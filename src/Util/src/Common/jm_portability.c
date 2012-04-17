@@ -24,6 +24,7 @@
 DLL_HANDLE jm_portability_load_dll_handle(const char* dll_file_path)
 {
 #ifdef WIN32
+	/* printf("Will try to load %s\n", dll_file_path); */
 	return LoadLibrary(dll_file_path);
 #else	
 	return dlopen(dll_file_path, RTLD_LAZY);
@@ -49,7 +50,7 @@ jm_status_enu_t jm_portability_free_dll_handle(DLL_HANDLE dll_handle)
 
 jm_status_enu_t jm_portability_load_dll_function(DLL_HANDLE dll_handle, char* dll_function_name, void** dll_function_ptrptr)
 {
-#ifdef _MSC_VER
+#ifdef WIN32
 	*dll_function_ptrptr = GetProcAddress(dll_handle, dll_function_name);
 #else
 	*dll_function_ptrptr = dlsym(dll_handle, dll_function_name);

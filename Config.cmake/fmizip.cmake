@@ -5,7 +5,7 @@ if(NOT FMIZIPDIR)
 	
 	set(DOXYFILE_EXTRA_SOURCES "${DOXYFILE_EXTRA_SOURCES} \"${FMIZIPDIR}/include\"")
 
-    set(FMIZIP_LIBRARIES fmi_zip)
+    set(FMIZIP_LIBRARIES fmizip)
 	
     add_subdirectory(Config.cmake/Minizip)
 	
@@ -26,8 +26,8 @@ set(FMIZIPHEADERS
 
 SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DZLIB_STATIC")
 
-add_library(fmi_zip ${FMIZIPSOURCE} ${FMIZIPHEADERS})
+add_library(fmizip ${FMIZIPSOURCE} ${FMIZIPHEADERS})
 
-target_link_libraries(fmi_zip minizip)
+target_link_libraries(fmizip minizip)
 
 endif(NOT FMIZIPDIR)

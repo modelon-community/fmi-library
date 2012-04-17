@@ -17,7 +17,7 @@ endif(CMAKE_HOST_APPLE)
 
 add_definitions(-D${PLATFORM})
 
-if(NOT WIN32)
+if(CMAKE_COMPILER_IS_GNUCC)
   SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")
 endif()
 

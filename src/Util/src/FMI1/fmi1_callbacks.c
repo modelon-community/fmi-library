@@ -20,7 +20,7 @@
 #include <string.h>
 #include <assert.h>
 
-#include "fmi1_callbacks.h"
+#include <FMI1/fmi1_callbacks.h>
 
 #ifdef FMU_REPLACE_SYSTEM_MALLOC
 #define fmi1_malloc malloc

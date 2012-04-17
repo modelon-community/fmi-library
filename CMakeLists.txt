@@ -63,6 +63,19 @@ configure_file (
   "${FMILibrary_SOURCE_DIR}/Config.cmake/config.h.cmake"
   "${FMILibrary_BINARY_DIR}/config.h"
   )
+  
+install(TARGETS fmiimport jmutils fmizip fmixml fmicapi
+	ARCHIVE DESTINATION lib
+	LIBRARY DESTINATION lib
+)
+
+install(DIRECTORY 
+	${FMIIMPORTDIR}/include 
+	${FMICAPIDIR}/include 
+	${FMIXMLDIR}/include
+	${FMIZIPDIR}/include # not sure if needed at install location
+	${JMUTILDIR}/include
+	DESTINATION .)
 
 option (GENERATE_DOXYGEN_DOC "Generate doxygen doc target" ON)
 if(GENERATE_DOXYGEN_DOC)

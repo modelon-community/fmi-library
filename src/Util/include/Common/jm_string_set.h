@@ -24,7 +24,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-/** \file jm_named_ptr.h Definition of ::jm_named_ptr and supporting functions
+/** \file jm_string_set.h Definition of ::jm_string_set and supporting functions
 	*
 	* \addtogroup jm_utils
 	* @{

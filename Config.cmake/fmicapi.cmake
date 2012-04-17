@@ -27,4 +27,8 @@ add_library(fmicapi ${FMICAPISOURCE} ${FMICAPIHEADERS})
 
 target_link_libraries(fmicapi ${JMUTIL_LIBRARIES})
 
+install(DIRECTORY ${FMIXMLDIR}/include DESTINATION .)
+install(DIRECTORY ${FMICAPIDIR}/include DESTINATION .)
+#install(DIRECTORY ${JMRUNTIMEHOME}/FMI/ZIP/include DESTINATION include)
+
 endif(NOT FMICAPIDIR)

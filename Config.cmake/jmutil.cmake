@@ -1,39 +1,39 @@
 if(NOT JMUTILDIR)
     set(JMUTILDIR ${FMILIBRARYHOME}/src/Util/)
-    set(JMUTIL_LIBRARIES jm_utils)
-    include_directories (${FMILIBRARYHOME}/src/Util "${THIRDPARTYLIBS}/FMI/")
+    set(JMUTIL_LIBRARIES jmutils)
+    include_directories ("${JMUTILDIR}/include" "${JMUTILDIR}/include/Common" "${THIRDPARTYLIBS}/FMI/")
 	set(DOXYFILE_EXTRA_SOURCES "${DOXYFILE_EXTRA_SOURCES} \"${JMUTILDIR}\"")
 
 set(JMUTILSOURCE
- jm_callbacks.c
- jm_templates_inst.c
- jm_named_ptr.c
- jm_wc_match.c
- jm_portability.c
+ Common/jm_callbacks.c
+ Common/jm_templates_inst.c
+ Common/jm_named_ptr.c
+ Common/jm_wc_match.c
+ Common/jm_portability.c
  FMI1/fmi1_callbacks.c
  FMI1/fmi1_enums.c
 )
 
 set(JMUTILHEADERS
-  jm_callbacks.h
-  jm_vector.h
-  jm_vector_template.h
-  jm_stack.h
-  jm_types.h
-  jm_named_ptr.h
-  jm_string_set.h
-  jm_wc_match.h
-  jm_portability.h
+  Common/jm_callbacks.h
+  Common/jm_vector.h
+  Common/jm_vector_template.h
+  Common/jm_stack.h
+  Common/jm_types.h
+  Common/jm_named_ptr.h
+  Common/jm_string_set.h
+  Common/jm_wc_match.h
+  Common/jm_portability.h
   FMI1/fmi1_functions.h
   FMI1/fmi1_types.h
   FMI1/fmi1_callbacks.h
   FMI1/fmi1_enums.h
 )
 
-PREFIXLIST(JMUTILSOURCE  ${JMUTILDIR})
-PREFIXLIST(JMUTILHEADERS ${JMUTILDIR})
+PREFIXLIST(JMUTILSOURCE  ${JMUTILDIR}/src/)
+PREFIXLIST(JMUTILHEADERS ${JMUTILDIR}/include/)
 
-add_library(jm_utils ${JMUTILSOURCE} ${JMUTILHEADERS})
+add_library(jmutils ${JMUTILSOURCE} ${JMUTILHEADERS})
 
 if(CYGWIN) 
 message("not tested")

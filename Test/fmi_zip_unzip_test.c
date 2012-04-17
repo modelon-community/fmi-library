@@ -23,7 +23,7 @@
 #include <jm_types.h>
 #include <jm_callbacks.h>
 #include <fmi_zip_unzip.h>
-#include "config.h"
+#include "config_fmilib.h"
 
 
 void do_exit(int code)

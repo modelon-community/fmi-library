@@ -27,7 +27,7 @@
 #include <FMI1/fmi1_capi.h>
 #include <jm_callbacks.h>
 #include <fmu_dummy/fmu1_model_defines.h>
-#include "config.h"
+#include "config_fmilib.h"
 
 #define MODEL_IDENTIFIER FMU_DUMMY_ME_MODEL_IDENTIFIER
 

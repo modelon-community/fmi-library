@@ -23,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define MODEL_IDENTIFIER FMU_DUMMY_ME_MODEL_IDENTIFIER
 
 #include <fmu_dummy/fmu1_model.h>
-#include "config.h"
+#include "config_fmilib.h"
 
 /* FMI 1.0 Common Functions */
 DllExport const char* fmiGetVersion()

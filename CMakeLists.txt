@@ -7,6 +7,21 @@ set(THIRDPARTYLIBS  ${FMILibrary_SOURCE_DIR}/ThirdParty CACHE PATH "Path to the 
 SET(FMILIBRARY_INSTALL_PREFIX ${FMILibrary_BINARY_DIR}/../install CACHE PATH "Prefix prepended to install directories")
 SET(CMAKE_INSTALL_PREFIX ${FMILIBRARY_INSTALL_PREFIX} CACHE INTERNAL "Prefix prepended to install directories" FORCE)
 
+if(MSVC)
+	set(BUILD_WITH_STATIC_CRT YES)
+	ADD_DEFINITIONS (/D _CRT_SECURE_NO_WARNINGS)
+	foreach(flag_var
+        CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE
+        CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO
+        CMAKE_C_FLAGS CMAKE_C_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE
+        CMAKE_C_FLAGS_MINSIZEREL CMAKE_C_FLAGS_RELWITHDEBINFO)
+        if(${${flag_var}} MATCHES "/MD")
+          string(REGEX REPLACE "/MD" "/MT" tmp "${${flag_var}}")
+		  set(${flag_var} ${tmp} CACHE STRING "compiler flags" FORCE)
+        endif()
+    endforeach(flag_var)
+endif(MSVC)
+
 include_directories("${FMILibrary_BINARY_DIR}")
   
 IF(CMAKE_COMPILER_IS_GNUCC)
@@ -45,11 +60,6 @@ endmacro(PREFIXLIST)
 
 source_group("Private headers" REGULAR_EXPRESSION ".*impl.h")
 
-if(MSVC)
-	set(BUILD_WITH_STATIC_CRT NO)
-	ADD_DEFINITIONS (/D _CRT_SECURE_NO_WARNINGS)
-endif(MSVC)
-
 SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${FMILIBRARYHOME}/Config.cmake)
 
 include(jmutil)
@@ -61,13 +71,15 @@ include(runtime_test)
 
 configure_file (
   "${FMILibrary_SOURCE_DIR}/Config.cmake/config.h.cmake"
-  "${FMILibrary_BINARY_DIR}/config.h"
+  "${FMILibrary_BINARY_DIR}/config_fmilib.h"
   )
   
 install(TARGETS fmiimport jmutils fmizip fmixml fmicapi
 	ARCHIVE DESTINATION lib
 	LIBRARY DESTINATION lib
 )
+
+install(FILES "${FMILibrary_BINARY_DIR}/config_fmilib.h" DESTINATION include)
 
 install(DIRECTORY 
 	${FMIIMPORTDIR}/include 

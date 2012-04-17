@@ -23,7 +23,7 @@
 #include <FMI1/fmi1_enums.h>
 #include <FMI1/fmi1_functions.h>
 #include <FMI1/fmi1_import.h>
-#include "config.h"
+#include "config_fmilib.h"
 
 #define BUFFER 1000
 

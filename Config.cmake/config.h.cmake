@@ -4,6 +4,10 @@
 
 #cmakedefine MINGW
 
+#ifndef CMAKE_INTDIR
+#define CMAKE_INTDIR "."
+#endif
+
 /* PATHs to test files */
 #define FMU1_DLL_ME_PATH @FMU1_DLL_ME_PATH@ 
 #define FMU1_DLL_CS_PATH @FMU1_DLL_CS_PATH@

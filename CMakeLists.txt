@@ -69,11 +69,26 @@ include(fmizip)
 include(fmiimport)
 include(runtime_test)
 
+#Cmake variables set in config files.
+if(WIN32)
+set(FMI_FILE_SEP "\\\\")
+else(WIN32)
+set(FMI_FILE_SEP "/")
+endif(WIN32)
+
+
 configure_file (
-  "${FMILibrary_SOURCE_DIR}/Config.cmake/config.h.cmake"
+  "${FMILibrary_SOURCE_DIR}/Config.cmake/config_fmilib.h.cmake"
   "${FMILibrary_BINARY_DIR}/config_fmilib.h"
   )
   
+configure_file (
+  "${FMILibrary_SOURCE_DIR}/Config.cmake/config_test.h.cmake"
+  "${FMILibrary_BINARY_DIR}/config_test.h"
+  )
+
+set(${CMAKE_SHARED_MODULE_SUFFIX})
+
 install(TARGETS fmiimport jmutils fmizip fmixml fmicapi
 	ARCHIVE DESTINATION lib
 	LIBRARY DESTINATION lib
@@ -87,7 +102,12 @@ install(DIRECTORY
 	${FMIXMLDIR}/include
 	${FMIZIPDIR}/include # not sure if needed at install location
 	${JMUTILDIR}/include
-	DESTINATION .)
+	DESTINATION .)	
+install(DIRECTORY 
+	${THIRDPARTYLIBS}/FMI/1.0-CS
+	${THIRDPARTYLIBS}/FMI/1.0-ME	
+	DESTINATION include)
+	
 
 option (GENERATE_DOXYGEN_DOC "Generate doxygen doc target" ON)
 if(GENERATE_DOXYGEN_DOC)

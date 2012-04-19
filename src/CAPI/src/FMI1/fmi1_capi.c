@@ -25,7 +25,6 @@ extern "C" {
 #include <jm_types.h>
 #include <jm_portability.h>
 
-#include <FMI1/fmi1_capi.h>
 #include <FMI1/fmi1_capi_impl.h>
 
 #define FUNCTION_NAME_LENGTH_MAX 2048			/* Maximum length of FMI function name. Used in the load DLL function. */

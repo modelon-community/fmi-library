@@ -4,7 +4,7 @@
 
 #include <jm_vector.h>
 #include <jm_stack.h>
-#include "config_fmilib.h"
+#include "config_test.h"
 
 void print_int(int i,void* data) {
     printf("%d\n", i);

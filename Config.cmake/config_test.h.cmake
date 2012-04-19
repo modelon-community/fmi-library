@@ -1,12 +1,3 @@
-#ifndef WIN32
-#cmakedefine WIN32
-#endif
-
-#cmakedefine MINGW
-
-#ifndef CMAKE_INTDIR
-#define CMAKE_INTDIR "."
-#endif
 
 /* PATHs to test files */
 #define FMU1_DLL_ME_PATH @FMU1_DLL_ME_PATH@ 

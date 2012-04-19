@@ -16,14 +16,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <string.h>
 
+
+
+
 /* Standard FMI 1.0 ME and CS types */
 #include <1.0-CS/fmiPlatformTypes.h>
 #include <1.0-CS/fmiFunctions.h>
 
+#include <fmu_dummy/fmu1_model.h>
+#include "config_test.h"
 #define MODEL_IDENTIFIER FMU_DUMMY_CS_MODEL_IDENTIFIER
 
-#include <fmu_dummy/fmu1_model.h>
-#include "config_fmilib.h"
+
+
 
 /* FMI 1.0 Common Functions */
 DllExport const char* fmiGetVersion()

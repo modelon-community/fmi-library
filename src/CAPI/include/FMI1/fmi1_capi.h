@@ -21,7 +21,10 @@
 #include <FMI1/fmi1_types.h>
 #include <FMI1/fmi1_functions.h>
 #include <FMI1/fmi1_enums.h>
-#include <FMI1/fmi1_capi_impl.h>
+#include <jm_portability.h>
+#include <jm_callbacks.h>
+
+typedef struct fmi1_capi_t fmi1_capi_t;
 
 #ifdef __cplusplus 
 extern "C" {

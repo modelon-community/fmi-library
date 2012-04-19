@@ -25,6 +25,7 @@ extern "C" {
 #include <FMI1/fmi1_types.h>
 #include <FMI1/fmi1_functions.h>
 #include <FMI1/fmi1_enums.h>
+#include <FMI1/fmi1_capi.h>
 #include <jm_portability.h>
 #include <jm_callbacks.h>
 
@@ -33,7 +34,7 @@ extern "C" {
 /** 
  * \brief C-API struct used as a placeholder for the FMI funktions and shared library handler. 
  */
-typedef struct {
+struct fmi1_capi_t {
 	const char* dllPath;
 	const char* modelIdentifier;
 	fmi1_callback_functions_t callBackFunctions;
@@ -91,7 +92,7 @@ typedef struct {
     fmi1_get_boolean_status_ft			fmiGetBooleanStatus;
     fmi1_get_string_status_ft			fmiGetStringStatus;
 
-} fmi1_capi_t;
+};
 
 #ifdef __cplusplus 
 }

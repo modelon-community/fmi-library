@@ -50,3 +50,8 @@ endif(WIN32)
 add_library(minizip ${SOURCE} ${HEADERS})
 
 target_link_libraries(minizip zlib)
+
+install(TARGETS minizip
+        ARCHIVE DESTINATION lib
+        LIBRARY DESTINATION lib 
+)

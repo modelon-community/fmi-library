@@ -17,7 +17,7 @@
 #ifndef FMI1_XML_VARIABLEIMPL_H
 #define FMI1_XML_VARIABLEIMPL_H
 
-#include <jm_vector.h>
+#include <Common/jm_vector.h>
 
 #include <FMI1/fmi1_xml_model_description.h>
 

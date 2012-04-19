@@ -20,8 +20,8 @@
 #include <string.h>
 #include <errno.h>
 
-#include <jm_types.h>
-#include <jm_callbacks.h>
+#include <Common/jm_types.h>
+#include <Common/jm_callbacks.h>
 #include <fmi_zip_unzip.h>
 #include "config_test.h"
 

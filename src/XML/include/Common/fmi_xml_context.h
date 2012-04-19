@@ -25,7 +25,7 @@
 #define FMI_XML_CONTEXT_H_
 
 #include <stddef.h>
-#include <jm_callbacks.h>
+#include <Common/jm_callbacks.h>
 #include <FMI1/fmi1_xml_model_description.h>
 
 #ifdef __cplusplus

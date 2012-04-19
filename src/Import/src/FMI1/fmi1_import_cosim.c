@@ -13,7 +13,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include <jm_vector.h>
+#include <Common/jm_vector.h>
 #include <FMI1/fmi1_xml_model_description.h>
 #include "fmi1_import_impl.h"
 

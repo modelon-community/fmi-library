@@ -22,8 +22,8 @@ extern "C" {
 #include <stdarg.h>
 #include <string.h>
 
-#include <jm_types.h>
-#include <jm_portability.h>
+#include <Common/jm_types.h>
+#include <Common/jm_portability.h>
 
 #include <FMI1/fmi1_capi_impl.h>
 

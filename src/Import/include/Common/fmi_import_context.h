@@ -23,7 +23,7 @@
 #define FMI_IMPORT_CONTEXT_H_
 
 #include <stddef.h>
-#include <jm_callbacks.h>
+#include <Common/jm_callbacks.h>
 #include <Common/fmi_xml_context.h>
 
 #ifdef __cplusplus

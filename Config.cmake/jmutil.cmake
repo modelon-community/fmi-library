@@ -1,7 +1,7 @@
 if(NOT JMUTILDIR)
     set(JMUTILDIR ${FMILIBRARYHOME}/src/Util/)
     set(JMUTIL_LIBRARIES jmutils)
-    include_directories ("${JMUTILDIR}/include" "${JMUTILDIR}/include/Common" "${THIRDPARTYLIBS}/FMI/")
+    include_directories ("${JMUTILDIR}/include" "${THIRDPARTYLIBS}/FMI/")
 	set(DOXYFILE_EXTRA_SOURCES "${DOXYFILE_EXTRA_SOURCES} \"${JMUTILDIR}\"")
 
 set(JMUTILSOURCE

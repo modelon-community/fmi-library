@@ -17,7 +17,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 
-#include <jm_named_ptr.h>
+#include <Common/jm_named_ptr.h>
 #include <Common/fmi_import_context.h>
 #include <fmi_zip_unzip.h>
 #include <Common/fmi_import_util.h>

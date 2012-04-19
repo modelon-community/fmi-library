@@ -17,7 +17,7 @@
 #ifndef FMI1_IMPORT_UTIL_H_
 #define FMI1_IMPORT_UTIL_H_
 
-#include <jm_callbacks.h>
+#include <Common/jm_callbacks.h>
 /**
 \addtogroup  fmi_import
 @{

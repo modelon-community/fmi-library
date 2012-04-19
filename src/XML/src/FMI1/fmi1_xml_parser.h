@@ -19,9 +19,9 @@
 
 #include <expat.h>
 
-#include <jm_vector.h>
-#include <jm_stack.h>
-#include <jm_named_ptr.h>
+#include <Common/jm_vector.h>
+#include <Common/jm_stack.h>
+#include <Common/jm_named_ptr.h>
 
 #include <FMI1/fmi1_xml_model_description.h>
 

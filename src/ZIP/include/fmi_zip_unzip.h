@@ -23,7 +23,7 @@ extern "C" {
 #endif
 
 #include <stdlib.h>
-#include <jm_types.h>
+#include <Common/jm_types.h>
 #include "miniunz.h"
 /**
  \file fmi_zip_unzip.h

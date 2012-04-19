@@ -15,8 +15,8 @@
 */
 
 #include <string.h>
-#include "jm_callbacks.h"
-#include "jm_named_ptr.h"
+#include "Common/jm_callbacks.h"
+#include "Common/jm_named_ptr.h"
 
 jm_named_ptr jm_named_alloc(const char* name, size_t size, size_t nameoffset, jm_callbacks* c) {
     jm_named_ptr out;
@@ -52,4 +52,4 @@ jm_named_ptr jm_named_alloc_v(jm_vector(char)* name, size_t size, size_t nameoff
 }
 
 #define JM_TEMPLATE_INSTANCE_TYPE jm_named_ptr
-#include "jm_vector_template.h"
+#include "Common/jm_vector_template.h"

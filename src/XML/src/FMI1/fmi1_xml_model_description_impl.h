@@ -3,10 +3,10 @@
 
 #include <stdarg.h>
 
-#include <jm_callbacks.h>
-#include <jm_vector.h>
-#include <jm_named_ptr.h>
-#include <jm_string_set.h>
+#include <Common/jm_callbacks.h>
+#include <Common/jm_vector.h>
+#include <Common/jm_named_ptr.h>
+#include <Common/jm_string_set.h>
 #include <FMI1/fmi1_xml_model_description.h>
 
 #include "fmi1_xml_unit_impl.h"

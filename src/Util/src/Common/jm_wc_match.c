@@ -14,7 +14,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "jm_wc_match.h"
+#include "Common/jm_wc_match.h"
 
 /* The code is inspired by: http://cm.bell-labs.com/cm/cs/tpop/code.html
 	You may use this code for any purpose, as long as you leave the 

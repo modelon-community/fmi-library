@@ -19,7 +19,7 @@
 #include <string.h>
 #include <stdarg.h>
 
-#include "jm_callbacks.h"
+#include "Common/jm_callbacks.h"
 
 void jm_default_logger(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_level, jm_string message) {
 	switch(log_level) {

@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <stdarg.h>
 
-#include <jm_vector.h>
-#include <jm_stack.h>
+#include <Common/jm_vector.h>
+#include <Common/jm_stack.h>
 #include "config_test.h"
 
 void print_int(int i,void* data) {

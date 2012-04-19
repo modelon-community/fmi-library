@@ -17,7 +17,7 @@
 #include <string.h>
 #include <stdio.h>
 
-#include <jm_vector.h>
+#include <Common/jm_vector.h>
 
 #include "fmi1_xml_parser.h"
 #include "fmi1_xml_type_impl.h"

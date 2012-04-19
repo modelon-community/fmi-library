@@ -46,7 +46,7 @@
 #define FMI1_IMPORT_H_
 
 #include <stddef.h>
-#include <jm_callbacks.h>
+#include <Common/jm_callbacks.h>
 #include <Common/fmi_import_util.h>
 #include <Common/fmi_import_context.h>
 #include <FMI1/fmi1_xml_model_description.h>

@@ -19,8 +19,8 @@ extern "C" {
 #endif
 
 #include <stdlib.h>
-#include <jm_types.h>
-#include <jm_callbacks.h>
+#include <Common/jm_types.h>
+#include <Common/jm_callbacks.h>
 #include "miniunz.h"
 
 jm_status_enu_t fmi_zip_unzip(const char* zip_file_path, const char* output_folder, jm_callbacks* callbacks)

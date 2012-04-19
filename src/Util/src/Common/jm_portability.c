@@ -16,8 +16,8 @@
 
 #include <stdio.h>
 
-#include "jm_types.h"
-#include "jm_portability.h"
+#include "Common/jm_types.h"
+#include "Common/jm_portability.h"
 
 #define JM_PORTABILITY_DLL_ERROR_MESSAGE_SIZE 1000
 

@@ -22,7 +22,7 @@
 extern "C" {
 #endif
 
-#include <jm_types.h>
+#include <Common/jm_types.h>
 /**
  \file fmi_zip_unzip.h
  Declaration of fmi_zip_zip() function.

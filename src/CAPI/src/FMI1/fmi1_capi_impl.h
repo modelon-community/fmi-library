@@ -26,8 +26,8 @@ extern "C" {
 #include <FMI1/fmi1_functions.h>
 #include <FMI1/fmi1_enums.h>
 #include <FMI1/fmi1_capi.h>
-#include <jm_portability.h>
-#include <jm_callbacks.h>
+#include <Common/jm_portability.h>
+#include <Common/jm_callbacks.h>
 
 #define LOGGER_MODULE_NAME "CAPIIMPORT"
 

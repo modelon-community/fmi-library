@@ -17,8 +17,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <jm_types.h>
-#include <jm_callbacks.h>
+#include <Common/jm_types.h>
+#include <Common/jm_callbacks.h>
 #include <fmi_zip_zip.h>
 #include "config_test.h"
 

@@ -17,7 +17,7 @@
 #ifndef FMI1_CALLBACKS_H
 #define FMI1_CALLBACKS_H
 
-#include <jm_callbacks.h>
+#include <Common/jm_callbacks.h>
 #include "fmi1_functions.h"
 
 #ifdef __cplusplus

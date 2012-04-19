@@ -508,8 +508,8 @@ int fmi1_xml_parse_model_description(fmi1_xml_model_description_t* md, const cha
 }
 
 #define JM_TEMPLATE_INSTANCE_TYPE fmi1_xml_element_handle_map_t
-#include "jm_vector_template.h"
+#include "Common/jm_vector_template.h"
 
 #undef JM_TEMPLATE_INSTANCE_TYPE
 #define JM_TEMPLATE_INSTANCE_TYPE fmi1_xml_element_handle_ft
-#include "jm_vector_template.h"
+#include "Common/jm_vector_template.h"

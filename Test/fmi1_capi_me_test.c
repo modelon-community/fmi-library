@@ -20,12 +20,12 @@
 #include <string.h>
 #include <errno.h>
 
-#include <jm_types.h>
-#include <jm_portability.h>
+#include <Common/jm_types.h>
+#include <Common/jm_portability.h>
 #include <FMI1/fmi1_types.h>
 #include <FMI1/fmi1_functions.h>
 #include <FMI1/fmi1_capi.h>
-#include <jm_callbacks.h>
+#include <Common/jm_callbacks.h>
 #include <fmu_dummy/fmu1_model_defines.h>
 #include "config_test.h"
 

@@ -358,3 +358,30 @@ jm_vector(jm_named_ptr)* fmi1_xml_get_variables(fmi1_xml_model_description_t* md
 	return &md->variables;
 }
 
+fmi1_xml_variable_t* fmi1_xml_get_variable_by_name(fmi1_xml_model_description_t* md, const char* name) {
+	jm_named_ptr key, *found;
+    key.name = name;
+    found = jm_vector_bsearch(jm_named_ptr)(&md->variables, &key, jm_compare_named);
+	if(!found) return 0;
+	return found->ptr;
+}
+
+
+fmi1_xml_variable_t* fmi1_xml_get_variable_by_vr(fmi1_xml_model_description_t* md, fmi1_base_type_enu_t baseType, fmi1_value_reference_t vr) {
+    fmi1_xml_variable_t key;
+    fmi1_xml_variable_t *pkey = &key;
+	fmi1_xml_variable_type_base_t keyType;
+	fmi1_xml_variable_t *v = 0;
+    void ** found;
+	if(!md->variablesByVR) return 0;
+	keyType.structKind = fmi1_xml_type_struct_enu_base;
+	keyType.baseType = baseType;
+	key.typeBase = &keyType;
+	key.vr = vr;
+    key.aliasKind = fmi1_variable_is_not_alias;
+
+    found = jm_vector_bsearch(jm_voidp)(md->variablesByVR,(void**)&pkey, fmi1_xml_compare_vr);
+    if(!found) return 0;
+    v = *found;
+    return v;
+}

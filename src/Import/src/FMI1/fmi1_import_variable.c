@@ -24,6 +24,14 @@
 #include "fmi1_import_impl.h"
 #include "fmi1_import_variable_list_impl.h"
 
+fmi1_import_variable_t* fmi1_import_get_variable_by_name(fmi1_import_t* fmu, const char* name) {
+	return fmi1_xml_get_variable_by_name(fmu->md, name);
+}
+
+fmi1_import_variable_t* fmi1_import_get_variable_by_vr(fmi1_import_t* fmu, fmi1_base_type_enu_t baseType, fmi1_value_reference_t vr) {
+	return fmi1_xml_get_variable_by_vr(fmu->md, baseType, vr);
+}
+
 const char* fmi1_import_get_variable_name(fmi1_import_variable_t* v) {
 	return fmi1_xml_get_variable_name(v); 
 }

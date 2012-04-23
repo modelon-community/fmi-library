@@ -39,9 +39,27 @@ extern "C" {
 	@}
 	\addtogroup fmi1_import_variables Functions for handling variable definitions.
 	\brief All the functions in this group take a pointer to ::fmi1_import_variable_t as a parameter.
-	A variable pointer may be obtained via a \ref fmi1_import_varlist module.
+	A variable pointer may be obtained via a \ref fmi1_import_varlist module or via functions
+	fmi1_import_get_variable_by_name() and fmi1_import_get_variable_by_vr().
 	@{
 	*/
+/**
+	\brief Get variable by variable name.
+	\param fmu - An fmu object as returned by fmi1_import_parse_xml().
+	\param name - variable name
+	\return variable pointer.
+*/
+fmi1_import_variable_t* fmi1_import_get_variable_by_name(fmi1_import_t* fmu, const char* name);
+
+/**
+	\brief Get variable by value reference.
+	\param fmu - An fmu object as returned by fmi1_import_parse_xml().
+	\param baseType - basic data type
+	\param vr - value reference
+	\return variable pointer.
+*/
+fmi1_import_variable_t* fmi1_import_get_variable_by_vr(fmi1_import_t* fmu, fmi1_base_type_enu_t baseType, fmi1_value_reference_t vr);
+
 
 /** \brief Get the variable name */
 const char* fmi1_import_get_variable_name(fmi1_import_variable_t*);

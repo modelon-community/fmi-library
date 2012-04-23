@@ -119,6 +119,36 @@ void printTypeInfo(fmi1_import_variable_typedef_t* vt) {
 
 }
 
+void testVariableSearch(fmi1_import_t* fmu,
+	fmi1_import_variable_t* v) {
+
+		const char * a_name = fmi1_import_get_variable_name(v);
+		fmi1_import_variable_t* found = fmi1_import_get_variable_by_name(fmu, a_name);
+		if(found != v) {
+			printf("Searching by name %s found var %s\n", a_name, found?fmi1_import_get_variable_name(found):"nothing");
+			do_exit(1);
+		}
+		else {
+			printf("Searching by name worked fine\n");
+		}
+		found = fmi1_import_get_variable_by_vr(fmu, fmi1_import_get_variable_base_type(v),fmi1_import_get_variable_vr(v));
+		if(!found) {
+			printf("Searching by vr failed for variable '%s'\n");
+			do_exit(1);
+		}
+		else if(fmi1_import_get_variable_base_type(v) != fmi1_import_get_variable_base_type(found)) {			
+			printf("Searching %s found var %s", a_name, fmi1_import_get_variable_name(found));
+			do_exit(1);
+		}
+		else if(fmi1_import_get_variable_vr(v) != fmi1_import_get_variable_vr(found)) {			
+			printf("Searching %s found var %s", a_name, fmi1_import_get_variable_name(found));
+			do_exit(1);
+		}
+		else {
+			printf("Searching by vr worked fine\n");
+		}
+}
+
 void printVariableInfo(fmi1_import_t* fmu,
                        fmi1_import_variable_t* v) {
     fmi1_base_type_enu_t bt;
@@ -327,14 +357,20 @@ int main(int argc, char *argv[])
     {
         size_t nv, i;
         fmi1_import_variable_list_t* vl = fmi1_import_get_variable_list(fmu);
+
         assert(vl);
         nv = fmi1_import_get_variable_list_size(vl);
         printf("There are %d variables in total \n",nv);
         for(i = 0; i < nv; i++) {
             fmi1_import_variable_t* var = fmi1_import_get_variable(vl, i);
-            if(!var) printf("Something wrong with variable %d \n",i);
-            else
+            if(!var) {
+				printf("Something wrong with variable %d \n",i);
+				do_exit(1);
+			}
+            else {
                 printVariableInfo(fmu, var);
+				testVariableSearch(fmu, var);
+			}
         }
         fmi1_import_free_variable_list(vl);
     }

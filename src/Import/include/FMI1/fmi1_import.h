@@ -92,21 +92,24 @@ typedef fmi1_xml_type_definitions_t fmi1_import_type_definitions_t;
 /**@} */
 
 /**@name Scalar variable types */
-/**Typed variables are needed to support specific attributes */
 /**@{ */
-/**General variable type is convenien to unify all the variable list operations */
+/** \brief General variable type. 
+*
+* This type is convenient to unify all the variable list operations. 
+* 	However, typed variables are needed to support specific attributes.
+*/
 typedef fmi1_xml_variable_t fmi1_import_variable_t;
-/** Opaque real variable */
+/** \brief  Opaque real variable */
 typedef fmi1_xml_real_variable_t fmi1_import_real_variable_t;
-/** Opaque integer variable */
+/** \brief Opaque integer variable */
 typedef fmi1_xml_integer_variable_t fmi1_import_integer_variable_t;
-/** Opaque string variable */
+/** \brief Opaque string variable */
 typedef fmi1_xml_string_variable_t fmi1_import_string_variable_t;
-/** Opaque enumeration variable */
+/** \brief Opaque enumeration variable */
 typedef fmi1_xml_enum_variable_t fmi1_import_enum_variable_t;
-/** Opaque boolean variable */
+/** \brief Opaque boolean variable */
 typedef fmi1_xml_bool_variable_t fmi1_import_bool_variable_t;
-/** List of variables */
+/** \brief List of variables */
 typedef struct fmi1_import_variable_list_t fmi1_import_variable_list_t;
 /**@} */
 

@@ -196,6 +196,24 @@ fmi1_xml_capabilities_t* fmi1_xml_get_capabilities(fmi1_xml_model_description_t*
 
 jm_vector(jm_named_ptr)* fmi1_xml_get_variables(fmi1_xml_model_description_t* md);
 
+
+/**
+	\brief Get variable by variable name.
+	\param md - the model description
+	\param name - variable name
+	\return variable pointer.
+*/
+fmi1_xml_variable_t* fmi1_xml_get_variable_by_name(fmi1_xml_model_description_t* md, const char* name);
+
+/**
+	\brief Get variable by value reference.
+	\param md - the model description
+	\param baseType - basic data type
+	\param vr - value reference
+	\return variable pointer.
+*/
+fmi1_xml_variable_t* fmi1_xml_get_variable_by_vr(fmi1_xml_model_description_t* md, fmi1_base_type_enu_t baseType, fmi1_value_reference_t vr);
+
 /** @} */
 #include "fmi1_xml_type.h"
 #include "fmi1_xml_unit.h"

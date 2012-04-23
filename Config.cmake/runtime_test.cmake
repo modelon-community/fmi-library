@@ -214,13 +214,14 @@ file(MAKE_DIRECTORY ${TEST_OUTPUT_FOLDER}/tempfolder)
 
 #ADD_TEST(ctest_vector_test ${EXECUTABLE_OUTPUT_PATH}/jm_vector_test)
 
-ADD_TEST(ctest_fmi_import_test fmi_import_test ${FMU_ME_PATH} ${FMU_TEMPFOLDER})
-ADD_TEST(ctest_fmi_import_me_test ${EXECUTABLE_OUTPUT_PATH}/fmi_import_me_test ${FMU_ME_PATH} ${FMU_TEMPFOLDER})
-ADD_TEST(ctest_fmi_import_cs_test ${EXECUTABLE_OUTPUT_PATH}/fmi_import_cs_test ${FMU_CS_PATH} ${FMU_TEMPFOLDER})
+ADD_TEST(ctest_fmi_import_me_test fmi_import_me_test ${FMU_ME_PATH} ${FMU_TEMPFOLDER})
+ADD_TEST(ctest_fmi_import_cs_test fmi_import_cs_test ${FMU_CS_PATH} ${FMU_TEMPFOLDER})
+# the next test relies on the output from the previous one.
+ADD_TEST(ctest_fmi_import_xml_test fmi_import_xml_test ${FMU_TEMPFOLDER})
 
-ADD_TEST(ctest_fmi_zip_unzip_test ${EXECUTABLE_OUTPUT_PATH}/fmi_zip_unzip_test)
-ADD_TEST(ctest_fmi_zip_zip_test ${EXECUTABLE_OUTPUT_PATH}/fmi_zip_zip_test)
-ADD_TEST(ctest_fmi1_capi_cs_test ${EXECUTABLE_OUTPUT_PATH}/fmi1_capi_cs_test)
-ADD_TEST(ctest_fmi1_capi_me_test ${EXECUTABLE_OUTPUT_PATH}/fmi1_capi_me_test)
+ADD_TEST(ctest_fmi_zip_unzip_test fmi_zip_unzip_test)
+ADD_TEST(ctest_fmi_zip_zip_test fmi_zip_zip_test)
+ADD_TEST(ctest_fmi1_capi_cs_test fmi1_capi_cs_test)
+ADD_TEST(ctest_fmi1_capi_me_test fmi1_capi_me_test)
                               
 

@@ -38,8 +38,20 @@ set(FMU_DUMMY_HEADERS
   ${FMU_DUMMY_FOLDER}/fmu1_model_defines.h
 )
 include_directories(${RTTESTDIR})
-add_library(fmu1_dll_me SHARED ${FMU_DUMMY_ME_SOURCE} ${FMU_DUMMY_HEADERS})
-add_library(fmu1_dll_cs SHARED ${FMU_DUMMY_CS_SOURCE} ${FMU_DUMMY_HEADERS})
+if(MSVC)
+	foreach(flag_var
+			CMAKE_MODULE_LINKER_FLAGS_DEBUG CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO
+			CMAKE_SHARED_LINKER_FLAGS_DEBUG CMAKE_SHARED_LINKER_FLAGS_RELWITHDEBINFO)
+			debug_message("Checking:  ${flag_var}=${${flag_var}}")
+			string(REPLACE "/INCREMENTAL:NO" " " tmp1 "${${flag_var}}")
+			string(REPLACE "/INCREMENTAL" " " tmp "${tmp1}")
+			set(${flag_var} "${tmp} /INCREMENTAL:NO" CACHE STRING "linker flags" FORCE)
+			debug_message("After replace: ${flag_var}=${${flag_var}}")
+	endforeach(flag_var)
+endif()
+
+add_library(fmu1_dll_me MODULE ${FMU_DUMMY_ME_SOURCE} ${FMU_DUMMY_HEADERS})
+add_library(fmu1_dll_cs MODULE ${FMU_DUMMY_CS_SOURCE} ${FMU_DUMMY_HEADERS})
 
 #Set output directory for the shared library files
 #set_target_properties(

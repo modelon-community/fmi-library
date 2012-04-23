@@ -7,19 +7,37 @@ set(THIRDPARTYLIBS  ${FMILibrary_SOURCE_DIR}/ThirdParty CACHE PATH "Path to the 
 SET(FMILIBRARY_INSTALL_PREFIX ${FMILibrary_BINARY_DIR}/../install CACHE PATH "Prefix prepended to install directories")
 SET(CMAKE_INSTALL_PREFIX ${FMILIBRARY_INSTALL_PREFIX} CACHE INTERNAL "Prefix prepended to install directories" FORCE)
 
+option(PRINT_DEBUG_MESSAGES OFF)
+mark_as_advanced(FORCE PRINT_DEBUG_MESSAGES)
+function(debug_message)
+	if(PRINT_DEBUG_MESSAGES)
+		message(STATUS "${ARGV}")
+	endif()
+endfunction()
+
 if(MSVC)
-	set(BUILD_WITH_STATIC_CRT YES)
 	ADD_DEFINITIONS (/D _CRT_SECURE_NO_WARNINGS)
+	option (BUILD_WITH_STATIC_RTLIB "Use static run-time libraries (/MT or /MTd linker flags)" OFF)
+	if(BUILD_WITH_STATIC_RTLIB)
+		set(BUILD_WITH_STATIC_CRT YES)
+		set(replace_from "/MD")
+		set(replace_to "/MT")
+	else()
+		set(BUILD_WITH_STATIC_CRT NO)
+		set(replace_from "/MT")
+		set(replace_to "/MD")
+	endif(BUILD_WITH_STATIC_RTLIB)
+
 	foreach(flag_var
-        CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE
-        CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO
-        CMAKE_C_FLAGS CMAKE_C_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE
-        CMAKE_C_FLAGS_MINSIZEREL CMAKE_C_FLAGS_RELWITHDEBINFO)
-        if(${${flag_var}} MATCHES "/MD")
-          string(REGEX REPLACE "/MD" "/MT" tmp "${${flag_var}}")
-		  set(${flag_var} ${tmp} CACHE STRING "compiler flags" FORCE)
-        endif()
-    endforeach(flag_var)
+		CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE
+		CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO
+		CMAKE_C_FLAGS CMAKE_C_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE
+		CMAKE_C_FLAGS_MINSIZEREL CMAKE_C_FLAGS_RELWITHDEBINFO)
+		if(${${flag_var}} MATCHES "${replace_from}")
+			string(REPLACE "${replace_from}" "${replace_to}" tmp "${${flag_var}}")
+			set(${flag_var} ${tmp} CACHE STRING "compiler flags" FORCE)
+		endif()
+	endforeach(flag_var)	
 endif(MSVC)
 
 include_directories("${FMILibrary_BINARY_DIR}")

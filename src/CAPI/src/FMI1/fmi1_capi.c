@@ -216,6 +216,10 @@ jm_status_enu_t fmi1_capi_load_dll(fmi1_capi_t* fmu)
 
 jm_status_enu_t fmi1_capi_free_dll(fmi1_capi_t* fmu)
 {
+	if (fmu == NULL) {		
+		return jm_status_error; /* Return without writing any log message */
+	}
+
 	if (fmu->dllHandle) {		
 		if (jm_portability_free_dll_handle(fmu->dllHandle) == jm_status_error) { /* Free the library handle */
 			jm_log(fmu->callbacks, LOGGER_MODULE_NAME, jm_log_level_error, "Could not free the DLL: %s", jm_portability_get_last_dll_error());

@@ -85,6 +85,8 @@ void fmi1_import_destroy_dllfmu(fmi1_import_t* fmu) {
 
 	/* Destroy the C-API struct */
 	fmi1_capi_destroy_dllfmu(fmu -> capi);	
+
+	fmu -> capi = NULL;
 }
 
 /* FMI 1.0 Common functions */

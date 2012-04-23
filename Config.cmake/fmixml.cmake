@@ -46,7 +46,7 @@ set(FMIXMLSOURCE
 #find_package (EXPAT)
 
 if(NOT EXPAT_FOUND)
-  message(STATUS "Adding expat")
+  debug_message("Adding expat as sub-project")
   include_directories(${CMAKE_BINARY_DIR}/Expat)
   option(BUILD_tools OFF )
   option(BUILD_examples OFF )

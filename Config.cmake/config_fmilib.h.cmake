@@ -8,7 +8,7 @@
 #define CMAKE_INTDIR "."
 #endif
 
-/* Platform folder sepperator */
+/* Platform folder separator */
 #define FMI_FILE_SEP "@FMI_FILE_SEP@"	
 
 /* DLL file name suffix(.so, .dll, ...) */
@@ -27,5 +27,7 @@
 
 #define FMI_BINARIES "binaries"
 #define FMI_MODEL_DESCRIPTION_XML "modelDescription.xml"
+
+const char* fmilib_get_build_stamp();
 
 

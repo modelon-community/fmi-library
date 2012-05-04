@@ -178,7 +178,13 @@ endfunction(compress_fmu)
 #function(compress_fmu OUTPUT_FOLDER MODEL_IDENTIFIER FILE_NAME_CS_ME_EXT TARGET_NAME XML_PATH SHARED_LIBRARY_PATH)
 compress_fmu("${TEST_OUTPUT_FOLDER}" "${FMU_DUMMY_ME_MODEL_IDENTIFIER}" "me" "fmu1_dll_me" "${XML_ME_PATH}" "${SHARED_LIBRARY_ME_PATH}")
 compress_fmu("${TEST_OUTPUT_FOLDER}" "${FMU_DUMMY_CS_MODEL_IDENTIFIER}" "cs" "fmu1_dll_cs" "${XML_CS_PATH}" "${SHARED_LIBRARY_CS_PATH}")
-
+set(FMILIBFORTEST fmilib)
+if(NOT MSVC)
+#option(FMILIB_LINK_TEST_TO_SHAREDLIB "Link the tests to fmilib_shared instead of fmilib" ON)
+if(FMILIB_LINK_TEST_TO_SHAREDLIB)
+	set(FMILIBFORTEST fmilib_shared)
+endif()
+endif()
 add_executable (fmi_zip_zip_test ${RTTESTDIR}/fmi_zip_zip_test.c )
 target_link_libraries (fmi_zip_zip_test ${FMIZIP_LIBRARIES})
 
@@ -186,12 +192,11 @@ add_executable (fmi_zip_unzip_test ${RTTESTDIR}/fmi_zip_unzip_test.c )
 target_link_libraries (fmi_zip_unzip_test ${FMIZIP_LIBRARIES})
 
 add_executable (fmi_import_test ${RTTESTDIR}/fmi_import_test.c)
-target_link_libraries (fmi_import_test  ${FMICAPI_LIBRARIES} ${FMIXML_LIBRARIES} ${FMIZIP_LIBRARIES} ${FMIIMPORT_LIBRARIES} ${JMUTIL_LIBRARIES})
+target_link_libraries (fmi_import_test  ${FMILIBFORTEST})
 add_executable (fmi_import_me_test ${RTTESTDIR}/fmi_import_me_test.c)
-target_link_libraries (fmi_import_me_test  ${FMICAPI_LIBRARIES} ${FMIXML_LIBRARIES} ${FMIZIP_LIBRARIES} ${FMIIMPORT_LIBRARIES} ${JMUTIL_LIBRARIES})
+target_link_libraries (fmi_import_me_test  ${FMILIBFORTEST})
 add_executable (fmi_import_cs_test ${RTTESTDIR}/fmi_import_cs_test.c)
-target_link_libraries (fmi_import_cs_test  ${FMICAPI_LIBRARIES} ${FMIXML_LIBRARIES} ${FMIZIP_LIBRARIES} ${FMIIMPORT_LIBRARIES} ${JMUTIL_LIBRARIES})
-
+target_link_libraries (fmi_import_cs_test  ${FMILIBFORTEST})
 
 ENABLE_TESTING()
 

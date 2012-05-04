@@ -15,11 +15,11 @@
 */
 
 /**
-	* \mainpage JModelica Runtime Library: FMI import
+	* \mainpage FMI Import library (part of JModelica.org)
 	*
 	* \version     0.1a
 	* \date April  2012
-	* \section FMI Import library
+	* \section Summary
 	The library is intended as a foundation for applications interfacing FMUs (Functional Mockup Units)
 	that follow FMI Standard. See <http://functional-mockup-interface.org/> 
 	* \section License	

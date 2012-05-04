@@ -245,4 +245,5 @@ fmi1_import_capabilities_t* fmi1_import_get_capabilities(fmi1_import_t* fmu);
 #include "fmi1_import_cosim.h"
 #include "fmi1_import_variable_list.h"
 #include "fmi1_import_capi.h"
+#include "fmi1_import_convenience.h"
 #endif

@@ -48,10 +48,10 @@ jm_status_enu_t jm_portability_free_dll_handle(DLL_HANDLE dll_handle)
 #endif
 }
 
-jm_status_enu_t jm_portability_load_dll_function(DLL_HANDLE dll_handle, char* dll_function_name, void** dll_function_ptrptr)
+jm_status_enu_t jm_portability_load_dll_function(DLL_HANDLE dll_handle, char* dll_function_name, jm_dll_function_ptr* dll_function_ptrptr)
 {
 #ifdef WIN32
-	*dll_function_ptrptr = GetProcAddress(dll_handle, dll_function_name);
+	*dll_function_ptrptr = (jm_dll_function_ptr)GetProcAddress(dll_handle, dll_function_name);
 #else
 	*dll_function_ptrptr = dlsym(dll_handle, dll_function_name);
 #endif

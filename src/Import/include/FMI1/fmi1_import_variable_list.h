@@ -36,11 +36,19 @@ extern "C" {
  @}
 */
 
-/** \addtogroup  fmi1_import_varlist Handling of variable lists
+/** \addtogroup  fmi1_import_varlist Handling of variable lists.
+*  \brief Variable lists are provided to handle sets of variables.
+*
+* Note that variable lists are allocated dynamically and must be freed when not needed any longer.
  @{ 
 */
 
-/** Get the list of all the variables in the model */
+/** \brief Get the list of all the variables in the model.
+* @param fmu An FMU object as returned by fmi1_import_parse_xml().
+* @return a variable list with all the variables in the model.
+*
+* Note that variable lists are allocated dynamically and must be freed when not needed any longer.
+*/
 fmi1_import_variable_list_t* fmi1_import_get_variable_list(fmi1_import_t* fmu);
 
 /** Note that variable lists are allocated dynamically and must be freed when not needed any longer */

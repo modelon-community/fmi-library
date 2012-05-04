@@ -31,7 +31,7 @@ void mylogger(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_level, j
 void do_exit(int code)
 {
 	printf("Press 'Enter' to exit\n");
-	getchar();
+/*	getchar(); */
 	exit(code);
 }
 
@@ -133,7 +133,7 @@ void testVariableSearch(fmi1_import_t* fmu,
 		}
 		found = fmi1_import_get_variable_by_vr(fmu, fmi1_import_get_variable_base_type(v),fmi1_import_get_variable_vr(v));
 		if(!found) {
-			printf("Searching by vr failed for variable '%s'\n");
+			printf("Searching by vr failed for variable '%s'\n", a_name);
 			do_exit(1);
 		}
 		else if(fmi1_import_get_variable_base_type(v) != fmi1_import_get_variable_base_type(found)) {			

@@ -42,8 +42,16 @@
 DLL_HANDLE		jm_portability_load_dll_handle		(const char* dll_file_path);
 /** Unload a Dll and release the handle*/
 jm_status_enu_t jm_portability_free_dll_handle		(DLL_HANDLE dll_handle);
+
+/** \brief A function pointer as returned when DLL symbol is loaded.*/
+#ifdef WIN32
+#define jm_dll_function_ptr FARPROC
+#else
+typedef void* jm_dll_function_ptr; 
+#endif
+
 /** Find a function in the Dll and return a function pointer */
-jm_status_enu_t jm_portability_load_dll_function	(DLL_HANDLE dll_handle, char* dll_function_name, void** dll_function_ptrptr);
+jm_status_enu_t jm_portability_load_dll_function	(DLL_HANDLE dll_handle, char* dll_function_name, jm_dll_function_ptr* dll_function_ptrptr);
 /** Return error associated with Dll handling */
 char*			jm_portability_get_last_dll_error	(void);
 /*@}*/

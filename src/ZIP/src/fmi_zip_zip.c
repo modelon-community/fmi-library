@@ -27,7 +27,7 @@ jm_status_enu_t fmi_zip_zip(const char* zip_file_path, int n_files_to_zip, const
 {
 #define N_BASIC_ARGS 4
 	int argc;
-	const char** argv;
+	char** argv;
 	int k;
 	int status;
 
@@ -54,11 +54,11 @@ jm_status_enu_t fmi_zip_zip(const char* zip_file_path, int n_files_to_zip, const
 	argv[0]="minizip";
 	argv[1]="-o";
 	argv[2]="-1";
-	argv[3]=zip_file_path;
+	argv[3]=(char*)zip_file_path;
 
 	/* Append the input argument list with the files to unzip */
 	for (k = 0; k < n_files_to_zip; k++) {
-		argv[N_BASIC_ARGS + k] = files_to_zip[k];
+		argv[N_BASIC_ARGS + k] = (char*)files_to_zip[k];
 	}
 
 	/* Unzip */

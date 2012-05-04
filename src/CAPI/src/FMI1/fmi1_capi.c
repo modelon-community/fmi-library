@@ -31,7 +31,7 @@ extern "C" {
 #define STRINGIFY(str) #str
 
 /* Loading shared library functions */
-static jm_status_enu_t fmi1_capi_get_fcn(fmi1_capi_t* fmu, const char* function_name, void** dll_function_ptrptr)
+static jm_status_enu_t fmi1_capi_get_fcn(fmi1_capi_t* fmu, const char* function_name, jm_dll_function_ptr* dll_function_ptrptr)
 {
 	char fname[FUNCTION_NAME_LENGTH_MAX];
 	
@@ -47,7 +47,7 @@ static jm_status_enu_t fmi1_capi_get_fcn(fmi1_capi_t* fmu, const char* function_
 
 
 /* Load FMI functions from DLL macro */
-#define LOAD_DLL_FUNCTION(FMIFUNCTION) if (fmi1_capi_get_fcn(fmu, #FMIFUNCTION, (void**)&fmu->FMIFUNCTION) == jm_status_error) { \
+#define LOAD_DLL_FUNCTION(FMIFUNCTION) if (fmi1_capi_get_fcn(fmu, #FMIFUNCTION, (jm_dll_function_ptr*)&fmu->FMIFUNCTION) == jm_status_error) { \
 	jm_log(fmu->callbacks, LOGGER_MODULE_NAME, jm_log_level_error, "Could not load the FMI function '"#FMIFUNCTION"'. %s", jm_portability_get_last_dll_error()); \
 	return jm_status_error; \
 }
@@ -57,8 +57,8 @@ static jm_status_enu_t fmi1_capi_get_fcn(fmi1_capi_t* fmu, const char* function_
 static jm_status_enu_t fmi1_capi_load_cs_fcn(fmi1_capi_t* fmu)
 {
 	/* Workaround for Dymola 2012 and SimulationX 3.x */
-	if (fmi1_capi_get_fcn(fmu, "fmiGetTypesPlatform", (void**)&fmu->fmiGetTypesPlatform) == jm_status_error) {
-		if (fmi1_capi_get_fcn(fmu, "fmiGetModelTypesPlatform", (void**)&fmu->fmiGetTypesPlatform) == jm_status_error) {
+	if (fmi1_capi_get_fcn(fmu, "fmiGetTypesPlatform",(jm_dll_function_ptr*)&fmu->fmiGetTypesPlatform) == jm_status_error) {
+		if (fmi1_capi_get_fcn(fmu, "fmiGetModelTypesPlatform", (jm_dll_function_ptr*)&fmu->fmiGetTypesPlatform) == jm_status_error) {
 			jm_log(fmu->callbacks, LOGGER_MODULE_NAME, jm_log_level_error, "Could not load any of the FMI functions 'fmiGetModelTypesPlatform' or 'fmiGetTypesPlatform'. %s", jm_portability_get_last_dll_error());
 			return jm_status_error;
 		}

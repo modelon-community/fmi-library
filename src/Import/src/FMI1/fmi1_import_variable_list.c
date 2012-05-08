@@ -32,7 +32,9 @@ fmi1_import_variable_list_t* fmi1_import_alloc_variable_list(fmi1_import_t* fmu,
 }
 
 void fmi1_import_free_variable_list(fmi1_import_variable_list_t* vl) {
-    jm_callbacks* cb = vl->variables.callbacks;
+    jm_callbacks* cb;
+	if(!vl) return;
+	cb = vl->variables.callbacks;
     jm_vector_free(size_t)(vl->vr);
     jm_vector_free_data(jm_voidp)(&vl->variables);
     cb->free(vl);

@@ -215,6 +215,18 @@ void printVariableInfo(fmi1_import_t* fmu,
         }
         fmi1_import_free_variable_list(vl);
     }
+	{
+		fmi1_import_variable_list_t* vl = fmi1_import_get_direct_dependency( fmu, v);
+        size_t i, n = 0;
+		if(vl) 
+			n = fmi1_import_get_variable_list_size(vl);
+        if(n>0) {
+            printf("Listing direct dependencies: \n");
+            for(i = 0;i<n;i++)
+                printf("\t%s\n",fmi1_import_get_variable_name(fmi1_import_get_variable(vl, i)));
+        }
+        fmi1_import_free_variable_list(vl);
+	}
 }
 
 void printCapabilitiesInfo(fmi1_import_capabilities_t* capabilities) {

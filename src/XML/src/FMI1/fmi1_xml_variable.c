@@ -439,23 +439,30 @@ int fmi1_xml_handle_Name(fmi1_xml_parser_context_t *context, const char* data) {
     else {
         fmi1_xml_model_description_t* md = context->modelDescription;
         fmi1_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variables).ptr;
-        size_t namelen = strlen(data);
+        size_t namelen = strlen(data), i = 0, j;
         char* name = 0;
         jm_voidp* itemp;
         jm_string* namep;
-        if(namelen == 0) {
-            fmi1_xml_parse_error(context, "Unexpected empty Name element for DirectDependency of variable %s", variable->name);
+#define TRIM_SPACE " \n\r\t"
+		if(namelen) {
+			while(strchr(TRIM_SPACE, data[i])) i++;
+			while(strchr(TRIM_SPACE, data[namelen-1])) namelen--;
+		}
+        if(i>=namelen) {
+            fmi1_xml_parse_warning(context, "Unexpected empty Name element for DirectDependency of variable %s. Ignoring.", variable->name);
             return -1;
         }
         namep = jm_vector_push_back(jm_string)(&context->directDependencyStringsStore, name);
-        if(namep) *namep = name  = context->callbacks->malloc(namelen + 1);
+        if(namep) *namep = name = context->callbacks->malloc(namelen + 1);
         itemp = jm_vector_push_back(jm_voidp)(&context->directDependencyBuf, name);
         if(!namep || !itemp || !name)  {
             fmi1_xml_parse_error(context, "Could not allocate memory");
             return -1;
         }
-        memcpy(name, data, namelen);
-        name[namelen] = 0;
+		for(j = 0; i<namelen;i++) {
+			name[j++] = data[i];
+		}
+		name[j] = 0;
     }
     return 0;
 }
@@ -989,10 +996,15 @@ int fmi1_xml_handle_ModelVariables(fmi1_xml_parser_context_t *context, const cha
             numdep = jm_vector_get_size(jm_voidp)(dep);
             for(j = 0; j < numdep; j++) {
                 jm_string name = jm_vector_get_item(jm_voidp)(dep, j);
-                jm_named_ptr key;
+                jm_named_ptr key, *found;
                 fmi1_xml_variable_t* depvar;
                 key.name = name;
-                depvar = jm_vector_bsearch(jm_named_ptr)(&md->variables, &key, jm_compare_named)->ptr;
+				key.ptr = 0;
+				found = jm_vector_bsearch(jm_named_ptr)(&md->variables, &key, jm_compare_named);
+				if(found)
+					depvar = found->ptr;
+				else
+					depvar = 0;
                 if(!depvar) {
                     fmi1_xml_parse_warning(context, "Could not find variable %s mentioned in dependecies of %s. Ignoring", name, variable->name);
                     continue;

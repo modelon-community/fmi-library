@@ -245,6 +245,7 @@ void fmi1_xml_free_type_definitions_data(fmi1_xml_type_definitions_t* td) {
             cb->free(cur);
             cur = next;
         }
+		td->typePropsList = 0;
     }
 
     jm_named_vector_free_data(&td->typeDefinitions);

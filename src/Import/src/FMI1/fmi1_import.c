@@ -228,14 +228,14 @@ void fmi1_import_report_warning(fmi1_import_t* fmu, const char* module, const ch
 
 /* Get the list of all the variables in the model */
 fmi1_import_variable_list_t* fmi1_import_get_variable_list(fmi1_import_t* fmu) {
-	jm_vector(jm_named_ptr)* vars = fmi1_xml_get_variables(fmu->md);
+	jm_vector(jm_voidp)* vars = fmi1_xml_get_variables_original_order(fmu->md);
     fmi1_import_variable_list_t* vl;
     size_t nv, i;
-    nv = jm_vector_get_size(jm_named_ptr)(vars);
+    nv = jm_vector_get_size(jm_voidp)(vars);
     vl = fmi1_import_alloc_variable_list(fmu, nv);
     if(!vl) return 0;
     for(i = 0; i< nv; i++) {
-        jm_vector_set_item(jm_voidp)(&vl->variables, i, jm_vector_get_item(jm_named_ptr)(vars, i).ptr);
+        jm_vector_set_item(jm_voidp)(&vl->variables, i, jm_vector_get_item(jm_voidp)(vars, i));
     }
     return vl;
 }

@@ -68,9 +68,11 @@ struct fmi1_xml_model_description_t {
 
     jm_string_set descriptions;
 
-    jm_vector(jm_named_ptr) variables;
+	jm_vector(jm_named_ptr) variablesByName;
 
-    jm_vector(jm_voidp)* variablesByVR;
+    jm_vector(jm_voidp)* variablesOrigOrder;
+
+	jm_vector(jm_voidp)* variablesByVR;
 
     fmi1_fmu_kind_enu_t fmuKind;
 

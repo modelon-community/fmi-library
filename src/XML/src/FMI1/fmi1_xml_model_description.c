@@ -66,7 +66,9 @@ fmi1_xml_model_description_t * fmi1_xml_allocate_model_description( jm_callbacks
 
     fmi1_xml_init_type_definitions(&md->typeDefinitions, cb);
 
-    jm_vector_init(jm_named_ptr)(&md->variables, 0, cb);
+    jm_vector_init(jm_named_ptr)(&md->variablesByName, 0, cb);
+
+	md->variablesOrigOrder = 0;
 
 	md->variablesByVR = 0;
 
@@ -117,8 +119,12 @@ void fmi1_xml_clear_model_description( fmi1_xml_model_description_t* md) {
 
     fmi1_xml_free_type_definitions_data(&md->typeDefinitions);
 
-    jm_vector_foreach(jm_named_ptr)(&md->variables, fmi1_xml_free_direct_dependencies);
-    jm_named_vector_free_data(&md->variables);
+    jm_vector_foreach(jm_named_ptr)(&md->variablesByName, fmi1_xml_free_direct_dependencies);
+    jm_named_vector_free_data(&md->variablesByName);
+	if(md->variablesOrigOrder) {
+		jm_vector_free(jm_voidp)(md->variablesOrigOrder);
+		md->variablesOrigOrder = 0;
+	}
     if(md->variablesByVR) {
 		jm_vector_free(jm_voidp)(md->variablesByVR);
 		md->variablesByVR = 0;
@@ -354,14 +360,23 @@ int fmi1_xml_handle_DefaultExperiment(fmi1_xml_parser_context_t *context, const 
     return 0;
 }
 
-jm_vector(jm_named_ptr)* fmi1_xml_get_variables(fmi1_xml_model_description_t* md) {
-	return &md->variables;
+jm_vector(jm_voidp)* fmi1_xml_get_variables_original_order(fmi1_xml_model_description_t* md) {
+	return md->variablesOrigOrder;
 }
+
+jm_vector(jm_named_ptr)* fmi1_xml_get_variables_alphabetical_order(fmi1_xml_model_description_t* md){
+	return &md->variablesByName;
+}
+
+jm_vector(jm_voidp)* fmi1_xml_get_variables_vr_order(fmi1_xml_model_description_t* md) {
+	return md->variablesByVR;
+}
+
 
 fmi1_xml_variable_t* fmi1_xml_get_variable_by_name(fmi1_xml_model_description_t* md, const char* name) {
 	jm_named_ptr key, *found;
     key.name = name;
-    found = jm_vector_bsearch(jm_named_ptr)(&md->variables, &key, jm_compare_named);
+    found = jm_vector_bsearch(jm_named_ptr)(&md->variablesByName, &key, jm_compare_named);
 	if(!found) return 0;
 	return found->ptr;
 }

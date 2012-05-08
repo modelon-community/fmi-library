@@ -194,8 +194,11 @@ fmi1_fmu_kind_enu_t fmi1_xml_get_fmu_kind(fmi1_xml_model_description_t* md);
 
 fmi1_xml_capabilities_t* fmi1_xml_get_capabilities(fmi1_xml_model_description_t* md);
 
-jm_vector(jm_named_ptr)* fmi1_xml_get_variables(fmi1_xml_model_description_t* md);
+jm_vector(jm_voidp)* fmi1_xml_get_variables_original_order(fmi1_xml_model_description_t* md);
 
+jm_vector(jm_named_ptr)* fmi1_xml_get_variables_alphabetical_order(fmi1_xml_model_description_t* md);
+
+jm_vector(jm_voidp)* fmi1_xml_get_variables_vr_order(fmi1_xml_model_description_t* md);
 
 /**
 	\brief Get variable by variable name.

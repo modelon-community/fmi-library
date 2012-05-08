@@ -329,7 +329,7 @@ int fmi1_xml_handle_ScalarVariable(fmi1_xml_parser_context_t *context, const cha
 
             named.ptr = 0;
 			named.name = 0;
-            pnamed = jm_vector_push_back(jm_named_ptr)(&md->variables, named);
+            pnamed = jm_vector_push_back(jm_named_ptr)(&md->variablesByName, named);
 
             if(pnamed) *pnamed = named = jm_named_alloc_v(bufName,sizeof(fmi1_xml_variable_t), dummyV.name - (char*)&dummyV, context->callbacks);
             variable = named.ptr;
@@ -386,7 +386,7 @@ int fmi1_xml_handle_ScalarVariable(fmi1_xml_parser_context_t *context, const cha
         else {
             /* check that the type for the variable is set */
             fmi1_xml_model_description_t* md = context->modelDescription;
-            fmi1_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variables).ptr;
+            fmi1_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
             if(!variable->typeBase) {
                 fmi1_xml_parse_error(context, "No variable type element for variable %s", variable->name);
                 return -1;
@@ -402,7 +402,7 @@ int fmi1_xml_handle_DirectDependency(fmi1_xml_parser_context_t *context, const c
     if(context->skipOneVariableFlag) return 0;
     if(!data) {
         fmi1_xml_model_description_t* md = context->modelDescription;
-        fmi1_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variables).ptr;
+        fmi1_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
         if(context -> currentElmHandle != fmi1_xml_handle_ScalarVariable) {
             fmi1_xml_parse_error(context, "DirectDependency XML element must be a part of ScalarVariable");
             return -1;
@@ -414,7 +414,7 @@ int fmi1_xml_handle_DirectDependency(fmi1_xml_parser_context_t *context, const c
     }
     else {
         fmi1_xml_model_description_t* md = context->modelDescription;
-        fmi1_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variables).ptr;
+        fmi1_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
         if(jm_vector_get_size(jm_voidp)(&context->directDependencyBuf)) {
             variable->directDependency = jm_vector_clone(jm_voidp)(&context->directDependencyBuf);
             if(!variable->directDependency) {
@@ -438,7 +438,7 @@ int fmi1_xml_handle_Name(fmi1_xml_parser_context_t *context, const char* data) {
     }
     else {
         fmi1_xml_model_description_t* md = context->modelDescription;
-        fmi1_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variables).ptr;
+        fmi1_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
         size_t namelen = strlen(data), i = 0, j;
         char* name = 0;
         jm_voidp* itemp;
@@ -472,7 +472,7 @@ int fmi1_xml_handle_Real(fmi1_xml_parser_context_t *context, const char* data) {
 
     if(!data) {
         fmi1_xml_model_description_t* md = context->modelDescription;
-        fmi1_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variables).ptr;
+        fmi1_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
         fmi1_xml_type_definitions_t* td = &md->typeDefinitions;
         fmi1_xml_variable_type_base_t * declaredType = 0;
         fmi1_xml_real_type_props_t * type = 0;
@@ -565,7 +565,7 @@ int fmi1_xml_handle_Integer(fmi1_xml_parser_context_t *context, const char* data
     if(!data) {
         fmi1_xml_model_description_t* md = context->modelDescription;
         fmi1_xml_type_definitions_t* td = &md->typeDefinitions;
-        fmi1_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variables).ptr;
+        fmi1_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
         fmi1_xml_variable_type_base_t * declaredType = 0;
         fmi1_xml_integer_type_props_t * type = 0;
         int hasStart;
@@ -646,7 +646,7 @@ int fmi1_xml_handle_Boolean(fmi1_xml_parser_context_t *context, const char* data
     if(!data) {
         fmi1_xml_model_description_t* md = context->modelDescription;
         fmi1_xml_type_definitions_t* td = &md->typeDefinitions;
-        fmi1_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variables).ptr;
+        fmi1_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
         int hasStart;
 
         if(context -> currentElmHandle != fmi1_xml_handle_ScalarVariable) {
@@ -699,7 +699,7 @@ int fmi1_xml_handle_String(fmi1_xml_parser_context_t *context, const char* data)
     if(!data) {
         fmi1_xml_model_description_t* md = context->modelDescription;
         fmi1_xml_type_definitions_t* td = &md->typeDefinitions;
-        fmi1_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variables).ptr;
+        fmi1_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
         int hasStart;
 
         if(context -> currentElmHandle != fmi1_xml_handle_ScalarVariable) {
@@ -759,7 +759,7 @@ int fmi1_xml_handle_Enumeration(fmi1_xml_parser_context_t *context, const char* 
     if(!data) {
         fmi1_xml_model_description_t* md = context->modelDescription;
         fmi1_xml_type_definitions_t* td = &md->typeDefinitions;
-        fmi1_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variables).ptr;
+        fmi1_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
         fmi1_xml_variable_type_base_t * declaredType = 0;
         fmi1_xml_integer_type_props_t * type = 0;
         int hasStart;
@@ -849,9 +849,9 @@ void fmi1_xml_eliminate_bad_alias(fmi1_xml_parser_context_t *context, size_t ind
         jm_vector_remove_item_jm_voidp(varByVR,i);
         n--; i--;
         key.name = v->name;
-        index = jm_vector_bsearch_index(jm_named_ptr)(&md->variables, &key, jm_compare_named);
+        index = jm_vector_bsearch_index(jm_named_ptr)(&md->variablesByName, &key, jm_compare_named);
         assert(index <= n);
-        jm_vector_remove_item(jm_named_ptr)(&md->variables,index);
+        jm_vector_remove_item(jm_named_ptr)(&md->variablesByName,index);
         fmi1_xml_parse_warning(context,"Removing incorrect alias variable '%s'", v->name);
         md->callbacks->free(v);
     }
@@ -871,14 +871,14 @@ int fmi1_xml_handle_ModelVariables(fmi1_xml_parser_context_t *context, const cha
         jm_vector(jm_voidp)* varByVR;
         size_t i, numvar;
 
-        numvar = jm_vector_get_size(jm_named_ptr)(&md->variables);
-        /* vars with  vr = fmiUndefinedValueReference were alreade skipped. Just sanity: */
+        numvar = jm_vector_get_size(jm_named_ptr)(&md->variablesByName);
+        /* vars with  vr = fmiUndefinedValueReference were already skipped. Just sanity: */
         /* remove any variable with vr = fmiUndefinedValueReference */
         for(i = 0; i< numvar; i++) {
-            jm_named_ptr named = jm_vector_get_item(jm_named_ptr)(&md->variables, i);
+            jm_named_ptr named = jm_vector_get_item(jm_named_ptr)(&md->variablesByName, i);
             fmi1_xml_variable_t* v = named.ptr;
             if(v->vr == fmi1_undefined_value_reference) {
-                jm_vector_remove_item(jm_named_ptr)(&md->variables,i);
+                jm_vector_remove_item(jm_named_ptr)(&md->variablesByName,i);
                 numvar--; i--;
                 fmi1_xml_free_direct_dependencies(named);
                 md->callbacks->free(v);
@@ -886,24 +886,36 @@ int fmi1_xml_handle_ModelVariables(fmi1_xml_parser_context_t *context, const cha
             }
         }
 
+        /* store the list of vars in origianl order */
+		{
+			size_t size = jm_vector_get_size(jm_named_ptr)(&md->variablesByName);
+			md->variablesOrigOrder = jm_vector_alloc(jm_voidp)(size,size,md->callbacks);
+			if(md->variablesOrigOrder) {
+				size_t i;
+				for(i= 0; i < size; ++i) {
+					jm_vector_set_item(jm_voidp)(md->variablesOrigOrder, i, jm_vector_get_item(jm_named_ptr)(&md->variablesByName,i).ptr);
+				}
+			}
+		}		
+
         /* sort the variables by names */
-        jm_vector_qsort(jm_named_ptr)(&md->variables,jm_compare_named);
+        jm_vector_qsort(jm_named_ptr)(&md->variablesByName,jm_compare_named);
 
         /* create VR index */
         md->status = fmi1_xml_model_description_enu_ok;
 		{
-			size_t size = jm_vector_get_size(jm_named_ptr)(&md->variables);
+			size_t size = jm_vector_get_size(jm_named_ptr)(&md->variablesByName);
 			md->variablesByVR = jm_vector_alloc(jm_voidp)(size,size,md->callbacks);
 			if(md->variablesByVR) {
 				size_t i;
 				for(i= 0; i < size; ++i) {
-					jm_vector_set_item(jm_voidp)(md->variablesByVR, i, jm_vector_get_item(jm_named_ptr)(&md->variables,i).ptr);
+					jm_vector_set_item(jm_voidp)(md->variablesByVR, i, jm_vector_get_item(jm_named_ptr)(&md->variablesByName,i).ptr);
 				}
 			}
 		}
 
         md->status = fmi1_xml_model_description_enu_empty;
-        if(!md->variablesByVR) {
+		if(!md->variablesByVR || !md->variablesOrigOrder) {
             fmi1_xml_parse_error(context, "Could not allocate memory");
             return -1;
         }
@@ -984,12 +996,12 @@ int fmi1_xml_handle_ModelVariables(fmi1_xml_parser_context_t *context, const cha
             } while(foundBadAlias);
         }
 
-        numvar = jm_vector_get_size(jm_named_ptr)(&md->variables);
+        numvar = jm_vector_get_size(jm_named_ptr)(&md->variablesByName);
         /* postprocess direct dependencies */
         for(i = 0; i< numvar; i++) {
             size_t numdep, j, var_i = 0;
             jm_vector(jm_voidp)* dep;
-            fmi1_xml_variable_t* variable = jm_vector_get_item(jm_named_ptr)(&md->variables, i).ptr;
+            fmi1_xml_variable_t* variable = (fmi1_xml_variable_t*)jm_vector_get_item(jm_named_ptr)(&md->variablesByName, i).ptr;
 
             if(!variable->directDependency) continue;
             dep = variable->directDependency;
@@ -1000,7 +1012,7 @@ int fmi1_xml_handle_ModelVariables(fmi1_xml_parser_context_t *context, const cha
                 fmi1_xml_variable_t* depvar;
                 key.name = name;
 				key.ptr = 0;
-				found = jm_vector_bsearch(jm_named_ptr)(&md->variables, &key, jm_compare_named);
+				found = jm_vector_bsearch(jm_named_ptr)(&md->variablesByName, &key, jm_compare_named);
 				if(found)
 					depvar = found->ptr;
 				else

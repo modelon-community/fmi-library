@@ -23,6 +23,15 @@
 #include <Common/fmi_import_util.h>
 
 #include "fmi_import_context_impl.h"
+fmi_import_context_t* fmi_import_allocate_context( jm_callbacks* callbacks) {
+	FMILIB_TRACE("Inside fmi_import_allocate_context\n");
+	return fmi_xml_allocate_context(callbacks);
+}
+
+void fmi_import_free_context( fmi_import_context_t* c) {
+	fmi_xml_free_context(c);
+}
+
 
 fmi_version_enu_t fmi_import_get_fmi_version( fmi_import_context_t* c, const char* fileName, const char* dirName) {
 	fmi_version_enu_t ret = fmi_version_unknown_enu;

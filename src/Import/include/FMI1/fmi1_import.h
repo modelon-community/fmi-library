@@ -46,6 +46,7 @@
 #define FMI1_IMPORT_H_
 
 #include <stddef.h>
+#include <config_fmilib.h>
 #include <Common/jm_callbacks.h>
 #include <Common/fmi_import_util.h>
 #include <Common/fmi_import_context.h>
@@ -146,7 +147,7 @@ typedef fmi1_xml_capabilities_t fmi1_import_capabilities_t;
     @param dirPath A directory name (full path) of a directory where the FMU was unzipped.
     @return The new structure if parsing was successfull. 0-pointer is returned on error.
 */
-fmi1_import_t* fmi1_import_parse_xml( fmi_import_context_t* context, const char* dirPath);
+FMILIB_EXPORT fmi1_import_t* fmi1_import_parse_xml( fmi_import_context_t* context, const char* dirPath);
 
 /**Error handling:
 *  Many functions in the library return pointers to struct. An error is indicated by returning NULL/0-pointer.
@@ -157,7 +158,7 @@ fmi1_import_t* fmi1_import_parse_xml( fmi_import_context_t* context, const char*
 *    @param fmu An FMU object as returned by fmi1_import_parse_xml().
 *    @return NULL-terminated string with an error message.
 */
-const char* fmi1_import_get_last_error(fmi1_import_t* fmu);
+FMILIB_EXPORT const char* fmi1_import_get_last_error(fmi1_import_t* fmu);
 
 /**
 Clear the error message.
@@ -165,12 +166,12 @@ Clear the error message.
 * @return 0 if further processing is possible. If it returns 1 then the 
 *	error was not recoverable. The fmu object should then be freed and recreated.
 */
-int fmi1_import_clear_last_error(fmi1_import_t* fmu);
+FMILIB_EXPORT int fmi1_import_clear_last_error(fmi1_import_t* fmu);
 
 /**Release the memory allocated
 @param fmu An fmu object as returned by fmi1_import_parse_xml().
 */
-void fmi1_import_free(fmi1_import_t* fmu);
+FMILIB_EXPORT void fmi1_import_free(fmi1_import_t* fmu);
 /** @}
 \addtogroup fmi1_import_gen
  * \brief Functions for retrieving general model information. Memory for the strings is allocated and deallocated in the module.
@@ -179,58 +180,58 @@ void fmi1_import_free(fmi1_import_t* fmu);
  * @{
 */
 /** Get model name. */
-const char* fmi1_import_get_model_name(fmi1_import_t* fmu);
+FMILIB_EXPORT const char* fmi1_import_get_model_name(fmi1_import_t* fmu);
 
 /** Get model identifier. */
-const char* fmi1_import_get_model_identifier(fmi1_import_t* fmu);
+FMILIB_EXPORT const char* fmi1_import_get_model_identifier(fmi1_import_t* fmu);
 
 /** Get FMU GUID. */
-const char* fmi1_import_get_GUID(fmi1_import_t* fmu);
+FMILIB_EXPORT const char* fmi1_import_get_GUID(fmi1_import_t* fmu);
 
 /** Get FMU description. */
-const char* fmi1_import_get_description(fmi1_import_t* fmu);
+FMILIB_EXPORT const char* fmi1_import_get_description(fmi1_import_t* fmu);
 
 /** Get FMU author. */
-const char* fmi1_import_get_author(fmi1_import_t* fmu);
+FMILIB_EXPORT const char* fmi1_import_get_author(fmi1_import_t* fmu);
 
 /** Get FMU version. */
-const char* fmi1_import_get_model_version(fmi1_import_t* fmu);
+FMILIB_EXPORT const char* fmi1_import_get_model_version(fmi1_import_t* fmu);
 
 /** Get FMI standard version (always 1.0). */
-const char* fmi1_import_get_model_standard_version(fmi1_import_t* fmu);
+FMILIB_EXPORT const char* fmi1_import_get_model_standard_version(fmi1_import_t* fmu);
 
 /** Get FMU generation tool. */
-const char* fmi1_import_get_generation_tool(fmi1_import_t* fmu);
+FMILIB_EXPORT const char* fmi1_import_get_generation_tool(fmi1_import_t* fmu);
 
 /** Get FMU generation date and time. */
-const char* fmi1_import_get_generation_date_and_time(fmi1_import_t* fmu);
+FMILIB_EXPORT const char* fmi1_import_get_generation_date_and_time(fmi1_import_t* fmu);
 
 /** Get variable naming convention used. */
-fmi1_variable_naming_convension_enu_t fmi1_import_get_naming_convention(fmi1_import_t* fmu);
+FMILIB_EXPORT fmi1_variable_naming_convension_enu_t fmi1_import_get_naming_convention(fmi1_import_t* fmu);
 
 /** Get the number of contnuous states. */
-unsigned int fmi1_import_get_number_of_continuous_states(fmi1_import_t* fmu);
+FMILIB_EXPORT unsigned int fmi1_import_get_number_of_continuous_states(fmi1_import_t* fmu);
 
 /** Get the number of event indicators. */
-unsigned int fmi1_import_get_number_of_event_indicators(fmi1_import_t* fmu);
+FMILIB_EXPORT unsigned int fmi1_import_get_number_of_event_indicators(fmi1_import_t* fmu);
 
 /** Get the start time for default experiment  as specified in the XML file. */
-double fmi1_import_get_default_experiment_start(fmi1_import_t* fmu);
+FMILIB_EXPORT double fmi1_import_get_default_experiment_start(fmi1_import_t* fmu);
 
 /** Get the stop time for default experiment  as specified in the XML file. */
-double fmi1_import_get_default_experiment_stop(fmi1_import_t* fmu);
+FMILIB_EXPORT double fmi1_import_get_default_experiment_stop(fmi1_import_t* fmu);
 
 /** Get the tolerance default experiment as specified in the XML file. */
-double fmi1_import_get_default_experiment_tolerance(fmi1_import_t* fmu);
+FMILIB_EXPORT double fmi1_import_get_default_experiment_tolerance(fmi1_import_t* fmu);
 
 /** Get the type of the FMU (model exchange or co-simulation) */
-fmi1_fmu_kind_enu_t fmi1_import_get_fmu_kind(fmi1_import_t* fmu);
+FMILIB_EXPORT fmi1_fmu_kind_enu_t fmi1_import_get_fmu_kind(fmi1_import_t* fmu);
 
 /** Get the structure with capability flags.
 	@return A pointer to the fmi1_import_capabilities_t allocated within the library. 
 			Note that for model exchange FMUs the values of all the flags are always default.
 */
-fmi1_import_capabilities_t* fmi1_import_get_capabilities(fmi1_import_t* fmu);
+FMILIB_EXPORT fmi1_import_capabilities_t* fmi1_import_get_capabilities(fmi1_import_t* fmu);
 
 /**@} */
 

@@ -55,7 +55,7 @@ set(FMIIMPORTSOURCE
 
 PREFIXLIST(FMIIMPORTSOURCE  ${FMIIMPORTDIR}/)
 
-add_library(fmiimport ${FMIIMPORTSOURCE} ${FMIIMPORTHEADERS})
+add_library(fmiimport ${FMILIBKIND} ${FMIIMPORTSOURCE} ${FMIIMPORTHEADERS})
 target_link_libraries(fmiimport ${JMUTIL_LIBRARIES} ${FMIXML_LIBRARIES} ${FMIZIP_LIBRARIES} ${FMICAPI_LIBRARIES})
 #target_link_libraries(fmiimportshared fmiimport)
 

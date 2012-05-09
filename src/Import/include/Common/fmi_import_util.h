@@ -30,12 +30,12 @@ extern "C" {
 /** Given directory name fmu_unzipped_path and model identifier consturct Dll/so name
 	@return Pointer to a string with the file name. Caller is responsible for freeing the memory.
 */
-char* fmi_import_get_dll_path(const char* fmu_unzipped_path, const char* model_identifier, jm_callbacks* callBackFunctions);
+FMILIB_EXPORT char* fmi_import_get_dll_path(const char* fmu_unzipped_path, const char* model_identifier, jm_callbacks* callBackFunctions);
 
 /** Given directory name fmu_unzipped_path and model identifier consturct XML file name
 	@return Pointer to a string with the file name. Caller is responsible for freeing the memory.
 */
-char* fmi_import_get_model_description_path(const char* fmu_unzipped_path, jm_callbacks* callBackFunctions);
+FMILIB_EXPORT char* fmi_import_get_model_description_path(const char* fmu_unzipped_path, jm_callbacks* callBackFunctions);
 /**
 @}
 @}

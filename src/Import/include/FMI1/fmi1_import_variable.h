@@ -49,7 +49,7 @@ extern "C" {
 	\param name - variable name
 	\return variable pointer.
 */
-fmi1_import_variable_t* fmi1_import_get_variable_by_name(fmi1_import_t* fmu, const char* name);
+FMILIB_EXPORT fmi1_import_variable_t* fmi1_import_get_variable_by_name(fmi1_import_t* fmu, const char* name);
 
 /**
 	\brief Get variable by value reference.
@@ -58,132 +58,132 @@ fmi1_import_variable_t* fmi1_import_get_variable_by_name(fmi1_import_t* fmu, con
 	\param vr - value reference
 	\return variable pointer.
 */
-fmi1_import_variable_t* fmi1_import_get_variable_by_vr(fmi1_import_t* fmu, fmi1_base_type_enu_t baseType, fmi1_value_reference_t vr);
+FMILIB_EXPORT fmi1_import_variable_t* fmi1_import_get_variable_by_vr(fmi1_import_t* fmu, fmi1_base_type_enu_t baseType, fmi1_value_reference_t vr);
 
 
 /** \brief Get the variable name */
-const char* fmi1_import_get_variable_name(fmi1_import_variable_t*);
+FMILIB_EXPORT const char* fmi1_import_get_variable_name(fmi1_import_variable_t*);
 
 /** \brief Get variable description. 
 	@return Description string or empty string ("") if no description in the XML file was given.
 */
-const char* fmi1_import_get_variable_description(fmi1_import_variable_t*);
+FMILIB_EXPORT const char* fmi1_import_get_variable_description(fmi1_import_variable_t*);
 
 /** \brief Get variable value reference */
-fmi1_value_reference_t fmi1_import_get_variable_vr(fmi1_import_variable_t*);
+FMILIB_EXPORT fmi1_value_reference_t fmi1_import_get_variable_vr(fmi1_import_variable_t*);
 
 /**   \brief For scalar variable gives the type definition is present
 	@return Pointer of a type #fmi1_import_variable_typedef_t object or NULL of not present.
 */
-fmi1_import_variable_typedef_t* fmi1_import_get_variable_declared_type(fmi1_import_variable_t*);
+FMILIB_EXPORT fmi1_import_variable_typedef_t* fmi1_import_get_variable_declared_type(fmi1_import_variable_t*);
 
 /** \brief Get variable base type */
-fmi1_base_type_enu_t fmi1_import_get_variable_base_type(fmi1_import_variable_t*);
+FMILIB_EXPORT fmi1_base_type_enu_t fmi1_import_get_variable_base_type(fmi1_import_variable_t*);
 
 /** \brief Check if the variable has "start" attribute */
-int   fmi1_import_get_variable_has_start(fmi1_import_variable_t*);
+FMILIB_EXPORT int   fmi1_import_get_variable_has_start(fmi1_import_variable_t*);
 /** \brief Get the variable "fixed" attribute */
-int   fmi1_import_get_variable_is_fixed(fmi1_import_variable_t*);
+FMILIB_EXPORT int   fmi1_import_get_variable_is_fixed(fmi1_import_variable_t*);
 
 /** \brief Get variability attribute */
-fmi1_variability_enu_t fmi1_import_get_variability(fmi1_import_variable_t*);
+FMILIB_EXPORT fmi1_variability_enu_t fmi1_import_get_variability(fmi1_import_variable_t*);
 
 /** \brief Get causality attribute */
-fmi1_causality_enu_t fmi1_import_get_causality(fmi1_import_variable_t*);
+FMILIB_EXPORT fmi1_causality_enu_t fmi1_import_get_causality(fmi1_import_variable_t*);
 
 /** 
 	Get the direct dependency information
 
 	@return A variable list is returned for variables with causality Output. Null pointer for others. */
-fmi1_import_variable_list_t* fmi1_import_get_direct_dependency(fmi1_import_t* fmu, fmi1_import_variable_t*);
+FMILIB_EXPORT fmi1_import_variable_list_t* fmi1_import_get_direct_dependency(fmi1_import_t* fmu, fmi1_import_variable_t*);
 
 /** \brief Cast general variable to a one with the specific type 
 	
 	@return Typed object or NULL if base type does not match
 */
-fmi1_import_real_variable_t* fmi1_import_get_variable_as_real(fmi1_import_variable_t*);
+FMILIB_EXPORT fmi1_import_real_variable_t* fmi1_import_get_variable_as_real(fmi1_import_variable_t*);
 
 /** \brief Cast general variable to a one with the specific type 
 	
 	@return Typed object or NULL if base type does not match
 */
-fmi1_import_integer_variable_t* fmi1_import_get_variable_as_integer(fmi1_import_variable_t*);
+FMILIB_EXPORT fmi1_import_integer_variable_t* fmi1_import_get_variable_as_integer(fmi1_import_variable_t*);
 /** \brief Cast general variable to a one with the specific type 
 	
 	@return Typed object or NULL if base type does not match
 */
-fmi1_import_enum_variable_t* fmi1_import_get_variable_as_enum(fmi1_import_variable_t*);
+FMILIB_EXPORT fmi1_import_enum_variable_t* fmi1_import_get_variable_as_enum(fmi1_import_variable_t*);
 /** \brief Cast general variable to a one with the specific type 
 	
 	@return Typed object or NULL if base type does not match
 */
-fmi1_import_string_variable_t* fmi1_import_get_variable_as_string(fmi1_import_variable_t*);
+FMILIB_EXPORT fmi1_import_string_variable_t* fmi1_import_get_variable_as_string(fmi1_import_variable_t*);
 /** \brief Cast general variable to a one with the specific type 
 	
 	@return Typed object or NULL if base type does not match
 */
-fmi1_import_bool_variable_t* fmi1_import_get_variable_as_boolean(fmi1_import_variable_t*);
+FMILIB_EXPORT fmi1_import_bool_variable_t* fmi1_import_get_variable_as_boolean(fmi1_import_variable_t*);
 
 /** 
 	\brief Get the variable start attribute. 
 
 	@return The "start" attriburte as specified in the XML file or variable nominal value.
 */
-fmi1_real_t fmi1_import_get_real_variable_start(fmi1_import_real_variable_t* v);
+FMILIB_EXPORT fmi1_real_t fmi1_import_get_real_variable_start(fmi1_import_real_variable_t* v);
 
 /** \brief Get maximum value for the variable
 
 	@return Either the value specified in the XML file or DBL_MAX as defined in <float.h>
 */
-fmi1_real_t fmi1_import_get_real_variable_max(fmi1_import_real_variable_t* v);
+FMILIB_EXPORT fmi1_real_t fmi1_import_get_real_variable_max(fmi1_import_real_variable_t* v);
 
 /** \brief Get minimal value for the variable.
 
 	@return Either the value specified in the XML file or negated DBL_MAX as defined in <float.h>
 */
-fmi1_real_t fmi1_import_get_real_variable_min(fmi1_import_real_variable_t* v);
+FMILIB_EXPORT fmi1_real_t fmi1_import_get_real_variable_min(fmi1_import_real_variable_t* v);
 
 /** \brief Get nominal value for the variable*/
-fmi1_real_t fmi1_import_get_real_variable_nominal(fmi1_import_real_variable_t* v);
+FMILIB_EXPORT fmi1_real_t fmi1_import_get_real_variable_nominal(fmi1_import_real_variable_t* v);
 
 /** \brief Get associated "unit" object if any */
-fmi1_import_unit_t* fmi1_import_get_real_variable_unit(fmi1_import_real_variable_t* v);
+FMILIB_EXPORT fmi1_import_unit_t* fmi1_import_get_real_variable_unit(fmi1_import_real_variable_t* v);
 
 /** \brief Get associated "display unit" object if any */
-fmi1_import_display_unit_t* fmi1_import_get_real_variable_display_unit(fmi1_import_real_variable_t* v);
+FMILIB_EXPORT fmi1_import_display_unit_t* fmi1_import_get_real_variable_display_unit(fmi1_import_real_variable_t* v);
 
 /** \brief Get start value for the variable */
-const char* fmi1_import_get_string_variable_start(fmi1_import_string_variable_t* v);
+FMILIB_EXPORT const char* fmi1_import_get_string_variable_start(fmi1_import_string_variable_t* v);
 
 /** \brief Get start value for the variable */
-fmi1_boolean_t fmi1_import_get_boolean_variable_start(fmi1_import_bool_variable_t* v);
+FMILIB_EXPORT fmi1_boolean_t fmi1_import_get_boolean_variable_start(fmi1_import_bool_variable_t* v);
 
 /** \brief Get start value for the variable*/
-int fmi1_import_get_integer_variable_start(fmi1_import_integer_variable_t* v);
+FMILIB_EXPORT int fmi1_import_get_integer_variable_start(fmi1_import_integer_variable_t* v);
 /** \brief Get minimal value for the variable */
-int fmi1_import_get_integer_variable_min(fmi1_import_integer_variable_t* v);
+FMILIB_EXPORT int fmi1_import_get_integer_variable_min(fmi1_import_integer_variable_t* v);
 /** \brief Get max value for the variable */
-int fmi1_import_get_integer_variable_max(fmi1_import_integer_variable_t* v);
+FMILIB_EXPORT int fmi1_import_get_integer_variable_max(fmi1_import_integer_variable_t* v);
 
 /** \brief Get start value for the variable*/
-int fmi1_import_get_enum_variable_start(fmi1_import_enum_variable_t* v);
+FMILIB_EXPORT int fmi1_import_get_enum_variable_start(fmi1_import_enum_variable_t* v);
 /** \brief Get minimal value for the variable */
-int fmi1_import_get_enum_variable_min(fmi1_import_enum_variable_t* v);
+FMILIB_EXPORT int fmi1_import_get_enum_variable_min(fmi1_import_enum_variable_t* v);
 /** \brief Get max value for the variable */
-int fmi1_import_get_enum_variable_max(fmi1_import_enum_variable_t* v);
+FMILIB_EXPORT int fmi1_import_get_enum_variable_max(fmi1_import_enum_variable_t* v);
 
 /** \brief Get the variable alias kind*/
-fmi1_variable_alias_kind_enu_t fmi1_import_get_variable_alias_kind(fmi1_import_variable_t*);
+FMILIB_EXPORT fmi1_variable_alias_kind_enu_t fmi1_import_get_variable_alias_kind(fmi1_import_variable_t*);
 
 /** \brief Get the variable with the same value reference that is not an alias*/
-fmi1_import_variable_t* fmi1_import_get_variable_alias_base(fmi1_import_t* fmu,fmi1_import_variable_t*);
+FMILIB_EXPORT fmi1_import_variable_t* fmi1_import_get_variable_alias_base(fmi1_import_t* fmu,fmi1_import_variable_t*);
 
 /**
     Get the list of all the variables aliased to the given one (including the base one).
 
     Note that the list is ordered: base variable, aliases, negated aliases.
 */
-fmi1_import_variable_list_t* fmi1_import_get_variable_aliases(fmi1_import_t* fmu,fmi1_import_variable_t*);
+FMILIB_EXPORT fmi1_import_variable_list_t* fmi1_import_get_variable_aliases(fmi1_import_t* fmu,fmi1_import_variable_t*);
 
 /** @} */
 

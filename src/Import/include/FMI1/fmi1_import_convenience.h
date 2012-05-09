@@ -83,7 +83,7 @@ typedef struct {
 	\param fmu - An fmu object as returned by fmi1_import_parse_xml().
 	\param counts - a pointer to a preallocated struct.
 */
-void fmi1_import_collect_model_counts(fmi1_import_t* fmu, fmi1_import_model_counts_t* counts);
+FMILIB_EXPORT void fmi1_import_collect_model_counts(fmi1_import_t* fmu, fmi1_import_model_counts_t* counts);
 
 /** @} */
 

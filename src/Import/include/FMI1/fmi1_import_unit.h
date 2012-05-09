@@ -37,47 +37,47 @@ extern "C" {
 	*/
 
 /** \brief Get a list of all the unit definitions in the model. */
-fmi1_import_unit_definitions_t* fmi1_import_get_unit_definitions(fmi1_import_t* fmu);
+FMILIB_EXPORT fmi1_import_unit_definitions_t* fmi1_import_get_unit_definitions(fmi1_import_t* fmu);
 
 /** \brief Get the number of unit definitions. */
-unsigned int  fmi1_import_get_unit_definitions_number(fmi1_import_unit_definitions_t*);
+FMILIB_EXPORT unsigned int  fmi1_import_get_unit_definitions_number(fmi1_import_unit_definitions_t*);
 
 /** \brief Get a unit definition */
-fmi1_import_unit_t* fmi1_import_get_unit(fmi1_import_unit_definitions_t*, unsigned int  index);
+FMILIB_EXPORT fmi1_import_unit_t* fmi1_import_get_unit(fmi1_import_unit_definitions_t*, unsigned int  index);
 
 /** \brief Get a unit name */
-const char* fmi1_import_get_unit_name(fmi1_import_unit_t*);
+FMILIB_EXPORT const char* fmi1_import_get_unit_name(fmi1_import_unit_t*);
 
 /** \brief Get the number of display units associated with this unit */
-unsigned int fmi1_import_get_unit_display_unit_number(fmi1_import_unit_t*);
+FMILIB_EXPORT unsigned int fmi1_import_get_unit_display_unit_number(fmi1_import_unit_t*);
 
 /** \brief Get a display unit object by index.
 	@param index The index of display unit to be returned. Must be less than the number returned by fmi1_import_get_unit_display_unit_number()
 */
-fmi1_import_display_unit_t* fmi1_import_get_unit_display_unit(fmi1_import_unit_t*, size_t index);
+FMILIB_EXPORT fmi1_import_display_unit_t* fmi1_import_get_unit_display_unit(fmi1_import_unit_t*, size_t index);
 
 /**
 	\brief Get display unit associated with a real type definition.
 	@return Display unit object of NULL if none was given.
 */
-fmi1_import_display_unit_t* fmi1_import_get_type_display_unit(fmi1_import_real_typedef_t*);
+FMILIB_EXPORT fmi1_import_display_unit_t* fmi1_import_get_type_display_unit(fmi1_import_real_typedef_t*);
 /**
 	\brief Get unit defition for a display unit.
 */
-fmi1_import_unit_t* fmi1_import_get_base_unit(fmi1_import_display_unit_t*);
+FMILIB_EXPORT fmi1_import_unit_t* fmi1_import_get_base_unit(fmi1_import_display_unit_t*);
 /**
 	\brief Get display unit name
 */
-const char* fmi1_import_get_display_unit_name(fmi1_import_display_unit_t*);
+FMILIB_EXPORT const char* fmi1_import_get_display_unit_name(fmi1_import_display_unit_t*);
 
 /**
 	\brief Get the "gain" associated with the display unit.
 */
-fmi1_real_t fmi1_import_get_display_unit_gain(fmi1_import_display_unit_t*);
+FMILIB_EXPORT fmi1_real_t fmi1_import_get_display_unit_gain(fmi1_import_display_unit_t*);
 /**
 	\brief Get the "offset" associated with the display unit.
 */
-fmi1_real_t fmi1_import_get_display_unit_offset(fmi1_import_display_unit_t*);
+FMILIB_EXPORT fmi1_real_t fmi1_import_get_display_unit_offset(fmi1_import_display_unit_t*);
 
 /**
 	\brief Convert a value measured in "units" to a value measured with "display units"
@@ -85,7 +85,7 @@ fmi1_real_t fmi1_import_get_display_unit_offset(fmi1_import_display_unit_t*);
 	@param du The display unit object
 	@param isRelativeQuantity specifies if "offset" should be incorporated into conversion
 */
-fmi1_real_t fmi1_import_convert_to_display_unit(fmi1_real_t value , fmi1_import_display_unit_t* du, int isRelativeQuantity);
+FMILIB_EXPORT fmi1_real_t fmi1_import_convert_to_display_unit(fmi1_real_t value , fmi1_import_display_unit_t* du, int isRelativeQuantity);
 
 
 /**
@@ -94,7 +94,7 @@ fmi1_real_t fmi1_import_convert_to_display_unit(fmi1_real_t value , fmi1_import_
 	@param du The display unit object
 	@param isRelativeQuantity specifies if "offset" should be incorporated into conversion
 */
-fmi1_real_t fmi1_import_convert_from_display_unit(fmi1_real_t value, fmi1_import_display_unit_t* du, int isRelativeQuantity);
+FMILIB_EXPORT fmi1_real_t fmi1_import_convert_from_display_unit(fmi1_real_t value, fmi1_import_display_unit_t* du, int isRelativeQuantity);
 /** @} */
 #ifdef __cplusplus
 }

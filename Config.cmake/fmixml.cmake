@@ -78,7 +78,7 @@ PREFIXLIST(FMIXMLHEADERS ${FMIXMLDIR}/)
 
 message(STATUS "adding fmixml")
 
-add_library(fmixml ${FMIXMLSOURCE} ${FMIXMLHEADERS})
+add_library(fmixml ${FMILIBKIND} ${FMIXMLSOURCE} ${FMIXMLHEADERS})
 
 target_link_libraries(fmixml ${JMUTIL_LIBRARIES} ${EXPAT_LIBRARIES})
 

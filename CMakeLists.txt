@@ -92,18 +92,33 @@ endmacro(PREFIXLIST)
 
 option(FMILIB_GENERATE_BUILD_STAMP "Generate a build time stamp and include in into the library" OFF)
 if(FMILIB_GENERATE_BUILD_STAMP)
-include(config_stamp)
 add_custom_target(fmilib_update_timestamp
 	COMMAND	"${CMAKE_COMMAND}" 
 		-D FMILIBRARYHOME="${FMILIBRARYHOME}" -D FMILIBRARYBUILD="${FMILIBRARYBUILD}"
 		-P ${FMILIBRARYHOME}/Config.cmake/config_stamp.cmake
-	WORKING_DIRECTORY ${FMILibrary_BINARY_DIR}
+	COMMAND ${CMAKE_COMMAND}  -E touch ${FMILibrary_BINARY_DIR}/config_fmilib.c)
+	
+add_custom_command(
+	OUTPUT ${FMILibrary_BINARY_DIR}/config_fmilib.c
+	COMMAND	"${CMAKE_COMMAND}" 
+		-D FMILIBRARYHOME="${FMILIBRARYHOME}" -D FMILIBRARYBUILD="${FMILIBRARYBUILD}"
+		-P ${FMILIBRARYHOME}/Config.cmake/config_stamp.cmake	
+	DEPENDS ${FMILIBRARYHOME}/Config.cmake/config_stamp.cmake
 )
+#add_custom_target(fmilib_update_timestamp
+#	COMMAND	"${CMAKE_COMMAND}" 
+#		-D FMILIBRARYHOME="${FMILIBRARYHOME}" -D FMILIBRARYBUILD="${FMILIBRARYBUILD}"
+#		-P ${FMILIBRARYHOME}/Config.cmake/config_stamp.cmake
+#	WORKING_DIRECTORY ${FMILibrary_BINARY_DIR}
+#)
 add_library(fmilib_timestamp STATIC ${FMILibrary_BINARY_DIR}/config_fmilib.c "${FMILibrary_BINARY_DIR}/config_fmilib.h")
+#add_dependencies(${FMILibrary_BINARY_DIR}/config_fmilib.c fmilib_update_timestamp)
 add_dependencies(fmilib_timestamp fmilib_update_timestamp)
 endif()
 
 source_group("Private headers" REGULAR_EXPRESSION ".*impl.h")
+set(FMILIBKIND STATIC)
+add_definitions(-DFMILIB_BUILDING_LIBRARY)
 include(jmutil)
 include(fmixml)
 include(fmicapi)
@@ -137,15 +152,22 @@ if(FMILIB_GENERATE_BUILD_STAMP)
 endif()
 
 MERGE_LIBRARIES( fmilib STATIC  NOINSTALL ${FMILIB_SUBLIBS})
-SET_TARGET_PROPERTIES(fmilib PROPERTIES LINKER_LANGUAGE CXX)
+#SET_TARGET_PROPERTIES(fmilib PROPERTIES LINKER_LANGUAGE CXX)
+#add_library(fmilib_shared SHARED ${FMILibrary_BINARY_DIR}/config_fmilib.c)
+#target_link_libraries(fmilib_shared fmiimport jmutils fmizip fmixml fmicapi)
+
+add_library(fmilib_shared SHARED ${FMIIMPORTSOURCE} ${FMIIMPORTHEADERS} ${FMILibrary_BINARY_DIR}/config_fmilib.c)
+target_link_libraries(fmilib_shared ${JMUTIL_LIBRARIES} ${FMIXML_LIBRARIES} ${FMIZIP_LIBRARIES} ${FMICAPI_LIBRARIES})
+
 #MERGE_LIBRARIES( fmilib_shared SHARED NOINSTALL ${FMILIB_SUBLIBS} )
 #add_library(fmilib ${FMILibrary_BINARY_DIR}/config_fmilib.c)
 
 #target_link_libraries(fmilib fmiimport)
 # fmilib fmilib_shared 
-install(TARGETS fmiimport jmutils fmizip fmixml fmicapi fmilib
+install(TARGETS fmiimport jmutils fmizip fmixml fmicapi fmilib fmilib_shared
 	ARCHIVE DESTINATION lib
 	LIBRARY DESTINATION lib
+	RUNTIME DESTINATION lib
 )
 
 install(FILES "${FMILibrary_BINARY_DIR}/config_fmilib.h" DESTINATION include)

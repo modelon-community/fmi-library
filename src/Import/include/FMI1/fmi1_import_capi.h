@@ -71,13 +71,13 @@ Wrapper functions for the FMI 1.0 functions
  * @param callBackFunctions Callback functions used by the FMI functions internally.
  * @return Error status. If the function returns with an error, it is not allowed to call any of the other C-API functions.
  */
-jm_status_enu_t fmi1_import_create_dllfmu(fmi1_import_t* fmu, fmi1_callback_functions_t callBackFunctions);
+FMILIB_EXPORT jm_status_enu_t fmi1_import_create_dllfmu(fmi1_import_t* fmu, fmi1_callback_functions_t callBackFunctions);
 
 /** \brief Free a C-API struct. All memory allocated since the struct was created is freed.
  * 
  * @param fmu A model description object returned from fmi1_import_parse_xml().
  */
-void fmi1_import_destroy_dllfmu(fmi1_import_t* fmu);
+FMILIB_EXPORT void fmi1_import_destroy_dllfmu(fmi1_import_t* fmu);
 
 /**@} */
 
@@ -92,7 +92,7 @@ void fmi1_import_destroy_dllfmu(fmi1_import_t* fmu);
  * @param fmu A model description object returned by fmi1_import_parse_xml() that has loaded the FMI functions, see fmi1_import_load_fcn().
  * @return FMI version.
  */
-const char* fmi1_import_get_version(fmi1_import_t* fmu);
+FMILIB_EXPORT const char* fmi1_import_get_version(fmi1_import_t* fmu);
 
 /**
  * \brief Wrapper for the FMI function fmiSetDebugLogging(...) 
@@ -101,7 +101,7 @@ const char* fmi1_import_get_version(fmi1_import_t* fmu);
  * @param loggingOn Enable or disable the debug logger.
  * @return FMI status.
  */
-fmi1_status_t fmi1_import_set_debug_logging(fmi1_import_t* fmu, fmi1_boolean_t loggingOn);
+FMILIB_EXPORT fmi1_status_t fmi1_import_set_debug_logging(fmi1_import_t* fmu, fmi1_boolean_t loggingOn);
 
 /**
  * \brief Wrapper for the FMI function fmiSetReal(...) 
@@ -112,7 +112,7 @@ fmi1_status_t fmi1_import_set_debug_logging(fmi1_import_t* fmu, fmi1_boolean_t l
  * @param value Array of variable values.
  * @return FMI status.
  */
-fmi1_status_t fmi1_import_set_real(fmi1_import_t* fmu, const fmi1_value_reference_t vr[], size_t nvr, const fmi1_real_t    value[]);
+FMILIB_EXPORT fmi1_status_t fmi1_import_set_real(fmi1_import_t* fmu, const fmi1_value_reference_t vr[], size_t nvr, const fmi1_real_t    value[]);
 
 /**
  * \brief Wrapper for the FMI function fmiSetInteger(...) 
@@ -123,7 +123,7 @@ fmi1_status_t fmi1_import_set_real(fmi1_import_t* fmu, const fmi1_value_referenc
  * @param value Array of variable values.
  * @return FMI status.
  */
-fmi1_status_t fmi1_import_set_integer(fmi1_import_t* fmu, const fmi1_value_reference_t vr[], size_t nvr, const fmi1_integer_t value[]);
+FMILIB_EXPORT fmi1_status_t fmi1_import_set_integer(fmi1_import_t* fmu, const fmi1_value_reference_t vr[], size_t nvr, const fmi1_integer_t value[]);
 
 /**
  * \brief Wrapper for the FMI function fmiSetBoolean(...) 
@@ -134,7 +134,7 @@ fmi1_status_t fmi1_import_set_integer(fmi1_import_t* fmu, const fmi1_value_refer
  * @param value Array of variable values.
  * @return FMI status.
  */
-fmi1_status_t fmi1_import_set_boolean(fmi1_import_t* fmu, const fmi1_value_reference_t vr[], size_t nvr, const fmi1_boolean_t value[]);
+FMILIB_EXPORT fmi1_status_t fmi1_import_set_boolean(fmi1_import_t* fmu, const fmi1_value_reference_t vr[], size_t nvr, const fmi1_boolean_t value[]);
 
 /**
  * \brief Wrapper for the FMI function fmiSetString(...) 
@@ -145,7 +145,7 @@ fmi1_status_t fmi1_import_set_boolean(fmi1_import_t* fmu, const fmi1_value_refer
  * @param value Array of variable values.
  * @return FMI status.
  */
-fmi1_status_t fmi1_import_set_string(fmi1_import_t* fmu, const fmi1_value_reference_t vr[], size_t nvr, const fmi1_string_t  value[]);
+FMILIB_EXPORT fmi1_status_t fmi1_import_set_string(fmi1_import_t* fmu, const fmi1_value_reference_t vr[], size_t nvr, const fmi1_string_t  value[]);
 
 
 /**
@@ -157,7 +157,7 @@ fmi1_status_t fmi1_import_set_string(fmi1_import_t* fmu, const fmi1_value_refere
  * @param value (Output)Array of variable values.
  * @return FMI status.
  */
-fmi1_status_t fmi1_import_get_real(fmi1_import_t* fmu, const fmi1_value_reference_t vr[], size_t nvr, fmi1_real_t    value[]);
+FMILIB_EXPORT fmi1_status_t fmi1_import_get_real(fmi1_import_t* fmu, const fmi1_value_reference_t vr[], size_t nvr, fmi1_real_t    value[]);
 
 /**
  * \brief Wrapper for the FMI function fmiGetInteger(...) 
@@ -168,7 +168,7 @@ fmi1_status_t fmi1_import_get_real(fmi1_import_t* fmu, const fmi1_value_referenc
  * @param value (Output)Array of variable values.
  * @return FMI status.
  */
-fmi1_status_t fmi1_import_get_integer(fmi1_import_t* fmu, const fmi1_value_reference_t vr[], size_t nvr, fmi1_integer_t value[]);
+FMILIB_EXPORT fmi1_status_t fmi1_import_get_integer(fmi1_import_t* fmu, const fmi1_value_reference_t vr[], size_t nvr, fmi1_integer_t value[]);
 
 /**
  * \brief Wrapper for the FMI function fmiGetBoolean(...) 
@@ -179,7 +179,7 @@ fmi1_status_t fmi1_import_get_integer(fmi1_import_t* fmu, const fmi1_value_refer
  * @param value (Output)Array of variable values.
  * @return FMI status.
  */
-fmi1_status_t fmi1_import_get_boolean(fmi1_import_t* fmu, const fmi1_value_reference_t vr[], size_t nvr, fmi1_boolean_t value[]);
+FMILIB_EXPORT fmi1_status_t fmi1_import_get_boolean(fmi1_import_t* fmu, const fmi1_value_reference_t vr[], size_t nvr, fmi1_boolean_t value[]);
 
 /**
  * \brief Wrapper for the FMI function fmiGetString(...) 
@@ -190,7 +190,7 @@ fmi1_status_t fmi1_import_get_boolean(fmi1_import_t* fmu, const fmi1_value_refer
  * @param value (Output)Array of variable values.
  * @return FMI status.
  */
-fmi1_status_t fmi1_import_get_string(fmi1_import_t* fmu, const fmi1_value_reference_t vr[], size_t nvr, fmi1_string_t  value[]);
+FMILIB_EXPORT fmi1_status_t fmi1_import_get_string(fmi1_import_t* fmu, const fmi1_value_reference_t vr[], size_t nvr, fmi1_string_t  value[]);
 
 /**@} */
 
@@ -205,7 +205,7 @@ fmi1_status_t fmi1_import_get_string(fmi1_import_t* fmu, const fmi1_value_refere
  * @param fmu A model description object returned by fmi1_import_parse_xml() that has loaded the FMI functions, see fmi1_import_load_fcn().
  * @return The platform the FMU was compiled for.
  */
-const char* fmi1_import_get_model_types_platform(fmi1_import_t* fmu);
+FMILIB_EXPORT const char* fmi1_import_get_model_types_platform(fmi1_import_t* fmu);
 
 /**
  * \brief Wrapper for the FMI function fmiInstantiateModel(...) 
@@ -216,14 +216,14 @@ const char* fmi1_import_get_model_types_platform(fmi1_import_t* fmu);
  * @param loggingOn Enable or disable the debug logger.
  * @return Error status. Returnes jm_status_error if fmiInstantiateModel returned NULL, otherwise jm_status_success.
  */
-jm_status_enu_t fmi1_import_instantiate_model(fmi1_import_t* fmu, fmi1_string_t instanceName, fmi1_string_t GUID, fmi1_boolean_t loggingOn);
+FMILIB_EXPORT jm_status_enu_t fmi1_import_instantiate_model(fmi1_import_t* fmu, fmi1_string_t instanceName, fmi1_string_t GUID, fmi1_boolean_t loggingOn);
 
 /**
  * \brief Wrapper for the FMI function fmiFreeModelInstance(...) 
  * 
  * @param fmu A model description object returned by fmi1_import_parse_xml() that has loaded the FMI functions, see fmi1_import_load_fcn().
  */
-void fmi1_import_free_model_instance(fmi1_import_t* fmu);
+FMILIB_EXPORT void fmi1_import_free_model_instance(fmi1_import_t* fmu);
 
 /**
  * \brief Wrapper for the FMI function fmiSetTime(...) 
@@ -232,7 +232,7 @@ void fmi1_import_free_model_instance(fmi1_import_t* fmu);
  * @param time Set the current time.
  * @return FMI status.
  */
-fmi1_status_t fmi1_import_set_time(fmi1_import_t* fmu, fmi1_real_t time);
+FMILIB_EXPORT fmi1_status_t fmi1_import_set_time(fmi1_import_t* fmu, fmi1_real_t time);
 
 /**
  * \brief Wrapper for the FMI function fmiSetContinuousStates(...) 
@@ -242,7 +242,7 @@ fmi1_status_t fmi1_import_set_time(fmi1_import_t* fmu, fmi1_real_t time);
  * @param nx Number of states.
  * @return FMI status.
  */
-fmi1_status_t fmi1_import_set_continuous_states(fmi1_import_t* fmu, const fmi1_real_t x[], size_t nx);
+FMILIB_EXPORT fmi1_status_t fmi1_import_set_continuous_states(fmi1_import_t* fmu, const fmi1_real_t x[], size_t nx);
 
 /**
  * \brief Wrapper for the FMI function fmiCompletedIntegratorStep(...) 
@@ -251,7 +251,7 @@ fmi1_status_t fmi1_import_set_continuous_states(fmi1_import_t* fmu, const fmi1_r
  * @param callEventUpdate (Output) Call fmiEventUpdate indicator.
  * @return FMI status.
  */
-fmi1_status_t fmi1_import_completed_integrator_step(fmi1_import_t* fmu, fmi1_boolean_t* callEventUpdate);
+FMILIB_EXPORT fmi1_status_t fmi1_import_completed_integrator_step(fmi1_import_t* fmu, fmi1_boolean_t* callEventUpdate);
 
 /**
  * \brief Wrapper for the FMI function fmiInitialize(...) 
@@ -262,7 +262,7 @@ fmi1_status_t fmi1_import_completed_integrator_step(fmi1_import_t* fmu, fmi1_boo
  * @param eventInfo (Output) fmiEventInfo struct.
  * @return FMI status.
  */
-fmi1_status_t fmi1_import_initialize(fmi1_import_t* fmu, fmi1_boolean_t toleranceControlled, fmi1_real_t relativeTolerance, fmi1_event_info_t* eventInfo);
+FMILIB_EXPORT fmi1_status_t fmi1_import_initialize(fmi1_import_t* fmu, fmi1_boolean_t toleranceControlled, fmi1_real_t relativeTolerance, fmi1_event_info_t* eventInfo);
 
 /**
  * \brief Wrapper for the FMI function fmiGetDerivatives(...) 
@@ -272,7 +272,7 @@ fmi1_status_t fmi1_import_initialize(fmi1_import_t* fmu, fmi1_boolean_t toleranc
  * @param nx Number of derivatives.
  * @return FMI status.
  */
-fmi1_status_t fmi1_import_get_derivatives(fmi1_import_t* fmu, fmi1_real_t derivatives[], size_t nx);
+FMILIB_EXPORT fmi1_status_t fmi1_import_get_derivatives(fmi1_import_t* fmu, fmi1_real_t derivatives[], size_t nx);
 
 /**
  * \brief Wrapper for the FMI function fmiGetEventIndicators(...) 
@@ -282,7 +282,7 @@ fmi1_status_t fmi1_import_get_derivatives(fmi1_import_t* fmu, fmi1_real_t deriva
  * @param ni Number of event indicators.
  * @return FMI status.
  */
-fmi1_status_t fmi1_import_get_event_indicators(fmi1_import_t* fmu, fmi1_real_t eventIndicators[], size_t ni);
+FMILIB_EXPORT fmi1_status_t fmi1_import_get_event_indicators(fmi1_import_t* fmu, fmi1_real_t eventIndicators[], size_t ni);
 
 /**
  * \brief Wrapper for the FMI function fmiEventUpdate(...) 
@@ -292,7 +292,7 @@ fmi1_status_t fmi1_import_get_event_indicators(fmi1_import_t* fmu, fmi1_real_t e
  * @param eventInfo (Output) An fmiEventInfo struct.
  * @return FMI status.
  */
-fmi1_status_t fmi1_import_eventUpdate(fmi1_import_t* fmu, fmi1_boolean_t intermediateResults, fmi1_event_info_t* eventInfo);
+FMILIB_EXPORT fmi1_status_t fmi1_import_eventUpdate(fmi1_import_t* fmu, fmi1_boolean_t intermediateResults, fmi1_event_info_t* eventInfo);
 
 /**
  * \brief Wrapper for the FMI function fmiGetContinuousStates(...) 
@@ -302,7 +302,7 @@ fmi1_status_t fmi1_import_eventUpdate(fmi1_import_t* fmu, fmi1_boolean_t interme
  * @param nx Number of states.
  * @return FMI status.
  */
-fmi1_status_t fmi1_import_get_continuous_states(fmi1_import_t* fmu, fmi1_real_t states[], size_t nx);
+FMILIB_EXPORT fmi1_status_t fmi1_import_get_continuous_states(fmi1_import_t* fmu, fmi1_real_t states[], size_t nx);
 
 /**
  * \brief Wrapper for the FMI function fmiGetNominalContinuousStates(...) 
@@ -312,7 +312,7 @@ fmi1_status_t fmi1_import_get_continuous_states(fmi1_import_t* fmu, fmi1_real_t 
  * @param nx Number of nominal values.
  * @return FMI status.
  */
-fmi1_status_t fmi1_import_get_nominal_continuous_states(fmi1_import_t* fmu, fmi1_real_t x_nominal[], size_t nx);
+FMILIB_EXPORT fmi1_status_t fmi1_import_get_nominal_continuous_states(fmi1_import_t* fmu, fmi1_real_t x_nominal[], size_t nx);
 
 /**
  * \brief Wrapper for the FMI function fmiGetStateValueReferences(...) 
@@ -322,7 +322,7 @@ fmi1_status_t fmi1_import_get_nominal_continuous_states(fmi1_import_t* fmu, fmi1
  * @param nx Number of value-references.
  * @return FMI status.
  */
-fmi1_status_t fmi1_import_get_state_value_references(fmi1_import_t* fmu, fmi1_value_reference_t vrx[], size_t nx);
+FMILIB_EXPORT fmi1_status_t fmi1_import_get_state_value_references(fmi1_import_t* fmu, fmi1_value_reference_t vrx[], size_t nx);
 
 /**
  * \brief Wrapper for the FMI function fmiTerminate(...) 
@@ -330,7 +330,7 @@ fmi1_status_t fmi1_import_get_state_value_references(fmi1_import_t* fmu, fmi1_va
  * @param fmu A model description object returned by fmi1_import_parse_xml() that has loaded the FMI functions, see fmi1_import_load_fcn().
  * @return FMI status.
  */
-fmi1_status_t fmi1_import_terminate(fmi1_import_t* fmu);
+FMILIB_EXPORT fmi1_status_t fmi1_import_terminate(fmi1_import_t* fmu);
 
 /**@} */
 
@@ -345,7 +345,7 @@ fmi1_status_t fmi1_import_terminate(fmi1_import_t* fmu);
  * @param fmu A model description object returned by fmi1_import_parse_xml() that has loaded the FMI functions, see fmi1_import_load_fcn().
  * @return The platform the FMU was compiled for.
  */
-const char* fmi1_import_get_types_platform(fmi1_import_t* fmu);
+FMILIB_EXPORT const char* fmi1_import_get_types_platform(fmi1_import_t* fmu);
 
 /**
  * \brief Wrapper for the FMI function fmiInstantiateSlave(...) 
@@ -361,7 +361,7 @@ const char* fmi1_import_get_types_platform(fmi1_import_t* fmu);
  * @param loggingOn Enable or disable the debug logger.
  * @return Error status. Returnes jm_status_error if fmiInstantiateSlave returned NULL, otherwise jm_status_success.
  */
-jm_status_enu_t fmi1_import_instantiate_slave(fmi1_import_t* fmu, fmi1_string_t instanceName, fmi1_string_t fmuGUID, fmi1_string_t fmuLocation, fmi1_string_t mimeType,
+FMILIB_EXPORT jm_status_enu_t fmi1_import_instantiate_slave(fmi1_import_t* fmu, fmi1_string_t instanceName, fmi1_string_t fmuGUID, fmi1_string_t fmuLocation, fmi1_string_t mimeType,
 																 fmi1_real_t timeout, fmi1_boolean_t visible, fmi1_boolean_t interactive, fmi1_boolean_t loggingOn);
 
 /**
@@ -373,7 +373,7 @@ jm_status_enu_t fmi1_import_instantiate_slave(fmi1_import_t* fmu, fmi1_string_t 
  * @param tStop The stop time of the simulation.
  * @return FMI status.
  */
-fmi1_status_t fmi1_import_initialize_slave(fmi1_import_t* fmu, fmi1_real_t tStart, fmi1_boolean_t StopTimeDefined, fmi1_real_t tStop);
+FMILIB_EXPORT fmi1_status_t fmi1_import_initialize_slave(fmi1_import_t* fmu, fmi1_real_t tStart, fmi1_boolean_t StopTimeDefined, fmi1_real_t tStop);
 
 /**
  * \brief Wrapper for the FMI function fmiTerminateSlave(...) 
@@ -381,7 +381,7 @@ fmi1_status_t fmi1_import_initialize_slave(fmi1_import_t* fmu, fmi1_real_t tStar
  * @param fmu A model description object returned by fmi1_import_parse_xml() that has loaded the FMI functions, see fmi1_import_load_fcn().
  * @return FMI status.
  */
-fmi1_status_t fmi1_import_terminate_slave(fmi1_import_t* fmu);
+FMILIB_EXPORT fmi1_status_t fmi1_import_terminate_slave(fmi1_import_t* fmu);
 
 /**
  * \brief Wrapper for the FMI function fmiResetSlave(...) 
@@ -389,14 +389,14 @@ fmi1_status_t fmi1_import_terminate_slave(fmi1_import_t* fmu);
  * @param fmu A model description object returned by fmi1_import_parse_xml() that has loaded the FMI functions, see fmi1_import_load_fcn().
  * @return FMI status.
  */
-fmi1_status_t fmi1_import_reset_slave(fmi1_import_t* fmu);
+FMILIB_EXPORT fmi1_status_t fmi1_import_reset_slave(fmi1_import_t* fmu);
 
 /**
  * \brief Wrapper for the FMI function fmiFreeSlaveInstance(...) 
  * 
  * @param fmu A model description object returned by fmi1_import_parse_xml() that has loaded the FMI functions, see fmi1_import_load_fcn().
  */
-void fmi1_import_free_slave_instance(fmi1_import_t* fmu);
+FMILIB_EXPORT void fmi1_import_free_slave_instance(fmi1_import_t* fmu);
 
 /**
  * \brief Wrapper for the FMI function fmiSetRealInputDerivatives(...) 
@@ -408,7 +408,7 @@ void fmi1_import_free_slave_instance(fmi1_import_t* fmu);
  * @param value Array of variable values.
  * @return FMI status.
  */
-fmi1_status_t fmi1_import_set_real_input_derivatives(fmi1_import_t* fmu, const fmi1_value_reference_t vr[], size_t nvr, const fmi1_integer_t order[], const  fmi1_real_t value[]);                                                  
+FMILIB_EXPORT fmi1_status_t fmi1_import_set_real_input_derivatives(fmi1_import_t* fmu, const fmi1_value_reference_t vr[], size_t nvr, const fmi1_integer_t order[], const  fmi1_real_t value[]);                                                  
 
 /**
  * \brief Wrapper for the FMI function fmiGetOutputDerivatives(...) 
@@ -420,7 +420,7 @@ fmi1_status_t fmi1_import_set_real_input_derivatives(fmi1_import_t* fmu, const f
  * @param value (Output) Array of variable values.
  * @return FMI status.
  */
-fmi1_status_t fmi1_import_get_real_output_derivatives(fmi1_import_t* fmu, const fmi1_value_reference_t vr[], size_t nvr, const fmi1_integer_t order[], fmi1_real_t value[]);                                              
+FMILIB_EXPORT fmi1_status_t fmi1_import_get_real_output_derivatives(fmi1_import_t* fmu, const fmi1_value_reference_t vr[], size_t nvr, const fmi1_integer_t order[], fmi1_real_t value[]);                                              
 
 /**
  * \brief Wrapper for the FMI function fmiCancelStep(...) 
@@ -428,7 +428,7 @@ fmi1_status_t fmi1_import_get_real_output_derivatives(fmi1_import_t* fmu, const 
  * @param fmu A model description object returned by fmi1_import_parse_xml() that has loaded the FMI functions, see fmi1_import_load_fcn().
  * @return FMI status.
  */
-fmi1_status_t fmi1_import_cancel_step(fmi1_import_t* fmu);
+FMILIB_EXPORT fmi1_status_t fmi1_import_cancel_step(fmi1_import_t* fmu);
 
 /**
  * \brief Wrapper for the FMI function fmiDoStep(...) 
@@ -439,7 +439,7 @@ fmi1_status_t fmi1_import_cancel_step(fmi1_import_t* fmu);
  * @param newStep Indicates whether or not the last communication step was accepted by the master.
  * @return FMI status.
  */
-fmi1_status_t fmi1_import_do_step(fmi1_import_t* fmu, fmi1_real_t currentCommunicationPoint, fmi1_real_t communicationStepSize, fmi1_boolean_t newStep);
+FMILIB_EXPORT fmi1_status_t fmi1_import_do_step(fmi1_import_t* fmu, fmi1_real_t currentCommunicationPoint, fmi1_real_t communicationStepSize, fmi1_boolean_t newStep);
 
 /**
  * \brief Wrapper for the FMI function fmiGetStatus(...) 
@@ -449,7 +449,7 @@ fmi1_status_t fmi1_import_do_step(fmi1_import_t* fmu, fmi1_real_t currentCommuni
  * @param value (Output) FMI status value.
  * @return FMI status.
  */
-fmi1_status_t fmi1_import_get_status(fmi1_import_t* fmu, const fmi1_status_kind_t s, fmi1_status_t*  value);
+FMILIB_EXPORT fmi1_status_t fmi1_import_get_status(fmi1_import_t* fmu, const fmi1_status_kind_t s, fmi1_status_t*  value);
 
 /**
  * \brief Wrapper for the FMI function fmiGetRealStatus(...) 
@@ -459,7 +459,7 @@ fmi1_status_t fmi1_import_get_status(fmi1_import_t* fmu, const fmi1_status_kind_
  * @param value (Output) FMI real value.
  * @return FMI status.
  */
-fmi1_status_t fmi1_import_get_real_status(fmi1_import_t* fmu, const fmi1_status_kind_t s, fmi1_real_t*    value);
+FMILIB_EXPORT fmi1_status_t fmi1_import_get_real_status(fmi1_import_t* fmu, const fmi1_status_kind_t s, fmi1_real_t*    value);
 
 /**
  * \brief Wrapper for the FMI function fmiGetIntegerStatus(...) 
@@ -469,7 +469,7 @@ fmi1_status_t fmi1_import_get_real_status(fmi1_import_t* fmu, const fmi1_status_
  * @param value (Output) FMI integer value.
  * @return FMI status.
  */
-fmi1_status_t fmi1_import_get_integer_status(fmi1_import_t* fmu, const fmi1_status_kind_t s, fmi1_integer_t* value);
+FMILIB_EXPORT fmi1_status_t fmi1_import_get_integer_status(fmi1_import_t* fmu, const fmi1_status_kind_t s, fmi1_integer_t* value);
 
 /**
  * \brief Wrapper for the FMI function fmiGetBooleanStatus(...) 
@@ -479,7 +479,7 @@ fmi1_status_t fmi1_import_get_integer_status(fmi1_import_t* fmu, const fmi1_stat
  * @param value (Output) FMI boolean value.
  * @return FMI status.
  */
-fmi1_status_t fmi1_import_get_boolean_status(fmi1_import_t* fmu, const fmi1_status_kind_t s, fmi1_boolean_t* value);
+FMILIB_EXPORT fmi1_status_t fmi1_import_get_boolean_status(fmi1_import_t* fmu, const fmi1_status_kind_t s, fmi1_boolean_t* value);
 
 /**
  * \brief Wrapper for the FMI function fmiGetStringStatus(...) 
@@ -489,7 +489,7 @@ fmi1_status_t fmi1_import_get_boolean_status(fmi1_import_t* fmu, const fmi1_stat
  * @param value (Output) FMI string value.
  * @return FMI status.
  */
-fmi1_status_t fmi1_import_get_string_status(fmi1_import_t* fmu, const fmi1_status_kind_t s, fmi1_string_t*  value);
+FMILIB_EXPORT fmi1_status_t fmi1_import_get_string_status(fmi1_import_t* fmu, const fmi1_status_kind_t s, fmi1_string_t*  value);
 
 /**@} */
 

@@ -28,6 +28,33 @@
 #define FMI_BINARIES "binaries"
 #define FMI_MODEL_DESCRIPTION_XML "modelDescription.xml"
 
+#if !defined FMILIB_EXPORT 
+#if defined WIN32
+  #ifdef FMILIB_BUILDING_LIBRARY
+    #ifdef __GNUC__
+      #define FMILIB_EXPORT __attribute__ ((dllexport))
+    #else
+      #define FMILIB_EXPORT __declspec(dllexport) // Note: actually gcc seems to also supports this syntax.
+    #endif
+  #else
+    #ifdef __GNUC__
+      #define FMILIB_EXPORT __attribute__ ((dllimport))
+    #else
+      #define FMILIB_EXPORT __declspec(dllimport) // Note: actually gcc seems to also supports this syntax.
+    #endif
+  #endif
+  #define FMILIB_PRIVATE
+#else
+  #if __GNUC__ >= 4
+    #define FMILIB_EXPORT __attribute__ ((visibility ("default")))
+    #define FMILIB_PRIVATE  __attribute__ ((visibility ("hidden")))
+  #else
+    #define FMILIB_EXPORT
+    #define FMILIB_PRIVATE
+  #endif
+#endif
+#endif
+
 #cmakedefine FMILIB_DEBUG_TRACE
 #ifdef FMILIB_DEBUG_TRACE
 #include <stdio.h>
@@ -40,7 +67,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-const char* fmilib_get_build_stamp(void);
+FMILIB_EXPORT const char* fmilib_get_build_stamp(void);
 #ifdef __cplusplus
 }
 #endif

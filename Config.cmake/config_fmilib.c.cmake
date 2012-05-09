@@ -7,5 +7,6 @@ const char * fmilib_build_stamp =
 
 	
 const char* fmilib_get_build_stamp(void) {
+	FMILIB_TRACE("Inside fmilib_get_build_stamp\n");
 	return fmilib_build_stamp;
 }

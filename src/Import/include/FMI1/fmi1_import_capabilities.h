@@ -37,23 +37,23 @@ extern "C" {
 	@{
 	*/
 	/** \brief Retrieve  canHandleVariableCommunicationStepSize flag. */
-int fmi1_import_get_canHandleVariableCommunicationStepSize(fmi1_import_capabilities_t* );
+FMILIB_EXPORT int fmi1_import_get_canHandleVariableCommunicationStepSize(fmi1_import_capabilities_t* );
 	/** \brief Retrieve  canHandleEvents flag. */
-int fmi1_import_get_canHandleEvents(fmi1_import_capabilities_t* );
+FMILIB_EXPORT int fmi1_import_get_canHandleEvents(fmi1_import_capabilities_t* );
 	/** \brief Retrieve  canRejectSteps flag. */
-int fmi1_import_get_canRejectSteps(fmi1_import_capabilities_t* );
+FMILIB_EXPORT int fmi1_import_get_canRejectSteps(fmi1_import_capabilities_t* );
 	/** \brief Retrieve  canInterpolateInputs flag. */
-int fmi1_import_get_canInterpolateInputs(fmi1_import_capabilities_t* );
+FMILIB_EXPORT int fmi1_import_get_canInterpolateInputs(fmi1_import_capabilities_t* );
 	/** \brief Retrieve  maxOutputDerivativeOrder. */
-unsigned int fmi1_import_get_maxOutputDerivativeOrder(fmi1_import_capabilities_t* );
+FMILIB_EXPORT unsigned int fmi1_import_get_maxOutputDerivativeOrder(fmi1_import_capabilities_t* );
 	/** \brief Retrieve  canRunAsynchronuously flag. */
-int fmi1_import_get_canRunAsynchronuously(fmi1_import_capabilities_t* );
+FMILIB_EXPORT int fmi1_import_get_canRunAsynchronuously(fmi1_import_capabilities_t* );
 	/** \brief Retrieve  canSignalEvents flag. */
-int fmi1_import_get_canSignalEvents(fmi1_import_capabilities_t* );
+FMILIB_EXPORT int fmi1_import_get_canSignalEvents(fmi1_import_capabilities_t* );
 	/** \brief Retrieve  canBeInstantiatedOnlyOncePerProcess flag. */
-int fmi1_import_get_canBeInstantiatedOnlyOncePerProcess(fmi1_import_capabilities_t* );
+FMILIB_EXPORT int fmi1_import_get_canBeInstantiatedOnlyOncePerProcess(fmi1_import_capabilities_t* );
 	/** \brief Retrieve  canNotUseMemoryManagementFunctions flag. */
-int fmi1_import_get_canNotUseMemoryManagementFunctions(fmi1_import_capabilities_t* );
+FMILIB_EXPORT int fmi1_import_get_canNotUseMemoryManagementFunctions(fmi1_import_capabilities_t* );
 /** 
 @}
 */

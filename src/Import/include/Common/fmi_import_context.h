@@ -45,18 +45,13 @@ typedef fmi_xml_context_t fmi_import_context_t ;
 	@param callbacks - a pointer to the library callbacks for memory management and logging. May be NULL if defaults are utilized.
 	@return A new structure if memory allocation was successful.
 */
-static fmi_import_context_t* fmi_import_allocate_context( jm_callbacks* callbacks) {
-	FMILIB_TRACE("Inside fmi_import_allocate_context\n");
-	return fmi_xml_allocate_context(callbacks);
-}
+FMILIB_EXPORT fmi_import_context_t* fmi_import_allocate_context( jm_callbacks* callbacks);
 
 /**
 	\brief Free memory allocated for the library context.
 	@param c - library context allocated by fmi_import_allocate_context()
 */
-static void fmi_import_free_context( fmi_import_context_t* c) {
-	fmi_xml_free_context(c);
-}
+FMILIB_EXPORT void fmi_import_free_context( fmi_import_context_t* c);
 
 /**
 	\brief Unzip an FMU specified by the fileName into directory dirName and parse XML to get FMI standard version.
@@ -64,7 +59,7 @@ static void fmi_import_free_context( fmi_import_context_t* c) {
 	@param fileName - an FMU file name.
 	@param dirName - a directory name where the FMU should be unpacked
 */
-fmi_version_enu_t fmi_import_get_fmi_version( fmi_import_context_t* c, const char* fileName, const char* dirName);
+FMILIB_EXPORT fmi_version_enu_t fmi_import_get_fmi_version( fmi_import_context_t* c, const char* fileName, const char* dirName);
 
 /**
 	\brief FMU version 1.0 object
@@ -76,7 +71,7 @@ typedef struct fmi1_import_t fmi1_import_t;
 	\param c - library context.
 	\param dirName - a directory where the FMU was unpacked and XML file is present.
 */
-fmi1_import_t* fmi1_import_parse_xml( fmi_import_context_t* c, const char* dirName);
+FMILIB_EXPORT fmi1_import_t* fmi1_import_parse_xml( fmi_import_context_t* c, const char* dirName);
 
 /** \addtogroup  fmi1_import
 @}

@@ -18,6 +18,10 @@
 #define FMI1_IMPORT_UTIL_H_
 
 #include <Common/jm_callbacks.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 /**
 \addtogroup  fmi_import
 @{
@@ -36,4 +40,8 @@ char* fmi_import_get_model_description_path(const char* fmu_unzipped_path, jm_ca
 @}
 @}
 */
+#ifdef __cplusplus
+}
+#endif
+
 #endif /* End of header file FMI1_IMPORT_UTIL_H_ */

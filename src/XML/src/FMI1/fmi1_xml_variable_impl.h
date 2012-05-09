@@ -34,6 +34,7 @@ struct fmi1_xml_variable_t {
     const char* description;
     jm_vector(jm_voidp)* directDependency;
 
+	size_t originalIndex;
     fmi1_value_reference_t vr;
     char aliasKind;
     char variability;

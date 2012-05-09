@@ -17,6 +17,10 @@
 #ifndef FMI1_ENUMS_H_
 #define FMI1_ENUMS_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** \file fmi1_enums.h 
 	\brief Definions the enum types used with FMI 1.0 libs
 */
@@ -95,5 +99,8 @@ const char* fmi1_base_type_to_string(fmi1_base_type_enu_t bt);
 /**	
  @}
 */
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* End of header file FMI1_ENUMS_H_ */

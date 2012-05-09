@@ -45,7 +45,7 @@ extern "C" {
   \name Declarations of structs used in the interface.
   \brief All the structures used in the interfaces are intended to
    be treated as opaque objects by the client code.
-  @{
+  @{  */
 /** ModelDescription is the entry point for the package*/
 typedef struct fmi1_xml_model_description_t fmi1_xml_model_description_t;
 
@@ -218,6 +218,10 @@ fmi1_xml_variable_t* fmi1_xml_get_variable_by_name(fmi1_xml_model_description_t*
 fmi1_xml_variable_t* fmi1_xml_get_variable_by_vr(fmi1_xml_model_description_t* md, fmi1_base_type_enu_t baseType, fmi1_value_reference_t vr);
 
 /** @} */
+#ifdef __cplusplus
+}
+#endif
+
 #include "fmi1_xml_type.h"
 #include "fmi1_xml_unit.h"
 #include "fmi1_xml_variable.h"

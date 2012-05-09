@@ -74,7 +74,7 @@ typedef enum {
 } fmi1_status_kind_t;
 
 /* FMI 1.0 common functions */
-typedef const char*	  	    (*fmi1_get_version_ft)					();
+typedef const char*	  	    (*fmi1_get_version_ft)					(void);
 typedef fmi1_status_t		(*fmi1_set_debug_logging_ft)			(fmi1_component_t c, fmi1_boolean_t loggingOn);
 typedef fmi1_status_t		(*fmi1_set_real_ft)						(fmi1_component_t c, const fmi1_value_reference_t vr[], size_t nvr, const fmi1_real_t   value[]);
 typedef fmi1_status_t		(*fmi1_set_integer_ft)					(fmi1_component_t c, const fmi1_value_reference_t vr[], size_t nvr, const fmi1_integer_t value[]);
@@ -86,7 +86,7 @@ typedef fmi1_status_t		(*fmi1_get_boolean_ft)					(fmi1_component_t c, const fmi
 typedef fmi1_status_t		(*fmi1_get_string_ft)					(fmi1_component_t c, const fmi1_value_reference_t vr[], size_t nvr, fmi1_string_t  value[]);
 
 /* FMI ME 1.0 functions */
-typedef const char*		    (*fmi1_get_model_typesPlatform_ft)		();
+typedef const char*		    (*fmi1_get_model_typesPlatform_ft)		(void);
 typedef fmi1_component_t	(*fmi1_instantiate_model_ft)			(fmi1_string_t instanceName, fmi1_string_t GUID, fmi1_callback_functions_t functions, fmi1_boolean_t loggingOn);
 typedef void			    (*fmi1_free_model_instance_ft)			(fmi1_component_t c);
 typedef fmi1_status_t		(*fmi1_set_time_ft)					(fmi1_component_t c, fmi1_real_t time);
@@ -103,7 +103,7 @@ typedef fmi1_status_t		(*fmi1_terminate_ft)					(fmi1_component_t c);
 
 
 /* FMI CS 1.0 functions */
-typedef const char*		(*fmi1_get_types_platform_ft)			();
+typedef const char*		(*fmi1_get_types_platform_ft)			(void );
 typedef fmi1_component_t	(*fmi1_instantiate_slave_ft)			(fmi1_string_t  instanceName, fmi1_string_t  fmuGUID, fmi1_string_t  fmuLocation, 
 															 fmi1_string_t  mimeType, fmi1_real_t timeout, fmi1_boolean_t visible, fmi1_boolean_t interactive, 
 															 fmi1_callback_functions_t functions, fmi1_boolean_t loggingOn);

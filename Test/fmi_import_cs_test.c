@@ -171,6 +171,9 @@ int main(int argc, char *argv[])
 	callBackFunctions.allocateMemory = calloc;
 	callBackFunctions.freeMemory = free;
 
+#ifdef FMILIB_GENERATE_BUILD_STAMP
+	printf("Library build stamp:\n%s\n", fmilib_get_build_stamp());
+#endif
 
 	context = fmi_import_allocate_context(&callbacks);
 

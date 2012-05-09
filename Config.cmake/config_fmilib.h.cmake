@@ -28,6 +28,21 @@
 #define FMI_BINARIES "binaries"
 #define FMI_MODEL_DESCRIPTION_XML "modelDescription.xml"
 
-const char* fmilib_get_build_stamp();
-
+#cmakedefine FMILIB_DEBUG_TRACE
+#ifdef FMILIB_DEBUG_TRACE
+#include <stdio.h>
+#define FMILIB_TRACE(STR) printf(STR)
+#else
+#define FMILIB_TRACE(STR)
+#endif
+#cmakedefine FMILIB_GENERATE_BUILD_STAMP
+#ifdef FMILIB_GENERATE_BUILD_STAMP
+#ifdef __cplusplus
+extern "C" {
+#endif
+const char* fmilib_get_build_stamp(void);
+#ifdef __cplusplus
+}
+#endif
+#endif
 

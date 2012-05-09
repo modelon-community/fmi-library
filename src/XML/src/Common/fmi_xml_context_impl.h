@@ -18,7 +18,7 @@
 #define FMI_XML_CONTEXT_IMPL_H
 
 #include <expat.h>
-
+#include <config_fmilib.h>
 #include <Common/jm_vector.h>
 #include <Common/jm_stack.h>
 #include <Common/jm_named_ptr.h>

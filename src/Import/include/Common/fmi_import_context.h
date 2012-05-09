@@ -23,6 +23,7 @@
 #define FMI_IMPORT_CONTEXT_H_
 
 #include <stddef.h>
+#include <config_fmilib.h>
 #include <Common/jm_callbacks.h>
 #include <Common/fmi_xml_context.h>
 
@@ -45,6 +46,7 @@ typedef fmi_xml_context_t fmi_import_context_t ;
 	@return A new structure if memory allocation was successful.
 */
 static fmi_import_context_t* fmi_import_allocate_context( jm_callbacks* callbacks) {
+	FMILIB_TRACE("Inside fmi_import_allocate_context\n");
 	return fmi_xml_allocate_context(callbacks);
 }
 

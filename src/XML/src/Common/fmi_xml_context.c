@@ -24,6 +24,7 @@ fmi_xml_context_t* fmi_xml_allocate_context( jm_callbacks* callbacks) {
 	jm_callbacks* cb;
 	fmi_xml_context_t* c;
 
+	FMILIB_TRACE("Inside fmi_xml_allocate_context\n");
     if(callbacks) {
         cb = callbacks;
     }
@@ -35,11 +36,12 @@ fmi_xml_context_t* fmi_xml_allocate_context( jm_callbacks* callbacks) {
 	c->callbacks = callbacks;
 	c->parser = 0;
 	c->fmi_version = fmi_version_unknown_enu;
- 
+	FMILIB_TRACE("Returning allocated context\n");
     return c;
 }
 
 void fmi_xml_free_context(fmi_xml_context_t *context) {
+	FMILIB_TRACE("Inside fmi_xml_free_context\n");
     if(!context) return;
     if(context->parser) {
         XML_ParserFree(context->parser);
@@ -102,7 +104,9 @@ fmi_version_enu_t fmi_xml_get_fmi_version(fmi_xml_context_t* context, const char
     XML_Parser parser = NULL;
     FILE* file;
 
-    memsuite.malloc_fcn = context->callbacks->malloc;
+	FMILIB_TRACE("Inside fmi_xml_get_fmi_version\n");
+
+	memsuite.malloc_fcn = context->callbacks->malloc;
     memsuite.realloc_fcn = context->callbacks->realloc;
     memsuite.free_fcn = context->callbacks->free;
     context -> parser = parser = XML_ParserCreate_MM(0, &memsuite, 0);

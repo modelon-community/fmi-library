@@ -95,7 +95,7 @@ void jm_set_default_callbacks(jm_callbacks* c);
 /**
 Get default callbacks. The function never returns NULL.
 */
-jm_callbacks* jm_get_default_callbacks();
+jm_callbacks* jm_get_default_callbacks(void);
 
 /**
 Send a message to the logger function.

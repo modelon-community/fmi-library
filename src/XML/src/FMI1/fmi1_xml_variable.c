@@ -341,6 +341,7 @@ int fmi1_xml_handle_ScalarVariable(fmi1_xml_parser_context_t *context, const cha
             variable->description = description;
             variable->typeBase = 0;
             variable->directDependency = 0;
+			variable->originalIndex = jm_vector_get_size(jm_named_ptr)(&md->variablesByName) - 1;
 
               {
                 jm_name_ID_map_t variabilityConventionMap[] = {{"continuous",fmi1_variability_enu_continuous},
@@ -834,6 +835,11 @@ int fmi1_xml_handle_Enumeration(fmi1_xml_parser_context_t *context, const char* 
     return 0;
 }
 
+#define fmi1_xml_diff_variable_original_index(a, b) (((fmi1_xml_variable_t*)a)->originalIndex - ((fmi1_xml_variable_t*)b)->originalIndex)
+
+jm_define_comp_f(fmi1_xml_compare_variable_original_index, jm_voidp, fmi1_xml_diff_variable_original_index)
+
+
 void fmi1_xml_eliminate_bad_alias(fmi1_xml_parser_context_t *context, size_t indexVR) {
     fmi1_xml_model_description_t* md = context->modelDescription;
     jm_vector(jm_voidp)* varByVR = md->variablesByVR;
@@ -852,6 +858,12 @@ void fmi1_xml_eliminate_bad_alias(fmi1_xml_parser_context_t *context, size_t ind
         index = jm_vector_bsearch_index(jm_named_ptr)(&md->variablesByName, &key, jm_compare_named);
         assert(index <= n);
         jm_vector_remove_item(jm_named_ptr)(&md->variablesByName,index);
+
+		index = jm_vector_bsearch_index(jm_voidp)(md->variablesOrigOrder, (jm_voidp*)&v, fmi1_xml_compare_variable_original_index);
+        assert(index <= n);
+		
+		jm_vector_remove_item(jm_voidp)(md->variablesOrigOrder,index);
+		
         fmi1_xml_parse_warning(context,"Removing incorrect alias variable '%s'", v->name);
         md->callbacks->free(v);
     }

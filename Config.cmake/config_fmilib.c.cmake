@@ -6,6 +6,6 @@ const char * fmilib_build_stamp =
 	"Revision: @FMILibrary_WC_REVISION@";
 
 	
-const char* fmilib_get_build_stamp() {
+const char* fmilib_get_build_stamp(void) {
 	return fmilib_build_stamp;
 }

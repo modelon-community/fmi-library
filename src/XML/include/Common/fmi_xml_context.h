@@ -43,7 +43,7 @@ typedef struct fmi_xml_context_t fmi_xml_context_t;
 	@param callbacks - the callbacks to be used for memory allocation and logging. Can be NULL if default callbacks are to be used.
 	@return A pointer to the newly allocated ::fmi_xml_context_t or NULL if memory allocation failed.
 */
-fmi_xml_context_t* fmi_xml_allocate_context( jm_callbacks* callbacks);
+fmi_xml_context_t* __cdecl fmi_xml_allocate_context( jm_callbacks* callbacks);
 
 /** \brief Free library context */
 void fmi_xml_free_context(fmi_xml_context_t *context);

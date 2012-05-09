@@ -3,9 +3,6 @@ set(RTTESTDIR ${FMILIBRARYHOME}/Test)
 add_executable (jm_vector_test ${RTTESTDIR}/jm_vector_test.c)
 target_link_libraries (jm_vector_test ${JMUTIL_LIBRARIES})
 
-add_executable (fmi_import_xml_test ${RTTESTDIR}/fmi_import_xml_test.c )
-target_link_libraries (fmi_import_xml_test  ${FMIIMPORT_LIBRARIES}  )
-
 add_executable (fmi1_capi_cs_test ${RTTESTDIR}/fmi1_capi_cs_test.c )
 target_link_libraries (fmi1_capi_cs_test  ${FMICAPI_LIBRARIES})
 
@@ -186,6 +183,10 @@ if(FMILIB_LINK_TEST_TO_SHAREDLIB)
 	set(FMILIBFORTEST fmilib_shared)
 endif()
 endif()
+
+add_executable (fmi_import_xml_test ${RTTESTDIR}/fmi_import_xml_test.cc )
+target_link_libraries (fmi_import_xml_test  ${FMILIBFORTEST}  )
+
 add_executable (fmi_zip_zip_test ${RTTESTDIR}/fmi_zip_zip_test.c )
 target_link_libraries (fmi_zip_zip_test ${FMIZIP_LIBRARIES})
 

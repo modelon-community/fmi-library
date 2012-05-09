@@ -20,6 +20,7 @@
 #include <time.h>
 
 #include <Common/fmi_import_context.h>
+
 #include <FMI1/fmi1_import.h>
 
 
@@ -265,6 +266,10 @@ int main(int argc, char *argv[])
     callbacks.free = free;
     callbacks.logger = mylogger;
     callbacks.context = 0;
+
+#ifdef FMILIB_GENERATE_BUILD_STAMP
+	printf("Library build stamp:\n%s\n", fmilib_get_build_stamp());
+#endif
 
 	context = fmi_import_allocate_context(&callbacks);
 

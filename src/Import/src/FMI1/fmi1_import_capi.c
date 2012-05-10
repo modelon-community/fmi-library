@@ -49,16 +49,17 @@ jm_status_enu_t fmi1_import_create_dllfmu(fmi1_import_t* fmu, fmi1_callback_func
 	}
 
 	/* Allocate memory for the C-API struct */
-	fmu -> capi = fmi1_capi_create_dllfmu(fmu->callbacks, dllPath, modelIdentifier, callBackFunctions, standard);	
+	fmu -> capi = fmi1_capi_create_dllfmu(fmu->callbacks, dllPath, modelIdentifier, callBackFunctions, standard);
+	fmu->callbacks->free((jm_voidp)dllPath);
+
 	if (fmu -> capi == NULL) {
-		fmu->callbacks->free((jm_voidp)dllPath);
 		return jm_status_error;
 	}
 
 	/* Load the DLL handle */
 	if (fmi1_capi_load_dll(fmu -> capi) == jm_status_error) {		
 		fmi1_capi_destroy_dllfmu(fmu -> capi);
-		fmu->callbacks->free((jm_voidp)dllPath);
+		fmu -> capi = NULL;
 		return jm_status_error;
 	}
 
@@ -67,7 +68,7 @@ jm_status_enu_t fmi1_import_create_dllfmu(fmi1_import_t* fmu, fmi1_callback_func
 	if (fmi1_capi_load_fcn(fmu -> capi) == jm_status_error) {
 		fmi1_capi_free_dll(fmu -> capi);			
 		fmi1_capi_destroy_dllfmu(fmu -> capi);
-		fmu->callbacks->free((jm_voidp)dllPath);
+		fmu -> capi = NULL;
 		return jm_status_error;
 	}
 
@@ -76,6 +77,7 @@ jm_status_enu_t fmi1_import_create_dllfmu(fmi1_import_t* fmu, fmi1_callback_func
 
 void fmi1_import_destroy_dllfmu(fmi1_import_t* fmu) {
 
+	
 	if (fmu == NULL) {
 		return;
 	}
@@ -84,7 +86,7 @@ void fmi1_import_destroy_dllfmu(fmi1_import_t* fmu) {
 	fmi1_capi_free_dll(fmu -> capi);
 
 	/* Destroy the C-API struct */
-	fmi1_capi_destroy_dllfmu(fmu -> capi);	
+	fmi1_capi_destroy_dllfmu(fmu -> capi);
 
 	fmu -> capi = NULL;
 }

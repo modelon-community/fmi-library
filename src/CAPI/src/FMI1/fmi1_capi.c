@@ -188,19 +188,15 @@ fmi1_capi_t* fmi1_capi_create_dllfmu(jm_callbacks* cb, const char* dllPath, cons
 
 jm_status_enu_t fmi1_capi_load_fcn(fmi1_capi_t* fmu)
 {
-	switch (fmu->standard) {
-		case fmi1_fmu_kind_enu_me:				/* Load FMI 1.0 Model Exchange functions */
-			if (fmi1_capi_load_me_fcn(fmu) == jm_status_error) {
-				return jm_status_error;
-			}
-			break;
-		case fmi1_fmu_kind_enu_cs_standalone:	/* Load FMI 1.0 Co-Simulation functions */
-			if (fmi1_capi_load_cs_fcn(fmu) == jm_status_error) {
-				return jm_status_error;
-			}
-			break;
+	/* Load ME functions */
+	if (fmu->standard == fmi1_fmu_kind_enu_me) {
+		return fmi1_capi_load_me_fcn(fmu);
+	/* Load CS functions */
+	} else if (fmu->standard == fmi1_fmu_kind_enu_cs_standalone || fmu->standard == fmi1_fmu_kind_enu_cs_tool) {
+		return fmi1_capi_load_cs_fcn(fmu);
+	} else {
+		return jm_status_error;
 	}
-	return jm_status_success;
 }
 
 jm_status_enu_t fmi1_capi_load_dll(fmi1_capi_t* fmu)

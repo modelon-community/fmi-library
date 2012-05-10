@@ -29,7 +29,6 @@
 /*#include "fmi1_import_vendor_annotations_impl.h"
 #include "fmi1_import_parser.h"
 */
-
 fmi1_import_t* fmi1_import_allocate(jm_callbacks* cb) {
 	fmi1_import_t* fmu = (fmi1_import_t*)cb->calloc(1, sizeof(fmi1_import_t));
 
@@ -38,6 +37,7 @@ fmi1_import_t* fmi1_import_allocate(jm_callbacks* cb) {
 	}
 	fmu->dirPath = 0;
 	fmu->callbacks = cb;
+	fmu->capi = 0;
 	fmu->md = fmi1_xml_allocate_model_description(cb);
 	if(!fmu->md) {
 		cb->free(fmu);

@@ -18,12 +18,8 @@
 #include <stdlib.h>
 #include <stdarg.h>
 
-#include <Common/fmi_import_context.h>
-#include <FMI1/fmi1_types.h>
-#include <FMI1/fmi1_enums.h>
-#include <FMI1/fmi1_functions.h>
-#include <FMI1/fmi1_import.h>
-#include "config_test.h"
+#include <config_test.h>
+#include <fmilib.h>
 
 #define BUFFER 1000
 
@@ -128,6 +124,8 @@ int main(int argc, char *argv[])
 	printf("Everything seems to be OK since you got this far=)!\n");
 
 	do_exit(CTEST_RETURN_SUCCESS);
+
+	return 0;
 }
 
 

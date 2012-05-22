@@ -17,6 +17,7 @@
 #ifndef JM_PORTABILITY_H_
 #define JM_PORTABILITY_H_
 #include <config_fmilib.h>
+
 /* Include platform dependent headers */
 #if defined(_MSC_VER) || defined(WIN32)
 #include <windows.h> /* Microsoft Windows API */

@@ -1,7 +1,7 @@
 if(NOT JMUTILDIR)
     set(JMUTILDIR ${FMILIBRARYHOME}/src/Util/)
     set(JMUTIL_LIBRARIES jmutils)
-    include_directories ("${JMUTILDIR}/include" "${THIRDPARTYLIBS}/FMI/")
+    include_directories ("${JMUTILDIR}/include" "${FMILIB_THIRDPARTYLIBS}/FMI/")
 	set(DOXYFILE_EXTRA_SOURCES "${DOXYFILE_EXTRA_SOURCES} \"${JMUTILDIR}\"")
 
 set(JMUTILSOURCE
@@ -40,7 +40,8 @@ message("not tested")
 endif(CYGWIN)
 
 if(UNIX) 
-	link_libraries(dl)
+	message(STATUS "Adding -ldl to the linker")
+	target_link_libraries(jmutils dl)
 	#target_link_libraries(dl)
 endif(UNIX)
 

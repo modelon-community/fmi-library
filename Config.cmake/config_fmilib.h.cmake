@@ -1,3 +1,6 @@
+#ifndef CONFIG_FMILIB_H_
+#define CONFIG_FMILIB_H_
+
 #ifndef WIN32
 #cmakedefine WIN32
 #endif
@@ -28,23 +31,27 @@
 #define FMI_BINARIES "binaries"
 #define FMI_MODEL_DESCRIPTION_XML "modelDescription.xml"
 
-#if !defined FMILIB_EXPORT 
-#if defined WIN32
+#cmakedefine FMILIB_STATIC_LIB_ONLY
+
+#ifndef FMILIB_STATIC_LIB_ONLY
+ #if defined WIN32
   #ifdef FMILIB_BUILDING_LIBRARY
-    #ifdef __GNUC__
+    #if 0 /* defined(__GNUC__)  MSYS currently does not support visibility attribute */ 
       #define FMILIB_EXPORT __attribute__ ((dllexport))
     #else
-      #define FMILIB_EXPORT __declspec(dllexport) // Note: actually gcc seems to also supports this syntax.
+		/* Note: actually gcc seems to also supports this syntax. */
+      #define FMILIB_EXPORT __declspec(dllexport) 
     #endif
   #else
-    #ifdef __GNUC__
+    #if 0 /* defined(__GNUC__) MSYS currently does not support visibility attribute  */
       #define FMILIB_EXPORT __attribute__ ((dllimport))
     #else
-      #define FMILIB_EXPORT __declspec(dllimport) // Note: actually gcc seems to also supports this syntax.
+		/* Note: actually gcc seems to also supports this syntax. */
+      #define FMILIB_EXPORT __declspec(dllimport)
     #endif
   #endif
   #define FMILIB_PRIVATE
-#else
+ #else
   #if __GNUC__ >= 4
     #define FMILIB_EXPORT __attribute__ ((visibility ("default")))
     #define FMILIB_PRIVATE  __attribute__ ((visibility ("hidden")))
@@ -52,7 +59,10 @@
     #define FMILIB_EXPORT
     #define FMILIB_PRIVATE
   #endif
-#endif
+ #endif
+#else
+    #define FMILIB_EXPORT
+    #define FMILIB_PRIVATE
 #endif
 
 #cmakedefine FMILIB_DEBUG_TRACE
@@ -73,3 +83,4 @@ FMILIB_EXPORT const char* fmilib_get_build_stamp(void);
 #endif
 #endif
 
+#endif

@@ -16,6 +16,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <string.h>
 
+#if __GNUC__ >= 4
+    #pragma GCC visibility push(default)
+#endif
 /* Standard FMI 1.0 ME and CS types */
 #include <1.0-ME/fmiModelTypes.h>
 #include <1.0-ME/fmiModelFunctions.h>

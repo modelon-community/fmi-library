@@ -18,12 +18,10 @@
 #include <stdlib.h>
 #include <stdarg.h>
 
-#include <Common/fmi_import_context.h>
-#include <FMI1/fmi1_types.h>
-#include <FMI1/fmi1_enums.h>
-#include <FMI1/fmi1_functions.h>
-#include <FMI1/fmi1_import.h>
 #include "config_test.h"
+
+#include <fmilib.h>
+
 
 #define BUFFER 1000
 
@@ -63,12 +61,13 @@ int test_simulate_cs(fmi1_import_t* fmu)
 	fmi1_boolean_t interactive = fmi1_false;
 	fmi1_boolean_t loggingOn = fmi1_true;
 	
-	fmi1_real_t simulation_results[] = {-0.001878, -1.722275};
+	/* fmi1_real_t simulation_results[] = {-0.001878, -1.722275}; */
+	fmi1_real_t simulation_results[] = {0.0143633,   -1.62417};
 	fmi1_value_reference_t compare_real_variables_vr[] = {0, 1};
 	size_t k;
 
 	fmi1_real_t tstart = 0.0;
-	fmi1_real_t tcur;
+	fmi1_real_t tcur = tstart;
 	fmi1_real_t hstep = 0.1;
 	fmi1_real_t tend = 2.0;
 	fmi1_boolean_t StopTimeDefined = fmi1_false;
@@ -94,6 +93,7 @@ int test_simulate_cs(fmi1_import_t* fmu)
 	fmistatus = fmi1_import_initialize_slave(fmu, tstart, StopTimeDefined, tend);
 
 	tcur = tstart;
+	printf("%10s %10s\n", "Ball height", "Ball speed");
 	while (tcur < tend) {
 		fmi1_boolean_t newStep = fmi1_true;
 #if 0 /* Prints a real value.. */
@@ -109,11 +109,17 @@ int test_simulate_cs(fmi1_import_t* fmu)
 			fmi1_value_reference_t vr = compare_real_variables_vr[k];
 			fmi1_real_t rvalue;
 			fmistatus = fmi1_import_get_real(fmu, &vr, 1, &rvalue);
-			 if (k == 0) printf("Ball hight state[%d] = %f\n", k, rvalue);
+		}
+		{
+			fmi1_real_t val[2];
+			fmi1_import_get_real(fmu, compare_real_variables_vr, 2, val);
+			printf("%10g %10g\n", val[0],val[1]);
 		}
 
 		tcur += hstep;
 	}
+
+	printf("Simulation finished. Checking results\n");
 
 	/* Validate result */
 	for (k = 0; k < sizeof(compare_real_variables_vr)/sizeof(fmi1_value_reference_t); k++) {
@@ -123,8 +129,10 @@ int test_simulate_cs(fmi1_import_t* fmu)
 		fmistatus = fmi1_import_get_real(fmu, &vr, 1, &rvalue);
 		res = rvalue - simulation_results[k];
 		res = res > 0 ? res: -res; /* Take abs */
-		if (res > 1e-6) {
-			printf("Simulation results is wrong  states[%d] %f != %f, |res| = %f\n", k, rvalue, simulation_results[k], res);
+		if (res > 3e-3) {
+			printf("Simulation results is wrong!\n");
+			printf("State [%d]  %g != %g, |res| = %g\n", k, rvalue, simulation_results[k], res);
+			printf("\n");
 			do_exit(CTEST_RETURN_FAIL);
 		}
 	}
@@ -194,7 +202,7 @@ int main(int argc, char *argv[])
 
 	status = fmi1_import_create_dllfmu(fmu, callBackFunctions);
 	if (status == jm_status_error) {
-		printf("Could not create the DLL loading mechanism(C-API).\n");
+		printf("Could not create the DLL loading mechanism(C-API) (error: %s).\n", fmi1_import_get_last_error(fmu));
 		do_exit(CTEST_RETURN_FAIL);
 	}
 
@@ -208,6 +216,8 @@ int main(int argc, char *argv[])
 	printf("Everything seems to be OK since you got this far=)!\n");
 
 	do_exit(CTEST_RETURN_SUCCESS);
+
+	return 0;
 }
 
 

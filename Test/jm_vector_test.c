@@ -2,9 +2,9 @@
 #include <stdlib.h>
 #include <stdarg.h>
 
+#include "config_test.h"
 #include <Common/jm_vector.h>
 #include <Common/jm_stack.h>
-#include "config_test.h"
 
 void print_int(int i,void* data) {
     printf("%d\n", i);

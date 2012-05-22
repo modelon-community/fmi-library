@@ -17,6 +17,8 @@
 #ifndef FMI1_FUNCTIONS_H_
 #define FMI1_FUNCTIONS_H_
 
+#include <config_fmilib.h>
+
 #include "fmi1_types.h"
 #include <string.h>
 /**	\file fmi1_functions.h
@@ -37,7 +39,7 @@ typedef enum {
 } fmi1_status_t;
 
 /** Convert #fmi1_status_t variable to string  */
-const char* fmi1_status_to_string(fmi1_status_t status);
+FMILIB_EXPORT const char* fmi1_status_to_string(fmi1_status_t status);
 
 /** FMI 1.0 logger function type */
 typedef void  (*fmi1_callback_logger_ft)        (fmi1_component_t c, fmi1_string_t instanceName, fmi1_status_t status, fmi1_string_t category, fmi1_string_t message, ...);

@@ -20,6 +20,8 @@
 #include <string.h>
 #include <errno.h>
 
+#include "config_test.h"
+
 #include <Common/jm_types.h>
 #include <Common/jm_portability.h>
 #include <FMI1/fmi1_types.h>
@@ -27,7 +29,7 @@
 #include <FMI1/fmi1_capi.h>
 #include <Common/jm_callbacks.h>
 #include <fmu_dummy/fmu1_model_defines.h>
-#include "config_test.h"
+
 
 #define MODEL_IDENTIFIER FMU_DUMMY_ME_MODEL_IDENTIFIER
 
@@ -192,7 +194,7 @@ int test_instantiate_model()
  */
 int test_fmi_set_time()
 {
-	jm_status_enu_t status;
+	fmi1_status_t status;
 	status = fmi1_capi_set_time(fmu, 0.1);
 	if (status == fmi1_status_error || status == fmi1_status_fatal) {
 		printf("fmi1_capi_set_time:                      Failed\n");
@@ -209,7 +211,7 @@ int test_fmi_set_time()
  */
 int test_set_continuous_states()
 {
-	jm_status_enu_t status;
+	fmi1_status_t status;
 	size_t k;
 	fmi1_real_t states[N_STATES];
 
@@ -238,7 +240,7 @@ int test_set_continuous_states()
  */
 int test_initialize()
 {
-	jm_status_enu_t status;
+	fmi1_status_t status;
 	fmi1_boolean_t toleranceControlled;
 	fmi1_real_t relativeTolerance;
 	fmi1_event_info_t eventInfo;
@@ -269,7 +271,7 @@ int test_initialize()
  */
 int test_completed_integrator_step()
 {
-	jm_status_enu_t status;
+	fmi1_status_t status;
 	fmi1_boolean_t callEventUpdate;
 
 	status = fmi1_capi_completed_integrator_step(fmu, &callEventUpdate);
@@ -291,8 +293,8 @@ int test_completed_integrator_step()
  */
 int test_get_derivatives()
 {
-	jm_status_enu_t status;
-	size_t k = 0;
+	fmi1_status_t status;
+
 	fmi1_real_t dstates[N_STATES];
 
 	status = fmi1_capi_get_derivatives(fmu, dstates, N_STATES);
@@ -312,8 +314,8 @@ int test_get_derivatives()
 
 int test_get_event_indicators()
 {
-	jm_status_enu_t status;
-	size_t k = 0;
+	fmi1_status_t status;
+
 	fmi1_real_t zerocrossing[N_EVENT_INDICATORS];
 
 	status = fmi1_capi_get_event_indicators(fmu, zerocrossing, N_EVENT_INDICATORS);
@@ -337,7 +339,7 @@ int test_get_event_indicators()
  */
 int test_event_update()
 {
-	jm_status_enu_t status;
+	fmi1_status_t status;
 	fmi1_boolean_t intermediateResults = fmi1_false;
 	fmi1_event_info_t eventInfo;
 
@@ -365,8 +367,7 @@ int test_event_update()
  */
 int test_get_continuous_states()
 {
-	jm_status_enu_t status;
-	size_t k = 0;
+	fmi1_status_t status;
 	fmi1_real_t states[N_STATES];
 
 
@@ -391,8 +392,8 @@ int test_get_continuous_states()
  */
 int test_get_nominal_continuous_states()
 {
-	jm_status_enu_t status;
-	size_t k = 0;
+	fmi1_status_t status;
+	
 	fmi1_real_t states[N_STATES];
 
 	status = fmi1_capi_get_nominal_continuous_states(fmu, states, N_STATES);
@@ -416,8 +417,8 @@ int test_get_nominal_continuous_states()
  */
 int test_get_state_value_references()
 {
-	jm_status_enu_t status;
-	size_t k = 0;
+	fmi1_status_t status;
+	
 	fmi1_value_reference_t vrs[N_STATES];
 
 	status = fmi1_capi_get_state_value_references(fmu, vrs, N_STATES);
@@ -441,7 +442,7 @@ int test_get_state_value_references()
  */
 int test_set_debug_logging()
 {
-	jm_status_enu_t status;
+	fmi1_status_t status;
 	status = fmi1_capi_set_debug_logging(fmu, fmi1_true);
 	if (status == fmi1_status_error || status == fmi1_status_fatal) {
 		printf("fmi1_capi_set_debug_logging:             Failed\n");
@@ -458,7 +459,7 @@ int test_set_debug_logging()
  */
 int test_set_get_string()
 {
-	jm_status_enu_t status;
+	fmi1_status_t status;
 	fmi1_value_reference_t vrs[N_STRING];
 	fmi1_string_t values[N_STRING];
 	fmi1_string_t values_ref[N_STRING];
@@ -503,7 +504,7 @@ int test_set_get_string()
  */
 int test_set_get_integer()
 {
-	jm_status_enu_t status;
+	fmi1_status_t status;
 	fmi1_value_reference_t vrs[N_INTEGER];
 	fmi1_integer_t values[N_INTEGER];
 	fmi1_integer_t values_ref[N_INTEGER];
@@ -548,7 +549,7 @@ int test_set_get_integer()
  */
 int test_set_get_boolean()
 {
-	jm_status_enu_t status;
+	fmi1_status_t status;
 	fmi1_value_reference_t vrs[N_BOOLEAN];
 	fmi1_boolean_t values[N_BOOLEAN];
 	fmi1_boolean_t values_ref[N_BOOLEAN];
@@ -593,7 +594,7 @@ int test_set_get_boolean()
  */
 int test_set_get_real()
 {
-	jm_status_enu_t status;
+	fmi1_status_t status;
 	fmi1_value_reference_t vrs[N_REAL];
 	fmi1_real_t values[N_REAL];
 	fmi1_real_t values_ref[N_REAL];
@@ -639,7 +640,7 @@ int test_set_get_real()
  */
 int test_terminate()
 {
-	jm_status_enu_t status;
+	fmi1_status_t status;
 
 	status = fmi1_capi_terminate(fmu);
 	if (status == fmi1_status_error || status == fmi1_status_fatal) {
@@ -728,6 +729,7 @@ int main(int argc, char *argv[])
 	printf("Everything seems to be ok!\n");
 	printf("\n");
 	do_exit(CTEST_RETURN_SUCCESS);
+	return 0;
 }
 
 

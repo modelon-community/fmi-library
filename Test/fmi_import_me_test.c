@@ -18,12 +18,8 @@
 #include <stdlib.h>
 #include <stdarg.h>
 
-#include <Common/fmi_import_context.h>
-#include <FMI1/fmi1_types.h>
-#include <FMI1/fmi1_enums.h>
-#include <FMI1/fmi1_functions.h>
-#include <FMI1/fmi1_import.h>
 #include "config_test.h"
+#include <fmilib.h>
 
 #define BUFFER 1000
 
@@ -142,7 +138,11 @@ int test_simulate_me(fmi1_import_t* fmu)
 			hcur = hdef;
 		}
 		tcur += hcur;
-
+		if(tcur > tend - hcur/1e16) {
+			tcur -= hcur;
+			hcur = (tend - tcur);
+			tcur = tend;				
+		}
 		/* Integrate a step */
 		fmistatus = fmi1_import_get_derivatives(fmu, states_der, n_states);
 		for (k = 0; k < n_states; k++) {
@@ -243,6 +243,8 @@ int main(int argc, char *argv[])
 	printf("Everything seems to be OK since you got this far=)!\n");
 
 	do_exit(CTEST_RETURN_SUCCESS);
+
+	return 0;
 }
 
 

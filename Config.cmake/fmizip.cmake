@@ -9,7 +9,7 @@ if(NOT FMIZIPDIR)
 	
     add_subdirectory(Config.cmake/Minizip)
 	
-	include_directories("${FMIZIPDIR}/include" "${THIRDPARTYLIBS}/Minizip/minizip" "${THIRDPARTYLIBS}/FMI" "${THIRDPARTYLIBS}/Zlib/zlib-1.2.6" "${FMILibrary_BINARY_DIR}/zlib")
+	include_directories("${FMIZIPDIR}/include" "${FMILIB_THIRDPARTYLIBS}/Minizip/minizip" "${FMILIB_THIRDPARTYLIBS}/FMI" "${FMILIB_THIRDPARTYLIBS}/Zlib/zlib-1.2.6" "${FMILibrary_BINARY_DIR}/zlib")
 
 set(FMIZIPSOURCE
   ${FMIZIPDIR}/src/fmi_zip_unzip.c
@@ -22,7 +22,7 @@ set(FMIZIPHEADERS
   ${FMIZIPDIR}/include/fmi_zip_zip.h
 )
 
-#include_directories("${THIRDPARTYLIBS}/zlib/lib/VS2005/win32")
+#include_directories("${FMILIB_THIRDPARTYLIBS}/zlib/lib/VS2005/win32")
 
 SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DZLIB_STATIC")
 

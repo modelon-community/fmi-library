@@ -580,7 +580,16 @@ fmiStatus fmi_do_step(fmiComponent c, fmiReal currentCommunicationPoint, fmiReal
 			} else {
 				hcur = hdef;
 			}
-			tcur += hcur;
+
+			{ 
+				double t_full = tcur + hcur;
+				if(t_full > tend) {
+					hcur = (tend - tcur);
+					tcur = tend;				
+				}
+				else
+					tcur = t_full;
+			}
 
 			/* Integrate a step */
 			fmistatus = fmi_get_derivatives(comp, states_der, N_STATES);

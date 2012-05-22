@@ -6,7 +6,7 @@ include(fmicapi)
 
 set(DOXYFILE_EXTRA_SOURCES "${DOXYFILE_EXTRA_SOURCES} \"${FMIIMPORTDIR}/include\"")
 
-include_directories("${FMIIMPORTDIR}" "${FMIIMPORTDIR}/include" "${THIRDPARTYLIBS}/FMI/")
+include_directories("${FMIIMPORTDIR}" "${FMIIMPORTDIR}/include" "${FMILIB_THIRDPARTYLIBS}/FMI/")
 set(FMIIMPORT_LIBRARIES fmiimport)
 
 set(FMIIMPORT_PUBHEADERS

@@ -61,6 +61,8 @@ void do_exit(int code)
 	exit(code);
 }
 
+jm_callbacks* callbacks = 0;
+
 /**
  * \brief Tests fmi1_capi_create_dllfmu
  *
@@ -69,7 +71,6 @@ int test_create_dllfmu()
 {
 	fmi1_callback_functions_t callBackFunctions;
 	fmi1_fmu_kind_enu_t standard = fmi1_fmu_kind_enu_cs_standalone;	
-	jm_callbacks* callbacks;
 
 	callbacks = calloc(1, sizeof(jm_callbacks));
 
@@ -101,12 +102,12 @@ int test_create_dllfmu()
  */
 int test_load_dll()
 {
-	jm_status_enu_t status;
+        jm_status_enu_t status;
 
 	printf("fmi1_capi_load_dll:                      ");
 	status = fmi1_capi_load_dll(fmu);
 	if (status == jm_status_error) {
-		printf("Error in fmi1_capi_load_dll: %s\n", "fmi1_capi_get_last_error(fmu)");
+		printf("Error in fmi1_capi_load_dll: %s\n", jm_get_last_error(callbacks));
 		do_exit(CTEST_RETURN_FAIL);;
 	} else {
 		printf("Success\n");
@@ -205,7 +206,7 @@ int test_instantiate_slave()
  */
 int test_initialize_slave()
 {
-	jm_status_enu_t status;
+        fmi1_status_t status;
 	fmi1_real_t tStart;
 	fmi1_real_t tStop;
 	fmi1_boolean_t StopTimeDefined;
@@ -230,7 +231,7 @@ int test_initialize_slave()
  */
 int test_set_debug_logging()
 {
-	jm_status_enu_t status;
+        fmi1_status_t status;
 	status = fmi1_capi_set_debug_logging(fmu, fmi1_true);
 	if (status == fmi1_status_error || status == fmi1_status_fatal) {
 		printf("fmi1_capi_set_debug_logging:             Failed\n");
@@ -247,7 +248,7 @@ int test_set_debug_logging()
  */
 int test_cancel_step()
 {
-	jm_status_enu_t status;
+        fmi1_status_t status;
 	status = fmi1_capi_cancel_step(fmu);
 	if (status == fmi1_status_error || status == fmi1_status_fatal) {
 		printf("fmi1_capi_cancel_step:                   Failed\n");
@@ -264,7 +265,7 @@ int test_cancel_step()
  */
 int test_do_step()
 {
-	jm_status_enu_t status;
+        fmi1_status_t status;
 	fmi1_real_t currentCommunicationPoint;
 	fmi1_real_t communicationStepSize; 
 	fmi1_boolean_t newStep;
@@ -288,7 +289,7 @@ int test_do_step()
  */
 int test_get_status()
 {
-	jm_status_enu_t status;
+        fmi1_status_t status;
 	fmi1_status_kind_t statuskind;
 	fmi1_status_t  statusvalue;
 
@@ -309,7 +310,7 @@ int test_get_status()
  */
 int test_get_real_status()
 {
-	jm_status_enu_t status;
+        fmi1_status_t status;
 	fmi1_status_kind_t statuskind = fmi1_last_successful_time;
 	fmi1_real_t real;
 
@@ -329,7 +330,7 @@ int test_get_real_status()
  */
 int test_get_integer_status()
 {
-	jm_status_enu_t status;
+        fmi1_status_t status;
 	fmi1_status_kind_t statuskind = fmi1_last_successful_time;
 	fmi1_integer_t integer;
 
@@ -349,7 +350,7 @@ int test_get_integer_status()
  */
 int test_get_boolean_status()
 {
-	jm_status_enu_t status;
+        fmi1_status_t status;
 	fmi1_status_kind_t statuskind = fmi1_last_successful_time;
 	fmi1_boolean_t boolean;
 
@@ -369,7 +370,7 @@ int test_get_boolean_status()
  */
 int test_get_string_status()
 {
-	jm_status_enu_t status;
+        fmi1_status_t status;
 	fmi1_status_kind_t statuskind = fmi1_pending_status;
 	fmi1_string_t string;
 
@@ -389,7 +390,7 @@ int test_get_string_status()
  */
 int test_set_get_string()
 {
-	jm_status_enu_t status;
+        fmi1_status_t status;
 	fmi1_value_reference_t vrs[N_STRING];
 	fmi1_string_t values[N_STRING];
 	fmi1_string_t values_ref[N_STRING];
@@ -434,7 +435,7 @@ int test_set_get_string()
  */
 int test_set_get_integer()
 {
-	jm_status_enu_t status;
+        fmi1_status_t status;
 	fmi1_value_reference_t vrs[N_INTEGER];
 	fmi1_integer_t values[N_INTEGER];
 	fmi1_integer_t values_ref[N_INTEGER];
@@ -479,7 +480,7 @@ int test_set_get_integer()
  */
 int test_set_get_boolean()
 {
-	jm_status_enu_t status;
+        fmi1_status_t status;
 	fmi1_value_reference_t vrs[N_BOOLEAN];
 	fmi1_boolean_t values[N_BOOLEAN];
 	fmi1_boolean_t values_ref[N_BOOLEAN];
@@ -524,7 +525,7 @@ int test_set_get_boolean()
  */
 int test_set_get_real()
 {
-	jm_status_enu_t status;
+        fmi1_status_t status;
 	fmi1_value_reference_t vrs[N_REAL];
 	fmi1_real_t values[N_REAL];
 	fmi1_real_t values_ref[N_REAL];
@@ -569,7 +570,7 @@ int test_set_get_real()
  */
 int test_reset_slave()
 {
-	jm_status_enu_t status;
+        fmi1_status_t status;
 	status = fmi1_capi_reset_slave(fmu);
 	if (status == fmi1_status_error || status == fmi1_status_fatal) {
 		printf("fmi1_capi_reset_slave:                   Failed\n");
@@ -586,7 +587,7 @@ int test_reset_slave()
  */
 int test_set_real_input_derivatives()
 {
-	jm_status_enu_t status;
+        fmi1_status_t status;
 	fmi1_value_reference_t	vrs		[N_INPUT_REAL * N_INPUT_REAL_MAX_ORDER];
 	fmi1_real_t				values	[N_INPUT_REAL * N_INPUT_REAL_MAX_ORDER];
 	fmi1_integer_t			order	[N_INPUT_REAL * N_INPUT_REAL_MAX_ORDER];
@@ -617,7 +618,7 @@ int test_set_real_input_derivatives()
  */
 int test_get_real_output_derivatives()
 {
-	jm_status_enu_t status;
+        fmi1_status_t status;
 	fmi1_value_reference_t	vrs		[N_OUTPUT_REAL * N_OUTPUT_REAL_MAX_ORDER];
 	fmi1_real_t				values	[N_OUTPUT_REAL * N_OUTPUT_REAL_MAX_ORDER];
 	fmi1_integer_t			order	[N_OUTPUT_REAL * N_OUTPUT_REAL_MAX_ORDER];
@@ -664,7 +665,7 @@ int test_get_real_output_derivatives()
  */
 int test_terminate_slave()
 {
-	jm_status_enu_t status;
+        fmi1_status_t status;
 	status = fmi1_capi_terminate_slave(fmu);
 	if (status == fmi1_status_error || status == fmi1_status_fatal) {
 		printf("fmi1_capi_terminate_slave:               Failed\n");
@@ -753,6 +754,7 @@ int main(int argc, char *argv[])
 	printf("Everything seems to be ok!\n");
 	printf("\n");
 	do_exit(CTEST_RETURN_SUCCESS);
+        return 0;
 }
 
 

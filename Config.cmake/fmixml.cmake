@@ -4,7 +4,7 @@ include(jmutil)
 
 set(DOXYFILE_EXTRA_SOURCES "${DOXYFILE_EXTRA_SOURCES} \"${FMIXMLDIR}/include\"")
 
-include_directories("${FMIXMLDIR}/include" "${THIRDPARTYLIBS}/FMI/")
+include_directories("${FMIXMLDIR}/include" "${FMILIB_THIRDPARTYLIBS}/FMI/")
 set(FMIXML_LIBRARIES fmixml)
 
 set(FMIXMLHEADERS
@@ -42,44 +42,74 @@ set(FMIXMLSOURCE
 	src/Common/fmi_xml_context.c
 )
 
-#message(STATUS "Looking for installed expat library")
-#find_package (EXPAT)
-
-if(NOT EXPAT_FOUND)
-  debug_message("Adding expat as sub-project")
-  include_directories(${CMAKE_BINARY_DIR}/Expat)
-  option(BUILD_tools OFF )
-  option(BUILD_examples OFF )
-  option(BUILD_tests OFF )
-  option(BUILD_shared OFF )
-  option(XML_DTD OFF)
-  option(XML_NS OFF)
-  mark_as_advanced(FORCE BUILD_tools BUILD_examples BUILD_tests BUILD_shared XML_DTD XML_NS)
-  add_subdirectory(${THIRDPARTYLIBS}/Expat/expat-2.0.1 Expat)
- 
-	set(EXPAT_INCLUDE_DIRS "${THIRDPARTYLIBS}/Expat/expat-2.0.1/lib")
-	set(EXPAT_FOUND true FORCE)
-    set(EXPAT_LIBRARIES expat)
-				
-endif(NOT EXPAT_FOUND)
-
-if(EXPAT_FOUND)
-    include_directories(${EXPAT_INCLUDE_DIRS})
-else(EXPAT_FOUND)
-     message(FATAL_ERROR "No expat library for this platform")
-endif(EXPAT_FOUND)
-
-include_directories("${THIRDPARTYLIBS}/FMI/")
-
 SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DXML_STATIC -DFMI_XML_QUERY")
+
+include(ExternalProject)
+
+set(EXPAT_SETTINGS
+		-DBUILD_tools:BOOLEAN=OFF
+		-DBUILD_examples:BOOLEAN=OFF
+		-DBUILD_tests:BOOLEAN=OFF
+		-DBUILD_shared:BOOLEAN=OFF
+		-DXML_DTD:BOOLEAN=OFF
+		-DXML_NS:BOOLEAN=OFF
+		-DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
+		-DCMAKE_C_FLAGS:STRING=${CMAKE_C_FLAGS}
+		-DCMAKE_C_FLAGS_DEBUG:STRING=${CMAKE_C_FLAGS_DEBUG}
+		-DCMAKE_C_FLAGS_RELEASE:STRING=${CMAKE_C_FLAGS_RELEASE}
+		-DCMAKE_C_FLAGS_MINSIZEREL:STRING=${CMAKE_C_FLAGS_MINSIZEREL}
+		-DCMAKE_C_FLAGS_RELWITHDEBINFO:STRING=${CMAKE_C_FLAGS_RELWITHDEBINFO}
+		-DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_BINARY_DIR}/ExpatInst
+)
+
+ExternalProject_Add(
+	expatex
+	PREFIX "${FMILIB_THIRDPARTYLIBS}/Expat/expat-2.0.1"
+	SOURCE_DIR "${FMILIB_THIRDPARTYLIBS}/Expat/expat-2.0.1"
+	CMAKE_CACHE_ARGS ${EXPAT_SETTINGS}
+	BINARY_DIR ${CMAKE_BINARY_DIR}/ExpatEx
+	INSTALL_DIR ${CMAKE_BINARY_DIR}/ExpatEx/install
+	TMP_DIR     ${CMAKE_BINARY_DIR}/ExpatEx/tmp
+    STAMP_DIR   ${CMAKE_BINARY_DIR}/ExpatEx/stamp
+)
+
+ExternalProject_Add_Step(
+	expatex dependent_reconfigure
+	DEPENDEES configure
+	DEPENDERS build
+	COMMAND ${CMAKE_COMMAND} -E echo "Running:  ${CMAKE_COMMAND} ${EXPAT_SETTINGS} ${FMILIB_THIRDPARTYLIBS}/Expat/expat-2.0.1"
+	COMMAND ${CMAKE_COMMAND} ${EXPAT_SETTINGS} "${FMILIB_THIRDPARTYLIBS}/Expat/expat-2.0.1"
+	DEPENDS ${CMAKE_BINARY_DIR}/CMakeCache.txt
+	WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/ExpatEx
+)
+
+add_dependencies(expatex ${CMAKE_BINARY_DIR}/CMakeCache.txt)
+  
+set(expatlib "${CMAKE_BINARY_DIR}/ExpatEx/${CMAKE_CFG_INTDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}expat${CMAKE_STATIC_LIBRARY_SUFFIX}")
+  
+add_library(expat STATIC IMPORTED)
+
+set_target_properties(
+	expat PROPERTIES 
+		IMPORTED_LOCATION "${expatlib}"
+)
+
+if(FMILIB_INSTALL_SUBLIBS)
+	install(FILES "${expatlib}"	DESTINATION lib)
+endif()
+
+set(EXPAT_INCLUDE_DIRS "${FMILIB_THIRDPARTYLIBS}/Expat/expat-2.0.1/lib")
+include_directories("${EXPAT_INCLUDE_DIRS}" "${FMILIB_THIRDPARTYLIBS}/FMI/")
 
 PREFIXLIST(FMIXMLSOURCE  ${FMIXMLDIR}/)
 PREFIXLIST(FMIXMLHEADERS ${FMIXMLDIR}/)
 
-message(STATUS "adding fmixml")
+debug_message(STATUS "adding fmixml")
 
 add_library(fmixml ${FMILIBKIND} ${FMIXMLSOURCE} ${FMIXMLHEADERS})
 
-target_link_libraries(fmixml ${JMUTIL_LIBRARIES} ${EXPAT_LIBRARIES})
+add_dependencies(fmixml expatex)
+
+target_link_libraries(fmixml ${JMUTIL_LIBRARIES} expat)
 
 endif(NOT FMIXMLDIR)

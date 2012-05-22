@@ -176,11 +176,17 @@ endfunction(compress_fmu)
 #function(compress_fmu OUTPUT_FOLDER MODEL_IDENTIFIER FILE_NAME_CS_ME_EXT TARGET_NAME XML_PATH SHARED_LIBRARY_PATH)
 compress_fmu("${TEST_OUTPUT_FOLDER}" "${FMU_DUMMY_ME_MODEL_IDENTIFIER}" "me" "fmu1_dll_me" "${XML_ME_PATH}" "${SHARED_LIBRARY_ME_PATH}")
 compress_fmu("${TEST_OUTPUT_FOLDER}" "${FMU_DUMMY_CS_MODEL_IDENTIFIER}" "cs" "fmu1_dll_cs" "${XML_CS_PATH}" "${SHARED_LIBRARY_CS_PATH}")
+
 set(FMILIBFORTEST fmilib)
-option(FMILIB_LINK_TEST_TO_SHAREDLIB "Link the tests to fmilib_shared instead of fmilib" ON)
-if(FMILIB_LINK_TEST_TO_SHAREDLIB)
+
+if(FMILIB_BUILD_SHARED_LIB AND (FMILIB_LINK_TEST_TO_SHAREDLIB OR NOT FMILIB_BUILD_STATIC_LIB))
 	set(FMILIBFORTEST fmilib_shared)
+	if(CMAKE_COMPILER_IS_GNUCC)
+		set(FMILIBFORTEST ${FMILIBFORTEST} jmutils)
+	endif()
 endif()
+
+message(STATUS "Tests will be linked with ${FMILIBFORTEST}"  )
 
 add_executable (fmi_import_xml_test ${RTTESTDIR}/fmi_import_xml_test.cc )
 target_link_libraries (fmi_import_xml_test  ${FMILIBFORTEST}  )

@@ -17,6 +17,8 @@
 #ifndef FMI1_ENUMS_H_
 #define FMI1_ENUMS_H_
 
+#include <config_fmilib.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -41,7 +43,7 @@ typedef enum fmi1_variable_naming_convension_enu_t
 } fmi1_variable_naming_convension_enu_t;
 
 /** \brief Convert a #fmi1_variable_naming_convension_enu_t constant into string */
-const char* fmi1_naming_convention_to_string(fmi1_variable_naming_convension_enu_t convention);
+FMILIB_EXPORT const char* fmi1_naming_convention_to_string(fmi1_variable_naming_convension_enu_t convention);
 
 /** FMU 1.0 kinds */
 typedef enum fmi1_fmu_kind_enu_t
@@ -52,7 +54,7 @@ typedef enum fmi1_fmu_kind_enu_t
 } fmi1_fmu_kind_enu_t;
 
 /** \brief Convert a #fmi1_fmu_kind_enu_t constant into string  */
-const char* fmi1_fmu_kind_to_string(fmi1_fmu_kind_enu_t kind);
+FMILIB_EXPORT const char* fmi1_fmu_kind_to_string(fmi1_fmu_kind_enu_t kind);
 
 /** Variability property for variables */
 typedef enum fmi1_variability_enu_t {
@@ -63,7 +65,7 @@ typedef enum fmi1_variability_enu_t {
 } fmi1_variability_enu_t;
 
 /** \brief Convert a #fmi1_variability_enu_t constant into string  */
-const char* fmi1_variability_to_string(fmi1_variability_enu_t v);
+FMILIB_EXPORT const char* fmi1_variability_to_string(fmi1_variability_enu_t v);
 
 /** Causality property for variables */
 typedef enum fmi1_causality_enu_t {
@@ -74,7 +76,7 @@ typedef enum fmi1_causality_enu_t {
 } fmi1_causality_enu_t;
 
 /** \brief Convert a #fmi1_causality_enu_t constant into string  */
-const char* fmi1_causality_to_string(fmi1_causality_enu_t c);
+FMILIB_EXPORT const char* fmi1_causality_to_string(fmi1_causality_enu_t c);
 
 /** Alias property for variables */
 typedef enum fmi1_variable_alias_kind_enu_t {
@@ -94,7 +96,7 @@ typedef enum fmi1_base_type_enu_t
 } fmi1_base_type_enu_t;
 
 /* Convert base type constant to string */
-const char* fmi1_base_type_to_string(fmi1_base_type_enu_t bt);
+FMILIB_EXPORT const char* fmi1_base_type_to_string(fmi1_base_type_enu_t bt);
 
 /**	
  @}

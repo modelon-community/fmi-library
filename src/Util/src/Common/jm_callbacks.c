@@ -26,8 +26,10 @@ void jm_default_logger(jm_callbacks* c, jm_string module, jm_log_level_enu_t log
 	case jm_log_level_all:
 	case jm_log_level_info:
 		fprintf(stdout, "[INFO][%s]%s\n",module, message);
+		break;
 	case jm_log_level_warning:
 		fprintf(stdout, "[WARNING][%s]%s\n",module, message);
+		break;
 	default:
 		fprintf(stdout, "[ERROR][%s]%s\n",module, message);
 	}

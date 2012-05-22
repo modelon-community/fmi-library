@@ -58,6 +58,8 @@ IF(WIN32 OR CYGWIN OR APPLE OR WITH_PIC OR DISABLE_SHARED OR NOT CMAKE_SHARED_LI
 ENDIF()
 
 #INCLUDE(${MYSQL_CMAKE_SCRIPT_DIR}/cmake_parse_arguments.cmake)
+include(CMakeParseArguments)
+
 # CREATE_EXPORT_FILE (VAR target api_functions)
 # Internal macro, used to create source file for shared libraries that 
 # otherwise consists entirely of "convenience" libraries. On Windows, 

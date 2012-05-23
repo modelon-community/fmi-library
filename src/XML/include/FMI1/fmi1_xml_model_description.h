@@ -26,6 +26,7 @@
 #include <stddef.h>
 #include <Common/jm_callbacks.h>
 #include <Common/jm_named_ptr.h>
+#include <Common/fmi_xml_context.h>
 #include <FMI1/fmi1_types.h>
 #include <FMI1/fmi1_enums.h>
 
@@ -46,8 +47,6 @@ extern "C" {
   \brief All the structures used in the interfaces are intended to
    be treated as opaque objects by the client code.
   @{  */
-/** ModelDescription is the entry point for the package*/
-typedef struct fmi1_xml_model_description_t fmi1_xml_model_description_t;
 
 /**\name Vendor annotation supporting structures
  * @{ 

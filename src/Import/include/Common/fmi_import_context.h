@@ -25,7 +25,9 @@
 #include <stddef.h>
 #include <config_fmilib.h>
 #include <Common/jm_callbacks.h>
-#include <Common/fmi_xml_context.h>
+#include <FMI1/fmi1_types.h>
+#include <FMI1/fmi1_enums.h>
+#include <Common/fmi_xml_context.h> 
 
 #ifdef __cplusplus
 extern "C" {
@@ -39,7 +41,7 @@ extern "C" {
 /** \brief FMI version independent library context. 
 	Opaque struct returned from fmi_import_allocate_context()
 */
-typedef fmi_xml_context_t fmi_import_context_t ;
+typedef struct fmi_xml_context_t fmi_import_context_t ;
 
 /** \brief Create fmi_import_context_t structure.
 	@param callbacks - a pointer to the library callbacks for memory management and logging. May be NULL if defaults are utilized.

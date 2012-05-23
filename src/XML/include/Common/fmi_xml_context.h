@@ -26,7 +26,7 @@
 
 #include <stddef.h>
 #include <Common/jm_callbacks.h>
-#include <FMI1/fmi1_xml_model_description.h>
+/* #include <FMI1/fmi1_xml_model_description.h> */
 
 #ifdef __cplusplus
 extern "C" {
@@ -58,6 +58,9 @@ typedef enum
 
 /** \brief Parse XML file to identify FMI standard version (only beginning of the file is parsed). */
 fmi_version_enu_t fmi_xml_get_fmi_version( fmi_xml_context_t*, const char* fileName);
+
+/** ModelDescription is the entry point for the package*/
+typedef struct fmi1_xml_model_description_t fmi1_xml_model_description_t;
 
 /** \brief Parse XML file and create model description object.
 

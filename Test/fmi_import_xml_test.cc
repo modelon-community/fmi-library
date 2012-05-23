@@ -17,6 +17,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
+#include <assert.h>
 #include <time.h>
 
 #include "config_test.h"

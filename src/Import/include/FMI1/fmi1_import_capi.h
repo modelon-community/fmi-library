@@ -24,7 +24,7 @@ extern "C" {
 #include <Common/jm_callbacks.h>
 #include <Common/fmi_import_util.h>
 #include <Common/fmi_import_context.h>
-#include <FMI1/fmi1_xml_model_description.h>
+/* #include <FMI1/fmi1_xml_model_description.h>*/
 
 #include <FMI1/fmi1_types.h>
 #include <FMI1/fmi1_functions.h>

@@ -23,7 +23,7 @@
 #ifndef FMI1_IMPORT_VARIABLE_H_
 #define FMI1_IMPORT_VARIABLE_H_
 
-#include <FMI1/fmi1_xml_variable.h>
+/* #include <FMI1/fmi1_xml_variable.h> */
 
 #include "fmi1_import.h"
 #include "fmi1_import_type.h"

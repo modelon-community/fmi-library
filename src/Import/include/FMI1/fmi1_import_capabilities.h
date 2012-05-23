@@ -21,7 +21,7 @@
 extern "C" {
 #endif
 
-#include "FMI1/fmi1_import.h"
+#include "fmi1_import.h"
 	/**
 		\file fmi1_import_capabilities.h
 		Functions to retrieve capability flags.

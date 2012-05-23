@@ -26,7 +26,7 @@
 #include <Common/jm_callbacks.h>
 #include <Common/fmi_import_util.h>
 #include <Common/fmi_import_context.h>
-#include <FMI1/fmi1_xml_model_description.h>
+/* #include <FMI1/fmi1_xml_model_description.h> */
 
 #include <FMI1/fmi1_types.h>
 #include <FMI1/fmi1_functions.h>
@@ -47,25 +47,25 @@ extern "C" {
 */
 /**@{ */
 	/** Opaque list of vendor annotations. */
-typedef fmi1_xml_vendor_list_t fmi1_import_vendor_list_t;
+typedef struct fmi1_xml_vendor_list_t fmi1_import_vendor_list_t;
 	/** Opaque vendor object. */
-typedef fmi1_xml_vendor_t fmi1_import_vendor_t;
+typedef struct fmi1_xml_vendor_t fmi1_import_vendor_t;
 	/** Opaque annotation object. */
-typedef fmi1_xml_annotation_t fmi1_import_annotation_t;
+typedef struct fmi1_xml_annotation_t fmi1_import_annotation_t;
 /**@} */
 
 /**@name   Type definitions supporting structures*/
 /**@{ */
 /** Opaque type definition object. */
-typedef fmi1_xml_real_typedef_t fmi1_import_real_typedef_t;
+typedef struct fmi1_xml_real_typedef_t fmi1_import_real_typedef_t;
 /** Opaque integer type definition object. */
-typedef fmi1_xml_integer_typedef_t fmi1_import_integer_typedef_t;
+typedef struct fmi1_xml_integer_typedef_t fmi1_import_integer_typedef_t;
 /** Opaque enumeration type definition object. */
-typedef fmi1_xml_enumeration_typedef_t fmi1_import_enumeration_typedef_t;
+typedef struct fmi1_xml_enumeration_typedef_t fmi1_import_enumeration_typedef_t;
 /** Opaque general variable type definition object. */
-typedef fmi1_xml_variable_typedef_t fmi1_import_variable_typedef_t;
+typedef struct fmi1_xml_variable_typedef_t fmi1_import_variable_typedef_t;
 /** Opaque list of the type definitions in the model */
-typedef fmi1_xml_type_definitions_t fmi1_import_type_definitions_t;
+typedef struct fmi1_xml_type_definitions_t fmi1_import_type_definitions_t;
 /**@} */
 
 /**@name Scalar variable types */
@@ -75,17 +75,17 @@ typedef fmi1_xml_type_definitions_t fmi1_import_type_definitions_t;
 * This type is convenient to unify all the variable list operations. 
 * 	However, typed variables are needed to support specific attributes.
 */
-typedef fmi1_xml_variable_t fmi1_import_variable_t;
+typedef struct fmi1_xml_variable_t fmi1_import_variable_t;
 /** \brief  Opaque real variable */
-typedef fmi1_xml_real_variable_t fmi1_import_real_variable_t;
+typedef struct fmi1_xml_real_variable_t fmi1_import_real_variable_t;
 /** \brief Opaque integer variable */
-typedef fmi1_xml_integer_variable_t fmi1_import_integer_variable_t;
+typedef struct fmi1_xml_integer_variable_t fmi1_import_integer_variable_t;
 /** \brief Opaque string variable */
-typedef fmi1_xml_string_variable_t fmi1_import_string_variable_t;
+typedef struct fmi1_xml_string_variable_t fmi1_import_string_variable_t;
 /** \brief Opaque enumeration variable */
-typedef fmi1_xml_enum_variable_t fmi1_import_enum_variable_t;
+typedef struct fmi1_xml_enum_variable_t fmi1_import_enum_variable_t;
 /** \brief Opaque boolean variable */
-typedef fmi1_xml_bool_variable_t fmi1_import_bool_variable_t;
+typedef struct fmi1_xml_bool_variable_t fmi1_import_bool_variable_t;
 /** \brief List of variables */
 typedef struct fmi1_import_variable_list_t fmi1_import_variable_list_t;
 /**@} */
@@ -93,17 +93,17 @@ typedef struct fmi1_import_variable_list_t fmi1_import_variable_list_t;
 /**\name Structures encapsulating unit information */
 /**@{ */
 /** A variable unit defined with a unit defition */
-typedef fmi1_xml_unit_t fmi1_import_unit_t;
+typedef struct fmi1_xml_unit_t fmi1_import_unit_t;
 /** A display unit */
-typedef fmi1_xml_display_unit_t fmi1_import_display_unit_t;
+typedef struct fmi1_xml_display_unit_t fmi1_import_display_unit_t;
 /** The list of all the unit definitions in the model */
-typedef fmi1_xml_unit_definitions_t fmi1_import_unit_definitions_t;
+typedef struct fmi1_xml_unit_definitions_t fmi1_import_unit_definitions_t;
 /**@} */
 
 /**\name FMU capabilities flags */
 /**@{ */
 /** A container for all the capability flags */
-typedef fmi1_xml_capabilities_t fmi1_import_capabilities_t;
+typedef struct fmi1_xml_capabilities_t fmi1_import_capabilities_t;
 /** @} */
 /**	\addtogroup fmi1_import_init Constuction, destruction and error handling
  * 	\addtogroup fmi1_import_gen General information retrieval

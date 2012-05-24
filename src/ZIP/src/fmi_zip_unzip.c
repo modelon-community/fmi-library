@@ -18,10 +18,21 @@
 extern "C" {
 #endif
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <Common/jm_types.h>
 #include <Common/jm_callbacks.h>
 #include "miniunz.h"
+
+#ifdef WIN32
+#include <direct.h>
+#define get_cd _getcwd
+#define set_cd _chdir	
+#else
+#include <unistd.h>
+#define get_cd getcwd
+#define set_cd chdir
+#endif
 
 jm_status_enu_t fmi_zip_unzip(const char* zip_file_path, const char* output_folder, jm_callbacks* callbacks)
 {
@@ -36,16 +47,40 @@ jm_status_enu_t fmi_zip_unzip(const char* zip_file_path, const char* output_fold
 	  -p  extract crypted file using password
 	*/
 
+	/* A call to minunz may change the current directory and therefore we must change it back */
+	char cd[FILENAME_MAX];
+
 	int argc = 6;
 	const char *argv[6];
+	int status;
+
 	argv[0]="miniunz";
 	argv[1]="-x";
 	argv[2]="-o";
 	argv[3]=zip_file_path;
 	argv[4]="-d";
 	argv[5]=output_folder;
+	
 
-	if (miniunz(argc, (char**)argv) == 0) {
+	/* Temporary save the current directory */
+	if (!get_cd(cd, sizeof(cd) / sizeof(char)))
+	{
+		jm_log(callbacks, "UNZIP", jm_log_level_error, "Could not get Current Directory");
+		return jm_status_error;
+	}
+
+	/* Unzip */
+	status = miniunz(argc, (char**)argv);
+
+	/* Reset the current directory */
+	if (!set_cd(cd))
+	{
+		jm_log(callbacks, "UNZIP", jm_log_level_warning, "Could not change back Current Directory");
+		return jm_status_warning;
+	}
+
+	/* Return error status */
+	if (status == 0) {
 		return jm_status_success;
 	} else {
 		return jm_status_error;	

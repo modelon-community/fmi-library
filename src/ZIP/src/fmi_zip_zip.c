@@ -18,18 +18,39 @@
 extern "C" {
 #endif
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <Common/jm_types.h>
 #include <Common/jm_callbacks.h>
 #include "minizip.h"
 
+#ifdef WIN32
+#include <direct.h>
+#define get_cd _getcwd
+#define set_cd _chdir	
+#else
+#include <unistd.h>
+#define get_cd getcwd
+#define set_cd chdir
+#endif
+
 jm_status_enu_t fmi_zip_zip(const char* zip_file_path, int n_files_to_zip, const char** files_to_zip, jm_callbacks* callbacks)
 {
+	/* A call to minizip may change the current directory and therefore we must change it back */
+	char cd[FILENAME_MAX];
+
 #define N_BASIC_ARGS 4
 	int argc;
 	char** argv;
 	int k;
 	int status;
+
+	/* Temporary save the current directory */
+	if (!get_cd(cd, sizeof(cd) / sizeof(char)))
+	{
+		jm_log(callbacks, "UNZIP", jm_log_level_error, "Could not get Current Directory");
+		return jm_status_error;
+	}
 
 	argc = N_BASIC_ARGS + n_files_to_zip;
 	argv = callbacks->calloc(sizeof(char*), argc);	
@@ -61,11 +82,18 @@ jm_status_enu_t fmi_zip_zip(const char* zip_file_path, int n_files_to_zip, const
 		argv[N_BASIC_ARGS + k] = (char*)files_to_zip[k];
 	}
 
-	/* Unzip */
+	/* Zip */
 	status = minizip(argc, (char**)argv);
 
 	/* Free allocated memory */
 	callbacks->free(argv);
+
+	/* Reset the current directory */
+	if (!set_cd(cd))
+	{
+		jm_log(callbacks, "UNZIP", jm_log_level_warning, "Could not change back Current Directory");
+		return jm_status_warning;
+	}
 
 	/* Return error status */
 	if (status == 0) {

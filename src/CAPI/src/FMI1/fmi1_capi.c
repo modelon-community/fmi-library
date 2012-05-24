@@ -49,19 +49,20 @@ static jm_status_enu_t fmi1_capi_get_fcn(fmi1_capi_t* fmu, const char* function_
 /* Load FMI functions from DLL macro */
 #define LOAD_DLL_FUNCTION(FMIFUNCTION) if (fmi1_capi_get_fcn(fmu, #FMIFUNCTION, (jm_dll_function_ptr*)&fmu->FMIFUNCTION) == jm_status_error) { \
 	jm_log(fmu->callbacks, LOGGER_MODULE_NAME, jm_log_level_error, "Could not load the FMI function '"#FMIFUNCTION"'. %s", jm_portability_get_last_dll_error()); \
-	return jm_status_error; \
+	jm_status = jm_status_error; \
 }
 
 
 /* Load FMI 1.0 Co-Simulation functions */
 static jm_status_enu_t fmi1_capi_load_cs_fcn(fmi1_capi_t* fmu)
 {
+	jm_status_enu_t jm_status = jm_status_success;
+
 	/* Workaround for Dymola 2012 and SimulationX 3.x */
 	if (fmi1_capi_get_fcn(fmu, "fmiGetTypesPlatform",(jm_dll_function_ptr*)&fmu->fmiGetTypesPlatform) == jm_status_error) {
-		if (fmi1_capi_get_fcn(fmu, "fmiGetModelTypesPlatform", (jm_dll_function_ptr*)&fmu->fmiGetTypesPlatform) == jm_status_error) {
-			jm_log(fmu->callbacks, LOGGER_MODULE_NAME, jm_log_level_error, "Could not load any of the FMI functions 'fmiGetModelTypesPlatform' or 'fmiGetTypesPlatform'. %s", jm_portability_get_last_dll_error());
-			return jm_status_error;
-		}
+		jm_log(fmu->callbacks, LOGGER_MODULE_NAME, jm_log_level_warning, "Could not load the FMI function 'fmiGetTypesPlatform'. %s. Trying to load fmiGetModelTypesPlatform instead.", jm_portability_get_last_dll_error());
+		jm_status = jm_status_warning;
+		LOAD_DLL_FUNCTION(fmiGetModelTypesPlatform);
 	}
 
 	LOAD_DLL_FUNCTION(fmiInstantiateSlave);
@@ -89,12 +90,14 @@ static jm_status_enu_t fmi1_capi_load_cs_fcn(fmi1_capi_t* fmu)
 	LOAD_DLL_FUNCTION(fmiGetInteger);
 	LOAD_DLL_FUNCTION(fmiGetBoolean);
 	LOAD_DLL_FUNCTION(fmiGetString);
-	return jm_status_success; 
+	return jm_status; 
 }
 
 /* Load FMI 1.0 Model Exchange functions */
 static jm_status_enu_t fmi1_capi_load_me_fcn(fmi1_capi_t* fmu)
 {
+	jm_status_enu_t jm_status = jm_status_success;
+
 	LOAD_DLL_FUNCTION(fmiGetModelTypesPlatform);
 	LOAD_DLL_FUNCTION(fmiInstantiateModel);
 	LOAD_DLL_FUNCTION(fmiFreeModelInstance);
@@ -120,7 +123,8 @@ static jm_status_enu_t fmi1_capi_load_me_fcn(fmi1_capi_t* fmu)
 	LOAD_DLL_FUNCTION(fmiGetInteger);
 	LOAD_DLL_FUNCTION(fmiGetBoolean);
 	LOAD_DLL_FUNCTION(fmiGetString);
-	return jm_status_success; 
+
+	return jm_status; 
 }
 
 void fmi1_capi_destroy_dllfmu(fmi1_capi_t* fmu)

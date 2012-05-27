@@ -89,7 +89,7 @@ jm_status_enu_t fmi_zip_zip(const char* zip_file_path, int n_files_to_zip, const
 	callbacks->free(argv);
 
 	/* Reset the current directory */
-	if (!set_cd(cd))
+	if (set_cd(cd))
 	{
 		jm_log(callbacks, "UNZIP", jm_log_level_warning, "Could not change back Current Directory");
 		return jm_status_warning;

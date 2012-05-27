@@ -28,6 +28,6 @@ SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DZLIB_STATIC")
 
 add_library(fmizip ${FMILIBKIND} ${FMIZIPSOURCE} ${FMIZIPHEADERS})
 
-target_link_libraries(fmizip minizip)
+target_link_libraries(fmizip minizip jmutils)
 
 endif(NOT FMIZIPDIR)

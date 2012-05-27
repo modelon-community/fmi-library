@@ -73,7 +73,7 @@ jm_status_enu_t fmi_zip_unzip(const char* zip_file_path, const char* output_fold
 	status = miniunz(argc, (char**)argv);
 
 	/* Reset the current directory */
-	if (!set_cd(cd))
+	if (set_cd(cd))
 	{
 		jm_log(callbacks, "UNZIP", jm_log_level_warning, "Could not change back Current Directory");
 		return jm_status_warning;

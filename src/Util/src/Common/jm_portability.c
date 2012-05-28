@@ -19,6 +19,16 @@
 #include "Common/jm_types.h"
 #include "Common/jm_portability.h"
 
+#ifdef WIN32
+#include <direct.h>
+#define get_current_working_directory _getcwd
+#define set_current_working_directory _chdir	
+#else
+#include <unistd.h>
+#define get_current_working_directory getcwd
+#define set_current_working_directory chdir
+#endif
+
 #define JM_PORTABILITY_DLL_ERROR_MESSAGE_SIZE 1000
 
 DLL_HANDLE jm_portability_load_dll_handle(const char* dll_file_path)
@@ -75,4 +85,23 @@ char* jm_portability_get_last_dll_error(void)
 	sprintf(err_str, "%s", dlerror());
 #endif	
 	return err_str;
+}
+
+
+jm_status_enu_t jm_portability_get_current_working_directory(char* buffer, size_t len)
+{
+	if (get_current_working_directory(buffer, len) == NULL) {
+		return jm_status_error;
+	} else {
+		return jm_status_success;
+	}
+}
+
+jm_status_enu_t jm_portability_set_current_working_directory(char* cwd)
+{
+	if (set_current_working_directory(cwd) == 0) {
+		return jm_status_success;
+	} else {
+		return jm_status_error;
+	}
 }

@@ -37,7 +37,7 @@ fmi_version_enu_t fmi_import_get_fmi_version( fmi_import_context_t* c, const cha
 	fmi_version_enu_t ret = fmi_version_unknown_enu;
 	jm_status_enu_t status= fmi_zip_unzip(fileName, dirName, c->callbacks);
 	char* mdpath;
-	if(status != jm_status_success) return fmi_version_unknown_enu;
+	if(status == jm_status_error) return fmi_version_unknown_enu;
 	mdpath = fmi_import_get_model_description_path(dirName, c->callbacks);
 	ret = fmi_xml_get_fmi_version(c, mdpath);
 	c->callbacks->free(mdpath);

@@ -46,8 +46,7 @@ jm_status_enu_t fmi_zip_zip(const char* zip_file_path, int n_files_to_zip, const
 	int status;
 
 	/* Temporary save the current directory */
-	if (!get_cd(cd, sizeof(cd) / sizeof(char)))
-	{
+	if (jm_portability_get_current_working_directory(cd, sizeof(cd) / sizeof(char)) == jm_status_error) {
 		jm_log(callbacks, "UNZIP", jm_log_level_error, "Could not get Current Directory");
 		return jm_status_error;
 	}
@@ -89,8 +88,7 @@ jm_status_enu_t fmi_zip_zip(const char* zip_file_path, int n_files_to_zip, const
 	callbacks->free(argv);
 
 	/* Reset the current directory */
-	if (set_cd(cd))
-	{
+	if (jm_portability_set_current_working_directory(cd) == jm_status_error) {
 		jm_log(callbacks, "UNZIP", jm_log_level_warning, "Could not change back Current Directory");
 		return jm_status_warning;
 	}

@@ -24,16 +24,6 @@ extern "C" {
 #include <Common/jm_callbacks.h>
 #include "miniunz.h"
 
-#ifdef WIN32
-#include <direct.h>
-#define get_cd _getcwd
-#define set_cd _chdir	
-#else
-#include <unistd.h>
-#define get_cd getcwd
-#define set_cd chdir
-#endif
-
 jm_status_enu_t fmi_zip_unzip(const char* zip_file_path, const char* output_folder, jm_callbacks* callbacks)
 {
 	/*
@@ -63,8 +53,7 @@ jm_status_enu_t fmi_zip_unzip(const char* zip_file_path, const char* output_fold
 	
 
 	/* Temporary save the current directory */
-	if (!get_cd(cd, sizeof(cd) / sizeof(char)))
-	{
+	if (jm_portability_get_current_working_directory(cd, sizeof(cd) / sizeof(char)) == jm_status_error) {
 		jm_log(callbacks, "UNZIP", jm_log_level_error, "Could not get Current Directory");
 		return jm_status_error;
 	}
@@ -73,8 +62,7 @@ jm_status_enu_t fmi_zip_unzip(const char* zip_file_path, const char* output_fold
 	status = miniunz(argc, (char**)argv);
 
 	/* Reset the current directory */
-	if (set_cd(cd))
-	{
+	if (jm_portability_set_current_working_directory(cd) == jm_status_error) {
 		jm_log(callbacks, "UNZIP", jm_log_level_warning, "Could not change back Current Directory");
 		return jm_status_warning;
 	}

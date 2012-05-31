@@ -60,6 +60,8 @@
 	- FMILIB_BUILD_SHARED_LIB Build the library as shared (dll/so/dylib).
 	  'fmilib_shared' may be used for dynamic linking.
 
+	- FMILIB_FMI_PLATFORM - FMI platform defines the subdirectory within FMU where binary is located.
+
 	- FMILIB_BUILD_FOR_SHARED_LIBS  The static library 'fmilib' can be linked into shared libraries.
 
 	  On LINUX position independent code (-fPIC) must be used on all files to be linked into a shared 

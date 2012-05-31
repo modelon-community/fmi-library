@@ -160,11 +160,45 @@ else(WIN32)
 	set(FMI_FILE_SEP "/")
 endif(WIN32)
 
+
+
+set(FMILIB_FMI_PLATFORM_DOC "FMI platform defines the subdirectory within FMU where binary is located")
+set(FMILIB_FMI_PLATFORM ”unknown” CACHE STRING ${FMILIB_FMI_PLATFORM_DOC})
+if(FMILIB_FMI_PLATFORM MATCHES ”unknown”)
+	if(CMAKE_HOST_WIN32) #Set to true when the host system is Windows and on cygwin.
+		if(CMAKE_CL_64)
+		set(FMI_PLATFORM win64)
+		else(CMAKE_CL_64)
+		set(FMI_PLATFORM win32)
+		endif(CMAKE_CL_64)
+	elseif(CMAKE_HOST_APPLE) #Set to true when the host system is Apple OSX. 
+		if(CMAKE_SIZEOF_VOID_P EQUAL 4)
+			set(FMI_PLATFORM darwin32)
+		else(CMAKE_SIZEOF_VOID_P EQUAL 4)
+			set(FMI_PLATFORM darwin64)
+		endif(CMAKE_SIZEOF_VOID_P EQUAL 4)
+	elseif(CMAKE_HOST_UNIX) #Set to true when the host system is UNIX or UNIX like (i.e. APPLE and CYGWIN). 
+		if(CMAKE_SIZEOF_VOID_P EQUAL 4)
+			set(FMI_PLATFORM linux32)
+		else(CMAKE_SIZEOF_VOID_P EQUAL 4)
+			set(FMI_PLATFORM linux64)
+		endif(CMAKE_SIZEOF_VOID_P EQUAL 4)
+	else(CMAKE_HOST_WIN32)
+		message(SEND_ERROR "Target platform is not supported by the tests")
+		set(FMI_PLATFORM not_supported)
+	endif()
+	
+	set(FMILIB_FMI_PLATFORM ${FMI_PLATFORM} CACHE STRING ${FMILIB_FMI_PLATFORM_DOC} FORCE)
+else()
+	set(FMI_PLATFORM ${FMILIB_FMI_PLATFORM})
+endif()
+
 configure_file (
   "${FMILibrary_SOURCE_DIR}/Config.cmake/config_fmilib.h.cmake"
   "${FMILibrary_BINARY_DIR}/config_fmilib.h"
   )
   
+
 
 set(FMILIB_SHARED_SUBLIBS ${FMIXML_LIBRARIES} ${FMIZIP_LIBRARIES} ${FMICAPI_LIBRARIES} expat minizip zlib)
 set(FMILIB_SUBLIBS ${FMIIMPORT_LIBRARIES} ${JMUTIL_LIBRARIES} ${FMILIB_SHARED_SUBLIBS})

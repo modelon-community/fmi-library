@@ -19,6 +19,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+#include <fmilib_config.h>
 
 /**
 	@file jm_types.h Types used in the Utils module.
@@ -62,6 +63,7 @@ typedef enum {
 } jm_log_level_enu_t;
 
 /** \brief Convert log level into a string */
+FMILIB_EXPORT
 const char* jm_log_level_to_string(jm_log_level_enu_t level);
 
 /** @} */

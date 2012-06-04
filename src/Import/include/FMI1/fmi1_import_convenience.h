@@ -107,6 +107,15 @@ void fmi1_import_expand_variable_references(fmi1_import_t* fmu, const char* msgI
 FMILIB_EXPORT 
 void  fmi1_log_forwarding(fmi1_component_t c, fmi1_string_t instanceName, fmi1_status_t status, fmi1_string_t category, fmi1_string_t message, ...);
 
+/**
+	\brief An implementation of FMI 1.0 logger that forwards the messages to logger function inside jm_callbacks structure.
+	
+	The function is using a global array of active FMUs to find out which FMU is sending the logger and attach is to
+	the appropriate fmi_import_t struct. The function is called by the FMU.	
+*/
+FMILIB_EXPORT 
+void  fmi1_log_forwarding_v(fmi1_component_t c, fmi1_string_t instanceName, fmi1_status_t status, fmi1_string_t category, fmi1_string_t message, va_list args);
+
 /** @} */
 
 #ifdef __cplusplus

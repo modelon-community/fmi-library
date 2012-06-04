@@ -27,20 +27,20 @@
 
 void importlogger(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_level, jm_string message)
 {
-        printf("module = %s, log level = %d: %s\n", module, log_level, message);
+        printf("module = %s, log level = %s: %s\n", module, jm_log_level_to_string(log_level), message);
 }
 
 /* Logger function used by the FMU internally */
-/*
+
 void fmilogger(fmi1_component_t c, fmi1_string_t instanceName, fmi1_status_t status, fmi1_string_t category, fmi1_string_t message, ...)
 {
 	char msg[BUFFER];
 	va_list argp;	
 	va_start(argp, message);
 	vsprintf(msg, message, argp);
-	printf("fmiStatus = %d;  %s (%s): %s\n", status, instanceName, category, msg);
+	fmi1_log_forwarding_v(c, instanceName, status, category, message, argp);
+	va_end(argp);
 }
-*/
 
 void do_exit(int code)
 {
@@ -89,8 +89,6 @@ int test_simulate_cs(fmi1_import_t* fmu)
 		printf("fmi1_import_instantiate_model failed\n");
 		do_exit(CTEST_RETURN_FAIL);
 	}
-
-	fmistatus = fmi1_import_set_debug_logging(fmu, fmi1_false);
 
 	fmistatus = fmi1_import_initialize_slave(fmu, tstart, StopTimeDefined, tend);
 

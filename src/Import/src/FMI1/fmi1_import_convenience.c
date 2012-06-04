@@ -226,6 +226,12 @@ jm_vector(jm_voidp)* fmi1_import_active_fmu = 0;
 
 void  fmi1_log_forwarding(fmi1_component_t c, fmi1_string_t instanceName, fmi1_status_t status, fmi1_string_t category, fmi1_string_t message, ...) {
     va_list args;
+    va_start (args, message);
+	fmi1_log_forwarding_v(c, instanceName, status, category, message, args);
+    va_end (args);
+}
+
+void  fmi1_log_forwarding_v(fmi1_component_t c, fmi1_string_t instanceName, fmi1_status_t status, fmi1_string_t category, fmi1_string_t message, va_list args) {
     char buf[10000], *curp;
 	const char* statusStr;
 	fmi1_import_t* fmu = 0;
@@ -264,7 +270,6 @@ void  fmi1_log_forwarding(fmi1_component_t c, fmi1_string_t instanceName, fmi1_s
 	}
 
         if(logLevel > cb->log_level) return;
-    va_start (args, message);
 
 	curp = buf;
     *curp = 0;
@@ -277,7 +282,6 @@ void  fmi1_log_forwarding(fmi1_component_t c, fmi1_string_t instanceName, fmi1_s
     sprintf(curp, "[FMU status:%s] ", statusStr);
         curp += strlen(statusStr) + strlen("[FMU status:] ");
 	vsprintf(curp, message, args);
-    va_end (args);
 
 	if(fmu) {
 		fmi1_import_expand_variable_references(fmu, buf, cb->errMessageBuffer,JM_MAX_ERROR_MESSAGE_SIZE);

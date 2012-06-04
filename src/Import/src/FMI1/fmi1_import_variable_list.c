@@ -137,6 +137,7 @@ fmi1_import_variable_list_t* fmi1_import_get_sublist(fmi1_import_variable_list_t
 fmi1_import_variable_list_t* fmi1_import_filter_variables(fmi1_import_variable_list_t* vl, fmi1_import_variable_filter_function_ft filter, void* context) {
     size_t nv, i;
     fmi1_import_variable_list_t* out = fmi1_import_alloc_variable_list(vl->fmu, 0);
+	if(!out) return 0; /* out of memory */
     nv = fmi1_import_get_variable_list_size(vl);
     for(i=0; i < nv;i++) {
         fmi1_import_variable_t* variable = fmi1_import_get_variable(vl, i);

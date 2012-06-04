@@ -45,15 +45,24 @@ typedef enum {
 	jm_status_warning = 1
 } jm_status_enu_t;
 
+#define JM_LOG_LEVELS(LOG) \
+	LOG(fatal) \
+	LOG(error)\
+	LOG(warning) \
+	LOG(info) \
+	LOG(verbose) \
+	LOG(debug)
+
 /** \brief Log levels supported via the logger functions in ::jm_callbacks */
 typedef enum {	
-	jm_log_level_all, /* "all" must be first in this enum*/
-	jm_log_level_info,
-	jm_log_level_warning,
-	jm_log_level_error,
-	jm_log_level_fatal,
-	jm_log_level_nothing /* "nothing" must be last in this enum*/
+	jm_log_level_nothing, /* "nothing" must be first in this enum*/
+#define jm_put_log_level(level) jm_log_level_ ## level,
+	JM_LOG_LEVELS(jm_put_log_level)
+	jm_log_level_all /* "all" must be last in this enum*/
 } jm_log_level_enu_t;
+
+/** \brief Convert log level into a string */
+const char* jm_log_level_to_string(jm_log_level_enu_t level);
 
 /** @} */
 #ifdef __cplusplus

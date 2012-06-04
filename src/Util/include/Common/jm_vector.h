@@ -364,6 +364,8 @@ jm_vector_declare_template(size_t)
 jm_vector_declare_template(jm_string)
 jm_vector_declare_template(jm_name_ID_map_t)
 
+
+jm_define_comp_f(jm_compare_voidp, int*, jm_diff)
 jm_define_comp_f(jm_compare_int, int, jm_diff)
 jm_define_comp_f(jm_compare_char, char, jm_diff)
 jm_define_comp_f(jm_compare_double, double, jm_diff)

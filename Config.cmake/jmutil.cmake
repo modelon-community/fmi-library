@@ -8,7 +8,6 @@ set(JMUTILSOURCE
  Common/jm_callbacks.c
  Common/jm_templates_inst.c
  Common/jm_named_ptr.c
- Common/jm_wc_match.c
  Common/jm_portability.c
  FMI1/fmi1_callbacks.c
  FMI1/fmi1_enums.c
@@ -22,8 +21,8 @@ set(JMUTILHEADERS
   Common/jm_types.h
   Common/jm_named_ptr.h
   Common/jm_string_set.h
-  Common/jm_wc_match.h
   Common/jm_portability.h
+  Common/fmi_version.h
   FMI1/fmi1_functions.h
   FMI1/fmi1_types.h
   FMI1/fmi1_callbacks.h

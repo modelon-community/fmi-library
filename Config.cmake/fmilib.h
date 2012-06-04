@@ -108,7 +108,7 @@
 #define FMILIB_H_
 
 #include <stddef.h>
-#include "config_fmilib.h"
+#include "fmilib_config.h"
 
 #include <Common/fmi_import_context.h>
 #include <FMI1/fmi1_import.h>

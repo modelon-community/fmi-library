@@ -23,21 +23,6 @@
 
 #define BUFFER 1000
 
-void importlogger(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_level, jm_string message)
-{
-        printf("module = %s, log level = %d: %s\n", module, log_level, message);
-}
-
-/* Logger function used by the FMU internally */
-void fmilogger(fmi1_component_t c, fmi1_string_t instanceName, fmi1_status_t status, fmi1_string_t category, fmi1_string_t message, ...)
-{
-	char msg[BUFFER];
-	va_list argp;	
-	va_start(argp, message);
-	vsprintf(msg, message, argp);
-	printf("fmiStatus = %d;  %s (%s): %s\n", status, instanceName, category, msg);
-}
-
 void do_exit(int code)
 {
 	printf("Press 'Enter' to exit\n");
@@ -84,14 +69,11 @@ int test_simulate_me(fmi1_import_t* fmu)
 	event_indicators = calloc(n_event_indicators, sizeof(double));
 	event_indicators_prev = calloc(n_event_indicators, sizeof(double));
 
-	jmstatus = fmi1_import_instantiate_model(fmu, "Test ME model instance", fmi1_import_get_GUID(fmu), fmi1_true);
+	jmstatus = fmi1_import_instantiate_model(fmu, "Test ME model instance");
 	if (jmstatus == jm_status_error) {
 		printf("fmi1_import_instantiate_model failed\n");
 		do_exit(CTEST_RETURN_FAIL);
 	}
-
-	fmistatus = fmi1_import_set_debug_logging(fmu, fmi1_false);
-	printf("fmi1_import_set_debug_logging:  %s\n", fmi1_status_to_string(fmistatus));	
 
 	fmistatus = fmi1_import_set_time(fmu, tstart);
 
@@ -99,6 +81,10 @@ int test_simulate_me(fmi1_import_t* fmu)
 
 	fmistatus = fmi1_import_get_continuous_states(fmu, states, n_states);
 	fmistatus = fmi1_import_get_event_indicators(fmu, event_indicators_prev, n_event_indicators);
+
+	fmistatus = fmi1_import_set_debug_logging(fmu, fmi1_false);
+	printf("fmi1_import_set_debug_logging:  %s\n", fmi1_status_to_string(fmistatus));	
+	fmi1_import_set_debug_logging(fmu, fmi1_true);
 
 	tcur = tstart;
 	hcur = hdef;
@@ -171,6 +157,11 @@ int test_simulate_me(fmi1_import_t* fmu)
 
 	fmi1_import_free_model_instance(fmu);
 
+	free(states);
+	free(states_der);
+	free(event_indicators);
+	free(event_indicators_prev);
+
 	return 0;
 }
 
@@ -199,10 +190,11 @@ int main(int argc, char *argv[])
     callbacks.calloc = calloc;
     callbacks.realloc = realloc;
     callbacks.free = free;
-    callbacks.logger = importlogger;
+    callbacks.logger = jm_default_logger;
+	callbacks.log_level = jm_log_level_debug;
     callbacks.context = 0;
 
-	callBackFunctions.logger = fmilogger;
+	callBackFunctions.logger = fmi1_log_forwarding;
 	callBackFunctions.allocateMemory = calloc;
 	callBackFunctions.freeMemory = free;
 

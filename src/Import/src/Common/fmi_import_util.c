@@ -18,8 +18,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#include <fmilib_config.h>
 #include "fmi_import_util.h"
-#include "config_fmilib.h"
 
 
 

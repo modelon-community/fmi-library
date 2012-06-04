@@ -15,6 +15,9 @@
 */
 
 #include <string.h>
+#include <stdio.h>
+#include <ctype.h>
+
 #include <FMI1/fmi1_xml_model_description.h>
 
 #include "fmi1_import_impl.h"
@@ -83,4 +86,207 @@ void fmi1_import_collect_model_counts(fmi1_import_t* fmu, fmi1_import_model_coun
 		}
     }
     return;
+}
+
+void fmi1_import_expand_variable_references_impl(fmi1_import_t* fmu, const char* msgIn);
+
+void fmi1_import_expand_variable_references(fmi1_import_t* fmu, const char* msgIn, char* msgOut, size_t maxMsgSize) {
+	fmi1_import_expand_variable_references_impl(fmu, msgIn);
+	strncpy(msgOut, jm_vector_get_itemp(char)(&fmu->logMessageBuffer,0),maxMsgSize);
+}
+
+/* Print msgIn into msgOut by expanding variable references of the form #<Type><VR># into variable names
+  and replacing '##' with a single # */
+void fmi1_import_expand_variable_references_impl(fmi1_import_t* fmu, const char* msgIn){
+	jm_vector(char)* msgOut = &fmu->logMessageBuffer;
+	fmi1_xml_model_description_t* md = fmu->md;
+	jm_callbacks* callbacks = fmu->callbacks;
+    char curCh;
+	const char* firstRef;
+    size_t i; /* next char index after curCh in msgIn*/ 
+	size_t msgLen = strlen(msgIn)+1; /* original message length including terminating 0 */
+
+	if(jm_vector_reserve(char)(msgOut, msgLen + 100) < msgLen + 100) {
+		jm_log(fmu->callbacks,"LOGGER", jm_log_level_warning, "Could not allocate memory for the log message");
+		jm_vector_resize(char)(msgOut, 6);
+		memcpy(jm_vector_get_itemp(char)(msgOut,0),"ERROR",6); /* at least 16 chars are always there */
+		return;
+	}
+
+	/* check if there are any refs at all and copy the head of the string without references */
+	firstRef = strchr(msgIn, '#');
+	if(firstRef) {
+		i = firstRef - msgIn;
+		jm_vector_resize(char)(msgOut, i);
+		if(i) {
+			memcpy(jm_vector_get_itemp(char)(msgOut, 0), msgIn, i);
+		}
+		curCh = msgIn[i++];
+	}
+	else {
+		jm_vector_resize(char)(msgOut, msgLen);
+		memcpy(jm_vector_get_itemp(char)(msgOut, 0), msgIn, msgLen);
+		return;
+	}
+    do {
+        if (curCh!='#') {
+            jm_vector_push_back(char)(msgOut, curCh); /* copy in to out */
+        }
+		else if(msgIn[i] == '#') {
+			jm_vector_push_back(char)(msgOut, '#');
+			i++; /* skip the second # */
+		}
+		else {
+			fmi1_value_reference_t vr = fmi1_undefined_value_reference;
+			char typeChar = msgIn[i++];
+			size_t pastePos = jm_vector_get_size(char)(msgOut);
+			fmi1_base_type_enu_t baseType;
+			size_t num_digits;
+			fmi1_xml_variable_t* var;
+			const char* name;
+			size_t nameLen;
+			switch(typeChar) {
+				case 'r': 
+					baseType = fmi1_base_type_real;
+					break;
+				case 'i': 
+					baseType = fmi1_base_type_int;
+					break;
+				case 'b': 
+					baseType = fmi1_base_type_bool;
+					break;
+				case 's': 
+					baseType = fmi1_base_type_str;
+					break;
+				default:
+					jm_vector_push_back(char)(msgOut, 0);
+					jm_log(callbacks,"LOGGER", jm_log_level_warning, 
+						"Expected type specification character 'r', 'i', 'b' or 's' in log message here: '%s'", 
+					jm_vector_get_itemp(char)(msgOut,0));
+                    jm_vector_resize(char)(msgOut, msgLen);
+					memcpy(jm_vector_get_itemp(char)(msgOut,0),msgIn,msgLen);
+					return;
+			}
+            curCh = msgIn[i++];
+			while( isdigit(curCh) ) {
+				jm_vector_push_back(char)(msgOut, curCh);
+	            curCh = msgIn[i++];
+			}
+			num_digits = jm_vector_get_size(char)(msgOut) - pastePos;
+			jm_vector_push_back(char)(msgOut, 0);
+			if(num_digits == 0) {
+				jm_log(callbacks,"LOGGER", jm_log_level_warning, "Expected value reference in log message here: '%s'", jm_vector_get_itemp(char)(msgOut,0));
+                                jm_vector_resize(char)(msgOut, msgLen);
+                jm_vector_resize(char)(msgOut, msgLen);
+				memcpy(jm_vector_get_itemp(char)(msgOut,0),msgIn,msgLen);
+				return;
+			}
+			else if(curCh != '#') {
+				jm_log(callbacks,"LOGGER", jm_log_level_warning, "Expected terminating '#' in log message here: '%s'", jm_vector_get_itemp(char)(msgOut,0));
+                                jm_vector_resize(char)(msgOut, msgLen);
+                jm_vector_resize(char)(msgOut, msgLen);
+				memcpy(jm_vector_get_itemp(char)(msgOut,0),msgIn,msgLen);
+				return;
+			}
+			
+			if(sscanf(jm_vector_get_itemp(char)(msgOut, pastePos), "%u",&vr) != 1) {
+				jm_log(callbacks,"LOGGER", jm_log_level_warning, "Could not decode value reference in log message here: '%s'", jm_vector_get_itemp(char)(msgOut,0));
+                                jm_vector_resize(char)(msgOut, msgLen);
+                jm_vector_resize(char)(msgOut, msgLen);
+				memcpy(jm_vector_get_itemp(char)(msgOut,0),msgIn,msgLen);
+				return;
+			}
+			var = fmi1_xml_get_variable_by_vr(md,baseType,vr);
+			if(!var) {
+				jm_log(callbacks,"LOGGER", jm_log_level_warning, "Could not find variable referenced in log message here: '%s'", jm_vector_get_itemp(char)(msgOut,0));
+                                jm_vector_resize(char)(msgOut, msgLen);
+                jm_vector_resize(char)(msgOut, msgLen);
+				memcpy(jm_vector_get_itemp(char)(msgOut,0),msgIn,msgLen);
+				return;
+			}
+			name = fmi1_xml_get_variable_name(var);
+			nameLen = strlen(name);
+			if(jm_vector_resize(char)(msgOut, pastePos + nameLen) != pastePos + nameLen) {
+				jm_log(callbacks,"LOGGER", jm_log_level_warning, "Could not allocate memory for the log message");
+                                jm_vector_resize(char)(msgOut, msgLen);
+                jm_vector_resize(char)(msgOut, msgLen);
+				memcpy(jm_vector_get_itemp(char)(msgOut,0),msgIn,msgLen);
+				return;
+			};
+			memcpy(jm_vector_get_itemp(char)(msgOut, pastePos), name, nameLen);
+        }
+        curCh = msgIn[i++];
+    } while (curCh);
+    jm_vector_push_back(char)(msgOut, 0);
+}
+
+jm_vector(jm_voidp) fmi1_import_active_fmu_store;
+
+jm_vector(jm_voidp)* fmi1_import_active_fmu = 0;
+
+void  fmi1_log_forwarding(fmi1_component_t c, fmi1_string_t instanceName, fmi1_status_t status, fmi1_string_t category, fmi1_string_t message, ...) {
+    va_list args;
+    char buf[10000], *curp;
+	const char* statusStr;
+	fmi1_import_t* fmu = 0;
+	jm_callbacks* cb = jm_get_default_callbacks();
+	jm_log_level_enu_t logLevel = jm_log_level_error;
+	if(fmi1_import_active_fmu) {
+		size_t n = jm_vector_get_size(jm_voidp)(fmi1_import_active_fmu);
+		size_t i;
+		for(i= 0; i < n; i++) {
+			fmu = (fmi1_import_t*)jm_vector_get_item(jm_voidp)(fmi1_import_active_fmu, i);
+			if(fmu->capi->c == c) {
+				cb = fmu->callbacks;
+				break;
+			}
+		}
+		if(i >= n) { /* Could not find matching FMU -> use default callbacks */
+			fmu = 0;
+			cb = jm_get_default_callbacks();
+		}
+	}
+	switch(status) {
+		case fmi1_status_discard:
+		case fmi1_status_pending:
+		case fmi1_status_ok:
+			logLevel = jm_log_level_info;
+			break;
+		case fmi1_status_warning:
+			logLevel = jm_log_level_warning;
+			break;
+		case fmi1_status_error:
+			logLevel = jm_log_level_error;
+			break;
+		case fmi1_status_fatal:
+		default:
+			logLevel = jm_log_level_fatal;
+	}
+
+        if(logLevel > cb->log_level) return;
+    va_start (args, message);
+
+	curp = buf;
+    *curp = 0;
+
+	if(category) {
+        sprintf(curp, "[%s]", category);
+        curp += strlen(category)+2;
+    }
+	statusStr = fmi1_status_to_string(status);
+    sprintf(curp, "[FMU status:%s] ", statusStr);
+        curp += strlen(statusStr) + strlen("[FMU status:] ");
+	vsprintf(curp, message, args);
+    va_end (args);
+
+	if(fmu) {
+		fmi1_import_expand_variable_references(fmu, buf, cb->errMessageBuffer,JM_MAX_ERROR_MESSAGE_SIZE);
+	}
+	else {
+		strncpy(cb->errMessageBuffer, buf, JM_MAX_ERROR_MESSAGE_SIZE);
+	}
+	if(cb->logger) {
+		cb->logger(cb, instanceName, logLevel, cb->errMessageBuffer);
+	}
+
 }

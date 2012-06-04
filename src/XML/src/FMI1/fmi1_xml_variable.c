@@ -25,6 +25,7 @@
 
 #include "fmi1_xml_variable_impl.h"
 
+static const char* module = "FMI1XML";
 
 const char* fmi1_xml_get_variable_name(fmi1_xml_variable_t* v) {
     return v->name;
@@ -75,7 +76,7 @@ jm_status_enu_t fmi1_xml_get_variable_aliases(fmi1_xml_model_description_t* md,f
     i = baseIndex + 1;
     while(fmi1_xml_get_variable_vr(cur) == vr) {
         if(!jm_vector_push_back(jm_voidp)(list, cur)) {
-            fmi1_xml_report_error(md,"XML_Variable","Could not allocate memory");
+			jm_log_fatal(md->callbacks,module,"Could not allocate memory");
             return jm_status_error;
         };
         if(i >= num) break;
@@ -88,7 +89,7 @@ jm_status_enu_t fmi1_xml_get_variable_aliases(fmi1_xml_model_description_t* md,f
         cur = (fmi1_xml_variable_t*)jm_vector_get_item(jm_voidp)(md->variablesByVR, i);
         while(fmi1_xml_get_variable_vr(cur) == vr) {
             if(!jm_vector_push_back(jm_voidp)(list, cur)) {
-                fmi1_xml_report_error(md,"XML_Variable","Could not allocate memory");                
+                jm_log_fatal(md->callbacks,module,"Could not allocate memory");                
                 return jm_status_error;
             };
             i--;
@@ -320,7 +321,7 @@ int fmi1_xml_handle_ScalarVariable(fmi1_xml_parser_context_t *context, const cha
             ) return -1;
 
             if(context->skipOneVariableFlag) {
-                fmi1_xml_parse_warning(context, "Ignoring variable with undefined vr '%s'", jm_vector_get_itemp(char)(bufName,0));
+				jm_log_error(context->callbacks,module, "Ignoring variable with undefined vr '%s'", jm_vector_get_itemp(char)(bufName,0));
                 return 0;
             }
             if(jm_vector_get_size(char)(bufDescr)) {
@@ -450,7 +451,8 @@ int fmi1_xml_handle_Name(fmi1_xml_parser_context_t *context, const char* data) {
 			while(strchr(TRIM_SPACE, data[namelen-1])) namelen--;
 		}
         if(i>=namelen) {
-            fmi1_xml_parse_warning(context, "Unexpected empty Name element for DirectDependency of variable %s. Ignoring.", variable->name);
+			jm_log_error(context->callbacks, module, 
+				"Unexpected empty Name element for DirectDependency of variable %s. Ignoring.", variable->name);
             return -1;
         }
         namep = jm_vector_push_back(jm_string)(&context->directDependencyStringsStore, name);
@@ -864,7 +866,7 @@ void fmi1_xml_eliminate_bad_alias(fmi1_xml_parser_context_t *context, size_t ind
 		
 		jm_vector_remove_item(jm_voidp)(md->variablesOrigOrder,index);
 		
-        fmi1_xml_parse_warning(context,"Removing incorrect alias variable '%s'", v->name);
+		jm_log_error(context->callbacks, module,"Removing incorrect alias variable '%s'", v->name);
         md->callbacks->free(v);
     }
 }
@@ -942,7 +944,7 @@ int fmi1_xml_handle_ModelVariables(fmi1_xml_parser_context_t *context, const cha
                 foundBadAlias = 0;
 
                 if(a->aliasKind == fmi1_variable_is_alias) {
-                    fmi1_xml_parse_warning(context,"All variables with vr %d (base type %s) are marked as aliases.",
+					jm_log_error(context->callbacks, module, "All variables with vr %d (base type %s) are marked as aliases.",
                                           a->vr, fmi1_base_type_to_string(fmi1_xml_get_variable_base_type(a)));
                     fmi1_xml_eliminate_bad_alias(context,0);
                     foundBadAlias = 1;
@@ -956,14 +958,14 @@ int fmi1_xml_handle_ModelVariables(fmi1_xml_parser_context_t *context, const cha
                             || (a->vr != b->vr)) {
                         /* a different vr */
                         if(a->aliasKind == fmi1_variable_is_negated_alias) {
-                            fmi1_xml_parse_warning(context,"All variables with vr %u (base type %s) are marked as negated aliases",
+                            jm_log_error(context->callbacks,module,"All variables with vr %u (base type %s) are marked as negated aliases",
                                                   a->vr, fmi1_base_type_to_string(fmi1_xml_get_variable_base_type(a)));
                             fmi1_xml_eliminate_bad_alias(context,i-1);
                             foundBadAlias = 1;
                             break;
                         }
                         if(b->aliasKind == fmi1_variable_is_alias) {
-                            fmi1_xml_parse_warning(context,"All variables with vr %u (base type %s) are marked as aliases",
+                            jm_log_error(context->callbacks,module,"All variables with vr %u (base type %s) are marked as aliases",
                                                 b->vr, fmi1_base_type_to_string(fmi1_xml_get_variable_base_type(b)));
                           fmi1_xml_eliminate_bad_alias(context,i);
                           foundBadAlias = 1;
@@ -982,7 +984,7 @@ int fmi1_xml_handle_ModelVariables(fmi1_xml_parser_context_t *context, const cha
                         if((a->aliasKind == fmi1_variable_is_not_alias) && (a->aliasKind == b->aliasKind)) {
                             fmi1_xml_variable_t* c;
                             size_t j = i+1;
-                            fmi1_xml_parse_warning(context,"Variables %s and %s reference the same vr %u. Marking '%s' as alias.",
+                            jm_log_error(context->callbacks,module,"Variables %s and %s reference the same vr %u. Marking '%s' as alias.",
                                                 a->name, b->name, b->vr, b->name);
                             b->aliasKind = fmi1_variable_is_alias;
 
@@ -1030,11 +1032,11 @@ int fmi1_xml_handle_ModelVariables(fmi1_xml_parser_context_t *context, const cha
 				else
 					depvar = 0;
                 if(!depvar) {
-                    fmi1_xml_parse_warning(context, "Could not find variable %s mentioned in dependecies of %s. Ignoring", name, variable->name);
+                    jm_log_error(context->callbacks,module, "Could not find variable %s mentioned in dependecies of %s. Ignoring", name, variable->name);
                     continue;
                 }
                 if(depvar->causality != fmi1_causality_enu_input) {
-                    fmi1_xml_parse_warning(context, "Only input variables are allowed in DirectDependecies, but %s is not input. Ignoring", name);
+                    jm_log_error(context->callbacks,module, "Only input variables are allowed in DirectDependecies, but %s is not input. Ignoring", name);
                     continue;
                 }
                 jm_vector_set_item(jm_voidp)(dep,var_i++, depvar);

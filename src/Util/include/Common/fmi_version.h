@@ -14,32 +14,32 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef FMI_XML_CONTEXT_IMPL_H
-#define FMI_XML_CONTEXT_IMPL_H
-
-#include <expat.h>
-#include <fmilib_config.h>
-#include <Common/jm_vector.h>
-#include <Common/jm_stack.h>
-#include <Common/jm_named_ptr.h>
-
-#include <FMI1/fmi1_xml_model_description.h>
-#include <Common/fmi_xml_context.h>
-
+#ifndef FMI_VERSION_H
+#define FMI_VERSION_H
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-struct fmi_xml_context_t {
-	jm_callbacks* callbacks;
-	
-    XML_Parser parser;
+/**
+	@file fmi_version.h Enum defining supported FMI versions.
 
-	fmi_version_enu_t fmi_version;
-};
+	*/
+/** \addtogroup jm_utils
+  * @{
+*/
 
+/** \brief Suported versions of FMI standard */
+typedef enum
+{ 
+	fmi_version_unknown_enu = 0,
+	fmi_version_1_enu
+	/* , fmi_version_2_0_enu */
+} fmi_version_enu_t;
+
+/** @} */
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* FMI_XML_CONTEXT_H */
+/* JM_TYPES_H */
+#endif

@@ -20,6 +20,7 @@
 #include "fmi1_xml_model_description_impl.h"
 #include "fmi1_xml_parser.h"
 
+static const char * module = "FMI1XML";
 
 #define ATTR_STR(attr) #attr
 const char *fmi_xmlAttrNames[] = {
@@ -64,21 +65,14 @@ void fmi1_xml_parse_free_context(fmi1_xml_parser_context_t *context) {
     context->callbacks->free(context);
 }
 
+
+
 void fmi1_xml_parse_error(fmi1_xml_parser_context_t *context, const char* fmt, ...) {
     va_list args;
-    const char * module = "XMLparser";
     va_start (args, fmt);
-    fmi1_xml_report_error_v(context->modelDescription, module, fmt, args);
+	jm_log_error_v(context->callbacks, module, fmt, args);
     va_end (args);
     XML_StopParser(context->parser,0);
-}
-
-void fmi1_xml_parse_warning(fmi1_xml_parser_context_t *context, const char* fmt, ...) {
-    va_list args;
-    const char * module = "XMLparser";
-    va_start (args, fmt);
-    fmi1_xml_report_warning_v(context->modelDescription, module, fmt, args);
-    va_end (args);
 }
 
 int fmi1_xml_is_attr_defined(fmi1_xml_parser_context_t *context, fmi1_xml_attr_enu_t attrID) {
@@ -323,6 +317,7 @@ void XMLCALL fmi_parse_element_start(void *c, const char *elm, const char **attr
         fmi1_xml_parse_error(context, "Unknown element '%s' start in XML", elm);
         return;
     }
+
     currentHandle = currentElMap->elementHandle;
 
     /* process the attributes  */
@@ -352,7 +347,7 @@ void XMLCALL fmi_parse_element_start(void *c, const char *elm, const char **attr
     for(i = 0; i < fmi1_xml_attr_number; i++) {
         if(jm_vector_get_item(jm_string)(context->attrBuffer, i)) {
             if(!context->skipOneVariableFlag)
-                fmi1_xml_parse_warning(context, "Attribute '%s' not processed by element '%s' handle", fmi_xmlAttrNames[i], elm);
+                jm_log_error(context->callbacks,module, "Attribute '%s' not processed by element '%s' handle", fmi_xmlAttrNames[i], elm);
             jm_vector_set_item(jm_string)(context->attrBuffer, i,0);
         }
     }

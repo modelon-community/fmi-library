@@ -26,6 +26,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <fmu_dummy/fmu1_model.h>
 #include "config_test.h"
 
+   typedef enum {fmiDoStepStatus,
+                 fmiPendingStatus,
+                 fmiLastSuccessfulTime} fmiStatusKind;
+
+#include "fmu1_model.c"
+
 #define MODEL_IDENTIFIER FMU_DUMMY_ME_MODEL_IDENTIFIER
 
 /* FMI 1.0 Common Functions */

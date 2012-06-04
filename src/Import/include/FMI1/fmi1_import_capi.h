@@ -29,7 +29,7 @@ extern "C" {
 #include <FMI1/fmi1_types.h>
 #include <FMI1/fmi1_functions.h>
 #include <FMI1/fmi1_enums.h>
-#include <FMI1/fmi1_capi.h>
+/* #include <FMI1/fmi1_capi.h> */
 
 /**
 \file fmi1_import_capi.h
@@ -212,11 +212,9 @@ FMILIB_EXPORT const char* fmi1_import_get_model_types_platform(fmi1_import_t* fm
  * 
  * @param fmu A model description object returned by fmi1_import_parse_xml() that has loaded the FMI functions, see fmi1_import_load_fcn().
  * @param instanceName The name of the instance.
- * @param GUID The GUID identifier.
- * @param loggingOn Enable or disable the debug logger.
  * @return Error status. Returnes jm_status_error if fmiInstantiateModel returned NULL, otherwise jm_status_success.
  */
-FMILIB_EXPORT jm_status_enu_t fmi1_import_instantiate_model(fmi1_import_t* fmu, fmi1_string_t instanceName, fmi1_string_t GUID, fmi1_boolean_t loggingOn);
+FMILIB_EXPORT jm_status_enu_t fmi1_import_instantiate_model(fmi1_import_t* fmu, fmi1_string_t instanceName);
 
 /**
  * \brief Wrapper for the FMI function fmiFreeModelInstance(...) 
@@ -352,17 +350,15 @@ FMILIB_EXPORT const char* fmi1_import_get_types_platform(fmi1_import_t* fmu);
  * 
  * @param fmu A model description object returned by fmi1_import_parse_xml() that has loaded the FMI functions, see fmi1_import_load_fcn().
  * @param instanceName The name of the instance.
- * @param fmuGUID The GUID identifier.
  * @param fmuLocation Access path to the FMU archive.
  * @param mimeType MIME type.
  * @param timeout Communication timeout value in milli-seconds.
  * @param visible Indicates whether or not the simulator application window shoule be visible.
  * @param interactive Indicates whether the simulator application must be manually started by the user.
- * @param loggingOn Enable or disable the debug logger.
  * @return Error status. Returnes jm_status_error if fmiInstantiateSlave returned NULL, otherwise jm_status_success.
  */
-FMILIB_EXPORT jm_status_enu_t fmi1_import_instantiate_slave(fmi1_import_t* fmu, fmi1_string_t instanceName, fmi1_string_t fmuGUID, fmi1_string_t fmuLocation, fmi1_string_t mimeType,
-																 fmi1_real_t timeout, fmi1_boolean_t visible, fmi1_boolean_t interactive, fmi1_boolean_t loggingOn);
+FMILIB_EXPORT jm_status_enu_t fmi1_import_instantiate_slave(fmi1_import_t* fmu, fmi1_string_t instanceName, fmi1_string_t fmuLocation, fmi1_string_t mimeType,
+																 fmi1_real_t timeout, fmi1_boolean_t visible, fmi1_boolean_t interactive);
 
 /**
  * \brief Wrapper for the FMI function fmiInitializeSlave(...) 

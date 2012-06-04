@@ -23,8 +23,11 @@
 #include <Common/fmi_import_util.h>
 
 #include "fmi_import_context_impl.h"
+
+#define MODULE "FMILIB"
+
 fmi_import_context_t* fmi_import_allocate_context( jm_callbacks* callbacks) {
-	FMILIB_TRACE("Inside fmi_import_allocate_context\n");
+	jm_log_debug(callbacks, MODULE, "Inside fmi_import_allocate_context");
 	return fmi_xml_allocate_context(callbacks);
 }
 

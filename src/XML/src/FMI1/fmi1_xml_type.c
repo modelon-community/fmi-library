@@ -23,6 +23,7 @@
 #include "fmi1_xml_unit_impl.h"
 #include "fmi1_xml_parser.h"
 
+static const char* module = "FMI1XML";
 
 fmi1_xml_display_unit_t* fmi1_xml_get_type_display_unit(fmi1_xml_real_typedef_t* t) {
     fmi1_xml_variable_typedef_t* vt = (void*)t;
@@ -253,6 +254,8 @@ void fmi1_xml_free_type_definitions_data(fmi1_xml_type_definitions_t* td) {
 
 int fmi1_xml_handle_TypeDefinitions(fmi1_xml_parser_context_t *context, const char* data) {
     if(!data) {
+		jm_log_verbose(context->callbacks, module, "Parsing XML element TypeDefinitions");
+
         if(context -> currentElmHandle != fmi1_xml_handle_fmiModelDescription) {
             fmi1_xml_parse_error(context, "TypeDefinitions XML element must be a part of fmiModelDescription");
             return -1;

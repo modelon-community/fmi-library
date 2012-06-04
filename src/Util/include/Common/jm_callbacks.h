@@ -19,6 +19,8 @@
 #include <stddef.h>
 #include <stdarg.h>
 
+#include <fmilib_config.h>
+
 #include "jm_types.h"
 
 #ifdef __cplusplus
@@ -76,7 +78,7 @@ struct jm_callbacks {
 
 /**
 * An alternative way to get error information is to use jm_get_last_error(). This is only meaningful
-* if logger function is not present. Otherwize the string is always empty.
+* if logger function is not present.
 */
 static jm_string jm_get_last_error(jm_callbacks* cb) {return cb->errMessageBuffer; }
 
@@ -90,12 +92,20 @@ Set the structure to be returned by jm_get_default_callbacks().
 @param c - a pointer to initialized struct to be used as default later on. If this is NULL
 	library default implementation will be used.
 */
+FMILIB_EXPORT
 void jm_set_default_callbacks(jm_callbacks* c);
 
 /**
 Get default callbacks. The function never returns NULL.
 */
+FMILIB_EXPORT
 jm_callbacks* jm_get_default_callbacks(void);
+
+/**
+\brief The default logger implementation prints messages to stderr.
+*/
+FMILIB_EXPORT
+void jm_default_logger(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_level, jm_string message);
 
 /**
 Send a message to the logger function.
@@ -110,6 +120,30 @@ void jm_log(jm_callbacks* cb, const char* module, jm_log_level_enu_t log_level, 
 	@param ap - variable size argument list.
 */
 void jm_log_v(jm_callbacks* cb, const char* module, jm_log_level_enu_t log_level, const char* fmt, va_list ap);
+
+void jm_log_fatal_v(jm_callbacks* cb, const char* module, const char* fmt, va_list ap);
+void jm_log_fatal(jm_callbacks* cb, const char* module, const char* fmt, ...);
+
+void jm_log_error_v(jm_callbacks* cb, const char* module, const char* fmt, va_list ap);
+void jm_log_error(jm_callbacks* cb, const char* module, const char* fmt, ...);
+
+void jm_log_warning_v(jm_callbacks* cb, const char* module, const char* fmt, va_list ap);
+void jm_log_warning(jm_callbacks* cb, const char* module, const char* fmt, ...);
+
+void jm_log_info_v(jm_callbacks* cb, const char* module, const char* fmt, va_list ap);
+void jm_log_info(jm_callbacks* cb, const char* module, const char* fmt, ...);
+
+void jm_log_verbose_v(jm_callbacks* cb, const char* module, const char* fmt, va_list ap);
+void jm_log_verbose(jm_callbacks* cb, const char* module, const char* fmt, ...);
+
+#ifdef FMILIB_ENABLE_LOG_LEVEL_DEBUG
+void jm_log_debug_v(jm_callbacks* cb, const char* module, const char* fmt, va_list ap);
+void jm_log_debug(jm_callbacks* cb, const char* module, const char* fmt, ...);
+#else
+static void jm_log_debug_v(jm_callbacks* cb, const char* module, const char* fmt, va_list ap) {}
+static void jm_log_debug(jm_callbacks* cb, const char* module, const char* fmt, ...) {}
+#endif
+
 
 /* @}
 */

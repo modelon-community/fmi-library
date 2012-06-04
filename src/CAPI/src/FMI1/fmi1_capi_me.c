@@ -24,7 +24,9 @@ extern "C" {
 
 fmi1_component_t fmi1_capi_instantiate_model(fmi1_capi_t* fmu, fmi1_string_t instanceName, fmi1_string_t GUID, fmi1_boolean_t loggingOn)
 {
-	return fmu->c = fmu->fmiInstantiateModel(instanceName, GUID, fmu->callBackFunctions, loggingOn);
+	fmi1_me_callback_functions_t cb = *(fmi1_me_callback_functions_t*)&fmu->callBackFunctions;
+
+	return fmu->c = fmu->fmiInstantiateModel(instanceName, GUID, cb, loggingOn);
 }
 
 void fmi1_capi_free_model_instance(fmi1_capi_t* fmu)

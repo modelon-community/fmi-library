@@ -17,10 +17,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdio.h>
 #include <string.h>
 
-/* Standard FMI 1.0 ME and CS types */
+/* 
+Standard FMI 1.0 ME and CS types 
 #include <1.0-CS/fmiPlatformTypes.h>
 #include <1.0-CS/fmiFunctions.h>
+*/
 #include <fmu_dummy/fmu1_model.h>
+
 
 /* Model calculation functions */
 static int calc_initialize(component_ptr_t comp)
@@ -29,6 +32,17 @@ static int calc_initialize(component_ptr_t comp)
 	comp->states[VAR_R_HIGHT_SPEED] = 4;
 	comp->reals	[VAR_R_GRATIVY]		= -9.81;
 	comp->reals	[VAR_R_BOUNCE_CONF]	= 0.5;
+	if(comp->loggingOn) {
+		comp->functions.logger(comp, comp->instanceName, fmiOK, "INFO", "###### Initializing component ######");
+		comp->functions.logger(comp, comp->instanceName, fmiOK, "INFO", "Init #r%d#=%g", VAR_R_HIGHT, comp->states[VAR_R_HIGHT]);
+		comp->functions.logger(comp, comp->instanceName, fmiOK, "INFO", "Init #r%d#=%g",VAR_R_HIGHT_SPEED, comp->states[VAR_R_HIGHT_SPEED]);
+		comp->functions.logger(comp, comp->instanceName, fmiOK, "INFO", "Init #r%d#=%g",VAR_R_GRATIVY, comp->reals	[VAR_R_GRATIVY]);
+		comp->functions.logger(comp, comp->instanceName, fmiOK, "INFO", "Init #r%d#=%g",VAR_R_BOUNCE_CONF, comp->reals	[VAR_R_BOUNCE_CONF]);
+		comp->functions.logger(comp, comp->instanceName, fmiOK, "ERROR", "Bad reference: #r-1#");
+		comp->functions.logger(comp, comp->instanceName, fmiOK, "ERROR", "Bad reference: #r1");
+		comp->functions.logger(comp, comp->instanceName, fmiOK, "ERROR", "Bad reference: #t1#");
+		comp->functions.logger(comp, comp->instanceName, fmiOK, "ERROR", "Bad reference: #r10#");
+	}
 	return 0;
 }
 

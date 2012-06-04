@@ -31,6 +31,7 @@ void importlogger(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_leve
 }
 
 /* Logger function used by the FMU internally */
+/*
 void fmilogger(fmi1_component_t c, fmi1_string_t instanceName, fmi1_status_t status, fmi1_string_t category, fmi1_string_t message, ...)
 {
 	char msg[BUFFER];
@@ -39,6 +40,7 @@ void fmilogger(fmi1_component_t c, fmi1_string_t instanceName, fmi1_status_t sta
 	vsprintf(msg, message, argp);
 	printf("fmiStatus = %d;  %s (%s): %s\n", status, instanceName, category, msg);
 }
+*/
 
 void do_exit(int code)
 {
@@ -82,7 +84,7 @@ int test_simulate_cs(fmi1_import_t* fmu)
 
 	fmuGUID = fmi1_import_get_GUID(fmu);
 
-	jmstatus = fmi1_import_instantiate_slave(fmu, instanceName, fmuGUID, fmuLocation, mimeType, timeout, visible, interactive, loggingOn);
+	jmstatus = fmi1_import_instantiate_slave(fmu, instanceName, fmuLocation, mimeType, timeout, visible, interactive);
 	if (jmstatus == jm_status_error) {
 		printf("fmi1_import_instantiate_model failed\n");
 		do_exit(CTEST_RETURN_FAIL);
@@ -175,7 +177,7 @@ int main(int argc, char *argv[])
     callbacks.logger = importlogger;
     callbacks.context = 0;
 
-	callBackFunctions.logger = fmilogger;
+	callBackFunctions.logger = fmi1_log_forwarding;
 	callBackFunctions.allocateMemory = calloc;
 	callBackFunctions.freeMemory = free;
 

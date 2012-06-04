@@ -34,10 +34,11 @@ endif()
 option (FMILIB_GENERATE_DOXYGEN_DOC "Generate doxygen doc target" ON)
 
 option (FMILIB_BUILD_TESTS "Build tests" ON)
+option (FMILIB_BUILD_BEFORE_TESTS "Force build before testing" ON)
 option(FMILIB_LINK_TEST_TO_SHAREDLIB "Link the tests to fmilib_shared (if built) instead of fmilib" ON)
 
 option(FMILIB_GENERATE_BUILD_STAMP "Generate a build time stamp and include in into the library" OFF)
-option(FMILIB_DEBUG_TRACE "Enable priting of trace messages from fmilib. Intended for debugging." OFF)
+option(FMILIB_ENABLE_LOG_LEVEL_DEBUG "Enable log level 'debug'. If the option is of then the debug level is not compiled in." OFF)
 option(FMILIB_PRINT_DEBUG_MESSAGES "Enable printing of status messages from the build script. Intended for debugging." OFF)
 mark_as_advanced(FMILIB_PRINT_DEBUG_MESSAGES FMILIB_DEBUG_TRACE)
 
@@ -195,7 +196,7 @@ endif()
 
 configure_file (
   "${FMILibrary_SOURCE_DIR}/Config.cmake/config_fmilib.h.cmake"
-  "${FMILibrary_BINARY_DIR}/config_fmilib.h"
+  "${FMILibrary_BINARY_DIR}/fmilib_config.h"
   )
   
 
@@ -254,15 +255,15 @@ install(TARGETS ${FMILIB_TARGETS}
 )
 
 install(FILES 
-			"${FMILibrary_BINARY_DIR}/config_fmilib.h" 
+			"${FMILibrary_BINARY_DIR}/fmilib_config.h" 
 			"${FMILibrary_BINARY_DIR}/fmilib.h" 
 		DESTINATION include)
 
 install(DIRECTORY 
 	${FMIIMPORTDIR}/include 
-	${FMICAPIDIR}/include 
-	${FMIXMLDIR}/include
-	${FMIZIPDIR}/include # not sure if needed at install location
+	# ${FMICAPIDIR}/include 
+	# ${FMIXMLDIR}/include
+	# ${FMIZIPDIR}/include 
 	${JMUTILDIR}/include
 	DESTINATION .)
 	

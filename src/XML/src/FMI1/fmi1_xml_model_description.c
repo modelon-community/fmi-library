@@ -16,10 +16,13 @@
 
 #include <stdio.h>
 
+
 #include <Common/jm_named_ptr.h>
 #include "fmi1_xml_model_description_impl.h"
 #include "fmi1_xml_vendor_annotations_impl.h"
 #include "fmi1_xml_parser.h"
+
+static const char* module = "FMI1XML";
 
 fmi1_xml_model_description_t * fmi1_xml_allocate_model_description( jm_callbacks* callbacks) {
     jm_callbacks* cb;
@@ -261,38 +264,16 @@ fmi1_xml_type_definitions_t* fmi1_xml_get_type_definitions(fmi1_xml_model_descri
     return &md->typeDefinitions;
 }
 
-void fmi1_xml_report_error(fmi1_xml_model_description_t* md, const char* module, const char* fmt, ...){
-    va_list args;
-    va_start (args, fmt);
-    fmi1_xml_report_error_v(md, module, fmt, args);
-    va_end (args);
-}
-
-void fmi1_xml_report_error_v(fmi1_xml_model_description_t* md, const char* module, const char* fmt, va_list ap) {
-	jm_log_v(md->callbacks, module, jm_log_level_error, fmt, ap);
-}
-
-void fmi1_xml_report_warning(fmi1_xml_model_description_t* md, const char* module, const char* fmt, ...){
-    va_list args;
-    va_start (args, fmt);
-    fmi1_xml_report_warning_v(md, module, fmt, args);
-    va_end (args);
-}
-
-void fmi1_xml_report_warning_v(fmi1_xml_model_description_t* md, const char* module, const char* fmt, va_list ap){
-	jm_log_v(md->callbacks, module, jm_log_level_warning, fmt, ap);
-}
-
 
 int fmi1_xml_handle_fmiModelDescription(fmi1_xml_parser_context_t *context, const char* data) {
     jm_name_ID_map_t namingConventionMap[] = {{"flat",fmi1_naming_enu_flat},{"structured", fmi1_naming_enu_structured},{0,0}};
     fmi1_xml_model_description_t* md = context->modelDescription;
-
     if(!data) {
         if(context -> currentElmHandle != 0) {
             fmi1_xml_parse_error(context, "fmi1_xml_model_description must be the root XML element");
             return -1;
         }
+		jm_log_verbose(context->callbacks, module, "Parsing XML element fmiModelDescription");
         /* process the attributes */
         return (
                     /* <xs:attribute name="fmiVersion" type="xs:normalizedString" use="required" fixed="1.0"/> */
@@ -397,6 +378,8 @@ fmi1_xml_variable_t* fmi1_xml_get_variable_by_vr(fmi1_xml_model_description_t* m
 
     found = jm_vector_bsearch(jm_voidp)(md->variablesByVR,(void**)&pkey, fmi1_xml_compare_vr);
     if(!found) return 0;
-    v = *found;
+    v = (fmi1_xml_variable_t*)(*found);
     return v;
 }
+
+

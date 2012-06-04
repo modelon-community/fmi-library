@@ -20,11 +20,14 @@
 
 #include "fmi_xml_context_impl.h"
 
+static char* MODULE="FMIXML";
+
 fmi_xml_context_t* fmi_xml_allocate_context( jm_callbacks* callbacks) {
 	jm_callbacks* cb;
 	fmi_xml_context_t* c;
 
-	FMILIB_TRACE("Inside fmi_xml_allocate_context\n");
+	jm_log_debug(callbacks, MODULE, "Allocating context for XML parsing module");
+
     if(callbacks) {
         cb = callbacks;
     }
@@ -36,12 +39,12 @@ fmi_xml_context_t* fmi_xml_allocate_context( jm_callbacks* callbacks) {
 	c->callbacks = callbacks;
 	c->parser = 0;
 	c->fmi_version = fmi_version_unknown_enu;
-	FMILIB_TRACE("Returning allocated context\n");
+	jm_log_debug(callbacks, MODULE, "Returning allocated context\n");
     return c;
 }
 
 void fmi_xml_free_context(fmi_xml_context_t *context) {
-	FMILIB_TRACE("Inside fmi_xml_free_context\n");
+	jm_log_debug(context->callbacks, MODULE, "Inside fmi_xml_free_context\n");
     if(!context) return;
     if(context->parser) {
         XML_ParserFree(context->parser);
@@ -50,12 +53,12 @@ void fmi_xml_free_context(fmi_xml_context_t *context) {
     context->callbacks->free(context);
 }
 
-void fmi_xml_error(fmi_xml_context_t *context, const char* fmt, ...) {
+void fmi_xml_fatal(fmi_xml_context_t *context, const char* fmt, ...) {
     va_list args;
-    const char * module = "FMIXML";
+
     va_start (args, fmt);
 
-	jm_log_v(context->callbacks, module, jm_log_level_error, fmt, args);
+	jm_log_fatal_v(context->callbacks, MODULE, fmt, args);
 
     va_end (args);
 
@@ -68,7 +71,7 @@ void XMLCALL fmi_xml_parse_element_start(void *c, const char *elm, const char **
 	int i = 0;
 
 	if(strcmp(elm, "fmiModelDescription") != 0) {
-		fmi_xml_error(context, "First element in XML must be fmiModelDescription");
+		fmi_xml_fatal(context, "First element in XML must be fmiModelDescription");
 		return;
 	}
 	while(attr[i]) {
@@ -79,7 +82,7 @@ void XMLCALL fmi_xml_parse_element_start(void *c, const char *elm, const char **
 		i+=2;
 	}
 	if(!fmiVersion) {
-		fmi_xml_error(context, "Could not find fmiVersion attribute in the XML. Cannot proceed.");
+		fmi_xml_fatal(context, "Could not find fmiVersion attribute in the XML. Cannot proceed.");
 		return;
 	}
 	if( strcmp(fmiVersion, "1.0") == 0 ) {
@@ -88,7 +91,7 @@ void XMLCALL fmi_xml_parse_element_start(void *c, const char *elm, const char **
 		return;
 	}
 	else {
-		fmi_xml_error(context, "This version of FMI standard is not supported (fmiVersion=%s)", fmiVersion);
+		fmi_xml_fatal(context, "This version of FMI standard is not supported (fmiVersion=%s)", fmiVersion);
 		return;
 	}
 }
@@ -104,7 +107,7 @@ fmi_version_enu_t fmi_xml_get_fmi_version(fmi_xml_context_t* context, const char
     XML_Parser parser = NULL;
     FILE* file;
 
-	FMILIB_TRACE("Inside fmi_xml_get_fmi_version\n");
+	jm_log_verbose(context->callbacks, MODULE, "Parsing XML to detecting FMI standard version");
 
 	memsuite.malloc_fcn = context->callbacks->malloc;
     memsuite.realloc_fcn = context->callbacks->realloc;
@@ -112,7 +115,7 @@ fmi_version_enu_t fmi_xml_get_fmi_version(fmi_xml_context_t* context, const char
     context -> parser = parser = XML_ParserCreate_MM(0, &memsuite, 0);
 
     if(! parser) {
-        fmi_xml_error(context, "Could not initialize XML parsing library.");
+        fmi_xml_fatal(context, "Could not initialize XML parsing library.");
         fmi_xml_free_context(context);
         return fmi_version_unknown_enu;
     }
@@ -125,7 +128,7 @@ fmi_version_enu_t fmi_xml_get_fmi_version(fmi_xml_context_t* context, const char
 
     file = fopen(filename, "rb");
     if (file == NULL) {
-        fmi_xml_error(context, "Cannot open file '%s' for parsing", filename);
+        fmi_xml_fatal(context, "Cannot open file '%s' for parsing", filename);
         return fmi_version_unknown_enu;
     }
 
@@ -137,12 +140,12 @@ fmi_version_enu_t fmi_xml_get_fmi_version(fmi_xml_context_t* context, const char
         char text[XML_BLOCK_SIZE];
         int n = fread(text, sizeof(char), XML_BLOCK_SIZE, file);
         if(ferror(file)) {
-            fmi_xml_error(context, "Error reading from file %s", filename);
+            fmi_xml_fatal(context, "Error reading from file %s", filename);
             fclose(file);
             return fmi_version_unknown_enu;
         }
         if (!XML_Parse(parser, text, n, feof(file)) && (context->fmi_version == fmi_version_unknown_enu)) {
-             fmi_xml_error(context, "Parse error in file %s at line %d:\n%s",
+             fmi_xml_fatal(context, "Parse error in file %s at line %d:\n%s",
                           filename,
                          (int)XML_GetCurrentLineNumber(parser),
                          XML_ErrorString(XML_GetErrorCode(parser)));
@@ -154,7 +157,7 @@ fmi_version_enu_t fmi_xml_get_fmi_version(fmi_xml_context_t* context, const char
     fclose(file);
 
 	if(context->fmi_version == fmi_version_unknown_enu) {
-             fmi_xml_error(context, "Could not detect FMI standard version");
+             fmi_xml_fatal(context, "Could not detect FMI standard version");
 	}
 
     return context->fmi_version;

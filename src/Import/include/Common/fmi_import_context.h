@@ -23,11 +23,11 @@
 #define FMI_IMPORT_CONTEXT_H_
 
 #include <stddef.h>
-#include <config_fmilib.h>
+#include <fmilib_config.h>
 #include <Common/jm_callbacks.h>
 #include <FMI1/fmi1_types.h>
 #include <FMI1/fmi1_enums.h>
-#include <Common/fmi_xml_context.h> 
+#include <Common/fmi_version.h> 
 
 #ifdef __cplusplus
 extern "C" {

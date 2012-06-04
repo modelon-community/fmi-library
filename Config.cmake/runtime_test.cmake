@@ -24,11 +24,11 @@ set(FMU_DUMMY_FOLDER ${RTTESTDIR}/fmu_dummy)
 
 set(FMU_DUMMY_ME_SOURCE
   ${FMU_DUMMY_FOLDER}/fmu1_model_me.c
-  ${FMU_DUMMY_FOLDER}/fmu1_model.c
+#  ${FMU_DUMMY_FOLDER}/fmu1_model.c
 )
 set(FMU_DUMMY_CS_SOURCE
   ${FMU_DUMMY_FOLDER}/fmu1_model_cs.c
-  ${FMU_DUMMY_FOLDER}/fmu1_model.c
+#  ${FMU_DUMMY_FOLDER}/fmu1_model.c
 )
 set(FMU_DUMMY_HEADERS
   ${FMU_DUMMY_FOLDER}/fmu1_model.h
@@ -208,6 +208,9 @@ to_native_c_path(${TEST_OUTPUT_FOLDER}/tempfolder FMU_TEMPFOLDER)
 file(MAKE_DIRECTORY ${TEST_OUTPUT_FOLDER}/tempfolder)
 
 #ADD_TEST(ctest_vector_test ${EXECUTABLE_OUTPUT_PATH}/jm_vector_test)
+if(FMILIB_BUILD_BEFORE_TESTS)
+	ADD_TEST(ctest_build_all "${CMAKE_COMMAND}" --build ${FMILIBRARYBUILD})
+endif()
 
 ADD_TEST(ctest_fmi_import_me_test fmi_import_me_test ${FMU_ME_PATH} ${FMU_TEMPFOLDER})
 ADD_TEST(ctest_fmi_import_cs_test fmi_import_cs_test ${FMU_CS_PATH} ${FMU_TEMPFOLDER})
@@ -218,5 +221,20 @@ ADD_TEST(ctest_fmi_zip_unzip_test fmi_zip_unzip_test)
 ADD_TEST(ctest_fmi_zip_zip_test fmi_zip_zip_test)
 ADD_TEST(ctest_fmi1_capi_cs_test fmi1_capi_cs_test)
 ADD_TEST(ctest_fmi1_capi_me_test fmi1_capi_me_test)
-                              
 
+if(FMILIB_BUILD_BEFORE_TESTS)
+	SET_TESTS_PROPERTIES ( 
+		ctest_fmi_import_me_test
+		ctest_fmi_import_cs_test 
+		ctest_fmi_import_xml_test
+		ctest_fmi_zip_unzip_test
+		ctest_fmi_zip_zip_test
+		ctest_fmi1_capi_cs_test
+		ctest_fmi1_capi_me_test
+		PROPERTIES DEPENDS ctest_build_all)
+endif()
+
+SET_TESTS_PROPERTIES ( 
+	ctest_fmi_import_xml_test	
+	PROPERTIES DEPENDS ctest_fmi_import_cs_test 	
+)

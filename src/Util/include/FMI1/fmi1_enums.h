@@ -17,7 +17,7 @@
 #ifndef FMI1_ENUMS_H_
 #define FMI1_ENUMS_H_
 
-#include <config_fmilib.h>
+#include <fmilib_config.h>
 
 #ifdef __cplusplus
 extern "C" {

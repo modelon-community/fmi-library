@@ -30,6 +30,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "config_test.h"
 #define MODEL_IDENTIFIER FMU_DUMMY_CS_MODEL_IDENTIFIER
 
+#include "fmu1_model.c"
 
 
 

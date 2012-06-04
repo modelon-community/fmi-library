@@ -22,7 +22,7 @@
 #define FMI1_IMPORT_H_
 
 #include <stddef.h>
-#include <config_fmilib.h>
+#include <fmilib_config.h>
 #include <Common/jm_callbacks.h>
 #include <Common/fmi_import_util.h>
 #include <Common/fmi_import_context.h>
@@ -46,25 +46,25 @@ extern "C" {
 \name Vendor annotation supporting structures
 */
 /**@{ */
-	/** Opaque list of vendor annotations. */
+	/** \brief  Opaque list of vendor annotations. */
 typedef struct fmi1_xml_vendor_list_t fmi1_import_vendor_list_t;
-	/** Opaque vendor object. */
+	/** \brief Opaque vendor object. */
 typedef struct fmi1_xml_vendor_t fmi1_import_vendor_t;
-	/** Opaque annotation object. */
+	/** \brief Opaque annotation object. */
 typedef struct fmi1_xml_annotation_t fmi1_import_annotation_t;
 /**@} */
 
 /**@name   Type definitions supporting structures*/
 /**@{ */
-/** Opaque type definition object. */
+/** \brief Opaque type definition object. */
 typedef struct fmi1_xml_real_typedef_t fmi1_import_real_typedef_t;
-/** Opaque integer type definition object. */
+/** \brief Opaque integer type definition object. */
 typedef struct fmi1_xml_integer_typedef_t fmi1_import_integer_typedef_t;
-/** Opaque enumeration type definition object. */
+/** \brief Opaque enumeration type definition object. */
 typedef struct fmi1_xml_enumeration_typedef_t fmi1_import_enumeration_typedef_t;
-/** Opaque general variable type definition object. */
+/** \brief Opaque general variable type definition object. */
 typedef struct fmi1_xml_variable_typedef_t fmi1_import_variable_typedef_t;
-/** Opaque list of the type definitions in the model */
+/** \brief Opaque list of the type definitions in the model */
 typedef struct fmi1_xml_type_definitions_t fmi1_import_type_definitions_t;
 /**@} */
 
@@ -92,17 +92,17 @@ typedef struct fmi1_import_variable_list_t fmi1_import_variable_list_t;
 
 /**\name Structures encapsulating unit information */
 /**@{ */
-/** A variable unit defined with a unit defition */
+/** \brief A variable unit defined with a unit defition */
 typedef struct fmi1_xml_unit_t fmi1_import_unit_t;
-/** A display unit */
+/** \brief A display unit. */
 typedef struct fmi1_xml_display_unit_t fmi1_import_display_unit_t;
-/** The list of all the unit definitions in the model */
+/** \brief The list of all the unit definitions in the model */
 typedef struct fmi1_xml_unit_definitions_t fmi1_import_unit_definitions_t;
 /**@} */
 
 /**\name FMU capabilities flags */
 /**@{ */
-/** A container for all the capability flags */
+/** \brief A container for all the capability flags */
 typedef struct fmi1_xml_capabilities_t fmi1_import_capabilities_t;
 /** @} */
 /**	\addtogroup fmi1_import_init Constuction, destruction and error handling
@@ -125,7 +125,11 @@ typedef struct fmi1_xml_capabilities_t fmi1_import_capabilities_t;
 */
 FMILIB_EXPORT fmi1_import_t* fmi1_import_parse_xml( fmi_import_context_t* context, const char* dirPath);
 
-/**Error handling:
+/**
+* \brief Retrieve the last error message.
+*
+* Error handling:
+*
 *  Many functions in the library return pointers to struct. An error is indicated by returning NULL/0-pointer.
 *  If error is returned than fmi_import_get_last_error() functions can be used to retrieve the error message.
 *  If logging callbacks were specified then the same information is reported via logger.
@@ -137,14 +141,15 @@ FMILIB_EXPORT fmi1_import_t* fmi1_import_parse_xml( fmi_import_context_t* contex
 FMILIB_EXPORT const char* fmi1_import_get_last_error(fmi1_import_t* fmu);
 
 /**
-Clear the error message.
+\brief Clear the error message.
 * @param fmu An FMU object as returned by fmi1_import_parse_xml().
 * @return 0 if further processing is possible. If it returns 1 then the 
 *	error was not recoverable. The fmu object should then be freed and recreated.
 */
 FMILIB_EXPORT int fmi1_import_clear_last_error(fmi1_import_t* fmu);
 
-/**Release the memory allocated
+/**
+\brief Release the memory allocated
 @param fmu An fmu object as returned by fmi1_import_parse_xml().
 */
 FMILIB_EXPORT void fmi1_import_free(fmi1_import_t* fmu);
@@ -155,55 +160,80 @@ FMILIB_EXPORT void fmi1_import_free(fmi1_import_t* fmu);
  *   The information is retrieved from the XML file.
  * @{
 */
-/** Get model name. */
+/** 
+\brief Get model name. 
+@param fmu An fmu object as returned by fmi1_import_parse_xml().
+*/
 FMILIB_EXPORT const char* fmi1_import_get_model_name(fmi1_import_t* fmu);
 
-/** Get model identifier. */
+/** 
+\brief Get model identifier. 
+@param fmu An fmu object as returned by fmi1_import_parse_xml().
+*/
 FMILIB_EXPORT const char* fmi1_import_get_model_identifier(fmi1_import_t* fmu);
 
-/** Get FMU GUID. */
+/** 
+\brief Get FMU GUID. 
+@param fmu An fmu object as returned by fmi1_import_parse_xml().
+*/
 FMILIB_EXPORT const char* fmi1_import_get_GUID(fmi1_import_t* fmu);
 
-/** Get FMU description. */
+/** 
+\brief Get FMU description.
+@param fmu An fmu object as returned by fmi1_import_parse_xml().
+*/
 FMILIB_EXPORT const char* fmi1_import_get_description(fmi1_import_t* fmu);
 
-/** Get FMU author. */
+/** 
+\brief Get FMU author. 
+@param fmu An fmu object as returned by fmi1_import_parse_xml().
+*/
 FMILIB_EXPORT const char* fmi1_import_get_author(fmi1_import_t* fmu);
 
-/** Get FMU version. */
+/** \brief Get FMU version.
+@param fmu An fmu object as returned by fmi1_import_parse_xml().
+*/
 FMILIB_EXPORT const char* fmi1_import_get_model_version(fmi1_import_t* fmu);
 
-/** Get FMI standard version (always 1.0). */
+/** \brief Get FMI standard version (always 1.0). 
+@param fmu An fmu object as returned by fmi1_import_parse_xml().
+*/
 FMILIB_EXPORT const char* fmi1_import_get_model_standard_version(fmi1_import_t* fmu);
 
-/** Get FMU generation tool. */
+/** \brief Get FMU generation tool. 
+@param fmu An fmu object as returned by fmi1_import_parse_xml().
+*/
 FMILIB_EXPORT const char* fmi1_import_get_generation_tool(fmi1_import_t* fmu);
 
-/** Get FMU generation date and time. */
+/** \brief Get FMU generation date and time. 
+@param fmu An fmu object as returned by fmi1_import_parse_xml().
+*/
 FMILIB_EXPORT const char* fmi1_import_get_generation_date_and_time(fmi1_import_t* fmu);
 
-/** Get variable naming convention used. */
+/** \brief Get variable naming convention used. 
+@param fmu An fmu object as returned by fmi1_import_parse_xml().
+*/
 FMILIB_EXPORT fmi1_variable_naming_convension_enu_t fmi1_import_get_naming_convention(fmi1_import_t* fmu);
 
-/** Get the number of contnuous states. */
+/** \brief Get the number of contnuous states. */
 FMILIB_EXPORT unsigned int fmi1_import_get_number_of_continuous_states(fmi1_import_t* fmu);
 
-/** Get the number of event indicators. */
+/** \brief Get the number of event indicators. */
 FMILIB_EXPORT unsigned int fmi1_import_get_number_of_event_indicators(fmi1_import_t* fmu);
 
-/** Get the start time for default experiment  as specified in the XML file. */
+/** \brief Get the start time for default experiment  as specified in the XML file. */
 FMILIB_EXPORT double fmi1_import_get_default_experiment_start(fmi1_import_t* fmu);
 
-/** Get the stop time for default experiment  as specified in the XML file. */
+/** \brief Get the stop time for default experiment  as specified in the XML file. */
 FMILIB_EXPORT double fmi1_import_get_default_experiment_stop(fmi1_import_t* fmu);
 
-/** Get the tolerance default experiment as specified in the XML file. */
+/** \brief Get the tolerance default experiment as specified in the XML file. */
 FMILIB_EXPORT double fmi1_import_get_default_experiment_tolerance(fmi1_import_t* fmu);
 
-/** Get the type of the FMU (model exchange or co-simulation) */
+/** \brief Get the type of the FMU (model exchange or co-simulation) */
 FMILIB_EXPORT fmi1_fmu_kind_enu_t fmi1_import_get_fmu_kind(fmi1_import_t* fmu);
 
-/** Get the structure with capability flags.
+/** \brief Get the structure with capability flags.
 	@return A pointer to the fmi1_import_capabilities_t allocated within the library. 
 			Note that for model exchange FMUs the values of all the flags are always default.
 */

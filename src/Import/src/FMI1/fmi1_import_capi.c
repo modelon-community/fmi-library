@@ -138,10 +138,10 @@ const char* fmi1_import_get_model_types_platform(fmi1_import_t* fmu) {
 	return fmi1_capi_get_model_types_platform(fmu -> capi);
 }
 
-jm_status_enu_t fmi1_import_instantiate_model(fmi1_import_t* fmu, fmi1_string_t instanceName, fmi1_string_t GUID, fmi1_boolean_t loggingOn) {
-	fmi1_component_t c;
-	
-	c = fmi1_capi_instantiate_model(fmu -> capi, instanceName, GUID, loggingOn);
+jm_status_enu_t fmi1_import_instantiate_model(fmi1_import_t* fmu, fmi1_string_t instanceName) {
+	fmi1_string_t GUID = fmi1_import_get_GUID(fmu);
+	fmi1_boolean_t loggingOn = (fmu->callbacks->log_level > jm_log_level_nothing);
+	fmi1_component_t c = fmi1_capi_instantiate_model(fmu -> capi, instanceName, GUID, loggingOn);
 	if (c == NULL) {
 		return jm_status_error;
 	} else {
@@ -203,11 +203,11 @@ const char* fmi1_import_get_types_platform(fmi1_import_t* fmu) {
 	return fmi1_capi_get_types_platform(fmu -> capi);
 }
 
-jm_status_enu_t fmi1_import_instantiate_slave(fmi1_import_t* fmu, fmi1_string_t instanceName, fmi1_string_t fmuGUID, fmi1_string_t fmuLocation, fmi1_string_t mimeType,
-																 fmi1_real_t timeout, fmi1_boolean_t visible, fmi1_boolean_t interactive, fmi1_boolean_t loggingOn) {
-	fmi1_component_t c;
-
-	c = fmi1_capi_instantiate_slave(fmu -> capi, instanceName, fmuGUID, fmuLocation, mimeType, timeout, visible, interactive, loggingOn);
+jm_status_enu_t fmi1_import_instantiate_slave(fmi1_import_t* fmu, fmi1_string_t instanceName, fmi1_string_t fmuLocation, fmi1_string_t mimeType,
+																 fmi1_real_t timeout, fmi1_boolean_t visible, fmi1_boolean_t interactive) {
+ 	fmi1_string_t fmuGUID = fmi1_import_get_GUID(fmu);
+	fmi1_boolean_t loggingOn = (fmu->callbacks->log_level > jm_log_level_nothing);
+	fmi1_component_t c = fmi1_capi_instantiate_slave(fmu -> capi, instanceName, fmuGUID, fmuLocation, mimeType, timeout, visible, interactive, loggingOn);
 	if (c == NULL) {
 		return jm_status_error;
 	} else {

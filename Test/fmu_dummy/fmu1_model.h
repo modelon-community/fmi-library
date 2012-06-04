@@ -15,6 +15,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #ifndef FM1_MODEL_H_
+#define FM1_MODEL_H_
 
 #include <fmu_dummy/fmu1_model_defines.h>
 

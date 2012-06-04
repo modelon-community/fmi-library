@@ -26,7 +26,7 @@
 
 #include <stddef.h>
 #include <Common/jm_callbacks.h>
-/* #include <FMI1/fmi1_xml_model_description.h> */
+#include <Common/fmi_version.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -47,14 +47,6 @@ fmi_xml_context_t* fmi_xml_allocate_context( jm_callbacks* callbacks);
 
 /** \brief Free library context */
 void fmi_xml_free_context(fmi_xml_context_t *context);
-
-/** \brief Suported versions of FMI standard */
-typedef enum
-{ 
-	fmi_version_unknown_enu = 0,
-	fmi_version_1_enu
-	/* , fmi_version_2_0_enu */
-} fmi_version_enu_t;
 
 /** \brief Parse XML file to identify FMI standard version (only beginning of the file is parsed). */
 fmi_version_enu_t fmi_xml_get_fmi_version( fmi_xml_context_t*, const char* fileName);

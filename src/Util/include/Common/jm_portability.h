@@ -16,7 +16,7 @@
 
 #ifndef JM_PORTABILITY_H_
 #define JM_PORTABILITY_H_
-#include <config_fmilib.h>
+#include <fmilib_config.h>
 
 /* Include platform dependent headers */
 #if defined(_MSC_VER) || defined(WIN32)
@@ -55,5 +55,12 @@ typedef void* jm_dll_function_ptr;
 jm_status_enu_t jm_portability_load_dll_function	(DLL_HANDLE dll_handle, char* dll_function_name, jm_dll_function_ptr* dll_function_ptrptr);
 /** Return error associated with Dll handling */
 char*			jm_portability_get_last_dll_error	(void);
+
+/** Get current working directory name */
+jm_status_enu_t jm_portability_get_current_working_directory(char* buffer, size_t len);
+
+/** Set current working directory*/
+jm_status_enu_t jm_portability_set_current_working_directory(char* cwd);
+
 /*@}*/
 #endif /* End of header file JM_PORTABILITY_H_ */

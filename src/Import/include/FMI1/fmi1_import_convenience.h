@@ -83,7 +83,29 @@ typedef struct {
 	\param fmu - An fmu object as returned by fmi1_import_parse_xml().
 	\param counts - a pointer to a preallocated struct.
 */
-FMILIB_EXPORT void fmi1_import_collect_model_counts(fmi1_import_t* fmu, fmi1_import_model_counts_t* counts);
+FMILIB_EXPORT 
+void fmi1_import_collect_model_counts(fmi1_import_t* fmu, fmi1_import_model_counts_t* counts);
+
+/**
+  \brief Print msgIn into msgOut by expanding variable references of the form #<Type><VR># into variable names
+  and replacing '##' with a single #.
+   \param fmu - An fmu object as returned by fmi1_import_parse_xml().
+   \param msgIn - Log message as produced by an FMU.
+   \param msgOut - Output message buffer. 
+   \param maxMsgSize - maximum message size
+   */
+FMILIB_EXPORT 
+void fmi1_import_expand_variable_references(fmi1_import_t* fmu, const char* msgIn, char* msgOut, size_t maxMsgSize);
+
+
+/**
+	\brief An implementation of FMI 1.0 logger that forwards the messages to logger function inside jm_callbacks structure.
+	
+	The function is using a global array of active FMUs to find out which FMU is sending the logger and attach is to
+	the appropriate fmi_import_t struct. The function is called by the FMU.	
+*/
+FMILIB_EXPORT 
+void  fmi1_log_forwarding(fmi1_component_t c, fmi1_string_t instanceName, fmi1_status_t status, fmi1_string_t category, fmi1_string_t message, ...);
 
 /** @} */
 

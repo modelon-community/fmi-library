@@ -21,34 +21,61 @@
 
 #include "Common/jm_callbacks.h"
 
+static const char* jm_log_level_str[] = 
+{
+#define log_level_str_put(level) #level,
+	JM_LOG_LEVELS(log_level_str_put)
+	"all"
+};
+
+/** \brief Convert log level into a string */
+const char* jm_log_level_to_string(jm_log_level_enu_t level) {
+	if((level > jm_log_level_nothing) && (level < jm_log_level_all))
+		return jm_log_level_str[level - 1];
+	else
+		return "unknown";
+}
+
 void jm_default_logger(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_level, jm_string message) {
-	switch(log_level) {
-	case jm_log_level_all:
-	case jm_log_level_info:
-		fprintf(stdout, "[INFO][%s]%s\n",module, message);
-		break;
-	case jm_log_level_warning:
-		fprintf(stdout, "[WARNING][%s]%s\n",module, message);
-		break;
-	default:
-		fprintf(stdout, "[ERROR][%s]%s\n",module, message);
-	}
+	fprintf(stderr, "[%s][%s]%s\n", jm_log_level_to_string(log_level), module, message);
 }
 
 void jm_log(jm_callbacks* cb, const char* module, jm_log_level_enu_t log_level, const char* fmt, ...) {
 	va_list args;
+	if(log_level > cb->log_level) return;
     va_start (args, fmt);
     jm_log_v(cb, module, log_level, fmt, args);
     va_end (args);
 }
 
 void jm_log_v(jm_callbacks* cb, const char* module, jm_log_level_enu_t log_level, const char* fmt, va_list ap) {
-	if(log_level < cb->log_level) return;
+	if(log_level > cb->log_level) return;
     vsprintf(cb->errMessageBuffer, fmt, ap);
 	if(cb->logger) {
 		cb->logger(cb,module, log_level, cb->errMessageBuffer);
 	}
 }
+
+#define CREATE_LOG_FUNCTIONS(log_level) \
+void jm_log_ ## log_level(jm_callbacks* cb, const char* module, const char* fmt, ...) { \
+	va_list args; \
+    va_start (args, fmt); \
+	jm_log_v(cb, module, jm_log_level_ ## log_level, fmt, args); \
+    va_end (args); \
+} \
+	void jm_log_ ## log_level ## _v(jm_callbacks* cb, const char* module, const char* fmt, va_list ap) { \
+    jm_log_v(cb, module, jm_log_level_ ## log_level, fmt, ap); \
+}
+
+CREATE_LOG_FUNCTIONS(fatal)
+CREATE_LOG_FUNCTIONS(error)
+CREATE_LOG_FUNCTIONS(warning)
+CREATE_LOG_FUNCTIONS(info)
+CREATE_LOG_FUNCTIONS(verbose)
+#ifdef FMILIB_ENABLE_LOG_LEVEL_DEBUG
+CREATE_LOG_FUNCTIONS(debug)
+#endif
+
 
 jm_callbacks jm_standard_callbacks;
 

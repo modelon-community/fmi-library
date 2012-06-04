@@ -39,7 +39,12 @@ struct fmi1_import_t {
 	jm_callbacks* callbacks;
 	fmi1_xml_model_description_t* md;
 	fmi1_capi_t* capi;
+	jm_vector(char) logMessageBuffer;
 };
+
+extern jm_vector(jm_voidp) fmi1_import_active_fmu_store;
+
+extern jm_vector(jm_voidp)* fmi1_import_active_fmu;
 
 #ifdef __cplusplus
 }

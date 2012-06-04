@@ -57,13 +57,8 @@
     #define FMILIB_PRIVATE
 #endif
 
-#cmakedefine FMILIB_DEBUG_TRACE
-#ifdef FMILIB_DEBUG_TRACE
-#include <stdio.h>
-#define FMILIB_TRACE(STR) printf(STR)
-#else
-#define FMILIB_TRACE(STR)
-#endif
+#cmakedefine FMILIB_ENABLE_LOG_LEVEL_DEBUG
+
 #cmakedefine FMILIB_GENERATE_BUILD_STAMP
 #ifdef FMILIB_GENERATE_BUILD_STAMP
 #ifdef __cplusplus

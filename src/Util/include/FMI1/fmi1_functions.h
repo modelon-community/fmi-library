@@ -17,7 +17,7 @@
 #ifndef FMI1_FUNCTIONS_H_
 #define FMI1_FUNCTIONS_H_
 
-#include <config_fmilib.h>
+#include <fmilib_config.h>
 
 #include "fmi1_types.h"
 #include <string.h>
@@ -50,7 +50,14 @@ typedef void  (*fmi1_callback_free_memory_ft)    (void* obj);
 /** FMI 1.0 step finished callback function type */
 typedef void  (*fmi1_step_finished_ft)          (fmi1_component_t c, fmi1_status_t status);
 
-/** Unified structure for both FMI 1.0 ME and CS */
+/** Functions for FMI 1.0 ME */
+typedef struct {
+	fmi1_callback_logger_ft         logger;
+	fmi1_callback_allocate_memory_ft allocateMemory;
+	fmi1_callback_free_memory_ft     freeMemory;
+} fmi1_me_callback_functions_t;
+
+/** The FMI 1.0 CS strcuture adds one field to the ME, otherwize compatible */
 typedef struct {
 	fmi1_callback_logger_ft         logger;
 	fmi1_callback_allocate_memory_ft allocateMemory;
@@ -89,7 +96,7 @@ typedef fmi1_status_t		(*fmi1_get_string_ft)					(fmi1_component_t c, const fmi1
 
 /* FMI ME 1.0 functions */
 typedef const char*		    (*fmi1_get_model_typesPlatform_ft)		(void);
-typedef fmi1_component_t	(*fmi1_instantiate_model_ft)			(fmi1_string_t instanceName, fmi1_string_t GUID, fmi1_callback_functions_t functions, fmi1_boolean_t loggingOn);
+typedef fmi1_component_t	(*fmi1_instantiate_model_ft)			(fmi1_string_t instanceName, fmi1_string_t GUID, fmi1_me_callback_functions_t functions, fmi1_boolean_t loggingOn);
 typedef void			    (*fmi1_free_model_instance_ft)			(fmi1_component_t c);
 typedef fmi1_status_t		(*fmi1_set_time_ft)					(fmi1_component_t c, fmi1_real_t time);
 typedef fmi1_status_t		(*fmi1_set_continuous_states_ft)		(fmi1_component_t c, const fmi1_real_t x[], size_t nx);

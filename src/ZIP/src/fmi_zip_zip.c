@@ -20,9 +20,11 @@ extern "C" {
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <miniunz.h>
+
 #include <Common/jm_types.h>
 #include <Common/jm_callbacks.h>
-#include "minizip.h"
+#include <Common/jm_portability.h>
 
 #ifdef WIN32
 #include <direct.h>

@@ -23,8 +23,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #endif
 
 /* Standard FMI 1.0 ME and CS types */
-#include <1.0-CS/fmiPlatformTypes.h>
-#include <1.0-CS/fmiFunctions.h>
+#include <FMI1/fmiPlatformTypes.h>
+#include <FMI1/fmiFunctions.h>
 
 #include <fmu_dummy/fmu1_model.h>
 #include "config_test.h"

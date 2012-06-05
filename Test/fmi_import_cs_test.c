@@ -173,6 +173,7 @@ int main(int argc, char *argv[])
     callbacks.realloc = realloc;
     callbacks.free = free;
     callbacks.logger = importlogger;
+	callbacks.log_level = jm_log_level_debug;
     callbacks.context = 0;
 
 	callBackFunctions.logger = fmi1_log_forwarding;

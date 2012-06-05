@@ -20,8 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     #pragma GCC visibility push(default)
 #endif
 /* Standard FMI 1.0 ME and CS types */
-#include <1.0-ME/fmiModelTypes.h>
-#include <1.0-ME/fmiModelFunctions.h>
+#include <FMI1/fmiModelTypes.h>
+#include <FMI1/fmiModelFunctions.h>
 
 #include <fmu_dummy/fmu1_model.h>
 #include "config_test.h"

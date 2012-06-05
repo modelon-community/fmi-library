@@ -39,7 +39,7 @@
 #define fmiString fmi1_string_t
 /** @}*/
 /* Standard FMI 1.0 ME and CS types */
-#include "1.0-CS/fmiPlatformTypes.h"
+#include <FMI1/fmiPlatformTypes.h>
 /** FMI platform name constant string.*/
 static const char * fmi1_get_platform(void) {
 	return fmiPlatform;

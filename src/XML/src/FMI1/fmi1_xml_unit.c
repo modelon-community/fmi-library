@@ -74,11 +74,11 @@ int fmi1_xml_handle_UnitDefinitions(fmi1_xml_parser_context_t *context, const ch
     fmi1_xml_model_description_t* md = context->modelDescription;
     if(!data) {
         if(context -> currentElmHandle != fmi1_xml_handle_fmiModelDescription) {
-            fmi1_xml_parse_error(context, "UnitDefinitions XML element must be a part of fmiModelDescription");
+            fmi1_xml_parse_fatal(context, "UnitDefinitions XML element must be a part of fmiModelDescription");
             return -1;
         }
         if(context->lastElmHandle != 0) {
-            fmi1_xml_parse_error(context, "UnitDefinitions XML element must be the first inside fmi1_xml_model_description");
+            fmi1_xml_parse_fatal(context, "UnitDefinitions XML element must be the first inside fmi1_xml_model_description");
             return -1;
         }
     }
@@ -112,7 +112,7 @@ fmi1_xml_display_unit_t* fmi1_xml_get_parsed_unit(fmi1_xml_parser_context_t *con
     if(pnamed) *pnamed = named = jm_named_alloc_v(name,sizeof(fmi1_xml_unit_t),dummy.baseUnit - (char*)&dummy,context->callbacks);
 
     if(!pnamed || !named.ptr) {
-        fmi1_xml_parse_error(context, "Could not allocate memory");
+        fmi1_xml_parse_fatal(context, "Could not allocate memory");
         return 0;
     }
 
@@ -130,7 +130,7 @@ fmi1_xml_display_unit_t* fmi1_xml_get_parsed_unit(fmi1_xml_parser_context_t *con
 int fmi1_xml_handle_BaseUnit(fmi1_xml_parser_context_t *context, const char* data) {
     if(!data) {
         if(context -> currentElmHandle != fmi1_xml_handle_UnitDefinitions) {
-            fmi1_xml_parse_error(context, "BaseUnit XML element must be a part of UnitDefinitions");
+            fmi1_xml_parse_fatal(context, "BaseUnit XML element must be a part of UnitDefinitions");
             return -1;
         }
         {
@@ -155,7 +155,7 @@ int fmi1_xml_handle_BaseUnit(fmi1_xml_parser_context_t *context, const char* dat
 int fmi1_xml_handle_DisplayUnitDefinition(fmi1_xml_parser_context_t *context, const char* data) {
     if(!data) {
         if(context -> currentElmHandle != fmi1_xml_handle_BaseUnit) {
-            fmi1_xml_parse_error(context, "DisplayUnitDefinition XML element must be a part of BaseUnit");
+            fmi1_xml_parse_fatal(context, "DisplayUnitDefinition XML element must be a part of BaseUnit");
             return -1;
         }
         {
@@ -180,7 +180,7 @@ int fmi1_xml_handle_DisplayUnitDefinition(fmi1_xml_parser_context_t *context, co
             dispUnit = pnamed->ptr;
             if( !pnamed || !dispUnit ||
                 !jm_vector_push_back(jm_voidp)(&unit->displayUnits, dispUnit) ) {
-                fmi1_xml_parse_error(context, "Could not allocate memory");
+                fmi1_xml_parse_fatal(context, "Could not allocate memory");
                 return -1;
             }
             dispUnit->baseUnit = unit;

@@ -22,7 +22,7 @@
 const char* fmi1_naming_convention_to_string(fmi1_variable_naming_convension_enu_t convention) {
     if(convention == fmi1_naming_enu_flat) return "flat";
     if(convention == fmi1_naming_enu_structured) return "structured";
-    return "Invalid";
+    return "Unknown";
 }
 
 const char* fmi1_fmu_kind_to_string(fmi1_fmu_kind_enu_t kind) {
@@ -31,7 +31,7 @@ const char* fmi1_fmu_kind_to_string(fmi1_fmu_kind_enu_t kind) {
     case fmi1_fmu_kind_enu_cs_standalone: return "CoSimulation_StandAlone";
     case fmi1_fmu_kind_enu_cs_tool: return "CoSimulation_Tool";
     }
-    return "Invalid";
+    return "Unknown";
 }
 
 const char* fmi1_variability_to_string(fmi1_variability_enu_t v) {
@@ -41,7 +41,7 @@ const char* fmi1_variability_to_string(fmi1_variability_enu_t v) {
     case fmi1_variability_enu_discrete: return "discrete";
     case fmi1_variability_enu_continuous: return "continuous";
     }
-    return "Error";
+    return "Unknown";
 }
 
 const char* fmi1_causality_to_string(fmi1_causality_enu_t c) {
@@ -51,7 +51,7 @@ const char* fmi1_causality_to_string(fmi1_causality_enu_t c) {
     case fmi1_causality_enu_internal: return "internal";
     case fmi1_causality_enu_none: return "none";
     };
-    return "Error";
+    return "Unknown";
 }
 
 const char* fmi1_status_to_string(fmi1_status_t status) {

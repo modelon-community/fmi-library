@@ -14,39 +14,19 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef FMI_VERSION_H
-#define FMI_VERSION_H
-#include <fmilib_config.h>
+#include <assert.h>
+#include <Common/fmi_version.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+static const char* fmi_versions[] = {
+	"1.0",
+	"2.0"
+};
 
-/**
-	@file fmi_version.h Enum defining supported FMI versions.
-
-	*/
-/** \addtogroup jm_utils
-  * @{
-*/
-
-/** \brief Suported versions of FMI standard */
-typedef enum
-{ 
-	fmi_version_unknown_enu = 0,
-	fmi_version_1_enu,
-	fmi_version_2_0_enu,
-	fmi_version_unsupported_enu
-} fmi_version_enu_t;
-
-/** Convert version enum into string */
-FMILIB_EXPORT
-const char * fmi_version_to_string(fmi_version_enu_t v);
-
-/** @} */
-#ifdef __cplusplus
+const char * fmi_version_to_string(fmi_version_enu_t v){
+	if( (v <= fmi_version_unknown_enu) || (v > fmi_version_unsupported_enu - 1)) {
+		assert(0);
+		return "UNEXPECTED";
+	}
+	return fmi_versions[v - 1];
 }
-#endif
 
-/* JM_TYPES_H */
-#endif

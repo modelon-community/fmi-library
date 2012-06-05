@@ -49,7 +49,7 @@ const char* fmi1_xml_get_annotation_value(fmi1_xml_annotation_t* a) {
 int fmi1_xml_handle_VendorAnnotations(fmi1_xml_parser_context_t *context, const char* data) {
     if(!data) {
         if(context -> currentElmHandle != fmi1_xml_handle_fmiModelDescription) {
-            fmi1_xml_parse_error(context, "VendorAnnotations XML element must be a part of fmiModelDescription");
+            fmi1_xml_parse_fatal(context, "VendorAnnotations XML element must be a part of fmiModelDescription");
             return -1;
         }
     }
@@ -62,7 +62,7 @@ int fmi1_xml_handle_VendorAnnotations(fmi1_xml_parser_context_t *context, const 
 int fmi1_xml_handle_Tool(fmi1_xml_parser_context_t *context, const char* data) {
     if(!data) {
         if(context -> currentElmHandle != fmi1_xml_handle_VendorAnnotations) {
-            fmi1_xml_parse_error(context, "Tool XML element must be a part of VendorAnnotations");
+            fmi1_xml_parse_fatal(context, "Tool XML element must be a part of VendorAnnotations");
             return -1;
         }
         {            
@@ -79,7 +79,7 @@ int fmi1_xml_handle_Tool(fmi1_xml_parser_context_t *context, const char* data) {
             if(pvendor )
                 *pvendor = vendor = jm_named_alloc_v(bufName,sizeof(fmi1_xml_vendor_t), dummyV.name - (char*)&dummyV, context->callbacks).ptr;
             if(!pvendor || !vendor) {
-                fmi1_xml_parse_error(context, "Could not allocate memory");
+                fmi1_xml_parse_fatal(context, "Could not allocate memory");
                 return -1;
             }
             jm_vector_init(jm_named_ptr)(&vendor->annotations,0, context->callbacks);
@@ -94,7 +94,7 @@ int fmi1_xml_handle_Tool(fmi1_xml_parser_context_t *context, const char* data) {
 int fmi1_xml_handle_Annotation(fmi1_xml_parser_context_t *context, const char* data) {
     if(!data) {
         if(context -> currentElmHandle != fmi1_xml_handle_Tool) {
-            fmi1_xml_parse_error(context, "Annotation XML element must be a part of Tool");
+            fmi1_xml_parse_fatal(context, "Annotation XML element must be a part of Tool");
             return -1;
         }
 
@@ -123,7 +123,7 @@ int fmi1_xml_handle_Annotation(fmi1_xml_parser_context_t *context, const char* d
             if(pnamed) *pnamed = named = jm_named_alloc_v(bufName,sizeof(fmi1_xml_annotation_t)+vallen+1,sizeof(fmi1_xml_annotation_t)+vallen,context->callbacks);
             annotation = named.ptr;
             if( !pnamed || !annotation ) {
-                fmi1_xml_parse_error(context, "Could not allocate memory");
+                fmi1_xml_parse_fatal(context, "Could not allocate memory");
                 return -1;
             }
             annotation->name = named.name;

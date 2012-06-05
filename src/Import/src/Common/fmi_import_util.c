@@ -17,6 +17,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <assert.h>
 
 #include <fmilib_config.h>
 #include "fmi_import_util.h"
@@ -29,6 +30,7 @@ char* fmi_import_get_dll_path(const char* fmu_unzipped_path, const char* model_i
 	int len;
 
 	if (model_identifier == NULL || fmu_unzipped_path == NULL) {
+		assert(0);
 		return NULL;
 	}
 
@@ -36,7 +38,7 @@ char* fmi_import_get_dll_path(const char* fmu_unzipped_path, const char* model_i
 
 	dll_path = (char*)callbacks->calloc(len, sizeof(char));
 	if (dll_path == NULL) {
-		callbacks->logger(NULL, "FMIIMPORTUTIL", jm_log_level_error, "Failed to allocate memory.");
+		jm_log_fatal(callbacks, "FMILIB", "Failed to allocate memory.");
 		return NULL;
 	}
 

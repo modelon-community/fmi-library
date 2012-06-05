@@ -35,7 +35,10 @@ fmi1_xml_model_description_t * fmi1_xml_allocate_model_description( jm_callbacks
         cb = jm_get_default_callbacks();
     }
     md = (fmi1_xml_model_description_t*)cb->malloc(sizeof(fmi1_xml_model_description_t));
-    if(!md) return 0;
+    if(!md) {
+		jm_log_fatal(cb, module, "Could not allocate memory");
+		return 0;
+	}
 
     md->callbacks = cb;
 
@@ -159,7 +162,9 @@ void fmi1_xml_clear_last_error(fmi1_xml_model_description_t* md) {
 }
 
 void fmi1_xml_free_model_description(fmi1_xml_model_description_t* md) {
-    jm_callbacks* cb = md->callbacks;
+    jm_callbacks* cb;
+	if(!md) return;
+	cb = md->callbacks;
     fmi1_xml_clear_model_description(md);
     cb->free(md);
 }
@@ -239,17 +244,27 @@ void fmi1_xml_set_default_experiment_tolerance(fmi1_xml_model_description_t* md,
 }
 
 fmi1_xml_vendor_list_t* fmi1_xml_get_vendor_list(fmi1_xml_model_description_t* md) {
+	assert(md);
     return (fmi1_xml_vendor_list_t*)&md->vendorList;
 }
 
 unsigned int  fmi1_xml_get_number_of_vendors(fmi1_xml_vendor_list_t* vl) {
+	if(!vl) {
+		assert(vl && "Vendor list cannot be NULL");
+		return 0;
+	}
     return jm_vector_get_size(jm_voidp)(&vl->vendors);
 }
 
 fmi1_xml_vendor_t* fmi1_xml_get_vendor(fmi1_xml_vendor_list_t* v, unsigned int  index) {
-    jm_vector(jm_voidp)* vl = &v->vendors;
+    jm_vector(jm_voidp)* vl;
+	if(!v) {
+		assert(v && "Vendor list cannot be NULL");
+		return 0;
+	}
+	vl = &v->vendors;
     if(index >= jm_vector_get_size(jm_voidp)(vl)) return 0;
-    return jm_vector_get_item(jm_voidp)(vl, index);
+    return (fmi1_xml_vendor_t*)jm_vector_get_item(jm_voidp)(vl, index);
 }
 
 fmi1_xml_unit_definitions_t* fmi1_xml_get_unit_definitions(fmi1_xml_model_description_t* md) {
@@ -257,10 +272,15 @@ fmi1_xml_unit_definitions_t* fmi1_xml_get_unit_definitions(fmi1_xml_model_descri
 }
 
 unsigned int  fmi1_xml_get_unit_definitions_number(fmi1_xml_unit_definitions_t* ud) {
+	if(!ud) {
+		assert(ud && "Unit definitions cannot be NULL");
+		return 0;
+	}
     return jm_vector_get_size(jm_named_ptr)(&ud->definitions);
 }
 
 fmi1_xml_type_definitions_t* fmi1_xml_get_type_definitions(fmi1_xml_model_description_t* md) {
+	assert(md);
     return &md->typeDefinitions;
 }
 
@@ -270,7 +290,7 @@ int fmi1_xml_handle_fmiModelDescription(fmi1_xml_parser_context_t *context, cons
     fmi1_xml_model_description_t* md = context->modelDescription;
     if(!data) {
         if(context -> currentElmHandle != 0) {
-            fmi1_xml_parse_error(context, "fmi1_xml_model_description must be the root XML element");
+            fmi1_xml_parse_fatal(context, "fmi1_xml_model_description must be the root XML element");
             return -1;
         }
 		jm_log_verbose(context->callbacks, module, "Parsing XML element fmiModelDescription");
@@ -313,7 +333,7 @@ int fmi1_xml_handle_DefaultExperiment(fmi1_xml_parser_context_t *context, const 
         fmi1_xml_model_description_t* md = context->modelDescription;
         if(  context -> currentElmHandle != fmi1_xml_handle_fmiModelDescription)
         {
-            fmi1_xml_parse_error(context, "DefaultExperiment XML element must be a part of fmiModelDescription");
+            fmi1_xml_parse_fatal(context, "DefaultExperiment XML element must be a part of fmiModelDescription");
             return -1;
         }
         if(  (context -> lastElmHandle != 0) &&
@@ -321,7 +341,7 @@ int fmi1_xml_handle_DefaultExperiment(fmi1_xml_parser_context_t *context, const 
               (context->lastElmHandle != fmi1_xml_handle_UnitDefinitions)
                 )
         {
-            fmi1_xml_parse_error(context, "DefaultExperiment XML element must either be the first or follow TypeDefinitions or UnitDefinitions");
+            fmi1_xml_parse_fatal(context, "DefaultExperiment XML element must either be the first or follow TypeDefinitions or UnitDefinitions");
             return -1;
         }
         /* process the attributes */

@@ -24,6 +24,7 @@ extern "C" {
 #include <FMI1/fmi1_enums.h>
 #include <FMI1/fmi1_capi.h>
 
+static const char * module = "FMILIB";
 
 /* Load and destroy functions */
 jm_status_enu_t fmi1_import_create_dllfmu(fmi1_import_t* fmu, fmi1_callback_functions_t callBackFunctions) {
@@ -33,6 +34,7 @@ jm_status_enu_t fmi1_import_create_dllfmu(fmi1_import_t* fmu, fmi1_callback_func
 	fmi1_fmu_kind_enu_t standard;
 
 	if (fmu == NULL) {
+		assert(0);
 		return jm_status_error;
 	}
 
@@ -71,32 +73,44 @@ jm_status_enu_t fmi1_import_create_dllfmu(fmi1_import_t* fmu, fmi1_callback_func
 		fmu -> capi = NULL;
 		return jm_status_error;
 	}
+	jm_log_verbose(fmu->callbacks, module, "Successfully loaded all the interface functions"); 
 
 	return jm_status_success;
 }
 
 void fmi1_import_destroy_dllfmu(fmi1_import_t* fmu) {
-
 	
 	if (fmu == NULL) {
 		return;
 	}
 
-	/* Free DLL handle */
-	fmi1_capi_free_dll(fmu -> capi);
+	if(fmu -> capi) {
+		jm_log_verbose(fmu->callbacks, module, "Releasing FMU CAPI interface"); 
 
-	/* Destroy the C-API struct */
-	fmi1_capi_destroy_dllfmu(fmu -> capi);
+		/* Free DLL handle */
+		fmi1_capi_free_dll(fmu -> capi);
 
-	fmu -> capi = NULL;
+		/* Destroy the C-API struct */
+		fmi1_capi_destroy_dllfmu(fmu -> capi);
+
+		fmu -> capi = NULL;
+	}
 }
 
 /* FMI 1.0 Common functions */
 const char* fmi1_import_get_version(fmi1_import_t* fmu) {
+	if(!fmu->capi) {
+		jm_log_error(fmu->callbacks, module,"FMU CAPI is not loaded");
+		return 0;
+	}
 	return fmi1_capi_get_version(fmu -> capi);
 }
 
 fmi1_status_t fmi1_import_set_debug_logging(fmi1_import_t* fmu, fmi1_boolean_t loggingOn) {
+	if(!fmu->capi) {
+		jm_log_error(fmu->callbacks, module,"FMU CAPI is not loaded");
+		return fmi1_status_fatal;
+	}
 	return fmi1_capi_set_debug_logging(fmu -> capi, loggingOn);
 }
 

@@ -46,20 +46,16 @@ typedef enum {
 	jm_status_warning = 1
 } jm_status_enu_t;
 
-#define JM_LOG_LEVELS(LOG) \
-	LOG(fatal) \
-	LOG(error)\
-	LOG(warning) \
-	LOG(info) \
-	LOG(verbose) \
-	LOG(debug)
-
 /** \brief Log levels supported via the logger functions in ::jm_callbacks */
 typedef enum {	
-	jm_log_level_nothing, /* "nothing" must be first in this enum*/
-#define jm_put_log_level(level) jm_log_level_ ## level,
-	JM_LOG_LEVELS(jm_put_log_level)
-	jm_log_level_all /* "all" must be last in this enum*/
+	jm_log_level_nothing = 0, /** \brief Must be first in this enum. May be usefull in application relying solely on jm_get_last_error() */
+	jm_log_level_fatal, /** \brief Unrecoverable errors */
+	jm_log_level_error, /** \brief Errors that may be not critical for some FMUs. */
+	jm_log_level_warning, /** \brief Non-critical issues */
+	jm_log_level_info, /** \brief Informative messages */
+	jm_log_level_verbose, /** \brief Verbose messages */
+	jm_log_level_debug, /** \brief Debug messages. Only enabled if library is configured with FMILIB_ENABLE_LOG_LEVEL_DEBUG */
+	jm_log_level_all /** \brief  Must be last in this enum. */
 } jm_log_level_enu_t;
 
 /** \brief Convert log level into a string */

@@ -39,7 +39,8 @@ extern "C" {
 typedef enum fmi1_variable_naming_convension_enu_t
 { 
         fmi1_naming_enu_flat,
-        fmi1_naming_enu_structured
+        fmi1_naming_enu_structured,
+        fmi1_naming_enu_unknown
 } fmi1_variable_naming_convension_enu_t;
 
 /** \brief Convert a #fmi1_variable_naming_convension_enu_t constant into string */
@@ -50,7 +51,8 @@ typedef enum fmi1_fmu_kind_enu_t
 {
         fmi1_fmu_kind_enu_me = 0,
         fmi1_fmu_kind_enu_cs_standalone,
-        fmi1_fmu_kind_enu_cs_tool
+        fmi1_fmu_kind_enu_cs_tool,
+		fmi1_fmu_kind_enu_unknown
 } fmi1_fmu_kind_enu_t;
 
 /** \brief Convert a #fmi1_fmu_kind_enu_t constant into string  */
@@ -61,7 +63,8 @@ typedef enum fmi1_variability_enu_t {
         fmi1_variability_enu_constant,
         fmi1_variability_enu_parameter,
         fmi1_variability_enu_discrete,
-        fmi1_variability_enu_continuous
+        fmi1_variability_enu_continuous,
+		fmi1_variability_enu_unknown
 } fmi1_variability_enu_t;
 
 /** \brief Convert a #fmi1_variability_enu_t constant into string  */
@@ -72,20 +75,21 @@ typedef enum fmi1_causality_enu_t {
         fmi1_causality_enu_input,
         fmi1_causality_enu_output,
         fmi1_causality_enu_internal,
-        fmi1_causality_enu_none
+        fmi1_causality_enu_none,
+        fmi1_causality_enu_unknown
 } fmi1_causality_enu_t;
 
 /** \brief Convert a #fmi1_causality_enu_t constant into string  */
 FMILIB_EXPORT const char* fmi1_causality_to_string(fmi1_causality_enu_t c);
 
-/** Alias property for variables */
+/** \brief Alias property for variables */
 typedef enum fmi1_variable_alias_kind_enu_t {
     fmi1_variable_is_negated_alias = -1,
     fmi1_variable_is_not_alias = 0,
     fmi1_variable_is_alias = 1
 } fmi1_variable_alias_kind_enu_t;
 
-/** Base types used in type definitions */
+/** \brief Base types used in type definitions */
 typedef enum fmi1_base_type_enu_t
 {
 	fmi1_base_type_real,

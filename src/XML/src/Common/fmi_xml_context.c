@@ -35,16 +35,19 @@ fmi_xml_context_t* fmi_xml_allocate_context( jm_callbacks* callbacks) {
         cb = jm_get_default_callbacks();
     }
     c = cb->malloc(sizeof(fmi_xml_context_t));
-    if(!c) return 0;
+    if(!c) {
+		jm_log_fatal(callbacks, MODULE, "Could not allocate memory");
+		return 0;
+	}
 	c->callbacks = callbacks;
 	c->parser = 0;
 	c->fmi_version = fmi_version_unknown_enu;
-	jm_log_debug(callbacks, MODULE, "Returning allocated context\n");
+	jm_log_debug(callbacks, MODULE, "Returning allocated context");
     return c;
 }
 
 void fmi_xml_free_context(fmi_xml_context_t *context) {
-	jm_log_debug(context->callbacks, MODULE, "Inside fmi_xml_free_context\n");
+	jm_log_debug(context->callbacks, MODULE, "Releasing XML parsing module memory");
     if(!context) return;
     if(context->parser) {
         XML_ParserFree(context->parser);
@@ -86,6 +89,7 @@ void XMLCALL fmi_xml_parse_element_start(void *c, const char *elm, const char **
 		return;
 	}
 	if( strcmp(fmiVersion, "1.0") == 0 ) {
+		jm_log_verbose(context->callbacks, MODULE, "XML specifies FMI 1.0");
 		context->fmi_version = fmi_version_1_enu;
 		XML_StopParser(context->parser,0);
 		return;
@@ -107,7 +111,7 @@ fmi_version_enu_t fmi_xml_get_fmi_version(fmi_xml_context_t* context, const char
     XML_Parser parser = NULL;
     FILE* file;
 
-	jm_log_verbose(context->callbacks, MODULE, "Parsing XML to detecting FMI standard version");
+	jm_log_verbose(context->callbacks, MODULE, "Parsing XML to detect FMI standard version");
 
 	memsuite.malloc_fcn = context->callbacks->malloc;
     memsuite.realloc_fcn = context->callbacks->realloc;

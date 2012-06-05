@@ -57,7 +57,7 @@ int fmi1_xml_handle_Capabilities(fmi1_xml_parser_context_t *context, const char*
         if(   (context -> currentElmHandle != fmi1_xml_handle_CoSimulation_StandAlone)
            && (context -> currentElmHandle != fmi1_xml_handle_CoSimulation_Tool))
         {
-            fmi1_xml_parse_error(context, "Capabilities XML element must be a part of CoSimulation specification");
+            fmi1_xml_parse_fatal(context, "Capabilities XML element must be a part of CoSimulation specification");
             return -1;
         }
         return (

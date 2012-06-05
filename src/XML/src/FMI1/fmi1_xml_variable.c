@@ -291,7 +291,7 @@ void fmi1_xml_free_direct_dependencies(jm_named_ptr named) {
 int fmi1_xml_handle_ScalarVariable(fmi1_xml_parser_context_t *context, const char* data) {
     if(!data) {
         if(context -> currentElmHandle != fmi1_xml_handle_ModelVariables) {
-            fmi1_xml_parse_error(context, "ScalarVariable XML element must be a part of ModelVariables");
+            fmi1_xml_parse_fatal(context, "ScalarVariable XML element must be a part of ModelVariables");
             return -1;
         }
         {            
@@ -335,7 +335,7 @@ int fmi1_xml_handle_ScalarVariable(fmi1_xml_parser_context_t *context, const cha
             if(pnamed) *pnamed = named = jm_named_alloc_v(bufName,sizeof(fmi1_xml_variable_t), dummyV.name - (char*)&dummyV, context->callbacks);
             variable = named.ptr;
             if( !pnamed || !variable ) {
-                fmi1_xml_parse_error(context, "Could not allocate memory");
+                fmi1_xml_parse_fatal(context, "Could not allocate memory");
                 return -1;
             }
             variable->vr = vr;
@@ -390,7 +390,7 @@ int fmi1_xml_handle_ScalarVariable(fmi1_xml_parser_context_t *context, const cha
             fmi1_xml_model_description_t* md = context->modelDescription;
             fmi1_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
             if(!variable->typeBase) {
-                fmi1_xml_parse_error(context, "No variable type element for variable %s", variable->name);
+                fmi1_xml_parse_fatal(context, "No variable type element for variable %s", variable->name);
                 return -1;
             }
         }
@@ -406,11 +406,11 @@ int fmi1_xml_handle_DirectDependency(fmi1_xml_parser_context_t *context, const c
         fmi1_xml_model_description_t* md = context->modelDescription;
         fmi1_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
         if(context -> currentElmHandle != fmi1_xml_handle_ScalarVariable) {
-            fmi1_xml_parse_error(context, "DirectDependency XML element must be a part of ScalarVariable");
+            fmi1_xml_parse_fatal(context, "DirectDependency XML element must be a part of ScalarVariable");
             return -1;
         }
         if(variable->causality != fmi1_causality_enu_output) {
-            fmi1_xml_parse_error(context, "DirectDependency XML element cannot be defined for '%s' since causality is not output", variable->name);
+            fmi1_xml_parse_fatal(context, "DirectDependency XML element cannot be defined for '%s' since causality is not output", variable->name);
             return -1;
         }
     }
@@ -420,7 +420,7 @@ int fmi1_xml_handle_DirectDependency(fmi1_xml_parser_context_t *context, const c
         if(jm_vector_get_size(jm_voidp)(&context->directDependencyBuf)) {
             variable->directDependency = jm_vector_clone(jm_voidp)(&context->directDependencyBuf);
             if(!variable->directDependency) {
-                fmi1_xml_parse_error(context, "Could not allocate memory");
+                fmi1_xml_parse_fatal(context, "Could not allocate memory");
                 return -1;
             }
         }
@@ -434,7 +434,7 @@ int fmi1_xml_handle_Name(fmi1_xml_parser_context_t *context, const char* data) {
 
     if(!data) {
         if(context -> currentElmHandle != fmi1_xml_handle_DirectDependency) {
-            fmi1_xml_parse_error(context, "Name XML element must be a part of DirectDependency");
+            fmi1_xml_parse_fatal(context, "Name XML element must be a part of DirectDependency");
             return -1;
         }
     }
@@ -459,7 +459,7 @@ int fmi1_xml_handle_Name(fmi1_xml_parser_context_t *context, const char* data) {
         if(namep) *namep = name = context->callbacks->malloc(namelen + 1);
         itemp = jm_vector_push_back(jm_voidp)(&context->directDependencyBuf, name);
         if(!namep || !itemp || !name)  {
-            fmi1_xml_parse_error(context, "Could not allocate memory");
+            fmi1_xml_parse_fatal(context, "Could not allocate memory");
             return -1;
         }
 		for(j = 0; i<namelen;i++) {
@@ -482,11 +482,11 @@ int fmi1_xml_handle_Real(fmi1_xml_parser_context_t *context, const char* data) {
         int hasStart;
 
         if(context -> currentElmHandle != fmi1_xml_handle_ScalarVariable) {
-            fmi1_xml_parse_error(context, "Real XML element must be a part of ScalarVariable");
+            fmi1_xml_parse_fatal(context, "Real XML element must be a part of ScalarVariable");
             return -1;
         }
         if(variable->typeBase) {
-            fmi1_xml_parse_error(context, "Several types are defined for variable %s", variable->name);
+            fmi1_xml_parse_fatal(context, "Several types are defined for variable %s", variable->name);
             return -1;
         }
 
@@ -536,7 +536,7 @@ int fmi1_xml_handle_Real(fmi1_xml_parser_context_t *context, const char* data) {
             fmi1_xml_variable_start_real_t * start = (fmi1_xml_variable_start_real_t*)fmi1_xml_alloc_variable_type_start(td, &type->typeBase, sizeof(fmi1_xml_variable_start_real_t));
             int isFixedBuf;
             if(!start) {
-                fmi1_xml_parse_error(context, "Could not allocate memory");
+                fmi1_xml_parse_fatal(context, "Could not allocate memory");
                 return -1;
             }
             if(
@@ -551,7 +551,7 @@ int fmi1_xml_handle_Real(fmi1_xml_parser_context_t *context, const char* data) {
         }
         else {
             if(fmi1_xml_is_attr_defined(context,fmi_attr_id_fixed)) {
-                fmi1_xml_parse_error(context, "When parsing variable %s: 'fixed' attributed is only allowed when start is defined", variable->name);
+                fmi1_xml_parse_fatal(context, "When parsing variable %s: 'fixed' attributed is only allowed when start is defined", variable->name);
             }
         }
     }
@@ -574,11 +574,11 @@ int fmi1_xml_handle_Integer(fmi1_xml_parser_context_t *context, const char* data
         int hasStart;
 
         if(context -> currentElmHandle != fmi1_xml_handle_ScalarVariable) {
-            fmi1_xml_parse_error(context, "Integer XML element must be a part of ScalarVariable");
+            fmi1_xml_parse_fatal(context, "Integer XML element must be a part of ScalarVariable");
             return -1;
         }
         if(variable->typeBase) {
-            fmi1_xml_parse_error(context, "Several types are defined for variable %s", variable->name);
+            fmi1_xml_parse_fatal(context, "Several types are defined for variable %s", variable->name);
             return -1;
         }
 
@@ -617,7 +617,7 @@ int fmi1_xml_handle_Integer(fmi1_xml_parser_context_t *context, const char* data
             fmi1_xml_variable_start_integer_t * start = (fmi1_xml_variable_start_integer_t*)fmi1_xml_alloc_variable_type_start(td, &type->typeBase, sizeof(fmi1_xml_variable_start_integer_t));
             int isFixedBuf;
             if(!start) {
-                fmi1_xml_parse_error(context, "Could not allocate memory");
+                fmi1_xml_parse_fatal(context, "Could not allocate memory");
                 return -1;
             }
             if(
@@ -632,7 +632,7 @@ int fmi1_xml_handle_Integer(fmi1_xml_parser_context_t *context, const char* data
         }
         else {
             if(fmi1_xml_is_attr_defined(context,fmi_attr_id_fixed)) {
-                fmi1_xml_parse_error(context, "When parsing variable %s: 'fixed' attributed is only allowed when start is defined", variable->name);
+                fmi1_xml_parse_fatal(context, "When parsing variable %s: 'fixed' attributed is only allowed when start is defined", variable->name);
             }
         }
     }
@@ -653,11 +653,11 @@ int fmi1_xml_handle_Boolean(fmi1_xml_parser_context_t *context, const char* data
         int hasStart;
 
         if(context -> currentElmHandle != fmi1_xml_handle_ScalarVariable) {
-            fmi1_xml_parse_error(context, "Boolean XML element must be a part of ScalarVariable");
+            fmi1_xml_parse_fatal(context, "Boolean XML element must be a part of ScalarVariable");
             return -1;
         }
         if(variable->typeBase) {
-            fmi1_xml_parse_error(context, "Several types are defined for variable %s", variable->name);
+            fmi1_xml_parse_fatal(context, "Several types are defined for variable %s", variable->name);
             return -1;
         }
 
@@ -670,7 +670,7 @@ int fmi1_xml_handle_Boolean(fmi1_xml_parser_context_t *context, const char* data
             int isFixedBuf;
             fmi1_xml_variable_start_integer_t * start = (fmi1_xml_variable_start_integer_t*)fmi1_xml_alloc_variable_type_start(td, variable->typeBase, sizeof(fmi1_xml_variable_start_integer_t ));
             if(!start) {
-                fmi1_xml_parse_error(context, "Could not allocate memory");
+                fmi1_xml_parse_fatal(context, "Could not allocate memory");
                 return -1;
             }
             if(
@@ -685,7 +685,7 @@ int fmi1_xml_handle_Boolean(fmi1_xml_parser_context_t *context, const char* data
         }
         else {
             if(fmi1_xml_is_attr_defined(context,fmi_attr_id_fixed)) {
-                fmi1_xml_parse_error(context, "When parsing variable %s: 'fixed' attributed is only allowed when start is defined", variable->name);
+                fmi1_xml_parse_fatal(context, "When parsing variable %s: 'fixed' attributed is only allowed when start is defined", variable->name);
             }            
         }
     }
@@ -706,11 +706,11 @@ int fmi1_xml_handle_String(fmi1_xml_parser_context_t *context, const char* data)
         int hasStart;
 
         if(context -> currentElmHandle != fmi1_xml_handle_ScalarVariable) {
-            fmi1_xml_parse_error(context, "String XML element must be a part of ScalarVariable");
+            fmi1_xml_parse_fatal(context, "String XML element must be a part of ScalarVariable");
             return -1;
         }
         if(variable->typeBase) {
-            fmi1_xml_parse_error(context, "Several types are defined for variable %s", variable->name);
+            fmi1_xml_parse_fatal(context, "Several types are defined for variable %s", variable->name);
             return -1;
         }
 
@@ -736,7 +736,7 @@ int fmi1_xml_handle_String(fmi1_xml_parser_context_t *context, const char* data)
             start = (fmi1_xml_variable_start_string_t*)fmi1_xml_alloc_variable_type_start(td, variable->typeBase, sizeof(fmi1_xml_variable_start_string_t) + strlen);
 
             if(!start) {
-                fmi1_xml_parse_error(context, "Could not allocate memory");
+                fmi1_xml_parse_fatal(context, "Could not allocate memory");
                 return -1;
             }
             memcpy(start->start, jm_vector_get_itemp_char(bufStartStr,0), strlen);
@@ -745,7 +745,7 @@ int fmi1_xml_handle_String(fmi1_xml_parser_context_t *context, const char* data)
         }
         else {
             if(fmi1_xml_is_attr_defined(context,fmi_attr_id_fixed)) {
-                fmi1_xml_parse_error(context, "When parsing variable %s: 'fixed' attributed is only allowed when start is defined", variable->name);
+                fmi1_xml_parse_fatal(context, "When parsing variable %s: 'fixed' attributed is only allowed when start is defined", variable->name);
             }
         }
     }
@@ -768,11 +768,11 @@ int fmi1_xml_handle_Enumeration(fmi1_xml_parser_context_t *context, const char* 
         int hasStart;
 
         if(context -> currentElmHandle != fmi1_xml_handle_ScalarVariable) {
-            fmi1_xml_parse_error(context, "Integer XML element must be a part of ScalarVariable");
+            fmi1_xml_parse_fatal(context, "Integer XML element must be a part of ScalarVariable");
             return -1;
         }
         if(variable->typeBase) {
-            fmi1_xml_parse_error(context, "Several types are defined for variable %s", variable->name);
+            fmi1_xml_parse_fatal(context, "Several types are defined for variable %s", variable->name);
             return -1;
         }
 
@@ -811,7 +811,7 @@ int fmi1_xml_handle_Enumeration(fmi1_xml_parser_context_t *context, const char* 
             fmi1_xml_variable_start_integer_t * start = (fmi1_xml_variable_start_integer_t*)fmi1_xml_alloc_variable_type_start(td, &type->typeBase, sizeof(fmi1_xml_variable_start_integer_t ));
             int isFixedBuf;
             if(!start) {
-                fmi1_xml_parse_error(context, "Could not allocate memory");
+                fmi1_xml_parse_fatal(context, "Could not allocate memory");
                 return -1;
             }
             if(
@@ -826,7 +826,7 @@ int fmi1_xml_handle_Enumeration(fmi1_xml_parser_context_t *context, const char* 
         }
         else {
             if(fmi1_xml_is_attr_defined(context,fmi_attr_id_fixed)) {
-                fmi1_xml_parse_error(context, "When parsing variable %s: 'fixed' attributed is only allowed when start is defined", variable->name);
+                fmi1_xml_parse_fatal(context, "When parsing variable %s: 'fixed' attributed is only allowed when start is defined", variable->name);
             }            
         }
     }
@@ -874,7 +874,7 @@ void fmi1_xml_eliminate_bad_alias(fmi1_xml_parser_context_t *context, size_t ind
 int fmi1_xml_handle_ModelVariables(fmi1_xml_parser_context_t *context, const char* data) {
     if(!data) {
         if(context -> currentElmHandle != fmi1_xml_handle_fmiModelDescription) {
-            fmi1_xml_parse_error(context, "ModelVariables XML element must be a part of fmiModelDescription");
+            fmi1_xml_parse_fatal(context, "ModelVariables XML element must be a part of fmiModelDescription");
             return -1;
         }
     }
@@ -930,7 +930,7 @@ int fmi1_xml_handle_ModelVariables(fmi1_xml_parser_context_t *context, const cha
 
         md->status = fmi1_xml_model_description_enu_empty;
 		if(!md->variablesByVR || !md->variablesOrigOrder) {
-            fmi1_xml_parse_error(context, "Could not allocate memory");
+            fmi1_xml_parse_fatal(context, "Could not allocate memory");
             return -1;
         }
         varByVR = md->variablesByVR;
@@ -975,7 +975,7 @@ int fmi1_xml_handle_ModelVariables(fmi1_xml_parser_context_t *context, const cha
                     else {
                         if(   (a->aliasKind == fmi1_variable_is_negated_alias)
                                 && (b->aliasKind == fmi1_variable_is_alias)) {
-                            fmi1_xml_parse_error(context,"All variables with vr %u (base type %s) are marked as aliases",
+                            fmi1_xml_parse_fatal(context,"All variables with vr %u (base type %s) are marked as aliases",
                                                 b->vr, fmi1_base_type_to_string(fmi1_xml_get_variable_base_type(b)));
                           fmi1_xml_eliminate_bad_alias(context,i);
                           foundBadAlias = 1;

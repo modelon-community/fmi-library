@@ -18,26 +18,33 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
+#include <assert.h>
 
 #include "Common/jm_callbacks.h"
 
 static const char* jm_log_level_str[] = 
 {
-#define log_level_str_put(level) #level,
-	JM_LOG_LEVELS(log_level_str_put)
-	"all"
+	"FATAL",
+	"ERROR",
+	"WARNING",
+	"INFO",
+	"VERBOSE",
+	"DEBUG",
+	"ALL"
 };
 
 /** \brief Convert log level into a string */
 const char* jm_log_level_to_string(jm_log_level_enu_t level) {
 	if((level > jm_log_level_nothing) && (level < jm_log_level_all))
 		return jm_log_level_str[level - 1];
-	else
-		return "unknown";
+	else {
+		assert(0);
+		return "UNEXPECTED";
+	}
 }
 
 void jm_default_logger(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_level, jm_string message) {
-	fprintf(stderr, "[%s][%s]%s\n", jm_log_level_to_string(log_level), module, message);
+	fprintf(stderr, "[%s][%s] %s\n", jm_log_level_to_string(log_level), module, message);
 }
 
 void jm_log(jm_callbacks* cb, const char* module, jm_log_level_enu_t log_level, const char* fmt, ...) {

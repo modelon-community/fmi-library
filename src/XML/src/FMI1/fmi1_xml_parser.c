@@ -67,10 +67,10 @@ void fmi1_xml_parse_free_context(fmi1_xml_parser_context_t *context) {
 
 
 
-void fmi1_xml_parse_error(fmi1_xml_parser_context_t *context, const char* fmt, ...) {
+void fmi1_xml_parse_fatal(fmi1_xml_parser_context_t *context, const char* fmt, ...) {
     va_list args;
     va_start (args, fmt);
-	jm_log_error_v(context->callbacks, module, fmt, args);
+	jm_log_fatal_v(context->callbacks, module, fmt, args);
     va_end (args);
     XML_StopParser(context->parser,0);
 }
@@ -90,7 +90,7 @@ int fmi_get_attr_str(fmi1_xml_parser_context_t *context, fmi1_xml_elm_enu_t elmI
     jm_vector_set_item(jm_string)(context->attrBuffer, attrID, 0);
     if(!(*valp)) {
         if (required) {
-            fmi1_xml_parse_error(context, "Parsing XML element '%s': required attribute '%s' not found", elmName, attrName);
+            fmi1_xml_parse_fatal(context, "Parsing XML element '%s': required attribute '%s' not found", elmName, attrName);
             return -1;
         }
         else
@@ -116,7 +116,7 @@ int fmi1_xml_set_attr_string(fmi1_xml_parser_context_t *context, fmi1_xml_elm_en
 
     len = strlen(val) + 1;
     if(jm_vector_resize(char)(field, len) < len) {
-        fmi1_xml_parse_error(context, "XML element '%s': could not allocate memory for setting '%s'='%s'", elmName, attrName, val);
+        fmi1_xml_parse_fatal(context, "XML element '%s': could not allocate memory for setting '%s'='%s'", elmName, attrName, val);
         return -1;
     }
     /* copy terminating 0 as well but set vector size to be actual string length */
@@ -140,7 +140,7 @@ int fmi1_xml_set_attr_uint(fmi1_xml_parser_context_t *context, fmi1_xml_elm_enu_
     attrName = fmi_xmlAttrNames[attrID];
 
     if(sscanf(strVal, "%u", field) != 1) {
-        fmi1_xml_parse_error(context, "XML element '%s': could not parse value for attribute '%s'='%s'", elmName, attrName, strVal);
+        fmi1_xml_parse_fatal(context, "XML element '%s': could not parse value for attribute '%s'='%s'", elmName, attrName, strVal);
         return -1;
     }
     return 0;
@@ -164,7 +164,7 @@ int fmi1_xml_set_attr_enum(fmi1_xml_parser_context_t *context, fmi1_xml_elm_enu_
     i = 0;
     while(nameMap[i].name && strcmp(nameMap[i].name, strVal)) i++;
     if(!nameMap[i].name) {
-        fmi1_xml_parse_error(context, "XML element '%s': could not parse value for attribute '%s'='%s'", elmName, attrName, strVal);
+        fmi1_xml_parse_fatal(context, "XML element '%s': could not parse value for attribute '%s'='%s'", elmName, attrName, strVal);
         return -1;
     }
     *field = nameMap[i].ID;
@@ -191,7 +191,7 @@ int fmi1_xml_set_attr_int(fmi1_xml_parser_context_t *context, fmi1_xml_elm_enu_t
     attrName = fmi_xmlAttrNames[attrID];
 
     if(sscanf(strVal, "%d", field) != 1) {
-        fmi1_xml_parse_error(context, "XML element '%s': could not parse value for attribute '%s'='%s'", elmName, attrName, strVal);
+        fmi1_xml_parse_fatal(context, "XML element '%s': could not parse value for attribute '%s'='%s'", elmName, attrName, strVal);
         return -1;
     }
     return 0;
@@ -214,7 +214,7 @@ int fmi1_xml_set_attr_double(fmi1_xml_parser_context_t *context, fmi1_xml_elm_en
     attrName = fmi_xmlAttrNames[attrID];
 
     if(sscanf(strVal, "%lf", field) != 1) {
-        fmi1_xml_parse_error(context, "XML element '%s': could not parse value for attribute '%s'='%s'", elmName, attrName, strVal);
+        fmi1_xml_parse_fatal(context, "XML element '%s': could not parse value for attribute '%s'='%s'", elmName, attrName, strVal);
         return -1;
     }
     return 0;
@@ -225,7 +225,7 @@ int fmi1_xml_alloc_parse_buffer(fmi1_xml_parser_context_t *context, size_t items
     jm_vector(jm_voidp)* parseBuffer = &context->parseBuffer;
 
     if(jm_vector_init(jm_voidp)(parseBuffer,items,context->callbacks) < items) {
-        fmi1_xml_parse_error(context, "Could not allocate buffer for parsing XML");
+        fmi1_xml_parse_fatal(context, "Could not allocate buffer for parsing XML");
         return -1;
     }
     jm_vector_zero(jm_voidp)(parseBuffer);
@@ -251,13 +251,13 @@ jm_vector(char) * fmi1_xml_reserve_parse_buffer(fmi1_xml_parser_context_t *conte
         item = jm_vector_alloc(char)(size,size,context->callbacks);
         jm_vector_set_item(jm_voidp)(parseBuffer,index,item);
         if(!item) {
-            fmi1_xml_parse_error(context, "Could not allocate a buffer for parsing XML");
+            fmi1_xml_parse_fatal(context, "Could not allocate a buffer for parsing XML");
             return 0;
         }
     }
     else {
         if(jm_vector_resize(char)(item, size) < size ) {
-            fmi1_xml_parse_error(context, "Could not allocate a buffer for parsing XML");
+            fmi1_xml_parse_fatal(context, "Could not allocate a buffer for parsing XML");
             return 0;
         }
     }
@@ -314,7 +314,7 @@ void XMLCALL fmi_parse_element_start(void *c, const char *elm, const char **attr
     currentElMap = jm_vector_bsearch(fmi1_xml_element_handle_map_t)(context->elmMap, &keyEl, fmi1_xml_compare_elmName);
     if(!currentElMap) {
         /* not found error*/
-        fmi1_xml_parse_error(context, "Unknown element '%s' start in XML", elm);
+        fmi1_xml_parse_fatal(context, "Unknown element '%s' start in XML", elm);
         return;
     }
 
@@ -328,7 +328,7 @@ void XMLCALL fmi_parse_element_start(void *c, const char *elm, const char **attr
         currentMap = jm_vector_bsearch(jm_named_ptr)(context->attrMap, &key, jm_compare_named);
         if(!currentMap) {
             /* not found error*/
-            fmi1_xml_parse_error(context, "Unknown attribute '%s' in XML", attr[i]);
+            fmi1_xml_parse_fatal(context, "Unknown attribute '%s' in XML", attr[i]);
             return;
         }
         {
@@ -368,14 +368,14 @@ void XMLCALL fmi_parse_element_end(void* c, const char *elm) {
     currentElMap = jm_vector_bsearch(fmi1_xml_element_handle_map_t)(context->elmMap, &keyEl, fmi1_xml_compare_elmName);
     if(!currentElMap) {
         /* not found error*/
-        fmi1_xml_parse_error(context, "Unknown element end in XML (element: %s)", elm);
+        fmi1_xml_parse_fatal(context, "Unknown element end in XML (element: %s)", elm);
         return;
     }
     currentHandle = currentElMap->elementHandle;
 
     if(currentHandle != context -> currentElmHandle) {
         /* missmatch error*/
-        fmi1_xml_parse_error(context, "Element end '%s' does not match element start in XML", elm);
+        fmi1_xml_parse_fatal(context, "Element end '%s' does not match element start in XML", elm);
         return;
     }
 
@@ -425,13 +425,13 @@ int fmi1_xml_parse_model_description(fmi1_xml_model_description_t* md, const cha
 
     context = (fmi1_xml_parser_context_t*)md->callbacks->calloc(1, sizeof(fmi1_xml_parser_context_t));
     if(!context) {
-        jm_log(md->callbacks, "FMIXML", jm_log_level_error, "Could not allocate memory for XML parser context");
+        jm_log_fatal(md->callbacks, "FMIXML", "Could not allocate memory for XML parser context");
     }
     context->callbacks = md->callbacks;
     context->modelDescription = md;
     if(fmi1_xml_alloc_parse_buffer(context, 16)) return -1;
     if(fmi_create_attr_map(context) || fmi_create_elm_map(context)) {
-        fmi1_xml_parse_error(context, "Error in parsing initialization");
+        fmi1_xml_parse_fatal(context, "Error in parsing initialization");
         fmi1_xml_parse_free_context(context);
         return -1;
     }
@@ -450,7 +450,7 @@ int fmi1_xml_parse_model_description(fmi1_xml_model_description_t* md, const cha
     context -> parser = parser = XML_ParserCreate_MM(0, &memsuite, 0);
 
     if(! parser) {
-        fmi1_xml_parse_error(context, "Could not initialize XML parsing library.");
+        fmi1_xml_parse_fatal(context, "Could not initialize XML parsing library.");
         fmi1_xml_parse_free_context(context);
         return -1;
     }
@@ -463,7 +463,7 @@ int fmi1_xml_parse_model_description(fmi1_xml_model_description_t* md, const cha
 
     file = fopen(filename, "rb");
     if (file == NULL) {
-        fmi1_xml_parse_error(context, "Cannot open file '%s' for parsing", filename);
+        fmi1_xml_parse_fatal(context, "Cannot open file '%s' for parsing", filename);
         fmi1_xml_parse_free_context(context);
         return -1;
     }
@@ -472,13 +472,13 @@ int fmi1_xml_parse_model_description(fmi1_xml_model_description_t* md, const cha
         char * text = jm_vector_get_itemp(char)(fmi1_xml_reserve_parse_buffer(context,0,XML_BLOCK_SIZE),0);
         int n = fread(text, sizeof(char), XML_BLOCK_SIZE, file);
         if(ferror(file)) {
-            fmi1_xml_parse_error(context, "Error reading from file %s", filename);
+            fmi1_xml_parse_fatal(context, "Error reading from file %s", filename);
             fclose(file);
 	        fmi1_xml_parse_free_context(context);
             return -1;
         }
         if (!XML_Parse(parser, text, n, feof(file))) {
-             fmi1_xml_parse_error(context, "Parse error in file %s at line %d:\n%s",
+             fmi1_xml_parse_fatal(context, "Parse error in file %s at line %d:\n%s",
                           filename,
                          (int)XML_GetCurrentLineNumber(parser),
                          XML_ErrorString(XML_GetErrorCode(parser)));
@@ -490,7 +490,7 @@ int fmi1_xml_parse_model_description(fmi1_xml_model_description_t* md, const cha
     fclose(file);
     /* done later XML_ParserFree(parser);*/
     if(!jm_stack_is_empty(fmi1_xml_element_handle_ft)(&context->elmHandleStack)) {
-        fmi1_xml_parse_error(context, "Unexpected end of file (not all elements ended) when parsing %s", filename);
+        fmi1_xml_parse_fatal(context, "Unexpected end of file (not all elements ended) when parsing %s", filename);
         fmi1_xml_parse_free_context(context);
         return -1;
     }

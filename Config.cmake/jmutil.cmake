@@ -9,6 +9,7 @@ set(JMUTILSOURCE
  Common/jm_templates_inst.c
  Common/jm_named_ptr.c
  Common/jm_portability.c
+ Common/fmi_version.c
  FMI1/fmi1_callbacks.c
  FMI1/fmi1_enums.c
 )

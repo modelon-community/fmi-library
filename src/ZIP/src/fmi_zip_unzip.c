@@ -27,6 +27,8 @@ extern "C" {
 #include <Common/jm_callbacks.h>
 #include <Common/jm_portability.h>
 
+static const char* module = "FMIZIP";
+
 jm_status_enu_t fmi_zip_unzip(const char* zip_file_path, const char* output_folder, jm_callbacks* callbacks)
 {
 	/*
@@ -47,6 +49,8 @@ jm_status_enu_t fmi_zip_unzip(const char* zip_file_path, const char* output_fold
 	const char *argv[6];
 	int status;
 
+	jm_log_verbose(callbacks, module, "Unpacking FMU into %s", output_folder);
+
 	argv[0]="miniunz";
 	argv[1]="-x";
 	argv[2]="-o";
@@ -57,7 +61,7 @@ jm_status_enu_t fmi_zip_unzip(const char* zip_file_path, const char* output_fold
 
 	/* Temporary save the current directory */
 	if (jm_portability_get_current_working_directory(cd, sizeof(cd) / sizeof(char)) == jm_status_error) {
-		jm_log(callbacks, "UNZIP", jm_log_level_error, "Could not get Current Directory");
+		jm_log_fatal(callbacks, module, "Could not get Current Directory");
 		return jm_status_error;
 	}
 
@@ -66,7 +70,7 @@ jm_status_enu_t fmi_zip_unzip(const char* zip_file_path, const char* output_fold
 
 	/* Reset the current directory */
 	if (jm_portability_set_current_working_directory(cd) == jm_status_error) {
-		jm_log(callbacks, "UNZIP", jm_log_level_warning, "Could not change back Current Directory");
+		jm_log_warning(callbacks, module, "Could not restore Current Directory after unpacking");
 		return jm_status_warning;
 	}
 

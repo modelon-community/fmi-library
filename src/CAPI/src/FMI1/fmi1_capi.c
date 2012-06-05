@@ -21,6 +21,7 @@ extern "C" {
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
+#include <assert.h>
 
 #include <Common/jm_types.h>
 #include <Common/jm_portability.h>
@@ -36,7 +37,7 @@ static jm_status_enu_t fmi1_capi_get_fcn(fmi1_capi_t* fmu, const char* function_
 	char fname[FUNCTION_NAME_LENGTH_MAX];
 	
 	if (strlen(fmu->modelIdentifier) + strlen(function_name) + 2 > FUNCTION_NAME_LENGTH_MAX) {
-		jm_log(fmu->callbacks, LOGGER_MODULE_NAME, jm_log_level_error,  "DLL function name is too long. Max name length is set to %s.", STRINGIFY(FUNCTION_NAME_LENGTH_MAX));
+		jm_log_fatal(fmu->callbacks, FMI_CAPI_MODULE_NAME, "DLL function name is too long. Max name length is set to %s.", STRINGIFY(FUNCTION_NAME_LENGTH_MAX));
 		return jm_status_error;
 	}	
 
@@ -48,7 +49,7 @@ static jm_status_enu_t fmi1_capi_get_fcn(fmi1_capi_t* fmu, const char* function_
 
 /* Load FMI functions from DLL macro */
 #define LOAD_DLL_FUNCTION(FMIFUNCTION) if (fmi1_capi_get_fcn(fmu, #FMIFUNCTION, (jm_dll_function_ptr*)&fmu->FMIFUNCTION) == jm_status_error) { \
-	jm_log(fmu->callbacks, LOGGER_MODULE_NAME, jm_log_level_error, "Could not load the FMI function '"#FMIFUNCTION"'. %s", jm_portability_get_last_dll_error()); \
+	jm_log_error(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Could not load the FMI function '"#FMIFUNCTION"'. %s", jm_portability_get_last_dll_error()); \
 	jm_status = jm_status_error; \
 }
 
@@ -58,9 +59,11 @@ static jm_status_enu_t fmi1_capi_load_cs_fcn(fmi1_capi_t* fmu)
 {
 	jm_status_enu_t jm_status = jm_status_success;
 
+	jm_log_verbose(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Loading functions for the co-simulation interface"); 
+
 	/* Workaround for Dymola 2012 and SimulationX 3.x */
 	if (fmi1_capi_get_fcn(fmu, "fmiGetTypesPlatform",(jm_dll_function_ptr*)&fmu->fmiGetTypesPlatform) == jm_status_error) {
-		jm_log(fmu->callbacks, LOGGER_MODULE_NAME, jm_log_level_warning, "Could not load the FMI function 'fmiGetTypesPlatform'. %s. Trying to load fmiGetModelTypesPlatform instead.", jm_portability_get_last_dll_error());
+		jm_log_warning(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Could not load the FMI function 'fmiGetTypesPlatform'. %s. Trying to load fmiGetModelTypesPlatform instead.", jm_portability_get_last_dll_error());
 		jm_status = jm_status_warning;
 		LOAD_DLL_FUNCTION(fmiGetModelTypesPlatform);
 	}
@@ -98,6 +101,8 @@ static jm_status_enu_t fmi1_capi_load_me_fcn(fmi1_capi_t* fmu)
 {
 	jm_status_enu_t jm_status = jm_status_success;
 
+	jm_log_verbose(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Loading functions for the model exchange interface"); 
+
 	LOAD_DLL_FUNCTION(fmiGetModelTypesPlatform);
 	LOAD_DLL_FUNCTION(fmiInstantiateModel);
 	LOAD_DLL_FUNCTION(fmiFreeModelInstance);
@@ -132,7 +137,7 @@ void fmi1_capi_destroy_dllfmu(fmi1_capi_t* fmu)
 	if (fmu == NULL) {
 		return;
 	}
-
+	jm_log_debug(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Releasing allocated memory");
 	fmu->callbacks->free((void*)fmu->dllPath);
 	fmu->callbacks->free((void*)fmu->modelIdentifier);
 	fmu->callbacks->free((void*)fmu);
@@ -142,15 +147,18 @@ fmi1_capi_t* fmi1_capi_create_dllfmu(jm_callbacks* cb, const char* dllPath, cons
 {
 	fmi1_capi_t* fmu = NULL;
 
+	jm_log_debug(cb, FMI_CAPI_MODULE_NAME, "Initializing data stuctures for FMICAPI.");
+
 	/* Minor check for the callbacks */
 	if (cb == NULL) {
+		assert(0);
 		return NULL;
 	}
 
 	/* Allocate memory for the FMU instance */
 	fmu = (fmi1_capi_t*)cb->calloc(1, sizeof(fmi1_capi_t));
 	if (fmu == NULL) { /* Could not allocate memory for the FMU struct */
-		jm_log(cb, LOGGER_MODULE_NAME, jm_log_level_error, "Could not allocate memory for the FMU struct.");
+		jm_log_fatal(cb, FMI_CAPI_MODULE_NAME, "Could not allocate memory for the FMU struct.");
 		return NULL;
 	}
 
@@ -171,7 +179,7 @@ fmi1_capi_t* fmi1_capi_create_dllfmu(jm_callbacks* cb, const char* dllPath, cons
 	/* Copy DLL path */
 	fmu->dllPath = (char*)cb->calloc(sizeof(char), strlen(dllPath) + 1);
 	if (fmu->dllPath == NULL) {
-		jm_log(cb, LOGGER_MODULE_NAME, jm_log_level_error, "Could not allocate memory for the DLL path string.");
+		jm_log_fatal(cb, FMI_CAPI_MODULE_NAME, "Could not allocate memory for the DLL path string.");
 		fmi1_capi_destroy_dllfmu(fmu);
 		return NULL;
 	}
@@ -180,11 +188,13 @@ fmi1_capi_t* fmi1_capi_create_dllfmu(jm_callbacks* cb, const char* dllPath, cons
 	/* Copy the modelIdentifier */
 	fmu->modelIdentifier = (char*)cb->calloc(sizeof(char), strlen(modelIdentifier) + 1);
 	if (fmu->modelIdentifier == NULL) {
-		jm_log(cb, LOGGER_MODULE_NAME, jm_log_level_error, "Could not allocate memory for the modelIdentifier string.");
+		jm_log_fatal(cb, FMI_CAPI_MODULE_NAME, "Could not allocate memory for the modelIdentifier string.");
 		fmi1_capi_destroy_dllfmu(fmu);
 		return NULL;
 	}
 	strcpy((char*)fmu->modelIdentifier, modelIdentifier);
+
+	jm_log_debug(cb, FMI_CAPI_MODULE_NAME, "Successfully initialized data stuctures for FMICAPI.");
 
 	/* Everything was succesfull */
 	return fmu;
@@ -192,6 +202,7 @@ fmi1_capi_t* fmi1_capi_create_dllfmu(jm_callbacks* cb, const char* dllPath, cons
 
 jm_status_enu_t fmi1_capi_load_fcn(fmi1_capi_t* fmu)
 {
+	assert(fmu);
 	/* Load ME functions */
 	if (fmu->standard == fmi1_fmu_kind_enu_me) {
 		return fmi1_capi_load_me_fcn(fmu);
@@ -205,11 +216,13 @@ jm_status_enu_t fmi1_capi_load_fcn(fmi1_capi_t* fmu)
 
 jm_status_enu_t fmi1_capi_load_dll(fmi1_capi_t* fmu)
 {
+	assert(fmu && fmu->dllPath);
 	fmu->dllHandle = jm_portability_load_dll_handle(fmu->dllPath); /* Load the shared library */
 	if (fmu->dllHandle == NULL) {
-		jm_log(fmu->callbacks, LOGGER_MODULE_NAME, jm_log_level_error, "Could not load the DLL: %s", jm_portability_get_last_dll_error());
+		jm_log_fatal(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Could not load the DLL: %s", jm_portability_get_last_dll_error());
 		return jm_status_error;
 	} else {
+		jm_log_verbose(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Loaded FMU binary from %s", fmu->dllPath);
 		return jm_status_success;
 	}
 }
@@ -222,9 +235,10 @@ jm_status_enu_t fmi1_capi_free_dll(fmi1_capi_t* fmu)
 
 	if (fmu->dllHandle) {		
 		if (jm_portability_free_dll_handle(fmu->dllHandle) == jm_status_error) { /* Free the library handle */
-			jm_log(fmu->callbacks, LOGGER_MODULE_NAME, jm_log_level_error, "Could not free the DLL: %s", jm_portability_get_last_dll_error());
+			jm_log(fmu->callbacks, FMI_CAPI_MODULE_NAME, jm_log_level_error, "Could not free the DLL: %s", jm_portability_get_last_dll_error());
 			return jm_status_error;
 		} else {
+			jm_log_verbose(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Successfully unloaded FMU binary");
 			return jm_status_success;
 		}
 	}
@@ -235,6 +249,7 @@ jm_status_enu_t fmi1_capi_free_dll(fmi1_capi_t* fmu)
 
 const char* fmi1_capi_get_version(fmi1_capi_t* fmu)
 {
+	assert(fmu);
 	return fmu->fmiGetVersion();
 }
 

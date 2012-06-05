@@ -29,7 +29,7 @@ extern "C" {
 #include <Common/jm_portability.h>
 #include <Common/jm_callbacks.h>
 
-#define LOGGER_MODULE_NAME "CAPIIMPORT"
+#define FMI_CAPI_MODULE_NAME "FMICAPI"
 
 /** 
  * \brief C-API struct used as a placeholder for the FMI funktions and shared library handler. 

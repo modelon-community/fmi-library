@@ -34,8 +34,7 @@ extern "C" {
 	* @}
 */
 /** \addtogroup jm_callbacks Definition of callbacks struct and supporting functions
-* @{ 
-* Forward declaration of the callbacks struct*/
+* @{  */
 typedef struct jm_callbacks jm_callbacks;
 
 /** \name Memory management callbacks
@@ -50,15 +49,18 @@ typedef jm_voidp (*jm_realloc_f)(void *ptr, size_t size);
 typedef jm_voidp (*jm_calloc_f)(size_t numitems, size_t itemsize);
 
 typedef void (*jm_free_f)(jm_voidp p);
-/* @}
+/** @}
 */
 
-/*
+/**
+*  
 * \brief Logger callback type.
-* The logger callback is used to report errors. Note that this function is only used in
-* FMI standard intependent code (e.g., fmi_import_context()). Since logging functions
-* are different between different standards separate logging functions are necessary for each fmi implementation.
-* See \ref fmi1_callbacks.h
+*
+* The logger callback is used to report errors. Note that this function is
+* by default only used in FMI standard intependent code (e.g., fmi_import_get_fmi_version()).
+* Since logging functions are different between different standard versions separate
+* logging functions are necessary for each fmi implementation.\n
+* Defaults are provided for each standard. For FMI1 see \ref fmi1_callbacks.h and \ref fmi1_log_forwarding()
 */
 typedef void (*jm_logger_f)(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_level, jm_string message);
 

@@ -254,7 +254,12 @@ install(TARGETS ${FMILIB_TARGETS}
 	LIBRARY DESTINATION lib
 	RUNTIME DESTINATION lib
 )
-
+install(FILES 
+			"${FMILIBRARYHOME}/FMILIB_Readme.txt"
+			"${FMILIBRARYHOME}/FMILIB_License.txt"
+			"${FMILIBRARYHOME}/FMILIB_Acknowledgements.txt"
+		DESTINATION doc)
+		
 install(FILES 
 			"${FMILibrary_BINARY_DIR}/fmilib_config.h" 
 			"${FMILibrary_BINARY_DIR}/fmilib.h" 
@@ -268,6 +273,15 @@ install(DIRECTORY
 install(DIRECTORY 
 	${FMILIB_FMI_STANDARD_HEADERS}/FMI1
 	DESTINATION include)
+
+function(append_file_context file_out file_in)
+	#file(APPEND filename "message to write"... )
+	#file(READ filename variable [LIMIT numBytes] [OFFSET offset] [HEX])
+	file(READ "${file_in}" text)
+	string(REGEX REPLACE "%.*%" " " text "${text}")	
+	file(APPEND ${file_out} "${text}")
+	set(text "")
+endfunction()
 	
 
 if(FMILIB_GENERATE_DOXYGEN_DOC)
@@ -275,8 +289,18 @@ if(FMILIB_GENERATE_DOXYGEN_DOC)
 	file(MAKE_DIRECTORY "${FMILIB_INSTALL_PREFIX}/doc")
 
 	set(DOXYFILE_IN ${FMILIBRARYHOME}/Config.cmake/fmilib_doxydoc.conf CACHE INTERNAL "Doxygen config file")
+	
+	file(MAKE_DIRECTORY ${FMILIBRARYBUILD}/doc)
+	
+	file(COPY ${FMILIBRARYHOME}/Config.cmake/fmilib.h DESTINATION ${FMILIBRARYBUILD}/doc)
+	
+	file(APPEND ${FMILIBRARYBUILD}/doc/fmilib.h "/**")
+	append_file_context(${FMILIBRARYBUILD}/doc/fmilib.h "${FMILIBRARYHOME}/FMILIB_Readme.txt" )
+	append_file_context(${FMILIBRARYBUILD}/doc/fmilib.h "${FMILIBRARYHOME}/FMILIB_License.txt" )
+	append_file_context(${FMILIBRARYBUILD}/doc/fmilib.h "${FMILIBRARYHOME}/FMILIB_Acknowledgements.txt" )
+	file(APPEND ${FMILIBRARYBUILD}/doc/fmilib.h "*/")
 
-	set(DOXYFILE_SOURCE_DIR "${FMILIBRARYHOME}/Config.cmake" CACHE INTERNAL "Doxygen default source dir" FORCE)
+	set(DOXYFILE_SOURCE_DIR "${FMILIBRARYBUILD}/doc" CACHE INTERNAL "Doxygen default source dir" FORCE)
 	
 	set(DOXYFILE_OUTPUT_DIR "${FMILIB_INSTALL_PREFIX}/doc")
 

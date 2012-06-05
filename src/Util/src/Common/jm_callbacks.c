@@ -24,6 +24,7 @@
 
 static const char* jm_log_level_str[] = 
 {
+	"NOTHING",
 	"FATAL",
 	"ERROR",
 	"WARNING",
@@ -35,8 +36,8 @@ static const char* jm_log_level_str[] =
 
 /** \brief Convert log level into a string */
 const char* jm_log_level_to_string(jm_log_level_enu_t level) {
-	if((level > jm_log_level_nothing) && (level < jm_log_level_all))
-		return jm_log_level_str[level - 1];
+	if((level >= jm_log_level_nothing) && (level <= jm_log_level_all))
+		return jm_log_level_str[level];
 	else {
 		assert(0);
 		return "UNEXPECTED";

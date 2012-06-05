@@ -3,7 +3,7 @@ if(NOT FMIZIPDIR)
 	
     include(jmutil)
 	
-	set(DOXYFILE_EXTRA_SOURCES "${DOXYFILE_EXTRA_SOURCES} \"${FMIZIPDIR}/include\"")
+	# set(DOXYFILE_EXTRA_SOURCES "${DOXYFILE_EXTRA_SOURCES} \"${FMIZIPDIR}/include\"")
 
     set(FMIZIP_LIBRARIES fmizip)
 	

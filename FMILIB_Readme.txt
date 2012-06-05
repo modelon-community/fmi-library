@@ -84,11 +84,12 @@ The supplied tests are:
 - \b ctest_build_all \n
 Build the library. This test is controlled by \a FMILIB_BUILD_BEFORE_TESTS configuration option.
 - \b ctest_fmi_import_me_test \n
-Load a basic model exchange FMU and simulate it. Test executable is \e fmi_import_me_test.
+Load a basic model exchange FMU and simulate it. Test executable is \e fmi_import_me_test, main source file is \ref fmi_import_me_test.c.
 - \b ctest_fmi_import_cs_test \n
-Load a basic co-simulation FMU and simulate it. Test executable is \e fmi_import_cs_test.
+Load a basic co-simulation FMU and simulate it. Test executable is \e fmi_import_cs_test, main source file is \ref fmi_import_cs_test.c.
 - \b ctest_fmi_import_xml_test \n
-Load a small model description XML file and print out detailed information on it. Test executable is \e fmi_import_xml_text. 
+Load a small model description XML file and print out detailed information on it. Test executable is \e fmi_import_xml_text,
+ main source file is \ref fmi_import_xml_test.cc. 
 This test depends on the success of the \e ctest_fmi_import_cs_test. 
 - \b ctest_fmi_zip_unzip_test \n
 Basic unzip functionality test. Test executable is \e fmi_zip_unzip_test.

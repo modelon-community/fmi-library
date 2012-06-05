@@ -16,7 +16,7 @@ if(NOT JMUTILDIR)
     set(JMUTILDIR ${FMILIBRARYHOME}/src/Util/)
     set(JMUTIL_LIBRARIES jmutils)
     include_directories ("${JMUTILDIR}/include" "${FMILIB_FMI_STANDARD_HEADERS}")
-	set(DOXYFILE_EXTRA_SOURCES "${DOXYFILE_EXTRA_SOURCES} \"${JMUTILDIR}\"")
+	set(DOXYFILE_EXTRA_SOURCES "${DOXYFILE_EXTRA_SOURCES} \"${JMUTILDIR}/include\"")
 
 set(JMUTILSOURCE
  Common/jm_callbacks.c

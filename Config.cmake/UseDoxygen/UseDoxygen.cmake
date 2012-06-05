@@ -78,6 +78,9 @@ if(DOXYGEN_FOUND AND DOXYFILE_IN_FOUND)
 		PATH "Input files source directory")
 	usedoxygen_set_default(DOXYFILE_EXTRA_SOURCE_DIRS ""
 		STRING "Additional source files/directories separated by space")
+	usedoxygen_set_default(DOXYFILE_IMAGE_DIR ${DOXYFILE_SOURCE_DIR}
+		STRING "Doxygen images input directory")
+		
 	set(DOXYFILE_SOURCE_DIRS "\"${DOXYFILE_SOURCE_DIR}\" ${DOXYFILE_EXTRA_SOURCES}")
 
 	usedoxygen_set_default(DOXYFILE_LATEX YES BOOL "Generate LaTeX API documentation" OFF)
@@ -131,7 +134,6 @@ if(DOXYGEN_FOUND AND DOXYFILE_IN_FOUND)
 	else()
 		set(DOXYFILE_GENERATE_LATEX "NO")
 	endif()
-
 
 	configure_file("${DOXYFILE_IN}" "${DOXYFILE}" @ONLY)
 

@@ -25,8 +25,8 @@
 #define FMI_XML_CONTEXT_H_
 
 #include <stddef.h>
-#include <Common/jm_callbacks.h>
-#include <Common/fmi_version.h>
+#include <JM/jm_callbacks.h>
+#include <FMI/fmi_version.h>
 
 #ifdef __cplusplus
 extern "C" {

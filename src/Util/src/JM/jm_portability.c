@@ -16,8 +16,8 @@
 
 #include <stdio.h>
 
-#include "Common/jm_types.h"
-#include "Common/jm_portability.h"
+#include "JM/jm_types.h"
+#include "JM/jm_portability.h"
 
 #ifdef WIN32
 #include <direct.h>

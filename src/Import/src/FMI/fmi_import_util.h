@@ -17,7 +17,7 @@
 #ifndef FMI1_IMPORT_UTIL_H_
 #define FMI1_IMPORT_UTIL_H_
 
-#include <Common/jm_callbacks.h>
+#include <JM/jm_callbacks.h>
 
 char* fmi_import_get_dll_path(const char* fmu_unzipped_path, const char* model_identifier, jm_callbacks* callBackFunctions);
 char* fmi_import_get_model_description_path(const char* fmu_unzipped_path, jm_callbacks* callBackFunctions);

@@ -17,7 +17,7 @@
 #ifndef FMI1_XML_VENDORANNOTATIONS_H
 #define FMI1_XML_VENDORANNOTATIONS_H
 
-#include <Common/jm_named_ptr.h>
+#include <JM/jm_named_ptr.h>
 
 #include <FMI1/fmi1_xml_model_description.h>
 

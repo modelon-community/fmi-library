@@ -34,8 +34,8 @@ set(FMIIMPORT_PUBHEADERS
 	include/FMI1/fmi1_import_variable_list.h
 	include/FMI1/fmi1_import_vendor_annotations.h
 	include/FMI1/fmi1_import_convenience.h
-	include/Common/fmi_import_context.h
-	include/Common/fmi_import_util.h
+	include/FMI/fmi_import_context.h
+	include/FMI/fmi_import_util.h
  )
 							
 set(FMIIMPORT_PRIVHEADERS
@@ -51,7 +51,7 @@ set(FMIIMPORTHEADERS
  )
 
 set(FMIIMPORTSOURCE
-	src/Common/fmi_import_context.c
+	src/FMI/fmi_import_context.c
 	src/FMI1/fmi1_import_cosim.c
 	src/FMI1/fmi1_import_capi.c
 	#src/FMI1/fmi1_import_query.c
@@ -61,8 +61,8 @@ set(FMIIMPORTSOURCE
 	src/FMI1/fmi1_import_variable_list.c
 	src/FMI1/fmi1_import_vendor_annotations.c
 	src/FMI1/fmi1_import.c
-	#src/Common/fmi_import_util.h
-	src/Common/fmi_import_util.c
+	#src/FMI/fmi_import_util.h
+	src/FMI/fmi_import_util.c
 	src/FMI1/fmi1_import_capabilities.c
 	src/FMI1/fmi1_import_convenience.c
 )

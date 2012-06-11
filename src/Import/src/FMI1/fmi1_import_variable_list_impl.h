@@ -17,7 +17,7 @@
 #ifndef FMI1_IMPORT_VARIABLELISTIMPL_H
 #define FMI1_IMPORT_VARIABLELISTIMPL_H
 
-#include <Common/jm_vector.h>
+#include <JM/jm_vector.h>
 #include <FMI1/fmi1_import.h>
 #include <FMI1/fmi1_import_variable_list.h>
 

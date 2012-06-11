@@ -20,12 +20,12 @@
 #include <string.h>
 #include <errno.h>
 
-#include <Common/jm_types.h>
-#include <Common/jm_portability.h>
+#include <JM/jm_types.h>
+#include <JM/jm_portability.h>
 #include <FMI1/fmi1_types.h>
 #include <FMI1/fmi1_functions.h>
 #include <FMI1/fmi1_capi.h>
-#include <Common/jm_callbacks.h>
+#include <JM/jm_callbacks.h>
 #include <fmu_dummy/fmu1_model_defines.h>
 #include "config_test.h" /* Defines path to the DLL file */
 

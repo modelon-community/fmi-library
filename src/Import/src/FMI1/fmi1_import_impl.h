@@ -26,7 +26,7 @@
 #include <FMI1/fmi1_import.h>
 #include <FMI1/fmi1_xml_model_description.h>
 
-#include "../Common/fmi_import_context_impl.h"
+#include "../FMI/fmi_import_context_impl.h"
 #include "../src/FMI1/fmi1_capi_impl.h"
 
 

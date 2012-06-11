@@ -17,7 +17,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 
-#include <Common/jm_named_ptr.h>
+#include <JM/jm_named_ptr.h>
 #include "fmi1_import_impl.h"
 #include "fmi1_import_variable_list_impl.h"
 

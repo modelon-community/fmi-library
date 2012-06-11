@@ -24,9 +24,9 @@
 #define FMI1_XML_MODELDESCRIPTION_H_
 
 #include <stddef.h>
-#include <Common/jm_callbacks.h>
-#include <Common/jm_named_ptr.h>
-#include <Common/fmi_xml_context.h>
+#include <JM/jm_callbacks.h>
+#include <JM/jm_named_ptr.h>
+#include <FMI/fmi_xml_context.h>
 #include <FMI1/fmi1_types.h>
 #include <FMI1/fmi1_enums.h>
 

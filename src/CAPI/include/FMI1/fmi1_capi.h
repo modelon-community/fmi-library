@@ -21,8 +21,8 @@
 #include <FMI1/fmi1_types.h>
 #include <FMI1/fmi1_functions.h>
 #include <FMI1/fmi1_enums.h>
-#include <Common/jm_portability.h>
-#include <Common/jm_callbacks.h>
+#include <JM/jm_portability.h>
+#include <JM/jm_callbacks.h>
 
 typedef struct fmi1_capi_t fmi1_capi_t;
 

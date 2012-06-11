@@ -23,8 +23,8 @@ extern "C" {
 #include <string.h>
 #include <assert.h>
 
-#include <Common/jm_types.h>
-#include <Common/jm_portability.h>
+#include <JM/jm_types.h>
+#include <JM/jm_portability.h>
 
 #include <FMI1/fmi1_capi_impl.h>
 

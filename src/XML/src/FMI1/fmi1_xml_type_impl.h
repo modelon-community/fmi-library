@@ -17,8 +17,8 @@
 #ifndef FMI1_XML_TYPEIMPL_H
 #define FMI1_XML_TYPEIMPL_H
 
-#include <Common/jm_named_ptr.h>
-#include <Common/jm_string_set.h>
+#include <JM/jm_named_ptr.h>
+#include <JM/jm_string_set.h>
 #include <FMI1/fmi1_xml_model_description.h>
 
 #include "fmi1_xml_parser.h"

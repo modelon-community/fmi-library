@@ -20,7 +20,7 @@
 #include <stdarg.h>
 #include <assert.h>
 
-#include "Common/jm_callbacks.h"
+#include "JM/jm_callbacks.h"
 
 static const char* jm_log_level_str[] = 
 {

@@ -38,8 +38,8 @@ set(FMIXMLHEADERS
     include/FMI1/fmi1_xml_capabilities.h
     src/FMI1/fmi1_xml_capabilities_impl.h
 	# src/FMI1/fmi1_xml_query.h
-	include/Common/fmi_xml_context.h
-	src/Common/fmi_xml_context_impl.h
+	include/FMI/fmi_xml_context.h
+	src/FMI/fmi_xml_context_impl.h
  )
 
 set(FMIXMLSOURCE
@@ -53,7 +53,7 @@ set(FMIXMLSOURCE
     src/FMI1/fmi1_xml_capabilities.c
     src/FMI1/fmi1_xml_cosim.c
 	# src/FMI1/fmi1_xml_query.c
-	src/Common/fmi_xml_context.c
+	src/FMI/fmi_xml_context.c
 )
 
 SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DXML_STATIC -DFMI_XML_QUERY")

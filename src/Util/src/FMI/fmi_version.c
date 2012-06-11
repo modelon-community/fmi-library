@@ -15,7 +15,7 @@
 */
 
 #include <assert.h>
-#include <Common/fmi_version.h>
+#include <FMI/fmi_version.h>
 
 static const char* fmi_versions[] = {
 	"1.0",

@@ -21,9 +21,9 @@
 extern "C" {
 #endif
 
-#include <Common/jm_callbacks.h>
-#include <Common/fmi_import_util.h>
-#include <Common/fmi_import_context.h>
+#include <JM/jm_callbacks.h>
+#include <FMI/fmi_import_util.h>
+#include <FMI/fmi_import_context.h>
 /* #include <FMI1/fmi1_xml_model_description.h>*/
 
 #include <FMI1/fmi1_types.h>

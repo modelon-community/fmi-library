@@ -24,10 +24,10 @@
 
 #include <stddef.h>
 #include <fmilib_config.h>
-#include <Common/jm_callbacks.h>
+#include <JM/jm_callbacks.h>
 #include <FMI1/fmi1_types.h>
 #include <FMI1/fmi1_enums.h>
-#include <Common/fmi_version.h> 
+#include <FMI/fmi_version.h> 
 
 #ifdef __cplusplus
 extern "C" {

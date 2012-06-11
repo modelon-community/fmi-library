@@ -22,7 +22,7 @@
 
 #include "config_test.h"
 
-#include <Common/fmi_import_context.h>
+#include <FMI/fmi_import_context.h>
 
 #include <FMI1/fmi1_import.h>
 

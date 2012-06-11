@@ -17,8 +17,8 @@
 #ifndef FMI1_XML_UNITIMPL_H
 #define FMI1_XML_UNITIMPL_H
 
-#include <Common/jm_vector.h>
-#include <Common/jm_named_ptr.h>
+#include <JM/jm_vector.h>
+#include <JM/jm_named_ptr.h>
 #include "FMI1/fmi1_xml_model_description.h"
 #include "fmi1_xml_parser.h"
 #ifdef __cplusplus

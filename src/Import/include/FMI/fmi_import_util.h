@@ -17,7 +17,7 @@
 #ifndef FMI1_IMPORT_UTIL_H_
 #define FMI1_IMPORT_UTIL_H_
 
-#include <Common/jm_callbacks.h>
+#include <JM/jm_callbacks.h>
 
 #ifdef __cplusplus
 extern "C" {

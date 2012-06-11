@@ -42,17 +42,14 @@ fmi1_import_t* fmi1_import_allocate(jm_callbacks* cb) {
 	fmu->callbacks = cb;
 	fmu->capi = 0;
 	fmu->md = fmi1_xml_allocate_model_description(cb);
+	fmu->registerGlobally = 0;
 	jm_vector_init(char)(&fmu->logMessageBuffer,0,cb);
 
 	if(!fmu->md) {
 		cb->free(fmu);
 		return 0;
 	}
-	if(!fmi1_import_active_fmu) {
-		jm_vector_init(jm_voidp)(&fmi1_import_active_fmu_store,0,cb);
-		fmi1_import_active_fmu = &fmi1_import_active_fmu_store;
-	}
-	jm_vector_push_back(jm_voidp)(fmi1_import_active_fmu, fmu);
+
 	return fmu;
 }
 
@@ -95,21 +92,9 @@ fmi1_import_t* fmi1_import_parse_xml( fmi_import_context_t* context, const char*
 
 void fmi1_import_free(fmi1_import_t* fmu) {
     jm_callbacks* cb = fmu->callbacks;
-	size_t index;
-	size_t nFmu;
+
 	if(!fmu) return;
-	jm_log_verbose( fmu->callbacks, "FMILIB", "Releasing allocated library resources");
-	if(fmi1_import_active_fmu) {
-		index = jm_vector_find_index(jm_voidp)(fmi1_import_active_fmu, (void**)&fmu, jm_compare_voidp);
-		nFmu = jm_vector_get_size(jm_voidp)(fmi1_import_active_fmu);
-		if(index < nFmu) {
-			jm_vector_remove_item(jm_voidp)(fmi1_import_active_fmu,index);
-			if(nFmu == 1) {
-				jm_vector_free_data(jm_voidp)(fmi1_import_active_fmu);
-				fmi1_import_active_fmu = 0;
-			}
-		}
-	}
+	jm_log_verbose( fmu->callbacks, "FMILIB", "Releasing allocated library resources");	
 
 	fmi1_import_destroy_dllfmu(fmu);
 	fmi1_xml_free_model_description(fmu->md);

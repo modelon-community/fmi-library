@@ -15,10 +15,10 @@
   <ScalarVariable name="HIGHT_SPEED" valueReference="1" description="Speed of the ball">
      <Real start="4.0" fixed="true"/>
   </ScalarVariable> 
-  <ScalarVariable name="GRAVITY" valueReference="0" description="Gravity constant">
+  <ScalarVariable name="GRAVITY" valueReference="2" description="Gravity constant">
      <Real start="-9.81"/>
   </ScalarVariable>
-  <ScalarVariable name="BOUNCE_COF" valueReference="1" description="Bouncing coefficient">
+  <ScalarVariable name="BOUNCE_COF" valueReference="3" description="Bouncing coefficient">
      <Real start="0.5" fixed="true"/>
   </ScalarVariable>
 </ModelVariables>

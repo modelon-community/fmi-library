@@ -601,7 +601,7 @@ int test_set_get_real()
 	size_t k;
 
 	for (k = 0; k < N_REAL; k++) {
-		vrs[k] = k;
+		vrs[k] = N_STATES + k;
 		values[k] = (k + 1) * 12;
 		values_ref[k] = values[k];
 	}

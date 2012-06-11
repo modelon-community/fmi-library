@@ -36,6 +36,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 /* Event indicators */
 #define EVENT_HIGHT				0
 
+/* Event indicators */
+#define VAR_S_LOGGER_TEST		0
+
 /* Sizes */
 #define N_STATES				2
 #define N_EVENT_INDICATORS		1

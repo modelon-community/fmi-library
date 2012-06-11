@@ -38,11 +38,11 @@ set(FMU_DUMMY_FOLDER ${RTTESTDIR}/fmu_dummy)
 
 set(FMU_DUMMY_ME_SOURCE
   ${FMU_DUMMY_FOLDER}/fmu1_model_me.c
-#  ${FMU_DUMMY_FOLDER}/fmu1_model.c
+  #${FMU_DUMMY_FOLDER}/fmu1_model.c
 )
 set(FMU_DUMMY_CS_SOURCE
   ${FMU_DUMMY_FOLDER}/fmu1_model_cs.c
-#  ${FMU_DUMMY_FOLDER}/fmu1_model.c
+  #${FMU_DUMMY_FOLDER}/fmu1_model.c
 )
 set(FMU_DUMMY_HEADERS
   ${FMU_DUMMY_FOLDER}/fmu1_model.h
@@ -208,8 +208,6 @@ ENABLE_TESTING()
 set(CTEST_RETURN_SUCCESS 0) 
 set(CTEST_RETURN_FAIL 1)
 
-
-
 #set(FMU_ME_PATH ${TEST_OUTPUT_FOLDER}/${FMU_DUMMY_ME_MODEL_IDENTIFIER}_me.fmu)
 to_native_c_path("${TEST_OUTPUT_FOLDER}/${FMU_DUMMY_ME_MODEL_IDENTIFIER}_me.fmu" FMU_ME_PATH)
 
@@ -236,6 +234,22 @@ ADD_TEST(ctest_fmi_zip_zip_test fmi_zip_zip_test)
 ADD_TEST(ctest_fmi1_capi_cs_test fmi1_capi_cs_test)
 ADD_TEST(ctest_fmi1_capi_me_test fmi1_capi_me_test)
 
+
+##Add logger test
+add_executable (fmi1_logger_test ${RTTESTDIR}/fmi1_logger_test.c)
+target_link_libraries (fmi1_logger_test  ${FMILIBFORTEST}) 
+
+set(logger_output_file "${TEST_OUTPUT_FOLDER}/fmi1_logger_test_output.txt")
+set(logger_reference_file "${RTTESTDIR}/fmi1_logger_test_output.txt")
+
+add_test(ctest_fmi1_logger_test_run fmi1_logger_test ${FMU_ME_PATH} ${FMU_TEMPFOLDER} ${logger_output_file})
+add_test(ctest_fmi1_logger_test_check ${CMAKE_COMMAND} -E compare_files ${logger_output_file}  ${logger_reference_file})
+
+SET_TESTS_PROPERTIES ( 
+	ctest_fmi1_logger_test_check	
+	PROPERTIES DEPENDS ctest_fmi1_logger_test_run 	
+)
+
 if(FMILIB_BUILD_BEFORE_TESTS)
 	SET_TESTS_PROPERTIES ( 
 		ctest_fmi_import_me_test
@@ -245,6 +259,7 @@ if(FMILIB_BUILD_BEFORE_TESTS)
 		ctest_fmi_zip_zip_test
 		ctest_fmi1_capi_cs_test
 		ctest_fmi1_capi_me_test
+		ctest_fmi1_logger_test_run
 		PROPERTIES DEPENDS ctest_build_all)
 endif()
 

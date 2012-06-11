@@ -69,9 +69,10 @@ Wrapper functions for the FMI 1.0 functions
  * 
  * @param fmu A model description object returned by fmi1_import_parse_xml().
  * @param callBackFunctions Callback functions used by the FMI functions internally.
+ * @param registerGlobally Register the FMU globally to enable use of fmi1_log_forwarding(). If this parameter is non-zero the code becomes non-thread safe.
  * @return Error status. If the function returns with an error, it is not allowed to call any of the other C-API functions.
  */
-FMILIB_EXPORT jm_status_enu_t fmi1_import_create_dllfmu(fmi1_import_t* fmu, fmi1_callback_functions_t callBackFunctions);
+FMILIB_EXPORT jm_status_enu_t fmi1_import_create_dllfmu(fmi1_import_t* fmu, fmi1_callback_functions_t callBackFunctions, int registerGlobally);
 
 /** \brief Free a C-API struct. All memory allocated since the struct was created is freed.
  * 

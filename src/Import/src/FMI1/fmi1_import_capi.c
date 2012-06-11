@@ -27,7 +27,7 @@ extern "C" {
 static const char * module = "FMILIB";
 
 /* Load and destroy functions */
-jm_status_enu_t fmi1_import_create_dllfmu(fmi1_import_t* fmu, fmi1_callback_functions_t callBackFunctions) {
+jm_status_enu_t fmi1_import_create_dllfmu(fmi1_import_t* fmu, fmi1_callback_functions_t callBackFunctions, int registerGlobally) {
 
 	const char* dllPath; 
 	const char* modelIdentifier;
@@ -36,6 +36,11 @@ jm_status_enu_t fmi1_import_create_dllfmu(fmi1_import_t* fmu, fmi1_callback_func
 	if (fmu == NULL) {
 		assert(0);
 		return jm_status_error;
+	}
+
+	if(fmu -> capi) {
+		jm_log_warning(fmu->callbacks, module, "FMU binary is already loaded"); 
+		return jm_status_success;
 	}
 
 	standard = fmi1_import_get_fmu_kind(fmu);
@@ -75,6 +80,17 @@ jm_status_enu_t fmi1_import_create_dllfmu(fmi1_import_t* fmu, fmi1_callback_func
 	}
 	jm_log_verbose(fmu->callbacks, module, "Successfully loaded all the interface functions"); 
 
+	if (registerGlobally) {
+		fmu->registerGlobally = 1;
+		if(!fmi1_import_active_fmu) {
+			jm_vector_init(jm_voidp)(&fmi1_import_active_fmu_store,0, fmu->callbacks);
+			fmi1_import_active_fmu = &fmi1_import_active_fmu_store;
+			jm_log_debug(fmu->callbacks, module, "Created an empty active fmu list");
+		}
+		jm_vector_push_back(jm_voidp)(fmi1_import_active_fmu, fmu);
+		jm_log_debug(fmu->callbacks, module, "Registrered active fmu(%p)", fmu);
+	}
+
 	return jm_status_success;
 }
 
@@ -84,6 +100,7 @@ void fmi1_import_destroy_dllfmu(fmi1_import_t* fmu) {
 		return;
 	}
 
+	
 	if(fmu -> capi) {
 		jm_log_verbose(fmu->callbacks, module, "Releasing FMU CAPI interface"); 
 
@@ -93,7 +110,28 @@ void fmi1_import_destroy_dllfmu(fmi1_import_t* fmu) {
 		/* Destroy the C-API struct */
 		fmi1_capi_destroy_dllfmu(fmu -> capi);
 
+		if(fmu->registerGlobally && fmi1_import_active_fmu) {
+			size_t index;
+			size_t nFmu;
+
+			index = jm_vector_find_index(jm_voidp)(fmi1_import_active_fmu, (void**)&fmu, jm_compare_voidp);
+			nFmu = jm_vector_get_size(jm_voidp)(fmi1_import_active_fmu);
+			if(index < nFmu) {
+				jm_vector_remove_item(jm_voidp)(fmi1_import_active_fmu,index);
+				jm_log_debug(fmu->callbacks, module, "Unregistrered active fmu(%p)", fmu);
+				if(nFmu == 1) {
+					jm_vector_free_data(jm_voidp)(fmi1_import_active_fmu);
+					fmi1_import_active_fmu = 0;
+					jm_log_debug(fmu->callbacks, module, "Freed active fmu list");
+				}
+			}
+			fmu->registerGlobally = 0;
+		}
+
 		fmu -> capi = NULL;
+	}
+	else {
+		assert(fmu->registerGlobally == 0);
 	}
 }
 

@@ -17,13 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdio.h>
 #include <string.h>
 
-/* 
-Standard FMI 1.0 ME and CS types 
-#include <1.0-CS/fmiPlatformTypes.h>
-#include <1.0-CS/fmiFunctions.h>
-*/
 #include <fmu_dummy/fmu1_model.h>
-
 
 /* Model calculation functions */
 static int calc_initialize(component_ptr_t comp)
@@ -104,7 +98,12 @@ fmiStatus fmi_get_real(fmiComponent c, const fmiValueReference vr[], size_t nvr,
 	} else {
 		size_t k;
 		for (k = 0; k < nvr; k++) {
-			value[k] = comp->reals[vr[k]];
+			fmiValueReference cvr = vr[k];
+			if (cvr < N_STATES) {
+				value[k] = comp->states[cvr];
+			} else {
+				value[k] = comp->reals[cvr - N_STATES];
+			}	
 		}
 		return fmiOK;
 	}
@@ -160,7 +159,12 @@ fmiStatus fmi_set_real(fmiComponent c, const fmiValueReference vr[], size_t nvr,
 	} else {
 		size_t k;
 		for (k = 0; k < nvr; k++) {
-			comp->reals[vr[k]] = value[k]; 
+			fmiValueReference cvr = vr[k];
+			if (cvr < N_STATES) {
+				comp->states[cvr] = value[k]; 
+			} else {
+				comp->reals[cvr - N_STATES] = value[k]; 
+			}			
 		}
 		return fmiOK;
 	}
@@ -201,7 +205,7 @@ fmiStatus fmi_set_string(fmiComponent c, const fmiValueReference vr[], size_t nv
 		return fmiFatal;
 	} else {
 		size_t k;
-		for (k = 0; k < nvr; k++) {
+		for (k = 0; k < nvr; k++) {			
 			int len;
 			fmiString s_dist;
 			fmiString s_src = value[k];
@@ -214,6 +218,17 @@ fmiStatus fmi_set_string(fmiComponent c, const fmiValueReference vr[], size_t nv
 			strcpy((char*)s_dist, (char*)s_src);
 			comp->strings[vr[k]] = s_dist;
 		}
+
+		/******* Logger test *******/
+		if(comp->loggingOn == fmiTrue) {
+			for (k = 0; k < nvr; k++) {
+				fmiValueReference cvr = vr[k];
+				if (cvr == VAR_S_LOGGER_TEST) {
+					comp->functions.logger(comp, comp->instanceName, fmiFatal, "INFO", "%s",value[k]);
+				}
+			}
+		}
+		/******* End of logger test *******/
 		return fmiOK;
 	}
 }
@@ -222,6 +237,13 @@ fmiStatus fmi_set_string(fmiComponent c, const fmiValueReference vr[], size_t nv
 const char* fmi_get_model_types_platform()
 {
 	return FMI_PLATFORM_TYPE;
+}
+
+#define FMI_TEST_LOGGER_TEST_RESULT_FILE "C:\\P510-JModelica\\FMIToolbox\\trunk\\external\\FMIL\\build\\testfolder\\"
+#define FMI_TEST_LOGGER_TEST_SOURCE_FILE "C:\\P510-JModelica\\FMIToolbox\\trunk\\external\\FMIL\\build\\testfolder\\"
+
+static FILE* find_string(FILE* fp, char* str, int len) {
+
 }
 
 fmiComponent fmi_instantiate_model(fmiString instanceName, fmiString GUID, fmiCallbackFunctions functions, fmiBoolean loggingOn)

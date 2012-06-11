@@ -201,7 +201,7 @@ int main(int argc, char *argv[])
 	}
 	
 
-	status = fmi1_import_create_dllfmu(fmu, callBackFunctions);
+	status = fmi1_import_create_dllfmu(fmu, callBackFunctions, 1);
 	if (status == jm_status_error) {
 		printf("Could not create the DLL loading mechanism(C-API) (error: %s).\n", fmi1_import_get_last_error(fmu));
 		do_exit(CTEST_RETURN_FAIL);

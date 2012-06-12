@@ -281,7 +281,7 @@ Default definition below is jm_diff and is implemented as (int)(first-second)
 
 /** Declare the struct and functions for the specified type. */
 #define jm_vector_declare_template(T)		\
-typedef struct   {                \
+typedef struct  jm_vector(T) {                \
         jm_callbacks* callbacks; 			\
         T  *items;     				\
 	size_t size;  				 \

@@ -84,7 +84,7 @@ fmi1_import_variable_list_t* fmi1_import_append_to_var_list(fmi1_import_variable
     return out;
 }
 
-fmi1_import_variable_list_t* fmi1_import_prepend_to_var_list(fmi1_import_variable_list_t* list, fmi1_import_variable_list_t* v) {
+fmi1_import_variable_list_t* fmi1_import_prepend_to_var_list(fmi1_import_variable_list_t* list, fmi1_import_variable_t* v) {
     size_t lsize = fmi1_import_get_variable_list_size(list);
     fmi1_import_variable_list_t* out = fmi1_import_alloc_variable_list(list->fmu, lsize+1);
     if(!out) return 0;

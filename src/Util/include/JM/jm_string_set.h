@@ -28,22 +28,27 @@ extern "C" {
 	*
 	* \addtogroup jm_utils
 	* @{
-	*    \addtogroup jm_string_set
+	*    \addtogroup jm_string_set_group
 	* @}
 	*/
 
-	/** \addtogroup jm_string_set A set of strings
+	/** \addtogroup jm_string_set_group A set of strings
 	 @{
 	*/
 
-/** \brief Set of string is based on a vector,
-	
-TODO: Some faster implementation based on binary tree or hash is desirable.
+/** 
+	\brief Set of string is based on a vector	
+
+	\todo Some faster implementation based on binary tree or hash is desirable.
 */
-typedef jm_vector(jm_string) jm_string_set;
+typedef struct jm_vector_jm_string jm_string_set; /* equivalent to "typedef jm_vector(jm_string) jm_string_set" which Doxygen does not understand */
 
 /**
 \brief Find a string in a set.
+
+\param s A string set.
+\param str Search string.
+\return If found returns a pointer to the string saved in the set. If not found returns NULL.
 */
 static jm_string jm_string_set_find(jm_string_set* s, jm_string str) {
     jm_string* found = jm_vector_find(jm_string)(s,&str,jm_compare_string);
@@ -53,6 +58,9 @@ static jm_string jm_string_set_find(jm_string_set* s, jm_string str) {
 
 /**
 *  \brief Put an element in the set if it is not there yet.
+*
+*  @param s A string set.
+*  \param str String to put.
 *  @return A pointer to the inserted (or found) element or zero pointer if failed.
 */
 static jm_string jm_string_set_put(jm_string_set* s, jm_string str) {

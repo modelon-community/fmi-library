@@ -490,12 +490,7 @@ FMILIB_EXPORT fmi1_status_t fmi1_import_get_string_status(fmi1_import_t* fmu, co
 
 /**@} */
 
-/**
- * \addtogroup fmi1_import_capi_me FMI 1.0 ME functions
- * @{
- */
 
-/**@} */
 /**@} */
 
 #ifdef __cplusplus

@@ -42,12 +42,16 @@ typedef struct jm_callbacks jm_callbacks;
 * types correspond to the standard C memory management functions
 * @{ 
 */
+/** \brief Allocation function type. */
 typedef jm_voidp (*jm_malloc_f)(size_t size);
 
+/** \brief Re-allocation function type. */
 typedef jm_voidp (*jm_realloc_f)(void *ptr, size_t size);
 
+/** \brief Zero-initialized allocation function type. */
 typedef jm_voidp (*jm_calloc_f)(size_t numitems, size_t itemsize);
 
+/** \brief Free memory function type. */
 typedef void (*jm_free_f)(jm_voidp p);
 /** @}
 */
@@ -64,9 +68,10 @@ typedef void (*jm_free_f)(jm_voidp p);
 */
 typedef void (*jm_logger_f)(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_level, jm_string message);
 
+/** \brief Maximum message size that can be stored in the ::jm_callbacks struct */
 #define JM_MAX_ERROR_MESSAGE_SIZE 2000
 
-/** The callbacks struct is sent to all the modules in the library */
+/** \brief The callbacks struct is sent to all the modules in the library */
 struct jm_callbacks {
         jm_malloc_f malloc; /** Allocate non-initialized memory */
         jm_calloc_f calloc; /** Allocate zero initialized memory */
@@ -79,18 +84,21 @@ struct jm_callbacks {
 };
 
 /**
+* \brief Get the last log message produced by the library.
+*
 * An alternative way to get error information is to use jm_get_last_error(). This is only meaningful
 * if logger function is not present.
 */
 static jm_string jm_get_last_error(jm_callbacks* cb) {return cb->errMessageBuffer; }
 
 /**
- Clear the last generated error message.
+ \brief Clear the last generated log message.
 */
 static void jm_clear_last_error(jm_callbacks* cb) { cb->errMessageBuffer[0] = 0; }
 
 /**
-Set the structure to be returned by jm_get_default_callbacks().
+\brief Set the structure to be returned by jm_get_default_callbacks().
+
 @param c - a pointer to initialized struct to be used as default later on. If this is NULL
 	library default implementation will be used.
 */
@@ -98,7 +106,8 @@ FMILIB_EXPORT
 void jm_set_default_callbacks(jm_callbacks* c);
 
 /**
-Get default callbacks. The function never returns NULL.
+\brief Get default callbacks. The function never returns NULL.
+\return Default ::jm_callbacks struture. Either the one supplied by the library of the one set with jm_set_default_callbacks().
 */
 FMILIB_EXPORT
 jm_callbacks* jm_get_default_callbacks(void);
@@ -110,7 +119,7 @@ FMILIB_EXPORT
 void jm_default_logger(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_level, jm_string message);
 
 /**
-Send a message to the logger function.
+\brief Send a message to the logger function.
 	@param cb - callbacks to be used for reporting;
 	@param module - a name of reporting module;
 	@param log_level - message kind;
@@ -123,26 +132,62 @@ void jm_log(jm_callbacks* cb, const char* module, jm_log_level_enu_t log_level, 
 */
 void jm_log_v(jm_callbacks* cb, const char* module, jm_log_level_enu_t log_level, const char* fmt, va_list ap);
 
+/** \brief Send a fatal error message to the logger function.
+*/
 void jm_log_fatal_v(jm_callbacks* cb, const char* module, const char* fmt, va_list ap);
+/** \brief Send a fatal error message to the logger function.
+*/
 void jm_log_fatal(jm_callbacks* cb, const char* module, const char* fmt, ...);
 
+/** \brief Send a error message to the logger function.
+*/
 void jm_log_error_v(jm_callbacks* cb, const char* module, const char* fmt, va_list ap);
+/** \brief Send a error message to the logger function.
+*/
 void jm_log_error(jm_callbacks* cb, const char* module, const char* fmt, ...);
 
+/** \brief Send a warning message to the logger function.
+*/
 void jm_log_warning_v(jm_callbacks* cb, const char* module, const char* fmt, va_list ap);
+/** \brief Send a warning message to the logger function.
+*/
 void jm_log_warning(jm_callbacks* cb, const char* module, const char* fmt, ...);
 
+/** \brief Send an info message to the logger function.
+*/
 void jm_log_info_v(jm_callbacks* cb, const char* module, const char* fmt, va_list ap);
+/** \brief Send an info message to the logger function.
+*/
 void jm_log_info(jm_callbacks* cb, const char* module, const char* fmt, ...);
 
+/** \brief Send a verbose message to the logger function.
+*/
 void jm_log_verbose_v(jm_callbacks* cb, const char* module, const char* fmt, va_list ap);
+/** \brief Send a verbose message to the logger function.
+*/
 void jm_log_verbose(jm_callbacks* cb, const char* module, const char* fmt, ...);
 
 #ifdef FMILIB_ENABLE_LOG_LEVEL_DEBUG
+/** \brief Send a debug message to the logger function.
+
+	Note that the function is only active if the library is configure with FMILIB_ENABLE_LOG_LEVEL_DEBUG=ON
+*/
 void jm_log_debug_v(jm_callbacks* cb, const char* module, const char* fmt, va_list ap);
+/** \brief Send a debug message to the logger function.
+
+	Note that the function is only active if the library is configure with FMILIB_ENABLE_LOG_LEVEL_DEBUG=ON
+*/
 void jm_log_debug(jm_callbacks* cb, const char* module, const char* fmt, ...);
 #else
+/** \brief Send a debug message to the logger function.
+
+	Note that the function is only active if the library is configure with FMILIB_ENABLE_LOG_LEVEL_DEBUG=ON
+*/
 static void jm_log_debug_v(jm_callbacks* cb, const char* module, const char* fmt, va_list ap) {}
+/** \brief Send a debug message to the logger function.
+
+	Note that the function is only active if the library is configure with FMILIB_ENABLE_LOG_LEVEL_DEBUG=ON
+*/
 static void jm_log_debug(jm_callbacks* cb, const char* module, const char* fmt, ...) {}
 #endif
 

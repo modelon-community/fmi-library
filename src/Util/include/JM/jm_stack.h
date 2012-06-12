@@ -26,22 +26,24 @@ extern "C" {
 	*
 	* \addtogroup jm_utils
 	* @{
-	*    \addtogroup jm_stack
+	*    \defgroup jm_stack_grp  A basic stack
 	* @}
 	*/
 
-	/** \addtogroup jm_stack A basic stack
+	/** \addtogroup jm_stack_grp
 	 @{
 	*/
-/** \brief A basic stack of items.
+/** \typedef jm_stack
+	\brief A basic stack of items.
 	
-Stack is implemented on top of ::jm_vector right now. There is a couple of extra methonds that are convenient.
+	Stack is implemented on top of jm_vector right now. There is a couple of extra methonds that are convenient.
 
-TODO: Consider reimplementing on top of deque.
+	TODO: Consider reimplementing on top of deque.
   */
 #define jm_stack(T) jm_mangle(jm_stack, T)
 
-/**  \brief  Allocates a stack with the given reserved memory
+/**
+*  \brief  Allocates a stack with the given reserved memory
 *
 *  jm_stack(T)* jm_stack_alloc(T)(size_t capacity,jm_callbacks*c );
 *  @param capacity - initial stack capacity, can be 0
@@ -51,6 +53,7 @@ TODO: Consider reimplementing on top of deque.
 #define jm_stack_alloc(T) jm_mangle(jm_stack_alloc, T)
 
 /** 
+*  \fun jm_stack_free
 \brief Release memory allocated for a stack.
 
 extern void jm_stack_free(T)(jm_stack(T)* a); 

@@ -221,7 +221,9 @@ file(MAKE_DIRECTORY ${TEST_OUTPUT_FOLDER}/tempfolder)
 
 #ADD_TEST(ctest_vector_test ${EXECUTABLE_OUTPUT_PATH}/jm_vector_test)
 if(FMILIB_BUILD_BEFORE_TESTS)
-	ADD_TEST(ctest_build_all "${CMAKE_COMMAND}" --build ${FMILIBRARYBUILD})
+	add_test(
+		NAME ctest_build_all 
+		COMMAND "${CMAKE_COMMAND}" --build ${FMILIBRARYBUILD} --config $<CONFIGURATION>)
 endif()
 
 ADD_TEST(ctest_fmi_import_me_test fmi_import_me_test ${FMU_ME_PATH} ${FMU_TEMPFOLDER})

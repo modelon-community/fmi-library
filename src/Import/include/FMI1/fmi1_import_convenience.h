@@ -87,7 +87,7 @@ FMILIB_EXPORT
 void fmi1_import_collect_model_counts(fmi1_import_t* fmu, fmi1_import_model_counts_t* counts);
 
 /**
-  \brief Print msgIn into msgOut by expanding variable references of the form #<Type><VR># into variable names
+  \brief Print msgIn into msgOut by expanding variable references of the form #\<Type\>\<VR\># into variable names
   and replacing '##' with a single #.
    \param fmu - An fmu object as returned by fmi1_import_parse_xml().
    \param msgIn - Log message as produced by an FMU.
@@ -101,17 +101,19 @@ void fmi1_import_expand_variable_references(fmi1_import_t* fmu, const char* msgI
 /**
 	\brief An implementation of FMI 1.0 logger that forwards the messages to logger function inside ::jm_callbacks structure.
 	
-	The function is using a global array of active FMUs to find out which FMU is sending the logger and attach is to
-	the appropriate ::fmi1_import_t struct. The function is called by the FMU.	
+	The function is using a global array of active FMUs to find out which FMU is sending the log messege. It then
+	forwards the message to the logger connected to the particular ::fmi1_import_t struct. The function is called by the FMU.
+	The FMU must be loaded with non-zero registerGlobally parameter of fmi1_import_create_dllfmu() in order to work. 
+	If no matching ::fmi1_import_t struct is found on the global list then jm_get_default_callbacks() is used to get the default logger.
+	Note that this function is not thread safe due to the use of the global list.
 */
 FMILIB_EXPORT 
 void  fmi1_log_forwarding(fmi1_component_t c, fmi1_string_t instanceName, fmi1_status_t status, fmi1_string_t category, fmi1_string_t message, ...);
 
 /**
-	\brief An implementation of FMI 1.0 logger that forwards the messages to logger function inside jm_callbacks structure.
+	\brief An implementation of FMI 1.0 logger that forwards the messages to logger function inside ::jm_callbacks structure.
 	
-	The function is using a global array of active FMUs to find out which FMU is sending the logger and attach is to
-	the appropriate fmi_import_t struct. The function is called by the FMU.	
+	See fmi1_log_forwarding() for more information.
 */
 FMILIB_EXPORT 
 void  fmi1_log_forwarding_v(fmi1_component_t c, fmi1_string_t instanceName, fmi1_status_t status, fmi1_string_t category, fmi1_string_t message, va_list args);

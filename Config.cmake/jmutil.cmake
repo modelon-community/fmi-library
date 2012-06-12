@@ -24,7 +24,6 @@ set(JMUTILSOURCE
  JM/jm_named_ptr.c
  JM/jm_portability.c
  FMI/fmi_version.c
- FMI1/fmi1_callbacks.c
  FMI1/fmi1_enums.c
 )
 
@@ -40,7 +39,6 @@ set(JMUTILHEADERS
   FMI/fmi_version.h
   FMI1/fmi1_functions.h
   FMI1/fmi1_types.h
-  FMI1/fmi1_callbacks.h
   FMI1/fmi1_enums.h
 )
 

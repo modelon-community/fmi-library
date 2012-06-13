@@ -93,6 +93,10 @@ fmi1_import_variable_list_t* fmi1_import_prepend_to_var_list(fmi1_import_variabl
     return out;
 }
 
+jm_status_enu_t fmi1_import_var_list_push_back(fmi1_import_variable_list_t* list, fmi1_import_variable_t* v) {
+    if(!jm_vector_push_back(jm_voidp)(&list->variables, v)) return jm_status_error;
+    return jm_status_success;
+}
 
 /* Get a pointer to the list of the value references for all the variables */
 const fmi1_value_reference_t* fmi1_import_get_value_referece_list(fmi1_import_variable_list_t* vl) {

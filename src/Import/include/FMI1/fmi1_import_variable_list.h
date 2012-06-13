@@ -121,6 +121,13 @@ FMILIB_EXPORT fmi1_import_variable_list_t* fmi1_import_append_to_var_list(fmi1_i
 \param v A variable.
 */
 FMILIB_EXPORT fmi1_import_variable_list_t* fmi1_import_prepend_to_var_list(fmi1_import_variable_list_t* vl, fmi1_import_variable_t* v);
+
+/** \brief Add a variable to a variable list.
+  
+\param vl A variable list.
+\param v A variable.
+*/
+FMILIB_EXPORT jm_status_enu_t fmi1_import_var_list_push_back(fmi1_import_variable_list_t* vl, fmi1_import_variable_t* v);
 /**
   @}
  */

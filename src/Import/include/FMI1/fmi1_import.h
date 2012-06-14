@@ -131,7 +131,7 @@ FMILIB_EXPORT fmi1_import_t* fmi1_import_parse_xml( fmi_import_context_t* contex
 * Error handling:
 *
 *  Many functions in the library return pointers to struct. An error is indicated by returning NULL/0-pointer.
-*  If error is returned than fmi_import_get_last_error() functions can be used to retrieve the error message.
+*  If error is returned than fmi1_import_get_last_error() functions can be used to retrieve the error message.
 *  If logging callbacks were specified then the same information is reported via logger.
 *  Memory for the error string is allocated and deallocated in the module.
 *  Client code should not store the pointer to the string since it can become invalid.
@@ -144,7 +144,7 @@ FMILIB_EXPORT const char* fmi1_import_get_last_error(fmi1_import_t* fmu);
 \brief Clear the error message.
 * @param fmu An FMU object as returned by fmi1_import_parse_xml().
 * @return 0 if further processing is possible. If it returns 1 then the 
-*	error was not recoverable. The fmu object should then be freed and recreated.
+*	error was not recoverable. The \p fmu object should then be freed and recreated.
 */
 FMILIB_EXPORT int fmi1_import_clear_last_error(fmi1_import_t* fmu);
 

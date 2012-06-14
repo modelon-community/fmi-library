@@ -30,6 +30,9 @@ typedef struct fmi1_capi_t fmi1_capi_t;
 extern "C" {
 #endif
 
+/** \file fmi1_capi.h
+	\brief Public interfaces for the FMI CAPI library. 
+	*/
 
 /** \addtogroup fmi1_capi Standard FMI 1.0 "C" API
  * \brief The "C" API loads and frees the FMI functions and it is through theise functions all the communcation with the FMU occures. The FMI import library wrappes these functions in a more convenient way.

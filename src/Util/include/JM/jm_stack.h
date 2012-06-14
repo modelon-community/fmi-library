@@ -33,19 +33,20 @@ extern "C" {
 	/** \addtogroup jm_stack_grp
 	 @{
 	*/
-/** \typedef jm_stack
+/** 
 	\brief A basic stack of items.
 	
 	Stack is implemented on top of jm_vector right now. There is a couple of extra methonds that are convenient.
 
-	TODO: Consider reimplementing on top of deque.
+	\todo Consider reimplementing on top of deque.
   */
 #define jm_stack(T) jm_mangle(jm_stack, T)
 
 /**
 *  \brief  Allocates a stack with the given reserved memory
-*
+*  \code
 *  jm_stack(T)* jm_stack_alloc(T)(size_t capacity,jm_callbacks*c );
+*  \endcode
 *  @param capacity - initial stack capacity, can be 0
 *  @param c - jm_callbacks callbacks, can be zero
 *  @return Newly allocated stack
@@ -53,46 +54,61 @@ extern "C" {
 #define jm_stack_alloc(T) jm_mangle(jm_stack_alloc, T)
 
 /** 
-*  \fun jm_stack_free
-\brief Release memory allocated for a stack.
-
+*  \brief Release memory allocated for a stack.
+\code
 extern void jm_stack_free(T)(jm_stack(T)* a); 
+\endcode
 */
 #define jm_stack_free(T) jm_mangle(jm_stack_free, T)
 
 /**
-*  jm_stack_init initializes a jm_stack allocated on stack.
-*  Input:
-*    a - pointer to the stack to be initialized;
-*    c - jm_callbacks callbacks, can be zero
-* void jm_stack_init(T)(jm_stack(T)* a, jm_callbacks* c)
+*  \brief Initializes a #jm_stack allocated on stack.
+*  \param a - pointer to the stack to be initialized;
+*  \param c - ::jm_callbacks callbacks, can be zero
+*
+*  \code
+void jm_stack_init(T)(jm_stack(T)* a, jm_callbacks* c)
+  \endcode
 */
 #define jm_stack_init(T) jm_mangle(jm_stack_init, T)
 
 /**
-*  jm_stack_free_data releases memory allocated for stack data
-*  This only needs to be called both for stack allocated jm_stack
-* inline void jm_stack_free_data(T)(jm_stack(T)* a)
+*  \brief  Releases memory allocated for stack data.
+*
+*  This only needs to be called both for stack allocated #jm_stack structs.
+*\code
+inline void jm_stack_free_data(T)(jm_stack(T)* a)
+\endcode
+*\param a - pointer to the stack.
+*
 */
 #define jm_stack_free_data(T) jm_mangle(jm_stack_free_data, T)
 
 /**
+\brief  Get the number of elements in the stack.
+
+\code
 inline size_t jm_stack_get_size(T)(jm_stack(T)* a)
+\endcode
 */
 #define jm_stack_get_size(T) jm_mangle(jm_stack_get_size, T)
 
 /**
-*  jm_stack_reserve preallocates memory for the stack (to speed up consequent push)
-*  Returns: the actually reserved space. Can be smaller than "capacity" if memory allocation failed.
+*  \brief Preallocate memory for the stack (to speed up consequent push).
+*
+*  \return The actually reserved space. Can be smaller than "capacity" if memory allocation failed.
 *  Can be larger than "capacity" if more memory was previously allocated.
 *  size_t jm_stack_reserve(T)(jm_stack(T)* a, size_t capacity)
 */
 #define jm_stack_reserve(T) jm_mangle(jm_stack_reserve, T)
 
 /**
-*  jm_stack_push puts an element on the stack.
-*  Returns a pointer to the inserted element or zero pointer if failed.
-*  T* jm_stack_push_back(jm_stack(T)* a, T item)
+*  \brief Put an element on the stack.
+*  \return A pointer to the inserted element or zero pointer if failed.
+*
+\code
+T* jm_stack_push_back(jm_stack(T)* a, T item);
+\endcode
 */
 #define jm_stack_push(T) jm_mangle(jm_stack_push, T)
 

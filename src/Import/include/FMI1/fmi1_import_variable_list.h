@@ -103,7 +103,7 @@ FMILIB_EXPORT fmi1_import_variable_list_t* fmi1_import_join_var_list(fmi1_import
 
 /** \brief Create a variable list with a single variable.
   
-\param vl A variable list.
+\param fmu An FMU object that this variable list will reference.
 \param v A variable.
 */
 FMILIB_EXPORT fmi1_import_variable_list_t* fmi1_import_create_var_list(fmi1_import_t* fmu,fmi1_import_variable_t* v);

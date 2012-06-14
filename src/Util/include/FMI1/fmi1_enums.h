@@ -35,7 +35,7 @@ extern "C" {
 /** \addtogroup fmi1_enums Enum types used with FMI 1.0 libs
 	@{
 */
-/** Naming convention for the variables in XML file*/
+/** \brief Naming convention for the variables in XML file*/
 typedef enum fmi1_variable_naming_convension_enu_t
 { 
         fmi1_naming_enu_flat,
@@ -46,7 +46,7 @@ typedef enum fmi1_variable_naming_convension_enu_t
 /** \brief Convert a #fmi1_variable_naming_convension_enu_t constant into string */
 FMILIB_EXPORT const char* fmi1_naming_convention_to_string(fmi1_variable_naming_convension_enu_t convention);
 
-/** FMU 1.0 kinds */
+/**  \brief FMU 1.0 kinds */
 typedef enum fmi1_fmu_kind_enu_t
 {
         fmi1_fmu_kind_enu_me = 0,
@@ -58,7 +58,7 @@ typedef enum fmi1_fmu_kind_enu_t
 /** \brief Convert a #fmi1_fmu_kind_enu_t constant into string  */
 FMILIB_EXPORT const char* fmi1_fmu_kind_to_string(fmi1_fmu_kind_enu_t kind);
 
-/** Variability property for variables */
+/**  \brief Variability property for variables */
 typedef enum fmi1_variability_enu_t {
         fmi1_variability_enu_constant,
         fmi1_variability_enu_parameter,
@@ -70,7 +70,7 @@ typedef enum fmi1_variability_enu_t {
 /** \brief Convert a #fmi1_variability_enu_t constant into string  */
 FMILIB_EXPORT const char* fmi1_variability_to_string(fmi1_variability_enu_t v);
 
-/** Causality property for variables */
+/**  \brief Causality property for variables */
 typedef enum fmi1_causality_enu_t {
         fmi1_causality_enu_input,
         fmi1_causality_enu_output,
@@ -99,7 +99,10 @@ typedef enum fmi1_base_type_enu_t
 	fmi1_base_type_enum
 } fmi1_base_type_enu_t;
 
-/* Convert base type constant to string */
+/**  \brief Convert base type constant to string 
+	\param bt Base type identifier.
+	\return Corresponding base type name.
+	*/
 FMILIB_EXPORT const char* fmi1_base_type_to_string(fmi1_base_type_enu_t bt);
 
 /**	

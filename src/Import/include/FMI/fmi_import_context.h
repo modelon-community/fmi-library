@@ -34,7 +34,13 @@ extern "C" {
 #endif
 
 	
-/** \addtogroup fmi_import FMI import library
+/** 
+\addtogroup fmi_import FMI import library
+@{
+\addtogroup fmi_import_context Library initialization
+\addtogroup  fmi1_import
+@}
+\addtogroup fmi_import_context
 @{
 */
 
@@ -75,7 +81,7 @@ typedef struct fmi1_import_t fmi1_import_t;
 */
 FMILIB_EXPORT fmi1_import_t* fmi1_import_parse_xml( fmi_import_context_t* c, const char* dirName);
 
-/** \addtogroup  fmi1_import
+/** 
 @}
 */
 

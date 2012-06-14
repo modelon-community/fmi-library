@@ -25,7 +25,9 @@ extern "C" {
 	@file jm_types.h Types used in the Utils module.
 
 	*/
-/** \defgroup jm_utils Utilities 
+/** 
+\defgroup jm_utils Utilities 
+\addtogroup jm_utils
   * @{
 */
 /** \brief A constant string.*/

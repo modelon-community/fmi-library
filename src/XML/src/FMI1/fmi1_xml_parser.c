@@ -75,6 +75,14 @@ void fmi1_xml_parse_fatal(fmi1_xml_parser_context_t *context, const char* fmt, .
     XML_StopParser(context->parser,0);
 }
 
+void fmi1_xml_parse_error(fmi1_xml_parser_context_t *context, const char* message) {
+	if(context->parser)
+		jm_log_error(context->callbacks, module, "[Line:%u] %s", XML_GetCurrentLineNumber(context->parser),message);
+	else
+		jm_log_error(context->callbacks, module, "%s", message);
+}
+
+
 int fmi1_xml_is_attr_defined(fmi1_xml_parser_context_t *context, fmi1_xml_attr_enu_t attrID) {
     return ( jm_vector_get_item(jm_string)(context->attrBuffer, attrID) != 0);
 }

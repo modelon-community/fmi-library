@@ -593,8 +593,8 @@ int fmi1_xml_handle_EnumerationType(fmi1_xml_parser_context_t *context, const ch
 int fmi1_xml_handle_Item(fmi1_xml_parser_context_t *context, const char* data) {
     if(!data) {
         if(context -> currentElmHandle != fmi1_xml_handle_EnumerationType) {
-            fmi1_xml_parse_fatal(context, "Item XML element must be a part of EnumerationType");
-            return -1;
+			fmi1_xml_parse_error(context, "Item XML element must be a part of EnumerationType");
+            return 0;
         }
 
         {

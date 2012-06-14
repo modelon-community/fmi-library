@@ -15,7 +15,8 @@
 */
 
 /** \file fmilib.h
-*  \brief Include file to be used in client applications of the FMI Library.
+	\brief Include file to be used in client applications of the FMI Library.
+	\defgroup fmi_import FMI import library
 */
 
 #ifndef FMILIB_H_
@@ -26,4 +27,5 @@
 
 #include <FMI/fmi_import_context.h>
 #include <FMI1/fmi1_import.h>
+
 #endif

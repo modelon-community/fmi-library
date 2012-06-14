@@ -27,18 +27,8 @@
 extern "C" {
 #endif
 
-/* \defgroup Type definitions supporting structures
-  \
-*/
+/** \defgroup Type definitions supporting structures
 
-typedef enum {
-    fmi1_xml_type_struct_enu_base,
-    fmi1_xml_type_struct_enu_typedef,
-    fmi1_xml_type_struct_enu_props,
-    fmi1_xml_type_struct_enu_start
-} fmi1_xml_type_struct_kind_enu_t;
-
-/*
   For each basic type there is exactly one instance of
   TypeContrainsBase with structKind=fmi1_xml_type_struct_enu_base.
   Those instances do not have baseType.
@@ -55,13 +45,22 @@ typedef enum {
     (1) fmi1_xml_type_struct_enu_start providing the start value
     (2) structKind=fmi1_xml_type_struct_enu_props  providing information on min/max/quantity/etc.
     baseType is a pointer to either fmi1_xml_type_struct_enu_base or fmi1_xml_type_struct_enu_typedef.
-  */
+ */
+
+typedef enum {
+    fmi1_xml_type_struct_enu_base,
+    fmi1_xml_type_struct_enu_typedef,
+    fmi1_xml_type_struct_enu_props,
+    fmi1_xml_type_struct_enu_start
+} fmi1_xml_type_struct_kind_enu_t;
+
+
 
 typedef struct fmi1_xml_variable_type_base_t fmi1_xml_variable_type_base_t;
 struct fmi1_xml_variable_type_base_t {
     fmi1_xml_variable_type_base_t* baseTypeStruct; /* The fmi1_xml_variable_type_base structs are put on a list that provide needed info on a variable */
 
-    fmi1_xml_variable_type_base_t* next;    /* dynamically allocated fmi1_xml_variable_type_base structs are put on a linked list to prevent memory leaks*/
+    fmi1_xml_variable_type_base_t* next;    /** dynamically allocated fmi1_xml_variable_type_base structs are put on a linked list to prevent memory leaks*/
 
     char structKind; /* one of fmi1_xml_type_contrains_kind.*/
     char baseType;   /* one of fmi1_xml_base_type */

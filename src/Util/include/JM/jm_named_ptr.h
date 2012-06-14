@@ -33,50 +33,60 @@ extern "C" {
 /** \addtogroup jm_named_ptr Named objects
  @{
 */
-/** Name and object pointer pair */
+/** \brief Name and object pointer pair */
 typedef struct jm_named_ptr jm_named_ptr;
 
-/** Name and object pointer pair */
+/** \brief Name and object pointer pair */
 struct jm_named_ptr {
-    jm_voidp ptr;
-    jm_string name;
+    jm_voidp ptr; /** \brief Object pointer */
+    jm_string name; /** \brief Name string */
 };
 
 /**
-The function jm_named_alloc is intended for types defined as:
-struct T {
-    < some data fields>
-    char name[1];
-}
-It allocates memory for the object and the name string and sets pointer to it packed together with the name pointer.
+\brief Allocate memory for the object and the name string and sets pointer to it packed together with the name pointer.
+ \param name Name for the object.
+ \param size Size of the data structure.
+ \param nameoffset Offset of the name field within the data structure.
+ \param c Callbacks to be used for memory allocation.
+
+The function jm_named_alloc() is intended for types defined as:
+\code
+struct T { 
+    < some data fields> 
+    char name[1]; 
+} 
+\endcode
 The "name" is copied into the allocated memory.
 */
 jm_named_ptr jm_named_alloc(jm_string name, size_t size, size_t nameoffset, jm_callbacks* c);
 
-/** Same as above but name is given as a jm_vector(char) pointer */
+/** \brief Same as jm_named_alloc() but name is given as a jm_vector(char) pointer */
 jm_named_ptr jm_named_alloc_v(jm_vector(char)* name, size_t size, size_t nameoffset, jm_callbacks* c);
 
-/** jm_named_free frees the memory allocated for the object pointed by jm_named_ptr */
+/** \brief Free the memory allocated for the object pointed by jm_named_ptr */
 static void jm_named_free(jm_named_ptr np, jm_callbacks* c) { c->free(np.ptr); }
 
 jm_vector_declare_template(jm_named_ptr)
 
+/** \brief Helper to construct comparison operation */
 #define jm_diff_named(a, b) strcmp(a.name,b.name)
 
 jm_define_comp_f(jm_compare_named, jm_named_ptr, jm_diff_named)
 
-/** jm_named_vector_free_data releases the data allocated by the items
+/** \brief Release the data allocated by the items
   in a vector and then clears the memory used by the vector as well.
-  This should be used for vectors initialized with vector_init.
+
+  This should be used for vectors initialized with jm_vector_init.
 */
 static void jm_named_vector_free_data(jm_vector(jm_named_ptr)* v) {
     jm_vector_foreach_c(jm_named_ptr)(v, (void (*)(jm_named_ptr, void*))jm_named_free,v->callbacks);
     jm_vector_free_data(jm_named_ptr)(v);
 }
 
-/** jm_named_vector_free releases the data allocated by the items
+/** \brief Release the data allocated by the items
   in a vector and then clears the memory used by the vector as well.
-  This should be used for vectors created with vector_alloc.
+
+  This should be used for vectors created with jm_vector_alloc.
 */
 static void jm_named_vector_free(jm_vector(jm_named_ptr)* v) {
     jm_vector_foreach_c(jm_named_ptr)(v,(void (*)(jm_named_ptr, void*))jm_named_free,v->callbacks);

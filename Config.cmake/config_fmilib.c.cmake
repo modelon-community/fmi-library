@@ -14,7 +14,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "config_fmilib.h"
+#include "fmilib_config.h"
 
 const char * fmilib_build_stamp = 
 	"Built on: " __DATE__ " " __TIME__ "\n"

@@ -78,6 +78,7 @@ jm_status_enu_t fmi_zip_unzip(const char* zip_file_path, const char* output_fold
 	if (status == 0) {
 		return jm_status_success;
 	} else {
+		jm_log_fatal(callbacks, "FMIZIP", "Unpacking of FMU %s into %s failed", zip_file_path, output_folder);
 		return jm_status_error;	
 	}
 }

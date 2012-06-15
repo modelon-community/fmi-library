@@ -228,7 +228,7 @@ if(FMILIB_GENERATE_BUILD_STAMP)
 		COMMAND ${CMAKE_COMMAND}  -E touch ${FMILibrary_BINARY_DIR}/config_fmilib.c
 		DEPENDS ${FMILIB_SUBLIBS}
 	)
-	add_library(fmilib_timestamp STATIC ${FMILibrary_BINARY_DIR}/config_fmilib.c "${FMILibrary_BINARY_DIR}/config_fmilib.h")
+	add_library(fmilib_timestamp STATIC ${FMILibrary_BINARY_DIR}/config_fmilib.c "${FMILibrary_BINARY_DIR}/fmilib_config.h")
 #	add_dependencies(fmilib_timestamp ${FMILIB_SUBLIBS} expat minizip zlib ${FMILIBRARYHOME}/Config.cmake/config_stamp.cmake)
 	
 	set(FMILIB_SUBLIBS ${FMILIB_SUBLIBS} fmilib_timestamp)

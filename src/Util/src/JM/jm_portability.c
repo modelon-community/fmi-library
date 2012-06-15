@@ -14,10 +14,11 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <stdlib.h>
 #include <stdio.h>
 
-#include "JM/jm_types.h"
-#include "JM/jm_portability.h"
+#include <JM/jm_types.h>
+#include <JM/jm_portability.h>
 
 #ifdef WIN32
 #include <direct.h>
@@ -104,4 +105,66 @@ jm_status_enu_t jm_portability_set_current_working_directory(char* cwd)
 	} else {
 		return jm_status_error;
 	}
+}
+
+#ifdef WIN32
+#define MAX_TEMP_DIR_NAME_LENGTH 262
+TCHAR jm_temp_dir_buffer[MAX_TEMP_DIR_NAME_LENGTH];
+#endif
+
+const char* jm_get_system_temp_dir() {
+#ifdef WIN32
+	if(!GetTempPath(MAX_TEMP_DIR_NAME_LENGTH, jm_temp_dir_buffer)) return 0;
+	return jm_temp_dir_buffer;
+#else
+	return "/tmp/"
+#endif
+}
+
+#ifdef WIN32
+#include <io.h>
+#define mktemp _mktemp
+#endif
+ 
+char* jm_mktemp(char* tmplt) {
+	return mktemp(tmplt);
+}
+
+#ifdef WIN32
+#include <direct.h>
+#define MKDIR(dir) _mkdir(dir)
+#else
+#include <sys/stat.h>
+#define MKDIR(dir) mkdir(dir, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH)
+#endif
+
+jm_status_enu_t jm_mkdir(jm_callbacks* cb, const char* dir) {
+	if(MKDIR(dir)) {
+		jm_log_fatal(cb,"JMPRT","Could not create directory %s", dir);
+		return jm_status_error;
+	}
+	else
+		return jm_status_success;
+}
+
+
+jm_status_enu_t jm_rmdir(jm_callbacks* cb, const char* dir) {
+#if WIN32
+	const char* fmt_cmd = "rmdir /s /q %s";
+#else
+    const char* fmt_cmd = "rm -rf %s";
+#endif
+    char * buf = (char*)cb->calloc(sizeof(char), strlen(dir)+strlen(fmt_cmd)+1);
+	if(!buf) {
+	    jm_log_error(cb,"JMPRT","Could not allocate memory");
+		return jm_status_error;
+	}
+    sprintf(buf, fmt_cmd, dir);
+    jm_log_verbose(cb,"JMPRT","Removing %s", dir);
+    if(system(buf)) {
+	    jm_log_error(cb,"JMPRT","Error removing %s", dir);
+		return jm_status_error;
+	}
+    cb->free(buf);
+	return jm_status_success;
 }

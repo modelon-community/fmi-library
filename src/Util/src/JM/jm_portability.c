@@ -16,6 +16,9 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
+
+#include <fmilib_config.h>
 
 #include <JM/jm_types.h>
 #include <JM/jm_portability.h>
@@ -117,13 +120,15 @@ const char* jm_get_system_temp_dir() {
 	if(!GetTempPath(MAX_TEMP_DIR_NAME_LENGTH, jm_temp_dir_buffer)) return 0;
 	return jm_temp_dir_buffer;
 #else
-	return "/tmp/"
+	return "/tmp/";
 #endif
 }
 
 #ifdef WIN32
 #include <io.h>
 #define mktemp _mktemp
+#else
+char* mktemp(char*);
 #endif
  
 char* jm_mktemp(char* tmplt) {

@@ -1,0 +1,54 @@
+/*
+    Copyright (C) 2012 Modelon AB
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, version 3 of the License.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+#ifndef FMI_UTIL_H
+#define FMI_UTIL_H
+#include <fmilib_config.h>
+#include <JM/jm_callbacks.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/**
+	@file fmi_util.h 
+	\brief Some low-level utility functions suitable for all standards.
+
+	*/
+/** \addtogroup jm_utils
+  * @{
+*/
+/** \brief Given directory name fmu_unzipped_path and construct the directory path for Dll/so
+	\param fmu_unzipped_path Directory name where FMU is unpacked.
+	\param callbacks Callbacks for memory allocation.
+	@return Pointer to a string with the directory name (last symbol is directory separator). Caller is responsible for freeing the memory.
+*/
+FMILIB_EXPORT char* fmi_construct_dll_dir_name(jm_callbacks* callbacks, const char* fmu_unzipped_path);
+
+/** \brief Given model_identifier construct the dll/so name by adding platform suffix
+	\param callbacks Callbacks for memory allocation.
+	\param model_identifier The FMU model identifier.
+	@return Pointer to a string with the file name. Caller is responsible for freeing the memory.
+*/
+FMILIB_EXPORT char* fmi_construct_dll_file_name(jm_callbacks* callbacks, const char* model_identifier);
+
+/** @} */
+#ifdef __cplusplus
+}
+#endif
+
+/* FMI_UTIL_H */
+#endif

@@ -18,18 +18,22 @@
 extern "C" {
 #endif
 
-#include "fmi1_import_impl.h"
+#include <stdio.h>
 #include <FMI1/fmi1_types.h>
 #include <FMI1/fmi1_functions.h>
 #include <FMI1/fmi1_enums.h>
 #include <FMI1/fmi1_capi.h>
+#include <FMI/fmi_util.h>
+#include "fmi1_import_impl.h"
 
 static const char * module = "FMILIB";
 
 /* Load and destroy functions */
 jm_status_enu_t fmi1_import_create_dllfmu(fmi1_import_t* fmu, fmi1_callback_functions_t callBackFunctions, int registerGlobally) {
 
-	const char* dllPath; 
+	char curDir[FILENAME_MAX + 2];
+	char* dllDirPath = 0;
+	char* dllFileName = 0;
 	const char* modelIdentifier;
 	fmi1_fmu_kind_enu_t standard;
 
@@ -50,23 +54,44 @@ jm_status_enu_t fmi1_import_create_dllfmu(fmi1_import_t* fmu, fmi1_callback_func
 		return jm_status_error;
 	}
 
-	dllPath = fmi_import_get_dll_path(fmu->dirPath, modelIdentifier, fmu->callbacks);
-	if (dllPath == NULL) {
+	if( jm_portability_get_current_working_directory(curDir, FILENAME_MAX+1) != jm_status_success) {
+		jm_log_fatal(fmu->callbacks, module, "Could not get current working directory");
+		return jm_status_error;
+	};
+
+	dllDirPath = fmi_construct_dll_dir_name(fmu->callbacks, fmu->dirPath);
+	dllFileName = fmi_construct_dll_file_name(fmu->callbacks, modelIdentifier);
+
+	if (!dllDirPath ||!dllFileName) {
+		fmu->callbacks->free(dllDirPath);
 		return jm_status_error;
 	}
 
-	/* Allocate memory for the C-API struct */
-	fmu -> capi = fmi1_capi_create_dllfmu(fmu->callbacks, dllPath, modelIdentifier, callBackFunctions, standard);
-	fmu->callbacks->free((jm_voidp)dllPath);
-
-	if (fmu -> capi == NULL) {
-		return jm_status_error;
+	if(jm_portability_set_current_working_directory(dllDirPath) != jm_status_success) {
+		jm_log_fatal(fmu->callbacks, module, "Could not get current working directory");
 	}
+	else {
+		/* Allocate memory for the C-API struct */
+		fmu -> capi = fmi1_capi_create_dllfmu(fmu->callbacks, dllFileName, modelIdentifier, callBackFunctions, standard);
+	}
+
 
 	/* Load the DLL handle */
-	if (fmi1_capi_load_dll(fmu -> capi) == jm_status_error) {		
-		fmi1_capi_destroy_dllfmu(fmu -> capi);
-		fmu -> capi = NULL;
+	if (fmu -> capi) {
+		if(fmi1_capi_load_dll(fmu -> capi) == jm_status_error) {		
+			fmi1_capi_destroy_dllfmu(fmu -> capi);
+			fmu -> capi = NULL;
+		}
+	}
+
+	if(jm_portability_set_current_working_directory(curDir) != jm_status_success) {
+		jm_log_error(fmu->callbacks, module, "Could not restore current working directory");
+	}
+
+	fmu->callbacks->free((jm_voidp)dllDirPath);
+	fmu->callbacks->free((jm_voidp)dllFileName);
+
+	if (fmu -> capi == NULL) {
 		return jm_status_error;
 	}
 

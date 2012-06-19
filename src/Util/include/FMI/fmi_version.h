@@ -23,7 +23,8 @@ extern "C" {
 #endif
 
 /**
-	@file fmi_version.h Enum defining supported FMI versions.
+	@file fmi_version.h 
+	\brief Enum defining supported FMI versions.
 
 	*/
 /** \addtogroup jm_utils

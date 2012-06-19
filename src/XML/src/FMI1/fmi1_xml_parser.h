@@ -164,6 +164,7 @@ struct fmi1_xml_parser_context_t {
     jm_vector(jm_string) directDependencyStringsStore;
 
     int skipOneVariableFlag;
+	int skipElementCnt;
 
     jm_stack(fmi1_xml_element_handle_ft) elmHandleStack;
     jm_vector(char) elmData;

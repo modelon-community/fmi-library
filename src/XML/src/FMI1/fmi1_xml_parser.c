@@ -316,13 +316,22 @@ void XMLCALL fmi_parse_element_start(void *c, const char *elm, const char **attr
     fmi1_xml_element_handle_ft currentHandle;
     int i;
     fmi1_xml_parser_context_t *context = c;
-    keyEl.elementName = elm;
-
-    /* find the element handle by name */
+    
+	if(context->skipElementCnt) {
+		context->skipElementCnt++;
+        jm_log_warning(context->callbacks, module, "[Line:%u] Skipping nested element '%s' in XML, skipping",
+			XML_GetCurrentLineNumber(context->parser), elm);
+		return;
+	}
+	
+	keyEl.elementName = elm;
+	/* find the element handle by name */
     currentElMap = jm_vector_bsearch(fmi1_xml_element_handle_map_t)(context->elmMap, &keyEl, fmi1_xml_compare_elmName);
     if(!currentElMap) {
         /* not found error*/
-        fmi1_xml_parse_fatal(context, "Unknown element '%s' start in XML", elm);
+        jm_log_error(context->callbacks, module, "[Line:%u] Unknown element '%s' in XML, skipping",
+			XML_GetCurrentLineNumber(context->parser), elm);
+		context->skipElementCnt = 1;
         return;
     }
 
@@ -370,6 +379,11 @@ void XMLCALL fmi_parse_element_end(void* c, const char *elm) {
     fmi1_xml_element_handle_map_t* currentElMap;
     fmi1_xml_element_handle_ft currentHandle;
     fmi1_xml_parser_context_t *context = c;
+
+	if(context->skipElementCnt) {
+		context->skipElementCnt--;
+		return;
+	}
 
     keyEl.elementName = elm;
     currentElMap = jm_vector_bsearch(fmi1_xml_element_handle_map_t)(context->elmMap, &keyEl, fmi1_xml_compare_elmName);
@@ -446,6 +460,7 @@ int fmi1_xml_parse_model_description(fmi1_xml_model_description_t* md, const cha
     jm_vector_init(jm_voidp)(&context->directDependencyBuf, 0, context->callbacks);
     jm_vector_init(jm_string)(&context->directDependencyStringsStore, 0, context->callbacks);
     context->skipOneVariableFlag = 0;
+	context->skipElementCnt = 0;
     jm_stack_init(fmi1_xml_element_handle_ft)(&context->elmHandleStack,  context->callbacks);
     jm_vector_init(char)(&context->elmData, 0, context->callbacks);
     context->lastElmHandle = 0;

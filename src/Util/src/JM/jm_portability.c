@@ -139,6 +139,7 @@ char* jm_mktemp(char* tmplt) {
 #include <direct.h>
 #define MKDIR(dir) _mkdir(dir)
 #else
+#include <errno.h>
 #include <sys/stat.h>
 #define MKDIR(dir) mkdir(dir, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH)
 #endif
@@ -154,7 +155,7 @@ jm_status_enu_t jm_mkdir(jm_callbacks* cb, const char* dir) {
 
 
 jm_status_enu_t jm_rmdir(jm_callbacks* cb, const char* dir) {
-#if WIN32
+#ifdef WIN32
 	const char* fmt_cmd = "rmdir /s /q %s";
 #else
     const char* fmt_cmd = "rm -rf %s";
@@ -165,9 +166,18 @@ jm_status_enu_t jm_rmdir(jm_callbacks* cb, const char* dir) {
 		return jm_status_error;
 	}
     sprintf(buf, fmt_cmd, dir);
+#ifdef WIN32
+	{
+		char* ch = buf+strlen(fmt_cmd) - 2;
+		while(*ch) {
+			if(*ch == '/') *ch = '\\';
+			ch++;
+		}
+	}
+#endif
     jm_log_verbose(cb,"JMPRT","Removing %s", dir);
     if(system(buf)) {
-	    jm_log_error(cb,"JMPRT","Error removing %s", dir);
+	    jm_log_error(cb,"JMPRT","Error removing %s (%s)", dir, strerror(errno));
 		return jm_status_error;
 	}
     cb->free(buf);

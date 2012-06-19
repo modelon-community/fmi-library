@@ -551,7 +551,7 @@ int fmi1_xml_handle_Real(fmi1_xml_parser_context_t *context, const char* data) {
         }
         else {
             if(fmi1_xml_is_attr_defined(context,fmi_attr_id_fixed)) {
-                fmi1_xml_parse_fatal(context, "When parsing variable %s: 'fixed' attributed is only allowed when start is defined", variable->name);
+                jm_log_warning(context->callbacks, module, "When parsing variable %s: 'fixed' attributed is only allowed when start is defined", variable->name);
             }
         }
     }

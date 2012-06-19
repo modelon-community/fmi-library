@@ -336,10 +336,9 @@ void XMLCALL fmi_parse_element_start(void *c, const char *elm, const char **attr
         currentMap = jm_vector_bsearch(jm_named_ptr)(context->attrMap, &key, jm_compare_named);
         if(!currentMap) {
             /* not found error*/
-            fmi1_xml_parse_fatal(context, "Unknown attribute '%s' in XML", attr[i]);
-            return;
+			jm_log_error(context->callbacks, module, "Unknown attribute '%s' in XML", attr[i]);
         }
-        {
+		else  {
             /* save attr value (still as string) for further handling  */
             const char** mapItem = currentMap->ptr;
             *mapItem = attr[i+1];
@@ -355,7 +354,7 @@ void XMLCALL fmi_parse_element_start(void *c, const char *elm, const char **attr
     for(i = 0; i < fmi1_xml_attr_number; i++) {
         if(jm_vector_get_item(jm_string)(context->attrBuffer, i)) {
             if(!context->skipOneVariableFlag)
-                jm_log_error(context->callbacks,module, "Attribute '%s' not processed by element '%s' handle", fmi_xmlAttrNames[i], elm);
+                jm_log_warning(context->callbacks,module, "Attribute '%s' not processed by element '%s' handle", fmi_xmlAttrNames[i], elm);
             jm_vector_set_item(jm_string)(context->attrBuffer, i,0);
         }
     }

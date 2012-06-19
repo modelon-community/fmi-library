@@ -19,7 +19,7 @@
 
 #include <JM/jm_types.h>
 #include <JM/jm_callbacks.h>
-#include <fmi_zip_zip.h>
+#include <FMI/fmi_zip_zip.h>
 #include "config_test.h"
 
 #define PRINT_MY_DEBUG printf("Line: %d \t File: %s \n",__LINE__, __FILE__)

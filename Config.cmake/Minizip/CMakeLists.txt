@@ -10,6 +10,10 @@ if(NOT FMILIB_INSTALL_SUBLIBS)
 endif()
 add_subdirectory("${FMILIB_THIRDPARTYLIBS}/Zlib/zlib-1.2.6" "${FMILibrary_BINARY_DIR}/zlib")
 
+if(CMAKE_CL_64)
+	set_target_properties(zlib PROPERTIES STATIC_LIBRARY_FLAGS "/machine:x64")
+endif()
+
 if(CMAKE_HOST_APPLE)
 set(PLATFORM __APPLE__)
 elseif(CMAKE_HOST_UNIX)

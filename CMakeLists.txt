@@ -281,6 +281,15 @@ install(DIRECTORY
 	${FMIIMPORTDIR}/include 
 	${JMUTILDIR}/include
 	DESTINATION .)
+
+if(FMILIB_INSTALL_SUBLIBS)
+	install(DIRECTORY 
+		${FMICAPIDIR}/include 	
+		${FMIXMLDIR}/include 
+		${FMIZIPDIR}/include
+		DESTINATION .)
+endif()
+
 	
 install(DIRECTORY 
 	${FMILIB_FMI_STANDARD_HEADERS}/FMI1

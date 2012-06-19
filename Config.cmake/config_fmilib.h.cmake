@@ -49,7 +49,7 @@ It is redefined to "." for Makefile based build environments. Otherwise is set b
 #define FMI_FILE_SEP "@FMI_FILE_SEP@"	
 
 /** \brief DLL file name suffix(.so, .dll, ...) */
-#define FMI_DLL_EXT "@CMAKE_SHARED_MODULE_SUFFIX@" 
+#define FMI_DLL_EXT "@CMAKE_SHARED_LIBRARY_SUFFIX@" 
 
 /** \brief Folder name inside FMU in which the DLL is found for this platform */
 #define FMI_PLATFORM "@FMI_PLATFORM@"

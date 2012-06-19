@@ -18,7 +18,7 @@
 #include <stdlib.h>
 #include <JM/jm_types.h>
 #include <JM/jm_callbacks.h>
-#include "fmi_zip_zip.h"
+#include <FMI/fmi_zip_zip.h>
 
 static void importlogger(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_level, jm_string message)
 {

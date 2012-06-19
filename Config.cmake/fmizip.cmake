@@ -32,8 +32,8 @@ set(FMIZIPSOURCE
 
 set(FMIZIPHEADERS
 #  src/fmi_zip_unzip_impl.h
-  ${FMIZIPDIR}/include/fmi_zip_unzip.h
-  ${FMIZIPDIR}/include/fmi_zip_zip.h
+  ${FMIZIPDIR}/include/FMI/fmi_zip_unzip.h
+  ${FMIZIPDIR}/include/FMI/fmi_zip_zip.h
 )
 
 #include_directories("${FMILIB_THIRDPARTYLIBS}/zlib/lib/VS2005/win32")

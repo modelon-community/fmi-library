@@ -19,7 +19,7 @@
 
 #include <JM/jm_named_ptr.h>
 #include <FMI/fmi_import_context.h>
-#include <fmi_zip_unzip.h>
+#include <FMI/fmi_zip_unzip.h>
 #include <FMI/fmi_import_util.h>
 
 #include "fmi_import_context_impl.h"
@@ -41,6 +41,14 @@ fmi_version_enu_t fmi_import_get_fmi_version( fmi_import_context_t* c, const cha
 	jm_status_enu_t status;
 	char* mdpath;
 	jm_log_verbose(c->callbacks, MODULE, "Detecting FMI standard version");
+	if(!fileName || !*fileName) {
+		jm_log_fatal(c->callbacks, MODULE, "No FMU filename specified");
+		return fmi_version_unknown_enu;
+	}
+	if(!dirName || !*dirName) {
+		jm_log_fatal(c->callbacks, MODULE, "No temporary directory name specified");
+		return fmi_version_unknown_enu;
+	}
 	status = fmi_zip_unzip(fileName, dirName, c->callbacks);
 	if(status == jm_status_error) return fmi_version_unknown_enu;
 	mdpath = fmi_import_get_model_description_path(dirName, c->callbacks);

@@ -1,16 +1,15 @@
 #    Copyright (C) 2012 Modelon AB
 
 #    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU General Public License as published by
-#    the Free Software Foundation, version 3 of the License.
+#    it under the terms of the BSD style license.
 
-#    This program is distributed in the hope that it will be useful,
+# #    This program is distributed in the hope that it will be useful,
 #    but WITHOUT ANY WARRANTY; without even the implied warranty of
 #    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU General Public License for more details.
+#    FMILIB_License.txt file for more details.
 
-#    You should have received a copy of the GNU General Public License
-#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#    You should have received a copy of the FMILIB_License.txt file
+#    along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 
 if(NOT FMIXMLDIR)
 set(FMIXMLDIR ${FMILIBRARYHOME}/src/XML/)
@@ -101,7 +100,7 @@ ExternalProject_Add_Step(
 	WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/ExpatEx
 )
 
-add_dependencies(expatex ${CMAKE_BINARY_DIR}/CMakeCache.txt)
+add_dependencies(expatex ${CMAKE_BINARY_DIR}/CMakeCache.txt ${FMILIBRARYHOME}/CMakeLists.txt)
   
 set(expatlib "${CMAKE_BINARY_DIR}/ExpatEx/${CMAKE_CFG_INTDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}expat${CMAKE_STATIC_LIBRARY_SUFFIX}")
   
@@ -112,13 +111,16 @@ set_target_properties(
 		IMPORTED_LOCATION "${expatlib}"
 )
 
+add_dependencies(expat expatex)
+
 if(FMILIB_INSTALL_SUBLIBS)
 	install(FILES 
 	"${CMAKE_BINARY_DIR}/ExpatEx/install/lib/${CMAKE_STATIC_LIBRARY_PREFIX}expat${CMAKE_STATIC_LIBRARY_SUFFIX}"
 	DESTINATION lib)
 endif()
 
-set(EXPAT_INCLUDE_DIRS "${FMILIB_THIRDPARTYLIBS}/Expat/expat-2.0.1/lib")
+set(EXPAT_INCLUDE_DIRS ${CMAKE_BINARY_DIR}/ExpatEx/install/include)
+
 include_directories("${EXPAT_INCLUDE_DIRS}" "${FMILIB_THIRDPARTYLIBS}/FMI/")
 
 PREFIXLIST(FMIXMLSOURCE  ${FMIXMLDIR}/)
@@ -127,8 +129,6 @@ PREFIXLIST(FMIXMLHEADERS ${FMIXMLDIR}/)
 debug_message(STATUS "adding fmixml")
 
 add_library(fmixml ${FMILIBKIND} ${FMIXMLSOURCE} ${FMIXMLHEADERS})
-
-add_dependencies(fmixml expatex)
 
 target_link_libraries(fmixml ${JMUTIL_LIBRARIES} expat)
 

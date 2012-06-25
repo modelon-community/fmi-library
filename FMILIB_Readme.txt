@@ -2,7 +2,7 @@
 % Readme file for the FMILIB.
 %
 
-\mainpage FMI Import library (part of JModelica.org)
+\mainpage FMI Library: part of JModelica.org
 
 \version     1.0.x
 \date June 2012

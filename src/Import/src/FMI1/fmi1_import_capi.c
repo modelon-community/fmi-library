@@ -2,16 +2,15 @@
     Copyright (C) 2012 Modelon AB
 
     This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, version 3 of the License.
+    it under the terms of the BSD style license.
 
-    This program is distributed in the hope that it will be useful,
+     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    FMILIB_License.txt file for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the FMILIB_License.txt file
+    along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 */
 
 #ifdef __cplusplus
@@ -19,6 +18,7 @@ extern "C" {
 #endif
 
 #include <stdio.h>
+#include <errno.h>
 #include <FMI1/fmi1_types.h>
 #include <FMI1/fmi1_functions.h>
 #include <FMI1/fmi1_enums.h>
@@ -55,8 +55,8 @@ jm_status_enu_t fmi1_import_create_dllfmu(fmi1_import_t* fmu, fmi1_callback_func
 	}
 
 	if( jm_portability_get_current_working_directory(curDir, FILENAME_MAX+1) != jm_status_success) {
-		jm_log_fatal(fmu->callbacks, module, "Could not get current working directory");
-		return jm_status_error;
+		jm_log_warning(fmu->callbacks, module, "Could not get current working directory (%s)", strerror(errno));
+		curDir[0] = 0;
 	};
 
 	dllDirPath = fmi_construct_dll_dir_name(fmu->callbacks, fmu->dirPath);
@@ -68,7 +68,11 @@ jm_status_enu_t fmi1_import_create_dllfmu(fmi1_import_t* fmu, fmi1_callback_func
 	}
 
 	if(jm_portability_set_current_working_directory(dllDirPath) != jm_status_success) {
-		jm_log_fatal(fmu->callbacks, module, "Could not get current working directory");
+		jm_log_fatal(fmu->callbacks, module, "Could not change to the DLL directory %s", dllDirPath);
+		if(ENOENT == errno)
+			jm_log_fatal(fmu->callbacks, module, "No binary for this platform?");
+		else
+			jm_log_fatal(fmu->callbacks, module, "System error: %s", strerror(errno));
 	}
 	else {
 		/* Allocate memory for the C-API struct */
@@ -84,8 +88,8 @@ jm_status_enu_t fmi1_import_create_dllfmu(fmi1_import_t* fmu, fmi1_callback_func
 		}
 	}
 
-	if(jm_portability_set_current_working_directory(curDir) != jm_status_success) {
-		jm_log_error(fmu->callbacks, module, "Could not restore current working directory");
+	if(curDir[0] && (jm_portability_set_current_working_directory(curDir) != jm_status_success)) {
+		jm_log_error(fmu->callbacks, module, "Could not restore current working directory (%s)", strerror(errno));
 	}
 
 	fmu->callbacks->free((jm_voidp)dllDirPath);

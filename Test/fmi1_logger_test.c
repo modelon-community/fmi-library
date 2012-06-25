@@ -90,6 +90,7 @@ int test_logger(fmi1_import_t* fmu)
 			vr[k] = VAR_S_LOGGER_TEST;
 		}
 		fmistatus = fmi1_import_set_string(fmu, vr, n, str);
+		free(vr);
 	}
 
 

@@ -201,7 +201,9 @@ target_link_libraries (fmi_import_me_test  ${FMILIBFORTEST})
 add_executable (fmi_import_cs_test ${RTTESTDIR}/fmi_import_cs_test.c)
 target_link_libraries (fmi_import_cs_test  ${FMILIBFORTEST})
 
-ENABLE_TESTING()
+# include CTest gives more options (such as running valgrind automatically
+#ENABLE_TESTING()
+include(CTest)
 
 #Define values in the "config.h"
 set(CTEST_RETURN_SUCCESS 0) 

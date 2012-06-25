@@ -4,7 +4,6 @@ Copyright (C) 2012 Modelon AB
 This program is free software: you can redistribute it and/or modify
 it under the terms of the BSD style license.
 
-the Free Software Foundation, version 3 of the License.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -212,11 +211,14 @@ fmiStatus fmi_set_string(fmiComponent c, const fmiValueReference vr[], size_t nv
 			fmiString s_src = value[k];
 
 			len = strlen((char*)s_src) + 1;
-			s_dist = calloc(len, sizeof(char));
+			s_dist = comp->functions.allocateMemory(len, sizeof(char));
 			if (s_dist == NULL) {
 				return fmiFatal;
 			}			
 			strcpy((char*)s_dist, (char*)s_src);
+			if(comp->strings[vr[k]]) {
+				comp->functions.freeMemory((void*)comp->strings[vr[k]]);
+			}
 			comp->strings[vr[k]] = s_dist;
 		}
 
@@ -243,16 +245,16 @@ const char* fmi_get_model_types_platform()
 #define FMI_TEST_LOGGER_TEST_RESULT_FILE "C:\\P510-JModelica\\FMIToolbox\\trunk\\external\\FMIL\\build\\testfolder\\"
 #define FMI_TEST_LOGGER_TEST_SOURCE_FILE "C:\\P510-JModelica\\FMIToolbox\\trunk\\external\\FMIL\\build\\testfolder\\"
 
-static FILE* find_string(FILE* fp, char* str, int len) {
+/* static FILE* find_string(FILE* fp, char* str, int len) {
 
-}
+} */
 
 fmiComponent fmi_instantiate_model(fmiString instanceName, fmiString GUID, fmiCallbackFunctions functions, fmiBoolean loggingOn)
 {
 	component_ptr_t comp;
 	int k, p;
 
-	comp = (component_ptr_t)malloc(sizeof(component_t));
+	comp = (component_ptr_t)functions.allocateMemory(1, sizeof(component_t));
 	if (comp == NULL) {
 		return NULL;
 	} else if (strcmp(GUID, FMI_GUID) != 0) {
@@ -297,7 +299,13 @@ fmiComponent fmi_instantiate_model(fmiString instanceName, fmiString GUID, fmiCa
 
 void fmi_free_model_instance(fmiComponent c)
 {
-	free(c);
+	int i;
+	component_ptr_t comp = (fmiComponent)c;
+	for(i = 0; i < N_STRING; i++) {
+		comp->functions.freeMemory((void*)(comp->strings[i]));
+		comp->strings[i] = 0;
+	}
+	comp->functions.freeMemory(c);
 }
 
 fmiStatus fmi_set_time(fmiComponent c, fmiReal fmitime)

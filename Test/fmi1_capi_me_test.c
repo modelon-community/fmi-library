@@ -61,6 +61,8 @@ void do_exit(int code)
 	exit(code);
 }
 
+jm_callbacks* callbacks;
+
 /**
  * \brief Tests fmi1_capi_create_dllfmu
  *
@@ -69,7 +71,6 @@ int test_create_dllfmu()
 {
 	fmi1_callback_functions_t callBackFunctions;
 	fmi1_fmu_kind_enu_t standard = fmi1_fmu_kind_enu_me;
-	jm_callbacks* callbacks;
 
 	callbacks = calloc(1, sizeof(jm_callbacks));
 
@@ -723,7 +724,7 @@ int main(int argc, char *argv[])
 	/* Test CAPI destructor functions */
 	test_free_dll();
 	test_destroy_dllfmu();
-
+	free(callbacks);
 	printf("\n");
 	printf("Everything seems to be ok!\n");
 	printf("\n");

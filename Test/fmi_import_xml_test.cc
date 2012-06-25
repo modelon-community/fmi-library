@@ -270,6 +270,7 @@ int main(int argc, char *argv[])
     callbacks.free = free;
     callbacks.logger = mylogger;
     callbacks.context = 0;
+	callbacks.log_level = jm_log_level_debug;
 
 #ifdef FMILIB_GENERATE_BUILD_STAMP
 	printf("Library build stamp:\n%s\n", fmilib_get_build_stamp());

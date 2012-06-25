@@ -55,6 +55,8 @@ int main(int argc, char *argv[])
     callbacks.realloc = realloc;
     callbacks.free = free;
     callbacks.logger = importlogger;
+	callbacks.log_level = jm_log_level_debug;
+
     callbacks.context = 0;
 
 	status = fmi_zip_zip(COMPRESS_DUMMY_FILE_PATH_DIST, n_files_to_zip, files_to_zip, &callbacks);

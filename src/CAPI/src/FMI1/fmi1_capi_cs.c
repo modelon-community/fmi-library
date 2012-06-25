@@ -29,7 +29,10 @@ fmi1_component_t fmi1_capi_instantiate_slave(fmi1_capi_t* fmu, fmi1_string_t ins
 
 void fmi1_capi_free_slave_instance(fmi1_capi_t* fmu)
 {
-	fmu->fmiFreeSlaveInstance(fmu->c);
+	if(fmu->c) {
+		fmu->fmiFreeSlaveInstance(fmu->c);
+		fmu->c = 0;
+	}
 }
 
 fmi1_status_t fmi1_capi_initialize_slave(fmi1_capi_t* fmu, fmi1_real_t tStart, fmi1_boolean_t StopTimeDefined, fmi1_real_t tStop)

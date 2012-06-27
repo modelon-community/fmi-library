@@ -78,9 +78,9 @@ ENDIF(NOT CMAKE_BUILD_TYPE)
 
 SET(CMAKE_INSTALL_PREFIX ${FMILIB_INSTALL_PREFIX} CACHE INTERNAL "Prefix prepended to install directories" FORCE)
 
-SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${FMILIBRARYHOME}/Config.cmake)
+SET(CMAKE_MODULE_PATH ${FMILIB_THIRDPARTYLIBS}/CMakeModules)
 include(libutils/libutils)
-set(MYSQL_CMAKE_SCRIPT_DIR ${FMILIBRARYHOME}/Config.cmake/libutils)
+set(MYSQL_CMAKE_SCRIPT_DIR ${FMILIB_THIRDPARTYLIBS}/CMakeModules/libutils)
 
 # debug_message is used to trace the build script
 function(debug_message)
@@ -161,6 +161,8 @@ set(FMILIBKIND STATIC)
 if(NOT FMILIB_STATIC_LIB_ONLY)
 	add_definitions(-DFMILIB_BUILDING_LIBRARY)
 endif()
+
+SET(CMAKE_MODULE_PATH ${FMILIBRARYHOME}/Config.cmake)
 
 include(jmutil)
 include(fmixml)
@@ -331,6 +333,8 @@ if(FMILIB_GENERATE_DOXYGEN_DOC)
 	set(DOXYFILE_OUTPUT_DIR "${FMILIB_INSTALL_PREFIX}/doc")
 
 	set(DOXYFILE_STRIP_FROM_PATH "${FMILIBRARYHOME}")
+
+	SET(CMAKE_MODULE_PATH ${FMILIB_THIRDPARTYLIBS}/CMakeModules)
  
 	include(UseDoxygen/UseDoxygen)
 endif(FMILIB_GENERATE_DOXYGEN_DOC)

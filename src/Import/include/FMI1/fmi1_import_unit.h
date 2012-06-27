@@ -20,7 +20,7 @@
 #ifndef FMI1_IMPORT_UNIT_H_
 #define FMI1_IMPORT_UNIT_H_
 
-#include "fmi1_import.h"
+#include <fmilib_config.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -35,8 +35,15 @@ extern "C" {
 	@{
 	*/
 
-/** \brief Get a list of all the unit definitions in the model. */
-FMILIB_EXPORT fmi1_import_unit_definitions_t* fmi1_import_get_unit_definitions(fmi1_import_t* fmu);
+/**\name Structures encapsulating unit information */
+/**@{ */
+/** \brief A variable unit defined with a unit defition */
+typedef struct fmi1_xml_unit_t fmi1_import_unit_t;
+/** \brief A display unit. */
+typedef struct fmi1_xml_display_unit_t fmi1_import_display_unit_t;
+/** \brief The list of all the unit definitions in the model */
+typedef struct fmi1_xml_unit_definitions_t fmi1_import_unit_definitions_t;
+/**@} */
 
 /** \brief Get the number of unit definitions. */
 FMILIB_EXPORT unsigned int  fmi1_import_get_unit_definitions_number(fmi1_import_unit_definitions_t*);
@@ -55,11 +62,6 @@ FMILIB_EXPORT unsigned int fmi1_import_get_unit_display_unit_number(fmi1_import_
 */
 FMILIB_EXPORT fmi1_import_display_unit_t* fmi1_import_get_unit_display_unit(fmi1_import_unit_t*, size_t index);
 
-/**
-	\brief Get display unit associated with a real type definition.
-	@return Display unit object of NULL if none was given.
-*/
-FMILIB_EXPORT fmi1_import_display_unit_t* fmi1_import_get_type_display_unit(fmi1_import_real_typedef_t*);
 /**
 	\brief Get unit defition for a display unit.
 */

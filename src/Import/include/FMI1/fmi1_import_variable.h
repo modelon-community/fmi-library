@@ -22,11 +22,10 @@
 #ifndef FMI1_IMPORT_VARIABLE_H_
 #define FMI1_IMPORT_VARIABLE_H_
 
-/* #include <FMI1/fmi1_xml_variable.h> */
+#include <FMI/fmi_import_context.h>
 
-#include "fmi1_import.h"
 #include "fmi1_import_type.h"
-
+#include "fmi1_import_unit.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -42,6 +41,28 @@ extern "C" {
 	fmi1_import_get_variable_by_name() and fmi1_import_get_variable_by_vr().
 	@{
 	*/
+	/**@name Scalar variable types */
+/**@{ */
+/** \brief General variable type. 
+*
+* This type is convenient to unify all the variable list operations. 
+* 	However, typed variables are needed to support specific attributes.
+*/
+typedef struct fmi1_xml_variable_t fmi1_import_variable_t;
+/** \brief  Opaque real variable */
+typedef struct fmi1_xml_real_variable_t fmi1_import_real_variable_t;
+/** \brief Opaque integer variable */
+typedef struct fmi1_xml_integer_variable_t fmi1_import_integer_variable_t;
+/** \brief Opaque string variable */
+typedef struct fmi1_xml_string_variable_t fmi1_import_string_variable_t;
+/** \brief Opaque enumeration variable */
+typedef struct fmi1_xml_enum_variable_t fmi1_import_enum_variable_t;
+/** \brief Opaque boolean variable */
+typedef struct fmi1_xml_bool_variable_t fmi1_import_bool_variable_t;
+/** \brief List of variables */
+typedef struct fmi1_import_variable_list_t fmi1_import_variable_list_t;
+/**@} */
+
 /**
 	\brief Get variable by variable name.
 	\param fmu - An fmu object as returned by fmi1_import_parse_xml().
@@ -89,12 +110,6 @@ FMILIB_EXPORT fmi1_variability_enu_t fmi1_import_get_variability(fmi1_import_var
 
 /** \brief Get causality attribute */
 FMILIB_EXPORT fmi1_causality_enu_t fmi1_import_get_causality(fmi1_import_variable_t*);
-
-/** 
-	Get the direct dependency information
-
-	@return A variable list is returned for variables with causality Output. Null pointer for others. */
-FMILIB_EXPORT fmi1_import_variable_list_t* fmi1_import_get_direct_dependency(fmi1_import_t* fmu, fmi1_import_variable_t*);
 
 /** \brief Cast general variable to a one with the specific type 
 	
@@ -173,16 +188,6 @@ FMILIB_EXPORT int fmi1_import_get_enum_variable_max(fmi1_import_enum_variable_t*
 
 /** \brief Get the variable alias kind*/
 FMILIB_EXPORT fmi1_variable_alias_kind_enu_t fmi1_import_get_variable_alias_kind(fmi1_import_variable_t*);
-
-/** \brief Get the variable with the same value reference that is not an alias*/
-FMILIB_EXPORT fmi1_import_variable_t* fmi1_import_get_variable_alias_base(fmi1_import_t* fmu,fmi1_import_variable_t*);
-
-/**
-    Get the list of all the variables aliased to the given one (including the base one).
-
-    Note that the list is ordered: base variable, aliases, negated aliases.
-*/
-FMILIB_EXPORT fmi1_import_variable_list_t* fmi1_import_get_variable_aliases(fmi1_import_t* fmu,fmi1_import_variable_t*);
 
 /** \brief Get the original index in xml of the variable */
 size_t fmi1_import_get_variable_original_order(fmi1_import_variable_t* v);

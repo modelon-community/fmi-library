@@ -33,6 +33,17 @@
 #include <FMI1/fmi1_functions.h>
 #include <FMI1/fmi1_enums.h>
 
+#include "fmi1_import_type.h"
+#include "fmi1_import_unit.h"
+#include "fmi1_import_variable.h"
+#include "fmi1_import_vendor_annotations.h"
+#include "fmi1_import_capabilities.h"
+#include "fmi1_import_variable_list.h"
+
+#include "fmi1_import_capi.h"
+#include "fmi1_import_convenience.h"
+#include "fmi1_import_cosim.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -43,69 +54,7 @@ extern "C" {
  *  be treated as opaque objects by the client code.
  @{ 
  */
-/** 
-\name Vendor annotation supporting structures
-*/
-/**@{ */
-	/** \brief  Opaque list of vendor annotations. */
-typedef struct fmi1_xml_vendor_list_t fmi1_import_vendor_list_t;
-	/** \brief Opaque vendor object. */
-typedef struct fmi1_xml_vendor_t fmi1_import_vendor_t;
-	/** \brief Opaque annotation object. */
-typedef struct fmi1_xml_annotation_t fmi1_import_annotation_t;
-/**@} */
 
-/**@name   Type definitions supporting structures*/
-/**@{ */
-/** \brief Opaque type definition object. */
-typedef struct fmi1_xml_real_typedef_t fmi1_import_real_typedef_t;
-/** \brief Opaque integer type definition object. */
-typedef struct fmi1_xml_integer_typedef_t fmi1_import_integer_typedef_t;
-/** \brief Opaque enumeration type definition object. */
-typedef struct fmi1_xml_enumeration_typedef_t fmi1_import_enumeration_typedef_t;
-/** \brief Opaque general variable type definition object. */
-typedef struct fmi1_xml_variable_typedef_t fmi1_import_variable_typedef_t;
-/** \brief Opaque list of the type definitions in the model */
-typedef struct fmi1_xml_type_definitions_t fmi1_import_type_definitions_t;
-/**@} */
-
-/**@name Scalar variable types */
-/**@{ */
-/** \brief General variable type. 
-*
-* This type is convenient to unify all the variable list operations. 
-* 	However, typed variables are needed to support specific attributes.
-*/
-typedef struct fmi1_xml_variable_t fmi1_import_variable_t;
-/** \brief  Opaque real variable */
-typedef struct fmi1_xml_real_variable_t fmi1_import_real_variable_t;
-/** \brief Opaque integer variable */
-typedef struct fmi1_xml_integer_variable_t fmi1_import_integer_variable_t;
-/** \brief Opaque string variable */
-typedef struct fmi1_xml_string_variable_t fmi1_import_string_variable_t;
-/** \brief Opaque enumeration variable */
-typedef struct fmi1_xml_enum_variable_t fmi1_import_enum_variable_t;
-/** \brief Opaque boolean variable */
-typedef struct fmi1_xml_bool_variable_t fmi1_import_bool_variable_t;
-/** \brief List of variables */
-typedef struct fmi1_import_variable_list_t fmi1_import_variable_list_t;
-/**@} */
-
-/**\name Structures encapsulating unit information */
-/**@{ */
-/** \brief A variable unit defined with a unit defition */
-typedef struct fmi1_xml_unit_t fmi1_import_unit_t;
-/** \brief A display unit. */
-typedef struct fmi1_xml_display_unit_t fmi1_import_display_unit_t;
-/** \brief The list of all the unit definitions in the model */
-typedef struct fmi1_xml_unit_definitions_t fmi1_import_unit_definitions_t;
-/**@} */
-
-/**\name FMU capabilities flags */
-/**@{ */
-/** \brief A container for all the capability flags */
-typedef struct fmi1_xml_capabilities_t fmi1_import_capabilities_t;
-/** @} */
 /**	\addtogroup fmi1_import_init Constuction, destruction and error handling
  * 	\addtogroup fmi1_import_gen General information retrieval
  *	\addtogroup fmi1_import_capi Interface to the standard FMI 1.0 "C" API
@@ -240,18 +189,47 @@ FMILIB_EXPORT fmi1_fmu_kind_enu_t fmi1_import_get_fmu_kind(fmi1_import_t* fmu);
 */
 FMILIB_EXPORT fmi1_import_capabilities_t* fmi1_import_get_capabilities(fmi1_import_t* fmu);
 
+/** \brief Get the list of all the type definitions in the model*/
+FMILIB_EXPORT fmi1_import_type_definitions_t* fmi1_import_get_type_definitions(fmi1_import_t* );
+
+/** \brief Get a list of all the unit definitions in the model. */
+FMILIB_EXPORT fmi1_import_unit_definitions_t* fmi1_import_get_unit_definitions(fmi1_import_t* fmu);
+
+/** 
+	\brief Get the direct dependency information
+
+	@return A variable list is returned for variables with causality Output. Null pointer for others. */
+FMILIB_EXPORT fmi1_import_variable_list_t* fmi1_import_get_direct_dependency(fmi1_import_t* fmu, fmi1_import_variable_t*);
+
+/** \brief Get the variable with the same value reference that is not an alias*/
+FMILIB_EXPORT fmi1_import_variable_t* fmi1_import_get_variable_alias_base(fmi1_import_t* fmu,fmi1_import_variable_t*);
+
+/**
+    Get the list of all the variables aliased to the given one (including the base one).
+
+    Note that the list is ordered: base variable, aliases, negated aliases.
+*/
+FMILIB_EXPORT fmi1_import_variable_list_t* fmi1_import_get_variable_aliases(fmi1_import_t* fmu,fmi1_import_variable_t*);
+
+/** \brief Get the list of all the variables in the model.
+* @param fmu An FMU object as returned by fmi1_import_parse_xml().
+* @return a variable list with all the variables in the model.
+*
+* Note that variable lists are allocated dynamically and must be freed when not needed any longer.
+*/
+FMILIB_EXPORT fmi1_import_variable_list_t* fmi1_import_get_variable_list(fmi1_import_t* fmu);
+
+/** \brief Create a variable list with a single variable.
+  
+\param fmu An FMU object that this variable list will reference.
+\param v A variable.
+*/
+FMILIB_EXPORT fmi1_import_variable_list_t* fmi1_import_create_var_list(fmi1_import_t* fmu,fmi1_import_variable_t* v);
+
 /**@} */
 
 #ifdef __cplusplus
 }
 #endif
-#include "fmi1_import_type.h"
-#include "fmi1_import_unit.h"
-#include "fmi1_import_variable.h"
-#include "fmi1_import_vendor_annotations.h"
-#include "fmi1_import_capabilities.h"
-#include "fmi1_import_cosim.h"
-#include "fmi1_import_variable_list.h"
-#include "fmi1_import_capi.h"
-#include "fmi1_import_convenience.h"
+
 #endif

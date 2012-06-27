@@ -16,11 +16,12 @@
 #ifndef FMI1_IMPORT_CAPABILITIES_H
 #define FMI1_IMPORT_CAPABILITIES_H
 
+#include <fmilib_config.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include "fmi1_import.h"
 	/**
 		\file fmi1_import_capabilities.h
 		Functions to retrieve capability flags.
@@ -35,6 +36,12 @@ extern "C" {
 	\addtogroup fmi1_import_capabilities
 	@{
 	*/
+/**\name FMU capabilities flags */
+/**@{ */
+/** \brief A container for all the capability flags */
+typedef struct fmi1_xml_capabilities_t fmi1_import_capabilities_t;
+/** @} */
+
 	/** \brief Retrieve  canHandleVariableCommunicationStepSize flag. */
 FMILIB_EXPORT int fmi1_import_get_canHandleVariableCommunicationStepSize(fmi1_import_capabilities_t* );
 	/** \brief Retrieve  canHandleEvents flag. */

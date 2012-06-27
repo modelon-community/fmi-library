@@ -20,7 +20,7 @@
 #ifndef FMI1_IMPORT_VENDORANNOTATIONS_H_
 #define FMI1_IMPORT_VENDORANNOTATIONS_H_
 
-#include "fmi1_import.h"
+#include <fmilib_config.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -35,8 +35,17 @@ extern "C" {
  @{ 
  */
 
-/** \brief Get the list of all the vendor annotations present in the XML file */
-FMILIB_EXPORT fmi1_import_vendor_list_t* fmi1_import_get_vendor_list(fmi1_import_t* fmu);
+/** 
+\name Vendor annotation supporting structures
+*/
+/**@{ */
+	/** \brief  Opaque list of vendor annotations. */
+typedef struct fmi1_xml_vendor_list_t fmi1_import_vendor_list_t;
+	/** \brief Opaque vendor object. */
+typedef struct fmi1_xml_vendor_t fmi1_import_vendor_t;
+	/** \brief Opaque annotation object. */
+typedef struct fmi1_xml_annotation_t fmi1_import_annotation_t;
+/**@} */
 
 /** \brief Get the number of different vendors */
 FMILIB_EXPORT unsigned int  fmi1_import_get_number_of_vendors(fmi1_import_vendor_list_t*);
@@ -61,6 +70,9 @@ FMILIB_EXPORT const char* fmi1_import_get_annotation_name(fmi1_import_annotation
 
 /** \brief Get the value for the annotation */
 FMILIB_EXPORT const char* fmi1_import_get_annotation_value(fmi1_import_annotation_t*);
+
+/** \brief Get the list of all the vendor annotations present in the XML file */
+FMILIB_EXPORT fmi1_import_vendor_list_t* fmi1_import_get_vendor_list(fmi1_import_t* fmu);
 
 /** @} */
 #ifdef __cplusplus

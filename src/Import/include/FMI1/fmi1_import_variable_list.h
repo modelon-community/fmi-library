@@ -24,7 +24,7 @@
 #ifndef FMI1_IMPORT_VARIABLELIST_H_
 #define FMI1_IMPORT_VARIABLELIST_H_
 
- #include "fmi1_import.h"
+ #include "fmi1_import_variable.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -43,14 +43,6 @@ extern "C" {
 * Note that variable lists are allocated dynamically and must be freed when not needed any longer.
  @{ 
 */
-
-/** \brief Get the list of all the variables in the model.
-* @param fmu An FMU object as returned by fmi1_import_parse_xml().
-* @return a variable list with all the variables in the model.
-*
-* Note that variable lists are allocated dynamically and must be freed when not needed any longer.
-*/
-FMILIB_EXPORT fmi1_import_variable_list_t* fmi1_import_get_variable_list(fmi1_import_t* fmu);
 
 /**  \brief Free a variable list. Note that variable lists are allocated dynamically and must be freed when not needed any longer 
 	\param vl A variable list.
@@ -102,12 +94,6 @@ FMILIB_EXPORT fmi1_import_variable_list_t* fmi1_import_filter_variables(fmi1_imp
 */
 FMILIB_EXPORT fmi1_import_variable_list_t* fmi1_import_join_var_list(fmi1_import_variable_list_t* a, fmi1_import_variable_list_t* b);
 
-/** \brief Create a variable list with a single variable.
-  
-\param fmu An FMU object that this variable list will reference.
-\param v A variable.
-*/
-FMILIB_EXPORT fmi1_import_variable_list_t* fmi1_import_create_var_list(fmi1_import_t* fmu,fmi1_import_variable_t* v);
 
 /** \brief Append a variable to the variable list.
   

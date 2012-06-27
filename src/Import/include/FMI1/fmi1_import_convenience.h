@@ -25,8 +25,7 @@
 #ifndef FMI1_IMPORT_CONVENIENCE_H_
 #define FMI1_IMPORT_CONVENIENCE_H_
 
-#include "fmi1_import.h"
-
+#include <FMI/fmi_import_context.h>
 
 #ifdef __cplusplus
 extern "C" {

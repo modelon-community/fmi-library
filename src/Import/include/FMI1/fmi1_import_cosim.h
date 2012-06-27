@@ -16,11 +16,12 @@
 #ifndef FMI1_IMPORT_COSIM_H
 #define FMI1_IMPORT_COSIM_H
 
+#include <FMI/fmi_import_context.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include "fmi1_import.h"
 	/**
 		\file fmi1_import_cosim.h
 		Functions to retrieve co-simulation related information.

@@ -22,7 +22,7 @@
 #ifndef FMI1_IMPORT_TYPE_H_
 #define FMI1_IMPORT_TYPE_H_
 
-#include "FMI1/fmi1_import.h"
+#include "fmi1_import_unit.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -36,9 +36,19 @@ extern "C" {
 	\addtogroup fmi1_import_typedef Support for processing variable types
   @{
 */
-
-/** \brief Get the list of all the type definitions in the model*/
-FMILIB_EXPORT fmi1_import_type_definitions_t* fmi1_import_get_type_definitions(fmi1_import_t* );
+/**@name   Type definitions supporting structures*/
+/**@{ */
+/** \brief Opaque type definition object. */
+typedef struct fmi1_xml_real_typedef_t fmi1_import_real_typedef_t;
+/** \brief Opaque integer type definition object. */
+typedef struct fmi1_xml_integer_typedef_t fmi1_import_integer_typedef_t;
+/** \brief Opaque enumeration type definition object. */
+typedef struct fmi1_xml_enumeration_typedef_t fmi1_import_enumeration_typedef_t;
+/** \brief Opaque general variable type definition object. */
+typedef struct fmi1_xml_variable_typedef_t fmi1_import_variable_typedef_t;
+/** \brief Opaque list of the type definitions in the model */
+typedef struct fmi1_xml_type_definitions_t fmi1_import_type_definitions_t;
+/**@} */
 
 /** \brief Get the number of available type definitions */
 FMILIB_EXPORT size_t fmi1_import_get_type_definition_number(fmi1_import_type_definitions_t* td);
@@ -135,6 +145,12 @@ FMILIB_EXPORT unsigned int  fmi1_import_get_enum_type_size(fmi1_import_enumerati
 FMILIB_EXPORT const char* fmi1_import_get_enum_type_item_name(fmi1_import_enumeration_typedef_t*, unsigned int  item);
 /** \brief Get an enumeration item description by index */
 FMILIB_EXPORT const char* fmi1_import_get_enum_type_item_description(fmi1_import_enumeration_typedef_t*, unsigned int  item);
+
+/**
+	\brief Get display unit associated with a real type definition.
+	@return Display unit object of NULL if none was given.
+*/
+FMILIB_EXPORT fmi1_import_display_unit_t* fmi1_import_get_type_display_unit(fmi1_import_real_typedef_t*);
 
 /**
 *  @}

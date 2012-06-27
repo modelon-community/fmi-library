@@ -1,4 +1,13 @@
 [INFO][FMILIB] XML specifies FMI standard version 1.0
+[ERROR][FMI1XML] [Line:20] XML element 'RealType' cannot be placed inside 'ScalarVariable', skipping
+[ERROR][FMI1XML] [Line:20] XML element 'Integer' cannot be placed after element 'Real', skipping
+[ERROR][FMI1XML] DirectDependency XML element cannot be defined for 'HIGHT_SPEED_ALIAS' since causality is not output. Skipping.
+[WARNING][FMI1XML] [Line:26] Skipping nested XML element 'Name'
+[ERROR][FMI1XML] Variables HIGHT_SPEED and HIGHT_SPEED_ALIAS reference the same vr 1. Marking 'HIGHT_SPEED_ALIAS' as alias.
+[ERROR][FMI1XML] [Line:44] Multiple instances of XML element 'ModelVariables' are not allowed, skipping
+[WARNING][FMI1XML] [Line:45] Skipping nested XML element 'ScalarVariable'
+[WARNING][FMI1XML] [Line:46] Skipping nested XML element 'Boolean'
+[INFO][FMILIB] Loading '-----' binary with '------' platform types
 [FATAL][LoggerTesting] [INFO][FMU status:Fatal] ### Reals ###
 [FATAL][LoggerTesting] [INFO][FMU status:Fatal] OK HIGHT = HIGHT
 [FATAL][LoggerTesting] [INFO][FMU status:Fatal] OK HIGHT_SPEED = HIGHT_SPEED

@@ -82,6 +82,9 @@ jm_status_enu_t fmi1_import_create_dllfmu(fmi1_import_t* fmu, fmi1_callback_func
 
 	/* Load the DLL handle */
 	if (fmu -> capi) {
+		jm_log_info(fmu->callbacks, module, 
+			"Loading '" FMI_PLATFORM "' binary with '%s' platform types", fmi1_get_platform() );
+
 		if(fmi1_capi_load_dll(fmu -> capi) == jm_status_error) {		
 			fmi1_capi_destroy_dllfmu(fmu -> capi);
 			fmu -> capi = NULL;

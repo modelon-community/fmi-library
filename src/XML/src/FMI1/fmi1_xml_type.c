@@ -38,7 +38,7 @@ size_t fmi1_xml_get_type_definition_number(fmi1_xml_type_definitions_t* td) {
 
 fmi1_xml_variable_typedef_t* fmi1_xml_get_typedef(fmi1_xml_type_definitions_t* td, unsigned int  index) {
     if(index >= fmi1_xml_get_type_definition_number(td)) return 0;
-    return jm_vector_get_item(jm_named_ptr)(&td->typeDefinitions, index).ptr;
+    return (fmi1_xml_variable_typedef_t*)jm_vector_get_item(jm_named_ptr)(&td->typeDefinitions, index).ptr;
 }
 
 const char* fmi1_xml_get_type_name(fmi1_xml_variable_typedef_t* t) {   
@@ -254,17 +254,6 @@ void fmi1_xml_free_type_definitions_data(fmi1_xml_type_definitions_t* td) {
 int fmi1_xml_handle_TypeDefinitions(fmi1_xml_parser_context_t *context, const char* data) {
     if(!data) {
 		jm_log_verbose(context->callbacks, module, "Parsing XML element TypeDefinitions");
-
-        if(context -> currentElmHandle != fmi1_xml_handle_fmiModelDescription) {
-            fmi1_xml_parse_fatal(context, "TypeDefinitions XML element must be a part of fmiModelDescription");
-            return -1;
-        }
-        if((context->lastElmHandle != 0)  &&
-           (context->lastElmHandle != fmi1_xml_handle_UnitDefinitions)
-          ) {
-            fmi1_xml_parse_fatal(context, "TypeDefinitions XML element must follow UnitDefinitions");
-            return -1;
-        }
     }
     else {
         fmi1_xml_type_definitions_t* defs =  &context->modelDescription->typeDefinitions;
@@ -278,11 +267,6 @@ int fmi1_xml_handle_TypeDefinitions(fmi1_xml_parser_context_t *context, const ch
 
 int fmi1_xml_handle_Type(fmi1_xml_parser_context_t *context, const char* data) {
     if(!data) {
-        if(context -> currentElmHandle != fmi1_xml_handle_TypeDefinitions) {
-            fmi1_xml_parse_fatal(context, "Type XML element must be a part of TypeDefinitions");
-            return -1;
-        }
-        {            
             fmi1_xml_model_description_t* md = context->modelDescription;
             fmi1_xml_type_definitions_t* td = &md->typeDefinitions;
             jm_named_ptr named, *pnamed;
@@ -316,7 +300,6 @@ int fmi1_xml_handle_Type(fmi1_xml_parser_context_t *context, const char* data) {
                 }
                 else type->description = "";
             }
-        }
     }
     else {
         jm_named_ptr named = jm_vector_get_last(jm_named_ptr)(&(context->modelDescription->typeDefinitions.typeDefinitions));
@@ -332,18 +315,14 @@ int fmi1_xml_handle_Type(fmi1_xml_parser_context_t *context, const char* data) {
 }
 
 int fmi_check_last_elem_is_specific_type(fmi1_xml_parser_context_t *context) {
-    if(context -> currentElmHandle != fmi1_xml_handle_Type) {
-        fmi1_xml_parse_fatal(context, "Specific element types XML elements must be a part of Type element");
-        return -1;
-    }
     if (
-                (context->lastElmHandle == fmi1_xml_handle_RealType)  ||
-                (context->lastElmHandle == fmi1_xml_handle_IntegerType)  ||
-                (context->lastElmHandle == fmi1_xml_handle_BooleanType)  ||
-                (context->lastElmHandle == fmi1_xml_handle_StringType)  ||
-                (context->lastElmHandle == fmi1_xml_handle_EnumerationType)
+                (context->lastElmID == fmi1_xml_elmID_RealType)  ||
+                (context->lastElmID == fmi1_xml_elmID_IntegerType)  ||
+                (context->lastElmID == fmi1_xml_elmID_BooleanType)  ||
+                (context->lastElmID == fmi1_xml_elmID_StringType)  ||
+                (context->lastElmID == fmi1_xml_elmID_EnumerationType)
                 ) {
-        fmi1_xml_parse_fatal(context, "Multiple definitions for a type aer not allowed");
+        fmi1_xml_parse_fatal(context, "Multiple definitions for a type are not allowed");
         return -1;
     }
     return 0;
@@ -591,11 +570,6 @@ int fmi1_xml_handle_EnumerationType(fmi1_xml_parser_context_t *context, const ch
 
 int fmi1_xml_handle_Item(fmi1_xml_parser_context_t *context, const char* data) {
     if(!data) {
-        if(context -> currentElmHandle != fmi1_xml_handle_EnumerationType) {
-			fmi1_xml_parse_error(context, "Item XML element must be a part of EnumerationType");
-            return 0;
-        }
-
         {
             fmi1_xml_model_description_t* md = context->modelDescription;
             jm_vector(char)* bufName = fmi1_xml_reserve_parse_buffer(context,1,100);
@@ -648,14 +622,14 @@ fmi1_xml_variable_type_base_t* fmi_get_declared_type(fmi1_xml_parser_context_t *
     key.name = jm_vector_get_itemp(char)(bufDeclaredType,0);
     found = jm_vector_bsearch(jm_named_ptr)(&(context->modelDescription->typeDefinitions.typeDefinitions),&key, jm_compare_named);
     if(!found) {
-        fmi1_xml_parse_fatal(context, "Declared type %s not found in type definitions", key.name);
-        return 0;
+        jm_log_error(context->callbacks, module, "Declared type %s not found in type definitions. Ignoring.", key.name);
+        return defaultType;
     }
     else  {
         fmi1_xml_variable_type_base_t* retType = found->ptr;
         if(retType->baseType != defaultType->baseType) {
-            fmi1_xml_parse_fatal(context, "Declared type %s does not match variable type", key.name);
-            return 0;
+            jm_log_error(context->callbacks, module, "Declared type %s does not match variable type. Ignoring.", key.name);
+            return defaultType;
         }
         return retType;
     }

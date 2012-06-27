@@ -120,24 +120,31 @@ typedef struct fmi1_xml_parser_context_t fmi1_xml_parser_context_t;
 #define EXPAND_ELM_HANDLE(elm) extern int fmi1_xml_handle_##elm(fmi1_xml_parser_context_t *context, const char* data);
 FMI1_XML_ELMLIST(EXPAND_ELM_HANDLE)
 
-#define FMI1_XML_ELM_ID(elm) fmi1_xml_elmID_##elm,
+#define FMI1_XML_ELM_ID(elm) ,fmi1_xml_elmID_##elm
 typedef enum fmi1_xml_elm_enu_t {
+	fmi1_xml_elmID_none = -1
     FMI1_XML_ELMLIST(FMI1_XML_ELM_ID)
-    fmi1_xml_elm_number
+    ,fmi1_xml_elm_number
 } fmi1_xml_elm_enu_t;
 
 typedef int (*fmi1_xml_element_handle_ft)(fmi1_xml_parser_context_t *context, const char* data);
 
 typedef struct fmi1_xml_element_handle_map_t fmi1_xml_element_handle_map_t;
 
+typedef struct {
+	fmi1_xml_elm_enu_t parentID;
+	int siblingIndex;
+	int multipleAllowed;
+} fmi1_xml_scheme_info_t;
+
 struct fmi1_xml_element_handle_map_t {
     const char* elementName;
     fmi1_xml_element_handle_ft elementHandle;
+	fmi1_xml_elm_enu_t elemID;
 };
 
+
 jm_vector_declare_template(fmi1_xml_element_handle_map_t)
-jm_vector_declare_template(fmi1_xml_element_handle_ft)
-jm_stack_declare_template(fmi1_xml_element_handle_ft)
 
 #define fmi1_xml_diff_elmName(a, b) strcmp(a.elementName,b.elementName)
 
@@ -165,11 +172,11 @@ struct fmi1_xml_parser_context_t {
     int skipOneVariableFlag;
 	int skipElementCnt;
 
-    jm_stack(fmi1_xml_element_handle_ft) elmHandleStack;
+    jm_stack(int) elmStack;
     jm_vector(char) elmData;
 
-    fmi1_xml_element_handle_ft lastElmHandle;
-    fmi1_xml_element_handle_ft currentElmHandle;
+	fmi1_xml_elm_enu_t lastElmID;
+	fmi1_xml_elm_enu_t currentElmID;
 };
 
 jm_vector(char) * fmi1_xml_reserve_parse_buffer(fmi1_xml_parser_context_t *context, size_t index, size_t size);

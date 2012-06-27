@@ -53,12 +53,6 @@ void fmi1_xml_init_capabilities(fmi1_xml_capabilities_t* c) {
 int fmi1_xml_handle_Capabilities(fmi1_xml_parser_context_t *context, const char* data) {
     fmi1_xml_model_description_t* md = context->modelDescription;
     if(!data) {
-        if(   (context -> currentElmHandle != fmi1_xml_handle_CoSimulation_StandAlone)
-           && (context -> currentElmHandle != fmi1_xml_handle_CoSimulation_Tool))
-        {
-            fmi1_xml_parse_fatal(context, "Capabilities XML element must be a part of CoSimulation specification");
-            return -1;
-        }
         return (
                     /* <xs:attribute name="canHandleVariableCommunicationStepSize" type="xs:boolean" default="false"/> */
                     fmi1_xml_set_attr_boolean(context,fmi1_xml_elmID_Capabilities, fmi_attr_id_canHandleVariableCommunicationStepSize,0,

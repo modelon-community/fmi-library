@@ -55,7 +55,15 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 
 
 #define FMI_VERSION			"1.0"
-#define FMI_PLATFORM_TYPE	"ANY_PLATFORM"
+#if defined(FMI1_TYPES_H_)
+#define FMI_PLATFORM_TYPE	fmi1_get_platform()
+#elif defined(fmiModelTypesPlatform)
+#define FMI_PLATFORM_TYPE	fmiModelTypesPlatform
+#elif defined(fmiPlatform)
+#define FMI_PLATFORM_TYPE	fmiPlatform
+#else
+#error "Either fmiPlatform or fmiModelTypesPlatform must be defined"
+#endif
 #define FMI_GUID			"123"
 
 

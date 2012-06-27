@@ -148,7 +148,7 @@ fmi_version_enu_t fmi_xml_get_fmi_version(fmi_xml_context_t* context, const char
             return fmi_version_unknown_enu;
         }
         if (!XML_Parse(parser, text, n, feof(file)) && (context->fmi_version == fmi_version_unknown_enu)) {
-             fmi_xml_fatal(context, "Parse error in file %s at line %d:\n%s",
+             fmi_xml_fatal(context, "Parse error at line %d:\n%s",
                           filename,
                          (int)XML_GetCurrentLineNumber(parser),
                          XML_ErrorString(XML_GetErrorCode(parser)));

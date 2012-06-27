@@ -27,7 +27,17 @@ FILE* logFile;
 
 void logger(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_level, jm_string message) {
 	char buf[10000];
-	sprintf(buf, "[%s][%s] %s\n", jm_log_level_to_string(log_level), module, message);
+	const char* loadingstr = "Loading '";
+	/* need to replace platform specific message with a standard one */
+	if( (log_level == jm_log_level_info) && 
+		(strcmp(module, "FMILIB") == 0) &&
+		(strncmp(message, "Loading '", strlen(loadingstr)) == 0)
+		)
+	{
+		sprintf(buf, "[INFO][FMILIB] Loading '-----' binary with '------' platform types\n");
+	}
+	else
+		sprintf(buf, "[%s][%s] %s\n", jm_log_level_to_string(log_level), module, message);
 	printf("%s", buf);
 	fprintf(logFile, "%s", buf);
 }

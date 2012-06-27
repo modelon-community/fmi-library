@@ -288,7 +288,7 @@ int fmi1_xml_handle_fmiModelDescription(fmi1_xml_parser_context_t *context, cons
     jm_name_ID_map_t namingConventionMap[] = {{"flat",fmi1_naming_enu_flat},{"structured", fmi1_naming_enu_structured},{0,0}};
     fmi1_xml_model_description_t* md = context->modelDescription;
     if(!data) {
-        if(context -> currentElmHandle != 0) {
+        if(context -> currentElmID != fmi1_xml_elmID_none) {
             fmi1_xml_parse_fatal(context, "fmi1_xml_model_description must be the root XML element");
             return -1;
         }
@@ -330,19 +330,6 @@ int fmi1_xml_handle_fmiModelDescription(fmi1_xml_parser_context_t *context, cons
 int fmi1_xml_handle_DefaultExperiment(fmi1_xml_parser_context_t *context, const char* data) {
     if(!data) {
         fmi1_xml_model_description_t* md = context->modelDescription;
-        if(  context -> currentElmHandle != fmi1_xml_handle_fmiModelDescription)
-        {
-            fmi1_xml_parse_fatal(context, "DefaultExperiment XML element must be a part of fmiModelDescription");
-            return -1;
-        }
-        if(  (context -> lastElmHandle != 0) &&
-             (context -> lastElmHandle != fmi1_xml_handle_TypeDefinitions) &&
-              (context->lastElmHandle != fmi1_xml_handle_UnitDefinitions)
-                )
-        {
-            fmi1_xml_parse_fatal(context, "DefaultExperiment XML element must either be the first or follow TypeDefinitions or UnitDefinitions");
-            return -1;
-        }
         /* process the attributes */
         return (
         /* <xs:attribute name="startTime" type="xs:double"/> */

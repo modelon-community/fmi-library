@@ -19,6 +19,8 @@
 #include "fmi1_xml_model_description_impl.h"
 #include "fmi1_xml_vendor_annotations_impl.h"
 
+static const char* module = "FMI1XML";
+
 void fmi1_xml_vendor_free(fmi1_xml_vendor_t* v) {
     jm_named_vector_free_data(&v->annotations);
     v->annotations.callbacks->free(v);
@@ -47,11 +49,8 @@ const char* fmi1_xml_get_annotation_value(fmi1_xml_annotation_t* a) {
 
 int fmi1_xml_handle_VendorAnnotations(fmi1_xml_parser_context_t *context, const char* data) {
     if(!data) {
-        if(context -> currentElmHandle != fmi1_xml_handle_fmiModelDescription) {
-            fmi1_xml_parse_fatal(context, "VendorAnnotations XML element must be a part of fmiModelDescription");
-            return -1;
-        }
-    }
+ 		jm_log_verbose(context->callbacks, module, "Parsing XML element VendorAnnotations");
+	}
     else {
         /* might give out a warning if(data[0] != 0) */
     }
@@ -60,11 +59,6 @@ int fmi1_xml_handle_VendorAnnotations(fmi1_xml_parser_context_t *context, const 
 
 int fmi1_xml_handle_Tool(fmi1_xml_parser_context_t *context, const char* data) {
     if(!data) {
-        if(context -> currentElmHandle != fmi1_xml_handle_VendorAnnotations) {
-            fmi1_xml_parse_fatal(context, "Tool XML element must be a part of VendorAnnotations");
-            return -1;
-        }
-        {            
             fmi1_xml_model_description_t* md = context->modelDescription;
             jm_vector(char)* bufName = fmi1_xml_reserve_parse_buffer(context,1,100);
             fmi1_xml_vendor_t* vendor = 0;
@@ -82,7 +76,6 @@ int fmi1_xml_handle_Tool(fmi1_xml_parser_context_t *context, const char* data) {
                 return -1;
             }
             jm_vector_init(jm_named_ptr)(&vendor->annotations,0, context->callbacks);
-        }
     }
     else {
         /* don't do anything. might give out a warning if(data[0] != 0) */
@@ -92,12 +85,6 @@ int fmi1_xml_handle_Tool(fmi1_xml_parser_context_t *context, const char* data) {
 }
 int fmi1_xml_handle_Annotation(fmi1_xml_parser_context_t *context, const char* data) {
     if(!data) {
-        if(context -> currentElmHandle != fmi1_xml_handle_Tool) {
-            fmi1_xml_parse_fatal(context, "Annotation XML element must be a part of Tool");
-            return -1;
-        }
-
-        {
             fmi1_xml_model_description_t* md = context->modelDescription;
             size_t numVendors = jm_vector_get_size(jm_voidp)(&(md->vendorList));
             fmi1_xml_vendor_t* vendor =(fmi1_xml_vendor_t*)jm_vector_get_item(jm_voidp)(&(md->vendorList), numVendors-1);
@@ -129,7 +116,6 @@ int fmi1_xml_handle_Annotation(fmi1_xml_parser_context_t *context, const char* d
             if(vallen)
                 memcpy(annotation->value,jm_vector_get_itemp(char)(bufValue,0), vallen);
             annotation->value[vallen] = 0;
-        }
     }
     else {
         /* don't do anything. might give out a warning if(data[0] != 0) */

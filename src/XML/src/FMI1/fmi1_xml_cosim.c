@@ -16,6 +16,8 @@
 #include "fmi1_xml_model_description_impl.h"
 #include "fmi1_xml_parser.h"
 
+static const char * module = "FMI1XML";
+
 fmi1_fmu_kind_enu_t fmi1_xml_get_fmu_kind(fmi1_xml_model_description_t* md) {
     return md->fmuKind;
 }
@@ -49,10 +51,7 @@ int fmi1_xml_get_manual_start(fmi1_xml_model_description_t* md){
 
 int fmi1_xml_handle_Implementation(fmi1_xml_parser_context_t *context, const char* data) {
     if(!data) {
-        if(context -> currentElmHandle != fmi1_xml_handle_fmiModelDescription) {
-            fmi1_xml_parse_fatal(context, "Implementation XML element must be a part of fmiModelDescription");
-            return -1;
-        }
+		jm_log_info(context->callbacks, module, "Processing implementation element (co-simulation FMU detected)");
     }
     else {
         /* might give out a warning if(data[0] != 0) */
@@ -63,10 +62,6 @@ int fmi1_xml_handle_Implementation(fmi1_xml_parser_context_t *context, const cha
 int fmi1_xml_handle_CoSimulation_StandAlone(fmi1_xml_parser_context_t *context, const char* data) {
     fmi1_xml_model_description_t* md = context->modelDescription;
     if(!data) {
-        if(context -> currentElmHandle != fmi1_xml_handle_Implementation) {
-            fmi1_xml_parse_fatal(context, "CoSimulation_StandAlone XML element must be a part of Implementation");
-            return -1;
-        }
         md->fmuKind = fmi1_fmu_kind_enu_cs_standalone;
     }
     else {
@@ -80,10 +75,6 @@ int fmi1_xml_handle_CoSimulation_StandAlone(fmi1_xml_parser_context_t *context, 
 int fmi1_xml_handle_CoSimulation_Tool(fmi1_xml_parser_context_t *context, const char* data) {
     fmi1_xml_model_description_t* md = context->modelDescription;
     if(!data) {
-        if(context -> currentElmHandle != fmi1_xml_handle_Implementation) {
-            fmi1_xml_parse_fatal(context, "CoSimulation_Tool XML element must be a part of Implementation");
-            return -1;
-        }
         md->fmuKind = fmi1_fmu_kind_enu_cs_tool;
     }
     else {
@@ -95,10 +86,6 @@ int fmi1_xml_handle_CoSimulation_Tool(fmi1_xml_parser_context_t *context, const 
 int fmi1_xml_handle_Model(fmi1_xml_parser_context_t *context, const char* data) {
     fmi1_xml_model_description_t* md = context->modelDescription;
     if(!data) {
-        if(context -> currentElmHandle != fmi1_xml_handle_CoSimulation_Tool) {
-            fmi1_xml_parse_fatal(context, "Model XML element must be a part of CoSimulation_Tool");
-            return -1;
-        }
         return (
         /* <xs:attribute name="entryPoint"  type="xs:anyURI" use="required"/> */
         fmi1_xml_set_attr_string(context, fmi1_xml_elmID_Model, fmi_attr_id_entryPoint, 1, &(md->entryPoint)) ||
@@ -117,11 +104,6 @@ int fmi1_xml_handle_Model(fmi1_xml_parser_context_t *context, const char* data) 
 int fmi1_xml_handle_File(fmi1_xml_parser_context_t *context, const char* data) {
     fmi1_xml_model_description_t* md = context->modelDescription;
     if(!data) {
-        if(context -> currentElmHandle != fmi1_xml_handle_CoSimulation_Tool) {
-            fmi1_xml_parse_fatal(context, "UnitDefinitions XML element must be a part of fmiModelDescription");
-            return -1;
-        }
-        {
             jm_vector(char)* bufFileName = fmi1_xml_get_parse_buffer(context,2);
             char* fileName = 0;
             jm_string* pname;
@@ -137,7 +119,6 @@ int fmi1_xml_handle_File(fmi1_xml_parser_context_t *context, const char* data) {
             }
             memcpy(fileName, jm_vector_get_itemp(char)(bufFileName,0), len);
             fileName[len] = 0;
-        }
     }
     else {
         /* might give out a warning if(data[0] != 0) */

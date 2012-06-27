@@ -16,6 +16,8 @@
 #include "fmi1_xml_model_description_impl.h"
 #include "fmi1_xml_unit_impl.h"
 
+static const char* module = "FMI1XML";
+
 fmi1_xml_unit_t* fmi1_xml_get_unit(fmi1_xml_unit_definitions_t* ud, unsigned int  index) {
     if(index >= fmi1_xml_get_unit_definitions_number(ud)) return 0;
     return jm_vector_get_item(jm_named_ptr)(&ud->definitions, index).ptr;
@@ -72,15 +74,8 @@ double fmi1_xml_convert_from_display_unit(double val, fmi1_xml_display_unit_t* d
 int fmi1_xml_handle_UnitDefinitions(fmi1_xml_parser_context_t *context, const char* data) {
     fmi1_xml_model_description_t* md = context->modelDescription;
     if(!data) {
-        if(context -> currentElmHandle != fmi1_xml_handle_fmiModelDescription) {
-            fmi1_xml_parse_fatal(context, "UnitDefinitions XML element must be a part of fmiModelDescription");
-            return -1;
-        }
-        if(context->lastElmHandle != 0) {
-            fmi1_xml_parse_fatal(context, "UnitDefinitions XML element must be the first inside fmi1_xml_model_description");
-            return -1;
-        }
-    }
+ 		jm_log_verbose(context->callbacks, module, "Parsing XML element UnitDefinitions");
+	}
     else {
         jm_vector_qsort(jm_named_ptr)(&(md->unitDefinitions),jm_compare_named);
         jm_vector_qsort(jm_named_ptr)(&(md->displayUnitDefinitions),jm_compare_named);
@@ -128,11 +123,6 @@ fmi1_xml_display_unit_t* fmi1_xml_get_parsed_unit(fmi1_xml_parser_context_t *con
 
 int fmi1_xml_handle_BaseUnit(fmi1_xml_parser_context_t *context, const char* data) {
     if(!data) {
-        if(context -> currentElmHandle != fmi1_xml_handle_UnitDefinitions) {
-            fmi1_xml_parse_fatal(context, "BaseUnit XML element must be a part of UnitDefinitions");
-            return -1;
-        }
-        {
             fmi1_xml_display_unit_t* unit;
             jm_vector(char)* buf = fmi1_xml_reserve_parse_buffer(context,1,100);
 
@@ -142,7 +132,6 @@ int fmi1_xml_handle_BaseUnit(fmi1_xml_parser_context_t *context, const char* dat
                 !(unit = fmi1_xml_get_parsed_unit(context, buf, 0))
                ) return -1;
             context->lastBaseUnit = unit->baseUnit;
-        }
     }
     else {
         /* don't do anything. might give out a warning if(data[0] != 0) */
@@ -153,11 +142,6 @@ int fmi1_xml_handle_BaseUnit(fmi1_xml_parser_context_t *context, const char* dat
 
 int fmi1_xml_handle_DisplayUnitDefinition(fmi1_xml_parser_context_t *context, const char* data) {
     if(!data) {
-        if(context -> currentElmHandle != fmi1_xml_handle_BaseUnit) {
-            fmi1_xml_parse_fatal(context, "DisplayUnitDefinition XML element must be a part of BaseUnit");
-            return -1;
-        }
-        {
             fmi1_xml_model_description_t* md = context->modelDescription;
             jm_vector(char)* buf = fmi1_xml_reserve_parse_buffer(context,1,100);
             /* this display unit belongs to the last created base unit */
@@ -190,7 +174,6 @@ int fmi1_xml_handle_DisplayUnitDefinition(fmi1_xml_parser_context_t *context, co
                          /*  <xs:attribute name="offset" type="xs:double" default="0"/>  */
                         fmi1_xml_set_attr_double(context, fmi1_xml_elmID_DisplayUnitDefinition, fmi_attr_id_offset, 0, &dispUnit->offset, 0)
                      );
-        }
     }
     else {
         /* don't do anything. might give out a warning if(data[0] != 0) */

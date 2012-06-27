@@ -176,3 +176,7 @@ fmi1_import_variable_list_t* fmi1_import_get_variable_aliases(fmi1_import_t* fmu
 	}
 	return list;
 }
+
+size_t fmi1_import_get_variable_original_order(fmi1_import_variable_t* v) {
+	return fmi1_xml_get_variable_original_order((fmi1_xml_variable_t*)v);
+}

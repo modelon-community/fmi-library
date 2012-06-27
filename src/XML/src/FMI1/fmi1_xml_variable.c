@@ -34,6 +34,9 @@ const char* fmi1_xml_get_variable_description(fmi1_xml_variable_t* v) {
     return v->description;
 }
 
+size_t fmi1_xml_get_variable_original_order(fmi1_xml_variable_t* v) {
+	return v->originalIndex;
+}
 
 fmi1_value_reference_t fmi1_xml_get_variable_vr(fmi1_xml_variable_t* v) {
     return v->vr;

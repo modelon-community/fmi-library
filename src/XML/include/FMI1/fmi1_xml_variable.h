@@ -40,6 +40,8 @@ extern "C" {
 const char* fmi1_xml_get_variable_name(fmi1_xml_variable_t*);
 const char* fmi1_xml_get_variable_description(fmi1_xml_variable_t*);
 
+size_t fmi1_xml_get_variable_original_order(fmi1_xml_variable_t* v);
+
 fmi1_value_reference_t fmi1_xml_get_variable_vr(fmi1_xml_variable_t*);
 
 /*

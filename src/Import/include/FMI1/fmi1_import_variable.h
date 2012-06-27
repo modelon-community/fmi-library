@@ -184,6 +184,9 @@ FMILIB_EXPORT fmi1_import_variable_t* fmi1_import_get_variable_alias_base(fmi1_i
 */
 FMILIB_EXPORT fmi1_import_variable_list_t* fmi1_import_get_variable_aliases(fmi1_import_t* fmu,fmi1_import_variable_t*);
 
+/** \brief Get the original index in xml of the variable */
+size_t fmi1_import_get_variable_original_order(fmi1_import_variable_t* v);
+
 /** @} */
 
 #ifdef __cplusplus

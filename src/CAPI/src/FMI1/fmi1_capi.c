@@ -64,7 +64,10 @@ static jm_status_enu_t fmi1_capi_load_cs_fcn(fmi1_capi_t* fmu)
 	if (fmi1_capi_get_fcn(fmu, "fmiGetTypesPlatform",(jm_dll_function_ptr*)&fmu->fmiGetTypesPlatform) == jm_status_error) {
 		jm_log_warning(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Could not load the FMI function 'fmiGetTypesPlatform'. %s. Trying to load fmiGetModelTypesPlatform instead.", jm_portability_get_last_dll_error());
 		jm_status = jm_status_warning;
-		LOAD_DLL_FUNCTION(fmiGetModelTypesPlatform);
+		if (fmi1_capi_get_fcn(fmu, "fmiGetModelTypesPlatform", (jm_dll_function_ptr*)&fmu->fmiGetTypesPlatform) == jm_status_error) {
+			jm_log_error(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Could not load the FMI function 'fmiGetModelTypesPlatform'. %s", jm_portability_get_last_dll_error());
+			jm_status = jm_status_error;
+		}
 	}
 
 	LOAD_DLL_FUNCTION(fmiInstantiateSlave);

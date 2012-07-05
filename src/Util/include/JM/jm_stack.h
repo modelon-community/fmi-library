@@ -37,7 +37,6 @@ extern "C" {
 	
 	Stack is implemented on top of jm_vector right now. There is a couple of extra methonds that are convenient.
 
-	\todo Consider reimplementing on top of deque.
   */
 #define jm_stack(T) jm_mangle(jm_stack, T)
 

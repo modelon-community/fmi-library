@@ -18,6 +18,7 @@
 #include <ctype.h>
 
 #include <FMI1/fmi1_xml_model_description.h>
+#include <FMI1/fmi1_functions.h>
 
 #include "fmi1_import_impl.h"
 
@@ -292,4 +293,53 @@ void  fmi1_log_forwarding_v(fmi1_component_t c, fmi1_string_t instanceName, fmi1
 		cb->logger(cb, instanceName, logLevel, cb->errMessageBuffer);
 	}
 
+}
+
+void  fmi1_default_callback_logger(fmi1_component_t c, fmi1_string_t instanceName, fmi1_status_t status, fmi1_string_t category, fmi1_string_t message, ...) {
+    va_list args;
+    char buf[500], *curp;
+    va_start (args, message);
+    curp = buf;
+    *curp = 0;
+    if(instanceName) {
+        sprintf(curp, "[%s]", instanceName);
+        curp += strlen(instanceName)+2;
+    }
+    if(category) {
+        sprintf(curp, "[%s]", category);
+        curp += strlen(category)+2;
+    }
+    fprintf(stdout, "%s[status=%s]", buf, fmi1_status_to_string(status));
+    vfprintf (stdout, message, args);
+    fprintf(stdout, "\n");
+    va_end (args);
+}
+
+void fmi1_logger(jm_callbacks* cb, jm_string module, jm_log_level_enu_t log_level, jm_string message) {
+	fmi1_callback_functions_t* c = (fmi1_callback_functions_t*)cb->context;
+	fmi1_status_t status;
+	if(!c ||!c->logger) return;
+
+	if(log_level > jm_log_level_all) {
+		assert(0);
+		status = fmi1_status_error;
+	}
+	else if(log_level >= jm_log_level_info)
+		status = fmi1_status_ok;
+	else if(log_level >= jm_log_level_warning)
+		status = fmi1_status_warning;
+	else if(log_level >= jm_log_level_error)
+		status = fmi1_status_error;
+	else if(log_level >= jm_log_level_fatal)
+		status = fmi1_status_fatal;
+	else {
+		status = fmi1_status_ok;
+	}
+
+	c->logger( c, module, status, jm_log_level_to_string(log_level), message);
+}
+
+void fmi1_import_init_logger(jm_callbacks* cb, fmi1_callback_functions_t* fmiCallbacks) {
+	cb->logger = fmi1_logger;
+	cb->context = fmiCallbacks;
 }

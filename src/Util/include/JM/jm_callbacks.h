@@ -63,7 +63,7 @@ typedef void (*jm_free_f)(jm_voidp p);
 * by default only used in FMI standard intependent code (e.g., fmi_import_get_fmi_version()).
 * Since logging functions are different between different standard versions separate
 * logging functions are necessary for each fmi implementation.\n
-* Defaults are provided for each standard. For FMI1 see \ref fmi1_callbacks.h and \ref fmi1_log_forwarding()
+* Defaults are provided for each standard. 
 */
 typedef void (*jm_logger_f)(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_level, jm_string message);
 
@@ -132,46 +132,60 @@ void jm_default_logger(jm_callbacks* c, jm_string module, jm_log_level_enu_t log
 	@param log_level - message kind;
 	@param fmt - "printf" type of format followed by the arguments.
 */
+FMILIB_EXPORT
 void jm_log(jm_callbacks* cb, const char* module, jm_log_level_enu_t log_level, const char* fmt, ...);
 
 /** \copydoc jm_log()
 	@param ap - variable size argument list.
 */
+FMILIB_EXPORT
 void jm_log_v(jm_callbacks* cb, const char* module, jm_log_level_enu_t log_level, const char* fmt, va_list ap);
 
 /** \brief Send a fatal error message to the logger function. See jm_log() for details.
 */
+FMILIB_EXPORT
 void jm_log_fatal_v(jm_callbacks* cb, const char* module, const char* fmt, va_list ap);
 /** \brief Send a fatal error message to the logger function. See jm_log() for details.
 */
+FMILIB_EXPORT
 void jm_log_fatal(jm_callbacks* cb, const char* module, const char* fmt, ...);
 
 /** \brief Send a error message to the logger function. See jm_log() for details.
 */
+FMILIB_EXPORT
 void jm_log_error_v(jm_callbacks* cb, const char* module, const char* fmt, va_list ap);
+
 /** \brief Send a error message to the logger function. See jm_log() for details.
 */
+FMILIB_EXPORT
 void jm_log_error(jm_callbacks* cb, const char* module, const char* fmt, ...);
 
 /** \brief Send a warning message to the logger function. See jm_log() for details.
 */
+FMILIB_EXPORT
 void jm_log_warning_v(jm_callbacks* cb, const char* module, const char* fmt, va_list ap);
+
 /** \brief Send a warning message to the logger function. See jm_log() for details.
 */
+FMILIB_EXPORT
 void jm_log_warning(jm_callbacks* cb, const char* module, const char* fmt, ...);
 
 /** \brief Send an info message to the logger function. See jm_log() for details.
 */
+FMILIB_EXPORT
 void jm_log_info_v(jm_callbacks* cb, const char* module, const char* fmt, va_list ap);
 /** \brief Send an info message to the logger function. See jm_log() for details.
 */
+FMILIB_EXPORT
 void jm_log_info(jm_callbacks* cb, const char* module, const char* fmt, ...);
 
 /** \brief Send a verbose message to the logger function. See jm_log() for details.
 */
+FMILIB_EXPORT
 void jm_log_verbose_v(jm_callbacks* cb, const char* module, const char* fmt, va_list ap);
 /** \brief Send a verbose message to the logger function. See jm_log() for details.
 */
+FMILIB_EXPORT
 void jm_log_verbose(jm_callbacks* cb, const char* module, const char* fmt, ...);
 
 #ifdef FMILIB_ENABLE_LOG_LEVEL_DEBUG
@@ -179,11 +193,13 @@ void jm_log_verbose(jm_callbacks* cb, const char* module, const char* fmt, ...);
 
 	Note that the function is only active if the library is configure with FMILIB_ENABLE_LOG_LEVEL_DEBUG=ON
 */
+FMILIB_EXPORT
 void jm_log_debug_v(jm_callbacks* cb, const char* module, const char* fmt, va_list ap);
 /** \brief Send a debug message to the logger function. See jm_log() for details.
 
 	Note that the function is only active if the library is configure with FMILIB_ENABLE_LOG_LEVEL_DEBUG=ON
 */
+FMILIB_EXPORT
 void jm_log_debug(jm_callbacks* cb, const char* module, const char* fmt, ...);
 #else
 /** \brief Send a debug message to the logger function. See jm_log() for details.

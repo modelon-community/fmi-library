@@ -38,7 +38,6 @@ extern "C" {
 /** 
 	\brief Set of string is based on a vector	
 
-	\todo Some faster implementation based on binary tree or hash is desirable.
 */
 typedef struct jm_vector_jm_string jm_string_set; /* equivalent to "typedef jm_vector(jm_string) jm_string_set" which Doxygen does not understand */
 

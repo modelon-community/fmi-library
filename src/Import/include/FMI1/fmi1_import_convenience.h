@@ -116,6 +116,23 @@ void  fmi1_log_forwarding(fmi1_component_t c, fmi1_string_t instanceName, fmi1_s
 FMILIB_EXPORT 
 void  fmi1_log_forwarding_v(fmi1_component_t c, fmi1_string_t instanceName, fmi1_status_t status, fmi1_string_t category, fmi1_string_t message, va_list args);
 
+
+/** \brief  Default FMI 1.0 logger may be used when instantiating FMUs */
+FMILIB_EXPORT
+void  fmi1_default_callback_logger(fmi1_component_t c, fmi1_string_t instanceName, fmi1_status_t status, fmi1_string_t category, fmi1_string_t message, ...);
+
+/** \brief  Given ::fmi1_callback_functions_t logger (fmi1_logger), the ::jm_callbacks logger may be setup to redirect the messages to the fmi1_logger.
+
+    The functions sets up the redirection. Note that the context field in ::jm_callbacks is set to point to the provided ::fmi1_callback_functions_t.
+	\param cb FMI Library callbacks
+	\param fmiCallbacks FMI 1.0 standard callbacks
+*/
+FMILIB_EXPORT
+void fmi1_import_init_logger(jm_callbacks* cb, fmi1_callback_functions_t* fmiCallbacks);
+/**	@}
+*/
+
+
 /** @} */
 
 #ifdef __cplusplus

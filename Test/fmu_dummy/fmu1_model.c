@@ -102,7 +102,7 @@ fmiStatus fmi_get_real(fmiComponent c, const fmiValueReference vr[], size_t nvr,
 			if (cvr < N_STATES) {
 				value[k] = comp->states[cvr];
 			} else {
-				value[k] = comp->reals[cvr - N_STATES];
+				value[k] = comp->reals[cvr];
 			}	
 		}
 		return fmiOK;
@@ -163,7 +163,7 @@ fmiStatus fmi_set_real(fmiComponent c, const fmiValueReference vr[], size_t nvr,
 			if (cvr < N_STATES) {
 				comp->states[cvr] = value[k]; 
 			} else {
-				comp->reals[cvr - N_STATES] = value[k]; 
+				comp->reals[cvr] = value[k]; 
 			}			
 		}
 		return fmiOK;

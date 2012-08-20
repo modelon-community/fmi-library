@@ -11,7 +11,11 @@
 #    You should have received a copy of the FMILIB_License.txt file
 #    along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 	
-cmake_minimum_required (VERSION 2.8)
+cmake_minimum_required (VERSION 2.8.6 FATAL_ERROR)
+# Prohibit in-source build
+IF("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
+  message(FATAL_ERROR "In-source build is not supported. Please, use an empty directory for building the project.")
+ENDIF()
 project (FMILibrary)
 
 set(FMILIBRARYHOME ${FMILibrary_SOURCE_DIR})

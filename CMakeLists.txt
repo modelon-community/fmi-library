@@ -11,7 +11,11 @@
 #    You should have received a copy of the FMILIB_License.txt file
 #    along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 	
-cmake_minimum_required (VERSION 2.8)
+cmake_minimum_required (VERSION 2.8.6 FATAL_ERROR)
+# Prohibit in-source build
+IF("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
+  message(FATAL_ERROR "In-source build is not supported. Please, use an empty directory for building the project.")
+ENDIF()
 project (FMILibrary)
 
 set(FMILIBRARYHOME ${FMILibrary_SOURCE_DIR})
@@ -77,10 +81,6 @@ IF(NOT CMAKE_BUILD_TYPE)
 ENDIF(NOT CMAKE_BUILD_TYPE)
 
 SET(CMAKE_INSTALL_PREFIX ${FMILIB_INSTALL_PREFIX} CACHE INTERNAL "Prefix prepended to install directories" FORCE)
-
-SET(CMAKE_MODULE_PATH ${FMILIB_THIRDPARTYLIBS}/CMakeModules)
-include(libutils/libutils)
-set(MYSQL_CMAKE_SCRIPT_DIR ${FMILIB_THIRDPARTYLIBS}/CMakeModules/libutils)
 
 # debug_message is used to trace the build script
 function(debug_message)
@@ -177,8 +177,6 @@ else(WIN32)
 	set(FMI_FILE_SEP "/")
 endif(WIN32)
 
-
-
 set(FMILIB_FMI_PLATFORM_DOC "FMI platform defines the subdirectory within FMU where binary is located")
 set(FMILIB_FMI_PLATFORM ”unknown” CACHE STRING ${FMILIB_FMI_PLATFORM_DOC})
 if(FMILIB_FMI_PLATFORM MATCHES ”unknown”)
@@ -241,7 +239,16 @@ if(FMILIB_INSTALL_SUBLIBS)
 endif()
 	
 if(FMILIB_BUILD_STATIC_LIB)
-	MERGE_LIBRARIES( fmilib STATIC  NOINSTALL ${FMILIB_SUBLIBS})
+	#SET(CMAKE_MODULE_PATH ${FMILIB_THIRDPARTYLIBS}/CMakeModules)
+	#include(libutils/libutils)
+	#set(MYSQL_CMAKE_SCRIPT_DIR ${FMILIB_THIRDPARTYLIBS}/CMakeModules/libutils)
+	#MERGE_LIBRARIES( fmilib STATIC  NOINSTALL ${FMILIB_SUBLIBS})
+	include(mergestaticlibs)
+	merge_static_libs(fmilib ${FMILIB_SUBLIBS} )
+	if(UNIX) 
+		target_link_libraries(fmilib dl)
+	endif(UNIX)
+
 	set(FMILIB_TARGETS ${FMILIB_TARGETS} fmilib)
 endif()
 

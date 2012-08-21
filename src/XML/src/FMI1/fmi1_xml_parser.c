@@ -59,7 +59,7 @@ const char *fmi_xmlAttrNames[] = {
 */
 #define fmi1_xml_scheme_Capabilities {fmi1_xml_elmID_CoSimulation_StandAlone, 0, 0}
 #define fmi1_xml_scheme_CoSimulation_Tool {fmi1_xml_elmID_Implementation, 0, 0}
-#define fmi1_xml_scheme_Model {fmi1_xml_elmID_CoSimulation_Tool, 0, 0}
+#define fmi1_xml_scheme_Model {fmi1_xml_elmID_CoSimulation_Tool, 1, 0}
 #define fmi1_xml_scheme_File {fmi1_xml_elmID_Model, 0, 1}
 
 #define ELM_PASTE(elm) fmi1_xml_scheme_##elm

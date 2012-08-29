@@ -826,6 +826,17 @@ void fmi1_xml_eliminate_bad_alias(fmi1_xml_parser_context_t *context, size_t ind
     }
 }
 
+static int fmi1_xml_compare_vr_and_original_index (const void* first, const void* second) {
+	int ret = fmi1_xml_compare_vr(first, second);
+	if(ret == 0) {
+	    fmi1_xml_variable_t* a = *(fmi1_xml_variable_t**)first;
+		fmi1_xml_variable_t* b = *(fmi1_xml_variable_t**)second;
+		ret = (a->originalIndex - b->originalIndex);
+	}
+	
+	return ret;
+}
+
 int fmi1_xml_handle_ModelVariables(fmi1_xml_parser_context_t *context, const char* data) {
     if(!data) {
 		jm_log_verbose(context->callbacks, module,"Parsing XML element ModelVariables");
@@ -886,7 +897,7 @@ int fmi1_xml_handle_ModelVariables(fmi1_xml_parser_context_t *context, const cha
             return -1;
         }
         varByVR = md->variablesByVR;
-        jm_vector_qsort(jm_voidp)(varByVR, fmi1_xml_compare_vr);
+        jm_vector_qsort(jm_voidp)(varByVR, fmi1_xml_compare_vr_and_original_index);
 
         {
             int foundBadAlias;
@@ -952,7 +963,6 @@ int fmi1_xml_handle_ModelVariables(fmi1_xml_parser_context_t *context, const cha
                                 jm_vector_set_item(jm_voidp)(varByVR, j, b);
                                 jm_vector_set_item(jm_voidp)(varByVR, i, c);
                             }
-                            /* jm_vector_qsort(jm_voidp)(varByVR, fmi1_xml_compare_vr); */
                             foundBadAlias = 1;
                             i--;
                             continue;

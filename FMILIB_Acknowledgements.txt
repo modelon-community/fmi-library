@@ -1,5 +1,6 @@
 % File: FMILIB_Acknowledgements.txt 
-%Acknowledgements on the use of third party software inside for the FMILIB.
+% Acknowledgements on the use of third party software inside for the FMILIB.
+% Note: Content of this file is used verbatim in doxygen generated documentation.
 %
 
 \section Acknowledgements

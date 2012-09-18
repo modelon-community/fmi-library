@@ -29,8 +29,8 @@ extern "C" {
 /** \defgroup Type definitions supporting structures
 
   For each basic type there is exactly one instance of
-  TypeContrainsBase with structKind=fmi1_xml_type_struct_enu_base.
-  Those instances do not have baseType.
+  fmi1_xml_variable_type_base_t with structKind=fmi1_xml_type_struct_enu_base.
+  Those instances have baseTypeStruct = NULL.
 
   Each type definition creates 1 or 2 instances:
   (1)  instance with structKind=fmi1_xml_type_struct_enu_typedef

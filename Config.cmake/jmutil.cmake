@@ -24,7 +24,9 @@ set(JMUTILSOURCE
  JM/jm_portability.c
  FMI/fmi_version.c
  FMI/fmi_util.c
+ 
  FMI1/fmi1_enums.c
+ FMI2/fmi2_enums.c
 )
 
 set(JMUTILHEADERS
@@ -38,9 +40,14 @@ set(JMUTILHEADERS
   JM/jm_portability.h
   FMI/fmi_version.h
   FMI/fmi_util.h
+
   FMI1/fmi1_functions.h
   FMI1/fmi1_types.h
   FMI1/fmi1_enums.h
+
+  FMI2/fmi2_functions.h
+  FMI2/fmi2_types.h
+  FMI2/fmi2_enums.h
 )
 
 PREFIXLIST(JMUTILSOURCE  ${JMUTILDIR}/src/)
@@ -53,9 +60,7 @@ message("not tested")
 endif(CYGWIN)
 
 if(UNIX) 
-	message(STATUS "Adding -ldl to the linker")
 	target_link_libraries(jmutils dl)
-	#target_link_libraries(dl)
 endif(UNIX)
 
 endif(NOT JMUTILDIR)

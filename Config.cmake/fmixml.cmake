@@ -21,6 +21,9 @@ include_directories("${FMIXMLDIR}/include" "${FMILIB_THIRDPARTYLIBS}/FMI/")
 set(FMIXML_LIBRARIES fmixml)
 
 set(FMIXMLHEADERS
+	include/FMI/fmi_xml_context.h
+	src/FMI/fmi_xml_context_impl.h
+
     include/FMI1/fmi1_xml_model_description.h
     src/FMI1/fmi1_xml_model_description_impl.h
     src/FMI1/fmi1_xml_parser.h
@@ -32,27 +35,44 @@ set(FMIXMLHEADERS
     src/FMI1/fmi1_xml_vendor_annotations_impl.h
     include/FMI1/fmi1_xml_variable.h
     src/FMI1/fmi1_xml_variable_impl.h
-    # include/FMI1/fmi1_xml_variable_list.h
-    # src/FMI1/fmi1_xml_variable_list_impl.h
     include/FMI1/fmi1_xml_capabilities.h
     src/FMI1/fmi1_xml_capabilities_impl.h
-	# src/FMI1/fmi1_xml_query.h
-	include/FMI/fmi_xml_context.h
-	src/FMI/fmi_xml_context_impl.h
+
+    include/FMI2/fmi2_xml_model_description.h
+    src/FMI2/fmi2_xml_model_description_impl.h
+    src/FMI2/fmi2_xml_parser.h
+    include/FMI2/fmi2_xml_type.h
+    src/FMI2/fmi2_xml_type_impl.h
+    include/FMI2/fmi2_xml_unit.h
+    src/FMI2/fmi2_xml_unit_impl.h
+    include/FMI2/fmi2_xml_vendor_annotations.h
+    src/FMI2/fmi2_xml_vendor_annotations_impl.h
+    include/FMI2/fmi2_xml_variable.h
+    src/FMI2/fmi2_xml_variable_impl.h
+    include/FMI2/fmi2_xml_capabilities.h
+    src/FMI2/fmi2_xml_capabilities_impl.h
  )
 
 set(FMIXMLSOURCE
+	src/FMI/fmi_xml_context.c
+
     src/FMI1/fmi1_xml_parser.c
     src/FMI1/fmi1_xml_model_description.c
     src/FMI1/fmi1_xml_type.c
     src/FMI1/fmi1_xml_unit.c
     src/FMI1/fmi1_xml_vendor_annotations.c
     src/FMI1/fmi1_xml_variable.c
-    # src/FMI1/fmi1_xml_variable_list.c
     src/FMI1/fmi1_xml_capabilities.c
     src/FMI1/fmi1_xml_cosim.c
-	# src/FMI1/fmi1_xml_query.c
-	src/FMI/fmi_xml_context.c
+
+    src/FMI2/fmi2_xml_parser.c
+    src/FMI2/fmi2_xml_model_description.c
+    src/FMI2/fmi2_xml_type.c
+    src/FMI2/fmi2_xml_unit.c
+    src/FMI2/fmi2_xml_vendor_annotations.c
+    src/FMI2/fmi2_xml_variable.c
+    src/FMI2/fmi2_xml_capabilities.c
+    src/FMI2/fmi2_xml_cosim.c
 )
 
 SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DXML_STATIC -DFMI_XML_QUERY")

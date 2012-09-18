@@ -475,7 +475,7 @@ int fmi1_xml_handle_Real(fmi1_xml_parser_context_t *context, const char* data) {
 
         assert(!variable->typeBase);
 
-        declaredType = fmi_get_declared_type(context, fmi1_xml_elmID_Real, &td->defaultRealType.typeBase);
+        declaredType = fmi1_get_declared_type(context, fmi1_xml_elmID_Real, &td->defaultRealType.typeBase);
 
         if(!declaredType) return -1;
 
@@ -558,7 +558,7 @@ int fmi1_xml_handle_Integer(fmi1_xml_parser_context_t *context, const char* data
         fmi1_xml_integer_type_props_t * type = 0;
         int hasStart;
 
-        declaredType = fmi_get_declared_type(context, fmi1_xml_elmID_Integer,&td->defaultIntegerType.typeBase) ;
+        declaredType = fmi1_get_declared_type(context, fmi1_xml_elmID_Integer,&td->defaultIntegerType.typeBase) ;
 
         if(!declaredType) return -1;
 
@@ -630,7 +630,7 @@ int fmi1_xml_handle_Boolean(fmi1_xml_parser_context_t *context, const char* data
 
 		assert(!variable->typeBase);
 
-        variable->typeBase = fmi_get_declared_type(context, fmi1_xml_elmID_Boolean, &td->defaultBooleanType) ;
+        variable->typeBase = fmi1_get_declared_type(context, fmi1_xml_elmID_Boolean, &td->defaultBooleanType) ;
 
         if(!variable->typeBase) return -1;
 
@@ -676,7 +676,7 @@ int fmi1_xml_handle_String(fmi1_xml_parser_context_t *context, const char* data)
 
 		assert(!variable->typeBase);
 
-        variable->typeBase = fmi_get_declared_type(context, fmi1_xml_elmID_String,&td->defaultStringType) ;
+        variable->typeBase = fmi1_get_declared_type(context, fmi1_xml_elmID_String,&td->defaultStringType) ;
 
         if(!variable->typeBase) return -1;
 
@@ -731,7 +731,7 @@ int fmi1_xml_handle_Enumeration(fmi1_xml_parser_context_t *context, const char* 
 
 		assert(!variable->typeBase);
 
-        declaredType = fmi_get_declared_type(context, fmi1_xml_elmID_Enumeration,&td->defaultEnumType.typeBase);
+        declaredType = fmi1_get_declared_type(context, fmi1_xml_elmID_Enumeration,&td->defaultEnumType.typeBase);
 
         if(!declaredType) return -1;
 

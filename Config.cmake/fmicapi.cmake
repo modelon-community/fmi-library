@@ -25,10 +25,15 @@ set(FMICAPISOURCE
     src/FMI1/fmi1_capi_cs.c
     src/FMI1/fmi1_capi_me.c
     src/FMI1/fmi1_capi.c
+    src/FMI2/fmi2_capi_cs.c
+    src/FMI2/fmi2_capi_me.c
+    src/FMI2/fmi2_capi.c
 )
 set(FMICAPIHEADERS
 	include/FMI1/fmi1_capi.h	
 	src/FMI1/fmi1_capi_impl.h
+	include/FMI2/fmi2_capi.h	
+	src/FMI2/fmi2_capi_impl.h
 )
  
 include_directories(${FMILIB_FMI_STANDARD_HEADERS})

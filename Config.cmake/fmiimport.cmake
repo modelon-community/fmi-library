@@ -33,6 +33,18 @@ set(FMIIMPORT_PUBHEADERS
 	include/FMI1/fmi1_import_variable_list.h
 	include/FMI1/fmi1_import_vendor_annotations.h
 	include/FMI1/fmi1_import_convenience.h
+
+	include/FMI2/fmi2_import.h
+	include/FMI2/fmi2_import_capi.h
+	include/FMI2/fmi2_import_capabilities.h
+	include/FMI2/fmi2_import_cosim.h
+	include/FMI2/fmi2_import_type.h
+	include/FMI2/fmi2_import_unit.h
+	include/FMI2/fmi2_import_variable.h
+	include/FMI2/fmi2_import_variable_list.h
+	include/FMI2/fmi2_import_vendor_annotations.h
+	include/FMI2/fmi2_import_convenience.h
+
 	include/FMI/fmi_import_context.h
 	include/FMI/fmi_import_util.h
  )
@@ -40,6 +52,9 @@ set(FMIIMPORT_PUBHEADERS
 set(FMIIMPORT_PRIVHEADERS
 	src/FMI1/fmi1_import_impl.h
 	src/FMI1/fmi1_import_variable_list_impl.h
+
+	src/FMI2/fmi2_import_impl.h
+	src/FMI2/fmi2_import_variable_list_impl.h
  )
  
 PREFIXLIST(FMIIMPORT_PRIVHEADERS ${FMIIMPORTDIR}/)
@@ -51,20 +66,30 @@ set(FMIIMPORTHEADERS
 
 set(FMIIMPORTSOURCE
 	src/FMI/fmi_import_context.c
+	src/FMI/fmi_import_util.c
+	
 	src/FMI1/fmi1_import_cosim.c
 	src/FMI1/fmi1_import_capi.c
-	#src/FMI1/fmi1_import_query.c
 	src/FMI1/fmi1_import_type.c
 	src/FMI1/fmi1_import_unit.c
 	src/FMI1/fmi1_import_variable.c
 	src/FMI1/fmi1_import_variable_list.c
 	src/FMI1/fmi1_import_vendor_annotations.c
 	src/FMI1/fmi1_import.c
-	#src/FMI/fmi_import_util.h
-	src/FMI/fmi_import_util.c
 	src/FMI1/fmi1_import_capabilities.c
 	src/FMI1/fmi1_import_convenience.c
-)
+
+	src/FMI2/fmi2_import_cosim.c
+	src/FMI2/fmi2_import_capi.c
+	src/FMI2/fmi2_import_type.c
+	src/FMI2/fmi2_import_unit.c
+	src/FMI2/fmi2_import_variable.c
+	src/FMI2/fmi2_import_variable_list.c
+	src/FMI2/fmi2_import_vendor_annotations.c
+	src/FMI2/fmi2_import.c
+	src/FMI2/fmi2_import_capabilities.c
+	src/FMI2/fmi2_import_convenience.c
+	)
 
 PREFIXLIST(FMIIMPORTSOURCE  ${FMIIMPORTDIR}/)
 

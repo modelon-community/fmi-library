@@ -314,7 +314,7 @@ int fmi1_xml_handle_Type(fmi1_xml_parser_context_t *context, const char* data) {
     return 0;
 }
 
-int fmi_check_last_elem_is_specific_type(fmi1_xml_parser_context_t *context) {
+int fmi1_check_last_elem_is_specific_type(fmi1_xml_parser_context_t *context) {
     if (
                 (context->lastElmID == fmi1_xml_elmID_RealType)  ||
                 (context->lastElmID == fmi1_xml_elmID_IntegerType)  ||
@@ -415,7 +415,7 @@ int fmi1_xml_handle_RealType(fmi1_xml_parser_context_t *context, const char* dat
         jm_named_ptr named;
         fmi1_xml_variable_typedef_t* type;
         fmi1_xml_real_type_props_t * props;
-        if(fmi_check_last_elem_is_specific_type(context)) return -1;
+        if(fmi1_check_last_elem_is_specific_type(context)) return -1;
 
         props = fmi1_xml_parse_real_type_properties(context, fmi1_xml_elmID_RealType);
         if(!props) return -1;
@@ -468,7 +468,7 @@ int fmi1_xml_handle_IntegerType(fmi1_xml_parser_context_t *context, const char* 
         jm_named_ptr named;
         fmi1_xml_variable_typedef_t* type;
         fmi1_xml_integer_type_props_t * props;
-        if(fmi_check_last_elem_is_specific_type(context)) return -1;
+        if(fmi1_check_last_elem_is_specific_type(context)) return -1;
 
         props = fmi1_xml_parse_integer_type_properties(context, fmi1_xml_elmID_IntegerType);
         if(!props) return -1;
@@ -490,7 +490,7 @@ int fmi1_xml_handle_BooleanType(fmi1_xml_parser_context_t *context, const char* 
         fmi1_xml_model_description_t* md = context->modelDescription;
         jm_named_ptr named;
         fmi1_xml_variable_typedef_t* type;
-        if(fmi_check_last_elem_is_specific_type(context)) return -1;
+        if(fmi1_check_last_elem_is_specific_type(context)) return -1;
 
         named = jm_vector_get_last(jm_named_ptr)(&context->modelDescription->typeDefinitions.typeDefinitions);
         type = named.ptr;
@@ -509,7 +509,7 @@ int fmi1_xml_handle_StringType(fmi1_xml_parser_context_t *context, const char* d
         fmi1_xml_model_description_t* md = context->modelDescription;
         jm_named_ptr named;
         fmi1_xml_variable_typedef_t* type;
-        if(fmi_check_last_elem_is_specific_type(context)) return -1;
+        if(fmi1_check_last_elem_is_specific_type(context)) return -1;
 
         named = jm_vector_get_last(jm_named_ptr)(&context->modelDescription->typeDefinitions.typeDefinitions);
         type = named.ptr;
@@ -534,7 +534,7 @@ int fmi1_xml_handle_EnumerationType(fmi1_xml_parser_context_t *context, const ch
                 jm_vector(char)* bufDescr = fmi_get_parse_buffer(context,2); */
         jm_vector(char)* bufQuantity = fmi1_xml_reserve_parse_buffer(context,3,100);
 
-        if(fmi_check_last_elem_is_specific_type(context)) return -1;
+        if(fmi1_check_last_elem_is_specific_type(context)) return -1;
 
         props = (fmi1_xml_enum_type_props_t*)fmi1_xml_alloc_variable_type_props(&md->typeDefinitions, &md->typeDefinitions.defaultEnumType.typeBase, sizeof(fmi1_xml_enum_type_props_t));
         if(props) jm_vector_init(jm_named_ptr)(&props->enumItems,0,context->callbacks);
@@ -613,7 +613,7 @@ int fmi1_xml_handle_Item(fmi1_xml_parser_context_t *context, const char* data) {
     return 0;
 }
 
-fmi1_xml_variable_type_base_t* fmi_get_declared_type(fmi1_xml_parser_context_t *context, fmi1_xml_elm_enu_t elmID, fmi1_xml_variable_type_base_t* defaultType) {
+fmi1_xml_variable_type_base_t* fmi1_get_declared_type(fmi1_xml_parser_context_t *context, fmi1_xml_elm_enu_t elmID, fmi1_xml_variable_type_base_t* defaultType) {
     jm_named_ptr key, *found;
     jm_vector(char)* bufDeclaredType = fmi1_xml_reserve_parse_buffer(context,1, 100);
     /*         <xs:attribute name="declaredType" type="xs:normalizedString"> */

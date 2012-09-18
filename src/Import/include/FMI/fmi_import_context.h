@@ -24,9 +24,11 @@
 #include <stddef.h>
 #include <fmilib_config.h>
 #include <JM/jm_callbacks.h>
+#include <FMI/fmi_version.h> 
 #include <FMI1/fmi1_types.h>
 #include <FMI1/fmi1_enums.h>
-#include <FMI/fmi_version.h> 
+#include <FMI2/fmi2_types.h>
+#include <FMI2/fmi2_enums.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -74,11 +76,23 @@ FMILIB_EXPORT fmi_version_enu_t fmi_import_get_fmi_version( fmi_import_context_t
 typedef struct fmi1_import_t fmi1_import_t;
 
 /**
-	\brief Parse XML file found in the directory dirName.
+	\brief FMU version 2.0 object
+*/
+typedef struct fmi2_import_t fmi2_import_t;
+
+/**
+	\brief Parse FMI 1.0 XML file found in the directory dirName.
 	\param c - library context.
 	\param dirName - a directory where the FMU was unpacked and XML file is present.
 */
 FMILIB_EXPORT fmi1_import_t* fmi1_import_parse_xml( fmi_import_context_t* c, const char* dirName);
+
+/**
+	\brief Parse FMI 2.0 XML file found in the directory dirName.
+	\param c - library context.
+	\param dirName - a directory where the FMU was unpacked and XML file is present.
+*/
+FMILIB_EXPORT fmi2_import_t* fmi2_import_parse_xml( fmi_import_context_t* c, const char* dirName);
 
 /** 
 @}

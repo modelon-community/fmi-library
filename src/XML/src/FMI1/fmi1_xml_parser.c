@@ -22,7 +22,7 @@
 static const char * module = "FMI1XML";
 
 #define ATTR_STR(attr) #attr
-const char *fmi_xmlAttrNames[] = {
+const char *fmi1_xmlAttrNames[] = {
     FMI1_XML_ATTRLIST(ATTR_STR)
 };
 
@@ -71,7 +71,7 @@ fmi1_xml_scheme_info_t fmi1_xml_scheme_info[fmi1_xml_elm_number] = {
 
 #define EXPAND_ELM_NAME(elm) { #elm, fmi1_xml_handle_##elm, fmi1_xml_elmID_##elm},
 
-fmi1_xml_element_handle_map_t fmi_element_handle_map[fmi1_xml_elm_number] = {
+fmi1_xml_element_handle_map_t fmi1_element_handle_map[fmi1_xml_elm_number] = {
     FMI1_XML_ELMLIST(EXPAND_ELM_NAME)
 };
 
@@ -126,12 +126,12 @@ int fmi1_xml_is_attr_defined(fmi1_xml_parser_context_t *context, fmi1_xml_attr_e
     return ( jm_vector_get_item(jm_string)(context->attrBuffer, attrID) != 0);
 }
 
-int fmi_get_attr_str(fmi1_xml_parser_context_t *context, fmi1_xml_elm_enu_t elmID, fmi1_xml_attr_enu_t attrID, int required,const char** valp) {
+static int fmi1_get_attr_str(fmi1_xml_parser_context_t *context, fmi1_xml_elm_enu_t elmID, fmi1_xml_attr_enu_t attrID, int required,const char** valp) {
 
     jm_string elmName, attrName, value;
 
-    elmName = fmi_element_handle_map[elmID].elementName;
-    attrName = fmi_xmlAttrNames[attrID];
+    elmName = fmi1_element_handle_map[elmID].elementName;
+    attrName = fmi1_xmlAttrNames[attrID];
     value = jm_vector_get_item(jm_string)(context->attrBuffer, attrID);
     *valp =  value;
     jm_vector_set_item(jm_string)(context->attrBuffer, attrID, 0);
@@ -150,7 +150,7 @@ int fmi1_xml_set_attr_string(fmi1_xml_parser_context_t *context, fmi1_xml_elm_en
     int ret;
     jm_string elmName, attrName, val;
     size_t len;
-    ret = fmi_get_attr_str(context, elmID, attrID,required,&val);
+    ret = fmi1_get_attr_str(context, elmID, attrID,required,&val);
     if(ret) return ret;
     if((!val || !val[0]) && !required) {
         jm_vector_resize(char)(field, 1);
@@ -158,8 +158,8 @@ int fmi1_xml_set_attr_string(fmi1_xml_parser_context_t *context, fmi1_xml_elm_en
         jm_vector_resize(char)(field, 0);
         return 0;
     }
-    elmName = fmi_element_handle_map[elmID].elementName;
-    attrName = fmi_xmlAttrNames[attrID];
+    elmName = fmi1_element_handle_map[elmID].elementName;
+    attrName = fmi1_xmlAttrNames[attrID];
 
     len = strlen(val) + 1;
     if(jm_vector_resize(char)(field, len) < len) {
@@ -176,15 +176,15 @@ int fmi1_xml_set_attr_uint(fmi1_xml_parser_context_t *context, fmi1_xml_elm_enu_
     int ret;
     jm_string elmName, attrName, strVal;    
 
-    ret = fmi_get_attr_str(context, elmID, attrID,required,&strVal);
+    ret = fmi1_get_attr_str(context, elmID, attrID,required,&strVal);
     if(ret) return ret;
     if(!strVal && !required) {
         *field = defaultVal;
         return 0;
     }
 
-    elmName = fmi_element_handle_map[elmID].elementName;
-    attrName = fmi_xmlAttrNames[attrID];
+    elmName = fmi1_element_handle_map[elmID].elementName;
+    attrName = fmi1_xmlAttrNames[attrID];
 
     if(sscanf(strVal, "%u", field) != 1) {
         fmi1_xml_parse_fatal(context, "XML element '%s': could not parse value for attribute '%s'='%s'", elmName, attrName, strVal);
@@ -198,15 +198,15 @@ int fmi1_xml_set_attr_enum(fmi1_xml_parser_context_t *context, fmi1_xml_elm_enu_
     int ret, i;
     jm_string elmName, attrName, strVal;
 
-    ret = fmi_get_attr_str(context, elmID, attrID,required,&strVal);
+    ret = fmi1_get_attr_str(context, elmID, attrID,required,&strVal);
     if(ret) return ret;
     if(!strVal && !required) {
         *field = defaultVal;
         return 0;
     }
 
-    elmName = fmi_element_handle_map[elmID].elementName;
-    attrName = fmi_xmlAttrNames[attrID];
+    elmName = fmi1_element_handle_map[elmID].elementName;
+    attrName = fmi1_xmlAttrNames[attrID];
 
     i = 0;
     while(nameMap[i].name && strcmp(nameMap[i].name, strVal)) i++;
@@ -227,15 +227,15 @@ int fmi1_xml_set_attr_int(fmi1_xml_parser_context_t *context, fmi1_xml_elm_enu_t
     int ret;
     jm_string elmName, attrName, strVal;
 
-    ret = fmi_get_attr_str(context, elmID, attrID,required,&strVal);
+    ret = fmi1_get_attr_str(context, elmID, attrID,required,&strVal);
     if(ret) return ret;
     if(!strVal && !required) {
         *field = defaultVal;
         return 0;
     }
 
-    elmName = fmi_element_handle_map[elmID].elementName;
-    attrName = fmi_xmlAttrNames[attrID];
+    elmName = fmi1_element_handle_map[elmID].elementName;
+    attrName = fmi1_xmlAttrNames[attrID];
 
     if(sscanf(strVal, "%d", field) != 1) {
         fmi1_xml_parse_fatal(context, "XML element '%s': could not parse value for attribute '%s'='%s'", elmName, attrName, strVal);
@@ -250,15 +250,15 @@ int fmi1_xml_set_attr_double(fmi1_xml_parser_context_t *context, fmi1_xml_elm_en
     jm_string elmName, attrName, strVal;
 
 
-    ret = fmi_get_attr_str(context, elmID, attrID,required,&strVal);
+    ret = fmi1_get_attr_str(context, elmID, attrID,required,&strVal);
     if(ret) return ret;
     if(!strVal && !required) {
         *field = defaultVal;
         return 0;
     }
 
-    elmName = fmi_element_handle_map[elmID].elementName;
-    attrName = fmi_xmlAttrNames[attrID];
+    elmName = fmi1_element_handle_map[elmID].elementName;
+    attrName = fmi1_xmlAttrNames[attrID];
 
     if(sscanf(strVal, "%lf", field) != 1) {
         fmi1_xml_parse_fatal(context, "XML element '%s': could not parse value for attribute '%s'='%s'", elmName, attrName, strVal);
@@ -318,7 +318,7 @@ jm_vector(char) * fmi1_xml_get_parse_buffer(fmi1_xml_parser_context_t *context, 
 
 
 
-int fmi_create_attr_map(fmi1_xml_parser_context_t* context) {
+int fmi2_create_attr_map(fmi1_xml_parser_context_t* context) {
     int i;
     context->attrBuffer = jm_vector_alloc(jm_string)(fmi1_xml_attr_number, fmi1_xml_attr_number, context->callbacks);
     if(!context->attrBuffer) return -1;
@@ -327,7 +327,7 @@ int fmi_create_attr_map(fmi1_xml_parser_context_t* context) {
     for(i = 0; i < fmi1_xml_attr_number; i++) {
         jm_named_ptr map;
         jm_vector_set_item(jm_string)(context->attrBuffer, i, 0);
-        map.name = fmi_xmlAttrNames[i];
+        map.name = fmi1_xmlAttrNames[i];
         map.ptr = (void*)(jm_vector_get_itemp(jm_string)(context->attrBuffer, i));
         jm_vector_set_item(jm_named_ptr)(context->attrMap, i, map);
     }
@@ -335,19 +335,19 @@ int fmi_create_attr_map(fmi1_xml_parser_context_t* context) {
     return 0;
 }
 
-int fmi_create_elm_map(fmi1_xml_parser_context_t* context) {
+int fmi2_create_elm_map(fmi1_xml_parser_context_t* context) {
     size_t i;
     context->elmMap = jm_vector_alloc(fmi1_xml_element_handle_map_t)(fmi1_xml_elm_number, fmi1_xml_elm_number, context->callbacks);
     if(!context->elmMap) return -1;
     for(i = 0; i < fmi1_xml_elm_number; i++) {
-        fmi1_xml_element_handle_map_t item = fmi_element_handle_map[i];
+        fmi1_xml_element_handle_map_t item = fmi1_element_handle_map[i];
         jm_vector_set_item(fmi1_xml_element_handle_map_t)(context->elmMap, i, item);
     }
     jm_vector_qsort(fmi1_xml_element_handle_map_t)(context->elmMap, fmi1_xml_compare_elmName);
     return 0;
 }
 
-void XMLCALL fmi_parse_element_start(void *c, const char *elm, const char **attr) {
+static void XMLCALL fmi1_parse_element_start(void *c, const char *elm, const char **attr) {
     jm_named_ptr key;
     fmi1_xml_element_handle_map_t keyEl;
     fmi1_xml_element_handle_map_t* currentElMap;
@@ -384,7 +384,7 @@ void XMLCALL fmi_parse_element_start(void *c, const char *elm, const char **attr
 			((currentID != fmi1_xml_elmID_Capabilities) || (parentID != fmi1_xml_elmID_CoSimulation_Tool))) {
 				jm_log_error(context->callbacks, module, 
 					"[Line:%u] XML element '%s' cannot be placed inside '%s', skipping",
-					XML_GetCurrentLineNumber(context->parser), elm, fmi_element_handle_map[parentID].elementName);
+					XML_GetCurrentLineNumber(context->parser), elm, fmi1_element_handle_map[parentID].elementName);
 				context->skipElementCnt = 1;
 				return;
 		}
@@ -405,7 +405,7 @@ void XMLCALL fmi_parse_element_start(void *c, const char *elm, const char **attr
 				if(lastSiblingIndex >= curSiblingIndex) {
 					jm_log_error(context->callbacks, module, 
 						"[Line:%u] XML element '%s' cannot be placed after element '%s', skipping",
-						XML_GetCurrentLineNumber(context->parser), elm, fmi_element_handle_map[siblingID].elementName);
+						XML_GetCurrentLineNumber(context->parser), elm, fmi1_element_handle_map[siblingID].elementName);
 					context->skipElementCnt = 1;
 					return;
 				}
@@ -441,7 +441,7 @@ void XMLCALL fmi_parse_element_start(void *c, const char *elm, const char **attr
     for(i = 0; i < fmi1_xml_attr_number; i++) {
         if(jm_vector_get_item(jm_string)(context->attrBuffer, i)) {
             if(!context->skipOneVariableFlag)
-                jm_log_warning(context->callbacks,module, "Attribute '%s' not processed by element '%s' handle", fmi_xmlAttrNames[i], elm);
+                jm_log_warning(context->callbacks,module, "Attribute '%s' not processed by element '%s' handle", fmi1_xmlAttrNames[i], elm);
             jm_vector_set_item(jm_string)(context->attrBuffer, i,0);
         }
     }
@@ -451,7 +451,7 @@ void XMLCALL fmi_parse_element_start(void *c, const char *elm, const char **attr
     context -> currentElmID = currentID;
 }
 
-void XMLCALL fmi_parse_element_end(void* c, const char *elm) {
+static void XMLCALL fmi1_parse_element_end(void* c, const char *elm) {
 
     fmi1_xml_element_handle_map_t keyEl;
     fmi1_xml_element_handle_map_t* currentElMap;
@@ -475,7 +475,7 @@ void XMLCALL fmi_parse_element_end(void* c, const char *elm) {
     if(currentID != context -> currentElmID) {
         /* missmatch error*/
         fmi1_xml_parse_fatal(context, "Element end '%s' does not match element start '%s' in XML", elm, 
-			fmi_element_handle_map[context -> currentElmID].elementName);
+			fmi1_element_handle_map[context -> currentElmID].elementName);
         return;
     }
 
@@ -505,7 +505,7 @@ void XMLCALL fmi_parse_element_end(void* c, const char *elm) {
 *  instead of an empty string with len == 0 we get "\n". The workaround is
 *  to replace this with the empty string whenever we encounter "\n".
 */
-void XMLCALL fmi_parse_element_data(void* c, const XML_Char *s, int len) {
+static void XMLCALL fmi1_parse_element_data(void* c, const XML_Char *s, int len) {
         fmi1_xml_parser_context_t *context = c;
         int i;
         jm_vector_reserve(char)(&context->elmData, len + jm_vector_get_size(char)(&context->elmData) + 1);
@@ -530,7 +530,7 @@ int fmi1_xml_parse_model_description(fmi1_xml_model_description_t* md, const cha
     context->callbacks = md->callbacks;
     context->modelDescription = md;
     if(fmi1_xml_alloc_parse_buffer(context, 16)) return -1;
-    if(fmi_create_attr_map(context) || fmi_create_elm_map(context)) {
+    if(fmi2_create_attr_map(context) || fmi2_create_elm_map(context)) {
         fmi1_xml_parse_fatal(context, "Error in parsing initialization");
         fmi1_xml_parse_free_context(context);
         return -1;
@@ -558,9 +558,9 @@ int fmi1_xml_parse_model_description(fmi1_xml_model_description_t* md, const cha
 
     XML_SetUserData( parser, context);
 
-    XML_SetElementHandler(parser, fmi_parse_element_start, fmi_parse_element_end);
+    XML_SetElementHandler(parser, fmi1_parse_element_start, fmi1_parse_element_end);
 
-    XML_SetCharacterDataHandler(parser, fmi_parse_element_data);
+    XML_SetCharacterDataHandler(parser, fmi1_parse_element_data);
 
     file = fopen(filename, "rb");
     if (file == NULL) {

@@ -166,6 +166,9 @@ const char* fmi2_xml_get_GUID(fmi2_xml_model_description_t* md);
 const char* fmi2_xml_get_description(fmi2_xml_model_description_t* md);
 
 const char* fmi2_xml_get_author(fmi2_xml_model_description_t* md);
+const char* fmi2_xml_get_license(fmi2_xml_model_description_t* md);
+
+const char* fmi2_xml_get_copyright(fmi2_xml_model_description_t* md);
 
 const char* fmi2_xml_get_model_version(fmi2_xml_model_description_t* md);
 const char* fmi2_xml_get_model_standard_version(fmi2_xml_model_description_t* md);

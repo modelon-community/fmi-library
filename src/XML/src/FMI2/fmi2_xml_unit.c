@@ -45,8 +45,8 @@ const char* fmi2_xml_get_display_unit_name(fmi2_xml_display_unit_t* du) {
     return du->displayUnit;
 }
 
-double fmi2_xml_get_display_unit_gain(fmi2_xml_display_unit_t* du) {
-    return du->gain;
+double fmi2_xml_get_display_unit_factor(fmi2_xml_display_unit_t* du) {
+    return du->factor;
 }
 
 double fmi2_xml_get_display_unit_offset(fmi2_xml_display_unit_t* du) {
@@ -54,7 +54,7 @@ double fmi2_xml_get_display_unit_offset(fmi2_xml_display_unit_t* du) {
 }
 
 double fmi2_xml_convert_to_display_unit(double val , fmi2_xml_display_unit_t* du, int isRelativeQuantity) {
-    double gain = fmi2_xml_get_display_unit_gain(du);
+    double gain = fmi2_xml_get_display_unit_factor(du);
     double offset = fmi2_xml_get_display_unit_offset(du);
     if(isRelativeQuantity)
         return val *gain;
@@ -63,12 +63,12 @@ double fmi2_xml_convert_to_display_unit(double val , fmi2_xml_display_unit_t* du
 }
 
 double fmi2_xml_convert_from_display_unit(double val, fmi2_xml_display_unit_t* du, int isRelativeQuantity) {
-    double gain = fmi2_xml_get_display_unit_gain(du);
+    double factor = fmi2_xml_get_display_unit_factor(du);
     double offset = fmi2_xml_get_display_unit_offset(du);
     if(isRelativeQuantity)
-        return val/gain;
+        return val/factor;
     else
-        return (val - offset)/gain;
+        return (val - offset)/factor;
 }
 
 int fmi2_xml_handle_UnitDefinitions(fmi2_xml_parser_context_t *context, const char* data) {
@@ -113,7 +113,7 @@ fmi2_xml_display_unit_t* fmi2_xml_get_parsed_unit(fmi2_xml_parser_context_t *con
     unit = named.ptr;
     unit->defaultDisplay.baseUnit = unit;
     unit->defaultDisplay.offset = 0;
-    unit->defaultDisplay.gain = 1.0;
+    unit->defaultDisplay.factor = 1.0;
     unit->defaultDisplay.displayUnit[0] = 0;
     jm_vector_init(jm_voidp)(&(unit->displayUnits),0,context->callbacks);
 
@@ -169,8 +169,8 @@ int fmi2_xml_handle_DisplayUnitDefinition(fmi2_xml_parser_context_t *context, co
             dispUnit->baseUnit = unit;
             /* finally process the attributes */
             return (
-                        /*  <xs:attribute name="gain" type="xs:double" default="1"/>  */
-                        fmi2_xml_set_attr_double(context, fmi2_xml_elmID_DisplayUnitDefinition, fmi_attr_id_gain, 0, &dispUnit->gain, 1)  ||
+                        /*  <xs:attribute name="factor" type="xs:double" default="1"/>  */
+                        fmi2_xml_set_attr_double(context, fmi2_xml_elmID_DisplayUnitDefinition, fmi_attr_id_factor, 0, &dispUnit->factor, 1)  ||
                          /*  <xs:attribute name="offset" type="xs:double" default="0"/>  */
                         fmi2_xml_set_attr_double(context, fmi2_xml_elmID_DisplayUnitDefinition, fmi_attr_id_offset, 0, &dispUnit->offset, 0)
                      );

@@ -13,27 +13,13 @@
     along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 */
 
-#ifdef __cplusplus 
-extern "C" {
-#endif
-
 #include <stdio.h>
 #include <stdlib.h>
-#include <miniunz.h>
+#include <minizip.h>
 
 #include <JM/jm_types.h>
 #include <JM/jm_callbacks.h>
 #include <JM/jm_portability.h>
-
-#ifdef WIN32
-#include <direct.h>
-#define get_cd _getcwd
-#define set_cd _chdir	
-#else
-#include <unistd.h>
-#define get_cd getcwd
-#define set_cd chdir
-#endif
 
 jm_status_enu_t fmi_zip_zip(const char* zip_file_path, int n_files_to_zip, const char** files_to_zip, jm_callbacks* callbacks)
 {
@@ -101,7 +87,3 @@ jm_status_enu_t fmi_zip_zip(const char* zip_file_path, int n_files_to_zip, const
 		return jm_status_error;	
 	}
 }
-
-#ifdef __cplusplus 
-}
-#endif

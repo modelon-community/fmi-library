@@ -46,7 +46,7 @@ fmi2_xml_display_unit_t* fmi2_xml_get_unit_display_unit(fmi2_xml_unit_t*, size_t
 fmi2_xml_display_unit_t* fmi2_xml_get_type_display_unit(fmi2_xml_real_typedef_t*);
 fmi2_xml_unit_t* fmi2_xml_get_base_unit(fmi2_xml_display_unit_t*);
 const char* fmi2_xml_get_display_unit_name(fmi2_xml_display_unit_t*);
-double fmi2_xml_get_display_unit_gain(fmi2_xml_display_unit_t*);
+double fmi2_xml_get_display_unit_factor(fmi2_xml_display_unit_t*);
 double fmi2_xml_get_display_unit_offset(fmi2_xml_display_unit_t*);
 
 double fmi2_xml_convert_to_display_unit(double, fmi2_xml_display_unit_t*, int isRelativeQuantity);

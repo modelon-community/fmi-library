@@ -27,7 +27,7 @@ extern "C" {
 /* Structure encapsulating base unit information */
 
 struct fmi2_xml_display_unit_t {
-    double gain;
+    double factor;
     double offset;
     fmi2_xml_unit_t* baseUnit;
     char displayUnit[1];

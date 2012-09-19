@@ -159,6 +159,21 @@ const char* fmi2_import_get_author(fmi2_import_t* fmu) {
 	return fmi2_xml_get_author(fmu->md);
 }
 
+const char* fmi2_import_get_license(fmi2_import_t* fmu) {
+	if(!fmu->md) {
+		jm_log_error(fmu->callbacks, module,"No FMU is loaded");
+		return 0;
+	}
+	return fmi2_xml_get_license(fmu->md);
+}
+const char* fmi2_import_get_copyright(fmi2_import_t* fmu) {
+	if(!fmu->md) {
+		jm_log_error(fmu->callbacks, module,"No FMU is loaded");
+		return 0;
+	}
+	return fmi2_xml_get_copyright(fmu->md);
+}
+
 const char* fmi2_import_get_model_standard_version(fmi2_import_t* fmu) {
 	if(!fmu->md) {
 		jm_log_error(fmu->callbacks, module,"No FMU is loaded");

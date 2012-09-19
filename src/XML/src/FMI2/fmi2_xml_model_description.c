@@ -50,6 +50,8 @@ fmi2_xml_model_description_t * fmi2_xml_allocate_model_description( jm_callbacks
     jm_vector_init(char)(&md->GUID, 0,cb);
     jm_vector_init(char)(&md->description, 0,cb);
     jm_vector_init(char)(&md->author, 0,cb);
+    jm_vector_init(char)(&md->license, 0,cb);
+    jm_vector_init(char)(&md->copyright, 0,cb);
     jm_vector_init(char)(&md->version, 0,cb);
     jm_vector_init(char)(&md->generationTool, 0,cb);
     jm_vector_init(char)(&md->generationDateAndTime, 0,cb);
@@ -108,6 +110,8 @@ void fmi2_xml_clear_model_description( fmi2_xml_model_description_t* md) {
     jm_vector_free_data(char)(&md->GUID);
     jm_vector_free_data(char)(&md->description);
     jm_vector_free_data(char)(&md->author);
+    jm_vector_free_data(char)(&md->license);
+    jm_vector_free_data(char)(&md->copyright);
     jm_vector_free_data(char)(&md->version);
     jm_vector_free_data(char)(&md->generationTool);
     jm_vector_free_data(char)(&md->generationDateAndTime);
@@ -196,6 +200,14 @@ const char* fmi2_xml_get_description(fmi2_xml_model_description_t* md){
 
 const char* fmi2_xml_get_author(fmi2_xml_model_description_t* md){
     return jm_vector_char2string(&md->author);
+}
+
+const char* fmi2_xml_get_license(fmi2_xml_model_description_t* md){
+    return jm_vector_char2string(&md->license);
+}
+
+const char* fmi2_xml_get_copyright(fmi2_xml_model_description_t* md){
+    return jm_vector_char2string(&md->copyright);
 }
 
 const char* fmi2_xml_get_model_standard_version(fmi2_xml_model_description_t* md){
@@ -306,7 +318,7 @@ int fmi2_xml_handle_fmiModelDescription(fmi2_xml_parser_context_t *context, cons
 		md->fmuKind = fmi2_fmu_kind_unknown;
         /* process the attributes */
         return (
-                    /* <xs:attribute name="fmiVersion" type="xs:normalizedString" use="required" fixed="1.0"/> */
+                    /* <xs:attribute name="fmiVersion" type="xs:normalizedString" use="required" fixed="2.0"/> */
                     fmi2_xml_set_attr_string(context, fmi2_xml_elmID_fmiModelDescription, fmi_attr_id_fmiVersion, 1, &(md->fmi2_xml_standard_version)) ||
                     /* <xs:attribute name="modelName" type="xs:normalizedString" use="required"> */
                     fmi2_xml_set_attr_string(context, fmi2_xml_elmID_fmiModelDescription, fmi_attr_id_modelName, 1, &(md->modelName)) ||
@@ -318,14 +330,16 @@ int fmi2_xml_handle_fmiModelDescription(fmi2_xml_parser_context_t *context, cons
                     fmi2_xml_set_attr_string(context, fmi2_xml_elmID_fmiModelDescription, fmi_attr_id_author, 0, &(md->author)) ||
                     /* <xs:attribute name="version" type="xs:normalizedString"> */
                     fmi2_xml_set_attr_string(context, fmi2_xml_elmID_fmiModelDescription, fmi_attr_id_version, 0, &(md->version)) ||
-                    /* <xs:attribute name="generationTool" type="xs:normalizedString"/> */
+			        /* <xs:attribute name="copyright" type="xs:string"> */
+                    fmi2_xml_set_attr_string(context, fmi2_xml_elmID_fmiModelDescription, fmi_attr_id_copyright, 0, &(md->copyright)) ||
+					/* <xs:attribute name="license" type="xs:string"> */
+                    fmi2_xml_set_attr_string(context, fmi2_xml_elmID_fmiModelDescription, fmi_attr_id_license, 0, &(md->license)) ||
+					/* <xs:attribute name="generationTool" type="xs:normalizedString"/> */
                     fmi2_xml_set_attr_string(context, fmi2_xml_elmID_fmiModelDescription, fmi_attr_id_generationTool, 0, &(md->generationTool)) ||
                     /* <xs:attribute name="generationDateAndTime" type="xs:dateTime"/> */
                     fmi2_xml_set_attr_string(context, fmi2_xml_elmID_fmiModelDescription, fmi_attr_id_generationDateAndTime, 0, &(md->generationDateAndTime)) ||
                     /* <xs:attribute name="variableNamingConvention" use="optional" default="flat"> */
                     fmi2_xml_set_attr_enum(context, fmi2_xml_elmID_fmiModelDescription, fmi_attr_id_variableNamingConvention, 0, (unsigned*)&(md->namingConvension), fmi2_naming_enu_flat, namingConventionMap) ||
-                    /* <xs:attribute name="numberOfContinuousStates" type="xs:unsignedInt" use="required"/> */
-                    fmi2_xml_set_attr_uint(context, fmi2_xml_elmID_fmiModelDescription, fmi_attr_id_numberOfContinuousStates, 1, &(md->numberOfContinuousStates),0) ||
                     /* <xs:attribute name="numberOfEventIndicators" type="xs:unsignedInt" use="required"/> */
                     fmi2_xml_set_attr_uint(context, fmi2_xml_elmID_fmiModelDescription, fmi_attr_id_numberOfEventIndicators, 1, &(md->numberOfEventIndicators),0)
                     );
@@ -343,7 +357,28 @@ int fmi2_xml_handle_ModelExchange(fmi2_xml_parser_context_t *context, const char
 		md->fmuKind = fmi2_fmu_kind_me;
         /* process the attributes */
         return (	/* <xs:attribute name="modelIdentifier" type="xs:normalizedString" use="required"> */
-                    fmi2_xml_set_attr_string(context, fmi2_xml_elmID_ModelExchange, fmi_attr_id_modelIdentifier, 1, &(md->modelIdentifierME))
+                    fmi2_xml_set_attr_string(context, fmi2_xml_elmID_ModelExchange, fmi_attr_id_modelIdentifier, 1, &(md->modelIdentifierME)) ||
+					/* 	<xs:attribute name="needsExecutionTool" type="xs:boolean" default="false"> */
+                    fmi2_xml_set_attr_boolean(context,fmi2_xml_elmID_ModelExchange, fmi_attr_id_needsExecutionTool,0,
+                                             &md->capabilities[fmi2_me_needsExecutionTool],0) ||
+					/* <xs:attribute name="completedIntegratorStepNotNeeded" type="xs:boolean" default="false"/> */
+                    fmi2_xml_set_attr_boolean(context,fmi2_xml_elmID_ModelExchange, fmi_attr_id_completedIntegratorStepNotNeeded,0,
+                                             &md->capabilities[fmi2_me_completedIntegratorStepNotNeeded],0) ||
+					/* <xs:attribute name="canBeInstantiatedOnlyOncePerProcess" type="xs:boolean" default="false"/> */
+                    fmi2_xml_set_attr_boolean(context,fmi2_xml_elmID_ModelExchange, fmi_attr_id_canBeInstantiatedOnlyOncePerProcess,0,
+                                             &md->capabilities[fmi2_me_canBeInstantiatedOnlyOncePerProcess],0) ||
+					/* <xs:attribute name="canNotUseMemoryManagementFunctions" type="xs:boolean" default="false"/> */
+                    fmi2_xml_set_attr_boolean(context,fmi2_xml_elmID_ModelExchange, fmi_attr_id_canNotUseMemoryManagementFunctions,0,
+                                             &md->capabilities[fmi2_me_canNotUseMemoryManagementFunctions],0) ||
+					/* <xs:attribute name="canGetAndSetFMUstate" type="xs:boolean" default="false"/> */
+                    fmi2_xml_set_attr_boolean(context,fmi2_xml_elmID_ModelExchange, fmi_attr_id_canGetAndSetFMUstate,0,
+                                             &md->capabilities[fmi2_me_canGetAndSetFMUstate],0) ||
+					/* <xs:attribute name="canSerializeFMUstate" type="xs:boolean" default="false"/> */
+                    fmi2_xml_set_attr_boolean(context,fmi2_xml_elmID_ModelExchange, fmi_attr_id_canSerializeFMUstate,0,
+                                             &md->capabilities[fmi2_me_canSerializeFMUstate],0) ||
+					/* <xs:attribute name="providesDirectionalDerivatives" type="xs:boolean" default="false"/> */
+                    fmi2_xml_set_attr_boolean(context,fmi2_xml_elmID_ModelExchange, fmi_attr_id_providesDirectionalDerivatives,0,
+                                             &md->capabilities[fmi2_me_providesDirectionalDerivatives],0)
                    );
     }
     else {
@@ -362,7 +397,44 @@ int fmi2_xml_handle_CoSimulation(fmi2_xml_parser_context_t *context, const char*
 			md->fmuKind = fmi2_fmu_kind_cs;
         /* process the attributes */
         return (	/* <xs:attribute name="modelIdentifier" type="xs:normalizedString" use="required"> */
-                    fmi2_xml_set_attr_string(context, fmi2_xml_elmID_CoSimulation, fmi_attr_id_modelIdentifier, 1, &(md->modelIdentifierCS))
+                    fmi2_xml_set_attr_string(context, fmi2_xml_elmID_CoSimulation, fmi_attr_id_modelIdentifier, 1, &(md->modelIdentifierCS)) ||
+					/* 	<xs:attribute name="needsExecutionTool" type="xs:boolean" default="false"> */
+                    fmi2_xml_set_attr_boolean(context,fmi2_xml_elmID_CoSimulation, fmi_attr_id_needsExecutionTool,0,
+                                             &md->capabilities[fmi2_cs_needsExecutionTool],0) ||
+					/* <xs:attribute name="canHandleVariableCommunicationStepSize" type="xs:boolean" default="false"/> */
+                    fmi2_xml_set_attr_boolean(context,fmi2_xml_elmID_CoSimulation, fmi_attr_id_canHandleVariableCommunicationStepSize,0,
+                                             &md->capabilities[fmi2_cs_canHandleVariableCommunicationStepSize],0) ||
+					/* <xs:attribute name="canHandleEvents" type="xs:boolean" default="false"/>*/
+                    fmi2_xml_set_attr_boolean(context,fmi2_xml_elmID_CoSimulation, fmi_attr_id_canHandleEvents,0,
+                                             &md->capabilities[fmi2_cs_canHandleEvents],0) ||
+					/* <xs:attribute name="canInterpolateInputs" type="xs:boolean" default="false"/>*/
+                    fmi2_xml_set_attr_boolean(context,fmi2_xml_elmID_CoSimulation, fmi_attr_id_canInterpolateInputs,0,
+                                             &md->capabilities[fmi2_cs_canInterpolateInputs],0) ||
+					/* <xs:attribute name="maxOutputDerivativeOrder" type="xs:unsignedInt" default="0"/> */
+                    fmi2_xml_set_attr_uint(context,fmi2_xml_elmID_CoSimulation, fmi_attr_id_maxOutputDerivativeOrder,0,
+                                             &md->capabilities[fmi2_cs_maxOutputDerivativeOrder],0) ||
+					/* <xs:attribute name="canRunAsynchronuously" type="xs:boolean" default="false"/> */
+                    fmi2_xml_set_attr_boolean(context,fmi2_xml_elmID_CoSimulation, fmi_attr_id_canRunAsynchronuously,0,
+                                             &md->capabilities[fmi2_cs_canRunAsynchronuously],0) ||
+					/* <xs:attribute name="canSignalEvents" type="xs:boolean" default="false"/> */
+                    fmi2_xml_set_attr_boolean(context,fmi2_xml_elmID_CoSimulation, fmi_attr_id_canSignalEvents,0,
+                                             &md->capabilities[fmi2_cs_canSignalEvents],0) ||
+					/* <xs:attribute name="canBeInstantiatedOnlyOncePerProcess" type="xs:boolean" default="false"/> */
+                    fmi2_xml_set_attr_boolean(context,fmi2_xml_elmID_CoSimulation, fmi_attr_id_canBeInstantiatedOnlyOncePerProcess,0,
+                                             &md->capabilities[fmi2_cs_canBeInstantiatedOnlyOncePerProcess],0) ||
+					/* <xs:attribute name="canNotUseMemoryManagementFunctions" type="xs:boolean" default="false"/> */
+                    fmi2_xml_set_attr_boolean(context,fmi2_xml_elmID_CoSimulation, fmi_attr_id_canNotUseMemoryManagementFunctions,0,
+                                             &md->capabilities[fmi2_cs_canNotUseMemoryManagementFunctions],0) ||
+					/* <xs:attribute name="canGetAndSetFMUstate" type="xs:boolean" default="false"/> */
+                    fmi2_xml_set_attr_boolean(context,fmi2_xml_elmID_CoSimulation, fmi_attr_id_canGetAndSetFMUstate,0,
+                                             &md->capabilities[fmi2_cs_canGetAndSetFMUstate],0) ||
+					/* <xs:attribute name="canSerializeFMUstate" type="xs:boolean" default="false"/> */
+                    fmi2_xml_set_attr_boolean(context,fmi2_xml_elmID_CoSimulation, fmi_attr_id_canSerializeFMUstate,0,
+                                             &md->capabilities[fmi2_cs_canSerializeFMUstate],0) 
+		/* Not in specification? */
+					/* <xs:attribute name="providesDirectionalDerivatives" type="xs:boolean" default="false"/> */  
+/*        ||            fmi2_xml_set_attr_boolean(context,fmi2_xml_elmID_CoSimulation, fmi_attr_id_providesDirectionalDerivatives,0,
+                                             &md->capabilities[fmi2_cs_providesDirectionalDerivatives],0) */
                    );
     }
     else {

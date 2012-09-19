@@ -72,9 +72,9 @@ FMILIB_EXPORT fmi2_import_unit_t* fmi2_import_get_base_unit(fmi2_import_display_
 FMILIB_EXPORT const char* fmi2_import_get_display_unit_name(fmi2_import_display_unit_t*);
 
 /**
-	\brief Get the "gain" associated with the display unit.
+	\brief Get the "factor" associated with the display unit.
 */
-FMILIB_EXPORT fmi2_real_t fmi2_import_get_display_unit_gain(fmi2_import_display_unit_t*);
+FMILIB_EXPORT fmi2_real_t fmi2_import_get_display_unit_factor(fmi2_import_display_unit_t*);
 /**
 	\brief Get the "offset" associated with the display unit.
 */

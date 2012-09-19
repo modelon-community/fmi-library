@@ -146,6 +146,18 @@ FMILIB_EXPORT const char* fmi2_import_get_description(fmi2_import_t* fmu);
 */
 FMILIB_EXPORT const char* fmi2_import_get_author(fmi2_import_t* fmu);
 
+/** 
+\brief Get FMU copyright information. 
+@param fmu An fmu object as returned by fmi2_import_parse_xml().
+*/
+FMILIB_EXPORT const char* fmi2_import_get_copyright(fmi2_import_t* fmu);
+
+/** 
+\brief Get FMU license information. 
+@param fmu An fmu object as returned by fmi2_import_parse_xml().
+*/
+FMILIB_EXPORT const char* fmi2_import_get_license(fmi2_import_t* fmu);
+
 /** \brief Get FMU version.
 @param fmu An fmu object as returned by fmi2_import_parse_xml().
 */

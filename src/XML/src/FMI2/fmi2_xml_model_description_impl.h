@@ -39,6 +39,8 @@ struct fmi2_xml_model_description_t {
     jm_vector(char) description;
 
     jm_vector(char) author;
+    jm_vector(char) copyright;
+    jm_vector(char) license;
 
     jm_vector(char) version;
     jm_vector(char) generationTool;

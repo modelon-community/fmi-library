@@ -31,7 +31,7 @@ extern "C" {
 #define FMI2_XML_ATTRLIST(EXPAND_XML_ATTRNAME) \
     EXPAND_XML_ATTRNAME(fmiVersion), \
     EXPAND_XML_ATTRNAME(displayUnit), \
-    EXPAND_XML_ATTRNAME(gain), \
+    EXPAND_XML_ATTRNAME(factor), \
     EXPAND_XML_ATTRNAME(offset), \
     EXPAND_XML_ATTRNAME(unit), \
     EXPAND_XML_ATTRNAME(name), \
@@ -51,18 +51,19 @@ extern "C" {
     EXPAND_XML_ATTRNAME(valueReference), \
     EXPAND_XML_ATTRNAME(variability), \
     EXPAND_XML_ATTRNAME(causality), \
-    EXPAND_XML_ATTRNAME(alias), \
     EXPAND_XML_ATTRNAME(modelName), \
     EXPAND_XML_ATTRNAME(modelIdentifier), \
     EXPAND_XML_ATTRNAME(guid), \
     EXPAND_XML_ATTRNAME(author), \
+    EXPAND_XML_ATTRNAME(copyright), \
+    EXPAND_XML_ATTRNAME(license), \
     EXPAND_XML_ATTRNAME(version), \
     EXPAND_XML_ATTRNAME(generationTool), \
     EXPAND_XML_ATTRNAME(generationDateAndTime), \
     EXPAND_XML_ATTRNAME(variableNamingConvention), \
-    EXPAND_XML_ATTRNAME(numberOfContinuousStates), \
     EXPAND_XML_ATTRNAME(numberOfEventIndicators), \
     EXPAND_XML_ATTRNAME(input), \
+    EXPAND_XML_ATTRNAME(needsExecutionTool), \
     EXPAND_XML_ATTRNAME(canHandleVariableCommunicationStepSize), \
 	EXPAND_XML_ATTRNAME(completedIntegratorStepNotNeeded), \
 	EXPAND_XML_ATTRNAME(canBeInstantiatedOnlyOncePerProcess), \
@@ -188,7 +189,7 @@ void fmi2_xml_parse_error(fmi2_xml_parser_context_t *context, const char* messag
 int fmi2_xml_set_attr_string(fmi2_xml_parser_context_t *context, fmi2_xml_elm_enu_t elmID, fmi2_xml_attr_enu_t attrID, int required, jm_vector(char)* field);
 int fmi2_xml_set_attr_uint(fmi2_xml_parser_context_t *context, fmi2_xml_elm_enu_t elmID, fmi2_xml_attr_enu_t attrID, int required, unsigned int* field, unsigned int defaultVal);
 int fmi2_xml_set_attr_enum(fmi2_xml_parser_context_t *context, fmi2_xml_elm_enu_t elmID, fmi2_xml_attr_enu_t attrID, int required, unsigned int* field, unsigned int defaultVal, jm_name_ID_map_t* nameMap);
-int fmi2_xml_set_attr_boolean(fmi2_xml_parser_context_t *context, fmi2_xml_elm_enu_t elmID, fmi2_xml_attr_enu_t attrID, int required, int* field, int defaultVal);
+int fmi2_xml_set_attr_boolean(fmi2_xml_parser_context_t *context, fmi2_xml_elm_enu_t elmID, fmi2_xml_attr_enu_t attrID, int required, unsigned int* field, unsigned int defaultVal);
 int fmi2_xml_set_attr_int(fmi2_xml_parser_context_t *context, fmi2_xml_elm_enu_t elmID, fmi2_xml_attr_enu_t attrID, int required, int* field, int defaultVal);
 int fmi2_xml_set_attr_double(fmi2_xml_parser_context_t *context, fmi2_xml_elm_enu_t elmID, fmi2_xml_attr_enu_t attrID, int required, double* field, double defaultVal);
 int fmi2_xml_is_attr_defined(fmi2_xml_parser_context_t *context, fmi2_xml_attr_enu_t attrID);

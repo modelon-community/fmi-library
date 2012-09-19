@@ -31,8 +31,9 @@ const char *fmi2_xmlAttrNames[] = {
 #define fmi2_xml_scheme_ModelExchange {fmi2_xml_elmID_fmiModelDescription, 0, 0}
 #define fmi2_xml_scheme_CoSimulation {fmi2_xml_elmID_fmiModelDescription, 1, 0}
 #define fmi2_xml_scheme_UnitDefinitions {fmi2_xml_elmID_fmiModelDescription, 2, 0}
-#define fmi2_xml_scheme_BaseUnit {fmi2_xml_elmID_UnitDefinitions, 0, 1}
-#define fmi2_xml_scheme_DisplayUnitDefinition {fmi2_xml_elmID_BaseUnit, 0, 1}
+#define fmi2_xml_scheme_Unit {fmi2_xml_elmID_UnitDefinitions, 0, 1}
+#define fmi2_xml_scheme_BaseUnit {fmi2_xml_elmID_Unit, 0, 0}
+#define fmi2_xml_scheme_DisplayUnit {fmi2_xml_elmID_Unit, 1, 1}
 #define fmi2_xml_scheme_TypeDefinitions {fmi2_xml_elmID_fmiModelDescription, 3, 0}
 #define fmi2_xml_scheme_Type {fmi2_xml_elmID_TypeDefinitions, 0, 1}
 #define fmi2_xml_scheme_RealType {fmi2_xml_elmID_Type, 0, 0}

@@ -148,12 +148,38 @@ typedef enum fmi2_capabilities_enu_t {
 	fmi2_capabilities_Num
 } fmi2_capabilities_enu_t;
 
-
 /** \brief Convert capability flag to a string 
 	\param id Capability flag ID.
 	\return Name of the flag or Unknown if the id is out of range.
 */
 FMILIB_EXPORT const char * fmi2_capability_to_string(fmi2_capabilities_enu_t id);
+
+/** \brief List of SI base units used in Unit defitions*/
+#define FMI2_SI_BASE_UNITS(H) \
+	H(kg) H(m) H(s) H(A) H(K) H(mol) H(cd) H(rad)
+
+/** \brief SI base units used in Unit defitions*/
+typedef enum fmi2_SI_base_units_enu_t {
+#define FMI2_EXPAND_SI_BASE_UNIT_ENU(c) fmi2_SI_base_unit_ ## c,
+	FMI2_SI_BASE_UNITS(FMI2_EXPAND_SI_BASE_UNIT_ENU)
+	fmi2_SI_base_units_Num
+} fmi2_SI_base_units_enu_t;
+
+/** \brief Convert SI base unit ID a string 
+	\param id SI base unit ID.
+	\return Name of the base unit or "unknown" if the id is out of range.
+*/
+FMILIB_EXPORT const char * fmi2_SI_base_unit_to_string(fmi2_SI_base_units_enu_t id);
+
+/** \brief Convert a list of SI base unit exponents (corresponding to the IDs from  fmi2_SI_base_units_enu_t)
+	to a string of the form kg*m^2/s^2. Prints '-' if all the exponents are zero.
+	\param exp An array of SI base units exponents.
+	\param bufSize Size of the buffer to store the string. 
+	\param buf Buffer to store the string
+	\return Required size of the buffer to store the string. This most likely be under [8*fmi2_SI_base_units_Num].
+	If the return value is larger or equal than bufSize than the string could not be fitted in the buffer. 
+*/
+FMILIB_EXPORT size_t fmi2_SI_base_unit_exp_to_string(int exp[fmi2_SI_base_units_Num], size_t bufSize, char buf[]);
 
 /**	
  @}

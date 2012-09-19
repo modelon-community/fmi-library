@@ -35,6 +35,9 @@ struct fmi2_xml_display_unit_t {
 
 struct fmi2_xml_unit_t {
         jm_vector(jm_voidp) displayUnits;
+		int SI_base_unit_exp[fmi2_SI_base_units_Num];
+		double factor;
+		double offset;
         fmi2_xml_display_unit_t defaultDisplay;
         char baseUnit[1];
 };

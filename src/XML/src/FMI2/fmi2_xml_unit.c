@@ -27,6 +27,44 @@ const char* fmi2_xml_get_unit_name(fmi2_xml_unit_t* u) {
     return u->baseUnit;
 }
 
+/**
+	\brief Get fmi2_SI_base_units_Num SI base units exponents associated with the unit.
+*/
+const int* fmi2_xml_get_SI_unit_exponents(fmi2_xml_unit_t* u) {
+	return u->SI_base_unit_exp;
+}
+
+/**
+	\brief Get factor to the corresponding SI base units.
+*/
+double fmi2_xml_get_SI_unit_factor(fmi2_xml_unit_t* u){
+	return u->factor;
+}
+
+
+/**
+	\brief Get offset to the corresponding SI base units.
+*/
+double fmi2_xml_get_SI_unit_offset(fmi2_xml_unit_t* u) {
+	return u->offset;
+}
+
+/**
+	\brief Convert a value with respect to the unit to the
+	value with respect to the SI base unit.
+*/
+double fmi2_xml_convert_to_SI_base_unit(double uv, fmi2_xml_unit_t* u) {
+	return u->factor * uv + u->offset;
+}
+
+/**
+	\brief Convert a value with respect to the SI base unit to the
+	value with respect to the unit.
+*/
+double fmi2_xml_convert_from_SI_base_unit(double SIv, fmi2_xml_unit_t* u) {
+	return (SIv - u->offset)/u->factor;
+}
+
 unsigned int fmi2_xml_get_unit_display_unit_number(fmi2_xml_unit_t* u) {
     return jm_vector_get_size(jm_voidp)(&u->displayUnits);
 }
@@ -89,6 +127,7 @@ fmi2_xml_display_unit_t* fmi2_xml_get_parsed_unit(fmi2_xml_parser_context_t *con
     fmi2_xml_unit_t dummy, *unit;
     jm_named_ptr named, *pnamed;
     fmi2_xml_model_description_t* md = context->modelDescription;
+	int i;
 
     named.name = jm_vector_get_itemp(char)(name,0);
     if(sorted)
@@ -111,6 +150,10 @@ fmi2_xml_display_unit_t* fmi2_xml_get_parsed_unit(fmi2_xml_parser_context_t *con
     }
 
     unit = named.ptr;
+	unit->factor = 1.0;
+	unit->offset = 0.0;
+	for(i = 0; i < fmi2_SI_base_units_Num; i++)
+		unit->SI_base_unit_exp[i] = 0;
     unit->defaultDisplay.baseUnit = unit;
     unit->defaultDisplay.offset = 0;
     unit->defaultDisplay.factor = 1.0;
@@ -123,12 +166,50 @@ fmi2_xml_display_unit_t* fmi2_xml_get_parsed_unit(fmi2_xml_parser_context_t *con
 
 int fmi2_xml_handle_BaseUnit(fmi2_xml_parser_context_t *context, const char* data) {
     if(!data) {
+			int ret;
+            fmi2_xml_model_description_t* md = context->modelDescription;
+            /* this base unit belongs to the last created base unit */
+            fmi2_xml_unit_t* unit = context->lastBaseUnit;
+
+            /* process the attributes */
+
+			/* <xs:attribute name="xxx" type="xs:int" default="0"> */
+#define FMI2_PARSE_SI_BASE_UNIT_ENU(c) \
+	fmi2_xml_set_attr_int(context, fmi2_xml_elmID_BaseUnit, fmi_attr_id_ ## c,0,&(unit->SI_base_unit_exp[fmi2_SI_base_unit_ ## c]),0) ||
+			ret =     	
+				FMI2_SI_BASE_UNITS(FMI2_PARSE_SI_BASE_UNIT_ENU) 
+				/*  <xs:attribute name="factor" type="xs:double" default="1"/>  */
+                fmi2_xml_set_attr_double(context, fmi2_xml_elmID_BaseUnit, fmi_attr_id_factor, 0, &unit->factor, 1)  ||
+                /*  <xs:attribute name="offset" type="xs:double" default="0"/>  */
+                fmi2_xml_set_attr_double(context, fmi2_xml_elmID_BaseUnit, fmi_attr_id_offset, 0, &unit->offset, 0);
+
+			if(unit->factor == 0) {
+				unit->factor = 1.0;
+				if(!ret) {
+					fmi2_xml_parse_error(context, "Attribute 'factor' cannot be equal to zero");
+				}
+			}
+
+            return ( ret );
+    }
+    else {
+        /* don't do anything. might give out a warning if(data[0] != 0) */
+        return 0;
+    }
+    return 0;
+}
+
+
+
+int fmi2_xml_handle_Unit(fmi2_xml_parser_context_t *context, const char* data) {
+    if(!data) {
             fmi2_xml_display_unit_t* unit;
             jm_vector(char)* buf = fmi2_xml_reserve_parse_buffer(context,1,100);
 
             if(!buf) return -1;
-            if( /*  <xs:attribute name="unit" type="xs:normalizedString" use="required"/> */
-                fmi2_xml_set_attr_string(context, fmi2_xml_elmID_BaseUnit, fmi_attr_id_unit, 1, buf) ||
+            if( 
+				/*  <xs:attribute name="name" type="xs:normalizedString" use="required"> */
+                fmi2_xml_set_attr_string(context, fmi2_xml_elmID_BaseUnit, fmi_attr_id_name, 1, buf) ||
                 !(unit = fmi2_xml_get_parsed_unit(context, buf, 0))
                ) return -1;
             context->lastBaseUnit = unit->baseUnit;
@@ -140,8 +221,9 @@ int fmi2_xml_handle_BaseUnit(fmi2_xml_parser_context_t *context, const char* dat
     return 0;
 }
 
-int fmi2_xml_handle_DisplayUnitDefinition(fmi2_xml_parser_context_t *context, const char* data) {
+int fmi2_xml_handle_DisplayUnit(fmi2_xml_parser_context_t *context, const char* data) {
     if(!data) {
+			int ret;
             fmi2_xml_model_description_t* md = context->modelDescription;
             jm_vector(char)* buf = fmi2_xml_reserve_parse_buffer(context,1,100);
             /* this display unit belongs to the last created base unit */
@@ -149,12 +231,11 @@ int fmi2_xml_handle_DisplayUnitDefinition(fmi2_xml_parser_context_t *context, co
             fmi2_xml_display_unit_t *dispUnit = 0;
             fmi2_xml_display_unit_t dummyDU;
             jm_named_ptr named, *pnamed;
-            int ret;
 
             if(!buf) return -1;
             /* first read the required name attribute */
-            /*  <xs:attribute name="displayUnit" type="xs:normalizedString" use="required"/> */
-            ret = fmi2_xml_set_attr_string(context, fmi2_xml_elmID_DisplayUnitDefinition, fmi_attr_id_displayUnit, 1, buf);
+            /*  <xs:attribute name="name" type="xs:normalizedString" use="required"/> */
+            ret = fmi2_xml_set_attr_string(context, fmi2_xml_elmID_DisplayUnit, fmi_attr_id_name, 1, buf);
             if(ret) return ret;
             /* alloc memory to the correct size and put display unit on the list for the base unit */
             named.ptr = 0;
@@ -168,12 +249,19 @@ int fmi2_xml_handle_DisplayUnitDefinition(fmi2_xml_parser_context_t *context, co
             }
             dispUnit->baseUnit = unit;
             /* finally process the attributes */
-            return (
-                        /*  <xs:attribute name="factor" type="xs:double" default="1"/>  */
-                        fmi2_xml_set_attr_double(context, fmi2_xml_elmID_DisplayUnitDefinition, fmi_attr_id_factor, 0, &dispUnit->factor, 1)  ||
-                         /*  <xs:attribute name="offset" type="xs:double" default="0"/>  */
-                        fmi2_xml_set_attr_double(context, fmi2_xml_elmID_DisplayUnitDefinition, fmi_attr_id_offset, 0, &dispUnit->offset, 0)
-                     );
+			ret =     
+				/*  <xs:attribute name="factor" type="xs:double" default="1"/>  */
+                fmi2_xml_set_attr_double(context, fmi2_xml_elmID_DisplayUnit, fmi_attr_id_factor, 0, &dispUnit->factor, 1)  ||
+                /*  <xs:attribute name="offset" type="xs:double" default="0"/>  */
+                fmi2_xml_set_attr_double(context, fmi2_xml_elmID_DisplayUnit, fmi_attr_id_offset, 0, &dispUnit->offset, 0);
+			if(dispUnit->factor == 0) {
+				dispUnit->factor = 1.0;
+				if(!ret) {
+					fmi2_xml_parse_error(context, "Attribute 'factor' cannot be equal to zero");
+				}
+			}
+
+            return ( ret );
     }
     else {
         /* don't do anything. might give out a warning if(data[0] != 0) */

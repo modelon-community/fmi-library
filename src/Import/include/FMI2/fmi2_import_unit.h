@@ -57,6 +57,33 @@ FMILIB_EXPORT const char* fmi2_import_get_unit_name(fmi2_import_unit_t*);
 /** \brief Get the number of display units associated with this unit */
 FMILIB_EXPORT unsigned int fmi2_import_get_unit_display_unit_number(fmi2_import_unit_t*);
 
+/**
+	\brief Get fmi2_SI_base_units_Num SI base units exponents associated with the unit.
+*/
+FMILIB_EXPORT const int* fmi2_import_get_SI_unit_exponents(fmi2_import_unit_t*);
+
+/**
+	\brief Get factor to the corresponding SI base units.
+*/
+FMILIB_EXPORT double fmi2_import_get_SI_unit_factor(fmi2_import_unit_t*);
+
+/**
+	\brief Get offset to the corresponding SI base units.
+*/
+FMILIB_EXPORT double fmi2_import_get_SI_unit_offset(fmi2_import_unit_t*);
+
+/**
+	\brief Convert a value with respect to the unit to the
+	value with respect to the SI base unit.
+*/
+FMILIB_EXPORT double fmi2_import_convert_to_SI_base_unit(double, fmi2_import_unit_t*);
+
+/**
+	\brief Convert a value with respect to the SI base unit to the
+	value with respect to the unit.
+*/
+FMILIB_EXPORT double fmi2_import_convert_from_SI_base_unit(double, fmi2_import_unit_t*);
+
 /** \brief Get a display unit object by index.
 	@param index The index of display unit to be returned. Must be less than the number returned by fmi2_import_get_unit_display_unit_number()
 */

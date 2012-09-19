@@ -13,9 +13,9 @@
     along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 */
 #include <assert.h>
+#include <stdio.h>
 
 #include <FMI2/fmi2_functions.h>
-
 #include <FMI2/fmi2_enums.h>
 
 const char* fmi2_naming_convention_to_string(fmi2_variable_naming_convension_enu_t convention) {
@@ -107,4 +107,110 @@ const char * fmi2_capability_to_string(fmi2_capabilities_enu_t id) {
 	default: break;
 	}
 	return "Unknown";
+}
+
+const char * fmi2_SI_base_unit_to_string(fmi2_SI_base_units_enu_t id) {
+#define FMI2_SI_BASE_UNIT_ENU_TO_STR(c) case fmi2_SI_base_unit_ ## c: return #c;
+	switch(id) {
+		FMI2_SI_BASE_UNITS(FMI2_SI_BASE_UNIT_ENU_TO_STR)
+	default: break;
+	}
+	return "unknown";
+}
+
+/** \brief Convert a list of SI base unit exponents (corresponding to the IDs from  fmi2_SI_base_units_enu_t)
+	to a string of the form kg*m^2/s^2.
+
+	\param exp An array of SI base units exponents.
+	\param bufSize Size of the buffer to store the string. 
+	\param buf Buffer to store the string
+	\return Required size of the buffer to store the string including the terminating zero.
+		This most likely be under [8*fmi2_SI_base_units_Num]. If the return value is larger or equal 
+		than bufSize than the string could not be fitted in the buffer. 
+*/
+size_t fmi2_SI_base_unit_exp_to_string(int exp[fmi2_SI_base_units_Num], size_t bufSize, char buf[]){
+	int i = 0;
+	int num_pos_exp = 0, num_neg_exp = 0; /* number of exponents */
+	size_t len = 0;
+	char tmp[fmi2_SI_base_units_Num * 20]; /* tmp is always enough size */
+	if(bufSize) buf[0] = 0; /* just to prevent errors */
+
+	/* count the exponents */
+	for(i = 0; i < fmi2_SI_base_units_Num; i++) {
+		if(exp[i] == 0) continue;
+		if(exp[i] < 0) 
+			num_neg_exp ++;
+		else
+			num_pos_exp ++;
+	}
+	if((num_neg_exp + num_pos_exp) == 0) { /* return "-" */ 
+		 if (bufSize < 2) return 2;
+		 buf[0] = '-';
+		 buf[1] = 0;
+		 return 2;
+	}
+	if(num_pos_exp == 0) {
+		/* we start with "one over", i.e., 1 */
+		tmp[0] = '1';
+		len = 1;
+	}
+	else {
+		len = 0;
+		/* print positive exp */
+		for(i = 0; i < fmi2_SI_base_units_Num; i++) {
+			char* curp = tmp + len;
+			int expi = exp[i];
+			if(expi <= 0)  continue;
+			if(len) {
+				*curp = '*';
+				curp++; len++;
+			}
+
+			strcpy(curp, fmi2_SI_base_unit_to_string((fmi2_SI_base_units_enu_t)i)) ;
+			len += strlen(curp);
+			curp = tmp + len;
+
+			if(expi > 1) {
+				*curp = '^';
+				curp++; len++;
+
+				sprintf(curp, "%d", expi);
+				len += strlen(curp);
+			}
+		}
+	}
+	/* print negative exp */
+	if(num_neg_exp > 0) {
+		tmp[len++] = '/';
+		if(num_neg_exp > 1)
+			tmp[len++] = '(';
+		num_neg_exp = 0;
+
+		for(i = 0; i < fmi2_SI_base_units_Num; i++) {
+			char* curp = tmp + len;
+			int expi = exp[i];
+			if(expi >= 0)  continue;
+			expi = -expi;
+			if(num_neg_exp > 0) {
+				*curp = '*';
+				curp++; len++;
+			}
+			num_neg_exp++;
+			strcpy(curp, fmi2_SI_base_unit_to_string((fmi2_SI_base_units_enu_t)i)) ;
+			len += strlen(curp);
+			curp = tmp + len;
+
+			if(expi > 1) {
+				*curp = '^';
+				curp++; len++;
+
+				sprintf(curp, "%d", expi);
+				len += strlen(curp);
+			}
+		}
+		if(num_neg_exp > 1)
+			tmp[len++] = ')';
+	}
+	strncpy(buf, tmp, bufSize);
+	return len;
 }

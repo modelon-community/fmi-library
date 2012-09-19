@@ -22,64 +22,67 @@
 #include <JM/jm_stack.h>
 #include <JM/jm_named_ptr.h>
 
+#include <FMI2/fmi2_enums.h>
 #include <FMI2/fmi2_xml_model_description.h>
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 #define FMI2_XML_ATTRLIST(EXPAND_XML_ATTRNAME) \
-    EXPAND_XML_ATTRNAME(fmiVersion), \
-    EXPAND_XML_ATTRNAME(displayUnit), \
-    EXPAND_XML_ATTRNAME(factor), \
-    EXPAND_XML_ATTRNAME(offset), \
-    EXPAND_XML_ATTRNAME(unit), \
-    EXPAND_XML_ATTRNAME(name), \
-    EXPAND_XML_ATTRNAME(description), \
-    EXPAND_XML_ATTRNAME(quantity), \
-    EXPAND_XML_ATTRNAME(relativeQuantity), \
-    EXPAND_XML_ATTRNAME(min), \
-    EXPAND_XML_ATTRNAME(max), \
-    EXPAND_XML_ATTRNAME(nominal), \
-    EXPAND_XML_ATTRNAME(declaredType), \
-    EXPAND_XML_ATTRNAME(start), \
-    EXPAND_XML_ATTRNAME(fixed), \
-    EXPAND_XML_ATTRNAME(startTime), \
-    EXPAND_XML_ATTRNAME(stopTime), \
-    EXPAND_XML_ATTRNAME(tolerance), \
-    EXPAND_XML_ATTRNAME(value), \
-    EXPAND_XML_ATTRNAME(valueReference), \
-    EXPAND_XML_ATTRNAME(variability), \
-    EXPAND_XML_ATTRNAME(causality), \
-    EXPAND_XML_ATTRNAME(modelName), \
-    EXPAND_XML_ATTRNAME(modelIdentifier), \
-    EXPAND_XML_ATTRNAME(guid), \
-    EXPAND_XML_ATTRNAME(author), \
-    EXPAND_XML_ATTRNAME(copyright), \
-    EXPAND_XML_ATTRNAME(license), \
-    EXPAND_XML_ATTRNAME(version), \
-    EXPAND_XML_ATTRNAME(generationTool), \
-    EXPAND_XML_ATTRNAME(generationDateAndTime), \
-    EXPAND_XML_ATTRNAME(variableNamingConvention), \
-    EXPAND_XML_ATTRNAME(numberOfEventIndicators), \
-    EXPAND_XML_ATTRNAME(input), \
-    EXPAND_XML_ATTRNAME(needsExecutionTool), \
-    EXPAND_XML_ATTRNAME(canHandleVariableCommunicationStepSize), \
-	EXPAND_XML_ATTRNAME(completedIntegratorStepNotNeeded), \
-	EXPAND_XML_ATTRNAME(canBeInstantiatedOnlyOncePerProcess), \
-	EXPAND_XML_ATTRNAME(canNotUseMemoryManagementFunctions), \
-	EXPAND_XML_ATTRNAME(canGetAndSetFMUstate), \
-	EXPAND_XML_ATTRNAME(canSerializeFMUstate), \
-	EXPAND_XML_ATTRNAME(providesDirectionalDerivatives), \
-    EXPAND_XML_ATTRNAME(canHandleEvents), \
-    EXPAND_XML_ATTRNAME(canInterpolateInputs), \
-    EXPAND_XML_ATTRNAME(maxOutputDerivativeOrder), \
-    EXPAND_XML_ATTRNAME(canRunAsynchronuously), \
+    EXPAND_XML_ATTRNAME(fmiVersion) \
+    EXPAND_XML_ATTRNAME(factor) \
+    EXPAND_XML_ATTRNAME(offset) \
+	FMI2_SI_BASE_UNITS(EXPAND_XML_ATTRNAME) \
+    EXPAND_XML_ATTRNAME(name) \
+    EXPAND_XML_ATTRNAME(description) \
+    EXPAND_XML_ATTRNAME(quantity) \
+    EXPAND_XML_ATTRNAME(unit) \
+    EXPAND_XML_ATTRNAME(displayUnit) \
+    EXPAND_XML_ATTRNAME(relativeQuantity) \
+    EXPAND_XML_ATTRNAME(min) \
+    EXPAND_XML_ATTRNAME(max) \
+    EXPAND_XML_ATTRNAME(nominal) \
+    EXPAND_XML_ATTRNAME(declaredType) \
+    EXPAND_XML_ATTRNAME(start) \
+    EXPAND_XML_ATTRNAME(fixed) \
+    EXPAND_XML_ATTRNAME(startTime) \
+    EXPAND_XML_ATTRNAME(stopTime) \
+    EXPAND_XML_ATTRNAME(tolerance) \
+    EXPAND_XML_ATTRNAME(value) \
+    EXPAND_XML_ATTRNAME(valueReference) \
+    EXPAND_XML_ATTRNAME(variability) \
+    EXPAND_XML_ATTRNAME(causality) \
+    EXPAND_XML_ATTRNAME(modelName) \
+    EXPAND_XML_ATTRNAME(modelIdentifier) \
+    EXPAND_XML_ATTRNAME(guid) \
+    EXPAND_XML_ATTRNAME(author) \
+    EXPAND_XML_ATTRNAME(copyright) \
+    EXPAND_XML_ATTRNAME(license) \
+    EXPAND_XML_ATTRNAME(version) \
+    EXPAND_XML_ATTRNAME(generationTool) \
+    EXPAND_XML_ATTRNAME(generationDateAndTime) \
+    EXPAND_XML_ATTRNAME(variableNamingConvention) \
+    EXPAND_XML_ATTRNAME(numberOfEventIndicators) \
+    EXPAND_XML_ATTRNAME(input) \
+    EXPAND_XML_ATTRNAME(needsExecutionTool) \
+    EXPAND_XML_ATTRNAME(canHandleVariableCommunicationStepSize) \
+	EXPAND_XML_ATTRNAME(completedIntegratorStepNotNeeded) \
+	EXPAND_XML_ATTRNAME(canBeInstantiatedOnlyOncePerProcess) \
+	EXPAND_XML_ATTRNAME(canNotUseMemoryManagementFunctions) \
+	EXPAND_XML_ATTRNAME(canGetAndSetFMUstate) \
+	EXPAND_XML_ATTRNAME(canSerializeFMUstate) \
+	EXPAND_XML_ATTRNAME(providesDirectionalDerivatives) \
+    EXPAND_XML_ATTRNAME(canHandleEvents) \
+    EXPAND_XML_ATTRNAME(canInterpolateInputs) \
+    EXPAND_XML_ATTRNAME(maxOutputDerivativeOrder) \
+    EXPAND_XML_ATTRNAME(canRunAsynchronuously) \
     EXPAND_XML_ATTRNAME(canSignalEvents)
 
-#define FMI2_XML_ATTR_ID(attr) fmi_attr_id_##attr
+#define FMI2_XML_ATTR_ID(attr) fmi_attr_id_##attr,
 typedef enum fmi2_xml_attr_enu_t {
-    FMI2_XML_ATTRLIST(FMI2_XML_ATTR_ID),
+    FMI2_XML_ATTRLIST(FMI2_XML_ATTR_ID)
     fmi2_xml_attr_number
 } fmi2_xml_attr_enu_t;
 
@@ -88,8 +91,9 @@ typedef enum fmi2_xml_attr_enu_t {
 	EXPAND_XML_ELMNAME(ModelExchange) \
     EXPAND_XML_ELMNAME(CoSimulation) \
     EXPAND_XML_ELMNAME(UnitDefinitions) \
+    EXPAND_XML_ELMNAME(Unit) \
     EXPAND_XML_ELMNAME(BaseUnit) \
-    EXPAND_XML_ELMNAME(DisplayUnitDefinition) \
+    EXPAND_XML_ELMNAME(DisplayUnit) \
     EXPAND_XML_ELMNAME(TypeDefinitions) \
     EXPAND_XML_ELMNAME(Type) \
     EXPAND_XML_ELMNAME(RealType) \

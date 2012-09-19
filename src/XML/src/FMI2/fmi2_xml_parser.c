@@ -28,10 +28,12 @@ const char *fmi2_xmlAttrNames[] = {
 
 /* fmi2_xml_scheme_ defines give parent ID, the index in a sequence among siblings, flag if multiple elems are allowed */
 #define fmi2_xml_scheme_fmiModelDescription {fmi2_xml_elmID_none, 0, 0}
-#define fmi2_xml_scheme_UnitDefinitions {fmi2_xml_elmID_fmiModelDescription, 0, 0}
+#define fmi2_xml_scheme_ModelExchange {fmi2_xml_elmID_fmiModelDescription, 0, 0}
+#define fmi2_xml_scheme_CoSimulation {fmi2_xml_elmID_fmiModelDescription, 1, 0}
+#define fmi2_xml_scheme_UnitDefinitions {fmi2_xml_elmID_fmiModelDescription, 2, 0}
 #define fmi2_xml_scheme_BaseUnit {fmi2_xml_elmID_UnitDefinitions, 0, 1}
 #define fmi2_xml_scheme_DisplayUnitDefinition {fmi2_xml_elmID_BaseUnit, 0, 1}
-#define fmi2_xml_scheme_TypeDefinitions {fmi2_xml_elmID_fmiModelDescription, 1, 0}
+#define fmi2_xml_scheme_TypeDefinitions {fmi2_xml_elmID_fmiModelDescription, 3, 0}
 #define fmi2_xml_scheme_Type {fmi2_xml_elmID_TypeDefinitions, 0, 1}
 #define fmi2_xml_scheme_RealType {fmi2_xml_elmID_Type, 0, 0}
 #define fmi2_xml_scheme_IntegerType {fmi2_xml_elmID_Type, 0, 0}
@@ -39,11 +41,13 @@ const char *fmi2_xmlAttrNames[] = {
 #define fmi2_xml_scheme_StringType {fmi2_xml_elmID_Type, 0, 0}
 #define fmi2_xml_scheme_EnumerationType {fmi2_xml_elmID_Type, 0, 0}
 #define fmi2_xml_scheme_Item {fmi2_xml_elmID_EnumerationType, 0, 1}
-#define fmi2_xml_scheme_DefaultExperiment {fmi2_xml_elmID_fmiModelDescription, 2, 0}
-#define fmi2_xml_scheme_VendorAnnotations {fmi2_xml_elmID_fmiModelDescription, 3, 0}
+#define fmi2_xml_scheme_LogCategories {fmi2_xml_elmID_fmiModelDescription, 4, 0}
+#define fmi2_xml_scheme_Category {fmi2_xml_elmID_LogCategories, 0, 1}
+#define fmi2_xml_scheme_DefaultExperiment {fmi2_xml_elmID_fmiModelDescription, 5, 0}
+#define fmi2_xml_scheme_VendorAnnotations {fmi2_xml_elmID_fmiModelDescription, 6, 0}
 #define fmi2_xml_scheme_Tool {fmi2_xml_elmID_VendorAnnotations, 0, 1}
 #define fmi2_xml_scheme_Annotation {fmi2_xml_elmID_Tool, 0, 1}
-#define fmi2_xml_scheme_ModelVariables {fmi2_xml_elmID_fmiModelDescription, 4, 0}
+#define fmi2_xml_scheme_ModelVariables {fmi2_xml_elmID_fmiModelDescription, 7, 0}
 #define fmi2_xml_scheme_ScalarVariable {fmi2_xml_elmID_ModelVariables, 0, 1}
 #define fmi2_xml_scheme_DirectDependency {fmi2_xml_elmID_ScalarVariable, 1, 0}
 #define fmi2_xml_scheme_Name {fmi2_xml_elmID_DirectDependency, 0, 1}
@@ -52,15 +56,6 @@ const char *fmi2_xmlAttrNames[] = {
 #define fmi2_xml_scheme_Boolean {fmi2_xml_elmID_ScalarVariable, 0, 0}
 #define fmi2_xml_scheme_String {fmi2_xml_elmID_ScalarVariable, 0, 0}
 #define fmi2_xml_scheme_Enumeration {fmi2_xml_elmID_ScalarVariable, 0, 0}
-#define fmi2_xml_scheme_Implementation {fmi2_xml_elmID_fmiModelDescription, 5, 0}
-#define fmi2_xml_scheme_CoSimulation_StandAlone {fmi2_xml_elmID_Implementation, 0, 0}
-/* NOTE: Capabilities need special handling since it can appear both under 
-	CoSimulation_StandAlone and CoSimulation_Tool
-*/
-#define fmi2_xml_scheme_Capabilities {fmi2_xml_elmID_CoSimulation_StandAlone, 0, 0}
-#define fmi2_xml_scheme_CoSimulation_Tool {fmi2_xml_elmID_Implementation, 0, 0}
-#define fmi2_xml_scheme_Model {fmi2_xml_elmID_CoSimulation_Tool, 1, 0}
-#define fmi2_xml_scheme_File {fmi2_xml_elmID_Model, 0, 1}
 
 #define ELM_PASTE(elm) fmi2_xml_scheme_##elm
 #define EXPAND_ELM_SCHEME(elm) fmi2_xml_scheme_##elm ,
@@ -380,8 +375,7 @@ static void XMLCALL fmi2_parse_element_start(void *c, const char *elm, const cha
 		fmi2_xml_elm_enu_t parentID = context->currentElmID;
 		fmi2_xml_elm_enu_t siblingID =  context->lastElmID;
 
-		if((fmi2_xml_scheme_info[currentID].parentID != parentID) &&
-			((currentID != fmi2_xml_elmID_Capabilities) || (parentID != fmi2_xml_elmID_CoSimulation_Tool))) {
+		if(fmi2_xml_scheme_info[currentID].parentID != parentID) {
 				jm_log_error(context->callbacks, module, 
 					"[Line:%u] XML element '%s' cannot be placed inside '%s', skipping",
 					XML_GetCurrentLineNumber(context->parser), elm, fmi2_element_handle_map[parentID].elementName);

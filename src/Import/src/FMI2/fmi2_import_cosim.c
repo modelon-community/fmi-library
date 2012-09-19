@@ -20,10 +20,6 @@ fmi2_fmu_kind_enu_t fmi2_import_get_fmu_kind(fmi2_import_t* fmu) {
     return fmi2_xml_get_fmu_kind(fmu->md);
 }
 
-fmi2_import_capabilities_t* fmi2_import_get_capabilities(fmi2_import_t* fmu){
-    return fmi2_xml_get_capabilities(fmu->md);
-}
-
 size_t fmi2_import_get_number_of_additional_models(fmi2_import_t* fmu) {
     return fmi2_xml_get_number_of_additional_models(fmu->md);
 }

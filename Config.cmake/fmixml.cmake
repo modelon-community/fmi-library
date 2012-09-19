@@ -49,8 +49,6 @@ set(FMIXMLHEADERS
     src/FMI2/fmi2_xml_vendor_annotations_impl.h
     include/FMI2/fmi2_xml_variable.h
     src/FMI2/fmi2_xml_variable_impl.h
-    include/FMI2/fmi2_xml_capabilities.h
-    src/FMI2/fmi2_xml_capabilities_impl.h
  )
 
 set(FMIXMLSOURCE
@@ -71,7 +69,6 @@ set(FMIXMLSOURCE
     src/FMI2/fmi2_xml_unit.c
     src/FMI2/fmi2_xml_vendor_annotations.c
     src/FMI2/fmi2_xml_variable.c
-    src/FMI2/fmi2_xml_capabilities.c
     src/FMI2/fmi2_xml_cosim.c
 )
 

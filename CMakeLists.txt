@@ -155,7 +155,14 @@ macro(PREFIXLIST list_name prefix)
     UNSET(${list_name}_TMP)
 endmacro(PREFIXLIST)
 
-source_group("Private headers" REGULAR_EXPRESSION ".*impl.h") # mostly for MSVC
+# Mostly for MSVC
+source_group("Source files\\FMI1" REGULAR_EXPRESSION "fmi1_.*.c") 
+source_group("Source files\\FMI2" REGULAR_EXPRESSION "fmi2_.*.c") 
+source_group("Header files\\FMI1" REGULAR_EXPRESSION "fmi1_.*.h") 
+source_group("Header files\\FMI2" REGULAR_EXPRESSION "fmi2_.*.h") 
+source_group("Private headers" REGULAR_EXPRESSION "fmi_.*impl.h") 
+source_group("Private headers\\FMI1" REGULAR_EXPRESSION "fmi1_.*impl.h") 
+source_group("Private headers\\FMI2" REGULAR_EXPRESSION "fmi2_.*impl.h") 
 
 set(FMILIBKIND STATIC)
 if(NOT FMILIB_STATIC_LIB_ONLY)

@@ -36,6 +36,7 @@ struct fmi2_xml_variable_t {
 	size_t originalIndex;
     fmi2_value_reference_t vr;
     char aliasKind;
+    char initial;
     char variability;
     char causality;
 

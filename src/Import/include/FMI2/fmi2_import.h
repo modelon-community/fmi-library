@@ -35,7 +35,6 @@
 #include "fmi2_import_unit.h"
 #include "fmi2_import_variable.h"
 #include "fmi2_import_vendor_annotations.h"
-#include "fmi2_import_capabilities.h"
 #include "fmi2_import_variable_list.h"
 
 #include "fmi2_import_capi.h"
@@ -114,11 +113,20 @@ FMILIB_EXPORT void fmi2_import_free(fmi2_import_t* fmu);
 */
 FMILIB_EXPORT const char* fmi2_import_get_model_name(fmi2_import_t* fmu);
 
+/** \brief Retrieve capability flags by ID. */
+FMILIB_EXPORT unsigned int fmi2_import_get_capability(fmi2_import_t* , fmi2_capabilities_enu_t id);
+
 /** 
-\brief Get model identifier. 
+\brief Get model identifier for ModelExchange. 
 @param fmu An fmu object as returned by fmi2_import_parse_xml().
 */
-FMILIB_EXPORT const char* fmi2_import_get_model_identifier(fmi2_import_t* fmu);
+FMILIB_EXPORT const char* fmi2_import_get_model_identifier_ME(fmi2_import_t* fmu);
+
+/** 
+\brief Get model identifier for CoSimulation. 
+@param fmu An fmu object as returned by fmi2_import_parse_xml().
+*/
+FMILIB_EXPORT const char* fmi2_import_get_model_identifier_CS(fmi2_import_t* fmu);
 
 /** 
 \brief Get FMU GUID. 
@@ -180,12 +188,6 @@ FMILIB_EXPORT double fmi2_import_get_default_experiment_tolerance(fmi2_import_t*
 
 /** \brief Get the type of the FMU (model exchange or co-simulation) */
 FMILIB_EXPORT fmi2_fmu_kind_enu_t fmi2_import_get_fmu_kind(fmi2_import_t* fmu);
-
-/** \brief Get the structure with capability flags.
-	@return A pointer to the fmi2_import_capabilities_t allocated within the library. 
-			Note that for model exchange FMUs the values of all the flags are always default.
-*/
-FMILIB_EXPORT fmi2_import_capabilities_t* fmi2_import_get_capabilities(fmi2_import_t* fmu);
 
 /** \brief Get the list of all the type definitions in the model*/
 FMILIB_EXPORT fmi2_import_type_definitions_t* fmi2_import_get_type_definitions(fmi2_import_t* );

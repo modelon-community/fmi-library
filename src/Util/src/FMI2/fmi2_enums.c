@@ -26,9 +26,9 @@ const char* fmi2_naming_convention_to_string(fmi2_variable_naming_convension_enu
 
 const char* fmi2_fmu_kind_to_string(fmi2_fmu_kind_enu_t kind) {
     switch (kind) {
-    case fmi2_fmu_kind_enu_me: return "ModelExchange";
-    case fmi2_fmu_kind_enu_cs_standalone: return "CoSimulation_StandAlone";
-    case fmi2_fmu_kind_enu_cs_tool: return "CoSimulation_Tool";
+    case fmi2_fmu_kind_me: return "ModelExchange";
+    case fmi2_fmu_kind_cs: return "CoSimulation";
+    case fmi2_fmu_kind_me_and_cs: return "ModelExchange and CoSimulation";
 	default: break;
     }
     return "Unknown";
@@ -37,7 +37,8 @@ const char* fmi2_fmu_kind_to_string(fmi2_fmu_kind_enu_t kind) {
 const char* fmi2_variability_to_string(fmi2_variability_enu_t v) {
     switch(v) {
     case fmi2_variability_enu_constant: return "constant";
-    case fmi2_variability_enu_parameter: return "parameter";
+    case fmi2_variability_enu_fixed: return "fixed";
+    case fmi2_variability_enu_tunable: return "tunable";
     case fmi2_variability_enu_discrete: return "discrete";
     case fmi2_variability_enu_continuous: return "continuous";
 	default: break;
@@ -49,8 +50,8 @@ const char* fmi2_causality_to_string(fmi2_causality_enu_t c) {
     switch(c) {
     case fmi2_causality_enu_input: return "input";
     case fmi2_causality_enu_output: return "output";
-    case fmi2_causality_enu_internal: return "internal";
-    case fmi2_causality_enu_none: return "none";
+    case fmi2_causality_enu_parameter: return "parameter";
+    case fmi2_causality_enu_local: return "local";
 	default: break;
     };
     return "Unknown";
@@ -85,4 +86,25 @@ const char* fmi2_base_type_to_string(fmi2_base_type_enu_t bt) {
 	default: break;
     }
     return "Error";
+}
+
+const char* fmi2_initial_to_string(fmi2_initial_enu_t ini) {
+	switch (ini) {
+	case fmi2_initial_enu_exact: return "exact";
+	case fmi2_initial_enu_approx: return "approx";
+	case fmi2_initial_enu_calculated: return "calculated";
+		default: break;
+	}
+	return "Undefined";
+}
+
+const char * fmi2_capability_to_string(fmi2_capabilities_enu_t id) {
+#define FMI2_ME_CAPABILITIES_ENU_TO_STR(c) case fmi2_me_ ## c: return #c;
+#define FMI2_CS_CAPABILITIES_ENU_TO_STR(c) case fmi2_cs_ ## c: return #c;
+	switch (id) {
+	FMI2_ME_CAPABILITIES(FMI2_ME_CAPABILITIES_ENU_TO_STR)
+	FMI2_CS_CAPABILITIES(FMI2_CS_CAPABILITIES_ENU_TO_STR)
+	default: break;
+	}
+	return "Unknown";
 }

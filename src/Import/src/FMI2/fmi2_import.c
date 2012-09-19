@@ -41,7 +41,6 @@ fmi2_import_t* fmi2_import_allocate(jm_callbacks* cb) {
 	fmu->callbacks = cb;
 	fmu->capi = 0;
 	fmu->md = fmi2_xml_allocate_model_description(cb);
-	fmu->registerGlobally = 0;
 	jm_vector_init(char)(&fmu->logMessageBuffer,0,cb);
 
 	if(!fmu->md) {
@@ -111,12 +110,29 @@ const char* fmi2_import_get_model_name(fmi2_import_t* fmu) {
 	return fmi2_xml_get_model_name(fmu->md);
 }
 
-const char* fmi2_import_get_model_identifier(fmi2_import_t* fmu) {
+unsigned int fmi2_import_get_capability(fmi2_import_t* fmu , fmi2_capabilities_enu_t id) {
 	if(!fmu->md) {
 		jm_log_error(fmu->callbacks, module,"No FMU is loaded");
 		return 0;
 	}
-	return fmi2_xml_get_model_identifier(fmu->md);
+	return fmi2_xml_get_capability(fmu->md, id);
+}
+
+
+const char* fmi2_import_get_model_identifier_ME(fmi2_import_t* fmu) {
+	if(!fmu->md) {
+		jm_log_error(fmu->callbacks, module,"No FMU is loaded");
+		return 0;
+	}
+	return fmi2_xml_get_model_identifier_ME(fmu->md);
+}
+
+const char* fmi2_import_get_model_identifier_CS(fmi2_import_t* fmu) {
+	if(!fmu->md) {
+		jm_log_error(fmu->callbacks, module,"No FMU is loaded");
+		return 0;
+	}
+	return fmi2_xml_get_model_identifier_CS(fmu->md);
 }
 
 const char* fmi2_import_get_GUID(fmi2_import_t* fmu){

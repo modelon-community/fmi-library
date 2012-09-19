@@ -157,7 +157,9 @@ void fmi2_xml_free_model_description(fmi2_xml_model_description_t* md);
 */
 const char* fmi2_xml_get_model_name(fmi2_xml_model_description_t* md);
 
-const char* fmi2_xml_get_model_identifier(fmi2_xml_model_description_t* md);
+const char* fmi2_xml_get_model_identifier_ME(fmi2_xml_model_description_t* md);
+
+const char* fmi2_xml_get_model_identifier_CS(fmi2_xml_model_description_t* md);
 
 const char* fmi2_xml_get_GUID(fmi2_xml_model_description_t* md);
 
@@ -190,7 +192,8 @@ void fmi2_xml_set_default_experiment_tolerance(fmi2_xml_model_description_t* md,
 
 fmi2_fmu_kind_enu_t fmi2_xml_get_fmu_kind(fmi2_xml_model_description_t* md);
 
-fmi2_xml_capabilities_t* fmi2_xml_get_capabilities(fmi2_xml_model_description_t* md);
+/** \brief Get a capability flag by ID */
+unsigned int fmi2_xml_get_capability(fmi2_xml_model_description_t* , fmi2_capabilities_enu_t id);
 
 jm_vector(jm_voidp)* fmi2_xml_get_variables_original_order(fmi2_xml_model_description_t* md);
 

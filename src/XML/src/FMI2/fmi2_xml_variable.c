@@ -344,8 +344,10 @@ int fmi2_xml_handle_ScalarVariable(fmi2_xml_parser_context_t *context, const cha
               {
                 jm_name_ID_map_t variabilityConventionMap[] = {{"continuous",fmi2_variability_enu_continuous},
                                                                {"constant", fmi2_variability_enu_constant},
-                                                               {"parameter", fmi2_variability_enu_parameter},
-                                                               {"discrete", fmi2_variability_enu_discrete},{0,0}};
+                                                               {"fixed", fmi2_variability_enu_fixed},
+                                                               {"tunable", fmi2_variability_enu_tunable},
+                                                               {"discrete", fmi2_variability_enu_discrete},
+																{0,0}};
                 unsigned int variability;
                 /*  <xs:attribute name="variability" default="continuous"> */
                 if(fmi2_xml_set_attr_enum(context, fmi2_xml_elmID_ScalarVariable, fmi_attr_id_variability,0,&variability,fmi2_variability_enu_continuous,variabilityConventionMap))
@@ -353,28 +355,15 @@ int fmi2_xml_handle_ScalarVariable(fmi2_xml_parser_context_t *context, const cha
                 variable->variability = variability;
             }
             {
-                jm_name_ID_map_t causalityConventionMap[] = {{"internal",fmi2_causality_enu_internal},
+                jm_name_ID_map_t causalityConventionMap[] = {{"local",fmi2_causality_enu_local},
                                                              {"input",fmi2_causality_enu_input},
                                                              {"output",fmi2_causality_enu_output},
-                                                             {"none",fmi2_causality_enu_none},{0,0}};
+                                                             {"parameter",fmi2_causality_enu_parameter},{0,0}};
                 /* <xs:attribute name="causality" default="internal"> */
                 unsigned int causality;
-                if(fmi2_xml_set_attr_enum(context, fmi2_xml_elmID_ScalarVariable, fmi_attr_id_causality,0,&causality,fmi2_causality_enu_internal,causalityConventionMap))
+                if(fmi2_xml_set_attr_enum(context, fmi2_xml_elmID_ScalarVariable, fmi_attr_id_causality,0,&causality,fmi2_causality_enu_local,causalityConventionMap))
                     return -1;
                 variable->causality = causality;
-            }
-            {
-                jm_name_ID_map_t aliasConventionMap[] = {{"alias", 1},
-                                                         {"negatedAlias", 2},
-                                                         {"noAlias", 0}, {0,0}};
-                unsigned int alias;
-                /* <xs:attribute name="alias" default="noAlias"> */
-                if(fmi2_xml_set_attr_enum(context, fmi2_xml_elmID_ScalarVariable, fmi_attr_id_alias ,0,&alias,0,aliasConventionMap))
-                    return -1;
-                if(alias == 0) variable->aliasKind = fmi2_variable_is_not_alias;
-                else if (alias == 1) variable->aliasKind = fmi2_variable_is_alias;
-                else if (alias == 2) variable->aliasKind = fmi2_variable_is_negated_alias;
-                else assert(0);
             }
     }
     else {
@@ -902,112 +891,65 @@ int fmi2_xml_handle_ModelVariables(fmi2_xml_parser_context_t *context, const cha
         {
             int foundBadAlias;
 
-			jm_log_verbose(context->callbacks, module,"Checking alias information");
+			jm_log_verbose(context->callbacks, module,"Building alias index");
             do {
                 fmi2_xml_variable_t* a = (fmi2_xml_variable_t*)jm_vector_get_item(jm_voidp)(varByVR, 0);
+				int aliasNotAllowed = 
+					(a->causality == fmi2_causality_enu_input) ||
+					(a->causality == fmi2_causality_enu_parameter);
+				int startPresent = fmi2_xml_get_variable_has_start(a);
+
                 foundBadAlias = 0;
 
-                if(a->aliasKind == fmi2_variable_is_alias) {
-					jm_log_error(context->callbacks, module, "All variables with vr %d (base type %s) are marked as aliases.",
-                                          a->vr, fmi2_base_type_to_string(fmi2_xml_get_variable_base_type(a)));
-                    fmi2_xml_eliminate_bad_alias(context,0);
-                    foundBadAlias = 1;
-                    continue;
-                }
                 numvar = jm_vector_get_size(jm_voidp)(varByVR);
 
                 for(i = 1; i< numvar; i++) {
                     fmi2_xml_variable_t* b = (fmi2_xml_variable_t*)jm_vector_get_item(jm_voidp)(varByVR, i);
-                    if((fmi2_xml_get_variable_base_type(a)!=fmi2_xml_get_variable_base_type(b))
-                            || (a->vr != b->vr)) {
-                        /* a different vr */
-                        if(a->aliasKind == fmi2_variable_is_negated_alias) {
-                            jm_log_error(context->callbacks,module,"All variables with vr %u (base type %s) are marked as negated aliases",
-                                                  a->vr, fmi2_base_type_to_string(fmi2_xml_get_variable_base_type(a)));
-                            fmi2_xml_eliminate_bad_alias(context,i-1);
-                            foundBadAlias = 1;
-                            break;
-                        }
-                        if(b->aliasKind == fmi2_variable_is_alias) {
-                            jm_log_error(context->callbacks,module,"All variables with vr %u (base type %s) are marked as aliases",
-                                                b->vr, fmi2_base_type_to_string(fmi2_xml_get_variable_base_type(b)));
-                          fmi2_xml_eliminate_bad_alias(context,i);
-                          foundBadAlias = 1;
-                          break;
-                        }
-                    }
-                    else {
-                        if(   (a->aliasKind == fmi2_variable_is_negated_alias)
-                                && (b->aliasKind == fmi2_variable_is_alias)) {
-                            jm_log_error(context->callbacks,module, "All variables with vr %u (base type %s) are marked as aliases",
-                                                b->vr, fmi2_base_type_to_string(fmi2_xml_get_variable_base_type(b)));
-                          fmi2_xml_eliminate_bad_alias(context,i);
-                          foundBadAlias = 1;
-                          break;
-                        }
-                        if((a->aliasKind == fmi2_variable_is_not_alias) && (a->aliasKind == b->aliasKind)) {
-                            fmi2_xml_variable_t* c;
-                            size_t j = i+1;
-                            jm_log_error(context->callbacks,module,"Variables %s and %s reference the same vr %u. Marking '%s' as alias.",
-                                                a->name, b->name, b->vr, b->name);
+					int b_aliasNotAllowed = 
+						(b->causality == fmi2_causality_enu_input) ||
+						(b->causality == fmi2_causality_enu_parameter);
+					int b_startPresent = fmi2_xml_get_variable_has_start(a);
+                    if((fmi2_xml_get_variable_base_type(a) == fmi2_xml_get_variable_base_type(b))
+                            && (a->vr == b->vr)) {							
+	                        /* an alias */
+                            jm_log_verbose(context->callbacks,module,"Variables %s and %s reference the same vr %u. Marking '%s' as alias.",
+											      a->name, b->name, b->vr, b->name);
                             b->aliasKind = fmi2_variable_is_alias;
-
-                            while(j < numvar) {
-                                c = (fmi2_xml_variable_t*)jm_vector_get_item(jm_voidp)(varByVR, j);
-                                if(fmi2_xml_compare_vr(&b,&c) <= 0) break;
-                                j++;
-                            }
-                            j--;
-                            if(i != j) {
-                                c = (fmi2_xml_variable_t*)jm_vector_get_item(jm_voidp)(varByVR, j);
-                                jm_vector_set_item(jm_voidp)(varByVR, j, b);
-                                jm_vector_set_item(jm_voidp)(varByVR, i, c);
-                            }
-                            foundBadAlias = 1;
-                            i--;
-                            continue;
-                        }
-                    }
-                    a = b;
+							if(aliasNotAllowed || b_aliasNotAllowed) {
+								jm_log_error(context->callbacks,module,
+									"Aliases not allowed for parameters and inputs (variables %s and %s reference the same vr %u)",
+									a->name, b->name, b->vr
+									);
+								fmi2_xml_eliminate_bad_alias(context,i);
+								foundBadAlias = 1;
+								break;
+							}
+							if(startPresent && b_startPresent) {
+								jm_log_error(context->callbacks,module,
+									"Only one variable among aliases is allowed to have start attribute (varriables: %s and %s)",
+										a->name, b->name);
+								fmi2_xml_eliminate_bad_alias(context,i);
+								foundBadAlias = 1;
+								break;
+							}
+							if(b_startPresent) {
+								startPresent = 1;
+								a = b;
+							}
+					}
+					else {
+						aliasNotAllowed = b_aliasNotAllowed;
+						startPresent = b_startPresent;
+						a = b;
+					}
                 }
             } while(foundBadAlias);
         }
 
         numvar = jm_vector_get_size(jm_named_ptr)(&md->variablesByName);
 		jm_log_verbose(context->callbacks, module,"Setting up direct dependencies cross-references");
-        /* postprocess direct dependencies */
-        for(i = 0; i< numvar; i++) {
-            size_t numdep, j, var_i = 0;
-            jm_vector(jm_voidp)* dep;
-            fmi2_xml_variable_t* variable = (fmi2_xml_variable_t*)jm_vector_get_item(jm_named_ptr)(&md->variablesByName, i).ptr;
 
-            if(!variable->directDependency) continue;
-            dep = variable->directDependency;
-            numdep = jm_vector_get_size(jm_voidp)(dep);
-            for(j = 0; j < numdep; j++) {
-                jm_string name = jm_vector_get_item(jm_voidp)(dep, j);
-                jm_named_ptr key, *found;
-                fmi2_xml_variable_t* depvar;
-                key.name = name;
-				key.ptr = 0;
-				found = jm_vector_bsearch(jm_named_ptr)(&md->variablesByName, &key, jm_compare_named);
-				if(found)
-					depvar = found->ptr;
-				else
-					depvar = 0;
-                if(!depvar) {
-                    jm_log_error(context->callbacks,module, "Could not find variable %s mentioned in dependecies of %s. Ignoring", name, variable->name);
-                    continue;
-                }
-                if(depvar->causality != fmi2_causality_enu_input) {
-                    jm_log_error(context->callbacks,module, "Only input variables are allowed in DirectDependecies, but %s is not input. Ignoring", name);
-                    continue;
-                }
-                jm_vector_set_item(jm_voidp)(dep,var_i++, depvar);
-            }
-            jm_vector_resize(jm_voidp)(dep,var_i);
-        }
-        jm_vector_foreach(jm_string)(&context->directDependencyStringsStore, (void(*)(jm_string))context->callbacks->free);
+		jm_vector_foreach(jm_string)(&context->directDependencyStringsStore, (void(*)(jm_string))context->callbacks->free);
         jm_vector_free_data(jm_string)(&context->directDependencyStringsStore);
 
         /* might give out a warning if(data[0] != 0) */

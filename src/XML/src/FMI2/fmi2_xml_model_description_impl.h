@@ -12,7 +12,6 @@
 #include "fmi2_xml_unit_impl.h"
 #include "fmi2_xml_type_impl.h"
 #include "fmi2_xml_variable_impl.h"
-#include "fmi2_xml_capabilities_impl.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -34,8 +33,6 @@ struct fmi2_xml_model_description_t {
     jm_vector(char) fmi2_xml_standard_version;
 
     jm_vector(char) modelName;
-
-    jm_vector(char) modelIdentifier;
 
     jm_vector(char) GUID;
 
@@ -59,7 +56,11 @@ struct fmi2_xml_model_description_t {
 
     double defaultExperimentTolerance;
 
-    jm_vector(jm_voidp) vendorList;
+    jm_vector(char) modelIdentifierME;
+
+	jm_vector(char) modelIdentifierCS;
+
+	jm_vector(jm_voidp) vendorList;
 
     jm_vector(jm_named_ptr) unitDefinitions;
     jm_vector(jm_named_ptr) displayUnitDefinitions;
@@ -76,7 +77,7 @@ struct fmi2_xml_model_description_t {
 
     fmi2_fmu_kind_enu_t fmuKind;
 
-    fmi2_xml_capabilities_t capabilities;
+    unsigned int capabilities[fmi2_capabilities_Num];
 
     jm_vector(char) entryPoint;
     jm_vector(char) mimeType;

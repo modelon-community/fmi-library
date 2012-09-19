@@ -67,11 +67,11 @@ Wrapper functions for the FMI 1.0 functions
  * must be called before this function can be called again. 
  * 
  * @param fmu A model description object returned by fmi2_import_parse_xml().
+ * @param fmuKind Specifies if ModelExchange or CoSimulation binary should be loaded.
  * @param callBackFunctions Callback functions used by the FMI functions internally.
- * @param registerGlobally Register the FMU globally to enable use of fmi2_log_forwarding(). If this parameter is non-zero the code becomes non-thread safe.
  * @return Error status. If the function returns with an error, it is not allowed to call any of the other C-API functions.
  */
-FMILIB_EXPORT jm_status_enu_t fmi2_import_create_dllfmu(fmi2_import_t* fmu, fmi2_callback_functions_t callBackFunctions, int registerGlobally);
+FMILIB_EXPORT jm_status_enu_t fmi2_import_create_dllfmu(fmi2_import_t* fmu, fmi2_fmu_kind_enu_t fmuKind, fmi2_callback_functions_t callBackFunctions);
 
 /** \brief Free a C-API struct. All memory allocated since the struct was created is freed.
  * 

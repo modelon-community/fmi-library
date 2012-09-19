@@ -29,13 +29,12 @@ extern "C" {
 static const char * module = "FMILIB";
 
 /* Load and destroy functions */
-jm_status_enu_t fmi2_import_create_dllfmu(fmi2_import_t* fmu, fmi2_callback_functions_t callBackFunctions, int registerGlobally) {
+jm_status_enu_t fmi2_import_create_dllfmu(fmi2_import_t* fmu, fmi2_fmu_kind_enu_t fmuKind, fmi2_callback_functions_t callBackFunctions) {
 
 	char curDir[FILENAME_MAX + 2];
 	char* dllDirPath = 0;
 	char* dllFileName = 0;
 	const char* modelIdentifier;
-	fmi2_fmu_kind_enu_t standard;
 
 	if (fmu == NULL) {
 		assert(0);
@@ -47,10 +46,17 @@ jm_status_enu_t fmi2_import_create_dllfmu(fmi2_import_t* fmu, fmi2_callback_func
 		return jm_status_success;
 	}
 
-	standard = fmi2_import_get_fmu_kind(fmu);
+	if(fmuKind == fmi2_fmu_kind_me)
+		modelIdentifier = fmi2_import_get_model_identifier_ME(fmu);
+	else 	if(fmuKind == fmi2_fmu_kind_cs)
+		modelIdentifier = fmi2_import_get_model_identifier_CS(fmu);
+	else {
+		assert(0);
+		return jm_status_error;
+	}
 
-	modelIdentifier = fmi2_import_get_model_identifier(fmu);
 	if (modelIdentifier == NULL) {
+		jm_log_error(fmu->callbacks, module, "No model identifier given");
 		return jm_status_error;
 	}
 
@@ -76,7 +82,7 @@ jm_status_enu_t fmi2_import_create_dllfmu(fmi2_import_t* fmu, fmi2_callback_func
 	}
 	else {
 		/* Allocate memory for the C-API struct */
-		fmu -> capi = fmi2_capi_create_dllfmu(fmu->callbacks, dllFileName, modelIdentifier, callBackFunctions, standard);
+		fmu -> capi = fmi2_capi_create_dllfmu(fmu->callbacks, dllFileName, modelIdentifier, callBackFunctions, fmuKind);
 	}
 
 
@@ -112,17 +118,6 @@ jm_status_enu_t fmi2_import_create_dllfmu(fmi2_import_t* fmu, fmi2_callback_func
 	}
 	jm_log_verbose(fmu->callbacks, module, "Successfully loaded all the interface functions"); 
 
-	if (registerGlobally) {
-		fmu->registerGlobally = 1;
-		if(!fmi2_import_active_fmu) {
-			jm_vector_init(jm_voidp)(&fmi2_import_active_fmu_store,0, fmu->callbacks);
-			fmi2_import_active_fmu = &fmi2_import_active_fmu_store;
-			jm_log_debug(fmu->callbacks, module, "Created an empty active fmu list");
-		}
-		jm_vector_push_back(jm_voidp)(fmi2_import_active_fmu, fmu);
-		jm_log_debug(fmu->callbacks, module, "Registrered active fmu(%p)", fmu);
-	}
-
 	return jm_status_success;
 }
 
@@ -142,28 +137,7 @@ void fmi2_import_destroy_dllfmu(fmi2_import_t* fmu) {
 		/* Destroy the C-API struct */
 		fmi2_capi_destroy_dllfmu(fmu -> capi);
 
-		if(fmu->registerGlobally && fmi2_import_active_fmu) {
-			size_t index;
-			size_t nFmu;
-
-			index = jm_vector_find_index(jm_voidp)(fmi2_import_active_fmu, (void**)&fmu, jm_compare_voidp);
-			nFmu = jm_vector_get_size(jm_voidp)(fmi2_import_active_fmu);
-			if(index < nFmu) {
-				jm_vector_remove_item(jm_voidp)(fmi2_import_active_fmu,index);
-				jm_log_debug(fmu->callbacks, module, "Unregistrered active fmu(%p)", fmu);
-				if(nFmu == 1) {
-					jm_vector_free_data(jm_voidp)(fmi2_import_active_fmu);
-					fmi2_import_active_fmu = 0;
-					jm_log_debug(fmu->callbacks, module, "Freed active fmu list");
-				}
-			}
-			fmu->registerGlobally = 0;
-		}
-
 		fmu -> capi = NULL;
-	}
-	else {
-		assert(fmu->registerGlobally == 0);
 	}
 }
 

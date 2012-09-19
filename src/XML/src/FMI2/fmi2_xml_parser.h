@@ -64,18 +64,17 @@ extern "C" {
     EXPAND_XML_ATTRNAME(numberOfEventIndicators), \
     EXPAND_XML_ATTRNAME(input), \
     EXPAND_XML_ATTRNAME(canHandleVariableCommunicationStepSize), \
+	EXPAND_XML_ATTRNAME(completedIntegratorStepNotNeeded), \
+	EXPAND_XML_ATTRNAME(canBeInstantiatedOnlyOncePerProcess), \
+	EXPAND_XML_ATTRNAME(canNotUseMemoryManagementFunctions), \
+	EXPAND_XML_ATTRNAME(canGetAndSetFMUstate), \
+	EXPAND_XML_ATTRNAME(canSerializeFMUstate), \
+	EXPAND_XML_ATTRNAME(providesDirectionalDerivatives), \
     EXPAND_XML_ATTRNAME(canHandleEvents), \
-    EXPAND_XML_ATTRNAME(canRejectSteps), \
     EXPAND_XML_ATTRNAME(canInterpolateInputs), \
     EXPAND_XML_ATTRNAME(maxOutputDerivativeOrder), \
     EXPAND_XML_ATTRNAME(canRunAsynchronuously), \
-    EXPAND_XML_ATTRNAME(canSignalEvents), \
-    EXPAND_XML_ATTRNAME(canBeInstantiatedOnlyOncePerProcess), \
-    EXPAND_XML_ATTRNAME(canNotUseMemoryManagementFunctions), \
-    EXPAND_XML_ATTRNAME(file), \
-    EXPAND_XML_ATTRNAME(entryPoint), \
-    EXPAND_XML_ATTRNAME(manualStart), \
-    EXPAND_XML_ATTRNAME(type)
+    EXPAND_XML_ATTRNAME(canSignalEvents)
 
 #define FMI2_XML_ATTR_ID(attr) fmi_attr_id_##attr
 typedef enum fmi2_xml_attr_enu_t {
@@ -85,6 +84,8 @@ typedef enum fmi2_xml_attr_enu_t {
 
 #define FMI2_XML_ELMLIST(EXPAND_XML_ELMNAME) \
     EXPAND_XML_ELMNAME(fmiModelDescription) \
+	EXPAND_XML_ELMNAME(ModelExchange) \
+    EXPAND_XML_ELMNAME(CoSimulation) \
     EXPAND_XML_ELMNAME(UnitDefinitions) \
     EXPAND_XML_ELMNAME(BaseUnit) \
     EXPAND_XML_ELMNAME(DisplayUnitDefinition) \
@@ -103,18 +104,14 @@ typedef enum fmi2_xml_attr_enu_t {
     EXPAND_XML_ELMNAME(ModelVariables) \
     EXPAND_XML_ELMNAME(ScalarVariable) \
     EXPAND_XML_ELMNAME(DirectDependency) \
+	EXPAND_XML_ELMNAME(LogCategories) \
+	EXPAND_XML_ELMNAME(Category) \
     EXPAND_XML_ELMNAME(Name) \
     EXPAND_XML_ELMNAME(Real) \
     EXPAND_XML_ELMNAME(Integer) \
     EXPAND_XML_ELMNAME(Boolean) \
     EXPAND_XML_ELMNAME(String) \
-    EXPAND_XML_ELMNAME(Enumeration) \
-    EXPAND_XML_ELMNAME(Implementation) \
-    EXPAND_XML_ELMNAME(CoSimulation_StandAlone) \
-    EXPAND_XML_ELMNAME(Capabilities) \
-    EXPAND_XML_ELMNAME(CoSimulation_Tool) \
-    EXPAND_XML_ELMNAME(Model) \
-    EXPAND_XML_ELMNAME(File)
+    EXPAND_XML_ELMNAME(Enumeration)
 
 typedef struct fmi2_xml_parser_context_t fmi2_xml_parser_context_t;
 #define EXPAND_ELM_HANDLE(elm) extern int fmi2_xml_handle_##elm(fmi2_xml_parser_context_t *context, const char* data);

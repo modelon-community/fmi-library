@@ -38,7 +38,6 @@ struct fmi2_import_t {
 	jm_callbacks* callbacks;
 	fmi2_xml_model_description_t* md;
 	fmi2_capi_t* capi;
-	int registerGlobally;
 	jm_vector(char) logMessageBuffer;
 };
 

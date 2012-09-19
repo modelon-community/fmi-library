@@ -36,24 +36,10 @@ extern "C" {
 	@{
 	*/
 /** \brief Retrieve  canHandleVariableCommunicationStepSize flag. */
-int fmi2_xml_get_canHandleVariableCommunicationStepSize(fmi2_xml_capabilities_t* );
-	/** \brief Retrieve  canHandleEvents flag. */
-int fmi2_xml_get_canHandleEvents(fmi2_xml_capabilities_t* );
-	/** \brief Retrieve  canRejectSteps flag. */
-int fmi2_xml_get_canRejectSteps(fmi2_xml_capabilities_t* );
-	/** \brief Retrieve  canInterpolateInputs flag. */
-int fmi2_xml_get_canInterpolateInputs(fmi2_xml_capabilities_t* );
-	/** \brief Retrieve  maxOutputDerivativeOrder. */
-unsigned int fmi2_xml_get_maxOutputDerivativeOrder(fmi2_xml_capabilities_t* );
-	/** \brief Retrieve  canRunAsynchronuously flag. */
-int fmi2_xml_get_canRunAsynchronuously(fmi2_xml_capabilities_t* );
-	/** \brief Retrieve  canSignalEvents flag. */
-int fmi2_xml_get_canSignalEvents(fmi2_xml_capabilities_t* );
-	/** \brief Retrieve  canBeInstantiatedOnlyOncePerProcess flag. */
-int fmi2_xml_get_canBeInstantiatedOnlyOncePerProcess(fmi2_xml_capabilities_t* );
-	/** \brief Retrieve  canNotUseMemoryManagementFunctions flag. */
-int fmi2_xml_get_canNotUseMemoryManagementFunctions(fmi2_xml_capabilities_t* );
-
+	
+unsigned int fmi2_xml_get_capability(fmi2_xml_model_description_t* , fmi2_capabilities_enu_t id);
+	
+	
 /** 
 @}
 */

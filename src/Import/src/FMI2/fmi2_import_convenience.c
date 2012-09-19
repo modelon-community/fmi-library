@@ -38,8 +38,11 @@ void fmi2_import_collect_model_counts(fmi2_import_t* fmu, fmi2_import_model_coun
 		case fmi2_variability_enu_constant:
 			counts->num_constants++;
 			break;
-		case fmi2_variability_enu_parameter:
-			counts->num_parameters++;
+		case fmi2_variability_enu_fixed:
+			counts->num_fixed++;
+			break;
+		case fmi2_variability_enu_tunable:
+			counts->num_tunable++;
 			break;
 		case fmi2_variability_enu_discrete:
 			counts->num_discrete++;
@@ -51,8 +54,8 @@ void fmi2_import_collect_model_counts(fmi2_import_t* fmu, fmi2_import_model_coun
 			assert(0);
 		}
 		switch(fmi2_xml_get_causality(var)) {
-		case fmi2_causality_enu_none:
-			counts->num_causality_none++;
+		case fmi2_causality_enu_parameter:
+			counts->num_parameters++;
 			break;
 		case fmi2_causality_enu_input:
 			counts->num_inputs++;
@@ -60,8 +63,8 @@ void fmi2_import_collect_model_counts(fmi2_import_t* fmu, fmi2_import_model_coun
 		case fmi2_causality_enu_output:
 			counts->num_outputs++;
 			break;
-		case fmi2_causality_enu_internal:
-			counts->num_internal++;
+		case fmi2_causality_enu_local:
+			counts->num_local++;
 			break;
 		default: assert(0);
 		}

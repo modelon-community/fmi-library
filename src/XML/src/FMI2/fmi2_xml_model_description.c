@@ -45,7 +45,8 @@ fmi2_xml_model_description_t * fmi2_xml_allocate_model_description( jm_callbacks
 
     jm_vector_init(char)( & md->fmi2_xml_standard_version, 0,cb);
     jm_vector_init(char)(&md->modelName, 0,cb);
-    jm_vector_init(char)(&md->modelIdentifier, 0,cb);
+    jm_vector_init(char)(&md->modelIdentifierME, 0,cb);
+    jm_vector_init(char)(&md->modelIdentifierCS, 0,cb);
     jm_vector_init(char)(&md->GUID, 0,cb);
     jm_vector_init(char)(&md->description, 0,cb);
     jm_vector_init(char)(&md->author, 0,cb);
@@ -79,9 +80,13 @@ fmi2_xml_model_description_t * fmi2_xml_allocate_model_description( jm_callbacks
 
     jm_vector_init(jm_string)(&md->descriptions, 0, cb);
 
-    md->fmuKind = fmi2_fmu_kind_enu_me;
+    md->fmuKind = fmi2_fmu_kind_unknown;
 
-    fmi2_xml_init_capabilities(&md->capabilities);
+	{
+		int i = fmi2_capabilities_Num;
+		while(i > 0)
+			md->capabilities[--i] = 0;
+	}
 
     jm_vector_init(jm_string)(&md->additionalModels, 0, cb);
 
@@ -98,7 +103,8 @@ void fmi2_xml_clear_model_description( fmi2_xml_model_description_t* md) {
     md->status = fmi2_xml_model_description_enu_empty;
     jm_vector_free_data(char)(&md->fmi2_xml_standard_version);
     jm_vector_free_data(char)(&md->modelName);
-    jm_vector_free_data(char)(&md->modelIdentifier);
+    jm_vector_free_data(char)(&md->modelIdentifierME);
+    jm_vector_free_data(char)(&md->modelIdentifierCS);
     jm_vector_free_data(char)(&md->GUID);
     jm_vector_free_data(char)(&md->description);
     jm_vector_free_data(char)(&md->author);
@@ -172,8 +178,12 @@ const char* fmi2_xml_get_model_name(fmi2_xml_model_description_t* md) {
     return jm_vector_char2string(&md->modelName);
 }
 
-const char* fmi2_xml_get_model_identifier(fmi2_xml_model_description_t* md){
-    return jm_vector_char2string(&md->modelIdentifier);
+const char* fmi2_xml_get_model_identifier_ME(fmi2_xml_model_description_t* md){
+    return jm_vector_char2string(&md->modelIdentifierME);
+}
+
+const char* fmi2_xml_get_model_identifier_CS(fmi2_xml_model_description_t* md){
+    return jm_vector_char2string(&md->modelIdentifierCS);
 }
 
 const char* fmi2_xml_get_GUID(fmi2_xml_model_description_t* md){
@@ -293,15 +303,14 @@ int fmi2_xml_handle_fmiModelDescription(fmi2_xml_parser_context_t *context, cons
             return -1;
         }
 		jm_log_verbose(context->callbacks, module, "Parsing XML element fmiModelDescription");
+		md->fmuKind = fmi2_fmu_kind_unknown;
         /* process the attributes */
         return (
                     /* <xs:attribute name="fmiVersion" type="xs:normalizedString" use="required" fixed="1.0"/> */
                     fmi2_xml_set_attr_string(context, fmi2_xml_elmID_fmiModelDescription, fmi_attr_id_fmiVersion, 1, &(md->fmi2_xml_standard_version)) ||
                     /* <xs:attribute name="modelName" type="xs:normalizedString" use="required"> */
                     fmi2_xml_set_attr_string(context, fmi2_xml_elmID_fmiModelDescription, fmi_attr_id_modelName, 1, &(md->modelName)) ||
-                    /* <xs:attribute name="modelIdentifier" type="xs:normalizedString" use="required"> */
-                    fmi2_xml_set_attr_string(context, fmi2_xml_elmID_fmiModelDescription, fmi_attr_id_modelIdentifier, 1, &(md->modelIdentifier)) ||
-                    /* <xs:attribute name="guid" type="xs:normalizedString" use="required"> */
+					/* <xs:attribute name="guid" type="xs:normalizedString" use="required"> */
                     fmi2_xml_set_attr_string(context, fmi2_xml_elmID_fmiModelDescription, fmi_attr_id_guid, 1, &(md->GUID)) ||
                     /* <xs:attribute name="description" type="xs:string"/> */
                     fmi2_xml_set_attr_string(context, fmi2_xml_elmID_fmiModelDescription, fmi_attr_id_description, 0, &(md->description)) ||
@@ -320,6 +329,66 @@ int fmi2_xml_handle_fmiModelDescription(fmi2_xml_parser_context_t *context, cons
                     /* <xs:attribute name="numberOfEventIndicators" type="xs:unsignedInt" use="required"/> */
                     fmi2_xml_set_attr_uint(context, fmi2_xml_elmID_fmiModelDescription, fmi_attr_id_numberOfEventIndicators, 1, &(md->numberOfEventIndicators),0)
                     );
+    }
+    else {
+        /* don't do anything. might give out a warning if(data[0] != 0) */
+        return 0;
+    }
+}
+
+int fmi2_xml_handle_ModelExchange(fmi2_xml_parser_context_t *context, const char* data) {
+    fmi2_xml_model_description_t* md = context->modelDescription;
+    if(!data) {
+		jm_log_verbose(context->callbacks, module, "Parsing XML element ModelExchange");
+		md->fmuKind = fmi2_fmu_kind_me;
+        /* process the attributes */
+        return (	/* <xs:attribute name="modelIdentifier" type="xs:normalizedString" use="required"> */
+                    fmi2_xml_set_attr_string(context, fmi2_xml_elmID_ModelExchange, fmi_attr_id_modelIdentifier, 1, &(md->modelIdentifierME))
+                   );
+    }
+    else {
+        /* don't do anything. might give out a warning if(data[0] != 0) */
+        return 0;
+    }
+}
+
+int fmi2_xml_handle_CoSimulation(fmi2_xml_parser_context_t *context, const char* data) {
+    fmi2_xml_model_description_t* md = context->modelDescription;
+    if(!data) {
+		jm_log_verbose(context->callbacks, module, "Parsing XML element CoSimulation");
+		if(md->fmuKind == fmi2_fmu_kind_me)
+			md->fmuKind = fmi2_fmu_kind_me_and_cs;
+		else
+			md->fmuKind = fmi2_fmu_kind_cs;
+        /* process the attributes */
+        return (	/* <xs:attribute name="modelIdentifier" type="xs:normalizedString" use="required"> */
+                    fmi2_xml_set_attr_string(context, fmi2_xml_elmID_CoSimulation, fmi_attr_id_modelIdentifier, 1, &(md->modelIdentifierCS))
+                   );
+    }
+    else {
+        /* don't do anything. might give out a warning if(data[0] != 0) */
+        return 0;
+    }
+}
+
+int fmi2_xml_handle_LogCategories(fmi2_xml_parser_context_t *context, const char* data) {
+    fmi2_xml_model_description_t* md = context->modelDescription;
+    if(!data) {
+		jm_log_verbose(context->callbacks, module, "Parsing XML element LogCategories");
+        /* process the attributes */
+        return (0);
+    }
+    else {
+        /* don't do anything. might give out a warning if(data[0] != 0) */
+        return 0;
+    }
+}
+
+int fmi2_xml_handle_Category(fmi2_xml_parser_context_t *context, const char* data) {
+    fmi2_xml_model_description_t* md = context->modelDescription;
+    if(!data) {
+        /* process the attributes */
+        return (0);
     }
     else {
         /* don't do anything. might give out a warning if(data[0] != 0) */

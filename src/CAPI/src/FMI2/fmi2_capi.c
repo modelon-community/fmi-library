@@ -207,10 +207,10 @@ jm_status_enu_t fmi2_capi_load_fcn(fmi2_capi_t* fmu)
 {
 	assert(fmu);
 	/* Load ME functions */
-	if (fmu->standard == fmi2_fmu_kind_enu_me) {
+	if (fmu->standard == fmi2_fmu_kind_me) {
 		return fmi2_capi_load_me_fcn(fmu);
 	/* Load CS functions */
-	} else if (fmu->standard == fmi2_fmu_kind_enu_cs_standalone || fmu->standard == fmi2_fmu_kind_enu_cs_tool) {
+	} else if (fmu->standard == fmi2_fmu_kind_cs) {
 		return fmi2_capi_load_cs_fcn(fmu);
 	} else {
 		return jm_status_error;

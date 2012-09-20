@@ -81,6 +81,10 @@ int fmi2_import_get_real_type_is_relative_quantity(fmi2_import_real_typedef_t* t
 	return fmi2_xml_get_real_type_is_relative_quantity(t);
 }
 
+int fmi2_import_get_real_type_is_unbounded(fmi2_import_real_typedef_t* t) {
+	return fmi2_xml_get_real_type_is_unbounded(t);
+}
+
 fmi2_integer_t fmi2_import_get_integer_type_min(fmi2_import_integer_typedef_t* t) {
 	return fmi2_xml_get_integer_type_min(t);
 }

@@ -36,12 +36,10 @@ set(FMIIMPORT_PUBHEADERS
 
 	include/FMI2/fmi2_import.h
 	include/FMI2/fmi2_import_capi.h
-	include/FMI2/fmi2_import_cosim.h
 	include/FMI2/fmi2_import_type.h
 	include/FMI2/fmi2_import_unit.h
 	include/FMI2/fmi2_import_variable.h
 	include/FMI2/fmi2_import_variable_list.h
-	include/FMI2/fmi2_import_vendor_annotations.h
 	include/FMI2/fmi2_import_convenience.h
 
 	include/FMI/fmi_import_context.h
@@ -78,13 +76,11 @@ set(FMIIMPORTSOURCE
 	src/FMI1/fmi1_import_capabilities.c
 	src/FMI1/fmi1_import_convenience.c
 
-	src/FMI2/fmi2_import_cosim.c
 	src/FMI2/fmi2_import_capi.c
 	src/FMI2/fmi2_import_type.c
 	src/FMI2/fmi2_import_unit.c
 	src/FMI2/fmi2_import_variable.c
 	src/FMI2/fmi2_import_variable_list.c
-	src/FMI2/fmi2_import_vendor_annotations.c
 	src/FMI2/fmi2_import.c
 	src/FMI2/fmi2_import_convenience.c
 	)

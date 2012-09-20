@@ -27,48 +27,49 @@ const char *fmi2_xmlAttrNames[] = {
 };
 
 /* fmi2_xml_scheme_ defines give parent ID, the index in a sequence among siblings, flag if multiple elems are allowed */
-#define fmi2_xml_scheme_fmiModelDescription {fmi2_xml_elmID_none, 0, 0}
-#define fmi2_xml_scheme_ModelExchange {fmi2_xml_elmID_fmiModelDescription, 0, 0}
-#define fmi2_xml_scheme_CoSimulation {fmi2_xml_elmID_fmiModelDescription, 1, 0}
-#define fmi2_xml_scheme_UnitDefinitions {fmi2_xml_elmID_fmiModelDescription, 2, 0}
-#define fmi2_xml_scheme_Unit {fmi2_xml_elmID_UnitDefinitions, 0, 1}
-#define fmi2_xml_scheme_BaseUnit {fmi2_xml_elmID_Unit, 0, 0}
-#define fmi2_xml_scheme_DisplayUnit {fmi2_xml_elmID_Unit, 1, 1}
-#define fmi2_xml_scheme_TypeDefinitions {fmi2_xml_elmID_fmiModelDescription, 3, 0}
-#define fmi2_xml_scheme_Type {fmi2_xml_elmID_TypeDefinitions, 0, 1}
-#define fmi2_xml_scheme_RealType {fmi2_xml_elmID_Type, 0, 0}
-#define fmi2_xml_scheme_IntegerType {fmi2_xml_elmID_Type, 0, 0}
-#define fmi2_xml_scheme_BooleanType {fmi2_xml_elmID_Type, 0, 0}
-#define fmi2_xml_scheme_StringType {fmi2_xml_elmID_Type, 0, 0}
-#define fmi2_xml_scheme_EnumerationType {fmi2_xml_elmID_Type, 0, 0}
-#define fmi2_xml_scheme_Item {fmi2_xml_elmID_EnumerationType, 0, 1}
-#define fmi2_xml_scheme_LogCategories {fmi2_xml_elmID_fmiModelDescription, 4, 0}
-#define fmi2_xml_scheme_Category {fmi2_xml_elmID_LogCategories, 0, 1}
-#define fmi2_xml_scheme_DefaultExperiment {fmi2_xml_elmID_fmiModelDescription, 5, 0}
-#define fmi2_xml_scheme_VendorAnnotations {fmi2_xml_elmID_fmiModelDescription, 6, 0}
-#define fmi2_xml_scheme_Tool {fmi2_xml_elmID_VendorAnnotations, 0, 1}
-#define fmi2_xml_scheme_Annotation {fmi2_xml_elmID_Tool, 0, 1}
-#define fmi2_xml_scheme_ModelVariables {fmi2_xml_elmID_fmiModelDescription, 7, 0}
-#define fmi2_xml_scheme_ScalarVariable {fmi2_xml_elmID_ModelVariables, 0, 1}
-#define fmi2_xml_scheme_DirectDependency {fmi2_xml_elmID_ScalarVariable, 1, 0}
-#define fmi2_xml_scheme_Name {fmi2_xml_elmID_DirectDependency, 0, 1}
-#define fmi2_xml_scheme_Real {fmi2_xml_elmID_ScalarVariable, 0, 0}
-#define fmi2_xml_scheme_Integer {fmi2_xml_elmID_ScalarVariable, 0, 0}
-#define fmi2_xml_scheme_Boolean {fmi2_xml_elmID_ScalarVariable, 0, 0}
-#define fmi2_xml_scheme_String {fmi2_xml_elmID_ScalarVariable, 0, 0}
-#define fmi2_xml_scheme_Enumeration {fmi2_xml_elmID_ScalarVariable, 0, 0}
+#define fmi2_xml_scheme_fmiModelDescription {fmi2_xml_elmID_none,fmi2_xml_elmID_none, 0, 0}
+#define fmi2_xml_scheme_ModelExchange {fmi2_xml_elmID_fmiModelDescription,fmi2_xml_elmID_none, 0, 0}
+#define fmi2_xml_scheme_CoSimulation {fmi2_xml_elmID_fmiModelDescription,fmi2_xml_elmID_none, 1, 0}
+#define fmi2_xml_scheme_UnitDefinitions {fmi2_xml_elmID_fmiModelDescription,fmi2_xml_elmID_none, 2, 0}
+#define fmi2_xml_scheme_Unit {fmi2_xml_elmID_UnitDefinitions,fmi2_xml_elmID_none, 0, 1}
+#define fmi2_xml_scheme_BaseUnit {fmi2_xml_elmID_Unit,fmi2_xml_elmID_none, 0, 0}
+#define fmi2_xml_scheme_DisplayUnit {fmi2_xml_elmID_Unit,fmi2_xml_elmID_none, 1, 1}
+#define fmi2_xml_scheme_TypeDefinitions {fmi2_xml_elmID_fmiModelDescription,fmi2_xml_elmID_none, 3, 0}
+#define fmi2_xml_scheme_SimpleType {fmi2_xml_elmID_TypeDefinitions,fmi2_xml_elmID_none, 0, 1}
+#define fmi2_xml_scheme_RealType {fmi2_xml_elmID_SimpleType,fmi2_xml_elmID_none, 0, 0}
+#define fmi2_xml_scheme_IntegerType {fmi2_xml_elmID_SimpleType,fmi2_xml_elmID_none, 0, 0}
+#define fmi2_xml_scheme_BooleanType {fmi2_xml_elmID_SimpleType,fmi2_xml_elmID_none, 0, 0}
+#define fmi2_xml_scheme_StringType {fmi2_xml_elmID_SimpleType,fmi2_xml_elmID_none, 0, 0}
+#define fmi2_xml_scheme_EnumerationType {fmi2_xml_elmID_SimpleType,fmi2_xml_elmID_none, 0, 0}
+#define fmi2_xml_scheme_Item {fmi2_xml_elmID_EnumerationType,fmi2_xml_elmID_none, 0, 1}
+#define fmi2_xml_scheme_LogCategories {fmi2_xml_elmID_fmiModelDescription,fmi2_xml_elmID_none, 4, 0}
+#define fmi2_xml_scheme_Category {fmi2_xml_elmID_LogCategories,fmi2_xml_elmID_none, 0, 1}
+#define fmi2_xml_scheme_DefaultExperiment {fmi2_xml_elmID_fmiModelDescription,fmi2_xml_elmID_none, 5, 0}
+#define fmi2_xml_scheme_VendorAnnotations {fmi2_xml_elmID_fmiModelDescription,fmi2_xml_elmID_none, 6, 0}
+#define fmi2_xml_scheme_Tool {fmi2_xml_elmID_Annotations,fmi2_xml_elmID_ModelTool, 0, 1}
+#define fmi2_xml_scheme_ModelTool {fmi2_xml_elmID_VendorAnnotations,fmi2_xml_elmID_none, 0, 1}
+#define fmi2_xml_scheme_ModelVariables {fmi2_xml_elmID_fmiModelDescription,fmi2_xml_elmID_none, 7, 0}
+#define fmi2_xml_scheme_ScalarVariable {fmi2_xml_elmID_ModelVariables,fmi2_xml_elmID_none, 0, 1}
+#define fmi2_xml_scheme_Annotations {fmi2_xml_elmID_ScalarVariable,fmi2_xml_elmID_none, 6, 0}
+#define fmi2_xml_scheme_Real {fmi2_xml_elmID_ScalarVariable,fmi2_xml_elmID_RealType, 0, 0}
+#define fmi2_xml_scheme_Integer {fmi2_xml_elmID_ScalarVariable,fmi2_xml_elmID_IntegerType, 0, 0}
+#define fmi2_xml_scheme_Boolean {fmi2_xml_elmID_ScalarVariable,fmi2_xml_elmID_BooleanType, 0, 0}
+#define fmi2_xml_scheme_String {fmi2_xml_elmID_ScalarVariable,fmi2_xml_elmID_StringType, 0, 0}
+#define fmi2_xml_scheme_Enumeration {fmi2_xml_elmID_ScalarVariable,fmi2_xml_elmID_EnumerationType, 0, 0}
 
-#define ELM_PASTE(elm) fmi2_xml_scheme_##elm
 #define EXPAND_ELM_SCHEME(elm) fmi2_xml_scheme_##elm ,
 
 fmi2_xml_scheme_info_t fmi2_xml_scheme_info[fmi2_xml_elm_number] = {
     FMI2_XML_ELMLIST(EXPAND_ELM_SCHEME)
-};
+	{fmi2_xml_elm_actual_number,fmi2_xml_elmID_none,0,0},
+	FMI2_XML_ELMLIST_ALT(EXPAND_ELM_SCHEME)};
 
 #define EXPAND_ELM_NAME(elm) { #elm, fmi2_xml_handle_##elm, fmi2_xml_elmID_##elm},
 
 fmi2_xml_element_handle_map_t fmi2_element_handle_map[fmi2_xml_elm_number] = {
     FMI2_XML_ELMLIST(EXPAND_ELM_NAME)
+	{ NULL, NULL, fmi2_xml_elm_actual_number},
+	FMI2_XML_ELMLIST_ALT(EXPAND_ELM_NAME)
 };
 
 void fmi2_xml_parse_free_context(fmi2_xml_parser_context_t *context) {
@@ -333,9 +334,9 @@ int fmi1_create_attr_map(fmi2_xml_parser_context_t* context) {
 
 int fmi1_create_elm_map(fmi2_xml_parser_context_t* context) {
     size_t i;
-    context->elmMap = jm_vector_alloc(fmi2_xml_element_handle_map_t)(fmi2_xml_elm_number, fmi2_xml_elm_number, context->callbacks);
+    context->elmMap = jm_vector_alloc(fmi2_xml_element_handle_map_t)(fmi2_xml_elm_actual_number, fmi2_xml_elm_number, context->callbacks);
     if(!context->elmMap) return -1;
-    for(i = 0; i < fmi2_xml_elm_number; i++) {
+    for(i = 0; i < fmi2_xml_elm_actual_number; i++) {
         fmi2_xml_element_handle_map_t item = fmi2_element_handle_map[i];
         jm_vector_set_item(fmi2_xml_element_handle_map_t)(context->elmMap, i, item);
     }
@@ -351,7 +352,20 @@ static void XMLCALL fmi2_parse_element_start(void *c, const char *elm, const cha
 	fmi2_xml_elm_enu_t currentID;
     int i;
     fmi2_xml_parser_context_t *context = c;
-    
+    context->has_produced_data_warning = 0;
+
+	if(context->useAnyHandleFlg) {
+		jm_xml_callbacks_t* anyH = context->anyHandle;
+		context->anyElmCount++;
+		if(anyH && anyH->startHandle) {
+			int ret = anyH->startHandle(anyH->context, elm, attr);
+			if(ret != 0) {
+				fmi2_xml_parse_fatal(context, "User element handle returned non-zero error code %d", ret);
+			}
+		}
+		return;
+	}
+
 	if(context->skipElementCnt) {
 		context->skipElementCnt++;
         jm_log_warning(context->callbacks, module, "[Line:%u] Skipping nested XML element '%s'",
@@ -375,6 +389,13 @@ static void XMLCALL fmi2_parse_element_start(void *c, const char *elm, const cha
 	{
 		fmi2_xml_elm_enu_t parentID = context->currentElmID;
 		fmi2_xml_elm_enu_t siblingID =  context->lastElmID;
+		while(	
+			(fmi2_xml_scheme_info[currentID].parentID != parentID) 
+			&&  (fmi2_xml_scheme_info[currentID].alternativeID != fmi2_xml_elmID_none))
+		{
+			currentID = fmi2_xml_scheme_info[currentID].alternativeID;
+			currentElMap = &fmi2_element_handle_map[currentID];
+		}
 
 		if(fmi2_xml_scheme_info[currentID].parentID != parentID) {
 				jm_log_error(context->callbacks, module, 
@@ -453,6 +474,18 @@ static void XMLCALL fmi2_parse_element_end(void* c, const char *elm) {
 	fmi2_xml_elm_enu_t currentID;
     fmi2_xml_parser_context_t *context = c;
 
+	if(context->useAnyHandleFlg && (context->anyElmCount > 0)) {
+		jm_xml_callbacks_t* anyH = context->anyHandle;
+		context->anyElmCount--;
+		if(anyH && anyH->endHandle) {
+			int ret = anyH->endHandle(anyH->context, elm);
+			if(ret != 0) {
+				fmi2_xml_parse_fatal(context, "User element handle returned non-zero error code %d", ret);
+			}
+		}
+		return;
+	}
+
 	if(context->skipElementCnt) {
 		context->skipElementCnt--;
 		return;
@@ -466,6 +499,15 @@ static void XMLCALL fmi2_parse_element_end(void* c, const char *elm) {
         return;
     }
     currentID = currentElMap->elemID;
+	/* switch to alternative ID if needed */
+	while(
+		(currentID != context -> currentElmID)
+		&& (fmi2_xml_scheme_info[currentID].parentID != fmi2_xml_scheme_info[context->currentElmID].parentID) 
+		&&  (fmi2_xml_scheme_info[currentID].alternativeID != fmi2_xml_elmID_none))
+	{
+		currentID = fmi2_xml_scheme_info[currentID].alternativeID;
+		currentElMap = &fmi2_element_handle_map[currentID];
+	}
 
     if(currentID != context -> currentElmID) {
         /* missmatch error*/
@@ -502,17 +544,27 @@ static void XMLCALL fmi2_parse_element_end(void* c, const char *elm) {
 */
 static void XMLCALL fmi2_parse_element_data(void* c, const XML_Char *s, int len) {
         fmi2_xml_parser_context_t *context = c;
-        int i;
-        jm_vector_reserve(char)(&context->elmData, len + jm_vector_get_size(char)(&context->elmData) + 1);
-        for(i = 0; i< len;i++) {
-            char ch = s[i];
-            if(ch != '\n') {
-                jm_vector_push_back(char)(&context->elmData, ch);
-            }
-        }
+		if(context->useAnyHandleFlg) {
+			jm_xml_callbacks_t* anyH = context->anyHandle;
+			if(anyH && anyH->dataHandle) {
+				int ret = anyH->dataHandle(anyH->context, s, len);
+				if(ret != 0) {
+					fmi2_xml_parse_fatal(context, "User element handle returned non-zero error code %d", ret);
+				}
+			}
+			return;
+		}
+		if(context->skipElementCnt) {
+			return;
+		}
+		if(!context->has_produced_data_warning) {
+			jm_log_warning(context->callbacks, module, "[Line:%u] Skipping unexpected XML element data",
+					XML_GetCurrentLineNumber(context->parser));
+			context->has_produced_data_warning = 1;
+		}
 }
 
-int fmi2_xml_parse_model_description(fmi2_xml_model_description_t* md, const char* filename) {
+int fmi2_xml_parse_model_description(fmi2_xml_model_description_t* md, const char* filename, jm_xml_callbacks_t* xml_callbacks) {
     XML_Memory_Handling_Suite memsuite;
     fmi2_xml_parser_context_t* context;
     XML_Parser parser = NULL;
@@ -539,6 +591,9 @@ int fmi2_xml_parse_model_description(fmi2_xml_model_description_t* md, const cha
     jm_vector_init(char)(&context->elmData, 0, context->callbacks);
     context->lastElmID = fmi2_xml_elmID_none;
     context->currentElmID = fmi2_xml_elmID_none;
+	context->anyElmCount = 0;
+	context->useAnyHandleFlg = 0;
+	context->anyHandle = xml_callbacks;
 
     memsuite.malloc_fcn = context->callbacks->malloc;
     memsuite.realloc_fcn = context->callbacks->realloc;

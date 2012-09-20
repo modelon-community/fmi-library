@@ -63,6 +63,7 @@ double fmi2_xml_get_real_type_max(fmi2_xml_real_typedef_t*);
 double fmi2_xml_get_real_type_nominal(fmi2_xml_real_typedef_t*);
 fmi2_xml_unit_t* fmi2_xml_get_real_type_unit(fmi2_xml_real_typedef_t*);
 int fmi2_xml_get_real_type_is_relative_quantity(fmi2_xml_real_typedef_t*);
+int fmi2_xml_get_real_type_is_unbounded(fmi2_xml_real_typedef_t*);
 
 fmi2_integer_t fmi2_xml_get_integer_type_min(fmi2_xml_integer_typedef_t*);
 fmi2_integer_t fmi2_xml_get_integer_type_max(fmi2_xml_integer_typedef_t*);

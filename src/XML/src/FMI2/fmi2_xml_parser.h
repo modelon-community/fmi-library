@@ -21,6 +21,7 @@
 #include <JM/jm_vector.h>
 #include <JM/jm_stack.h>
 #include <JM/jm_named_ptr.h>
+#include <JM/jm_xml_callbacks.h>
 
 #include <FMI2/fmi2_enums.h>
 #include <FMI2/fmi2_xml_model_description.h>
@@ -41,7 +42,8 @@ extern "C" {
     EXPAND_XML_ATTRNAME(unit) \
     EXPAND_XML_ATTRNAME(displayUnit) \
     EXPAND_XML_ATTRNAME(relativeQuantity) \
-    EXPAND_XML_ATTRNAME(min) \
+    EXPAND_XML_ATTRNAME(unbounded) \
+	EXPAND_XML_ATTRNAME(min) \
     EXPAND_XML_ATTRNAME(max) \
     EXPAND_XML_ATTRNAME(nominal) \
     EXPAND_XML_ATTRNAME(declaredType) \
@@ -86,6 +88,7 @@ typedef enum fmi2_xml_attr_enu_t {
     fmi2_xml_attr_number
 } fmi2_xml_attr_enu_t;
 
+/** \brief Element names used in XML */
 #define FMI2_XML_ELMLIST(EXPAND_XML_ELMNAME) \
     EXPAND_XML_ELMNAME(fmiModelDescription) \
 	EXPAND_XML_ELMNAME(ModelExchange) \
@@ -95,37 +98,43 @@ typedef enum fmi2_xml_attr_enu_t {
     EXPAND_XML_ELMNAME(BaseUnit) \
     EXPAND_XML_ELMNAME(DisplayUnit) \
     EXPAND_XML_ELMNAME(TypeDefinitions) \
-    EXPAND_XML_ELMNAME(Type) \
-    EXPAND_XML_ELMNAME(RealType) \
-    EXPAND_XML_ELMNAME(IntegerType) \
-    EXPAND_XML_ELMNAME(BooleanType) \
-    EXPAND_XML_ELMNAME(StringType) \
-    EXPAND_XML_ELMNAME(EnumerationType) \
+    EXPAND_XML_ELMNAME(SimpleType) \
     EXPAND_XML_ELMNAME(Item) \
     EXPAND_XML_ELMNAME(DefaultExperiment) \
     EXPAND_XML_ELMNAME(VendorAnnotations) \
     EXPAND_XML_ELMNAME(Tool) \
-    EXPAND_XML_ELMNAME(Annotation) \
     EXPAND_XML_ELMNAME(ModelVariables) \
     EXPAND_XML_ELMNAME(ScalarVariable) \
-    EXPAND_XML_ELMNAME(DirectDependency) \
+    EXPAND_XML_ELMNAME(Annotations) \
 	EXPAND_XML_ELMNAME(LogCategories) \
 	EXPAND_XML_ELMNAME(Category) \
-    EXPAND_XML_ELMNAME(Name) \
     EXPAND_XML_ELMNAME(Real) \
     EXPAND_XML_ELMNAME(Integer) \
     EXPAND_XML_ELMNAME(Boolean) \
     EXPAND_XML_ELMNAME(String) \
     EXPAND_XML_ELMNAME(Enumeration)
 
+/** \brief Element that can be placed under different parents get alternative names from the info struct */
+#define FMI2_XML_ELMLIST_ALT(EXPAND_XML_ELMNAME) \
+    EXPAND_XML_ELMNAME(RealType) \
+    EXPAND_XML_ELMNAME(IntegerType) \
+    EXPAND_XML_ELMNAME(BooleanType) \
+    EXPAND_XML_ELMNAME(StringType) \
+    EXPAND_XML_ELMNAME(EnumerationType)  \
+    EXPAND_XML_ELMNAME(ModelTool)
+
+
 typedef struct fmi2_xml_parser_context_t fmi2_xml_parser_context_t;
 #define EXPAND_ELM_HANDLE(elm) extern int fmi2_xml_handle_##elm(fmi2_xml_parser_context_t *context, const char* data);
 FMI2_XML_ELMLIST(EXPAND_ELM_HANDLE)
+FMI2_XML_ELMLIST_ALT(EXPAND_ELM_HANDLE)
 
 #define FMI2_XML_ELM_ID(elm) ,fmi2_xml_elmID_##elm
 typedef enum fmi2_xml_elm_enu_t {
 	fmi2_xml_elmID_none = -1
     FMI2_XML_ELMLIST(FMI2_XML_ELM_ID)
+	,fmi2_xml_elm_actual_number
+	FMI2_XML_ELMLIST_ALT(FMI2_XML_ELM_ID)
     ,fmi2_xml_elm_number
 } fmi2_xml_elm_enu_t;
 
@@ -133,10 +142,14 @@ typedef int (*fmi2_xml_element_handle_ft)(fmi2_xml_parser_context_t *context, co
 
 typedef struct fmi2_xml_element_handle_map_t fmi2_xml_element_handle_map_t;
 
+/** Keeps information about the allowed parent element ID, index among siblings in a sequence and if
+	multiple elements of this type are allowed in a sequence.
+*/
 typedef struct {
-	fmi2_xml_elm_enu_t parentID;
-	int siblingIndex;
-	int multipleAllowed;
+	fmi2_xml_elm_enu_t parentID; /* expected parent ID for an element */
+	fmi2_xml_elm_enu_t alternativeID; /* if an element can be under different parents it gets an alternative ID*/
+	int siblingIndex;       /* index among siblings */
+	int multipleAllowed;	/* multiple elements of this kind kan come in a sequence as siblings*/
 } fmi2_xml_scheme_info_t;
 
 struct fmi2_xml_element_handle_map_t {
@@ -173,12 +186,17 @@ struct fmi2_xml_parser_context_t {
 
     int skipOneVariableFlag;
 	int skipElementCnt;
+	int has_produced_data_warning;
 
     jm_stack(int) elmStack;
     jm_vector(char) elmData;
 
 	fmi2_xml_elm_enu_t lastElmID;
 	fmi2_xml_elm_enu_t currentElmID;
+
+	int anyElmCount;
+	int useAnyHandleFlg;
+	jm_xml_callbacks_t* anyHandle;
 };
 
 jm_vector(char) * fmi2_xml_reserve_parse_buffer(fmi2_xml_parser_context_t *context, size_t index, size_t size);

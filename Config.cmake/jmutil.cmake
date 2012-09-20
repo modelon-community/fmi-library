@@ -38,6 +38,7 @@ set(JMUTILHEADERS
   JM/jm_named_ptr.h
   JM/jm_string_set.h
   JM/jm_portability.h
+  JM/jm_xml_callbacks.h
   FMI/fmi_version.h
   FMI/fmi_util.h
 

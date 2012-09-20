@@ -112,8 +112,12 @@ FMILIB_EXPORT double fmi2_import_get_real_type_nominal(fmi2_import_real_typedef_
 
 /** \brief Get the unit object associated with the type definition if any*/
 FMILIB_EXPORT fmi2_import_unit_t* fmi2_import_get_real_type_unit(fmi2_import_real_typedef_t*);
-/** \brief Get the isRelativeQuantity flag */
+
+/** \brief Get the 'relativeQuantity' flag */
 FMILIB_EXPORT int fmi2_import_get_real_type_is_relative_quantity(fmi2_import_real_typedef_t*);
+
+/** \brief Get the 'unbounded' flag */
+FMILIB_EXPORT int fmi2_import_get_real_type_is_unbounded(fmi2_import_real_typedef_t*);
 
 /** \brief Get minimal value for the type.
 	

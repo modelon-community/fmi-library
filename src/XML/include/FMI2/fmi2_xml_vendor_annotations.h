@@ -40,20 +40,6 @@ void* fmiRemoveVendor(fmi2_xml_vendor*); */
 
 const char* fmi2_xml_get_vendor_name(fmi2_xml_vendor_t*);
 
-unsigned int  fmi2_xml_get_number_of_vendor_annotations(fmi2_xml_vendor_t*);
-
-/*Note: Annotations can be used in other places but have common interface name-value */
-fmi2_xml_annotation_t* fmi2_xml_get_vendor_annotation(fmi2_xml_vendor_t*, unsigned int  index);
-
-const char* fmi2_xml_get_annotation_name(fmi2_xml_annotation_t*);
-
-const char* fmi2_xml_get_annotation_value(fmi2_xml_annotation_t*);
-
-/* fmi2_xml_annotation* fmi2_xml_add_vendor_annotation(fmi2_xml_vendor*, const char* name, const char* value);
-
-fmi2_xml_annotation* fmi2_xml_remove_vendor_annotation(fmi2_xml_vendor*, const char* name, const char* value);
-*/
-
 #ifdef __cplusplus
 }
 #endif

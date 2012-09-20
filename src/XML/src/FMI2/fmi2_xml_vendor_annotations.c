@@ -17,35 +17,9 @@
 
 #include "fmi2_xml_parser.h"
 #include "fmi2_xml_model_description_impl.h"
-#include "fmi2_xml_vendor_annotations_impl.h"
 
 static const char* module = "FMI2XML";
 
-void fmi2_xml_vendor_free(fmi2_xml_vendor_t* v) {
-    jm_named_vector_free_data(&v->annotations);
-    v->annotations.callbacks->free(v);
-}
-
-const char* fmi2_xml_get_vendor_name(fmi2_xml_vendor_t* v) {
-    return v->name;
-}
-
-unsigned int  fmi2_xml_get_number_of_vendor_annotations(fmi2_xml_vendor_t* v) {
-    return jm_vector_get_size(jm_named_ptr)(&v->annotations);
-}
-
-fmi2_xml_annotation_t* fmi2_xml_get_vendor_annotation(fmi2_xml_vendor_t* v, unsigned int  index) {
-    if(index >= fmi2_xml_get_number_of_vendor_annotations(v)) return 0;
-    return jm_vector_get_item(jm_named_ptr)(&v->annotations, index).ptr;
-}
-
-const char* fmi2_xml_get_annotation_name(fmi2_xml_annotation_t* a) {
-    return a->name;
-}
-
-const char* fmi2_xml_get_annotation_value(fmi2_xml_annotation_t* a) {
-    return a->value;
-}
 
 int fmi2_xml_handle_VendorAnnotations(fmi2_xml_parser_context_t *context, const char* data) {
     if(!data) {
@@ -57,68 +31,77 @@ int fmi2_xml_handle_VendorAnnotations(fmi2_xml_parser_context_t *context, const 
     return 0;
 }
 
-int fmi2_xml_handle_Tool(fmi2_xml_parser_context_t *context, const char* data) {
+int fmi2_xml_handle_Annotations(fmi2_xml_parser_context_t *context, const char* data) {
     if(!data) {
+ 		jm_log_verbose(context->callbacks, module, "Parsing XML element Annotations");
+	}
+    else {
+        /* might give out a warning if(data[0] != 0) */
+    }
+    return 0;
+}
+
+int fmi2_xml_handle_ModelTool(fmi2_xml_parser_context_t *context, const char* data) {
+    if(!data) {
+			size_t len;
             fmi2_xml_model_description_t* md = context->modelDescription;
             jm_vector(char)* bufName = fmi2_xml_reserve_parse_buffer(context,1,100);
-            fmi2_xml_vendor_t* vendor = 0;
-            fmi2_xml_vendor_t dummyV;
-            jm_voidp *pvendor;
-
+            jm_string *pvendor;
+			char* vendor = 0;
+			
             if(!bufName) return -1;
             /* <xs:attribute name="name" type="xs:normalizedString" use="required"> */
-            if( fmi2_xml_set_attr_string(context, fmi2_xml_elmID_Tool, fmi_attr_id_name, 1, bufName)) return -1;
-            pvendor = jm_vector_push_back(jm_voidp)(&md->vendorList, vendor);
+            if( fmi2_xml_set_attr_string(context, fmi2_xml_elmID_Tool, fmi_attr_id_name, 1, bufName))
+				return -1;
+            pvendor = jm_vector_push_back(jm_string)(&md->vendorList, vendor);
+			len = jm_vector_get_size(char)(bufName);
             if(pvendor )
-                *pvendor = vendor = jm_named_alloc_v(bufName,sizeof(fmi2_xml_vendor_t), dummyV.name - (char*)&dummyV, context->callbacks).ptr;
-            if(!pvendor || !vendor) {
-                fmi2_xml_parse_fatal(context, "Could not allocate memory");
-                return -1;
-            }
-            jm_vector_init(jm_named_ptr)(&vendor->annotations,0, context->callbacks);
+                *pvendor = vendor = (char*)(context->callbacks->malloc(len + 1));
+	        if(!pvendor || !vendor) {
+	            fmi2_xml_parse_fatal(context, "Could not allocate memory");
+		        return -1;
+			}
+            memcpy(vendor, jm_vector_get_itemp(char)(bufName,0), len);
+            vendor[len] = 0;
+
+			context->useAnyHandleFlg = 1;
     }
     else {
         /* don't do anything. might give out a warning if(data[0] != 0) */
+		context->useAnyHandleFlg = 0;
         return 0;
     }
     return 0;
 }
-int fmi2_xml_handle_Annotation(fmi2_xml_parser_context_t *context, const char* data) {
+
+int fmi2_xml_handle_Tool(fmi2_xml_parser_context_t *context, const char* data) {
     if(!data) {
+			size_t len;
             fmi2_xml_model_description_t* md = context->modelDescription;
-            size_t numVendors = jm_vector_get_size(jm_voidp)(&(md->vendorList));
-            fmi2_xml_vendor_t* vendor =(fmi2_xml_vendor_t*)jm_vector_get_item(jm_voidp)(&(md->vendorList), numVendors-1);
             jm_vector(char)* bufName = fmi2_xml_reserve_parse_buffer(context,1,100);
-            jm_vector(char)* bufValue = fmi2_xml_reserve_parse_buffer(context,2,100);
-            jm_named_ptr named, *pnamed;
-            fmi2_xml_annotation_t* annotation = 0;
-            size_t vallen;
+            jm_string *pvendor;
+			char* vendor = 0;
+			
+            if(!bufName) return -1;
+            /* <xs:attribute name="name" type="xs:normalizedString" use="required"> */
+            if( fmi2_xml_set_attr_string(context, fmi2_xml_elmID_Tool, fmi_attr_id_name, 1, bufName))
+				return -1;
+            pvendor = jm_vector_push_back(jm_string)(&md->vendorList, vendor);
+			len = jm_vector_get_size(char)(bufName);
+            if(pvendor )
+                *pvendor = vendor = (char*)(context->callbacks->malloc(len + 1));
+	        if(!pvendor || !vendor) {
+	            fmi2_xml_parse_fatal(context, "Could not allocate memory");
+		        return -1;
+			}
+            memcpy(vendor, jm_vector_get_itemp(char)(bufName,0), len);
+            vendor[len] = 0;
 
-            if(!bufName || !bufValue ||
-            /*     <xs:attribute name="name" type="xs:normalizedString" use="required"/> */
-                fmi2_xml_set_attr_string(context, fmi2_xml_elmID_Annotation, fmi_attr_id_name, 1, bufName) ||
-            /* <xs:attribute name="value" type="xs:string" use="required"/> */
-                fmi2_xml_set_attr_string(context, fmi2_xml_elmID_Annotation, fmi_attr_id_value, 1, bufValue)
-                    )
-                return -1;
-            vallen = jm_vector_get_size(char)(bufValue);
-            named.ptr = 0;
-			named.name = 0;
-            pnamed = jm_vector_push_back(jm_named_ptr)(&vendor->annotations, named);
-
-            if(pnamed) *pnamed = named = jm_named_alloc_v(bufName,sizeof(fmi2_xml_annotation_t)+vallen+1,sizeof(fmi2_xml_annotation_t)+vallen,context->callbacks);
-            annotation = named.ptr;
-            if( !pnamed || !annotation ) {
-                fmi2_xml_parse_fatal(context, "Could not allocate memory");
-                return -1;
-            }
-            annotation->name = named.name;
-            if(vallen)
-                memcpy(annotation->value,jm_vector_get_itemp(char)(bufValue,0), vallen);
-            annotation->value[vallen] = 0;
+			context->useAnyHandleFlg = 1;
     }
     else {
         /* don't do anything. might give out a warning if(data[0] != 0) */
+		context->useAnyHandleFlg = 0;
         return 0;
     }
     return 0;

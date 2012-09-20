@@ -62,7 +62,6 @@ const char *fmi1_xmlAttrNames[] = {
 #define fmi1_xml_scheme_Model {fmi1_xml_elmID_CoSimulation_Tool, 1, 0}
 #define fmi1_xml_scheme_File {fmi1_xml_elmID_Model, 0, 1}
 
-#define ELM_PASTE(elm) fmi1_xml_scheme_##elm
 #define EXPAND_ELM_SCHEME(elm) fmi1_xml_scheme_##elm ,
 
 fmi1_xml_scheme_info_t fmi1_xml_scheme_info[fmi1_xml_elm_number] = {

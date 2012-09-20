@@ -55,7 +55,7 @@ const char* fmi2_import_get_last_error(fmi2_import_t* fmu) {
 	return jm_get_last_error(fmu->callbacks);
 }
 
-fmi2_import_t* fmi2_import_parse_xml( fmi_import_context_t* context, const char* dirPath) {
+fmi2_import_t* fmi2_import_parse_xml( fmi_import_context_t* context, const char* dirPath, jm_xml_callbacks_t* xml_callbacks) {
 	char* xmlPath =  fmi_import_get_model_description_path(dirPath, context->callbacks);
 
 	fmi2_import_t* fmu = fmi2_import_allocate(context->callbacks);
@@ -67,7 +67,7 @@ fmi2_import_t* fmi2_import_parse_xml( fmi_import_context_t* context, const char*
 	
 	jm_log_verbose( context->callbacks, "FMILIB", "Parsing model description XML");
 
-	if(fmi2_xml_parse_model_description( fmu->md, xmlPath)) {
+	if(fmi2_xml_parse_model_description( fmu->md, xmlPath, xml_callbacks)) {
 		fmi2_import_free(fmu);
 		context->callbacks->free(xmlPath);
 		return 0;
@@ -278,22 +278,6 @@ void fmi2_import_set_default_experiment_tolerance(fmi2_import_t* fmu, double tol
 	fmi2_xml_set_default_experiment_tolerance(fmu->md, tol);
 }
 
-fmi2_import_vendor_list_t* fmi2_import_get_vendor_list(fmi2_import_t* fmu) {
-	if(!fmu->md) {
-		jm_log_error(fmu->callbacks, module,"No FMU is loaded");
-		return 0;
-	}
-	return fmi2_xml_get_vendor_list(fmu->md);
-}
-
-unsigned int  fmi2_import_get_number_of_vendors(fmi2_import_vendor_list_t* vl) {
-	return fmi2_xml_get_number_of_vendors(vl);
-}
-
-fmi2_import_vendor_t* fmi2_import_get_vendor(fmi2_import_vendor_list_t* v, unsigned int  index) {
-	return fmi2_xml_get_vendor(v, index);
-}
-
 fmi2_import_unit_definitions_t* fmi2_import_get_unit_definitions(fmi2_import_t* fmu) {
 	if(!fmu->md) {
 		jm_log_error(fmu->callbacks, module,"No FMU is loaded");
@@ -331,4 +315,24 @@ fmi2_import_variable_list_t* fmi2_import_get_variable_list(fmi2_import_t* fmu) {
         jm_vector_set_item(jm_voidp)(&vl->variables, i, jm_vector_get_item(jm_voidp)(vars, i));
     }
     return vl;
+}
+
+fmi2_fmu_kind_enu_t fmi2_import_get_fmu_kind(fmi2_import_t* fmu) {
+    return fmi2_xml_get_fmu_kind(fmu->md);
+}
+
+size_t fmi2_import_get_vendors_num(fmi2_import_t* fmu){
+	if(!fmu->md) {
+		jm_log_error(fmu->callbacks, module,"No FMU is loaded");
+		return 0;
+	}
+	return fmi2_xml_get_vendors_num(fmu->md);
+}
+
+const char* fmi2_import_get_vendor_name(fmi2_import_t* fmu, unsigned int  index){
+	if(!fmu->md) {
+		jm_log_error(fmu->callbacks, module,"No FMU is loaded");
+		return 0;
+	}
+	return fmi2_xml_get_vendor_name(fmu->md, index);
 }

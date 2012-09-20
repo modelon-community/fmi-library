@@ -62,7 +62,7 @@ struct fmi2_xml_model_description_t {
 
 	jm_vector(char) modelIdentifierCS;
 
-	jm_vector(jm_voidp) vendorList;
+	jm_vector(jm_string) vendorList;
 
     jm_vector(jm_named_ptr) unitDefinitions;
     jm_vector(jm_named_ptr) displayUnitDefinitions;
@@ -80,11 +80,6 @@ struct fmi2_xml_model_description_t {
     fmi2_fmu_kind_enu_t fmuKind;
 
     unsigned int capabilities[fmi2_capabilities_Num];
-
-    jm_vector(char) entryPoint;
-    jm_vector(char) mimeType;
-    int manual_start;
-    jm_vector(jm_string) additionalModels;
 };
 
 void fmi2_xml_report_error(fmi2_xml_model_description_t* md, const char* module, const char* fmt, ...);

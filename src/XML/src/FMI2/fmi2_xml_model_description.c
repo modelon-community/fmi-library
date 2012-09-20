@@ -18,7 +18,6 @@
 
 #include <JM/jm_named_ptr.h>
 #include "fmi2_xml_model_description_impl.h"
-#include "fmi2_xml_vendor_annotations_impl.h"
 #include "fmi2_xml_parser.h"
 
 static const char* module = "FMI2XML";
@@ -67,7 +66,7 @@ fmi2_xml_model_description_t * fmi2_xml_allocate_model_description( jm_callbacks
 
     md->defaultExperimentTolerance = 1e-6;
 
-    jm_vector_init(jm_voidp)(&md->vendorList, 0, cb);
+	jm_vector_init(jm_string)(&md->vendorList, 0, cb);
 
     jm_vector_init(jm_named_ptr)(&md->unitDefinitions, 0, cb);
     jm_vector_init(jm_named_ptr)(&md->displayUnitDefinitions, 0, cb);
@@ -89,12 +88,6 @@ fmi2_xml_model_description_t * fmi2_xml_allocate_model_description( jm_callbacks
 		while(i > 0)
 			md->capabilities[--i] = 0;
 	}
-
-    jm_vector_init(jm_string)(&md->additionalModels, 0, cb);
-
-    jm_vector_init(char)(&md->entryPoint, 0,cb);
-    jm_vector_init(char)(&md->mimeType, 0,cb);
-
     return md;
 }
 
@@ -126,8 +119,8 @@ void fmi2_xml_clear_model_description( fmi2_xml_model_description_t* md) {
 
     md->defaultExperimentTolerance = 0;
 
-    jm_vector_foreach(jm_voidp)(&md->vendorList, (void(*)(void*))fmi2_xml_vendor_free);
-    jm_vector_free_data(jm_voidp)(&md->vendorList);
+    jm_vector_foreach(jm_string)(&md->vendorList, (void(*)(const char*))md->callbacks->free);
+    jm_vector_free_data(jm_string)(&md->vendorList);
 
     jm_named_vector_free_data(&md->unitDefinitions);
     jm_named_vector_free_data(&md->displayUnitDefinitions);
@@ -147,13 +140,6 @@ void fmi2_xml_clear_model_description( fmi2_xml_model_description_t* md) {
 
     jm_vector_foreach(jm_string)(&md->descriptions, (void(*)(const char*))md->callbacks->free);
     jm_vector_free_data(jm_string)(&md->descriptions);
-
-    jm_vector_foreach(jm_string)(&md->additionalModels, (void(*)(const char*))md->callbacks->free);
-    jm_vector_free_data(jm_string)(&md->additionalModels);
-
-    jm_vector_free_data(char)(&md->entryPoint);
-    jm_vector_free_data(char)(&md->mimeType);
-
 }
 
 int fmi2_xml_is_model_description_empty(fmi2_xml_model_description_t* md) {
@@ -260,32 +246,17 @@ double fmi2_xml_get_default_experiment_tolerance(fmi2_xml_model_description_t* m
     return md->defaultExperimentTolerance;
 }
 
+fmi2_fmu_kind_enu_t fmi2_xml_get_fmu_kind(fmi2_xml_model_description_t* md) {
+	return md->fmuKind;
+}
+
+unsigned int fmi2_xml_get_capability(fmi2_xml_model_description_t* md, fmi2_capabilities_enu_t id) {
+	assert((unsigned)id < (unsigned)fmi2_capabilities_Num);
+	return md->capabilities[id];
+}
+
 void fmi2_xml_set_default_experiment_tolerance(fmi2_xml_model_description_t* md, double tol){
     md->defaultExperimentTolerance = tol;
-}
-
-fmi2_xml_vendor_list_t* fmi2_xml_get_vendor_list(fmi2_xml_model_description_t* md) {
-	assert(md);
-    return (fmi2_xml_vendor_list_t*)&md->vendorList;
-}
-
-unsigned int  fmi2_xml_get_number_of_vendors(fmi2_xml_vendor_list_t* vl) {
-	if(!vl) {
-		assert(vl && "Vendor list cannot be NULL");
-		return 0;
-	}
-    return jm_vector_get_size(jm_voidp)(&vl->vendors);
-}
-
-fmi2_xml_vendor_t* fmi2_xml_get_vendor(fmi2_xml_vendor_list_t* v, unsigned int  index) {
-    jm_vector(jm_voidp)* vl;
-	if(!v) {
-		assert(v && "Vendor list cannot be NULL");
-		return 0;
-	}
-	vl = &v->vendors;
-    if(index >= jm_vector_get_size(jm_voidp)(vl)) return 0;
-    return (fmi2_xml_vendor_t*)jm_vector_get_item(jm_voidp)(vl, index);
 }
 
 fmi2_xml_unit_definitions_t* fmi2_xml_get_unit_definitions(fmi2_xml_model_description_t* md) {
@@ -303,6 +274,19 @@ unsigned int  fmi2_xml_get_unit_definitions_number(fmi2_xml_unit_definitions_t* 
 fmi2_xml_type_definitions_t* fmi2_xml_get_type_definitions(fmi2_xml_model_description_t* md) {
 	assert(md);
     return &md->typeDefinitions;
+}
+
+/** \brief Get the number of vendors that had annotations in the XML*/
+size_t fmi2_xml_get_vendors_num(fmi2_xml_model_description_t* md) {
+	assert(md);
+	return jm_vector_get_size(jm_string)(&md->vendorList);
+}
+
+/** \brief Get the name of the vendor with that had annotations in the XML by index */
+const char* fmi2_xml_get_vendor_name(fmi2_xml_model_description_t* md, unsigned int  index) {
+	assert(fmi2_xml_get_vendors_num(md) > index);
+
+	return jm_vector_get_item(jm_string)(&md->vendorList,index);
 }
 
 
@@ -517,7 +501,7 @@ fmi2_xml_variable_t* fmi2_xml_get_variable_by_vr(fmi2_xml_model_description_t* m
 	fmi2_xml_variable_t *v = 0;
     void ** found;
 	if(!md->variablesByVR) return 0;
-	keyType.structKind = fmi2_xml_type_struct_enu_base;
+	keyType.structKind = fmi2_xml_type_struct_enu_props;
 	keyType.baseType = baseType;
 	key.typeBase = &keyType;
 	key.vr = vr;

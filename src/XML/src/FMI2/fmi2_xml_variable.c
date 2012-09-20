@@ -110,7 +110,6 @@ fmi2_xml_variable_typedef_t* fmi2_xml_get_variable_declared_type(fmi2_xml_variab
 
 fmi2_base_type_enu_t fmi2_xml_get_variable_base_type(fmi2_xml_variable_t* v) {
     fmi2_xml_variable_type_base_t* type = v->typeBase;
-    type = fmi2_xml_find_type_struct(type, fmi2_xml_type_struct_enu_base);
     return (type->baseType);
 }
 
@@ -200,14 +199,14 @@ int fmi2_xml_get_integer_variable_max(fmi2_xml_integer_variable_t* v){
 
 int fmi2_xml_get_enum_variable_min(fmi2_xml_enum_variable_t* v){
     fmi2_xml_variable_t* vv = (fmi2_xml_variable_t*)v;
-    fmi2_xml_enum_type_props_t* props = (fmi2_xml_enum_type_props_t*)(fmi2_xml_find_type_props(vv->typeBase));
-	assert(props);
-	return props->typeMin;
+	fmi2_xml_variable_type_base_t* props = fmi2_xml_find_type_props(vv->typeBase);
+	return ((fmi2_xml_enum_variable_props_t*)props)->typeMin;
 }
 
 int fmi2_xml_get_enum_variable_max(fmi2_xml_enum_variable_t* v){
     fmi2_xml_variable_t* vv = (fmi2_xml_variable_t*)v;
-    fmi2_xml_enum_type_props_t* props = (fmi2_xml_enum_type_props_t*)(fmi2_xml_find_type_props(vv->typeBase));
+    fmi2_xml_enum_variable_props_t* props = 
+		(fmi2_xml_enum_variable_props_t*)(fmi2_xml_find_type_props(vv->typeBase));
 	assert(props);
 	return props->typeMax;
 }
@@ -476,9 +475,10 @@ int fmi2_xml_handle_Real(fmi2_xml_parser_context_t *context, const char* data) {
             int hasNom = fmi2_xml_is_attr_defined(context, fmi_attr_id_nominal);
             int hasQuan = fmi2_xml_is_attr_defined(context, fmi_attr_id_quantity);
             int hasRelQ = fmi2_xml_is_attr_defined(context, fmi_attr_id_relativeQuantity);
+            int hasUnb = fmi2_xml_is_attr_defined(context, fmi_attr_id_unbounded);
 
 
-            if(hasUnit || hasMin || hasMax || hasNom || hasQuan || hasRelQ) {
+            if(hasUnit || hasMin || hasMax || hasNom || hasQuan || hasRelQ ||hasUnb) {
                 fmi2_xml_real_type_props_t* props = 0;
 
                 if(declaredType->structKind == fmi2_xml_type_struct_enu_typedef)
@@ -498,7 +498,10 @@ int fmi2_xml_handle_Real(fmi2_xml_parser_context_t *context, const char* data) {
                 if( !hasMax) type->typeMax = props->typeMax;
                 if( !hasNom) type->typeNominal = props->typeNominal;
                 if( !hasQuan) type->quantity = props->quantity;
-                if( !hasRelQ) type->typeBase.relativeQuantity = props->typeBase.relativeQuantity;
+                if( !hasRelQ) type->typeBase.flags = 
+					type->typeBase.flags | (props->typeBase.flags & FMI2_VARIABLE_RELATIVE_QUANTITY);
+                if( !hasUnb) type->typeBase.flags = 
+					type->typeBase.flags | (props->typeBase.flags & FMI2_VARIABLE_UNBOUNDED);
             }
             else
                 type = (fmi2_xml_real_type_props_t*)declaredType;
@@ -562,7 +565,7 @@ int fmi2_xml_handle_Integer(fmi2_xml_parser_context_t *context, const char* data
                 props = (fmi2_xml_integer_type_props_t*)declaredType;
             else
                 props = (fmi2_xml_integer_type_props_t*)(declaredType->baseTypeStruct);
-            assert((props->typeBase.structKind == fmi2_xml_type_struct_enu_props) || (props->typeBase.structKind == fmi2_xml_type_struct_enu_base));
+            assert(props->typeBase.structKind == fmi2_xml_type_struct_enu_props);
             fmi2_xml_reserve_parse_buffer(context, 1, 0);
             fmi2_xml_reserve_parse_buffer(context, 2, 0);
             type = fmi2_xml_parse_integer_type_properties(context, fmi2_xml_elmID_Integer);
@@ -720,7 +723,7 @@ int fmi2_xml_handle_Enumeration(fmi2_xml_parser_context_t *context, const char* 
 
 		assert(!variable->typeBase);
 
-        declaredType = fmi2_get_declared_type(context, fmi2_xml_elmID_Enumeration,&td->defaultEnumType.typeBase);
+        declaredType = fmi2_get_declared_type(context, fmi2_xml_elmID_Enumeration,&td->defaultEnumType.base.typeBase);
 
         if(!declaredType) return -1;
 

@@ -34,12 +34,10 @@
 #include "fmi2_import_type.h"
 #include "fmi2_import_unit.h"
 #include "fmi2_import_variable.h"
-#include "fmi2_import_vendor_annotations.h"
 #include "fmi2_import_variable_list.h"
 
 #include "fmi2_import_capi.h"
 #include "fmi2_import_convenience.h"
-#include "fmi2_import_cosim.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -63,14 +61,6 @@ extern "C" {
 /** \addtogroup fmi2_import_init Constuction, destruction and error handling
 @{
 */
-/**
-   \brief Create ::fmi2_import_t structure and parse the XML file.
-
-    @param context A context data strucutre is used to propagate the callbacks for memory handling and logging.
-    @param dirPath A directory name (full path) of a directory where the FMU was unzipped.
-    @return The new structure if parsing was successfull. 0-pointer is returned on error.
-*/
-FMILIB_EXPORT fmi2_import_t* fmi2_import_parse_xml( fmi_import_context_t* context, const char* dirPath);
 
 /**
 * \brief Retrieve the last error message.
@@ -237,6 +227,12 @@ FMILIB_EXPORT fmi2_import_variable_list_t* fmi2_import_get_variable_list(fmi2_im
 \param v A variable.
 */
 FMILIB_EXPORT fmi2_import_variable_list_t* fmi2_import_create_var_list(fmi2_import_t* fmu,fmi2_import_variable_t* v);
+
+/** \brief Get the number of vendors that had annotations in the XML*/
+FMILIB_EXPORT size_t fmi2_import_get_vendors_num(fmi2_import_t* fmu);
+
+/** \brief Get the name of the vendor with that had annotations in the XML by index */
+FMILIB_EXPORT const char* fmi2_import_get_vendor_name(fmi2_import_t* fmu, unsigned int  index);
 
 /**@} */
 

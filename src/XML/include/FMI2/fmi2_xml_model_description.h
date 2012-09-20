@@ -24,6 +24,7 @@
 
 #include <stddef.h>
 #include <JM/jm_callbacks.h>
+#include <JM/jm_xml_callbacks.h>
 #include <JM/jm_named_ptr.h>
 #include <FMI/fmi_xml_context.h>
 #include <FMI2/fmi2_types.h>
@@ -110,9 +111,10 @@ fmi2_xml_model_description_t* fmi2_xml_allocate_model_description( jm_callbacks*
 
     @param md A model description object as returned by fmi2_xml_allocate_model_description.
     @param fileName A name (full path) of the XML file name with model definition.
+	@param xml_callbacks Callbacks to use for processing annotations (may be NULL).
    @return 0 if parsing was successfull. Non-zero value indicates an error.
 */
-int fmi2_xml_parse_model_description( fmi2_xml_model_description_t* md, const char* fileName);
+int fmi2_xml_parse_model_description( fmi2_xml_model_description_t* md, const char* fileName, jm_xml_callbacks_t* xml_callbacks);
 
 /**
    Clears the data associated with the model description. This is useful if the same object
@@ -221,6 +223,12 @@ fmi2_xml_variable_t* fmi2_xml_get_variable_by_name(fmi2_xml_model_description_t*
 */
 fmi2_xml_variable_t* fmi2_xml_get_variable_by_vr(fmi2_xml_model_description_t* md, fmi2_base_type_enu_t baseType, fmi2_value_reference_t vr);
 
+/** \brief Get the number of vendors that had annotations in the XML*/
+size_t fmi2_xml_get_vendors_num(fmi2_xml_model_description_t* md);
+
+/** \brief Get the name of the vendor with that had annotations in the XML by index */
+const char* fmi2_xml_get_vendor_name(fmi2_xml_model_description_t* md, unsigned int  index);
+
 /** @} */
 #ifdef __cplusplus
 }
@@ -229,7 +237,6 @@ fmi2_xml_variable_t* fmi2_xml_get_variable_by_vr(fmi2_xml_model_description_t* m
 #include "fmi2_xml_type.h"
 #include "fmi2_xml_unit.h"
 #include "fmi2_xml_variable.h"
-#include "fmi2_xml_vendor_annotations.h"
 #include "fmi2_xml_capabilities.h"
 #include "fmi2_xml_cosim.h"
 

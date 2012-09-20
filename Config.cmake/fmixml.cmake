@@ -45,8 +45,6 @@ set(FMIXMLHEADERS
     src/FMI2/fmi2_xml_type_impl.h
     include/FMI2/fmi2_xml_unit.h
     src/FMI2/fmi2_xml_unit_impl.h
-    include/FMI2/fmi2_xml_vendor_annotations.h
-    src/FMI2/fmi2_xml_vendor_annotations_impl.h
     include/FMI2/fmi2_xml_variable.h
     src/FMI2/fmi2_xml_variable_impl.h
  )
@@ -67,9 +65,8 @@ set(FMIXMLSOURCE
     src/FMI2/fmi2_xml_model_description.c
     src/FMI2/fmi2_xml_type.c
     src/FMI2/fmi2_xml_unit.c
-    src/FMI2/fmi2_xml_vendor_annotations.c
-    src/FMI2/fmi2_xml_variable.c
-    src/FMI2/fmi2_xml_cosim.c
+	src/FMI2/fmi2_xml_vendor_annotations.c
+	src/FMI2/fmi2_xml_variable.c
 )
 
 SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DXML_STATIC -DFMI_XML_QUERY")

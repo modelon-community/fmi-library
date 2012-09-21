@@ -475,6 +475,36 @@ int fmi2_xml_handle_Name(fmi2_xml_parser_context_t *context, const char* data) {
     return 0;
 }
 
+int   fmi2_xml_get_has_start(fmi2_xml_parser_context_t *context, fmi2_xml_variable_t* variable) {
+	int hasStart = fmi2_xml_is_attr_defined(context, fmi_attr_id_start);
+	if(!hasStart)  {
+		/*
+		   Variables with causality = "parameter" or "input", as well as variables with variability = "constant", must have a "start" value.
+		   If initial = exact or approx, a start value must be provided.
+		   The second condition is actually enough since parameters and inputs and constants must be "initial=exact"
+		*/
+		if(    (variable->causality == (char)fmi2_causality_enu_parameter)
+			|| (variable->causality == (char)fmi2_causality_enu_input)
+			|| (variable->variability == (char)fmi2_variability_enu_constant)) {
+				assert(variable->initial != (char)fmi2_initial_enu_exact);
+		}
+
+		if (variable->initial != (char)fmi2_initial_enu_calculated)
+		{
+			fmi2_xml_parse_error(context, "Start attribute is required for this causality, variability and initial combination");
+			hasStart = 1;
+		}
+	}
+	else {
+		/* If initial = calculated, it is not allowed to provide a start value. */
+		if(variable->initial == (char)fmi2_initial_enu_calculated) {
+			fmi2_xml_parse_error(context, "Start attribute is not allowed for variables with initial='calculated'");
+			hasStart = 0;
+		}
+	}
+	return hasStart;
+}
+
 int fmi2_xml_handle_Real(fmi2_xml_parser_context_t *context, const char* data) {
     if(context->skipOneVariableFlag) return 0;
 
@@ -531,7 +561,8 @@ int fmi2_xml_handle_Real(fmi2_xml_parser_context_t *context, const char* data) {
         }
         variable->typeBase = &type->typeBase;
 
-        hasStart = fmi2_xml_is_attr_defined(context, fmi_attr_id_start);
+        hasStart = fmi2_xml_get_has_start(context, variable);
+
         if(hasStart) {
             fmi2_xml_variable_start_real_t * start = (fmi2_xml_variable_start_real_t*)fmi2_xml_alloc_variable_type_start(td, &type->typeBase, sizeof(fmi2_xml_variable_start_real_t));
             if(!start) {
@@ -544,11 +575,6 @@ int fmi2_xml_handle_Real(fmi2_xml_parser_context_t *context, const char* data) {
                 )
                     return -1;
             variable->typeBase = &start->typeBase;
-        }
-        else {
-/*            if(fmi2_xml_is_attr_defined(context,fmi_attr_id_fixed)) {
-                jm_log_warning(context->callbacks, module, "When parsing variable %s: 'fixed' attributed is only allowed when start is defined", variable->name);
-            } */
         }
     }
     else {
@@ -572,12 +598,11 @@ int fmi2_xml_handle_Integer(fmi2_xml_parser_context_t *context, const char* data
         declaredType = fmi2_get_declared_type(context, fmi2_xml_elmID_Integer,&td->defaultIntegerType.typeBase) ;
 
         if(!declaredType) return -1;
-
-        if(
-                fmi2_xml_is_attr_defined(context,fmi_attr_id_min) ||
-                fmi2_xml_is_attr_defined(context,fmi_attr_id_max) ||
-                fmi2_xml_is_attr_defined(context,fmi_attr_id_quantity)
-                ) {
+		{
+			int hasMin = fmi2_xml_is_attr_defined(context,fmi_attr_id_min);
+			int hasMax = fmi2_xml_is_attr_defined(context,fmi_attr_id_max);
+			int hasQuan =  fmi2_xml_is_attr_defined(context,fmi_attr_id_quantity);
+        if( hasMin || hasMax || hasQuan) {
             fmi2_xml_integer_type_props_t* props = 0;
 
             if(declaredType->structKind != fmi2_xml_type_struct_enu_typedef)
@@ -590,17 +615,17 @@ int fmi2_xml_handle_Integer(fmi2_xml_parser_context_t *context, const char* data
             type = fmi2_xml_parse_integer_type_properties(context, fmi2_xml_elmID_Integer);
             if(!type) return -1;
             type->typeBase.baseTypeStruct = declaredType;
-            if(!fmi2_xml_is_attr_defined(context,fmi_attr_id_min)) type->typeMin = props->typeMin;
-            if(!fmi2_xml_is_attr_defined(context,fmi_attr_id_max)) type->typeMax = props->typeMax;
-            if(!fmi2_xml_is_attr_defined(context,fmi_attr_id_quantity)) type->quantity = props->quantity;
+            if(!hasMin) type->typeMin = props->typeMin;
+            if(!hasMax) type->typeMax = props->typeMax;
+            if(!hasQuan) type->quantity = props->quantity;
         }
         else
             type = (fmi2_xml_integer_type_props_t*)declaredType;
-
+		}
         variable->typeBase = &type->typeBase;
 
-        hasStart = fmi2_xml_is_attr_defined(context,fmi_attr_id_start);
-        if(hasStart) {
+        hasStart = fmi2_xml_get_has_start(context, variable);
+		if(hasStart) {
             fmi2_xml_variable_start_integer_t * start = (fmi2_xml_variable_start_integer_t*)fmi2_xml_alloc_variable_type_start(td, &type->typeBase, sizeof(fmi2_xml_variable_start_integer_t));
             if(!start) {
                 fmi2_xml_parse_fatal(context, "Could not allocate memory");
@@ -612,11 +637,6 @@ int fmi2_xml_handle_Integer(fmi2_xml_parser_context_t *context, const char* data
                 )
                     return -1;
             variable->typeBase = &start->typeBase;
-        }
-        else {
-/*            if(fmi2_xml_is_attr_defined(context,fmi_attr_id_fixed)) {
-                jm_log_warning(context->callbacks, module, "When parsing variable %s: 'fixed' attributed is only allowed when start is defined", variable->name);
-            } */
         }
     }
     else {
@@ -641,7 +661,7 @@ int fmi2_xml_handle_Boolean(fmi2_xml_parser_context_t *context, const char* data
 
         if(!variable->typeBase) return -1;
 
-        hasStart = fmi2_xml_is_attr_defined(context,fmi_attr_id_start);
+        hasStart = fmi2_xml_get_has_start(context, variable);
         if(hasStart) {
             fmi2_xml_variable_start_integer_t * start = (fmi2_xml_variable_start_integer_t*)fmi2_xml_alloc_variable_type_start(td, variable->typeBase, sizeof(fmi2_xml_variable_start_integer_t ));
             if(!start) {
@@ -655,11 +675,6 @@ int fmi2_xml_handle_Boolean(fmi2_xml_parser_context_t *context, const char* data
                     return -1;
             variable->typeBase = &start->typeBase;
         }
-/*        else {
-            if(fmi2_xml_is_attr_defined(context,fmi_attr_id_fixed)) {
-                jm_log_warning(context->callbacks, module,"When parsing variable %s: 'fixed' attributed is only allowed when start is defined", variable->name);
-            }            
-        } */
     }
     else {
         /* don't do anything. might give out a warning if(data[0] != 0) */
@@ -683,7 +698,7 @@ int fmi2_xml_handle_String(fmi2_xml_parser_context_t *context, const char* data)
 
         if(!variable->typeBase) return -1;
 
-        hasStart = fmi2_xml_is_attr_defined(context,fmi_attr_id_start);
+        hasStart = fmi2_xml_get_has_start(context, variable);
         if(hasStart) {
             jm_vector(char)* bufStartStr = fmi2_xml_reserve_parse_buffer(context,1, 100);
             size_t strlen;
@@ -705,17 +720,44 @@ int fmi2_xml_handle_String(fmi2_xml_parser_context_t *context, const char* data)
             start->start[strlen] = 0;
             variable->typeBase = &start->typeBase;
         }
-        else {
-/*            if(fmi2_xml_is_attr_defined(context,fmi_attr_id_fixed)) {
-                jm_log_warning(context->callbacks, module, "When parsing variable %s: 'fixed' attributed is only allowed when start is defined", variable->name);
-            } */
-        }
     }
     else {
         /* don't do anything. might give out a warning if(data[0] != 0) */
         return 0;
     }
     return 0;
+}
+
+fmi2_xml_enum_variable_props_t * fmi2_xml_parse_enum_properties(fmi2_xml_parser_context_t* context, fmi2_xml_enum_variable_props_t* declaredType) {
+
+    fmi2_xml_model_description_t* md = context->modelDescription;
+    fmi2_xml_enum_variable_props_t * props = 0;
+	fmi2_xml_elm_enu_t elmID = fmi2_xml_elmID_Enumeration;
+    const char* quantity = 0;
+
+    /*        jm_vector(char)* bufName = fmi_get_parse_buffer(context,1);
+            jm_vector(char)* bufDescr = fmi_get_parse_buffer(context,2); */
+    jm_vector(char)* bufQuantity = fmi2_xml_reserve_parse_buffer(context,3,100);
+
+	props = (fmi2_xml_enum_variable_props_t*)fmi2_xml_alloc_variable_type_props(&md->typeDefinitions, 
+					&md->typeDefinitions.defaultEnumType.base.typeBase, sizeof(fmi2_xml_enum_variable_props_t));
+
+    if(!bufQuantity || !props ||
+            /* <xs:attribute name="quantity" type="xs:normalizedString"/> */
+            fmi2_xml_set_attr_string(context, elmID, fmi_attr_id_quantity, 0, bufQuantity)
+            )
+        return 0;
+    if(jm_vector_get_size(char)(bufQuantity))
+        quantity = jm_string_set_put(&md->typeDefinitions.quantities, jm_vector_get_itemp(char)(bufQuantity, 0));
+
+	props->quantity = (quantity == 0) ? declaredType->quantity: quantity;
+
+    if(     /* <xs:attribute name="min" type="xs:int"/> */
+			fmi2_xml_set_attr_int(context, elmID, fmi_attr_id_min, 0, &props->typeMin, declaredType->typeMin) ||
+            /* <xs:attribute name="max" type="xs:int"/> */
+			fmi2_xml_set_attr_int(context, elmID, fmi_attr_id_max, 0, &props->typeMax, declaredType->typeMax)
+            ) return 0;
+    return props;
 }
 
 int fmi2_xml_handle_Enumeration(fmi2_xml_parser_context_t *context, const char* data) {
@@ -726,7 +768,7 @@ int fmi2_xml_handle_Enumeration(fmi2_xml_parser_context_t *context, const char* 
         fmi2_xml_type_definitions_t* td = &md->typeDefinitions;
         fmi2_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
         fmi2_xml_variable_type_base_t * declaredType = 0;
-        fmi2_xml_integer_type_props_t * type = 0;
+        fmi2_xml_enum_variable_props_t * type = 0;
         int hasStart;
 
 		assert(!variable->typeBase);
@@ -740,28 +782,25 @@ int fmi2_xml_handle_Enumeration(fmi2_xml_parser_context_t *context, const char* 
                 fmi2_xml_is_attr_defined(context,fmi_attr_id_max) ||
                 fmi2_xml_is_attr_defined(context,fmi_attr_id_quantity)
                 ) {
-            fmi2_xml_integer_type_props_t* props = 0;
+            fmi2_xml_enum_variable_props_t* props = 0;
 
             if(declaredType->structKind != fmi2_xml_type_struct_enu_typedef)
-                props = (fmi2_xml_integer_type_props_t*)declaredType;
+                props = (fmi2_xml_enum_variable_props_t*)declaredType;
             else
-                props = (fmi2_xml_integer_type_props_t*)declaredType->baseTypeStruct;
+                props = (fmi2_xml_enum_variable_props_t*)declaredType->baseTypeStruct;
             assert(props->typeBase.structKind == fmi2_xml_type_struct_enu_props);
             fmi2_xml_reserve_parse_buffer(context, 1, 0);
             fmi2_xml_reserve_parse_buffer(context, 2, 0);
-            type = fmi2_xml_parse_integer_type_properties(context, fmi2_xml_elmID_Enumeration);
+			type = fmi2_xml_parse_enum_properties(context, props);
             if(!type) return -1;
             type->typeBase.baseTypeStruct = declaredType;
-            if(!fmi2_xml_is_attr_defined(context,fmi_attr_id_min)) type->typeMin = props->typeMin;
-            if(!fmi2_xml_is_attr_defined(context,fmi_attr_id_max)) type->typeMax = props->typeMax;
-            if(!fmi2_xml_is_attr_defined(context,fmi_attr_id_quantity)) type->quantity = props->quantity;
         }
         else
-            type = (fmi2_xml_integer_type_props_t*)declaredType;
+            type = (fmi2_xml_enum_variable_props_t*)declaredType;
 
         variable->typeBase = &type->typeBase;
 
-        hasStart = fmi2_xml_is_attr_defined(context,fmi_attr_id_start);
+        hasStart = fmi2_xml_get_has_start(context, variable);
         if(hasStart) {
             fmi2_xml_variable_start_integer_t * start = (fmi2_xml_variable_start_integer_t*)fmi2_xml_alloc_variable_type_start(td, &type->typeBase, sizeof(fmi2_xml_variable_start_integer_t ));
             if(!start) {
@@ -772,14 +811,8 @@ int fmi2_xml_handle_Enumeration(fmi2_xml_parser_context_t *context, const char* 
                 /*  <xs:attribute name="start" type="xs:integer"/> */
                     fmi2_xml_set_attr_int(context, fmi2_xml_elmID_Enumeration, fmi_attr_id_start, 0, &start->start, 0)
                 )
-                    return -1;
+                    start = 0;
             variable->typeBase = &start->typeBase;
-        }
-        else {
-/*            if(fmi2_xml_is_attr_defined(context,fmi_attr_id_fixed)) {
-                jm_log_warning(context->callbacks, module, "When parsing variable %s: 'fixed' attributed is only allowed when start is defined", variable->name);
-            }            
-			*/
         }
     }
     else {
@@ -934,7 +967,7 @@ int fmi2_xml_handle_ModelVariables(fmi2_xml_parser_context_t *context, const cha
 							}
 							if(startPresent && b_startPresent) {
 								jm_log_error(context->callbacks,module,
-									"Only one variable among aliases is allowed to have start attribute (varriables: %s and %s)",
+									"Only one variable among aliases is allowed to have start attribute (variables: %s and %s)",
 										a->name, b->name);
 								fmi2_xml_eliminate_bad_alias(context,i);
 								foundBadAlias = 1;

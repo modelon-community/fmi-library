@@ -21,8 +21,8 @@
 
 static const char * module = "FMI2XML";
 
-#define ATTR_STR(attr) #attr
-const char *fmi2_xmlAttrNames[] = {
+#define ATTR_STR(attr) #attr,
+const char *fmi2_xmlAttrNames[fmi2_xml_attr_number] = {
     FMI2_XML_ATTRLIST(ATTR_STR)
 };
 

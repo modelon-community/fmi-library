@@ -102,8 +102,6 @@ FMILIB_EXPORT fmi2_base_type_enu_t fmi2_import_get_variable_base_type(fmi2_impor
 
 /** \brief Check if the variable has "start" attribute */
 FMILIB_EXPORT int   fmi2_import_get_variable_has_start(fmi2_import_variable_t*);
-/** \brief Get the variable "fixed" attribute */
-FMILIB_EXPORT int   fmi2_import_get_variable_is_fixed(fmi2_import_variable_t*);
 
 /** \brief Get variability attribute */
 FMILIB_EXPORT fmi2_variability_enu_t fmi2_import_get_variability(fmi2_import_variable_t*);
@@ -111,7 +109,10 @@ FMILIB_EXPORT fmi2_variability_enu_t fmi2_import_get_variability(fmi2_import_var
 /** \brief Get causality attribute */
 FMILIB_EXPORT fmi2_causality_enu_t fmi2_import_get_causality(fmi2_import_variable_t*);
 
-/** \brief Cast general variable to a one with the specific type 
+/** \brief Get initial attribute */
+FMILIB_EXPORT fmi2_initial_enu_t fmi2_import_get_initial(fmi2_import_variable_t* );
+
+	/** \brief Cast general variable to a one with the specific type 
 	
 	@return Typed object or NULL if base type does not match
 */

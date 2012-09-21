@@ -51,7 +51,7 @@ typedef enum fmi2_fmu_kind_enu_t
 		fmi2_fmu_kind_unknown = 0,
         fmi2_fmu_kind_me = 1,
         fmi2_fmu_kind_cs = 2,
-        fmi2_fmu_kind_me_and_cs = 3
+        fmi2_fmu_kind_me_and_cs = 3 /* defined to be equal to (fmi2_fmu_kind_me|fmi2_fmu_kind_cs) */
 } fmi2_fmu_kind_enu_t;
 
 /** \brief Convert a #fmi2_fmu_kind_enu_t constant into string  */
@@ -59,12 +59,12 @@ FMILIB_EXPORT const char* fmi2_fmu_kind_to_string(fmi2_fmu_kind_enu_t kind);
 
 /**  \brief Variability property for variables */
 typedef enum fmi2_variability_enu_t {
-        fmi2_variability_enu_constant,
-        fmi2_variability_enu_fixed,
-        fmi2_variability_enu_tunable,
-        fmi2_variability_enu_discrete,
-        fmi2_variability_enu_continuous,
-		fmi2_variability_enu_unknown
+        fmi2_variability_enu_constant = 0,
+        fmi2_variability_enu_fixed  = 1,
+        fmi2_variability_enu_tunable  = 2,
+        fmi2_variability_enu_discrete  = 3,
+        fmi2_variability_enu_continuous  = 4,
+		fmi2_variability_enu_unknown  = 5
 } fmi2_variability_enu_t;
 
 /** \brief Convert a #fmi2_variability_enu_t constant into string  */
@@ -72,11 +72,11 @@ FMILIB_EXPORT const char* fmi2_variability_to_string(fmi2_variability_enu_t v);
 
 /**  \brief Causality property for variables */
 typedef enum fmi2_causality_enu_t {
-        fmi2_causality_enu_parameter,
-        fmi2_causality_enu_input,
-        fmi2_causality_enu_output,
-        fmi2_causality_enu_local,
-        fmi2_causality_enu_unknown
+        fmi2_causality_enu_parameter = 0,
+        fmi2_causality_enu_input  = 1,
+        fmi2_causality_enu_output  = 2,
+        fmi2_causality_enu_local  = 3,
+        fmi2_causality_enu_unknown = 4
 } fmi2_causality_enu_t;
 
 /** \brief Convert a #fmi2_causality_enu_t constant into string  */
@@ -87,11 +87,24 @@ typedef enum fmi2_initial_enu_t {
         fmi2_initial_enu_exact,
         fmi2_initial_enu_approx,
         fmi2_initial_enu_calculated,
-        fmi2_initial_enu_unknown
+        fmi2_initial_enu_unknown /* must be last*/
 } fmi2_initial_enu_t;
 
 /** \brief Convert a #fmi2_initial_enu_t constant into string  */
 FMILIB_EXPORT const char* fmi2_initial_to_string(fmi2_initial_enu_t c);
+
+/** 
+	\brief Get default initial attribute value for the given variability and causality combination.
+	\return The default initial attribute or fmi2_initial_enu_unknown if combination of causality
+			and variability is not valid.
+*/
+FMILIB_EXPORT fmi2_initial_enu_t fmi2_get_default_initial(fmi2_variability_enu_t v, fmi2_causality_enu_t c);
+
+/** 
+	\brief Check if the combination of variability, causality and initial is valid.
+	\return Same initial as submitted if the combination is valid. Otherwise, same as fmi2_get_default_initial.
+*/
+FMILIB_EXPORT fmi2_initial_enu_t fmi2_get_valid_initial(fmi2_variability_enu_t v, fmi2_causality_enu_t c, fmi2_initial_enu_t i);
 
 /** \brief Alias property for variables */
 typedef enum fmi2_variable_alias_kind_enu_t {

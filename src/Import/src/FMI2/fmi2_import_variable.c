@@ -58,16 +58,16 @@ int   fmi2_import_get_variable_has_start(fmi2_import_variable_t* v) {
 	return fmi2_xml_get_variable_has_start(v);
 }
 
-int   fmi2_import_get_variable_is_fixed(fmi2_import_variable_t* v) {
-	return fmi2_xml_get_variable_is_fixed(v);
-}
-
 fmi2_variability_enu_t fmi2_import_get_variability(fmi2_import_variable_t* v) {
 	return fmi2_xml_get_variability(v);
 }
 
 fmi2_causality_enu_t fmi2_import_get_causality(fmi2_import_variable_t* v) {
 	return fmi2_xml_get_causality(v);
+}
+
+fmi2_initial_enu_t fmi2_import_get_initial(fmi2_import_variable_t* v) {
+	return fmi2_xml_get_initial(v);
 }
 
 /* DirectDependency is returned for variables with causality Output. Null pointer for others. */

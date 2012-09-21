@@ -123,13 +123,13 @@ fmi2_xml_unit_t* fmi2_xml_get_real_type_unit(fmi2_xml_real_typedef_t* t) {
 int fmi2_xml_get_real_type_is_relative_quantity(fmi2_xml_real_typedef_t* t) {
     fmi2_xml_variable_typedef_t* vt = (void*)t;
     fmi2_xml_real_type_props_t* props = (fmi2_xml_real_type_props_t*)(vt->typeBase.baseTypeStruct);
-    return props->typeBase.flags & FMI2_VARIABLE_RELATIVE_QUANTITY;
+	return props->typeBase.isRelativeQuantity;
 }
 
 int fmi2_xml_get_real_type_is_unbounded(fmi2_xml_real_typedef_t* t) {
     fmi2_xml_variable_typedef_t* vt = (void*)t;
     fmi2_xml_real_type_props_t* props = (fmi2_xml_real_type_props_t*)(vt->typeBase.baseTypeStruct);
-    return props->typeBase.flags & FMI2_VARIABLE_UNBOUNDED;
+	return props->typeBase.isUnbounded;
 }
 
 
@@ -204,8 +204,8 @@ void fmi2_xml_init_variable_type_base(fmi2_xml_variable_type_base_t* type, fmi2_
     type->next = 0;
     type->structKind = kind;
     type->baseType = baseType;
-    type->flags = 0;
-    type->isFixed = 0;
+	type->isRelativeQuantity = 0;
+	type->isUnbounded = 0;
 }
 
 void fmi2_xml_init_real_type_properties(fmi2_xml_real_type_props_t* type) {
@@ -424,10 +424,8 @@ fmi2_xml_real_type_props_t* fmi2_xml_parse_real_type_properties(fmi2_xml_parser_
             /*  <xs:attribute name="nominal" type="xs:double"/> */
             fmi2_xml_set_attr_double(context, elmID, fmi_attr_id_nominal, 0, &props->typeNominal, 1)
             ) return 0;
-	if(relQuanBuf)
-		props->typeBase.flags = props->typeBase.flags | FMI2_VARIABLE_RELATIVE_QUANTITY;
-	if(unboundedBuf)
-		props->typeBase.flags = props->typeBase.flags | FMI2_VARIABLE_UNBOUNDED;
+	props->typeBase.isRelativeQuantity = (relQuanBuf) ? 1:0;
+	props->typeBase.isUnbounded = (unboundedBuf) ? 1 : 0;
     return props;
 }
 

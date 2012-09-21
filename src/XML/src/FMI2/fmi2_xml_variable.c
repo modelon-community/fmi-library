@@ -117,17 +117,16 @@ int fmi2_xml_get_variable_has_start(fmi2_xml_variable_t* v) {
     return (v->typeBase->structKind == fmi2_xml_type_struct_enu_start);
 }
 
-int   fmi2_xml_get_variable_is_fixed(fmi2_xml_variable_t* v) {
-    fmi2_xml_variable_type_base_t* type = v->typeBase;
-    return ((type->structKind == fmi2_xml_type_struct_enu_start) && (type->isFixed));
-}
-
 fmi2_variability_enu_t fmi2_xml_get_variability(fmi2_xml_variable_t* v) {
     return (fmi2_variability_enu_t)v->variability;
 }
 
 fmi2_causality_enu_t fmi2_xml_get_causality(fmi2_xml_variable_t* v) {
     return (fmi2_causality_enu_t)v->causality;
+}
+
+fmi2_initial_enu_t fmi2_xml_get_initial(fmi2_xml_variable_t* v) {
+	return (fmi2_initial_enu_t)v->initial;
 }
 
 double fmi2_xml_get_real_variable_start(fmi2_xml_real_variable_t* v) {
@@ -302,7 +301,7 @@ int fmi2_xml_handle_ScalarVariable(fmi2_xml_parser_context_t *context, const cha
 
             if(!bufName || !bufDescr) return -1;
 
-            /*   <xs:attribute name="valueReference" type="xs:unsignedInt" use="required"> */
+            /*   <xs:attribute name="valueReference" type="xs:unsignedInt" use="optional but required for FMI"> */
             if(fmi2_xml_set_attr_uint(context, fmi2_xml_elmID_ScalarVariable, fmi_attr_id_valueReference, 1, &vr, 0)) return -1;
 
             if(vr == fmi2_undefined_value_reference) {
@@ -340,29 +339,55 @@ int fmi2_xml_handle_ScalarVariable(fmi2_xml_parser_context_t *context, const cha
             variable->directDependency = 0;
 			variable->originalIndex = jm_vector_get_size(jm_named_ptr)(&md->variablesByName) - 1;
 
-              {
+            {
+                jm_name_ID_map_t causalityConventionMap[] = {{"local",fmi2_causality_enu_local},
+                                                             {"input",fmi2_causality_enu_input},
+                                                             {"output",fmi2_causality_enu_output},
+                                                             {"parameter",fmi2_causality_enu_parameter},
+															{0,0}};
                 jm_name_ID_map_t variabilityConventionMap[] = {{"continuous",fmi2_variability_enu_continuous},
                                                                {"constant", fmi2_variability_enu_constant},
                                                                {"fixed", fmi2_variability_enu_fixed},
                                                                {"tunable", fmi2_variability_enu_tunable},
                                                                {"discrete", fmi2_variability_enu_discrete},
 																{0,0}};
-                unsigned int variability;
+                jm_name_ID_map_t initialConventionMap[] = {{"approx",fmi2_initial_enu_approx},
+                                                            {"calculated",fmi2_initial_enu_calculated},
+                                                            {"exact",fmi2_initial_enu_exact},
+															{0,0}};
+                unsigned int causality, variability, initial;
+				fmi2_initial_enu_t defaultInitial;
+                /* <xs:attribute name="causality" default="local"> */
+                if(fmi2_xml_set_attr_enum(context, fmi2_xml_elmID_ScalarVariable, fmi_attr_id_causality,0,&causality,fmi2_causality_enu_local,causalityConventionMap))
+                    causality = fmi2_causality_enu_local;
+                variable->causality = causality;
                 /*  <xs:attribute name="variability" default="continuous"> */
                 if(fmi2_xml_set_attr_enum(context, fmi2_xml_elmID_ScalarVariable, fmi_attr_id_variability,0,&variability,fmi2_variability_enu_continuous,variabilityConventionMap))
-                    return -1;
-                variable->variability = variability;
-            }
-            {
-                jm_name_ID_map_t causalityConventionMap[] = {{"local",fmi2_causality_enu_local},
-                                                             {"input",fmi2_causality_enu_input},
-                                                             {"output",fmi2_causality_enu_output},
-                                                             {"parameter",fmi2_causality_enu_parameter},{0,0}};
-                /* <xs:attribute name="causality" default="internal"> */
-                unsigned int causality;
-                if(fmi2_xml_set_attr_enum(context, fmi2_xml_elmID_ScalarVariable, fmi_attr_id_causality,0,&causality,fmi2_causality_enu_local,causalityConventionMap))
-                    return -1;
-                variable->causality = causality;
+                    variability = fmi2_variability_enu_continuous;
+            
+				defaultInitial = fmi2_get_default_initial((fmi2_variability_enu_t)variability, (fmi2_causality_enu_t)causality);
+				if(defaultInitial == fmi2_initial_enu_unknown) {
+					fmi2_xml_parse_error(context,"Invalid combination of variability %s and causality %s. Setting variability to 'fixed'",
+						fmi2_variability_to_string((fmi2_variability_enu_t)variability), 
+						fmi2_causality_to_string((fmi2_causality_enu_t)causality));
+					variability = fmi2_variability_enu_fixed;
+					defaultInitial = fmi2_get_default_initial((fmi2_variability_enu_t)variability, (fmi2_causality_enu_t)causality);
+				}
+                variable->variability = variability;				
+
+                /* <xs:attribute name="initial"> */
+                if(fmi2_xml_set_attr_enum(context, fmi2_xml_elmID_ScalarVariable, fmi_attr_id_initial,0,&initial,defaultInitial,initialConventionMap))
+                    initial = defaultInitial;
+				defaultInitial = fmi2_get_valid_initial((fmi2_variability_enu_t)variability, (fmi2_causality_enu_t)causality, (fmi2_initial_enu_t) initial);
+				if(defaultInitial != initial) {
+					fmi2_xml_parse_error(context,"Initial '%s' is not allowed for variability '%s' and causality '%s'. Setting initial to '%s'",
+						fmi2_initial_to_string((fmi2_initial_enu_t)initial),
+						fmi2_variability_to_string((fmi2_variability_enu_t)variability), 
+						fmi2_causality_to_string((fmi2_causality_enu_t)causality),
+						fmi2_initial_to_string(defaultInitial));
+					initial = defaultInitial;
+				}
+                variable->initial = initial;
             }
     }
     else {
@@ -498,10 +523,8 @@ int fmi2_xml_handle_Real(fmi2_xml_parser_context_t *context, const char* data) {
                 if( !hasMax) type->typeMax = props->typeMax;
                 if( !hasNom) type->typeNominal = props->typeNominal;
                 if( !hasQuan) type->quantity = props->quantity;
-                if( !hasRelQ) type->typeBase.flags = 
-					type->typeBase.flags | (props->typeBase.flags & FMI2_VARIABLE_RELATIVE_QUANTITY);
-                if( !hasUnb) type->typeBase.flags = 
-					type->typeBase.flags | (props->typeBase.flags & FMI2_VARIABLE_UNBOUNDED);
+				if( !hasRelQ) type->typeBase.isRelativeQuantity = type->typeBase.isRelativeQuantity;
+				if( !hasUnb) type->typeBase.isUnbounded = type->typeBase.isUnbounded;
             }
             else
                 type = (fmi2_xml_real_type_props_t*)declaredType;
@@ -511,25 +534,21 @@ int fmi2_xml_handle_Real(fmi2_xml_parser_context_t *context, const char* data) {
         hasStart = fmi2_xml_is_attr_defined(context, fmi_attr_id_start);
         if(hasStart) {
             fmi2_xml_variable_start_real_t * start = (fmi2_xml_variable_start_real_t*)fmi2_xml_alloc_variable_type_start(td, &type->typeBase, sizeof(fmi2_xml_variable_start_real_t));
-            int isFixedBuf;
             if(!start) {
                 fmi2_xml_parse_fatal(context, "Could not allocate memory");
                 return -1;
             }
             if(
                 /*  <xs:attribute name="start" type="xs:double"/> */
-                    fmi2_xml_set_attr_double(context, fmi2_xml_elmID_Real, fmi_attr_id_start, 0, &start->start, 0) ||
-                /*  <xs:attribute name="fixed" type="xs:boolean"> */
-                    fmi2_xml_set_attr_boolean(context, fmi2_xml_elmID_Real, fmi_attr_id_fixed, 0, &(isFixedBuf), 1)
+                    fmi2_xml_set_attr_double(context, fmi2_xml_elmID_Real, fmi_attr_id_start, 0, &start->start, 0)
                 )
                     return -1;
-            start->typeBase.isFixed = isFixedBuf;
             variable->typeBase = &start->typeBase;
         }
         else {
-            if(fmi2_xml_is_attr_defined(context,fmi_attr_id_fixed)) {
+/*            if(fmi2_xml_is_attr_defined(context,fmi_attr_id_fixed)) {
                 jm_log_warning(context->callbacks, module, "When parsing variable %s: 'fixed' attributed is only allowed when start is defined", variable->name);
-            }
+            } */
         }
     }
     else {
@@ -583,25 +602,21 @@ int fmi2_xml_handle_Integer(fmi2_xml_parser_context_t *context, const char* data
         hasStart = fmi2_xml_is_attr_defined(context,fmi_attr_id_start);
         if(hasStart) {
             fmi2_xml_variable_start_integer_t * start = (fmi2_xml_variable_start_integer_t*)fmi2_xml_alloc_variable_type_start(td, &type->typeBase, sizeof(fmi2_xml_variable_start_integer_t));
-            int isFixedBuf;
             if(!start) {
                 fmi2_xml_parse_fatal(context, "Could not allocate memory");
                 return -1;
             }
             if(
                 /*  <xs:attribute name="start" type="xs:integer"/> */
-                    fmi2_xml_set_attr_int(context, fmi2_xml_elmID_Integer, fmi_attr_id_start, 0, &start->start, 0) ||
-                /*  <xs:attribute name="fixed" type="xs:boolean"> */
-                    fmi2_xml_set_attr_boolean(context, fmi2_xml_elmID_Integer, fmi_attr_id_fixed, 0, &isFixedBuf, 1)
+                    fmi2_xml_set_attr_int(context, fmi2_xml_elmID_Integer, fmi_attr_id_start, 0, &start->start, 0)
                 )
                     return -1;
-            start->typeBase.isFixed = isFixedBuf;
             variable->typeBase = &start->typeBase;
         }
         else {
-            if(fmi2_xml_is_attr_defined(context,fmi_attr_id_fixed)) {
+/*            if(fmi2_xml_is_attr_defined(context,fmi_attr_id_fixed)) {
                 jm_log_warning(context->callbacks, module, "When parsing variable %s: 'fixed' attributed is only allowed when start is defined", variable->name);
-            }
+            } */
         }
     }
     else {
@@ -628,7 +643,6 @@ int fmi2_xml_handle_Boolean(fmi2_xml_parser_context_t *context, const char* data
 
         hasStart = fmi2_xml_is_attr_defined(context,fmi_attr_id_start);
         if(hasStart) {
-            int isFixedBuf;
             fmi2_xml_variable_start_integer_t * start = (fmi2_xml_variable_start_integer_t*)fmi2_xml_alloc_variable_type_start(td, variable->typeBase, sizeof(fmi2_xml_variable_start_integer_t ));
             if(!start) {
                 fmi2_xml_parse_fatal(context, "Could not allocate memory");
@@ -636,19 +650,16 @@ int fmi2_xml_handle_Boolean(fmi2_xml_parser_context_t *context, const char* data
             }
             if(
                   /*  <xs:attribute name="start" type="xs:boolean"/> */
-                    fmi2_xml_set_attr_boolean(context, fmi2_xml_elmID_Boolean, fmi_attr_id_start, 0, (int*)&start->start, 0) ||
-                /*  <xs:attribute name="fixed" type="xs:boolean"> */
-                    fmi2_xml_set_attr_boolean(context, fmi2_xml_elmID_Boolean, fmi_attr_id_fixed, 0, &isFixedBuf, 1)
+                    fmi2_xml_set_attr_boolean(context, fmi2_xml_elmID_Boolean, fmi_attr_id_start, 0, (int*)&start->start, 0) 
                 )
                     return -1;
-            start->typeBase.isFixed = isFixedBuf;
             variable->typeBase = &start->typeBase;
         }
-        else {
+/*        else {
             if(fmi2_xml_is_attr_defined(context,fmi_attr_id_fixed)) {
                 jm_log_warning(context->callbacks, module,"When parsing variable %s: 'fixed' attributed is only allowed when start is defined", variable->name);
             }            
-        }
+        } */
     }
     else {
         /* don't do anything. might give out a warning if(data[0] != 0) */
@@ -676,13 +687,10 @@ int fmi2_xml_handle_String(fmi2_xml_parser_context_t *context, const char* data)
         if(hasStart) {
             jm_vector(char)* bufStartStr = fmi2_xml_reserve_parse_buffer(context,1, 100);
             size_t strlen;
-            int isFixed;
             fmi2_xml_variable_start_string_t * start;
             if(
                  /*   <xs:attribute name="start" type="xs:string"/> */
-                    fmi2_xml_set_attr_string(context, fmi2_xml_elmID_String, fmi_attr_id_start, 0, bufStartStr) ||
-                /*  <xs:attribute name="fixed" type="xs:boolean"> */
-                    fmi2_xml_set_attr_boolean(context, fmi2_xml_elmID_Boolean, fmi_attr_id_fixed, 0, &isFixed, 1)
+                    fmi2_xml_set_attr_string(context, fmi2_xml_elmID_String, fmi_attr_id_start, 0, bufStartStr)
                 )
                     return -1;
             strlen = jm_vector_get_size_char(bufStartStr);
@@ -698,9 +706,9 @@ int fmi2_xml_handle_String(fmi2_xml_parser_context_t *context, const char* data)
             variable->typeBase = &start->typeBase;
         }
         else {
-            if(fmi2_xml_is_attr_defined(context,fmi_attr_id_fixed)) {
+/*            if(fmi2_xml_is_attr_defined(context,fmi_attr_id_fixed)) {
                 jm_log_warning(context->callbacks, module, "When parsing variable %s: 'fixed' attributed is only allowed when start is defined", variable->name);
-            }
+            } */
         }
     }
     else {
@@ -756,25 +764,22 @@ int fmi2_xml_handle_Enumeration(fmi2_xml_parser_context_t *context, const char* 
         hasStart = fmi2_xml_is_attr_defined(context,fmi_attr_id_start);
         if(hasStart) {
             fmi2_xml_variable_start_integer_t * start = (fmi2_xml_variable_start_integer_t*)fmi2_xml_alloc_variable_type_start(td, &type->typeBase, sizeof(fmi2_xml_variable_start_integer_t ));
-            int isFixedBuf;
             if(!start) {
                 fmi2_xml_parse_fatal(context, "Could not allocate memory");
                 return -1;
             }
             if(
                 /*  <xs:attribute name="start" type="xs:integer"/> */
-                    fmi2_xml_set_attr_int(context, fmi2_xml_elmID_Enumeration, fmi_attr_id_start, 0, &start->start, 0) ||
-                /*  <xs:attribute name="fixed" type="xs:boolean"> */
-                    fmi2_xml_set_attr_boolean(context, fmi2_xml_elmID_Enumeration, fmi_attr_id_fixed, 0, &isFixedBuf, 1)
+                    fmi2_xml_set_attr_int(context, fmi2_xml_elmID_Enumeration, fmi_attr_id_start, 0, &start->start, 0)
                 )
                     return -1;
-            start->typeBase.isFixed = isFixedBuf;
             variable->typeBase = &start->typeBase;
         }
         else {
-            if(fmi2_xml_is_attr_defined(context,fmi_attr_id_fixed)) {
+/*            if(fmi2_xml_is_attr_defined(context,fmi_attr_id_fixed)) {
                 jm_log_warning(context->callbacks, module, "When parsing variable %s: 'fixed' attributed is only allowed when start is defined", variable->name);
             }            
+			*/
         }
     }
     else {

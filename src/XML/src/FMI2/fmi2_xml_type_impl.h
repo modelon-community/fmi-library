@@ -67,10 +67,8 @@ struct fmi2_xml_variable_type_base_t {
 
     char structKind; /* one of fmi2_xml_type_contrains_kind.*/
     char baseType;   /* one of fmi2_xml_base_type */
-#define FMI2_VARIABLE_RELATIVE_QUANTITY 1
-#define FMI2_VARIABLE_UNBOUNDED			2
-    char flags;   /* relativeQuantity (bit 0) & unbounded (bit 1) only used in fmi2_xml_real_type_props_t) */
-    char isFixed;   /* only used for fmi2_xml_type_struct_enu_start*/
+    char isRelativeQuantity;   /* relativeQuantity flag set. Only used in fmi2_xml_real_type_props_t) */
+	char isUnbounded;          /* unbounded flag set only used in fmi2_xml_real_type_props_t) */
 } ;
 
 /* 

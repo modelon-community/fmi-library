@@ -98,6 +98,41 @@ const char* fmi2_initial_to_string(fmi2_initial_enu_t ini) {
 	return "Undefined";
 }
 
+fmi2_initial_enu_t initialDefaultsTable[fmi2_variability_enu_unknown][fmi2_causality_enu_unknown] = {
+	/*                parameter                    input                      output                    local */
+	/* constant */  {fmi2_initial_enu_unknown, fmi2_initial_enu_unknown, fmi2_initial_enu_exact,      fmi2_initial_enu_exact},
+	/* fixed   */   {fmi2_initial_enu_exact,   fmi2_initial_enu_exact,   fmi2_initial_enu_calculated, fmi2_initial_enu_calculated},
+	/* tunable */   {fmi2_initial_enu_exact,   fmi2_initial_enu_exact,   fmi2_initial_enu_calculated, fmi2_initial_enu_calculated},
+	/* discrete */  {fmi2_initial_enu_unknown, fmi2_initial_enu_exact,   fmi2_initial_enu_calculated, fmi2_initial_enu_calculated},
+	/* continuous */{fmi2_initial_enu_unknown, fmi2_initial_enu_exact,   fmi2_initial_enu_calculated, fmi2_initial_enu_calculated}
+};
+
+fmi2_initial_enu_t fmi2_get_default_initial(fmi2_variability_enu_t v, fmi2_causality_enu_t c) {
+	if((unsigned)v >= (unsigned)fmi2_variability_enu_unknown) return fmi2_initial_enu_unknown;
+	if((unsigned)c >= (unsigned)fmi2_causality_enu_unknown) return fmi2_initial_enu_unknown;
+	return initialDefaultsTable[v][c];
+}
+
+FMILIB_EXPORT fmi2_initial_enu_t fmi2_get_valid_initial(fmi2_variability_enu_t v, fmi2_causality_enu_t c, fmi2_initial_enu_t i) {
+	fmi2_initial_enu_t defaultInitial = fmi2_get_default_initial(v, c);
+	if( (defaultInitial == i) ||
+		((unsigned)i >= (unsigned)fmi2_initial_enu_unknown) ||
+		(defaultInitial == fmi2_initial_enu_unknown))
+		return defaultInitial;
+	/*  At this point we know that v, c & i are fine and that (defaultInitial != i) 
+		Check the other allowed combinations: */
+	if(defaultInitial == fmi2_initial_enu_calculated) {
+		if(v >= fmi2_variability_enu_discrete) {
+			return i;
+		}
+		else if(i != fmi2_initial_enu_exact)
+			return i;
+	}
+	/* in all other cases the combination is not valid and default should be used */
+	return defaultInitial;
+}
+
+
 const char * fmi2_capability_to_string(fmi2_capabilities_enu_t id) {
 #define FMI2_ME_CAPABILITIES_ENU_TO_STR(c) case fmi2_me_ ## c: return #c;
 #define FMI2_CS_CAPABILITIES_ENU_TO_STR(c) case fmi2_cs_ ## c: return #c;

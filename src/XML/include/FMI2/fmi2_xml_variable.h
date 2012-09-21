@@ -51,11 +51,10 @@ fmi2_xml_variable_typedef_t* fmi2_xml_get_variable_declared_type(fmi2_xml_variab
 fmi2_base_type_enu_t fmi2_xml_get_variable_base_type(fmi2_xml_variable_t*);
 
 int   fmi2_xml_get_variable_has_start(fmi2_xml_variable_t*);
-int   fmi2_xml_get_variable_is_fixed(fmi2_xml_variable_t*);
 
 fmi2_variability_enu_t fmi2_xml_get_variability(fmi2_xml_variable_t*);
-
 fmi2_causality_enu_t fmi2_xml_get_causality(fmi2_xml_variable_t*);
+fmi2_initial_enu_t fmi2_xml_get_initial(fmi2_xml_variable_t*);
 
 /* DirectDependency is returned for variables with causality Output. Null pointer for others. */
 size_t fmi2_xml_get_direct_dependency_size(fmi2_xml_model_description_t* md,fmi2_xml_variable_t*);

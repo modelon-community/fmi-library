@@ -111,11 +111,13 @@ void fmi2_xml_parse_fatal(fmi2_xml_parser_context_t *context, const char* fmt, .
     XML_StopParser(context->parser,0);
 }
 
-void fmi2_xml_parse_error(fmi2_xml_parser_context_t *context, const char* message) {
+void fmi2_xml_parse_error(fmi2_xml_parser_context_t *context, const char* fmt, ...) {
+    va_list args;
+    va_start (args, fmt);
 	if(context->parser)
-		jm_log_error(context->callbacks, module, "[Line:%u] %s", XML_GetCurrentLineNumber(context->parser),message);
-	else
-		jm_log_error(context->callbacks, module, "%s", message);
+		jm_log_info(context->callbacks, module, "[Line:%u] Detected during parsing:", XML_GetCurrentLineNumber(context->parser));
+	jm_log_error_v(context->callbacks, module,fmt, args);
+    va_end (args);
 }
 
 

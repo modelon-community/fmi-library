@@ -48,7 +48,6 @@ extern "C" {
     EXPAND_XML_ATTRNAME(nominal) \
     EXPAND_XML_ATTRNAME(declaredType) \
     EXPAND_XML_ATTRNAME(start) \
-    EXPAND_XML_ATTRNAME(fixed) \
     EXPAND_XML_ATTRNAME(startTime) \
     EXPAND_XML_ATTRNAME(stopTime) \
     EXPAND_XML_ATTRNAME(tolerance) \
@@ -56,6 +55,7 @@ extern "C" {
     EXPAND_XML_ATTRNAME(valueReference) \
     EXPAND_XML_ATTRNAME(variability) \
     EXPAND_XML_ATTRNAME(causality) \
+    EXPAND_XML_ATTRNAME(initial) \
     EXPAND_XML_ATTRNAME(modelName) \
     EXPAND_XML_ATTRNAME(modelIdentifier) \
     EXPAND_XML_ATTRNAME(guid) \
@@ -206,7 +206,7 @@ int fmi2_xml_alloc_parse_buffer(fmi2_xml_parser_context_t *context, size_t items
 void fmi2_xml_free_parse_buffer(fmi2_xml_parser_context_t *context);
 
 void fmi2_xml_parse_fatal(fmi2_xml_parser_context_t *context, const char* fmt, ...);
-void fmi2_xml_parse_error(fmi2_xml_parser_context_t *context, const char* message);
+void fmi2_xml_parse_error(fmi2_xml_parser_context_t *context, const char* fmt, ...);
 
 int fmi2_xml_set_attr_string(fmi2_xml_parser_context_t *context, fmi2_xml_elm_enu_t elmID, fmi2_xml_attr_enu_t attrID, int required, jm_vector(char)* field);
 int fmi2_xml_set_attr_uint(fmi2_xml_parser_context_t *context, fmi2_xml_elm_enu_t elmID, fmi2_xml_attr_enu_t attrID, int required, unsigned int* field, unsigned int defaultVal);

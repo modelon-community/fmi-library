@@ -898,8 +898,9 @@ int fmi1_xml_handle_ModelVariables(fmi1_xml_parser_context_t *context, const cha
         }
         varByVR = md->variablesByVR;
         jm_vector_qsort(jm_voidp)(varByVR, fmi1_xml_compare_vr_and_original_index);
+        numvar = jm_vector_get_size(jm_named_ptr)(&md->variablesByName);
 
-        {
+        if(numvar > 0) {
             int foundBadAlias;
 
 			jm_log_verbose(context->callbacks, module,"Checking alias information");

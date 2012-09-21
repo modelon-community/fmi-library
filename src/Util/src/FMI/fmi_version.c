@@ -23,8 +23,7 @@ static const char* fmi_versions[] = {
 
 const char * fmi_version_to_string(fmi_version_enu_t v){
 	if( (v <= fmi_version_unknown_enu) || (v > fmi_version_unsupported_enu - 1)) {
-		assert(0);
-		return "UNEXPECTED";
+		return "unknown";
 	}
 	return fmi_versions[v - 1];
 }

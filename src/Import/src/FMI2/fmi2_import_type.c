@@ -112,3 +112,12 @@ const char* fmi2_import_get_enum_type_item_name(fmi2_import_enumeration_typedef_
 const char* fmi2_import_get_enum_type_item_description(fmi2_import_enumeration_typedef_t* t, unsigned int  item){
 	return fmi2_xml_get_enum_type_item_description(t, item);
 }
+
+int fmi2_import_get_enum_type_item_value(fmi2_import_enumeration_typedef_t* t, unsigned int  item) {
+	return fmi2_xml_get_enum_type_item_value(t, item);
+}
+
+const char* fmi2_import_get_enum_type_value_name(fmi2_import_enumeration_typedef_t* t, int value) {
+	return fmi2_xml_get_enum_type_value_name(t, value);
+}
+

@@ -163,7 +163,7 @@ const char * fmi2_SI_base_unit_to_string(fmi2_SI_base_units_enu_t id) {
 		This most likely be under [8*fmi2_SI_base_units_Num]. If the return value is larger or equal 
 		than bufSize than the string could not be fitted in the buffer. 
 */
-size_t fmi2_SI_base_unit_exp_to_string(int exp[fmi2_SI_base_units_Num], size_t bufSize, char buf[]){
+size_t fmi2_SI_base_unit_exp_to_string(const int exp[fmi2_SI_base_units_Num], size_t bufSize, char buf[]){
 	int i = 0;
 	int num_pos_exp = 0, num_neg_exp = 0; /* number of exponents */
 	size_t len = 0;

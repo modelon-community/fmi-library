@@ -29,8 +29,8 @@ fmi2_xml_display_unit_t* fmi2_xml_get_type_display_unit(fmi2_xml_real_typedef_t*
     fmi2_xml_variable_typedef_t* vt = (void*)t;
     fmi2_xml_real_type_props_t * props = (fmi2_xml_real_type_props_t*)vt->typeBase.baseTypeStruct;
     fmi2_xml_display_unit_t* du = props->displayUnit;
-    if(du->displayUnit) return du;
-    return 0;
+	if(!du || (&du->baseUnit->defaultDisplay == du)) return 0;
+    return du;
 }
 
 size_t fmi2_xml_get_type_definition_number(fmi2_xml_type_definitions_t* td) {
@@ -177,6 +177,15 @@ const char* fmi2_xml_get_enum_type_item_name(fmi2_xml_enumeration_typedef_t* t, 
     return jm_vector_get_item(jm_named_ptr)(&props->enumItems,item-1).name;
 }
 
+int fmi2_xml_get_enum_type_item_value(fmi2_xml_enumeration_typedef_t* t, unsigned int  item) {
+    fmi2_xml_variable_typedef_t* vt = (fmi2_xml_variable_typedef_t*)(void*)t;
+    fmi2_xml_enum_typedef_props_t* props = (fmi2_xml_enum_typedef_props_t*)(vt->typeBase.baseTypeStruct);
+	fmi2_xml_enum_type_item_t* eitem;
+    if((item == 0) || (item > fmi2_xml_get_enum_type_size(t) )) return  0;
+	eitem = jm_vector_get_item(jm_named_ptr)(&props->enumItems,item-1).ptr;
+    return eitem->value;
+}
+
 const char* fmi2_xml_get_enum_type_value_name(fmi2_xml_enumeration_typedef_t* t, int value) {
     fmi2_xml_variable_typedef_t* vt = (fmi2_xml_variable_typedef_t*)(void*)t;
     fmi2_xml_enum_typedef_props_t* props = (fmi2_xml_enum_typedef_props_t*)(vt->typeBase.baseTypeStruct);
@@ -194,8 +203,8 @@ const char* fmi2_xml_get_enum_type_item_description(fmi2_xml_enumeration_typedef
     fmi2_xml_variable_typedef_t* vt = (void*)t;
     fmi2_xml_enum_typedef_props_t* props = (fmi2_xml_enum_typedef_props_t*)(vt->typeBase.baseTypeStruct);
     fmi2_xml_enum_type_item_t* e;
-    if(item >= fmi2_xml_get_enum_type_size(t) ) return  0;
-    e = jm_vector_get_item(jm_named_ptr)(&props->enumItems,item).ptr;
+    if(item > fmi2_xml_get_enum_type_size(t) ) return  0;
+    e = jm_vector_get_item(jm_named_ptr)(&props->enumItems,item-1).ptr;
     return e->itemDesciption;
 }
 
@@ -429,14 +438,14 @@ fmi2_xml_real_type_props_t* fmi2_xml_parse_real_type_properties(fmi2_xml_parser_
     return props;
 }
 
-int fmi2_xml_handle_RealType(fmi2_xml_parser_context_t *context, const char* data) {
+int fmi2_xml_handle_Real(fmi2_xml_parser_context_t *context, const char* data) {
     if(!data) {
         fmi2_xml_model_description_t* md = context->modelDescription;
         jm_named_ptr named;
         fmi2_xml_variable_typedef_t* type;
         fmi2_xml_real_type_props_t * props;
 
-        props = fmi2_xml_parse_real_type_properties(context, fmi2_xml_elmID_RealType);
+        props = fmi2_xml_parse_real_type_properties(context, fmi2_xml_elmID_Real);
         if(!props) return -1;
         named = jm_vector_get_last(jm_named_ptr)(&md->typeDefinitions.typeDefinitions);
         type = named.ptr;
@@ -481,14 +490,14 @@ fmi2_xml_integer_type_props_t * fmi2_xml_parse_integer_type_properties(fmi2_xml_
     return props;
 }
 
-int fmi2_xml_handle_IntegerType(fmi2_xml_parser_context_t *context, const char* data) {
+int fmi2_xml_handle_Integer(fmi2_xml_parser_context_t *context, const char* data) {
     if(!data) {
         fmi2_xml_model_description_t* md = context->modelDescription;
         jm_named_ptr named;
         fmi2_xml_variable_typedef_t* type;
         fmi2_xml_integer_type_props_t * props;
 
-        props = fmi2_xml_parse_integer_type_properties(context, fmi2_xml_elmID_IntegerType);
+        props = fmi2_xml_parse_integer_type_properties(context, fmi2_xml_elmID_Integer);
         if(!props) return -1;
         named = jm_vector_get_last(jm_named_ptr)(&md->typeDefinitions.typeDefinitions);
         type = named.ptr;
@@ -503,7 +512,7 @@ int fmi2_xml_handle_IntegerType(fmi2_xml_parser_context_t *context, const char* 
 }
 
 
-int fmi2_xml_handle_BooleanType(fmi2_xml_parser_context_t *context, const char* data) {
+int fmi2_xml_handle_Boolean(fmi2_xml_parser_context_t *context, const char* data) {
     if(!data) {
         fmi2_xml_model_description_t* md = context->modelDescription;
         jm_named_ptr named;
@@ -521,7 +530,7 @@ int fmi2_xml_handle_BooleanType(fmi2_xml_parser_context_t *context, const char* 
     return 0;
 }
 
-int fmi2_xml_handle_StringType(fmi2_xml_parser_context_t *context, const char* data) {
+int fmi2_xml_handle_String(fmi2_xml_parser_context_t *context, const char* data) {
     if(!data) {
         fmi2_xml_model_description_t* md = context->modelDescription;
         jm_named_ptr named;
@@ -539,7 +548,7 @@ int fmi2_xml_handle_StringType(fmi2_xml_parser_context_t *context, const char* d
     return 0;
 }
 
-int fmi2_xml_handle_EnumerationType(fmi2_xml_parser_context_t *context, const char* data) {
+int fmi2_xml_handle_Enumeration(fmi2_xml_parser_context_t *context, const char* data) {
     if(!data) {
         jm_named_ptr named;
         fmi2_xml_model_description_t* md = context->modelDescription;
@@ -555,7 +564,7 @@ int fmi2_xml_handle_EnumerationType(fmi2_xml_parser_context_t *context, const ch
         if(props) jm_vector_init(jm_named_ptr)(&props->enumItems,0,context->callbacks);
         if(!bufQuantity || !props ||
                 /* <xs:attribute name="quantity" type="xs:normalizedString"/> */
-                fmi2_xml_set_attr_string(context, fmi2_xml_elmID_IntegerType, fmi_attr_id_quantity, 0, bufQuantity)
+                fmi2_xml_set_attr_string(context, fmi2_xml_elmID_Integer, fmi_attr_id_quantity, 0, bufQuantity)
                 )
             return -1;
         if(jm_vector_get_size(char)(bufQuantity))

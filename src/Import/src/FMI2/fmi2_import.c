@@ -329,7 +329,7 @@ size_t fmi2_import_get_vendors_num(fmi2_import_t* fmu){
 	return fmi2_xml_get_vendors_num(fmu->md);
 }
 
-const char* fmi2_import_get_vendor_name(fmi2_import_t* fmu, unsigned int  index){
+const char* fmi2_import_get_vendor_name(fmi2_import_t* fmu, size_t  index){
 	if(!fmu->md) {
 		jm_log_error(fmu->callbacks, module,"No FMU is loaded");
 		return 0;

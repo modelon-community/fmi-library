@@ -227,7 +227,7 @@ fmi2_xml_variable_t* fmi2_xml_get_variable_by_vr(fmi2_xml_model_description_t* m
 size_t fmi2_xml_get_vendors_num(fmi2_xml_model_description_t* md);
 
 /** \brief Get the name of the vendor with that had annotations in the XML by index */
-const char* fmi2_xml_get_vendor_name(fmi2_xml_model_description_t* md, unsigned int  index);
+const char* fmi2_xml_get_vendor_name(fmi2_xml_model_description_t* md, size_t  index);
 
 /** @} */
 #ifdef __cplusplus

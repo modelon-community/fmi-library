@@ -192,7 +192,7 @@ FMILIB_EXPORT const char * fmi2_SI_base_unit_to_string(fmi2_SI_base_units_enu_t 
 	\return Required size of the buffer to store the string. This most likely be under [8*fmi2_SI_base_units_Num].
 	If the return value is larger or equal than bufSize than the string could not be fitted in the buffer. 
 */
-FMILIB_EXPORT size_t fmi2_SI_base_unit_exp_to_string(int exp[fmi2_SI_base_units_Num], size_t bufSize, char buf[]);
+FMILIB_EXPORT size_t fmi2_SI_base_unit_exp_to_string(const int exp[fmi2_SI_base_units_Num], size_t bufSize, char buf[]);
 
 /**	
  @}

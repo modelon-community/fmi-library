@@ -27,41 +27,43 @@ const char *fmi2_xmlAttrNames[fmi2_xml_attr_number] = {
 };
 
 /* fmi2_xml_scheme_ defines give parent ID, the index in a sequence among siblings, flag if multiple elems are allowed */
-#define fmi2_xml_scheme_fmiModelDescription {fmi2_xml_elmID_none,fmi2_xml_elmID_none, 0, 0}
-#define fmi2_xml_scheme_ModelExchange {fmi2_xml_elmID_fmiModelDescription,fmi2_xml_elmID_none, 0, 0}
-#define fmi2_xml_scheme_CoSimulation {fmi2_xml_elmID_fmiModelDescription,fmi2_xml_elmID_none, 1, 0}
-#define fmi2_xml_scheme_UnitDefinitions {fmi2_xml_elmID_fmiModelDescription,fmi2_xml_elmID_none, 2, 0}
-#define fmi2_xml_scheme_Unit {fmi2_xml_elmID_UnitDefinitions,fmi2_xml_elmID_none, 0, 1}
-#define fmi2_xml_scheme_BaseUnit {fmi2_xml_elmID_Unit,fmi2_xml_elmID_none, 0, 0}
-#define fmi2_xml_scheme_DisplayUnit {fmi2_xml_elmID_Unit,fmi2_xml_elmID_none, 1, 1}
-#define fmi2_xml_scheme_TypeDefinitions {fmi2_xml_elmID_fmiModelDescription,fmi2_xml_elmID_none, 3, 0}
-#define fmi2_xml_scheme_SimpleType {fmi2_xml_elmID_TypeDefinitions,fmi2_xml_elmID_none, 0, 1}
-#define fmi2_xml_scheme_RealType {fmi2_xml_elmID_SimpleType,fmi2_xml_elmID_none, 0, 0}
-#define fmi2_xml_scheme_IntegerType {fmi2_xml_elmID_SimpleType,fmi2_xml_elmID_none, 0, 0}
-#define fmi2_xml_scheme_BooleanType {fmi2_xml_elmID_SimpleType,fmi2_xml_elmID_none, 0, 0}
-#define fmi2_xml_scheme_StringType {fmi2_xml_elmID_SimpleType,fmi2_xml_elmID_none, 0, 0}
-#define fmi2_xml_scheme_EnumerationType {fmi2_xml_elmID_SimpleType,fmi2_xml_elmID_none, 0, 0}
-#define fmi2_xml_scheme_Item {fmi2_xml_elmID_EnumerationType,fmi2_xml_elmID_none, 0, 1}
-#define fmi2_xml_scheme_LogCategories {fmi2_xml_elmID_fmiModelDescription,fmi2_xml_elmID_none, 4, 0}
-#define fmi2_xml_scheme_Category {fmi2_xml_elmID_LogCategories,fmi2_xml_elmID_none, 0, 1}
-#define fmi2_xml_scheme_DefaultExperiment {fmi2_xml_elmID_fmiModelDescription,fmi2_xml_elmID_none, 5, 0}
-#define fmi2_xml_scheme_VendorAnnotations {fmi2_xml_elmID_fmiModelDescription,fmi2_xml_elmID_none, 6, 0}
-#define fmi2_xml_scheme_Tool {fmi2_xml_elmID_Annotations,fmi2_xml_elmID_ModelTool, 0, 1}
-#define fmi2_xml_scheme_ModelTool {fmi2_xml_elmID_VendorAnnotations,fmi2_xml_elmID_none, 0, 1}
-#define fmi2_xml_scheme_ModelVariables {fmi2_xml_elmID_fmiModelDescription,fmi2_xml_elmID_none, 7, 0}
-#define fmi2_xml_scheme_ScalarVariable {fmi2_xml_elmID_ModelVariables,fmi2_xml_elmID_none, 0, 1}
-#define fmi2_xml_scheme_Annotations {fmi2_xml_elmID_ScalarVariable,fmi2_xml_elmID_none, 6, 0}
-#define fmi2_xml_scheme_Real {fmi2_xml_elmID_ScalarVariable,fmi2_xml_elmID_RealType, 0, 0}
-#define fmi2_xml_scheme_Integer {fmi2_xml_elmID_ScalarVariable,fmi2_xml_elmID_IntegerType, 0, 0}
-#define fmi2_xml_scheme_Boolean {fmi2_xml_elmID_ScalarVariable,fmi2_xml_elmID_BooleanType, 0, 0}
-#define fmi2_xml_scheme_String {fmi2_xml_elmID_ScalarVariable,fmi2_xml_elmID_StringType, 0, 0}
-#define fmi2_xml_scheme_Enumeration {fmi2_xml_elmID_ScalarVariable,fmi2_xml_elmID_EnumerationType, 0, 0}
+#define fmi2_xml_scheme_fmiModelDescription {fmi2_xml_elmID_none, 0, 0}
+#define fmi2_xml_scheme_ModelExchange {fmi2_xml_elmID_fmiModelDescription, 0, 0}
+#define fmi2_xml_scheme_CoSimulation {fmi2_xml_elmID_fmiModelDescription, 1, 0}
+#define fmi2_xml_scheme_UnitDefinitions {fmi2_xml_elmID_fmiModelDescription, 2, 0}
+#define fmi2_xml_scheme_Unit {fmi2_xml_elmID_UnitDefinitions, 0, 1}
+#define fmi2_xml_scheme_BaseUnit {fmi2_xml_elmID_Unit, 0, 0}
+#define fmi2_xml_scheme_DisplayUnit {fmi2_xml_elmID_Unit, 1, 1}
+#define fmi2_xml_scheme_TypeDefinitions {fmi2_xml_elmID_fmiModelDescription, 3, 0}
+#define fmi2_xml_scheme_SimpleType {fmi2_xml_elmID_TypeDefinitions, 0, 1}
+#define fmi2_xml_scheme_Real {fmi2_xml_elmID_SimpleType, 0, 0}
+#define fmi2_xml_scheme_Integer {fmi2_xml_elmID_SimpleType, 0, 0}
+#define fmi2_xml_scheme_Boolean {fmi2_xml_elmID_SimpleType, 0, 0}
+#define fmi2_xml_scheme_String {fmi2_xml_elmID_SimpleType, 0, 0}
+#define fmi2_xml_scheme_Enumeration {fmi2_xml_elmID_SimpleType, 0, 0}
+#define fmi2_xml_scheme_Item {fmi2_xml_elmID_Enumeration, 0, 1}
+#define fmi2_xml_scheme_LogCategories {fmi2_xml_elmID_fmiModelDescription, 4, 0}
+#define fmi2_xml_scheme_Category {fmi2_xml_elmID_LogCategories, 0, 1}
+#define fmi2_xml_scheme_DefaultExperiment {fmi2_xml_elmID_fmiModelDescription, 5, 0}
+#define fmi2_xml_scheme_VendorAnnotations {fmi2_xml_elmID_fmiModelDescription, 6, 0}
+#define fmi2_xml_scheme_Tool {fmi2_xml_elmID_Annotations, 0, 1}
+#define fmi2_xml_scheme_ModelVariables {fmi2_xml_elmID_fmiModelDescription, 7, 0}
+#define fmi2_xml_scheme_ScalarVariable {fmi2_xml_elmID_ModelVariables, 0, 1}
+
+#define fmi2_xml_scheme_RealVariable {fmi2_xml_elmID_ScalarVariable, 0, 0}
+#define fmi2_xml_scheme_IntegerVariable {fmi2_xml_elmID_ScalarVariable, 0, 0}
+#define fmi2_xml_scheme_BooleanVariable {fmi2_xml_elmID_ScalarVariable, 0, 0}
+#define fmi2_xml_scheme_StringVariable {fmi2_xml_elmID_ScalarVariable, 0, 0}
+#define fmi2_xml_scheme_EnumerationVariable {fmi2_xml_elmID_ScalarVariable, 0, 0}
+
+#define fmi2_xml_scheme_Annotations {fmi2_xml_elmID_ScalarVariable, 1, 0}
+#define fmi2_xml_scheme_VariableTool {fmi2_xml_elmID_Annotations, 0, 1}
 
 #define EXPAND_ELM_SCHEME(elm) fmi2_xml_scheme_##elm ,
 
 fmi2_xml_scheme_info_t fmi2_xml_scheme_info[fmi2_xml_elm_number] = {
     FMI2_XML_ELMLIST(EXPAND_ELM_SCHEME)
-	{fmi2_xml_elm_actual_number,fmi2_xml_elmID_none,0,0},
+	{fmi2_xml_elm_actual_number,0,0},
 	FMI2_XML_ELMLIST_ALT(EXPAND_ELM_SCHEME)};
 
 #define EXPAND_ELM_NAME(elm) { #elm, fmi2_xml_handle_##elm, fmi2_xml_elmID_##elm},
@@ -186,7 +188,7 @@ int fmi2_xml_set_attr_uint(fmi2_xml_parser_context_t *context, fmi2_xml_elm_enu_
     attrName = fmi2_xmlAttrNames[attrID];
 
     if(sscanf(strVal, "%u", field) != 1) {
-        fmi2_xml_parse_fatal(context, "XML element '%s': could not parse value for attribute '%s'='%s'", elmName, attrName, strVal);
+        fmi2_xml_parse_error(context, "XML element '%s': could not parse value for unsigned attribute '%s'='%s'", elmName, attrName, strVal);
         return -1;
     }
     return 0;
@@ -210,7 +212,7 @@ int fmi2_xml_set_attr_enum(fmi2_xml_parser_context_t *context, fmi2_xml_elm_enu_
     i = 0;
     while(nameMap[i].name && strcmp(nameMap[i].name, strVal)) i++;
     if(!nameMap[i].name) {
-        fmi2_xml_parse_fatal(context, "XML element '%s': could not parse value for attribute '%s'='%s'", elmName, attrName, strVal);
+        fmi2_xml_parse_error(context, "XML element '%s': could not parse value for enumeration attribute '%s'='%s'", elmName, attrName, strVal);
         return -1;
     }
     *field = nameMap[i].ID;
@@ -237,7 +239,7 @@ int fmi2_xml_set_attr_int(fmi2_xml_parser_context_t *context, fmi2_xml_elm_enu_t
     attrName = fmi2_xmlAttrNames[attrID];
 
     if(sscanf(strVal, "%d", field) != 1) {
-        fmi2_xml_parse_fatal(context, "XML element '%s': could not parse value for attribute '%s'='%s'", elmName, attrName, strVal);
+        fmi2_xml_parse_error(context, "XML element '%s': could not parse value for integer attribute '%s'='%s'", elmName, attrName, strVal);
         return -1;
     }
     return 0;
@@ -260,7 +262,7 @@ int fmi2_xml_set_attr_double(fmi2_xml_parser_context_t *context, fmi2_xml_elm_en
     attrName = fmi2_xmlAttrNames[attrID];
 
     if(sscanf(strVal, "%lf", field) != 1) {
-        fmi2_xml_parse_fatal(context, "XML element '%s': could not parse value for attribute '%s'='%s'", elmName, attrName, strVal);
+        fmi2_xml_parse_error(context, "XML element '%s': could not parse value for real attribute '%s'='%s'", elmName, attrName, strVal);
         return -1;
     }
     return 0;
@@ -317,7 +319,7 @@ jm_vector(char) * fmi2_xml_get_parse_buffer(fmi2_xml_parser_context_t *context, 
 
 
 
-int fmi1_create_attr_map(fmi2_xml_parser_context_t* context) {
+int fmi2_create_attr_map(fmi2_xml_parser_context_t* context) {
     int i;
     context->attrBuffer = jm_vector_alloc(jm_string)(fmi2_xml_attr_number, fmi2_xml_attr_number, context->callbacks);
     if(!context->attrBuffer) return -1;
@@ -334,7 +336,7 @@ int fmi1_create_attr_map(fmi2_xml_parser_context_t* context) {
     return 0;
 }
 
-int fmi1_create_elm_map(fmi2_xml_parser_context_t* context) {
+int fmi2_create_elm_map(fmi2_xml_parser_context_t* context) {
     size_t i;
     context->elmMap = jm_vector_alloc(fmi2_xml_element_handle_map_t)(fmi2_xml_elm_actual_number, fmi2_xml_elm_number, context->callbacks);
     if(!context->elmMap) return -1;
@@ -345,6 +347,17 @@ int fmi1_create_elm_map(fmi2_xml_parser_context_t* context) {
     jm_vector_qsort(fmi2_xml_element_handle_map_t)(context->elmMap, fmi2_xml_compare_elmName);
     return 0;
 }
+
+void fmi2_xml_set_element_handle(fmi2_xml_parser_context_t *context, const char* elm, fmi2_xml_elm_enu_t id) {
+    fmi2_xml_element_handle_map_t keyEl;
+    fmi2_xml_element_handle_map_t* currentElMap;
+	keyEl.elementName = elm;
+    currentElMap = jm_vector_bsearch(fmi2_xml_element_handle_map_t)(context->elmMap, &keyEl, fmi2_xml_compare_elmName);
+	
+	currentElMap->elementHandle = fmi2_element_handle_map[id].elementHandle;;
+	currentElMap->elemID = id;
+}
+
 
 static void XMLCALL fmi2_parse_element_start(void *c, const char *elm, const char **attr) {
     jm_named_ptr key;
@@ -391,13 +404,6 @@ static void XMLCALL fmi2_parse_element_start(void *c, const char *elm, const cha
 	{
 		fmi2_xml_elm_enu_t parentID = context->currentElmID;
 		fmi2_xml_elm_enu_t siblingID =  context->lastElmID;
-		while(	
-			(fmi2_xml_scheme_info[currentID].parentID != parentID) 
-			&&  (fmi2_xml_scheme_info[currentID].alternativeID != fmi2_xml_elmID_none))
-		{
-			currentID = fmi2_xml_scheme_info[currentID].alternativeID;
-			currentElMap = &fmi2_element_handle_map[currentID];
-		}
 
 		if(fmi2_xml_scheme_info[currentID].parentID != parentID) {
 				jm_log_error(context->callbacks, module, 
@@ -501,15 +507,6 @@ static void XMLCALL fmi2_parse_element_end(void* c, const char *elm) {
         return;
     }
     currentID = currentElMap->elemID;
-	/* switch to alternative ID if needed */
-	while(
-		(currentID != context -> currentElmID)
-		&& (fmi2_xml_scheme_info[currentID].parentID != fmi2_xml_scheme_info[context->currentElmID].parentID) 
-		&&  (fmi2_xml_scheme_info[currentID].alternativeID != fmi2_xml_elmID_none))
-	{
-		currentID = fmi2_xml_scheme_info[currentID].alternativeID;
-		currentElMap = &fmi2_element_handle_map[currentID];
-	}
 
     if(currentID != context -> currentElmID) {
         /* missmatch error*/
@@ -545,6 +542,7 @@ static void XMLCALL fmi2_parse_element_end(void* c, const char *elm) {
 *  to replace this with the empty string whenever we encounter "\n".
 */
 static void XMLCALL fmi2_parse_element_data(void* c, const XML_Char *s, int len) {
+		int i;
         fmi2_xml_parser_context_t *context = c;
 		if(context->useAnyHandleFlg) {
 			jm_xml_callbacks_t* anyH = context->anyHandle;
@@ -559,7 +557,14 @@ static void XMLCALL fmi2_parse_element_data(void* c, const XML_Char *s, int len)
 		if(context->skipElementCnt) {
 			return;
 		}
-		if(!context->has_produced_data_warning) {
+		for(i = 0; i< len;i++) {
+            char ch = s[i];
+            if((ch != '\n') && (ch != ' ') && (ch != '\t')) {
+                break;
+            }
+        }
+
+		if((i != len) && !context->has_produced_data_warning) {
 			jm_log_warning(context->callbacks, module, "[Line:%u] Skipping unexpected XML element data",
 					XML_GetCurrentLineNumber(context->parser));
 			context->has_produced_data_warning = 1;
@@ -579,7 +584,7 @@ int fmi2_xml_parse_model_description(fmi2_xml_model_description_t* md, const cha
     context->callbacks = md->callbacks;
     context->modelDescription = md;
     if(fmi2_xml_alloc_parse_buffer(context, 16)) return -1;
-    if(fmi1_create_attr_map(context) || fmi1_create_elm_map(context)) {
+    if(fmi2_create_attr_map(context) || fmi2_create_elm_map(context)) {
         fmi2_xml_parse_fatal(context, "Error in parsing initialization");
         fmi2_xml_parse_free_context(context);
         return -1;

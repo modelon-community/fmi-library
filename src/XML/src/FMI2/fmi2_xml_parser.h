@@ -80,7 +80,12 @@ extern "C" {
     EXPAND_XML_ATTRNAME(canInterpolateInputs) \
     EXPAND_XML_ATTRNAME(maxOutputDerivativeOrder) \
     EXPAND_XML_ATTRNAME(canRunAsynchronuously) \
-    EXPAND_XML_ATTRNAME(canSignalEvents)
+    EXPAND_XML_ATTRNAME(canSignalEvents)\
+	EXPAND_XML_ATTRNAME(providesPartialDerivativesOf_DerivativeFunction_wrt_States)\
+	EXPAND_XML_ATTRNAME(providesPartialDerivativesOf_DerivativeFunction_wrt_Inputs)\
+	EXPAND_XML_ATTRNAME(providesPartialDerivativesOf_OutputFunction_wrt_States)\
+	EXPAND_XML_ATTRNAME(providesPartialDerivativesOf_OutputFunction_wrt_Inputs)
+
 
 #define FMI2_XML_ATTR_ID(attr) fmi_attr_id_##attr,
 typedef enum fmi2_xml_attr_enu_t {
@@ -116,12 +121,12 @@ typedef enum fmi2_xml_attr_enu_t {
 
 /** \brief Element that can be placed under different parents get alternative names from the info struct */
 #define FMI2_XML_ELMLIST_ALT(EXPAND_XML_ELMNAME) \
-    EXPAND_XML_ELMNAME(RealType) \
-    EXPAND_XML_ELMNAME(IntegerType) \
-    EXPAND_XML_ELMNAME(BooleanType) \
-    EXPAND_XML_ELMNAME(StringType) \
-    EXPAND_XML_ELMNAME(EnumerationType)  \
-    EXPAND_XML_ELMNAME(ModelTool)
+    EXPAND_XML_ELMNAME(RealVariable) \
+    EXPAND_XML_ELMNAME(IntegerVariable) \
+    EXPAND_XML_ELMNAME(BooleanVariable) \
+    EXPAND_XML_ELMNAME(StringVariable) \
+    EXPAND_XML_ELMNAME(EnumerationVariable)  \
+    EXPAND_XML_ELMNAME(VariableTool)
 
 
 typedef struct fmi2_xml_parser_context_t fmi2_xml_parser_context_t;
@@ -129,12 +134,13 @@ typedef struct fmi2_xml_parser_context_t fmi2_xml_parser_context_t;
 FMI2_XML_ELMLIST(EXPAND_ELM_HANDLE)
 FMI2_XML_ELMLIST_ALT(EXPAND_ELM_HANDLE)
 
-#define FMI2_XML_ELM_ID(elm) ,fmi2_xml_elmID_##elm
+#define FMI2_XML_ELM_ID(elm) fmi2_xml_elmID_##elm
+#define FMI2_XML_LIST_ELM_ID(elm) ,FMI2_XML_ELM_ID(elm)
 typedef enum fmi2_xml_elm_enu_t {
 	fmi2_xml_elmID_none = -1
-    FMI2_XML_ELMLIST(FMI2_XML_ELM_ID)
+    FMI2_XML_ELMLIST(FMI2_XML_LIST_ELM_ID)
 	,fmi2_xml_elm_actual_number
-	FMI2_XML_ELMLIST_ALT(FMI2_XML_ELM_ID)
+	FMI2_XML_ELMLIST_ALT(FMI2_XML_LIST_ELM_ID)
     ,fmi2_xml_elm_number
 } fmi2_xml_elm_enu_t;
 
@@ -147,7 +153,6 @@ typedef struct fmi2_xml_element_handle_map_t fmi2_xml_element_handle_map_t;
 */
 typedef struct {
 	fmi2_xml_elm_enu_t parentID; /* expected parent ID for an element */
-	fmi2_xml_elm_enu_t alternativeID; /* if an element can be under different parents it gets an alternative ID*/
 	int siblingIndex;       /* index among siblings */
 	int multipleAllowed;	/* multiple elements of this kind kan come in a sequence as siblings*/
 } fmi2_xml_scheme_info_t;
@@ -215,6 +220,9 @@ int fmi2_xml_set_attr_boolean(fmi2_xml_parser_context_t *context, fmi2_xml_elm_e
 int fmi2_xml_set_attr_int(fmi2_xml_parser_context_t *context, fmi2_xml_elm_enu_t elmID, fmi2_xml_attr_enu_t attrID, int required, int* field, int defaultVal);
 int fmi2_xml_set_attr_double(fmi2_xml_parser_context_t *context, fmi2_xml_elm_enu_t elmID, fmi2_xml_attr_enu_t attrID, int required, double* field, double defaultVal);
 int fmi2_xml_is_attr_defined(fmi2_xml_parser_context_t *context, fmi2_xml_attr_enu_t attrID);
+
+void fmi2_xml_set_element_handle(fmi2_xml_parser_context_t *context, const char* elm, fmi2_xml_elm_enu_t id);
+
 
 #ifdef __cplusplus
 }

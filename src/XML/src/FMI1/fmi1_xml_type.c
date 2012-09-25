@@ -166,8 +166,8 @@ const char* fmi1_xml_get_enum_type_item_description(fmi1_xml_enumeration_typedef
     fmi1_xml_variable_typedef_t* vt = (void*)t;
     fmi1_xml_enum_type_props_t* props = (fmi1_xml_enum_type_props_t*)(vt->typeBase.baseTypeStruct);
     fmi1_xml_enum_type_item_t* e;
-    if(item >= fmi1_xml_get_enum_type_size(t) ) return  0;
-    e = jm_vector_get_item(jm_named_ptr)(&props->enumItems,item).ptr;
+    if((item == 0) || (item > fmi1_xml_get_enum_type_size(t) )) return  0;
+    e = jm_vector_get_item(jm_named_ptr)(&props->enumItems,item-1).ptr;
     return e->itemDesciption;
 }
 

@@ -283,7 +283,7 @@ size_t fmi2_xml_get_vendors_num(fmi2_xml_model_description_t* md) {
 }
 
 /** \brief Get the name of the vendor with that had annotations in the XML by index */
-const char* fmi2_xml_get_vendor_name(fmi2_xml_model_description_t* md, unsigned int  index) {
+const char* fmi2_xml_get_vendor_name(fmi2_xml_model_description_t* md, size_t  index) {
 	assert(fmi2_xml_get_vendors_num(md) > index);
 
 	return jm_vector_get_item(jm_string)(&md->vendorList,index);

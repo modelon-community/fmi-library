@@ -72,7 +72,9 @@ int fmi2_xml_get_enum_type_min(fmi2_xml_enumeration_typedef_t*);
 int fmi2_xml_get_enum_type_max(fmi2_xml_enumeration_typedef_t*);
 unsigned int  fmi2_xml_get_enum_type_size(fmi2_xml_enumeration_typedef_t*);
 const char* fmi2_xml_get_enum_type_item_name(fmi2_xml_enumeration_typedef_t*, unsigned int  item);
+int fmi2_xml_get_enum_type_item_value(fmi2_xml_enumeration_typedef_t*, unsigned int  item);
 const char* fmi2_xml_get_enum_type_item_description(fmi2_xml_enumeration_typedef_t*, unsigned int  item);
+const char* fmi2_xml_get_enum_type_value_name(fmi2_xml_enumeration_typedef_t* t, int value);
 
 /*
 *  @}

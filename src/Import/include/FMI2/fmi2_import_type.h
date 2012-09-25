@@ -147,8 +147,15 @@ FMILIB_EXPORT unsigned int  fmi2_import_get_enum_type_size(fmi2_import_enumerati
 
 /** \brief Get an enumeration item name by index */
 FMILIB_EXPORT const char* fmi2_import_get_enum_type_item_name(fmi2_import_enumeration_typedef_t*, unsigned int  item);
+
+/** \brief Get an enumeration item value by index */
+FMILIB_EXPORT int fmi2_import_get_enum_type_item_value(fmi2_import_enumeration_typedef_t*, unsigned int  item);
+
 /** \brief Get an enumeration item description by index */
 FMILIB_EXPORT const char* fmi2_import_get_enum_type_item_description(fmi2_import_enumeration_typedef_t*, unsigned int  item);
+
+/** \brief Get an enumeration item name for the given value */
+FMILIB_EXPORT const char* fmi2_import_get_enum_type_value_name(fmi2_import_enumeration_typedef_t* t, int value);
 
 /**
 	\brief Get display unit associated with a real type definition.

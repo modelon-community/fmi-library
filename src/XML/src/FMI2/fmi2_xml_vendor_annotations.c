@@ -41,7 +41,7 @@ int fmi2_xml_handle_Annotations(fmi2_xml_parser_context_t *context, const char* 
     return 0;
 }
 
-int fmi2_xml_handle_ModelTool(fmi2_xml_parser_context_t *context, const char* data) {
+int fmi2_xml_handle_VariableTool(fmi2_xml_parser_context_t *context, const char* data) {
     if(!data) {
 			size_t len;
             fmi2_xml_model_description_t* md = context->modelDescription;

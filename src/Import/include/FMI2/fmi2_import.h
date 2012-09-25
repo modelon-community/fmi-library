@@ -232,7 +232,7 @@ FMILIB_EXPORT fmi2_import_variable_list_t* fmi2_import_create_var_list(fmi2_impo
 FMILIB_EXPORT size_t fmi2_import_get_vendors_num(fmi2_import_t* fmu);
 
 /** \brief Get the name of the vendor with that had annotations in the XML by index */
-FMILIB_EXPORT const char* fmi2_import_get_vendor_name(fmi2_import_t* fmu, unsigned int  index);
+FMILIB_EXPORT const char* fmi2_import_get_vendor_name(fmi2_import_t* fmu, size_t  index);
 
 /**@} */
 

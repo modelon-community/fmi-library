@@ -63,7 +63,7 @@ fmi2_xml_variable_t* fmi2_xml_get_variable_alias_base(fmi2_xml_model_description
 
 /*
     Return the list of all the variables aliased to the given one (including the base one.
-    The list is ordered: base variable, aliases, negated aliases.
+    The list is ordered: base variable, aliases.
 */
 jm_status_enu_t fmi2_xml_get_variable_aliases(fmi2_xml_model_description_t* md,fmi2_xml_variable_t* v, jm_vector(jm_voidp)* list) {
     fmi2_xml_variable_t key, *cur;
@@ -401,76 +401,10 @@ int fmi2_xml_handle_ScalarVariable(fmi2_xml_parser_context_t *context, const cha
             if(!variable->typeBase) {
 				jm_log_error(context->callbacks, module, "No variable type element for variable %s. Assuming Real.", variable->name);
 
-				return fmi2_xml_handle_Real(context, data);
+				return fmi2_xml_handle_RealVariable(context, data);
             }
         }
         /* might give out a warning if(data[0] != 0) */
-    }
-    return 0;
-}
-
-
-int fmi2_xml_handle_DirectDependency(fmi2_xml_parser_context_t *context, const char* data) {
-    if(context->skipOneVariableFlag) return 0;
-    if(!data) {
-        fmi2_xml_model_description_t* md = context->modelDescription;
-        fmi2_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
-        if(variable->causality != fmi2_causality_enu_output) {
-			jm_log_error(context->callbacks,module, 
-				"DirectDependency XML element cannot be defined for '%s' since causality is not output. Skipping.", variable->name);
-			context->skipElementCnt = 1;
-            return 0;
-        }
-    }
-    else {
-        fmi2_xml_model_description_t* md = context->modelDescription;
-        fmi2_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
-        if(jm_vector_get_size(jm_voidp)(&context->directDependencyBuf)) {
-            variable->directDependency = jm_vector_clone(jm_voidp)(&context->directDependencyBuf);
-            if(!variable->directDependency) {
-                fmi2_xml_parse_fatal(context, "Could not allocate memory");
-                return -1;
-            }
-        }
-        jm_vector_resize(jm_voidp)(&context->directDependencyBuf,0);
-    }
-    return 0;
-}
-
-int fmi2_xml_handle_Name(fmi2_xml_parser_context_t *context, const char* data) {
-    if(context->skipOneVariableFlag) return 0;
-
-    if(!data) {
-		return 0;
-    }
-    else {
-        fmi2_xml_model_description_t* md = context->modelDescription;
-        fmi2_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
-        size_t namelen = strlen(data), i = 0, j;
-        char* name = 0;
-        jm_voidp* itemp;
-        jm_string* namep;
-#define TRIM_SPACE " \n\r\t"
-		if(namelen) {
-			while(strchr(TRIM_SPACE, data[i])) i++;
-			while(strchr(TRIM_SPACE, data[namelen-1])) namelen--;
-		}
-        if(i>=namelen) {
-			jm_log_error(context->callbacks, module, 
-				"Unexpected empty Name element for DirectDependency of variable %s. Ignoring.", variable->name);
-            return 0;
-        }
-        namep = jm_vector_push_back(jm_string)(&context->directDependencyStringsStore, name);
-        if(namep) *namep = name = context->callbacks->malloc(namelen + 1);
-        itemp = jm_vector_push_back(jm_voidp)(&context->directDependencyBuf, name);
-        if(!namep || !itemp || !name)  {
-            fmi2_xml_parse_fatal(context, "Could not allocate memory");
-            return -1;
-        }
-		for(j = 0; i<namelen;i++) {
-			name[j++] = data[i];
-		}
-		name[j] = 0;
     }
     return 0;
 }
@@ -505,7 +439,7 @@ int   fmi2_xml_get_has_start(fmi2_xml_parser_context_t *context, fmi2_xml_variab
 	return hasStart;
 }
 
-int fmi2_xml_handle_Real(fmi2_xml_parser_context_t *context, const char* data) {
+int fmi2_xml_handle_RealVariable(fmi2_xml_parser_context_t *context, const char* data) {
     if(context->skipOneVariableFlag) return 0;
 
     if(!data) {
@@ -584,7 +518,7 @@ int fmi2_xml_handle_Real(fmi2_xml_parser_context_t *context, const char* data) {
     return 0;
 }
 
-int fmi2_xml_handle_Integer(fmi2_xml_parser_context_t *context, const char* data) {
+int fmi2_xml_handle_IntegerVariable(fmi2_xml_parser_context_t *context, const char* data) {
     if(context->skipOneVariableFlag) return 0;
 
     if(!data) {
@@ -646,7 +580,7 @@ int fmi2_xml_handle_Integer(fmi2_xml_parser_context_t *context, const char* data
     return 0;
 }
 
-int fmi2_xml_handle_Boolean(fmi2_xml_parser_context_t *context, const char* data) {
+int fmi2_xml_handle_BooleanVariable(fmi2_xml_parser_context_t *context, const char* data) {
     if(context->skipOneVariableFlag) return 0;
 
     if(!data) {
@@ -683,7 +617,7 @@ int fmi2_xml_handle_Boolean(fmi2_xml_parser_context_t *context, const char* data
     return 0;
 }
 
-int fmi2_xml_handle_String(fmi2_xml_parser_context_t *context, const char* data) {
+int fmi2_xml_handle_StringVariable(fmi2_xml_parser_context_t *context, const char* data) {
     if(context->skipOneVariableFlag) return 0;
 
     if(!data) {
@@ -760,7 +694,7 @@ fmi2_xml_enum_variable_props_t * fmi2_xml_parse_enum_properties(fmi2_xml_parser_
     return props;
 }
 
-int fmi2_xml_handle_Enumeration(fmi2_xml_parser_context_t *context, const char* data) {
+int fmi2_xml_handle_EnumerationVariable(fmi2_xml_parser_context_t *context, const char* data) {
     if(context->skipOneVariableFlag) return 0;
 
     if(!data) {
@@ -811,7 +745,7 @@ int fmi2_xml_handle_Enumeration(fmi2_xml_parser_context_t *context, const char* 
                 /*  <xs:attribute name="start" type="xs:integer"/> */
                     fmi2_xml_set_attr_int(context, fmi2_xml_elmID_Enumeration, fmi_attr_id_start, 0, &start->start, 0)
                 )
-                    start = 0;
+				start->start = type->typeMin;
             variable->typeBase = &start->typeBase;
         }
     }
@@ -858,9 +792,13 @@ void fmi2_xml_eliminate_bad_alias(fmi2_xml_parser_context_t *context, size_t ind
 
 static int fmi2_xml_compare_vr_and_original_index (const void* first, const void* second) {
 	int ret = fmi2_xml_compare_vr(first, second);
-	if(ret == 0) {
+	if(ret != 0) return ret;
+
+	{
 	    fmi2_xml_variable_t* a = *(fmi2_xml_variable_t**)first;
 		fmi2_xml_variable_t* b = *(fmi2_xml_variable_t**)second;
+		ret = a->causality - b->causality;
+		if(!ret) return ret;
 		ret = (a->originalIndex - b->originalIndex);
 	}
 	
@@ -870,6 +808,13 @@ static int fmi2_xml_compare_vr_and_original_index (const void* first, const void
 int fmi2_xml_handle_ModelVariables(fmi2_xml_parser_context_t *context, const char* data) {
     if(!data) {
 		jm_log_verbose(context->callbacks, module,"Parsing XML element ModelVariables");
+		/*  reset handles for the elements that are specific under ModelVariables */
+		fmi2_xml_set_element_handle(context, "Real", FMI2_XML_ELM_ID(RealVariable));
+		fmi2_xml_set_element_handle(context, "Integer", FMI2_XML_ELM_ID(IntegerVariable));
+		fmi2_xml_set_element_handle(context, "Enumeration", FMI2_XML_ELM_ID(EnumerationVariable));
+		fmi2_xml_set_element_handle(context, "String", FMI2_XML_ELM_ID(StringVariable));
+		fmi2_xml_set_element_handle(context, "Boolean", FMI2_XML_ELM_ID(BooleanVariable));
+		fmi2_xml_set_element_handle(context, "Tool", FMI2_XML_ELM_ID(VariableTool));
     }
     else {
          /* postprocess variable list */
@@ -935,10 +880,8 @@ int fmi2_xml_handle_ModelVariables(fmi2_xml_parser_context_t *context, const cha
 			jm_log_verbose(context->callbacks, module,"Building alias index");
             do {
                 fmi2_xml_variable_t* a = (fmi2_xml_variable_t*)jm_vector_get_item(jm_voidp)(varByVR, 0);
-				int aliasNotAllowed = 
-					(a->causality == fmi2_causality_enu_input) ||
-					(a->causality == fmi2_causality_enu_parameter);
 				int startPresent = fmi2_xml_get_variable_has_start(a);
+				a->aliasKind = fmi2_variable_is_not_alias;
 
                 foundBadAlias = 0;
 
@@ -946,25 +889,13 @@ int fmi2_xml_handle_ModelVariables(fmi2_xml_parser_context_t *context, const cha
 
                 for(i = 1; i< numvar; i++) {
                     fmi2_xml_variable_t* b = (fmi2_xml_variable_t*)jm_vector_get_item(jm_voidp)(varByVR, i);
-					int b_aliasNotAllowed = 
-						(b->causality == fmi2_causality_enu_input) ||
-						(b->causality == fmi2_causality_enu_parameter);
-					int b_startPresent = fmi2_xml_get_variable_has_start(a);
+					int b_startPresent = fmi2_xml_get_variable_has_start(b);
                     if((fmi2_xml_get_variable_base_type(a) == fmi2_xml_get_variable_base_type(b))
                             && (a->vr == b->vr)) {							
 	                        /* an alias */
                             jm_log_verbose(context->callbacks,module,"Variables %s and %s reference the same vr %u. Marking '%s' as alias.",
 											      a->name, b->name, b->vr, b->name);
                             b->aliasKind = fmi2_variable_is_alias;
-							if(aliasNotAllowed || b_aliasNotAllowed) {
-								jm_log_error(context->callbacks,module,
-									"Aliases not allowed for parameters and inputs (variables %s and %s reference the same vr %u)",
-									a->name, b->name, b->vr
-									);
-								fmi2_xml_eliminate_bad_alias(context,i);
-								foundBadAlias = 1;
-								break;
-							}
 							if(startPresent && b_startPresent) {
 								jm_log_error(context->callbacks,module,
 									"Only one variable among aliases is allowed to have start attribute (variables: %s and %s)",
@@ -979,7 +910,7 @@ int fmi2_xml_handle_ModelVariables(fmi2_xml_parser_context_t *context, const cha
 							}
 					}
 					else {
-						aliasNotAllowed = b_aliasNotAllowed;
+						b->aliasKind = fmi2_variable_is_not_alias;
 						startPresent = b_startPresent;
 						a = b;
 					}

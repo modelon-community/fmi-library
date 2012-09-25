@@ -317,7 +317,7 @@ jm_vector(char) * fmi1_xml_get_parse_buffer(fmi1_xml_parser_context_t *context, 
 
 
 
-int fmi2_create_attr_map(fmi1_xml_parser_context_t* context) {
+int fmi1_create_attr_map(fmi1_xml_parser_context_t* context) {
     int i;
     context->attrBuffer = jm_vector_alloc(jm_string)(fmi1_xml_attr_number, fmi1_xml_attr_number, context->callbacks);
     if(!context->attrBuffer) return -1;
@@ -334,7 +334,7 @@ int fmi2_create_attr_map(fmi1_xml_parser_context_t* context) {
     return 0;
 }
 
-int fmi2_create_elm_map(fmi1_xml_parser_context_t* context) {
+int fmi1_create_elm_map(fmi1_xml_parser_context_t* context) {
     size_t i;
     context->elmMap = jm_vector_alloc(fmi1_xml_element_handle_map_t)(fmi1_xml_elm_number, fmi1_xml_elm_number, context->callbacks);
     if(!context->elmMap) return -1;
@@ -529,7 +529,7 @@ int fmi1_xml_parse_model_description(fmi1_xml_model_description_t* md, const cha
     context->callbacks = md->callbacks;
     context->modelDescription = md;
     if(fmi1_xml_alloc_parse_buffer(context, 16)) return -1;
-    if(fmi2_create_attr_map(context) || fmi2_create_elm_map(context)) {
+    if(fmi1_create_attr_map(context) || fmi1_create_elm_map(context)) {
         fmi1_xml_parse_fatal(context, "Error in parsing initialization");
         fmi1_xml_parse_free_context(context);
         return -1;

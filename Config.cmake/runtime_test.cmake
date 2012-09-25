@@ -161,6 +161,9 @@ message(STATUS "Tests will be linked with ${FMILIBFORTEST}"  )
 add_executable (fmi_import_xml_test ${RTTESTDIR}/fmi_import_xml_test.cc )
 target_link_libraries (fmi_import_xml_test  ${FMILIBFORTEST}  )
 
+add_executable (fmi2_import_xml_test ${RTTESTDIR}/fmi2_import_xml_test.cc )
+target_link_libraries (fmi2_import_xml_test  ${FMILIBFORTEST}  )
+
 add_executable (fmi_zip_zip_test ${RTTESTDIR}/fmi_zip_zip_test.c )
 target_link_libraries (fmi_zip_zip_test ${FMIZIP_LIBRARIES})
 

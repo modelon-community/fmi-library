@@ -262,19 +262,6 @@ void printVariableInfo(fmi2_import_t* fmu,
         }
         fmi2_import_free_variable_list(vl);
     }
-/*	{
-		fmi2_import_variable_list_t* vl = fmi2_import_get_direct_dependency( fmu, v);
-        size_t i, n = 0;
-		if(vl) 
-			n = fmi2_import_get_variable_list_size(vl);
-        if(n>0) {
-            printf("Listing direct dependencies: \n");
-            for(i = 0;i<n;i++)
-                printf("\t%s\n",fmi2_import_get_variable_name(fmi2_import_get_variable(vl, i)));
-        }
-        fmi2_import_free_variable_list(vl);
-	}
-	*/
 }
 
 void printCapabilitiesInfo(fmi2_import_t* fmu) {
@@ -287,6 +274,35 @@ void printCapabilitiesInfo(fmi2_import_t* fmu) {
 	}
 }
 
+void printDependenciesInfo(	fmi2_import_t* fmu, fmi2_import_variable_list_t* rows, fmi2_import_variable_list_t* cols, size_t* start, size_t *dep, char* factor) {
+	size_t i, j, nr;
+	if(!rows || !cols || !start) {
+		printf("Dependencies are not available\n");
+		if(rows) {
+			nr = fmi2_import_get_variable_list_size(rows);
+			for(i = 0; i < nr; i++) {
+				printf("\t%s\n",fmi2_import_get_variable_name(fmi2_import_get_variable(rows, i)));
+			}
+		}
+		return;
+	}
+	nr = fmi2_import_get_variable_list_size(rows);
+	for(i = 0; i < nr; i++) {
+		if(start[i] == start[i+1]) {
+			printf("\t%s has no dependencies\n",fmi2_import_get_variable_name(fmi2_import_get_variable(rows, i)));
+		}
+		else if((start[i] + 1 == start[i+1]) && (dep[start[i]] == 0)) {
+			printf("\t%s depends on all\n",fmi2_import_get_variable_name(fmi2_import_get_variable(rows, i)));
+		}
+		else {
+			printf("\t%s depends on:\n",fmi2_import_get_variable_name(fmi2_import_get_variable(rows, i)));
+			for(j = start[i]; j < start[i+1]; j++) {
+				printf("\t\t%s (factor kind: %s)\n",fmi2_import_get_variable_name(fmi2_import_get_variable(cols, dep[j]-1)), 
+					fmi2_dependency_factor_kind_to_string((fmi2_dependency_factor_kind_enu_t)factor[j]));
+			}
+		}
+	}
+}
 
 int main(int argc, char *argv[])
 {
@@ -410,6 +426,7 @@ int main(int argc, char *argv[])
     {
         size_t nv, i;
         fmi2_import_variable_list_t* vl = fmi2_import_get_variable_list(fmu);
+		fmi2_import_variable_list_t* ders = fmi2_import_get_derivatives_list( fmu);
 
         assert(vl);
         nv = fmi2_import_get_variable_list_size(vl);
@@ -421,12 +438,91 @@ int main(int argc, char *argv[])
 				do_exit(1);
 			}
             else {
+				int stateIndex = fmi2_import_get_state_index(var);
                 printVariableInfo(fmu, var);
+				if(stateIndex) {
+					printf("This variable is a state. Its derivative: %s\n", 
+						fmi2_import_get_variable_name(fmi2_import_get_variable(ders, stateIndex-1)));
+				}
 				testVariableSearch(fmu, var);
 			}
         }
         fmi2_import_free_variable_list(vl);
+        fmi2_import_free_variable_list(ders);
     }
+	{
+		fmi2_import_variable_list_t* vl = fmi2_import_get_inputs_list( fmu);
+        size_t i, n = 0;
+		if(vl) 
+			n = fmi2_import_get_variable_list_size(vl);
+        if(n>0) {
+            printf("Listing inputs: \n");
+            for(i = 0;i<n;i++) 
+                printf("\t%s\n",fmi2_import_get_variable_name(fmi2_import_get_variable(vl, i)));
+        }
+		else {
+            printf("There are no inputs\n");
+		}
+        fmi2_import_free_variable_list(vl);
+	}	
+	{
+		fmi2_import_variable_list_t* states = fmi2_import_get_states_list( fmu);
+		fmi2_import_variable_list_t* inputs = fmi2_import_get_inputs_list( fmu);
+        size_t n = 0;
+		if(states) 
+			n = fmi2_import_get_variable_list_size(states);
+        if(n>0) {
+			size_t *start, *dep;
+			char* factor;
+            printf("Listing states and dependencies on inputs: \n");
+			fmi2_import_get_dependencies_derivatives_on_inputs(fmu, &start, &dep, &factor);
+			printDependenciesInfo(	fmu, states, inputs, start, dep, factor);
+
+			fmi2_import_get_dependencies_derivatives_on_states(fmu, &start, &dep, &factor);
+			if(start) {
+				printf("Listing states and dependencies on other states: \n");
+				printDependenciesInfo(	fmu, states, states, start, dep, factor);
+			}
+			else {
+				printf("No dependencies on states available\n");
+			}
+        }
+		else {
+            printf("There are no states\n");
+		}
+        fmi2_import_free_variable_list(inputs);
+        fmi2_import_free_variable_list(states);
+	}	
+	{
+		fmi2_import_variable_list_t* states = fmi2_import_get_states_list( fmu);
+		fmi2_import_variable_list_t* inputs = fmi2_import_get_inputs_list( fmu);
+		fmi2_import_variable_list_t* outputs = fmi2_import_get_outputs_list( fmu);
+        size_t n = 0;
+		if(outputs) 
+			n = fmi2_import_get_variable_list_size(outputs);
+        if(n>0) {
+			size_t *start, *dep;
+			char* factor;
+            printf("Listing outputs and dependencies on inputs: \n");
+			fmi2_import_get_dependencies_outputs_on_inputs(fmu, &start, &dep, &factor);
+			printDependenciesInfo(	fmu, outputs, inputs, start, dep, factor);
+
+			fmi2_import_get_dependencies_outputs_on_states(fmu, &start, &dep, &factor);
+			if(start) {
+				printf("Listing outputs and dependencies on states: \n");
+				printDependenciesInfo(	fmu, outputs, states, start, dep, factor);
+			}
+			else {
+				printf("No dependencies on states available\n");
+			}
+        }
+		else {
+            printf("There are no outputs\n");
+		}
+        fmi2_import_free_variable_list(outputs);
+        fmi2_import_free_variable_list(inputs);
+        fmi2_import_free_variable_list(states);
+	}	
 
 	fmi2_import_free(fmu);
 	fmi_import_free_context(context);

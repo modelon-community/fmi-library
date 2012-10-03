@@ -240,5 +240,6 @@ fmi2_xml_model_structure_t* fmi2_xml_get_model_structure(fmi2_xml_model_descript
 #include "fmi2_xml_variable.h"
 #include "fmi2_xml_capabilities.h"
 #include "fmi2_xml_cosim.h"
+#include "fmi2_xml_model_structure.h"
 
 #endif

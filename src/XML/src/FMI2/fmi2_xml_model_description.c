@@ -294,6 +294,12 @@ jm_vector(jm_string)* fmi2_xml_get_log_categories(fmi2_xml_model_description_t* 
 	return &md->logCategories;
 }
 
+fmi2_xml_model_structure_t* fmi2_xml_get_model_structure(fmi2_xml_model_description_t* md) {
+	assert(md);
+	return md->modelStructure;
+}
+
+
 /** \brief Get the name of the vendor with that had annotations in the XML by index */
 const char* fmi2_xml_get_vendor_name(fmi2_xml_model_description_t* md, size_t  index) {
 	assert(fmi2_xml_get_vendors_num(md) > index);

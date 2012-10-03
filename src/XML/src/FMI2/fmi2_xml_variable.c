@@ -129,6 +129,22 @@ fmi2_initial_enu_t fmi2_xml_get_initial(fmi2_xml_variable_t* v) {
 	return (fmi2_initial_enu_t)v->initial;
 }
 
+size_t fmi2_xml_get_input_index(fmi2_xml_variable_t* v) {
+	return v->inputIndex;
+}
+
+size_t fmi2_xml_get_output_index(fmi2_xml_variable_t* v){
+	return v->outputIndex;
+}
+
+size_t fmi2_xml_get_state_index(fmi2_xml_variable_t* v){
+	return v->stateIndex;
+}
+
+size_t fmi2_xml_get_derivative_index(fmi2_xml_variable_t* v){
+	return v->derivativeIndex;
+}
+
 double fmi2_xml_get_real_variable_start(fmi2_xml_real_variable_t* v) {
     fmi2_xml_variable_t* vv = (fmi2_xml_variable_t*)v;
     if(fmi2_xml_get_variable_has_start(vv)) {

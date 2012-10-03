@@ -173,7 +173,8 @@ FMILIB_EXPORT const char* fmi2_import_get_generation_date_and_time(fmi2_import_t
 */
 FMILIB_EXPORT fmi2_variable_naming_convension_enu_t fmi2_import_get_naming_convention(fmi2_import_t* fmu);
 
-/** \brief Get the number of contnuous states. */
+/** \brief Get the number of continuous states. 
+*/
 FMILIB_EXPORT unsigned int fmi2_import_get_number_of_continuous_states(fmi2_import_t* fmu);
 
 /** \brief Get the number of event indicators. */
@@ -234,6 +235,105 @@ FMILIB_EXPORT size_t fmi2_import_get_log_categories_num(fmi2_import_t* fmu);
 /** \brief Get the log category by index */
 FMILIB_EXPORT const char* fmi2_import_get_log_category(fmi2_import_t* fmu, size_t  index);
 
+/**
+	\brief Get variable by variable name.
+	\param fmu - An fmu object as returned by fmi2_import_parse_xml().
+	\param name - variable name
+	\return variable pointer.
+*/
+FMILIB_EXPORT fmi2_import_variable_t* fmi2_import_get_variable_by_name(fmi2_import_t* fmu, const char* name);
+
+/**
+	\brief Get variable by value reference.
+	\param fmu - An fmu object as returned by fmi2_import_parse_xml().
+	\param baseType - basic data type
+	\param vr - value reference
+	\return variable pointer.
+*/
+FMILIB_EXPORT fmi2_import_variable_t* fmi2_import_get_variable_by_vr(fmi2_import_t* fmu, fmi2_base_type_enu_t baseType, fmi2_value_reference_t vr);
+
+
+/** \brief Get the list of all the output variables in the model.
+* @param fmu An FMU object as returned by fmi2_import_parse_xml().
+* @return a variable list with all the output variables in the model.
+*
+* Note that variable lists are allocated dynamically and must be freed when not needed any longer.
+* If the ModelStructure is available, then the list constructed from this information.
+* Otherwise, causality property is used.
+*/
+FMILIB_EXPORT fmi2_import_variable_list_t* fmi2_import_get_outputs_list(fmi2_import_t* fmu);
+
+/** \brief Get the list of all the input variables in the model.
+* @param fmu An FMU object as returned by fmi2_import_parse_xml().
+* @return a variable list with all the input variables in the model.
+*
+* Note that variable lists are allocated dynamically and must be freed when not needed any longer.
+*/
+FMILIB_EXPORT fmi2_import_variable_list_t* fmi2_import_get_inputs_list(fmi2_import_t* fmu);
+
+/** \brief Get the list of all the state variables in the model.
+* @param fmu An FMU object as returned by fmi2_import_parse_xml().
+* @return a variable list with all the continuous state variables in the model.
+*
+*     Note: variable lists are allocated dynamically and must be freed when not needed any longer.
+*/
+FMILIB_EXPORT fmi2_import_variable_list_t* fmi2_import_get_states_list(fmi2_import_t* fmu);
+
+/** \brief Get the list of all the derivative variables in the model.
+* @param fmu An FMU object as returned by fmi2_import_parse_xml().
+* @return a variable list with all the continuous state derivatives in the model.
+*
+*     Note: variable lists are allocated dynamically and must be freed when not needed any longer.
+*/
+FMILIB_EXPORT fmi2_import_variable_list_t* fmi2_import_get_derivatives_list(fmi2_import_t* fmu);
+
+/*
+	Get dependency information in row-compressed format.
+    @param fmu An FMU object as returned by fmi2_import_parse_xml().
+	@param startIndex - outputs a pointer to an array of start indices (size of array is number of states + 1). 
+			First element is zero, last is equal to the number of elements in the dependency and factor arrays.
+			NULL pointer is returned if no dependency information was provided in the XML.
+	@param dependency - outputs a pointer to the dependency index data. Indices are 1-based. Index equals to zero 
+			means "depends on all" (no information in the XML).
+	@param factorKind - outputs a pointer to the factor kind data. The values can be converted to fmi2_dependency_factor_kind_enu_t::
+*/
+FMILIB_EXPORT void fmi2_import_get_dependencies_derivatives_on_inputs(fmi2_import_t* fmu, size_t** startIndex, size_t** dependency, char** factorKind);
+
+/*
+	Get dependency information in row-compressed format.
+    @param fmu An FMU object as returned by fmi2_import_parse_xml().
+	@param startIndex - outputs a pointer to an array of start indices (size of array is number of states + 1). 
+			First element is zero, last is equal to the number of elements in the dependency and factor arrays.
+			NULL pointer is returned if no dependency information was provided in the XML.
+	@param dependency - outputs a pointer to the dependency index data. Indices are 1-based. Index equals to zero 
+			means "depends on all" (no information in the XML).
+	@param factorKind - outputs a pointer to the factor kind data. The values can be converted to fmi2_dependency_factor_kind_enu_t::
+*/
+FMILIB_EXPORT void fmi2_import_get_dependencies_derivatives_on_states(fmi2_import_t* fmu, size_t** startIndex, size_t** dependency, char** factorKind);
+
+/*
+	Get dependency information in row-compressed format.
+    @param fmu An FMU object as returned by fmi2_import_parse_xml().
+	@param startIndex - outputs a pointer to an array of start indices (size of array is number of outputs + 1). 
+			First element is zero, last is equal to the number of elements in the dependency and factor arrays.
+			NULL pointer is returned if no dependency information was provided in the XML.
+	@param dependency - outputs a pointer to the dependency index data. Indices are 1-based. Index equals to zero 
+			means "depends on all" (no information in the XML).
+	@param factorKind - outputs a pointer to the factor kind data. The values can be converted to fmi2_dependency_factor_kind_enu_t::
+*/
+FMILIB_EXPORT void fmi2_import_get_dependencies_outputs_on_inputs(fmi2_import_t* fmu, size_t** startIndex, size_t** dependency, char** factorKind);
+
+/*
+	Get dependency information in row-compressed format.
+    @param fmu An FMU object as returned by fmi2_import_parse_xml().
+	@param startIndex - outputs a pointer to an array of start indices (size of array is number of outputs + 1). 
+			First element is zero, last is equal to the number of elements in the dependency and factor arrays.
+			NULL pointer is returned if no dependency information was provided in the XML.
+	@param dependency - outputs a pointer to the dependency index data. Indices are 1-based. Index equals to zero 
+			means "depends on all" (no information in the XML).
+	@param factorKind - outputs a pointer to the factor kind data. The values can be converted to fmi2_dependency_factor_kind_enu_t::
+*/
+FMILIB_EXPORT void fmi2_import_get_dependencies_outputs_on_states(fmi2_import_t* fmu, size_t** startIndex, size_t** dependency, char** factorKind);
 /**@} */
 
 #ifdef __cplusplus

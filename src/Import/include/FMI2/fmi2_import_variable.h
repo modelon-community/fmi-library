@@ -63,23 +63,6 @@ typedef struct fmi2_xml_bool_variable_t fmi2_import_bool_variable_t;
 typedef struct fmi2_import_variable_list_t fmi2_import_variable_list_t;
 /**@} */
 
-/**
-	\brief Get variable by variable name.
-	\param fmu - An fmu object as returned by fmi2_import_parse_xml().
-	\param name - variable name
-	\return variable pointer.
-*/
-FMILIB_EXPORT fmi2_import_variable_t* fmi2_import_get_variable_by_name(fmi2_import_t* fmu, const char* name);
-
-/**
-	\brief Get variable by value reference.
-	\param fmu - An fmu object as returned by fmi2_import_parse_xml().
-	\param baseType - basic data type
-	\param vr - value reference
-	\return variable pointer.
-*/
-FMILIB_EXPORT fmi2_import_variable_t* fmi2_import_get_variable_by_vr(fmi2_import_t* fmu, fmi2_base_type_enu_t baseType, fmi2_value_reference_t vr);
-
 
 /** \brief Get the variable name */
 FMILIB_EXPORT const char* fmi2_import_get_variable_name(fmi2_import_variable_t*);
@@ -112,7 +95,27 @@ FMILIB_EXPORT fmi2_causality_enu_t fmi2_import_get_causality(fmi2_import_variabl
 /** \brief Get initial attribute */
 FMILIB_EXPORT fmi2_initial_enu_t fmi2_import_get_initial(fmi2_import_variable_t* );
 
-	/** \brief Cast general variable to a one with the specific type 
+/** \brief Get the input index of this variable 
+	\return One-based input index for causality=input, zero otherwize.
+*/
+FMILIB_EXPORT size_t fmi2_import_get_input_index(fmi2_import_variable_t* );
+
+/** \brief Get the output index of this variable 
+	\return One-based output index for causality=output, zero otherwize.
+*/
+FMILIB_EXPORT size_t fmi2_import_get_output_index(fmi2_import_variable_t* );
+
+/** \brief Get the state index of this variable 
+	\return One-based index for states, zero otherwize.
+*/
+FMILIB_EXPORT size_t fmi2_import_get_state_index(fmi2_import_variable_t* );
+
+/** \brief Get the derivative index of this variable 
+	\return One-based derivative index for derivatives, zero otherwize.
+*/
+FMILIB_EXPORT size_t fmi2_import_get_derivative_index(fmi2_import_variable_t* );
+
+/** \brief Cast general variable to a one with the specific type 
 	
 	@return Typed object or NULL if base type does not match
 */
@@ -191,7 +194,7 @@ FMILIB_EXPORT int fmi2_import_get_enum_variable_max(fmi2_import_enum_variable_t*
 FMILIB_EXPORT fmi2_variable_alias_kind_enu_t fmi2_import_get_variable_alias_kind(fmi2_import_variable_t*);
 
 /** \brief Get the original index in xml of the variable */
-size_t fmi2_import_get_variable_original_order(fmi2_import_variable_t* v);
+FMILIB_EXPORT size_t fmi2_import_get_variable_original_order(fmi2_import_variable_t* v);
 
 /** @} */
 

@@ -56,6 +56,15 @@ fmi2_variability_enu_t fmi2_xml_get_variability(fmi2_xml_variable_t*);
 fmi2_causality_enu_t fmi2_xml_get_causality(fmi2_xml_variable_t*);
 fmi2_initial_enu_t fmi2_xml_get_initial(fmi2_xml_variable_t*);
 
+size_t fmi2_xml_get_input_index(fmi2_xml_variable_t* );
+
+size_t fmi2_xml_get_output_index(fmi2_xml_variable_t* );
+
+size_t fmi2_xml_get_state_index(fmi2_xml_variable_t* );
+
+size_t fmi2_xml_get_derivative_index(fmi2_xml_variable_t* );
+
+
 fmi2_xml_real_variable_t* fmi2_xml_get_variable_as_real(fmi2_xml_variable_t*);
 fmi2_xml_integer_variable_t* fmi2_xml_get_variable_as_integer(fmi2_xml_variable_t*);
 fmi2_xml_enum_variable_t* fmi2_xml_get_variable_as_enum(fmi2_xml_variable_t*);

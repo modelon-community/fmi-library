@@ -73,6 +73,53 @@ void fmi2_xml_free_model_structure(fmi2_xml_model_structure_t* ms) {
 	cb->free(ms);
 }
 
+jm_vector(jm_voidp)* fmi2_xml_get_outputs(fmi2_xml_model_structure_t* ms) {
+	return &ms->outputs;
+}
+
+jm_vector(jm_voidp)* fmi2_xml_get_inputs(fmi2_xml_model_structure_t* ms){
+	return &ms->inputs;
+}
+
+jm_vector(jm_voidp)* fmi2_xml_get_states(fmi2_xml_model_structure_t* ms){
+	return &ms->states;
+}
+
+jm_vector(jm_voidp)* fmi2_xml_get_derivatives(fmi2_xml_model_structure_t* ms){
+	return &ms->derivatives;
+}
+
+void fmi2_xml_get_dependencies(fmi2_xml_dependencies_t* dep, size_t** startIndex, size_t** dependency, char** factorKind){
+	if(dep) {
+		*startIndex = jm_vector_get_itemp(size_t)(&dep->startIndex, 0);
+		*dependency = jm_vector_get_itemp(size_t)(&dep->dependencyIndex, 0);
+		*factorKind = jm_vector_get_itemp(char)(&dep->dependencyFactorKind, 0);
+	}
+	else {
+		*startIndex = 0;
+	}
+}
+
+void fmi2_xml_get_dependencies_derivatives_on_inputs(fmi2_xml_model_structure_t* ms, 
+						size_t** startIndex, size_t** dependency, char** factorKind) {
+	fmi2_xml_get_dependencies(ms->depsStatesOnInputs, startIndex, dependency, factorKind);
+}
+
+void fmi2_xml_get_dependencies_derivatives_on_states(fmi2_xml_model_structure_t* ms, 
+	size_t** startIndex, size_t** dependency, char** factorKind){
+		fmi2_xml_get_dependencies(ms->depsStatesOnStates, startIndex, dependency, factorKind);
+}
+
+void fmi2_xml_get_dependencies_outputs_on_inputs(fmi2_xml_model_structure_t* ms, 
+	size_t** startIndex, size_t** dependency, char** factorKind){
+		fmi2_xml_get_dependencies(ms->depsOutputsOnInputs, startIndex, dependency, factorKind);
+}
+
+void fmi2_xml_get_dependencies_outputs_on_states(fmi2_xml_model_structure_t* ms, 
+	size_t** startIndex, size_t** dependency, char** factorKind){
+		fmi2_xml_get_dependencies(ms->depsOutputsOnStates, startIndex, dependency, factorKind);
+}
+
 fmi2_xml_dependencies_t* fmi2_xml_allocate_dependencies(jm_callbacks* cb) {
 	fmi2_xml_dependencies_t* dep = (fmi2_xml_dependencies_t*)(cb->malloc(sizeof(fmi2_xml_dependencies_t)));
 	if(!dep) return 0;
@@ -297,20 +344,8 @@ int fmi2_xml_handle_ModelStructure(fmi2_xml_parser_context_t *context, const cha
     else {
 		/** make sure model structure information is consistent */
 		if(!fmi2_xml_check_model_structure(md)) {
-			size_t i, numvar = jm_vector_get_size(jm_named_ptr)(&md->variablesByName);
-			fmi2_xml_model_structure_t* ms = md->modelStructure;
-			fmi2_xml_parse_error(context, "Model structure will not be available for further processing due to detected errors");
-			fmi2_xml_free_model_structure(ms);
-			md->modelStructure = 0;
-		    for(i = 0; i< numvar; i++) {
-				jm_named_ptr named = jm_vector_get_item(jm_named_ptr)(&md->variablesByName, i);
-				fmi2_xml_variable_t* v = named.ptr;
-				v->inputIndex = 0;
-				v->stateIndex = 0;
-				v->derivativeIndex = 0;
-				v->outputIndex = 0;
-			}
-			return 0;
+			fmi2_xml_parse_fatal(context, "Model structure is not valid due to detected errors. Cannot continue.");
+			return -1;
 		}
     }
     return 0;

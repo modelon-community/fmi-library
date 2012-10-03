@@ -48,13 +48,8 @@ extern "C" {
    be treated as opaque objects by the client code.
   @{  */
 
-/**\name Vendor annotation supporting structures
- * @{ 
- */
-typedef struct fmi2_xml_vendor_list_t fmi2_xml_vendor_list_t;
-typedef struct fmi2_xml_vendor_t fmi2_xml_vendor_t;
-typedef struct fmi2_xml_annotation_t fmi2_xml_annotation_t;
-/** @} */
+/** \brief Model structure object */
+typedef struct fmi2_xml_model_structure_t fmi2_xml_model_structure_t;
 
 /**\name  Type definitions supporting structures
 @{ */
@@ -228,6 +223,12 @@ size_t fmi2_xml_get_vendors_num(fmi2_xml_model_description_t* md);
 
 /** \brief Get the name of the vendor with that had annotations in the XML by index */
 const char* fmi2_xml_get_vendor_name(fmi2_xml_model_description_t* md, size_t  index);
+
+/** \brief Get the log categories defined in the XML */
+jm_vector(jm_string)* fmi2_xml_get_log_categories(fmi2_xml_model_description_t* md);
+
+/** \brief Get the model structure pointer. NULL pointer means there was no information present in the XML */
+fmi2_xml_model_structure_t* fmi2_xml_get_model_structure(fmi2_xml_model_description_t* md);
 
 /** @} */
 #ifdef __cplusplus

@@ -13,12 +13,12 @@
     along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 */
 
-/** \file fmi2_xml_vendor_annotations.h
+/** \file fmi2_xml_model_structure.h
 *  \brief Public interface to the FMI XML C-library. Handling of vendor annotations.
 */
 
-#ifndef FMI2_XML_VENDORANNOTATIONS_H_
-#define FMI2_XML_VENDORANNOTATIONS_H_
+#ifndef FMI2_XML_MODELSTRUCTURE_H_
+#define FMI2_XML_MODELSTRUCTURE_H_
 
 #include "fmi2_xml_model_description.h"
 
@@ -26,19 +26,12 @@
 extern "C" {
 #endif
 
-/* Basic support for vendor annotations. */
+typedef struct fmi2_xml_model_structure_t fmi2_xml_model_structure_t;
 
-fmi2_xml_vendor_list_t* fmi2_xml_get_vendor_list(fmi2_xml_model_description_t* md);
 
-unsigned int  fmi2_xml_get_number_of_vendors(fmi2_xml_vendor_list_t*);
+fmi2_xml_model_structure_t* fmi2_xml_allocate_model_structure(jm_callbacks* cb);
 
-fmi2_xml_vendor_t* fmi2_xml_get_vendor(fmi2_xml_vendor_list_t*, unsigned int  index);
-
-/* fmi2_xml_vendor* fmiAddVendor(fmiModelDescription* md, char* name);
-
-void* fmiRemoveVendor(fmi2_xml_vendor*); */
-
-const char* fmi2_xml_get_vendor_name(fmi2_xml_vendor_t*);
+void fmi2_xml_free_model_structure(fmi2_xml_model_structure_t* ms);
 
 #ifdef __cplusplus
 }

@@ -46,9 +46,17 @@ const char *fmi2_xmlAttrNames[fmi2_xml_attr_number] = {
 #define fmi2_xml_scheme_Category {fmi2_xml_elmID_LogCategories, 0, 1}
 #define fmi2_xml_scheme_DefaultExperiment {fmi2_xml_elmID_fmiModelDescription, 5, 0}
 #define fmi2_xml_scheme_VendorAnnotations {fmi2_xml_elmID_fmiModelDescription, 6, 0}
-#define fmi2_xml_scheme_Tool {fmi2_xml_elmID_Annotations, 0, 1}
+#define fmi2_xml_scheme_Tool {fmi2_xml_elmID_VendorAnnotations, 0, 1}
 #define fmi2_xml_scheme_ModelVariables {fmi2_xml_elmID_fmiModelDescription, 7, 0}
 #define fmi2_xml_scheme_ScalarVariable {fmi2_xml_elmID_ModelVariables, 0, 1}
+
+#define fmi2_xml_scheme_ModelStructure {fmi2_xml_elmID_fmiModelDescription, 8, 0}
+#define fmi2_xml_scheme_Inputs {fmi2_xml_elmID_ModelStructure, 0, 0}
+#define fmi2_xml_scheme_Input {fmi2_xml_elmID_Inputs, 0, 1}
+#define fmi2_xml_scheme_Derivatives {fmi2_xml_elmID_ModelStructure, 1, 0}
+#define fmi2_xml_scheme_Derivative {fmi2_xml_elmID_Derivatives, 0, 1}
+#define fmi2_xml_scheme_Outputs {fmi2_xml_elmID_ModelStructure, 2, 0}
+#define fmi2_xml_scheme_Output {fmi2_xml_elmID_Outputs, 0, 1}
 
 #define fmi2_xml_scheme_RealVariable {fmi2_xml_elmID_ScalarVariable, 0, 0}
 #define fmi2_xml_scheme_IntegerVariable {fmi2_xml_elmID_ScalarVariable, 0, 0}
@@ -98,10 +106,6 @@ void fmi2_xml_parse_free_context(fmi2_xml_parser_context_t *context) {
     jm_stack_free_data(int)(& context->elmStack );
     jm_vector_free_data(char)( &context->elmData );
 
-    jm_vector_free_data(jm_voidp)(&context->directDependencyBuf);
-    jm_vector_foreach(jm_string)(&context->directDependencyStringsStore, (void(*)(jm_string))context->callbacks->free);
-    jm_vector_free_data(jm_string)(&context->directDependencyStringsStore);
-
     context->callbacks->free(context);
 }
 
@@ -127,7 +131,7 @@ int fmi2_xml_is_attr_defined(fmi2_xml_parser_context_t *context, fmi2_xml_attr_e
     return ( jm_vector_get_item(jm_string)(context->attrBuffer, attrID) != 0);
 }
 
-int fmi2_get_attr_str(fmi2_xml_parser_context_t *context, fmi2_xml_elm_enu_t elmID, fmi2_xml_attr_enu_t attrID, int required,const char** valp) {
+int fmi2_xml_get_attr_str(fmi2_xml_parser_context_t *context, fmi2_xml_elm_enu_t elmID, fmi2_xml_attr_enu_t attrID, int required,const char** valp) {
 
     jm_string elmName, attrName, value;
 
@@ -151,7 +155,7 @@ int fmi2_xml_set_attr_string(fmi2_xml_parser_context_t *context, fmi2_xml_elm_en
     int ret;
     jm_string elmName, attrName, val;
     size_t len;
-    ret = fmi2_get_attr_str(context, elmID, attrID,required,&val);
+    ret = fmi2_xml_get_attr_str(context, elmID, attrID,required,&val);
     if(ret) return ret;
     if((!val || !val[0]) && !required) {
         jm_vector_resize(char)(field, 1);
@@ -177,7 +181,7 @@ int fmi2_xml_set_attr_uint(fmi2_xml_parser_context_t *context, fmi2_xml_elm_enu_
     int ret;
     jm_string elmName, attrName, strVal;    
 
-    ret = fmi2_get_attr_str(context, elmID, attrID,required,&strVal);
+    ret = fmi2_xml_get_attr_str(context, elmID, attrID,required,&strVal);
     if(ret) return ret;
     if(!strVal && !required) {
         *field = defaultVal;
@@ -199,7 +203,7 @@ int fmi2_xml_set_attr_enum(fmi2_xml_parser_context_t *context, fmi2_xml_elm_enu_
     int ret, i;
     jm_string elmName, attrName, strVal;
 
-    ret = fmi2_get_attr_str(context, elmID, attrID,required,&strVal);
+    ret = fmi2_xml_get_attr_str(context, elmID, attrID,required,&strVal);
     if(ret) return ret;
     if(!strVal && !required) {
         *field = defaultVal;
@@ -228,10 +232,10 @@ int fmi2_xml_set_attr_int(fmi2_xml_parser_context_t *context, fmi2_xml_elm_enu_t
     int ret;
     jm_string elmName, attrName, strVal;
 
-    ret = fmi2_get_attr_str(context, elmID, attrID,required,&strVal);
+    ret = fmi2_xml_get_attr_str(context, elmID, attrID,required,&strVal);
     if(ret) return ret;
-    if(!strVal && !required) {
-        *field = defaultVal;
+    if(!strVal && !required) {        
+		*field = defaultVal;
         return 0;
     }
 
@@ -251,7 +255,7 @@ int fmi2_xml_set_attr_double(fmi2_xml_parser_context_t *context, fmi2_xml_elm_en
     jm_string elmName, attrName, strVal;
 
 
-    ret = fmi2_get_attr_str(context, elmID, attrID,required,&strVal);
+    ret = fmi2_xml_get_attr_str(context, elmID, attrID,required,&strVal);
     if(ret) return ret;
     if(!strVal && !required) {
         *field = defaultVal;
@@ -445,8 +449,29 @@ static void XMLCALL fmi2_parse_element_start(void *c, const char *elm, const cha
         /* find attribute by name  */
         currentMap = jm_vector_bsearch(jm_named_ptr)(context->attrMap, &key, jm_compare_named);
         if(!currentMap) {
-            /* not found error*/
-			jm_log_error(context->callbacks, module, "Unknown attribute '%s' in XML", attr[i]);
+#define XMLSchema_instance "http://www.w3.org/2001/XMLSchema-instance"
+			const size_t stdNSlen = strlen(XMLSchema_instance);
+			if((attr[i][stdNSlen] == '|') && (strncmp(attr[i], XMLSchema_instance, stdNSlen) == 0)) {
+				const char* localName = attr[i] + stdNSlen + 1;
+				if(	strcmp(localName, "noNamespaceSchemaLocation") == 0)
+					jm_log_warning(context->callbacks, module, "Attribute noNamespaceSchemaLocation='%s' is ignored. Using standard fmiModelDescription.xsd.",
+					attr[i+1]);
+				else if((strcmp(localName, "nil") == 0)
+					||  (strcmp(localName, "type") == 0)) {
+						jm_log_warning(context->callbacks, module, "Attribute {" XMLSchema_instance "}%s=%s is ignored",
+							localName, attr[i+1]);
+				}
+				else if(strcmp(localName, "schemaLocation") == 0) {
+					/* just skip this */
+				}
+				else {
+					jm_log_error(context->callbacks, module, "Unknown attribute '%s=%s' in XML", attr[i], attr[i+1]);
+				}
+			}
+			else {
+				/* not found error*/
+				jm_log_error(context->callbacks, module, "Unknown attribute '%s=%s' in XML", attr[i], attr[i+1]);
+			}
         }
 		else  {
             /* save attr value (still as string) for further handling  */
@@ -544,7 +569,7 @@ static void XMLCALL fmi2_parse_element_end(void* c, const char *elm) {
 static void XMLCALL fmi2_parse_element_data(void* c, const XML_Char *s, int len) {
 		int i;
         fmi2_xml_parser_context_t *context = c;
-		if(context->useAnyHandleFlg) {
+		if(context->useAnyHandleFlg && (context->anyElmCount > 0)) {
 			jm_xml_callbacks_t* anyH = context->anyHandle;
 			if(anyH && anyH->dataHandle) {
 				int ret = anyH->dataHandle(anyH->context, s, len);
@@ -590,8 +615,6 @@ int fmi2_xml_parse_model_description(fmi2_xml_model_description_t* md, const cha
         return -1;
     }
     context->lastBaseUnit = 0;
-    jm_vector_init(jm_voidp)(&context->directDependencyBuf, 0, context->callbacks);
-    jm_vector_init(jm_string)(&context->directDependencyStringsStore, 0, context->callbacks);
     context->skipOneVariableFlag = 0;
 	context->skipElementCnt = 0;
     jm_stack_init(int)(&context->elmStack,  context->callbacks);
@@ -605,7 +628,7 @@ int fmi2_xml_parse_model_description(fmi2_xml_model_description_t* md, const cha
     memsuite.malloc_fcn = context->callbacks->malloc;
     memsuite.realloc_fcn = context->callbacks->realloc;
     memsuite.free_fcn = context->callbacks->free;
-    context -> parser = parser = XML_ParserCreate_MM(0, &memsuite, 0);
+    context -> parser = parser = XML_ParserCreate_MM(0, &memsuite, "|");
 
     if(! parser) {
         fmi2_xml_parse_fatal(context, "Could not initialize XML parsing library.");

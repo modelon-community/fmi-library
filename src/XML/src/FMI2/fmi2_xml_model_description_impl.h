@@ -58,9 +58,12 @@ struct fmi2_xml_model_description_t {
 
     double defaultExperimentTolerance;
 
+
     jm_vector(char) modelIdentifierME;
 
 	jm_vector(char) modelIdentifierCS;
+
+    jm_vector(jm_string) logCategories;
 
 	jm_vector(jm_string) vendorList;
 
@@ -80,6 +83,8 @@ struct fmi2_xml_model_description_t {
     fmi2_fmu_kind_enu_t fmuKind;
 
     unsigned int capabilities[fmi2_capabilities_Num];
+
+	fmi2_xml_model_structure_t* modelStructure;
 };
 
 void fmi2_xml_report_error(fmi2_xml_model_description_t* md, const char* module, const char* fmt, ...);

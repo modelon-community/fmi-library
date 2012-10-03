@@ -336,3 +336,21 @@ const char* fmi2_import_get_vendor_name(fmi2_import_t* fmu, size_t  index){
 	}
 	return fmi2_xml_get_vendor_name(fmu->md, index);
 }
+
+/** \brief Get the number of log categories defined in the XML */
+FMILIB_EXPORT size_t fmi2_import_get_log_categories_num(fmi2_import_t* fmu) {
+	if(!fmu->md) {
+		jm_log_error(fmu->callbacks, module,"No FMU is loaded");
+		return 0;
+	}
+	return jm_vector_get_size(jm_string)(fmi2_xml_get_log_categories(fmu->md));
+}
+
+/** \brief Get the log category by index */
+FMILIB_EXPORT const char* fmi2_import_get_log_category(fmi2_import_t* fmu, size_t  index) {
+	if(!fmu->md) {
+		jm_log_error(fmu->callbacks, module,"No FMU is loaded");
+		return 0;
+	}
+	return jm_vector_get_item(jm_string)(fmi2_xml_get_log_categories(fmu->md), index);
+}

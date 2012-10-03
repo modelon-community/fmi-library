@@ -194,6 +194,21 @@ FMILIB_EXPORT const char * fmi2_SI_base_unit_to_string(fmi2_SI_base_units_enu_t 
 */
 FMILIB_EXPORT size_t fmi2_SI_base_unit_exp_to_string(const int exp[fmi2_SI_base_units_Num], size_t bufSize, char buf[]);
 
+
+/** \brief Base types used in type definitions */
+typedef enum fmi2_dependency_factor_kind_enu_t
+{
+	fmi2_dependency_factor_kind_nonlinear = 0,
+	fmi2_dependency_factor_kind_fixed,
+	fmi2_dependency_factor_kind_discrete,
+	fmi2_dependency_factor_kind_num
+} fmi2_dependency_factor_kind_enu_t;
+
+/**  \brief Convert dependency factor kind constant to string 
+	\param fc Dependency factor kind identifier.
+	\return Corresponding factor kind as string.
+	*/
+FMILIB_EXPORT const char* fmi2_dependency_factor_kind_to_string(fmi2_dependency_factor_kind_enu_t fc);
 /**	
  @}
 */

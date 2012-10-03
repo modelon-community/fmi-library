@@ -18,6 +18,7 @@
 
 #include <JM/jm_named_ptr.h>
 #include "fmi2_xml_model_description_impl.h"
+#include "fmi2_xml_model_structure_impl.h"
 #include "fmi2_xml_parser.h"
 
 static const char* module = "FMI2XML";
@@ -32,7 +33,7 @@ fmi2_xml_model_description_t * fmi2_xml_allocate_model_description( jm_callbacks
     else {
         cb = jm_get_default_callbacks();
     }
-    md = (fmi2_xml_model_description_t*)cb->malloc(sizeof(fmi2_xml_model_description_t));
+    md = (fmi2_xml_model_description_t*)cb->calloc(1, sizeof(fmi2_xml_model_description_t));
     if(!md) {
 		jm_log_fatal(cb, module, "Could not allocate memory");
 		return 0;
@@ -67,6 +68,7 @@ fmi2_xml_model_description_t * fmi2_xml_allocate_model_description( jm_callbacks
     md->defaultExperimentTolerance = 1e-6;
 
 	jm_vector_init(jm_string)(&md->vendorList, 0, cb);
+	jm_vector_init(jm_string)(&md->logCategories, 0, cb);
 
     jm_vector_init(jm_named_ptr)(&md->unitDefinitions, 0, cb);
     jm_vector_init(jm_named_ptr)(&md->displayUnitDefinitions, 0, cb);
@@ -122,12 +124,14 @@ void fmi2_xml_clear_model_description( fmi2_xml_model_description_t* md) {
     jm_vector_foreach(jm_string)(&md->vendorList, (void(*)(const char*))md->callbacks->free);
     jm_vector_free_data(jm_string)(&md->vendorList);
 
+    jm_vector_foreach(jm_string)(&md->logCategories, (void(*)(const char*))md->callbacks->free);
+    jm_vector_free_data(jm_string)(&md->logCategories);	
+
     jm_named_vector_free_data(&md->unitDefinitions);
     jm_named_vector_free_data(&md->displayUnitDefinitions);
 
     fmi2_xml_free_type_definitions_data(&md->typeDefinitions);
 
-    jm_vector_foreach(jm_named_ptr)(&md->variablesByName, fmi2_xml_free_direct_dependencies);
     jm_named_vector_free_data(&md->variablesByName);
 	if(md->variablesOrigOrder) {
 		jm_vector_free(jm_voidp)(md->variablesOrigOrder);
@@ -140,6 +144,9 @@ void fmi2_xml_clear_model_description( fmi2_xml_model_description_t* md) {
 
     jm_vector_foreach(jm_string)(&md->descriptions, (void(*)(const char*))md->callbacks->free);
     jm_vector_free_data(jm_string)(&md->descriptions);
+
+	fmi2_xml_free_model_structure(md->modelStructure);
+	md->modelStructure = 0;
 }
 
 int fmi2_xml_is_model_description_empty(fmi2_xml_model_description_t* md) {
@@ -282,6 +289,11 @@ size_t fmi2_xml_get_vendors_num(fmi2_xml_model_description_t* md) {
 	return jm_vector_get_size(jm_string)(&md->vendorList);
 }
 
+jm_vector(jm_string)* fmi2_xml_get_log_categories(fmi2_xml_model_description_t* md) {
+	assert(md);
+	return &md->logCategories;
+}
+
 /** \brief Get the name of the vendor with that had annotations in the XML by index */
 const char* fmi2_xml_get_vendor_name(fmi2_xml_model_description_t* md, size_t  index) {
 	assert(fmi2_xml_get_vendors_num(md) > index);
@@ -289,6 +301,22 @@ const char* fmi2_xml_get_vendor_name(fmi2_xml_model_description_t* md, size_t  i
 	return jm_vector_get_item(jm_string)(&md->vendorList,index);
 }
 
+int fmi2_xml_is_valid_model_ID_char(char ch) {
+	return ((( ch >= 'A') && (ch <= 'Z')) || 
+			(( ch >= 'a') && (ch <= 'z')) || 
+			(ch == '_'));
+}
+
+int fmi2_xml_is_valid_model_ID(const char* str) {
+	size_t i, len = strlen(str);
+	char ch = str[0];
+	if( !fmi2_xml_is_valid_model_ID_char(ch)) return 0;
+	for(i = 1; i < len; i++) {
+		ch = str[i];
+		if( !fmi2_xml_is_valid_model_ID_char(ch) && (ch < '0') && (ch > '9')) return 0;
+	}
+	return 1;
+}
 
 int fmi2_xml_handle_fmiModelDescription(fmi2_xml_parser_context_t *context, const char* data) {
     jm_name_ID_map_t namingConventionMap[] = {{"flat",fmi2_naming_enu_flat},{"structured", fmi2_naming_enu_structured},{0,0}};
@@ -329,7 +357,23 @@ int fmi2_xml_handle_fmiModelDescription(fmi2_xml_parser_context_t *context, cons
                     );
     }
     else {
-        /* don't do anything. might give out a warning if(data[0] != 0) */
+		/* check that fmuKind is defined and that model identifies are valid*/
+		if(md->fmuKind == fmi2_fmu_kind_unknown) {
+			fmi2_xml_parse_fatal(context, "Neither ModelExchange nor CoSimulation element were parsed correctly. FMU kind not known.");
+			return -1;
+		}
+		if( (md->fmuKind != fmi2_fmu_kind_cs) && !fmi2_xml_is_valid_model_ID(fmi2_xml_get_model_identifier_ME(md))) {
+			fmi2_xml_parse_error(context, "Model indetifier '%s' is not valid (must be a valid C-identifier)", fmi2_xml_get_model_identifier_ME(md));
+			return -1;
+		}
+		if( (md->fmuKind != fmi2_fmu_kind_me) && !fmi2_xml_is_valid_model_ID(fmi2_xml_get_model_identifier_CS(md))) {
+			fmi2_xml_parse_error(context, "Model indetifier '%s' is not valid (must be a valid C-identifier)", fmi2_xml_get_model_identifier_CS(md));
+			return -1;
+		}
+		if( (md->fmuKind == fmi2_fmu_kind_me_and_cs) && (strcmp(fmi2_xml_get_model_identifier_CS(md), fmi2_xml_get_model_identifier_ME(md)) == 0)) {
+			fmi2_xml_parse_error(context, "Model indetifiers for ModelExchange and CoSimulation must be different");
+			return -1;
+		}
         return 0;
     }
 }
@@ -444,6 +488,26 @@ int fmi2_xml_handle_Category(fmi2_xml_parser_context_t *context, const char* dat
     fmi2_xml_model_description_t* md = context->modelDescription;
     if(!data) {
         /* process the attributes */
+		size_t len;
+        fmi2_xml_model_description_t* md = context->modelDescription;
+        jm_vector(char)* bufName = fmi2_xml_reserve_parse_buffer(context,1,100);
+        jm_string *pcategory;
+		char* category = 0;
+			
+        if(!bufName) return -1;
+		/* <xs:attribute name="name" type="xs:normalizedString"> */
+            if( fmi2_xml_set_attr_string(context, fmi2_xml_elmID_Category, fmi_attr_id_name, 1, bufName))
+				return -1;
+            pcategory = jm_vector_push_back(jm_string)(&md->vendorList, category);
+			len = jm_vector_get_size(char)(bufName);
+            if(pcategory )
+                *pcategory = category = (char*)(context->callbacks->malloc(len + 1));
+	        if(!pcategory || !category) {
+	            fmi2_xml_parse_fatal(context, "Could not allocate memory");
+		        return -1;
+			}
+            memcpy(category, jm_vector_get_itemp(char)(bufName,0), len);
+            category[len] = 0;
         return (0);
     }
     else {

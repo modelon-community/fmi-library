@@ -28,13 +28,22 @@ extern "C" {
 
 /* General variable type is convenien to unify all the variable list operations */
 struct fmi2_xml_variable_t {
-    fmi2_xml_variable_type_base_t* typeBase;
+    fmi2_xml_variable_type_base_t* typeBase; /** \brief Type information of the variable */
 
-    const char* description;
-    jm_vector(jm_voidp)* directDependency;
+    const char* description;				 /** \brief Associate description */
 
-	size_t originalIndex;
-    fmi2_value_reference_t vr;
+	size_t originalIndex;					/** \brief Index in the model description */
+
+	/*
+		Note: in principle a variable can correspond to two different input/states/ders/outputs indices.
+		So when going from a variable to its structure information having one index is not always enough.
+	*/
+	size_t inputIndex;						/** \brief Index in the list of inputs (1-based, 0 if not an input) */
+	size_t stateIndex;						/** \brief Index in the list of states (1-based, 0 if not a state) */
+	size_t derivativeIndex;					/** \brief Index in the list of derivatives (1-based, 0 if not a derivative) */
+	size_t outputIndex;						/** \brief Index in the list of outputs (1-based, 0 if not an ouput) */
+
+    fmi2_value_reference_t vr;				/** \brief Value reference */
     char aliasKind;
     char initial;
     char variability;
@@ -55,8 +64,6 @@ static int fmi2_xml_compare_vr (const void* first, const void* second) {
     if(a->vr > b->vr) return 1;
     return ((int)a->aliasKind - (int)b->aliasKind);
 }
-
-void fmi2_xml_free_direct_dependencies(jm_named_ptr named);
 
 #ifdef __cplusplus
 }

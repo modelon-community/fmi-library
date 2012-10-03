@@ -70,16 +70,6 @@ fmi2_initial_enu_t fmi2_import_get_initial(fmi2_import_variable_t* v) {
 	return fmi2_xml_get_initial(v);
 }
 
-/* DirectDependency is returned for variables with causality Output. Null pointer for others. */
-fmi2_import_variable_list_t* fmi2_import_get_direct_dependency(fmi2_import_t* fmu, fmi2_import_variable_t* v) {
-	fmi2_import_variable_list_t* list = fmi2_import_alloc_variable_list(fmu, fmi2_xml_get_direct_dependency_size(fmu->md,v));
-	if(fmi2_xml_get_direct_dependency(fmu->md,v,&list->variables) != jm_status_success) {
-		fmi2_import_free_variable_list(list);
-		return 0;
-	}
-	return list;
-}
-
 fmi2_import_real_variable_t* fmi2_import_get_variable_as_real(fmi2_import_variable_t* v) {
 	return fmi2_xml_get_variable_as_real(v);
 }

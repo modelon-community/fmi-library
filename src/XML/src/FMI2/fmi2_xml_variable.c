@@ -237,27 +237,6 @@ fmi2_boolean_t fmi2_xml_get_boolean_variable_start(fmi2_xml_bool_variable_t* v) 
         return 0;
 }
 
-size_t fmi2_xml_get_direct_dependency_size(fmi2_xml_model_description_t* md,fmi2_xml_variable_t*v) {
-	if(v->directDependency) {
-		return jm_vector_get_size(jm_voidp)(v->directDependency);
-	}
-	else
-		return 0;
-}
-
-/* DirectDependency is returned for variables with causality Output. Null pointer for others. */
-jm_status_enu_t fmi2_xml_get_direct_dependency(fmi2_xml_model_description_t* md, fmi2_xml_variable_t* v, jm_vector(jm_voidp)* list) {
-	size_t size = 0;
-	if(fmi2_xml_get_causality(v) != fmi2_causality_enu_output) return jm_status_error;
-	jm_vector_resize(jm_voidp)(list, 0);
-	if(v->directDependency) {
-		size = jm_vector_get_size(jm_voidp)(v->directDependency);
-		if(jm_vector_reserve(jm_voidp)(list, size) < size) return jm_status_error;
-	    jm_vector_copy(jm_voidp)(list,v->directDependency);
-	}
-	return jm_status_success;
-}
-
 fmi2_xml_real_variable_t* fmi2_xml_get_variable_as_real(fmi2_xml_variable_t* v) {
     if(fmi2_xml_get_variable_base_type(v) == fmi2_base_type_real)  return (void*)v;
     return 0;
@@ -278,14 +257,6 @@ fmi2_xml_string_variable_t* fmi2_xml_get_variable_as_string(fmi2_xml_variable_t*
 fmi2_xml_bool_variable_t* fmi2_xml_get_variable_as_boolean(fmi2_xml_variable_t* v){
     if(fmi2_xml_get_variable_base_type(v) == fmi2_base_type_bool)  return (void*)v;
     return 0;
-}
-
-void fmi2_xml_free_direct_dependencies(jm_named_ptr named) {
-        fmi2_xml_variable_t* v = named.ptr;
-        if(v->directDependency) {
-                jm_vector_free(jm_voidp)(v->directDependency);
-                v->directDependency = 0;
-        }
 }
 
 int fmi2_xml_handle_ScalarVariable(fmi2_xml_parser_context_t *context, const char* data) {
@@ -336,7 +307,10 @@ int fmi2_xml_handle_ScalarVariable(fmi2_xml_parser_context_t *context, const cha
             variable->vr = vr;
             variable->description = description;
             variable->typeBase = 0;
-            variable->directDependency = 0;
+			variable->stateIndex = 0;
+			variable->inputIndex = 0;
+			variable->derivativeIndex = 0;
+			variable->outputIndex = 0;
 			variable->originalIndex = jm_vector_get_size(jm_named_ptr)(&md->variablesByName) - 1;
 
             {
@@ -799,6 +773,8 @@ static int fmi2_xml_compare_vr_and_original_index (const void* first, const void
 		fmi2_xml_variable_t* b = *(fmi2_xml_variable_t**)second;
 		ret = a->causality - b->causality;
 		if(!ret) return ret;
+		ret = a->variability - b->variability;
+		if(!ret) return ret;
 		ret = (a->originalIndex - b->originalIndex);
 	}
 	
@@ -832,7 +808,6 @@ int fmi2_xml_handle_ModelVariables(fmi2_xml_parser_context_t *context, const cha
             if(v->vr == fmi2_undefined_value_reference) {
                 jm_vector_remove_item(jm_named_ptr)(&md->variablesByName,i);
                 numvar--; i--;
-                fmi2_xml_free_direct_dependencies(named);
                 md->callbacks->free(v);
                 assert(0);
             }
@@ -919,10 +894,6 @@ int fmi2_xml_handle_ModelVariables(fmi2_xml_parser_context_t *context, const cha
         }
 
         numvar = jm_vector_get_size(jm_named_ptr)(&md->variablesByName);
-		jm_log_verbose(context->callbacks, module,"Setting up direct dependencies cross-references");
-
-		jm_vector_foreach(jm_string)(&context->directDependencyStringsStore, (void(*)(jm_string))context->callbacks->free);
-        jm_vector_free_data(jm_string)(&context->directDependencyStringsStore);
 
         /* might give out a warning if(data[0] != 0) */
     }

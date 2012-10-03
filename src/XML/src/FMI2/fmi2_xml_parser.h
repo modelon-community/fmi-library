@@ -84,8 +84,13 @@ extern "C" {
 	EXPAND_XML_ATTRNAME(providesPartialDerivativesOf_DerivativeFunction_wrt_States)\
 	EXPAND_XML_ATTRNAME(providesPartialDerivativesOf_DerivativeFunction_wrt_Inputs)\
 	EXPAND_XML_ATTRNAME(providesPartialDerivativesOf_OutputFunction_wrt_States)\
-	EXPAND_XML_ATTRNAME(providesPartialDerivativesOf_OutputFunction_wrt_Inputs)
-
+	EXPAND_XML_ATTRNAME(providesPartialDerivativesOf_OutputFunction_wrt_Inputs) \
+	EXPAND_XML_ATTRNAME(derivative) \
+	EXPAND_XML_ATTRNAME(state) \
+	EXPAND_XML_ATTRNAME(stateDependencies) \
+	EXPAND_XML_ATTRNAME(stateFactorKinds) \
+	EXPAND_XML_ATTRNAME(inputDependencies) \
+	EXPAND_XML_ATTRNAME(inputFactorKinds)
 
 #define FMI2_XML_ATTR_ID(attr) fmi_attr_id_##attr,
 typedef enum fmi2_xml_attr_enu_t {
@@ -117,7 +122,14 @@ typedef enum fmi2_xml_attr_enu_t {
     EXPAND_XML_ELMNAME(Integer) \
     EXPAND_XML_ELMNAME(Boolean) \
     EXPAND_XML_ELMNAME(String) \
-    EXPAND_XML_ELMNAME(Enumeration)
+    EXPAND_XML_ELMNAME(Enumeration) \
+    EXPAND_XML_ELMNAME(ModelStructure) \
+    EXPAND_XML_ELMNAME(Derivatives) \
+    EXPAND_XML_ELMNAME(Inputs) \
+    EXPAND_XML_ELMNAME(Outputs) \
+    EXPAND_XML_ELMNAME(Derivative) \
+    EXPAND_XML_ELMNAME(Input) \
+    EXPAND_XML_ELMNAME(Output)
 
 /** \brief Element that can be placed under different parents get alternative names from the info struct */
 #define FMI2_XML_ELMLIST_ALT(EXPAND_XML_ELMNAME) \
@@ -185,10 +197,6 @@ struct fmi2_xml_parser_context_t {
 
     fmi2_xml_unit_t* lastBaseUnit;
 
-    jm_vector(jm_voidp) directDependencyBuf;
-
-    jm_vector(jm_string) directDependencyStringsStore;
-
     int skipOneVariableFlag;
 	int skipElementCnt;
 	int has_produced_data_warning;
@@ -220,6 +228,7 @@ int fmi2_xml_set_attr_boolean(fmi2_xml_parser_context_t *context, fmi2_xml_elm_e
 int fmi2_xml_set_attr_int(fmi2_xml_parser_context_t *context, fmi2_xml_elm_enu_t elmID, fmi2_xml_attr_enu_t attrID, int required, int* field, int defaultVal);
 int fmi2_xml_set_attr_double(fmi2_xml_parser_context_t *context, fmi2_xml_elm_enu_t elmID, fmi2_xml_attr_enu_t attrID, int required, double* field, double defaultVal);
 int fmi2_xml_is_attr_defined(fmi2_xml_parser_context_t *context, fmi2_xml_attr_enu_t attrID);
+int fmi2_xml_get_attr_str(fmi2_xml_parser_context_t *context, fmi2_xml_elm_enu_t elmID, fmi2_xml_attr_enu_t attrID, int required,const char** valp);
 
 void fmi2_xml_set_element_handle(fmi2_xml_parser_context_t *context, const char* elm, fmi2_xml_elm_enu_t id);
 

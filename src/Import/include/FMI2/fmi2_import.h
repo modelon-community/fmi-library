@@ -197,12 +197,6 @@ FMILIB_EXPORT fmi2_import_type_definitions_t* fmi2_import_get_type_definitions(f
 /** \brief Get a list of all the unit definitions in the model. */
 FMILIB_EXPORT fmi2_import_unit_definitions_t* fmi2_import_get_unit_definitions(fmi2_import_t* fmu);
 
-/** 
-	\brief Get the direct dependency information
-
-	@return A variable list is returned for variables with causality Output. Null pointer for others. */
-FMILIB_EXPORT fmi2_import_variable_list_t* fmi2_import_get_direct_dependency(fmi2_import_t* fmu, fmi2_import_variable_t*);
-
 /** \brief Get the variable with the same value reference that is not an alias*/
 FMILIB_EXPORT fmi2_import_variable_t* fmi2_import_get_variable_alias_base(fmi2_import_t* fmu,fmi2_import_variable_t*);
 
@@ -233,6 +227,12 @@ FMILIB_EXPORT size_t fmi2_import_get_vendors_num(fmi2_import_t* fmu);
 
 /** \brief Get the name of the vendor with that had annotations in the XML by index */
 FMILIB_EXPORT const char* fmi2_import_get_vendor_name(fmi2_import_t* fmu, size_t  index);
+
+/** \brief Get the number of log categories defined in the XML */
+FMILIB_EXPORT size_t fmi2_import_get_log_categories_num(fmi2_import_t* fmu);
+
+/** \brief Get the log category by index */
+FMILIB_EXPORT const char* fmi2_import_get_log_category(fmi2_import_t* fmu, size_t  index);
 
 /**@} */
 

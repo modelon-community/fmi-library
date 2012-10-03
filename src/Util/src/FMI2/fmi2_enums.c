@@ -34,6 +34,16 @@ const char* fmi2_fmu_kind_to_string(fmi2_fmu_kind_enu_t kind) {
     return "Unknown";
 }
 
+const char* fmi2_dependency_factor_kind_to_string(fmi2_dependency_factor_kind_enu_t fc) {
+	switch(fc) {
+	case fmi2_dependency_factor_kind_nonlinear: return "non-linear";
+	case fmi2_dependency_factor_kind_fixed: return "fixed";
+	case fmi2_dependency_factor_kind_discrete: return "discrete";
+	default:break;
+	}
+	return "illegal factor kind";
+} fmi2_dependency_factor_kind_enu_t;
+
 const char* fmi2_variability_to_string(fmi2_variability_enu_t v) {
     switch(v) {
     case fmi2_variability_enu_constant: return "constant";

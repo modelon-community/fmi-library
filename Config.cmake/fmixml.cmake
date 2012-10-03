@@ -40,6 +40,8 @@ set(FMIXMLHEADERS
 
     include/FMI2/fmi2_xml_model_description.h
     src/FMI2/fmi2_xml_model_description_impl.h
+    include/FMI2/fmi2_xml_model_structure.h
+    src/FMI2/fmi2_xml_model_structure_impl.h
     src/FMI2/fmi2_xml_parser.h
     include/FMI2/fmi2_xml_type.h
     src/FMI2/fmi2_xml_type_impl.h
@@ -63,6 +65,7 @@ set(FMIXMLSOURCE
 
     src/FMI2/fmi2_xml_parser.c
     src/FMI2/fmi2_xml_model_description.c
+    src/FMI2/fmi2_xml_model_structure.c
     src/FMI2/fmi2_xml_type.c
     src/FMI2/fmi2_xml_unit.c
 	src/FMI2/fmi2_xml_vendor_annotations.c

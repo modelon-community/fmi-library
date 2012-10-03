@@ -43,9 +43,9 @@ int annotation_start_handle(void *context, const char *elm, const char **attr) {
 }
 
 int annotation_data_handle(void* context, const char *s, int len) {
-	char fmt[20];
-	sprintf(fmt, "%%%d%%s", len);
-	printf(fmt, s);
+	int i;
+	for(i = 0; i < len; i++)
+		printf("%c", s[i]);
 	return 0;
 }
 
@@ -344,9 +344,9 @@ int main(int argc, char *argv[])
     printf("Naming : %s\n", fmi2_naming_convention_to_string(fmi2_import_get_naming_convention(fmu)));
 
     if(fmi2_import_get_fmu_kind(fmu) != fmi2_fmu_kind_cs)
-	    printf("Model identifier: %s\n", fmi2_import_get_model_identifier_ME(fmu));
+	    printf("Model identifier ME: %s\n", fmi2_import_get_model_identifier_ME(fmu));
     if(fmi2_import_get_fmu_kind(fmu) != fmi2_fmu_kind_me)
-	    printf("Model identifier: %s\n", fmi2_import_get_model_identifier_CS(fmu));
+	    printf("Model identifier CS: %s\n", fmi2_import_get_model_identifier_CS(fmu));
     printCapabilitiesInfo(fmu);
 
     printf("NumberOfContinuousStates = %d\n", fmi2_import_get_number_of_continuous_states(fmu));

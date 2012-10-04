@@ -245,7 +245,9 @@ char* jm_mk_temp_dir(jm_callbacks* cb, const char* systemTempDir, const char* te
 
 	len = strlen(tmpDir);
 	if(tmpDir[len-1] != FMI_FILE_SEP[0]) {
-		tmpDir[len] = FMI_FILE_SEP[0]; len++;
+		tmpDir[len] = FMI_FILE_SEP[0]; 
+		tmpDir[len+1] = 0;
+		len++;
 	}
 	len += strlen(tempPrefix) + 6;
 	if(len + 16 > FILENAME_MAX) {

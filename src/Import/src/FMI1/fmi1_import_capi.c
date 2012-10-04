@@ -294,6 +294,9 @@ jm_status_enu_t fmi1_import_instantiate_slave(fmi1_import_t* fmu, fmi1_string_t 
 	fmi1_component_t c;
 	if(!mimeType) mimeType = "application/x-fmu-sharedlibrary";
 	if(!fmuLocation) fmuLocation = fmu->location;
+	jm_log_verbose(fmu->callbacks, module, "Instantiating the slave with \n"
+					"\tFMU location ='%s'\n\tMIME type = '%s'", fmuLocation, mimeType);
+
 	c = fmi1_capi_instantiate_slave(fmu -> capi, instanceName, fmuGUID, fmuLocation, mimeType, timeout, visible, interactive, loggingOn);
 	if (c == NULL) {
 		return jm_status_error;

@@ -255,7 +255,9 @@ if(FMILIB_BUILD_STATIC_LIB)
 	if(UNIX) 
 		target_link_libraries(fmilib dl)
 	endif(UNIX)
-
+	if(WIN32)
+		target_link_libraries(fmilib Shlwapi)
+	endif(WIN32)
 	set(FMILIB_TARGETS ${FMILIB_TARGETS} fmilib)
 endif()
 

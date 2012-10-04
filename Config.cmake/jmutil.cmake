@@ -63,5 +63,8 @@ endif(CYGWIN)
 if(UNIX) 
 	target_link_libraries(jmutils dl)
 endif(UNIX)
+if(WIN32)
+	target_link_libraries(jmutils Shlwapi)
+endif(WIN32)
 
 endif(NOT JMUTILDIR)

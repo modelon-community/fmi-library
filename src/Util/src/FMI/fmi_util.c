@@ -40,7 +40,7 @@ char* fmi_construct_dll_dir_name(jm_callbacks* callbacks, const char* fmu_unzipp
 	return dir_path;
 }
 
-FMILIB_EXPORT char* fmi_construct_dll_file_name(jm_callbacks* callbacks, const char* model_identifier) {
+char* fmi_construct_dll_file_name(jm_callbacks* callbacks, const char* model_identifier) {
 	char* fname;
 	int len;
 	assert(callbacks && model_identifier);

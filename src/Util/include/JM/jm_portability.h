@@ -62,7 +62,7 @@ char* jm_portability_get_last_dll_error	(void);
 jm_status_enu_t jm_portability_get_current_working_directory(char* buffer, size_t len);
 
 /** \brief Set current working directory*/
-jm_status_enu_t jm_portability_set_current_working_directory(char* cwd);
+jm_status_enu_t jm_portability_set_current_working_directory(const char* cwd);
 
 /** \brief Get system-wide temporary directory */
 const char* jm_get_system_temp_dir();
@@ -74,6 +74,26 @@ const char* jm_get_system_temp_dir();
 	template is badly formed or no more unique names can be created from the given template.
 */
 char* jm_mktemp(char* tmplt);
+
+/** 
+	\brief Create a unique temporary directory
+	\param cb - callbacks for memory allocation and logging. Default callbacks are used if this parameter is NULL.
+	\param systemTempDir - directory where the temp dir should be located both absolute and relative path are accepted.
+				System-wide directory is used if this parameter is NULL.
+	\param tempPrefix - File name template prefix used when creating temporaty directories. "jm" is used if this is NULL.
+	\return A pointer to the temporary directory name (absolute path, no terminating '/'). Caller is responsible for freeing the memory.
+		The function returns NULL if there were errors in which case a message is send to the logger.	
+*/
+char* jm_mk_temp_dir(jm_callbacks* cb, const char* systemTempDir, const char* tempPrefix);
+
+/** 
+	\brief Create a file:// URL from absolute path
+	\param cb - callbacks for memory allocation and logging. Default callbacks are used if this parameter is NULL.
+	\param absPath - absolute path to be converted into the URL
+	\return A pointer to the URL. Caller is responsible for freeing the memory.
+		The function returns NULL if there were errors in which case a message is send to the logger.	
+*/
+char* jm_create_URL_from_abs_path(jm_callbacks* cb, const char* absPath);
 
 /**
 	\brief Make a directory.

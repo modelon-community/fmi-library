@@ -15,6 +15,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <locale.h>
 #include <string.h>
 
 #include <fmilib_config.h>
@@ -22,7 +23,10 @@
 #include <JM/jm_types.h>
 #include <JM/jm_portability.h>
 
+static const char * module = "JMPRT";
+
 #ifdef WIN32
+#include <Shlwapi.h>
 #include <direct.h>
 #define get_current_working_directory _getcwd
 #define set_current_working_directory _chdir	
@@ -93,6 +97,7 @@ char* jm_portability_get_last_dll_error(void)
 
 jm_status_enu_t jm_portability_get_current_working_directory(char* buffer, size_t len)
 {
+	setlocale(LC_CTYPE, "en_US.UTF-8"); /* just in case, does not seem to have an effect */
 	if (get_current_working_directory(buffer, len) == NULL) {
 		return jm_status_error;
 	} else {
@@ -100,7 +105,7 @@ jm_status_enu_t jm_portability_get_current_working_directory(char* buffer, size_
 	}
 }
 
-jm_status_enu_t jm_portability_set_current_working_directory(char* cwd)
+jm_status_enu_t jm_portability_set_current_working_directory(const char* cwd)
 {
 	if (set_current_working_directory(cwd) == 0) {
 		return jm_status_success;
@@ -144,8 +149,11 @@ char* jm_mktemp(char* tmplt) {
 #endif
 
 jm_status_enu_t jm_mkdir(jm_callbacks* cb, const char* dir) {
+	if(!cb) {
+		cb = jm_get_default_callbacks();
+	}
 	if(MKDIR(dir)) {
-		jm_log_fatal(cb,"JMPRT","Could not create directory %s", dir);
+		jm_log_fatal(cb,module,"Could not create directory %s", dir);
 		return jm_status_error;
 	}
 	else
@@ -160,8 +168,11 @@ jm_status_enu_t jm_rmdir(jm_callbacks* cb, const char* dir) {
     const char* fmt_cmd = "rm -rf %s";
 #endif
     char * buf = (char*)cb->calloc(sizeof(char), strlen(dir)+strlen(fmt_cmd)+1);
+	if(!cb) {
+		cb = jm_get_default_callbacks();
+	}
 	if(!buf) {
-	    jm_log_error(cb,"JMPRT","Could not allocate memory");
+	    jm_log_error(cb,module,"Could not allocate memory");
 		return jm_status_error;
 	}
     sprintf(buf, fmt_cmd, dir);
@@ -174,11 +185,131 @@ jm_status_enu_t jm_rmdir(jm_callbacks* cb, const char* dir) {
 		}
 	}
 #endif
-    jm_log_verbose(cb,"JMPRT","Removing %s", dir);
+    jm_log_verbose(cb,module,"Removing %s", dir);
     if(system(buf)) {
-	    jm_log_error(cb,"JMPRT","Error removing %s (%s)", dir, strerror(errno));
+	    jm_log_error(cb,module,"Error removing %s (%s)", dir, strerror(errno));
 		return jm_status_error;
 	}
     cb->free(buf);
 	return jm_status_success;
+}
+
+char* jm_mk_temp_dir(jm_callbacks* cb, const char* systemTempDir, const char* tempPrefix)
+{
+	size_t len;
+
+	char curDir[FILENAME_MAX + 2], tmpDir[FILENAME_MAX + 2];
+	char* tmpPath;
+
+	if(!cb) {
+		cb = jm_get_default_callbacks();
+	}
+	if(!systemTempDir) {
+		systemTempDir = jm_get_system_temp_dir();
+		if(!systemTempDir) systemTempDir = "./";
+	}
+	if(!tempPrefix) {
+		tempPrefix = "jm";
+	}
+	len = strlen(systemTempDir);
+
+	if( jm_portability_get_current_working_directory(curDir, FILENAME_MAX+1) != jm_status_success) {
+		jm_log_fatal(cb,module, "Could not get current working directory (%s)", strerror(errno));
+		return 0;
+	};
+
+	if(jm_portability_set_current_working_directory(systemTempDir) != jm_status_success) {
+		jm_log_fatal(cb,module, "Could not change to the temporary files directory %s", systemTempDir);
+		jm_portability_set_current_working_directory(curDir);
+		return 0;
+	};
+	if( jm_portability_get_current_working_directory(tmpDir, FILENAME_MAX+1) != jm_status_success) {
+		jm_log_fatal(cb,module, "Could not get canonical name for the temporary files directory (%s)", strerror(errno));
+		jm_portability_set_current_working_directory(curDir);
+		return 0;
+	};
+
+	jm_portability_set_current_working_directory(curDir);
+
+	len = strlen(tmpDir);
+	if(tmpDir[len-1] != FMI_FILE_SEP[0]) {
+		tmpDir[len] = FMI_FILE_SEP[0]; len++;
+	}
+	len += strlen(tempPrefix) + 6;
+	if(len + 16 > FILENAME_MAX) {
+		jm_log_fatal(cb,module, "Canonical name for the temporary files directory is too long (system limit for path length is %d)", FILENAME_MAX);
+		return 0;
+	}
+	tmpPath = (char*)cb->malloc(len + 7);
+	if(!tmpPath) {
+		jm_log_fatal(cb, module,"Could not allocate memory");
+		return 0;
+	}
+	sprintf(tmpPath,"%s%sXXXXXX",tmpDir,tempPrefix);
+
+	if(!jm_mktemp(tmpPath)) {
+		jm_log_fatal(cb, module,"Could not create a unique temporary directory name");
+		cb->free(tmpPath);
+		return 0;
+	}
+	if(jm_mkdir(cb,tmpPath) != jm_status_success) {
+		cb->free(tmpPath);
+		return 0;
+	}
+	return tmpPath;
+}
+
+char* jm_create_URL_from_abs_path(jm_callbacks* cb, const char* path) {
+	/* worst case: all symbols are 4-byte UTF-8 and need to be %-encoded */
+#define MAX_URL_LENGTH  (FILENAME_MAX * 4 * 3 + 7)
+	char buffer[MAX_URL_LENGTH];
+	char* url;
+	size_t urllen;
+	if(!cb) {
+		cb = jm_get_default_callbacks();
+	}
+
+#if defined(_WIN32) || defined(WIN32)
+	{
+		DWORD pathLen = MAX_URL_LENGTH;
+		HRESULT code = UrlCreateFromPathA(
+			path,
+			buffer,
+			&pathLen,
+			0);
+		if( (code != S_FALSE) && (code != S_OK)) {
+			jm_log_fatal(cb, module,"Could not constuct file URL from path %s", path);
+			return 0;
+		}
+		urllen = pathLen;
+	}
+#else
+	{
+		size_t i, len = strlen(path);
+		char *curBuf = buffer + 7;
+		unsigned char ch;
+		strcpy(buffer, "file://");
+		for( i = 0; i < len; i++) {
+			ch = (unsigned char)path[i];
+			if( (ch == '/') || ((ch >= 'A') && (ch <= 'Z')) 
+				|| ((ch >= 'a') && (ch <= 'z'))
+				|| (ch == '-') || (ch == '_') || (ch == '.') ||(ch == '~')) {
+					*curBuf = ch;
+					curBuf++;
+					continue;
+			}
+			sprintf(curBuf, "%%%2X", (int)ch);
+			curBuf+=3;
+		}
+		*curBuf = 0;
+		urllen = curBuf - buffer;
+	}
+#endif
+	url = (char*)cb->malloc(urllen+1);
+	if(!url) {
+		jm_log_fatal(cb, module,"Could not allocate memory");
+		return 0;
+	}
+	strcpy(url, buffer);
+	return url;
 }

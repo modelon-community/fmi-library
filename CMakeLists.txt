@@ -308,6 +308,7 @@ endif()
 	
 install(DIRECTORY 
 	${FMILIB_FMI_STANDARD_HEADERS}/FMI1
+	${FMILIB_FMI_STANDARD_HEADERS}/FMI2
 	DESTINATION include)
 
 function(append_file_context file_out file_in)

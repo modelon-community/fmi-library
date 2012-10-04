@@ -38,6 +38,7 @@ fmi1_import_t* fmi1_import_allocate(jm_callbacks* cb) {
 		return 0;
 	}
 	fmu->dirPath = 0;
+	fmu->location = 0;
 	fmu->callbacks = cb;
 	fmu->capi = 0;
 	fmu->md = fmi1_xml_allocate_model_description(cb);
@@ -57,34 +58,48 @@ const char* fmi1_import_get_last_error(fmi1_import_t* fmu) {
 }
 
 fmi1_import_t* fmi1_import_parse_xml( fmi_import_context_t* context, const char* dirPath) {
-	char* xmlPath =  fmi_import_get_model_description_path(dirPath, context->callbacks);
+	char* xmlPath; 
+	char absPath[FILENAME_MAX + 2];
+	jm_callbacks* cb;
+	fmi1_import_t* fmu;
 
-	fmi1_import_t* fmu = fmi1_import_allocate(context->callbacks);
+	if(!context) return 0;
+
+	cb = context->callbacks; 
+	
+	xmlPath =  fmi_import_get_model_description_path(dirPath, context->callbacks);
+
+	fmu = fmi1_import_allocate(context->callbacks);
 
 	if(!fmu) {
 		context->callbacks->free(xmlPath);
 		return 0;
 	}
 	
-	jm_log_verbose( context->callbacks, "FMILIB", "Parsing model description XML");
+	jm_log_verbose( cb, "FMILIB", "Parsing model description XML");
 
 	if(fmi1_xml_parse_model_description( fmu->md, xmlPath)) {
 		fmi1_import_free(fmu);
-		context->callbacks->free(xmlPath);
+		cb->free(xmlPath);
 		return 0;
 	}
-	context->callbacks->free(xmlPath);
+	cb->free(xmlPath);
 	
-	fmu->dirPath =  context->callbacks->calloc(strlen(dirPath) + 1, sizeof(char));
-	if (fmu->dirPath == NULL) {
-		jm_log_fatal( context->callbacks, "FMILIB", "Could not allocated memory");
+	fmu->dirPath =  (char*)cb->calloc(strlen(dirPath) + 1, sizeof(char));
+
+	if(jm_get_dir_abspath(cb, dirPath, absPath, FILENAME_MAX + 2)) {
+		fmu->location = fmi_import_create_URL_from_abs_path(cb, absPath);
+	}
+	
+	if ((fmu->dirPath == NULL) || (fmu->location == 0)){
+		jm_log_fatal( cb, "FMILIB", "Could not allocated memory");
 		fmi1_import_free(fmu);
-		context->callbacks->free(xmlPath);
+		cb->free(xmlPath);
 		return 0;
 	}
 	strcpy(fmu->dirPath, dirPath);
 
-	jm_log_verbose( context->callbacks, "FMILIB", "Parsing finished successfully");
+	jm_log_verbose( cb, "FMILIB", "Parsing finished successfully");
 
 	return fmu;
 }
@@ -100,6 +115,7 @@ void fmi1_import_free(fmi1_import_t* fmu) {
 	jm_vector_free_data(char)(&fmu->logMessageBuffer);
 
 	cb->free(fmu->dirPath);
+	cb->free(fmu->location);
     cb->free(fmu);
 }
 

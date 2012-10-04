@@ -350,8 +350,8 @@ FMILIB_EXPORT const char* fmi1_import_get_types_platform(fmi1_import_t* fmu);
  * 
  * @param fmu A model description object returned by fmi1_import_parse_xml() that has loaded the FMI functions, see fmi1_import_load_fcn().
  * @param instanceName The name of the instance.
- * @param fmuLocation Access path to the FMU archive.
- * @param mimeType MIME type.
+ * @param fmuLocation Access path to the FMU archive. If null FMU will get the path to the directory where it was unpacked.
+ * @param mimeType MIME type. If NULL the FMU will get "application/x-fmu-sharedlibrary".
  * @param timeout Communication timeout value in milli-seconds.
  * @param visible Indicates whether or not the simulator application window shoule be visible.
  * @param interactive Indicates whether the simulator application must be manually started by the user.

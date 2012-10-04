@@ -291,7 +291,10 @@ jm_status_enu_t fmi1_import_instantiate_slave(fmi1_import_t* fmu, fmi1_string_t 
 																 fmi1_real_t timeout, fmi1_boolean_t visible, fmi1_boolean_t interactive) {
  	fmi1_string_t fmuGUID = fmi1_import_get_GUID(fmu);
 	fmi1_boolean_t loggingOn = (fmu->callbacks->log_level > jm_log_level_nothing);
-	fmi1_component_t c = fmi1_capi_instantiate_slave(fmu -> capi, instanceName, fmuGUID, fmuLocation, mimeType, timeout, visible, interactive, loggingOn);
+	fmi1_component_t c;
+	if(!mimeType) mimeType = "application/x-fmu-sharedlibrary";
+	if(!fmuLocation) fmuLocation = fmu->location;
+	c = fmi1_capi_instantiate_slave(fmu -> capi, instanceName, fmuGUID, fmuLocation, mimeType, timeout, visible, interactive, loggingOn);
 	if (c == NULL) {
 		return jm_status_error;
 	} else {

@@ -19,9 +19,21 @@
 #include <assert.h>
 
 #include <fmilib_config.h>
+#include <JM/jm_portability.h>
 #include "fmi_import_util.h"
 
+char* fmi_import_mk_temp_dir(jm_callbacks* cb, const char* systemTempDir, const char* tempPrefix) {
+	if(!tempPrefix) tempPrefix = "fmil";
+	return jm_mk_temp_dir(cb, systemTempDir, tempPrefix);
+}
 
+char* fmi_import_create_URL_from_abs_path(jm_callbacks* cb, const char* absPath) {
+	return jm_create_URL_from_abs_path(cb, absPath);
+}
+
+jm_status_enu_t fmi_import_rmdir(jm_callbacks* cb, const char* dir) {
+	return jm_rmdir(cb, dir);
+}
 
 char* fmi_import_get_dll_path(const char* fmu_unzipped_path, const char* model_identifier, jm_callbacks* callbacks)
 {

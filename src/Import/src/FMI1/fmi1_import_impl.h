@@ -35,6 +35,7 @@ extern "C" {
 
 struct fmi1_import_t {	
 	char* dirPath;
+	char* location;
 	jm_callbacks* callbacks;
 	fmi1_xml_model_description_t* md;
 	fmi1_capi_t* capi;

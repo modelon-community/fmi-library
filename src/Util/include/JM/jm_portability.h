@@ -75,6 +75,17 @@ const char* jm_get_system_temp_dir();
 */
 char* jm_mktemp(char* tmplt);
 
+
+/** 
+	\brief Get absolute path to an existing directory
+	\param cb - callbacks for memory allocation and logging. Default callbacks are used if this parameter is NULL.
+	\param dir - path to a directory (relative or absolute).
+	\param outPath - buffer for storing the directory
+	\param len - of the buffer (if size is larger than FILENAME_MAX + 1 then the path will always fit in)
+	\return Pointer to outPath on success, 0 - on error in which case a message is send to the logger.	
+*/
+char* jm_get_dir_abspath(jm_callbacks* cb, const char* dir, char* outPath, size_t len);
+
 /** 
 	\brief Create a unique temporary directory
 	\param cb - callbacks for memory allocation and logging. Default callbacks are used if this parameter is NULL.

@@ -194,11 +194,37 @@ jm_status_enu_t jm_rmdir(jm_callbacks* cb, const char* dir) {
 	return jm_status_success;
 }
 
+char* jm_get_dir_abspath(jm_callbacks* cb, const char* dir, char* outPath, size_t len) {
+	char curDir[FILENAME_MAX + 2];
+
+	if(!cb) {
+		cb = jm_get_default_callbacks();
+	}
+	if( jm_portability_get_current_working_directory(curDir, FILENAME_MAX+1) != jm_status_success) {
+		jm_log_fatal(cb,module, "Could not get current working directory (%s)", strerror(errno));
+		return 0;
+	};
+
+	if(jm_portability_set_current_working_directory(dir) != jm_status_success) {
+		jm_log_fatal(cb,module, "Could not change to the directory %s", dir);
+		jm_portability_set_current_working_directory(curDir);
+		return 0;
+	};
+	if( jm_portability_get_current_working_directory(outPath, len) != jm_status_success) {
+		jm_log_fatal(cb,module, "Could not get absolute path for the directory (%s)", strerror(errno));
+		jm_portability_set_current_working_directory(curDir);
+		return 0;
+	};
+	jm_portability_set_current_working_directory(curDir);
+	return outPath;
+}
+
+
 char* jm_mk_temp_dir(jm_callbacks* cb, const char* systemTempDir, const char* tempPrefix)
 {
 	size_t len;
 
-	char curDir[FILENAME_MAX + 2], tmpDir[FILENAME_MAX + 2];
+	char tmpDir[FILENAME_MAX + 2];
 	char* tmpPath;
 
 	if(!cb) {
@@ -213,23 +239,9 @@ char* jm_mk_temp_dir(jm_callbacks* cb, const char* systemTempDir, const char* te
 	}
 	len = strlen(systemTempDir);
 
-	if( jm_portability_get_current_working_directory(curDir, FILENAME_MAX+1) != jm_status_success) {
-		jm_log_fatal(cb,module, "Could not get current working directory (%s)", strerror(errno));
+	if(!jm_get_dir_abspath(cb, systemTempDir, tmpDir, FILENAME_MAX + 2)) {
 		return 0;
-	};
-
-	if(jm_portability_set_current_working_directory(systemTempDir) != jm_status_success) {
-		jm_log_fatal(cb,module, "Could not change to the temporary files directory %s", systemTempDir);
-		jm_portability_set_current_working_directory(curDir);
-		return 0;
-	};
-	if( jm_portability_get_current_working_directory(tmpDir, FILENAME_MAX+1) != jm_status_success) {
-		jm_log_fatal(cb,module, "Could not get canonical name for the temporary files directory (%s)", strerror(errno));
-		jm_portability_set_current_working_directory(curDir);
-		return 0;
-	};
-
-	jm_portability_set_current_working_directory(curDir);
+	}
 
 	len = strlen(tmpDir);
 	if(tmpDir[len-1] != FMI_FILE_SEP[0]) {

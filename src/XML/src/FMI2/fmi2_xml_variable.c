@@ -558,9 +558,12 @@ int fmi2_xml_handle_IntegerVariable(fmi2_xml_parser_context_t *context, const ch
             if(
                 /*  <xs:attribute name="start" type="xs:integer"/> */
                     fmi2_xml_set_attr_int(context, fmi2_xml_elmID_Integer, fmi_attr_id_start, 0, &start->start, 0)
-                )
-                    return -1;
-            variable->typeBase = &start->typeBase;
+                ) {
+					/* not sure how to peek a default here (and start is probably required attriute)*/
+					jm_log_error(context->callbacks, module, "Start value zero will be assumed.");
+					start->start = 0;
+			}
+			variable->typeBase = &start->typeBase;
         }
     }
     else {

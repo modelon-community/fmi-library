@@ -483,7 +483,8 @@ static void XMLCALL fmi2_parse_element_start(void *c, const char *elm, const cha
 
     /* handle the element */
 	if( currentElMap->elementHandle(context, 0) ) {
-        return;
+		/* try to skip and continue anyway */
+        if(!context->skipElementCnt) context->skipElementCnt = 1; 
     }
 	if(context->skipElementCnt) return;
     /* check that the element handle had process all the attributes */

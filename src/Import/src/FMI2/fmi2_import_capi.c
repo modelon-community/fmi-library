@@ -190,16 +190,19 @@ fmi2_status_t fmi2_import_get_string(fmi2_import_t* fmu, const fmi2_value_refere
 	return fmi2_capi_get_string(fmu -> capi, vr, nvr, value);
 }
 
-
-/* FMI 1.0 ME functions */
-const char* fmi2_import_get_model_types_platform(fmi2_import_t* fmu) {
-	return fmi2_capi_get_model_types_platform(fmu -> capi);
+const char* fmi2_import_get_types_platform(fmi2_import_t* fmu) {
+	return fmi2_capi_get_types_platform(fmu -> capi);
 }
 
-jm_status_enu_t fmi2_import_instantiate_model(fmi2_import_t* fmu, fmi2_string_t instanceName) {
-	fmi2_string_t GUID = fmi2_import_get_GUID(fmu);
+/* FMI 2.0 ME functions */
+
+jm_status_enu_t fmi2_import_instantiate_model(fmi2_import_t* fmu, fmi2_string_t instanceName, fmi2_string_t fmuResourceLocation, fmi2_boolean_t visible) {
+	fmi2_string_t fmuGUID = fmi2_import_get_GUID(fmu);
 	fmi2_boolean_t loggingOn = (fmu->callbacks->log_level > jm_log_level_nothing);
-	fmi2_component_t c = fmi2_capi_instantiate_model(fmu -> capi, instanceName, GUID, loggingOn);
+	fmi2_component_t c;
+	if(!fmuResourceLocation) 
+		fmuResourceLocation = fmu->resourceLocation;
+	c = fmi2_capi_instantiate_model(fmu -> capi, instanceName, fmuGUID,  fmuResourceLocation, visible, loggingOn);
 	if (c == NULL) {
 		return jm_status_error;
 	} else {
@@ -223,8 +226,8 @@ fmi2_status_t fmi2_import_completed_integrator_step(fmi2_import_t* fmu, fmi2_boo
 	return fmi2_capi_completed_integrator_step(fmu -> capi, callEventUpdate);
 }
 
-fmi2_status_t fmi2_import_initialize(fmi2_import_t* fmu, fmi2_boolean_t toleranceControlled, fmi2_real_t relativeTolerance, fmi2_event_info_t* eventInfo) {
-	return fmi2_capi_initialize(fmu -> capi, toleranceControlled, relativeTolerance, eventInfo);
+fmi2_status_t fmi2_import_initialize_model(fmi2_import_t* fmu, fmi2_boolean_t toleranceControlled, fmi2_real_t relativeTolerance, fmi2_event_info_t* eventInfo) {
+	return fmi2_capi_initialize_model(fmu -> capi, toleranceControlled, relativeTolerance, eventInfo);
 }
 
 fmi2_status_t fmi2_import_get_derivatives(fmi2_import_t* fmu, fmi2_real_t derivatives[], size_t nx) {
@@ -257,15 +260,14 @@ fmi2_status_t fmi2_import_terminate(fmi2_import_t* fmu) {
 
 
 /* FMI 1.0 CS functions */
-const char* fmi2_import_get_types_platform(fmi2_import_t* fmu) {
-	return fmi2_capi_get_types_platform(fmu -> capi);
-}
 
-jm_status_enu_t fmi2_import_instantiate_slave(fmi2_import_t* fmu, fmi2_string_t instanceName, fmi2_string_t fmuLocation, fmi2_string_t mimeType,
-																 fmi2_real_t timeout, fmi2_boolean_t visible, fmi2_boolean_t interactive) {
+jm_status_enu_t fmi2_import_instantiate_slave(fmi2_import_t* fmu, fmi2_string_t instanceName, fmi2_string_t fmuResourceLocation, fmi2_boolean_t visible) {
  	fmi2_string_t fmuGUID = fmi2_import_get_GUID(fmu);
 	fmi2_boolean_t loggingOn = (fmu->callbacks->log_level > jm_log_level_nothing);
-	fmi2_component_t c = fmi2_capi_instantiate_slave(fmu -> capi, instanceName, fmuGUID, fmuLocation, mimeType, timeout, visible, interactive, loggingOn);
+	fmi2_component_t c;
+	if(!fmuResourceLocation) fmuResourceLocation = fmu->resourceLocation;
+	jm_log_verbose(fmu->callbacks, module, "Instantiating the slave with FMU resources in '%s'", fmuResourceLocation);
+	c = fmi2_capi_instantiate_slave(fmu -> capi, instanceName, fmuGUID, fmuResourceLocation, visible, loggingOn);
 	if (c == NULL) {
 		return jm_status_error;
 	} else {
@@ -273,8 +275,8 @@ jm_status_enu_t fmi2_import_instantiate_slave(fmi2_import_t* fmu, fmi2_string_t 
 	}
 }
 
-fmi2_status_t fmi2_import_initialize_slave(fmi2_import_t* fmu, fmi2_real_t tStart, fmi2_boolean_t StopTimeDefined, fmi2_real_t tStop) {
-	return fmi2_capi_initialize_slave(fmu -> capi, tStart, StopTimeDefined, tStop);
+fmi2_status_t fmi2_import_initialize_slave(fmi2_import_t* fmu, fmi2_real_t  relativeTolerance, fmi2_real_t tStart, fmi2_boolean_t StopTimeDefined, fmi2_real_t tStop) {
+	return fmi2_capi_initialize_slave(fmu -> capi, relativeTolerance, tStart, StopTimeDefined, tStop);
 }
 
 fmi2_status_t fmi2_import_terminate_slave(fmi2_import_t* fmu) {

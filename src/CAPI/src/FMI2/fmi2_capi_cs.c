@@ -20,9 +20,9 @@ extern "C" {
 #include <FMI2/fmi2_capi.h>
 #include <FMI2/fmi2_capi_impl.h>
 
-fmi2_component_t fmi2_capi_instantiate_slave(fmi2_capi_t* fmu, fmi2_string_t instanceName, fmi2_string_t fmuGUID, fmi2_string_t fmuLocation, fmi2_string_t mimeType, fmi2_real_t timeout, fmi2_boolean_t visible, fmi2_boolean_t interactive, fmi2_boolean_t loggingOn)
+fmi2_component_t fmi2_capi_instantiate_slave(fmi2_capi_t* fmu, fmi2_string_t instanceName, fmi2_string_t fmuGUID, fmi2_string_t fmuResourceLocation, fmi2_boolean_t visible, fmi2_boolean_t loggingOn)
 {
-	return fmu->c = fmu->fmiInstantiateSlave(instanceName, fmuGUID, fmuLocation, mimeType, timeout, visible, interactive, fmu->callBackFunctions, loggingOn);
+	return fmu->c = fmu->fmiInstantiateSlave(instanceName, fmuGUID, fmuResourceLocation, &fmu->callBackFunctions, visible, loggingOn);
 }
 
 void fmi2_capi_free_slave_instance(fmi2_capi_t* fmu)
@@ -33,16 +33,11 @@ void fmi2_capi_free_slave_instance(fmi2_capi_t* fmu)
 	}
 }
 
-fmi2_status_t fmi2_capi_initialize_slave(fmi2_capi_t* fmu, fmi2_real_t tStart, fmi2_boolean_t StopTimeDefined, fmi2_real_t tStop)
+fmi2_status_t fmi2_capi_initialize_slave(fmi2_capi_t* fmu, fmi2_real_t relativeTolerance, fmi2_real_t tStart, fmi2_boolean_t StopTimeDefined, fmi2_real_t tStop)
 {
-	return fmu->fmiInitializeSlave(fmu->c, tStart, StopTimeDefined, tStop);
+	return fmu->fmiInitializeSlave(fmu->c, relativeTolerance, tStart, StopTimeDefined, tStop);
 }
 
-
-const char* fmi2_capi_get_types_platform(fmi2_capi_t* fmu)
-{
-	return fmu->fmiGetTypesPlatform();
-}
 
 fmi2_status_t fmi2_capi_terminate_slave(fmi2_capi_t* fmu)
 {

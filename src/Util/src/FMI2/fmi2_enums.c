@@ -144,8 +144,8 @@ FMILIB_EXPORT fmi2_initial_enu_t fmi2_get_valid_initial(fmi2_variability_enu_t v
 
 
 const char * fmi2_capability_to_string(fmi2_capabilities_enu_t id) {
-#define FMI2_ME_CAPABILITIES_ENU_TO_STR(c) case fmi2_me_ ## c: return #c;
-#define FMI2_CS_CAPABILITIES_ENU_TO_STR(c) case fmi2_cs_ ## c: return #c;
+#define FMI2_ME_CAPABILITIES_ENU_TO_STR(c) case fmi2_me_ ## c: return "me_"#c;
+#define FMI2_CS_CAPABILITIES_ENU_TO_STR(c) case fmi2_cs_ ## c: return "cs_"#c;
 	switch (id) {
 	FMI2_ME_CAPABILITIES(FMI2_ME_CAPABILITIES_ENU_TO_STR)
 	FMI2_CS_CAPABILITIES(FMI2_CS_CAPABILITIES_ENU_TO_STR)

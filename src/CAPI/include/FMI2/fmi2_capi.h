@@ -217,24 +217,26 @@ fmi2_status_t fmi2_capi_get_string(fmi2_capi_t* fmu, const fmi2_value_reference_
  */
 
 /**
- * \brief Calls the FMI function fmiGetModelTypesPlatform(...) 
+ * \brief Calls the FMI function fmiGetTypesPlatform(...) 
  * 
  * @param fmu C-API struct that has succesfully loaded the FMI function.
  * @return The platform the FMU was compiled for.
  */
-const char* fmi2_capi_get_model_types_platform(fmi2_capi_t* fmu);
+const char* fmi2_capi_get_types_platform(fmi2_capi_t* fmu);
 
 /**
  * \brief Calls the FMI function fmiInstantiateModel(...) 
  * 
- * @param fmu C-API struct that has succesfully loaded the FMI function.
+ * @param fmu C-API struct that has succesfully loaded the FMI function. 
  * @param instanceName The name of the instance.
- * @param GUID The GUID identifier.
+ * @param fmuGUID The GUID identifier.
+ * @param fmuResourceLocation Access path to the FMU archive resources.
+ * @param visible Indicates whether or not the simulator application window shoule be visible.
  * @param loggingOn Enable or disable the debug logger.
  * @return An instance of a model.
  */
-fmi2_component_t fmi2_capi_instantiate_model(fmi2_capi_t* fmu, fmi2_string_t instanceName, fmi2_string_t GUID, fmi2_boolean_t loggingOn);
-
+fmi2_component_t fmi2_capi_instantiate_model(fmi2_capi_t* fmu, fmi2_string_t instanceName, fmi2_string_t fmuGUID, fmi2_string_t fmuResourceLocation, 
+																 fmi2_boolean_t visible, fmi2_boolean_t loggingOn);
 /**
  * \brief Calls the FMI function fmiFreeModelInstance(...) 
  * 
@@ -271,7 +273,7 @@ fmi2_status_t fmi2_capi_set_continuous_states(fmi2_capi_t* fmu, const fmi2_real_
 fmi2_status_t fmi2_capi_completed_integrator_step(fmi2_capi_t* fmu, fmi2_boolean_t* callEventUpdate);
 
 /**
- * \brief Calls the FMI function fmiInitialize(...) 
+ * \brief Calls the FMI function fmiInitializeModel(...) 
  * 
  * @param fmu C-API struct that has succesfully loaded the FMI function.
  * @param toleranceControlled Enable or disable the use of relativeTolerance in the FMU.
@@ -279,7 +281,7 @@ fmi2_status_t fmi2_capi_completed_integrator_step(fmi2_capi_t* fmu, fmi2_boolean
  * @param eventInfo (Output) fmiEventInfo struct.
  * @return FMI status.
  */
-fmi2_status_t fmi2_capi_initialize(fmi2_capi_t* fmu, fmi2_boolean_t toleranceControlled, fmi2_real_t relativeTolerance, fmi2_event_info_t* eventInfo);
+fmi2_status_t fmi2_capi_initialize_model(fmi2_capi_t* fmu, fmi2_boolean_t toleranceControlled, fmi2_real_t relativeTolerance, fmi2_event_info_t* eventInfo);
 
 /**
  * \brief Calls the FMI function fmiGetDerivatives(...) 
@@ -356,38 +358,29 @@ fmi2_status_t fmi2_capi_terminate(fmi2_capi_t* fmu);
  */
 
 /**
- * \brief Calls the FMI function fmiGetTypesPlatform(...) 
- * 
- * @param fmu C-API struct that has succesfully loaded the FMI function.
- * @return The platform the FMU was compiled for.
- */
-const char* fmi2_capi_get_types_platform(fmi2_capi_t* fmu);
-/**
  * \brief Calls the FMI function fmiInstantiateSlave(...) 
  * 
  * @param fmu C-API struct that has succesfully loaded the FMI function.
  * @param instanceName The name of the instance.
  * @param fmuGUID The GUID identifier.
- * @param fmuLocation Access path to the FMU archive.
- * @param mimeType MIME type.
- * @param timeout Communication timeout value in milli-seconds.
+ * @param fmuResourceLocation Access path to the FMU archive resources.
  * @param visible Indicates whether or not the simulator application window shoule be visible.
- * @param interactive Indicates whether the simulator application must be manually started by the user.
  * @param loggingOn Enable or disable the debug logger.
  * @return An instance of a model.
  */
-fmi2_component_t fmi2_capi_instantiate_slave(fmi2_capi_t* fmu, fmi2_string_t instanceName, fmi2_string_t fmuGUID, fmi2_string_t fmuLocation, fmi2_string_t mimeType,
-																 fmi2_real_t timeout, fmi2_boolean_t visible, fmi2_boolean_t interactive, fmi2_boolean_t loggingOn);
+fmi2_component_t fmi2_capi_instantiate_slave(fmi2_capi_t* fmu, fmi2_string_t instanceName, fmi2_string_t fmuGUID, fmi2_string_t fmuResourceLocation, 
+																 fmi2_boolean_t visible, fmi2_boolean_t loggingOn);
 /**
  * \brief Calls the FMI function fmiInitializeSlave(...) 
  * 
  * @param fmu C-API struct that has succesfully loaded the FMI function.
+ * @param relativeTolerance suggests a relative (local) tolerance in case the slave utilizes a numerical integrator with variable step size and error estimation.
  * @param tStart Start time of the simulation
  * @param StopTimeDefined Indicates whether or not the stop time is used.
  * @param tStop The stop time of the simulation.
  * @return FMI status.
  */
-fmi2_status_t fmi2_capi_initialize_slave(fmi2_capi_t* fmu, fmi2_real_t tStart, fmi2_boolean_t StopTimeDefined, fmi2_real_t tStop);
+fmi2_status_t fmi2_capi_initialize_slave(fmi2_capi_t* fmu, fmi2_real_t  relativeTolerance, fmi2_real_t tStart, fmi2_boolean_t StopTimeDefined, fmi2_real_t tStop);
 
 /**
  * \brief Calls the FMI function fmiTerminateSlave(...) 

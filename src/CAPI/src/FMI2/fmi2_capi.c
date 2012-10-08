@@ -105,13 +105,13 @@ static jm_status_enu_t fmi2_capi_load_me_fcn(fmi2_capi_t* fmu)
 
 	jm_log_verbose(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Loading functions for the model exchange interface"); 
 
-	LOAD_DLL_FUNCTION(fmiGetModelTypesPlatform);
+	LOAD_DLL_FUNCTION(fmiGetTypesPlatform);
 	LOAD_DLL_FUNCTION(fmiInstantiateModel);
 	LOAD_DLL_FUNCTION(fmiFreeModelInstance);
 	LOAD_DLL_FUNCTION(fmiSetTime);
 	LOAD_DLL_FUNCTION(fmiSetContinuousStates);
 	LOAD_DLL_FUNCTION(fmiCompletedIntegratorStep);
-	LOAD_DLL_FUNCTION(fmiInitialize);
+	LOAD_DLL_FUNCTION(fmiInitializeModel);
 	LOAD_DLL_FUNCTION(fmiGetDerivatives);
 	LOAD_DLL_FUNCTION(fmiGetEventIndicators);
 	LOAD_DLL_FUNCTION(fmiEventUpdate);
@@ -262,6 +262,13 @@ const char* fmi2_capi_get_version(fmi2_capi_t* fmu)
 {
 	assert(fmu);
 	return fmu->fmiGetVersion();
+}
+
+const char* fmi2_capi_get_types_platform(fmi2_capi_t* fmu)
+{
+	assert(fmu);
+	jm_log_verbose(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Calling fmiGetModelTypesPlatform");
+	return fmu->fmiGetTypesPlatform();
 }
 
 fmi2_status_t fmi2_capi_set_debug_logging(fmi2_capi_t* fmu, fmi2_boolean_t loggingOn, size_t nCategories, fmi2_string_t categories[])

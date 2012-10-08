@@ -17,13 +17,14 @@
 #include <stdarg.h>
 
 #include <JM/jm_named_ptr.h>
-#include "fmi2_import_impl.h"
-#include "fmi2_import_variable_list_impl.h"
-
 #include <FMI2/fmi2_types.h>
 #include <FMI2/fmi2_functions.h>
 #include <FMI2/fmi2_enums.h>
 #include <FMI2/fmi2_capi.h>
+
+#include "fmi2_import_impl.h"
+#include "fmi2_import_variable_list_impl.h"
+
 
 static const char* module = "FMILIB";
 
@@ -38,6 +39,7 @@ fmi2_import_t* fmi2_import_allocate(jm_callbacks* cb) {
 		return 0;
 	}
 	fmu->dirPath = 0;
+	fmu->resourceLocation = 0;
 	fmu->callbacks = cb;
 	fmu->capi = 0;
 	fmu->md = fmi2_xml_allocate_model_description(cb);
@@ -56,26 +58,30 @@ const char* fmi2_import_get_last_error(fmi2_import_t* fmu) {
 }
 
 fmi2_import_t* fmi2_import_parse_xml( fmi_import_context_t* context, const char* dirPath, jm_xml_callbacks_t* xml_callbacks) {
-	char* xmlPath =  fmi_import_get_model_description_path(dirPath, context->callbacks);
+	char* xmlPath;
+	char absPath[FILENAME_MAX + 2];
+	fmi2_import_t* fmu = 0;
 
-	fmi2_import_t* fmu = fmi2_import_allocate(context->callbacks);
+	if(strlen(dirPath) + 20 > FILENAME_MAX) {
+		jm_log_fatal(context->callbacks, module, "Directory path for FMU is too long");
+		return 0;
+	}
+
+	xmlPath =  fmi_import_get_model_description_path(dirPath, context->callbacks);
+	fmu = fmi2_import_allocate(context->callbacks);
 
 	if(!fmu) {
 		context->callbacks->free(xmlPath);
 		return 0;
 	}
-	
-	jm_log_verbose( context->callbacks, "FMILIB", "Parsing model description XML");
 
-	if(fmi2_xml_parse_model_description( fmu->md, xmlPath, xml_callbacks)) {
-		fmi2_import_free(fmu);
-		context->callbacks->free(xmlPath);
-		return 0;
+	if(jm_get_dir_abspath(context->callbacks, dirPath, absPath, FILENAME_MAX + 2)) {
+		size_t len = strlen(absPath);
+		strcpy(absPath + len, FMI_FILE_SEP "resources");
+		fmu->resourceLocation = fmi_import_create_URL_from_abs_path(context->callbacks, absPath);
 	}
-	context->callbacks->free(xmlPath);
-	
-	fmu->dirPath =  context->callbacks->calloc(strlen(dirPath) + 1, sizeof(char));
-	if (fmu->dirPath == NULL) {
+	fmu->dirPath =  context->callbacks->malloc(strlen(dirPath) + 1);
+	if (!fmu->dirPath ||  !fmu->resourceLocation) {
 		jm_log_fatal( context->callbacks, "FMILIB", "Could not allocated memory");
 		fmi2_import_free(fmu);
 		context->callbacks->free(xmlPath);
@@ -83,7 +89,16 @@ fmi2_import_t* fmi2_import_parse_xml( fmi_import_context_t* context, const char*
 	}
 	strcpy(fmu->dirPath, dirPath);
 
-	jm_log_verbose( context->callbacks, "FMILIB", "Parsing finished successfully");
+	jm_log_verbose( context->callbacks, "FMILIB", "Parsing model description XML");
+
+	if(fmi2_xml_parse_model_description( fmu->md, xmlPath, xml_callbacks)) {
+		fmi2_import_free(fmu);
+		fmu = 0;
+	}
+	context->callbacks->free(xmlPath);
+
+	if(fmu)
+		jm_log_verbose( context->callbacks, "FMILIB", "Parsing finished successfully");
 
 	return fmu;
 }
@@ -98,6 +113,7 @@ void fmi2_import_free(fmi2_import_t* fmu) {
 	fmi2_xml_free_model_description(fmu->md);
 	jm_vector_free_data(char)(&fmu->logMessageBuffer);
 
+	cb->free(fmu->resourceLocation);
 	cb->free(fmu->dirPath);
     cb->free(fmu);
 }

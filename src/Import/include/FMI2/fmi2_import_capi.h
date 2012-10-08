@@ -194,6 +194,14 @@ FMILIB_EXPORT fmi2_status_t fmi2_import_get_boolean(fmi2_import_t* fmu, const fm
  */
 FMILIB_EXPORT fmi2_status_t fmi2_import_get_string(fmi2_import_t* fmu, const fmi2_value_reference_t vr[], size_t nvr, fmi2_string_t  value[]);
 
+/**
+ * \brief Wrapper for the FMI function fmiGetTypesPlatform(...) 
+ * 
+ * @param fmu A model description object returned by fmi2_import_parse_xml() that has loaded the FMI functions, see fmi2_import_load_fcn().
+ * @return The platform the FMU was compiled for.
+ */
+FMILIB_EXPORT const char* fmi2_import_get_types_platform(fmi2_import_t* fmu);
+
 /**@} */
 
 /**
@@ -201,22 +209,17 @@ FMILIB_EXPORT fmi2_status_t fmi2_import_get_string(fmi2_import_t* fmu, const fmi
  * @{
  */
 
-/**
- * \brief Wrapper for the FMI function fmiGetModelTypesPlatform(...) 
- * 
- * @param fmu A model description object returned by fmi2_import_parse_xml() that has loaded the FMI functions, see fmi2_import_load_fcn().
- * @return The platform the FMU was compiled for.
- */
-FMILIB_EXPORT const char* fmi2_import_get_model_types_platform(fmi2_import_t* fmu);
 
 /**
  * \brief Wrapper for the FMI function fmiInstantiateModel(...) 
  * 
  * @param fmu A model description object returned by fmi2_import_parse_xml() that has loaded the FMI functions, see fmi2_import_load_fcn().
  * @param instanceName The name of the instance.
+ * @param fmuResourceLocation Access path URI to the FMU archive resources. If this is NULL pointer the FMU will get the path to the unzipped location.
+ * @param visible Indicates whether or not the simulator application window shoule be visible.
  * @return Error status. Returnes jm_status_error if fmiInstantiateModel returned NULL, otherwise jm_status_success.
  */
-FMILIB_EXPORT jm_status_enu_t fmi2_import_instantiate_model(fmi2_import_t* fmu, fmi2_string_t instanceName);
+FMILIB_EXPORT jm_status_enu_t fmi2_import_instantiate_model(fmi2_import_t* fmu, fmi2_string_t instanceName, fmi2_string_t fmuResourceLocation, fmi2_boolean_t visible);
 
 /**
  * \brief Wrapper for the FMI function fmiFreeModelInstance(...) 
@@ -262,7 +265,7 @@ FMILIB_EXPORT fmi2_status_t fmi2_import_completed_integrator_step(fmi2_import_t*
  * @param eventInfo (Output) fmiEventInfo struct.
  * @return FMI status.
  */
-FMILIB_EXPORT fmi2_status_t fmi2_import_initialize(fmi2_import_t* fmu, fmi2_boolean_t toleranceControlled, fmi2_real_t relativeTolerance, fmi2_event_info_t* eventInfo);
+FMILIB_EXPORT fmi2_status_t fmi2_import_initialize_model(fmi2_import_t* fmu, fmi2_boolean_t toleranceControlled, fmi2_real_t relativeTolerance, fmi2_event_info_t* eventInfo);
 
 /**
  * \brief Wrapper for the FMI function fmiGetDerivatives(...) 
@@ -339,39 +342,30 @@ FMILIB_EXPORT fmi2_status_t fmi2_import_terminate(fmi2_import_t* fmu);
  * @{
  */
 
-/**
- * \brief Wrapper for the FMI function fmiGetTypesPlatform(...) 
- * 
- * @param fmu A model description object returned by fmi2_import_parse_xml() that has loaded the FMI functions, see fmi2_import_load_fcn().
- * @return The platform the FMU was compiled for.
- */
-FMILIB_EXPORT const char* fmi2_import_get_types_platform(fmi2_import_t* fmu);
 
 /**
  * \brief Wrapper for the FMI function fmiInstantiateSlave(...) 
  * 
  * @param fmu A model description object returned by fmi2_import_parse_xml() that has loaded the FMI functions, see fmi2_import_load_fcn().
  * @param instanceName The name of the instance.
- * @param fmuLocation Access path to the FMU archive.
- * @param mimeType MIME type.
- * @param timeout Communication timeout value in milli-seconds.
+ * @param fmuResourceLocation Access path to the resource subdir in the FMU archive.
  * @param visible Indicates whether or not the simulator application window shoule be visible.
- * @param interactive Indicates whether the simulator application must be manually started by the user.
  * @return Error status. Returnes jm_status_error if fmiInstantiateSlave returned NULL, otherwise jm_status_success.
  */
-FMILIB_EXPORT jm_status_enu_t fmi2_import_instantiate_slave(fmi2_import_t* fmu, fmi2_string_t instanceName, fmi2_string_t fmuLocation, fmi2_string_t mimeType,
-																 fmi2_real_t timeout, fmi2_boolean_t visible, fmi2_boolean_t interactive);
+FMILIB_EXPORT jm_status_enu_t fmi2_import_instantiate_slave(fmi2_import_t* fmu, fmi2_string_t instanceName, fmi2_string_t fmuResourceLocation, fmi2_boolean_t visible);
 
 /**
  * \brief Wrapper for the FMI function fmiInitializeSlave(...) 
  * 
  * @param fmu A model description object returned by fmi2_import_parse_xml() that has loaded the FMI functions, see fmi2_import_load_fcn().
+ * @param relativeTolerance suggests a relative (local) tolerance in case the slave utilizes a numerical integrator with variable step size and error estimation.
  * @param tStart Start time of the simulation
  * @param StopTimeDefined Indicates whether or not the stop time is used.
  * @param tStop The stop time of the simulation.
  * @return FMI status.
  */
-FMILIB_EXPORT fmi2_status_t fmi2_import_initialize_slave(fmi2_import_t* fmu, fmi2_real_t tStart, fmi2_boolean_t StopTimeDefined, fmi2_real_t tStop);
+FMILIB_EXPORT fmi2_status_t fmi2_import_initialize_slave(fmi2_import_t* fmu,  fmi2_real_t  relativeTolerance, 
+					fmi2_real_t tStart, fmi2_boolean_t StopTimeDefined, fmi2_real_t tStop);
 
 /**
  * \brief Wrapper for the FMI function fmiTerminateSlave(...) 

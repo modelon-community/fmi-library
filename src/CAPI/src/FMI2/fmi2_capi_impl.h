@@ -59,30 +59,29 @@ struct fmi2_capi_t {
     fmi2_get_string_ft					fmiGetString;
 
 	/* FMI ME */
-    fmi2_get_model_typesPlatform_ft		fmiGetModelTypesPlatform;    
+    fmi2_get_types_platform_ft			fmiGetTypesPlatform;    
     fmi2_instantiate_model_ft			fmiInstantiateModel;
     fmi2_free_model_instance_ft			fmiFreeModelInstance;    
     fmi2_set_time_ft					fmiSetTime;
     fmi2_set_continuous_states_ft		fmiSetContinuousStates;
     fmi2_completed_integrator_step_ft	fmiCompletedIntegratorStep;
-    fmi2_initialize_ft			 		fmiInitialize;
+    fmi2_initialize_model_ft			fmiInitializeModel;
     fmi2_get_derivatives_ft				fmiGetDerivatives;
     fmi2_get_event_indicators_ft		fmiGetEventIndicators;
     fmi2_event_update_ft				fmiEventUpdate;
     fmi2_get_continuous_states_ft		fmiGetContinuousStates;
-    fmi2_get_nominal_continuousStates_ft fmiGetNominalContinuousStates;
-    fmi2_get_state_valueReferences_ft	fmiGetStateValueReferences;
+    fmi2_get_nominal_continuous_states_ft fmiGetNominalContinuousStates;
+    fmi2_get_state_value_references_ft	fmiGetStateValueReferences;
     fmi2_terminate_ft					fmiTerminate;
 
 	/* FMI CS */
-	fmi2_get_types_platform_ft			fmiGetTypesPlatform;   
     fmi2_instantiate_slave_ft			fmiInstantiateSlave;
     fmi2_initialize_slave_ft			fmiInitializeSlave;
     fmi2_terminate_slave_ft				fmiTerminateSlave;
     fmi2_reset_slave_ft					fmiResetSlave;
     fmi2_free_slave_instance_ft			fmiFreeSlaveInstance;
-    fmi2_set_real_inputDerivatives_ft	fmiSetRealInputDerivatives;
-    fmi2_get_real_outputDerivatives_ft	fmiGetRealOutputDerivatives;
+    fmi2_set_real_input_derivatives_ft	fmiSetRealInputDerivatives;
+    fmi2_get_real_output_derivatives_ft	fmiGetRealOutputDerivatives;
     fmi2_do_step_ft						fmiDoStep;
     fmi2_cancel_step_ft					fmiCancelStep;
     fmi2_get_status_ft					fmiGetStatus;

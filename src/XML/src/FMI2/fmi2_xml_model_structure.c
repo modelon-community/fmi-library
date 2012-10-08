@@ -136,8 +136,14 @@ fmi2_xml_dependencies_t* fmi2_xml_allocate_dependencies(jm_callbacks* cb) {
 
 void fmi2_xml_zero_empty_dependencies(fmi2_xml_dependencies_t** pdep) {
 	fmi2_xml_dependencies_t* dep =*pdep;
+	size_t ndep = jm_vector_get_size(size_t)(&dep->dependencyIndex);
+	size_t i;
 	if(!dep) return;
-	if(jm_vector_get_size(size_t)(&dep->dependencyIndex) == 0) {
+	for(i = 0; i<ndep;i++) {
+		if(jm_vector_get_item(size_t)(&dep->dependencyIndex, i)) break;
+	}
+	if(i == ndep) {
+		fmi2_xml_free_dependencies(dep);
 		*pdep = 0;
 	}
 }
@@ -266,7 +272,7 @@ int fmi2_xml_check_model_structure(fmi2_xml_model_description_t* md) {
 					fmi2_xml_get_variable_name(vOut), ind, numInputs);
 				ms->isValidFlag = 0;
 			}
-			else {
+			else if(ind!=0) {
 				fmi2_xml_variable_t* vIn = (fmi2_xml_variable_t*)jm_vector_get_item(jm_voidp)(&ms->inputs, ind - 1);
 				fmi2_variability_enu_t variOut = fmi2_xml_get_variability(vOut);
 				fmi2_variability_enu_t variIn = fmi2_xml_get_variability(vIn);
@@ -314,7 +320,7 @@ int fmi2_xml_check_model_structure(fmi2_xml_model_description_t* md) {
 					fmi2_xml_get_variable_name(vOut), ind, numStates);
 				ms->isValidFlag = 0;
 			}
-			else {
+			else if(ind!=0) {
 				fmi2_xml_variable_t* vState = (fmi2_xml_variable_t*)jm_vector_get_item(jm_voidp)(&ms->states, ind - 1 );
 				fmi2_variability_enu_t variOut = fmi2_xml_get_variability(vOut);
 				if(variOut <= fmi2_variability_enu_tunable) {

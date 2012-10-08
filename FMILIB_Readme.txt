@@ -20,11 +20,15 @@ CMake (see <http://www.cmake.org/>) is used to generate the native build scripts
 for the library. It is recommended to use "cmake-gui" on Windows or 
 "ccmake <FMIL source dir>" to configure the build. 
 
+CMake 2.8.6 is required since this is the version used in development both on 
+Windows and Linux. The build script is KNOWN NOT TO WORK WITH CMake 2.8.3 and 
+below (due to ExternalProject interface changes). CMake 2.8.4 and 2.8.5 are not 
+tested.
+
 To build from a terminal command line on Linux or Mac with default settings use:
 \code
 	mkdir build-fmil; cd build-fmil
-	cmake <path to FMI 
-	L source>
+	cmake <path to FMIL source>
 	make install test
 \endcode
 To build in MSYS terminal with g++/gcc on Windows:

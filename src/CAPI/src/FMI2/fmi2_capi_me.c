@@ -21,13 +21,12 @@ extern "C" {
 #include <FMI2/fmi2_capi_impl.h>
 
 
-fmi2_component_t fmi2_capi_instantiate_model(fmi2_capi_t* fmu, fmi2_string_t instanceName, fmi2_string_t GUID, fmi2_boolean_t loggingOn)
+fmi2_component_t fmi2_capi_instantiate_model(fmi2_capi_t* fmu, fmi2_string_t instanceName, fmi2_string_t fmuGUID, fmi2_string_t fmuResourceLocation, 
+																 fmi2_boolean_t visible, fmi2_boolean_t loggingOn)
 {
-	fmi2_callback_functions_t cb;
 	assert(fmu);
-	cb = *(fmi2_callback_functions_t*)&fmu->callBackFunctions;
 	jm_log_verbose(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Calling fmiInstantiateModel");
-	return fmu->c = fmu->fmiInstantiateModel(instanceName, GUID, cb, loggingOn);
+	return fmu->c = fmu->fmiInstantiateModel(instanceName, fmuGUID,  fmuResourceLocation, &fmu->callBackFunctions, visible, loggingOn);
 }
 
 void fmi2_capi_free_model_instance(fmi2_capi_t* fmu)
@@ -36,19 +35,13 @@ void fmi2_capi_free_model_instance(fmi2_capi_t* fmu)
 	fmu->fmiFreeModelInstance(fmu->c);
 }
 
-fmi2_status_t fmi2_capi_initialize(fmi2_capi_t* fmu, fmi2_boolean_t toleranceControlled, fmi2_real_t relativeTolerance, fmi2_event_info_t* eventInfo)
+fmi2_status_t fmi2_capi_initialize_model(fmi2_capi_t* fmu, fmi2_boolean_t toleranceControlled, fmi2_real_t relativeTolerance, fmi2_event_info_t* eventInfo)
 {
 	assert(fmu);
 	jm_log_verbose(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Calling fmiInitialize");
-	return fmu->fmiInitialize(fmu->c, toleranceControlled, relativeTolerance, eventInfo);	
+	return fmu->fmiInitializeModel(fmu->c, toleranceControlled, relativeTolerance, eventInfo);	
 }
 
-const char* fmi2_capi_get_model_types_platform(fmi2_capi_t* fmu)
-{
-	assert(fmu);
-	jm_log_verbose(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Calling fmiGetModelTypesPlatform");
-	return fmu->fmiGetModelTypesPlatform();
-}
 
 fmi2_status_t fmi2_capi_set_time(fmi2_capi_t* fmu, fmi2_real_t time)
 {

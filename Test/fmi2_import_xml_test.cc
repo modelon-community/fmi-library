@@ -268,7 +268,7 @@ void printCapabilitiesInfo(fmi2_import_t* fmu) {
 	size_t i;
 
 	for( i = 0; i < fmi2_capabilities_Num; ++i) {
-		printf("%s = %u", 
+		printf("%s = %u\n", 
 			fmi2_capability_to_string((fmi2_capabilities_enu_t)i), 
 			fmi2_import_get_capability(fmu, (fmi2_capabilities_enu_t)i));
 	}
@@ -338,16 +338,16 @@ int main(int argc, char *argv[])
 	start = clock();
 	fmu = fmi2_import_parse_xml(context, tmpPath, &annotation_callbacks);
 
+	    /* Stop timer */
+    stop = clock();
+    t = (double) (stop-start)/CLOCKS_PER_SEC;
+    printf("Parsing took %g seconds\n", t);
 	if(!fmu) {
 		printf("Error parsing XML, exiting\n");
 		do_exit(1);
 	}
 
-	    /* Stop timer */
-    stop = clock();
-    t = (double) (stop-start)/CLOCKS_PER_SEC;
 
-    printf("Parsing took %g seconds\n", t);
     printf("Model name: %s\n", fmi2_import_get_model_name(fmu));
     printf("Model GUID: %s\n", fmi2_import_get_GUID(fmu));
     printf("FMU kind: %s\n", fmi2_fmu_kind_to_string(fmi2_import_get_fmu_kind(fmu)));

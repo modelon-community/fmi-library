@@ -13,8 +13,8 @@
     along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 */
 
-#ifndef FMI2_FUNCTIONS_H_
-#define FMI2_FUNCTIONS_H_
+#ifndef _FMI2_FUNCTION_TYPES_H_
+#define _FMI2_FUNCTION_TYPES_H_
 
 #include <string.h>
 #include <fmilib_config.h>
@@ -27,6 +27,15 @@
 	@{
 */
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+/* make sure all compiler use the same alignment policies for structures */
+#if defined _MSC_VER || defined __GNUC__
+#pragma pack(push,8)
+#endif
+
+
 /** FMI 2.0 status codes */
 typedef enum {
 	fmi2_status_ok,
@@ -37,17 +46,21 @@ typedef enum {
 	fmi2_status_pending
 } fmi2_status_t;
 
+/* Type definitions */
+
 /** Convert #fmi2_status_t variable to string  */
 FMILIB_EXPORT const char* fmi2_status_to_string(fmi2_status_t status);
 
-/** FMI 1.0 logger function type */
+/** FMI 2.0 logger function type */
 typedef void  (*fmi2_callback_logger_ft)        (fmi2_component_environment_t env, fmi2_string_t instanceName, fmi2_status_t status, fmi2_string_t category, fmi2_string_t message, ...);
-/** FMI 1.0 allocate memory function type */
+/** FMI 2.0 allocate memory function type */
 typedef void* (*fmi2_callback_allocate_memory_ft)(size_t nobj, size_t size);
-/** FMI 1.0 free memory  function type */
+/** FMI 2.0 free memory  function type */
 typedef void  (*fmi2_callback_free_memory_ft)    (void* obj);
-/** FMI 1.0 step finished callback function type */
+/** FMI 2.0 step finished callback function type */
 typedef void  (*fmi2_step_finished_ft)          (fmi2_component_environment_t env, fmi2_status_t status);
+
+typedef fmi2_status_t (*fmi2_set_matrix_element_ft)         (void*, fmi2_integer_t, fmi2_integer_t, fmi2_real_t);
 
 /** The FMI 2.0 callbacks */
 typedef struct {
@@ -58,7 +71,7 @@ typedef struct {
 	fmi2_component_environment_t    componentEnvironment;
 } fmi2_callback_functions_t;
 
-/** Event info structure as used in FMI 1.0 ME */
+/** Event info structure as used in FMI 2.0 ME */
 typedef struct {
 	fmi2_boolean_t iterationConverged;
 	fmi2_boolean_t stateValueReferencesChanged;
@@ -68,66 +81,112 @@ typedef struct {
 	fmi2_real_t    nextEventTime;
 } fmi2_event_info_t;
 
-/** FMI 1.0 asyncronous co-simulation  status */
+/** Co-simulation status for FMI 2.0 ME */
 typedef enum {
-	fmi2_do_step_status,
-	fmi2_pending_status,
-	fmi2_last_successful_time,
-	fmi2_terminated
+    fmi2_do_step_status,
+    fmi2_pending_status,
+    fmi2_last_successful_time,
+    fmi2_terminated
 } fmi2_status_kind_t;
 
 
-/* TODO: put the FMI 2.0 functions here */
-/* FMI 1.0 common functions */
-typedef const char*	  	    (*fmi2_get_version_ft)					(void);
-typedef fmi2_status_t		(*fmi2_set_debug_logging_ft)			(fmi2_component_t c, fmi2_boolean_t loggingOn, size_t nCategories, const fmi2_string_t categories[]);
-typedef fmi2_status_t		(*fmi2_set_real_ft)						(fmi2_component_t c, const fmi2_value_reference_t vr[], size_t nvr, const fmi2_real_t   value[]);
-typedef fmi2_status_t		(*fmi2_set_integer_ft)					(fmi2_component_t c, const fmi2_value_reference_t vr[], size_t nvr, const fmi2_integer_t value[]);
-typedef fmi2_status_t		(*fmi2_set_boolean_ft)					(fmi2_component_t c, const fmi2_value_reference_t vr[], size_t nvr, const fmi2_boolean_t value[]);
-typedef fmi2_status_t		(*fmi2_set_string_ft)					(fmi2_component_t c, const fmi2_value_reference_t vr[], size_t nvr, const fmi2_string_t  value[]);
-typedef fmi2_status_t		(*fmi2_get_real_ft)						(fmi2_component_t c, const fmi2_value_reference_t vr[], size_t nvr, fmi2_real_t   value[]);
-typedef fmi2_status_t		(*fmi2_get_integer_ft)					(fmi2_component_t c, const fmi2_value_reference_t vr[], size_t nvr, fmi2_integer_t value[]);
-typedef fmi2_status_t		(*fmi2_get_boolean_ft)					(fmi2_component_t c, const fmi2_value_reference_t vr[], size_t nvr, fmi2_boolean_t value[]);
-typedef fmi2_status_t		(*fmi2_get_string_ft)					(fmi2_component_t c, const fmi2_value_reference_t vr[], size_t nvr, fmi2_string_t  value[]);
 
-/* FMI ME 1.0 functions */
-typedef const char*		    (*fmi2_get_model_typesPlatform_ft)		(void);
-typedef fmi2_component_t	(*fmi2_instantiate_model_ft)			(fmi2_string_t instanceName, fmi2_string_t GUID, fmi2_callback_functions_t functions, fmi2_boolean_t loggingOn);
-typedef void			    (*fmi2_free_model_instance_ft)			(fmi2_component_t c);
-typedef fmi2_status_t		(*fmi2_set_time_ft)					(fmi2_component_t c, fmi2_real_t time);
-typedef fmi2_status_t		(*fmi2_set_continuous_states_ft)		(fmi2_component_t c, const fmi2_real_t x[], size_t nx);
-typedef fmi2_status_t		(*fmi2_completed_integrator_step_ft)	(fmi2_component_t c, fmi2_boolean_t* callEventUpdate);
-typedef fmi2_status_t		(*fmi2_initialize_ft)					(fmi2_component_t c, fmi2_boolean_t toleranceControlled, fmi2_real_t relativeTolerance, fmi2_event_info_t* eventInfo);
-typedef fmi2_status_t		(*fmi2_get_derivatives_ft)				(fmi2_component_t c, fmi2_real_t derivatives[]    , size_t nx);
-typedef fmi2_status_t		(*fmi2_get_event_indicators_ft)			(fmi2_component_t c, fmi2_real_t eventIndicators[], size_t ni);
-typedef fmi2_status_t		(*fmi2_event_update_ft)				(fmi2_component_t c, fmi2_boolean_t intermediateResults, fmi2_event_info_t* eventInfo);
-typedef fmi2_status_t		(*fmi2_get_continuous_states_ft)		(fmi2_component_t c, fmi2_real_t states[], size_t nx);
-typedef fmi2_status_t		(*fmi2_get_nominal_continuousStates_ft)	(fmi2_component_t c, fmi2_real_t x_nominal[], size_t nx);
-typedef fmi2_status_t		(*fmi2_get_state_valueReferences_ft)	(fmi2_component_t c, fmi2_value_reference_t vrx[], size_t nx);
-typedef fmi2_status_t		(*fmi2_terminate_ft)					(fmi2_component_t c);  
+/* reset alignment policy to the one set before reading this file */
+#if defined _MSC_VER || defined __GNUC__
+#pragma pack(pop)
+#endif
+
+/* Define fmi function pointer types to simplify dynamic loading */
+
+/***************************************************
+Types for Common Functions
+****************************************************/
+
+/* Inquire version numbers of header files and setting logging status */
+   typedef const char* (*fmi2_get_types_platform_ft)();
+   typedef const char* (*fmi2_get_version_ft)();
+   typedef fmi2_status_t   (*fmi2_set_debug_logging_ft)(fmi2_component_t, fmi2_boolean_t,size_t nCategories, const fmi2_string_t categories[]);
+
+/* Getting and setting variable values */
+   typedef fmi2_status_t (*fmi2_get_real_ft)   (fmi2_component_t, const fmi2_value_reference_t[], size_t, fmi2_real_t   []);
+   typedef fmi2_status_t (*fmi2_get_integer_ft)(fmi2_component_t, const fmi2_value_reference_t[], size_t, fmi2_integer_t[]);
+   typedef fmi2_status_t (*fmi2_get_boolean_ft)(fmi2_component_t, const fmi2_value_reference_t[], size_t, fmi2_boolean_t[]);
+   typedef fmi2_status_t (*fmi2_get_string_ft) (fmi2_component_t, const fmi2_value_reference_t[], size_t, fmi2_string_t []);
+
+   typedef fmi2_status_t (*fmi2_set_real_ft)   (fmi2_component_t, const fmi2_value_reference_t[], size_t, const fmi2_real_t   []);
+   typedef fmi2_status_t (*fmi2_set_integer_ft)(fmi2_component_t, const fmi2_value_reference_t[], size_t, const fmi2_integer_t[]);
+   typedef fmi2_status_t (*fmi2_set_boolean_ft)(fmi2_component_t, const fmi2_value_reference_t[], size_t, const fmi2_boolean_t[]);
+   typedef fmi2_status_t (*fmi2_set_string_ft) (fmi2_component_t, const fmi2_value_reference_t[], size_t, const fmi2_string_t []);
+
+/* Getting and setting the internal _fmu_ state */
+   typedef fmi2_status_t (*fmi2_get_fmu_state_ft)           (fmi2_component_t, fmi2_FMU_state_t*);
+   typedef fmi2_status_t (*fmi2_set_fmu_state_ft)           (fmi2_component_t, fmi2_FMU_state_t);
+   typedef fmi2_status_t (*fmi2_free_fmu_state_ft)          (fmi2_component_t, fmi2_FMU_state_t*);
+   typedef fmi2_status_t (*fmi2_serialized_fmu_state_size_ft)(fmi2_component_t, fmi2_FMU_state_t, size_t*);
+   typedef fmi2_status_t (*fmi2_serialize_fmu_state_ft)     (fmi2_component_t, fmi2_FMU_state_t, fmi2_byte_t[], size_t);
+   typedef fmi2_status_t (*fmi2_de_serialize_fmu_state_ft)   (fmi2_component_t, const fmi2_byte_t[], size_t, fmi2_FMU_state_t*);
+
+/* Getting partial derivatives */
+   typedef fmi2_status_t (*fmi2_get_partial_derivatives_ft)   (fmi2_component_t, fmi2_set_matrix_element_ft, void*, void*, void*, void*);
+   typedef fmi2_status_t (*fmi2_get_directional_derivative_ft)(fmi2_component_t, const fmi2_value_reference_t[], size_t,
+                                                                   const fmi2_value_reference_t[], size_t,
+                                                                   const fmi2_real_t[], fmi2_real_t[]);
+
+/***************************************************
+Types for Functions for FMI for Model Exchange
+****************************************************/
+
+/* Creation and destruction of model instances and setting debug status */
+   typedef fmi2_component_t (*fmi2_instantiate_model_ft) (fmi2_string_t, fmi2_string_t, fmi2_string_t, const fmi2_callback_functions_t*, fmi2_boolean_t, fmi2_boolean_t);
+   typedef void         (*fmi2_free_model_instance_ft)(fmi2_component_t);
+
+/* Providing independent variables and re-initialization of caching */
+   typedef fmi2_status_t (*fmi2_set_time_ft)                (fmi2_component_t, fmi2_real_t);
+   typedef fmi2_status_t (*fmi2_set_continuous_states_ft)    (fmi2_component_t, const fmi2_real_t[], size_t);
+   typedef fmi2_status_t (*fmi2_completed_integrator_step_ft)(fmi2_component_t, fmi2_boolean_t*);
+
+/* Evaluation of the model equations */
+   typedef fmi2_status_t (*fmi2_initialize_model_ft)        (fmi2_component_t, fmi2_boolean_t, fmi2_real_t, fmi2_event_info_t*);
+   typedef fmi2_status_t (*fmi2_event_update_ft)            (fmi2_component_t, fmi2_boolean_t, fmi2_event_info_t*);
+   typedef fmi2_status_t (*fmi2_completed_event_iteration_ft)(fmi2_component_t);
+   typedef fmi2_status_t (*fmi2_terminate_ft)              (fmi2_component_t);
+
+   typedef fmi2_status_t (*fmi2_get_derivatives_ft)            (fmi2_component_t, fmi2_real_t[], size_t);
+   typedef fmi2_status_t (*fmi2_get_event_indicators_ft)        (fmi2_component_t, fmi2_real_t[], size_t);
+   typedef fmi2_status_t (*fmi2_get_continuous_states_ft)       (fmi2_component_t, fmi2_real_t[], size_t);
+   typedef fmi2_status_t (*fmi2_get_nominal_continuous_states_ft)(fmi2_component_t, fmi2_real_t[], size_t);
+   typedef fmi2_status_t (*fmi2_get_state_value_references_ft)   (fmi2_component_t, fmi2_value_reference_t[], size_t);
 
 
-/* FMI CS 1.0 functions */
-typedef const char*		(*fmi2_get_types_platform_ft)			(void );
-typedef fmi2_component_t	(*fmi2_instantiate_slave_ft)			(fmi2_string_t  instanceName, fmi2_string_t  fmuGUID, fmi2_string_t  fmuLocation, 
-															 fmi2_string_t  mimeType, fmi2_real_t timeout, fmi2_boolean_t visible, fmi2_boolean_t interactive, 
-															 fmi2_callback_functions_t functions, fmi2_boolean_t loggingOn);
-typedef fmi2_status_t		(*fmi2_initialize_slave_ft)			(fmi2_component_t c, fmi2_real_t tStart, fmi2_boolean_t StopTimeDefined, fmi2_real_t tStop);
-typedef fmi2_status_t		(*fmi2_terminate_slave_ft)				(fmi2_component_t c);
-typedef fmi2_status_t		(*fmi2_reset_slave_ft)					(fmi2_component_t c);
-typedef void			    (*fmi2_free_slave_instance_ft)			(fmi2_component_t c);
-typedef fmi2_status_t		(*fmi2_set_real_inputDerivatives_ft)	(fmi2_component_t c, const  fmi2_value_reference_t vr[], size_t nvr, const fmi2_integer_t order[], const  fmi2_real_t value[]);                                                  
-typedef fmi2_status_t		(*fmi2_get_real_outputDerivatives_ft)	(fmi2_component_t c, const fmi2_value_reference_t vr[], size_t  nvr, const fmi2_integer_t order[], fmi2_real_t value[]);                                              
-typedef fmi2_status_t		(*fmi2_cancel_step_ft)					(fmi2_component_t c);
-typedef fmi2_status_t		(*fmi2_do_step_ft)						(fmi2_component_t c, fmi2_real_t currentCommunicationPoint, fmi2_real_t communicationStepSize, fmi2_boolean_t newStep);
+/***************************************************
+Types for_functions for FMI for Co-_simulation
+****************************************************/
 
-typedef fmi2_status_t		(*fmi2_get_status_ft)					(fmi2_component_t c, const fmi2_status_kind_t s, fmi2_status_t*  value);
-typedef fmi2_status_t		(*fmi2_get_real_status_ft)				(fmi2_component_t c, const fmi2_status_kind_t s, fmi2_real_t*    value);
-typedef fmi2_status_t		(*fmi2_get_integer_status_ft)			(fmi2_component_t c, const fmi2_status_kind_t s, fmi2_integer_t* value);
-typedef fmi2_status_t		(*fmi2_get_boolean_status_ft)			(fmi2_component_t c, const fmi2_status_kind_t s, fmi2_boolean_t* value);
-typedef fmi2_status_t		(*fmi2_get_string_status_ft)			(fmi2_component_t c, const fmi2_status_kind_t s, fmi2_string_t*  value); 
+/* Creation and destruction of slave instances */
+   typedef fmi2_component_t (*fmi2_instantiate_slave_ft) (fmi2_string_t, fmi2_string_t, fmi2_string_t, const fmi2_callback_functions_t*, fmi2_boolean_t, fmi2_boolean_t);
+   typedef void         (*fmi2_free_slave_instance_ft)(fmi2_component_t);
 
-/** @}
-*/
+/* Simulating the slave */
+   typedef fmi2_status_t (*fmi2_initialize_slave_ft)(fmi2_component_t, fmi2_real_t, fmi2_real_t, fmi2_boolean_t, fmi2_real_t);
+   typedef fmi2_status_t (*fmi2_terminate_slave_ft) (fmi2_component_t);
+   typedef fmi2_status_t (*fmi2_reset_slave_ft)     (fmi2_component_t);
 
-#endif /* End of header file FMI2_FUNCTIONS_H_ */
+   typedef fmi2_status_t (*fmi2_set_real_input_derivatives_ft) (fmi2_component_t, const fmi2_value_reference_t [], size_t, const fmi2_integer_t [], const fmi2_real_t []);
+   typedef fmi2_status_t (*fmi2_get_real_output_derivatives_ft)(fmi2_component_t, const fmi2_value_reference_t [], size_t, const fmi2_integer_t [], fmi2_real_t []);
+
+   typedef fmi2_status_t (*fmi2_do_step_ft)     (fmi2_component_t, fmi2_real_t, fmi2_real_t, fmi2_boolean_t);
+   typedef fmi2_status_t (*fmi2_cancel_step_ft) (fmi2_component_t);
+
+/* Inquire slave status */
+   typedef fmi2_status_t (*fmi2_get_status_ft)       (fmi2_component_t, const fmi2_status_kind_t, fmi2_status_t* );
+   typedef fmi2_status_t (*fmi2_get_real_status_ft)   (fmi2_component_t, const fmi2_status_kind_t, fmi2_real_t*   );
+   typedef fmi2_status_t (*fmi2_get_integer_status_ft)(fmi2_component_t, const fmi2_status_kind_t, fmi2_integer_t*);
+   typedef fmi2_status_t (*fmi2_get_boolean_status_ft)(fmi2_component_t, const fmi2_status_kind_t, fmi2_boolean_t*);
+   typedef fmi2_status_t (*fmi2_get_string_status_ft) (fmi2_component_t, const fmi2_status_kind_t, fmi2_string_t* );
+
+
+#ifdef __cplusplus
+}  /* end of extern "C" { */
+#endif
+
+#endif /* fmi2_function_types_h */

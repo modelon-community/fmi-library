@@ -26,8 +26,6 @@
 extern "C" {
 #endif
 
-typedef struct fmi2_xml_model_structure_t fmi2_xml_model_structure_t;
-
 fmi2_xml_model_structure_t* fmi2_xml_allocate_model_structure(jm_callbacks* cb);
 
 void fmi2_xml_free_model_structure(fmi2_xml_model_structure_t* ms);

@@ -26,8 +26,6 @@
 extern "C" {
 #endif
 
-typedef struct fmi2_xml_model_structure_t fmi2_xml_model_structure_t;
-
 /** \brief Structure for keeping information about variable dependencies.
 */
 typedef struct fmi2_xml_dependencies_t {

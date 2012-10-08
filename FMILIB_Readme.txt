@@ -18,7 +18,8 @@ development of custom applications. See Section \ref testing for details.
 \section config Configuring and building
 CMake (see <http://www.cmake.org/>) is used to generate the native build scripts
 for the library. It is recommended to use "cmake-gui" on Windows or 
-"ccmake <FMIL source dir>" to configure the build. 
+"ccmake <FMIL source dir>" to configure the build. All the required third party
+libraries are included into the distribution.
 
 CMake 2.8.6 is required since this is the version used in development both on 
 Windows and Linux. The build script is KNOWN NOT TO WORK WITH CMake 2.8.3 and 

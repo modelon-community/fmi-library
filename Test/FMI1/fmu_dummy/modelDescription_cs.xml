@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<fmiModelDescription
+  fmiVersion="1.0"
+  modelName="BouncingBall"
+  modelIdentifier="BouncingBall"
+  generationTool="None"
+  description="A bouncing ball model"
+  guid="123"
+  numberOfContinuousStates="2"
+  numberOfEventIndicators="1">
+<ModelVariables>
+  <ScalarVariable name="HIGHT" valueReference="0" description="Hight of the ball">
+     <Real start="1.0" fixed="true"/>
+  </ScalarVariable>
+  <ScalarVariable name="HIGHT_SPEED" valueReference="1" description="Speed of the ball">
+     <Real start="4.0" fixed="true"/>
+  </ScalarVariable> 
+  <ScalarVariable name="GRAVITY" valueReference="2" description="Gravity constant">
+     <Real start="-9.81"/>
+  </ScalarVariable>
+  <ScalarVariable name="BOUNCE_COF" valueReference="3" description="Bouncing coefficient">
+     <Real start="0.5" fixed="true"/>
+  </ScalarVariable>
+  <ScalarVariable name="LOGGER_TEST" valueReference="0" description="The logger will print the value of this variable when it is set.">
+     <String/>
+  </ScalarVariable>
+    <ScalarVariable name="LOGGER_TEST_INTEGER" valueReference="0" description="This is only used to test logger replace function #i0#">
+     <Integer/>
+  </ScalarVariable>  
+    <ScalarVariable name="LOGGER_TEST_BOOLEAN" valueReference="0" description="This is only used to test logger replace function #b0#">
+     <Boolean/>
+  </ScalarVariable>   
+</ModelVariables>
+<Implementation>
+  <CoSimulation_StandAlone>
+    <Capabilities
+      canHandleVariableCommunicationStepSize="true"/>
+  </CoSimulation_StandAlone>
+</Implementation>
+</fmiModelDescription>
+

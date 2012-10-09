@@ -397,7 +397,7 @@ int test_set_get_string()
 	size_t k;
 
 	for (k = 0; k < N_STRING; k++) {
-		vrs[k] = k;
+		vrs[k] = (fmi1_value_reference_t)k;
 		values[k] = "hej";
 		values_ref[k] = values[k];
 	}
@@ -439,10 +439,10 @@ int test_set_get_integer()
 	fmi1_value_reference_t vrs[N_INTEGER];
 	fmi1_integer_t values[N_INTEGER];
 	fmi1_integer_t values_ref[N_INTEGER];
-	size_t k;
+	int k;
 
 	for (k = 0; k < N_INTEGER; k++) {
-		vrs[k] = k;
+		vrs[k] = (fmi1_value_reference_t)k;
 		values[k] = (k + 1) * 12;
 		values_ref[k] = values[k];
 	}
@@ -487,7 +487,7 @@ int test_set_get_boolean()
 	size_t k;
 
 	for (k = 0; k < N_INTEGER; k++) {
-		vrs[k] = k;
+		vrs[k] = (fmi1_value_reference_t)k;
 		values[k] = fmi1_true;
 		values_ref[k] = values[k];
 	}
@@ -532,8 +532,8 @@ int test_set_get_real()
 	size_t k;
 
 	for (k = 0; k < N_REAL; k++) {
-		vrs[k] = N_STATES + k;
-		values[k] = (k + 1) * 12;
+		vrs[k] = (fmi1_value_reference_t)(N_STATES + k);
+		values[k] = (fmi1_real_t)(k + 1) * 12;
 		values_ref[k] = values[k];
 	}
 
@@ -591,12 +591,12 @@ int test_set_real_input_derivatives()
 	fmi1_value_reference_t	vrs		[N_INPUT_REAL * N_INPUT_REAL_MAX_ORDER];
 	fmi1_real_t				values	[N_INPUT_REAL * N_INPUT_REAL_MAX_ORDER];
 	fmi1_integer_t			order	[N_INPUT_REAL * N_INPUT_REAL_MAX_ORDER];
-	size_t k, p;
+	int k, p;
 
 	for (k = 0; k < N_INPUT_REAL_MAX_ORDER; k++) {
 		for (p = 0; p < N_INPUT_REAL; p++)
 		{
-			vrs		[p + k * N_INPUT_REAL] = p;
+			vrs		[p + k * N_INPUT_REAL] = (fmi1_value_reference_t)p;
 			values	[p + k * N_INPUT_REAL] = MAGIC_TEST_VALUE; /* This value is tested in the DLL to be exakt MAGIC_TEST_VALUE */
 			order	[p + k * N_INPUT_REAL] = k + 1;
 		}
@@ -627,9 +627,9 @@ int test_get_real_output_derivatives()
 	for (k = 0; k < N_OUTPUT_REAL_MAX_ORDER; k++) {
 		for (p = 0; p < N_OUTPUT_REAL; p++)
 		{
-			vrs		[p + k * N_OUTPUT_REAL] = p;
+			vrs		[p + k * N_OUTPUT_REAL] = (fmi1_value_reference_t)p;
 			values	[p + k * N_OUTPUT_REAL] = -1;
-			order	[p + k * N_OUTPUT_REAL] = k + 1;
+			order	[p + k * N_OUTPUT_REAL] = (fmi1_integer_t)k + 1;
 		}
 	}
 

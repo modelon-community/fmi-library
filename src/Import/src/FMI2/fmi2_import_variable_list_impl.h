@@ -27,7 +27,7 @@ extern "C" {
 struct fmi2_import_variable_list_t {
 	fmi2_import_t* fmu;
     jm_vector(jm_voidp) variables;
-    jm_vector(size_t)* vr;
+    fmi2_value_reference_t* vr;
 };
 
 /* Allocate an empty list */

@@ -174,9 +174,9 @@ const char* fmi2_xml_get_generation_date_and_time(fmi2_xml_model_description_t* 
 
 fmi2_variable_naming_convension_enu_t fmi2_xml_get_naming_convention(fmi2_xml_model_description_t* md);
 
-unsigned int fmi2_xml_get_number_of_continuous_states(fmi2_xml_model_description_t* md);
+size_t fmi2_xml_get_number_of_continuous_states(fmi2_xml_model_description_t* md);
 
-unsigned int fmi2_xml_get_number_of_event_indicators(fmi2_xml_model_description_t* md);
+size_t fmi2_xml_get_number_of_event_indicators(fmi2_xml_model_description_t* md);
 
 double fmi2_xml_get_default_experiment_start(fmi2_xml_model_description_t* md);
 

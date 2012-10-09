@@ -107,8 +107,11 @@ void printTypeInfo(fmi1_import_variable_typedef_t* vt) {
         int max = fmi1_import_get_enum_type_max(et);
         printf("Min %d, max %d\n", min, max);
         {
-            size_t ni, i;
+            size_t ni;
+			unsigned i;
             ni = fmi1_import_get_enum_type_size(et);
+			i = (unsigned)(ni);
+			assert( i == ni);
             printf("There are %d items \n",ni);
             for(i = 0; i < ni; i++) {
                 printf("[%d] %s (%s) \n", i+1, fmi1_import_get_enum_type_item_name(et, i), fmi1_import_get_enum_type_item_description(et, i));
@@ -210,7 +213,9 @@ void printVariableInfo(fmi1_import_t* fmu,
     }
     {
         fmi1_import_variable_list_t* vl = fmi1_import_get_variable_aliases(fmu, v);
-        size_t i, n = fmi1_import_get_variable_list_size(vl);
+        size_t n = fmi1_import_get_variable_list_size(vl);
+		unsigned i = (unsigned)n;
+		assert( n == i);
         if(n>1) {
             printf("Listing aliases: \n");
             for(i = 0;i<n;i++)
@@ -220,9 +225,12 @@ void printVariableInfo(fmi1_import_t* fmu,
     }
 	{
 		fmi1_import_variable_list_t* vl = fmi1_import_get_direct_dependency( fmu, v);
-        size_t i, n = 0;
+        size_t n = 0;
+		unsigned i;
 		if(vl) 
 			n = fmi1_import_get_variable_list_size(vl);
+		i = (unsigned)n;
+		assert( n == i);		
         if(n>0) {
             printf("Listing direct dependencies: \n");
             for(i = 0;i<n;i++)
@@ -313,7 +321,10 @@ int main(int argc, char *argv[])
            fmi1_import_get_default_experiment_tolerance(fmu));
     {
         fmi1_import_vendor_list_t* vl = fmi1_import_get_vendor_list(fmu);
-        size_t i, nv = fmi1_import_get_number_of_vendors(vl);
+        size_t nv = fmi1_import_get_number_of_vendors(vl);
+		unsigned i;
+		i = (unsigned)nv;
+		assert( nv == i);		
         printf("There are %d tool annotation records \n", nv);
         for( i = 0; i < nv; i++) {
             fmi1_import_vendor_t* vendor = fmi1_import_get_vendor(vl, i);
@@ -323,7 +334,7 @@ int main(int argc, char *argv[])
             }
             printf("Vendor name [%d] %s", i, fmi1_import_get_vendor_name(vendor));
             {
-                size_t j, na = fmi1_import_get_number_of_vendor_annotations(vendor);
+                unsigned j, na = fmi1_import_get_number_of_vendor_annotations(vendor);
 
                 for(j = 0; j< na; j++) {
                     fmi1_import_annotation_t* a = fmi1_import_get_vendor_annotation(vendor, j);
@@ -340,7 +351,7 @@ int main(int argc, char *argv[])
     {
         fmi1_import_unit_definitions_t* ud = fmi1_import_get_unit_definitions(fmu);
         if(ud) {
-            size_t  i, nu = fmi1_import_get_unit_definitions_number(ud);
+            unsigned  i, nu = fmi1_import_get_unit_definitions_number(ud);
             printf("There are %d different units used \n", nu);
 
             for(i = 0; i < nu; i++) {
@@ -359,7 +370,7 @@ int main(int argc, char *argv[])
         fmi1_import_type_definitions_t* td = fmi1_import_get_type_definitions(fmu);
         if(td) {
             {
-                size_t i, ntd = fmi1_import_get_type_definition_number(td);
+                unsigned i, ntd = (unsigned)fmi1_import_get_type_definition_number(td);
                 printf("There are %d defs\n", ntd);
                 for(i = 0; i < ntd; i++) {
                     fmi1_import_variable_typedef_t* vt = fmi1_import_get_typedef(td, i);
@@ -375,12 +386,15 @@ int main(int argc, char *argv[])
             printf("Error getting type definitions (%s)\n", fmi1_import_get_last_error(fmu));
     }
     {
-        size_t nv, i;
+        size_t nv;
+		unsigned i;
         fmi1_import_variable_list_t* vl = fmi1_import_get_variable_list(fmu);
 
         assert(vl);
         nv = fmi1_import_get_variable_list_size(vl);
-        printf("There are %d variables in total \n",nv);
+		i = (unsigned)nv;
+		assert(i == nv);
+		printf("There are %d variables in total \n",nv);
         for(i = 0; i < nv; i++) {
             fmi1_import_variable_t* var = fmi1_import_get_variable(vl, i);
             if(!var) {

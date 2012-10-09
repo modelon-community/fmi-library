@@ -20,7 +20,7 @@
 
 char* fmi_construct_dll_dir_name(jm_callbacks* callbacks, const char* fmu_unzipped_path) {
 	char* dir_path;
-	int len;
+	size_t len;
 
 	assert( fmu_unzipped_path && callbacks);
 
@@ -42,7 +42,7 @@ char* fmi_construct_dll_dir_name(jm_callbacks* callbacks, const char* fmu_unzipp
 
 char* fmi_construct_dll_file_name(jm_callbacks* callbacks, const char* model_identifier) {
 	char* fname;
-	int len;
+	size_t len;
 	assert(callbacks && model_identifier);
 	len = 
 		strlen(FMI_FILE_SEP) + 1 +

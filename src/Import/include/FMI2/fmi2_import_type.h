@@ -51,7 +51,7 @@ typedef struct fmi2_xml_type_definitions_t fmi2_import_type_definitions_t;
 /**@} */
 
 /** \brief Get the number of available type definitions */
-FMILIB_EXPORT size_t fmi2_import_get_type_definition_number(fmi2_import_type_definitions_t* td);
+FMILIB_EXPORT unsigned int fmi2_import_get_type_definition_number(fmi2_import_type_definitions_t* td);
 
 /** \brief Get a type definition specified by the index 
 	@param td the type definition list object

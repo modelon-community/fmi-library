@@ -42,7 +42,7 @@ const char* fmi2_dependency_factor_kind_to_string(fmi2_dependency_factor_kind_en
 	default:break;
 	}
 	return "illegal factor kind";
-} fmi2_dependency_factor_kind_enu_t;
+}
 
 const char* fmi2_variability_to_string(fmi2_variability_enu_t v) {
     switch(v) {
@@ -257,5 +257,6 @@ size_t fmi2_SI_base_unit_exp_to_string(const int exp[fmi2_SI_base_units_Num], si
 			tmp[len++] = ')';
 	}
 	strncpy(buf, tmp, bufSize);
-	return len;
+    if(len < bufSize) buf[len] = 0;
+	return len + 1;
 }

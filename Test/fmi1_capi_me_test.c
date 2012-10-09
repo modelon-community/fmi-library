@@ -216,7 +216,7 @@ int test_set_continuous_states()
 	fmi1_real_t states[N_STATES];
 
 	for (k = 0; k < N_STATES; k++) {
-		states[k] = (k + 1) * 12;
+		states[k] = (fmi1_real_t)(k + 1) * 12;
 	}
 
 	status = fmi1_capi_set_continuous_states(fmu, states, N_STATES);
@@ -466,7 +466,7 @@ int test_set_get_string()
 	size_t k;
 
 	for (k = 0; k < N_STRING; k++) {
-		vrs[k] = k;
+		vrs[k] = (fmi1_value_reference_t)k;
 		values[k] = "hej";
 		values_ref[k] = values[k];
 	}
@@ -508,10 +508,10 @@ int test_set_get_integer()
 	fmi1_value_reference_t vrs[N_INTEGER];
 	fmi1_integer_t values[N_INTEGER];
 	fmi1_integer_t values_ref[N_INTEGER];
-	size_t k;
+	int k;
 
 	for (k = 0; k < N_INTEGER; k++) {
-		vrs[k] = k;
+		vrs[k] = (fmi1_value_reference_t)k;
 		values[k] = (k + 1) * 12;
 		values_ref[k] = values[k];
 	}
@@ -556,7 +556,7 @@ int test_set_get_boolean()
 	size_t k;
 
 	for (k = 0; k < N_INTEGER; k++) {
-		vrs[k] = k;
+		vrs[k] = (fmi1_value_reference_t)k;
 		values[k] = fmi1_true;
 		values_ref[k] = values[k];
 	}
@@ -601,8 +601,8 @@ int test_set_get_real()
 	size_t k;
 
 	for (k = 0; k < N_REAL; k++) {
-		vrs[k] = N_STATES + k;
-		values[k] = (k + 1) * 12;
+		vrs[k] = (fmi1_value_reference_t)(N_STATES + k);
+		values[k] = (fmi1_real_t)(k + 1) * 12;
 		values_ref[k] = values[k];
 	}
 

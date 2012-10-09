@@ -175,10 +175,10 @@ FMILIB_EXPORT fmi2_variable_naming_convension_enu_t fmi2_import_get_naming_conve
 
 /** \brief Get the number of continuous states. 
 */
-FMILIB_EXPORT unsigned int fmi2_import_get_number_of_continuous_states(fmi2_import_t* fmu);
+FMILIB_EXPORT size_t fmi2_import_get_number_of_continuous_states(fmi2_import_t* fmu);
 
 /** \brief Get the number of event indicators. */
-FMILIB_EXPORT unsigned int fmi2_import_get_number_of_event_indicators(fmi2_import_t* fmu);
+FMILIB_EXPORT size_t fmi2_import_get_number_of_event_indicators(fmi2_import_t* fmu);
 
 /** \brief Get the start time for default experiment  as specified in the XML file. */
 FMILIB_EXPORT double fmi2_import_get_default_experiment_start(fmi2_import_t* fmu);

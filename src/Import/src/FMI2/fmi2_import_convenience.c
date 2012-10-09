@@ -140,6 +140,7 @@ void fmi2_import_expand_variable_references_impl(fmi2_import_t* fmu, const char*
 			i++; /* skip the second # */
 		}
 		else {
+            unsigned int bufVR;
 			fmi2_value_reference_t vr = fmi2_undefined_value_reference;
 			char typeChar = msgIn[i++];
 			size_t pastePos = jm_vector_get_size(char)(msgOut);
@@ -192,13 +193,14 @@ void fmi2_import_expand_variable_references_impl(fmi2_import_t* fmu, const char*
 				return;
 			}
 			
-			if(sscanf(jm_vector_get_itemp(char)(msgOut, pastePos), "%u",&vr) != 1) {
+			if(sscanf(jm_vector_get_itemp(char)(msgOut, pastePos), "%u",&bufVR) != 1) {
 				jm_log(callbacks,"LOGGER", jm_log_level_warning, "Could not decode value reference in log message here: '%s'", jm_vector_get_itemp(char)(msgOut,0));
                                 jm_vector_resize(char)(msgOut, msgLen);
                 jm_vector_resize(char)(msgOut, msgLen);
 				memcpy(jm_vector_get_itemp(char)(msgOut,0),msgIn,msgLen);
 				return;
 			}
+            vr = bufVR;
 			var = fmi2_xml_get_variable_by_vr(md,baseType,vr);
 			if(!var) {
 				jm_log(callbacks,"LOGGER", jm_log_level_warning, "Could not find variable referenced in log message here: '%s'", jm_vector_get_itemp(char)(msgOut,0));

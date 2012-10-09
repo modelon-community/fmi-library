@@ -353,6 +353,7 @@ int fmi2_xml_handle_ModelStructure(fmi2_xml_parser_context_t *context, const cha
 			fmi2_xml_parse_fatal(context, "Model structure is not valid due to detected errors. Cannot continue.");
 			return -1;
 		}
+		md->numberOfContinuousStates = jm_vector_get_size(jm_voidp)(&md->modelStructure->states);
     }
     return 0;
 }

@@ -252,7 +252,7 @@ unsigned int  fmi1_xml_get_number_of_vendors(fmi1_xml_vendor_list_t* vl) {
 		assert(vl && "Vendor list cannot be NULL");
 		return 0;
 	}
-    return jm_vector_get_size(jm_voidp)(&vl->vendors);
+    return (unsigned int)jm_vector_get_size(jm_voidp)(&vl->vendors);
 }
 
 fmi1_xml_vendor_t* fmi1_xml_get_vendor(fmi1_xml_vendor_list_t* v, unsigned int  index) {
@@ -275,7 +275,7 @@ unsigned int  fmi1_xml_get_unit_definitions_number(fmi1_xml_unit_definitions_t* 
 		assert(ud && "Unit definitions cannot be NULL");
 		return 0;
 	}
-    return jm_vector_get_size(jm_named_ptr)(&ud->definitions);
+    return (unsigned int)jm_vector_get_size(jm_named_ptr)(&ud->definitions);
 }
 
 fmi1_xml_type_definitions_t* fmi1_xml_get_type_definitions(fmi1_xml_model_description_t* md) {

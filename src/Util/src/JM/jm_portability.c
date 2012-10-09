@@ -97,8 +97,10 @@ char* jm_portability_get_last_dll_error(void)
 
 jm_status_enu_t jm_portability_get_current_working_directory(char* buffer, size_t len)
 {
+	int ilen = (int)len;
+	if(ilen != len) ilen = FILENAME_MAX + 2;
 	setlocale(LC_CTYPE, "en_US.UTF-8"); /* just in case, does not seem to have an effect */
-	if (get_current_working_directory(buffer, len) == NULL) {
+	if (get_current_working_directory(buffer, ilen) == NULL) {
 		return jm_status_error;
 	} else {
 		return jm_status_success;

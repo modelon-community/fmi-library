@@ -38,7 +38,7 @@ fmi2_xml_type_definitions_t* fmi2_xml_get_type_definitions(fmi2_xml_model_descri
 
 /* Convert base type constant to string */
 
-size_t fmi2_xml_get_type_definition_number(fmi2_xml_type_definitions_t* td);
+unsigned int fmi2_xml_get_type_definition_number(fmi2_xml_type_definitions_t* td);
 
 fmi2_xml_variable_typedef_t* fmi2_xml_get_typedef(fmi2_xml_type_definitions_t* td, unsigned int  index);
 

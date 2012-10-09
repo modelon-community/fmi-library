@@ -225,11 +225,11 @@ fmi2_variable_naming_convension_enu_t fmi2_xml_get_naming_convention(fmi2_xml_mo
 }
 
 
-unsigned int fmi2_xml_get_number_of_continuous_states(fmi2_xml_model_description_t* md) {
+size_t fmi2_xml_get_number_of_continuous_states(fmi2_xml_model_description_t* md) {
     return md->numberOfContinuousStates;
 }
 
-unsigned int fmi2_xml_get_number_of_event_indicators(fmi2_xml_model_description_t* md) {
+size_t fmi2_xml_get_number_of_event_indicators(fmi2_xml_model_description_t* md) {
     return md->numberOfEventIndicators;
 }
 
@@ -275,7 +275,7 @@ unsigned int  fmi2_xml_get_unit_definitions_number(fmi2_xml_unit_definitions_t* 
 		assert(ud && "Unit definitions cannot be NULL");
 		return 0;
 	}
-    return jm_vector_get_size(jm_named_ptr)(&ud->definitions);
+    return (unsigned int)jm_vector_get_size(jm_named_ptr)(&ud->definitions);
 }
 
 fmi2_xml_type_definitions_t* fmi2_xml_get_type_definitions(fmi2_xml_model_description_t* md) {
@@ -328,6 +328,8 @@ int fmi2_xml_handle_fmiModelDescription(fmi2_xml_parser_context_t *context, cons
     jm_name_ID_map_t namingConventionMap[] = {{"flat",fmi2_naming_enu_flat},{"structured", fmi2_naming_enu_structured},{0,0}};
     fmi2_xml_model_description_t* md = context->modelDescription;
     if(!data) {
+		unsigned int numEventIndicators;
+		int ret;
         if(context -> currentElmID != fmi2_xml_elmID_none) {
             fmi2_xml_parse_fatal(context, "fmi2_xml_model_description must be the root XML element");
             return -1;
@@ -335,8 +337,7 @@ int fmi2_xml_handle_fmiModelDescription(fmi2_xml_parser_context_t *context, cons
 		jm_log_verbose(context->callbacks, module, "Parsing XML element fmiModelDescription");
 		md->fmuKind = fmi2_fmu_kind_unknown;
         /* process the attributes */
-        return (
-                    /* <xs:attribute name="fmiVersion" type="xs:normalizedString" use="required" fixed="2.0"/> */
+		ret =        /* <xs:attribute name="fmiVersion" type="xs:normalizedString" use="required" fixed="2.0"/> */
                     fmi2_xml_set_attr_string(context, fmi2_xml_elmID_fmiModelDescription, fmi_attr_id_fmiVersion, 1, &(md->fmi2_xml_standard_version)) ||
                     /* <xs:attribute name="modelName" type="xs:normalizedString" use="required"> */
                     fmi2_xml_set_attr_string(context, fmi2_xml_elmID_fmiModelDescription, fmi_attr_id_modelName, 1, &(md->modelName)) ||
@@ -359,8 +360,9 @@ int fmi2_xml_handle_fmiModelDescription(fmi2_xml_parser_context_t *context, cons
                     /* <xs:attribute name="variableNamingConvention" use="optional" default="flat"> */
                     fmi2_xml_set_attr_enum(context, fmi2_xml_elmID_fmiModelDescription, fmi_attr_id_variableNamingConvention, 0, (unsigned*)&(md->namingConvension), fmi2_naming_enu_flat, namingConventionMap) ||
                     /* <xs:attribute name="numberOfEventIndicators" type="xs:unsignedInt" use="required"/> */
-                    fmi2_xml_set_attr_uint(context, fmi2_xml_elmID_fmiModelDescription, fmi_attr_id_numberOfEventIndicators, 1, &(md->numberOfEventIndicators),0)
-                    );
+                    fmi2_xml_set_attr_uint(context, fmi2_xml_elmID_fmiModelDescription, fmi_attr_id_numberOfEventIndicators, 1, &numEventIndicators,0);
+					md->numberOfEventIndicators = numEventIndicators;
+		return (ret );
     }
     else {
 		/* check that fmuKind is defined and that model identifies are valid*/
@@ -478,7 +480,7 @@ int fmi2_xml_handle_CoSimulation(fmi2_xml_parser_context_t *context, const char*
 }
 
 int fmi2_xml_handle_LogCategories(fmi2_xml_parser_context_t *context, const char* data) {
-    fmi2_xml_model_description_t* md = context->modelDescription;
+/*    fmi2_xml_model_description_t* md = context->modelDescription; */
     if(!data) {
 		jm_log_verbose(context->callbacks, module, "Parsing XML element LogCategories");
         /* process the attributes */
@@ -491,7 +493,6 @@ int fmi2_xml_handle_LogCategories(fmi2_xml_parser_context_t *context, const char
 }
 
 int fmi2_xml_handle_Category(fmi2_xml_parser_context_t *context, const char* data) {
-    fmi2_xml_model_description_t* md = context->modelDescription;
     if(!data) {
         /* process the attributes */
 		size_t len;

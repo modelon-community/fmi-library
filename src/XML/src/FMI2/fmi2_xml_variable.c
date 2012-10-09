@@ -597,7 +597,7 @@ int fmi2_xml_handle_BooleanVariable(fmi2_xml_parser_context_t *context, const ch
             }
             if(
                   /*  <xs:attribute name="start" type="xs:boolean"/> */
-                    fmi2_xml_set_attr_boolean(context, fmi2_xml_elmID_Boolean, fmi_attr_id_start, 0, (int*)&start->start, 0) 
+                    fmi2_xml_set_attr_boolean(context, fmi2_xml_elmID_Boolean, fmi_attr_id_start, 0, (unsigned*)&start->start, 0) 
                 )
                     return -1;
             variable->typeBase = &start->typeBase;
@@ -749,10 +749,13 @@ int fmi2_xml_handle_EnumerationVariable(fmi2_xml_parser_context_t *context, cons
     return 0;
 }
 
-#define fmi2_xml_diff_variable_original_index(a, b) (((fmi2_xml_variable_t*)a)->originalIndex - ((fmi2_xml_variable_t*)b)->originalIndex)
-
-jm_define_comp_f(fmi2_xml_compare_variable_original_index, jm_voidp, fmi2_xml_diff_variable_original_index)
-
+static int fmi2_xml_compare_variable_original_index (const void* first, const void* second) { 
+	size_t a = ((fmi2_xml_variable_t*)first)->originalIndex;
+	size_t b = ((fmi2_xml_variable_t*)second)->originalIndex;
+    if(a < b) return -1;
+    if(a > b) return 1;
+	return 0;
+}
 
 void fmi2_xml_eliminate_bad_alias(fmi2_xml_parser_context_t *context, size_t indexVR) {
     fmi2_xml_model_description_t* md = context->modelDescription;
@@ -791,13 +794,18 @@ static int fmi2_xml_compare_vr_and_original_index (const void* first, const void
 	    fmi2_xml_variable_t* a = *(fmi2_xml_variable_t**)first;
 		fmi2_xml_variable_t* b = *(fmi2_xml_variable_t**)second;
 		ret = a->causality - b->causality;
-		if(!ret) return ret;
+		if(ret != 0 ) return ret;
 		ret = a->variability - b->variability;
-		if(!ret) return ret;
-		ret = (a->originalIndex - b->originalIndex);
+		if(ret != 0) return ret;
+		{
+			size_t ai = a->originalIndex;
+			size_t bi = b->originalIndex;
+			if(ai > bi) return 1;
+			if(ai < bi) return -1;
+		}
 	}
 	
-	return ret;
+	return 0;
 }
 
 int fmi2_xml_handle_ModelVariables(fmi2_xml_parser_context_t *context, const char* data) {

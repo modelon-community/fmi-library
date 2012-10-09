@@ -143,7 +143,7 @@ void printTypeInfo(fmi2_import_variable_typedef_t* vt) {
         int max = fmi2_import_get_enum_type_max(et);
         printf("Min %d, max %d\n", min, max);
         {
-            size_t ni, i;
+            unsigned ni, i;
             ni = fmi2_import_get_enum_type_size(et);
             printf("There are %d items \n",ni);
             for(i = 1; i <= ni; i++) {
@@ -198,9 +198,11 @@ void testVariableSearch(fmi2_import_t* fmu,
 void printVariableInfo(fmi2_import_t* fmu,
                        fmi2_import_variable_t* v) {
     fmi2_base_type_enu_t bt;
+    size_t vr = fmi2_import_get_variable_vr(v);
+    assert(vr == (unsigned)vr);
     printf("Variable name: %s\n", fmi2_import_get_variable_name(v));
     printf("Description: %s\n", fmi2_import_get_variable_description(v));
-    printf("VR: %d\n", fmi2_import_get_variable_vr(v));
+    printf("VR: %u\n", (unsigned)vr);
     printf("Variability: %s\n", fmi2_variability_to_string(fmi2_import_get_variability(v)));
     printf("Causality: %s\n", fmi2_causality_to_string(fmi2_import_get_causality(v)));
     printf("Initial: %s\n", fmi2_initial_to_string(fmi2_import_get_initial(v)));
@@ -365,8 +367,8 @@ int main(int argc, char *argv[])
 	    printf("Model identifier CS: %s\n", fmi2_import_get_model_identifier_CS(fmu));
     printCapabilitiesInfo(fmu);
 
-    printf("NumberOfContinuousStates = %d\n", fmi2_import_get_number_of_continuous_states(fmu));
-    printf("NumberOfEventIndicators = %d\n", fmi2_import_get_number_of_event_indicators(fmu));
+    printf("NumberOfContinuousStates = " FMILIB_SIZET_FORMAT "\n", fmi2_import_get_number_of_continuous_states(fmu));
+    printf("NumberOfEventIndicators = " FMILIB_SIZET_FORMAT "\n", fmi2_import_get_number_of_event_indicators(fmu));
 
     printf("Default experiment start = %g, end = %g, tolerance = %g\n",
            fmi2_import_get_default_experiment_start(fmu),
@@ -382,7 +384,7 @@ int main(int argc, char *argv[])
     {
         fmi2_import_unit_definitions_t* ud = fmi2_import_get_unit_definitions(fmu);
         if(ud) {
-            size_t  i, nu = fmi2_import_get_unit_definitions_number(ud);
+            unsigned  i, nu = fmi2_import_get_unit_definitions_number(ud);
             printf("There are %d different units used \n", nu);
 
             for(i = 0; i < nu; i++) {
@@ -408,7 +410,7 @@ int main(int argc, char *argv[])
         fmi2_import_type_definitions_t* td = fmi2_import_get_type_definitions(fmu);
         if(td) {
             {
-                size_t i, ntd = fmi2_import_get_type_definition_number(td);
+                unsigned i, ntd = fmi2_import_get_type_definition_number(td);
                 printf("There are %d defs\n", ntd);
                 for(i = 0; i < ntd; i++) {
                     fmi2_import_variable_typedef_t* vt = fmi2_import_get_typedef(td, i);
@@ -427,18 +429,22 @@ int main(int argc, char *argv[])
         size_t nv, i;
         fmi2_import_variable_list_t* vl = fmi2_import_get_variable_list(fmu);
 		fmi2_import_variable_list_t* ders = fmi2_import_get_derivatives_list( fmu);
+		const fmi2_value_reference_t* vrl = fmi2_import_get_value_referece_list(vl);
+
 
         assert(vl);
+		
         nv = fmi2_import_get_variable_list_size(vl);
         printf("There are %d variables in total \n",nv);
         for(i = 0; i < nv; i++) {
             fmi2_import_variable_t* var = fmi2_import_get_variable(vl, i);
+			assert(vrl[i] == fmi2_import_get_variable_vr(var));
             if(!var) {
 				printf("Something wrong with variable %d \n",i);
 				do_exit(1);
 			}
             else {
-				int stateIndex = fmi2_import_get_state_index(var);
+				size_t stateIndex = fmi2_import_get_state_index(var);
                 printVariableInfo(fmu, var);
 				if(stateIndex) {
 					printf("This variable is a state. Its derivative: %s\n", 

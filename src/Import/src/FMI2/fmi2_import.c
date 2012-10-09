@@ -212,13 +212,13 @@ fmi2_variable_naming_convension_enu_t fmi2_import_get_naming_convention(fmi2_imp
 	return fmi2_xml_get_naming_convention(fmu->md);
 }
 
-unsigned int fmi2_import_get_number_of_continuous_states(fmi2_import_t* fmu) {
+size_t fmi2_import_get_number_of_continuous_states(fmi2_import_t* fmu) {
 	if(!fmi2_import_check_has_FMU(fmu)) return 0;
 
 	return fmi2_xml_get_number_of_continuous_states(fmu->md);
 }
 
-unsigned int fmi2_import_get_number_of_event_indicators(fmi2_import_t* fmu) {
+size_t fmi2_import_get_number_of_event_indicators(fmi2_import_t* fmu) {
 	if(!fmi2_import_check_has_FMU(fmu)) return 0;
 
 	return fmi2_xml_get_number_of_event_indicators(fmu->md);

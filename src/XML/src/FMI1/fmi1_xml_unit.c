@@ -28,7 +28,7 @@ const char* fmi1_xml_get_unit_name(fmi1_xml_unit_t* u) {
 }
 
 unsigned int fmi1_xml_get_unit_display_unit_number(fmi1_xml_unit_t* u) {
-    return jm_vector_get_size(jm_voidp)(&u->displayUnits);
+    return (unsigned int)jm_vector_get_size(jm_voidp)(&u->displayUnits);
 }
 
 fmi1_xml_display_unit_t* fmi1_xml_get_unit_display_unit(fmi1_xml_unit_t* u, size_t index) {

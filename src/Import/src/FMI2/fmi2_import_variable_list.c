@@ -34,7 +34,7 @@ void fmi2_import_free_variable_list(fmi2_import_variable_list_t* vl) {
     jm_callbacks* cb;
 	if(!vl) return;
 	cb = vl->variables.callbacks;
-    jm_vector_free(size_t)(vl->vr);
+	cb->free(vl->vr);
     jm_vector_free_data(jm_voidp)(&vl->variables);
     cb->free(vl);
 }
@@ -100,19 +100,21 @@ jm_status_enu_t fmi2_import_var_list_push_back(fmi2_import_variable_list_t* list
 /* Get a pointer to the list of the value references for all the variables */
 const fmi2_value_reference_t* fmi2_import_get_value_referece_list(fmi2_import_variable_list_t* vl) {
     if(!vl->vr) {
+		jm_callbacks* cb = vl->fmu->callbacks;
         size_t i, nv = fmi2_import_get_variable_list_size(vl);
-        vl->vr = jm_vector_alloc(size_t)(nv,nv,vl->variables.callbacks);
+		vl->vr = (fmi2_value_reference_t*)cb->malloc(nv * sizeof(fmi2_value_reference_t));
         if(vl->vr) {
             for(i = 0; i < nv; i++) {
-				jm_vector_set_item(size_t)(vl->vr, i, fmi2_xml_get_variable_vr(fmi2_import_get_variable(vl, i)));
+				vl->vr[i] = fmi2_xml_get_variable_vr(fmi2_import_get_variable(vl, i));
             }
         }
+		else return 0;
     }
-    return jm_vector_get_itemp(size_t)(vl->vr,0);
+    return vl->vr;
 }
 
 /* Get a single variable from the list*/
-fmi2_import_variable_t* fmi2_import_get_variable(fmi2_import_variable_list_t* vl, unsigned int  index) {
+fmi2_import_variable_t* fmi2_import_get_variable(fmi2_import_variable_list_t* vl, size_t  index) {
 	if(index >= fmi2_import_get_variable_list_size(vl))
 		return 0;
 	else
@@ -121,7 +123,7 @@ fmi2_import_variable_t* fmi2_import_get_variable(fmi2_import_variable_list_t* vl
 
 /* Operations on variable lists. Every operation creates a new list. */
 /* Select sub-lists */
-fmi2_import_variable_list_t* fmi2_import_get_sublist(fmi2_import_variable_list_t* vl, unsigned int  fromIndex, unsigned int  toIndex) {
+fmi2_import_variable_list_t* fmi2_import_get_sublist(fmi2_import_variable_list_t* vl, size_t  fromIndex, size_t  toIndex) {
     fmi2_import_variable_list_t* out;
     size_t size, i;
     if(fromIndex > toIndex) return 0;

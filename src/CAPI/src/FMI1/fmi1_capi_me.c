@@ -25,7 +25,9 @@ fmi1_component_t fmi1_capi_instantiate_model(fmi1_capi_t* fmu, fmi1_string_t ins
 {
 	fmi1_me_callback_functions_t cb;
 	assert(fmu);
-	cb = *(fmi1_me_callback_functions_t*)&fmu->callBackFunctions;
+	cb.logger = fmu->callBackFunctions.logger;
+    cb.allocateMemory = fmu->callBackFunctions.allocateMemory;
+    cb.freeMemory = fmu->callBackFunctions.freeMemory;
 	jm_log_verbose(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Calling fmiInstantiateModel");
 	return fmu->c = fmu->fmiInstantiateModel(instanceName, GUID, cb, loggingOn);
 }

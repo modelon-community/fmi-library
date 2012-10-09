@@ -59,7 +59,7 @@ FMILIB_EXPORT size_t  fmi2_import_get_variable_list_size(fmi2_import_variable_li
 FMILIB_EXPORT const fmi2_value_reference_t* fmi2_import_get_value_referece_list(fmi2_import_variable_list_t* vl);
 
 /** \brief Get a single variable from the list*/
-FMILIB_EXPORT fmi2_import_variable_t* fmi2_import_get_variable(fmi2_import_variable_list_t* vl, unsigned int  index);
+FMILIB_EXPORT fmi2_import_variable_t* fmi2_import_get_variable(fmi2_import_variable_list_t* vl, size_t  index);
 
 /** \name Operations on variable lists. Every operation creates a new list. 
 @{
@@ -70,7 +70,7 @@ FMILIB_EXPORT fmi2_import_variable_t* fmi2_import_get_variable(fmi2_import_varia
 \param toIndex Zero based end index, inclusive.
 \return A sublist. NULL is returned if toIndex is less than fromIndex or is larger than the list size or if memory allocation failed.
 */
-FMILIB_EXPORT fmi2_import_variable_list_t* fmi2_import_get_sublist(fmi2_import_variable_list_t* vl, unsigned int  fromIndex, unsigned int  toIndex);
+FMILIB_EXPORT fmi2_import_variable_list_t* fmi2_import_get_sublist(fmi2_import_variable_list_t* vl, size_t  fromIndex, size_t  toIndex);
 
 /** \brief Callback function typedef for the fmiFilterVariables. 
 

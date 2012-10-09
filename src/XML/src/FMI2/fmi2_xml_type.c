@@ -33,8 +33,8 @@ fmi2_xml_display_unit_t* fmi2_xml_get_type_display_unit(fmi2_xml_real_typedef_t*
     return du;
 }
 
-size_t fmi2_xml_get_type_definition_number(fmi2_xml_type_definitions_t* td) {
-    return jm_vector_get_size(jm_named_ptr)(&td->typeDefinitions);
+unsigned int fmi2_xml_get_type_definition_number(fmi2_xml_type_definitions_t* td) {
+    return (unsigned int)jm_vector_get_size(jm_named_ptr)(&td->typeDefinitions);
 }
 
 fmi2_xml_variable_typedef_t* fmi2_xml_get_typedef(fmi2_xml_type_definitions_t* td, unsigned int  index) {
@@ -167,7 +167,7 @@ int fmi2_xml_get_enum_type_max(fmi2_xml_enumeration_typedef_t* t){
 unsigned int  fmi2_xml_get_enum_type_size(fmi2_xml_enumeration_typedef_t* t) {
     fmi2_xml_variable_typedef_t* vt = (void*)t;
     fmi2_xml_enum_typedef_props_t* props = (fmi2_xml_enum_typedef_props_t*)(vt->typeBase.baseTypeStruct);
-    return jm_vector_get_size(jm_named_ptr)(&props->enumItems);
+    return (unsigned int)jm_vector_get_size(jm_named_ptr)(&props->enumItems);
 }
 
 const char* fmi2_xml_get_enum_type_item_name(fmi2_xml_enumeration_typedef_t* t, unsigned int  item) {

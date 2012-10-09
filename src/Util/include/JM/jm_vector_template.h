@@ -121,7 +121,7 @@ size_t jm_vector_append(JM_TEMPLATE_INSTANCE_TYPE)(jm_vector(JM_TEMPLATE_INSTANC
 }
 
 JM_TEMPLATE_INSTANCE_TYPE* jm_vector_insert(JM_TEMPLATE_INSTANCE_TYPE)(jm_vector(JM_TEMPLATE_INSTANCE_TYPE)* a, size_t index, JM_TEMPLATE_INSTANCE_TYPE item) {
-        int reserve;
+        size_t reserve;
         JM_TEMPLATE_INSTANCE_TYPE* pitem;
         if(index >= a->size) return 0;
         if(a->size == a->capacity) {
@@ -140,7 +140,7 @@ JM_TEMPLATE_INSTANCE_TYPE* jm_vector_insert(JM_TEMPLATE_INSTANCE_TYPE)(jm_vector
 }
 
 JM_TEMPLATE_INSTANCE_TYPE* jm_vector_resize1(JM_TEMPLATE_INSTANCE_TYPE) (jm_vector(JM_TEMPLATE_INSTANCE_TYPE) * a) {
-        int reserve;
+        size_t reserve;
         JM_TEMPLATE_INSTANCE_TYPE* pitem;
         if(a->size == a->capacity) {
                 if(a->capacity > JM_VECTOR_MAX_MEMORY_CHUNK)

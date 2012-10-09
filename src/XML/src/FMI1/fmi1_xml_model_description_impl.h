@@ -49,9 +49,9 @@ struct fmi1_xml_model_description_t {
 
     fmi1_variable_naming_convension_enu_t namingConvension;
 
-    size_t numberOfContinuousStates;
+    unsigned int numberOfContinuousStates;
 
-    size_t numberOfEventIndicators;
+    unsigned int numberOfEventIndicators;
 
     double defaultExperimentStartTime;
 

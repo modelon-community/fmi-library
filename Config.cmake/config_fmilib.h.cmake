@@ -114,6 +114,12 @@ It is redefined to "." for Makefile based build environments. Otherwise is set b
 \brief Activates debug level log messages. If not defined the debug messages are compiled out. 
 */
 
+#if defined _MSC_VER
+	#define FMILIB_SIZET_FORMAT "%Iu"
+#else 
+	#define FMILIB_SIZET_FORMAT "%zu"
+#endif
+
 #cmakedefine FMILIB_GENERATE_BUILD_STAMP
 #ifndef FMILIB_GENERATE_BUILD_STAMP
 /* Just for Doxygen */

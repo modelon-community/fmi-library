@@ -792,10 +792,13 @@ int fmi1_xml_handle_Enumeration(fmi1_xml_parser_context_t *context, const char* 
     return 0;
 }
 
-#define fmi1_xml_diff_variable_original_index(a, b) (((fmi1_xml_variable_t*)a)->originalIndex - ((fmi1_xml_variable_t*)b)->originalIndex)
-
-jm_define_comp_f(fmi1_xml_compare_variable_original_index, jm_voidp, fmi1_xml_diff_variable_original_index)
-
+static int fmi1_xml_compare_variable_original_index (const void* first, const void* second) { 
+	size_t a = ((fmi1_xml_variable_t*)first)->originalIndex;
+	size_t b = ((fmi1_xml_variable_t*)second)->originalIndex;
+    if(a < b) return -1;
+    if(a > b) return 1;
+	return 0;
+}
 
 void fmi1_xml_eliminate_bad_alias(fmi1_xml_parser_context_t *context, size_t indexVR) {
     fmi1_xml_model_description_t* md = context->modelDescription;
@@ -831,7 +834,10 @@ static int fmi1_xml_compare_vr_and_original_index (const void* first, const void
 	if(ret == 0) {
 	    fmi1_xml_variable_t* a = *(fmi1_xml_variable_t**)first;
 		fmi1_xml_variable_t* b = *(fmi1_xml_variable_t**)second;
-		ret = (a->originalIndex - b->originalIndex);
+		size_t ai = a->originalIndex;
+		size_t bi = b->originalIndex;
+		if(ai > bi) ret = 1;
+		if(ai < bi) ret = -1;
 	}
 	
 	return ret;

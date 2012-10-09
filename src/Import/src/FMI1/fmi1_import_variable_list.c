@@ -34,7 +34,7 @@ void fmi1_import_free_variable_list(fmi1_import_variable_list_t* vl) {
     jm_callbacks* cb;
 	if(!vl) return;
 	cb = vl->variables.callbacks;
-    jm_vector_free(size_t)(vl->vr);
+	cb->free(vl->vr);
     jm_vector_free_data(jm_voidp)(&vl->variables);
     cb->free(vl);
 }
@@ -100,15 +100,19 @@ jm_status_enu_t fmi1_import_var_list_push_back(fmi1_import_variable_list_t* list
 /* Get a pointer to the list of the value references for all the variables */
 const fmi1_value_reference_t* fmi1_import_get_value_referece_list(fmi1_import_variable_list_t* vl) {
     if(!vl->vr) {
-        size_t i, nv = fmi1_import_get_variable_list_size(vl);
-        vl->vr = jm_vector_alloc(size_t)(nv,nv,vl->variables.callbacks);
+		jm_callbacks* cb = vl->fmu->callbacks;
+        size_t nv = fmi1_import_get_variable_list_size(vl);
+		unsigned i = (unsigned)nv;
+		assert( i == nv);
+		vl->vr = (fmi1_value_reference_t*)cb->malloc(nv * sizeof(fmi1_value_reference_t));
         if(vl->vr) {
             for(i = 0; i < nv; i++) {
-				jm_vector_set_item(size_t)(vl->vr, i, fmi1_xml_get_variable_vr(fmi1_import_get_variable(vl, i)));
+				vl->vr[i] = fmi1_xml_get_variable_vr(fmi1_import_get_variable(vl, i));
             }
         }
+		else return 0;
     }
-    return jm_vector_get_itemp(size_t)(vl->vr,0);
+    return vl->vr;
 }
 
 /* Get a single variable from the list*/
@@ -138,10 +142,14 @@ fmi1_import_variable_list_t* fmi1_import_get_sublist(fmi1_import_variable_list_t
 /* fmi1_import_filter_variables calls  the provided 'filter' function on every variable in the list.
   It returns a sub-list list with the variables for which filter returned non-zero value. */
 fmi1_import_variable_list_t* fmi1_import_filter_variables(fmi1_import_variable_list_t* vl, fmi1_import_variable_filter_function_ft filter, void* context) {
-    size_t nv, i;
-    fmi1_import_variable_list_t* out = fmi1_import_alloc_variable_list(vl->fmu, 0);
-	if(!out) return 0; /* out of memory */
+    size_t nv;
+	unsigned i;
+    fmi1_import_variable_list_t* out;
     nv = fmi1_import_get_variable_list_size(vl);
+	i = (unsigned) nv;
+	if(i != nv) return 0; /* this is not really possible */
+	out = fmi1_import_alloc_variable_list(vl->fmu, 0);
+	if(!out) return 0; /* out of memory */
     for(i=0; i < nv;i++) {
         fmi1_import_variable_t* variable = fmi1_import_get_variable(vl, i);
         if(filter(variable, context))

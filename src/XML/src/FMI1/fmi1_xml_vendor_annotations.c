@@ -31,7 +31,7 @@ const char* fmi1_xml_get_vendor_name(fmi1_xml_vendor_t* v) {
 }
 
 unsigned int  fmi1_xml_get_number_of_vendor_annotations(fmi1_xml_vendor_t* v) {
-    return jm_vector_get_size(jm_named_ptr)(&v->annotations);
+    return (unsigned int)jm_vector_get_size(jm_named_ptr)(&v->annotations);
 }
 
 fmi1_xml_annotation_t* fmi1_xml_get_vendor_annotation(fmi1_xml_vendor_t* v, unsigned int  index) {

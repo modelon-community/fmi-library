@@ -206,7 +206,7 @@ fmiStatus fmi_set_string(fmiComponent c, const fmiValueReference vr[], size_t nv
 	} else {
 		size_t k;
 		for (k = 0; k < nvr; k++) {			
-			int len;
+			size_t len;
 			fmiString s_dist;
 			fmiString s_src = value[k];
 

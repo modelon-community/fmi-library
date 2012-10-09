@@ -152,7 +152,7 @@ int fmi1_xml_get_enum_type_max(fmi1_xml_enumeration_typedef_t* t){
 unsigned int  fmi1_xml_get_enum_type_size(fmi1_xml_enumeration_typedef_t* t) {
     fmi1_xml_variable_typedef_t* vt = (void*)t;
     fmi1_xml_enum_type_props_t* props = (fmi1_xml_enum_type_props_t*)(vt->typeBase.baseTypeStruct);
-    return jm_vector_get_size(jm_named_ptr)(&props->enumItems);
+    return (unsigned int)jm_vector_get_size(jm_named_ptr)(&props->enumItems);
 }
 
 const char* fmi1_xml_get_enum_type_item_name(fmi1_xml_enumeration_typedef_t* t, unsigned int  item) {

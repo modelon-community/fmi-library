@@ -23,7 +23,7 @@ fmi2_import_display_unit_t* fmi2_import_get_type_display_unit(fmi2_import_real_t
 	return fmi2_xml_get_type_display_unit(t);
 }
 
-size_t fmi2_import_get_type_definition_number(fmi2_import_type_definitions_t* td) {
+unsigned int fmi2_import_get_type_definition_number(fmi2_import_type_definitions_t* td) {
 	return fmi2_xml_get_type_definition_number(td);
 }
 

@@ -66,7 +66,7 @@ double fmi2_xml_convert_from_SI_base_unit(double SIv, fmi2_xml_unit_t* u) {
 }
 
 unsigned int fmi2_xml_get_unit_display_unit_number(fmi2_xml_unit_t* u) {
-    return jm_vector_get_size(jm_voidp)(&u->displayUnits);
+    return (unsigned int)jm_vector_get_size(jm_voidp)(&u->displayUnits);
 }
 
 fmi2_xml_display_unit_t* fmi2_xml_get_unit_display_unit(fmi2_xml_unit_t* u, size_t index) {
@@ -167,7 +167,7 @@ fmi2_xml_display_unit_t* fmi2_xml_get_parsed_unit(fmi2_xml_parser_context_t *con
 int fmi2_xml_handle_BaseUnit(fmi2_xml_parser_context_t *context, const char* data) {
     if(!data) {
 			int ret;
-            fmi2_xml_model_description_t* md = context->modelDescription;
+            /* fmi2_xml_model_description_t* md = context->modelDescription; */
             /* this base unit belongs to the last created base unit */
             fmi2_xml_unit_t* unit = context->lastBaseUnit;
 

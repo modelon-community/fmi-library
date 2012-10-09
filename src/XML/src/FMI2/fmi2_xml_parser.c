@@ -475,7 +475,7 @@ static void XMLCALL fmi2_parse_element_start(void *c, const char *elm, const cha
         }
 		else  {
             /* save attr value (still as string) for further handling  */
-            const char** mapItem = (char**)currentMap->ptr;
+            const char** mapItem = (const char**)currentMap->ptr;
             *mapItem = attr[i+1];
         }
         i += 2;
@@ -652,7 +652,7 @@ int fmi2_xml_parse_model_description(fmi2_xml_model_description_t* md, const cha
 
     while (!feof(file)) {
         char * text = jm_vector_get_itemp(char)(fmi2_xml_reserve_parse_buffer(context,0,XML_BLOCK_SIZE),0);
-        int n = fread(text, sizeof(char), XML_BLOCK_SIZE, file);
+        int n = (int)fread(text, sizeof(char), XML_BLOCK_SIZE, file);
         if(ferror(file)) {
             fmi2_xml_parse_fatal(context, "Error reading from file %s", filename);
             fclose(file);

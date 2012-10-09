@@ -141,7 +141,7 @@ fmi_version_enu_t fmi_xml_get_fmi_version(fmi_xml_context_t* context, const char
 
     while (!feof(file)) {
         char text[XML_BLOCK_SIZE];
-        int n = fread(text, sizeof(char), XML_BLOCK_SIZE, file);
+        int n = (int)fread(text, sizeof(char), XML_BLOCK_SIZE, file);
         if(ferror(file)) {
             fmi_xml_fatal(context, "Error reading from file %s", filename);
             fclose(file);

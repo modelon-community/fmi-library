@@ -53,7 +53,7 @@ int main() {
 		if(jm_vector_get_size(int)(v) != VINIT_SIZE+i+1) log_error("Vector size %d is not as expected %d\n", jm_vector_get_size(int)(v), VINIT_SIZE+i+1);
     }
 	{
-		int index = jm_vector_find_index(int)(v, &k,jm_compare_int);
+		size_t index = jm_vector_find_index(int)(v, &k,jm_compare_int);
 		k = TESTVAL;
 		if( index != 2) log_error("Index of '%d' should be '2' but got %d\n", TESTVAL, k );
 	}

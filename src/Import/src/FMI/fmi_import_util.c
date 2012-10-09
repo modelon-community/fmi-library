@@ -38,7 +38,7 @@ jm_status_enu_t fmi_import_rmdir(jm_callbacks* cb, const char* dir) {
 char* fmi_import_get_dll_path(const char* fmu_unzipped_path, const char* model_identifier, jm_callbacks* callbacks)
 {
 	char* dll_path;
-	int len;
+	size_t len;
 
 	if (model_identifier == NULL || fmu_unzipped_path == NULL) {
 		assert(0);
@@ -61,7 +61,7 @@ char* fmi_import_get_dll_path(const char* fmu_unzipped_path, const char* model_i
 char* fmi_import_get_model_description_path(const char* fmu_unzipped_path, jm_callbacks* callbacks)
 {
 	char* model_description_path;
-	int len;
+	size_t len;
 
 	len = strlen(fmu_unzipped_path) + strlen(FMI_FILE_SEP) + strlen(FMI_MODEL_DESCRIPTION_XML) + 1;
 

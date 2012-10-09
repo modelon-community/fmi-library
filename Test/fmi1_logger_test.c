@@ -16,6 +16,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
+#include <assert.h>
 
 #include "config_test.h"
 #include <fmilib.h>
@@ -48,7 +49,7 @@ void do_exit(int code)
 	   
 int test_logger(fmi1_import_t* fmu)
 {	
-	fmi1_status_t fmistatus;
+	fmi1_status_t fmistatus; 
 	jm_status_enu_t jmstatus;	
 
 	jmstatus = fmi1_import_instantiate_model(fmu, "LoggerTesting");
@@ -62,7 +63,7 @@ int test_logger(fmi1_import_t* fmu)
 		fmi1_value_reference_t* vr;
 		size_t n;
 		size_t k;
-		char* str[] = {
+		const char* str[] = {
 			"###### Reals ######",
 			"OK HIGHT = #r0#", /* HIGHT */
 			"OK HIGHT_SPEED = #r1#", /* HIGHT_SPEED */
@@ -98,6 +99,9 @@ int test_logger(fmi1_import_t* fmu)
 			vr[k] = VAR_S_LOGGER_TEST;
 		}
 		fmistatus = fmi1_import_set_string(fmu, vr, n, str);
+        if(fmistatus != fmi1_status_ok) {
+            abort();
+        }
 		free(vr);
 	}
 

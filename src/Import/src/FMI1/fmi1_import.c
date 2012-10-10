@@ -317,3 +317,22 @@ fmi1_import_variable_list_t* fmi1_import_get_variable_list(fmi1_import_t* fmu) {
     }
     return vl;
 }
+
+/* Get the list of all the variables in the model in alphabetical order */
+fmi1_import_variable_list_t* fmi1_import_get_variable_list_alphabetical_order(fmi1_import_t* fmu) {
+	jm_vector(jm_named_ptr)* vars;
+    fmi1_import_variable_list_t* vl;
+    size_t nv, i;
+	if(!fmu->md) {
+		jm_log_error(fmu->callbacks, module,"No FMU is loaded");
+		return 0;
+	}
+	vars = fmi1_xml_get_variables_alphabetical_order(fmu->md);
+    nv = jm_vector_get_size(jm_named_ptr)(vars);
+    vl = fmi1_import_alloc_variable_list(fmu, nv);
+    if(!vl) return 0;
+    for(i = 0; i< nv; i++) {
+		jm_vector_set_item(jm_voidp)(&vl->variables, i, jm_vector_get_item(jm_named_ptr)(vars, i).ptr);
+    }
+    return vl;
+}

@@ -793,8 +793,8 @@ int fmi1_xml_handle_Enumeration(fmi1_xml_parser_context_t *context, const char* 
 }
 
 static int fmi1_xml_compare_variable_original_index (const void* first, const void* second) { 
-	size_t a = ((fmi1_xml_variable_t*)first)->originalIndex;
-	size_t b = ((fmi1_xml_variable_t*)second)->originalIndex;
+	size_t a = (*(fmi1_xml_variable_t**)first)->originalIndex;
+	size_t b = (*(fmi1_xml_variable_t**)second)->originalIndex;
     if(a < b) return -1;
     if(a > b) return 1;
 	return 0;

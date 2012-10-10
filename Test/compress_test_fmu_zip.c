@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
 	jm_callbacks callbacks;
 	char* output_name;	
 	const char** files_to_zip;
-	int n_files_to_zip;
+	int i, n_files_to_zip;
 
 	callbacks.malloc = malloc;
     callbacks.calloc = calloc;
@@ -50,13 +50,18 @@ int main(int argc, char *argv[])
 	files_to_zip = &argv[2];
 	n_files_to_zip = argc - 2;
 
+	printf("Will compress:\n");
+	for(i=0; i< n_files_to_zip;i++) {
+		printf("\t%s\n", files_to_zip[i]);
+	}
+
 	status = fmi_zip_zip(output_name, n_files_to_zip, files_to_zip, &callbacks);
 
 	if (status == jm_status_error) {
-		printf("Failed to compress the file\n");
+		printf("Failed to compress the files\n");
 		return 1;
 	} else {
-		printf("Succesfully compressed the file\n");
+		printf("Succesfully created: %s\n", output_name);
 		return 0;
 	}	
 	

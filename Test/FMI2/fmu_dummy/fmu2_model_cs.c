@@ -27,11 +27,11 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 #include <FMI1/fmiPlatformTypes.h>
 #include <FMI1/fmiFunctions.h>
 
-#include <fmu_dummy/fmu1_model.h>
+#include <fmu_dummy/fmu2_model.h>
 #include "config_test.h"
 #define MODEL_IDENTIFIER FMU_DUMMY_CS_MODEL_IDENTIFIER
 
-#include "fmu1_model.c"
+#include "fmu2_model.c"
 
 
 

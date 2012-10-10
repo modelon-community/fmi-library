@@ -24,14 +24,14 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 #include <FMI1/fmiModelTypes.h>
 #include <FMI1/fmiModelFunctions.h>
 
-#include <fmu_dummy/fmu1_model.h>
+#include <fmu_dummy/fmu2_model.h>
 #include "config_test.h"
 
    typedef enum {fmiDoStepStatus,
                  fmiPendingStatus,
                  fmiLastSuccessfulTime} fmiStatusKind;
 
-#include "fmu1_model.c"
+#include "fmu2_model.c"
 
 #define MODEL_IDENTIFIER FMU_DUMMY_ME_MODEL_IDENTIFIER
 

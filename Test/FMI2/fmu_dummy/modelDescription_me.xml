@@ -1,35 +1,43 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <fmiModelDescription
-  fmiVersion="1.0"
+  fmiVersion="2.0"
   modelName="BouncingBall"
-  modelIdentifier="BouncingBall"
   generationTool="None"
   description="A bouncing ball model"
   guid="123"
   numberOfContinuousStates="2"
   numberOfEventIndicators="1">
+  <ModelExchange modelIdentifier="BouncingBall2" />
   <TypeDefinitions>
-    <Type
+    <SimpleType
       name="Modelica.Blocks.Interfaces.RealOutput">
-      <RealType/>
-    </Type>
+      <Real/>
+    </SimpleType>
   </TypeDefinitions>
  
 <ModelVariables>
-  <ScalarVariable name="HIGHT" valueReference="0" description="Hight of the ball">
-     <RealType/> <Real start="1.0" fixed="true"/> <Integer/>
+  <ScalarVariable name="HIGHT" valueReference="0" initial="exact" causality="output" description="Hight of the ball">
+     <RealType/> <Real start="1.0" /> <Integer/>
   </ScalarVariable>
-  <ScalarVariable name="HIGHT_SPEED" valueReference="1" description="Speed of the ball">
+  <ScalarVariable name="HIGHT_SPEED" valueReference="1" initial="exact" description="Speed of the ball">
      <Real start="4.0" fixed="true"/>
+	 </ScalarVariable> 
+  <ScalarVariable name="HIGHT_SPEED alias" valueReference="1" description="Speed of the ball">
+     <Real />
+	 </ScalarVariable> 
+  <ScalarVariable name="HIGHT_ACC" valueReference="4" description="Speed of the ball">
+     <Real />	 
   </ScalarVariable>   
-  <ScalarVariable name="HIGHT_SPEED_ALIAS" valueReference="1" description="Speed of the ball">
+  <ScalarVariable name="A variable" valueReference="100" initial="exact" description="Speed of the ball">
+     <Real start="4.0" fixed="true"/> <DirectDependency><Name>xxx</Name> </DirectDependency> </ScalarVariable>
+  <ScalarVariable name="A bad alias" valueReference="100" initial="exact" description="Speed of the ball">
      <Real start="4.0" fixed="true"/> <DirectDependency><Name>xxx</Name> </DirectDependency>
   </ScalarVariable> 
-  <ScalarVariable name="GRAVITY" valueReference="2" description="Gravity constant">
+  <ScalarVariable name="GRAVITY" valueReference="2" description="Gravity constant" initial="exact">
      <Real start="-9.81"/>
   </ScalarVariable>
   <ScalarVariable name="BOUNCE_COF" valueReference="3" description="Bouncing coefficient">
-     <Real start="0.5" fixed="true"/>
+     <Real start="0.5" />
   </ScalarVariable>
   <ScalarVariable name="LOGGER_TEST" valueReference="0" description="The logger will print the value of this variable when it is set.">
      <String/>
@@ -46,6 +54,14 @@
      <Boolean/>
   </ScalarVariable>  
 </ModelVariables>
-
+<ModelStructure>
+  <Derivatives>
+    <Derivative name="HIGHT_SPEED" state="HIGHT"/>
+    <Derivative name="HIGHT_ACC" state="HIGHT_SPEED"/>
+  </Derivatives>
+  <Outputs>
+  <Output name="HIGHT" />
+  </Outputs>
+</ModelStructure>
 </fmiModelDescription>
 

@@ -382,6 +382,10 @@ int fmi2_xml_handle_fmiModelDescription(fmi2_xml_parser_context_t *context, cons
 			fmi2_xml_parse_error(context, "Model indetifiers for ModelExchange and CoSimulation must be different");
 			return -1;
 		}
+		if(!md->modelStructure) {
+			fmi2_xml_parse_fatal(context, "No model structure information available. Cannot continue.");
+			return -1;
+		}
         return 0;
     }
 }

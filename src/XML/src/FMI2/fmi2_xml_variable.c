@@ -750,8 +750,8 @@ int fmi2_xml_handle_EnumerationVariable(fmi2_xml_parser_context_t *context, cons
 }
 
 static int fmi2_xml_compare_variable_original_index (const void* first, const void* second) { 
-	size_t a = ((fmi2_xml_variable_t*)first)->originalIndex;
-	size_t b = ((fmi2_xml_variable_t*)second)->originalIndex;
+	size_t a = (*(fmi2_xml_variable_t**)first)->originalIndex;
+	size_t b = (*(fmi2_xml_variable_t**)second)->originalIndex;
     if(a < b) return -1;
     if(a > b) return 1;
 	return 0;

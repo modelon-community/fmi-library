@@ -184,6 +184,8 @@ Types for_functions for FMI for Co-_simulation
    typedef fmi2_status_t (*fmi2_get_boolean_status_ft)(fmi2_component_t, const fmi2_status_kind_t, fmi2_boolean_t*);
    typedef fmi2_status_t (*fmi2_get_string_status_ft) (fmi2_component_t, const fmi2_status_kind_t, fmi2_string_t* );
 
+/**	@}
+*/
 
 #ifdef __cplusplus
 }  /* end of extern "C" { */

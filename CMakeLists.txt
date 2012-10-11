@@ -21,7 +21,7 @@ IF("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
   message(FATAL_ERROR "In-source build is not supported. Please, use an empty directory for building the project.")
 ENDIF()
 project (FMILibrary)
-
+set_property(GLOBAL PROPERTY PROPERTYPREDEFINED_TARGETS_FOLDER Global)
 set(FMILIBRARYHOME ${FMILibrary_SOURCE_DIR})
 set(FMILIBRARYBUILD ${FMILibrary_BINARY_DIR})
 
@@ -245,6 +245,10 @@ if(FMILIB_GENERATE_BUILD_STAMP)
 	set(FMILIB_SHARED_SRC ${FMILIB_SHARED_SRC} ${FMILibrary_BINARY_DIR}/config_fmilib.c)
 endif()
 
+set_target_properties(
+	${FMILIB_SUBLIBS}
+    PROPERTIES FOLDER "Sublibs")
+	
 if(FMILIB_INSTALL_SUBLIBS)
 	set(FMILIB_TARGETS fmiimport jmutils fmizip fmixml fmicapi)
 endif()

@@ -16,11 +16,11 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 */
 
 /* This header is used to generate the FMU test DLL and in the C API test that uses the DLL */
-#ifndef FMU1_MODEL_DEFINES_H_
+#ifndef FMU2_MODEL_DEFINES_H_
 
-#define STRINGIFY(a)			#a
+/*#define STRINGIFY(a)			#a
 #define STRINGIFY2(a)			STRINGIFY(a)
-#define MODEL_IDENTIFIER_STR	STRINGIFY2(MODEL_IDENTIFIER)
+#define MODEL_IDENTIFIER_STR	STRINGIFY2(MODEL_IDENTIFIER) */
 
 #define BUFFER					1024
 #define MAGIC_TEST_VALUE		13.0	/* A test value for some functions  */
@@ -54,17 +54,9 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 #define N_OUTPUT_REAL_MAX_ORDER	2 /* CS only */
 
 
-#define FMI_VERSION			"1.0"
-#if defined(FMI1_TYPES_H_)
-#define FMI_PLATFORM_TYPE	fmi1_get_platform()
-#elif defined(fmiModelTypesPlatform)
-#define FMI_PLATFORM_TYPE	fmiModelTypesPlatform
-#elif defined(fmiPlatform)
-#define FMI_PLATFORM_TYPE	fmiPlatform
-#else
-#error "Either fmiPlatform or fmiModelTypesPlatform must be defined"
-#endif
+#define FMI_VERSION			"2.0"
+
 #define FMI_GUID			"123"
 
 
-#endif /* End of header FMU1_MODEL_DEFINES_H_ */
+#endif /* End of header FMU2_MODEL_DEFINES_H_ */

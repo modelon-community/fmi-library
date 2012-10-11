@@ -17,9 +17,11 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 
 #ifndef FM1_MODEL_H_
 #define FM1_MODEL_H_
-
-#include <fmu_dummy/fmu1_model_defines.h>
-
+#include <FMI2/fmiFunctions.h>
+#include <fmu_dummy/fmu2_model_defines.h>
+#ifndef FMIAPI
+	#define FMIAPI DllExport
+#endif
 typedef struct {
 	/*************** FMI ME 1.0 ****************/
 	fmiReal					states			[N_STATES];
@@ -44,7 +46,7 @@ typedef struct {
 	/* fmiCompletedIntegratorStep */
 	fmiBoolean				callEventUpdate;
 
-	/* fmiInitialize */
+	/* fmiInitializeModel */
 	fmiBoolean				toleranceControlled;
 	fmiReal					relativeTolerance;
 	fmiEventInfo			eventInfo;
@@ -54,10 +56,7 @@ typedef struct {
 
 	/* fmiInstantiateSlave */
 	char					fmuLocation		[BUFFER];
-	char					mimeType		[BUFFER];
-	fmiReal					timeout;
 	fmiBoolean				visible;
-	fmiBoolean				interactive;
 
 	/* fmiInitializeSlave */
 	fmiReal					tStart;
@@ -131,8 +130,10 @@ const char*		fmi_get_model_types_platform();
 
 fmiComponent	fmi_instantiate_model(
 													fmiString instanceName,
-													fmiString GUID,
-													fmiCallbackFunctions functions,
+													fmiString fmuGUID,
+													fmiString fmuLocation,
+													const fmiCallbackFunctions* functions,
+													fmiBoolean visible,
 													fmiBoolean loggingOn);
 
 void			fmi_free_model_instance(
@@ -193,19 +194,16 @@ fmiStatus		fmi_terminate(fmiComponent c);
 
 const char*		fmi_get_types_platform();
 
-fmiComponent	fmi_instantiate_slave(
-													fmiString instanceName,
+fmiComponent	fmi_instantiate_slave(				fmiString instanceName,
 													fmiString fmuGUID,
 													fmiString fmuLocation,
-													fmiString mimeType,
-													fmiReal timeout,
+													const fmiCallbackFunctions* functions,
 													fmiBoolean visible,
-													fmiBoolean interactive,
-													fmiCallbackFunctions functions,
 													fmiBoolean loggingOn);
 
 fmiStatus		fmi_initialize_slave(
 													fmiComponent c,
+													fmiReal relativeTolerance,
 													fmiReal tStart,
 													fmiBoolean StopTimeDefined,
 													fmiReal tStop);
@@ -267,4 +265,4 @@ fmiStatus		fmi_get_string_status(
 													fmiString*  value);
 
 #endif /* End of fmiFunctions_h */
-#endif /* End of header FM1_MODEL_H_ */
+#endif /* End of header FMU2_MODEL_H_ */

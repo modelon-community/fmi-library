@@ -71,7 +71,7 @@ Wrapper functions for the FMI 1.0 functions
  * @param callBackFunctions Callback functions used by the FMI functions internally.
  * @return Error status. If the function returns with an error, it is not allowed to call any of the other C-API functions.
  */
-FMILIB_EXPORT jm_status_enu_t fmi2_import_create_dllfmu(fmi2_import_t* fmu, fmi2_fmu_kind_enu_t fmuKind, fmi2_callback_functions_t callBackFunctions);
+FMILIB_EXPORT jm_status_enu_t fmi2_import_create_dllfmu(fmi2_import_t* fmu, fmi2_fmu_kind_enu_t fmuKind, const fmi2_callback_functions_t* callBackFunctions);
 
 /** \brief Free a C-API struct. All memory allocated since the struct was created is freed.
  * 

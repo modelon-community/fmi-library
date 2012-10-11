@@ -19,6 +19,10 @@ target_link_libraries (jm_vector_test ${JMUTIL_LIBRARIES})
 #Create function that zipz the dummy FMUs 
 add_executable (compress_test_fmu_zip ${RTTESTDIR}/compress_test_fmu_zip.c)
 target_link_libraries (compress_test_fmu_zip ${FMIZIP_LIBRARIES})
+
+set_target_properties(
+	jm_vector_test  compress_test_fmu_zip
+    PROPERTIES FOLDER "Test")
 #Path to the executable
 get_property(COMPRESS_EXECUTABLE TARGET compress_test_fmu_zip PROPERTY LOCATION)
 
@@ -90,10 +94,13 @@ function(compress_fmu OUTPUT_FOLDER_T MODEL_IDENTIFIER_T FILE_NAME_CS_ME_EXT_T T
 	   COMMAND "${CMAKE_COMMAND}" -E copy "${FMU_OUTPUT_FOLDER_T}/${MODEL_IDENTIFIER_T}.fmu" "${OUTPUT_FOLDER_T}/${MODEL_IDENTIFIER_T}_${FILE_NAME_CS_ME_EXT_T}.fmu"
 	)
 
-	add_custom_target( ${MODEL_IDENTIFIER_T}_${FILE_NAME_CS_ME_EXT_T}_FMU ALL
+	set(tname ${MODEL_IDENTIFIER_T}_${FILE_NAME_CS_ME_EXT_T}_FMU)
+	add_custom_target( ${tname} ALL
 		DEPENDS ${OUTPUT_FOLDER_T}/${MODEL_IDENTIFIER_T}_${FILE_NAME_CS_ME_EXT_T}.fmu 
 		SOURCES "${XML_PATH_T}")
-				
+	set_target_properties( ${tname} ${TARGET_NAME_T}
+                        PROPERTIES FOLDER "TestFMUs")
+	
 endfunction(compress_fmu)
 
 set(FMILIBFORTEST fmilib)
@@ -113,6 +120,17 @@ target_link_libraries (fmi_zip_zip_test ${FMIZIP_LIBRARIES})
 add_executable (fmi_zip_unzip_test ${RTTESTDIR}/FMI1/fmi_zip_unzip_test.c )
 target_link_libraries (fmi_zip_unzip_test ${FMIZIP_LIBRARIES})
 
+add_executable (fmi_import_test 
+					${RTTESTDIR}/fmi_import_test.c
+					${RTTESTDIR}/FMI1/fmi1_import_test.c
+					${RTTESTDIR}/FMI2/fmi2_import_test.c)
+target_link_libraries (fmi_import_test  ${FMILIBFORTEST})
+
+set_target_properties(
+	fmi_zip_zip_test   
+	fmi_zip_unzip_test
+	fmi_import_test
+    PROPERTIES FOLDER "Test")
 # include CTest gives more options (such as running valgrind automatically)
 include(CTest)
 
@@ -134,12 +152,21 @@ endif()
 ADD_TEST(ctest_fmi_zip_unzip_test fmi_zip_unzip_test)
 ADD_TEST(ctest_fmi_zip_zip_test fmi_zip_zip_test)
 
+include(test_fmi1)
+include(test_fmi2)
+
+ADD_TEST(ctest_fmi1_import_test_me fmi_import_test ${FMU_ME_PATH} ${FMU_TEMPFOLDER})
+ADD_TEST(ctest_fmi1_import_test_cs fmi_import_test ${FMU_CS_PATH} ${FMU_TEMPFOLDER})
+ADD_TEST(ctest_fmi2_import_test_me fmi_import_test ${FMU2_ME_PATH} ${FMU_TEMPFOLDER})
+ADD_TEST(ctest_fmi2_import_test_cs fmi_import_test ${FMU2_CS_PATH} ${FMU_TEMPFOLDER})
+
 if(FMILIB_BUILD_BEFORE_TESTS)
 	SET_TESTS_PROPERTIES ( 
+		ctest_fmi1_import_test_me
+		ctest_fmi1_import_test_cs
+		ctest_fmi2_import_test_me
+		ctest_fmi2_import_test_cs
 		ctest_fmi_zip_unzip_test
 		ctest_fmi_zip_zip_test
 		PROPERTIES DEPENDS ctest_build_all)
 endif()
-
-include(test_fmi1)
-include(test_fmi2)

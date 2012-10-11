@@ -70,7 +70,7 @@ void fmi2_capi_destroy_dllfmu(fmi2_capi_t* fmu);
  * @param callBackFunctions callbacks passed to the FMU.
  * @return Error status. If the function returns with an error, it is not allowed to call any of the other C-API functions.
  */
-fmi2_capi_t* fmi2_capi_create_dllfmu(jm_callbacks* callbacks, const char* dllPath, const char* modelIdentifier, fmi2_callback_functions_t callBackFunctions, fmi2_fmu_kind_enu_t standard);
+fmi2_capi_t* fmi2_capi_create_dllfmu(jm_callbacks* callbacks, const char* dllPath, const char* modelIdentifier, const fmi2_callback_functions_t* callBackFunctions, fmi2_fmu_kind_enu_t standard);
 
 /**
  * \brief Loads the FMI functions from the shared library. The shared library must be loaded before this function can be called, see fmi2_import_load_dll.

@@ -22,19 +22,12 @@
 
 #define BUFFER 1000
 
+extern int fmi1_test(fmi_import_context_t* context, const char* dirPath);
+extern int fmi2_test(fmi_import_context_t* context, const char* dirPath);
+
 void importlogger(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_level, jm_string message)
 {
         printf("module = %s, log level = %d: %s\n", module, log_level, message);
-}
-
-/* Logger function used by the FMU internally */
-void fmilogger(fmi1_component_t c, fmi1_string_t instanceName, fmi1_status_t status, fmi1_string_t category, fmi1_string_t message, ...)
-{
-	char msg[BUFFER];
-	va_list argp;	
-	va_start(argp, message);
-	vsprintf(msg, message, argp);
-	printf("fmiStatus = %d;  %s (%s): %s\n", status, instanceName, category, msg);
 }
 
 void do_exit(int code)
@@ -46,18 +39,12 @@ void do_exit(int code)
 	   
 int main(int argc, char *argv[])
 {
-	fmi1_callback_functions_t callBackFunctions;
 	const char* FMUPath;
 	const char* tmpPath;
-	const char* modelIdentifier;
-	const char* modelName;
-	const char*  GUID;
 	jm_callbacks callbacks;
 	fmi_import_context_t* context;
 	fmi_version_enu_t version;
-	jm_status_enu_t status;
-
-	fmi1_import_t* fmu;	
+	int ret;
 
 	if(argc < 3) {
 		printf("Usage: %s <fmu_file> <temporary_dir>\n", argv[0]);
@@ -73,11 +60,9 @@ int main(int argc, char *argv[])
     callbacks.realloc = realloc;
     callbacks.free = free;
     callbacks.logger = importlogger;
+	callbacks.log_level = jm_log_level_all;
     callbacks.context = 0;
 
-	callBackFunctions.logger = fmilogger;
-	callBackFunctions.allocateMemory = calloc;
-	callBackFunctions.freeMemory = free;
 #ifdef FMILIB_GENERATE_BUILD_STAMP
 	printf("Library build stamp:\n%s\n", fmilib_get_build_stamp());
 #endif
@@ -86,43 +71,23 @@ int main(int argc, char *argv[])
 
 	version = fmi_import_get_fmi_version(context, FMUPath, tmpPath);
 
-	if(version != fmi_version_1_enu) {
-		printf("Only version 1.0 is supported so far\n");
+	if(version == fmi_version_1_enu) {
+		ret = fmi1_test(context, tmpPath);
+	}
+	else if(version == fmi_version_2_0_enu) {
+		ret = fmi2_test(context, tmpPath);
+	}
+	else {
+		printf("Only versions 1.0 and 2.0 are supported so far\n");
 		do_exit(CTEST_RETURN_FAIL);
 	}
 
-	fmu = fmi1_import_parse_xml(context, tmpPath);
-
-	if(!fmu) {
-		printf("Error parsing XML, exiting\n");
-		do_exit(CTEST_RETURN_FAIL);
-	}
-	modelIdentifier = fmi1_import_get_model_identifier(fmu);
-	modelName = fmi1_import_get_model_name(fmu);
-	GUID = fmi1_import_get_GUID(fmu);
-
-	printf("Model name: %s\n", modelName);
-    printf("Model identifier: %s\n", modelIdentifier);
-    printf("Model GUID: %s\n", GUID);
-
-	
-
-	status = fmi1_import_create_dllfmu(fmu, callBackFunctions, 0);
-	if (status == jm_status_error) {
-		printf("Could not create the DLL loading mechanism(C-API).\n");
-		do_exit(CTEST_RETURN_FAIL);
-	}
-
-	printf("Version returned from FMU:   %s\n", fmi1_import_get_version(fmu));
-
-	fmi1_import_destroy_dllfmu(fmu);
-
-	fmi1_import_free(fmu);
 	fmi_import_free_context(context);
 	
-	printf("Everything seems to be OK since you got this far=)!\n");
+	if(ret == CTEST_RETURN_SUCCESS)
+		printf("Everything seems to be OK since you got this far=)!\n");
 
-	do_exit(CTEST_RETURN_SUCCESS);
+	do_exit(ret);
 
 	return 0;
 }

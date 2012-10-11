@@ -93,6 +93,12 @@ void XMLCALL fmi_xml_parse_element_start(void *c, const char *elm, const char **
 		XML_StopParser(context->parser,0);
 		return;
 	}
+	else if( strcmp(fmiVersion, "2.0") == 0 ) {
+		jm_log_verbose(context->callbacks, MODULE, "XML specifies FMI 2.0");
+		context->fmi_version = fmi_version_2_0_enu;
+		XML_StopParser(context->parser,0);
+		return;
+	}
 	else {
 		fmi_xml_fatal(context, "This version of FMI standard is not supported (fmiVersion=%s)", fmiVersion);
 		return;

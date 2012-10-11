@@ -29,7 +29,7 @@ extern "C" {
 static const char * module = "FMILIB";
 
 /* Load and destroy functions */
-jm_status_enu_t fmi2_import_create_dllfmu(fmi2_import_t* fmu, fmi2_fmu_kind_enu_t fmuKind, fmi2_callback_functions_t callBackFunctions) {
+jm_status_enu_t fmi2_import_create_dllfmu(fmi2_import_t* fmu, fmi2_fmu_kind_enu_t fmuKind, const fmi2_callback_functions_t* callBackFunctions) {
 
 	char curDir[FILENAME_MAX + 2];
 	char* dllDirPath = 0;

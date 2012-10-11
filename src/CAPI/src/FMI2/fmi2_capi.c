@@ -33,16 +33,7 @@ extern "C" {
 /* Loading shared library functions */
 static jm_status_enu_t fmi2_capi_get_fcn(fmi2_capi_t* fmu, const char* function_name, jm_dll_function_ptr* dll_function_ptrptr)
 {
-	char fname[FUNCTION_NAME_LENGTH_MAX];
-	
-	if (strlen(fmu->modelIdentifier) + strlen(function_name) + 2 > FUNCTION_NAME_LENGTH_MAX) {
-		jm_log_fatal(fmu->callbacks, FMI_CAPI_MODULE_NAME, "DLL function name is too long. Max name length is set to %s.", STRINGIFY(FUNCTION_NAME_LENGTH_MAX));
-		return jm_status_error;
-	}	
-
-	sprintf(fname,"%s_%s",fmu->modelIdentifier, function_name);
-
-	return jm_portability_load_dll_function(fmu->dllHandle, fname, dll_function_ptrptr);
+	return jm_portability_load_dll_function(fmu->dllHandle, (char*)function_name, dll_function_ptrptr);
 }
 
 
@@ -146,7 +137,7 @@ void fmi2_capi_destroy_dllfmu(fmi2_capi_t* fmu)
 	fmu->callbacks->free((void*)fmu);
 }
 
-fmi2_capi_t* fmi2_capi_create_dllfmu(jm_callbacks* cb, const char* dllPath, const char* modelIdentifier, fmi2_callback_functions_t callBackFunctions, fmi2_fmu_kind_enu_t standard)
+fmi2_capi_t* fmi2_capi_create_dllfmu(jm_callbacks* cb, const char* dllPath, const char* modelIdentifier, const fmi2_callback_functions_t* callBackFunctions, fmi2_fmu_kind_enu_t standard)
 {
 	fmi2_capi_t* fmu = NULL;
 
@@ -169,7 +160,7 @@ fmi2_capi_t* fmi2_capi_create_dllfmu(jm_callbacks* cb, const char* dllPath, cons
 	fmu->callbacks = cb;
 
 	/* Set the FMI callback functions */
-	fmu->callBackFunctions = callBackFunctions;
+	fmu->callBackFunctions = *callBackFunctions;
 
 	/* Set FMI standard to load */
 	fmu->standard = standard;

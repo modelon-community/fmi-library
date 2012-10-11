@@ -46,7 +46,7 @@ set(XML_CS_TC_PATH ${FMU_DUMMY_FOLDER}/modelDescription_cs_tc.xml)
 set(SHARED_LIBRARY_ME_PATH ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${CMAKE_SHARED_LIBRARY_PREFIX}fmu1_dll_me${CMAKE_SHARED_LIBRARY_SUFFIX})
 set(SHARED_LIBRARY_CS_PATH ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${CMAKE_SHARED_LIBRARY_PREFIX}fmu1_dll_cs${CMAKE_SHARED_LIBRARY_SUFFIX})
 
-#Create FMU 1.0 ME/CS Model and generate library path
+#Create FMU 1.0 ME/CS Model and generate library path to be used in test config
 
 to_native_c_path("\"${SHARED_LIBRARY_ME_PATH}\"" DLL_OUTPUT_PATH_ME_DEFINE)
 to_native_c_path("\"${SHARED_LIBRARY_CS_PATH}\"" DLL_OUTPUT_PATH_CS_DEFINE)
@@ -64,8 +64,6 @@ compress_fmu("${TEST_OUTPUT_FOLDER}" "${FMU_DUMMY_CS_MODEL_IDENTIFIER}" "cs_tc" 
 add_executable (fmi_import_xml_test ${RTTESTDIR}/FMI1/fmi_import_xml_test.cc )
 target_link_libraries (fmi_import_xml_test  ${FMILIBFORTEST}  )
 
-add_executable (fmi_import_test ${RTTESTDIR}/FMI1/fmi_import_test.c)
-target_link_libraries (fmi_import_test  ${FMILIBFORTEST})
 add_executable (fmi_import_me_test ${RTTESTDIR}/FMI1/fmi_import_me_test.c)
 target_link_libraries (fmi_import_me_test  ${FMILIBFORTEST})
 add_executable (fmi_import_cs_test ${RTTESTDIR}/FMI1/fmi_import_cs_test.c)
@@ -98,6 +96,15 @@ set(logger_reference_file "${RTTESTDIR}/FMI1/fmi1_logger_test_output.txt")
 
 add_test(ctest_fmi1_logger_test_run fmi1_logger_test ${FMU_ME_PATH} ${FMU_TEMPFOLDER} ${logger_output_file})
 add_test(ctest_fmi1_logger_test_check ${CMAKE_COMMAND} -E compare_files ${logger_output_file}  ${logger_reference_file})
+
+set_target_properties(
+	fmi_import_me_test 
+	fmi_import_cs_test 
+	fmi_import_xml_test
+	fmi1_capi_cs_test
+	fmi1_capi_me_test
+	fmi1_logger_test
+    PROPERTIES FOLDER "Test/FMI1")
 
 SET_TESTS_PROPERTIES ( 
 	ctest_fmi1_logger_test_check	

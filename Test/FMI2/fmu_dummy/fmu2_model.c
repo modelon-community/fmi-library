@@ -17,7 +17,7 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 #include <stdio.h>
 #include <string.h>
 
-#include <fmu_dummy/fmu1_model.h>
+#include <fmu_dummy/fmu2_model.h>
 
 /* Model calculation functions */
 static int calc_initialize(component_ptr_t comp)
@@ -239,30 +239,27 @@ fmiStatus fmi_set_string(fmiComponent c, const fmiValueReference vr[], size_t nv
 /* FMI 1.0 ME Functions */
 const char* fmi_get_model_types_platform()
 {
-	return FMI_PLATFORM_TYPE;
+	return fmiTypesPlatform;
 }
-
-#define FMI_TEST_LOGGER_TEST_RESULT_FILE "C:\\P510-JModelica\\FMIToolbox\\trunk\\external\\FMIL\\build\\testfolder\\"
-#define FMI_TEST_LOGGER_TEST_SOURCE_FILE "C:\\P510-JModelica\\FMIToolbox\\trunk\\external\\FMIL\\build\\testfolder\\"
 
 /* static FILE* find_string(FILE* fp, char* str, int len) {
 
 } */
 
-fmiComponent fmi_instantiate_model(fmiString instanceName, fmiString GUID, fmiCallbackFunctions functions, fmiBoolean loggingOn)
+fmiComponent fmi_instantiate_model(fmiString instanceName,	fmiString fmuGUID,	fmiString fmuLocation,	const fmiCallbackFunctions *functions,	fmiBoolean visible,	fmiBoolean loggingOn)
 {
 	component_ptr_t comp;
 	int k, p;
 
-	comp = (component_ptr_t)functions.allocateMemory(1, sizeof(component_t));
+	comp = (component_ptr_t)functions->allocateMemory(1, sizeof(component_t));
 	if (comp == NULL) {
 		return NULL;
-	} else if (strcmp(GUID, FMI_GUID) != 0) {
+	} else if (strcmp(fmuGUID, FMI_GUID) != 0) {
 		return NULL;
 	} else {	
 		sprintf(comp->instanceName, "%s", instanceName);
-		sprintf(comp->GUID, "%s",GUID);
-		comp->functions		= functions;
+		sprintf(comp->GUID, "%s",fmuGUID);
+		comp->functions		= *functions;
 		comp->loggingOn		= loggingOn;
 
 		comp->callEventUpdate = fmiFalse;
@@ -292,7 +289,9 @@ fmiComponent fmi_instantiate_model(fmiString instanceName, fmiString GUID, fmiCa
 				comp->output_real[k][p] = MAGIC_TEST_VALUE;
 			}
 		}
-
+	
+		sprintf(comp->fmuLocation, "%s",fmuLocation);
+		comp->visible		= visible;
 		return comp;
 	}
 }
@@ -472,32 +471,20 @@ fmiStatus fmi_terminate(fmiComponent c)
 /* FMI 1.0 CS Functions */
 const char* fmi_get_types_platform()
 {
-	return FMI_PLATFORM_TYPE;
+	return fmiTypesPlatform;
 }
 
-fmiComponent fmi_instantiate_slave(fmiString instanceName, fmiString fmuGUID, fmiString fmuLocation, fmiString mimeType, fmiReal timeout, fmiBoolean visible, fmiBoolean interactive, fmiCallbackFunctions functions, fmiBoolean loggingOn)
+fmiComponent fmi_instantiate_slave(fmiString instanceName, fmiString fmuGUID, fmiString fmuLocation, const fmiCallbackFunctions *functions, fmiBoolean visible, fmiBoolean loggingOn)
 {
 	component_ptr_t comp;
 
-	comp = fmi_instantiate_model(instanceName, fmuGUID, functions, loggingOn);
-	if (comp == NULL) {
-		return NULL;
-	} else if (strcmp(fmuGUID, FMI_GUID) != 0) {
-		return NULL;
-	} else {	
-		sprintf(comp->fmuLocation, "%s",fmuLocation);
-		sprintf(comp->mimeType, "%s",mimeType);
-		comp->timeout		= timeout;
-		comp->visible		= visible;
-		comp->interactive	= interactive;
-		return comp;
-	}
+	comp = fmi_instantiate_model(instanceName, fmuGUID, fmuLocation, functions, visible, loggingOn);
+	return comp;
 }
 
-fmiStatus fmi_initialize_slave(fmiComponent c, fmiReal tStart, fmiBoolean StopTimeDefined, fmiReal tStop)
+fmiStatus fmi_initialize_slave(fmiComponent c, fmiReal relativeTolerance, fmiReal tStart, fmiBoolean StopTimeDefined, fmiReal tStop)
 {
 	component_ptr_t comp	= (fmiComponent)c;
-	fmiReal relativeTolerance;
 	fmiEventInfo eventInfo;
 	fmiBoolean toleranceControlled;
 
@@ -507,7 +494,6 @@ fmiStatus fmi_initialize_slave(fmiComponent c, fmiReal tStart, fmiBoolean StopTi
 	comp->tStop				= tStop;
 
 	toleranceControlled = fmiTrue;
-	relativeTolerance = 1e-4;
 
 	return fmi_initialize((fmiComponent)comp, toleranceControlled, relativeTolerance, &eventInfo);
 }

@@ -217,6 +217,14 @@ FMILIB_EXPORT fmi1_import_variable_list_t* fmi1_import_get_variable_aliases(fmi1
 */
 FMILIB_EXPORT fmi1_import_variable_list_t* fmi1_import_get_variable_list(fmi1_import_t* fmu);
 
+/** \brief Get the list of all the variables in the model in alphabetical order.
+* @param fmu An FMU object as returned by fmi1_import_parse_xml().
+* @return a variable list with all the variables in the model sorted in alphabetical order.
+*
+* Note that variable lists are allocated dynamically and must be freed when not needed any longer.
+*/
+FMILIB_EXPORT fmi1_import_variable_list_t* fmi1_import_get_variable_list_alphabetical_order(fmi1_import_t* fmu);
+
 /** \brief Create a variable list with a single variable.
   
 \param fmu An FMU object that this variable list will reference.

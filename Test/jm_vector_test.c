@@ -48,7 +48,8 @@ int main() {
         jm_vector_push_back(int)(v,x);
         jm_stack_push(double)(s,x);
 		top = (int)jm_stack_top(double)(s);
-        printf("pushed item %d=%d (stack top %g), vector size: %d, capacity: %d\n", i, x, jm_stack_top(double)(s), jm_vector_get_size(int)(v), jm_vector_reserve(int)(v,0));
+        printf("pushed item %d=%d (stack top %g), vector size: %u, capacity: %u\n", i, x, jm_stack_top(double)(s), 
+               (unsigned)jm_vector_get_size(int)(v), (unsigned)jm_vector_reserve(int)(v,0));
 		if(top != x) log_error("Stack top does not match the pushed value \n");
 		if(jm_vector_get_size(int)(v) != VINIT_SIZE+i+1) log_error("Vector size %d is not as expected %d\n", jm_vector_get_size(int)(v), VINIT_SIZE+i+1);
     }
@@ -66,7 +67,7 @@ int main() {
     jm_vector_qsort(int)(v, jm_compare_int);
     printf("Printing sorted vector \n");
     jm_vector_foreach_c(int)(v,print_int,0);
-    printf("Index of %d is %d\n", k, jm_vector_bsearch_index(int)(v, &k, jm_compare_int));
+    printf("Index of %d is %u\n", k, (unsigned)jm_vector_bsearch_index(int)(v, &k, jm_compare_int));
     printf("Printing the stack \n");
     jm_stack_foreach(double)(s,print_dbl,0);
 

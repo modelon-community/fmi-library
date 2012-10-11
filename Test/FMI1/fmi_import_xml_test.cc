@@ -112,9 +112,9 @@ void printTypeInfo(fmi1_import_variable_typedef_t* vt) {
             ni = fmi1_import_get_enum_type_size(et);
 			i = (unsigned)(ni);
 			assert( i == ni);
-            printf("There are %d items \n",ni);
+            printf("There are %u items \n",(unsigned)ni);
             for(i = 0; i < ni; i++) {
-                printf("[%d] %s (%s) \n", i+1, fmi1_import_get_enum_type_item_name(et, i), fmi1_import_get_enum_type_item_description(et, i));
+                printf("[%u] %s (%s) \n", (unsigned)i+1, fmi1_import_get_enum_type_item_name(et, i), fmi1_import_get_enum_type_item_description(et, i));
             }
         }
         break;
@@ -325,11 +325,11 @@ int main(int argc, char *argv[])
 		unsigned i;
 		i = (unsigned)nv;
 		assert( nv == i);		
-        printf("There are %d tool annotation records \n", nv);
+        printf("There are %u tool annotation records \n", (unsigned)nv);
         for( i = 0; i < nv; i++) {
             fmi1_import_vendor_t* vendor = fmi1_import_get_vendor(vl, i);
             if(!vendor) {
-                printf("Error getting vendor for index %d\n", i);
+                printf("Error getting vendor for index %u\n", (unsigned)i);
                 break;
             }
             printf("Vendor name [%d] %s", i, fmi1_import_get_vendor_name(vendor));
@@ -394,7 +394,7 @@ int main(int argc, char *argv[])
         nv = fmi1_import_get_variable_list_size(vl);
 		i = (unsigned)nv;
 		assert(i == nv);
-		printf("There are %d variables in total \n",nv);
+		printf("There are %u variables in total \n",(unsigned)nv);
         for(i = 0; i < nv; i++) {
             fmi1_import_variable_t* var = fmi1_import_get_variable(vl, i);
             if(!var) {

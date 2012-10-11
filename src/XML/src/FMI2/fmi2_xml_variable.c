@@ -876,7 +876,9 @@ int fmi2_xml_handle_ModelVariables(fmi2_xml_parser_context_t *context, const cha
         varByVR = md->variablesByVR;
         jm_vector_qsort(jm_voidp)(varByVR, fmi2_xml_compare_vr_and_original_index);
 
-        {
+        numvar = jm_vector_get_size(jm_voidp)(varByVR);
+
+		if(numvar > 0)  {
             int foundBadAlias;
 
 			jm_log_verbose(context->callbacks, module,"Building alias index");
@@ -887,7 +889,6 @@ int fmi2_xml_handle_ModelVariables(fmi2_xml_parser_context_t *context, const cha
 
                 foundBadAlias = 0;
 
-                numvar = jm_vector_get_size(jm_voidp)(varByVR);
 
                 for(i = 1; i< numvar; i++) {
                     fmi2_xml_variable_t* b = (fmi2_xml_variable_t*)jm_vector_get_item(jm_voidp)(varByVR, i);
@@ -903,6 +904,7 @@ int fmi2_xml_handle_ModelVariables(fmi2_xml_parser_context_t *context, const cha
 									"Only one variable among aliases is allowed to have start attribute (variables: %s and %s)",
 										a->name, b->name);
 								fmi2_xml_eliminate_bad_alias(context,i);
+						        numvar = jm_vector_get_size(jm_voidp)(varByVR);
 								foundBadAlias = 1;
 								break;
 							}

@@ -111,7 +111,7 @@ Types for Common Functions
 /* Inquire version numbers of header files and setting logging status */
    typedef const char* fmiGetTypesPlatformTYPE();
    typedef const char* fmiGetVersionTYPE();
-   typedef fmiStatus   fmiSetDebugLoggingTYPE(fmiComponent, fmiBoolean);
+   typedef fmiStatus   fmiSetDebugLoggingTYPE(fmiComponent, fmiBoolean, size_t, const fmiString []);
 
 /* Getting and setting variable values */
    typedef fmiStatus fmiGetRealTYPE   (fmiComponent, const fmiValueReference[], size_t, fmiReal   []);

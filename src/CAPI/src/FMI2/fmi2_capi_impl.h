@@ -46,6 +46,8 @@ struct fmi2_capi_t {
 
 	fmi2_component_t					c;
 
+	int debugMode;
+
 	/* FMI common */
 	fmi2_get_version_ft					fmiGetVersion;
 	fmi2_set_debug_logging_ft			fmiSetDebugLogging;

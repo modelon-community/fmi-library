@@ -64,6 +64,7 @@ int main(int argc, char *argv[])
 		printf("Succesfully uncompressed the file\n");
 		do_exit(CTEST_RETURN_SUCCESS);
 	}
+    return 0;
 }
 
 

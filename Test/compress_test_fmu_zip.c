@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
     callbacks.realloc = realloc;
     callbacks.free = free;
     callbacks.logger = importlogger;
-	callbacks.log_level = jm_log_level_debug;
+	callbacks.log_level = jm_log_level_warning;
 
     callbacks.context = 0;
 
@@ -47,21 +47,20 @@ int main(int argc, char *argv[])
 	}
 
 	output_name = argv[1];
-	files_to_zip = &argv[2];
+	files_to_zip = (const char**)&argv[2];
 	n_files_to_zip = argc - 2;
 
-	printf("Will compress:\n");
-	for(i=0; i< n_files_to_zip;i++) {
-		printf("\t%s\n", files_to_zip[i]);
+	printf("Will compress following files: \n");
+	for (i = 0; i < n_files_to_zip; i++) {
+		printf( "\t%s\n", files_to_zip[i]);
 	}
-
 	status = fmi_zip_zip(output_name, n_files_to_zip, files_to_zip, &callbacks);
 
 	if (status == jm_status_error) {
-		printf("Failed to compress the files\n");
+		printf("Failed to compress the file\n");
 		return 1;
 	} else {
-		printf("Succesfully created: %s\n", output_name);
+		printf("Succesfully compressed the file\n");
 		return 0;
 	}	
 	

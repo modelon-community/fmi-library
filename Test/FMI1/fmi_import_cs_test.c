@@ -60,7 +60,7 @@ int test_simulate_cs(fmi1_import_t* fmu)
 	fmi1_real_t timeout = 0.0;
 	fmi1_boolean_t visible = fmi1_false;
 	fmi1_boolean_t interactive = fmi1_false;
-	fmi1_boolean_t loggingOn = fmi1_true;
+/*	fmi1_boolean_t loggingOn = fmi1_true; */
 	
 	/* fmi1_real_t simulation_results[] = {-0.001878, -1.722275}; */
 	fmi1_real_t simulation_results[] = {0.0143633,   -1.62417};
@@ -82,6 +82,8 @@ int test_simulate_cs(fmi1_import_t* fmu)
 	printf("Platform type returned:      %s\n", fmi1_import_get_types_platform(fmu));
 
 	fmuGUID = fmi1_import_get_GUID(fmu);
+    printf("GUID:      %s\n", fmuGUID);
+
 
 	jmstatus = fmi1_import_instantiate_slave(fmu, instanceName, fmuLocation, mimeType, timeout, visible, interactive);
 	if (jmstatus == jm_status_error) {
@@ -90,6 +92,10 @@ int test_simulate_cs(fmi1_import_t* fmu)
 	}
 
 	fmistatus = fmi1_import_initialize_slave(fmu, tstart, StopTimeDefined, tend);
+    if(fmistatus != fmi1_status_ok) {
+        printf("fmi1_import_initialize_slave failed\n");
+		do_exit(CTEST_RETURN_FAIL);
+    }
 
 	tcur = tstart;
 	printf("%10s %10s\n", "Ball height", "Ball speed");
@@ -130,7 +136,7 @@ int test_simulate_cs(fmi1_import_t* fmu)
 		res = res > 0 ? res: -res; /* Take abs */
 		if (res > 3e-3) {
 			printf("Simulation results is wrong!\n");
-			printf("State [%d]  %g != %g, |res| = %g\n", k, rvalue, simulation_results[k], res);
+			printf("State [%u]  %g != %g, |res| = %g\n", (unsigned)k, rvalue, simulation_results[k], res);
 			printf("\n");
 			do_exit(CTEST_RETURN_FAIL);
 		}

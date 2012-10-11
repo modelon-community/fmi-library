@@ -82,6 +82,7 @@ ADD_TEST(ctest_fmi_import_me_test fmi_import_me_test ${FMU_ME_PATH} ${FMU_TEMPFO
 ADD_TEST(ctest_fmi_import_cs_test fmi_import_cs_test ${FMU_CS_PATH} ${FMU_TEMPFOLDER})
 ADD_TEST(ctest_fmi_import_cs_tc_test fmi_import_cs_test ${FMU_CS_TC_PATH} ${FMU_TEMPFOLDER})
 # the next test relies on the output from the previous one.
+ADD_TEST(ctest_fmi_import_xml_test_empty fmi_import_xml_test ${FMU_DUMMY_FOLDER})
 ADD_TEST(ctest_fmi_import_xml_test fmi_import_xml_test ${FMU_TEMPFOLDER})
 
 ADD_TEST(ctest_fmi1_capi_cs_test fmi1_capi_cs_test)
@@ -116,6 +117,7 @@ if(FMILIB_BUILD_BEFORE_TESTS)
 		ctest_fmi_import_me_test
 		ctest_fmi_import_cs_test 
 		ctest_fmi_import_xml_test
+		ctest_fmi_import_xml_test_empty
 		ctest_fmi1_capi_cs_test
 		ctest_fmi1_capi_me_test
 		ctest_fmi1_logger_test_run

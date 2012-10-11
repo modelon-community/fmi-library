@@ -64,7 +64,9 @@ jm_status_enu_t fmi_zip_zip(const char* zip_file_path, int n_files_to_zip, const
 	argv[3]=(char*)zip_file_path;
 
 	/* Append the input argument list with the files to unzip */
+	jm_log_info(callbacks, "FMIZIP", "Will compress following files: \n");
 	for (k = 0; k < n_files_to_zip; k++) {
+		jm_log_info(callbacks, "FMIZIP", "\t%s\n", files_to_zip[k]);
 		argv[N_BASIC_ARGS + k] = (char*)files_to_zip[k];
 	}
 

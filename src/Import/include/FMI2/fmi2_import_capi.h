@@ -79,6 +79,14 @@ FMILIB_EXPORT jm_status_enu_t fmi2_import_create_dllfmu(fmi2_import_t* fmu, fmi2
  */
 FMILIB_EXPORT void fmi2_import_destroy_dllfmu(fmi2_import_t* fmu);
 
+/**
+ * \brief Set CAPI debug mode flag. Setting to non-zero prevents DLL unloading in fmi2_import_destroy_dllfmu
+ *  while all the memory is deallocated. This is to support valgrind debugging. 
+ * 
+ * @param fmu C-API struct that has succesfully loaded the FMI function.
+ * @param mode The debug mode to set.
+ */
+FMILIB_EXPORT void fmi2_import_set_debug_mode(fmi2_import_t* fmu, int mode);
 /**@} */
 
 /**

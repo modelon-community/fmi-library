@@ -376,9 +376,9 @@ int main(int argc, char *argv[])
            fmi2_import_get_default_experiment_tolerance(fmu));
     {
         size_t i, nv = fmi2_import_get_vendors_num(fmu);
-        printf("There are %d tool annotation records \n", nv);
+        printf("There are %u tool annotation records \n", (unsigned)nv);
         for( i = 0; i < nv; i++) {
-            printf("Vendor name [%d] %s", i, fmi2_import_get_vendor_name(fmu, i));
+            printf("Vendor name [%u] %s", (unsigned)i, fmi2_import_get_vendor_name(fmu, i));
 		}
 	}
     {
@@ -435,12 +435,12 @@ int main(int argc, char *argv[])
         assert(vl);
 		
         nv = fmi2_import_get_variable_list_size(vl);
-        printf("There are %d variables in total \n",nv);
+        printf("There are %u variables in total \n",(unsigned)nv);
         for(i = 0; i < nv; i++) {
             fmi2_import_variable_t* var = fmi2_import_get_variable(vl, i);
 			assert(vrl[i] == fmi2_import_get_variable_vr(var));
             if(!var) {
-				printf("Something wrong with variable %d \n",i);
+				printf("Something wrong with variable %u \n",(unsigned)i);
 				do_exit(1);
 			}
             else {

@@ -221,6 +221,16 @@ jm_status_enu_t fmi2_capi_load_dll(fmi2_capi_t* fmu)
 	}
 }
 
+void fmi2_capi_set_debug_mode(fmi2_capi_t* fmu, int mode) {
+	if(fmu)
+		fmu->debugMode = mode;
+}
+
+int fmi2_capi_get_debug_mode(fmi2_capi_t* fmu) {
+	if(fmu) return fmu->debugMode;
+	return 0;
+}
+
 jm_status_enu_t fmi2_capi_free_dll(fmi2_capi_t* fmu)
 {
 	if (fmu == NULL) {		
@@ -229,12 +239,10 @@ jm_status_enu_t fmi2_capi_free_dll(fmi2_capi_t* fmu)
 
 	if (fmu->dllHandle) {
 		jm_status_enu_t status =
-#ifdef JM_DO_NOT_UNLOAD_DLL
+			(fmu->debugMode != 0) ?
                 /* When running valgrind this may be convenient to track mem leaks */ 
-                jm_status_success;
-#else  
+                jm_status_success:
                 jm_portability_free_dll_handle(fmu->dllHandle);
-#endif
 		fmu->dllHandle = 0;
 		if (status == jm_status_error) { /* Free the library handle */
 			jm_log(fmu->callbacks, FMI_CAPI_MODULE_NAME, jm_log_level_error, "Could not free the DLL: %s", jm_portability_get_last_dll_error());

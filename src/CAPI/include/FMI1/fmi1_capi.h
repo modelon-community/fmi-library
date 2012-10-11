@@ -96,6 +96,22 @@ jm_status_enu_t fmi1_capi_load_dll(fmi1_capi_t* fmu);
  */
 jm_status_enu_t fmi1_capi_free_dll(fmi1_capi_t* fmu);
 
+/**
+ * \brief Set CAPI debug mode flag. Setting to non-zero prevents DLL unloading in fmi1_capi_free_dll
+ *  while all the memory is deallocated. This is to support valgrind debugging. 
+ * 
+ * @param fmu C-API struct that has succesfully loaded the FMI function.
+ * @param mode The debug mode to set.
+ */
+void fmi1_capi_set_debug_mode(fmi1_capi_t* fmu, int mode);
+
+/**
+ * \brief Get CAPI debug mode flag that was set with fmi1_capi_set_debug_mode()
+ * 
+ * @param fmu C-API struct that has succesfully loaded the FMI function. */
+int fmi1_capi_get_debug_mode(fmi1_capi_t* fmu);
+
+
 /**@} */
 
 /** \addtogroup fmi1_capi_common

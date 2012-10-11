@@ -225,38 +225,26 @@ void fmi2_import_expand_variable_references_impl(fmi2_import_t* fmu, const char*
     jm_vector_push_back(char)(msgOut, 0);
 }
 
-jm_vector(jm_voidp) fmi2_import_active_fmu_store;
-
-jm_vector(jm_voidp)* fmi2_import_active_fmu = 0;
-
-void  fmi2_log_forwarding(fmi2_component_t c, fmi2_string_t instanceName, fmi2_status_t status, fmi2_string_t category, fmi2_string_t message, ...) {
+void  fmi2_log_forwarding(fmi2_component_environment_t c, fmi2_string_t instanceName, fmi2_status_t status, fmi2_string_t category, fmi2_string_t message, ...) {
     va_list args;
     va_start (args, message);
 	fmi2_log_forwarding_v(c, instanceName, status, category, message, args);
     va_end (args);
 }
 
-void  fmi2_log_forwarding_v(fmi2_component_t c, fmi2_string_t instanceName, fmi2_status_t status, fmi2_string_t category, fmi2_string_t message, va_list args) {
+void  fmi2_log_forwarding_v(fmi2_component_environment_t c, fmi2_string_t instanceName, fmi2_status_t status, fmi2_string_t category, fmi2_string_t message, va_list args) {
     char buf[10000], *curp;
 	const char* statusStr;
-	fmi2_import_t* fmu = 0;
-	jm_callbacks* cb = jm_get_default_callbacks();
-	jm_log_level_enu_t logLevel = jm_log_level_error;
-	if(fmi2_import_active_fmu) {
-		size_t n = jm_vector_get_size(jm_voidp)(fmi2_import_active_fmu);
-		size_t i;
-		for(i= 0; i < n; i++) {
-			fmu = (fmi2_import_t*)jm_vector_get_item(jm_voidp)(fmi2_import_active_fmu, i);
-			if(fmu->capi->c == c) {
-				cb = fmu->callbacks;
-				break;
-			}
-		}
-		if(i >= n) { /* Could not find matching FMU -> use default callbacks */
-			fmu = 0;
-			cb = jm_get_default_callbacks();
-		}
+	fmi2_import_t* fmu = (fmi2_import_t*)c;
+	jm_callbacks* cb;
+	jm_log_level_enu_t logLevel;
+
+	if(fmu) {
+		 cb = fmu->callbacks;
 	}
+	else 
+		cb = jm_get_default_callbacks();
+	logLevel = cb->log_level;
 	switch(status) {
 		case fmi2_status_discard:
 		case fmi2_status_pending:
@@ -274,7 +262,7 @@ void  fmi2_log_forwarding_v(fmi2_component_t c, fmi2_string_t instanceName, fmi2
 			logLevel = jm_log_level_fatal;
 	}
 
-        if(logLevel > cb->log_level) return;
+    if(logLevel > cb->log_level) return;
 
 	curp = buf;
     *curp = 0;
@@ -300,7 +288,7 @@ void  fmi2_log_forwarding_v(fmi2_component_t c, fmi2_string_t instanceName, fmi2
 
 }
 
-void  fmi2_default_callback_logger(fmi2_component_t c, fmi2_string_t instanceName, fmi2_status_t status, fmi2_string_t category, fmi2_string_t message, ...) {
+void  fmi2_default_callback_logger(fmi2_component_environment_t c, fmi2_string_t instanceName, fmi2_status_t status, fmi2_string_t category, fmi2_string_t message, ...) {
     va_list args;
     char buf[500], *curp;
     va_start (args, message);

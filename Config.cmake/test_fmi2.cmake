@@ -61,16 +61,21 @@ to_native_c_path("${TEST_OUTPUT_FOLDER}/${FMU2_DUMMY_CS_MODEL_IDENTIFIER}_cs.fmu
 
 add_executable (fmi2_import_xml_test ${RTTESTDIR}/FMI2/fmi2_import_xml_test.cc )
 target_link_libraries (fmi2_import_xml_test  ${FMILIBFORTEST}  )
+add_executable (fmi2_import_me_test ${RTTESTDIR}/FMI2/fmi2_import_me_test.c )
+target_link_libraries (fmi2_import_me_test  ${FMILIBFORTEST}  )
 set_target_properties(
 	fmi2_import_xml_test 
     PROPERTIES FOLDER "Test/FMI2")
+ADD_TEST(ctest_fmi2_import_xml_test_empty fmi2_import_xml_test ${FMU2_DUMMY_FOLDER})
 add_test(ctest_fmi2_import_xml_test_me fmi2_import_xml_test ${TEST_OUTPUT_FOLDER}/${FMU2_DUMMY_ME_MODEL_IDENTIFIER}_me)
+add_test(ctest_fmi2_import_test_me fmi2_import_me_test ${FMU2_ME_PATH} ${FMU_TEMPFOLDER})
 add_test(ctest_fmi2_import_xml_test_cs fmi2_import_xml_test ${TEST_OUTPUT_FOLDER}/${FMU2_DUMMY_ME_MODEL_IDENTIFIER}_cs)
 
 if(FMILIB_BUILD_BEFORE_TESTS)
 	SET_TESTS_PROPERTIES ( 
 		ctest_fmi2_import_xml_test_me
 		ctest_fmi2_import_xml_test_cs
+		ctest_fmi2_import_xml_test_empty
 		PROPERTIES DEPENDS ctest_build_all)
 endif()
 

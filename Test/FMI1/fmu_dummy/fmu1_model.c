@@ -101,7 +101,8 @@ fmiStatus fmi_get_real(fmiComponent c, const fmiValueReference vr[], size_t nvr,
 			fmiValueReference cvr = vr[k];
 			if (cvr < N_STATES) {
 				value[k] = comp->states[cvr];
-			} else {
+			} 
+			else {
 				value[k] = comp->reals[cvr];
 			}	
 		}
@@ -162,7 +163,8 @@ fmiStatus fmi_set_real(fmiComponent c, const fmiValueReference vr[], size_t nvr,
 			fmiValueReference cvr = vr[k];
 			if (cvr < N_STATES) {
 				comp->states[cvr] = value[k]; 
-			} else {
+			} 
+			else {
 				comp->reals[cvr] = value[k]; 
 			}			
 		}
@@ -648,7 +650,7 @@ fmiStatus fmi_do_step(fmiComponent c, fmiReal currentCommunicationPoint, fmiReal
 			/* Step is complete */
 			fmistatus = fmi_completed_integrator_step(comp, &callEventUpdate);
 
-
+            if(fmistatus != fmiOK) break;
 		}
 		for (k = 0; k < N_STATES; k++) { /* Update states */
 			comp->reals[k] = comp->states[k];

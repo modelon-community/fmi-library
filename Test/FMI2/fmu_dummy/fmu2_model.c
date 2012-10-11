@@ -27,15 +27,15 @@ static int calc_initialize(component_ptr_t comp)
 	comp->reals	[VAR_R_GRATIVY]		= -9.81;
 	comp->reals	[VAR_R_BOUNCE_CONF]	= 0.5;
 	if(comp->loggingOn) {
-		comp->functions.logger(comp, comp->instanceName, fmiOK, "INFO", "###### Initializing component ######");
-		comp->functions.logger(comp, comp->instanceName, fmiOK, "INFO", "Init #r%d#=%g", VAR_R_HIGHT, comp->states[VAR_R_HIGHT]);
-		comp->functions.logger(comp, comp->instanceName, fmiOK, "INFO", "Init #r%d#=%g",VAR_R_HIGHT_SPEED, comp->states[VAR_R_HIGHT_SPEED]);
-		comp->functions.logger(comp, comp->instanceName, fmiOK, "INFO", "Init #r%d#=%g",VAR_R_GRATIVY, comp->reals	[VAR_R_GRATIVY]);
-		comp->functions.logger(comp, comp->instanceName, fmiOK, "INFO", "Init #r%d#=%g",VAR_R_BOUNCE_CONF, comp->reals	[VAR_R_BOUNCE_CONF]);
-		comp->functions.logger(comp, comp->instanceName, fmiOK, "ERROR", "Bad reference: #r-1#");
-		comp->functions.logger(comp, comp->instanceName, fmiOK, "ERROR", "Bad reference: #r1");
-		comp->functions.logger(comp, comp->instanceName, fmiOK, "ERROR", "Bad reference: #t1#");
-		comp->functions.logger(comp, comp->instanceName, fmiOK, "ERROR", "Bad reference: #r10#");
+		comp->functions.logger(comp->functions.componentEnvironment, comp->instanceName, fmiOK, "INFO", "###### Initializing component ######");
+		comp->functions.logger(comp->functions.componentEnvironment, comp->instanceName, fmiOK, "INFO", "Init #r%d#=%g", VAR_R_HIGHT, comp->states[VAR_R_HIGHT]);
+		comp->functions.logger(comp->functions.componentEnvironment, comp->instanceName, fmiOK, "INFO", "Init #r%d#=%g",VAR_R_HIGHT_SPEED, comp->states[VAR_R_HIGHT_SPEED]);
+		comp->functions.logger(comp->functions.componentEnvironment, comp->instanceName, fmiOK, "INFO", "Init #r%d#=%g",VAR_R_GRATIVY, comp->reals	[VAR_R_GRATIVY]);
+		comp->functions.logger(comp->functions.componentEnvironment, comp->instanceName, fmiOK, "INFO", "Init #r%d#=%g",VAR_R_BOUNCE_CONF, comp->reals	[VAR_R_BOUNCE_CONF]);
+		comp->functions.logger(comp->functions.componentEnvironment, comp->instanceName, fmiOK, "ERROR", "Bad reference: #r-1#");
+		comp->functions.logger(comp->functions.componentEnvironment, comp->instanceName, fmiOK, "ERROR", "Bad reference: #r1");
+		comp->functions.logger(comp->functions.componentEnvironment, comp->instanceName, fmiOK, "ERROR", "Bad reference: #t1#");
+		comp->functions.logger(comp->functions.componentEnvironment, comp->instanceName, fmiOK, "ERROR", "Bad reference: #r10#");
 	}
 	return 0;
 }
@@ -101,7 +101,12 @@ fmiStatus fmi_get_real(fmiComponent c, const fmiValueReference vr[], size_t nvr,
 			fmiValueReference cvr = vr[k];
 			if (cvr < N_STATES) {
 				value[k] = comp->states[cvr];
-			} else {
+			} 
+			else if(cvr == 4) {
+				calc_get_derivatives(comp);
+				value[k] = comp->states_der[1];
+			}
+			else {
 				value[k] = comp->reals[cvr];
 			}	
 		}
@@ -162,7 +167,12 @@ fmiStatus fmi_set_real(fmiComponent c, const fmiValueReference vr[], size_t nvr,
 			fmiValueReference cvr = vr[k];
 			if (cvr < N_STATES) {
 				comp->states[cvr] = value[k]; 
-			} else {
+			} 
+			else if(cvr == 4) {
+				comp->functions.logger(c, comp->instanceName,fmiWarning, "WARNING", "Cannot set acceleration value (calculated)");
+				return fmiError;
+			}
+			else {
 				comp->reals[cvr] = value[k]; 
 			}			
 		}
@@ -227,7 +237,7 @@ fmiStatus fmi_set_string(fmiComponent c, const fmiValueReference vr[], size_t nv
 			for (k = 0; k < nvr; k++) {
 				fmiValueReference cvr = vr[k];
 				if (cvr == VAR_S_LOGGER_TEST) {
-					comp->functions.logger(comp, comp->instanceName, fmiFatal, "INFO", "%s",value[k]);
+					comp->functions.logger(comp->functions.componentEnvironment, comp->instanceName, fmiFatal, "INFO", "%s",value[k]);
 				}
 			}
 		}
@@ -633,7 +643,8 @@ fmiStatus fmi_do_step(fmiComponent c, fmiReal currentCommunicationPoint, fmiReal
 			fmistatus = fmi_set_continuous_states(comp, states, N_STATES);
 			/* Step is complete */
 			fmistatus = fmi_completed_integrator_step(comp, &callEventUpdate);
-
+            
+            if(fmistatus != fmiOK) break;
 
 		}
 		for (k = 0; k < N_STATES; k++) { /* Update states */

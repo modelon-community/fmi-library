@@ -121,6 +121,13 @@ jm_status_enu_t fmi2_import_create_dllfmu(fmi2_import_t* fmu, fmi2_fmu_kind_enu_
 	return jm_status_success;
 }
 
+void fmi2_import_set_debug_mode(fmi2_import_t* fmu, int mode) {
+	if (fmu == NULL) {
+		return;
+	}
+	fmi2_capi_set_debug_mode(fmu->capi, mode);
+}
+
 void fmi2_import_destroy_dllfmu(fmi2_import_t* fmu) {
 	
 	if (fmu == NULL) {

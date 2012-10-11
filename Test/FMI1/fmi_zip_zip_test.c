@@ -68,6 +68,7 @@ int main(int argc, char *argv[])
 		printf("Succesfully compressed the file\n");
 		do_exit(CTEST_RETURN_SUCCESS);
 	}
+    return 0;
 }
 
 

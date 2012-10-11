@@ -37,7 +37,7 @@ FMIAPI const char* fmiGetVersion()
 	return fmi_get_version();
 }
 
-FMIAPI fmiStatus fmiSetDebugLogging(fmiComponent c, fmiBoolean loggingOn)
+FMIAPI fmiStatus fmiSetDebugLogging(fmiComponent c, fmiBoolean loggingOn, size_t n , const fmiString cat[])
 {
 	return fmi_set_debug_logging(c, loggingOn);
 }

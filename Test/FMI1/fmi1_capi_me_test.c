@@ -488,7 +488,7 @@ int test_set_get_string()
 	} else {
 		for (k = 0; k < N_STRING; k++) {
 			if (strcmp(values_ref[k], values[k]) != 0) {
-				printf("fmi1_capi_get_string returned values[%d] = \"%s\" expected \"%s\"\n", k, values[k], values_ref[k]);
+				printf("fmi1_capi_get_string returned values[%u] = \"%s\" expected \"%s\"\n", (unsigned)k, values[k], values_ref[k]);
 				do_exit(CTEST_RETURN_FAIL);;
 			}
 		}
@@ -578,7 +578,7 @@ int test_set_get_boolean()
 	} else {
 		for (k = 0; k < N_BOOLEAN; k++) {
 			if (values_ref[k] != values[k]) {
-				printf("fmi1_capi_get_boolean returned values[%d] = \"%s\" expected \"%s\"\n", k, values[k] ? "fmiTrue" : "fmiFalse", values_ref[k] ? "fmiTrue" : "fmiFalse");
+				printf("fmi1_capi_get_boolean returned values[%u] = \"%s\" expected \"%s\"\n", (unsigned)k, values[k] ? "fmiTrue" : "fmiFalse", values_ref[k] ? "fmiTrue" : "fmiFalse");
 				do_exit(CTEST_RETURN_FAIL);;
 			}
 		}
@@ -624,7 +624,7 @@ int test_set_get_real()
 		for (k = 0; k < N_REAL; k++) {
 			if (values_ref[k] != values[k]) {
 				printf("%f\n",12.0);
-				printf("fmi1_capi_get_real returned values[%d] = \"%f\" expected \"%f\"\n", k, (double)values[k], (double)values_ref[k]);
+				printf("fmi1_capi_get_real returned values[%u] = \"%f\" expected \"%f\"\n", (unsigned)k, (double)values[k], (double)values_ref[k]);
 				do_exit(CTEST_RETURN_FAIL);;
 			}
 		}

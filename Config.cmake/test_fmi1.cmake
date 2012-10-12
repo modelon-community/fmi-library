@@ -22,6 +22,7 @@ target_link_libraries (fmi1_capi_me_test  ${FMICAPI_LIBRARIES})
 #Defines for the test FMUs
 set(FMU_DUMMY_ME_MODEL_IDENTIFIER BouncingBall) #This must be the same as in the xml-file
 set(FMU_DUMMY_CS_MODEL_IDENTIFIER BouncingBall) #This must be the same as in the xml-file
+set(FMU_DUMMY_MF_MODEL_IDENTIFIER BouncingBall_malformed) #This must be the same as in the xml-file
 
 set(FMU_DUMMY_FOLDER ${RTTESTDIR}/FMI1/fmu_dummy)
 
@@ -42,6 +43,7 @@ add_library(fmu1_dll_cs SHARED ${FMU_DUMMY_CS_SOURCE} ${FMU_DUMMY_HEADERS})
 set(XML_ME_PATH ${FMU_DUMMY_FOLDER}/modelDescription_me.xml)
 set(XML_CS_PATH ${FMU_DUMMY_FOLDER}/modelDescription_cs.xml)
 set(XML_CS_TC_PATH ${FMU_DUMMY_FOLDER}/modelDescription_cs_tc.xml)
+set(XML_MF_PATH ${FMU_DUMMY_FOLDER}/modelDescription_malformed.xml)
 
 set(SHARED_LIBRARY_ME_PATH ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${CMAKE_SHARED_LIBRARY_PREFIX}fmu1_dll_me${CMAKE_SHARED_LIBRARY_SUFFIX})
 set(SHARED_LIBRARY_CS_PATH ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${CMAKE_SHARED_LIBRARY_PREFIX}fmu1_dll_cs${CMAKE_SHARED_LIBRARY_SUFFIX})
@@ -57,6 +59,7 @@ to_native_c_path("\"${CMAKE_CURRENT_BINARY_DIR}/\" CMAKE_INTDIR \"/${CMAKE_SHARE
 				FMU1_DLL_CS_PATH)
 
 #function(compress_fmu OUTPUT_FOLDER MODEL_IDENTIFIER FILE_NAME_CS_ME_EXT TARGET_NAME XML_PATH SHARED_LIBRARY_PATH)
+compress_fmu("${TEST_OUTPUT_FOLDER}" "${FMU_DUMMY_MF_MODEL_IDENTIFIER}" "mf" "fmu1_dll_me" "${XML_MF_PATH}" "${SHARED_LIBRARY_ME_PATH}")
 compress_fmu("${TEST_OUTPUT_FOLDER}" "${FMU_DUMMY_ME_MODEL_IDENTIFIER}" "me" "fmu1_dll_me" "${XML_ME_PATH}" "${SHARED_LIBRARY_ME_PATH}")
 compress_fmu("${TEST_OUTPUT_FOLDER}" "${FMU_DUMMY_CS_MODEL_IDENTIFIER}" "cs" "fmu1_dll_cs" "${XML_CS_PATH}" "${SHARED_LIBRARY_CS_PATH}")
 compress_fmu("${TEST_OUTPUT_FOLDER}" "${FMU_DUMMY_CS_MODEL_IDENTIFIER}" "cs_tc" "fmu1_dll_cs" "${XML_CS_TC_PATH}" "${SHARED_LIBRARY_CS_PATH}")
@@ -84,6 +87,8 @@ ADD_TEST(ctest_fmi_import_cs_tc_test fmi_import_cs_test ${FMU_CS_TC_PATH} ${FMU_
 # the next test relies on the output from the previous one.
 ADD_TEST(ctest_fmi_import_xml_test_empty fmi_import_xml_test ${FMU_DUMMY_FOLDER})
 ADD_TEST(ctest_fmi_import_xml_test fmi_import_xml_test ${FMU_TEMPFOLDER})
+add_test(ctest_fmi_import_xml_test_mf fmi_import_xml_test ${TEST_OUTPUT_FOLDER}/${FMU_DUMMY_MF_MODEL_IDENTIFIER}_mf)
+  set_tests_properties(ctest_fmi_import_xml_test_mf PROPERTIES WILL_FAIL TRUE)
 
 ADD_TEST(ctest_fmi1_capi_cs_test fmi1_capi_cs_test)
 ADD_TEST(ctest_fmi1_capi_me_test fmi1_capi_me_test)
@@ -118,6 +123,7 @@ if(FMILIB_BUILD_BEFORE_TESTS)
 		ctest_fmi_import_cs_test 
 		ctest_fmi_import_xml_test
 		ctest_fmi_import_xml_test_empty
+		ctest_fmi_import_xml_test_mf
 		ctest_fmi1_capi_cs_test
 		ctest_fmi1_capi_me_test
 		ctest_fmi1_logger_test_run

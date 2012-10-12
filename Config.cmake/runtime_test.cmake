@@ -157,6 +157,8 @@ ADD_TEST(ctest_fmi_zip_zip_test fmi_zip_zip_test)
 include(test_fmi1)
 include(test_fmi2)
 
+ADD_TEST(ctest_fmi_import_test_no_xml fmi_import_test ${UNCOMPRESSED_DUMMY_FILE_PATH_SRC} ${TEST_OUTPUT_FOLDER})	
+  set_tests_properties(ctest_fmi_import_test_no_xml PROPERTIES WILL_FAIL TRUE)
 ADD_TEST(ctest_fmi_import_test_me_1 fmi_import_test ${FMU_ME_PATH} ${FMU_TEMPFOLDER})
 ADD_TEST(ctest_fmi_import_test_cs_1 fmi_import_test ${FMU_CS_PATH} ${FMU_TEMPFOLDER})
 ADD_TEST(ctest_fmi_import_test_me_2 fmi_import_test ${FMU2_ME_PATH} ${FMU_TEMPFOLDER})
@@ -164,6 +166,7 @@ ADD_TEST(ctest_fmi_import_test_cs_2 fmi_import_test ${FMU2_CS_PATH} ${FMU_TEMPFO
 
 if(FMILIB_BUILD_BEFORE_TESTS)
 	SET_TESTS_PROPERTIES ( 
+		ctest_fmi_import_test_no_xml
 		ctest_fmi_import_test_me_1
 		ctest_fmi_import_test_cs_1
 		ctest_fmi_import_test_me_2
@@ -172,3 +175,4 @@ if(FMILIB_BUILD_BEFORE_TESTS)
 		ctest_fmi_zip_zip_test
 		PROPERTIES DEPENDS ctest_build_all)
 endif()
+SET_TESTS_PROPERTIES ( ctest_fmi_import_test_no_xml PROPERTIES DEPENDS ctest_fmi_zip_unzip_test) 

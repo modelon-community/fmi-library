@@ -14,13 +14,22 @@
       <Real/>
     </SimpleType>
   </TypeDefinitions>
- 
+  <VendorAnnotations>
+    <Tool name ="JModelica">
+      <JModelica name="model annotations">Test data</JModelica>
+    </Tool>
+  </VendorAnnotations>
 <ModelVariables>
   <ScalarVariable name="HIGHT" valueReference="0" initial="exact" causality="output" description="Hight of the ball">
      <RealType/> <Real start="1.0" /> <Integer/>
   </ScalarVariable>
   <ScalarVariable name="HIGHT_SPEED" valueReference="1" initial="exact" description="Speed of the ball">
      <Real start="4.0" fixed="true"/>
+    <Annotations>
+      <Tool name ="JModelica">
+        <JModelica name="HIGHT_SPEED variable annotations">Test data</JModelica>
+      </Tool>
+    </Annotations>
 	 </ScalarVariable> 
   <ScalarVariable name="HIGHT_SPEED alias" valueReference="1" description="Speed of the ball">
      <Real />

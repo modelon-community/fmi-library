@@ -64,6 +64,8 @@ int fmi2_xml_handle_VariableTool(fmi2_xml_parser_context_t *context, const char*
             memcpy(vendor, jm_vector_get_itemp(char)(bufName,0), len);
             vendor[len] = 0;
 
+			context->anyParentName = "ScalarVariable";
+			context->anyParent = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
 			context->useAnyHandleFlg = 1;
     }
     else {
@@ -97,6 +99,8 @@ int fmi2_xml_handle_Tool(fmi2_xml_parser_context_t *context, const char* data) {
             memcpy(vendor, jm_vector_get_itemp(char)(bufName,0), len);
             vendor[len] = 0;
 
+			context->anyParentName = "fmiModelDescription";
+			context->anyParent = 0;
 			context->useAnyHandleFlg = 1;
     }
     else {

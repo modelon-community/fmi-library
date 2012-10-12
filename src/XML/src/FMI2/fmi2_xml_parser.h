@@ -209,6 +209,8 @@ struct fmi2_xml_parser_context_t {
 
 	int anyElmCount;
 	int useAnyHandleFlg;
+	char* anyParentName;
+	void* anyParent;
 	jm_xml_callbacks_t* anyHandle;
 };
 

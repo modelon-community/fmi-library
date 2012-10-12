@@ -31,9 +31,10 @@ void mylogger(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_level, j
         printf("module = %s, log level = %d: %s\n", module, log_level, message);
 }
 
-int annotation_start_handle(void *context, const char *elm, const char **attr) {
+int annotation_start_handle(void *context, const char *parentName, void *parent, const char *elm, const char **attr) {
 	int i = 0;
-	printf("Annotation element %s start\n", elm);
+	printf("Annotation element %s start (under %s:%s)\n", elm, parentName, 
+		parent?fmi2_import_get_variable_name((fmi2_import_variable_t*)parent):"");
 	while(attr[i]) {
 		printf("Attribute %s = %s\n", attr[i], attr[i+1]);
 		i+=2;

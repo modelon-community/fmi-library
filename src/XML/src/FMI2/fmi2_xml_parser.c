@@ -377,7 +377,7 @@ static void XMLCALL fmi2_parse_element_start(void *c, const char *elm, const cha
 		jm_xml_callbacks_t* anyH = context->anyHandle;
 		context->anyElmCount++;
 		if(anyH && anyH->startHandle) {
-			int ret = anyH->startHandle(anyH->context, elm, attr);
+			int ret = anyH->startHandle(anyH->context, context->anyParentName, context->anyParent, elm, attr);
 			if(ret != 0) {
 				fmi2_xml_parse_fatal(context, "User element handle returned non-zero error code %d", ret);
 			}
@@ -624,6 +624,7 @@ int fmi2_xml_parse_model_description(fmi2_xml_model_description_t* md, const cha
     context->currentElmID = fmi2_xml_elmID_none;
 	context->anyElmCount = 0;
 	context->useAnyHandleFlg = 0;
+	context->anyParent = 0;
 	context->anyHandle = xml_callbacks;
 
     memsuite.malloc_fcn = context->callbacks->malloc;

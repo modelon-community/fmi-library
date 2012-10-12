@@ -35,12 +35,17 @@ typedef struct jm_xml_callbacks_t jm_xml_callbacks_t;
 /** \name XML handling callbacks
 * @{ 
 */
-/** \brief Handle start of an XML element.
+/** \brief Handle start of an XML element in a SAX parser.
 *
-*  Arguments are: context as specified when setting up the callbacks, elm - name of the element, attr - attributes (names and values).
+*  Arguments are: 
+*	context as specified when setting up the callbacks,
+*   parentName - parse context specific parent name,
+*   parent - parse context specific parent object, 
+*   elm - name of the element, 
+*   attr - attributes (names and values).
 *  The function should return 0 on success or error code on exit (in which case parsing will be aborted).
 */
-typedef int (*jm_xml_element_start_handle_ft)(	void *context, const char *elm, const char **attr);
+typedef int (*jm_xml_element_start_handle_ft)(	void *context, const char *parentName, void *parent, const char *elm, const char **attr);
 
 /** \brief Handle data of an XML element.
 *

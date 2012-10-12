@@ -110,7 +110,7 @@ jm_status_enu_t fmi2_import_create_dllfmu(fmi2_import_t* fmu, fmi2_fmu_kind_enu_
 
 
 	/* Load the DLL functions */
-	if (fmi2_capi_load_fcn(fmu -> capi) == jm_status_error) {
+	if (fmi2_capi_load_fcn(fmu -> capi, fmi2_xml_get_capabilities(fmu->md)) == jm_status_error) {
 		fmi2_capi_free_dll(fmu -> capi);			
 		fmi2_capi_destroy_dllfmu(fmu -> capi);
 		fmu -> capi = NULL;
@@ -201,6 +201,31 @@ const char* fmi2_import_get_types_platform(fmi2_import_t* fmu) {
 	return fmi2_capi_get_types_platform(fmu -> capi);
 }
 
+fmi2_status_t fmi2_import_get_fmu_state           (fmi2_import_t* fmu, fmi2_FMU_state_t* s) {
+	return fmi2_capi_get_fmu_state(fmu -> capi,s);
+}
+fmi2_status_t fmi2_import_set_fmu_state           (fmi2_import_t* fmu, fmi2_FMU_state_t s){
+	return fmi2_capi_set_fmu_state(fmu -> capi,s);
+}
+fmi2_status_t fmi2_import_free_fmu_state          (fmi2_import_t* fmu, fmi2_FMU_state_t* s){
+	return fmi2_capi_free_fmu_state (fmu -> capi,s);
+}
+fmi2_status_t fmi2_import_serialized_fmu_state_size(fmi2_import_t* fmu, fmi2_FMU_state_t s, size_t* sz){
+	return fmi2_capi_serialized_fmu_state_size(fmu -> capi,s,sz);
+}
+fmi2_status_t fmi2_import_serialize_fmu_state     (fmi2_import_t* fmu, fmi2_FMU_state_t s , fmi2_byte_t data[], size_t sz){
+	return fmi2_capi_serialize_fmu_state(fmu -> capi,s,data,sz);
+}
+fmi2_status_t fmi2_import_de_serialize_fmu_state  (fmi2_import_t* fmu, const fmi2_byte_t data[], size_t sz, fmi2_FMU_state_t* s){
+	return fmi2_capi_de_serialize_fmu_state (fmu -> capi,data,sz,s);
+}
+
+fmi2_status_t fmi2_import_get_directional_derivative(fmi2_import_t* fmu, const fmi2_value_reference_t v_ref[], size_t nv,
+                                                                   const fmi2_value_reference_t z_ref[], size_t nz,
+                                                                   const fmi2_real_t dv[], fmi2_real_t dz[]){
+	return fmi2_capi_get_directional_derivative(fmu -> capi,v_ref, nv, z_ref, nz, dv, dz);
+}
+
 /* FMI 2.0 ME functions */
 
 jm_status_enu_t fmi2_import_instantiate_model(fmi2_import_t* fmu, fmi2_string_t instanceName, fmi2_string_t fmuResourceLocation, fmi2_boolean_t visible) {
@@ -247,6 +272,10 @@ fmi2_status_t fmi2_import_get_event_indicators(fmi2_import_t* fmu, fmi2_real_t e
 
 fmi2_status_t fmi2_import_eventUpdate(fmi2_import_t* fmu, fmi2_boolean_t intermediateResults, fmi2_event_info_t* eventInfo) {
 	return fmi2_capi_eventUpdate(fmu -> capi, intermediateResults, eventInfo);
+}
+
+fmi2_status_t fmi2_import_completed_event_iteration(fmi2_import_t* fmu) {
+	return fmi2_capi_completed_event_iteration(fmu -> capi);
 }
 
 fmi2_status_t fmi2_import_get_continuous_states(fmi2_import_t* fmu, fmi2_real_t states[], size_t nx) {

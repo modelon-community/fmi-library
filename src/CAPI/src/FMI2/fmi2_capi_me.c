@@ -13,9 +13,6 @@
     along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 */
 
-#ifdef __cplusplus 
-extern "C" {
-#endif
 #include <assert.h>
 #include <FMI2/fmi2_capi.h>
 #include <FMI2/fmi2_capi_impl.h>
@@ -85,6 +82,12 @@ fmi2_status_t fmi2_capi_eventUpdate(fmi2_capi_t* fmu, fmi2_boolean_t intermediat
 	return fmu->fmiEventUpdate(fmu->c, intermediateResults, eventInfo);
 }
 
+fmi2_status_t fmi2_capi_completed_event_iteration(fmi2_capi_t* fmu) {
+	assert(fmu);
+	jm_log_debug(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Calling fmiCompletedEventIteration");
+	return fmu->fmiCompletedEventIteration(fmu->c);
+}
+
 fmi2_status_t fmi2_capi_get_continuous_states(fmi2_capi_t* fmu, fmi2_real_t states[], size_t nx)
 {
 	assert(fmu);
@@ -112,7 +115,3 @@ fmi2_status_t fmi2_capi_terminate(fmi2_capi_t* fmu)
 	jm_log_debug(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Calling fmiTerminate");
 	return fmu->fmiTerminate(fmu->c);
 }
-
-#ifdef __cplusplus
-}
-#endif

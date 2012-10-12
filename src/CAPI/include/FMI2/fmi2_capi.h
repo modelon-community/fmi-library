@@ -76,9 +76,10 @@ fmi2_capi_t* fmi2_capi_create_dllfmu(jm_callbacks* callbacks, const char* dllPat
  * \brief Loads the FMI functions from the shared library. The shared library must be loaded before this function can be called, see fmi2_import_load_dll.
  * 
  * @param fmu A model description object returned by fmi2_import_allocate.
+ * @param capabilities An array of capability flags according to fmi2_capabilities_enu_t order.
  * @return Error status. If the function returns with an error, no other C-API functions than fmi2_import_free_dll and fmi2_import_destroy_dllfmu are allowed to be called.
  */
-jm_status_enu_t fmi2_capi_load_fcn(fmi2_capi_t* fmu);
+jm_status_enu_t fmi2_capi_load_fcn(fmi2_capi_t* fmu, unsigned int capabilities[]);
 
 /**
  * \brief Loads the FMU´s shared library. The shared library functions are not loaded in this call, see fmi2_import_load_fcn.
@@ -225,11 +226,6 @@ fmi2_status_t fmi2_capi_get_boolean(fmi2_capi_t* fmu, const fmi2_value_reference
  */
 fmi2_status_t fmi2_capi_get_string(fmi2_capi_t* fmu, const fmi2_value_reference_t vr[], size_t nvr, fmi2_string_t  value[]);
 
-/**@} */
-
-/** \addtogroup fmi2_capi_me
- *  @{
- */
 
 /**
  * \brief Calls the FMI function fmiGetTypesPlatform(...) 
@@ -238,6 +234,25 @@ fmi2_status_t fmi2_capi_get_string(fmi2_capi_t* fmu, const fmi2_value_reference_
  * @return The platform the FMU was compiled for.
  */
 const char* fmi2_capi_get_types_platform(fmi2_capi_t* fmu);
+
+fmi2_status_t fmi2_capi_get_fmu_state           (fmi2_capi_t* fmu, fmi2_FMU_state_t* s);
+fmi2_status_t fmi2_capi_set_fmu_state           (fmi2_capi_t* fmu, fmi2_FMU_state_t s);
+fmi2_status_t fmi2_capi_free_fmu_state          (fmi2_capi_t* fmu, fmi2_FMU_state_t* s);
+fmi2_status_t fmi2_capi_serialized_fmu_state_size(fmi2_capi_t* fmu, fmi2_FMU_state_t s, size_t* sz);
+fmi2_status_t fmi2_capi_serialize_fmu_state     (fmi2_capi_t* fmu, fmi2_FMU_state_t s , fmi2_byte_t data[], size_t sz);
+fmi2_status_t fmi2_capi_de_serialize_fmu_state  (fmi2_capi_t* fmu, const fmi2_byte_t data[], size_t sz, fmi2_FMU_state_t* s);
+
+/* Getting partial derivatives */
+/*   typedef fmi2_status_t (*fmi2_get_partial_derivatives_ft)   (fmi2_component_t, fmi2_set_matrix_element_ft, void*, void*, void*, void*); */
+fmi2_status_t fmi2_capi_get_directional_derivative(fmi2_capi_t* fmu, const fmi2_value_reference_t v_ref[], size_t nv,
+                                                                   const fmi2_value_reference_t z_ref[], size_t nz,
+                                                                   const fmi2_real_t dv[], fmi2_real_t dz[]);
+/**@} */
+
+/** \addtogroup fmi2_capi_me
+ *  @{
+ */
+
 
 /**
  * \brief Calls the FMI function fmiInstantiateModel(...) 
@@ -327,6 +342,14 @@ fmi2_status_t fmi2_capi_get_event_indicators(fmi2_capi_t* fmu, fmi2_real_t event
  * @return FMI status.
  */
 fmi2_status_t fmi2_capi_eventUpdate(fmi2_capi_t* fmu, fmi2_boolean_t intermediateResults, fmi2_event_info_t* eventInfo);
+
+/**
+ * \brief Wrapper for the FMI function fmiCompletedEventIteration(...) 
+ * 
+ * @param fmu C-API struct that has succesfully loaded the FMI function.
+ * @return FMI status.
+ */
+fmi2_status_t fmi2_capi_completed_event_iteration(fmi2_capi_t* fmu);
 
 /**
  * \brief Calls the FMI function fmiGetContinuousStates(...) 

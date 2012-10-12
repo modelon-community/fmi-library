@@ -60,9 +60,23 @@ struct fmi2_capi_t {
     fmi2_get_boolean_ft					fmiGetBoolean;
     fmi2_get_string_ft					fmiGetString;
 
+	fmi2_get_fmu_state_ft				fmiGetFMUstate;
+	fmi2_set_fmu_state_ft				fmiSetFMUstate;
+	fmi2_free_fmu_state_ft				fmiFreeFMUstate;
+	
+	fmi2_serialized_fmu_state_size_ft	fmiSerializedFMUstateSize;
+	fmi2_serialize_fmu_state_ft			fmiSerializeFMUstate;
+    fmi2_de_serialize_fmu_state_ft		fmiDeSerializeFMUstate;
+
+/* Getting partial derivatives */
+/*  fmi2_get_partial_derivatives_ft     fmiGetPartialDerivatives; */
+	fmi2_get_directional_derivative_ft			fmiGetDirectionalDerivative;
+
 	/* FMI ME */
     fmi2_get_types_platform_ft			fmiGetTypesPlatform;    
     fmi2_instantiate_model_ft			fmiInstantiateModel;
+    fmi2_completed_event_iteration_ft   fmiCompletedEventIteration;
+
     fmi2_free_model_instance_ft			fmiFreeModelInstance;    
     fmi2_set_time_ft					fmiSetTime;
     fmi2_set_continuous_states_ft		fmiSetContinuousStates;

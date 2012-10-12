@@ -133,6 +133,11 @@ FMIAPI fmiStatus fmiEventUpdate(fmiComponent c, fmiBoolean intermediateResults, 
 	return fmi_event_update(c, intermediateResults, eventInfo);
 }
 
+FMIAPI fmiStatus fmiCompletedEventIteration(fmiComponent c) {
+	if(c) return fmiOK;
+	return fmiError;
+}
+
 FMIAPI fmiStatus fmiGetContinuousStates(fmiComponent c, fmiReal states[], size_t nx)
 {
 	return fmi_get_continuous_states(c, states, nx);

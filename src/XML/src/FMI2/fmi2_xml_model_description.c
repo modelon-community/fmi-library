@@ -257,6 +257,10 @@ fmi2_fmu_kind_enu_t fmi2_xml_get_fmu_kind(fmi2_xml_model_description_t* md) {
 	return md->fmuKind;
 }
 
+unsigned int* fmi2_xml_get_capabilities(fmi2_xml_model_description_t* md) {
+	return md->capabilities;
+}
+
 unsigned int fmi2_xml_get_capability(fmi2_xml_model_description_t* md, fmi2_capabilities_enu_t id) {
 	assert((unsigned)id < (unsigned)fmi2_capabilities_Num);
 	return md->capabilities[id];

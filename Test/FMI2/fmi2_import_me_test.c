@@ -107,6 +107,7 @@ int test_simulate_me(fmi2_import_t* fmu)
 		/* Handle any events */
 		if (callEventUpdate || zero_crossning_event || (eventInfo.upcomingTimeEvent && tcur == eventInfo.nextEventTime)) {
 			fmistatus = fmi2_import_eventUpdate(fmu, intermediateResults, &eventInfo);
+			fmistatus = fmi2_import_completed_event_iteration(fmu);
 			fmistatus = fmi2_import_get_continuous_states(fmu, states, n_states);
 			fmistatus = fmi2_import_get_event_indicators(fmu, event_indicators, n_event_indicators);
 			fmistatus = fmi2_import_get_event_indicators(fmu, event_indicators_prev, n_event_indicators);

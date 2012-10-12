@@ -210,6 +210,19 @@ FMILIB_EXPORT fmi2_status_t fmi2_import_get_string(fmi2_import_t* fmu, const fmi
  */
 FMILIB_EXPORT const char* fmi2_import_get_types_platform(fmi2_import_t* fmu);
 
+FMILIB_EXPORT fmi2_status_t fmi2_import_get_fmu_state           (fmi2_import_t* fmu, fmi2_FMU_state_t*);
+FMILIB_EXPORT fmi2_status_t fmi2_import_set_fmu_state           (fmi2_import_t* fmu, fmi2_FMU_state_t);
+FMILIB_EXPORT fmi2_status_t fmi2_import_free_fmu_state          (fmi2_import_t* fmu, fmi2_FMU_state_t*);
+FMILIB_EXPORT fmi2_status_t fmi2_import_serialized_fmu_state_size(fmi2_import_t* fmu, fmi2_FMU_state_t, size_t*);
+FMILIB_EXPORT fmi2_status_t fmi2_import_serialize_fmu_state     (fmi2_import_t* fmu, fmi2_FMU_state_t, fmi2_byte_t[], size_t);
+FMILIB_EXPORT fmi2_status_t fmi2_import_de_serialize_fmu_state  (fmi2_import_t* fmu, const fmi2_byte_t[], size_t, fmi2_FMU_state_t*);
+
+/* Getting partial derivatives */
+/*   typedef fmi2_status_t (*fmi2_get_partial_derivatives_ft)   (fmi2_component_t, fmi2_set_matrix_element_ft, void*, void*, void*, void*); */
+FMILIB_EXPORT fmi2_status_t fmi2_import_get_directional_derivative(fmi2_import_t* fmu, const fmi2_value_reference_t[], size_t,
+                                                                   const fmi2_value_reference_t[], size_t,
+                                                                   const fmi2_real_t[], fmi2_real_t[]);
+
 /**@} */
 
 /**
@@ -304,6 +317,14 @@ FMILIB_EXPORT fmi2_status_t fmi2_import_get_event_indicators(fmi2_import_t* fmu,
  * @return FMI status.
  */
 FMILIB_EXPORT fmi2_status_t fmi2_import_eventUpdate(fmi2_import_t* fmu, fmi2_boolean_t intermediateResults, fmi2_event_info_t* eventInfo);
+
+/**
+ * \brief Wrapper for the FMI function fmiCompletedEventIteration(...) 
+ * 
+ * @param fmu A model description object returned by fmi2_import_parse_xml() that has loaded the FMI functions, see fmi2_import_load_fcn().
+ * @return FMI status.
+ */
+FMILIB_EXPORT fmi2_status_t fmi2_import_completed_event_iteration(fmi2_import_t* fmu);
 
 /**
  * \brief Wrapper for the FMI function fmiGetContinuousStates(...) 

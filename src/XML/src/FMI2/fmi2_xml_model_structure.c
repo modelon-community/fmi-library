@@ -150,12 +150,14 @@ void fmi2_xml_zero_empty_dependencies(fmi2_xml_dependencies_t** pdep) {
 
 
 void fmi2_xml_free_dependencies(fmi2_xml_dependencies_t* dep) {
-
+    jm_callbacks* cb;
 	if(!dep) return;
+    cb = dep->startIndex.callbacks;
 	jm_vector_free_data(size_t)(&dep->startIndex);
 
 	jm_vector_free_data(size_t)(&dep->dependencyIndex);
 	jm_vector_free_data(char)(&dep->dependencyFactorKind);
+    cb->free(dep);
 }
 
 

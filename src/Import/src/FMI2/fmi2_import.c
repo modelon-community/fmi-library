@@ -57,7 +57,7 @@ const char* fmi2_import_get_last_error(fmi2_import_t* fmu) {
 	return jm_get_last_error(fmu->callbacks);
 }
 
-fmi2_import_t* fmi2_import_parse_xml( fmi_import_context_t* context, const char* dirPath, jm_xml_callbacks_t* xml_callbacks) {
+fmi2_import_t* fmi2_import_parse_xml( fmi_import_context_t* context, const char* dirPath, fmi2_xml_callbacks_t* xml_callbacks) {
 	char* xmlPath;
 	char absPath[FILENAME_MAX + 2];
 	fmi2_import_t* fmu = 0;
@@ -292,9 +292,31 @@ fmi2_import_variable_list_t* fmi2_import_vector_to_varlist(fmi2_import_t* fmu, j
 }
 
 /* Get the list of all the variables in the model */
-fmi2_import_variable_list_t* fmi2_import_get_variable_list(fmi2_import_t* fmu) {
+/* 0 - original order as found in the XML file; 1 - sorted alfabetically by variable name; 2 sorted by types/value references. */
+fmi2_import_variable_list_t* fmi2_import_get_variable_list(fmi2_import_t* fmu, int sortOrder) {
 	if(!fmi2_import_check_has_FMU(fmu)) return 0;
-	return fmi2_import_vector_to_varlist(fmu, fmi2_xml_get_variables_original_order(fmu->md));
+	switch(sortOrder) {
+	case 0:
+		return fmi2_import_vector_to_varlist(fmu, fmi2_xml_get_variables_original_order(fmu->md));
+	case 1: {
+		fmi2_import_variable_list_t* vl;
+		size_t nv, i;
+		jm_vector(jm_named_ptr)* vars = fmi2_xml_get_variables_alphabetical_order(fmu->md);
+		if(!vars) return 0;
+		nv = jm_vector_get_size(jm_named_ptr)(vars);
+		vl = fmi2_import_alloc_variable_list(fmu, nv);
+		if(!vl) return 0;
+		for(i = 0; i< nv; i++) {
+			jm_vector_set_item(jm_voidp)(&vl->variables, i, jm_vector_get_item(jm_named_ptr)(vars, i).ptr);
+		}
+		return vl;
+	}
+	case 2:
+		return fmi2_import_vector_to_varlist(fmu, fmi2_xml_get_variables_vr_order(fmu->md));
+	default:
+		assert(0);
+	}
+	return 0;
 }
 
 fmi2_fmu_kind_enu_t fmi2_import_get_fmu_kind(fmi2_import_t* fmu) {

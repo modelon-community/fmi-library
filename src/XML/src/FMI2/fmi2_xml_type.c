@@ -538,8 +538,8 @@ int fmi2_xml_handle_String(fmi2_xml_parser_context_t *context, const char* data)
 
         named = jm_vector_get_last(jm_named_ptr)(&context->modelDescription->typeDefinitions.typeDefinitions);
         type = named.ptr;
-        type->typeBase.baseType = fmi2_base_type_bool;
-        type->typeBase.baseTypeStruct = &md->typeDefinitions.defaultBooleanType;
+        type->typeBase.baseType = fmi2_base_type_str;
+        type->typeBase.baseTypeStruct = &md->typeDefinitions.defaultStringType;
     }
     else {
         /* don't do anything. might give out a warning if(data[0] != 0) */
@@ -561,6 +561,7 @@ int fmi2_xml_handle_Enumeration(fmi2_xml_parser_context_t *context, const char* 
 													&md->typeDefinitions, 
 													&md->typeDefinitions.defaultEnumType.base.typeBase,
 													sizeof(fmi2_xml_enum_typedef_props_t));
+        props->base.typeBase.baseTypeStruct = 0;
         if(props) jm_vector_init(jm_named_ptr)(&props->enumItems,0,context->callbacks);
         if(!bufQuantity || !props ||
                 /* <xs:attribute name="quantity" type="xs:normalizedString"/> */

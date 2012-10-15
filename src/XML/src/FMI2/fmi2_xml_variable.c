@@ -328,6 +328,7 @@ int fmi2_xml_handle_ScalarVariable(fmi2_xml_parser_context_t *context, const cha
 			variable->derivativeIndex = 0;
 			variable->outputIndex = 0;
 			variable->originalIndex = jm_vector_get_size(jm_named_ptr)(&md->variablesByName) - 1;
+            variable->aliasKind = fmi2_variable_is_not_alias;
 
             {
                 jm_name_ID_map_t causalityConventionMap[] = {{"local",fmi2_causality_enu_local},
@@ -877,8 +878,8 @@ int fmi2_xml_handle_ModelVariables(fmi2_xml_parser_context_t *context, const cha
         jm_vector_qsort(jm_voidp)(varByVR, fmi2_xml_compare_vr_and_original_index);
 
         numvar = jm_vector_get_size(jm_voidp)(varByVR);
-
-		if(numvar > 0)  {
+        
+        if(numvar > 1){
             int foundBadAlias;
 
 			jm_log_verbose(context->callbacks, module,"Building alias index");
@@ -888,7 +889,7 @@ int fmi2_xml_handle_ModelVariables(fmi2_xml_parser_context_t *context, const cha
 				a->aliasKind = fmi2_variable_is_not_alias;
 
                 foundBadAlias = 0;
-
+                
 
                 for(i = 1; i< numvar; i++) {
                     fmi2_xml_variable_t* b = (fmi2_xml_variable_t*)jm_vector_get_item(jm_voidp)(varByVR, i);
@@ -904,7 +905,7 @@ int fmi2_xml_handle_ModelVariables(fmi2_xml_parser_context_t *context, const cha
 									"Only one variable among aliases is allowed to have start attribute (variables: %s and %s)",
 										a->name, b->name);
 								fmi2_xml_eliminate_bad_alias(context,i);
-						        numvar = jm_vector_get_size(jm_voidp)(varByVR);
+                                numvar = jm_vector_get_size(jm_voidp)(varByVR);
 								foundBadAlias = 1;
 								break;
 							}

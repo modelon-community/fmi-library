@@ -24,7 +24,7 @@
 #include <stddef.h>
 #include <fmilib_config.h>
 #include <JM/jm_callbacks.h>
-#include <JM/jm_xml_callbacks.h>
+#include <FMI2/fmi2_xml_callbacks.h>
 #include <FMI/fmi_version.h> 
 #include <FMI1/fmi1_types.h>
 #include <FMI1/fmi1_enums.h>
@@ -96,7 +96,7 @@ FMILIB_EXPORT fmi1_import_t* fmi1_import_parse_xml( fmi_import_context_t* c, con
 	\param xml_callbacks Callbacks to use for processing of annotations (may be NULL).
 	\return fmi2_import_t:: opaque object pointer
 */
-FMILIB_EXPORT fmi2_import_t* fmi2_import_parse_xml( fmi_import_context_t* context, const char* dirPath, jm_xml_callbacks_t* xml_callbacks);
+FMILIB_EXPORT fmi2_import_t* fmi2_import_parse_xml( fmi_import_context_t* context, const char* dirPath, fmi2_xml_callbacks_t* xml_callbacks);
 
 /** 
 @}

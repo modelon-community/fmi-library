@@ -513,8 +513,8 @@ int fmi1_xml_handle_StringType(fmi1_xml_parser_context_t *context, const char* d
 
         named = jm_vector_get_last(jm_named_ptr)(&context->modelDescription->typeDefinitions.typeDefinitions);
         type = named.ptr;
-        type->typeBase.baseType = fmi1_base_type_bool;
-        type->typeBase.baseTypeStruct = &md->typeDefinitions.defaultBooleanType;
+        type->typeBase.baseType = fmi1_base_type_str;
+        type->typeBase.baseTypeStruct = &md->typeDefinitions.defaultStringType;
     }
     else {
         /* don't do anything. might give out a warning if(data[0] != 0) */

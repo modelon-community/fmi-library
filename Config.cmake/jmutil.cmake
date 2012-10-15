@@ -38,7 +38,6 @@ set(JMUTILHEADERS
   JM/jm_named_ptr.h
   JM/jm_string_set.h
   JM/jm_portability.h
-  JM/jm_xml_callbacks.h
   FMI/fmi_version.h
   FMI/fmi_util.h
 
@@ -49,6 +48,7 @@ set(JMUTILHEADERS
   FMI2/fmi2_functions.h
   FMI2/fmi2_types.h
   FMI2/fmi2_enums.h
+  FMI2/fmi2_xml_callbacks.h
 )
 
 PREFIXLIST(JMUTILSOURCE  ${JMUTILDIR}/src/)

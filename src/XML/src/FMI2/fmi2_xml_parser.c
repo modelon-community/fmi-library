@@ -374,10 +374,10 @@ static void XMLCALL fmi2_parse_element_start(void *c, const char *elm, const cha
     context->has_produced_data_warning = 0;
 
 	if(context->useAnyHandleFlg) {
-		jm_xml_callbacks_t* anyH = context->anyHandle;
+		fmi2_xml_callbacks_t* anyH = context->anyHandle;
 		context->anyElmCount++;
 		if(anyH && anyH->startHandle) {
-			int ret = anyH->startHandle(anyH->context, context->anyParentName, context->anyParent, elm, attr);
+            int ret = anyH->startHandle(anyH->context, context->anyToolName, context->anyParent, elm, attr);            
 			if(ret != 0) {
 				fmi2_xml_parse_fatal(context, "User element handle returned non-zero error code %d", ret);
 			}
@@ -451,7 +451,8 @@ static void XMLCALL fmi2_parse_element_start(void *c, const char *elm, const cha
         if(!currentMap) {
 #define XMLSchema_instance "http://www.w3.org/2001/XMLSchema-instance"
 			const size_t stdNSlen = strlen(XMLSchema_instance);
-			if((attr[i][stdNSlen] == '|') && (strncmp(attr[i], XMLSchema_instance, stdNSlen) == 0)) {
+            const size_t attrStrLen = strlen(attr[i]);
+			if((attrStrLen > stdNSlen) && (attr[i][stdNSlen] == '|') && (strncmp(attr[i], XMLSchema_instance, stdNSlen) == 0)) {
 				const char* localName = attr[i] + stdNSlen + 1;
 				if(	strcmp(localName, "noNamespaceSchemaLocation") == 0)
 					jm_log_warning(context->callbacks, module, "Attribute noNamespaceSchemaLocation='%s' is ignored. Using standard fmiModelDescription.xsd.",
@@ -467,6 +468,15 @@ static void XMLCALL fmi2_parse_element_start(void *c, const char *elm, const cha
 				else {
 					jm_log_error(context->callbacks, module, "Unknown attribute '%s=%s' in XML", attr[i], attr[i+1]);
 				}
+			}
+			else if(
+				(strcmp("providesPartialDerivativesOf_DerivativeFunction_wrt_States", attr[i]) == 0) ||
+				(strcmp("providesPartialDerivativesOf_DerivativeFunction_wrt_Inputs", attr[i]) == 0) ||
+				(strcmp("providesPartialDerivativesOf_OutputFunction_wrt_States", attr[i]) == 0) ||
+				(strcmp("providesPartialDerivativesOf_OutputFunction_wrt_Inputs", attr[i]) == 0)
+				) {
+					jm_log_warning(context->callbacks, module, 
+						"FMI API function fmiGetPartialDerivatives is removed from the specification. Attribute %s will be ignored.", attr[i]);
 			}
 			else {
 				/* not found error*/
@@ -509,7 +519,7 @@ static void XMLCALL fmi2_parse_element_end(void* c, const char *elm) {
     fmi2_xml_parser_context_t *context = c;
 
 	if(context->useAnyHandleFlg && (context->anyElmCount > 0)) {
-		jm_xml_callbacks_t* anyH = context->anyHandle;
+		fmi2_xml_callbacks_t* anyH = context->anyHandle;
 		context->anyElmCount--;
 		if(anyH && anyH->endHandle) {
 			int ret = anyH->endHandle(anyH->context, elm);
@@ -571,7 +581,7 @@ static void XMLCALL fmi2_parse_element_data(void* c, const XML_Char *s, int len)
 		int i;
         fmi2_xml_parser_context_t *context = c;
 		if(context->useAnyHandleFlg && (context->anyElmCount > 0)) {
-			jm_xml_callbacks_t* anyH = context->anyHandle;
+			fmi2_xml_callbacks_t* anyH = context->anyHandle;
 			if(anyH && anyH->dataHandle) {
 				int ret = anyH->dataHandle(anyH->context, s, len);
 				if(ret != 0) {
@@ -597,7 +607,7 @@ static void XMLCALL fmi2_parse_element_data(void* c, const XML_Char *s, int len)
 		}
 }
 
-int fmi2_xml_parse_model_description(fmi2_xml_model_description_t* md, const char* filename, jm_xml_callbacks_t* xml_callbacks) {
+int fmi2_xml_parse_model_description(fmi2_xml_model_description_t* md, const char* filename, fmi2_xml_callbacks_t* xml_callbacks) {
     XML_Memory_Handling_Suite memsuite;
     fmi2_xml_parser_context_t* context;
     XML_Parser parser = NULL;
@@ -624,7 +634,7 @@ int fmi2_xml_parse_model_description(fmi2_xml_model_description_t* md, const cha
     context->currentElmID = fmi2_xml_elmID_none;
 	context->anyElmCount = 0;
 	context->useAnyHandleFlg = 0;
-	context->anyParent = 0;
+    context->anyParent = 0;
 	context->anyHandle = xml_callbacks;
 
     memsuite.malloc_fcn = context->callbacks->malloc;

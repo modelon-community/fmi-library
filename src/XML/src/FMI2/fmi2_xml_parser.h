@@ -21,7 +21,7 @@
 #include <JM/jm_vector.h>
 #include <JM/jm_stack.h>
 #include <JM/jm_named_ptr.h>
-#include <JM/jm_xml_callbacks.h>
+#include <FMI2/fmi2_xml_callbacks.h>
 
 #include <FMI2/fmi2_enums.h>
 #include <FMI2/fmi2_xml_model_description.h>
@@ -81,16 +81,16 @@ extern "C" {
     EXPAND_XML_ATTRNAME(maxOutputDerivativeOrder) \
     EXPAND_XML_ATTRNAME(canRunAsynchronuously) \
     EXPAND_XML_ATTRNAME(canSignalEvents)\
-	EXPAND_XML_ATTRNAME(providesPartialDerivativesOf_DerivativeFunction_wrt_States)\
-	EXPAND_XML_ATTRNAME(providesPartialDerivativesOf_DerivativeFunction_wrt_Inputs)\
-	EXPAND_XML_ATTRNAME(providesPartialDerivativesOf_OutputFunction_wrt_States)\
-	EXPAND_XML_ATTRNAME(providesPartialDerivativesOf_OutputFunction_wrt_Inputs) \
 	EXPAND_XML_ATTRNAME(derivative) \
 	EXPAND_XML_ATTRNAME(state) \
 	EXPAND_XML_ATTRNAME(stateDependencies) \
 	EXPAND_XML_ATTRNAME(stateFactorKinds) \
 	EXPAND_XML_ATTRNAME(inputDependencies) \
 	EXPAND_XML_ATTRNAME(inputFactorKinds)
+/*	EXPAND_XML_ATTRNAME(providesPartialDerivativesOf_DerivativeFunction_wrt_States)\
+	EXPAND_XML_ATTRNAME(providesPartialDerivativesOf_DerivativeFunction_wrt_Inputs)\
+	EXPAND_XML_ATTRNAME(providesPartialDerivativesOf_OutputFunction_wrt_States)\
+	EXPAND_XML_ATTRNAME(providesPartialDerivativesOf_OutputFunction_wrt_Inputs) \*/
 
 #define FMI2_XML_ATTR_ID(attr) fmi_attr_id_##attr,
 typedef enum fmi2_xml_attr_enu_t {
@@ -209,9 +209,9 @@ struct fmi2_xml_parser_context_t {
 
 	int anyElmCount;
 	int useAnyHandleFlg;
-	char* anyParentName;
+	char* anyToolName;
 	void* anyParent;
-	jm_xml_callbacks_t* anyHandle;
+	fmi2_xml_callbacks_t* anyHandle;
 };
 
 jm_vector(char) * fmi2_xml_reserve_parse_buffer(fmi2_xml_parser_context_t *context, size_t index, size_t size);

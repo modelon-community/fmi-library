@@ -89,6 +89,7 @@ fmi2_xml_model_description_t * fmi2_xml_allocate_model_description( jm_callbacks
 		int i = fmi2_capabilities_Num;
 		while(i > 0)
 			md->capabilities[--i] = 0;
+		md->capabilities[fmi2_me_completedEventIterationIsProvided] = 1;
 	}
     return md;
 }

@@ -44,8 +44,10 @@ static void fmi2_capi_get_fcn_with_flag(fmi2_capi_t* fmu, const char* function_n
 	jm_status_enu_t status = jm_status_success;
 	if(capabilities[flag]) {
 		fmi2_capi_get_fcn(fmu, function_name, dll_function_ptrptr, &status);
-		jm_log_warning(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Reseting capability flag %s", fmi2_capability_to_string(flag)); 
-		capabilities[flag] = 0;
+		if(status != jm_status_success) {
+			jm_log_warning(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Reseting flag '%s'", fmi2_capability_to_string(flag)); 
+			capabilities[flag] = 0;
+		}
 	}
 }
 
@@ -215,7 +217,7 @@ static jm_status_enu_t fmi2_capi_load_me_fcn(fmi2_capi_t* fmu, unsigned int capa
    typedef fmiStatus fmiTerminateTYPE              (fmiComponent); */
 	LOAD_DLL_FUNCTION(fmiInitializeModel);
 	LOAD_DLL_FUNCTION(fmiEventUpdate);
-	LOAD_DLL_FUNCTION(fmiCompletedEventIteration);
+	LOAD_DLL_FUNCTION_WITH_FLAG(fmiCompletedEventIteration, fmi2_me_completedEventIterationIsProvided);
 	LOAD_DLL_FUNCTION(fmiTerminate);
 
 /*

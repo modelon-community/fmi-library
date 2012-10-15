@@ -24,11 +24,11 @@
 
 #include <stddef.h>
 #include <JM/jm_callbacks.h>
-#include <JM/jm_xml_callbacks.h>
 #include <JM/jm_named_ptr.h>
 #include <FMI/fmi_xml_context.h>
 #include <FMI2/fmi2_types.h>
 #include <FMI2/fmi2_enums.h>
+#include <FMI2/fmi2_xml_callbacks.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -109,7 +109,7 @@ fmi2_xml_model_description_t* fmi2_xml_allocate_model_description( jm_callbacks*
 	@param xml_callbacks Callbacks to use for processing annotations (may be NULL).
    @return 0 if parsing was successfull. Non-zero value indicates an error.
 */
-int fmi2_xml_parse_model_description( fmi2_xml_model_description_t* md, const char* fileName, jm_xml_callbacks_t* xml_callbacks);
+int fmi2_xml_parse_model_description( fmi2_xml_model_description_t* md, const char* fileName, fmi2_xml_callbacks_t* xml_callbacks);
 
 /**
    Clears the data associated with the model description. This is useful if the same object

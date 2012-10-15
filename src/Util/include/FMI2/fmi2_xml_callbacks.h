@@ -13,59 +13,59 @@
     along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 */
 
-#ifndef JM_XML_CALLBACKS_H
-#define JM_XML_CALLBACKS_H
+#ifndef FMI2_XML_CALLBACKS_H
+#define FMI2_XML_CALLBACKS_H
 
 #include <fmilib_config.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-/** \file jm_xml_callbacks.h Definition of ::jm_xml_callbacks_t and supporting functions
+/** \file fmi2_xml_callbacks.h Definition of ::fmi2_xml_callbacks_t and supporting functions
 	*
-	* \addtogroup jm_utils
+	* \addtogroup fmi2_utils
 	* @{
-		\addtogroup jm_xml_callbacks
+		\addtogroup fmi2_xml_callbacks
 	* @}
 */
-/** \addtogroup jm_xml_callbacks Definition of XML callbacks struct
+/** \addtogroup fmi2_xml_callbacks Definition of XML callbacks struct
 * @{  */
-typedef struct jm_xml_callbacks_t jm_xml_callbacks_t;
+typedef struct fmi2_xml_callbacks_t fmi2_xml_callbacks_t;
 
 /** \name XML handling callbacks
 * @{ 
 */
-/** \brief Handle start of an XML element in a SAX parser.
+/** \brief Handle start of an XML element within tool annotation in a SAX parser.
 *
 *  Arguments are: 
 *	context as specified when setting up the callbacks,
-*   parentName - parse context specific parent name,
-*   parent - parse context specific parent object, 
+*   parentName - tool name as given by name attibute to the Tool elelent,
+*   parent - NULL for model level annotations; fmi2_import_t variable pointer for variable annotations. 
 *   elm - name of the element, 
 *   attr - attributes (names and values).
 *  The function should return 0 on success or error code on exit (in which case parsing will be aborted).
 */
-typedef int (*jm_xml_element_start_handle_ft)(	void *context, const char *parentName, void *parent, const char *elm, const char **attr);
+typedef int (*fmi2_xml_element_start_handle_ft)(	void *context, const char *toolName, void *parent, const char *elm, const char **attr);
 
 /** \brief Handle data of an XML element.
 *
 *  Arguments are: context as specified when setting up the callbacks, s - data string, len - length of the data.
 *  The function should return 0 on success or error code on exit (in which case parsing will be aborted).
 */
-typedef int (*jm_xml_element_data_handle_ft)(void* context, const char *s, int len);
+typedef int (*fmi2_xml_element_data_handle_ft)(void* context, const char *s, int len);
 
 /** \brief Handle end of an XML element.
 *
 *  Arguments are: context as specified when setting up the callbacks, elm - name of the element.
 *  The function should return 0 on success or error code on exit (in which case parsing will be aborted).
 */
-typedef int (*jm_xml_element_end_handle_ft)(void *context, const char *elm);
+typedef int (*fmi2_xml_element_end_handle_ft)(void *context, const char *elm);
 
 /** \brief XML callbacks are used to process parts of XML that are not handled by the library */
-struct jm_xml_callbacks_t {
-	jm_xml_element_start_handle_ft startHandle;
-	jm_xml_element_data_handle_ft  dataHandle;
-	jm_xml_element_end_handle_ft   endHandle;
+struct fmi2_xml_callbacks_t {
+	fmi2_xml_element_start_handle_ft startHandle;
+	fmi2_xml_element_data_handle_ft  dataHandle;
+	fmi2_xml_element_end_handle_ft   endHandle;
 	void* context;
 };
 /* @}

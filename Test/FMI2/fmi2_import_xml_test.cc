@@ -33,8 +33,8 @@ void mylogger(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_level, j
 
 int annotation_start_handle(void *context, const char *parentName, void *parent, const char *elm, const char **attr) {
 	int i = 0;
-	printf("Annotation element %s start (under %s:%s)\n", elm, parentName, 
-		parent?fmi2_import_get_variable_name((fmi2_import_variable_t*)parent):"");
+	printf("Annotation element %s start (tool: %s, parent:%s)\n", elm, parentName, 
+		parent?fmi2_import_get_variable_name((fmi2_import_variable_t*)parent):"model");
 	while(attr[i]) {
 		printf("Attribute %s = %s\n", attr[i], attr[i+1]);
 		i+=2;
@@ -56,7 +56,7 @@ int annotation_end_handle(void *context, const char *elm) {
 }
 
 /** \brief XML callbacks are used to process parts of XML that are not handled by the library */
-jm_xml_callbacks_t annotation_callbacks = {
+fmi2_xml_callbacks_t annotation_callbacks = {
 	annotation_start_handle,
 	annotation_data_handle,
 	annotation_end_handle, NULL};
@@ -347,6 +347,7 @@ int main(int argc, char *argv[])
     printf("Parsing took %g seconds\n", t);
 	if(!fmu) {
 		printf("Error parsing XML, exiting\n");
+        fmi_import_free_context(context);
 		do_exit(1);
 	}
 
@@ -428,7 +429,7 @@ int main(int argc, char *argv[])
     }
     {
         size_t nv, i;
-        fmi2_import_variable_list_t* vl = fmi2_import_get_variable_list(fmu);
+        fmi2_import_variable_list_t* vl = fmi2_import_get_variable_list(fmu, 0);
 		fmi2_import_variable_list_t* ders = fmi2_import_get_derivatives_list( fmu);
 		const fmi2_value_reference_t* vrl = fmi2_import_get_value_referece_list(vl);
 

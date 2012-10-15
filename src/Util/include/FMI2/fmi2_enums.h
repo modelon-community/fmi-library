@@ -136,7 +136,8 @@ FMILIB_EXPORT const char* fmi2_base_type_to_string(fmi2_base_type_enu_t bt);
 	H(canNotUseMemoryManagementFunctions) \
 	H(canGetAndSetFMUstate) \
 	H(canSerializeFMUstate) \
-	H(providesDirectionalDerivatives)
+	H(providesDirectionalDerivatives)\
+	H(completedEventIterationIsProvided)
 
 /** \brief List of capability flags for CoSimulation */
 #define FMI2_CS_CAPABILITIES(H) \

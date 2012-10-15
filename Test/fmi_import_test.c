@@ -78,6 +78,7 @@ int main(int argc, char *argv[])
 		ret = fmi2_test(context, tmpPath);
 	}
 	else {
+        fmi_import_free_context(context);
 		printf("Only versions 1.0 and 2.0 are supported so far\n");
 		do_exit(CTEST_RETURN_FAIL);
 	}

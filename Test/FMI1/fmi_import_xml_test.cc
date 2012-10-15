@@ -289,6 +289,7 @@ int main(int argc, char *argv[])
 
 	if(!fmu) {
 		printf("Error parsing XML, exiting\n");
+        fmi_import_free_context(context);       
 		do_exit(1);
 	}
 

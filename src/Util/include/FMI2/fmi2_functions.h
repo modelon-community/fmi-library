@@ -81,7 +81,7 @@ typedef struct {
 	fmi2_real_t    nextEventTime;
 } fmi2_event_info_t;
 
-/** Co-simulation status for FMI 2.0 ME */
+/** Co-simulation status for FMI 2.0 CS */
 typedef enum {
     fmi2_do_step_status,
     fmi2_pending_status,

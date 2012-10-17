@@ -343,6 +343,11 @@ int fmi2_capi_get_debug_mode(fmi2_capi_t* fmu) {
 	return 0;
 }
 
+fmi2_fmu_kind_enu_t fmi2_capi_get_fmu_kind(fmi2_capi_t* fmu) {
+	if(fmu) return fmu->standard;
+	return fmi2_fmu_kind_unknown;
+}
+
 jm_status_enu_t fmi2_capi_free_dll(fmi2_capi_t* fmu)
 {
 	if (fmu == NULL) {		

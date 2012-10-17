@@ -112,6 +112,13 @@ void fmi2_capi_set_debug_mode(fmi2_capi_t* fmu, int mode);
  * @param fmu C-API struct that has succesfully loaded the FMI function. */
 int fmi2_capi_get_debug_mode(fmi2_capi_t* fmu);
 
+/**
+ * \brief Get the FMU kind loaded by the CAPI
+ * 
+ * @param fmu C-API struct that has succesfully loaded the FMI function. */
+fmi2_fmu_kind_enu_t fmi2_capi_get_fmu_kind(fmi2_capi_t* fmu);
+
+
 /**@} */
 
 /** \addtogroup fmi2_capi_common

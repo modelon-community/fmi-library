@@ -35,6 +35,7 @@ jm_status_enu_t fmi2_import_create_dllfmu(fmi2_import_t* fmu, fmi2_fmu_kind_enu_
 	char* dllDirPath = 0;
 	char* dllFileName = 0;
 	const char* modelIdentifier;
+	fmi2_callback_functions_t defaultCallbacks;
 
 	if (fmu == NULL) {
 		assert(0);
@@ -42,8 +43,12 @@ jm_status_enu_t fmi2_import_create_dllfmu(fmi2_import_t* fmu, fmi2_fmu_kind_enu_
 	}
 
 	if(fmu -> capi) {
-		jm_log_warning(fmu->callbacks, module, "FMU binary is already loaded"); 
-		return jm_status_success;
+		if(fmi2_capi_get_fmu_kind(fmu -> capi) == fmuKind) {
+			jm_log_warning(fmu->callbacks, module, "FMU binary is already loaded"); 
+			return jm_status_success;
+		}
+		else
+			fmi2_import_destroy_dllfmu(fmu);		
 	}
 
 	if(fmuKind == fmi2_fmu_kind_me)
@@ -71,6 +76,16 @@ jm_status_enu_t fmi2_import_create_dllfmu(fmi2_import_t* fmu, fmi2_fmu_kind_enu_
 	if (!dllDirPath ||!dllFileName) {
 		fmu->callbacks->free(dllDirPath);
 		return jm_status_error;
+	}
+
+	if(!callBackFunctions) {
+		jm_callbacks* cb = fmu->callbacks;
+		defaultCallbacks.allocateMemory = cb->calloc;
+		defaultCallbacks.freeMemory = cb->free;
+		defaultCallbacks.componentEnvironment = fmu;
+		defaultCallbacks.logger = fmi2_log_forwarding;
+		defaultCallbacks.stepFinished = 0;
+		callBackFunctions = &defaultCallbacks;
 	}
 
 	if(jm_portability_set_current_working_directory(dllDirPath) != jm_status_success) {

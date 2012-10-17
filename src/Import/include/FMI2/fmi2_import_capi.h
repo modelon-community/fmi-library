@@ -68,7 +68,8 @@ Wrapper functions for the FMI 1.0 functions
  * 
  * @param fmu A model description object returned by fmi2_import_parse_xml().
  * @param fmuKind Specifies if ModelExchange or CoSimulation binary should be loaded.
- * @param callBackFunctions Callback functions used by the FMI functions internally.
+ * @param callBackFunctions Callback functions to be used by the FMI functions internally. If this parameter is NULL
+ *           then the jm_callbacks:: and fmi2_log_forwarding are utitlized to fill in the default structure.
  * @return Error status. If the function returns with an error, it is not allowed to call any of the other C-API functions.
  */
 FMILIB_EXPORT jm_status_enu_t fmi2_import_create_dllfmu(fmi2_import_t* fmu, fmi2_fmu_kind_enu_t fmuKind, const fmi2_callback_functions_t* callBackFunctions);
@@ -210,18 +211,84 @@ FMILIB_EXPORT fmi2_status_t fmi2_import_get_string(fmi2_import_t* fmu, const fmi
  */
 FMILIB_EXPORT const char* fmi2_import_get_types_platform(fmi2_import_t* fmu);
 
-FMILIB_EXPORT fmi2_status_t fmi2_import_get_fmu_state           (fmi2_import_t* fmu, fmi2_FMU_state_t*);
-FMILIB_EXPORT fmi2_status_t fmi2_import_set_fmu_state           (fmi2_import_t* fmu, fmi2_FMU_state_t);
-FMILIB_EXPORT fmi2_status_t fmi2_import_free_fmu_state          (fmi2_import_t* fmu, fmi2_FMU_state_t*);
-FMILIB_EXPORT fmi2_status_t fmi2_import_serialized_fmu_state_size(fmi2_import_t* fmu, fmi2_FMU_state_t, size_t*);
-FMILIB_EXPORT fmi2_status_t fmi2_import_serialize_fmu_state     (fmi2_import_t* fmu, fmi2_FMU_state_t, fmi2_byte_t[], size_t);
-FMILIB_EXPORT fmi2_status_t fmi2_import_de_serialize_fmu_state  (fmi2_import_t* fmu, const fmi2_byte_t[], size_t, fmi2_FMU_state_t*);
+/**
+ * \brief Wrapper for the FMI function fmiGetFMUstate(...) 
+ * 
+ * @param fmu A model description object returned by fmi2_import_parse_xml() that has loaded the FMI functions, see fmi2_import_load_fcn().
+ * @param s The state object to be set by the FMU
+ * @return FMI status.
+ */
+FMILIB_EXPORT fmi2_status_t fmi2_import_get_fmu_state           (fmi2_import_t* fmu, fmi2_FMU_state_t* s );
 
-/* Getting partial derivatives */
+/**
+ * \brief Wrapper for the FMI function fmiSetFMUstate(...) 
+ * 
+ * @param fmu A model description object returned by fmi2_import_parse_xml() that has loaded the FMI functions, see fmi2_import_load_fcn().
+ * @param s The FMU state object
+ * @return FMI status.
+ */
+FMILIB_EXPORT fmi2_status_t fmi2_import_set_fmu_state           (fmi2_import_t* fmu, fmi2_FMU_state_t s);
+
+/**
+ * \brief Wrapper for the FMI function fmiFreeFMUstate(...) 
+ * 
+ * @param fmu A model description object returned by fmi2_import_parse_xml() that has loaded the FMI functions, see fmi2_import_load_fcn().
+ * @param s The FMU state object
+ * @return FMI status.
+ */
+FMILIB_EXPORT fmi2_status_t fmi2_import_free_fmu_state          (fmi2_import_t* fmu, fmi2_FMU_state_t* s);
+
+/**
+ * \brief Wrapper for the FMI function fmiSerializedFMUstateSize(...) 
+ * 
+ * @param fmu A model description object returned by fmi2_import_parse_xml() that has loaded the FMI functions, see fmi2_import_load_fcn().
+ * @param s The FMU state object
+ * @param sz The size of the serialized state in bytes
+ * @return FMI status.
+ */
+FMILIB_EXPORT fmi2_status_t fmi2_import_serialized_fmu_state_size(fmi2_import_t* fmu, fmi2_FMU_state_t s, size_t* sz);
+
+/**
+ * \brief Wrapper for the FMI function fmiSerializeFMUstate(...) 
+ * 
+ * @param fmu A model description object returned by fmi2_import_parse_xml() that has loaded the FMI functions, see fmi2_import_load_fcn().
+ * @param s The FMU state object
+ * @param data The buffer that will receive serialized FMU state
+ * @param sz The size of the data buffer
+ * @return FMI status.
+ */
+FMILIB_EXPORT fmi2_status_t fmi2_import_serialize_fmu_state     (fmi2_import_t* fmu, fmi2_FMU_state_t s, fmi2_byte_t data[], size_t sz);
+
+/**
+ * \brief Wrapper for the FMI function fmiSerializeFMUstate(...) 
+ * 
+ * @param fmu A model description object returned by fmi2_import_parse_xml() that has loaded the FMI functions, see fmi2_import_load_fcn().
+ * @param data The buffer that contains serialized FMU state
+ * @param sz The size of the data buffer
+ * @param s The FMU state object to be created
+ * @return FMI status.
+ */
+FMILIB_EXPORT fmi2_status_t fmi2_import_de_serialize_fmu_state  (fmi2_import_t* fmu, const fmi2_byte_t data[], size_t sz, fmi2_FMU_state_t* s);
+
+/* Getting partial derivatives: fmiGetPartialDerivatives is not in standard */
 /*   typedef fmi2_status_t (*fmi2_get_partial_derivatives_ft)   (fmi2_component_t, fmi2_set_matrix_element_ft, void*, void*, void*, void*); */
-FMILIB_EXPORT fmi2_status_t fmi2_import_get_directional_derivative(fmi2_import_t* fmu, const fmi2_value_reference_t[], size_t,
-                                                                   const fmi2_value_reference_t[], size_t,
-                                                                   const fmi2_real_t[], fmi2_real_t[]);
+
+
+/**
+ * \brief Wrapper for the FMI function fmiGetDirectionalDerivative(...) 
+ * 
+ * @param fmu A model description object returned by fmi2_import_parse_xml() that has loaded the FMI functions, see fmi2_import_load_fcn().
+ * @param v_ref Value references for the seed vector
+ * @param nv   size of v_ref array
+ * @param z_ref Value references for the derivatives/outputs to be processed
+ * @param nz Size of z_ref array
+ * @param dv The seed vector.
+ * @param dz Calculated directional derivative on output.
+ * @return FMI status.
+ */
+FMILIB_EXPORT fmi2_status_t fmi2_import_get_directional_derivative(fmi2_import_t* fmu, const fmi2_value_reference_t v_ref[], size_t nv,
+                                                                   const fmi2_value_reference_t z_ref[], size_t nz,
+                                                                   const fmi2_real_t dv[], fmi2_real_t dz[]);
 
 /**@} */
 

@@ -40,8 +40,20 @@ extern "C" {
 \addtogroup fmi_import FMI import library
 @{
 \addtogroup fmi_import_context Library initialization
+Interaction with an FMU by means of the FMI Library starts with allocation of 
+an ::fmi_import_context_t structure. This is done with a call to fmi_import_allocate_context().
+The next step is detection of FMI standard used in the specific FMU. This is achieved by
+calling fmi_import_get_fmi_version() function. When the standard is known a standard
+specific function for processing model description XML should be called to create an
+opaque FMU structure. This is done by calling either fmi1_import_parse_xml() or fmi2_import_parse_xml().
+With the FMU structure available one can proceed by loading the FMU binary 
+(fmi1_import_create_dllfmu() or fmi2_import_create_dllfmu()). After that 
+the code is able to interact with the FMU by means of the methonds presented 
+in \ref fmi1_import_capi and \ref fmi2_import_capi.
+
 \addtogroup  fmi1_import
 \addtogroup  fmi2_import
+\addtogroup  fmi_import_utils
 @}
 \addtogroup fmi_import_context
 @{

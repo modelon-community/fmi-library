@@ -38,6 +38,7 @@ extern "C" {
 	\addtogroup fmi1_import_convenience Convenience functions.
 	\brief The functions in this module are provided for convenience. The functionality
 	*  is already available via other lower level functions.
+
 	@{
 	*/
 	

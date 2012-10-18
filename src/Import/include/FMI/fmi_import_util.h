@@ -22,9 +22,8 @@
 extern "C" {
 #endif
 /**
-\addtogroup  fmi_import
+\addtogroup  fmi_import_utils Utility functions supporting interactions with the library
 @{
-\name Utility functions
 */
 /** 
 	\brief Create a unique temporary directory

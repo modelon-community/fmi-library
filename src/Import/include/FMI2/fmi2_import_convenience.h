@@ -39,9 +39,9 @@ extern "C" {
 	\addtogroup fmi2_import_convenience Convenience functions.
 	\brief The functions in this module are provided for convenience. The functionality
 	*  is already available via other lower level functions.
+
 	@{
-	*/
-	
+	*/	
 /** 
 \brief Collection of counters providing model information.
 	*/

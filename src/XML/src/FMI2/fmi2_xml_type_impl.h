@@ -30,7 +30,7 @@ extern "C" {
 
   The type structures are designed to save memory and
   to enable handling of diff-sets in the future.
-  For each basic type (Real, Integer, Enumeration, String & Boolean)
+  For each basic type (Real, Integer, each Enumeration, String & Boolean)
   there is a default instance of fmi2_xml_variable_type_base_t with 
   structKind=fmi2_xml_type_struct_enu_props. Those instances have 
   baseTypeStruct = NULL. 

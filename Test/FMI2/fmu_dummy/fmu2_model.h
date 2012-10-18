@@ -23,7 +23,7 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 	#define FMIAPI DllExport
 #endif
 typedef struct {
-	/*************** FMI ME 1.0 ****************/
+	/*************** FMI ME 2.0 ****************/
 	fmiReal					states			[N_STATES];
 	fmiReal					states_nom		[N_STATES];
 	fmiValueReference		states_vr		[N_STATES];
@@ -51,7 +51,7 @@ typedef struct {
 	fmiReal					relativeTolerance;
 	fmiEventInfo			eventInfo;
 
-	/*************** FMI CS 1.0. Depends on the ME fields above and functions ****************/
+	/*************** FMI CS 2.0. Depends on the ME fields above and functions ****************/
 	fmiReal					states_prev		[N_STATES];
 
 	/* fmiInstantiateSlave */
@@ -73,7 +73,7 @@ typedef struct {
 
 typedef component_t* component_ptr_t;
 
-/* FMI 1.0 Common Functions */
+/* FMI 2.0 Common Functions */
 const char*		fmi_get_version();
 
 fmiStatus		fmi_set_debug_logging(
@@ -125,7 +125,7 @@ fmiStatus		fmi_set_string(
 													size_t nvr,
 													const fmiString  value[]);
 
-/* FMI 1.0 ME Functions */
+/* FMI 2.0 ME Functions */
 const char*		fmi_get_model_types_platform();
 
 fmiComponent	fmi_instantiate_model(
@@ -189,7 +189,7 @@ fmiStatus		fmi_get_state_value_references(
 
 fmiStatus		fmi_terminate(fmiComponent c);
 
-/* FMI 1.0 CS Functions */
+/* FMI 2.0 CS Functions */
 #ifdef fmiFunctions_h
 
 const char*		fmi_get_types_platform();

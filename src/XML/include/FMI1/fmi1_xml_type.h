@@ -28,9 +28,14 @@
 extern "C" {
 #endif
 
-/* \defgroup Support for processing variable types
-*  @{
-*/
+	/**
+	\addtogroup fmi1_xml
+	@{
+	\addtogroup fmi1_xml_types Support for processing variable types
+	@}
+	\addtogroup fmi1_xml_types Support for processing variable types
+	@{
+	*/
 
 fmi1_xml_display_unit_t* fmi1_xml_get_type_display_unit(fmi1_xml_real_typedef_t*);
 

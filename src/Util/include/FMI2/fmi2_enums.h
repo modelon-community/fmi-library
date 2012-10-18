@@ -23,7 +23,7 @@ extern "C" {
 #endif
 
 /** \file fmi2_enums.h 
-	\brief Definions the enum types used with FMI 1.0 libs
+	\brief Definions the enum types used with FMI 2.0 libs
 */
 
 /**	\addtogroup fmi2_utils
@@ -31,7 +31,7 @@ extern "C" {
 	\addtogroup fmi2_enums
 	@}
 */
-/** \addtogroup fmi2_enums Enum types used with FMI 1.0 libs
+/** \addtogroup fmi2_enums Enum types used with FMI 2.0 libs
 	@{
 */
 /** \brief Naming convention for the variables in XML file*/
@@ -196,7 +196,7 @@ FMILIB_EXPORT const char * fmi2_SI_base_unit_to_string(fmi2_SI_base_units_enu_t 
 FMILIB_EXPORT size_t fmi2_SI_base_unit_exp_to_string(const int exp[fmi2_SI_base_units_Num], size_t bufSize, char buf[]);
 
 
-/** \brief Base types used in type definitions */
+/** \brief Dependency factor kinds are used as part of ModelStructure definition */
 typedef enum fmi2_dependency_factor_kind_enu_t
 {
 	fmi2_dependency_factor_kind_nonlinear = 0,

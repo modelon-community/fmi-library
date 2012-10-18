@@ -34,7 +34,7 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 
 
 
-/* FMI 1.0 Common Functions */
+/* FMI 2.0 Common Functions */
 FMIAPI const char* fmiGetVersion()
 {
 	return fmi_get_version();

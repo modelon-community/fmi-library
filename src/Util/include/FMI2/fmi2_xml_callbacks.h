@@ -37,36 +37,38 @@ typedef struct fmi2_xml_callbacks_t fmi2_xml_callbacks_t;
 */
 /** \brief Handle start of an XML element within tool annotation in a SAX parser.
 *
-*  Arguments are: 
-*	context as specified when setting up the callbacks,
-*   parentName - tool name as given by name attibute to the Tool elelent,
-*   parent - NULL for model level annotations; fmi2_import_t variable pointer for variable annotations. 
-*   elm - name of the element, 
-*   attr - attributes (names and values).
+*	@param context as specified when setting up the callbacks,
+*   @param parentName - tool name as given by name attibute to the Tool elelent,
+*   @param parent - NULL for model level annotations; fmi2_import_t variable pointer for variable annotations. 
+*   @param elm - name of the element, 
+*   @param attr - attributes (names and values).
 *  The function should return 0 on success or error code on exit (in which case parsing will be aborted).
 */
 typedef int (*fmi2_xml_element_start_handle_ft)(	void *context, const char *toolName, void *parent, const char *elm, const char **attr);
 
-/** \brief Handle data of an XML element.
+/** \brief Handle data of an XML element within tool annotation in a SAX parser.
 *
-*  Arguments are: context as specified when setting up the callbacks, s - data string, len - length of the data.
+*  @param context as specified when setting up the callbacks
+*  @param s - data string
+*  @param len - length of the data.
 *  The function should return 0 on success or error code on exit (in which case parsing will be aborted).
 */
 typedef int (*fmi2_xml_element_data_handle_ft)(void* context, const char *s, int len);
 
-/** \brief Handle end of an XML element.
+/** \brief Handle end of an XML element within tool annotation in a SAX parser.
 *
-*  Arguments are: context as specified when setting up the callbacks, elm - name of the element.
+*  @param context as specified when setting up the callbacks
+*  @param elm - name of the element.
 *  The function should return 0 on success or error code on exit (in which case parsing will be aborted).
 */
 typedef int (*fmi2_xml_element_end_handle_ft)(void *context, const char *elm);
 
 /** \brief XML callbacks are used to process parts of XML that are not handled by the library */
 struct fmi2_xml_callbacks_t {
-	fmi2_xml_element_start_handle_ft startHandle;
-	fmi2_xml_element_data_handle_ft  dataHandle;
-	fmi2_xml_element_end_handle_ft   endHandle;
-	void* context;
+	fmi2_xml_element_start_handle_ft startHandle; /** \brief Handle start of an XML element within tool annotation in a SAX parser. */
+	fmi2_xml_element_data_handle_ft  dataHandle;  /** \brief Handle data of an XML element within tool annotation in a SAX parser.  */
+	fmi2_xml_element_end_handle_ft   endHandle;   /** \brief Handle end of an XML element within tool annotation in a SAX parser. */
+	void* context;	/** \breif Context ponter is forwarded to the handle functions. */
 };
 /* @}
 */

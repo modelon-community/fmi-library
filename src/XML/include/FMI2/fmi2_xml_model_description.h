@@ -40,8 +40,8 @@ extern "C" {
   @}
 */
 /**
-  \addtogroup fmi2_xml FMI 1.0 XML parsing library.
-   \brief The FMI 1.0 XML parsing library supports processing of model description XML files.
+  \addtogroup fmi2_xml FMI 2.0 XML parsing library.
+   \brief The FMI 2.0 XML parsing library supports processing of model description XML files.
    @{
   \name Declarations of structs used in the interface.
   \brief All the structures used in the interfaces are intended to

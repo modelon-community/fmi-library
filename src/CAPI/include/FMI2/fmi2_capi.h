@@ -33,18 +33,18 @@ extern "C" {
 	\brief Public interfaces for the FMI CAPI library. 
 	*/
 
-/** \addtogroup fmi2_capi Standard FMI 1.0 "C" API
+/** \addtogroup fmi2_capi Standard FMI 2.0 "C" API
  * \brief The "C" API loads and frees the FMI functions and it is through theise functions all the communcation with the FMU occures. The FMI import library wrappes these functions in a more convenient way.
  *  @{
  */
 
-/**	\addtogroup fmi2_capi_const_destroy FMI 1.0 Utility functions
+/**	\addtogroup fmi2_capi_const_destroy FMI 2.0 Utility functions
  *		\brief Utility functions used to load and free the FMI functions.
- *	\addtogroup fmi2_capi_me FMI 1.0 (ME) Model Exchange functions
+ *	\addtogroup fmi2_capi_me FMI 2.0 (ME) Model Exchange functions
  *		\brief List of Model Exchange wrapper functions. Common functions are not listed.
- *	\addtogroup fmi2_capi_cs FMI 1.0 (CS) Co-Simulation functions 
+ *	\addtogroup fmi2_capi_cs FMI 2.0 (CS) Co-Simulation functions 
  *		\brief List of Co-Simulation wrapper functions. Common functions are not listed.
- *	\addtogroup fmi2_capi_common FMI 1.0 (ME & CS) Common functions
+ *	\addtogroup fmi2_capi_common FMI 2.0 (ME & CS) Common functions
  *		\brief List of wrapper functions that are in common for both Model Exchange and Co-Simulation.
  */
 

@@ -41,6 +41,7 @@ extern "C" {
 @{
 \addtogroup fmi_import_context Library initialization
 \addtogroup  fmi1_import
+\addtogroup  fmi2_import
 @}
 \addtogroup fmi_import_context
 @{
@@ -91,8 +92,8 @@ FMILIB_EXPORT fmi1_import_t* fmi1_import_parse_xml( fmi_import_context_t* c, con
 
 /**
     \brief Create ::fmi2_import_t structure and parse the FMI 2.0 XML file found in the directory dirName.
-	\param c - library context.
-	\param dirName - a directory where the FMU was unpacked and XML file is present.
+	\param context - library context.
+	\param dirPath - a directory where the FMU was unpacked and XML file is present.
 	\param xml_callbacks Callbacks to use for processing of annotations (may be NULL).
 	\return fmi2_import_t:: opaque object pointer
 */

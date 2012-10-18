@@ -26,6 +26,7 @@
 #define FMI2_IMPORT_CONVENIENCE_H_
 
 #include <FMI/fmi_import_context.h>
+#include <FMI2/fmi2_functions.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -98,7 +99,7 @@ void fmi2_import_expand_variable_references(fmi2_import_t* fmu, const char* msgI
 
 
 /**
-	\brief An implementation of FMI 1.0 logger that forwards the messages to logger function inside ::jm_callbacks structure.
+	\brief An implementation of FMI 2.0 logger that forwards the messages to logger function inside ::jm_callbacks structure.
 	
 	The function is using a global array of active FMUs to find out which FMU is sending the log messege. It then
 	forwards the message to the logger connected to the particular ::fmi2_import_t struct. The function is called by the FMU.
@@ -110,7 +111,7 @@ FMILIB_EXPORT
 void  fmi2_log_forwarding(fmi2_component_t c, fmi2_string_t instanceName, fmi2_status_t status, fmi2_string_t category, fmi2_string_t message, ...);
 
 /**
-	\brief An implementation of FMI 1.0 logger that forwards the messages to logger function inside ::jm_callbacks structure.
+	\brief An implementation of FMI 2.0 logger that forwards the messages to logger function inside ::jm_callbacks structure.
 	
 	See fmi2_log_forwarding() for more information.
 */
@@ -118,7 +119,7 @@ FMILIB_EXPORT
 void  fmi2_log_forwarding_v(fmi2_component_t c, fmi2_string_t instanceName, fmi2_status_t status, fmi2_string_t category, fmi2_string_t message, va_list args);
 
 
-/** \brief  Default FMI 1.0 logger may be used when instantiating FMUs */
+/** \brief  Default FMI 2.0 logger may be used when instantiating FMUs */
 FMILIB_EXPORT
 void  fmi2_default_callback_logger(fmi2_component_t c, fmi2_string_t instanceName, fmi2_status_t status, fmi2_string_t category, fmi2_string_t message, ...);
 

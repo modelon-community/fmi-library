@@ -32,7 +32,7 @@ extern "C" {
 
 /**
 \file fmi2_import_capi.h
-Wrapper functions for the FMI 1.0 functions
+Wrapper functions for the FMI 2.0 functions
 */
 
 /**
@@ -40,18 +40,18 @@ Wrapper functions for the FMI 1.0 functions
  * @{
  */
 
-/**	\addtogroup fmi2_import_capi_const_destroy FMI 1.0 Constructor and Destructor	
+/**	\addtogroup fmi2_import_capi_const_destroy FMI 2.0 Constructor and Destructor	
  * \brief Functions for instantiating and freeing the container of the struct that is responsible for the FMI functions.
  *
  *	Before any of the FMI functions may be called, the construction function must instantiate a fmi_import_t module.
  *	After the fmi_import_t module has been succesfully instantiated, all the FMI functions can be called. To unload
  *	the FMI functions, the destroy functions shall be called.
  *
- * 	\addtogroup fmi2_import_capi_me FMI 1.0 (ME) Model Exchange functions
+ * 	\addtogroup fmi2_import_capi_me FMI 2.0 (ME) Model Exchange functions
  * \brief List of Model Exchange wrapper functions. Common functions are not listed.
- *	\addtogroup fmi2_import_capi_cs FMI 1.0 (CS) Co-Simulation functions 
+ *	\addtogroup fmi2_import_capi_cs FMI 2.0 (CS) Co-Simulation functions 
  * \brief List of Co-Simulation wrapper functions. Common functions are not listed.
- *	\addtogroup fmi2_import_capi_common FMI 1.0 (ME & CS) Common functions
+ *	\addtogroup fmi2_import_capi_common FMI 2.0 (ME & CS) Common functions
  * \brief List of wrapper functions that are in common for both Model Exchange and Co-Simulation.
  */
 

@@ -31,7 +31,7 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 
 /* #define MODEL_IDENTIFIER FMU_DUMMY_ME_MODEL_IDENTIFIER*/
 
-/* FMI 1.0 Common Functions */
+/* FMI 2.0 Common Functions */
 FMIAPI const char* fmiGetVersion()
 {
 	return fmi_get_version();
@@ -82,7 +82,7 @@ FMIAPI fmiStatus fmiSetString(fmiComponent c, const fmiValueReference vr[], size
 	return fmi_set_string(c, vr, nvr, value);
 }
 
-/* FMI 1.0 ME Functions */
+/* FMI 2.0 ME Functions */
 FMIAPI const char* fmiGetTypesPlatform()
 {
 	return fmi_get_model_types_platform();

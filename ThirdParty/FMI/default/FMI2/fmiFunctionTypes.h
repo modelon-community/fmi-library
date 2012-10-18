@@ -77,7 +77,7 @@ typedef void      (*fmiCallbackLogger)        (fmiComponentEnvironment, fmiStrin
 typedef void*     (*fmiCallbackAllocateMemory)(size_t, size_t);
 typedef void      (*fmiCallbackFreeMemory)    (void*);
 typedef void      (*fmiStepFinished)          (fmiComponentEnvironment, fmiStatus);
-typedef fmiStatus (*setMatrixElement)         (void*, fmiInteger, fmiInteger, fmiReal);
+/* Removed: typedef fmiStatus (*setMatrixElement)         (void*, fmiInteger, fmiInteger, fmiReal); */
 
 typedef struct {
    fmiCallbackLogger         logger;
@@ -133,7 +133,7 @@ Types for Common Functions
    typedef fmiStatus fmiDeSerializeFMUstateTYPE   (fmiComponent, const fmiByte[], size_t, fmiFMUstate*);
 
 /* Getting partial derivatives */
-   typedef fmiStatus fmiGetPartialDerivativesTYPE   (fmiComponent, setMatrixElement, void*, void*, void*, void*);
+ /* typedef fmiStatus fmiGetPartialDerivativesTYPE   (fmiComponent, setMatrixElement, void*, void*, void*, void*); */
    typedef fmiStatus fmiGetDirectionalDerivativeTYPE(fmiComponent, const fmiValueReference[], size_t,
                                                                    const fmiValueReference[], size_t,
                                                                    const fmiReal[], fmiReal[]);

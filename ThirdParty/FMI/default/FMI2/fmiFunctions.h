@@ -167,7 +167,7 @@ Common Functions
 #define fmiSerializedFMUstateSize   fmiFullName(fmiSerializedFMUstateSize)
 #define fmiSerializeFMUstate        fmiFullName(fmiSerializeFMUstate)
 #define fmiDeSerializeFMUstate      fmiFullName(fmiDeSerializeFMUstate)
-#define fmiGetPartialDerivatives    fmiFullName(fmiGetPartialDerivatives)
+/*	Removed: #define fmiGetPartialDerivatives    fmiFullName(fmiGetPartialDerivatives) */
 #define fmiGetDirectionalDerivative fmiFullName(fmiGetDirectionalDerivative)
 
 
@@ -180,6 +180,7 @@ Functions for FMI for Model Exchange
 #define fmiSetContinuousStates        fmiFullName(fmiSetContinuousStates)
 #define fmiInitializeModel            fmiFullName(fmiInitializeModel)
 #define fmiEventUpdate                fmiFullName(fmiEventUpdate)
+#define fmiCompletedEventIteration    fmiFullName(fmiCompletedEventIteration)
 #define fmiCompletedIntegratorStep    fmiFullName(fmiCompletedIntegratorStep)
 #define fmiTerminate                  fmiFullName(fmiTerminate)
 #define fmiGetDerivatives             fmiFullName(fmiGetDerivatives)
@@ -240,7 +241,8 @@ Common Functions
    FMIAPI fmiDeSerializeFMUstateTYPE    fmiDeSerializeFMUstate;
 
 /* Getting partial derivatives */
-   FMIAPI fmiGetDirectionalDerivativeTYPE fmiGetDirectionalDerivative;
+/*	Removed: FMIAPI fmiGetPartialDerivativesTYPE fmiGetPartialDerivatives */
+	FMIAPI fmiGetDirectionalDerivativeTYPE fmiGetDirectionalDerivative;
 
 /***************************************************
 Functions for FMI for Model Exchange
@@ -258,7 +260,7 @@ Functions for FMI for Model Exchange
 /* Evaluation of the model equations */
    FMIAPI fmiInitializeModelTYPE         fmiInitializeModel;
    FMIAPI fmiEventUpdateTYPE             fmiEventUpdate;
-   FMIAPI fmiCompletedIntegratorStepTYPE fmiCompletedIntegratorStep;
+   FMIAPI fmiCompletedEventIterationTYPE fmiCompletedEventIteration;
    FMIAPI fmiTerminateTYPE               fmiTerminate;
 
    FMIAPI fmiGetDerivativesTYPE             fmiGetDerivatives;

@@ -41,12 +41,17 @@ void fmi1_import_free_variable_list(fmi1_import_variable_list_t* vl) {
 
 /* Get number of variables in a list */
 size_t  fmi1_import_get_variable_list_size(fmi1_import_variable_list_t* vl) {
-    return jm_vector_get_size(jm_voidp)(&vl->variables);
+	if(vl)
+		return jm_vector_get_size(jm_voidp)(&vl->variables);
+	else
+		return 0;
 }
 
 /* Make a copy */
 fmi1_import_variable_list_t* fmi1_import_clone_variable_list(fmi1_import_variable_list_t* vl) {
-    fmi1_import_variable_list_t* copy = fmi1_import_alloc_variable_list(vl->fmu, fmi1_import_get_variable_list_size(vl));
+    fmi1_import_variable_list_t* copy;
+	if(!vl) return 0;
+	copy = fmi1_import_alloc_variable_list(vl->fmu, fmi1_import_get_variable_list_size(vl));
     if(!copy) return 0;
     jm_vector_copy(jm_voidp)(&copy->variables, &vl->variables);
     return copy;
@@ -60,9 +65,12 @@ fmi1_import_variable_list_t* fmi1_import_join_var_list(fmi1_import_variable_list
     if(!list) {
         return list;
     }
-    jm_vector_copy(jm_voidp)(&list->variables,&a->variables);
-    jm_vector_resize(jm_voidp)(&list->variables,joinSize);
-    memcpy((void*)jm_vector_get_itemp(jm_voidp)(&list->variables,asize), (void*)jm_vector_get_itemp(jm_voidp)(&b->variables,0), sizeof(jm_voidp)*bsize);
+	if(a)
+		jm_vector_copy(jm_voidp)(&list->variables,&a->variables);
+	if(b) {
+		jm_vector_resize(jm_voidp)(&list->variables,joinSize);
+		memcpy((void*)jm_vector_get_itemp(jm_voidp)(&list->variables,asize), (void*)jm_vector_get_itemp(jm_voidp)(&b->variables,0), sizeof(jm_voidp)*bsize);
+	}
     return list;
 }
 

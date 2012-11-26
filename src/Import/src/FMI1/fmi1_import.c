@@ -309,7 +309,10 @@ fmi1_import_variable_list_t* fmi1_import_get_variable_list(fmi1_import_t* fmu) {
 		return 0;
 	}
 	vars = fmi1_xml_get_variables_original_order(fmu->md);
-    nv = jm_vector_get_size(jm_voidp)(vars);
+	if(vars)
+		nv = jm_vector_get_size(jm_voidp)(vars);
+	else
+		nv = 0;
     vl = fmi1_import_alloc_variable_list(fmu, nv);
     if(!vl) return 0;
     for(i = 0; i< nv; i++) {

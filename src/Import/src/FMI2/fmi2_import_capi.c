@@ -71,7 +71,7 @@ jm_status_enu_t fmi2_import_create_dllfmu(fmi2_import_t* fmu, fmi2_fmu_kind_enu_
 	};
 
 	dllDirPath = fmi_construct_dll_dir_name(fmu->callbacks, fmu->dirPath);
-	dllFileName = fmi_construct_dll_file_name(fmu->callbacks, modelIdentifier);
+	dllFileName = fmi_construct_dll_file_name(fmu->callbacks, dllDirPath, modelIdentifier);
 
 	if (!dllDirPath ||!dllFileName) {
 		fmu->callbacks->free(dllDirPath);

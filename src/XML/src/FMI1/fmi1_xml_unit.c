@@ -90,7 +90,10 @@ fmi1_xml_display_unit_t* fmi1_xml_get_parsed_unit(fmi1_xml_parser_context_t *con
     jm_named_ptr named, *pnamed;
     fmi1_xml_model_description_t* md = context->modelDescription;
 
-    named.name = jm_vector_get_itemp(char)(name,0);
+	if(jm_vector_get_size(char)(name))
+		named.name = jm_vector_get_itemp(char)(name,0);
+	else
+		named.name = "";
     if(sorted)
         pnamed = jm_vector_bsearch(jm_named_ptr)(&(md->unitDefinitions), &named,jm_compare_named);
     else

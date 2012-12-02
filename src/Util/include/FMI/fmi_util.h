@@ -39,10 +39,11 @@ FMILIB_EXPORT char* fmi_construct_dll_dir_name(jm_callbacks* callbacks, const ch
 
 /** \brief Given model_identifier construct the dll/so name by adding platform suffix
 	\param callbacks Callbacks for memory allocation.
+	\param dll_dir_name Directory path for Dll/so as returned by fmi_construct_dll_dir_name
 	\param model_identifier The FMU model identifier.
 	@return Pointer to a string with the file name. Caller is responsible for freeing the memory.
 */
-FMILIB_EXPORT char* fmi_construct_dll_file_name(jm_callbacks* callbacks, const char* model_identifier);
+FMILIB_EXPORT char* fmi_construct_dll_file_name(jm_callbacks* callbacks, const char* dll_dir_name, const char* model_identifier);
 
 /** @} */
 #ifdef __cplusplus

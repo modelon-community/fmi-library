@@ -128,9 +128,12 @@ fmi2_xml_display_unit_t* fmi2_xml_get_parsed_unit(fmi2_xml_parser_context_t *con
     jm_named_ptr named, *pnamed;
     fmi2_xml_model_description_t* md = context->modelDescription;
 	int i;
+	if(jm_vector_get_size(char)(name))
+		named.name = jm_vector_get_itemp(char)(name,0);
+	else
+		named.name = "";
 
-    named.name = jm_vector_get_itemp(char)(name,0);
-    if(sorted)
+	if(sorted)
         pnamed = jm_vector_bsearch(jm_named_ptr)(&(md->unitDefinitions), &named,jm_compare_named);
     else
         pnamed = jm_vector_find(jm_named_ptr)(&(md->unitDefinitions), &named,jm_compare_named);

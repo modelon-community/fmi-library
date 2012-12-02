@@ -41,7 +41,10 @@ void fmi2_import_free_variable_list(fmi2_import_variable_list_t* vl) {
 
 /* Get number of variables in a list */
 size_t  fmi2_import_get_variable_list_size(fmi2_import_variable_list_t* vl) {
-    return jm_vector_get_size(jm_voidp)(&vl->variables);
+	if(vl)
+		return jm_vector_get_size(jm_voidp)(&vl->variables);
+	else
+		return 0;
 }
 
 /* Make a copy */

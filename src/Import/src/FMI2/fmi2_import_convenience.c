@@ -30,9 +30,9 @@
 void fmi2_import_collect_model_counts(fmi2_import_t* fmu, fmi2_import_model_counts_t* counts) {
 	jm_vector(jm_voidp)* vars = fmi2_xml_get_variables_original_order(fmu->md);
     size_t nv, i;
-	if(!vars) return;
-    nv = jm_vector_get_size(jm_voidp)(vars);
 	memset(counts,0,sizeof(fmi2_import_model_counts_t));
+	if(!vars) return;
+    nv = jm_vector_get_size(jm_voidp)(vars);	
     for(i = 0; i< nv; i++) {
 		fmi2_xml_variable_t* var = (fmi2_xml_variable_t*)jm_vector_get_item(jm_voidp)(vars, i); 
 		switch (fmi2_xml_get_variability(var)) {

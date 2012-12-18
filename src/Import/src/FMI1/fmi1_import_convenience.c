@@ -221,6 +221,8 @@ void fmi1_import_expand_variable_references_impl(fmi1_import_t* fmu, const char*
     jm_vector_push_back(char)(msgOut, 0);
 }
 
+jm_callbacks fmi1_import_active_fmu_store_callbacks;
+
 jm_vector(jm_voidp) fmi1_import_active_fmu_store;
 
 jm_vector(jm_voidp)* fmi1_import_active_fmu = 0;

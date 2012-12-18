@@ -43,6 +43,8 @@ struct fmi1_import_t {
 	jm_vector(char) logMessageBuffer;
 };
 
+extern jm_callbacks fmi1_import_active_fmu_store_callbacks;
+
 extern jm_vector(jm_voidp) fmi1_import_active_fmu_store;
 
 extern jm_vector(jm_voidp)* fmi1_import_active_fmu;

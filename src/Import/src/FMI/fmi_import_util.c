@@ -20,7 +20,7 @@
 
 #include <fmilib_config.h>
 #include <JM/jm_portability.h>
-#include "fmi_import_util.h"
+#include <FMI/fmi_import_util.h>
 
 char* fmi_import_mk_temp_dir(jm_callbacks* cb, const char* systemTempDir, const char* tempPrefix) {
 	if(!tempPrefix) tempPrefix = "fmil";

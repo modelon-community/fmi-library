@@ -234,7 +234,7 @@ void  fmi2_log_forwarding(fmi2_component_environment_t c, fmi2_string_t instance
 }
 
 void  fmi2_log_forwarding_v(fmi2_component_environment_t c, fmi2_string_t instanceName, fmi2_status_t status, fmi2_string_t category, fmi2_string_t message, va_list args) {
-    char buf[10000], *curp;
+    char buf[50000], *curp;
 	const char* statusStr;
 	fmi2_import_t* fmu = (fmi2_import_t*)c;
 	jm_callbacks* cb;

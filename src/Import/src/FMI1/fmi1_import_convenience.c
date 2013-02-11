@@ -235,7 +235,7 @@ void  fmi1_log_forwarding(fmi1_component_t c, fmi1_string_t instanceName, fmi1_s
 }
 
 void  fmi1_log_forwarding_v(fmi1_component_t c, fmi1_string_t instanceName, fmi1_status_t status, fmi1_string_t category, fmi1_string_t message, va_list args) {
-    char buf[10000], *curp;
+    char buf[50000], *curp;
 	const char* statusStr;
 	fmi1_import_t* fmu = 0;
 	jm_callbacks* cb = jm_get_default_callbacks();

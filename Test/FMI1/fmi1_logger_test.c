@@ -90,7 +90,7 @@ int test_logger(fmi1_import_t* fmu)
 			"Bad reference #s0",
 			"Bad reference #s-0",
 			"Bad reference #s-1",
-			"Bad reference #s100#",
+			"Bad reference #s100#"
 		};
 
 		n = sizeof(str)/sizeof(*str);	
@@ -98,10 +98,38 @@ int test_logger(fmi1_import_t* fmu)
 		for (k = 0; k < n; k++) {
 			vr[k] = VAR_S_LOGGER_TEST;
 		}
+
 		fmistatus = fmi1_import_set_string(fmu, vr, n, str);
         if(fmistatus != fmi1_status_ok) {
             abort();
-        }
+        }		
+
+		{ /* Print a really big message */
+
+#define MESSAGE_SIZE_TO_EXPAND_AND_PRINT 3000 /* Using fixed size since the log message is printed to a file and compared */
+#if JM_MAX_ERROR_MESSAGE_SIZE + 200 > MESSAGE_SIZE_TO_EXPAND_AND_PRINT
+#error This test triggers the logger function to allocate more memory than the default size JM_MAX_ERROR_MESSAGE_SIZE. If you change JM_MAX_ERROR_MESSAGE_SIZE, please update this test.
+#endif
+			char longmessage[MESSAGE_SIZE_TO_EXPAND_AND_PRINT];
+			const char* str[1];
+
+			str[0] = (const char*)&longmessage;
+			{
+				fmi1_value_reference_t vr = VAR_S_LOGGER_TEST;
+				int k;
+				char repmsg[] = "#r0# "; /* HIGHT */
+				for (k = 0; k < sizeof(longmessage)/sizeof(*longmessage) - 1; k++) {
+					longmessage[k] = repmsg[k%(sizeof(repmsg)/sizeof(*repmsg) - 1)];					
+				}
+				longmessage[k] = '\0';
+				
+				fmistatus = fmi1_import_set_string(fmu, &vr, 1, str);
+				if(fmistatus != fmi1_status_ok) {
+					abort();
+				}
+			}
+		}
+
 		free(vr);
 	}
 

@@ -94,6 +94,7 @@ void fmi1_import_expand_variable_references_impl(fmi1_import_t* fmu, const char*
 void fmi1_import_expand_variable_references(fmi1_import_t* fmu, const char* msgIn, char* msgOut, size_t maxMsgSize) {
 	fmi1_import_expand_variable_references_impl(fmu, msgIn);
 	strncpy(msgOut, jm_vector_get_itemp(char)(&fmu->logMessageBuffer,0),maxMsgSize);
+	msgOut[maxMsgSize - 1] = '\0';
 }
 
 /* Print msgIn into msgOut by expanding variable references of the form #<Type><VR># into variable names
@@ -291,6 +292,7 @@ void  fmi1_log_forwarding_v(fmi1_component_t c, fmi1_string_t instanceName, fmi1
 	}
 	else {
 		strncpy(cb->errMessageBuffer, buf, JM_MAX_ERROR_MESSAGE_SIZE);
+		cb->errMessageBuffer[JM_MAX_ERROR_MESSAGE_SIZE - 1] = '\0';
 	}
 	if(cb->logger) {
 		cb->logger(cb, instanceName, logLevel, cb->errMessageBuffer);

@@ -180,6 +180,7 @@ fmul_t load(int argc, char *argv[])
 	fmi_import_context_t* context;
 	fmi_version_enu_t version;
 	jm_status_enu_t status;
+	static int isunzipped;
 
 	fmi1_import_t* fmu;	
 
@@ -211,12 +212,14 @@ fmul_t load(int argc, char *argv[])
 
 
 	context = fmi_import_allocate_context(callbacks);
-
-	version = fmi_import_get_fmi_version(context, FMUPath, tmpPath);
-
-	if(version != fmi_version_1_enu) {
-		printf("Only version 1.0 is supported so far\n");
-		do_exit(CTEST_RETURN_FAIL);
+	
+	if (isunzipped == 0) { /* Unzip the FMU only once. Overwriting the dll/so file may cause a segfault. */
+		version = fmi_import_get_fmi_version(context, FMUPath, tmpPath);
+		if(version != fmi_version_1_enu) {
+			printf("Only version 1.0 is supported so far\n");
+			do_exit(CTEST_RETURN_FAIL);
+		}
+		isunzipped = 1;
 	}
 
 	fmu = fmi1_import_parse_xml(context, tmpPath);

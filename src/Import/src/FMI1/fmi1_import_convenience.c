@@ -236,7 +236,7 @@ void  fmi1_log_forwarding(fmi1_component_t c, fmi1_string_t instanceName, fmi1_s
 }
 
 void  fmi1_log_forwarding_v(fmi1_component_t c, fmi1_string_t instanceName, fmi1_status_t status, fmi1_string_t category, fmi1_string_t message, va_list args) {
-    char buf[50000], *curp;
+    char buf[50000], *curp, *msg;
 	const char* statusStr;
 	fmi1_import_t* fmu = 0;
 	jm_callbacks* cb = jm_get_default_callbacks();
@@ -289,15 +289,16 @@ void  fmi1_log_forwarding_v(fmi1_component_t c, fmi1_string_t instanceName, fmi1
 
 	if(fmu) {
 		fmi1_import_expand_variable_references(fmu, buf, cb->errMessageBuffer,JM_MAX_ERROR_MESSAGE_SIZE);
+		msg = jm_vector_get_itemp(char)(&fmu->logMessageBuffer,0);
 	}
 	else {
 		strncpy(cb->errMessageBuffer, buf, JM_MAX_ERROR_MESSAGE_SIZE);
 		cb->errMessageBuffer[JM_MAX_ERROR_MESSAGE_SIZE - 1] = '\0';
+		msg = cb->errMessageBuffer;
 	}
 	if(cb->logger) {
-		cb->logger(cb, instanceName, logLevel, cb->errMessageBuffer);
+		cb->logger(cb, instanceName, logLevel, msg);
 	}
-
 }
 
 void  fmi1_default_callback_logger(fmi1_component_t c, fmi1_string_t instanceName, fmi1_status_t status, fmi1_string_t category, fmi1_string_t message, ...) {

@@ -235,7 +235,7 @@ void  fmi2_log_forwarding(fmi2_component_environment_t c, fmi2_string_t instance
 }
 
 void  fmi2_log_forwarding_v(fmi2_component_environment_t c, fmi2_string_t instanceName, fmi2_status_t status, fmi2_string_t category, fmi2_string_t message, va_list args) {
-    char buf[50000], *curp;
+    char buf[50000], *curp, *msg;
 	const char* statusStr;
 	fmi2_import_t* fmu = (fmi2_import_t*)c;
 	jm_callbacks* cb;
@@ -280,13 +280,15 @@ void  fmi2_log_forwarding_v(fmi2_component_environment_t c, fmi2_string_t instan
 
 	if(fmu) {
 		fmi2_import_expand_variable_references(fmu, buf, cb->errMessageBuffer,JM_MAX_ERROR_MESSAGE_SIZE);
+		msg = jm_vector_get_itemp(char)(&fmu->logMessageBuffer,0);
 	}
 	else {
 		strncpy(cb->errMessageBuffer, buf, JM_MAX_ERROR_MESSAGE_SIZE);
 		cb->errMessageBuffer[JM_MAX_ERROR_MESSAGE_SIZE - 1] = '\0';
+		msg = cb->errMessageBuffer;
 	}
 	if(cb->logger) {
-		cb->logger(cb, instanceName, logLevel, cb->errMessageBuffer);
+		cb->logger(cb, instanceName, logLevel, msg);
 	}
 
 }

@@ -317,7 +317,7 @@ int fmi2_xml_check_model_structure(fmi2_xml_model_description_t* md) {
 			fmi2_xml_variable_t* vOut;
 			while(jm_vector_get_item(size_t)(&dos->startIndex, varIndex+1) < i) varIndex++;
 			vOut = (fmi2_xml_variable_t*)jm_vector_get_item(jm_voidp)(&ms->outputs, varIndex);
-			if(ind > numInputs) {
+			if(ind > numStates ) {
 				jm_log_error(cb, module, "Dependency list for output %s contains state index %u but the number of states is %u",
 					fmi2_xml_get_variable_name(vOut), ind, numStates);
 				ms->isValidFlag = 0;

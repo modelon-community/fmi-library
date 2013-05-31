@@ -310,21 +310,23 @@ install(FILES
 install(DIRECTORY 
 	${FMIIMPORTDIR}/include 
 	${JMUTILDIR}/include
-	DESTINATION .)
+	DESTINATION .
+    FILES_MATCHING PATTERN "*.h")
 
 if(FMILIB_INSTALL_SUBLIBS)
 	install(DIRECTORY 
 		${FMICAPIDIR}/include 	
 		${FMIXMLDIR}/include 
 		${FMIZIPDIR}/include
-		DESTINATION .)
+		DESTINATION .
+        FILES_MATCHING PATTERN "*.h")
 endif()
-
 	
 install(DIRECTORY 
 	${FMILIB_FMI_STANDARD_HEADERS}/FMI1
 	${FMILIB_FMI_STANDARD_HEADERS}/FMI2
-	DESTINATION include)
+	DESTINATION include
+    FILES_MATCHING PATTERN "*.h")
 
 function(append_file_context file_out file_in)
 	#file(APPEND filename "message to write"... )

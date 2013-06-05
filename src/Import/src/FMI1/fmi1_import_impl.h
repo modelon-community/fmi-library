@@ -40,7 +40,8 @@ struct fmi1_import_t {
 	fmi1_xml_model_description_t* md;
 	fmi1_capi_t* capi;
 	int registerGlobally;
-	jm_vector(char) logMessageBuffer;
+	jm_vector(char) logMessageBufferCoded;
+	jm_vector(char) logMessageBufferExpanded;
 };
 
 extern jm_callbacks fmi1_import_active_fmu_store_callbacks;

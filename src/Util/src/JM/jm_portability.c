@@ -87,9 +87,9 @@ char* jm_portability_get_last_dll_error(void)
 #ifdef WIN32
 	LPVOID lpMsgBuf;
 	FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR)&lpMsgBuf, 0, NULL);
-	sprintf(err_str, "%s", lpMsgBuf);
+	jm_snprintf(err_str, JM_PORTABILITY_DLL_ERROR_MESSAGE_SIZE, "%s", lpMsgBuf);
 #else
-	sprintf(err_str, "%s", dlerror());
+	jm_snprintf(err_str, JM_PORTABILITY_DLL_ERROR_MESSAGE_SIZE, "%s", dlerror());
 #endif	
 	return err_str;
 }
@@ -177,7 +177,7 @@ jm_status_enu_t jm_rmdir(jm_callbacks* cb, const char* dir) {
 	    jm_log_error(cb,module,"Could not allocate memory");
 		return jm_status_error;
 	}
-    sprintf(buf, fmt_cmd, dir);
+    sprintf(buf, fmt_cmd, dir);/*safe*/
 #ifdef WIN32
 	{
 		char* ch = buf+strlen(fmt_cmd) - 2;
@@ -261,7 +261,7 @@ char* jm_mk_temp_dir(jm_callbacks* cb, const char* systemTempDir, const char* te
 		jm_log_fatal(cb, module,"Could not allocate memory");
 		return 0;
 	}
-	sprintf(tmpPath,"%s%sXXXXXX",tmpDir,tempPrefix);
+	sprintf(tmpPath,"%s%sXXXXXX",tmpDir,tempPrefix);/*safe*/
 
 	if(!jm_mktemp(tmpPath)) {
 		jm_log_fatal(cb, module,"Could not create a unique temporary directory name");
@@ -314,7 +314,7 @@ char* jm_create_URL_from_abs_path(jm_callbacks* cb, const char* path) {
 					curBuf++;
 					continue;
 			}
-			sprintf(curBuf, "%%%2X", (int)ch);
+			sprintf(curBuf, "%%%2X", (int)ch);/*safe*/
 			curBuf+=3;
 		}
 		*curBuf = 0;
@@ -329,3 +329,18 @@ char* jm_create_URL_from_abs_path(jm_callbacks* cb, const char* path) {
 	strcpy(url, buffer);
 	return url;
 }
+
+ int rpl_vsnprintf(char *, size_t, const char *, va_list);
+
+ int jm_vsnprintf(char * str, size_t size, const char * fmt, va_list al) {
+     return rpl_vsnprintf(str, size, fmt, al);
+ }
+
+ int jm_snprintf(char * str, size_t size, const char * fmt, ...) {
+    va_list args;
+    int ret;
+    va_start (args, fmt);
+    ret = rpl_vsnprintf(str, size, fmt, args);
+    va_end (args);
+    return ret;
+ }

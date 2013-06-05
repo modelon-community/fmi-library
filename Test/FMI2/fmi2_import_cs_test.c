@@ -20,6 +20,7 @@
 #include "config_test.h"
 
 #include <fmilib.h>
+#include <JM/jm_portability.h>
 
 
 #define BUFFER 1000
@@ -33,10 +34,11 @@ void importlogger(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_leve
 
 void fmilogger(fmi2_component_t c, fmi2_string_t instanceName, fmi2_status_t status, fmi2_string_t category, fmi2_string_t message, ...)
 {
-	char msg[BUFFER];
+    /* int len;
+	char msg[BUFFER]; */
 	va_list argp;	
 	va_start(argp, message);
-	vsprintf(msg, message, argp);
+	/* len = jm_vsnprintf(msg, BUFFER, message, argp); */
 	fmi2_log_forwarding_v(c, instanceName, status, category, message, argp);
 	va_end(argp);
 }

@@ -219,7 +219,7 @@ size_t fmi2_SI_base_unit_exp_to_string(const int exp[fmi2_SI_base_units_Num], si
 				*curp = '^';
 				curp++; len++;
 
-				sprintf(curp, "%d", expi);
+				sprintf(curp, "%d", expi); /*safe */
 				len += strlen(curp);
 			}
 		}
@@ -249,7 +249,7 @@ size_t fmi2_SI_base_unit_exp_to_string(const int exp[fmi2_SI_base_units_Num], si
 				*curp = '^';
 				curp++; len++;
 
-				sprintf(curp, "%d", expi);
+				sprintf(curp, "%d", expi); /*safe */
 				len += strlen(curp);
 			}
 		}

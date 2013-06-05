@@ -19,16 +19,18 @@
 
 #include <config_test.h>
 #include <fmilib.h>
+#include <JM/jm_portability.h>
 
 #define BUFFER 1000
 
 /* Logger function used by the FMU internally */
 static void fmi2logger(fmi2_component_environment_t env, fmi2_string_t instanceName, fmi2_status_t status, fmi2_string_t category, fmi2_string_t message, ...)
 {
+    int len;
 	char msg[BUFFER];
 	va_list argp;	
 	va_start(argp, message);
-	vsprintf(msg, message, argp);
+	len = jm_vsnprintf(msg, BUFFER, message, argp);
 	printf("fmiStatus = %s;  %s (%s): %s\n", fmi2_status_to_string(status), instanceName, category, msg);
 }
 

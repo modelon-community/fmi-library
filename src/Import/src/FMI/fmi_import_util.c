@@ -53,7 +53,7 @@ char* fmi_import_get_dll_path(const char* fmu_unzipped_path, const char* model_i
 		return NULL;
 	}
 
-	sprintf(dll_path, "%s%s%s%s%s%s%s%s", fmu_unzipped_path, FMI_FILE_SEP, FMI_BINARIES, FMI_FILE_SEP, FMI_PLATFORM, FMI_FILE_SEP, model_identifier, FMI_DLL_EXT);
+	jm_snprintf(dll_path, len, "%s%s%s%s%s%s%s%s", fmu_unzipped_path, FMI_FILE_SEP, FMI_BINARIES, FMI_FILE_SEP, FMI_PLATFORM, FMI_FILE_SEP, model_identifier, FMI_DLL_EXT);
 
 	return dll_path;
 }
@@ -71,7 +71,7 @@ char* fmi_import_get_model_description_path(const char* fmu_unzipped_path, jm_ca
 		return NULL;
 	}
 
-	sprintf(model_description_path, "%s%s%s", fmu_unzipped_path, FMI_FILE_SEP, FMI_MODEL_DESCRIPTION_XML);
+	jm_snprintf(model_description_path, len, "%s%s%s", fmu_unzipped_path, FMI_FILE_SEP, FMI_MODEL_DESCRIPTION_XML);
 
 	return model_description_path;
 }

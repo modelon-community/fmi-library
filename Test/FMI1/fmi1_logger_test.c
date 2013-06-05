@@ -21,6 +21,7 @@
 #include "config_test.h"
 #include <fmilib.h>
 #include <fmu_dummy/fmu1_model_defines.h>
+#include <JM/jm_portability.h>
 
 FILE* logFile;
 
@@ -33,10 +34,10 @@ void logger(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_level, jm_
 		(strncmp(message, "Loading '", strlen(loadingstr)) == 0)
 		)
 	{
-		sprintf(buf, "[INFO][FMILIB] Loading '-----' binary with '------' platform types\n");
+		jm_snprintf(buf, 10000, "[INFO][FMILIB] Loading '-----' binary with '------' platform types\n");
 	}
 	else
-		sprintf(buf, "[%s][%s] %s\n", jm_log_level_to_string(log_level), module, message);
+		jm_snprintf(buf, 10000, "[%s][%s] %s\n", jm_log_level_to_string(log_level), module, message);
 	printf("%s", buf);
 	fprintf(logFile, "%s", buf);
 }

@@ -223,6 +223,10 @@ else()
 	set(FMI_PLATFORM ${FMILIB_FMI_PLATFORM})
 endif()
 
+include(CheckSymbolExists)
+CHECK_SYMBOL_EXISTS(va_copy stdarg.h HAVE_VA_COPY)
+CHECK_SYMBOL_EXISTS(__va_copy stdarg.h HAVE___VA_COPY)
+
 configure_file (
   "${FMILibrary_SOURCE_DIR}/Config.cmake/config_fmilib.h.cmake"
   "${FMILibrary_BINARY_DIR}/fmilib_config.h"

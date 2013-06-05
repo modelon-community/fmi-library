@@ -46,10 +46,14 @@ void importlogger(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_leve
 void fmilogger(fmi1_component_t c, fmi1_string_t instanceName, fmi1_status_t status, fmi1_string_t category, fmi1_string_t message, ...)
 {
 	char msg[BUFFER];
+    int len;
 	va_list argp;	
 	va_start(argp, message);
-	vsprintf(msg, message, argp);
+	len=jm_vsnprintf(msg, BUFFER, message, argp);
 	printf("fmiStatus = %d;  %s (%s): %s\n", status, instanceName, category, msg);
+    if(len > BUFFER) {
+        printf("Warning: message was trancated");
+    }
 }
 
 /* Pause and exit function. Useally called when an error occured */

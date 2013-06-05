@@ -32,18 +32,21 @@ static const char* module = "FMILIB";
 */
 fmi1_import_t* fmi1_import_allocate(jm_callbacks* cb) {
 	fmi1_import_t* fmu = (fmi1_import_t*)cb->calloc(1, sizeof(fmi1_import_t));
-
-	if(!fmu) {
+    
+	if(!fmu || (jm_vector_init(char)(&fmu->logMessageBufferCoded,JM_MAX_ERROR_MESSAGE_SIZE,cb) < JM_MAX_ERROR_MESSAGE_SIZE)) {
 		jm_log_fatal(cb, module, "Could not allocate memory");
+        if(fmu) cb->free(fmu);
 		return 0;
 	}
+    
+
 	fmu->dirPath = 0;
 	fmu->location = 0;
 	fmu->callbacks = cb;
 	fmu->capi = 0;
 	fmu->md = fmi1_xml_allocate_model_description(cb);
 	fmu->registerGlobally = 0;
-	jm_vector_init(char)(&fmu->logMessageBuffer,0,cb);
+	jm_vector_init(char)(&fmu->logMessageBufferExpanded,0,cb);
 
 	if(!fmu->md) {
 		cb->free(fmu);
@@ -112,7 +115,8 @@ void fmi1_import_free(fmi1_import_t* fmu) {
 
 	fmi1_import_destroy_dllfmu(fmu);
 	fmi1_xml_free_model_description(fmu->md);
-	jm_vector_free_data(char)(&fmu->logMessageBuffer);
+	jm_vector_free_data(char)(&fmu->logMessageBufferCoded);
+	jm_vector_free_data(char)(&fmu->logMessageBufferExpanded);
 
 	cb->free(fmu->dirPath);
 	cb->free(fmu->location);

@@ -93,14 +93,14 @@ void fmi1_import_expand_variable_references_impl(fmi1_import_t* fmu, const char*
 
 void fmi1_import_expand_variable_references(fmi1_import_t* fmu, const char* msgIn, char* msgOut, size_t maxMsgSize) {
 	fmi1_import_expand_variable_references_impl(fmu, msgIn);
-	strncpy(msgOut, jm_vector_get_itemp(char)(&fmu->logMessageBuffer,0),maxMsgSize);
+	strncpy(msgOut, jm_vector_get_itemp(char)(&fmu->logMessageBufferExpanded,0),maxMsgSize);
 	msgOut[maxMsgSize - 1] = '\0';
 }
 
 /* Print msgIn into msgOut by expanding variable references of the form #<Type><VR># into variable names
   and replacing '##' with a single # */
 void fmi1_import_expand_variable_references_impl(fmi1_import_t* fmu, const char* msgIn){
-	jm_vector(char)* msgOut = &fmu->logMessageBuffer;
+	jm_vector(char)* msgOut = &fmu->logMessageBufferExpanded;
 	fmi1_xml_model_description_t* md = fmu->md;
 	jm_callbacks* callbacks = fmu->callbacks;
     char curCh;
@@ -236,7 +236,8 @@ void  fmi1_log_forwarding(fmi1_component_t c, fmi1_string_t instanceName, fmi1_s
 }
 
 void  fmi1_log_forwarding_v(fmi1_component_t c, fmi1_string_t instanceName, fmi1_status_t status, fmi1_string_t category, fmi1_string_t message, va_list args) {
-    char buf[50000], *curp, *msg;
+#define BUFSIZE JM_MAX_ERROR_MESSAGE_SIZE
+    char buffer[BUFSIZE], *buf, *curp, *msg;
 	const char* statusStr;
 	fmi1_import_t* fmu = 0;
 	jm_callbacks* cb = jm_get_default_callbacks();
@@ -256,6 +257,12 @@ void  fmi1_log_forwarding_v(fmi1_component_t c, fmi1_string_t instanceName, fmi1
 			cb = jm_get_default_callbacks();
 		}
 	}
+    if(fmu) {
+         buf = jm_vector_get_itemp(char)(&fmu->logMessageBufferCoded,0);
+	}
+	else  {
+         buf = buffer;
+    }
 	switch(status) {
 		case fmi1_status_discard:
 		case fmi1_status_pending:
@@ -279,20 +286,37 @@ void  fmi1_log_forwarding_v(fmi1_component_t c, fmi1_string_t instanceName, fmi1
     *curp = 0;
 
 	if(category) {
-        sprintf(curp, "[%s]", category);
-        curp += strlen(category)+2;
+        curp += jm_snprintf(curp, 100, "[%s]", category);
     }
 	statusStr = fmi1_status_to_string(status);
-    sprintf(curp, "[FMU status:%s] ", statusStr);
-        curp += strlen(statusStr) + strlen("[FMU status:] ");
-	vsprintf(curp, message, args);
+    curp += jm_snprintf(curp, 100,"[FMU status:%s] ", statusStr);        
 
 	if(fmu) {
-		fmi1_import_expand_variable_references(fmu, buf, cb->errMessageBuffer,JM_MAX_ERROR_MESSAGE_SIZE);
-		msg = jm_vector_get_itemp(char)(&fmu->logMessageBuffer,0);
+	    int bufsize = jm_vector_get_size(char)(&fmu->logMessageBufferCoded);
+        int len;
+#ifdef JM_VA_COPY
+        va_list argscp;
+        JM_VA_COPY(argscp, args);
+#endif
+        len = jm_vsnprintf(curp, bufsize -(curp-buf), message, args);
+        if(len > bufsize) {
+            int offset = (curp-buf);
+            len = jm_vector_resize(char)(&fmu->logMessageBufferCoded, len + offset + 1) - offset;
+            buf = jm_vector_get_itemp(char)(&fmu->logMessageBufferCoded,0);
+            curp = buf + offset;
+#ifdef JM_VA_COPY
+            jm_vsnprintf(curp, len, message, argscp);
+#endif
+        }
+#ifdef JM_VA_COPY
+        va_end(argscp);
+#endif
+	    fmi1_import_expand_variable_references(fmu, buf, cb->errMessageBuffer,JM_MAX_ERROR_MESSAGE_SIZE);
+		msg = jm_vector_get_itemp(char)(&fmu->logMessageBufferExpanded,0);
 	}
 	else {
-		strncpy(cb->errMessageBuffer, buf, JM_MAX_ERROR_MESSAGE_SIZE);
+		jm_vsnprintf(curp, BUFSIZE -(curp-buf), message, args);
+        strncpy(cb->errMessageBuffer, buf, JM_MAX_ERROR_MESSAGE_SIZE);
 		cb->errMessageBuffer[JM_MAX_ERROR_MESSAGE_SIZE - 1] = '\0';
 		msg = cb->errMessageBuffer;
 	}
@@ -303,17 +327,16 @@ void  fmi1_log_forwarding_v(fmi1_component_t c, fmi1_string_t instanceName, fmi1
 
 void  fmi1_default_callback_logger(fmi1_component_t c, fmi1_string_t instanceName, fmi1_status_t status, fmi1_string_t category, fmi1_string_t message, ...) {
     va_list args;
-    char buf[500], *curp;
+
+    char buf[BUFSIZE], *curp;
     va_start (args, message);
     curp = buf;
     *curp = 0;
     if(instanceName) {
-        sprintf(curp, "[%s]", instanceName);
-        curp += strlen(instanceName)+2;
+        curp += jm_snprintf(curp, 200, "[%s]", instanceName);
     }
     if(category) {
-        sprintf(curp, "[%s]", category);
-        curp += strlen(category)+2;
+        curp += jm_snprintf(curp, 200, "[%s]", category);
     }
     fprintf(stdout, "%s[status=%s]", buf, fmi1_status_to_string(status));
     vfprintf (stdout, message, args);

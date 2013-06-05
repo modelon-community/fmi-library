@@ -35,7 +35,7 @@ char* fmi_construct_dll_dir_name(jm_callbacks* callbacks, const char* fmu_unzipp
 		return NULL;
 	}
 
-	sprintf(dir_path, "%s%s%s%s%s%s", fmu_unzipped_path, FMI_FILE_SEP, FMI_BINARIES, FMI_FILE_SEP, FMI_PLATFORM, FMI_FILE_SEP);
+	sprintf(dir_path, "%s%s%s%s%s%s", fmu_unzipped_path, FMI_FILE_SEP, FMI_BINARIES, FMI_FILE_SEP, FMI_PLATFORM, FMI_FILE_SEP);/*safe */
 
 	return dir_path;
 }
@@ -53,7 +53,7 @@ char* fmi_construct_dll_file_name(jm_callbacks* callbacks, const char* dll_dir_n
 		jm_log_fatal(callbacks, "FMIUT", "Failed to allocate memory.");
 		return NULL;
 	}
-	sprintf(fname, "%s%s%s", dll_dir_name, model_identifier, FMI_DLL_EXT);
+	sprintf(fname, "%s%s%s", dll_dir_name, model_identifier, FMI_DLL_EXT);/*safe */
 
 	return fname;
 }

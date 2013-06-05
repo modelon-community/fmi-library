@@ -23,3 +23,9 @@ Condition of use and distribution are the same as Zlib
 The unziping is performed by using Zlib library called via \e minizip library.\n
 Homepage: <http://www.zlib.net/>.\n
 Zlib License: <http://www.zlib.net/zlib_license.html>. 
+
+- \b C99 snprintf \n
+C99 snprintf library is used to realize the snprintf functionality staying with C89
+code.\n
+Homepage: http://www.jhweiss.de/software/snprintf.html \n
+The code is free to use. See notice in the COPYING file included with the code.

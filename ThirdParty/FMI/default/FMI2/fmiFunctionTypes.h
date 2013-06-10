@@ -5,11 +5,18 @@
    It declares data and function types for FMI 2.0
 
    Revisions:
+   - Feb. 17, 2013: Added third argument to fmiCompletedIntegratorStepTYPE
+                    Changed function name "fmiTerminateType" to "fmiTerminateModelType" (due to #113)
+                    Changed function name "fmiGetNominalContinuousState" to
+                                          "fmiGetNominalsOfContinuousStates"
+                    Removed fmiGetStateValueReferencesTYPE.
    - Nov. 14, 2011: First public Version
 
 
-   Copyright © 2011, MODELISAR consortium. All rights reserved.
-   This file is licensed by the copyright holders under the BSD License
+   Copyright © 2011 MODELISAR consortium,
+               2012-2013 Modelica Association Project "FMI"
+               All rights reserved.
+   This file is licensed by the copyright holders under the BSD 2-Clause License
    (http://www.opensource.org/licenses/bsd-license.html):
 
    ----------------------------------------------------------------------------
@@ -77,7 +84,6 @@ typedef void      (*fmiCallbackLogger)        (fmiComponentEnvironment, fmiStrin
 typedef void*     (*fmiCallbackAllocateMemory)(size_t, size_t);
 typedef void      (*fmiCallbackFreeMemory)    (void*);
 typedef void      (*fmiStepFinished)          (fmiComponentEnvironment, fmiStatus);
-/* Removed: typedef fmiStatus (*setMatrixElement)         (void*, fmiInteger, fmiInteger, fmiReal); */
 
 typedef struct {
    fmiCallbackLogger         logger;
@@ -111,7 +117,7 @@ Types for Common Functions
 /* Inquire version numbers of header files and setting logging status */
    typedef const char* fmiGetTypesPlatformTYPE();
    typedef const char* fmiGetVersionTYPE();
-   typedef fmiStatus   fmiSetDebugLoggingTYPE(fmiComponent, fmiBoolean, size_t, const fmiString []);
+   typedef fmiStatus   fmiSetDebugLoggingTYPE(fmiComponent, fmiBoolean, size_t, const fmiString[]);
 
 /* Getting and setting variable values */
    typedef fmiStatus fmiGetRealTYPE   (fmiComponent, const fmiValueReference[], size_t, fmiReal   []);
@@ -133,7 +139,6 @@ Types for Common Functions
    typedef fmiStatus fmiDeSerializeFMUstateTYPE   (fmiComponent, const fmiByte[], size_t, fmiFMUstate*);
 
 /* Getting partial derivatives */
- /* typedef fmiStatus fmiGetPartialDerivativesTYPE   (fmiComponent, setMatrixElement, void*, void*, void*, void*); */
    typedef fmiStatus fmiGetDirectionalDerivativeTYPE(fmiComponent, const fmiValueReference[], size_t,
                                                                    const fmiValueReference[], size_t,
                                                                    const fmiReal[], fmiReal[]);
@@ -149,23 +154,23 @@ Types for Functions for FMI for Model Exchange
 /* Providing independent variables and re-initialization of caching */
    typedef fmiStatus fmiSetTimeTYPE                (fmiComponent, fmiReal);
    typedef fmiStatus fmiSetContinuousStatesTYPE    (fmiComponent, const fmiReal[], size_t);
+   /* typedef fmiStatus fmiCompletedIntegratorStepTYPE(fmiComponent, fmiBoolean, fmiBoolean*); */
    typedef fmiStatus fmiCompletedIntegratorStepTYPE(fmiComponent, fmiBoolean*);
 
 /* Evaluation of the model equations */
    typedef fmiStatus fmiInitializeModelTYPE        (fmiComponent, fmiBoolean, fmiReal, fmiEventInfo*);
    typedef fmiStatus fmiEventUpdateTYPE            (fmiComponent, fmiBoolean, fmiEventInfo*);
    typedef fmiStatus fmiCompletedEventIterationTYPE(fmiComponent);
-   typedef fmiStatus fmiTerminateTYPE              (fmiComponent);
+   typedef fmiStatus fmiTerminateModelTYPE         (fmiComponent);
 
-   typedef fmiStatus fmiGetDerivativesTYPE            (fmiComponent, fmiReal[], size_t);
-   typedef fmiStatus fmiGetEventIndicatorsTYPE        (fmiComponent, fmiReal[], size_t);
-   typedef fmiStatus fmiGetContinuousStatesTYPE       (fmiComponent, fmiReal[], size_t);
-   typedef fmiStatus fmiGetNominalContinuousStatesTYPE(fmiComponent, fmiReal[], size_t);
-   typedef fmiStatus fmiGetStateValueReferencesTYPE   (fmiComponent, fmiValueReference[], size_t);
+   typedef fmiStatus fmiGetDerivativesTYPE               (fmiComponent, fmiReal[], size_t);
+   typedef fmiStatus fmiGetEventIndicatorsTYPE           (fmiComponent, fmiReal[], size_t);
+   typedef fmiStatus fmiGetContinuousStatesTYPE          (fmiComponent, fmiReal[], size_t);
+   typedef fmiStatus fmiGetNominalsOfContinuousStatesTYPE(fmiComponent, fmiReal[], size_t);
 
 
 /***************************************************
-Types forFunctions for FMI for Co-Simulation
+Types for Functions for FMI for Co-Simulation
 ****************************************************/
 
 /* Creation and destruction of slave instances */

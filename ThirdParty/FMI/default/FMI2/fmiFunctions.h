@@ -7,10 +7,10 @@
 
    In order to have unique function names even if several FMUs
    are compiled together (e.g. for embedded systems), every "real" function name
-   is constructed by prepending the function name by "FMIAPI_FUNCTION_PREFIX".
+   is constructed by prepending the function name by "FMI_FUNCTION_PREFIX".
    Therefore, the typical usage is:
 
-      #define FMIAPI_FUNCTION_PREFIX MyModel_
+      #define FMI_FUNCTION_PREFIX MyModel_
       #include "fmiFunctions.h"
 
    As a result, a function that is defined as "fmiGetDerivatives" in this header file,
@@ -18,13 +18,17 @@
 
    This only holds if the FMU is shipped in C source code, or is compiled in a
    static link library. For FMUs compiled in a DLL/sharedObject, the "actual" function
-   names are used and "FMIAPI_FUNCTION_PREFIX" must not be defined.
+   names are used and "FMI_FUNCTION_PREFIX" must not be defined.
 
    Revisions:
-   - July 13, 2012: Portability improvements:
-				-	DllExport changed into FMIAPI
-				-	FUNCTION_PREFIX into FMIAPI_FUNCTION_PREFIX
-				-	Allow for undefined FMIAPI_FUNCTION_PREFIX
+   - Feb. 17, 2013: Portability improvements:
+                       o DllExport changed to FMI_Export
+                       o FUNCTION_PREFIX changed to FMI_FUNCTION_PREFIX
+                       o Allow undefined FMI_FUNCTION_PREFIX (meaning no prefix is used)
+                    Changed function name "fmiTerminate" to "fmiTerminateModel" (due to #113)
+                    Changed function name "fmiGetNominalContinuousState" to
+                                          "fmiGetNominalsOfContinuousStates"
+                    Removed fmiGetStateValueReferences.
    - Nov. 14, 2011: Adapted to FMI 2.0:
                        o Split into two files (fmiFunctions.h, fmiTypes.h) in order
                          that code that dynamically loads an FMU can directly
@@ -71,8 +75,10 @@
                     meeting with additional improvements (by Martin Otter, DLR).
    - Dec. 3 , 2008: First version by Martin Otter (DLR) and Hans Olsson (Dynasim).
 
-   Copyright © 2008-2011, MODELISAR consortium. All rights reserved.
-   This file is licensed by the copyright holders under the BSD License
+   Copyright © 2008-2011 MODELISAR consortium,
+               2012-2013 Modelica Association Project "FMI"
+               All rights reserved.
+   This file is licensed by the copyright holders under the BSD 2-Clause License
    (http://www.opensource.org/licenses/bsd-license.html):
 
    ----------------------------------------------------------------------------
@@ -118,33 +124,33 @@ extern "C" {
 #include <stdlib.h>
 
 
-/* 
-	Export FMI API functions on Windows and under GCC.
-	If custom linking is desired then the FMIAPI must be 
-	defined before including this file.	For instance, 
-	it may be set to __declspec(dllimport).
+/*
+  Export FMI API functions on Windows and under GCC.
+  If custom linking is desired then the FMI_Export must be
+  defined before including this file. For instance,
+  it may be set to __declspec(dllimport).
 */
-#if !defined(FMIAPI) && !defined(FMIAPI_FUNCTION_PREFIX)
+#if !defined(FMI_Export) && !defined(FMI_FUNCTION_PREFIX)
  #if defined _WIN32 || defined __CYGWIN__
-	/* Note: both gcc & MSVC on Windows support this syntax. */
-      #define FMIAPI __declspec(dllexport) 
+  /* Note: both gcc & MSVC on Windows support this syntax. */
+      #define FMI_Export __declspec(dllexport)
  #else
   #if __GNUC__ >= 4
-    #define FMIAPI __attribute__ ((visibility ("default")))
+    #define FMI_Export __attribute__ ((visibility ("default")))
   #else
-    #define FMIAPI
+    #define FMI_Export
   #endif
  #endif
 #endif
 
 /* Macros to construct the real function name
-   (prepend function name by FMIAPI_FUNCTION_PREFIX) */
-#if defined(FMIAPI_FUNCTION_PREFIX)
-	#define fmiPaste(a,b)     a ## b
-	#define fmiPasteB(a,b)    fmiPaste(a,b)
-	#define fmiFullName(name) fmiPasteB(FMIAPI_FUNCTION_PREFIX, name)
+   (prepend function name by FMI_FUNCTION_PREFIX) */
+#if defined(FMI_FUNCTION_PREFIX)
+  #define fmiPaste(a,b)     a ## b
+  #define fmiPasteB(a,b)    fmiPaste(a,b)
+  #define fmiFullName(name) fmiPasteB(FMI_FUNCTION_PREFIX, name)
 #else
-	#define fmiFullName(name) name
+  #define fmiFullName(name) name
 #endif
 
 /***************************************************
@@ -167,27 +173,25 @@ Common Functions
 #define fmiSerializedFMUstateSize   fmiFullName(fmiSerializedFMUstateSize)
 #define fmiSerializeFMUstate        fmiFullName(fmiSerializeFMUstate)
 #define fmiDeSerializeFMUstate      fmiFullName(fmiDeSerializeFMUstate)
-/*	Removed: #define fmiGetPartialDerivatives    fmiFullName(fmiGetPartialDerivatives) */
 #define fmiGetDirectionalDerivative fmiFullName(fmiGetDirectionalDerivative)
 
 
 /***************************************************
 Functions for FMI for Model Exchange
 ****************************************************/
-#define fmiInstantiateModel           fmiFullName(fmiInstantiateModel)
-#define fmiFreeModelInstance          fmiFullName(fmiFreeModelInstance)
-#define fmiSetTime                    fmiFullName(fmiSetTime)
-#define fmiSetContinuousStates        fmiFullName(fmiSetContinuousStates)
-#define fmiInitializeModel            fmiFullName(fmiInitializeModel)
-#define fmiEventUpdate                fmiFullName(fmiEventUpdate)
-#define fmiCompletedEventIteration    fmiFullName(fmiCompletedEventIteration)
-#define fmiCompletedIntegratorStep    fmiFullName(fmiCompletedIntegratorStep)
-#define fmiTerminate                  fmiFullName(fmiTerminate)
-#define fmiGetDerivatives             fmiFullName(fmiGetDerivatives)
-#define fmiGetEventIndicators         fmiFullName(fmiGetEventIndicators)
-#define fmiGetContinuousStates        fmiFullName(fmiGetContinuousStates)
-#define fmiGetNominalContinuousStates fmiFullName(fmiGetNominalContinuousStates)
-#define fmiGetStateValueReferences    fmiFullName(fmiGetStateValueReferences)
+#define fmiInstantiateModel              fmiFullName(fmiInstantiateModel)
+#define fmiFreeModelInstance             fmiFullName(fmiFreeModelInstance)
+#define fmiSetTime                       fmiFullName(fmiSetTime)
+#define fmiSetContinuousStates           fmiFullName(fmiSetContinuousStates)
+#define fmiInitializeModel               fmiFullName(fmiInitializeModel)
+#define fmiEventUpdate                   fmiFullName(fmiEventUpdate)
+#define fmiCompletedIntegratorStep       fmiFullName(fmiCompletedIntegratorStep)
+#define fmiCompletedEventIteration       fmiFullName(fmiCompletedEventIteration)
+#define fmiTerminateModel                fmiFullName(fmiTerminateModel)
+#define fmiGetDerivatives                fmiFullName(fmiGetDerivatives)
+#define fmiGetEventIndicators            fmiFullName(fmiGetEventIndicators)
+#define fmiGetContinuousStates           fmiFullName(fmiGetContinuousStates)
+#define fmiGetNominalsOfContinuousStates fmiFullName(fmiGetNominalsOfContinuousStates)
 
 
 /***************************************************
@@ -217,57 +221,55 @@ Common Functions
 ****************************************************/
 
 /* Inquire version numbers of header files */
-   FMIAPI fmiGetTypesPlatformTYPE fmiGetTypesPlatform;
-   FMIAPI fmiGetVersionTYPE       fmiGetVersion;
-   FMIAPI fmiSetDebugLoggingTYPE  fmiSetDebugLogging;
+   FMI_Export fmiGetTypesPlatformTYPE fmiGetTypesPlatform;
+   FMI_Export fmiGetVersionTYPE       fmiGetVersion;
+   FMI_Export fmiSetDebugLoggingTYPE  fmiSetDebugLogging;
 
 /* Getting and setting variables values */
-   FMIAPI fmiGetRealTYPE    fmiGetReal;
-   FMIAPI fmiGetIntegerTYPE fmiGetInteger;
-   FMIAPI fmiGetBooleanTYPE fmiGetBoolean;
-   FMIAPI fmiGetStringTYPE  fmiGetString;
+   FMI_Export fmiGetRealTYPE    fmiGetReal;
+   FMI_Export fmiGetIntegerTYPE fmiGetInteger;
+   FMI_Export fmiGetBooleanTYPE fmiGetBoolean;
+   FMI_Export fmiGetStringTYPE  fmiGetString;
 
-   FMIAPI fmiSetRealTYPE    fmiSetReal;
-   FMIAPI fmiSetIntegerTYPE fmiSetInteger;
-   FMIAPI fmiSetBooleanTYPE fmiSetBoolean;
-   FMIAPI fmiSetStringTYPE  fmiSetString;
+   FMI_Export fmiSetRealTYPE    fmiSetReal;
+   FMI_Export fmiSetIntegerTYPE fmiSetInteger;
+   FMI_Export fmiSetBooleanTYPE fmiSetBoolean;
+   FMI_Export fmiSetStringTYPE  fmiSetString;
 
 /* Getting and setting the internal FMU state */
-   FMIAPI fmiGetFMUstateTYPE            fmiGetFMUstate;
-   FMIAPI fmiSetFMUstateTYPE            fmiSetFMUstate;
-   FMIAPI fmiFreeFMUstateTYPE           fmiFreeFMUstate;
-   FMIAPI fmiSerializedFMUstateSizeTYPE fmiSerializedFMUstateSize;
-   FMIAPI fmiSerializeFMUstateTYPE      fmiSerializeFMUstate;
-   FMIAPI fmiDeSerializeFMUstateTYPE    fmiDeSerializeFMUstate;
+   FMI_Export fmiGetFMUstateTYPE            fmiGetFMUstate;
+   FMI_Export fmiSetFMUstateTYPE            fmiSetFMUstate;
+   FMI_Export fmiFreeFMUstateTYPE           fmiFreeFMUstate;
+   FMI_Export fmiSerializedFMUstateSizeTYPE fmiSerializedFMUstateSize;
+   FMI_Export fmiSerializeFMUstateTYPE      fmiSerializeFMUstate;
+   FMI_Export fmiDeSerializeFMUstateTYPE    fmiDeSerializeFMUstate;
 
 /* Getting partial derivatives */
-/*	Removed: FMIAPI fmiGetPartialDerivativesTYPE fmiGetPartialDerivatives */
-	FMIAPI fmiGetDirectionalDerivativeTYPE fmiGetDirectionalDerivative;
+   FMI_Export fmiGetDirectionalDerivativeTYPE fmiGetDirectionalDerivative;
 
 /***************************************************
 Functions for FMI for Model Exchange
 ****************************************************/
 
 /* Creation and destruction of model instances and setting debug status */
-   FMIAPI fmiInstantiateModelTYPE  fmiInstantiateModel;
-   FMIAPI fmiFreeModelInstanceTYPE fmiFreeModelInstance;
+   FMI_Export fmiInstantiateModelTYPE  fmiInstantiateModel;
+   FMI_Export fmiFreeModelInstanceTYPE fmiFreeModelInstance;
 
 /* Providing independent variables and re-initialization of caching */
-   FMIAPI fmiSetTimeTYPE                 fmiSetTime;
-   FMIAPI fmiSetContinuousStatesTYPE     fmiSetContinuousStates;
-   FMIAPI fmiCompletedIntegratorStepTYPE fmiCompletedIntegratorStep;
+   FMI_Export fmiSetTimeTYPE                 fmiSetTime;
+   FMI_Export fmiSetContinuousStatesTYPE     fmiSetContinuousStates;
+   FMI_Export fmiCompletedIntegratorStepTYPE fmiCompletedIntegratorStep;
 
 /* Evaluation of the model equations */
-   FMIAPI fmiInitializeModelTYPE         fmiInitializeModel;
-   FMIAPI fmiEventUpdateTYPE             fmiEventUpdate;
-   FMIAPI fmiCompletedEventIterationTYPE fmiCompletedEventIteration;
-   FMIAPI fmiTerminateTYPE               fmiTerminate;
+   FMI_Export fmiInitializeModelTYPE         fmiInitializeModel;
+   FMI_Export fmiEventUpdateTYPE             fmiEventUpdate;
+   FMI_Export fmiCompletedEventIterationTYPE fmiCompletedEventIteration;
+   FMI_Export fmiTerminateModelTYPE          fmiTerminateModel;
 
-   FMIAPI fmiGetDerivativesTYPE             fmiGetDerivatives;
-   FMIAPI fmiGetEventIndicatorsTYPE         fmiGetEventIndicators;
-   FMIAPI fmiGetContinuousStatesTYPE        fmiGetContinuousStates;
-   FMIAPI fmiGetNominalContinuousStatesTYPE fmiGetNominalContinuousStates;
-   FMIAPI fmiGetStateValueReferencesTYPE    fmiGetStateValueReferences;
+   FMI_Export fmiGetDerivativesTYPE                fmiGetDerivatives;
+   FMI_Export fmiGetEventIndicatorsTYPE            fmiGetEventIndicators;
+   FMI_Export fmiGetContinuousStatesTYPE           fmiGetContinuousStates;
+   FMI_Export fmiGetNominalsOfContinuousStatesTYPE fmiGetNominalsOfContinuousStates;
 
 
 /***************************************************
@@ -275,26 +277,26 @@ Functions for FMI for Co-Simulation
 ****************************************************/
 
 /* Creation and destruction of slave instances */
-   FMIAPI fmiInstantiateSlaveTYPE  fmiInstantiateSlave;
-   FMIAPI fmiFreeSlaveInstanceTYPE fmiFreeSlaveInstance;
+   FMI_Export fmiInstantiateSlaveTYPE  fmiInstantiateSlave;
+   FMI_Export fmiFreeSlaveInstanceTYPE fmiFreeSlaveInstance;
 
 /* Simulating the slave */
-   FMIAPI fmiInitializeSlaveTYPE fmiInitializeSlave;
-   FMIAPI fmiTerminateSlaveTYPE  fmiTerminateSlave;
-   FMIAPI fmiResetSlaveTYPE      fmiResetSlave;
+   FMI_Export fmiInitializeSlaveTYPE fmiInitializeSlave;
+   FMI_Export fmiTerminateSlaveTYPE  fmiTerminateSlave;
+   FMI_Export fmiResetSlaveTYPE      fmiResetSlave;
 
-   FMIAPI fmiSetRealInputDerivativesTYPE  fmiSetRealInputDerivatives;
-   FMIAPI fmiGetRealOutputDerivativesTYPE fmiGetRealOutputDerivatives;
+   FMI_Export fmiSetRealInputDerivativesTYPE  fmiSetRealInputDerivatives;
+   FMI_Export fmiGetRealOutputDerivativesTYPE fmiGetRealOutputDerivatives;
 
-   FMIAPI fmiDoStepTYPE     fmiDoStep;
-   FMIAPI fmiCancelStepTYPE fmiCancelStep;
+   FMI_Export fmiDoStepTYPE     fmiDoStep;
+   FMI_Export fmiCancelStepTYPE fmiCancelStep;
 
 /* Inquire slave status */
-   FMIAPI fmiGetStatusTYPE        fmiGetStatus;
-   FMIAPI fmiGetRealStatusTYPE    fmiGetRealStatus;
-   FMIAPI fmiGetIntegerStatusTYPE fmiGetIntegerStatus;
-   FMIAPI fmiGetBooleanStatusTYPE fmiGetBooleanStatus;
-   FMIAPI fmiGetStringStatusTYPE  fmiGetStringStatus;
+   FMI_Export fmiGetStatusTYPE        fmiGetStatus;
+   FMI_Export fmiGetRealStatusTYPE    fmiGetRealStatus;
+   FMI_Export fmiGetIntegerStatusTYPE fmiGetIntegerStatus;
+   FMI_Export fmiGetBooleanStatusTYPE fmiGetBooleanStatus;
+   FMI_Export fmiGetStringStatusTYPE  fmiGetStringStatus;
 
 #ifdef __cplusplus
 }  /* end of extern "C" { */

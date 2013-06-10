@@ -59,11 +59,6 @@ typedef enum {
 #undef fmiTrue
 #undef fmiFalse
 
-/** Undefined value for fmiValueReference (largest unsigned int value) */
-typedef enum fmi2_value_reference_enu_t {
-	fmi2_undefined_value_reference = (int)fmiUndefinedValueReference
-} fmi2_value_reference_enu_t;
-
 /**	
 	@}
 */

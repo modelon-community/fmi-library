@@ -143,7 +143,7 @@ void fmi2_import_expand_variable_references_impl(fmi2_import_t* fmu, const char*
 		}
 		else {
             unsigned int bufVR;
-			fmi2_value_reference_t vr = fmi2_undefined_value_reference;
+			fmi2_value_reference_t vr;
 			char typeChar = msgIn[i++];
 			size_t pastePos = jm_vector_get_size(char)(msgOut);
 			fmi2_base_type_enu_t baseType;

@@ -291,10 +291,6 @@ int fmi2_xml_handle_ScalarVariable(fmi2_xml_parser_context_t *context, const cha
             /*   <xs:attribute name="valueReference" type="xs:unsignedInt" use="optional but required for FMI"> */
             if(fmi2_xml_set_attr_uint(context, fmi2_xml_elmID_ScalarVariable, fmi_attr_id_valueReference, 1, &vr, 0)) return -1;
 
-            if(vr == fmi2_undefined_value_reference) {
-                context->skipOneVariableFlag = 1;
-            }
-
             if(
             /*  <xs:attribute name="name" type="xs:normalizedString" use="required"/> */
                 fmi2_xml_set_attr_string(context, fmi2_xml_elmID_ScalarVariable, fmi_attr_id_name, 1, bufName) ||
@@ -828,18 +824,6 @@ int fmi2_xml_handle_ModelVariables(fmi2_xml_parser_context_t *context, const cha
         size_t i, numvar;
 
         numvar = jm_vector_get_size(jm_named_ptr)(&md->variablesByName);
-        /* vars with  vr = fmiUndefinedValueReference were already skipped. Just sanity: */
-        /* remove any variable with vr = fmiUndefinedValueReference */
-        for(i = 0; i< numvar; i++) {
-            jm_named_ptr named = jm_vector_get_item(jm_named_ptr)(&md->variablesByName, i);
-            fmi2_xml_variable_t* v = named.ptr;
-            if(v->vr == fmi2_undefined_value_reference) {
-                jm_vector_remove_item(jm_named_ptr)(&md->variablesByName,i);
-                numvar--; i--;
-                md->callbacks->free(v);
-                assert(0);
-            }
-        }
 
         /* store the list of vars in origianl order */
 		{

@@ -60,8 +60,6 @@ typedef void  (*fmi2_callback_free_memory_ft)    (void* obj);
 /** FMI 2.0 step finished callback function type */
 typedef void  (*fmi2_step_finished_ft)          (fmi2_component_environment_t env, fmi2_status_t status);
 
-typedef fmi2_status_t (*fmi2_set_matrix_element_ft)         (void*, fmi2_integer_t, fmi2_integer_t, fmi2_real_t);
-
 /** The FMI 2.0 callbacks */
 typedef struct {
 	fmi2_callback_logger_ft         logger;
@@ -127,7 +125,7 @@ Types for Common Functions
    typedef fmi2_status_t (*fmi2_de_serialize_fmu_state_ft)   (fmi2_component_t, const fmi2_byte_t[], size_t, fmi2_FMU_state_t*);
 
 /* Getting partial derivatives */
-   typedef fmi2_status_t (*fmi2_get_partial_derivatives_ft)   (fmi2_component_t, fmi2_set_matrix_element_ft, void*, void*, void*, void*);
+/*   typedef fmi2_status_t (*fmi2_get_partial_derivatives_ft)   (fmi2_component_t, fmi2_set_matrix_element_ft, void*, void*, void*, void*); */
    typedef fmi2_status_t (*fmi2_get_directional_derivative_ft)(fmi2_component_t, const fmi2_value_reference_t[], size_t,
                                                                    const fmi2_value_reference_t[], size_t,
                                                                    const fmi2_real_t[], fmi2_real_t[]);
@@ -154,8 +152,7 @@ Types for Functions for FMI for Model Exchange
    typedef fmi2_status_t (*fmi2_get_derivatives_ft)            (fmi2_component_t, fmi2_real_t[], size_t);
    typedef fmi2_status_t (*fmi2_get_event_indicators_ft)        (fmi2_component_t, fmi2_real_t[], size_t);
    typedef fmi2_status_t (*fmi2_get_continuous_states_ft)       (fmi2_component_t, fmi2_real_t[], size_t);
-   typedef fmi2_status_t (*fmi2_get_nominal_continuous_states_ft)(fmi2_component_t, fmi2_real_t[], size_t);
-   typedef fmi2_status_t (*fmi2_get_state_value_references_ft)   (fmi2_component_t, fmi2_value_reference_t[], size_t);
+   typedef fmi2_status_t (*fmi2_get_nominals_of_continuous_states_ft)(fmi2_component_t, fmi2_real_t[], size_t);
 
 
 /***************************************************

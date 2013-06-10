@@ -65,7 +65,7 @@ fmi2_xml_model_description_t * fmi2_xml_allocate_model_description( jm_callbacks
 
     md->defaultExperimentStopTime = 1.0;
 
-    md->defaultExperimentTolerance = 1e-6;
+    md->defaultExperimentTolerance = FMI2_DEFAULT_EXPERIMENT_TOLERANCE;
 
 	jm_vector_init(jm_string)(&md->vendorList, 0, cb);
 	jm_vector_init(jm_string)(&md->logCategories, 0, cb);
@@ -542,7 +542,7 @@ int fmi2_xml_handle_DefaultExperiment(fmi2_xml_parser_context_t *context, const 
         /* <xs:attribute name="stopTime" type="xs:double"/>  */
                     fmi2_xml_set_attr_double(context, fmi2_xml_elmID_DefaultExperiment, fmi_attr_id_stopTime, 0, &md->defaultExperimentStopTime, 1) ||
         /* <xs:attribute name="tolerance" type="xs:double">  */
-                    fmi2_xml_set_attr_double(context, fmi2_xml_elmID_DefaultExperiment, fmi_attr_id_tolerance, 0, &md->defaultExperimentTolerance, 1e-6)
+                    fmi2_xml_set_attr_double(context, fmi2_xml_elmID_DefaultExperiment, fmi_attr_id_tolerance, 0, &md->defaultExperimentTolerance, FMI2_DEFAULT_EXPERIMENT_TOLERANCE)
                     );
     }
     else {

@@ -44,7 +44,6 @@
 #include <FMI1/fmiPlatformTypes.h>
 #undef fmiPlatformTypes_h
 
-#include <FMI1/fmiPlatformTypes.h>
 /** FMI platform name constant string.*/
 static const char * fmi1_get_platform(void) {
 	return fmiPlatform;

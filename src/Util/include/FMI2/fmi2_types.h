@@ -47,6 +47,7 @@
 #endif
 #include <FMI2/fmiTypesPlatform.h>
 #undef fmiTypesPlatform_h
+
 /** FMI platform name constant string.*/
 static const char * fmi2_get_types_platform(void) {
 	return fmiTypesPlatform;

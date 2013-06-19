@@ -113,11 +113,16 @@ void fmi1_xml_parse_fatal(fmi1_xml_parser_context_t *context, const char* fmt, .
     XML_StopParser(context->parser,0);
 }
 
-void fmi1_xml_parse_error(fmi1_xml_parser_context_t *context, const char* message) {
-	if(context->parser)
-		jm_log_error(context->callbacks, module, "[Line:%u] %s", XML_GetCurrentLineNumber(context->parser),message);
+void fmi1_xml_parse_error(fmi1_xml_parser_context_t *context, const char* fmt, ...) {
+    va_list args;
+    va_start (args, fmt);
+	if(context->parser) {		
+        jm_log_error(context->callbacks, module, "Detected on line:%u of modelDescription.xml", XML_GetCurrentLineNumber(context->parser));
+        jm_log_error_v(context->callbacks, module, fmt, args);
+    }
 	else
-		jm_log_error(context->callbacks, module, "%s", message);
+		jm_log_error_v(context->callbacks, module, fmt, args);
+    va_end (args);
 }
 
 
@@ -186,7 +191,7 @@ int fmi1_xml_set_attr_uint(fmi1_xml_parser_context_t *context, fmi1_xml_elm_enu_
     attrName = fmi1_xmlAttrNames[attrID];
 
     if(sscanf(strVal, "%u", field) != 1) {
-        fmi1_xml_parse_fatal(context, "XML element '%s': could not parse value for attribute '%s'='%s'", elmName, attrName, strVal);
+        fmi1_xml_parse_error(context, "XML element '%s': could not parse value for attribute '%s'='%s'", elmName, attrName, strVal);
         return -1;
     }
     return 0;
@@ -237,7 +242,7 @@ int fmi1_xml_set_attr_int(fmi1_xml_parser_context_t *context, fmi1_xml_elm_enu_t
     attrName = fmi1_xmlAttrNames[attrID];
 
     if(sscanf(strVal, "%d", field) != 1) {
-        fmi1_xml_parse_fatal(context, "XML element '%s': could not parse value for attribute '%s'='%s'", elmName, attrName, strVal);
+        fmi1_xml_parse_error(context, "XML element '%s': could not parse value for attribute '%s'='%s'", elmName, attrName, strVal);
         return -1;
     }
     return 0;

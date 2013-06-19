@@ -596,13 +596,12 @@ int fmi1_xml_handle_Integer(fmi1_xml_parser_context_t *context, const char* data
                 fmi1_xml_parse_fatal(context, "Could not allocate memory");
                 return -1;
             }
-            if(
+            
                 /*  <xs:attribute name="start" type="xs:integer"/> */
-                    fmi1_xml_set_attr_int(context, fmi1_xml_elmID_Integer, fmi_attr_id_start, 0, &start->start, 0) ||
+                    fmi1_xml_set_attr_int(context, fmi1_xml_elmID_Integer, fmi_attr_id_start, 0, &start->start, 0);
                 /*  <xs:attribute name="fixed" type="xs:boolean"> */
-                    fmi1_xml_set_attr_boolean(context, fmi1_xml_elmID_Integer, fmi_attr_id_fixed, 0, &isFixedBuf, 1)
-                )
-                    return -1;
+                    fmi1_xml_set_attr_boolean(context, fmi1_xml_elmID_Integer, fmi_attr_id_fixed, 0, &isFixedBuf, 1);
+
             start->typeBase.isFixed = isFixedBuf;
             variable->typeBase = &start->typeBase;
         }

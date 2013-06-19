@@ -116,5 +116,25 @@ jm_status_enu_t jm_mkdir(jm_callbacks* cb, const char* dir);
 */
 jm_status_enu_t jm_rmdir(jm_callbacks* cb, const char* dir);
 
+/**
+\brief C89 compatible implementation of C99 vsnprintf. 
+*/
+FMILIB_EXPORT
+int jm_vsnprintf(char * str, size_t size, const char * fmt, va_list al);
+
+/**
+\brief C89 compatible implementation of C99 snprintf. 
+*/
+FMILIB_EXPORT
+int jm_snprintf(char * str, size_t size, const char * fmt, ...);
+
+#ifdef HAVE_VA_COPY
+#define JM_VA_COPY va_copy
+#elif defined(HAVE___VA_COPY)
+#define JM_VA_COPY __va_copy
+#elif defined(WIN32)
+#define JM_VA_COPY(dest,src) dest=src
+#endif
+
 /*@}*/
 #endif /* End of header file JM_PORTABILITY_H_ */

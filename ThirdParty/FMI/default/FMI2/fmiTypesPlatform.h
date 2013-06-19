@@ -7,7 +7,9 @@
    by the simulation engine.
 
    Revisions:
-   - July    , 2012: changed from "standard32" to "default"
+   - Feb.  17, 2013: Changed fmiTypesPlatform from "standard32" to "default".
+                     Removed fmiUndefinedValueReference since no longer needed
+                     (because every state is defined in ScalarVariables).
    - March 20, 2012: Renamed from fmiPlatformTypes.h to fmiTypesPlatform.h
    - Nov.  14, 2011: Use the header file "fmiPlatformTypes.h" for FMI 2.0
                      both for "FMI for model exchange" and for "FMI for co-simulation"
@@ -34,8 +36,10 @@
                      Hans Olsson (Dynasim).
 
 
-   Copyright © 2008-2012, MODELISAR consortium. All rights reserved.
-   This file is licensed by the copyright holders under the BSD License
+   Copyright © 2008-2011 MODELISAR consortium,
+               2012-2013 Modelica Association Project "FMI"
+               All rights reserved.
+   This file is licensed by the copyright holders under the BSD 2-Clause License
    (http://www.opensource.org/licenses/bsd-license.html):
 
    ----------------------------------------------------------------------------
@@ -72,8 +76,6 @@
     the modified file must also be provided under this license).
 */
 
-#include <stddef.h>
-
 /* Platform (unique identification of this header file) */
 #define fmiTypesPlatform "default"
 
@@ -83,7 +85,7 @@
    fmiComponent           : an opaque object pointer
    fmiComponentEnvironment: an opaque object pointer
    fmiFMUstate            : an opaque object pointer
-   fmiValueReference      : size_t, return type for sizeof(), the maximum size of any object (including arrays)
+   fmiValueReference      : handle to the value of a variable
    fmiReal                : double precision floating-point type.
    fmiInteger             : basic signed integer type
    fmiBoolean             : basic signed integer type
@@ -93,7 +95,7 @@
    typedef void*        fmiComponent;               /* Pointer to FMU instance       */
    typedef void*        fmiComponentEnvironment;    /* Pointer to FMU environment    */
    typedef void*        fmiFMUstate;                /* Pointer to internal FMU state */
-   typedef size_t		fmiValueReference;
+   typedef unsigned int fmiValueReference;
    typedef double       fmiReal   ;
    typedef int          fmiInteger;
    typedef int          fmiBoolean;
@@ -104,7 +106,5 @@
 #define fmiTrue  1
 #define fmiFalse 0
 
-/* Undefined value for fmiValueReference (largest size_t value, same as SIZE_MAX in C99) */
-#define fmiUndefinedValueReference ((fmiValueReference) (-1))
 
-#endif
+#endif /* fmiTypesPlatform_h */

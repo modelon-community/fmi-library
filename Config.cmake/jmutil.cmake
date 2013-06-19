@@ -60,6 +60,8 @@ if(CYGWIN)
 message("not tested")
 endif(CYGWIN)
 
+target_link_libraries(jmutils c99snprintf)
+
 if(UNIX) 
 	target_link_libraries(jmutils dl)
 endif(UNIX)

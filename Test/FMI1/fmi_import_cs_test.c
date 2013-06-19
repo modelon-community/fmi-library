@@ -33,10 +33,10 @@ void importlogger(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_leve
 
 void fmilogger(fmi1_component_t c, fmi1_string_t instanceName, fmi1_status_t status, fmi1_string_t category, fmi1_string_t message, ...)
 {
-	char msg[BUFFER];
+	/* char msg[BUFFER];*/
 	va_list argp;	
 	va_start(argp, message);
-	vsprintf(msg, message, argp);
+	/* vsnprintf(msg, BUFFER, message, argp); */
 	fmi1_log_forwarding_v(c, instanceName, status, category, message, argp);
 	va_end(argp);
 }

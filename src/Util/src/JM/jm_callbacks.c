@@ -20,6 +20,7 @@
 #include <assert.h>
 
 #include "JM/jm_callbacks.h"
+#include "JM/jm_portability.h"
 
 static const char* jm_log_level_str[] = 
 {
@@ -57,7 +58,7 @@ void jm_log(jm_callbacks* cb, const char* module, jm_log_level_enu_t log_level, 
 
 void jm_log_v(jm_callbacks* cb, const char* module, jm_log_level_enu_t log_level, const char* fmt, va_list ap) {
 	if(log_level > cb->log_level) return;
-    vsprintf(cb->errMessageBuffer, fmt, ap);
+    jm_vsnprintf(cb->errMessageBuffer, JM_MAX_ERROR_MESSAGE_SIZE, fmt, ap);
 	if(cb->logger) {
 		cb->logger(cb,module, log_level, cb->errMessageBuffer);
 	}

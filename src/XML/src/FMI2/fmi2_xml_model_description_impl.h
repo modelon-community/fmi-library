@@ -56,6 +56,8 @@ struct fmi2_xml_model_description_t {
 
     double defaultExperimentStopTime;
 
+#define FMI2_DEFAULT_EXPERIMENT_TOLERANCE 1e-4
+
     double defaultExperimentTolerance;
 
 

@@ -41,8 +41,13 @@
 #define fmiByte fmi2_byte_t
 
 /** @}*/
-/* Standard FMI 1.0 ME and CS types */
+/* Standard FMI 2.0 types */
+#ifdef fmiTypesPlatform_h
+#undef fmiTypesPlatform_h
+#endif
 #include <FMI2/fmiTypesPlatform.h>
+#undef fmiTypesPlatform_h
+
 /** FMI platform name constant string.*/
 static const char * fmi2_get_types_platform(void) {
 	return fmiTypesPlatform;
@@ -58,11 +63,6 @@ typedef enum {
 
 #undef fmiTrue
 #undef fmiFalse
-
-/** Undefined value for fmiValueReference (largest unsigned int value) */
-typedef enum fmi2_value_reference_enu_t {
-	fmi2_undefined_value_reference = (int)fmiUndefinedValueReference
-} fmi2_value_reference_enu_t;
 
 /**	
 	@}

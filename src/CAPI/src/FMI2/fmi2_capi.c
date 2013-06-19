@@ -229,9 +229,7 @@ static jm_status_enu_t fmi2_capi_load_me_fcn(fmi2_capi_t* fmu, unsigned int capa
 	LOAD_DLL_FUNCTION(fmiGetDerivatives);
 	LOAD_DLL_FUNCTION(fmiGetEventIndicators);
 	LOAD_DLL_FUNCTION(fmiGetContinuousStates);
-	LOAD_DLL_FUNCTION(fmiGetNominalContinuousStates);
-	LOAD_DLL_FUNCTION(fmiGetStateValueReferences);
-
+	LOAD_DLL_FUNCTION(fmiGetNominalsOfContinuousStates);
    
 	return jm_status; 
 }

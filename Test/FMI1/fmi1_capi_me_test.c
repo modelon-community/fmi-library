@@ -19,14 +19,15 @@
 #include <string.h>
 #include <errno.h>
 
+#include <fmilib.h>
 #include "config_test.h"
-
-#include <JM/jm_types.h>
+/*#include <JM/jm_types.h>
 #include <JM/jm_portability.h>
 #include <FMI1/fmi1_types.h>
 #include <FMI1/fmi1_functions.h>
 #include <FMI1/fmi1_capi.h>
-#include <JM/jm_callbacks.h>
+#include <JM/jm_callbacks.h> */
+#include <FMI1/fmi1_capi.h>
 #include <fmu_dummy/fmu1_model_defines.h>
 
 
@@ -47,10 +48,14 @@ void importlogger(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_leve
 void fmilogger(fmi1_component_t c, fmi1_string_t instanceName, fmi1_status_t status, fmi1_string_t category, fmi1_string_t message, ...)
 {
 	char msg[BUFFER];
+    int len;
 	va_list argp;	
 	va_start(argp, message);
-	vsprintf(msg, message, argp);
+	len = jm_vsnprintf(msg, BUFFER, message, argp);
 	printf("fmiStatus = %d;  %s (%s): %s\n", status, instanceName, category, msg);
+    if(len > BUFFER) {
+          printf("Warning: Message was truncated");
+    }
 }
 
 /* Pause and exit function. Useally called when an error occured */

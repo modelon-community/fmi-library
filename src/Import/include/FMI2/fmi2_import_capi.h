@@ -414,16 +414,6 @@ FMILIB_EXPORT fmi2_status_t fmi2_import_get_continuous_states(fmi2_import_t* fmu
 FMILIB_EXPORT fmi2_status_t fmi2_import_get_nominal_continuous_states(fmi2_import_t* fmu, fmi2_real_t x_nominal[], size_t nx);
 
 /**
- * \brief Wrapper for the FMI function fmiGetStateValueReferences(...) 
- * 
- * @param fmu A model description object returned by fmi2_import_parse_xml() that has loaded the FMI functions, see fmi2_import_load_fcn().
- * @param vrx (Output) The value-references of the states.
- * @param nx Number of value-references.
- * @return FMI status.
- */
-FMILIB_EXPORT fmi2_status_t fmi2_import_get_state_value_references(fmi2_import_t* fmu, fmi2_value_reference_t vrx[], size_t nx);
-
-/**
  * \brief Wrapper for the FMI function fmiTerminate(...) 
  * 
  * @param fmu A model description object returned by fmi2_import_parse_xml() that has loaded the FMI functions, see fmi2_import_load_fcn().

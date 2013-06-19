@@ -30,9 +30,6 @@ struct fmi1_import_variable_list_t {
     fmi1_value_reference_t* vr;
 };
 
-/* Allocate an empty list */
-fmi1_import_variable_list_t* fmi1_import_alloc_variable_list(fmi1_import_t* fmu, size_t size);
-
 #ifdef __cplusplus
 }
 #endif

@@ -175,6 +175,8 @@ if(NOT FMILIB_STATIC_LIB_ONLY)
 	add_definitions(-DFMILIB_BUILDING_LIBRARY)
 endif()
 
+add_subdirectory(ThirdParty/c99_snprintf)
+
 SET(CMAKE_MODULE_PATH ${FMILIBRARYHOME}/Config.cmake)
 
 include(jmutil)
@@ -221,12 +223,16 @@ else()
 	set(FMI_PLATFORM ${FMILIB_FMI_PLATFORM})
 endif()
 
+include(CheckSymbolExists)
+CHECK_SYMBOL_EXISTS(va_copy stdarg.h HAVE_VA_COPY)
+CHECK_SYMBOL_EXISTS(__va_copy stdarg.h HAVE___VA_COPY)
+
 configure_file (
   "${FMILibrary_SOURCE_DIR}/Config.cmake/config_fmilib.h.cmake"
   "${FMILibrary_BINARY_DIR}/fmilib_config.h"
   ) 
 
-set(FMILIB_SHARED_SUBLIBS ${FMIXML_LIBRARIES} ${FMIZIP_LIBRARIES} ${FMICAPI_LIBRARIES} expat minizip zlib)
+set(FMILIB_SHARED_SUBLIBS ${FMIXML_LIBRARIES} ${FMIZIP_LIBRARIES} ${FMICAPI_LIBRARIES} expat minizip zlib c99snprintf)
 set(FMILIB_SUBLIBS ${FMIIMPORT_LIBRARIES} ${JMUTIL_LIBRARIES} ${FMILIB_SHARED_SUBLIBS})
 set(FMILIB_SHARED_SRC ${FMIIMPORTSOURCE} ${JMUTILSOURCE} ${FMIIMPORTHEADERS})
 
@@ -259,7 +265,8 @@ if(FMILIB_BUILD_STATIC_LIB)
 	include(mergestaticlibs)
 	if(WIN32)
 		merge_static_libs(fmilib ${FMILIB_SUBLIBS})
-		foreach(CONFIG_TYPE ${CMAKE_CONFIGURATION_TYPES})
+        target_link_libraries(fmilib Shlwapi)
+        foreach(CONFIG_TYPE ${CMAKE_CONFIGURATION_TYPES})
 			set(flags "")
 			string(TOUPPER "STATIC_LIBRARY_FLAGS_${CONFIG_TYPE}" PROPNAME)
 			get_target_property(flags fmilib ${PROPNAME})
@@ -310,21 +317,23 @@ install(FILES
 install(DIRECTORY 
 	${FMIIMPORTDIR}/include 
 	${JMUTILDIR}/include
-	DESTINATION .)
+	DESTINATION .
+    FILES_MATCHING PATTERN "*.h")
 
 if(FMILIB_INSTALL_SUBLIBS)
 	install(DIRECTORY 
 		${FMICAPIDIR}/include 	
 		${FMIXMLDIR}/include 
 		${FMIZIPDIR}/include
-		DESTINATION .)
+		DESTINATION .
+        FILES_MATCHING PATTERN "*.h")
 endif()
-
 	
 install(DIRECTORY 
 	${FMILIB_FMI_STANDARD_HEADERS}/FMI1
 	${FMILIB_FMI_STANDARD_HEADERS}/FMI2
-	DESTINATION include)
+	DESTINATION include
+    FILES_MATCHING PATTERN "*.h")
 
 function(append_file_context file_out file_in)
 	#file(APPEND filename "message to write"... )

@@ -35,128 +35,128 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 
 
 /* FMI 2.0 Common Functions */
-FMIAPI const char* fmiGetVersion()
+FMI_Export const char* fmiGetVersion()
 {
 	return fmi_get_version();
 }
 
-FMIAPI fmiStatus fmiSetDebugLogging(fmiComponent c, fmiBoolean loggingOn, size_t n, const fmiString cat[])
+FMI_Export fmiStatus fmiSetDebugLogging(fmiComponent c, fmiBoolean loggingOn, size_t n, const fmiString cat[])
 {
 	return fmi_set_debug_logging(c, loggingOn);
 }
 
-FMIAPI fmiStatus fmiGetReal(fmiComponent c, const fmiValueReference vr[], size_t nvr, fmiReal value[])
+FMI_Export fmiStatus fmiGetReal(fmiComponent c, const fmiValueReference vr[], size_t nvr, fmiReal value[])
 {
 	return fmi_get_real(c, vr, nvr, value);
 }
 
-FMIAPI fmiStatus fmiGetInteger(fmiComponent c, const fmiValueReference vr[], size_t nvr, fmiInteger value[])
+FMI_Export fmiStatus fmiGetInteger(fmiComponent c, const fmiValueReference vr[], size_t nvr, fmiInteger value[])
 {
 	return fmi_get_integer(c, vr, nvr, value);
 }
 
-FMIAPI fmiStatus fmiGetBoolean(fmiComponent c, const fmiValueReference vr[], size_t nvr, fmiBoolean value[])
+FMI_Export fmiStatus fmiGetBoolean(fmiComponent c, const fmiValueReference vr[], size_t nvr, fmiBoolean value[])
 {
 	return fmi_get_boolean(c, vr, nvr, value);
 }
 
-FMIAPI fmiStatus fmiGetString(fmiComponent c, const fmiValueReference vr[], size_t nvr, fmiString  value[])
+FMI_Export fmiStatus fmiGetString(fmiComponent c, const fmiValueReference vr[], size_t nvr, fmiString  value[])
 {
 	return fmi_get_string(c, vr, nvr, value);
 }
 
-FMIAPI fmiStatus fmiSetReal(fmiComponent c, const fmiValueReference vr[], size_t nvr, const fmiReal value[])
+FMI_Export fmiStatus fmiSetReal(fmiComponent c, const fmiValueReference vr[], size_t nvr, const fmiReal value[])
 {
 	return fmi_set_real(c, vr, nvr, value);
 }
 
-FMIAPI fmiStatus fmiSetInteger(fmiComponent c, const fmiValueReference vr[], size_t nvr, const fmiInteger value[])
+FMI_Export fmiStatus fmiSetInteger(fmiComponent c, const fmiValueReference vr[], size_t nvr, const fmiInteger value[])
 {
 	return fmi_set_integer(c, vr, nvr, value);
 }
 
-FMIAPI fmiStatus fmiSetBoolean(fmiComponent c, const fmiValueReference vr[], size_t nvr, const fmiBoolean value[])
+FMI_Export fmiStatus fmiSetBoolean(fmiComponent c, const fmiValueReference vr[], size_t nvr, const fmiBoolean value[])
 {
 	return fmi_set_boolean(c, vr, nvr, value);
 }
 
-FMIAPI fmiStatus fmiSetString(fmiComponent c, const fmiValueReference vr[], size_t nvr, const fmiString  value[])
+FMI_Export fmiStatus fmiSetString(fmiComponent c, const fmiValueReference vr[], size_t nvr, const fmiString  value[])
 {
 	return fmi_set_string(c, vr, nvr, value);
 }
 
 /* FMI 1.0 CS Functions */
-FMIAPI const char* fmiGetTypesPlatform()
+FMI_Export const char* fmiGetTypesPlatform()
 {
 	return fmi_get_types_platform();
 }
 
-FMIAPI fmiComponent fmiInstantiateSlave(fmiString instanceName, fmiString fmuGUID, fmiString fmuLocation, const fmiCallbackFunctions* functions, fmiBoolean visible, fmiBoolean loggingOn)
+FMI_Export fmiComponent fmiInstantiateSlave(fmiString instanceName, fmiString fmuGUID, fmiString fmuLocation, const fmiCallbackFunctions* functions, fmiBoolean visible, fmiBoolean loggingOn)
 {
 	return fmi_instantiate_slave(instanceName, fmuGUID, fmuLocation,functions, visible, loggingOn);
 }
 
-FMIAPI fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal relativeTolerance, fmiReal tStart, fmiBoolean StopTimeDefined, fmiReal tStop)
+FMI_Export fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal relativeTolerance, fmiReal tStart, fmiBoolean StopTimeDefined, fmiReal tStop)
 {
 	return fmi_initialize_slave(c, relativeTolerance, tStart, StopTimeDefined, tStop);
 }
 
-FMIAPI fmiStatus fmiTerminateSlave(fmiComponent c)
+FMI_Export fmiStatus fmiTerminateSlave(fmiComponent c)
 {
 	return fmi_terminate_slave(c);
 }
 
-FMIAPI fmiStatus fmiResetSlave(fmiComponent c)
+FMI_Export fmiStatus fmiResetSlave(fmiComponent c)
 {
 	return fmi_reset_slave(c);
 }
 
-FMIAPI void fmiFreeSlaveInstance(fmiComponent c)
+FMI_Export void fmiFreeSlaveInstance(fmiComponent c)
 {
 	fmi_free_slave_instance(c);
 }
 
-FMIAPI fmiStatus fmiSetRealInputDerivatives(fmiComponent c, const fmiValueReference vr[], size_t nvr, const fmiInteger order[], const fmiReal value[])
+FMI_Export fmiStatus fmiSetRealInputDerivatives(fmiComponent c, const fmiValueReference vr[], size_t nvr, const fmiInteger order[], const fmiReal value[])
 {
 	return fmi_set_real_input_derivatives(c, vr, nvr, order, value);
 }
 
-FMIAPI fmiStatus fmiGetRealOutputDerivatives(fmiComponent c, const fmiValueReference vr[], size_t nvr, const fmiInteger order[], fmiReal value[])
+FMI_Export fmiStatus fmiGetRealOutputDerivatives(fmiComponent c, const fmiValueReference vr[], size_t nvr, const fmiInteger order[], fmiReal value[])
 {
 	return fmi_get_real_output_derivatives(c, vr, nvr, order, value);
 }
 
-FMIAPI fmiStatus fmiCancelStep(fmiComponent c)
+FMI_Export fmiStatus fmiCancelStep(fmiComponent c)
 {
 	return fmi_cancel_step(c);
 }
 
-FMIAPI fmiStatus fmiDoStep(fmiComponent c, fmiReal currentCommunicationPoint, fmiReal communicationStepSize, fmiBoolean newStep)
+FMI_Export fmiStatus fmiDoStep(fmiComponent c, fmiReal currentCommunicationPoint, fmiReal communicationStepSize, fmiBoolean newStep)
 {
 	return fmi_do_step(c, currentCommunicationPoint, communicationStepSize, newStep);
 }
 
-FMIAPI fmiStatus fmiGetStatus(fmiComponent c, const fmiStatusKind s, fmiStatus*  value)
+FMI_Export fmiStatus fmiGetStatus(fmiComponent c, const fmiStatusKind s, fmiStatus*  value)
 {
 	return fmi_get_status(c, s, value);
 }
 
-FMIAPI fmiStatus fmiGetRealStatus(fmiComponent c, const fmiStatusKind s, fmiReal*    value)
+FMI_Export fmiStatus fmiGetRealStatus(fmiComponent c, const fmiStatusKind s, fmiReal*    value)
 {
 	return fmi_get_real_status(c, s, value);
 }
 
-FMIAPI fmiStatus fmiGetIntegerStatus(fmiComponent c, const fmiStatusKind s, fmiInteger* value)
+FMI_Export fmiStatus fmiGetIntegerStatus(fmiComponent c, const fmiStatusKind s, fmiInteger* value)
 {
 	return fmi_get_integer_status(c, s, value);
 }
 
-FMIAPI fmiStatus fmiGetBooleanStatus(fmiComponent c, const fmiStatusKind s, fmiBoolean* value)
+FMI_Export fmiStatus fmiGetBooleanStatus(fmiComponent c, const fmiStatusKind s, fmiBoolean* value)
 {
 	return fmi_get_boolean_status(c, s, value);
 }
 
-FMIAPI fmiStatus fmiGetStringStatus(fmiComponent c, const fmiStatusKind s, fmiString*  value)
+FMI_Export fmiStatus fmiGetStringStatus(fmiComponent c, const fmiStatusKind s, fmiString*  value)
 {
 	return fmi_get_string_status(c, s, value);
 }

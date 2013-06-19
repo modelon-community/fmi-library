@@ -164,15 +164,23 @@ int test_simulate_me(fmi1_import_t* fmu)
 	return 0;
 }
 
-int main(int argc, char *argv[])
+typedef struct {
+	fmi1_import_t* fmu;
+	fmi_import_context_t* context;
+	jm_callbacks* callbacks;
+	fmi1_callback_functions_t callBackFunctions;
+} fmul_t;
+
+fmul_t load(int argc, char *argv[])
 {
 	fmi1_callback_functions_t callBackFunctions;
 	const char* FMUPath;
 	const char* tmpPath;
-	jm_callbacks callbacks;
+	jm_callbacks* callbacks;
 	fmi_import_context_t* context;
 	fmi_version_enu_t version;
 	jm_status_enu_t status;
+	static int isunzipped;
 
 	fmi1_import_t* fmu;	
 
@@ -185,13 +193,14 @@ int main(int argc, char *argv[])
 	tmpPath = argv[2];
 
 
-	callbacks.malloc = malloc;
-    callbacks.calloc = calloc;
-    callbacks.realloc = realloc;
-    callbacks.free = free;
-    callbacks.logger = jm_default_logger;
-	callbacks.log_level = jm_log_level_debug;
-    callbacks.context = 0;
+	callbacks = (jm_callbacks*)malloc(sizeof(jm_callbacks));
+	callbacks->malloc = malloc;
+    callbacks->calloc = calloc;
+    callbacks->realloc = realloc;
+    callbacks->free = free;
+    callbacks->logger = jm_default_logger;
+	callbacks->log_level = jm_log_level_debug;
+    callbacks->context = 0;
 
 	callBackFunctions.logger = fmi1_log_forwarding;
 	callBackFunctions.allocateMemory = calloc;
@@ -202,13 +211,15 @@ int main(int argc, char *argv[])
 #endif
 
 
-	context = fmi_import_allocate_context(&callbacks);
-
-	version = fmi_import_get_fmi_version(context, FMUPath, tmpPath);
-
-	if(version != fmi_version_1_enu) {
-		printf("Only version 1.0 is supported so far\n");
-		do_exit(CTEST_RETURN_FAIL);
+	context = fmi_import_allocate_context(callbacks);
+	
+	if (isunzipped == 0) { /* Unzip the FMU only once. Overwriting the dll/so file may cause a segfault. */
+		version = fmi_import_get_fmi_version(context, FMUPath, tmpPath);
+		if(version != fmi_version_1_enu) {
+			printf("Only version 1.0 is supported so far\n");
+			do_exit(CTEST_RETURN_FAIL);
+		}
+		isunzipped = 1;
 	}
 
 	fmu = fmi1_import_parse_xml(context, tmpPath);
@@ -226,16 +237,39 @@ int main(int argc, char *argv[])
 	
 	test_simulate_me(fmu);
 
-	fmi1_import_destroy_dllfmu(fmu);
-
-	fmi1_import_free(fmu);
-	fmi_import_free_context(context);
-	
 	printf("Everything seems to be OK since you got this far=)!\n");
-
-	do_exit(CTEST_RETURN_SUCCESS);
-
-	return 0;
+	{
+		fmul_t fmus;
+		fmus.callBackFunctions = callBackFunctions;
+		fmus.callbacks = callbacks;
+		fmus.context = context;
+		fmus.fmu = fmu;
+		return fmus;
+	}
 }
 
+void destroy(fmul_t* fmus) {
+	fmi1_import_destroy_dllfmu(fmus->fmu);
+	fmi1_import_free(fmus->fmu);
+	fmi_import_free_context(fmus->context);
+	free(fmus->callbacks);
+	memset(fmus, 0, sizeof(fmul_t));
+}
+ 
+/* Load and simulate 150 FMUs. Destroy and free all memory last. Usefull testing speciall for the registerGlobally functionality. */
+#define NUMBER_OF_TESTS 150
+int main(int argc, char *argv[])
+{
+	fmul_t fmul[NUMBER_OF_TESTS];
+	int k;
+	
+	for (k=0;k<NUMBER_OF_TESTS;k++) {
+		fmul[k] = load(argc, argv);
+	}
 
+	for (k=0;k<NUMBER_OF_TESTS;k++) {
+		destroy(&fmul[k]);
+	}
+
+	do_exit(CTEST_RETURN_SUCCESS);
+}

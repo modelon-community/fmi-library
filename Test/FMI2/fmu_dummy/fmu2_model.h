@@ -19,8 +19,8 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 #define FM1_MODEL_H_
 #include <FMI2/fmiFunctions.h>
 #include <fmu_dummy/fmu2_model_defines.h>
-#ifndef FMIAPI
-	#define FMIAPI DllExport
+#ifndef FMI_Export
+	#define FMI_Export DllExport
 #endif
 typedef struct {
 	/*************** FMI ME 2.0 ****************/
@@ -177,7 +177,7 @@ fmiStatus		fmi_get_continuous_states(
 													fmiReal states[],
 													size_t nx);
 
-fmiStatus		fmi_get_nominal_continuousstates(	
+fmiStatus		fmi_get_nominals_of_continuousstates(	
 													fmiComponent c,
 													fmiReal x_nominal[],
 													size_t nx);

@@ -57,6 +57,8 @@ struct fmi1_xml_model_description_t {
 
     double defaultExperimentStopTime;
 
+#define FMI1_DEFAULT_EXPERIMENT_TOLERANCE 1e-4
+
     double defaultExperimentTolerance;
 
     jm_vector(jm_voidp) vendorList;

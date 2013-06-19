@@ -115,7 +115,9 @@ jm_status_enu_t fmi1_import_create_dllfmu(fmi1_import_t* fmu, fmi1_callback_func
 	if (registerGlobally) {
 		fmu->registerGlobally = 1;
 		if(!fmi1_import_active_fmu) {
-			jm_vector_init(jm_voidp)(&fmi1_import_active_fmu_store,0, fmu->callbacks);
+			fmi1_import_active_fmu_store_callbacks = *fmu->callbacks;
+			fmi1_import_active_fmu_store_callbacks.context = 0;
+			jm_vector_init(jm_voidp)(&fmi1_import_active_fmu_store,0, &fmi1_import_active_fmu_store_callbacks);
 			fmi1_import_active_fmu = &fmi1_import_active_fmu_store;
 			jm_log_debug(fmu->callbacks, module, "Created an empty active fmu list");
 		}

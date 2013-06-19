@@ -34,13 +34,14 @@ extern "C" {
 static jm_status_enu_t fmi1_capi_get_fcn(fmi1_capi_t* fmu, const char* function_name, jm_dll_function_ptr* dll_function_ptrptr)
 {
 	char fname[FUNCTION_NAME_LENGTH_MAX];
+    int len;
 	
 	if (strlen(fmu->modelIdentifier) + strlen(function_name) + 2 > FUNCTION_NAME_LENGTH_MAX) {
 		jm_log_fatal(fmu->callbacks, FMI_CAPI_MODULE_NAME, "DLL function name is too long. Max name length is set to %s.", STRINGIFY(FUNCTION_NAME_LENGTH_MAX));
 		return jm_status_error;
 	}	
 
-	sprintf(fname,"%s_%s",fmu->modelIdentifier, function_name);
+	len = jm_snprintf(fname,FUNCTION_NAME_LENGTH_MAX,"%s_%s",fmu->modelIdentifier, function_name);
 
 	return jm_portability_load_dll_function(fmu->dllHandle, fname, dll_function_ptrptr);
 }

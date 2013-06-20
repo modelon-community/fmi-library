@@ -143,9 +143,9 @@ FMI_Export fmiStatus fmiGetContinuousStates(fmiComponent c, fmiReal states[], si
 	return fmi_get_continuous_states(c, states, nx);
 }
 
-FMI_Export fmiStatus fmiGetNominalsOfContinuousStates(fmiComponent c, fmiReal x_nominal[], size_t nx)
+FMI_Export fmiStatus fmiGetNominalContinuousStates(fmiComponent c, fmiReal x_nominal[], size_t nx)
 {
-	return fmi_get_nominals_of_continuousstates(c, x_nominal, nx);
+	return fmi_get_nominal_continuousstates(c, x_nominal, nx);
 }
 
 FMI_Export fmiStatus fmiGetStateValueReferences(fmiComponent c, fmiValueReference vrx[], size_t nx)

@@ -376,7 +376,7 @@ fmi2_status_t fmi2_capi_get_continuous_states(fmi2_capi_t* fmu, fmi2_real_t stat
  * @param nx Number of nominal values.
  * @return FMI status.
  */
-fmi2_status_t fmi2_capi_get_nominals_of_continuous_states(fmi2_capi_t* fmu, fmi2_real_t x_nominal[], size_t nx);
+fmi2_status_t fmi2_capi_get_nominal_continuous_states(fmi2_capi_t* fmu, fmi2_real_t x_nominal[], size_t nx);
 
 /**
  * \brief Calls the FMI function fmiTerminate(...) 

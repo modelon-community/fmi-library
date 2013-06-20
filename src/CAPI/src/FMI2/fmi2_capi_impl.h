@@ -86,7 +86,7 @@ struct fmi2_capi_t {
     fmi2_get_event_indicators_ft		fmiGetEventIndicators;
     fmi2_event_update_ft				fmiEventUpdate;
     fmi2_get_continuous_states_ft		fmiGetContinuousStates;
-    fmi2_get_nominals_of_continuous_states_ft fmiGetNominalsOfContinuousStates;
+    fmi2_get_nominal_continuous_states_ft fmiGetNominalContinuousStates;
     fmi2_terminate_ft					fmiTerminate;
 
 	/* FMI CS */

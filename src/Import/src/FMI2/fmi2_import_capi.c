@@ -297,8 +297,8 @@ fmi2_status_t fmi2_import_get_continuous_states(fmi2_import_t* fmu, fmi2_real_t 
 	return fmi2_capi_get_continuous_states(fmu -> capi, states, nx);
 }
 
-fmi2_status_t fmi2_import_get_nominals_of_continuous_states(fmi2_import_t* fmu, fmi2_real_t x_nominal[], size_t nx) {
-	return fmi2_capi_get_nominals_of_continuous_states(fmu -> capi, x_nominal, nx);
+fmi2_status_t fmi2_import_get_nominal_continuous_states(fmi2_import_t* fmu, fmi2_real_t x_nominal[], size_t nx) {
+	return fmi2_capi_get_nominal_continuous_states(fmu -> capi, x_nominal, nx);
 }
 
 fmi2_status_t fmi2_import_terminate(fmi2_import_t* fmu) {

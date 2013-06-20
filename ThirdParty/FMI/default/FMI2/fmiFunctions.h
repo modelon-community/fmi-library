@@ -21,6 +21,8 @@
    names are used and "FMI_FUNCTION_PREFIX" must not be defined.
 
    Revisions:
+   - June 20, 2013:
+                Back to fmiTerminate and fmiGetNominalContinuousState to be beta4 binary compatible.
    - Feb. 17, 2013: Portability improvements:
                        o DllExport changed to FMI_Export
                        o FUNCTION_PREFIX changed to FMI_FUNCTION_PREFIX
@@ -191,7 +193,7 @@ Functions for FMI for Model Exchange
 #define fmiGetDerivatives                fmiFullName(fmiGetDerivatives)
 #define fmiGetEventIndicators            fmiFullName(fmiGetEventIndicators)
 #define fmiGetContinuousStates           fmiFullName(fmiGetContinuousStates)
-#define fmiGetNominalsOfContinuousStates fmiFullName(fmiGetNominalsOfContinuousStates)
+#define fmiGetNominalContinuousStates fmiFullName(fmiGetNominalContinuousStates)
 
 
 /***************************************************
@@ -269,7 +271,7 @@ Functions for FMI for Model Exchange
    FMI_Export fmiGetDerivativesTYPE                fmiGetDerivatives;
    FMI_Export fmiGetEventIndicatorsTYPE            fmiGetEventIndicators;
    FMI_Export fmiGetContinuousStatesTYPE           fmiGetContinuousStates;
-   FMI_Export fmiGetNominalsOfContinuousStatesTYPE fmiGetNominalsOfContinuousStates;
+   FMI_Export fmiGetNominalContinuousStatesTYPE fmiGetNominalContinuousStates;
 
 
 /***************************************************

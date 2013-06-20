@@ -5,7 +5,9 @@
    It declares data and function types for FMI 2.0
 
    Revisions:
-   - Feb. 17, 2013: Added third argument to fmiCompletedIntegratorStepTYPE
+    - June 20, 2013:
+                Back to fmiTerminate and fmiGetNominalContinuousState to be beta4 binary compatible.
+    - Feb. 17, 2013: Added third argument to fmiCompletedIntegratorStepTYPE
                     Changed function name "fmiTerminateType" to "fmiTerminateModelType" (due to #113)
                     Changed function name "fmiGetNominalContinuousState" to
                                           "fmiGetNominalsOfContinuousStates"
@@ -166,7 +168,7 @@ Types for Functions for FMI for Model Exchange
    typedef fmiStatus fmiGetDerivativesTYPE               (fmiComponent, fmiReal[], size_t);
    typedef fmiStatus fmiGetEventIndicatorsTYPE           (fmiComponent, fmiReal[], size_t);
    typedef fmiStatus fmiGetContinuousStatesTYPE          (fmiComponent, fmiReal[], size_t);
-   typedef fmiStatus fmiGetNominalsOfContinuousStatesTYPE(fmiComponent, fmiReal[], size_t);
+   typedef fmiStatus fmiGetNominalContinuousStatesTYPE(fmiComponent, fmiReal[], size_t);
 
 
 /***************************************************

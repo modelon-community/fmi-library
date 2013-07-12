@@ -299,7 +299,7 @@ void  fmi1_log_forwarding_v(fmi1_component_t c, fmi1_string_t instanceName, fmi1
         JM_VA_COPY(argscp, args);
 #endif
         len = jm_vsnprintf(curp, bufsize -(curp-buf), message, args);
-        if(len > bufsize) {
+        if(len > (bufsize -(curp-buf+1))) {
             int offset = (curp-buf);
             len = jm_vector_resize(char)(&fmu->logMessageBufferCoded, len + offset + 1) - offset;
             buf = jm_vector_get_itemp(char)(&fmu->logMessageBufferCoded,0);

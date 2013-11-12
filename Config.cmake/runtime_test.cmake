@@ -30,6 +30,8 @@ set(TEST_OUTPUT_FOLDER "${CMAKE_CURRENT_BINARY_DIR}/Testing")
 
 include_directories(${RTTESTDIR})
 if(MSVC)
+	# default in MSVC for Debug build is incremental linking, 
+	# but dlls linked with this flag cannot be loaded with LoadLibrary
 	foreach(flag_var
 			CMAKE_MODULE_LINKER_FLAGS_DEBUG CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO
 			CMAKE_SHARED_LINKER_FLAGS_DEBUG CMAKE_SHARED_LINKER_FLAGS_RELWITHDEBINFO)

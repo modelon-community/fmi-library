@@ -69,9 +69,9 @@ int test_simulate_me(fmi2_import_t* fmu)
 	event_indicators = calloc(n_event_indicators, sizeof(double));
 	event_indicators_prev = calloc(n_event_indicators, sizeof(double));
 
-	jmstatus = fmi2_import_instantiate_model(fmu, "Test ME model instance",0,0);
+	jmstatus = fmi2_import_instantiate(fmu, "Test ME model instance",fmi2_model_exchange,0,0);
 	if (jmstatus == jm_status_error) {
-		printf("fmi2_import_instantiate_model failed\n");
+		printf("fmi2_import_instantiate failed\n");
 		do_exit(CTEST_RETURN_FAIL);
 	}
 
@@ -158,7 +158,7 @@ int test_simulate_me(fmi2_import_t* fmu)
 
 	fmistatus = fmi2_import_terminate(fmu);
 
-	fmi2_import_free_model_instance(fmu);
+	fmi2_import_free_instance(fmu);
 
 	free(states);
 	free(states_der);

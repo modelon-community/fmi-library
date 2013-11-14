@@ -180,6 +180,28 @@ fmi2_status_t fmi2_import_set_debug_logging(fmi2_import_t* fmu, fmi2_boolean_t l
 	return fmi2_capi_set_debug_logging(fmu -> capi, loggingOn, nCategories, categories);
 }
 
+
+jm_status_enu_t fmi2_import_instantiate(fmi2_import_t* fmu,
+  fmi2_string_t instanceName, fmi2_type_t fmuType,
+  fmi2_string_t fmuResourceLocation, fmi2_boolean_t visible) {
+    fmi2_string_t fmuGUID = fmi2_import_get_GUID(fmu);
+    fmi2_boolean_t loggingOn = (fmu->callbacks->log_level > jm_log_level_nothing);
+    fmi2_component_t c;
+    if(!fmuResourceLocation) 
+        fmuResourceLocation = fmu->resourceLocation;
+    c = fmi2_capi_instantiate(fmu -> capi, instanceName, fmuType, fmuGUID,
+                              fmuResourceLocation, visible, loggingOn);
+    if (c == NULL) {
+        return jm_status_error;
+    } else {
+        return jm_status_success;
+    }
+}
+
+void fmi2_import_free_instance(fmi2_import_t* fmu) {
+    fmi2_capi_free_instance(fmu -> capi);
+}
+
 fmi2_status_t fmi2_import_set_real(fmi2_import_t* fmu, const fmi2_value_reference_t vr[], size_t nvr, const fmi2_real_t    value[]) {
 	return fmi2_capi_set_real(fmu -> capi, vr, nvr, value);
 }
@@ -243,24 +265,6 @@ fmi2_status_t fmi2_import_get_directional_derivative(fmi2_import_t* fmu, const f
 
 /* FMI 2.0 ME functions */
 
-jm_status_enu_t fmi2_import_instantiate_model(fmi2_import_t* fmu, fmi2_string_t instanceName, fmi2_string_t fmuResourceLocation, fmi2_boolean_t visible) {
-	fmi2_string_t fmuGUID = fmi2_import_get_GUID(fmu);
-	fmi2_boolean_t loggingOn = (fmu->callbacks->log_level > jm_log_level_nothing);
-	fmi2_component_t c;
-	if(!fmuResourceLocation) 
-		fmuResourceLocation = fmu->resourceLocation;
-	c = fmi2_capi_instantiate_model(fmu -> capi, instanceName, fmuGUID,  fmuResourceLocation, visible, loggingOn);
-	if (c == NULL) {
-		return jm_status_error;
-	} else {
-		return jm_status_success;
-	}
-}
-
-void fmi2_import_free_model_instance(fmi2_import_t* fmu) {
-	fmi2_capi_free_model_instance(fmu -> capi);
-}
-
 fmi2_status_t fmi2_import_set_time(fmi2_import_t* fmu, fmi2_real_t time) {
 	return fmi2_capi_set_time(fmu -> capi, time);
 }
@@ -310,20 +314,6 @@ fmi2_status_t fmi2_import_terminate(fmi2_import_t* fmu) {
 
 /* FMI 1.0 CS functions */
 
-jm_status_enu_t fmi2_import_instantiate_slave(fmi2_import_t* fmu, fmi2_string_t instanceName, fmi2_string_t fmuResourceLocation, fmi2_boolean_t visible) {
- 	fmi2_string_t fmuGUID = fmi2_import_get_GUID(fmu);
-	fmi2_boolean_t loggingOn = (fmu->callbacks->log_level > jm_log_level_nothing);
-	fmi2_component_t c;
-	if(!fmuResourceLocation) fmuResourceLocation = fmu->resourceLocation;
-	jm_log_verbose(fmu->callbacks, module, "Instantiating the slave with FMU resources in '%s'", fmuResourceLocation);
-	c = fmi2_capi_instantiate_slave(fmu -> capi, instanceName, fmuGUID, fmuResourceLocation, visible, loggingOn);
-	if (c == NULL) {
-		return jm_status_error;
-	} else {
-		return jm_status_success;
-	}
-}
-
 fmi2_status_t fmi2_import_initialize_slave(fmi2_import_t* fmu, fmi2_real_t  relativeTolerance, fmi2_real_t tStart, fmi2_boolean_t StopTimeDefined, fmi2_real_t tStop) {
 	return fmi2_capi_initialize_slave(fmu -> capi, relativeTolerance, tStart, StopTimeDefined, tStop);
 }
@@ -334,10 +324,6 @@ fmi2_status_t fmi2_import_terminate_slave(fmi2_import_t* fmu) {
 
 fmi2_status_t fmi2_import_reset_slave(fmi2_import_t* fmu) {
 	return fmi2_capi_reset_slave(fmu -> capi);
-}
-
-void fmi2_import_free_slave_instance(fmi2_import_t* fmu) {
-	fmi2_capi_free_slave_instance(fmu -> capi);
 }
 
 fmi2_status_t fmi2_import_set_real_input_derivatives(fmi2_import_t* fmu, const fmi2_value_reference_t vr[], size_t nvr, const fmi2_integer_t order[], const  fmi2_real_t value[]) {

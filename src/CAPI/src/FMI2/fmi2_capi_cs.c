@@ -20,18 +20,6 @@ extern "C" {
 #include <FMI2/fmi2_capi.h>
 #include <FMI2/fmi2_capi_impl.h>
 
-fmi2_component_t fmi2_capi_instantiate_slave(fmi2_capi_t* fmu, fmi2_string_t instanceName, fmi2_string_t fmuGUID, fmi2_string_t fmuResourceLocation, fmi2_boolean_t visible, fmi2_boolean_t loggingOn)
-{
-	return fmu->c = fmu->fmiInstantiateSlave(instanceName, fmuGUID, fmuResourceLocation, &fmu->callBackFunctions, visible, loggingOn);
-}
-
-void fmi2_capi_free_slave_instance(fmi2_capi_t* fmu)
-{
-	if(fmu->c) {
-		fmu->fmiFreeSlaveInstance(fmu->c);
-		fmu->c = 0;
-	}
-}
 
 fmi2_status_t fmi2_capi_initialize_slave(fmi2_capi_t* fmu, fmi2_real_t relativeTolerance, fmi2_real_t tStart, fmi2_boolean_t StopTimeDefined, fmi2_real_t tStop)
 {

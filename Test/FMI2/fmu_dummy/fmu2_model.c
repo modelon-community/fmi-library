@@ -256,7 +256,10 @@ const char* fmi_get_model_types_platform()
 
 } */
 
-fmiComponent fmi_instantiate_model(fmiString instanceName,	fmiString fmuGUID,	fmiString fmuLocation,	const fmiCallbackFunctions *functions,	fmiBoolean visible,	fmiBoolean loggingOn)
+fmiComponent fmi_instantiate(fmiString instanceName, fmiType fmuType,
+  fmiString fmuGUID, fmiString fmuLocation,
+  const fmiCallbackFunctions *functions, fmiBoolean visible,
+  fmiBoolean loggingOn)
 {
 	component_ptr_t comp;
 	int k, p;
@@ -306,7 +309,7 @@ fmiComponent fmi_instantiate_model(fmiString instanceName,	fmiString fmuGUID,	fm
 	}
 }
 
-void fmi_free_model_instance(fmiComponent c)
+void fmi_free_instance(fmiComponent c)
 {
 	int i;
 	component_ptr_t comp = (fmiComponent)c;
@@ -486,14 +489,6 @@ const char* fmi_get_types_platform()
 	return fmiTypesPlatform;
 }
 
-fmiComponent fmi_instantiate_slave(fmiString instanceName, fmiString fmuGUID, fmiString fmuLocation, const fmiCallbackFunctions *functions, fmiBoolean visible, fmiBoolean loggingOn)
-{
-	component_ptr_t comp;
-
-	comp = fmi_instantiate_model(instanceName, fmuGUID, fmuLocation, functions, visible, loggingOn);
-	return comp;
-}
-
 fmiStatus fmi_initialize_slave(fmiComponent c, fmiReal relativeTolerance, fmiReal tStart, fmiBoolean StopTimeDefined, fmiReal tStop)
 {
 	component_ptr_t comp	= (fmiComponent)c;
@@ -518,11 +513,6 @@ fmiStatus fmi_terminate_slave(fmiComponent c)
 fmiStatus fmi_reset_slave(fmiComponent c)
 {
 	return fmiOK;
-}
-
-void fmi_free_slave_instance(fmiComponent c)
-{
-	fmi_free_model_instance(c);
 }
 
 fmiStatus fmi_set_real_input_derivatives(fmiComponent c, const fmiValueReference vr[], size_t nvr, const fmiInteger order[], const fmiReal value[])

@@ -74,6 +74,12 @@ Types for Common Functions
 	LOAD_DLL_FUNCTION(fmiGetVersion);
 	LOAD_DLL_FUNCTION(fmiSetDebugLogging);
 
+    /* Creation and destruction of instances and setting debug status */
+    /*typedef fmiComponent fmiInstantiateTYPE (fmiString, fmiType, fmiString, fmiString, const fmiCallbackFunctions*, fmiBoolean, fmiBoolean);
+    typedef void         fmiFreeInstanceTYPE(fmiComponent);*/
+    LOAD_DLL_FUNCTION(fmiInstantiate);
+    LOAD_DLL_FUNCTION(fmiFreeInstance);
+
 	/* Getting and setting variable values */
 /*   typedef fmiStatus fmiGetRealTYPE   (fmiComponent, const fmiValueReference[], size_t, fmiReal   []);
    typedef fmiStatus fmiGetIntegerTYPE(fmiComponent, const fmiValueReference[], size_t, fmiInteger[]);
@@ -127,12 +133,6 @@ static jm_status_enu_t fmi2_capi_load_cs_fcn(fmi2_capi_t* fmu, unsigned int capa
                                                                    const fmiValueReference[], size_t,
                                                                    const fmiReal[], fmiReal[]); */
     /*???  LOAD_DLL_FUNCTION_WITH_FLAG(fmiGetDirectionalDerivative,fmi2_cs_providesDirectionalDerivatives); */
-
-/* Creation and destruction of slave instances */
-/*   typedef fmiComponent fmiInstantiateSlaveTYPE (fmiString, fmiString, fmiString, const fmiCallbackFunctions*, fmiBoolean, fmiBoolean);
-   typedef void         fmiFreeSlaveInstanceTYPE(fmiComponent); */
-    LOAD_DLL_FUNCTION(fmiInstantiateSlave);
-	LOAD_DLL_FUNCTION(fmiFreeSlaveInstance);
 
 /* Simulating the slave */
 /*   typedef fmiStatus fmiInitializeSlaveTYPE(fmiComponent, fmiReal, fmiReal, fmiBoolean, fmiReal);
@@ -195,12 +195,6 @@ static jm_status_enu_t fmi2_capi_load_me_fcn(fmi2_capi_t* fmu, unsigned int capa
                                                                    const fmiValueReference[], size_t,
                                                                    const fmiReal[], fmiReal[]); */
     LOAD_DLL_FUNCTION_WITH_FLAG(fmiGetDirectionalDerivative,fmi2_me_providesDirectionalDerivatives); 
-
-	/* Creation and destruction of model instances and setting debug status */
-   /*typedef fmiComponent fmiInstantiateModelTYPE (fmiString, fmiString, fmiString, const fmiCallbackFunctions*, fmiBoolean, fmiBoolean);
-    typedef void         fmiFreeModelInstanceTYPE(fmiComponent);*/
-	LOAD_DLL_FUNCTION(fmiInstantiateModel);
-	LOAD_DLL_FUNCTION(fmiFreeModelInstance);
 
 /* Providing independent variables and re-initialization of caching */
    /*typedef fmiStatus fmiSetTimeTYPE                (fmiComponent, fmiReal);
@@ -388,6 +382,23 @@ const char* fmi2_capi_get_types_platform(fmi2_capi_t* fmu)
 fmi2_status_t fmi2_capi_set_debug_logging(fmi2_capi_t* fmu, fmi2_boolean_t loggingOn, size_t nCategories, fmi2_string_t categories[])
 {
 	return fmu->fmiSetDebugLogging(fmu->c, loggingOn, nCategories, categories);
+}
+
+fmi2_component_t fmi2_capi_instantiate(fmi2_capi_t* fmu,
+  fmi2_string_t instanceName, fmi2_type_t fmuType, fmi2_string_t fmuGUID,
+  fmi2_string_t fmuResourceLocation, fmi2_boolean_t visible,
+  fmi2_boolean_t loggingOn)
+{
+    return fmu->c = fmu->fmiInstantiate(instanceName, fmuType, fmuGUID,
+        fmuResourceLocation, &fmu->callBackFunctions, visible, loggingOn);
+}
+
+void fmi2_capi_free_instance(fmi2_capi_t* fmu)
+{
+    if(fmu->c) {
+        fmu->fmiFreeInstance(fmu->c);
+        fmu->c = 0;
+    }
 }
 
 fmi2_status_t fmi2_capi_get_fmu_state           (fmi2_capi_t* fmu, fmi2_FMU_state_t* s) {

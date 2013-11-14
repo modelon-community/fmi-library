@@ -85,9 +85,9 @@ int test_simulate_cs(fmi2_import_t* fmu)
     printf("GUID:      %s\n", fmuGUID);
 
 
-	jmstatus = fmi2_import_instantiate_slave(fmu, instanceName, fmuLocation, visible);
+    jmstatus = fmi2_import_instantiate(fmu, instanceName, fmi2_cosimulation, fmuLocation, visible);
 	if (jmstatus == jm_status_error) {
-		printf("fmi2_import_instantiate_model failed\n");
+		printf("fmi2_import_instantiate failed\n");
 		do_exit(CTEST_RETURN_FAIL);
 	}
 
@@ -144,7 +144,7 @@ int test_simulate_cs(fmi2_import_t* fmu)
 
 	fmistatus = fmi2_import_terminate_slave(fmu);
 
-	fmi2_import_free_slave_instance(fmu);
+	fmi2_import_free_instance(fmu);
 
 	return 0;
 }

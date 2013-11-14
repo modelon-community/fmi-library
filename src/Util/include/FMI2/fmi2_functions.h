@@ -46,6 +46,12 @@ typedef enum {
 	fmi2_status_pending
 } fmi2_status_t;
 
+typedef enum {
+    fmi2_model_exchange,
+    fmi2_cosimulation
+} fmi2_type_t;
+
+
 /* Type definitions */
 
 /** Convert #fmi2_status_t variable to string  */
@@ -107,6 +113,10 @@ Types for Common Functions
    typedef const char* (*fmi2_get_version_ft)();
    typedef fmi2_status_t   (*fmi2_set_debug_logging_ft)(fmi2_component_t, fmi2_boolean_t,size_t nCategories, const fmi2_string_t categories[]);
 
+/* Creation and destruction of fmu instances and setting debug status */
+   typedef fmi2_component_t (*fmi2_instantiate_ft) (fmi2_string_t, fmi2_type_t, fmi2_string_t, fmi2_string_t, const fmi2_callback_functions_t*, fmi2_boolean_t, fmi2_boolean_t);
+   typedef void         (*fmi2_free_instance_ft)(fmi2_component_t);
+
 /* Getting and setting variable values */
    typedef fmi2_status_t (*fmi2_get_real_ft)   (fmi2_component_t, const fmi2_value_reference_t[], size_t, fmi2_real_t   []);
    typedef fmi2_status_t (*fmi2_get_integer_ft)(fmi2_component_t, const fmi2_value_reference_t[], size_t, fmi2_integer_t[]);
@@ -136,10 +146,6 @@ Types for Common Functions
 Types for Functions for FMI for Model Exchange
 ****************************************************/
 
-/* Creation and destruction of model instances and setting debug status */
-   typedef fmi2_component_t (*fmi2_instantiate_model_ft) (fmi2_string_t, fmi2_string_t, fmi2_string_t, const fmi2_callback_functions_t*, fmi2_boolean_t, fmi2_boolean_t);
-   typedef void         (*fmi2_free_model_instance_ft)(fmi2_component_t);
-
 /* Providing independent variables and re-initialization of caching */
    typedef fmi2_status_t (*fmi2_set_time_ft)                (fmi2_component_t, fmi2_real_t);
    typedef fmi2_status_t (*fmi2_set_continuous_states_ft)    (fmi2_component_t, const fmi2_real_t[], size_t);
@@ -160,10 +166,6 @@ Types for Functions for FMI for Model Exchange
 /***************************************************
 Types for_functions for FMI for Co-_simulation
 ****************************************************/
-
-/* Creation and destruction of slave instances */
-   typedef fmi2_component_t (*fmi2_instantiate_slave_ft) (fmi2_string_t, fmi2_string_t, fmi2_string_t, const fmi2_callback_functions_t*, fmi2_boolean_t, fmi2_boolean_t);
-   typedef void         (*fmi2_free_slave_instance_ft)(fmi2_component_t);
 
 /* Simulating the slave */
    typedef fmi2_status_t (*fmi2_initialize_slave_ft)(fmi2_component_t, fmi2_real_t, fmi2_real_t, fmi2_boolean_t, fmi2_real_t);

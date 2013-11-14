@@ -80,6 +80,18 @@ fmiStatus		fmi_set_debug_logging(
 													fmiComponent c,
 													fmiBoolean loggingOn);
 
+fmiComponent fmi_instantiate (
+    fmiString instanceName,
+    fmiType fmuType,
+    fmiString fmuGUID,
+    fmiString fmuLocation,
+    const fmiCallbackFunctions* functions,
+    fmiBoolean visible,
+    fmiBoolean loggingOn);
+
+void fmi_free_instance(
+    fmiComponent c);
+
 fmiStatus		fmi_get_real(			
 													fmiComponent c,
 													const fmiValueReference vr[],
@@ -127,17 +139,6 @@ fmiStatus		fmi_set_string(
 
 /* FMI 2.0 ME Functions */
 const char*		fmi_get_model_types_platform();
-
-fmiComponent	fmi_instantiate_model(
-													fmiString instanceName,
-													fmiString fmuGUID,
-													fmiString fmuLocation,
-													const fmiCallbackFunctions* functions,
-													fmiBoolean visible,
-													fmiBoolean loggingOn);
-
-void			fmi_free_model_instance(
-													fmiComponent c);
 
 fmiStatus		fmi_set_time(
 													fmiComponent c,
@@ -194,13 +195,6 @@ fmiStatus		fmi_terminate(fmiComponent c);
 #ifdef fmiFunctions_h
 
 const char*		fmi_get_types_platform();
-
-fmiComponent	fmi_instantiate_slave(				fmiString instanceName,
-													fmiString fmuGUID,
-													fmiString fmuLocation,
-													const fmiCallbackFunctions* functions,
-													fmiBoolean visible,
-													fmiBoolean loggingOn);
 
 fmiStatus		fmi_initialize_slave(
 													fmiComponent c,

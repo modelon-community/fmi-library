@@ -51,6 +51,8 @@ struct fmi2_capi_t {
 	/* FMI common */
 	fmi2_get_version_ft					fmiGetVersion;
 	fmi2_set_debug_logging_ft			fmiSetDebugLogging;
+    fmi2_instantiate_ft			fmiInstantiate;
+    fmi2_free_instance_ft			fmiFreeInstance;    
     fmi2_set_real_ft					fmiSetReal;
     fmi2_set_integer_ft					fmiSetInteger;
     fmi2_set_boolean_ft					fmiSetBoolean;
@@ -74,10 +76,8 @@ struct fmi2_capi_t {
 
 	/* FMI ME */
     fmi2_get_types_platform_ft			fmiGetTypesPlatform;    
-    fmi2_instantiate_model_ft			fmiInstantiateModel;
     fmi2_completed_event_iteration_ft   fmiCompletedEventIteration;
 
-    fmi2_free_model_instance_ft			fmiFreeModelInstance;    
     fmi2_set_time_ft					fmiSetTime;
     fmi2_set_continuous_states_ft		fmiSetContinuousStates;
     fmi2_completed_integrator_step_ft	fmiCompletedIntegratorStep;
@@ -90,11 +90,9 @@ struct fmi2_capi_t {
     fmi2_terminate_ft					fmiTerminate;
 
 	/* FMI CS */
-    fmi2_instantiate_slave_ft			fmiInstantiateSlave;
     fmi2_initialize_slave_ft			fmiInitializeSlave;
     fmi2_terminate_slave_ft				fmiTerminateSlave;
     fmi2_reset_slave_ft					fmiResetSlave;
-    fmi2_free_slave_instance_ft			fmiFreeSlaveInstance;
     fmi2_set_real_input_derivatives_ft	fmiSetRealInputDerivatives;
     fmi2_get_real_output_derivatives_ft	fmiGetRealOutputDerivatives;
     fmi2_do_step_ft						fmiDoStep;

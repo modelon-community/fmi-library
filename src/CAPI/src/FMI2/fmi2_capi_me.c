@@ -18,20 +18,6 @@
 #include <FMI2/fmi2_capi_impl.h>
 
 
-fmi2_component_t fmi2_capi_instantiate_model(fmi2_capi_t* fmu, fmi2_string_t instanceName, fmi2_string_t fmuGUID, fmi2_string_t fmuResourceLocation, 
-																 fmi2_boolean_t visible, fmi2_boolean_t loggingOn)
-{
-	assert(fmu);
-	jm_log_verbose(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Calling fmiInstantiateModel");
-	return fmu->c = fmu->fmiInstantiateModel(instanceName, fmuGUID,  fmuResourceLocation, &fmu->callBackFunctions, visible, loggingOn);
-}
-
-void fmi2_capi_free_model_instance(fmi2_capi_t* fmu)
-{
-	jm_log_verbose(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Calling fmiFreeModelInstance");
-	fmu->fmiFreeModelInstance(fmu->c);
-}
-
 fmi2_status_t fmi2_capi_initialize_model(fmi2_capi_t* fmu, fmi2_boolean_t toleranceControlled, fmi2_real_t relativeTolerance, fmi2_event_info_t* eventInfo)
 {
 	assert(fmu);

@@ -45,6 +45,20 @@ FMI_Export fmiStatus fmiSetDebugLogging(fmiComponent c, fmiBoolean loggingOn, si
 	return fmi_set_debug_logging(c, loggingOn);
 }
 
+FMI_Export fmiComponent fmiInstantiate(fmiString instanceName,
+  fmiType fmuType, fmiString GUID, fmiString location,
+  const fmiCallbackFunctions* functions, fmiBoolean visible,
+  fmiBoolean loggingOn)
+{
+    return fmi_instantiate(instanceName, fmuType, GUID, location, functions,
+                           visible, loggingOn);
+}
+
+FMI_Export void fmiFreeInstance(fmiComponent c)
+{
+	fmi_free_instance(c);
+}
+
 FMI_Export fmiStatus fmiGetReal(fmiComponent c, const fmiValueReference vr[], size_t nvr, fmiReal value[])
 {
 	return fmi_get_real(c, vr, nvr, value);
@@ -91,11 +105,6 @@ FMI_Export const char* fmiGetTypesPlatform()
 	return fmi_get_types_platform();
 }
 
-FMI_Export fmiComponent fmiInstantiateSlave(fmiString instanceName, fmiString fmuGUID, fmiString fmuLocation, const fmiCallbackFunctions* functions, fmiBoolean visible, fmiBoolean loggingOn)
-{
-	return fmi_instantiate_slave(instanceName, fmuGUID, fmuLocation,functions, visible, loggingOn);
-}
-
 FMI_Export fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal relativeTolerance, fmiReal tStart, fmiBoolean StopTimeDefined, fmiReal tStop)
 {
 	return fmi_initialize_slave(c, relativeTolerance, tStart, StopTimeDefined, tStop);
@@ -109,11 +118,6 @@ FMI_Export fmiStatus fmiTerminateSlave(fmiComponent c)
 FMI_Export fmiStatus fmiResetSlave(fmiComponent c)
 {
 	return fmi_reset_slave(c);
-}
-
-FMI_Export void fmiFreeSlaveInstance(fmiComponent c)
-{
-	fmi_free_slave_instance(c);
 }
 
 FMI_Export fmiStatus fmiSetRealInputDerivatives(fmiComponent c, const fmiValueReference vr[], size_t nvr, const fmiInteger order[], const fmiReal value[])

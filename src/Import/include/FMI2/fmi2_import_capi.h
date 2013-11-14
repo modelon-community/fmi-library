@@ -115,6 +115,28 @@ FMILIB_EXPORT const char* fmi2_import_get_version(fmi2_import_t* fmu);
  FMILIB_EXPORT fmi2_status_t fmi2_import_set_debug_logging(fmi2_import_t* fmu, fmi2_boolean_t loggingOn, size_t nCategories, fmi2_string_t categories[]);
 
 /**
+ * \brief Wrapper for the FMI function fmiInstantiate(...) 
+ * 
+ * @param fmu A model description object returned by fmi2_import_parse_xml() that has loaded the FMI functions, see fmi2_import_load_fcn().
+ * @param instanceName The name of the instance.
+ * @param fmuType fmi2_model_exchange or fmi2_cosimulation.
+ * @param fmuResourceLocation Access path URI to the FMU archive resources. If this is NULL pointer the FMU will get the path to the unzipped location.
+ * @param visible Indicates whether or not the simulator application window shoule be visible.
+ * @return Error status. Returnes jm_status_error if fmiInstantiateModel returned NULL, otherwise jm_status_success.
+ */
+FMILIB_EXPORT jm_status_enu_t fmi2_import_instantiate(fmi2_import_t* fmu,
+    fmi2_string_t instanceName, fmi2_type_t fmuType,
+    fmi2_string_t fmuResourceLocation, fmi2_boolean_t visible);
+
+/**
+ * \brief Wrapper for the FMI function fmiFreeInstance(...) 
+ * 
+ * @param fmu An fmu description object returned by fmi2_import_parse_xml() that has loaded the FMI functions, see fmi2_import_load_fcn().
+ */
+FMILIB_EXPORT void fmi2_import_free_instance(fmi2_import_t* fmu);
+
+
+/**
  * \brief Wrapper for the FMI function fmiSetReal(...) 
  * 
  * @param fmu A model description object returned by fmi2_import_parse_xml() that has loaded the FMI functions, see fmi2_import_load_fcn().
@@ -299,24 +321,6 @@ FMILIB_EXPORT fmi2_status_t fmi2_import_get_directional_derivative(fmi2_import_t
 
 
 /**
- * \brief Wrapper for the FMI function fmiInstantiateModel(...) 
- * 
- * @param fmu A model description object returned by fmi2_import_parse_xml() that has loaded the FMI functions, see fmi2_import_load_fcn().
- * @param instanceName The name of the instance.
- * @param fmuResourceLocation Access path URI to the FMU archive resources. If this is NULL pointer the FMU will get the path to the unzipped location.
- * @param visible Indicates whether or not the simulator application window shoule be visible.
- * @return Error status. Returnes jm_status_error if fmiInstantiateModel returned NULL, otherwise jm_status_success.
- */
-FMILIB_EXPORT jm_status_enu_t fmi2_import_instantiate_model(fmi2_import_t* fmu, fmi2_string_t instanceName, fmi2_string_t fmuResourceLocation, fmi2_boolean_t visible);
-
-/**
- * \brief Wrapper for the FMI function fmiFreeModelInstance(...) 
- * 
- * @param fmu A model description object returned by fmi2_import_parse_xml() that has loaded the FMI functions, see fmi2_import_load_fcn().
- */
-FMILIB_EXPORT void fmi2_import_free_model_instance(fmi2_import_t* fmu);
-
-/**
  * \brief Wrapper for the FMI function fmiSetTime(...) 
  * 
  * @param fmu A model description object returned by fmi2_import_parse_xml() that has loaded the FMI functions, see fmi2_import_load_fcn().
@@ -436,17 +440,6 @@ FMILIB_EXPORT fmi2_status_t fmi2_import_terminate(fmi2_import_t* fmu);
 
 
 /**
- * \brief Wrapper for the FMI function fmiInstantiateSlave(...) 
- * 
- * @param fmu A model description object returned by fmi2_import_parse_xml() that has loaded the FMI functions, see fmi2_import_load_fcn().
- * @param instanceName The name of the instance.
- * @param fmuResourceLocation Access path to the resource subdir in the FMU archive.
- * @param visible Indicates whether or not the simulator application window shoule be visible.
- * @return Error status. Returnes jm_status_error if fmiInstantiateSlave returned NULL, otherwise jm_status_success.
- */
-FMILIB_EXPORT jm_status_enu_t fmi2_import_instantiate_slave(fmi2_import_t* fmu, fmi2_string_t instanceName, fmi2_string_t fmuResourceLocation, fmi2_boolean_t visible);
-
-/**
  * \brief Wrapper for the FMI function fmiInitializeSlave(...) 
  * 
  * @param fmu A model description object returned by fmi2_import_parse_xml() that has loaded the FMI functions, see fmi2_import_load_fcn().
@@ -474,13 +467,6 @@ FMILIB_EXPORT fmi2_status_t fmi2_import_terminate_slave(fmi2_import_t* fmu);
  * @return FMI status.
  */
 FMILIB_EXPORT fmi2_status_t fmi2_import_reset_slave(fmi2_import_t* fmu);
-
-/**
- * \brief Wrapper for the FMI function fmiFreeSlaveInstance(...) 
- * 
- * @param fmu A model description object returned by fmi2_import_parse_xml() that has loaded the FMI functions, see fmi2_import_load_fcn().
- */
-FMILIB_EXPORT void fmi2_import_free_slave_instance(fmi2_import_t* fmu);
 
 /**
  * \brief Wrapper for the FMI function fmiSetRealInputDerivatives(...) 

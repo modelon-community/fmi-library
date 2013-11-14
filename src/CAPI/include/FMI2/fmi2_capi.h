@@ -146,6 +146,30 @@ const char* fmi2_capi_get_version(fmi2_capi_t* fmu);
 fmi2_status_t fmi2_capi_set_debug_logging(fmi2_capi_t* fmu, fmi2_boolean_t loggingOn, size_t nCategories, fmi2_string_t categories[]);
 
 /**
+ * \brief Calls the FMI function fmiInstantiate(...) 
+ * 
+ * @param fmu C-API struct that has succesfully loaded the FMI function. 
+ * @param instanceName The name of the instance.
+ * @param fmuType fmi2_model_exchange or fmi2_cosimulation.
+ * @param fmuGUID The GUID identifier.
+ * @param fmuResourceLocation Access path to the FMU archive resources.
+ * @param visible Indicates whether or not the simulator application window shoule be visible.
+ * @param loggingOn Enable or disable the debug logger.
+ * @return An instance of a model.
+ */
+fmi2_component_t fmi2_capi_instantiate(fmi2_capi_t* fmu,
+    fmi2_string_t instanceName, fmi2_type_t fmuType, fmi2_string_t fmuGUID,
+    fmi2_string_t fmuResourceLocation, fmi2_boolean_t visible,
+    fmi2_boolean_t loggingOn);
+
+/**
+ * \brief Calls the FMI function fmiFreeInstance(...) 
+ * 
+ * @param fmu C-API struct that has succesfully loaded the FMI function.
+ */
+void fmi2_capi_free_instance(fmi2_capi_t* fmu);
+
+/**
  * \brief Calls the FMI function fmiSetReal(...) 
  * 
  * @param fmu C-API struct that has succesfully loaded the FMI function.
@@ -259,27 +283,6 @@ fmi2_status_t fmi2_capi_get_directional_derivative(fmi2_capi_t* fmu, const fmi2_
 /** \addtogroup fmi2_capi_me
  *  @{
  */
-
-
-/**
- * \brief Calls the FMI function fmiInstantiateModel(...) 
- * 
- * @param fmu C-API struct that has succesfully loaded the FMI function. 
- * @param instanceName The name of the instance.
- * @param fmuGUID The GUID identifier.
- * @param fmuResourceLocation Access path to the FMU archive resources.
- * @param visible Indicates whether or not the simulator application window shoule be visible.
- * @param loggingOn Enable or disable the debug logger.
- * @return An instance of a model.
- */
-fmi2_component_t fmi2_capi_instantiate_model(fmi2_capi_t* fmu, fmi2_string_t instanceName, fmi2_string_t fmuGUID, fmi2_string_t fmuResourceLocation, 
-																 fmi2_boolean_t visible, fmi2_boolean_t loggingOn);
-/**
- * \brief Calls the FMI function fmiFreeModelInstance(...) 
- * 
- * @param fmu C-API struct that has succesfully loaded the FMI function.
- */
-void fmi2_capi_free_model_instance(fmi2_capi_t* fmu);
 
 /**
  * \brief Calls the FMI function fmiSetTime(...) 
@@ -399,19 +402,6 @@ fmi2_status_t fmi2_capi_terminate(fmi2_capi_t* fmu);
  */
 
 /**
- * \brief Calls the FMI function fmiInstantiateSlave(...) 
- * 
- * @param fmu C-API struct that has succesfully loaded the FMI function.
- * @param instanceName The name of the instance.
- * @param fmuGUID The GUID identifier.
- * @param fmuResourceLocation Access path to the FMU archive resources.
- * @param visible Indicates whether or not the simulator application window shoule be visible.
- * @param loggingOn Enable or disable the debug logger.
- * @return An instance of a model.
- */
-fmi2_component_t fmi2_capi_instantiate_slave(fmi2_capi_t* fmu, fmi2_string_t instanceName, fmi2_string_t fmuGUID, fmi2_string_t fmuResourceLocation, 
-																 fmi2_boolean_t visible, fmi2_boolean_t loggingOn);
-/**
  * \brief Calls the FMI function fmiInitializeSlave(...) 
  * 
  * @param fmu C-API struct that has succesfully loaded the FMI function.
@@ -438,13 +428,6 @@ fmi2_status_t fmi2_capi_terminate_slave(fmi2_capi_t* fmu);
  * @return FMI status.
  */
 fmi2_status_t fmi2_capi_reset_slave(fmi2_capi_t* fmu);
-
-/**
- * \brief Calls the FMI function fmiFreeSlaveInstance(...) 
- * 
- * @param fmu C-API struct that has succesfully loaded the FMI function.
- */
-void fmi2_capi_free_slave_instance(fmi2_capi_t* fmu);
 
 /**
  * \brief Calls the FMI function fmiSetRealInputDerivatives(...) 

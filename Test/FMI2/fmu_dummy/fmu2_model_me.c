@@ -42,6 +42,20 @@ FMI_Export fmiStatus fmiSetDebugLogging(fmiComponent c, fmiBoolean loggingOn, si
 	return fmi_set_debug_logging(c, loggingOn);
 }
 
+FMI_Export fmiComponent fmiInstantiate(fmiString instanceName,
+  fmiType fmuType, fmiString GUID, fmiString location,
+  const fmiCallbackFunctions* functions, fmiBoolean visible,
+  fmiBoolean loggingOn)
+{
+    return fmi_instantiate(instanceName, fmuType, GUID, location, functions,
+                           visible, loggingOn);
+}
+
+FMI_Export void fmiFreeInstance(fmiComponent c)
+{
+	fmi_free_instance(c);
+}
+
 FMI_Export fmiStatus fmiGetReal(fmiComponent c, const fmiValueReference vr[], size_t nvr, fmiReal value[])
 {
 	return fmi_get_real(c, vr, nvr, value);
@@ -86,16 +100,6 @@ FMI_Export fmiStatus fmiSetString(fmiComponent c, const fmiValueReference vr[], 
 FMI_Export const char* fmiGetTypesPlatform()
 {
 	return fmi_get_model_types_platform();
-}
-
-FMI_Export fmiComponent fmiInstantiateModel(fmiString instanceName, fmiString GUID, fmiString location, const fmiCallbackFunctions* functions, fmiBoolean visible, fmiBoolean loggingOn)
-{
-	return fmi_instantiate_model(instanceName, GUID, location, functions, visible, loggingOn);
-}
-
-FMI_Export void fmiFreeModelInstance(fmiComponent c)
-{
-	fmi_free_model_instance(c);
 }
 
 FMI_Export fmiStatus fmiSetTime(fmiComponent c, fmiReal fmitime)

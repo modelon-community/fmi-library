@@ -445,7 +445,7 @@ fmiStatus fmi_get_continuous_states(fmiComponent c, fmiReal states[], size_t nx)
 	}
 }
 
-fmiStatus fmi_get_nominal_continuousstates(fmiComponent c, fmiReal x_nominal[], size_t nx)
+fmiStatus fmi_get_nominals_of_continuousstates(fmiComponent c, fmiReal x_nominal[], size_t nx)
 {
 	component_ptr_t comp = (fmiComponent)c;
 	if (comp == NULL) {

@@ -160,7 +160,7 @@ Types for Functions for FMI for Model Exchange
    typedef fmi2_status_t (*fmi2_get_derivatives_ft)            (fmi2_component_t, fmi2_real_t[], size_t);
    typedef fmi2_status_t (*fmi2_get_event_indicators_ft)        (fmi2_component_t, fmi2_real_t[], size_t);
    typedef fmi2_status_t (*fmi2_get_continuous_states_ft)       (fmi2_component_t, fmi2_real_t[], size_t);
-   typedef fmi2_status_t (*fmi2_get_nominal_continuous_states_ft)(fmi2_component_t, fmi2_real_t[], size_t);
+   typedef fmi2_status_t (*fmi2_get_nominals_of_continuous_states_ft)(fmi2_component_t, fmi2_real_t[], size_t);
 
 
 /***************************************************

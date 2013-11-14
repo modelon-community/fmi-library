@@ -84,11 +84,11 @@ fmi2_status_t fmi2_capi_get_continuous_states(fmi2_capi_t* fmu, fmi2_real_t stat
 	return fmu->fmiGetContinuousStates(fmu->c, states, nx);
 }
 
-fmi2_status_t fmi2_capi_get_nominal_continuous_states(fmi2_capi_t* fmu, fmi2_real_t x_nominal[], size_t nx)
+fmi2_status_t fmi2_capi_get_nominals_of_continuous_states(fmi2_capi_t* fmu, fmi2_real_t x_nominal[], size_t nx)
 {
 	assert(fmu);
-	jm_log_debug(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Calling fmiGetNominalContinuousStates");
-	return fmu->fmiGetNominalContinuousStates(fmu->c, x_nominal, nx);
+	jm_log_debug(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Calling fmiGetNominalsOfContinuousStates");
+	return fmu->fmiGetNominalsOfContinuousStates(fmu->c, x_nominal, nx);
 }
 
 fmi2_status_t fmi2_capi_terminate(fmi2_capi_t* fmu)

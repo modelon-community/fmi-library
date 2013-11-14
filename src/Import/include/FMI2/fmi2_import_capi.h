@@ -414,14 +414,14 @@ FMILIB_EXPORT fmi2_status_t fmi2_import_completed_event_iteration(fmi2_import_t*
 FMILIB_EXPORT fmi2_status_t fmi2_import_get_continuous_states(fmi2_import_t* fmu, fmi2_real_t states[], size_t nx);
 
 /**
- * \brief Wrapper for the FMI function fmiGetNominalContinuousStates(...) 
+ * \brief Wrapper for the FMI function fmiGetNominalsOfContinuousStates(...) 
  * 
  * @param fmu A model description object returned by fmi2_import_parse_xml() that has loaded the FMI functions, see fmi2_import_load_fcn().
  * @param x_nominal (Output) The nominal values.
  * @param nx Number of nominal values.
  * @return FMI status.
  */
-FMILIB_EXPORT fmi2_status_t fmi2_import_get_nominal_continuous_states(fmi2_import_t* fmu, fmi2_real_t x_nominal[], size_t nx);
+FMILIB_EXPORT fmi2_status_t fmi2_import_get_nominals_of_continuous_states(fmi2_import_t* fmu, fmi2_real_t x_nominal[], size_t nx);
 
 /**
  * \brief Wrapper for the FMI function fmiTerminate(...) 

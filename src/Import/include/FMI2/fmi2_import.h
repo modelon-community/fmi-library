@@ -153,7 +153,7 @@ FMILIB_EXPORT const char* fmi2_import_get_license(fmi2_import_t* fmu);
 */
 FMILIB_EXPORT const char* fmi2_import_get_model_version(fmi2_import_t* fmu);
 
-/** \brief Get FMI standard version (always 1.0). 
+/** \brief Get FMI standard version (always 2.0). 
 @param fmu An fmu object as returned by fmi2_import_parse_xml().
 */
 FMILIB_EXPORT const char* fmi2_import_get_model_standard_version(fmi2_import_t* fmu);

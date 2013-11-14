@@ -167,7 +167,7 @@ static jm_status_enu_t fmi2_capi_load_cs_fcn(fmi2_capi_t* fmu, unsigned int capa
 	return jm_status; 
 }
 
-/* Load FMI 1.0 Model Exchange functions */
+/* Load FMI 2.0 Model Exchange functions */
 static jm_status_enu_t fmi2_capi_load_me_fcn(fmi2_capi_t* fmu, unsigned int capabilities[])
 {
 	jm_status_enu_t jm_status = jm_status_success;
@@ -364,7 +364,7 @@ jm_status_enu_t fmi2_capi_free_dll(fmi2_capi_t* fmu)
 	return jm_status_success;
 }
 
-/* Common FMI 1.0 functions */
+/* Common FMI 2.0 functions */
 
 const char* fmi2_capi_get_version(fmi2_capi_t* fmu)
 {

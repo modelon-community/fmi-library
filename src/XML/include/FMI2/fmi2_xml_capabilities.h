@@ -30,7 +30,7 @@ extern "C" {
 	@{
 	\addtogroup fmi2_xml_capabilities Functions to retrieve capability flags.
 	The functions accept a pointer to ::fmi2_xml_capabilities_t returned by fmi2_xml_get_capabilities().
-	They return the flags as specified by the FMI 1.0 standard. Default values are returned for model-exachange FMUs.
+	They return the flags as specified by the FMI 2.0 standard. Default values are returned for model-exachange FMUs.
 	@}
 	\addtogroup fmi2_xml_capabilities
 	@{

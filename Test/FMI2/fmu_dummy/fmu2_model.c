@@ -73,7 +73,7 @@ static int calc_event_update(component_ptr_t comp)
 }
 
 
-/* FMI 1.0 Common Functions */
+/* FMI 2.0 Common Functions */
 const char* fmi_get_version()
 {
 	return FMI_VERSION;
@@ -246,7 +246,7 @@ fmiStatus fmi_set_string(fmiComponent c, const fmiValueReference vr[], size_t nv
 	}
 }
 
-/* FMI 1.0 ME Functions */
+/* FMI 2.0 ME Functions */
 const char* fmi_get_model_types_platform()
 {
 	return fmiTypesPlatform;
@@ -483,7 +483,7 @@ fmiStatus fmi_terminate(fmiComponent c)
 	}
 }
 
-/* FMI 1.0 CS Functions */
+/* FMI 2.0 CS Functions */
 const char* fmi_get_types_platform()
 {
 	return fmiTypesPlatform;

@@ -99,7 +99,7 @@ FMI_Export fmiStatus fmiSetString(fmiComponent c, const fmiValueReference vr[], 
 	return fmi_set_string(c, vr, nvr, value);
 }
 
-/* FMI 1.0 CS Functions */
+/* FMI 2.0 CS Functions */
 FMI_Export const char* fmiGetTypesPlatform()
 {
 	return fmi_get_types_platform();

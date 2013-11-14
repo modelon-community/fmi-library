@@ -163,7 +163,7 @@ void fmi2_import_destroy_dllfmu(fmi2_import_t* fmu) {
 	}
 }
 
-/* FMI 1.0 Common functions */
+/* FMI 2.0 Common functions */
 const char* fmi2_import_get_version(fmi2_import_t* fmu) {
 	if(!fmu->capi) {
 		jm_log_error(fmu->callbacks, module,"FMU CAPI is not loaded");
@@ -312,7 +312,7 @@ fmi2_status_t fmi2_import_terminate(fmi2_import_t* fmu) {
 	return fmi2_capi_terminate(fmu -> capi);
 }
 
-/* FMI 1.0 CS functions */
+/* FMI 2.0 CS functions */
 
 fmi2_status_t fmi2_import_initialize_slave(fmi2_import_t* fmu, fmi2_real_t  relativeTolerance, fmi2_real_t tStart, fmi2_boolean_t StopTimeDefined, fmi2_real_t tStop) {
 	return fmi2_capi_initialize_slave(fmu -> capi, relativeTolerance, tStart, StopTimeDefined, tStop);

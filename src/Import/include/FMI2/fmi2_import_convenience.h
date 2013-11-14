@@ -127,7 +127,7 @@ void  fmi2_default_callback_logger(fmi2_component_t c, fmi2_string_t instanceNam
 
     The functions sets up the redirection. Note that the context field in ::jm_callbacks is set to point to the provided ::fmi2_callback_functions_t.
 	\param cb FMI Library callbacks
-	\param fmiCallbacks FMI 1.0 standard callbacks
+	\param fmiCallbacks FMI 2.0 standard callbacks
 */
 FMILIB_EXPORT
 void fmi2_import_init_logger(jm_callbacks* cb, fmi2_callback_functions_t* fmiCallbacks);

@@ -108,9 +108,12 @@ FMI_Export fmiStatus fmiSetContinuousStates(fmiComponent c, const fmiReal x[], s
 	return fmi_set_continuous_states(c, x, nx);
 }
 
-FMI_Export fmiStatus fmiCompletedIntegratorStep(fmiComponent c, fmiBoolean* callEventUpdate)
+FMI_Export fmiStatus fmiCompletedIntegratorStep(fmiComponent c,
+    fmiBoolean noSetFMUStatePriorToCurrentPoint,
+    fmiBoolean* enterEventMode, fmiBoolean* terminateSimulation)
 {
-	return fmi_completed_integrator_step(c, callEventUpdate);
+    return fmi_completed_integrator_step(c, noSetFMUStatePriorToCurrentPoint,
+                                         enterEventMode, terminateSimulation);
 }
 
 FMI_Export fmiStatus fmiInitializeModel(fmiComponent c, fmiBoolean toleranceControlled, fmiReal relativeTolerance, fmiEventInfo* eventInfo)

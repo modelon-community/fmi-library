@@ -5,12 +5,36 @@
    It declares data and function types for FMI 2.0
 
    Revisions:
-    - June 20, 2013:
-                Back to fmiTerminate and fmiGetNominalContinuousState to be beta4 binary compatible.
-    - Feb. 17, 2013: Added third argument to fmiCompletedIntegratorStepTYPE
+   - Oct. 11, 2013: Functions of ModelExchange and CoSimulation merged:
+                      fmiInstantiateModelTYPE , fmiInstantiateSlaveTYPE  -> fmiInstantiateTYPE
+                      fmiFreeModelInstanceTYPE, fmiFreeSlaveInstanceTYPE -> fmiFreeInstanceTYPE
+                      fmiEnterModelInitializationModeTYPE, fmiEnterSlaveInitializationModeTYPE -> fmiEnterInitializationModeTYPE
+                      fmiExitModelInitializationModeTYPE , fmiExitSlaveInitializationModeTYPE  -> fmiExitInitializationModeTYPE
+                      fmiTerminateModelTYPE , fmiTerminateSlaveTYPE  -> fmiTerminate
+                      fmiResetSlave -> fmiReset (now also for ModelExchange and not only for CoSimulation)
+                    Functions renamed
+                      fmiUpdateDiscreteStatesTYPE -> fmiNewDiscreteStatesTYPE
+                    Renamed elements of the enumeration fmiEventInfo
+                      upcomingTimeEvent             -> nextEventTimeDefined // due to generic naming scheme: varDefined + var
+                      newUpdateDiscreteStatesNeeded -> newDiscreteStatesNeeded;
+   - June 13, 2013: Changed type fmiEventInfo
+                    Functions removed:
+                       fmiInitializeModelTYPE
+                       fmiEventUpdateTYPE
+                       fmiCompletedEventIterationTYPE
+                       fmiInitializeSlaveTYPE
+                    Functions added:
+                       fmiEnterModelInitializationModeTYPE
+                       fmiExitModelInitializationModeTYPE
+                       fmiEnterEventModeTYPE
+                       fmiUpdateDiscreteStatesTYPE
+                       fmiEnterContinuousTimeModeTYPE
+                       fmiEnterSlaveInitializationModeTYPE;
+                       fmiExitSlaveInitializationModeTYPE;
+   - Feb. 17, 2013: Added third argument to fmiCompletedIntegratorStepTYPE
                     Changed function name "fmiTerminateType" to "fmiTerminateModelType" (due to #113)
-                    Changed function name "fmiGetNominalContinuousState" to
-                                          "fmiGetNominalsOfContinuousStates"
+                    Changed function name "fmiGetNominalContinuousStateTYPE" to
+                                          "fmiGetNominalsOfContinuousStatesTYPE"
                     Removed fmiGetStateValueReferencesTYPE.
    - Nov. 14, 2011: First public Version
 
@@ -76,6 +100,11 @@ typedef enum {
 } fmiStatus;
 
 typedef enum {
+    fmiModelExchange,
+    fmiCoSimulation
+} fmiType;
+
+typedef enum {
     fmiDoStepStatus,
     fmiPendingStatus,
     fmiLastSuccessfulTime,
@@ -96,13 +125,14 @@ typedef struct {
 } fmiCallbackFunctions;
 
 typedef struct {
-   fmiBoolean iterationConverged;
-   fmiBoolean stateValueReferencesChanged;
-   fmiBoolean stateValuesChanged;
+	 fmiBoolean newDiscreteStatesNeeded;
    fmiBoolean terminateSimulation;
-   fmiBoolean upcomingTimeEvent;
+   fmiBoolean nominalsOfContinuousStatesChanged;
+   fmiBoolean valuesOfContinuousStatesChanged;
+   fmiBoolean nextEventTimeDefined;
    fmiReal    nextEventTime;
 } fmiEventInfo;
+
 
 /* reset alignment policy to the one set before reading this file */
 #if defined _MSC_VER || defined __GNUC__
@@ -120,6 +150,17 @@ Types for Common Functions
    typedef const char* fmiGetTypesPlatformTYPE();
    typedef const char* fmiGetVersionTYPE();
    typedef fmiStatus   fmiSetDebugLoggingTYPE(fmiComponent, fmiBoolean, size_t, const fmiString[]);
+
+/* Creation and destruction of FMU instances and setting debug status */
+   typedef fmiComponent fmiInstantiateTYPE (fmiString, fmiType, fmiString, fmiString, const fmiCallbackFunctions*, fmiBoolean, fmiBoolean);
+   typedef void         fmiFreeInstanceTYPE(fmiComponent);
+
+/* Enter and exit initialization mode, terminate and reset */
+   typedef fmiStatus fmiSetupExperimentTYPE        (fmiComponent, fmiBoolean, fmiReal, fmiReal, fmiBoolean, fmiReal);
+   typedef fmiStatus fmiEnterInitializationModeTYPE(fmiComponent);
+   typedef fmiStatus fmiExitInitializationModeTYPE (fmiComponent);
+   typedef fmiStatus fmiTerminateTYPE              (fmiComponent);
+   typedef fmiStatus fmiResetTYPE                  (fmiComponent);
 
 /* Getting and setting variable values */
    typedef fmiStatus fmiGetRealTYPE   (fmiComponent, const fmiValueReference[], size_t, fmiReal   []);
@@ -149,41 +190,28 @@ Types for Common Functions
 Types for Functions for FMI for Model Exchange
 ****************************************************/
 
-/* Creation and destruction of model instances and setting debug status */
-   typedef fmiComponent fmiInstantiateModelTYPE (fmiString, fmiString, fmiString, const fmiCallbackFunctions*, fmiBoolean, fmiBoolean);
-   typedef void         fmiFreeModelInstanceTYPE(fmiComponent);
+/* Enter and exit the different modes */
+   typedef fmiStatus fmiEnterEventModeTYPE         (fmiComponent);
+   typedef fmiStatus fmiNewDiscreteStatesTYPE      (fmiComponent, fmiEventInfo*);
+   typedef fmiStatus fmiEnterContinuousTimeModeTYPE(fmiComponent);
+   typedef fmiStatus fmiCompletedIntegratorStepTYPE(fmiComponent, fmiBoolean, fmiBoolean*, fmiBoolean*);
 
 /* Providing independent variables and re-initialization of caching */
-   typedef fmiStatus fmiSetTimeTYPE                (fmiComponent, fmiReal);
-   typedef fmiStatus fmiSetContinuousStatesTYPE    (fmiComponent, const fmiReal[], size_t);
-   /* typedef fmiStatus fmiCompletedIntegratorStepTYPE(fmiComponent, fmiBoolean, fmiBoolean*); */
-   typedef fmiStatus fmiCompletedIntegratorStepTYPE(fmiComponent, fmiBoolean*);
+   typedef fmiStatus fmiSetTimeTYPE            (fmiComponent, fmiReal);
+   typedef fmiStatus fmiSetContinuousStatesTYPE(fmiComponent, const fmiReal[], size_t);
 
 /* Evaluation of the model equations */
-   typedef fmiStatus fmiInitializeModelTYPE        (fmiComponent, fmiBoolean, fmiReal, fmiEventInfo*);
-   typedef fmiStatus fmiEventUpdateTYPE            (fmiComponent, fmiBoolean, fmiEventInfo*);
-   typedef fmiStatus fmiCompletedEventIterationTYPE(fmiComponent);
-   typedef fmiStatus fmiTerminateModelTYPE         (fmiComponent);
-
    typedef fmiStatus fmiGetDerivativesTYPE               (fmiComponent, fmiReal[], size_t);
    typedef fmiStatus fmiGetEventIndicatorsTYPE           (fmiComponent, fmiReal[], size_t);
    typedef fmiStatus fmiGetContinuousStatesTYPE          (fmiComponent, fmiReal[], size_t);
-   typedef fmiStatus fmiGetNominalContinuousStatesTYPE(fmiComponent, fmiReal[], size_t);
+   typedef fmiStatus fmiGetNominalsOfContinuousStatesTYPE(fmiComponent, fmiReal[], size_t);
 
 
 /***************************************************
 Types for Functions for FMI for Co-Simulation
 ****************************************************/
 
-/* Creation and destruction of slave instances */
-   typedef fmiComponent fmiInstantiateSlaveTYPE (fmiString, fmiString, fmiString, const fmiCallbackFunctions*, fmiBoolean, fmiBoolean);
-   typedef void         fmiFreeSlaveInstanceTYPE(fmiComponent);
-
 /* Simulating the slave */
-   typedef fmiStatus fmiInitializeSlaveTYPE(fmiComponent, fmiReal, fmiReal, fmiBoolean, fmiReal);
-   typedef fmiStatus fmiTerminateSlaveTYPE (fmiComponent);
-   typedef fmiStatus fmiResetSlaveTYPE     (fmiComponent);
-
    typedef fmiStatus fmiSetRealInputDerivativesTYPE (fmiComponent, const fmiValueReference [], size_t, const fmiInteger [], const fmiReal []);
    typedef fmiStatus fmiGetRealOutputDerivativesTYPE(fmiComponent, const fmiValueReference [], size_t, const fmiInteger [], fmiReal []);
 

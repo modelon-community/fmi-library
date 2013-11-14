@@ -148,9 +148,10 @@ fmiStatus		fmi_set_continuous_states(
 													const fmiReal x[],
 													size_t nx);
 
-fmiStatus		fmi_completed_integrator_step(
-													fmiComponent c,
-													fmiBoolean* callEventUpdate);
+fmiStatus fmi_completed_integrator_step(
+    fmiComponent c,
+    fmiBoolean noSetFMUStatePriorToCurrentPoint,
+    fmiBoolean* enterEventMode, fmiBoolean* terminateSimulation);
 
 fmiStatus		fmi_initialize(
 													fmiComponent c,

@@ -60,11 +60,11 @@ static int calc_event_update(component_ptr_t comp)
 		comp->states[VAR_R_HIGHT_SPEED] = - comp->reals[VAR_R_BOUNCE_CONF] * comp->states[VAR_R_HIGHT_SPEED];
 		comp->states[VAR_R_HIGHT] = 0;
 
-		comp->eventInfo.iterationConverged			= fmiTrue;
-		comp->eventInfo.stateValueReferencesChanged = fmiFalse;
-		comp->eventInfo.stateValuesChanged			= fmiTrue;
+		comp->eventInfo.newDiscreteStatesNeeded			= fmiFalse;
 		comp->eventInfo.terminateSimulation			= fmiFalse;
-		comp->eventInfo.upcomingTimeEvent			= fmiFalse;
+		comp->eventInfo.nominalsOfContinuousStatesChanged	= fmiFalse;
+		comp->eventInfo.valuesOfContinuousStatesChanged		= fmiTrue;
+		comp->eventInfo.nextEventTimeDefined			= fmiFalse;
 		comp->eventInfo.nextEventTime				= -0.0;
 		return 0;
 	} else {
@@ -342,13 +342,15 @@ fmiStatus fmi_set_continuous_states(fmiComponent c, const fmiReal x[], size_t nx
 	}
 }
 
-fmiStatus fmi_completed_integrator_step(fmiComponent c, fmiBoolean* callEventUpdate)
+fmiStatus fmi_completed_integrator_step(fmiComponent c,
+  fmiBoolean noSetFMUStatePriorToCurrentPoint,
+  fmiBoolean* enterEventMode, fmiBoolean* terminateSimulation)
 {
 	component_ptr_t comp = (fmiComponent)c;
 	if (comp == NULL) {
 		return fmiFatal;
 	} else {
-		*callEventUpdate = comp->callEventUpdate;
+		*enterEventMode = comp->callEventUpdate;
 		return fmiOK;
 	}
 }
@@ -360,11 +362,11 @@ fmiStatus fmi_initialize(fmiComponent c, fmiBoolean toleranceControlled, fmiReal
 	if (comp == NULL) {
 		return fmiFatal;
 	} else {
-		comp->eventInfo.iterationConverged			= fmiFalse;
-		comp->eventInfo.stateValueReferencesChanged = fmiFalse;
-		comp->eventInfo.stateValuesChanged			= fmiFalse;
+		comp->eventInfo.newDiscreteStatesNeeded			= fmiFalse;
 		comp->eventInfo.terminateSimulation			= fmiFalse;
-		comp->eventInfo.upcomingTimeEvent			= fmiFalse;
+		comp->eventInfo.nominalsOfContinuousStatesChanged	= fmiFalse;
+		comp->eventInfo.valuesOfContinuousStatesChanged		= fmiTrue;
+		comp->eventInfo.nextEventTimeDefined			= fmiFalse;
 		comp->eventInfo.nextEventTime				= -0.0;
 
 		comp->toleranceControlled = toleranceControlled;
@@ -574,6 +576,7 @@ fmiStatus fmi_do_step(fmiComponent c, fmiReal currentCommunicationPoint, fmiReal
 		fmiReal states_der[N_STATES];
 		fmiEventInfo eventInfo;
 		fmiBoolean callEventUpdate;
+		fmiBoolean terminateSimulation;
 		fmiBoolean intermediateResults = fmiFalse;
 		fmiStatus fmistatus;	
 		size_t k;
@@ -604,7 +607,8 @@ fmiStatus fmi_do_step(fmiComponent c, fmiReal currentCommunicationPoint, fmiReal
 			}
 
 			/* Handle any events */
-			if (callEventUpdate || zero_crossning_event || (eventInfo.upcomingTimeEvent && tcur == eventInfo.nextEventTime)) {
+			if (callEventUpdate || zero_crossning_event ||
+			  (eventInfo.nextEventTimeDefined && tcur == eventInfo.nextEventTime)) {
 				fmistatus = fmi_event_update(comp, intermediateResults, &eventInfo);
 				fmistatus = fmi_get_continuous_states(comp, states, N_STATES);
 				fmistatus = fmi_get_event_indicators(comp, z_cur, N_EVENT_INDICATORS);
@@ -612,7 +616,7 @@ fmiStatus fmi_do_step(fmiComponent c, fmiReal currentCommunicationPoint, fmiReal
 			}
 
 			/* Updated next time step */
-			if (eventInfo.upcomingTimeEvent) {
+			if (eventInfo.nextEventTimeDefined) {
 				if (tcur + hdef < eventInfo.nextEventTime) {
 					hcur = hdef;
 				} else {
@@ -642,7 +646,8 @@ fmiStatus fmi_do_step(fmiComponent c, fmiReal currentCommunicationPoint, fmiReal
 			/* Set states */
 			fmistatus = fmi_set_continuous_states(comp, states, N_STATES);
 			/* Step is complete */
-			fmistatus = fmi_completed_integrator_step(comp, &callEventUpdate);
+			fmistatus = fmi_completed_integrator_step(comp, fmiTrue,
+                            &callEventUpdate, &terminateSimulation);
             
             if(fmistatus != fmiOK) break;
 

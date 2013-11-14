@@ -21,8 +21,28 @@
    names are used and "FMI_FUNCTION_PREFIX" must not be defined.
 
    Revisions:
-   - June 20, 2013:
-                Back to fmiTerminate and fmiGetNominalContinuousState to be beta4 binary compatible.
+   - Oct. 11, 2013: Functions of ModelExchange and CoSimulation merged:
+                      fmiInstantiateModel , fmiInstantiateSlave  -> fmiInstantiate
+                      fmiFreeModelInstance, fmiFreeSlaveInstance -> fmiFreeInstance
+                      fmiEnterModelInitializationMode, fmiEnterSlaveInitializationMode -> fmiEnterInitializationMode
+                      fmiExitModelInitializationMode , fmiExitSlaveInitializationMode  -> fmiExitInitializationMode
+                      fmiTerminateModel, fmiTerminateSlave  -> fmiTerminate
+                      fmiResetSlave -> fmiReset (now also for ModelExchange and not only for CoSimulation)
+                    Functions renamed:
+                      fmiUpdateDiscreteStates -> fmiNewDiscreteStates
+   - June 13, 2013: Functions removed:
+                       fmiInitializeModel
+                       fmiEventUpdate
+                       fmiCompletedEventIteration
+                       fmiInitializeSlave
+                    Functions added:
+                       fmiEnterModelInitializationMode
+                       fmiExitModelInitializationMode
+                       fmiEnterEventMode
+                       fmiUpdateDiscreteStates
+                       fmiEnterContinuousTimeMode
+                       fmiEnterSlaveInitializationMode;
+                       fmiExitSlaveInitializationMode;
    - Feb. 17, 2013: Portability improvements:
                        o DllExport changed to FMI_Export
                        o FUNCTION_PREFIX changed to FMI_FUNCTION_PREFIX
@@ -161,6 +181,13 @@ Common Functions
 #define fmiGetTypesPlatform         fmiFullName(fmiGetTypesPlatform)
 #define fmiGetVersion               fmiFullName(fmiGetVersion)
 #define fmiSetDebugLogging          fmiFullName(fmiSetDebugLogging)
+#define fmiInstantiate              fmiFullName(fmiInstantiate)
+#define fmiFreeInstance             fmiFullName(fmiFreeInstance)
+#define fmiSetupExperiment          fmiFullName(fmiSetupExperiment)
+#define fmiEnterInitializationMode  fmiFullName(fmiEnterInitializationMode)
+#define fmiExitInitializationMode   fmiFullName(fmiExitInitializationMode)
+#define fmiTerminate                fmiFullName(fmiTerminate)
+#define fmiReset                    fmiFullName(fmiReset)
 #define fmiGetReal                  fmiFullName(fmiGetReal)
 #define fmiGetInteger               fmiFullName(fmiGetInteger)
 #define fmiGetBoolean               fmiFullName(fmiGetBoolean)
@@ -181,38 +208,30 @@ Common Functions
 /***************************************************
 Functions for FMI for Model Exchange
 ****************************************************/
-#define fmiInstantiateModel              fmiFullName(fmiInstantiateModel)
-#define fmiFreeModelInstance             fmiFullName(fmiFreeModelInstance)
+#define fmiEnterEventMode                fmiFullName(fmiEnterEventMode)
+#define fmiNewDiscreteStates             fmiFullName(fmiNewDiscreteStates)
+#define fmiEnterContinuousTimeMode       fmiFullName(fmiEnterContinuousTimeMode)
+#define fmiCompletedIntegratorStep       fmiFullName(fmiCompletedIntegratorStep)
 #define fmiSetTime                       fmiFullName(fmiSetTime)
 #define fmiSetContinuousStates           fmiFullName(fmiSetContinuousStates)
-#define fmiInitializeModel               fmiFullName(fmiInitializeModel)
-#define fmiEventUpdate                   fmiFullName(fmiEventUpdate)
-#define fmiCompletedIntegratorStep       fmiFullName(fmiCompletedIntegratorStep)
-#define fmiCompletedEventIteration       fmiFullName(fmiCompletedEventIteration)
-#define fmiTerminateModel                fmiFullName(fmiTerminateModel)
 #define fmiGetDerivatives                fmiFullName(fmiGetDerivatives)
 #define fmiGetEventIndicators            fmiFullName(fmiGetEventIndicators)
 #define fmiGetContinuousStates           fmiFullName(fmiGetContinuousStates)
-#define fmiGetNominalContinuousStates fmiFullName(fmiGetNominalContinuousStates)
+#define fmiGetNominalsOfContinuousStates fmiFullName(fmiGetNominalsOfContinuousStates)
 
 
 /***************************************************
 Functions for FMI for Co-Simulation
 ****************************************************/
-#define fmiInstantiateSlave         fmiFullName(fmiInstantiateSlave)
-#define fmiFreeSlaveInstance        fmiFullName(fmiFreeSlaveInstance)
-#define fmiInitializeSlave          fmiFullName(fmiInitializeSlave)
-#define fmiTerminateSlave           fmiFullName(fmiTerminateSlave)
-#define fmiResetSlave               fmiFullName(fmiResetSlave)
-#define fmiSetRealInputDerivatives  fmiFullName(fmiSetRealInputDerivatives)
-#define fmiGetRealOutputDerivatives fmiFullName(fmiGetRealOutputDerivatives)
-#define fmiDoStep                   fmiFullName(fmiDoStep)
-#define fmiCancelStep               fmiFullName(fmiCancelStep)
-#define fmiGetStatus                fmiFullName(fmiGetStatus)
-#define fmiGetRealStatus            fmiFullName(fmiGetRealStatus)
-#define fmiGetIntegerStatus         fmiFullName(fmiGetIntegerStatus)
-#define fmiGetBooleanStatus         fmiFullName(fmiGetBooleanStatus)
-#define fmiGetStringStatus          fmiFullName(fmiGetStringStatus)
+#define fmiSetRealInputDerivatives      fmiFullName(fmiSetRealInputDerivatives)
+#define fmiGetRealOutputDerivatives     fmiFullName(fmiGetRealOutputDerivatives)
+#define fmiDoStep                       fmiFullName(fmiDoStep)
+#define fmiCancelStep                   fmiFullName(fmiCancelStep)
+#define fmiGetStatus                    fmiFullName(fmiGetStatus)
+#define fmiGetRealStatus                fmiFullName(fmiGetRealStatus)
+#define fmiGetIntegerStatus             fmiFullName(fmiGetIntegerStatus)
+#define fmiGetBooleanStatus             fmiFullName(fmiGetBooleanStatus)
+#define fmiGetStringStatus              fmiFullName(fmiGetStringStatus)
 
 /* Version number */
 #define fmiVersion "2.0"
@@ -226,6 +245,17 @@ Common Functions
    FMI_Export fmiGetTypesPlatformTYPE fmiGetTypesPlatform;
    FMI_Export fmiGetVersionTYPE       fmiGetVersion;
    FMI_Export fmiSetDebugLoggingTYPE  fmiSetDebugLogging;
+
+/* Creation and destruction of FMU instances */
+   FMI_Export fmiInstantiateTYPE  fmiInstantiate;
+   FMI_Export fmiFreeInstanceTYPE fmiFreeInstance;
+
+/* Enter and exit initialization mode, terminate and reset */
+   FMI_Export fmiSetupExperimentTYPE         fmiSetupExperiment;
+   FMI_Export fmiEnterInitializationModeTYPE fmiEnterInitializationMode;
+   FMI_Export fmiExitInitializationModeTYPE  fmiExitInitializationMode;
+   FMI_Export fmiTerminateTYPE               fmiTerminate;
+   FMI_Export fmiResetTYPE                   fmiReset;
 
 /* Getting and setting variables values */
    FMI_Export fmiGetRealTYPE    fmiGetReal;
@@ -249,44 +279,33 @@ Common Functions
 /* Getting partial derivatives */
    FMI_Export fmiGetDirectionalDerivativeTYPE fmiGetDirectionalDerivative;
 
+
 /***************************************************
 Functions for FMI for Model Exchange
 ****************************************************/
 
-/* Creation and destruction of model instances and setting debug status */
-   FMI_Export fmiInstantiateModelTYPE  fmiInstantiateModel;
-   FMI_Export fmiFreeModelInstanceTYPE fmiFreeModelInstance;
+/* Enter and exit the different modes */
+   FMI_Export fmiEnterEventModeTYPE               fmiEnterEventMode;
+   FMI_Export fmiNewDiscreteStatesTYPE            fmiNewDiscreteStates;
+   FMI_Export fmiEnterContinuousTimeModeTYPE      fmiEnterContinuousTimeMode;
+   FMI_Export fmiCompletedIntegratorStepTYPE      fmiCompletedIntegratorStep;
 
 /* Providing independent variables and re-initialization of caching */
-   FMI_Export fmiSetTimeTYPE                 fmiSetTime;
-   FMI_Export fmiSetContinuousStatesTYPE     fmiSetContinuousStates;
-   FMI_Export fmiCompletedIntegratorStepTYPE fmiCompletedIntegratorStep;
+   FMI_Export fmiSetTimeTYPE             fmiSetTime;
+   FMI_Export fmiSetContinuousStatesTYPE fmiSetContinuousStates;
 
 /* Evaluation of the model equations */
-   FMI_Export fmiInitializeModelTYPE         fmiInitializeModel;
-   FMI_Export fmiEventUpdateTYPE             fmiEventUpdate;
-   FMI_Export fmiCompletedEventIterationTYPE fmiCompletedEventIteration;
-   FMI_Export fmiTerminateModelTYPE          fmiTerminateModel;
-
    FMI_Export fmiGetDerivativesTYPE                fmiGetDerivatives;
    FMI_Export fmiGetEventIndicatorsTYPE            fmiGetEventIndicators;
    FMI_Export fmiGetContinuousStatesTYPE           fmiGetContinuousStates;
-   FMI_Export fmiGetNominalContinuousStatesTYPE fmiGetNominalContinuousStates;
+   FMI_Export fmiGetNominalsOfContinuousStatesTYPE fmiGetNominalsOfContinuousStates;
 
 
 /***************************************************
 Functions for FMI for Co-Simulation
 ****************************************************/
 
-/* Creation and destruction of slave instances */
-   FMI_Export fmiInstantiateSlaveTYPE  fmiInstantiateSlave;
-   FMI_Export fmiFreeSlaveInstanceTYPE fmiFreeSlaveInstance;
-
 /* Simulating the slave */
-   FMI_Export fmiInitializeSlaveTYPE fmiInitializeSlave;
-   FMI_Export fmiTerminateSlaveTYPE  fmiTerminateSlave;
-   FMI_Export fmiResetSlaveTYPE      fmiResetSlave;
-
    FMI_Export fmiSetRealInputDerivativesTYPE  fmiSetRealInputDerivatives;
    FMI_Export fmiGetRealOutputDerivativesTYPE fmiGetRealOutputDerivatives;
 

@@ -70,16 +70,18 @@ typedef struct {
 } fmi2_callback_functions_t;
 
 /** Event info structure as used in FMI 2.0 ME */
+/* TODO: reuse from fmiFunctions.h */
 typedef struct {
-	fmi2_boolean_t iterationConverged;
-	fmi2_boolean_t stateValueReferencesChanged;
-	fmi2_boolean_t stateValuesChanged;
-	fmi2_boolean_t terminateSimulation;
-	fmi2_boolean_t upcomingTimeEvent;
-	fmi2_real_t    nextEventTime;
+    fmi2_boolean_t newDiscreteStatesNeeded;
+    fmi2_boolean_t terminateSimulation;
+    fmi2_boolean_t nominalsOfContinuousStatesChanged;
+    fmi2_boolean_t valuesOfContinuousStatesChanged;
+    fmi2_boolean_t nextEventTimeDefined;
+    fmi2_real_t    nextEventTime;
 } fmi2_event_info_t;
 
 /** Co-simulation status for FMI 2.0 CS */
+/* TODO: reuse from fmiFunctions.h */
 typedef enum {
     fmi2_do_step_status,
     fmi2_pending_status,
@@ -141,7 +143,7 @@ Types for Functions for FMI for Model Exchange
 /* Providing independent variables and re-initialization of caching */
    typedef fmi2_status_t (*fmi2_set_time_ft)                (fmi2_component_t, fmi2_real_t);
    typedef fmi2_status_t (*fmi2_set_continuous_states_ft)    (fmi2_component_t, const fmi2_real_t[], size_t);
-   typedef fmi2_status_t (*fmi2_completed_integrator_step_ft)(fmi2_component_t, fmi2_boolean_t*);
+   typedef fmi2_status_t (*fmi2_completed_integrator_step_ft)(fmi2_component_t, fmi2_boolean_t, fmi2_boolean_t*, fmi2_boolean_t*);
 
 /* Evaluation of the model equations */
    typedef fmi2_status_t (*fmi2_initialize_model_ft)        (fmi2_component_t, fmi2_boolean_t, fmi2_real_t, fmi2_event_info_t*);

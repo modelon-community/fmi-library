@@ -54,11 +54,14 @@ fmi2_status_t fmi2_capi_set_continuous_states(fmi2_capi_t* fmu, const fmi2_real_
 	return fmu->fmiSetContinuousStates(fmu->c, x, nx);
 }
 
-fmi2_status_t fmi2_capi_completed_integrator_step(fmi2_capi_t* fmu, fmi2_boolean_t* callEventUpdate)
+fmi2_status_t fmi2_capi_completed_integrator_step(fmi2_capi_t* fmu,
+  fmi2_boolean_t noSetFMUStatePriorToCurrentPoint,
+  fmi2_boolean_t* enterEventMode, fmi2_boolean_t* terminateSimulation)
 {
-	assert(fmu);
-	jm_log_debug(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Calling fmiCompletedIntegratorStep");
-	return fmu->fmiCompletedIntegratorStep(fmu->c, callEventUpdate);
+    assert(fmu);
+    jm_log_debug(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Calling fmiCompletedIntegratorStep");
+    return fmu->fmiCompletedIntegratorStep(fmu->c, noSetFMUStatePriorToCurrentPoint,
+                                           enterEventMode, terminateSimulation);
 }
 
 fmi2_status_t fmi2_capi_get_derivatives(fmi2_capi_t* fmu, fmi2_real_t derivatives[], size_t nx)

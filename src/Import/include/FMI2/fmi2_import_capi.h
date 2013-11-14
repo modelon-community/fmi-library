@@ -339,10 +339,16 @@ FMILIB_EXPORT fmi2_status_t fmi2_import_set_continuous_states(fmi2_import_t* fmu
  * \brief Wrapper for the FMI function fmiCompletedIntegratorStep(...) 
  * 
  * @param fmu A model description object returned by fmi2_import_parse_xml() that has loaded the FMI functions, see fmi2_import_load_fcn().
- * @param callEventUpdate (Output) Call fmiEventUpdate indicator.
+ * @param noSetFMUStatePriorToCurrentPoint True if fmiSetFMUState will no
+          longer be called for time instants prior to current time in this
+          simulation run.
+ * @param enterEventMode (Output) Call fmiEnterEventMode indicator.
+ * @param terminateSimulation (Output) Terminate simulation indicator.
  * @return FMI status.
  */
-FMILIB_EXPORT fmi2_status_t fmi2_import_completed_integrator_step(fmi2_import_t* fmu, fmi2_boolean_t* callEventUpdate);
+FMILIB_EXPORT fmi2_status_t fmi2_import_completed_integrator_step(fmi2_import_t* fmu,
+    fmi2_boolean_t noSetFMUStatePriorToCurrentPoint,
+    fmi2_boolean_t* enterEventMode, fmi2_boolean_t* terminateSimulation);
 
 /**
  * \brief Wrapper for the FMI function fmiInitialize(...) 

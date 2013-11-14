@@ -269,8 +269,11 @@ fmi2_status_t fmi2_import_set_continuous_states(fmi2_import_t* fmu, const fmi2_r
 	return fmi2_capi_set_continuous_states(fmu -> capi, x, nx);
 }
 
-fmi2_status_t fmi2_import_completed_integrator_step(fmi2_import_t* fmu, fmi2_boolean_t* callEventUpdate) {
-	return fmi2_capi_completed_integrator_step(fmu -> capi, callEventUpdate);
+fmi2_status_t fmi2_import_completed_integrator_step(fmi2_import_t* fmu,
+  fmi2_boolean_t noSetFMUStatePriorToCurrentPoint,
+  fmi2_boolean_t* enterEventMode, fmi2_boolean_t* terminateSimulation) {
+    return fmi2_capi_completed_integrator_step(fmu -> capi, noSetFMUStatePriorToCurrentPoint,
+                                               enterEventMode, terminateSimulation);
 }
 
 fmi2_status_t fmi2_import_initialize_model(fmi2_import_t* fmu, fmi2_boolean_t toleranceControlled, fmi2_real_t relativeTolerance, fmi2_event_info_t* eventInfo) {

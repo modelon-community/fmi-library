@@ -304,10 +304,16 @@ fmi2_status_t fmi2_capi_set_continuous_states(fmi2_capi_t* fmu, const fmi2_real_
  * \brief Calls the FMI function fmiCompletedIntegratorStep(...) 
  * 
  * @param fmu C-API struct that has succesfully loaded the FMI function.
- * @param callEventUpdate (Output) Call fmiEventUpdate indicator.
+ * @param noSetFMUStatePriorToCurrentPoint True if fmiSetFMUState will no
+          longer be called for time instants prior to current time in this
+          simulation run.
+ * @param enterEventMode (Output) Call fmiEnterEventMode indicator.
+ * @param terminateSimulation (Output) Terminate simulation indicator.
  * @return FMI status.
  */
-fmi2_status_t fmi2_capi_completed_integrator_step(fmi2_capi_t* fmu, fmi2_boolean_t* callEventUpdate);
+fmi2_status_t fmi2_capi_completed_integrator_step(fmi2_capi_t* fmu,
+    fmi2_boolean_t noSetFMUStatePriorToCurrentPoint,
+    fmi2_boolean_t* enterEventMode, fmi2_boolean_t* terminateSimulation);
 
 /**
  * \brief Calls the FMI function fmiInitializeModel(...) 

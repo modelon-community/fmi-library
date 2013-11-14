@@ -46,6 +46,7 @@ int test_simulate_me(fmi2_import_t* fmu)
 	fmi2_real_t* event_indicators;
 	fmi2_real_t* event_indicators_prev;
 	fmi2_boolean_t callEventUpdate;
+	fmi2_boolean_t terminateSimulation = fmi2_false;
 	fmi2_boolean_t toleranceControlled = fmi2_true;
 	fmi2_real_t relativeTolerance = 0.001;
 	fmi2_event_info_t eventInfo;
@@ -105,7 +106,8 @@ int test_simulate_me(fmi2_import_t* fmu)
 		}
 
 		/* Handle any events */
-		if (callEventUpdate || zero_crossning_event || (eventInfo.upcomingTimeEvent && tcur == eventInfo.nextEventTime)) {
+		if (callEventUpdate || zero_crossning_event ||
+		  (eventInfo.nextEventTimeDefined && tcur == eventInfo.nextEventTime)) {
 			fmistatus = fmi2_import_eventUpdate(fmu, intermediateResults, &eventInfo);
 			fmistatus = fmi2_import_completed_event_iteration(fmu);
 			fmistatus = fmi2_import_get_continuous_states(fmu, states, n_states);
@@ -114,7 +116,7 @@ int test_simulate_me(fmi2_import_t* fmu)
 		}
 
 		/* Updated next time step */
-		if (eventInfo.upcomingTimeEvent) {
+		if (eventInfo.nextEventTimeDefined) {
 			if (tcur + hdef < eventInfo.nextEventTime) {
 				hcur = hdef;
 			} else {
@@ -139,7 +141,8 @@ int test_simulate_me(fmi2_import_t* fmu)
 		/* Set states */
 		fmistatus = fmi2_import_set_continuous_states(fmu, states, n_states);
 		/* Step is complete */
-		fmistatus = fmi2_import_completed_integrator_step(fmu, &callEventUpdate);
+		fmistatus = fmi2_import_completed_integrator_step(fmu, fmi2_true, &callEventUpdate,
+                                                                  &terminateSimulation);
 	}	
 
 	/* Validate result */

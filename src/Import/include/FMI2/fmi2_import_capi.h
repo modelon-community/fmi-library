@@ -137,6 +137,23 @@ FMILIB_EXPORT void fmi2_import_free_instance(fmi2_import_t* fmu);
 
 
 /**
+ * \brief Wrapper for the FMI function fmiTerminate(...) 
+ * 
+ * @param fmu A model description object returned by fmi2_import_parse_xml() that has loaded the FMI functions, see fmi2_import_load_fcn().
+ * @return FMI status.
+ */
+FMILIB_EXPORT fmi2_status_t fmi2_import_terminate(fmi2_import_t* fmu);
+
+/**
+ * \brief Wrapper for the FMI function fmiReset(...) 
+ * 
+ * @param fmu A model description object returned by fmi2_import_parse_xml() that has loaded the FMI functions, see fmi2_import_load_fcn().
+ * @return FMI status.
+ */
+FMILIB_EXPORT fmi2_status_t fmi2_import_reset(fmi2_import_t* fmu);
+
+
+/**
  * \brief Wrapper for the FMI function fmiSetReal(...) 
  * 
  * @param fmu A model description object returned by fmi2_import_parse_xml() that has loaded the FMI functions, see fmi2_import_load_fcn().
@@ -421,14 +438,6 @@ FMILIB_EXPORT fmi2_status_t fmi2_import_get_continuous_states(fmi2_import_t* fmu
  */
 FMILIB_EXPORT fmi2_status_t fmi2_import_get_nominals_of_continuous_states(fmi2_import_t* fmu, fmi2_real_t x_nominal[], size_t nx);
 
-/**
- * \brief Wrapper for the FMI function fmiTerminate(...) 
- * 
- * @param fmu A model description object returned by fmi2_import_parse_xml() that has loaded the FMI functions, see fmi2_import_load_fcn().
- * @return FMI status.
- */
-FMILIB_EXPORT fmi2_status_t fmi2_import_terminate(fmi2_import_t* fmu);
-
 /**@} */
 
 /**
@@ -450,21 +459,6 @@ FMILIB_EXPORT fmi2_status_t fmi2_import_terminate(fmi2_import_t* fmu);
 FMILIB_EXPORT fmi2_status_t fmi2_import_initialize_slave(fmi2_import_t* fmu,  fmi2_real_t  relativeTolerance, 
 					fmi2_real_t tStart, fmi2_boolean_t StopTimeDefined, fmi2_real_t tStop);
 
-/**
- * \brief Wrapper for the FMI function fmiTerminateSlave(...) 
- * 
- * @param fmu A model description object returned by fmi2_import_parse_xml() that has loaded the FMI functions, see fmi2_import_load_fcn().
- * @return FMI status.
- */
-FMILIB_EXPORT fmi2_status_t fmi2_import_terminate_slave(fmi2_import_t* fmu);
-
-/**
- * \brief Wrapper for the FMI function fmiResetSlave(...) 
- * 
- * @param fmu A model description object returned by fmi2_import_parse_xml() that has loaded the FMI functions, see fmi2_import_load_fcn().
- * @return FMI status.
- */
-FMILIB_EXPORT fmi2_status_t fmi2_import_reset_slave(fmi2_import_t* fmu);
 
 /**
  * \brief Wrapper for the FMI function fmiSetRealInputDerivatives(...) 

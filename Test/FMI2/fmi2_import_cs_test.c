@@ -142,7 +142,7 @@ int test_simulate_cs(fmi2_import_t* fmu)
 		}
 	}
 
-	fmistatus = fmi2_import_terminate_slave(fmu);
+	fmistatus = fmi2_import_terminate(fmu);
 
 	fmi2_import_free_instance(fmu);
 

@@ -117,6 +117,10 @@ Types for Common Functions
    typedef fmi2_component_t (*fmi2_instantiate_ft) (fmi2_string_t, fmi2_type_t, fmi2_string_t, fmi2_string_t, const fmi2_callback_functions_t*, fmi2_boolean_t, fmi2_boolean_t);
    typedef void         (*fmi2_free_instance_ft)(fmi2_component_t);
 
+/* Enter and exit initialization mode, terminate and reset */
+   typedef fmi2_status_t (*fmi2_terminate_ft)              (fmi2_component_t);
+   typedef fmi2_status_t (*fmi2_reset_ft)     (fmi2_component_t);
+
 /* Getting and setting variable values */
    typedef fmi2_status_t (*fmi2_get_real_ft)   (fmi2_component_t, const fmi2_value_reference_t[], size_t, fmi2_real_t   []);
    typedef fmi2_status_t (*fmi2_get_integer_ft)(fmi2_component_t, const fmi2_value_reference_t[], size_t, fmi2_integer_t[]);
@@ -154,7 +158,6 @@ Types for Functions for FMI for Model Exchange
    typedef fmi2_status_t (*fmi2_initialize_model_ft)        (fmi2_component_t, fmi2_boolean_t, fmi2_real_t, fmi2_event_info_t*);
    typedef fmi2_status_t (*fmi2_event_update_ft)            (fmi2_component_t, fmi2_boolean_t, fmi2_event_info_t*);
    typedef fmi2_status_t (*fmi2_completed_event_iteration_ft)(fmi2_component_t);
-   typedef fmi2_status_t (*fmi2_terminate_ft)              (fmi2_component_t);
 
    typedef fmi2_status_t (*fmi2_get_derivatives_ft)            (fmi2_component_t, fmi2_real_t[], size_t);
    typedef fmi2_status_t (*fmi2_get_event_indicators_ft)        (fmi2_component_t, fmi2_real_t[], size_t);
@@ -168,8 +171,6 @@ Types for_functions for FMI for Co-_simulation
 
 /* Simulating the slave */
    typedef fmi2_status_t (*fmi2_initialize_slave_ft)(fmi2_component_t, fmi2_real_t, fmi2_real_t, fmi2_boolean_t, fmi2_real_t);
-   typedef fmi2_status_t (*fmi2_terminate_slave_ft) (fmi2_component_t);
-   typedef fmi2_status_t (*fmi2_reset_slave_ft)     (fmi2_component_t);
 
    typedef fmi2_status_t (*fmi2_set_real_input_derivatives_ft) (fmi2_component_t, const fmi2_value_reference_t [], size_t, const fmi2_integer_t [], const fmi2_real_t []);
    typedef fmi2_status_t (*fmi2_get_real_output_derivatives_ft)(fmi2_component_t, const fmi2_value_reference_t [], size_t, const fmi2_integer_t [], fmi2_real_t []);

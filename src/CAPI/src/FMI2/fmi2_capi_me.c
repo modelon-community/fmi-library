@@ -90,10 +90,3 @@ fmi2_status_t fmi2_capi_get_nominals_of_continuous_states(fmi2_capi_t* fmu, fmi2
 	jm_log_debug(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Calling fmiGetNominalsOfContinuousStates");
 	return fmu->fmiGetNominalsOfContinuousStates(fmu->c, x_nominal, nx);
 }
-
-fmi2_status_t fmi2_capi_terminate(fmi2_capi_t* fmu)
-{
-	assert(fmu);
-	jm_log_debug(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Calling fmiTerminate");
-	return fmu->fmiTerminate(fmu->c);
-}

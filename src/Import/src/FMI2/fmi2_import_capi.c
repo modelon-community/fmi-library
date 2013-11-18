@@ -202,6 +202,16 @@ void fmi2_import_free_instance(fmi2_import_t* fmu) {
     fmi2_capi_free_instance(fmu -> capi);
 }
 
+
+fmi2_status_t fmi2_import_terminate(fmi2_import_t* fmu) {
+	return fmi2_capi_terminate(fmu -> capi);
+}
+
+fmi2_status_t fmi2_import_reset(fmi2_import_t* fmu) {
+	return fmi2_capi_reset(fmu -> capi);
+}
+
+
 fmi2_status_t fmi2_import_set_real(fmi2_import_t* fmu, const fmi2_value_reference_t vr[], size_t nvr, const fmi2_real_t    value[]) {
 	return fmi2_capi_set_real(fmu -> capi, vr, nvr, value);
 }
@@ -308,22 +318,10 @@ fmi2_status_t fmi2_import_get_nominals_of_continuous_states(fmi2_import_t* fmu, 
 	return fmi2_capi_get_nominals_of_continuous_states(fmu -> capi, x_nominal, nx);
 }
 
-fmi2_status_t fmi2_import_terminate(fmi2_import_t* fmu) {
-	return fmi2_capi_terminate(fmu -> capi);
-}
-
 /* FMI 2.0 CS functions */
 
 fmi2_status_t fmi2_import_initialize_slave(fmi2_import_t* fmu, fmi2_real_t  relativeTolerance, fmi2_real_t tStart, fmi2_boolean_t StopTimeDefined, fmi2_real_t tStop) {
 	return fmi2_capi_initialize_slave(fmu -> capi, relativeTolerance, tStart, StopTimeDefined, tStop);
-}
-
-fmi2_status_t fmi2_import_terminate_slave(fmi2_import_t* fmu) {
-	return fmi2_capi_terminate_slave(fmu -> capi);
-}
-
-fmi2_status_t fmi2_import_reset_slave(fmi2_import_t* fmu) {
-	return fmi2_capi_reset_slave(fmu -> capi);
 }
 
 fmi2_status_t fmi2_import_set_real_input_derivatives(fmi2_import_t* fmu, const fmi2_value_reference_t vr[], size_t nvr, const fmi2_integer_t order[], const  fmi2_real_t value[]) {

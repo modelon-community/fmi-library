@@ -170,6 +170,22 @@ fmi2_component_t fmi2_capi_instantiate(fmi2_capi_t* fmu,
 void fmi2_capi_free_instance(fmi2_capi_t* fmu);
 
 /**
+ * \brief Calls the FMI function fmiTerminate(...)
+ * 
+ * @param fmu C-API struct that has succesfully loaded the FMI function.
+ * @return FMI status.
+ */
+fmi2_status_t fmi2_capi_terminate(fmi2_capi_t* fmu);
+
+/**
+ * \brief Calls the FMI function fmiReset(...) 
+ * 
+ * @param fmu C-API struct that has succesfully loaded the FMI function.
+ * @return FMI status.
+ */
+fmi2_status_t fmi2_capi_reset_(fmi2_capi_t* fmu);
+
+/**
  * \brief Calls the FMI function fmiSetReal(...) 
  * 
  * @param fmu C-API struct that has succesfully loaded the FMI function.
@@ -386,14 +402,6 @@ fmi2_status_t fmi2_capi_get_continuous_states(fmi2_capi_t* fmu, fmi2_real_t stat
  */
 fmi2_status_t fmi2_capi_get_nominals_of_continuous_states(fmi2_capi_t* fmu, fmi2_real_t x_nominal[], size_t nx);
 
-/**
- * \brief Calls the FMI function fmiTerminate(...) 
- * 
- * @param fmu C-API struct that has succesfully loaded the FMI function.
- * @return FMI status.
- */
-fmi2_status_t fmi2_capi_terminate(fmi2_capi_t* fmu);
-
 /**@} */
 
 /** \addtogroup fmi2_capi_cs
@@ -411,22 +419,6 @@ fmi2_status_t fmi2_capi_terminate(fmi2_capi_t* fmu);
  * @return FMI status.
  */
 fmi2_status_t fmi2_capi_initialize_slave(fmi2_capi_t* fmu, fmi2_real_t  relativeTolerance, fmi2_real_t tStart, fmi2_boolean_t StopTimeDefined, fmi2_real_t tStop);
-
-/**
- * \brief Calls the FMI function fmiTerminateSlave(...) 
- * 
- * @param fmu C-API struct that has succesfully loaded the FMI function.
- * @return FMI status.
- */
-fmi2_status_t fmi2_capi_terminate_slave(fmi2_capi_t* fmu);
-
-/**
- * \brief Calls the FMI function fmiResetSlave(...) 
- * 
- * @param fmu C-API struct that has succesfully loaded the FMI function.
- * @return FMI status.
- */
-fmi2_status_t fmi2_capi_reset_slave(fmi2_capi_t* fmu);
 
 /**
  * \brief Calls the FMI function fmiSetRealInputDerivatives(...) 

@@ -110,14 +110,14 @@ FMI_Export fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal relativeToleranc
 	return fmi_initialize_slave(c, relativeTolerance, tStart, StopTimeDefined, tStop);
 }
 
-FMI_Export fmiStatus fmiTerminateSlave(fmiComponent c)
+FMI_Export fmiStatus fmiTerminate(fmiComponent c)
 {
-	return fmi_terminate_slave(c);
+	return fmi_terminate(c);
 }
 
-FMI_Export fmiStatus fmiResetSlave(fmiComponent c)
+FMI_Export fmiStatus fmiReset(fmiComponent c)
 {
-	return fmi_reset_slave(c);
+	return fmi_reset(c);
 }
 
 FMI_Export fmiStatus fmiSetRealInputDerivatives(fmiComponent c, const fmiValueReference vr[], size_t nvr, const fmiInteger order[], const fmiReal value[])

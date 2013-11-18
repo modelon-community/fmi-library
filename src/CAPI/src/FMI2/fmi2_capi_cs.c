@@ -26,17 +26,6 @@ fmi2_status_t fmi2_capi_initialize_slave(fmi2_capi_t* fmu, fmi2_real_t relativeT
 	return fmu->fmiInitializeSlave(fmu->c, relativeTolerance, tStart, StopTimeDefined, tStop);
 }
 
-
-fmi2_status_t fmi2_capi_terminate_slave(fmi2_capi_t* fmu)
-{
-	return fmu->fmiTerminateSlave(fmu->c);
-}
-
-fmi2_status_t fmi2_capi_reset_slave(fmi2_capi_t* fmu)
-{
-	return fmu->fmiResetSlave(fmu->c);
-}
-
 fmi2_status_t fmi2_capi_set_real_input_derivatives(fmi2_capi_t* fmu, const  fmi2_value_reference_t vr[], size_t nvr, const fmi2_integer_t order[], const  fmi2_real_t value[])  
 {
 	return fmu->fmiSetRealInputDerivatives(fmu->c, vr, nvr, order, value);

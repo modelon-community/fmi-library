@@ -164,3 +164,8 @@ FMI_Export fmiStatus fmiTerminate(fmiComponent c)
 {
 	return fmi_terminate(c);
 }
+
+FMI_Export fmiStatus fmiReset(fmiComponent c)
+{
+	return fmi_reset(c);
+}

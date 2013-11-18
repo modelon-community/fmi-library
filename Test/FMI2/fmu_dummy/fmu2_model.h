@@ -92,6 +92,13 @@ fmiComponent fmi_instantiate (
 void fmi_free_instance(
     fmiComponent c);
 
+
+fmiStatus		fmi_terminate(fmiComponent c);
+
+fmiStatus		fmi_reset(
+													fmiComponent c);
+
+
 fmiStatus		fmi_get_real(			
 													fmiComponent c,
 													const fmiValueReference vr[],
@@ -189,7 +196,6 @@ fmiStatus		fmi_get_state_value_references(
 													fmiValueReference vrx[],
 													size_t nx);
 
-fmiStatus		fmi_terminate(fmiComponent c);
 
 /* FMI 2.0 CS Functions */
 #ifdef fmiFunctions_h
@@ -202,12 +208,6 @@ fmiStatus		fmi_initialize_slave(
 													fmiReal tStart,
 													fmiBoolean StopTimeDefined,
 													fmiReal tStop);
-
-fmiStatus		fmi_terminate_slave(
-													fmiComponent c);
-
-fmiStatus		fmi_reset_slave(
-													fmiComponent c);
 
 void			fmi_free_slave_instance(
 													fmiComponent c);

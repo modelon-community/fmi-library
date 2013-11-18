@@ -505,12 +505,7 @@ fmiStatus fmi_initialize_slave(fmiComponent c, fmiReal relativeTolerance, fmiRea
 	return fmi_initialize((fmiComponent)comp, toleranceControlled, relativeTolerance, &eventInfo);
 }
 
-fmiStatus fmi_terminate_slave(fmiComponent c)
-{
-	return fmi_terminate(c);
-}
-
-fmiStatus fmi_reset_slave(fmiComponent c)
+fmiStatus fmi_reset(fmiComponent c)
 {
 	return fmiOK;
 }

@@ -74,6 +74,12 @@ Types for Common Functions
 	LOAD_DLL_FUNCTION(fmiGetVersion);
 	LOAD_DLL_FUNCTION(fmiSetDebugLogging);
 
+/* Enter and exit initialization mode, terminate and reset */
+/* typedef fmiStatus fmiTerminateTYPE              (fmiComponent);
+   typedef fmiStatus fmiResetTYPE     (fmiComponent); */
+	LOAD_DLL_FUNCTION(fmiTerminate);
+	LOAD_DLL_FUNCTION(fmiReset);
+
     /* Creation and destruction of instances and setting debug status */
     /*typedef fmiComponent fmiInstantiateTYPE (fmiString, fmiType, fmiString, fmiString, const fmiCallbackFunctions*, fmiBoolean, fmiBoolean);
     typedef void         fmiFreeInstanceTYPE(fmiComponent);*/
@@ -134,12 +140,8 @@ static jm_status_enu_t fmi2_capi_load_cs_fcn(fmi2_capi_t* fmu, unsigned int capa
     /*???  LOAD_DLL_FUNCTION_WITH_FLAG(fmiGetDirectionalDerivative,fmi2_cs_providesDirectionalDerivatives); */
 
 /* Simulating the slave */
-/*   typedef fmiStatus fmiInitializeSlaveTYPE(fmiComponent, fmiReal, fmiReal, fmiBoolean, fmiReal);
-   typedef fmiStatus fmiTerminateSlaveTYPE (fmiComponent);
-   typedef fmiStatus fmiResetSlaveTYPE     (fmiComponent); */
+/*   typedef fmiStatus fmiInitializeSlaveTYPE(fmiComponent, fmiReal, fmiReal, fmiBoolean, fmiReal); */
 	LOAD_DLL_FUNCTION(fmiInitializeSlave);
-	LOAD_DLL_FUNCTION(fmiTerminateSlave);
-	LOAD_DLL_FUNCTION(fmiResetSlave);
 
 /*   typedef fmiStatus fmiSetRealInputDerivativesTYPE (fmiComponent, const fmiValueReference [], size_t, const fmiInteger [], const fmiReal []);
    typedef fmiStatus fmiGetRealOutputDerivativesTYPE(fmiComponent, const fmiValueReference [], size_t, const fmiInteger [], fmiReal []); */
@@ -205,12 +207,10 @@ static jm_status_enu_t fmi2_capi_load_me_fcn(fmi2_capi_t* fmu, unsigned int capa
 /* Evaluation of the model equations */
 /*   typedef fmiStatus fmiInitializeModelTYPE        (fmiComponent, fmiBoolean, fmiReal, fmiEventInfo*);
    typedef fmiStatus fmiEventUpdateTYPE            (fmiComponent, fmiBoolean, fmiEventInfo*);
-   typedef fmiStatus fmiCompletedEventIterationTYPE(fmiComponent);
-   typedef fmiStatus fmiTerminateTYPE              (fmiComponent); */
+   typedef fmiStatus fmiCompletedEventIterationTYPE(fmiComponent); */
 	LOAD_DLL_FUNCTION(fmiInitializeModel);
 	LOAD_DLL_FUNCTION(fmiEventUpdate);
 	LOAD_DLL_FUNCTION_WITH_FLAG(fmiCompletedEventIteration, fmi2_me_completedEventIterationIsProvided);
-	LOAD_DLL_FUNCTION(fmiTerminate);
 
 /*
    typedef fmiStatus fmiGetDerivativesTYPE            (fmiComponent, fmiReal[], size_t);
@@ -397,6 +397,18 @@ void fmi2_capi_free_instance(fmi2_capi_t* fmu)
         fmu->fmiFreeInstance(fmu->c);
         fmu->c = 0;
     }
+}
+
+fmi2_status_t fmi2_capi_terminate(fmi2_capi_t* fmu)
+{
+	assert(fmu);
+	jm_log_debug(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Calling fmiTerminate");
+	return fmu->fmiTerminate(fmu->c);
+}
+
+fmi2_status_t fmi2_capi_reset(fmi2_capi_t* fmu)
+{
+	return fmu->fmiReset(fmu->c);
 }
 
 fmi2_status_t fmi2_capi_get_fmu_state           (fmi2_capi_t* fmu, fmi2_FMU_state_t* s) {

@@ -53,6 +53,10 @@ struct fmi2_capi_t {
 	fmi2_set_debug_logging_ft			fmiSetDebugLogging;
     fmi2_instantiate_ft			fmiInstantiate;
     fmi2_free_instance_ft			fmiFreeInstance;    
+
+    fmi2_terminate_ft					fmiTerminate;
+    fmi2_reset_ft					fmiReset;
+
     fmi2_set_real_ft					fmiSetReal;
     fmi2_set_integer_ft					fmiSetInteger;
     fmi2_set_boolean_ft					fmiSetBoolean;
@@ -86,12 +90,9 @@ struct fmi2_capi_t {
     fmi2_event_update_ft				fmiEventUpdate;
     fmi2_get_continuous_states_ft		fmiGetContinuousStates;
     fmi2_get_nominals_of_continuous_states_ft fmiGetNominalsOfContinuousStates;
-    fmi2_terminate_ft					fmiTerminate;
 
 	/* FMI CS */
     fmi2_initialize_slave_ft			fmiInitializeSlave;
-    fmi2_terminate_slave_ft				fmiTerminateSlave;
-    fmi2_reset_slave_ft					fmiResetSlave;
     fmi2_set_real_input_derivatives_ft	fmiSetRealInputDerivatives;
     fmi2_get_real_output_derivatives_ft	fmiGetRealOutputDerivatives;
     fmi2_do_step_ft						fmiDoStep;

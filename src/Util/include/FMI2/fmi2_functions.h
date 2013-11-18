@@ -136,8 +136,7 @@ Types for Common Functions
    typedef fmi2_status_t (*fmi2_serialize_fmu_state_ft)     (fmi2_component_t, fmi2_FMU_state_t, fmi2_byte_t[], size_t);
    typedef fmi2_status_t (*fmi2_de_serialize_fmu_state_ft)   (fmi2_component_t, const fmi2_byte_t[], size_t, fmi2_FMU_state_t*);
 
-/* Getting partial derivatives */
-/*   typedef fmi2_status_t (*fmi2_get_partial_derivatives_ft)   (fmi2_component_t, fmi2_set_matrix_element_ft, void*, void*, void*, void*); */
+/* Getting directional derivatives */
    typedef fmi2_status_t (*fmi2_get_directional_derivative_ft)(fmi2_component_t, const fmi2_value_reference_t[], size_t,
                                                                    const fmi2_value_reference_t[], size_t,
                                                                    const fmi2_real_t[], fmi2_real_t[]);

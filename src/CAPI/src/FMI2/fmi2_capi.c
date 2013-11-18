@@ -127,9 +127,8 @@ static jm_status_enu_t fmi2_capi_load_cs_fcn(fmi2_capi_t* fmu, unsigned int capa
    LOAD_DLL_FUNCTION_WITH_FLAG(fmiSerializeFMUstate,fmi2_cs_canSerializeFMUstate);
    LOAD_DLL_FUNCTION_WITH_FLAG(fmiDeSerializeFMUstate,fmi2_cs_canSerializeFMUstate);
 
-/* Getting partial derivatives */
-/*   typedef fmiStatus fmiGetPartialDerivativesTYPE   (fmiComponent, setMatrixElement, void*, void*, void*, void*);
-   typedef fmiStatus fmiGetDirectionalDerivativeTYPE(fmiComponent, const fmiValueReference[], size_t,
+/* Getting directional derivatives */
+/*   typedef fmiStatus fmiGetDirectionalDerivativeTYPE(fmiComponent, const fmiValueReference[], size_t,
                                                                    const fmiValueReference[], size_t,
                                                                    const fmiReal[], fmiReal[]); */
     /*???  LOAD_DLL_FUNCTION_WITH_FLAG(fmiGetDirectionalDerivative,fmi2_cs_providesDirectionalDerivatives); */
@@ -189,9 +188,8 @@ static jm_status_enu_t fmi2_capi_load_me_fcn(fmi2_capi_t* fmu, unsigned int capa
    LOAD_DLL_FUNCTION_WITH_FLAG(fmiSerializeFMUstate,fmi2_me_canSerializeFMUstate);
    LOAD_DLL_FUNCTION_WITH_FLAG(fmiDeSerializeFMUstate,fmi2_me_canSerializeFMUstate);
 
-/* Getting partial derivatives */
-/*   typedef fmiStatus fmiGetPartialDerivativesTYPE   (fmiComponent, setMatrixElement, void*, void*, void*, void*);
-   typedef fmiStatus fmiGetDirectionalDerivativeTYPE(fmiComponent, const fmiValueReference[], size_t,
+/* Getting directional derivatives */
+/*   typedef fmiStatus fmiGetDirectionalDerivativeTYPE(fmiComponent, const fmiValueReference[], size_t,
                                                                    const fmiValueReference[], size_t,
                                                                    const fmiReal[], fmiReal[]); */
     LOAD_DLL_FUNCTION_WITH_FLAG(fmiGetDirectionalDerivative,fmi2_me_providesDirectionalDerivatives); 

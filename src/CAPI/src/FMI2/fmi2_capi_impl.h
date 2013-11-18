@@ -71,7 +71,6 @@ struct fmi2_capi_t {
     fmi2_de_serialize_fmu_state_ft		fmiDeSerializeFMUstate;
 
 /* Getting partial derivatives */
-/*  fmi2_get_partial_derivatives_ft     fmiGetPartialDerivatives; */
 	fmi2_get_directional_derivative_ft			fmiGetDirectionalDerivative;
 
 	/* FMI ME */

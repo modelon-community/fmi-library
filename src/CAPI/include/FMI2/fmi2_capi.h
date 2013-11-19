@@ -334,6 +334,32 @@ fmi2_status_t fmi2_capi_get_directional_derivative(fmi2_capi_t* fmu, const fmi2_
  */
 
 /**
+ * \brief Calls the FMI function fmiEnterEventMode(...) 
+ * 
+ * @param fmu C-API struct that has succesfully loaded the FMI function.
+ * @return FMI status.
+ */
+fmi2_status_t fmi2_capi_enter_event_mode(fmi2_capi_t* fmu);
+
+/**
+ * \brief Calls the FMI function fmiNewDiscreteStates(...) 
+ * 
+ * @param fmu C-API struct that has succesfully loaded the FMI function.
+ * @param eventInfo Pointer to fmi2_event_info_t structure that will be filled in.
+ * @return FMI status.
+ */
+fmi2_status_t fmi2_capi_new_discrete_states(fmi2_capi_t* fmu, fmi2_event_info_t* eventInfo);
+
+/**
+ * \brief Calls the FMI function fmiEnterContinuousTimeMode(...) 
+ * 
+ * @param fmu C-API struct that has succesfully loaded the FMI function.
+ * @return FMI status.
+ */
+fmi2_status_t fmi2_capi_enter_continuous_time_mode(fmi2_capi_t* fmu);
+
+
+/**
  * \brief Calls the FMI function fmiSetTime(...) 
  * 
  * @param fmu C-API struct that has succesfully loaded the FMI function.

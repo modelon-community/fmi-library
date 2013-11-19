@@ -296,6 +296,18 @@ fmi2_status_t fmi2_import_get_directional_derivative(fmi2_import_t* fmu, const f
 
 /* FMI 2.0 ME functions */
 
+fmi2_status_t fmi2_import_enter_event_mode(fmi2_import_t* fmu) {
+    return fmi2_capi_enter_event_mode(fmu->capi);
+}
+
+fmi2_status_t fmi2_import_new_discrete_states(fmi2_import_t* fmu, fmi2_event_info_t* eventInfo) {
+    return fmi2_capi_new_discrete_states(fmu->capi, eventInfo);
+}
+
+fmi2_status_t fmi2_import_enter_continuous_time_mode(fmi2_import_t* fmu) {
+    return fmi2_capi_enter_continuous_time_mode(fmu->capi);
+}
+
 fmi2_status_t fmi2_import_set_time(fmi2_import_t* fmu, fmi2_real_t time) {
 	return fmi2_capi_set_time(fmu -> capi, time);
 }

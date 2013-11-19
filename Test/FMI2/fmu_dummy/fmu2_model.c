@@ -320,6 +320,24 @@ void fmi_free_instance(fmiComponent c)
 	comp->functions.freeMemory(c);
 }
 
+fmiStatus fmi_enter_event_mode(fmiComponent c)
+{
+    /* Dummy implementation. TODO: implement */
+    return fmiOK;
+}
+
+fmiStatus fmi_new_discrete_states(fmiComponent c, fmiEventInfo* eventInfo)
+{
+    /* Dummy implementation. TODO: implement */
+    return fmiOK;
+}
+
+fmiStatus fmi_enter_continuous_time_mode(fmiComponent c)
+{
+    /* Dummy implementation. TODO: implement */
+    return fmiOK;
+}
+
 fmiStatus fmi_set_time(fmiComponent c, fmiReal fmitime)
 {
 	component_ptr_t comp = (fmiComponent)c;

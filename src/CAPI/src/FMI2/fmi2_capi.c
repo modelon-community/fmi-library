@@ -196,13 +196,21 @@ static jm_status_enu_t fmi2_capi_load_me_fcn(fmi2_capi_t* fmu, unsigned int capa
                                                                    const fmiReal[], fmiReal[]); */
     LOAD_DLL_FUNCTION_WITH_FLAG(fmiGetDirectionalDerivative,fmi2_me_providesDirectionalDerivatives); 
 
+/* Enter and exit the different modes */
+/*   typedef fmiStatus fmiEnterEventModeTYPE         (fmiComponent);
+   typedef fmiStatus fmiNewDiscreteStatesTYPE      (fmiComponent, fmiEventInfo*);
+   typedef fmiStatus fmiEnterContinuousTimeModeTYPE(fmiComponent);
+   typedef fmiStatus fmiCompletedIntegratorStepTYPE(fmiComponent, fmiBoolean*);*/
+	LOAD_DLL_FUNCTION(fmiEnterEventMode);
+	LOAD_DLL_FUNCTION(fmiNewDiscreteStates);
+	LOAD_DLL_FUNCTION(fmiEnterContinuousTimeMode);
+	LOAD_DLL_FUNCTION(fmiCompletedIntegratorStep);
+
 /* Providing independent variables and re-initialization of caching */
    /*typedef fmiStatus fmiSetTimeTYPE                (fmiComponent, fmiReal);
-   typedef fmiStatus fmiSetContinuousStatesTYPE    (fmiComponent, const fmiReal[], size_t);
-   typedef fmiStatus fmiCompletedIntegratorStepTYPE(fmiComponent, fmiBoolean*); */
+   typedef fmiStatus fmiSetContinuousStatesTYPE    (fmiComponent, const fmiReal[], size_t);*/
 	LOAD_DLL_FUNCTION(fmiSetTime);
 	LOAD_DLL_FUNCTION(fmiSetContinuousStates);
-	LOAD_DLL_FUNCTION(fmiCompletedIntegratorStep);
 
 /* Evaluation of the model equations */
 /*   typedef fmiStatus fmiInitializeModelTYPE        (fmiComponent, fmiBoolean, fmiReal, fmiEventInfo*);

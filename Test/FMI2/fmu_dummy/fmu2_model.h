@@ -147,6 +147,10 @@ fmiStatus		fmi_set_string(
 /* FMI 2.0 ME Functions */
 const char*		fmi_get_model_types_platform();
 
+fmiStatus		fmi_enter_event_mode(fmiComponent c);
+fmiStatus		fmi_new_discrete_states(fmiComponent c, fmiEventInfo* eventInfo);
+fmiStatus		fmi_enter_continuous_time_mode(fmiComponent c);
+
 fmiStatus		fmi_set_time(
 													fmiComponent c,
 													fmiReal fmitime);

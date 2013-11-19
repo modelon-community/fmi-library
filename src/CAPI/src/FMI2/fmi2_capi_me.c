@@ -25,6 +25,26 @@ fmi2_status_t fmi2_capi_initialize_model(fmi2_capi_t* fmu, fmi2_boolean_t tolera
 	return fmu->fmiInitializeModel(fmu->c, toleranceControlled, relativeTolerance, eventInfo);	
 }
 
+fmi2_status_t fmi2_capi_enter_event_mode(fmi2_capi_t* fmu)
+{
+    assert(fmu); assert(fmu->c);
+    jm_log_verbose(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Calling fmiEnterEventMode");
+    return fmu->fmiEnterEventMode(fmu->c);
+}
+
+fmi2_status_t fmi2_capi_new_discrete_states(fmi2_capi_t* fmu, fmi2_event_info_t* eventInfo)
+{
+    assert(fmu); assert(fmu->c);
+    jm_log_verbose(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Calling fmiNewDiscreteStates");
+    return fmu->fmiNewDiscreteStates(fmu->c, eventInfo);
+}
+
+fmi2_status_t fmi2_capi_enter_continuous_time_mode(fmi2_capi_t* fmu)
+{
+    assert(fmu); assert(fmu->c);
+    jm_log_verbose(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Calling fmiEnterContinuousTimeMode");
+    return fmu->fmiEnterContinuousTimeMode(fmu->c);
+}
 
 fmi2_status_t fmi2_capi_set_time(fmi2_capi_t* fmu, fmi2_real_t time)
 {

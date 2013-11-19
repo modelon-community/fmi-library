@@ -152,10 +152,15 @@ Types for Common Functions
 Types for Functions for FMI for Model Exchange
 ****************************************************/
 
+/* Enter and exit the different modes */
+   typedef fmi2_status_t (*fmi2_enter_event_mode_ft)          (fmi2_component_t);
+   typedef fmi2_status_t (*fmi2_new_discrete_states_ft)       (fmi2_component_t, fmi2_event_info_t*);
+   typedef fmi2_status_t (*fmi2_enter_continuous_time_mode_ft)(fmi2_component_t);
+   typedef fmi2_status_t (*fmi2_completed_integrator_step_ft) (fmi2_component_t, fmi2_boolean_t, fmi2_boolean_t*, fmi2_boolean_t*);
+
 /* Providing independent variables and re-initialization of caching */
    typedef fmi2_status_t (*fmi2_set_time_ft)                (fmi2_component_t, fmi2_real_t);
    typedef fmi2_status_t (*fmi2_set_continuous_states_ft)    (fmi2_component_t, const fmi2_real_t[], size_t);
-   typedef fmi2_status_t (*fmi2_completed_integrator_step_ft)(fmi2_component_t, fmi2_boolean_t, fmi2_boolean_t*, fmi2_boolean_t*);
 
 /* Evaluation of the model equations */
    typedef fmi2_status_t (*fmi2_initialize_model_ft)        (fmi2_component_t, fmi2_boolean_t, fmi2_real_t, fmi2_event_info_t*);

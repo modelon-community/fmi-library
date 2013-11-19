@@ -102,6 +102,21 @@ FMI_Export const char* fmiGetTypesPlatform()
 	return fmi_get_model_types_platform();
 }
 
+FMI_Export fmiStatus fmiEnterEventMode(fmiComponent c)
+{
+    return fmi_enter_event_mode(c);
+}
+
+FMI_Export fmiStatus fmiNewDiscreteStates(fmiComponent c, fmiEventInfo* eventInfo)
+{
+    return fmi_new_discrete_states(c, eventInfo);
+}
+
+FMI_Export fmiStatus fmiEnterContinuousTimeMode(fmiComponent c)
+{
+    return fmi_enter_continuous_time_mode(c);
+}
+
 FMI_Export fmiStatus fmiSetTime(fmiComponent c, fmiReal fmitime)
 {
 	return fmi_set_time(c, fmitime);

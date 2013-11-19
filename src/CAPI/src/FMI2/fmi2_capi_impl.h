@@ -82,12 +82,16 @@ struct fmi2_capi_t {
 	fmi2_get_directional_derivative_ft			fmiGetDirectionalDerivative;
 
 	/* FMI ME */
+    fmi2_enter_event_mode_ft		fmiEnterEventMode;
+    fmi2_new_discrete_states_ft		fmiNewDiscreteStates;
+    fmi2_enter_continuous_time_mode_ft	fmiEnterContinuousTimeMode;
+    fmi2_completed_integrator_step_ft	fmiCompletedIntegratorStep;
+
     fmi2_get_types_platform_ft			fmiGetTypesPlatform;    
     fmi2_completed_event_iteration_ft   fmiCompletedEventIteration;
 
     fmi2_set_time_ft					fmiSetTime;
     fmi2_set_continuous_states_ft		fmiSetContinuousStates;
-    fmi2_completed_integrator_step_ft	fmiCompletedIntegratorStep;
     fmi2_initialize_model_ft			fmiInitializeModel;
     fmi2_get_derivatives_ft				fmiGetDerivatives;
     fmi2_get_event_indicators_ft		fmiGetEventIndicators;

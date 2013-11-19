@@ -366,6 +366,30 @@ FMILIB_EXPORT fmi2_status_t fmi2_import_get_directional_derivative(fmi2_import_t
  * @{
  */
 
+/**
+ * \brief Calls the FMI function fmiEnterEventMode(...) 
+ * 
+ * @param fmu A model description object returned by fmi2_import_parse_xml() that has loaded the FMI functions, see fmi2_import_load_fcn().
+ * @return FMI status.
+ */
+fmi2_status_t fmi2_import_enter_event_mode(fmi2_import_t* fmu);
+
+/**
+ * \brief Calls the FMI function fmiNewDiscreteStates(...) 
+ * 
+ * @param fmu A model description object returned by fmi2_import_parse_xml() that has loaded the FMI functions, see fmi2_import_load_fcn().
+ * @param eventInfo Pointer to fmi2_event_info_t structure that will be filled in.
+ * @return FMI status.
+ */
+fmi2_status_t fmi2_import_new_discrete_states(fmi2_import_t* fmu, fmi2_event_info_t* eventInfo);
+
+/**
+ * \brief Calls the FMI function fmiEnterContinuousTimeMode(...) 
+ * 
+ * @param fmu A model description object returned by fmi2_import_parse_xml() that has loaded the FMI functions, see fmi2_import_load_fcn().
+ * @return FMI status.
+ */
+fmi2_status_t fmi2_import_enter_continuous_time_mode(fmi2_import_t* fmu);
 
 /**
  * \brief Wrapper for the FMI function fmiSetTime(...) 

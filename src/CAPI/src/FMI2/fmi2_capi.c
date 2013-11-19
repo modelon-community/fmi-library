@@ -86,6 +86,13 @@ Types for Common Functions
     LOAD_DLL_FUNCTION(fmiInstantiate);
     LOAD_DLL_FUNCTION(fmiFreeInstance);
 
+   /* typedef fmiStatus fmiSetupExperimentTYPE        (fmiComponent, fmiBoolean, fmiReal, fmiReal, fmiBoolean, fmiReal);
+   typedef fmiStatus fmiEnterInitializationModeTYPE(fmiComponent);
+   typedef fmiStatus fmiExitInitializationModeTYPE (fmiComponent); */
+    LOAD_DLL_FUNCTION(fmiSetupExperiment);
+    LOAD_DLL_FUNCTION(fmiEnterInitializationMode);
+    LOAD_DLL_FUNCTION(fmiExitInitializationMode);
+
 	/* Getting and setting variable values */
 /*   typedef fmiStatus fmiGetRealTYPE   (fmiComponent, const fmiValueReference[], size_t, fmiReal   []);
    typedef fmiStatus fmiGetIntegerTYPE(fmiComponent, const fmiValueReference[], size_t, fmiInteger[]);

@@ -174,17 +174,17 @@ void fmi2_capi_free_instance(fmi2_capi_t* fmu);
  * \brief Calls the FMI function fmiSetupExperiment(...)
  * 
  * @param fmu C-API struct that has succesfully loaded the FMI function.
- * @param tolerance_defined True if the @p tolerance argument is to be used
- * @param tolerance Solvers internal to the FMU should use this tolerance or finer, if @p tolerance_defined is true
- * @param start_time Start time of the experiment
- * @param stop_time_defined True if the @p stop_time argument is to be used
- * @param stop_time Stop time of the experiment, if @p stop_time_defined is true
+ * @param toleranceDefined True if the @p tolerance argument is to be used
+ * @param tolerance Solvers internal to the FMU should use this tolerance or finer, if @p toleranceDefined is true
+ * @param startTime Start time of the experiment
+ * @param stopTimeDefined True if the @p stopTime argument is to be used
+ * @param stopTime Stop time of the experiment, if @p stopTimeDefined is true
  * @return FMI status.
  */
 fmi2_status_t fmi2_capi_setup_experiment(fmi2_capi_t* fmu,
-    fmi2_boolean_t tolerance_defined, fmi2_real_t tolerance,
-    fmi2_real_t start_time, fmi2_boolean_t stop_time_defined,
-    fmi2_real_t stop_time);
+    fmi2_boolean_t toleranceDefined, fmi2_real_t tolerance,
+    fmi2_real_t startTime, fmi2_boolean_t stopTimeDefined,
+    fmi2_real_t stopTime);
 
 /**
  * \brief Calls the FMI function fmiEnterInitializationMode(...)

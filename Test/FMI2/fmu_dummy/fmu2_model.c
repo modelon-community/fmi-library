@@ -320,6 +320,27 @@ void fmi_free_instance(fmiComponent c)
 	comp->functions.freeMemory(c);
 }
 
+fmiStatus fmi_setup_experiment(fmiComponent c, fmiBoolean toleranceDefined,
+                               fmiReal tolerance, fmiReal startTime,
+                               fmiBoolean stopTimeDefined,
+                               fmiReal stopTime)
+{
+    /* Dummy implementation. TODO: implement */
+    return fmiOK;
+}
+
+fmiStatus fmi_enter_initialization_mode(fmiComponent c)
+{
+    /* Dummy implementation. TODO: implement */
+    return fmiOK;
+}
+
+fmiStatus fmi_exit_initialization_mode(fmiComponent c)
+{
+    /* Dummy implementation. TODO: implement */
+    return fmiOK;
+}
+
 fmiStatus fmi_enter_event_mode(fmiComponent c)
 {
     /* Dummy implementation. TODO: implement */

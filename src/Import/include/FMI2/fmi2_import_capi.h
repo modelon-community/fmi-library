@@ -148,9 +148,9 @@ FMILIB_EXPORT void fmi2_import_free_instance(fmi2_import_t* fmu);
  * @return FMI status.
  */
 FMILIB_EXPORT fmi2_status_t fmi2_import_setup_experiment(fmi2_import_t* fmu,
-    fmi2_boolean_t tolerance_defined, fmi2_real_t tolerance,
-    fmi2_real_t start_time, fmi2_boolean_t stop_time_defined,
-    fmi2_real_t stop_time);
+    fmi2_boolean_t toleranceDefined, fmi2_real_t tolerance,
+    fmi2_real_t startTime, fmi2_boolean_t stopTimeDefined,
+    fmi2_real_t stopTime);
 
 /**
  * \brief Calls the FMI function fmiEnterInitializationMode(...)

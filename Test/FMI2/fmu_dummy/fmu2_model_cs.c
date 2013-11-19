@@ -59,6 +59,25 @@ FMI_Export void fmiFreeInstance(fmiComponent c)
 	fmi_free_instance(c);
 }
 
+FMI_Export fmiStatus fmiSetupExperiment(fmiComponent c, 
+    fmiBoolean toleranceDefined, fmiReal tolerance,
+    fmiReal startTime, fmiBoolean stopTimeDefined,
+    fmiReal stopTime)
+{
+    return fmi_setup_experiment(c, toleranceDefined, tolerance, startTime,
+                                stopTimeDefined, stopTime);
+}
+
+FMI_Export fmiStatus fmiEnterInitializationMode(fmiComponent c)
+{
+    return fmi_enter_initialization_mode(c);
+}
+
+FMI_Export fmiStatus fmiExitInitializationMode(fmiComponent c)
+{
+    return fmi_exit_initialization_mode(c);
+}
+
 FMI_Export fmiStatus fmiGetReal(fmiComponent c, const fmiValueReference vr[], size_t nvr, fmiReal value[])
 {
 	return fmi_get_real(c, vr, nvr, value);

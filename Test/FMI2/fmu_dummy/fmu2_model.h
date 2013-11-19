@@ -92,6 +92,12 @@ fmiComponent fmi_instantiate (
 void fmi_free_instance(
     fmiComponent c);
 
+fmiStatus fmi_setup_experiment(fmiComponent c,
+    fmiBoolean toleranceDefined, fmiReal tolerance,
+    fmiReal startTime, fmiBoolean stopTimeDefined,
+    fmiReal stopTime);
+fmiStatus		fmi_enter_initialization_mode(fmiComponent c);
+fmiStatus		fmi_exit_initialization_mode(fmiComponent c);
 
 fmiStatus		fmi_terminate(fmiComponent c);
 

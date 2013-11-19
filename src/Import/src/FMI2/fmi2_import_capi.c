@@ -202,6 +202,27 @@ void fmi2_import_free_instance(fmi2_import_t* fmu) {
     fmi2_capi_free_instance(fmu -> capi);
 }
 
+fmi2_status_t fmi2_import_setup_experiment(fmi2_import_t* fmu,
+    fmi2_boolean_t tolerance_defined, fmi2_real_t tolerance,
+    fmi2_real_t start_time, fmi2_boolean_t stop_time_defined,
+    fmi2_real_t stop_time)
+{
+    assert(fmu);
+    return fmi2_capi_setup_experiment(fmu->capi, tolerance_defined, tolerance,
+                                      start_time, stop_time_defined, stop_time);
+}
+
+fmi2_status_t fmi2_import_enter_initialization_mode(fmi2_import_t* fmu)
+{
+    assert(fmu);
+    return fmi2_capi_enter_initialization_mode(fmu->capi);
+}
+
+fmi2_status_t fmi2_import_exit_initialization_mode(fmi2_import_t* fmu)
+{
+    assert(fmu);
+    return fmi2_capi_exit_initialization_mode(fmu->capi);
+}
 
 fmi2_status_t fmi2_import_terminate(fmi2_import_t* fmu) {
 	return fmi2_capi_terminate(fmu -> capi);

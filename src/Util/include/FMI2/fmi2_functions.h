@@ -118,6 +118,9 @@ Types for Common Functions
    typedef void         (*fmi2_free_instance_ft)(fmi2_component_t);
 
 /* Enter and exit initialization mode, terminate and reset */
+   typedef fmi2_status_t (*fmi2_setup_experiment_ft)          (fmi2_component_t, fmi2_boolean_t, fmi2_real_t, fmi2_real_t, fmi2_boolean_t, fmi2_real_t);
+   typedef fmi2_status_t (*fmi2_enter_initialization_mode_ft) (fmi2_component_t);
+   typedef fmi2_status_t (*fmi2_exit_initialization_mode_ft)  (fmi2_component_t);
    typedef fmi2_status_t (*fmi2_terminate_ft)              (fmi2_component_t);
    typedef fmi2_status_t (*fmi2_reset_ft)     (fmi2_component_t);
 

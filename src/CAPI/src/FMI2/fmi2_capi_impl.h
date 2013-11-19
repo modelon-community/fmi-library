@@ -54,6 +54,10 @@ struct fmi2_capi_t {
     fmi2_instantiate_ft			fmiInstantiate;
     fmi2_free_instance_ft			fmiFreeInstance;    
 
+    fmi2_setup_experiment_ft 				fmiSetupExperiment;
+    fmi2_enter_initialization_mode_ft 			fmiEnterInitializationMode;
+    fmi2_exit_initialization_mode_ft 			fmiExitInitializationMode;
+
     fmi2_terminate_ft					fmiTerminate;
     fmi2_reset_ft					fmiReset;
 

@@ -137,6 +137,38 @@ FMILIB_EXPORT void fmi2_import_free_instance(fmi2_import_t* fmu);
 
 
 /**
+ * \brief Calls the FMI function fmiSetupExperiment(...)
+ * 
+ * @param fmu A model description object returned by fmi2_import_parse_xml() that has loaded the FMI functions, see fmi2_import_load_fcn().
+ * @param tolerance_defined True if the @p tolerance argument is to be used
+ * @param tolerance Solvers internal to the FMU should use this tolerance or finer, if @p tolerance_defined is true
+ * @param start_time Start time of the experiment
+ * @param stop_time_defined True if the @p stop_time argument is to be used
+ * @param stop_time Stop time of the experiment, if @p stop_time_defined is true
+ * @return FMI status.
+ */
+FMILIB_EXPORT fmi2_status_t fmi2_import_setup_experiment(fmi2_import_t* fmu,
+    fmi2_boolean_t tolerance_defined, fmi2_real_t tolerance,
+    fmi2_real_t start_time, fmi2_boolean_t stop_time_defined,
+    fmi2_real_t stop_time);
+
+/**
+ * \brief Calls the FMI function fmiEnterInitializationMode(...)
+ * 
+ * @param fmu A model description object returned by fmi2_import_parse_xml() that has loaded the FMI functions, see fmi2_import_load_fcn().
+ * @return FMI status.
+ */
+FMILIB_EXPORT fmi2_status_t fmi2_import_enter_initialization_mode(fmi2_import_t* fmu);
+
+/**
+ * \brief Calls the FMI function fmiExitInitializationMode(...)
+ * 
+ * @param fmu A model description object returned by fmi2_import_parse_xml() that has loaded the FMI functions, see fmi2_import_load_fcn().
+ * @return FMI status.
+ */
+FMILIB_EXPORT fmi2_status_t fmi2_import_exit_initialization_mode(fmi2_import_t* fmu);
+
+/**
  * \brief Wrapper for the FMI function fmiTerminate(...) 
  * 
  * @param fmu A model description object returned by fmi2_import_parse_xml() that has loaded the FMI functions, see fmi2_import_load_fcn().

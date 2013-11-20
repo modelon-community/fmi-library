@@ -91,11 +91,24 @@ int test_simulate_cs(fmi2_import_t* fmu)
 		do_exit(CTEST_RETURN_FAIL);
 	}
 
-	fmistatus = fmi2_import_initialize_slave(fmu, relativeTol, tstart, StopTimeDefined, tend);
+        fmistatus = fmi2_import_setup_experiment(fmu, fmi2_true,
+            relativeTol, tstart, StopTimeDefined, tend);
     if(fmistatus != fmi2_status_ok) {
-        printf("fmi2_import_initialize_slave failed\n");
-		do_exit(CTEST_RETURN_FAIL);
+        printf("fmi2_import_setup_experiment failed\n");
+        do_exit(CTEST_RETURN_FAIL);
     }
+
+        fmistatus = fmi2_import_enter_initialization_mode(fmu);
+    if(fmistatus != fmi2_status_ok) {
+        printf("fmi2_import_enter_initialization_mode failed\n");
+        do_exit(CTEST_RETURN_FAIL);
+    }
+
+        fmistatus = fmi2_import_exit_initialization_mode(fmu);
+    if(fmistatus != fmi2_status_ok) {
+        printf("fmi2_import_exit_initialization_mode failed\n");
+        do_exit(CTEST_RETURN_FAIL);
+    }        
 
 	tcur = tstart;
 	printf("%10s %10s\n", "Ball height", "Ball speed");

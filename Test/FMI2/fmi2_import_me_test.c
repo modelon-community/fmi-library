@@ -75,9 +75,11 @@ int test_simulate_me(fmi2_import_t* fmu)
 		do_exit(CTEST_RETURN_FAIL);
 	}
 
-	fmistatus = fmi2_import_set_time(fmu, tstart);
+        fmistatus = fmi2_import_setup_experiment(fmu, toleranceControlled,
+            relativeTolerance, tstart, fmi2_false, 0.0);
 
-	fmistatus = fmi2_import_initialize_model(fmu, toleranceControlled, relativeTolerance, &eventInfo);
+        fmistatus = fmi2_import_enter_initialization_mode(fmu);
+        fmistatus = fmi2_import_exit_initialization_mode(fmu);
 
 	fmistatus = fmi2_import_get_continuous_states(fmu, states, n_states);
 	fmistatus = fmi2_import_get_event_indicators(fmu, event_indicators_prev, n_event_indicators);
@@ -89,6 +91,13 @@ int test_simulate_me(fmi2_import_t* fmu)
 	tcur = tstart;
 	hcur = hdef;
 	callEventUpdate = fmi2_false;
+
+	eventInfo.newDiscreteStatesNeeded           = fmi2_false;
+	eventInfo.terminateSimulation               = fmi2_false;
+	eventInfo.nominalsOfContinuousStatesChanged = fmi2_false;
+	eventInfo.valuesOfContinuousStatesChanged   = fmi2_true;
+	eventInfo.nextEventTimeDefined              = fmi2_false;
+	eventInfo.nextEventTime                     = -0.0;
 
 	while (tcur < tend) {
 		size_t k;

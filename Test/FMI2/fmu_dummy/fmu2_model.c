@@ -325,19 +325,34 @@ fmiStatus fmi_setup_experiment(fmiComponent c, fmiBoolean toleranceDefined,
                                fmiBoolean stopTimeDefined,
                                fmiReal stopTime)
 {
-    /* Dummy implementation. TODO: implement */
-    return fmiOK;
+    component_ptr_t comp = (fmiComponent)c;
+
+    if (comp == NULL) {
+        return fmiFatal;
+    } else {
+        comp->toleranceControlled = toleranceDefined;
+        comp->relativeTolerance = tolerance;
+
+	comp->tStart = startTime;
+	comp->StopTimeDefined = stopTimeDefined;
+	comp->tStop = stopTime;
+
+        return fmiOK;
+    }
 }
 
 fmiStatus fmi_enter_initialization_mode(fmiComponent c)
 {
-    /* Dummy implementation. TODO: implement */
-    return fmiOK;
+    if (c == NULL) {
+        return fmiFatal;
+    } else {
+        calc_initialize(c);
+        return fmiOK;
+    }
 }
 
 fmiStatus fmi_exit_initialization_mode(fmiComponent c)
 {
-    /* Dummy implementation. TODO: implement */
     return fmiOK;
 }
 

@@ -92,7 +92,6 @@ struct fmi2_capi_t {
 
     fmi2_set_time_ft					fmiSetTime;
     fmi2_set_continuous_states_ft		fmiSetContinuousStates;
-    fmi2_initialize_model_ft			fmiInitializeModel;
     fmi2_get_derivatives_ft				fmiGetDerivatives;
     fmi2_get_event_indicators_ft		fmiGetEventIndicators;
     fmi2_event_update_ft				fmiEventUpdate;
@@ -100,7 +99,6 @@ struct fmi2_capi_t {
     fmi2_get_nominals_of_continuous_states_ft fmiGetNominalsOfContinuousStates;
 
 	/* FMI CS */
-    fmi2_initialize_slave_ft			fmiInitializeSlave;
     fmi2_set_real_input_derivatives_ft	fmiSetRealInputDerivatives;
     fmi2_get_real_output_derivatives_ft	fmiGetRealOutputDerivatives;
     fmi2_do_step_ft						fmiDoStep;

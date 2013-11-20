@@ -124,11 +124,6 @@ FMI_Export const char* fmiGetTypesPlatform()
 	return fmi_get_types_platform();
 }
 
-FMI_Export fmiStatus fmiInitializeSlave(fmiComponent c, fmiReal relativeTolerance, fmiReal tStart, fmiBoolean StopTimeDefined, fmiReal tStop)
-{
-	return fmi_initialize_slave(c, relativeTolerance, tStart, StopTimeDefined, tStop);
-}
-
 FMI_Export fmiStatus fmiTerminate(fmiComponent c)
 {
 	return fmi_terminate(c);

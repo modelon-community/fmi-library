@@ -323,10 +323,6 @@ fmi2_status_t fmi2_import_completed_integrator_step(fmi2_import_t* fmu,
                                                enterEventMode, terminateSimulation);
 }
 
-fmi2_status_t fmi2_import_initialize_model(fmi2_import_t* fmu, fmi2_boolean_t toleranceControlled, fmi2_real_t relativeTolerance, fmi2_event_info_t* eventInfo) {
-	return fmi2_capi_initialize_model(fmu -> capi, toleranceControlled, relativeTolerance, eventInfo);
-}
-
 fmi2_status_t fmi2_import_get_derivatives(fmi2_import_t* fmu, fmi2_real_t derivatives[], size_t nx) {
 	return fmi2_capi_get_derivatives(fmu -> capi, derivatives, nx);
 }
@@ -352,10 +348,6 @@ fmi2_status_t fmi2_import_get_nominals_of_continuous_states(fmi2_import_t* fmu, 
 }
 
 /* FMI 2.0 CS functions */
-
-fmi2_status_t fmi2_import_initialize_slave(fmi2_import_t* fmu, fmi2_real_t  relativeTolerance, fmi2_real_t tStart, fmi2_boolean_t StopTimeDefined, fmi2_real_t tStop) {
-	return fmi2_capi_initialize_slave(fmu -> capi, relativeTolerance, tStart, StopTimeDefined, tStop);
-}
 
 fmi2_status_t fmi2_import_set_real_input_derivatives(fmi2_import_t* fmu, const fmi2_value_reference_t vr[], size_t nvr, const fmi2_integer_t order[], const  fmi2_real_t value[]) {
 	return fmi2_capi_set_real_input_derivatives(fmu -> capi, vr, nvr, order, value);

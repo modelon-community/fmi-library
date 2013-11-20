@@ -21,11 +21,6 @@ extern "C" {
 #include <FMI2/fmi2_capi_impl.h>
 
 
-fmi2_status_t fmi2_capi_initialize_slave(fmi2_capi_t* fmu, fmi2_real_t relativeTolerance, fmi2_real_t tStart, fmi2_boolean_t StopTimeDefined, fmi2_real_t tStop)
-{
-	return fmu->fmiInitializeSlave(fmu->c, relativeTolerance, tStart, StopTimeDefined, tStop);
-}
-
 fmi2_status_t fmi2_capi_set_real_input_derivatives(fmi2_capi_t* fmu, const  fmi2_value_reference_t vr[], size_t nvr, const fmi2_integer_t order[], const  fmi2_real_t value[])  
 {
 	return fmu->fmiSetRealInputDerivatives(fmu->c, vr, nvr, order, value);

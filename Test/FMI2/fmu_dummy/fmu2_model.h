@@ -171,12 +171,6 @@ fmiStatus fmi_completed_integrator_step(
     fmiBoolean noSetFMUStatePriorToCurrentPoint,
     fmiBoolean* enterEventMode, fmiBoolean* terminateSimulation);
 
-fmiStatus		fmi_initialize(
-													fmiComponent c,
-													fmiBoolean toleranceControlled,
-													fmiReal relativeTolerance,
-													fmiEventInfo* eventInfo);
-
 fmiStatus		fmi_get_derivatives(
 													fmiComponent c,
 													fmiReal derivatives[],
@@ -211,13 +205,6 @@ fmiStatus		fmi_get_state_value_references(
 #ifdef fmiFunctions_h
 
 const char*		fmi_get_types_platform();
-
-fmiStatus		fmi_initialize_slave(
-													fmiComponent c,
-													fmiReal relativeTolerance,
-													fmiReal tStart,
-													fmiBoolean StopTimeDefined,
-													fmiReal tStop);
 
 void			fmi_free_slave_instance(
 													fmiComponent c);

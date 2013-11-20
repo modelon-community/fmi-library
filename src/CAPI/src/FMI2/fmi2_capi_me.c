@@ -18,13 +18,6 @@
 #include <FMI2/fmi2_capi_impl.h>
 
 
-fmi2_status_t fmi2_capi_initialize_model(fmi2_capi_t* fmu, fmi2_boolean_t toleranceControlled, fmi2_real_t relativeTolerance, fmi2_event_info_t* eventInfo)
-{
-	assert(fmu);
-	jm_log_verbose(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Calling fmiInitialize");
-	return fmu->fmiInitializeModel(fmu->c, toleranceControlled, relativeTolerance, eventInfo);	
-}
-
 fmi2_status_t fmi2_capi_enter_event_mode(fmi2_capi_t* fmu)
 {
     assert(fmu); assert(fmu->c);

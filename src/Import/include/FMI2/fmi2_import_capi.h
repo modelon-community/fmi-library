@@ -426,17 +426,6 @@ FMILIB_EXPORT fmi2_status_t fmi2_import_completed_integrator_step(fmi2_import_t*
     fmi2_boolean_t* enterEventMode, fmi2_boolean_t* terminateSimulation);
 
 /**
- * \brief Wrapper for the FMI function fmiInitialize(...) 
- * 
- * @param fmu A model description object returned by fmi2_import_parse_xml() that has loaded the FMI functions, see fmi2_import_load_fcn().
- * @param toleranceControlled Enable or disable the use of relativeTolerance in the FMU.
- * @param relativeTolerance A relative tolerance used in the FMU.
- * @param eventInfo (Output) fmiEventInfo struct.
- * @return FMI status.
- */
-FMILIB_EXPORT fmi2_status_t fmi2_import_initialize_model(fmi2_import_t* fmu, fmi2_boolean_t toleranceControlled, fmi2_real_t relativeTolerance, fmi2_event_info_t* eventInfo);
-
-/**
  * \brief Wrapper for the FMI function fmiGetDerivatives(...) 
  * 
  * @param fmu A model description object returned by fmi2_import_parse_xml() that has loaded the FMI functions, see fmi2_import_load_fcn().
@@ -500,20 +489,6 @@ FMILIB_EXPORT fmi2_status_t fmi2_import_get_nominals_of_continuous_states(fmi2_i
  * \addtogroup fmi2_import_capi_cs
  * @{
  */
-
-
-/**
- * \brief Wrapper for the FMI function fmiInitializeSlave(...) 
- * 
- * @param fmu A model description object returned by fmi2_import_parse_xml() that has loaded the FMI functions, see fmi2_import_load_fcn().
- * @param relativeTolerance suggests a relative (local) tolerance in case the slave utilizes a numerical integrator with variable step size and error estimation.
- * @param tStart Start time of the simulation
- * @param StopTimeDefined Indicates whether or not the stop time is used.
- * @param tStop The stop time of the simulation.
- * @return FMI status.
- */
-FMILIB_EXPORT fmi2_status_t fmi2_import_initialize_slave(fmi2_import_t* fmu,  fmi2_real_t  relativeTolerance, 
-					fmi2_real_t tStart, fmi2_boolean_t StopTimeDefined, fmi2_real_t tStop);
 
 
 /**

@@ -394,17 +394,6 @@ fmi2_status_t fmi2_capi_completed_integrator_step(fmi2_capi_t* fmu,
     fmi2_boolean_t* enterEventMode, fmi2_boolean_t* terminateSimulation);
 
 /**
- * \brief Calls the FMI function fmiInitializeModel(...) 
- * 
- * @param fmu C-API struct that has succesfully loaded the FMI function.
- * @param toleranceControlled Enable or disable the use of relativeTolerance in the FMU.
- * @param relativeTolerance A relative tolerance used in the FMU.
- * @param eventInfo (Output) fmiEventInfo struct.
- * @return FMI status.
- */
-fmi2_status_t fmi2_capi_initialize_model(fmi2_capi_t* fmu, fmi2_boolean_t toleranceControlled, fmi2_real_t relativeTolerance, fmi2_event_info_t* eventInfo);
-
-/**
  * \brief Calls the FMI function fmiGetDerivatives(...) 
  * 
  * @param fmu C-API struct that has succesfully loaded the FMI function.
@@ -467,18 +456,6 @@ fmi2_status_t fmi2_capi_get_nominals_of_continuous_states(fmi2_capi_t* fmu, fmi2
 /** \addtogroup fmi2_capi_cs
  *  @{
  */
-
-/**
- * \brief Calls the FMI function fmiInitializeSlave(...) 
- * 
- * @param fmu C-API struct that has succesfully loaded the FMI function.
- * @param relativeTolerance suggests a relative (local) tolerance in case the slave utilizes a numerical integrator with variable step size and error estimation.
- * @param tStart Start time of the simulation
- * @param StopTimeDefined Indicates whether or not the stop time is used.
- * @param tStop The stop time of the simulation.
- * @return FMI status.
- */
-fmi2_status_t fmi2_capi_initialize_slave(fmi2_capi_t* fmu, fmi2_real_t  relativeTolerance, fmi2_real_t tStart, fmi2_boolean_t StopTimeDefined, fmi2_real_t tStop);
 
 /**
  * \brief Calls the FMI function fmiSetRealInputDerivatives(...) 

@@ -154,11 +154,6 @@ FMI_Export fmiStatus fmiCompletedIntegratorStep(fmiComponent c,
                                          enterEventMode, terminateSimulation);
 }
 
-FMI_Export fmiStatus fmiInitializeModel(fmiComponent c, fmiBoolean toleranceControlled, fmiReal relativeTolerance, fmiEventInfo* eventInfo)
-{
-	return fmi_initialize(c, toleranceControlled, relativeTolerance, eventInfo);
-}
-
 FMI_Export fmiStatus fmiGetDerivatives(fmiComponent c, fmiReal derivatives[] , size_t nx)
 {
 	return fmi_get_derivatives(c, derivatives, nx);

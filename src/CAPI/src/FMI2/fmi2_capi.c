@@ -147,9 +147,6 @@ static jm_status_enu_t fmi2_capi_load_cs_fcn(fmi2_capi_t* fmu, unsigned int capa
     /*???  LOAD_DLL_FUNCTION_WITH_FLAG(fmiGetDirectionalDerivative,fmi2_cs_providesDirectionalDerivatives); */
 
 /* Simulating the slave */
-/*   typedef fmiStatus fmiInitializeSlaveTYPE(fmiComponent, fmiReal, fmiReal, fmiBoolean, fmiReal); */
-	LOAD_DLL_FUNCTION(fmiInitializeSlave);
-
 /*   typedef fmiStatus fmiSetRealInputDerivativesTYPE (fmiComponent, const fmiValueReference [], size_t, const fmiInteger [], const fmiReal []);
    typedef fmiStatus fmiGetRealOutputDerivativesTYPE(fmiComponent, const fmiValueReference [], size_t, const fmiInteger [], fmiReal []); */
 	LOAD_DLL_FUNCTION(fmiSetRealInputDerivatives);
@@ -220,10 +217,8 @@ static jm_status_enu_t fmi2_capi_load_me_fcn(fmi2_capi_t* fmu, unsigned int capa
 	LOAD_DLL_FUNCTION(fmiSetContinuousStates);
 
 /* Evaluation of the model equations */
-/*   typedef fmiStatus fmiInitializeModelTYPE        (fmiComponent, fmiBoolean, fmiReal, fmiEventInfo*);
-   typedef fmiStatus fmiEventUpdateTYPE            (fmiComponent, fmiBoolean, fmiEventInfo*);
+/*   typedef fmiStatus fmiEventUpdateTYPE            (fmiComponent, fmiBoolean, fmiEventInfo*);
    typedef fmiStatus fmiCompletedEventIterationTYPE(fmiComponent); */
-	LOAD_DLL_FUNCTION(fmiInitializeModel);
 	LOAD_DLL_FUNCTION(fmiEventUpdate);
 	LOAD_DLL_FUNCTION_WITH_FLAG(fmiCompletedEventIteration, fmi2_me_completedEventIterationIsProvided);
 

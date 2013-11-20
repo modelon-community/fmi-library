@@ -412,31 +412,6 @@ fmiStatus fmi_completed_integrator_step(fmiComponent c,
 	}
 }
 
-fmiStatus fmi_initialize(fmiComponent c, fmiBoolean toleranceControlled, fmiReal relativeTolerance, fmiEventInfo* eventInfo)
-{
-	component_ptr_t comp = (fmiComponent)c;
-
-	if (comp == NULL) {
-		return fmiFatal;
-	} else {
-		comp->eventInfo.newDiscreteStatesNeeded			= fmiFalse;
-		comp->eventInfo.terminateSimulation			= fmiFalse;
-		comp->eventInfo.nominalsOfContinuousStatesChanged	= fmiFalse;
-		comp->eventInfo.valuesOfContinuousStatesChanged		= fmiTrue;
-		comp->eventInfo.nextEventTimeDefined			= fmiFalse;
-		comp->eventInfo.nextEventTime				= -0.0;
-
-		comp->toleranceControlled = toleranceControlled;
-		comp->relativeTolerance = relativeTolerance;
-		
-		calc_initialize(comp);
-
-		*eventInfo = comp->eventInfo;
-
-		return fmiOK;
-	}
-}
-
 fmiStatus fmi_get_derivatives(fmiComponent c, fmiReal derivatives[] , size_t nx)
 {
 	component_ptr_t comp = (fmiComponent)c;
@@ -541,22 +516,6 @@ fmiStatus fmi_terminate(fmiComponent c)
 const char* fmi_get_types_platform()
 {
 	return fmiTypesPlatform;
-}
-
-fmiStatus fmi_initialize_slave(fmiComponent c, fmiReal relativeTolerance, fmiReal tStart, fmiBoolean StopTimeDefined, fmiReal tStop)
-{
-	component_ptr_t comp	= (fmiComponent)c;
-	fmiEventInfo eventInfo;
-	fmiBoolean toleranceControlled;
-
-
-	comp->tStart			= tStart;
-	comp->StopTimeDefined	= StopTimeDefined;
-	comp->tStop				= tStop;
-
-	toleranceControlled = fmiTrue;
-
-	return fmi_initialize((fmiComponent)comp, toleranceControlled, relativeTolerance, &eventInfo);
 }
 
 fmiStatus fmi_reset(fmiComponent c)

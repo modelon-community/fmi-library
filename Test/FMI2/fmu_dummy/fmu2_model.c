@@ -56,18 +56,19 @@ static int calc_get_event_indicators(component_ptr_t comp)
 
 static int calc_event_update(component_ptr_t comp)
 {	
-	if (comp->states[VAR_R_HIGHT] < 0) {
+    comp->eventInfo.newDiscreteStatesNeeded           = fmiFalse;
+    comp->eventInfo.terminateSimulation               = fmiFalse;
+    comp->eventInfo.nominalsOfContinuousStatesChanged = fmiFalse;
+    comp->eventInfo.nextEventTimeDefined              = fmiFalse;
+    comp->eventInfo.nextEventTime                     = -0.0;
+	if ((comp->states[VAR_R_HIGHT] < 0) && (comp->states[VAR_R_HIGHT_SPEED] < 0)) {
 		comp->states[VAR_R_HIGHT_SPEED] = - comp->reals[VAR_R_BOUNCE_CONF] * comp->states[VAR_R_HIGHT_SPEED];
 		comp->states[VAR_R_HIGHT] = 0;
 
-		comp->eventInfo.newDiscreteStatesNeeded			= fmiFalse;
-		comp->eventInfo.terminateSimulation			= fmiFalse;
-		comp->eventInfo.nominalsOfContinuousStatesChanged	= fmiFalse;
-		comp->eventInfo.valuesOfContinuousStatesChanged		= fmiTrue;
-		comp->eventInfo.nextEventTimeDefined			= fmiFalse;
-		comp->eventInfo.nextEventTime				= -0.0;
+        comp->eventInfo.valuesOfContinuousStatesChanged = fmiTrue;
 		return 0;
 	} else {
+        comp->eventInfo.valuesOfContinuousStatesChanged = fmiFalse;
 		return 1; /* Should not call the event update */
 	}
 }
@@ -355,19 +356,24 @@ fmiStatus fmi_exit_initialization_mode(fmiComponent c)
 
 fmiStatus fmi_enter_event_mode(fmiComponent c)
 {
-    /* Dummy implementation. TODO: implement */
     return fmiOK;
 }
 
 fmiStatus fmi_new_discrete_states(fmiComponent c, fmiEventInfo* eventInfo)
 {
-    /* Dummy implementation. TODO: implement */
-    return fmiOK;
+	component_ptr_t comp = (fmiComponent)c;
+	if (comp == NULL) {
+		return fmiFatal;
+	} else {
+		calc_event_update(comp);
+
+		*eventInfo = comp->eventInfo;
+		return fmiOK;
+	}
 }
 
 fmiStatus fmi_enter_continuous_time_mode(fmiComponent c)
 {
-    /* Dummy implementation. TODO: implement */
     return fmiOK;
 }
 

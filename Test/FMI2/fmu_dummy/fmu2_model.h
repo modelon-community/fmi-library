@@ -26,7 +26,6 @@ typedef struct {
 	/*************** FMI ME 2.0 ****************/
 	fmiReal					states			[N_STATES];
 	fmiReal					states_nom		[N_STATES];
-	fmiValueReference		states_vr		[N_STATES];
 	fmiReal					states_der		[N_STATES];
 	fmiReal					event_indicators[N_EVENT_INDICATORS];
 	fmiReal					reals			[N_REAL];
@@ -42,9 +41,6 @@ typedef struct {
 
 	/* fmiSetTime */
 	fmiReal					fmitime;
-
-	/* fmiCompletedIntegratorStep */
-	fmiBoolean				callEventUpdate;
 
 	/* fmiInitializeModel */
 	fmiBoolean				toleranceControlled;
@@ -193,11 +189,6 @@ fmiStatus		fmi_get_continuous_states(
 fmiStatus		fmi_get_nominals_of_continuousstates(	
 													fmiComponent c,
 													fmiReal x_nominal[],
-													size_t nx);
-
-fmiStatus		fmi_get_state_value_references(
-													fmiComponent c,
-													fmiValueReference vrx[],
 													size_t nx);
 
 

@@ -184,11 +184,6 @@ FMI_Export fmiStatus fmiGetNominalsOfContinuousStates(fmiComponent c, fmiReal x_
 	return fmi_get_nominals_of_continuousstates(c, x_nominal, nx);
 }
 
-FMI_Export fmiStatus fmiGetStateValueReferences(fmiComponent c, fmiValueReference vrx[], size_t nx)
-{
-	return fmi_get_state_value_references(c, vrx, nx);
-}
-
 FMI_Export fmiStatus fmiTerminate(fmiComponent c)
 {
 	return fmi_terminate(c);

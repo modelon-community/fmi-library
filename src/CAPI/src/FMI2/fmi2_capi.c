@@ -226,8 +226,7 @@ static jm_status_enu_t fmi2_capi_load_me_fcn(fmi2_capi_t* fmu, unsigned int capa
    typedef fmiStatus fmiGetDerivativesTYPE            (fmiComponent, fmiReal[], size_t);
    typedef fmiStatus fmiGetEventIndicatorsTYPE        (fmiComponent, fmiReal[], size_t);
    typedef fmiStatus fmiGetContinuousStatesTYPE       (fmiComponent, fmiReal[], size_t);
-   typedef fmiStatus fmiGetNominalsOfContinuousStatesTYPE(fmiComponent, fmiReal[], size_t);
-   typedef fmiStatus fmiGetStateValueReferencesTYPE   (fmiComponent, fmiValueReference[], size_t); */
+   typedef fmiStatus fmiGetNominalsOfContinuousStatesTYPE(fmiComponent, fmiReal[], size_t);*/
 	LOAD_DLL_FUNCTION(fmiGetDerivatives);
 	LOAD_DLL_FUNCTION(fmiGetEventIndicators);
 	LOAD_DLL_FUNCTION(fmiGetContinuousStates);

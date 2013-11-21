@@ -275,13 +275,10 @@ fmiComponent fmi_instantiate(fmiString instanceName, fmiType fmuType,
 		comp->functions		= *functions;
 		comp->loggingOn		= loggingOn;
 
-		comp->callEventUpdate = fmiFalse;
-
 		/* Set default values */
 		for (k = 0; k < N_STATES;			k++) comp->states[k]			= 0.0;
 		for (k = 0; k < N_STATES;			k++) comp->states_prev[k]		= 0.0; /* Used in CS only */
 		for (k = 0; k < N_STATES;			k++) comp->states_nom[k]		= 1.0;
-		for (k = 0; k < N_STATES;			k++) comp->states_vr[k]			= k;
 		for (k = 0; k < N_STATES;			k++) comp->states_der[k]		= 0.0;
 		for (k = 0; k < N_EVENT_INDICATORS; k++) comp->event_indicators[k]	= 1e10;
 		for (k = 0; k < N_REAL;				k++) comp->reals[k]				= 0.0;
@@ -407,7 +404,7 @@ fmiStatus fmi_completed_integrator_step(fmiComponent c,
 	if (comp == NULL) {
 		return fmiFatal;
 	} else {
-		*enterEventMode = comp->callEventUpdate;
+		*enterEventMode = fmiFalse;
 		return fmiOK;
 	}
 }
@@ -483,20 +480,6 @@ fmiStatus fmi_get_nominals_of_continuousstates(fmiComponent c, fmiReal x_nominal
 		size_t k;
 		for (k = 0; k < nx; k++) {
 			x_nominal[k] = comp->states_nom[k];
-		}
-		return fmiOK;
-	}
-}
-
-fmiStatus fmi_get_state_value_references(fmiComponent c, fmiValueReference vrx[], size_t nx)
-{
-	component_ptr_t comp = (fmiComponent)c;
-	if (comp == NULL) {
-		return fmiFatal;
-	} else {
-		size_t k;
-		for (k = 0; k < nx; k++) {
-			vrx[k] = comp->states_vr[k];
 		}
 		return fmiOK;
 	}

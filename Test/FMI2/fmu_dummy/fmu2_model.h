@@ -15,8 +15,8 @@ You should have received a copy of the FMILIB_License.txt file
 along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 */
 
-#ifndef FM1_MODEL_H_
-#define FM1_MODEL_H_
+#ifndef FMU2_MODEL_H_
+#define FMU2_MODEL_H_
 #include <FMI2/fmiFunctions.h>
 #include <fmu_dummy/fmu2_model_defines.h>
 #ifndef FMI_Export

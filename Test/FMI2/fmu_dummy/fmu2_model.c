@@ -333,9 +333,9 @@ fmiStatus fmi_setup_experiment(fmiComponent c, fmiBoolean toleranceDefined,
         comp->toleranceControlled = toleranceDefined;
         comp->relativeTolerance = tolerance;
 
-	comp->tStart = startTime;
-	comp->StopTimeDefined = stopTimeDefined;
-	comp->tStop = stopTime;
+        comp->tStart = startTime;
+        comp->StopTimeDefined = stopTimeDefined;
+        comp->tStop = stopTime;
 
         return fmiOK;
     }

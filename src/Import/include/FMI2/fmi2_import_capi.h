@@ -122,7 +122,7 @@ FMILIB_EXPORT const char* fmi2_import_get_version(fmi2_import_t* fmu);
  * @param fmuType fmi2_model_exchange or fmi2_cosimulation.
  * @param fmuResourceLocation Access path URI to the FMU archive resources. If this is NULL pointer the FMU will get the path to the unzipped location.
  * @param visible Indicates whether or not the simulator application window shoule be visible.
- * @return Error status. Returnes jm_status_error if fmiInstantiateModel returned NULL, otherwise jm_status_success.
+ * @return Error status. Returnes jm_status_error if fmiInstantiate returned NULL, otherwise jm_status_success.
  */
 FMILIB_EXPORT jm_status_enu_t fmi2_import_instantiate(fmi2_import_t* fmu,
     fmi2_string_t instanceName, fmi2_type_t fmuType,

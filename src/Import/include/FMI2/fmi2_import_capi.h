@@ -446,24 +446,6 @@ FMILIB_EXPORT fmi2_status_t fmi2_import_get_derivatives(fmi2_import_t* fmu, fmi2
 FMILIB_EXPORT fmi2_status_t fmi2_import_get_event_indicators(fmi2_import_t* fmu, fmi2_real_t eventIndicators[], size_t ni);
 
 /**
- * \brief Wrapper for the FMI function fmiEventUpdate(...) 
- * 
- * @param fmu A model description object returned by fmi2_import_parse_xml() that has loaded the FMI functions, see fmi2_import_load_fcn().
- * @param intermediateResults Indicate whether or not the fmiEventUpdate shall return after every internal event interation.
- * @param eventInfo (Output) An fmiEventInfo struct.
- * @return FMI status.
- */
-FMILIB_EXPORT fmi2_status_t fmi2_import_eventUpdate(fmi2_import_t* fmu, fmi2_boolean_t intermediateResults, fmi2_event_info_t* eventInfo);
-
-/**
- * \brief Wrapper for the FMI function fmiCompletedEventIteration(...) 
- * 
- * @param fmu A model description object returned by fmi2_import_parse_xml() that has loaded the FMI functions, see fmi2_import_load_fcn().
- * @return FMI status.
- */
-FMILIB_EXPORT fmi2_status_t fmi2_import_completed_event_iteration(fmi2_import_t* fmu);
-
-/**
  * \brief Wrapper for the FMI function fmiGetContinuousStates(...) 
  * 
  * @param fmu A model description object returned by fmi2_import_parse_xml() that has loaded the FMI functions, see fmi2_import_load_fcn().

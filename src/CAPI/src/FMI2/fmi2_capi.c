@@ -217,10 +217,6 @@ static jm_status_enu_t fmi2_capi_load_me_fcn(fmi2_capi_t* fmu, unsigned int capa
 	LOAD_DLL_FUNCTION(fmiSetContinuousStates);
 
 /* Evaluation of the model equations */
-/*   typedef fmiStatus fmiEventUpdateTYPE            (fmiComponent, fmiBoolean, fmiEventInfo*);
-   typedef fmiStatus fmiCompletedEventIterationTYPE(fmiComponent); */
-	LOAD_DLL_FUNCTION(fmiEventUpdate);
-	LOAD_DLL_FUNCTION_WITH_FLAG(fmiCompletedEventIteration, fmi2_me_completedEventIterationIsProvided);
 
 /*
    typedef fmiStatus fmiGetDerivativesTYPE            (fmiComponent, fmiReal[], size_t);

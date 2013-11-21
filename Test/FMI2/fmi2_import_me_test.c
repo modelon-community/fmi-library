@@ -59,7 +59,6 @@ int test_simulate_me(fmi2_import_t* fmu)
 	fmi2_boolean_t toleranceControlled = fmi2_true;
 	fmi2_real_t relativeTolerance = 0.001;
 	fmi2_event_info_t eventInfo;
-	fmi2_boolean_t intermediateResults = fmi2_false;
 	size_t k;
 
 	printf("Version returned from FMU:   %s\n", fmi2_import_get_version(fmu));

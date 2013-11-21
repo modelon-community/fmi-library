@@ -164,16 +164,6 @@ FMI_Export fmiStatus fmiGetEventIndicators(fmiComponent c, fmiReal eventIndicato
 	return fmi_get_event_indicators(c, eventIndicators, ni);
 }
 
-FMI_Export fmiStatus fmiEventUpdate(fmiComponent c, fmiBoolean intermediateResults, fmiEventInfo* eventInfo)
-{
-	return fmi_event_update(c, intermediateResults, eventInfo);
-}
-
-FMI_Export fmiStatus fmiCompletedEventIteration(fmiComponent c) {
-	if(c) return fmiOK;
-	return fmiError;
-}
-
 FMI_Export fmiStatus fmiGetContinuousStates(fmiComponent c, fmiReal states[], size_t nx)
 {
 	return fmi_get_continuous_states(c, states, nx);

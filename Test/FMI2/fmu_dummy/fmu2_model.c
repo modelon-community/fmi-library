@@ -449,19 +449,6 @@ fmiStatus fmi_get_event_indicators(fmiComponent c, fmiReal eventIndicators[], si
 	}
 }
 
-fmiStatus fmi_event_update(fmiComponent c, fmiBoolean intermediateResults, fmiEventInfo* eventInfo)
-{
-	component_ptr_t comp = (fmiComponent)c;
-	if (comp == NULL) {
-		return fmiFatal;
-	} else {
-		calc_event_update(comp);
-
-		*eventInfo = comp->eventInfo;
-		return fmiOK;
-	}
-}
-
 fmiStatus fmi_get_continuous_states(fmiComponent c, fmiReal states[], size_t nx)
 {
 	component_ptr_t comp = (fmiComponent)c;
@@ -596,7 +583,7 @@ fmiStatus fmi_do_step(fmiComponent c, fmiReal currentCommunicationPoint, fmiReal
 			/* Handle any events */
 			if (callEventUpdate || zero_crossning_event ||
 			  (eventInfo.nextEventTimeDefined && tcur == eventInfo.nextEventTime)) {
-				fmistatus = fmi_event_update(comp, intermediateResults, &eventInfo);
+				fmistatus = fmi_new_discrete_states(comp, &eventInfo);
 				fmistatus = fmi_get_continuous_states(comp, states, N_STATES);
 				fmistatus = fmi_get_event_indicators(comp, z_cur, N_EVENT_INDICATORS);
 				fmistatus = fmi_get_event_indicators(comp, z_pre, N_EVENT_INDICATORS);

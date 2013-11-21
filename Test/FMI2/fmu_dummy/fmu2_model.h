@@ -177,10 +177,6 @@ fmiStatus		fmi_get_event_indicators(
 													fmiReal eventIndicators[],
 													size_t ni);
 
-fmiStatus		fmi_event_update(
-													fmiComponent c,
-													fmiBoolean intermediateResults,
-													fmiEventInfo* eventInfo);
 fmiStatus		fmi_get_continuous_states(
 													fmiComponent c,
 													fmiReal states[],

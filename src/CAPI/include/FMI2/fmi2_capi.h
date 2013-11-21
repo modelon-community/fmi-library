@@ -414,24 +414,6 @@ fmi2_status_t fmi2_capi_get_derivatives(fmi2_capi_t* fmu, fmi2_real_t derivative
 fmi2_status_t fmi2_capi_get_event_indicators(fmi2_capi_t* fmu, fmi2_real_t eventIndicators[], size_t ni);
 
 /**
- * \brief Calls the FMI function fmiEventUpdate(...) 
- * 
- * @param fmu C-API struct that has succesfully loaded the FMI function.
- * @param intermediateResults Indicate whether or not the fmiEventUpdate shall return after every internal event interation.
- * @param eventInfo (Output) An fmiEventInfo struct.
- * @return FMI status.
- */
-fmi2_status_t fmi2_capi_eventUpdate(fmi2_capi_t* fmu, fmi2_boolean_t intermediateResults, fmi2_event_info_t* eventInfo);
-
-/**
- * \brief Wrapper for the FMI function fmiCompletedEventIteration(...) 
- * 
- * @param fmu C-API struct that has succesfully loaded the FMI function.
- * @return FMI status.
- */
-fmi2_status_t fmi2_capi_completed_event_iteration(fmi2_capi_t* fmu);
-
-/**
  * \brief Calls the FMI function fmiGetContinuousStates(...) 
  * 
  * @param fmu C-API struct that has succesfully loaded the FMI function.

@@ -77,19 +77,6 @@ fmi2_status_t fmi2_capi_get_event_indicators(fmi2_capi_t* fmu, fmi2_real_t event
 	return fmu->fmiGetEventIndicators(fmu->c, eventIndicators, ni);
 }
 
-fmi2_status_t fmi2_capi_eventUpdate(fmi2_capi_t* fmu, fmi2_boolean_t intermediateResults, fmi2_event_info_t* eventInfo)
-{
-	assert(fmu);
-	jm_log_debug(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Calling fmiEventUpdate");
-	return fmu->fmiEventUpdate(fmu->c, intermediateResults, eventInfo);
-}
-
-fmi2_status_t fmi2_capi_completed_event_iteration(fmi2_capi_t* fmu) {
-	assert(fmu);
-	jm_log_debug(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Calling fmiCompletedEventIteration");
-	return fmu->fmiCompletedEventIteration(fmu->c);
-}
-
 fmi2_status_t fmi2_capi_get_continuous_states(fmi2_capi_t* fmu, fmi2_real_t states[], size_t nx)
 {
 	assert(fmu);

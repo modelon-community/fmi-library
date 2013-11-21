@@ -331,14 +331,6 @@ fmi2_status_t fmi2_import_get_event_indicators(fmi2_import_t* fmu, fmi2_real_t e
 	return fmi2_capi_get_event_indicators(fmu -> capi, eventIndicators, ni);
 }
 
-fmi2_status_t fmi2_import_eventUpdate(fmi2_import_t* fmu, fmi2_boolean_t intermediateResults, fmi2_event_info_t* eventInfo) {
-	return fmi2_capi_eventUpdate(fmu -> capi, intermediateResults, eventInfo);
-}
-
-fmi2_status_t fmi2_import_completed_event_iteration(fmi2_import_t* fmu) {
-	return fmi2_capi_completed_event_iteration(fmu -> capi);
-}
-
 fmi2_status_t fmi2_import_get_continuous_states(fmi2_import_t* fmu, fmi2_real_t states[], size_t nx) {
 	return fmi2_capi_get_continuous_states(fmu -> capi, states, nx);
 }

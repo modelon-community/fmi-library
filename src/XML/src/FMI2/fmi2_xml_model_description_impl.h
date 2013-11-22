@@ -60,6 +60,10 @@ struct fmi2_xml_model_description_t {
 
     double defaultExperimentTolerance;
 
+#define FMI2_DEFAULT_EXPERIMENT_STEPSIZE 1e-2
+
+    double defaultExperimentStepSize;
+
 
     jm_vector(char) modelIdentifierME;
 

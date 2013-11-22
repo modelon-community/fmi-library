@@ -51,6 +51,7 @@ extern "C" {
     EXPAND_XML_ATTRNAME(startTime) \
     EXPAND_XML_ATTRNAME(stopTime) \
     EXPAND_XML_ATTRNAME(tolerance) \
+    EXPAND_XML_ATTRNAME(stepSize) \
     EXPAND_XML_ATTRNAME(value) \
     EXPAND_XML_ATTRNAME(valueReference) \
     EXPAND_XML_ATTRNAME(variability) \

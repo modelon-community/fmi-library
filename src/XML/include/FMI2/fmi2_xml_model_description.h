@@ -190,6 +190,10 @@ double fmi2_xml_get_default_experiment_tolerance(fmi2_xml_model_description_t* m
 
 void fmi2_xml_set_default_experiment_tolerance(fmi2_xml_model_description_t* md, double);
 
+double fmi2_xml_get_default_experiment_step(fmi2_xml_model_description_t* md);
+
+void fmi2_xml_set_default_experiment_step(fmi2_xml_model_description_t* md, double);
+
 fmi2_fmu_kind_enu_t fmi2_xml_get_fmu_kind(fmi2_xml_model_description_t* md);
 
 /** \brief Get a pointer to the internal capabilities array */

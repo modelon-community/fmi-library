@@ -262,6 +262,17 @@ void fmi2_import_set_default_experiment_tolerance(fmi2_import_t* fmu, double tol
 	fmi2_xml_set_default_experiment_tolerance(fmu->md, tol);
 }
 
+double fmi2_import_get_default_experiment_step(fmi2_import_t* fmu) {
+	if(!fmi2_import_check_has_FMU(fmu)) return 0;
+
+	return fmi2_xml_get_default_experiment_step(fmu->md);
+}
+
+void fmi2_import_set_default_experiment_step(fmi2_import_t* fmu, double t) {
+	if(!fmi2_import_check_has_FMU(fmu)) return;
+	fmi2_xml_set_default_experiment_step(fmu->md, t);
+}
+
 fmi2_import_unit_definitions_t* fmi2_import_get_unit_definitions(fmi2_import_t* fmu) {
 	if(!fmi2_import_check_has_FMU(fmu)) return 0;
 

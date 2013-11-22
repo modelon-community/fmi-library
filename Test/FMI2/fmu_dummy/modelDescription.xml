@@ -4,7 +4,7 @@
  generationDateAndTime="2012-09-21T10:40:41" variableNamingConvention="structured" 
  numberOfContinuousStates="0" numberOfEventIndicators="0" author="">
  <ModelExchange modelIdentifier="Empty" />
-<DefaultExperiment startTime="0" stopTime="1" tolerance="1e-005"/>
+<DefaultExperiment startTime="0" stopTime="1" tolerance="1e-005" stepSize="5e-3"/>
 <ModelVariables>
 </ModelVariables>
 <ModelStructure></ModelStructure>

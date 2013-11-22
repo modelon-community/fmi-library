@@ -67,6 +67,8 @@ fmi2_xml_model_description_t * fmi2_xml_allocate_model_description( jm_callbacks
 
     md->defaultExperimentTolerance = FMI2_DEFAULT_EXPERIMENT_TOLERANCE;
 
+    md->defaultExperimentStepSize = FMI2_DEFAULT_EXPERIMENT_STEPSIZE;
+
 	jm_vector_init(jm_string)(&md->vendorList, 0, cb);
 	jm_vector_init(jm_string)(&md->logCategories, 0, cb);
 
@@ -121,6 +123,8 @@ void fmi2_xml_clear_model_description( fmi2_xml_model_description_t* md) {
     md->defaultExperimentStopTime = 0;
 
     md->defaultExperimentTolerance = 0;
+
+    md->defaultExperimentStepSize = 0;
 
     jm_vector_foreach(jm_string)(&md->vendorList, (void(*)(const char*))md->callbacks->free);
     jm_vector_free_data(jm_string)(&md->vendorList);
@@ -252,6 +256,14 @@ void fmi2_xml_set_default_experiment_stop(fmi2_xml_model_description_t* md, doub
 
 double fmi2_xml_get_default_experiment_tolerance(fmi2_xml_model_description_t* md){
     return md->defaultExperimentTolerance;
+}
+
+double fmi2_xml_get_default_experiment_step(fmi2_xml_model_description_t* md){
+    return md->defaultExperimentStepSize;
+}
+
+void fmi2_xml_set_default_experiment_step(fmi2_xml_model_description_t* md, double t){
+    md->defaultExperimentStepSize = t;
 }
 
 fmi2_fmu_kind_enu_t fmi2_xml_get_fmu_kind(fmi2_xml_model_description_t* md) {
@@ -532,12 +544,14 @@ int fmi2_xml_handle_DefaultExperiment(fmi2_xml_parser_context_t *context, const 
         /* process the attributes */
         return (
         /* <xs:attribute name="startTime" type="xs:double"/> */
-                    fmi2_xml_set_attr_double(context, fmi2_xml_elmID_DefaultExperiment, fmi_attr_id_startTime, 0, &md->defaultExperimentStartTime, 0) ||
+                fmi2_xml_set_attr_double(context, fmi2_xml_elmID_DefaultExperiment, fmi_attr_id_startTime, 0, &md->defaultExperimentStartTime, 0) ||
         /* <xs:attribute name="stopTime" type="xs:double"/>  */
-                    fmi2_xml_set_attr_double(context, fmi2_xml_elmID_DefaultExperiment, fmi_attr_id_stopTime, 0, &md->defaultExperimentStopTime, 1) ||
+                fmi2_xml_set_attr_double(context, fmi2_xml_elmID_DefaultExperiment, fmi_attr_id_stopTime, 0, &md->defaultExperimentStopTime, 1) ||
         /* <xs:attribute name="tolerance" type="xs:double">  */
-                    fmi2_xml_set_attr_double(context, fmi2_xml_elmID_DefaultExperiment, fmi_attr_id_tolerance, 0, &md->defaultExperimentTolerance, FMI2_DEFAULT_EXPERIMENT_TOLERANCE)
-                    );
+                fmi2_xml_set_attr_double(context, fmi2_xml_elmID_DefaultExperiment, fmi_attr_id_tolerance, 0, &md->defaultExperimentTolerance, FMI2_DEFAULT_EXPERIMENT_TOLERANCE) ||
+        /* <xs:attribute name="stepSize" type="xs:double">   */
+                fmi2_xml_set_attr_double(context, fmi2_xml_elmID_DefaultExperiment, fmi_attr_id_stepSize, 0, &md->defaultExperimentStepSize, FMI2_DEFAULT_EXPERIMENT_STEPSIZE)
+        );
     }
     else {
         /* don't do anything. might give out a warning if(data[0] != 0) */

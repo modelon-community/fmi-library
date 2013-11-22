@@ -372,10 +372,11 @@ int main(int argc, char *argv[])
     printf("NumberOfContinuousStates = " FMILIB_SIZET_FORMAT "\n", fmi2_import_get_number_of_continuous_states(fmu));
     printf("NumberOfEventIndicators = " FMILIB_SIZET_FORMAT "\n", fmi2_import_get_number_of_event_indicators(fmu));
 
-    printf("Default experiment start = %g, end = %g, tolerance = %g\n",
+    printf("Default experiment start = %g, end = %g, tolerance = %g, step = %g\n",
            fmi2_import_get_default_experiment_start(fmu),
            fmi2_import_get_default_experiment_stop(fmu),
-           fmi2_import_get_default_experiment_tolerance(fmu));
+           fmi2_import_get_default_experiment_tolerance(fmu),
+           fmi2_import_get_default_experiment_step(fmu));
     {
         size_t i, nv = fmi2_import_get_vendors_num(fmu);
         printf("There are %u tool annotation records \n", (unsigned)nv);

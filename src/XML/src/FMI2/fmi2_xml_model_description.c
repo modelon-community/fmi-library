@@ -449,9 +449,6 @@ int fmi2_xml_handle_CoSimulation(fmi2_xml_parser_context_t *context, const char*
 					/* <xs:attribute name="canHandleVariableCommunicationStepSize" type="xs:boolean" default="false"/> */
                     fmi2_xml_set_attr_boolean(context,fmi2_xml_elmID_CoSimulation, fmi_attr_id_canHandleVariableCommunicationStepSize,0,
                                              &md->capabilities[fmi2_cs_canHandleVariableCommunicationStepSize],0) ||
-					/* <xs:attribute name="canHandleEvents" type="xs:boolean" default="false"/>*/
-                    fmi2_xml_set_attr_boolean(context,fmi2_xml_elmID_CoSimulation, fmi_attr_id_canHandleEvents,0,
-                                             &md->capabilities[fmi2_cs_canHandleEvents],0) ||
 					/* <xs:attribute name="canInterpolateInputs" type="xs:boolean" default="false"/>*/
                     fmi2_xml_set_attr_boolean(context,fmi2_xml_elmID_CoSimulation, fmi_attr_id_canInterpolateInputs,0,
                                              &md->capabilities[fmi2_cs_canInterpolateInputs],0) ||
@@ -461,9 +458,6 @@ int fmi2_xml_handle_CoSimulation(fmi2_xml_parser_context_t *context, const char*
 					/* <xs:attribute name="canRunAsynchronuously" type="xs:boolean" default="false"/> */
                     fmi2_xml_set_attr_boolean(context,fmi2_xml_elmID_CoSimulation, fmi_attr_id_canRunAsynchronuously,0,
                                              &md->capabilities[fmi2_cs_canRunAsynchronuously],0) ||
-					/* <xs:attribute name="canSignalEvents" type="xs:boolean" default="false"/> */
-                    fmi2_xml_set_attr_boolean(context,fmi2_xml_elmID_CoSimulation, fmi_attr_id_canSignalEvents,0,
-                                             &md->capabilities[fmi2_cs_canSignalEvents],0) ||
 					/* <xs:attribute name="canBeInstantiatedOnlyOncePerProcess" type="xs:boolean" default="false"/> */
                     fmi2_xml_set_attr_boolean(context,fmi2_xml_elmID_CoSimulation, fmi_attr_id_canBeInstantiatedOnlyOncePerProcess,0,
                                              &md->capabilities[fmi2_cs_canBeInstantiatedOnlyOncePerProcess],0) ||

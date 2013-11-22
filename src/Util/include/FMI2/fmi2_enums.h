@@ -143,11 +143,9 @@ FMILIB_EXPORT const char* fmi2_base_type_to_string(fmi2_base_type_enu_t bt);
 #define FMI2_CS_CAPABILITIES(H) \
 	H(needsExecutionTool) \
 	H(canHandleVariableCommunicationStepSize) \
-	H(canHandleEvents) \
 	H(canInterpolateInputs) \
 	H(maxOutputDerivativeOrder) \
 	H(canRunAsynchronuously) \
-	H(canSignalEvents) \
 	H(canBeInstantiatedOnlyOncePerProcess) \
 	H(canNotUseMemoryManagementFunctions) \
 	H(canGetAndSetFMUstate) \

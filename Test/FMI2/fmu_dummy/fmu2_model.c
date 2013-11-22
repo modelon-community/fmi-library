@@ -551,7 +551,6 @@ fmiStatus fmi_do_step(fmiComponent c, fmiReal currentCommunicationPoint, fmiReal
 		fmiEventInfo eventInfo;
 		fmiBoolean callEventUpdate;
 		fmiBoolean terminateSimulation;
-		fmiBoolean intermediateResults = fmiFalse;
 		fmiStatus fmistatus;	
 		size_t k;
 		size_t counter = 0;

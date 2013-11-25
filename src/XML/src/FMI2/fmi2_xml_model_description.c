@@ -242,16 +242,8 @@ double fmi2_xml_get_default_experiment_start(fmi2_xml_model_description_t* md) {
     return md->defaultExperimentStartTime;
 }
 
-void fmi2_xml_set_default_experiment_start(fmi2_xml_model_description_t* md, double t){
-    md->defaultExperimentStartTime = t;
-}
-
 double fmi2_xml_get_default_experiment_stop(fmi2_xml_model_description_t* md){
     return md->defaultExperimentStopTime;
-}
-
-void fmi2_xml_set_default_experiment_stop(fmi2_xml_model_description_t* md, double t){
-    md->defaultExperimentStopTime = t;
 }
 
 double fmi2_xml_get_default_experiment_tolerance(fmi2_xml_model_description_t* md){
@@ -260,10 +252,6 @@ double fmi2_xml_get_default_experiment_tolerance(fmi2_xml_model_description_t* m
 
 double fmi2_xml_get_default_experiment_step(fmi2_xml_model_description_t* md){
     return md->defaultExperimentStepSize;
-}
-
-void fmi2_xml_set_default_experiment_step(fmi2_xml_model_description_t* md, double t){
-    md->defaultExperimentStepSize = t;
 }
 
 fmi2_fmu_kind_enu_t fmi2_xml_get_fmu_kind(fmi2_xml_model_description_t* md) {
@@ -277,10 +265,6 @@ unsigned int* fmi2_xml_get_capabilities(fmi2_xml_model_description_t* md) {
 unsigned int fmi2_xml_get_capability(fmi2_xml_model_description_t* md, fmi2_capabilities_enu_t id) {
 	assert((unsigned)id < (unsigned)fmi2_capabilities_Num);
 	return md->capabilities[id];
-}
-
-void fmi2_xml_set_default_experiment_tolerance(fmi2_xml_model_description_t* md, double tol){
-    md->defaultExperimentTolerance = tol;
 }
 
 fmi2_xml_unit_definitions_t* fmi2_xml_get_unit_definitions(fmi2_xml_model_description_t* md) {

@@ -120,10 +120,8 @@ typedef enum fmi2_xml_attr_enu_t {
     EXPAND_XML_ELMNAME(Enumeration) \
     EXPAND_XML_ELMNAME(ModelStructure) \
     EXPAND_XML_ELMNAME(Derivatives) \
-    EXPAND_XML_ELMNAME(Inputs) \
     EXPAND_XML_ELMNAME(Outputs) \
     EXPAND_XML_ELMNAME(Derivative) \
-    EXPAND_XML_ELMNAME(Input) \
     EXPAND_XML_ELMNAME(Output)
 
 /** \brief Element that can be placed under different parents get alternative names from the info struct */

@@ -64,13 +64,6 @@
   </ScalarVariable>  
 </ModelVariables>
 <ModelStructure>
-  <Derivatives>
-    <Derivative name="HIGHT_SPEED" state="HIGHT"/>
-    <Derivative name="HIGHT_ACC" state="HIGHT_SPEED"/>
-  </Derivatives>
-  <Outputs>
-  <Output name="HIGHT" />
-  </Outputs>
 </ModelStructure>
 </fmiModelDescription>
 

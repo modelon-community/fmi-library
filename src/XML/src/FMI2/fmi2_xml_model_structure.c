@@ -322,17 +322,19 @@ int fmi2_xml_handle_ModelStructure(fmi2_xml_parser_context_t *context, const cha
     }
     else {
 		/** make sure model structure information is consistent */
+/*
 		if(!fmi2_xml_check_model_structure(md)) {
 			fmi2_xml_parse_fatal(context, "Model structure is not valid due to detected errors. Cannot continue.");
 			return -1;
 		}
 		md->numberOfContinuousStates = jm_vector_get_size(jm_voidp)(&md->modelStructure->states);
+*/
     }
     return 0;
 }
 
 
-int fmi2_xml_handle_Inputs(fmi2_xml_parser_context_t *context, const char* data) {
+int fmi2_xml_handle_Outputs(fmi2_xml_parser_context_t *context, const char* data) {
 		/** nothing to do */
     return 0;
 }
@@ -340,342 +342,17 @@ int fmi2_xml_handle_Derivatives(fmi2_xml_parser_context_t *context, const char* 
 		/** nothing to do */
     return 0;
 }
-int fmi2_xml_handle_Outputs(fmi2_xml_parser_context_t *context, const char* data) {
-		/** nothing to do */
-    return 0;
-}
-
-int fmi2_xml_handle_Input(fmi2_xml_parser_context_t *context, const char* data) {
-    if(!data) {
-        fmi2_xml_model_description_t* md = context->modelDescription;
-		fmi2_xml_model_structure_t* ms = md->modelStructure;
-        jm_vector(char)* bufName = fmi2_xml_reserve_parse_buffer(context,1,100);
-		int derivative;
-	    jm_named_ptr key, *found;
-    
-        fmi2_xml_variable_t* variable;
-		
-		if(
-			/*  <xs:attribute name="name" type="xs:normalizedString" use="required"/> */
-			fmi2_xml_set_attr_string(context, fmi2_xml_elmID_Input, fmi_attr_id_name, 1, bufName))
-		{
-			ms->isValidFlag = 0;
-			context->skipElementCnt = 1;
-			return 0;
-		}
-		key.name = jm_vector_get_itemp(char)(bufName,0);
-		found = jm_vector_bsearch(jm_named_ptr)(&(md->variablesByName),&key, jm_compare_named);
-		if(!found) {
-			fmi2_xml_parse_error(context, "Input element references variable %s that is not defined", key.name);
-			context->skipElementCnt = 1;
-			return 0;
-		}
-		variable = (fmi2_xml_variable_t*)found->ptr;
-        if(variable->causality != fmi2_causality_enu_input) {
-			fmi2_xml_parse_error(context, 
-				"Input element cannot reference '%s' since causality is not input. Skipping.", variable->name);
-			context->skipElementCnt = 1;
-            return 0;
-        }
-
-		if(!fmi2_xml_is_attr_defined(context, fmi_attr_id_derivative) ||
-			/*	<xs:attribute name="derivative" type="xs:int"> */
-			fmi2_xml_set_attr_int(context, fmi2_xml_elmID_Input, fmi_attr_id_derivative, 0, &derivative, -1)) {
-			derivative = 0;
-		}
-		else {
-			if(derivative <= 0) {
-				fmi2_xml_parse_error(context, "Input %s has attribute derivative=%d but indexing starts from 1.", 
-					variable->name, derivative);
-				ms->isValidFlag = 0;
-			}
-		}
-
-		if(!jm_vector_push_back(jm_voidp)(&ms->inputs, variable) ||
-			!jm_vector_push_back(size_t)(&ms->inputIsDerivative, (size_t)derivative)) {
-				fmi2_xml_parse_fatal(context, "Could not allocate memory");
-				return -1;
-		}
-
-		variable->inputIndex = jm_vector_get_size(jm_voidp)(&ms->inputs);
-    }
-    else {
-    }
-    return 0;
-}
-
-extern fmi2_xml_element_handle_map_t fmi2_element_handle_map[fmi2_xml_elm_number];
-extern const char *fmi2_xmlAttrNames[fmi2_xml_attr_number];
-
-int fmi2_xml_parse_dependency(fmi2_xml_parser_context_t *context, 
-								fmi2_xml_elm_enu_t elmID, 
-								fmi2_xml_attr_enu_t depAttrID,
-								fmi2_xml_attr_enu_t depKindAttrID,
-								fmi2_xml_dependencies_t* deps) {
-    jm_string elmName;
-    fmi2_xml_model_description_t* md = context->modelDescription;
-	fmi2_xml_model_structure_t* ms = md->modelStructure;
-
-    const char* listInd;
-    const char* listKind;
-	size_t numDepInd = 0;
-	size_t numDepKind = 0;
-	size_t totNumDep = jm_vector_get_size(size_t)(&deps->dependencyIndex);
-
-	elmName = fmi2_element_handle_map[elmID].elementName;
-
-	/* <xs:attribute name="stateDependencies"> (or 		<xs:attribute name="inputDependencies"> )
-			<xs:simpleType>
-				<xs:list itemType="xs:int"/>
-			</xs:simpleType>
-		</xs:attribute>
-		*/
-	if(fmi2_xml_get_attr_str(context, elmID, depAttrID, 0, &listInd)) {
-		ms->isValidFlag = 0;
-		return 0;
-	}
-	if(listInd) {
-		 const char* cur = listInd;
-		 int ind;
-		 while(*cur) {
-			 char ch = *cur;
-			 while((ch ==' ') || (ch == '\t') || (ch =='\n') || (ch == '\r')) {
-				 cur++; ch = *cur;
-				 if(!ch) break;
-			 }
-			 if(!ch) break;
-			 if(sscanf(cur, "%d", &ind) != 1) {
-		         fmi2_xml_parse_error(context, "XML element '%s': could not parse item %d in the list for attribute '%s'", 
-					 elmName, numDepInd, fmi2_xmlAttrNames[depAttrID]);
-				ms->isValidFlag = 0;
-				return 0;
-			 }
-			 if(ind < 1) {
-		         fmi2_xml_parse_error(context, "XML element '%s': item %d=%d is less than one in the list for attribute '%s'", 
-					 elmName, numDepInd, ind, fmi2_xmlAttrNames[depAttrID]);
-				ms->isValidFlag = 0;
-				return 0;
-			 }
-			 if(!jm_vector_push_back(size_t)(&deps->dependencyIndex, (size_t)ind)) {
-				fmi2_xml_parse_fatal(context, "Could not allocate memory");
-				return -1;
-			}
-			 while((*cur >= '0') && (*cur <= '9')) cur++;
-			 numDepInd++;
-		 }
-    }
-
-	/*
-		<xs:attribute name="stateFactorKinds"> (or <xs:attribute name="inputFactorKinds">)
-			<xs:simpleType>
-				<xs:list itemType="fmiDependencyFactorKind"/>
-			</xs:simpleType>
-		</xs:attribute>
-		*/
-	if(fmi2_xml_get_attr_str(context, elmID, depKindAttrID, 0, &listKind)) {
-		ms->isValidFlag = 0;
-		return 0;
-	}
-	if(listKind) {
-		 const char* cur = listKind;
-		 char kind;
-		 while(*cur) {
-			 char ch = *cur;
-			 while(ch && ((ch ==' ') || (ch == '\t') || (ch =='\n') || (ch == '\r'))) {
-				 cur++; ch = *cur;
-			 }
-			 if(!ch) break;
-			 if(strncmp("fixed", cur, 5) == 0) {
-				 kind = fmi2_dependency_factor_kind_fixed;
-				 cur+=5;
-			 }
-			 else if(strncmp("nonlinear", cur, 9) == 0) {
-				 kind = fmi2_dependency_factor_kind_nonlinear;
-				 cur+=9;
-			 }
-			 else if(strncmp("discrete", cur, 8) == 0) {
- 				 kind = fmi2_dependency_factor_kind_discrete;
-				 cur+=8;
-			 }
-			 else {
-		         fmi2_xml_parse_error(context, "XML element '%s': could not parse item %d in the list for attribute '%s'", 
-					 elmName, numDepKind, fmi2_xmlAttrNames[depKindAttrID]);
-				ms->isValidFlag = 0;
-				return 0;
-			 }
-			 if(!jm_vector_push_back(char)(&deps->dependencyFactorKind, kind)) {
-				fmi2_xml_parse_fatal(context, "Could not allocate memory");
-				return -1;
-			}
-			 numDepKind++;
-		 }
-    }
-	if(listInd && listKind) {
-		/* both lists are present - the number of items must match */
-		if(numDepInd != numDepKind) {
-  	            fmi2_xml_parse_error(context, "XML element '%s': different number of items (%u and %u) in the lists for '%s' and '%s'", 
-					 elmName, numDepInd, numDepKind, 
-					 fmi2_xmlAttrNames[depAttrID], fmi2_xmlAttrNames[depKindAttrID]);
-				ms->isValidFlag = 0;
-				return 0;
-		}
-	}
-	else if(listInd) {
-		/* only Dependencies are present, set all "kinds" to nonlinear */
-		char kind = fmi2_dependency_factor_kind_nonlinear;
-		if(jm_vector_reserve(char)(&deps->dependencyFactorKind,totNumDep + numDepInd) < totNumDep + numDepInd) {
-				fmi2_xml_parse_fatal(context, "Could not allocate memory");
-				return -1;
-		}
-		for(;numDepKind < numDepInd; numDepKind++)
-			jm_vector_push_back(char)(&deps->dependencyFactorKind, kind);
-	}
-	else if(listKind) {
-		/*  Only factor kinds are present -> assume that items just come in ascending order.
-		*/
-		if(jm_vector_reserve(size_t)(&deps->dependencyIndex,totNumDep + numDepKind) < totNumDep + numDepKind) {
-				fmi2_xml_parse_fatal(context, "Could not allocate memory");
-				return -1;
-		}
-		for(;numDepInd < numDepKind; numDepInd++)
-			jm_vector_push_back(size_t)(&deps->dependencyIndex, numDepInd+1);
-	}
-	else {
-		/* Dependencies are not provided. Put zero index/nonlinear to indicate that full row must be considered. */
-		numDepInd = numDepKind = 1;
-		if(!jm_vector_push_back(char)(&deps->dependencyFactorKind, fmi2_dependency_factor_kind_nonlinear) ||
-		   !jm_vector_push_back(size_t)(&deps->dependencyIndex, 0)
-			) {
-				fmi2_xml_parse_fatal(context, "Could not allocate memory");
-				return -1;
-		}
-	}
-	if(!jm_vector_push_back(size_t)(&deps->startIndex, totNumDep + numDepInd)) {
-		fmi2_xml_parse_fatal(context, "Could not allocate memory");
-		return -1;
-	}
-    return 0;
-}
 
 int fmi2_xml_handle_Derivative(fmi2_xml_parser_context_t *context, const char* data) {
     if(!data) {
-        fmi2_xml_model_description_t* md = context->modelDescription;
-		fmi2_xml_model_structure_t* ms = md->modelStructure;
-        jm_vector(char)* bufName = fmi2_xml_reserve_parse_buffer(context,1,100);
-        jm_vector(char)* bufState = fmi2_xml_reserve_parse_buffer(context,2,100);
-	    jm_named_ptr key, *found;
-    
-        fmi2_xml_variable_t* deriv, *state;
-		
-		if(
-			/*  <xs:attribute name="name" type="xs:normalizedString" use="required"/> */
-			fmi2_xml_set_attr_string(context, fmi2_xml_elmID_Derivative, fmi_attr_id_name, 1, bufName) ||
-			/*  <xs:attribute name="state" type="xs:normalizedString" use="required"/> */
-			fmi2_xml_set_attr_string(context, fmi2_xml_elmID_Derivative, fmi_attr_id_state, 1, bufState))
-		{
-			ms->isValidFlag = 0;
-			context->skipElementCnt = 1;
-			return 0;
-		}
-		key.name = jm_vector_get_itemp(char)(bufName,0);
-		found = jm_vector_bsearch(jm_named_ptr)(&(md->variablesByName),&key, jm_compare_named);
-		if(!found) {
-			fmi2_xml_parse_error(context, "Derivative element references variable %s that is not defined", key.name);
-			context->skipElementCnt = 1;
-			return 0;
-		}
-		deriv = (fmi2_xml_variable_t*)found->ptr;
-		key.name = jm_vector_get_itemp(char)(bufState,0);
-		found = jm_vector_bsearch(jm_named_ptr)(&(md->variablesByName),&key, jm_compare_named);
-		if(!found) {
-			fmi2_xml_parse_error(context, "Derivative element references variable %s that is not defined", key.name);
-			context->skipElementCnt = 1;
-			return 0;
-		}
-		state = (fmi2_xml_variable_t*)found->ptr;
-		if(!jm_vector_push_back(jm_voidp)(&ms->derivatives, deriv) ||
-			!jm_vector_push_back(jm_voidp)(&ms->states, state)) {
-				fmi2_xml_parse_fatal(context, "Could not allocate memory");
-				return -1;
-		}
-		deriv->derivativeIndex = jm_vector_get_size(jm_voidp)(&ms->derivatives);
-		state->stateIndex = jm_vector_get_size(jm_voidp)(&ms->states);
-
-		return 
-			fmi2_xml_parse_dependency(context, fmi2_xml_elmID_Derivative, 
-											   fmi_attr_id_stateDependencies, fmi_attr_id_stateFactorKinds,
-											    ms->depsStatesOnStates) ||
-		    fmi2_xml_parse_dependency(context, fmi2_xml_elmID_Derivative, 
-												  fmi_attr_id_inputDependencies, fmi_attr_id_inputFactorKinds,
-												  ms->depsStatesOnInputs);
     }
     else {
     }
     return 0;
 }
 
-
 int fmi2_xml_handle_Output(fmi2_xml_parser_context_t *context, const char* data) {
     if(!data) {
-        fmi2_xml_model_description_t* md = context->modelDescription;
-		fmi2_xml_model_structure_t* ms = md->modelStructure;
-        jm_vector(char)* bufName = fmi2_xml_reserve_parse_buffer(context,1,100);
-		int derivative;
-	    jm_named_ptr key, *found;
-    
-        fmi2_xml_variable_t* variable;
-		
-		if(
-			/*  <xs:attribute name="name" type="xs:normalizedString" use="required"/> */
-			fmi2_xml_set_attr_string(context, fmi2_xml_elmID_Output, fmi_attr_id_name, 1, bufName))
-		{
-			ms->isValidFlag = 0;
-			context->skipElementCnt = 1;
-			return 0;
-		}
-		key.name = jm_vector_get_itemp(char)(bufName,0);
-		found = jm_vector_bsearch(jm_named_ptr)(&(md->variablesByName),&key, jm_compare_named);
-		if(!found) {
-			fmi2_xml_parse_error(context, "Output element references variable %s that is not defined", key.name);
-			context->skipElementCnt = 1;
-			return 0;
-		}
-		variable = (fmi2_xml_variable_t*)found->ptr;
-        if(variable->causality != fmi2_causality_enu_output) {
-			fmi2_xml_parse_error(context, 
-				"Output element cannot reference '%s' since causality is not output. Skipping.", variable->name);
-			context->skipElementCnt = 1;
-            return 0;
-        }
-
-		if(!fmi2_xml_is_attr_defined(context, fmi_attr_id_derivative) ||
-			/*	<xs:attribute name="derivative" type="xs:int"> */
-			fmi2_xml_set_attr_int(context, fmi2_xml_elmID_Input, fmi_attr_id_derivative, 0, &derivative, -1)) {
-			derivative = 0;
-		}
-		else {
-			if(derivative < 1) {
-				fmi2_xml_parse_error(context, "Output %s has attribute derivative=%d but indexing starts from one.", 
-					variable->name, derivative);
-				ms->isValidFlag = 0;
-			}
-		}
-
-		if(!jm_vector_push_back(jm_voidp)(&ms->outputs, variable) ||
-			!jm_vector_push_back(size_t)(&ms->outputIsDerivative, (size_t)derivative)) {
-				fmi2_xml_parse_fatal(context, "Could not allocate memory");
-				return -1;
-		}
-
-		variable->outputIndex = jm_vector_get_size(jm_voidp)(&ms->outputs);
-
-		return 
-			fmi2_xml_parse_dependency(context, fmi2_xml_elmID_Output, 
-											   fmi_attr_id_stateDependencies, fmi_attr_id_stateFactorKinds,
-											    ms->depsOutputsOnStates) ||
-		    fmi2_xml_parse_dependency(context, fmi2_xml_elmID_Output, 
-												  fmi_attr_id_inputDependencies, fmi_attr_id_inputFactorKinds,
-												  ms->depsOutputsOnInputs);
     }
     else {
     }

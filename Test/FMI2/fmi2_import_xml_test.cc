@@ -431,7 +431,7 @@ int main(int argc, char *argv[])
     {
         size_t nv, i;
         fmi2_import_variable_list_t* vl = fmi2_import_get_variable_list(fmu, 0);
-		fmi2_import_variable_list_t* ders = fmi2_import_get_derivatives_list( fmu);
+/*		fmi2_import_variable_list_t* ders = fmi2_import_get_derivatives_list( fmu); */
 		const fmi2_value_reference_t* vrl = fmi2_import_get_value_referece_list(vl);
 
 
@@ -449,17 +449,17 @@ int main(int argc, char *argv[])
             else {
 				size_t stateIndex = fmi2_import_get_state_index(var);
                 printVariableInfo(fmu, var);
-				if(stateIndex) {
+/*				if(stateIndex) {
 					printf("This variable is a state. Its derivative: %s\n", 
 						fmi2_import_get_variable_name(fmi2_import_get_variable(ders, stateIndex-1)));
-				}
+				} */
 				testVariableSearch(fmu, var);
 			}
         }
         fmi2_import_free_variable_list(vl);
-        fmi2_import_free_variable_list(ders);
+/*        fmi2_import_free_variable_list(ders); */
     }
-	{
+/*	{
 		fmi2_import_variable_list_t* vl = fmi2_import_get_inputs_list( fmu);
         size_t i, n = 0;
 		if(vl) 
@@ -532,7 +532,7 @@ int main(int argc, char *argv[])
         fmi2_import_free_variable_list(inputs);
         fmi2_import_free_variable_list(states);
 	}	
-
+*/
 	fmi2_import_free(fmu);
 	fmi_import_free_context(context);
 	

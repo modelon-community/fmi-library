@@ -45,19 +45,16 @@ fmi2_xml_dependencies_t* fmi2_xml_allocate_dependencies(jm_callbacks* cb);
 void fmi2_xml_free_dependencies(fmi2_xml_dependencies_t* dep);
 	
 struct fmi2_xml_model_structure_t {
+/*
 	jm_vector(jm_voidp) inputs;
-	jm_vector(size_t) inputIsDerivative; /** \brief If an element is non-zero than this input is a derivative of another input */
+	jm_vector(size_t) inputIsDerivative;
 
 	jm_vector(jm_voidp) derivatives;
-	jm_vector(jm_voidp) states;  /** \brief index of the associated state */
-
-	fmi2_xml_dependencies_t* depsStatesOnInputs; /** \brief Dependencies between vars. */
-	fmi2_xml_dependencies_t* depsStatesOnStates;
+	jm_vector(jm_voidp) states;
 
 	jm_vector(jm_voidp) outputs;
-	jm_vector(size_t) outputIsDerivative; /** \brief If an element is non-zero than this output is a derivative of another output */
-	fmi2_xml_dependencies_t*  depsOutputsOnInputs; /** \brief Dependencies between vars.  */
-	fmi2_xml_dependencies_t*  depsOutputsOnStates;
+	jm_vector(size_t) outputIsDerivative;
+*/
 
 	int isValidFlag;  /**\ brief The flag is used to signal if an error was discovered and the model structure is not usable */
 };

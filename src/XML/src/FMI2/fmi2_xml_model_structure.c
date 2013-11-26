@@ -91,37 +91,6 @@ jm_vector(jm_voidp)* fmi2_xml_get_derivatives(fmi2_xml_model_structure_t* ms){
 }
 */
 
-void fmi2_xml_get_dependencies(fmi2_xml_dependencies_t* dep, size_t** startIndex, size_t** dependency, char** factorKind){
-	if(dep) {
-		*startIndex = jm_vector_get_itemp(size_t)(&dep->startIndex, 0);
-		*dependency = jm_vector_get_itemp(size_t)(&dep->dependencyIndex, 0);
-		*factorKind = jm_vector_get_itemp(char)(&dep->dependencyFactorKind, 0);
-	}
-	else {
-		*startIndex = 0;
-	}
-}
-
-void fmi2_xml_get_dependencies_derivatives_on_inputs(fmi2_xml_model_structure_t* ms, 
-						size_t** startIndex, size_t** dependency, char** factorKind) {
-	fmi2_xml_get_dependencies(ms->depsStatesOnInputs, startIndex, dependency, factorKind);
-}
-
-void fmi2_xml_get_dependencies_derivatives_on_states(fmi2_xml_model_structure_t* ms, 
-	size_t** startIndex, size_t** dependency, char** factorKind){
-		fmi2_xml_get_dependencies(ms->depsStatesOnStates, startIndex, dependency, factorKind);
-}
-
-void fmi2_xml_get_dependencies_outputs_on_inputs(fmi2_xml_model_structure_t* ms, 
-	size_t** startIndex, size_t** dependency, char** factorKind){
-		fmi2_xml_get_dependencies(ms->depsOutputsOnInputs, startIndex, dependency, factorKind);
-}
-
-void fmi2_xml_get_dependencies_outputs_on_states(fmi2_xml_model_structure_t* ms, 
-	size_t** startIndex, size_t** dependency, char** factorKind){
-		fmi2_xml_get_dependencies(ms->depsOutputsOnStates, startIndex, dependency, factorKind);
-}
-
 fmi2_xml_dependencies_t* fmi2_xml_allocate_dependencies(jm_callbacks* cb) {
 	fmi2_xml_dependencies_t* dep = (fmi2_xml_dependencies_t*)(cb->malloc(sizeof(fmi2_xml_dependencies_t)));
 	if(!dep) return 0;

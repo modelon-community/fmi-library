@@ -73,6 +73,7 @@ void fmi2_xml_free_model_structure(fmi2_xml_model_structure_t* ms) {
 	cb->free(ms);
 }
 
+/*
 jm_vector(jm_voidp)* fmi2_xml_get_outputs(fmi2_xml_model_structure_t* ms) {
 	return &ms->outputs;
 }
@@ -88,6 +89,7 @@ jm_vector(jm_voidp)* fmi2_xml_get_states(fmi2_xml_model_structure_t* ms){
 jm_vector(jm_voidp)* fmi2_xml_get_derivatives(fmi2_xml_model_structure_t* ms){
 	return &ms->derivatives;
 }
+*/
 
 void fmi2_xml_get_dependencies(fmi2_xml_dependencies_t* dep, size_t** startIndex, size_t** dependency, char** factorKind){
 	if(dep) {

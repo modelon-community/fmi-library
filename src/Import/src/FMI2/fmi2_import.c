@@ -339,6 +339,7 @@ const char* fmi2_import_get_log_category(fmi2_import_t* fmu, size_t  index) {
 	return jm_vector_get_item(jm_string)(fmi2_xml_get_log_categories(fmu->md), index);
 }
 
+/*
 fmi2_import_variable_list_t* fmi2_import_get_outputs_list(fmi2_import_t* fmu) {
 	if(!fmi2_import_check_has_FMU(fmu)) return 0;
 	return fmi2_import_vector_to_varlist(fmu, fmi2_xml_get_outputs(fmi2_xml_get_model_structure(fmu->md)));
@@ -358,6 +359,7 @@ fmi2_import_variable_list_t* fmi2_import_get_derivatives_list(fmi2_import_t* fmu
 	if(!fmi2_import_check_has_FMU(fmu)) return 0;
 	return fmi2_import_vector_to_varlist(fmu, fmi2_xml_get_derivatives(fmi2_xml_get_model_structure(fmu->md)));
 }
+*/
 
 void fmi2_import_get_dependencies_derivatives_on_inputs(fmi2_import_t* fmu,size_t** startIndex, size_t** dependency, char** factorKind) {
 	fmi2_xml_model_structure_t* ms;

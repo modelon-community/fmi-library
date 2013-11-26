@@ -266,7 +266,7 @@ FMILIB_EXPORT fmi2_import_variable_t* fmi2_import_get_variable_by_vr(fmi2_import
 * If the ModelStructure is available, then the list constructed from this information.
 * Otherwise, causality property is used.
 */
-FMILIB_EXPORT fmi2_import_variable_list_t* fmi2_import_get_outputs_list(fmi2_import_t* fmu);
+/* FMILIB_EXPORT fmi2_import_variable_list_t* fmi2_import_get_outputs_list(fmi2_import_t* fmu); */
 
 /** \brief Get the list of all the input variables in the model.
 * @param fmu An FMU object as returned by fmi2_import_parse_xml().
@@ -274,7 +274,7 @@ FMILIB_EXPORT fmi2_import_variable_list_t* fmi2_import_get_outputs_list(fmi2_imp
 *
 * Note that variable lists are allocated dynamically and must be freed when not needed any longer.
 */
-FMILIB_EXPORT fmi2_import_variable_list_t* fmi2_import_get_inputs_list(fmi2_import_t* fmu);
+/* FMILIB_EXPORT fmi2_import_variable_list_t* fmi2_import_get_inputs_list(fmi2_import_t* fmu); */
 
 /** \brief Get the list of all the state variables in the model.
 * @param fmu An FMU object as returned by fmi2_import_parse_xml().
@@ -282,7 +282,7 @@ FMILIB_EXPORT fmi2_import_variable_list_t* fmi2_import_get_inputs_list(fmi2_impo
 *
 *     Note: variable lists are allocated dynamically and must be freed when not needed any longer.
 */
-FMILIB_EXPORT fmi2_import_variable_list_t* fmi2_import_get_states_list(fmi2_import_t* fmu);
+/* FMILIB_EXPORT fmi2_import_variable_list_t* fmi2_import_get_states_list(fmi2_import_t* fmu); */
 
 /** \brief Get the list of all the derivative variables in the model.
 * @param fmu An FMU object as returned by fmi2_import_parse_xml().
@@ -290,7 +290,7 @@ FMILIB_EXPORT fmi2_import_variable_list_t* fmi2_import_get_states_list(fmi2_impo
 *
 *     Note: variable lists are allocated dynamically and must be freed when not needed any longer.
 */
-FMILIB_EXPORT fmi2_import_variable_list_t* fmi2_import_get_derivatives_list(fmi2_import_t* fmu);
+/* FMILIB_EXPORT fmi2_import_variable_list_t* fmi2_import_get_derivatives_list(fmi2_import_t* fmu); */
 
 /**
 *	\brief Get dependency information in row-compressed format.

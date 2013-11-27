@@ -447,9 +447,9 @@ int main(int argc, char *argv[])
 				do_exit(1);
 			}
             else {
-				size_t stateIndex = fmi2_import_get_state_index(var);
                 printVariableInfo(fmu, var);
-/*				if(stateIndex) {
+/*				size_t stateIndex = fmi2_import_get_state_index(var);
+				if(stateIndex) {
 					printf("This variable is a state. Its derivative: %s\n", 
 						fmi2_import_get_variable_name(fmi2_import_get_variable(ders, stateIndex-1)));
 				} */

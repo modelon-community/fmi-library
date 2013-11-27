@@ -34,15 +34,6 @@ struct fmi2_xml_variable_t {
 
 	size_t originalIndex;					/** \brief Index in the model description */
 
-	/*
-		Note: in principle a variable can correspond to two different input/states/ders/outputs indices.
-		So when going from a variable to its structure information having one index is not always enough.
-	*/
-	size_t inputIndex;						/** \brief Index in the list of inputs (1-based, 0 if not an input) */
-	size_t stateIndex;						/** \brief Index in the list of states (1-based, 0 if not a state) */
-	size_t derivativeIndex;					/** \brief Index in the list of derivatives (1-based, 0 if not a derivative) */
-	size_t outputIndex;						/** \brief Index in the list of outputs (1-based, 0 if not an ouput) */
-
     fmi2_value_reference_t vr;				/** \brief Value reference */
     char aliasKind;
     char initial;

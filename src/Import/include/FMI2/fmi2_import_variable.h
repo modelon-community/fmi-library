@@ -95,26 +95,6 @@ FMILIB_EXPORT fmi2_causality_enu_t fmi2_import_get_causality(fmi2_import_variabl
 /** \brief Get initial attribute */
 FMILIB_EXPORT fmi2_initial_enu_t fmi2_import_get_initial(fmi2_import_variable_t* );
 
-/** \brief Get the input index of this variable 
-	\return One-based input index for causality=input, zero otherwize.
-*/
-FMILIB_EXPORT size_t fmi2_import_get_input_index(fmi2_import_variable_t* );
-
-/** \brief Get the output index of this variable 
-	\return One-based output index for causality=output, zero otherwize.
-*/
-FMILIB_EXPORT size_t fmi2_import_get_output_index(fmi2_import_variable_t* );
-
-/** \brief Get the state index of this variable 
-	\return One-based index for states, zero otherwize.
-*/
-FMILIB_EXPORT size_t fmi2_import_get_state_index(fmi2_import_variable_t* );
-
-/** \brief Get the derivative index of this variable 
-	\return One-based derivative index for derivatives, zero otherwize.
-*/
-FMILIB_EXPORT size_t fmi2_import_get_derivative_index(fmi2_import_variable_t* );
-
 /** \brief Cast general variable to a one with the specific type 
 	
 	@return Typed object or NULL if base type does not match

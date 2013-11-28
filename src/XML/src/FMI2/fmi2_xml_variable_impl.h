@@ -34,11 +34,14 @@ struct fmi2_xml_variable_t {
 
 	size_t originalIndex;					/** \brief Index in the model description */
 
+    size_t derivativeOfIndex;               /** \brief If nonzero, index of the variable that this is the derivative of */
+
     fmi2_value_reference_t vr;				/** \brief Value reference */
     char aliasKind;
     char initial;
     char variability;
     char causality;
+    char reinit;
 
     char name[1];
 };

@@ -21,10 +21,10 @@
   </VendorAnnotations>
 <ModelVariables>
   <ScalarVariable name="HIGHT" valueReference="0" initial="exact" causality="output" description="Hight of the ball">
-     <RealType/> <Real start="1.0" /> <Integer/>
+     <RealType/> <Real start="1.0" reinit="true" /> <Integer/>
   </ScalarVariable>
   <ScalarVariable name="HIGHT_SPEED" valueReference="1" initial="exact" description="Speed of the ball">
-     <Real start="4.0" fixed="true"/>
+     <Real start="4.0" fixed="true" derivative="1" reinit="true"/>
     <Annotations>
       <Tool name ="JModelica">
         <JModelica name="HIGHT_SPEED variable annotations">Test data</JModelica>
@@ -34,8 +34,8 @@
   <ScalarVariable name="HIGHT_SPEED alias" valueReference="1" description="Speed of the ball">
      <Real />
 	 </ScalarVariable> 
-  <ScalarVariable name="HIGHT_ACC" valueReference="4" description="Speed of the ball">
-     <Real />	 
+  <ScalarVariable name="HIGHT_ACC" valueReference="4" description="Acceleration of the ball">
+     <Real derivative="2" />	 
   </ScalarVariable>   
   <ScalarVariable name="A variable" valueReference="100" initial="exact" description="Speed of the ball">
      <Real start="4.0" fixed="true"/> <DirectDependency><Name>xxx</Name> </DirectDependency> </ScalarVariable>

@@ -48,6 +48,8 @@ extern "C" {
     EXPAND_XML_ATTRNAME(nominal) \
     EXPAND_XML_ATTRNAME(declaredType) \
     EXPAND_XML_ATTRNAME(start) \
+    EXPAND_XML_ATTRNAME(derivative) \
+    EXPAND_XML_ATTRNAME(reinit) \
     EXPAND_XML_ATTRNAME(startTime) \
     EXPAND_XML_ATTRNAME(stopTime) \
     EXPAND_XML_ATTRNAME(tolerance) \
@@ -79,13 +81,7 @@ extern "C" {
 	EXPAND_XML_ATTRNAME(providesDirectionalDerivatives) \
     EXPAND_XML_ATTRNAME(canInterpolateInputs) \
     EXPAND_XML_ATTRNAME(maxOutputDerivativeOrder) \
-    EXPAND_XML_ATTRNAME(canRunAsynchronuously) \
-	EXPAND_XML_ATTRNAME(derivative) \
-	EXPAND_XML_ATTRNAME(state) \
-	EXPAND_XML_ATTRNAME(stateDependencies) \
-	EXPAND_XML_ATTRNAME(stateFactorKinds) \
-	EXPAND_XML_ATTRNAME(inputDependencies) \
-	EXPAND_XML_ATTRNAME(inputFactorKinds)
+    EXPAND_XML_ATTRNAME(canRunAsynchronuously)
 
 #define FMI2_XML_ATTR_ID(attr) fmi_attr_id_##attr,
 typedef enum fmi2_xml_attr_enu_t {

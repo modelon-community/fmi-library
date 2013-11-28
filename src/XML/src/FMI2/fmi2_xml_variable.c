@@ -304,7 +304,9 @@ int fmi2_xml_handle_ScalarVariable(fmi2_xml_parser_context_t *context, const cha
             variable->description = description;
             variable->typeBase = 0;
 			variable->originalIndex = jm_vector_get_size(jm_named_ptr)(&md->variablesByName) - 1;
+            variable->derivativeOfIndex = 0;
             variable->aliasKind = fmi2_variable_is_not_alias;
+            variable->reinit = 0;
 
             {
                 jm_name_ID_map_t causalityConventionMap[] = {{"local",fmi2_causality_enu_local},
@@ -422,6 +424,35 @@ int fmi2_xml_handle_RealVariable(fmi2_xml_parser_context_t *context, const char*
         declaredType = fmi2_get_declared_type(context, fmi2_xml_elmID_Real, &td->defaultRealType.typeBase);
 
         if(!declaredType) return -1;
+
+        {
+            /*   <xs:attribute name="derivative" type="xs:unsignedInt"> */
+            unsigned int derivativeOf;
+            unsigned int reinit;
+
+            if(fmi2_xml_set_attr_uint(context, fmi2_xml_elmID_Real,
+                fmi_attr_id_derivative, 0, &derivativeOf, 0)) return -1;
+            /* TODO: consider: is it ok to read in an unsigned int to store in a size_t? */
+            variable->derivativeOfIndex = derivativeOf;
+
+            /*   <xs:attribute name="reinit" type="xs:boolean" use="optional" default="false"> */
+            if(fmi2_xml_set_attr_boolean(context, fmi2_xml_elmID_Real,
+                fmi_attr_id_reinit, 0, &reinit, 0)) return -1;
+            variable->reinit = reinit;
+
+            if (variable->variability != fmi2_variability_enu_continuous) {
+                /* If derivative is set, this variable must be continuous. */
+                if (derivativeOf) {
+                    fmi2_xml_parse_error(context, "The derivative attribute may only appear on continuous-time Real variables.");
+                    return -1;
+                }
+                if (reinit) {
+                    fmi2_xml_parse_error(context, "The reinit attribute may only be set on continuous-time states.");
+                    return -1;
+                }
+                /* If reinit is true, this variable must be continuous. */
+            }
+        }
 
         {
             int hasUnit = fmi2_xml_is_attr_defined(context, fmi_attr_id_unit) ||

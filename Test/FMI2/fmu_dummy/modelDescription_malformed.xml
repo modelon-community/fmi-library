@@ -5,7 +5,6 @@
   generationTool="None"
   description="A bouncing ball model"
   guid="123"
-  numberOfContinuousStates="2"
   numberOfEventIndicators="1">
   <ModelExchange modelIdentifier="BouncingBall2_malformed" />
   <TypeDefinitions>
@@ -17,10 +16,10 @@
  
 <ModelVariables>
   <ScalarVariable name="HIGHT" valueReference="0" initial="exact" causality="output" description="Hight of the ball">
-     <RealType/> <Real start="1.0" /> <Integer/>
+    <Real start="1.0" />
   </ScalarVariable>
   <ScalarVariable name="HIGHT_SPEED" valueReference="1" initial="exact" description="Speed of the ball">
-     <Real start="4.0" fixed="true"/>
+     <Real start="4.0" />
 	 </ScalarVariable> 
   <ScalarVariable name="HIGHT_SPEED alias" valueReference="1" description="Speed of the ball">
      <Real />
@@ -29,9 +28,10 @@
      <Real />	 
   </ScalarVariable>   
   <ScalarVariable name="A variable" valueReference="100" initial="exact" description="Speed of the ball">
-     <Real start="4.0" fixed="true"/> <DirectDependency><Name>xxx</Name> </DirectDependency> </ScalarVariable>
+     <Real start="4.0" />
+  </ScalarVariable>
   <ScalarVariable name="A bad alias" valueReference="100" initial="exact" description="Speed of the ball">
-     <Real start="4.0" fixed="true"/> <DirectDependency><Name>xxx</Name> </DirectDependency>
+     <Real start="4.0" />
   </ScalarVariable> 
   <ScalarVariable name="GRAVITY" valueReference="2" description="Gravity constant" initial="exact">
      <Real start="-9.81"/>

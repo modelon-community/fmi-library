@@ -51,12 +51,14 @@ const char *fmi2_xmlAttrNames[fmi2_xml_attr_number] = {
 #define fmi2_xml_scheme_ScalarVariable {fmi2_xml_elmID_ModelVariables, 0, 1}
 
 #define fmi2_xml_scheme_ModelStructure {fmi2_xml_elmID_fmiModelDescription, 8, 0}
+/*
 #define fmi2_xml_scheme_Inputs {fmi2_xml_elmID_ModelStructure, 0, 0}
 #define fmi2_xml_scheme_Input {fmi2_xml_elmID_Inputs, 0, 1}
 #define fmi2_xml_scheme_Derivatives {fmi2_xml_elmID_ModelStructure, 1, 0}
 #define fmi2_xml_scheme_Derivative {fmi2_xml_elmID_Derivatives, 0, 1}
 #define fmi2_xml_scheme_Outputs {fmi2_xml_elmID_ModelStructure, 2, 0}
 #define fmi2_xml_scheme_Output {fmi2_xml_elmID_Outputs, 0, 1}
+*/
 
 #define fmi2_xml_scheme_RealVariable {fmi2_xml_elmID_ScalarVariable, 0, 0}
 #define fmi2_xml_scheme_IntegerVariable {fmi2_xml_elmID_ScalarVariable, 0, 0}

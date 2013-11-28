@@ -59,6 +59,8 @@ extern "C" {
     EXPAND_XML_ATTRNAME(variability) \
     EXPAND_XML_ATTRNAME(causality) \
     EXPAND_XML_ATTRNAME(initial) \
+    EXPAND_XML_ATTRNAME(previous) \
+    EXPAND_XML_ATTRNAME(canHandleMultipleSetPerTimeInstant) \
     EXPAND_XML_ATTRNAME(modelName) \
     EXPAND_XML_ATTRNAME(modelIdentifier) \
     EXPAND_XML_ATTRNAME(guid) \

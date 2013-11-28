@@ -305,8 +305,10 @@ int fmi2_xml_handle_ScalarVariable(fmi2_xml_parser_context_t *context, const cha
             variable->typeBase = 0;
 			variable->originalIndex = jm_vector_get_size(jm_named_ptr)(&md->variablesByName) - 1;
             variable->derivativeOfIndex = 0;
+            variable->previousIndex = 0;
             variable->aliasKind = fmi2_variable_is_not_alias;
             variable->reinit = 0;
+            variable->canHandleMultipleSetPerTimeInstant = 1;
 
             {
                 jm_name_ID_map_t causalityConventionMap[] = {{"local",fmi2_causality_enu_local},
@@ -357,6 +359,23 @@ int fmi2_xml_handle_ScalarVariable(fmi2_xml_parser_context_t *context, const cha
 					initial = defaultInitial;
 				}
                 variable->initial = initial;
+            }
+            {
+                unsigned int previous, multipleSet;
+                if (
+                /*   <xs:attribute name="previous" type="xs:unsignedInt"> */
+                   fmi2_xml_set_attr_uint(context, fmi2_xml_elmID_ScalarVariable, fmi_attr_id_previous, 0, &previous, 0) ||
+                /*   <xs:attribute name="canHandleMultipleSetPerTimeInstant" type="xs:boolean"> */
+                   fmi2_xml_set_attr_boolean(context, fmi2_xml_elmID_ScalarVariable, fmi_attr_id_canHandleMultipleSetPerTimeInstant, 0, &multipleSet, 1)
+                ) return -1;
+                
+                variable->previousIndex = (size_t)previous;
+                variable->canHandleMultipleSetPerTimeInstant = (char)multipleSet;
+
+                if (variable->variability != fmi2_causality_enu_input && !multipleSet) {
+                    fmi2_xml_parse_error(context, "Only variables with causality='input' can have canHandleMultipleSetPerTimeInstant=false");
+                    return -1;
+                }
             }
     }
     else {
@@ -433,12 +452,12 @@ int fmi2_xml_handle_RealVariable(fmi2_xml_parser_context_t *context, const char*
             if(fmi2_xml_set_attr_uint(context, fmi2_xml_elmID_Real,
                 fmi_attr_id_derivative, 0, &derivativeOf, 0)) return -1;
             /* TODO: consider: is it ok to read in an unsigned int to store in a size_t? */
-            variable->derivativeOfIndex = derivativeOf;
+            variable->derivativeOfIndex = (size_t)derivativeOf;
 
             /*   <xs:attribute name="reinit" type="xs:boolean" use="optional" default="false"> */
             if(fmi2_xml_set_attr_boolean(context, fmi2_xml_elmID_Real,
                 fmi_attr_id_reinit, 0, &reinit, 0)) return -1;
-            variable->reinit = reinit;
+            variable->reinit = (char)reinit;
 
             if (variable->variability != fmi2_variability_enu_continuous) {
                 /* If derivative is set, this variable must be continuous. */

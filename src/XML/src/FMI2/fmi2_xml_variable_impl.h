@@ -34,14 +34,16 @@ struct fmi2_xml_variable_t {
 
 	size_t originalIndex;					/** \brief Index in the model description */
 
-    size_t derivativeOfIndex;               /** \brief If nonzero, index of the variable that this is the derivative of */
+    size_t derivativeOfIndex;               /** \brief If nonzero, index of the variable that this is the derivative of. Only for continuous Real variables. */
+    size_t previousIndex;                   /** \brief If nonzero, index of the variable that holds the value of this variable at the previous super-dense time instant. */
 
     fmi2_value_reference_t vr;				/** \brief Value reference */
     char aliasKind;
     char initial;
     char variability;
     char causality;
-    char reinit;
+    char reinit; /** \brief Only for continuous Real variables */
+    char canHandleMultipleSetPerTimeInstant;
 
     char name[1];
 };

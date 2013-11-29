@@ -32,10 +32,10 @@ static int calc_initialize(component_ptr_t comp)
 		comp->functions.logger(comp->functions.componentEnvironment, comp->instanceName, fmiOK, "INFO", "Init #r%d#=%g",VAR_R_HIGHT_SPEED, comp->states[VAR_R_HIGHT_SPEED]);
 		comp->functions.logger(comp->functions.componentEnvironment, comp->instanceName, fmiOK, "INFO", "Init #r%d#=%g",VAR_R_GRATIVY, comp->reals	[VAR_R_GRATIVY]);
 		comp->functions.logger(comp->functions.componentEnvironment, comp->instanceName, fmiOK, "INFO", "Init #r%d#=%g",VAR_R_BOUNCE_CONF, comp->reals	[VAR_R_BOUNCE_CONF]);
-		comp->functions.logger(comp->functions.componentEnvironment, comp->instanceName, fmiOK, "ERROR", "Bad reference: #r-1#");
+/*		comp->functions.logger(comp->functions.componentEnvironment, comp->instanceName, fmiOK, "ERROR", "Bad reference: #r-1#");
 		comp->functions.logger(comp->functions.componentEnvironment, comp->instanceName, fmiOK, "ERROR", "Bad reference: #r1");
 		comp->functions.logger(comp->functions.componentEnvironment, comp->instanceName, fmiOK, "ERROR", "Bad reference: #t1#");
-		comp->functions.logger(comp->functions.componentEnvironment, comp->instanceName, fmiOK, "ERROR", "Bad reference: #r10#");
+		comp->functions.logger(comp->functions.componentEnvironment, comp->instanceName, fmiOK, "ERROR", "Bad reference: #r10#");*/
 	}
 	return 0;
 }

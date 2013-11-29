@@ -31,7 +31,7 @@
         <JModelica name="HIGHT_SPEED variable annotations">Test data</JModelica>
       </Tool>
     </Annotations>
-	 </ScalarVariable> 
+  </ScalarVariable> 
   <!--  3 -->
   <ScalarVariable name="HIGHT_SPEED alias" valueReference="1" description="Speed of the ball">
      <Real />
@@ -71,7 +71,7 @@
   </Outputs>
   <Derivatives>
     <Unknown index="2"/>
-    <Unknown index="4"/>
+    <Unknown index="4" dependencies="6" dependenciesKind="constant"/>
   </Derivatives>
   <DiscreteStates>
   </DiscreteStates>

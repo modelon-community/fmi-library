@@ -36,8 +36,10 @@ const char* fmi2_fmu_kind_to_string(fmi2_fmu_kind_enu_t kind) {
 
 const char* fmi2_dependency_factor_kind_to_string(fmi2_dependency_factor_kind_enu_t fc) {
 	switch(fc) {
-	case fmi2_dependency_factor_kind_nonlinear: return "non-linear";
+	case fmi2_dependency_factor_kind_dependent: return "dependent";
+	case fmi2_dependency_factor_kind_constant: return "constant";
 	case fmi2_dependency_factor_kind_fixed: return "fixed";
+	case fmi2_dependency_factor_kind_tunable: return "tunable";
 	case fmi2_dependency_factor_kind_discrete: return "discrete";
 	default:break;
 	}

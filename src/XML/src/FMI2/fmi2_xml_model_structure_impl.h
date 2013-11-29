@@ -50,6 +50,11 @@ struct fmi2_xml_model_structure_t {
 	jm_vector(jm_voidp) discreteStates;
 	jm_vector(jm_voidp) initialUnknowns;
 
+    fmi2_xml_dependencies_t* outputDeps;
+    fmi2_xml_dependencies_t* derivativeDeps;
+    fmi2_xml_dependencies_t* discreteStateDeps;
+    fmi2_xml_dependencies_t* initialUnknownDeps;
+
 	int isValidFlag;  /**\ brief The flag is used to signal if an error was discovered and the model structure is not usable */
 };
 

@@ -29,16 +29,10 @@ fmi2_xml_model_structure_t* fmi2_xml_allocate_model_structure(jm_callbacks* cb) 
 	fmi2_xml_model_structure_t* ms = (fmi2_xml_model_structure_t*)(cb->calloc(1, sizeof(fmi2_xml_model_structure_t)));
 	if(!ms) return 0;
 
-/*
-	jm_vector_init(jm_voidp)(&ms->inputs,0,cb);
-	jm_vector_init(size_t)(&ms->inputIsDerivative,0,cb);
-
-	jm_vector_init(jm_voidp)(&ms->derivatives,0,cb);
-	jm_vector_init(jm_voidp)(&ms->states,0,cb);
-	
 	jm_vector_init(jm_voidp)(&ms->outputs,0,cb);
-	jm_vector_init(size_t)(&ms->outputIsDerivative,0,cb);
-*/
+	jm_vector_init(jm_voidp)(&ms->derivatives,0,cb);
+	jm_vector_init(jm_voidp)(&ms->discreteStates,0,cb);
+	jm_vector_init(jm_voidp)(&ms->initialUnknowns,0,cb);
 
 	ms->isValidFlag = 1;
 
@@ -55,20 +49,14 @@ fmi2_xml_model_structure_t* fmi2_xml_allocate_model_structure(jm_callbacks* cb) 
 void fmi2_xml_free_model_structure(fmi2_xml_model_structure_t* ms) {
 	jm_callbacks* cb;
 	if(!ms) return;
-/*	cb = ms->inputs.callbacks;*/
+	cb = ms->outputs.callbacks;
 
-/*
-	jm_vector_free_data(jm_voidp)(&ms->inputs);
-	jm_vector_free_data(size_t)(&ms->inputIsDerivative);
-
-	jm_vector_free_data(jm_voidp)(&ms->derivatives);
-	jm_vector_free_data(jm_voidp)(&ms->states);
-	
 	jm_vector_free_data(jm_voidp)(&ms->outputs);
-	jm_vector_free_data(size_t)(&ms->outputIsDerivative);
-*/
+	jm_vector_free_data(jm_voidp)(&ms->derivatives);
+	jm_vector_free_data(jm_voidp)(&ms->discreteStates);
+	jm_vector_free_data(jm_voidp)(&ms->initialUnknowns);
 	
-/*	cb->free(ms); TODO: free this again! */
+	cb->free(ms);
 }
 
 /*
@@ -152,13 +140,13 @@ int fmi2_xml_handle_ModelStructure(fmi2_xml_parser_context_t *context, const cha
     }
     else {
 		/** make sure model structure information is consistent */
-/*
+
 		if(!fmi2_xml_check_model_structure(md)) {
 			fmi2_xml_parse_fatal(context, "Model structure is not valid due to detected errors. Cannot continue.");
 			return -1;
 		}
-		md->numberOfContinuousStates = jm_vector_get_size(jm_voidp)(&md->modelStructure->states);
-*/
+/*		md->numberOfContinuousStates = jm_vector_get_size(jm_voidp)(&md->modelStructure->states); */
+
     }
     return 0;
 }
@@ -201,6 +189,30 @@ int fmi2_xml_handle_InitialUnknowns(fmi2_xml_parser_context_t *context, const ch
 /*int fmi2_xml_handle_OutputUnknown(fmi2_xml_parser_context_t *context, const char* data) {*/
 int fmi2_xml_handle_Unknown(fmi2_xml_parser_context_t *context, const char* data) {
     if(!data) {
+        fmi2_xml_model_description_t* md = context->modelDescription;
+        fmi2_xml_model_structure_t* ms = md->modelStructure;
+
+        unsigned int index;
+        fmi2_xml_variable_t* variable;
+
+        /* <xs:attribute name="index" type="xs:unsignedInt" use="required"> */        
+        if (fmi2_xml_set_attr_uint(context, fmi2_xml_elmID_Unknown, fmi_attr_id_index, 1, &index, 0)) return -1;
+        index--; /* Convert from one- to zero-based indexing */
+
+        /* Ok to just check upper bound since index is unsigned. */
+        if (index >= jm_vector_get_size(jm_voidp)(md->variablesOrigOrder)) {
+            fmi2_xml_parse_error(context, "The index attribute must have a value between 1 and the number of model variables.");
+            ms->isValidFlag = 0;
+            return -1;
+        }
+        variable = (fmi2_xml_variable_t*)jm_vector_get_item(jm_voidp)(md->variablesOrigOrder, index);
+        
+        if (!jm_vector_push_back(jm_voidp)(&ms->outputs, variable)) {
+            fmi2_xml_parse_fatal(context, "Could not allocate memory");
+            ms->isValidFlag = 0;
+            return -1;
+        }
+        
     }
     else {
     }

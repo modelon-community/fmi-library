@@ -186,33 +186,41 @@ int fmi2_xml_handle_InitialUnknowns(fmi2_xml_parser_context_t *context, const ch
     return 0;
 }
 
+int fmi2_xml_parse_unknown(fmi2_xml_parser_context_t *context, jm_vector(jm_voidp) *destVarList) {
+    fmi2_xml_model_description_t* md = context->modelDescription;
+    fmi2_xml_model_structure_t* ms = md->modelStructure;
+    
+    unsigned int index;
+    fmi2_xml_variable_t* variable;
+    
+    /* <xs:attribute name="index" type="xs:unsignedInt" use="required"> */        
+    if (fmi2_xml_set_attr_uint(context, fmi2_xml_elmID_Unknown, fmi_attr_id_index, 1, &index, 0)) return -1;
+    index--; /* Convert from one- to zero-based indexing */
+    
+    /* Ok to just check upper bound since index is unsigned. */
+    if (index >= jm_vector_get_size(jm_voidp)(md->variablesOrigOrder)) {
+        fmi2_xml_parse_error(context, "The index attribute must have a value between 1 and the number of model variables.");
+        ms->isValidFlag = 0;
+        return -1;
+    }
+    variable = (fmi2_xml_variable_t*)jm_vector_get_item(jm_voidp)(md->variablesOrigOrder, index);
+    
+    if (!jm_vector_push_back(jm_voidp)(destVarList, variable)) {
+        fmi2_xml_parse_fatal(context, "Could not allocate memory");
+        ms->isValidFlag = 0;
+        return -1;
+    }
+    return 0;
+}
+
+
 /*int fmi2_xml_handle_OutputUnknown(fmi2_xml_parser_context_t *context, const char* data) {*/
 int fmi2_xml_handle_Unknown(fmi2_xml_parser_context_t *context, const char* data) {
     if(!data) {
         fmi2_xml_model_description_t* md = context->modelDescription;
         fmi2_xml_model_structure_t* ms = md->modelStructure;
 
-        unsigned int index;
-        fmi2_xml_variable_t* variable;
-
-        /* <xs:attribute name="index" type="xs:unsignedInt" use="required"> */        
-        if (fmi2_xml_set_attr_uint(context, fmi2_xml_elmID_Unknown, fmi_attr_id_index, 1, &index, 0)) return -1;
-        index--; /* Convert from one- to zero-based indexing */
-
-        /* Ok to just check upper bound since index is unsigned. */
-        if (index >= jm_vector_get_size(jm_voidp)(md->variablesOrigOrder)) {
-            fmi2_xml_parse_error(context, "The index attribute must have a value between 1 and the number of model variables.");
-            ms->isValidFlag = 0;
-            return -1;
-        }
-        variable = (fmi2_xml_variable_t*)jm_vector_get_item(jm_voidp)(md->variablesOrigOrder, index);
-        
-        if (!jm_vector_push_back(jm_voidp)(&ms->outputs, variable)) {
-            fmi2_xml_parse_fatal(context, "Could not allocate memory");
-            ms->isValidFlag = 0;
-            return -1;
-        }
-        
+        return fmi2_xml_parse_unknown(context, &ms->outputs);
     }
     else {
     }
@@ -221,6 +229,10 @@ int fmi2_xml_handle_Unknown(fmi2_xml_parser_context_t *context, const char* data
 
 int fmi2_xml_handle_DerivativeUnknown(fmi2_xml_parser_context_t *context, const char* data) {
     if(!data) {
+        fmi2_xml_model_description_t* md = context->modelDescription;
+        fmi2_xml_model_structure_t* ms = md->modelStructure;
+
+        return fmi2_xml_parse_unknown(context, &ms->derivatives);
     }
     else {
     }
@@ -229,6 +241,10 @@ int fmi2_xml_handle_DerivativeUnknown(fmi2_xml_parser_context_t *context, const 
 
 int fmi2_xml_handle_DiscreteStateUnknown(fmi2_xml_parser_context_t *context, const char* data) {
     if(!data) {
+        fmi2_xml_model_description_t* md = context->modelDescription;
+        fmi2_xml_model_structure_t* ms = md->modelStructure;
+
+        return fmi2_xml_parse_unknown(context, &ms->discreteStates);
     }
     else {
     }
@@ -237,6 +253,10 @@ int fmi2_xml_handle_DiscreteStateUnknown(fmi2_xml_parser_context_t *context, con
 
 int fmi2_xml_handle_InitialUnknown(fmi2_xml_parser_context_t *context, const char* data) {
     if(!data) {
+        fmi2_xml_model_description_t* md = context->modelDescription;
+        fmi2_xml_model_structure_t* ms = md->modelStructure;
+
+        return fmi2_xml_parse_unknown(context, &ms->initialUnknowns);
     }
     else {
     }

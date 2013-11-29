@@ -165,15 +165,41 @@ int fmi2_xml_handle_ModelStructure(fmi2_xml_parser_context_t *context, const cha
 
 
 int fmi2_xml_handle_Outputs(fmi2_xml_parser_context_t *context, const char* data) {
-		/** nothing to do */
+    if (!data) {
+        jm_log_verbose(context->callbacks, module, "Parsing XML element Outputs");
+        /*  reset handles for the elements that are specific under Outputs */
+/*        fmi2_xml_set_element_handle(context, "Unknown", FMI2_XML_ELM_ID(OutputUnknown));*/
+        fmi2_xml_set_element_handle(context, "Unknown", FMI2_XML_ELM_ID(Unknown));
+    }
     return 0;
 }
 int fmi2_xml_handle_Derivatives(fmi2_xml_parser_context_t *context, const char* data) {
-		/** nothing to do */
+    if (!data) {
+        jm_log_verbose(context->callbacks, module, "Parsing XML element Derivatives");
+        /*  reset handles for the elements that are specific under Derivatives */
+        fmi2_xml_set_element_handle(context, "Unknown", FMI2_XML_ELM_ID(DerivativeUnknown));
+    }
+    return 0;
+}
+int fmi2_xml_handle_DiscreteStates(fmi2_xml_parser_context_t *context, const char* data) {
+    if (!data) {
+        jm_log_verbose(context->callbacks, module, "Parsing XML element DiscreteStates");
+        /*  reset handles for the elements that are specific under DiscreteStates */
+        fmi2_xml_set_element_handle(context, "Unknown", FMI2_XML_ELM_ID(DiscreteStateUnknown));
+    }
+    return 0;
+}
+int fmi2_xml_handle_InitialUnknowns(fmi2_xml_parser_context_t *context, const char* data) {
+    if (!data) {
+        jm_log_verbose(context->callbacks, module, "Parsing XML element InitialUnknowns");
+        /*  reset handles for the elements that are specific under InitialUnknowns */
+        fmi2_xml_set_element_handle(context, "Unknown", FMI2_XML_ELM_ID(InitialUnknown));
+    }
     return 0;
 }
 
-int fmi2_xml_handle_Derivative(fmi2_xml_parser_context_t *context, const char* data) {
+/*int fmi2_xml_handle_OutputUnknown(fmi2_xml_parser_context_t *context, const char* data) {*/
+int fmi2_xml_handle_Unknown(fmi2_xml_parser_context_t *context, const char* data) {
     if(!data) {
     }
     else {
@@ -181,7 +207,23 @@ int fmi2_xml_handle_Derivative(fmi2_xml_parser_context_t *context, const char* d
     return 0;
 }
 
-int fmi2_xml_handle_Output(fmi2_xml_parser_context_t *context, const char* data) {
+int fmi2_xml_handle_DerivativeUnknown(fmi2_xml_parser_context_t *context, const char* data) {
+    if(!data) {
+    }
+    else {
+    }
+    return 0;
+}
+
+int fmi2_xml_handle_DiscreteStateUnknown(fmi2_xml_parser_context_t *context, const char* data) {
+    if(!data) {
+    }
+    else {
+    }
+    return 0;
+}
+
+int fmi2_xml_handle_InitialUnknown(fmi2_xml_parser_context_t *context, const char* data) {
     if(!data) {
     }
     else {

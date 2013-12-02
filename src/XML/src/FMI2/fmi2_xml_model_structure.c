@@ -66,23 +66,21 @@ void fmi2_xml_free_model_structure(fmi2_xml_model_structure_t* ms) {
 	cb->free(ms);
 }
 
-/*
 jm_vector(jm_voidp)* fmi2_xml_get_outputs(fmi2_xml_model_structure_t* ms) {
 	return &ms->outputs;
-}
-
-jm_vector(jm_voidp)* fmi2_xml_get_inputs(fmi2_xml_model_structure_t* ms){
-	return &ms->inputs;
-}
-
-jm_vector(jm_voidp)* fmi2_xml_get_states(fmi2_xml_model_structure_t* ms){
-	return &ms->states;
 }
 
 jm_vector(jm_voidp)* fmi2_xml_get_derivatives(fmi2_xml_model_structure_t* ms){
 	return &ms->derivatives;
 }
-*/
+
+jm_vector(jm_voidp)* fmi2_xml_get_discrete_states(fmi2_xml_model_structure_t* ms){
+	return &ms->discreteStates;
+}
+
+jm_vector(jm_voidp)* fmi2_xml_get_initial_unknowns(fmi2_xml_model_structure_t* ms){
+	return &ms->initialUnknowns;
+}
 
 fmi2_xml_dependencies_t* fmi2_xml_allocate_dependencies(jm_callbacks* cb) {
 	fmi2_xml_dependencies_t* dep = (fmi2_xml_dependencies_t*)(cb->malloc(sizeof(fmi2_xml_dependencies_t)));

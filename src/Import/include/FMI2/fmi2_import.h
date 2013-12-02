@@ -257,40 +257,37 @@ FMILIB_EXPORT fmi2_import_variable_t* fmi2_import_get_variable_by_name(fmi2_impo
 */
 FMILIB_EXPORT fmi2_import_variable_t* fmi2_import_get_variable_by_vr(fmi2_import_t* fmu, fmi2_base_type_enu_t baseType, fmi2_value_reference_t vr);
 
-
 /** \brief Get the list of all the output variables in the model.
 * @param fmu An FMU object as returned by fmi2_import_parse_xml().
 * @return a variable list with all the output variables in the model.
 *
 * Note that variable lists are allocated dynamically and must be freed when not needed any longer.
-* If the ModelStructure is available, then the list constructed from this information.
-* Otherwise, causality property is used.
 */
-/* FMILIB_EXPORT fmi2_import_variable_list_t* fmi2_import_get_outputs_list(fmi2_import_t* fmu); */
-
-/** \brief Get the list of all the input variables in the model.
-* @param fmu An FMU object as returned by fmi2_import_parse_xml().
-* @return a variable list with all the input variables in the model.
-*
-* Note that variable lists are allocated dynamically and must be freed when not needed any longer.
-*/
-/* FMILIB_EXPORT fmi2_import_variable_list_t* fmi2_import_get_inputs_list(fmi2_import_t* fmu); */
-
-/** \brief Get the list of all the state variables in the model.
-* @param fmu An FMU object as returned by fmi2_import_parse_xml().
-* @return a variable list with all the continuous state variables in the model.
-*
-*     Note: variable lists are allocated dynamically and must be freed when not needed any longer.
-*/
-/* FMILIB_EXPORT fmi2_import_variable_list_t* fmi2_import_get_states_list(fmi2_import_t* fmu); */
+FMILIB_EXPORT fmi2_import_variable_list_t* fmi2_import_get_outputs_list(fmi2_import_t* fmu);
 
 /** \brief Get the list of all the derivative variables in the model.
 * @param fmu An FMU object as returned by fmi2_import_parse_xml().
 * @return a variable list with all the continuous state derivatives in the model.
 *
-*     Note: variable lists are allocated dynamically and must be freed when not needed any longer.
+* Note that variable lists are allocated dynamically and must be freed when not needed any longer.
 */
-/* FMILIB_EXPORT fmi2_import_variable_list_t* fmi2_import_get_derivatives_list(fmi2_import_t* fmu); */
+FMILIB_EXPORT fmi2_import_variable_list_t* fmi2_import_get_derivatives_list(fmi2_import_t* fmu);
+
+/** \brief Get the list of all the discrete state variables in the model.
+* @param fmu An FMU object as returned by fmi2_import_parse_xml().
+* @return a variable list with all the discrete state variables in the model.
+*
+* Note that variable lists are allocated dynamically and must be freed when not needed any longer.
+*/
+FMILIB_EXPORT fmi2_import_variable_list_t* fmi2_import_get_discrete_states_list(fmi2_import_t* fmu);
+
+/** \brief Get the list of all the initial unknown variables in the model.
+* @param fmu An FMU object as returned by fmi2_import_parse_xml().
+* @return a variable list with all the initial unknowns in the model.
+*
+* Note that variable lists are allocated dynamically and must be freed when not needed any longer.
+*/
+FMILIB_EXPORT fmi2_import_variable_list_t* fmi2_import_get_initial_unknowns_list(fmi2_import_t* fmu);
 /**@} */
 
 #ifdef __cplusplus

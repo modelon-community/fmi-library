@@ -33,37 +33,26 @@ void fmi2_xml_free_model_structure(fmi2_xml_model_structure_t* ms);
 /** \brief Get the list of all the output variables in the model.
 * @param ms A model structure pointer (returned by fmi2_xml_get_model_structure)
 * @return a variable list with all the output variables in the model.
-*
-* Note that variable lists are allocated dynamically and must be freed when not needed any longer.
-* If the ModelStructure is available, then the list constructed from this information.
-* Otherwise, causality property is used.
 */
-    /*jm_vector(jm_voidp)* fmi2_xml_get_outputs(fmi2_xml_model_structure_t* ms);*/
-
-/** \brief Get the list of all the input variables in the model.
-* @param ms A model structure pointer (returned by fmi2_xml_get_model_structure)
-* @return a variable list with all the input variables in the model.
-*
-* Note that variable lists are allocated dynamically and must be freed when not needed any longer.
-*/
-/*jm_vector(jm_voidp)* fmi2_xml_get_inputs(fmi2_xml_model_structure_t* ms);*/
-
-/** \brief Get the list of all the state variables in the model.
-* @param ms A model structure pointer (returned by fmi2_xml_get_model_structure)
-* @return a variable list with all the continuous state variables in the model.
-*
-*     Note: variable lists are allocated dynamically and must be freed when not needed any longer.
-*/
-/*jm_vector(jm_voidp)* fmi2_xml_get_states(fmi2_xml_model_structure_t* ms);*/
+jm_vector(jm_voidp)* fmi2_xml_get_outputs(fmi2_xml_model_structure_t* ms);
 
 /** \brief Get the list of all the derivative variables in the model.
 * @param ms A model structure pointer (returned by fmi2_xml_get_model_structure)
 * @return a variable list with all the continuous state derivatives in the model.
-*
-*     Note: variable lists are allocated dynamically and must be freed when not needed any longer.
 */
-/*jm_vector(jm_voidp)* fmi2_xml_get_derivatives(fmi2_xml_model_structure_t* ms); */
+jm_vector(jm_voidp)* fmi2_xml_get_derivatives(fmi2_xml_model_structure_t* ms);
 
+/** \brief Get the list of all the discrete state variables in the model.
+* @param ms A model structure pointer (returned by fmi2_xml_get_model_structure)
+* @return a variable list with all the discrete state variables in the model.
+*/
+jm_vector(jm_voidp)* fmi2_xml_get_discrete_states(fmi2_xml_model_structure_t* ms);
+
+/** \brief Get the list of all the initial unknown variables in the model.
+* @param ms A model structure pointer (returned by fmi2_xml_get_model_structure)
+* @return a variable list with all the initial unknowns in the model.
+*/
+jm_vector(jm_voidp)* fmi2_xml_get_initial_unknowns(fmi2_xml_model_structure_t* ms);
 
 #ifdef __cplusplus
 }

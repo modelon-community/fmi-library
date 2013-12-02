@@ -339,24 +339,23 @@ const char* fmi2_import_get_log_category(fmi2_import_t* fmu, size_t  index) {
 	return jm_vector_get_item(jm_string)(fmi2_xml_get_log_categories(fmu->md), index);
 }
 
-/*
+
 fmi2_import_variable_list_t* fmi2_import_get_outputs_list(fmi2_import_t* fmu) {
 	if(!fmi2_import_check_has_FMU(fmu)) return 0;
 	return fmi2_import_vector_to_varlist(fmu, fmi2_xml_get_outputs(fmi2_xml_get_model_structure(fmu->md)));
-}
-
-fmi2_import_variable_list_t* fmi2_import_get_inputs_list(fmi2_import_t* fmu){
-	if(!fmi2_import_check_has_FMU(fmu)) return 0;
-	return fmi2_import_vector_to_varlist(fmu, fmi2_xml_get_inputs(fmi2_xml_get_model_structure(fmu->md)));
-}
-
-fmi2_import_variable_list_t* fmi2_import_get_states_list(fmi2_import_t* fmu){
-	if(!fmi2_import_check_has_FMU(fmu)) return 0;
-	return fmi2_import_vector_to_varlist(fmu, fmi2_xml_get_states(fmi2_xml_get_model_structure(fmu->md)));
 }
 
 fmi2_import_variable_list_t* fmi2_import_get_derivatives_list(fmi2_import_t* fmu){
 	if(!fmi2_import_check_has_FMU(fmu)) return 0;
 	return fmi2_import_vector_to_varlist(fmu, fmi2_xml_get_derivatives(fmi2_xml_get_model_structure(fmu->md)));
 }
-*/
+
+fmi2_import_variable_list_t* fmi2_import_get_discrete_states_list(fmi2_import_t* fmu) {
+	if(!fmi2_import_check_has_FMU(fmu)) return 0;
+	return fmi2_import_vector_to_varlist(fmu, fmi2_xml_get_discrete_states(fmi2_xml_get_model_structure(fmu->md)));
+}
+
+fmi2_import_variable_list_t* fmi2_import_get_initial_unknowns_list(fmi2_import_t* fmu) {
+	if(!fmi2_import_check_has_FMU(fmu)) return 0;
+	return fmi2_import_vector_to_varlist(fmu, fmi2_xml_get_initial_unknowns(fmi2_xml_get_model_structure(fmu->md)));
+}

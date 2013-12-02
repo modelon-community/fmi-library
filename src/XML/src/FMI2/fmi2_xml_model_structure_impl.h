@@ -35,7 +35,7 @@ typedef struct fmi2_xml_dependencies_t {
 	jm_vector(size_t) startIndex;  
 
 	/** Column indices (isRowMajor=1) or row indices (isRowMajor=0)
-		Note that indices are 1-based. 0 has a special meaning - no dependencies. Empty data means - depends on all.
+		Note that indices are 1-based. 0 has a special meaning - depends on all.
 	*/
 	jm_vector(size_t) dependencyIndex;
 	jm_vector(char)   dependencyFactorKind;

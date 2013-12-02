@@ -359,3 +359,47 @@ fmi2_import_variable_list_t* fmi2_import_get_initial_unknowns_list(fmi2_import_t
 	if(!fmi2_import_check_has_FMU(fmu)) return 0;
 	return fmi2_import_vector_to_varlist(fmu, fmi2_xml_get_initial_unknowns(fmi2_xml_get_model_structure(fmu->md)));
 }
+
+void fmi2_import_get_outputs_dependencies(fmi2_import_t* fmu,size_t** startIndex, size_t** dependency, char** factorKind) { 
+    fmi2_xml_model_structure_t* ms; 
+    if(!fmi2_import_check_has_FMU(fmu)) {
+        *startIndex = 0;
+        return;
+    }    
+    ms = fmi2_xml_get_model_structure(fmu->md);
+    assert(ms);
+    fmi2_xml_get_outputs_dependencies(ms, startIndex, dependency, factorKind); 
+} 
+
+void fmi2_import_get_derivatives_dependencies(fmi2_import_t* fmu,size_t** startIndex, size_t** dependency, char** factorKind) { 
+    fmi2_xml_model_structure_t* ms; 
+    if(!fmi2_import_check_has_FMU(fmu)) {
+        *startIndex = 0;
+        return;
+    }    
+    ms = fmi2_xml_get_model_structure(fmu->md);
+    assert(ms);
+    fmi2_xml_get_derivatives_dependencies(ms, startIndex, dependency, factorKind); 
+} 
+
+void fmi2_import_get_discrete_states_dependencies(fmi2_import_t* fmu,size_t** startIndex, size_t** dependency, char** factorKind) { 
+    fmi2_xml_model_structure_t* ms; 
+    if(!fmi2_import_check_has_FMU(fmu)) {
+        *startIndex = 0;
+        return;
+    }    
+    ms = fmi2_xml_get_model_structure(fmu->md);
+    assert(ms);
+    fmi2_xml_get_discrete_states_dependencies(ms, startIndex, dependency, factorKind); 
+} 
+
+void fmi2_import_get_initial_unknowns_dependencies(fmi2_import_t* fmu,size_t** startIndex, size_t** dependency, char** factorKind) { 
+    fmi2_xml_model_structure_t* ms; 
+    if(!fmi2_import_check_has_FMU(fmu)) {
+        *startIndex = 0;
+        return;
+    }    
+    ms = fmi2_xml_get_model_structure(fmu->md);
+    assert(ms);
+    fmi2_xml_get_initial_unknowns_dependencies(ms, startIndex, dependency, factorKind); 
+} 

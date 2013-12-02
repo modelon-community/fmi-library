@@ -195,6 +195,7 @@ int fmi2_xml_handle_InitialUnknowns(fmi2_xml_parser_context_t *context, const ch
 
 
 int fmi2_xml_parse_dependencies(fmi2_xml_parser_context_t *context,
+                                fmi2_xml_elm_enu_t parentElmID,
 								fmi2_xml_dependencies_t* deps)
 {
     fmi2_xml_model_description_t* md = context->modelDescription;
@@ -299,8 +300,14 @@ int fmi2_xml_parse_dependencies(fmi2_xml_parser_context_t *context,
              else {
                  fmi2_xml_parse_error(context, "XML element 'Unknown': could not parse item %d in the list for attribute 'dependenciesKind'",
                      numDepKind);
-                ms->isValidFlag = 0;
-                return 0;
+                 ms->isValidFlag = 0;
+                 return 0;
+             }
+             if (parentElmID == fmi2_xml_elmID_InitialUnknowns &&
+               !(kind == fmi2_dependency_factor_kind_dependent || kind == fmi2_dependency_factor_kind_constant)) {
+                 fmi2_xml_parse_error(context, "XML element 'Unknown' within 'InitialUnknowns': only 'dependent' and 'constant' allowed in list for attribute 'dependenciesKind'");
+                 ms->isValidFlag = 0;
+                 return 0;                 
              }
              if(!jm_vector_push_back(char)(&deps->dependencyFactorKind, kind)) {
                 fmi2_xml_parse_fatal(context, "Could not allocate memory");
@@ -353,6 +360,7 @@ int fmi2_xml_parse_dependencies(fmi2_xml_parser_context_t *context,
 
 
 int fmi2_xml_parse_unknown(fmi2_xml_parser_context_t *context, 
+                           fmi2_xml_elm_enu_t parentElmID,
                            jm_vector(jm_voidp) *destVarList,
                            fmi2_xml_dependencies_t* deps)
 {
@@ -380,7 +388,7 @@ int fmi2_xml_parse_unknown(fmi2_xml_parser_context_t *context,
         return -1;
     }
 
-    return fmi2_xml_parse_dependencies(context, deps);
+    return fmi2_xml_parse_dependencies(context, parentElmID, deps);
 }
 
 
@@ -390,7 +398,7 @@ int fmi2_xml_handle_Unknown(fmi2_xml_parser_context_t *context, const char* data
         fmi2_xml_model_description_t* md = context->modelDescription;
         fmi2_xml_model_structure_t* ms = md->modelStructure;
 
-        return fmi2_xml_parse_unknown(context, &ms->outputs, ms->outputDeps);
+        return fmi2_xml_parse_unknown(context, fmi2_xml_elmID_Outputs, &ms->outputs, ms->outputDeps);
     }
     else {
     }
@@ -402,7 +410,7 @@ int fmi2_xml_handle_DerivativeUnknown(fmi2_xml_parser_context_t *context, const 
         fmi2_xml_model_description_t* md = context->modelDescription;
         fmi2_xml_model_structure_t* ms = md->modelStructure;
 
-        return fmi2_xml_parse_unknown(context, &ms->derivatives, ms->derivativeDeps);
+        return fmi2_xml_parse_unknown(context, fmi2_xml_elmID_Derivatives, &ms->derivatives, ms->derivativeDeps);
     }
     else {
     }
@@ -414,7 +422,7 @@ int fmi2_xml_handle_DiscreteStateUnknown(fmi2_xml_parser_context_t *context, con
         fmi2_xml_model_description_t* md = context->modelDescription;
         fmi2_xml_model_structure_t* ms = md->modelStructure;
 
-        return fmi2_xml_parse_unknown(context, &ms->discreteStates, ms->discreteStateDeps);
+        return fmi2_xml_parse_unknown(context, fmi2_xml_elmID_DiscreteStates, &ms->discreteStates, ms->discreteStateDeps);
     }
     else {
     }
@@ -426,7 +434,7 @@ int fmi2_xml_handle_InitialUnknown(fmi2_xml_parser_context_t *context, const cha
         fmi2_xml_model_description_t* md = context->modelDescription;
         fmi2_xml_model_structure_t* ms = md->modelStructure;
 
-        return fmi2_xml_parse_unknown(context, &ms->initialUnknowns, ms->initialUnknownDeps);
+        return fmi2_xml_parse_unknown(context, fmi2_xml_elmID_InitialUnknowns, &ms->initialUnknowns, ms->initialUnknownDeps);
     }
     else {
     }

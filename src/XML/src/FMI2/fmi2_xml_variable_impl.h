@@ -34,8 +34,11 @@ struct fmi2_xml_variable_t {
 
 	size_t originalIndex;					/** \brief Index in the model description */
 
-    size_t derivativeOfIndex;               /** \brief If nonzero, index of the variable that this is the derivative of. Only for continuous Real variables. */
-    size_t previousIndex;                   /** \brief If nonzero, index of the variable that holds the value of this variable at the previous super-dense time instant. */
+    /* NB: before parsing of <ModelVariables> has finished,
+           derivativeOf and previous are stored as integer indices cast to pointers,
+           until they can be looked up */
+    fmi2_xml_variable_t *derivativeOf;      /** \brief Only for continuous Real variables. If non-NULL, the variable that this is the derivative of. */
+    fmi2_xml_variable_t *previous;          /** \brief If non-NULL, the variable that holds the value of this variable at the previous super-dense time instant. */
 
     fmi2_value_reference_t vr;				/** \brief Value reference */
     char aliasKind;

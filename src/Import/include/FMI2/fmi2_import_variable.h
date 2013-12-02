@@ -95,6 +95,22 @@ FMILIB_EXPORT fmi2_causality_enu_t fmi2_import_get_causality(fmi2_import_variabl
 /** \brief Get initial attribute */
 FMILIB_EXPORT fmi2_initial_enu_t fmi2_import_get_initial(fmi2_import_variable_t* );
 
+/** 
+    \brief Get the variable that holds the previous value of this variable, if defined.
+
+    @return If this variable is a discrete-time state, return the variable holds its previous value;
+            NULL otherwise.
+*/
+FMILIB_EXPORT fmi2_import_variable_t* fmi2_import_get_previous(fmi2_import_variable_t* v);
+
+/** \brief Get the canHandleMultipleSetPerTimeInstant flag for a variable.
+
+	@return For inputs: If false, then only one fmiSetXXX call is allowed at
+    one super dense time instant. In other words, this input is not allowed to
+    appear in an algebraic loop.
+*/
+FMILIB_EXPORT fmi2_boolean_t fmi2_import_get_canHandleMultipleSetPerTimeInstant(fmi2_import_variable_t* v);
+
 /** \brief Cast general variable to a one with the specific type 
 	
 	@return Typed object or NULL if base type does not match
@@ -125,9 +141,23 @@ FMILIB_EXPORT fmi2_import_bool_variable_t* fmi2_import_get_variable_as_boolean(f
 /** 
 	\brief Get the variable start attribute. 
 
-	@return The "start" attriburte as specified in the XML file or variable nominal value.
+	@return The "start" attribute as specified in the XML file or variable nominal value.
 */
 FMILIB_EXPORT fmi2_real_t fmi2_import_get_real_variable_start(fmi2_import_real_variable_t* v);
+
+/** 
+    \brief Get the variable that this is a derivative of, if defined.
+
+    @return If this variable is a derivative, return the variable that it is a derivative of;
+            NULL otherwise.
+*/
+FMILIB_EXPORT fmi2_import_real_variable_t* fmi2_import_get_real_variable_derivative_of(fmi2_import_real_variable_t* v);
+
+/** \brief Get the reinit flag for a real variable.
+
+	@return True if the real variable may change value at events.
+*/
+FMILIB_EXPORT fmi2_boolean_t fmi2_import_get_real_variable_reinit(fmi2_import_real_variable_t* v);
 
 /** \brief Get maximum value for the variable
 

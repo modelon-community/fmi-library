@@ -485,7 +485,7 @@ int fmi2_xml_handle_RealVariable(fmi2_xml_parser_context_t *context, const char*
                 /* If derivative is set, this variable must be continuous. */
                 if (derivativeOf) {
                     fmi2_xml_parse_error(context, "The derivative attribute may only appear on continuous-time Real variables.");
-                    return -1;
+                    /* return -1; */
                 }
                 if (reinit) {
                     fmi2_xml_parse_error(context, "The reinit attribute may only be set on continuous-time states.");

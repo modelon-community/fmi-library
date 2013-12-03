@@ -397,6 +397,18 @@ int fmi2_xml_handle_ModelExchange(fmi2_xml_parser_context_t *context, const char
 		jm_log_verbose(context->callbacks, module, "Parsing XML element ModelExchange");
 		md->fmuKind = fmi2_fmu_kind_me;
         /* process the attributes */
+
+        /* <xs:attribute name="providesDirectionalDerivative" type="xs:boolean" default="false"/> */
+        if (fmi2_xml_is_attr_defined(context, fmi_attr_id_providesDirectionalDerivatives)) {
+			fmi2_xml_parse_error(context, "Attribute 'providesDirectionalDerivatives' has been renamed to 'providesDirectionalDerivative'.");
+            if (fmi2_xml_set_attr_boolean(context,fmi2_xml_elmID_ModelExchange, fmi_attr_id_providesDirectionalDerivatives,0,
+                &md->capabilities[fmi2_me_providesDirectionalDerivatives],0)) return -1;
+        }
+        else {
+            if (fmi2_xml_set_attr_boolean(context,fmi2_xml_elmID_ModelExchange, fmi_attr_id_providesDirectionalDerivative,0,
+                &md->capabilities[fmi2_me_providesDirectionalDerivatives],0)) return -1;
+        }
+
         return (	/* <xs:attribute name="modelIdentifier" type="xs:normalizedString" use="required"> */
                     fmi2_xml_set_attr_string(context, fmi2_xml_elmID_ModelExchange, fmi_attr_id_modelIdentifier, 1, &(md->modelIdentifierME)) ||
 					/* 	<xs:attribute name="needsExecutionTool" type="xs:boolean" default="false"> */
@@ -416,10 +428,7 @@ int fmi2_xml_handle_ModelExchange(fmi2_xml_parser_context_t *context, const char
                                              &md->capabilities[fmi2_me_canGetAndSetFMUstate],0) ||
 					/* <xs:attribute name="canSerializeFMUstate" type="xs:boolean" default="false"/> */
                     fmi2_xml_set_attr_boolean(context,fmi2_xml_elmID_ModelExchange, fmi_attr_id_canSerializeFMUstate,0,
-                                             &md->capabilities[fmi2_me_canSerializeFMUstate],0) ||
-					/* <xs:attribute name="providesDirectionalDerivatives" type="xs:boolean" default="false"/> */
-                    fmi2_xml_set_attr_boolean(context,fmi2_xml_elmID_ModelExchange, fmi_attr_id_providesDirectionalDerivatives,0,
-                                             &md->capabilities[fmi2_me_providesDirectionalDerivatives],0)
+                                             &md->capabilities[fmi2_me_canSerializeFMUstate],0)
                    );
     }
     else {
@@ -437,6 +446,18 @@ int fmi2_xml_handle_CoSimulation(fmi2_xml_parser_context_t *context, const char*
 		else
 			md->fmuKind = fmi2_fmu_kind_cs;
         /* process the attributes */
+
+        /* <xs:attribute name="providesDirectionalDerivative" type="xs:boolean" default="false"/> */
+        if (fmi2_xml_is_attr_defined(context, fmi_attr_id_providesDirectionalDerivatives)) {
+			fmi2_xml_parse_error(context, "Attribute 'providesDirectionalDerivatives' has been renamed to 'providesDirectionalDerivative'.");
+            if (fmi2_xml_set_attr_boolean(context,fmi2_xml_elmID_ModelExchange, fmi_attr_id_providesDirectionalDerivatives,0,
+                &md->capabilities[fmi2_me_providesDirectionalDerivatives],0)) return -1;
+        }
+        else {
+            if (fmi2_xml_set_attr_boolean(context,fmi2_xml_elmID_ModelExchange, fmi_attr_id_providesDirectionalDerivative,0,
+                &md->capabilities[fmi2_me_providesDirectionalDerivatives],0)) return -1;
+        }
+
         return (	/* <xs:attribute name="modelIdentifier" type="xs:normalizedString" use="required"> */
                     fmi2_xml_set_attr_string(context, fmi2_xml_elmID_CoSimulation, fmi_attr_id_modelIdentifier, 1, &(md->modelIdentifierCS)) ||
 					/* 	<xs:attribute name="needsExecutionTool" type="xs:boolean" default="false"> */

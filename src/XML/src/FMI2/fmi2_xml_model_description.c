@@ -372,15 +372,15 @@ int fmi2_xml_handle_fmiModelDescription(fmi2_xml_parser_context_t *context, cons
 			return -1;
 		}
 		if( (md->fmuKind != fmi2_fmu_kind_cs) && !fmi2_xml_is_valid_model_ID(fmi2_xml_get_model_identifier_ME(md))) {
-			fmi2_xml_parse_error(context, "Model indetifier '%s' is not valid (must be a valid C-identifier)", fmi2_xml_get_model_identifier_ME(md));
+			fmi2_xml_parse_error(context, "Model identifier '%s' is not valid (must be a valid C-identifier)", fmi2_xml_get_model_identifier_ME(md));
 			return -1;
 		}
 		if( (md->fmuKind != fmi2_fmu_kind_me) && !fmi2_xml_is_valid_model_ID(fmi2_xml_get_model_identifier_CS(md))) {
-			fmi2_xml_parse_error(context, "Model indetifier '%s' is not valid (must be a valid C-identifier)", fmi2_xml_get_model_identifier_CS(md));
+			fmi2_xml_parse_error(context, "Model identifier '%s' is not valid (must be a valid C-identifier)", fmi2_xml_get_model_identifier_CS(md));
 			return -1;
 		}
 		if( (md->fmuKind == fmi2_fmu_kind_me_and_cs) && (strcmp(fmi2_xml_get_model_identifier_CS(md), fmi2_xml_get_model_identifier_ME(md)) == 0)) {
-			fmi2_xml_parse_error(context, "Model indetifiers for ModelExchange and CoSimulation must be different");
+			fmi2_xml_parse_error(context, "Model identifiers for ModelExchange and CoSimulation must be different");
 			return -1;
 		}
 		if(!md->modelStructure) {

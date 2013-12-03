@@ -334,11 +334,16 @@ int fmi2_xml_parse_dependencies(fmi2_xml_parser_context_t *context,
                  ms->isValidFlag = 0;
                  return 0;
              }
-             if (parentElmID == fmi2_xml_elmID_InitialUnknowns &&
-               !(kind == fmi2_dependency_factor_kind_dependent || kind == fmi2_dependency_factor_kind_constant)) {
-                 fmi2_xml_parse_error(context, "XML element 'Unknown' within 'InitialUnknowns': only 'dependent' and 'constant' allowed in list for attribute 'dependenciesKind'");
-                 ms->isValidFlag = 0;
-                 return 0;                 
+             if (parentElmID == fmi2_xml_elmID_InitialUnknowns) {
+                if (kind == fmi2_dependency_factor_kind_fixed) {
+                    fmi2_xml_parse_error(context, "XML element 'Unknown' within 'InitialUnknowns': 'fixed' is not allowed in list for attribute 'dependenciesKind'; setting to 'dependent'");
+                    kind = fmi2_dependency_factor_kind_dependent;
+                }
+                else if (!(kind == fmi2_dependency_factor_kind_dependent || kind == fmi2_dependency_factor_kind_constant)) {
+                    fmi2_xml_parse_error(context, "XML element 'Unknown' within 'InitialUnknowns': only 'dependent' and 'constant' allowed in list for attribute 'dependenciesKind'");
+                    ms->isValidFlag = 0;
+                    return 0;                 
+                }
              }
              if(!jm_vector_push_back(char)(&deps->dependencyFactorKind, kind)) {
                 fmi2_xml_parse_fatal(context, "Could not allocate memory");

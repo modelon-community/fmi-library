@@ -874,7 +874,6 @@ int fmi2_xml_handle_ModelVariables(fmi2_xml_parser_context_t *context, const cha
         fmi2_xml_model_description_t* md = context->modelDescription;
         jm_vector(jm_voidp)* varByVR;
         size_t i, numvar;
-        size_t numDerivatives = 0;
 
         numvar = jm_vector_get_size(jm_named_ptr)(&md->variablesByName);
 
@@ -890,7 +889,7 @@ int fmi2_xml_handle_ModelVariables(fmi2_xml_parser_context_t *context, const cha
 			}
 		}		
 
-        /* Look up actual pointers for the derivativeOf and previous fields in variablesOrigOrder. Also count the number of derivatives. */
+        /* look up actual pointers for the derivativeOf and previous fields in variablesOrigOrder */
         {
             size_t size = jm_vector_get_size(jm_voidp)(md->variablesOrigOrder);
             size_t k;
@@ -909,7 +908,6 @@ int fmi2_xml_handle_ModelVariables(fmi2_xml_parser_context_t *context, const cha
                         return -1;
                     }                    
                     variable->derivativeOf = (fmi2_xml_variable_t*)jm_vector_get_item(jm_voidp)(md->variablesOrigOrder, index);
-                    numDerivatives++;
                 }
                 if (variable->previous) {
                     /* retrieve index that was stored as a pointer */
@@ -926,7 +924,6 @@ int fmi2_xml_handle_ModelVariables(fmi2_xml_parser_context_t *context, const cha
                 }
             }
         }
-        md->numberOfContinuousStates = numDerivatives;
 
         /* sort the variables by names */
         jm_vector_qsort(jm_named_ptr)(&md->variablesByName,jm_compare_named);

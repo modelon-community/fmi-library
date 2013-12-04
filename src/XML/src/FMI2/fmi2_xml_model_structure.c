@@ -205,6 +205,12 @@ int fmi2_xml_handle_Derivatives(fmi2_xml_parser_context_t *context, const char* 
         /*  reset handles for the elements that are specific under Derivatives */
         fmi2_xml_set_element_handle(context, "Unknown", FMI2_XML_ELM_ID(DerivativeUnknown));
     }
+    else {
+        fmi2_xml_model_description_t* md = context->modelDescription;
+        fmi2_xml_model_structure_t* ms = md->modelStructure;
+        /* count the number of continuous states as the number of <Unknown> elements under <Derivatives> */
+        md->numberOfContinuousStates = jm_vector_get_size(jm_voidp)(&ms->derivatives);
+    }
     return 0;
 }
 int fmi2_xml_handle_DiscreteStates(fmi2_xml_parser_context_t *context, const char* data) {

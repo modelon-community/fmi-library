@@ -466,36 +466,6 @@ int fmi2_xml_handle_RealVariable(fmi2_xml_parser_context_t *context, const char*
         if(!declaredType) return -1;
 
         {
-            /*   <xs:attribute name="derivative" type="xs:unsignedInt"> */
-            unsigned int derivativeOf;
-            unsigned int reinit;
-
-            if(fmi2_xml_set_attr_uint(context, fmi2_xml_elmID_Real,
-                fmi_attr_id_derivative, 0, &derivativeOf, 0)) return -1;
-            /* TODO: consider: is it ok to read in an unsigned int to store in a size_t? */
-            /* Store the index as a pointer since we cannot access the variables list yet (we are constructing it). */
-            variable->derivativeOf = (void *)((char *)NULL + derivativeOf);
-
-            /*   <xs:attribute name="reinit" type="xs:boolean" use="optional" default="false"> */
-            if(fmi2_xml_set_attr_boolean(context, fmi2_xml_elmID_Real,
-                fmi_attr_id_reinit, 0, &reinit, 0)) return -1;
-            variable->reinit = (char)reinit;
-
-            if (variable->variability != fmi2_variability_enu_continuous) {
-                /* If derivative is set, this variable must be continuous. */
-                if (derivativeOf) {
-                    fmi2_xml_parse_error(context, "The derivative attribute may only appear on continuous-time Real variables.");
-                    /* return -1; */
-                }
-                if (reinit) {
-                    fmi2_xml_parse_error(context, "The reinit attribute may only be set on continuous-time states.");
-                    return -1;
-                }
-                /* If reinit is true, this variable must be continuous. */
-            }
-        }
-
-        {
             int hasUnit = fmi2_xml_is_attr_defined(context, fmi_attr_id_unit) ||
                     fmi2_xml_is_attr_defined(context, fmi_attr_id_displayUnit);
             int hasMin =  fmi2_xml_is_attr_defined(context, fmi_attr_id_min);
@@ -548,6 +518,36 @@ int fmi2_xml_handle_RealVariable(fmi2_xml_parser_context_t *context, const char*
                 )
                     return -1;
             variable->typeBase = &start->typeBase;
+        }
+
+        {
+            /*   <xs:attribute name="derivative" type="xs:unsignedInt"> */
+            unsigned int derivativeOf;
+            unsigned int reinit;
+
+            if(fmi2_xml_set_attr_uint(context, fmi2_xml_elmID_Real,
+                fmi_attr_id_derivative, 0, &derivativeOf, 0)) return -1;
+            /* TODO: consider: is it ok to read in an unsigned int to store in a size_t? */
+            /* Store the index as a pointer since we cannot access the variables list yet (we are constructing it). */
+            variable->derivativeOf = (void *)((char *)NULL + derivativeOf);
+
+            /*   <xs:attribute name="reinit" type="xs:boolean" use="optional" default="false"> */
+            if(fmi2_xml_set_attr_boolean(context, fmi2_xml_elmID_Real,
+                fmi_attr_id_reinit, 0, &reinit, 0)) return -1;
+            variable->reinit = (char)reinit;
+
+            if (variable->variability != fmi2_variability_enu_continuous) {
+                /* If derivative is set, this variable must be continuous. */
+                if (derivativeOf) {
+                    fmi2_xml_parse_error(context, "The derivative attribute may only appear on continuous-time Real variables.");
+                    /* return -1; */
+                }
+                if (reinit) {
+                    fmi2_xml_parse_error(context, "The reinit attribute may only be set on continuous-time states.");
+                    return -1;
+                }
+                /* If reinit is true, this variable must be continuous. */
+            }
         }
     }
     else {

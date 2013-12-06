@@ -539,30 +539,34 @@ int fmi2_xml_handle_LogCategories(fmi2_xml_parser_context_t *context, const char
     }
 }
 
+static int push_back_jm_string(fmi2_xml_parser_context_t *context, jm_vector(jm_string) *stringvector, jm_vector(char)* buf) {
+    size_t len;
+    char* string = 0;
+    jm_string *pstring;
+
+    pstring = jm_vector_push_back(jm_string)(stringvector, string);
+	len = jm_vector_get_size(char)(buf);
+    if(pstring )
+        *pstring = string = (char*)(context->callbacks->malloc(len + 1));
+	if(!pstring || !string) {
+	    fmi2_xml_parse_fatal(context, "Could not allocate memory");
+		return -1;
+	}
+    memcpy(string, jm_vector_get_itemp(char)(buf,0), len);
+    string[len] = 0;
+}
+
 int fmi2_xml_handle_Category(fmi2_xml_parser_context_t *context, const char* data) {
     if(!data) {
         /* process the attributes */
-		size_t len;
         fmi2_xml_model_description_t* md = context->modelDescription;
         jm_vector(char)* bufName = fmi2_xml_reserve_parse_buffer(context,1,100);
-        jm_string *pcategory;
-		char* category = 0;
-			
+
         if(!bufName) return -1;
 		/* <xs:attribute name="name" type="xs:normalizedString"> */
-            if( fmi2_xml_set_attr_string(context, fmi2_xml_elmID_Category, fmi_attr_id_name, 1, bufName))
-				return -1;
-            pcategory = jm_vector_push_back(jm_string)(&md->vendorList, category);
-			len = jm_vector_get_size(char)(bufName);
-            if(pcategory )
-                *pcategory = category = (char*)(context->callbacks->malloc(len + 1));
-	        if(!pcategory || !category) {
-	            fmi2_xml_parse_fatal(context, "Could not allocate memory");
-		        return -1;
-			}
-            memcpy(category, jm_vector_get_itemp(char)(bufName,0), len);
-            category[len] = 0;
-        return (0);
+        if( fmi2_xml_set_attr_string(context, fmi2_xml_elmID_Category, fmi_attr_id_name, 1, bufName))
+			return -1;
+        return push_back_jm_string(context, &md->logCategories, bufName);
     }
     else {
         /* don't do anything. might give out a warning if(data[0] != 0) */

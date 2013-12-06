@@ -377,6 +377,17 @@ int main(int argc, char *argv[])
            fmi2_import_get_default_experiment_stop(fmu),
            fmi2_import_get_default_experiment_tolerance(fmu),
            fmi2_import_get_default_experiment_step(fmu));
+
+    {
+        int n_sources = fmi2_import_get_source_files_me_num(fmu);
+        int k;
+        printf("There are %d source files for ME\n", n_sources);
+        for (k=0; k < n_sources; k++) {
+            printf("\t%s\n", fmi2_import_get_source_file_me(fmu, k));
+        }
+    }
+
+
     {
         size_t i, nv = fmi2_import_get_vendors_num(fmu);
         printf("There are %u tool annotation records \n", (unsigned)nv);

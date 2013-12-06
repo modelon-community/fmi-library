@@ -523,7 +523,19 @@ int fmi2_xml_handle_SourceFiles(fmi2_xml_parser_context_t *context, const char* 
 }
 
 int fmi2_xml_handle_File(fmi2_xml_parser_context_t *context, const char* data) {
-    return 0;
+    if(!data) {
+        fmi2_xml_model_description_t* md = context->modelDescription;
+        jm_vector(char)* bufName = fmi2_xml_reserve_parse_buffer(context,1,100);
+
+        if(!bufName) return -1;
+        /* <xs:attribute name="name" type="xs:normalizedString" use="required"> */
+        if( fmi2_xml_set_attr_string(context, fmi2_xml_elmID_File, fmi_attr_id_name, 1, bufName))
+            return -1;
+        return push_back_jm_string(context, &md->sourceFilesME, bufName);
+    }
+    else {
+        return 0;
+    }
 }
 
 int fmi2_xml_handle_LogCategories(fmi2_xml_parser_context_t *context, const char* data) {

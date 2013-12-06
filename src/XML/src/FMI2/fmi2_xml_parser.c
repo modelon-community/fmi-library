@@ -29,6 +29,8 @@ const char *fmi2_xmlAttrNames[fmi2_xml_attr_number] = {
 /* fmi2_xml_scheme_ defines give parent ID, the index in a sequence among siblings, flag if multiple elems are allowed */
 #define fmi2_xml_scheme_fmiModelDescription {fmi2_xml_elmID_none, 0, 0}
 #define fmi2_xml_scheme_ModelExchange {fmi2_xml_elmID_fmiModelDescription, 0, 0}
+#define fmi2_xml_scheme_SourceFiles {fmi2_xml_elmID_ModelExchange, 0, 0}
+#define fmi2_xml_scheme_File {fmi2_xml_elmID_SourceFiles, 0, 1}
 #define fmi2_xml_scheme_CoSimulation {fmi2_xml_elmID_fmiModelDescription, 1, 0}
 #define fmi2_xml_scheme_UnitDefinitions {fmi2_xml_elmID_fmiModelDescription, 2, 0}
 #define fmi2_xml_scheme_Unit {fmi2_xml_elmID_UnitDefinitions, 0, 1}

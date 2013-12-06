@@ -69,6 +69,9 @@ fmi2_xml_model_description_t * fmi2_xml_allocate_model_description( jm_callbacks
 
     md->defaultExperimentStepSize = FMI2_DEFAULT_EXPERIMENT_STEPSIZE;
 
+    jm_vector_init(jm_string)(&md->sourceFilesME, 0, cb);
+	jm_vector_init(jm_string)(&md->sourceFilesCS, 0, cb);
+
 	jm_vector_init(jm_string)(&md->vendorList, 0, cb);
 	jm_vector_init(jm_string)(&md->logCategories, 0, cb);
 
@@ -125,6 +128,12 @@ void fmi2_xml_clear_model_description( fmi2_xml_model_description_t* md) {
     md->defaultExperimentTolerance = 0;
 
     md->defaultExperimentStepSize = 0;
+
+    jm_vector_foreach(jm_string)(&md->sourceFilesME, (void(*)(const char*))md->callbacks->free);
+    jm_vector_free_data(jm_string)(&md->sourceFilesME);	
+
+    jm_vector_foreach(jm_string)(&md->sourceFilesCS, (void(*)(const char*))md->callbacks->free);
+    jm_vector_free_data(jm_string)(&md->sourceFilesCS);	
 
     jm_vector_foreach(jm_string)(&md->vendorList, (void(*)(const char*))md->callbacks->free);
     jm_vector_free_data(jm_string)(&md->vendorList);
@@ -293,6 +302,16 @@ size_t fmi2_xml_get_vendors_num(fmi2_xml_model_description_t* md) {
 jm_vector(jm_string)* fmi2_xml_get_log_categories(fmi2_xml_model_description_t* md) {
 	assert(md);
 	return &md->logCategories;
+}
+
+jm_vector(jm_string)* fmi2_xml_get_source_files_me(fmi2_xml_model_description_t* md) {
+	assert(md);
+	return &md->sourceFilesME;
+}
+
+jm_vector(jm_string)* fmi2_xml_get_source_files_cs(fmi2_xml_model_description_t* md) {
+	assert(md);
+	return &md->sourceFilesCS;
 }
 
 fmi2_xml_model_structure_t* fmi2_xml_get_model_structure(fmi2_xml_model_description_t* md) {
@@ -497,6 +516,14 @@ int fmi2_xml_handle_CoSimulation(fmi2_xml_parser_context_t *context, const char*
         /* don't do anything. might give out a warning if(data[0] != 0) */
         return 0;
     }
+}
+
+int fmi2_xml_handle_SourceFiles(fmi2_xml_parser_context_t *context, const char* data) {
+    return 0;
+}
+
+int fmi2_xml_handle_File(fmi2_xml_parser_context_t *context, const char* data) {
+    return 0;
 }
 
 int fmi2_xml_handle_LogCategories(fmi2_xml_parser_context_t *context, const char* data) {

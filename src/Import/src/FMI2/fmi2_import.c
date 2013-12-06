@@ -339,6 +339,34 @@ const char* fmi2_import_get_log_category(fmi2_import_t* fmu, size_t  index) {
 	return jm_vector_get_item(jm_string)(fmi2_xml_get_log_categories(fmu->md), index);
 }
 
+/** \brief Get the number of source files for ME defined in the XML */
+size_t fmi2_import_get_source_files_me_num(fmi2_import_t* fmu) {
+	if(!fmi2_import_check_has_FMU(fmu)) return 0;
+
+	return jm_vector_get_size(jm_string)(fmi2_xml_get_source_files_me(fmu->md));
+}
+
+/** \brief Get the ME source file by index */
+const char* fmi2_import_get_source_file_me(fmi2_import_t* fmu, size_t  index) {
+	if(!fmi2_import_check_has_FMU(fmu)) return 0;
+
+	return jm_vector_get_item(jm_string)(fmi2_xml_get_source_files_me(fmu->md), index);
+}
+
+/** \brief Get the number of source files for CS defined in the XML */
+size_t fmi2_import_get_source_files_cs_num(fmi2_import_t* fmu) {
+	if(!fmi2_import_check_has_FMU(fmu)) return 0;
+
+	return jm_vector_get_size(jm_string)(fmi2_xml_get_source_files_cs(fmu->md));
+}
+
+/** \brief Get the CS source file by index */
+const char* fmi2_import_get_source_file_cs(fmi2_import_t* fmu, size_t  index) {
+	if(!fmi2_import_check_has_FMU(fmu)) return 0;
+
+	return jm_vector_get_item(jm_string)(fmi2_xml_get_source_files_cs(fmu->md), index);
+}
+
 
 fmi2_import_variable_list_t* fmi2_import_get_outputs_list(fmi2_import_t* fmu) {
 	if(!fmi2_import_check_has_FMU(fmu)) return 0;

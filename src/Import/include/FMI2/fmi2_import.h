@@ -232,13 +232,25 @@ FMILIB_EXPORT fmi2_import_variable_list_t* fmi2_import_create_var_list(fmi2_impo
 FMILIB_EXPORT size_t fmi2_import_get_vendors_num(fmi2_import_t* fmu);
 
 /** \brief Get the name of the vendor with that had annotations in the XML by index */
-FMILIB_EXPORT const char* fmi2_import_get_vendor_name(fmi2_import_t* fmu, size_t  index);
+FMILIB_EXPORT const char* fmi2_import_get_vendor_name(fmi2_import_t* fmu, size_t index);
 
 /** \brief Get the number of log categories defined in the XML */
 FMILIB_EXPORT size_t fmi2_import_get_log_categories_num(fmi2_import_t* fmu);
 
 /** \brief Get the log category by index */
-FMILIB_EXPORT const char* fmi2_import_get_log_category(fmi2_import_t* fmu, size_t  index);
+FMILIB_EXPORT const char* fmi2_import_get_log_category(fmi2_import_t* fmu, size_t index);
+
+/** \brief Get the number of source files for ME defined in the XML */
+FMILIB_EXPORT size_t fmi2_import_get_source_files_me_num(fmi2_import_t* fmu);
+
+/** \brief Get the ME source file by index */
+FMILIB_EXPORT const char* fmi2_import_get_source_file_me(fmi2_import_t* fmu, size_t index);
+
+/** \brief Get the number of source files for CS defined in the XML */
+FMILIB_EXPORT size_t fmi2_import_get_source_files_cs_num(fmi2_import_t* fmu);
+
+/** \brief Get the CS source file by index */
+FMILIB_EXPORT const char* fmi2_import_get_source_file_cs(fmi2_import_t* fmu, size_t index);
 
 /**
 	\brief Get variable by variable name.

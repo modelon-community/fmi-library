@@ -100,6 +100,8 @@ typedef enum fmi2_xml_attr_enu_t {
     EXPAND_XML_ELMNAME(fmiModelDescription) \
 	EXPAND_XML_ELMNAME(ModelExchange) \
     EXPAND_XML_ELMNAME(CoSimulation) \
+    EXPAND_XML_ELMNAME(SourceFiles) \
+    EXPAND_XML_ELMNAME(File) \
     EXPAND_XML_ELMNAME(UnitDefinitions) \
     EXPAND_XML_ELMNAME(Unit) \
     EXPAND_XML_ELMNAME(BaseUnit) \

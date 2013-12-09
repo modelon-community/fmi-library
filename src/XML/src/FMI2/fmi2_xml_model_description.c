@@ -414,6 +414,11 @@ int fmi2_xml_handle_ModelExchange(fmi2_xml_parser_context_t *context, const char
     fmi2_xml_model_description_t* md = context->modelDescription;
     if(!data) {
 		jm_log_verbose(context->callbacks, module, "Parsing XML element ModelExchange");
+
+        /*  reset handles for the elements that are specific under ModelExchange */
+        fmi2_xml_set_element_handle(context, "SourceFiles", FMI2_XML_ELM_ID(SourceFiles));
+        fmi2_xml_set_element_handle(context, "File", FMI2_XML_ELM_ID(File));
+
 		md->fmuKind = fmi2_fmu_kind_me;
         /* process the attributes */
 
@@ -460,6 +465,11 @@ int fmi2_xml_handle_CoSimulation(fmi2_xml_parser_context_t *context, const char*
     fmi2_xml_model_description_t* md = context->modelDescription;
     if(!data) {
 		jm_log_verbose(context->callbacks, module, "Parsing XML element CoSimulation");
+
+        /*  reset handles for the elements that are specific under CoSimulation */
+        fmi2_xml_set_element_handle(context, "SourceFiles", FMI2_XML_ELM_ID(SourceFilesCS));
+        fmi2_xml_set_element_handle(context, "File", FMI2_XML_ELM_ID(FileCS));
+
 		if(md->fmuKind == fmi2_fmu_kind_me)
 			md->fmuKind = fmi2_fmu_kind_me_and_cs;
 		else
@@ -532,6 +542,26 @@ int fmi2_xml_handle_File(fmi2_xml_parser_context_t *context, const char* data) {
         if( fmi2_xml_set_attr_string(context, fmi2_xml_elmID_File, fmi_attr_id_name, 1, bufName))
             return -1;
         return push_back_jm_string(context, &md->sourceFilesME, bufName);
+    }
+    else {
+        return 0;
+    }
+}
+
+int fmi2_xml_handle_SourceFilesCS(fmi2_xml_parser_context_t *context, const char* data) {
+    return 0;
+}
+
+int fmi2_xml_handle_FileCS(fmi2_xml_parser_context_t *context, const char* data) {
+    if(!data) {
+        fmi2_xml_model_description_t* md = context->modelDescription;
+        jm_vector(char)* bufName = fmi2_xml_reserve_parse_buffer(context,1,100);
+
+        if(!bufName) return -1;
+        /* <xs:attribute name="name" type="xs:normalizedString" use="required"> */
+        if( fmi2_xml_set_attr_string(context, fmi2_xml_elmID_File, fmi_attr_id_name, 1, bufName))
+            return -1;
+        return push_back_jm_string(context, &md->sourceFilesCS, bufName);
     }
     else {
         return 0;

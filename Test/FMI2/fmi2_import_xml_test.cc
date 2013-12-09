@@ -386,6 +386,14 @@ int main(int argc, char *argv[])
             printf("\t%s\n", fmi2_import_get_source_file_me(fmu, k));
         }
     }
+    {
+        int n_sources = fmi2_import_get_source_files_cs_num(fmu);
+        int k;
+        printf("There are %d source files for CS\n", n_sources);
+        for (k=0; k < n_sources; k++) {
+            printf("\t%s\n", fmi2_import_get_source_file_cs(fmu, k));
+        }
+    }
 
 
     {

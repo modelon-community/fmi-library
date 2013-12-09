@@ -138,7 +138,8 @@ typedef enum fmi2_xml_attr_enu_t {
     EXPAND_XML_ELMNAME(StringVariable) \
     EXPAND_XML_ELMNAME(EnumerationVariable)  \
     EXPAND_XML_ELMNAME(VariableTool) \
-/*    EXPAND_XML_ELMNAME(OutputUnknown)*/ \
+    EXPAND_XML_ELMNAME(SourceFilesCS) \
+    EXPAND_XML_ELMNAME(FileCS) \
     EXPAND_XML_ELMNAME(DerivativeUnknown) \
     EXPAND_XML_ELMNAME(DiscreteStateUnknown) \
     EXPAND_XML_ELMNAME(InitialUnknown)

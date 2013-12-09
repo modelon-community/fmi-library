@@ -532,6 +532,25 @@ int fmi2_xml_handle_SourceFiles(fmi2_xml_parser_context_t *context, const char* 
     return 0;
 }
 
+static int push_back_jm_string(fmi2_xml_parser_context_t *context, jm_vector(jm_string) *stringvector, jm_vector(char)* buf) {
+    size_t len;
+    char* string = 0;
+    jm_string *pstring;
+
+    pstring = jm_vector_push_back(jm_string)(stringvector, string);
+	len = jm_vector_get_size(char)(buf);
+    if(pstring )
+        *pstring = string = (char*)(context->callbacks->malloc(len + 1));
+	if(!pstring || !string) {
+	    fmi2_xml_parse_fatal(context, "Could not allocate memory");
+		return -1;
+	}
+    memcpy(string, jm_vector_get_itemp(char)(buf,0), len);
+    string[len] = 0;
+    return 0;
+}
+
+
 int fmi2_xml_handle_File(fmi2_xml_parser_context_t *context, const char* data) {
     if(!data) {
         fmi2_xml_model_description_t* md = context->modelDescription;
@@ -579,23 +598,6 @@ int fmi2_xml_handle_LogCategories(fmi2_xml_parser_context_t *context, const char
         /* don't do anything. might give out a warning if(data[0] != 0) */
         return 0;
     }
-}
-
-static int push_back_jm_string(fmi2_xml_parser_context_t *context, jm_vector(jm_string) *stringvector, jm_vector(char)* buf) {
-    size_t len;
-    char* string = 0;
-    jm_string *pstring;
-
-    pstring = jm_vector_push_back(jm_string)(stringvector, string);
-	len = jm_vector_get_size(char)(buf);
-    if(pstring )
-        *pstring = string = (char*)(context->callbacks->malloc(len + 1));
-	if(!pstring || !string) {
-	    fmi2_xml_parse_fatal(context, "Could not allocate memory");
-		return -1;
-	}
-    memcpy(string, jm_vector_get_itemp(char)(buf,0), len);
-    string[len] = 0;
 }
 
 int fmi2_xml_handle_Category(fmi2_xml_parser_context_t *context, const char* data) {

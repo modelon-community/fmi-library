@@ -51,6 +51,16 @@ struct fmi2_capi_t {
 	/* FMI common */
 	fmi2_get_version_ft					fmiGetVersion;
 	fmi2_set_debug_logging_ft			fmiSetDebugLogging;
+    fmi2_instantiate_ft			fmiInstantiate;
+    fmi2_free_instance_ft			fmiFreeInstance;    
+
+    fmi2_setup_experiment_ft 				fmiSetupExperiment;
+    fmi2_enter_initialization_mode_ft 			fmiEnterInitializationMode;
+    fmi2_exit_initialization_mode_ft 			fmiExitInitializationMode;
+
+    fmi2_terminate_ft					fmiTerminate;
+    fmi2_reset_ft					fmiReset;
+
     fmi2_set_real_ft					fmiSetReal;
     fmi2_set_integer_ft					fmiSetInteger;
     fmi2_set_boolean_ft					fmiSetBoolean;
@@ -69,32 +79,24 @@ struct fmi2_capi_t {
     fmi2_de_serialize_fmu_state_ft		fmiDeSerializeFMUstate;
 
 /* Getting partial derivatives */
-/*  fmi2_get_partial_derivatives_ft     fmiGetPartialDerivatives; */
 	fmi2_get_directional_derivative_ft			fmiGetDirectionalDerivative;
 
 	/* FMI ME */
-    fmi2_get_types_platform_ft			fmiGetTypesPlatform;    
-    fmi2_instantiate_model_ft			fmiInstantiateModel;
-    fmi2_completed_event_iteration_ft   fmiCompletedEventIteration;
+    fmi2_enter_event_mode_ft		fmiEnterEventMode;
+    fmi2_new_discrete_states_ft		fmiNewDiscreteStates;
+    fmi2_enter_continuous_time_mode_ft	fmiEnterContinuousTimeMode;
+    fmi2_completed_integrator_step_ft	fmiCompletedIntegratorStep;
 
-    fmi2_free_model_instance_ft			fmiFreeModelInstance;    
+    fmi2_get_types_platform_ft			fmiGetTypesPlatform;    
+
     fmi2_set_time_ft					fmiSetTime;
     fmi2_set_continuous_states_ft		fmiSetContinuousStates;
-    fmi2_completed_integrator_step_ft	fmiCompletedIntegratorStep;
-    fmi2_initialize_model_ft			fmiInitializeModel;
     fmi2_get_derivatives_ft				fmiGetDerivatives;
     fmi2_get_event_indicators_ft		fmiGetEventIndicators;
-    fmi2_event_update_ft				fmiEventUpdate;
     fmi2_get_continuous_states_ft		fmiGetContinuousStates;
-    fmi2_get_nominal_continuous_states_ft fmiGetNominalContinuousStates;
-    fmi2_terminate_ft					fmiTerminate;
+    fmi2_get_nominals_of_continuous_states_ft fmiGetNominalsOfContinuousStates;
 
 	/* FMI CS */
-    fmi2_instantiate_slave_ft			fmiInstantiateSlave;
-    fmi2_initialize_slave_ft			fmiInitializeSlave;
-    fmi2_terminate_slave_ft				fmiTerminateSlave;
-    fmi2_reset_slave_ft					fmiResetSlave;
-    fmi2_free_slave_instance_ft			fmiFreeSlaveInstance;
     fmi2_set_real_input_derivatives_ft	fmiSetRealInputDerivatives;
     fmi2_get_real_output_derivatives_ft	fmiGetRealOutputDerivatives;
     fmi2_do_step_ft						fmiDoStep;

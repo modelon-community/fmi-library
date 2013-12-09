@@ -29,7 +29,11 @@ const char *fmi2_xmlAttrNames[fmi2_xml_attr_number] = {
 /* fmi2_xml_scheme_ defines give parent ID, the index in a sequence among siblings, flag if multiple elems are allowed */
 #define fmi2_xml_scheme_fmiModelDescription {fmi2_xml_elmID_none, 0, 0}
 #define fmi2_xml_scheme_ModelExchange {fmi2_xml_elmID_fmiModelDescription, 0, 0}
+#define fmi2_xml_scheme_SourceFiles {fmi2_xml_elmID_ModelExchange, 0, 0}
+#define fmi2_xml_scheme_File {fmi2_xml_elmID_SourceFiles, 0, 1}
 #define fmi2_xml_scheme_CoSimulation {fmi2_xml_elmID_fmiModelDescription, 1, 0}
+#define fmi2_xml_scheme_SourceFilesCS {fmi2_xml_elmID_CoSimulation, 0, 0}
+#define fmi2_xml_scheme_FileCS {fmi2_xml_elmID_SourceFilesCS, 0, 1}
 #define fmi2_xml_scheme_UnitDefinitions {fmi2_xml_elmID_fmiModelDescription, 2, 0}
 #define fmi2_xml_scheme_Unit {fmi2_xml_elmID_UnitDefinitions, 0, 1}
 #define fmi2_xml_scheme_BaseUnit {fmi2_xml_elmID_Unit, 0, 0}
@@ -51,12 +55,15 @@ const char *fmi2_xmlAttrNames[fmi2_xml_attr_number] = {
 #define fmi2_xml_scheme_ScalarVariable {fmi2_xml_elmID_ModelVariables, 0, 1}
 
 #define fmi2_xml_scheme_ModelStructure {fmi2_xml_elmID_fmiModelDescription, 8, 0}
-#define fmi2_xml_scheme_Inputs {fmi2_xml_elmID_ModelStructure, 0, 0}
-#define fmi2_xml_scheme_Input {fmi2_xml_elmID_Inputs, 0, 1}
+#define fmi2_xml_scheme_Outputs {fmi2_xml_elmID_ModelStructure, 0, 0}
+/*#define fmi2_xml_scheme_OutputUnknown {fmi2_xml_elmID_Outputs, 0, 1}*/
+#define fmi2_xml_scheme_Unknown {fmi2_xml_elmID_Outputs, 0, 1}
 #define fmi2_xml_scheme_Derivatives {fmi2_xml_elmID_ModelStructure, 1, 0}
-#define fmi2_xml_scheme_Derivative {fmi2_xml_elmID_Derivatives, 0, 1}
-#define fmi2_xml_scheme_Outputs {fmi2_xml_elmID_ModelStructure, 2, 0}
-#define fmi2_xml_scheme_Output {fmi2_xml_elmID_Outputs, 0, 1}
+#define fmi2_xml_scheme_DerivativeUnknown {fmi2_xml_elmID_Derivatives, 0, 1}
+#define fmi2_xml_scheme_DiscreteStates {fmi2_xml_elmID_ModelStructure, 2, 0}
+#define fmi2_xml_scheme_DiscreteStateUnknown {fmi2_xml_elmID_DiscreteStates, 0, 1}
+#define fmi2_xml_scheme_InitialUnknowns {fmi2_xml_elmID_ModelStructure, 3, 0}
+#define fmi2_xml_scheme_InitialUnknown {fmi2_xml_elmID_InitialUnknowns, 0, 1}
 
 #define fmi2_xml_scheme_RealVariable {fmi2_xml_elmID_ScalarVariable, 0, 0}
 #define fmi2_xml_scheme_IntegerVariable {fmi2_xml_elmID_ScalarVariable, 0, 0}

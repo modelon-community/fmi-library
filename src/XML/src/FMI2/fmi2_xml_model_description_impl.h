@@ -60,10 +60,17 @@ struct fmi2_xml_model_description_t {
 
     double defaultExperimentTolerance;
 
+#define FMI2_DEFAULT_EXPERIMENT_STEPSIZE 1e-2
+
+    double defaultExperimentStepSize;
+
 
     jm_vector(char) modelIdentifierME;
 
 	jm_vector(char) modelIdentifierCS;
+
+    jm_vector(jm_string) sourceFilesME;
+    jm_vector(jm_string) sourceFilesCS;
 
     jm_vector(jm_string) logCategories;
 

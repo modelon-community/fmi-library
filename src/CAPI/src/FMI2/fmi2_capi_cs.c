@@ -20,34 +20,6 @@ extern "C" {
 #include <FMI2/fmi2_capi.h>
 #include <FMI2/fmi2_capi_impl.h>
 
-fmi2_component_t fmi2_capi_instantiate_slave(fmi2_capi_t* fmu, fmi2_string_t instanceName, fmi2_string_t fmuGUID, fmi2_string_t fmuResourceLocation, fmi2_boolean_t visible, fmi2_boolean_t loggingOn)
-{
-	return fmu->c = fmu->fmiInstantiateSlave(instanceName, fmuGUID, fmuResourceLocation, &fmu->callBackFunctions, visible, loggingOn);
-}
-
-void fmi2_capi_free_slave_instance(fmi2_capi_t* fmu)
-{
-	if(fmu->c) {
-		fmu->fmiFreeSlaveInstance(fmu->c);
-		fmu->c = 0;
-	}
-}
-
-fmi2_status_t fmi2_capi_initialize_slave(fmi2_capi_t* fmu, fmi2_real_t relativeTolerance, fmi2_real_t tStart, fmi2_boolean_t StopTimeDefined, fmi2_real_t tStop)
-{
-	return fmu->fmiInitializeSlave(fmu->c, relativeTolerance, tStart, StopTimeDefined, tStop);
-}
-
-
-fmi2_status_t fmi2_capi_terminate_slave(fmi2_capi_t* fmu)
-{
-	return fmu->fmiTerminateSlave(fmu->c);
-}
-
-fmi2_status_t fmi2_capi_reset_slave(fmi2_capi_t* fmu)
-{
-	return fmu->fmiResetSlave(fmu->c);
-}
 
 fmi2_status_t fmi2_capi_set_real_input_derivatives(fmi2_capi_t* fmu, const  fmi2_value_reference_t vr[], size_t nvr, const fmi2_integer_t order[], const  fmi2_real_t value[])  
 {

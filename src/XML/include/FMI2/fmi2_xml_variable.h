@@ -56,14 +56,8 @@ fmi2_variability_enu_t fmi2_xml_get_variability(fmi2_xml_variable_t*);
 fmi2_causality_enu_t fmi2_xml_get_causality(fmi2_xml_variable_t*);
 fmi2_initial_enu_t fmi2_xml_get_initial(fmi2_xml_variable_t*);
 
-size_t fmi2_xml_get_input_index(fmi2_xml_variable_t* );
-
-size_t fmi2_xml_get_output_index(fmi2_xml_variable_t* );
-
-size_t fmi2_xml_get_state_index(fmi2_xml_variable_t* );
-
-size_t fmi2_xml_get_derivative_index(fmi2_xml_variable_t* );
-
+fmi2_xml_variable_t* fmi2_xml_get_previous(fmi2_xml_variable_t* v);
+fmi2_boolean_t fmi2_xml_get_canHandleMultipleSetPerTimeInstant(fmi2_xml_variable_t* v);
 
 fmi2_xml_real_variable_t* fmi2_xml_get_variable_as_real(fmi2_xml_variable_t*);
 fmi2_xml_integer_variable_t* fmi2_xml_get_variable_as_integer(fmi2_xml_variable_t*);
@@ -72,6 +66,8 @@ fmi2_xml_string_variable_t* fmi2_xml_get_variable_as_string(fmi2_xml_variable_t*
 fmi2_xml_bool_variable_t* fmi2_xml_get_variable_as_boolean(fmi2_xml_variable_t*);
 
 double fmi2_xml_get_real_variable_start(fmi2_xml_real_variable_t* v);
+fmi2_xml_real_variable_t* fmi2_xml_get_real_variable_derivative_of(fmi2_xml_real_variable_t* v);
+fmi2_boolean_t fmi2_xml_get_real_variable_reinit(fmi2_xml_real_variable_t* v);
 double fmi2_xml_get_real_variable_max(fmi2_xml_real_variable_t* v);
 double fmi2_xml_get_real_variable_min(fmi2_xml_real_variable_t* v);
 double fmi2_xml_get_real_variable_nominal(fmi2_xml_real_variable_t* v);

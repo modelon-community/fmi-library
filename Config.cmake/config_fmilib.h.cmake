@@ -93,8 +93,13 @@ It is redefined to "." for Makefile based build environments. Otherwise is set b
   #endif
  #endif
 #else
+  #if __GNUC__ >= 4
+    #define FMILIB_EXPORT __attribute__ ((visibility ("default")))
+    #define FMILIB_PRIVATE  __attribute__ ((visibility ("hidden")))
+  #else
     #define FMILIB_EXPORT
     #define FMILIB_PRIVATE
+  #endif
 #endif
 
 /** \def FMILIB_EXPORT

@@ -34,20 +34,19 @@ struct fmi2_xml_variable_t {
 
 	size_t originalIndex;					/** \brief Index in the model description */
 
-	/*
-		Note: in principle a variable can correspond to two different input/states/ders/outputs indices.
-		So when going from a variable to its structure information having one index is not always enough.
-	*/
-	size_t inputIndex;						/** \brief Index in the list of inputs (1-based, 0 if not an input) */
-	size_t stateIndex;						/** \brief Index in the list of states (1-based, 0 if not a state) */
-	size_t derivativeIndex;					/** \brief Index in the list of derivatives (1-based, 0 if not a derivative) */
-	size_t outputIndex;						/** \brief Index in the list of outputs (1-based, 0 if not an ouput) */
+    /* NB: before parsing of <ModelVariables> has finished,
+           derivativeOf and previous are stored as integer indices cast to pointers,
+           until they can be looked up */
+    fmi2_xml_variable_t *derivativeOf;      /** \brief Only for continuous Real variables. If non-NULL, the variable that this is the derivative of. */
+    fmi2_xml_variable_t *previous;          /** \brief If non-NULL, the variable that holds the value of this variable at the previous super-dense time instant. */
 
     fmi2_value_reference_t vr;				/** \brief Value reference */
     char aliasKind;
     char initial;
     char variability;
     char causality;
+    char reinit; /** \brief Only for continuous Real variables */
+    char canHandleMultipleSetPerTimeInstant;
 
     char name[1];
 };

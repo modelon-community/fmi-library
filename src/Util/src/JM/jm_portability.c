@@ -26,7 +26,7 @@
 static const char * module = "JMPRT";
 
 #ifdef WIN32
-#include <Shlwapi.h>
+#include <shlwapi.h>
 #include <direct.h>
 #define get_current_working_directory _getcwd
 #define set_current_working_directory _chdir	

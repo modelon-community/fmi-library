@@ -15,8 +15,8 @@ You should have received a copy of the FMILIB_License.txt file
 along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 */
 
-#ifndef FM1_MODEL_H_
-#define FM1_MODEL_H_
+#ifndef FMU2_MODEL_H_
+#define FMU2_MODEL_H_
 #include <FMI2/fmiFunctions.h>
 #include <fmu_dummy/fmu2_model_defines.h>
 #ifndef FMI_Export
@@ -26,7 +26,6 @@ typedef struct {
 	/*************** FMI ME 2.0 ****************/
 	fmiReal					states			[N_STATES];
 	fmiReal					states_nom		[N_STATES];
-	fmiValueReference		states_vr		[N_STATES];
 	fmiReal					states_der		[N_STATES];
 	fmiReal					event_indicators[N_EVENT_INDICATORS];
 	fmiReal					reals			[N_REAL];
@@ -42,9 +41,6 @@ typedef struct {
 
 	/* fmiSetTime */
 	fmiReal					fmitime;
-
-	/* fmiCompletedIntegratorStep */
-	fmiBoolean				callEventUpdate;
 
 	/* fmiInitializeModel */
 	fmiBoolean				toleranceControlled;
@@ -79,6 +75,31 @@ const char*		fmi_get_version();
 fmiStatus		fmi_set_debug_logging(
 													fmiComponent c,
 													fmiBoolean loggingOn);
+
+fmiComponent fmi_instantiate (
+    fmiString instanceName,
+    fmiType fmuType,
+    fmiString fmuGUID,
+    fmiString fmuLocation,
+    const fmiCallbackFunctions* functions,
+    fmiBoolean visible,
+    fmiBoolean loggingOn);
+
+void fmi_free_instance(
+    fmiComponent c);
+
+fmiStatus fmi_setup_experiment(fmiComponent c,
+    fmiBoolean toleranceDefined, fmiReal tolerance,
+    fmiReal startTime, fmiBoolean stopTimeDefined,
+    fmiReal stopTime);
+fmiStatus		fmi_enter_initialization_mode(fmiComponent c);
+fmiStatus		fmi_exit_initialization_mode(fmiComponent c);
+
+fmiStatus		fmi_terminate(fmiComponent c);
+
+fmiStatus		fmi_reset(
+													fmiComponent c);
+
 
 fmiStatus		fmi_get_real(			
 													fmiComponent c,
@@ -128,16 +149,9 @@ fmiStatus		fmi_set_string(
 /* FMI 2.0 ME Functions */
 const char*		fmi_get_model_types_platform();
 
-fmiComponent	fmi_instantiate_model(
-													fmiString instanceName,
-													fmiString fmuGUID,
-													fmiString fmuLocation,
-													const fmiCallbackFunctions* functions,
-													fmiBoolean visible,
-													fmiBoolean loggingOn);
-
-void			fmi_free_model_instance(
-													fmiComponent c);
+fmiStatus		fmi_enter_event_mode(fmiComponent c);
+fmiStatus		fmi_new_discrete_states(fmiComponent c, fmiEventInfo* eventInfo);
+fmiStatus		fmi_enter_continuous_time_mode(fmiComponent c);
 
 fmiStatus		fmi_set_time(
 													fmiComponent c,
@@ -148,15 +162,10 @@ fmiStatus		fmi_set_continuous_states(
 													const fmiReal x[],
 													size_t nx);
 
-fmiStatus		fmi_completed_integrator_step(
-													fmiComponent c,
-													fmiBoolean* callEventUpdate);
-
-fmiStatus		fmi_initialize(
-													fmiComponent c,
-													fmiBoolean toleranceControlled,
-													fmiReal relativeTolerance,
-													fmiEventInfo* eventInfo);
+fmiStatus fmi_completed_integrator_step(
+    fmiComponent c,
+    fmiBoolean noSetFMUStatePriorToCurrentPoint,
+    fmiBoolean* enterEventMode, fmiBoolean* terminateSimulation);
 
 fmiStatus		fmi_get_derivatives(
 													fmiComponent c,
@@ -168,51 +177,21 @@ fmiStatus		fmi_get_event_indicators(
 													fmiReal eventIndicators[],
 													size_t ni);
 
-fmiStatus		fmi_event_update(
-													fmiComponent c,
-													fmiBoolean intermediateResults,
-													fmiEventInfo* eventInfo);
 fmiStatus		fmi_get_continuous_states(
 													fmiComponent c,
 													fmiReal states[],
 													size_t nx);
 
-fmiStatus		fmi_get_nominal_continuousstates(	
+fmiStatus		fmi_get_nominals_of_continuousstates(	
 													fmiComponent c,
 													fmiReal x_nominal[],
 													size_t nx);
 
-fmiStatus		fmi_get_state_value_references(
-													fmiComponent c,
-													fmiValueReference vrx[],
-													size_t nx);
-
-fmiStatus		fmi_terminate(fmiComponent c);
 
 /* FMI 2.0 CS Functions */
 #ifdef fmiFunctions_h
 
 const char*		fmi_get_types_platform();
-
-fmiComponent	fmi_instantiate_slave(				fmiString instanceName,
-													fmiString fmuGUID,
-													fmiString fmuLocation,
-													const fmiCallbackFunctions* functions,
-													fmiBoolean visible,
-													fmiBoolean loggingOn);
-
-fmiStatus		fmi_initialize_slave(
-													fmiComponent c,
-													fmiReal relativeTolerance,
-													fmiReal tStart,
-													fmiBoolean StopTimeDefined,
-													fmiReal tStop);
-
-fmiStatus		fmi_terminate_slave(
-													fmiComponent c);
-
-fmiStatus		fmi_reset_slave(
-													fmiComponent c);
 
 void			fmi_free_slave_instance(
 													fmiComponent c);

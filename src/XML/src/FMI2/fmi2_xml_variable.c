@@ -129,21 +129,14 @@ fmi2_initial_enu_t fmi2_xml_get_initial(fmi2_xml_variable_t* v) {
 	return (fmi2_initial_enu_t)v->initial;
 }
 
-size_t fmi2_xml_get_input_index(fmi2_xml_variable_t* v) {
-	return v->inputIndex;
+fmi2_xml_variable_t* fmi2_xml_get_previous(fmi2_xml_variable_t* v) {
+    return v->previous;
 }
 
-size_t fmi2_xml_get_output_index(fmi2_xml_variable_t* v){
-	return v->outputIndex;
+fmi2_boolean_t fmi2_xml_get_canHandleMultipleSetPerTimeInstant(fmi2_xml_variable_t* v) {
+    return (fmi2_boolean_t)v->canHandleMultipleSetPerTimeInstant;
 }
 
-size_t fmi2_xml_get_state_index(fmi2_xml_variable_t* v){
-	return v->stateIndex;
-}
-
-size_t fmi2_xml_get_derivative_index(fmi2_xml_variable_t* v){
-	return v->derivativeIndex;
-}
 
 double fmi2_xml_get_real_variable_start(fmi2_xml_real_variable_t* v) {
     fmi2_xml_variable_t* vv = (fmi2_xml_variable_t*)v;
@@ -152,6 +145,17 @@ double fmi2_xml_get_real_variable_start(fmi2_xml_real_variable_t* v) {
         return start->start;
     }
         return fmi2_xml_get_real_variable_nominal(v);
+}
+
+fmi2_xml_real_variable_t* fmi2_xml_get_real_variable_derivative_of(fmi2_xml_real_variable_t* v) {
+    fmi2_xml_variable_t *vv = (fmi2_xml_variable_t *)v;
+    
+    return (fmi2_xml_real_variable_t *)vv->derivativeOf;
+}
+
+fmi2_boolean_t fmi2_xml_get_real_variable_reinit(fmi2_xml_real_variable_t* v) {
+    fmi2_xml_variable_t *vv = (fmi2_xml_variable_t *)v;
+    return (fmi2_boolean_t)vv->reinit;
 }
 
 fmi2_xml_unit_t* fmi2_xml_get_real_variable_unit(fmi2_xml_real_variable_t* v) {
@@ -319,12 +323,12 @@ int fmi2_xml_handle_ScalarVariable(fmi2_xml_parser_context_t *context, const cha
             variable->vr = vr;
             variable->description = description;
             variable->typeBase = 0;
-			variable->stateIndex = 0;
-			variable->inputIndex = 0;
-			variable->derivativeIndex = 0;
-			variable->outputIndex = 0;
 			variable->originalIndex = jm_vector_get_size(jm_named_ptr)(&md->variablesByName) - 1;
+            variable->derivativeOf = 0;
+            variable->previous = 0;
             variable->aliasKind = fmi2_variable_is_not_alias;
+            variable->reinit = 0;
+            variable->canHandleMultipleSetPerTimeInstant = 1;
 
             {
                 jm_name_ID_map_t causalityConventionMap[] = {{"local",fmi2_causality_enu_local},
@@ -375,6 +379,24 @@ int fmi2_xml_handle_ScalarVariable(fmi2_xml_parser_context_t *context, const cha
 					initial = defaultInitial;
 				}
                 variable->initial = initial;
+            }
+            {
+                unsigned int previous, multipleSet;
+                if (
+                /*   <xs:attribute name="previous" type="xs:unsignedInt"> */
+                   fmi2_xml_set_attr_uint(context, fmi2_xml_elmID_ScalarVariable, fmi_attr_id_previous, 0, &previous, 0) ||
+                /*   <xs:attribute name="canHandleMultipleSetPerTimeInstant" type="xs:boolean"> */
+                   fmi2_xml_set_attr_boolean(context, fmi2_xml_elmID_ScalarVariable, fmi_attr_id_canHandleMultipleSetPerTimeInstant, 0, &multipleSet, 1)
+                ) return -1;
+                
+                 /* Store the index as a pointer since we cannot access the variables list yet (we are constructing it). */
+                variable->previous = (void*)((char *)NULL + previous);
+                variable->canHandleMultipleSetPerTimeInstant = (char)multipleSet;
+
+                if (variable->variability != fmi2_causality_enu_input && !multipleSet) {
+                    fmi2_xml_parse_error(context, "Only variables with causality='input' can have canHandleMultipleSetPerTimeInstant=false");
+                    return -1;
+                }
             }
     }
     else {
@@ -496,6 +518,36 @@ int fmi2_xml_handle_RealVariable(fmi2_xml_parser_context_t *context, const char*
                 )
                     return -1;
             variable->typeBase = &start->typeBase;
+        }
+
+        {
+            /*   <xs:attribute name="derivative" type="xs:unsignedInt"> */
+            unsigned int derivativeOf;
+            unsigned int reinit;
+
+            if(fmi2_xml_set_attr_uint(context, fmi2_xml_elmID_Real,
+                fmi_attr_id_derivative, 0, &derivativeOf, 0)) return -1;
+            /* TODO: consider: is it ok to read in an unsigned int to store in a size_t? */
+            /* Store the index as a pointer since we cannot access the variables list yet (we are constructing it). */
+            variable->derivativeOf = (void *)((char *)NULL + derivativeOf);
+
+            /*   <xs:attribute name="reinit" type="xs:boolean" use="optional" default="false"> */
+            if(fmi2_xml_set_attr_boolean(context, fmi2_xml_elmID_Real,
+                fmi_attr_id_reinit, 0, &reinit, 0)) return -1;
+            variable->reinit = (char)reinit;
+
+            if (variable->variability != fmi2_variability_enu_continuous) {
+                /* If derivative is set, this variable must be continuous. */
+                if (derivativeOf) {
+                    fmi2_xml_parse_error(context, "The derivative attribute may only appear on continuous-time Real variables.");
+                    /* return -1; */
+                }
+                if (reinit) {
+                    fmi2_xml_parse_error(context, "The reinit attribute may only be set on continuous-time states.");
+                    return -1;
+                }
+                /* If reinit is true, this variable must be continuous. */
+            }
         }
     }
     else {
@@ -825,7 +877,7 @@ int fmi2_xml_handle_ModelVariables(fmi2_xml_parser_context_t *context, const cha
 
         numvar = jm_vector_get_size(jm_named_ptr)(&md->variablesByName);
 
-        /* store the list of vars in origianl order */
+        /* store the list of vars in original order */
 		{
 			size_t size = jm_vector_get_size(jm_named_ptr)(&md->variablesByName);
 			md->variablesOrigOrder = jm_vector_alloc(jm_voidp)(size,size,md->callbacks);
@@ -836,6 +888,42 @@ int fmi2_xml_handle_ModelVariables(fmi2_xml_parser_context_t *context, const cha
 				}
 			}
 		}		
+
+        /* look up actual pointers for the derivativeOf and previous fields in variablesOrigOrder */
+        {
+            size_t size = jm_vector_get_size(jm_voidp)(md->variablesOrigOrder);
+            size_t k;
+            for (k=0; k < size; k++) {
+                fmi2_xml_variable_t *variable = jm_vector_get_item(jm_voidp)(md->variablesOrigOrder, k);
+                
+                if (variable->derivativeOf) {
+                    /* Retrieve index that was stored as a pointer */
+                    size_t index = (char*)variable->derivativeOf - (char *)NULL;
+                    /* Convert from one- to zero-based indexing */
+                    index--;
+                    /* Ok to just check upper bound since index is unsigned. */
+                    if (index >= size) {
+                        fmi2_xml_parse_error(context, "The 'derivative' attribute must have a value between 1 and the number of model variables.");
+                        /* todo: free allocated memory? */
+                        return -1;
+                    }                    
+                    variable->derivativeOf = (fmi2_xml_variable_t*)jm_vector_get_item(jm_voidp)(md->variablesOrigOrder, index);
+                }
+                if (variable->previous) {
+                    /* retrieve index that was stored as a pointer */
+                    size_t index = (char*)variable->previous - (char *)NULL;
+                    /* Convert from one- to zero-based indexing */
+                    index--;
+                    /* Ok to just check upper bound since index is unsigned. */
+                    if (index >= size) {
+                        fmi2_xml_parse_error(context, "The 'previous' attribute must have a value between 1 and the number of model variables.");
+                        /* todo: free allocated memory? */
+                        return -1;
+                    }                    
+                    variable->previous = (fmi2_xml_variable_t*)jm_vector_get_item(jm_voidp)(md->variablesOrigOrder, index);
+                }
+            }
+        }
 
         /* sort the variables by names */
         jm_vector_qsort(jm_named_ptr)(&md->variablesByName,jm_compare_named);

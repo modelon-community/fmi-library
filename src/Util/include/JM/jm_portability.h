@@ -19,7 +19,7 @@
 #include "jm_callbacks.h"
 
 /* Include platform dependent headers */
-#if defined(_MSC_VER) || defined(WIN32)
+#if defined(_MSC_VER) || defined(WIN32) || defined(__MINGW32__)
 #include <windows.h> /* Microsoft Windows API */
 #define DLL_HANDLE HANDLE
 #else

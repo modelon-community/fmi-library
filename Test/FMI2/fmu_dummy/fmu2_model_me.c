@@ -42,6 +42,39 @@ FMI_Export fmiStatus fmiSetDebugLogging(fmiComponent c, fmiBoolean loggingOn, si
 	return fmi_set_debug_logging(c, loggingOn);
 }
 
+FMI_Export fmiComponent fmiInstantiate(fmiString instanceName,
+  fmiType fmuType, fmiString GUID, fmiString location,
+  const fmiCallbackFunctions* functions, fmiBoolean visible,
+  fmiBoolean loggingOn)
+{
+    return fmi_instantiate(instanceName, fmuType, GUID, location, functions,
+                           visible, loggingOn);
+}
+
+FMI_Export void fmiFreeInstance(fmiComponent c)
+{
+	fmi_free_instance(c);
+}
+
+FMI_Export fmiStatus fmiSetupExperiment(fmiComponent c, 
+    fmiBoolean toleranceDefined, fmiReal tolerance,
+    fmiReal startTime, fmiBoolean stopTimeDefined,
+    fmiReal stopTime)
+{
+    return fmi_setup_experiment(c, toleranceDefined, tolerance, startTime,
+                                stopTimeDefined, stopTime);
+}
+
+FMI_Export fmiStatus fmiEnterInitializationMode(fmiComponent c)
+{
+    return fmi_enter_initialization_mode(c);
+}
+
+FMI_Export fmiStatus fmiExitInitializationMode(fmiComponent c)
+{
+    return fmi_exit_initialization_mode(c);
+}
+
 FMI_Export fmiStatus fmiGetReal(fmiComponent c, const fmiValueReference vr[], size_t nvr, fmiReal value[])
 {
 	return fmi_get_real(c, vr, nvr, value);
@@ -88,14 +121,19 @@ FMI_Export const char* fmiGetTypesPlatform()
 	return fmi_get_model_types_platform();
 }
 
-FMI_Export fmiComponent fmiInstantiateModel(fmiString instanceName, fmiString GUID, fmiString location, const fmiCallbackFunctions* functions, fmiBoolean visible, fmiBoolean loggingOn)
+FMI_Export fmiStatus fmiEnterEventMode(fmiComponent c)
 {
-	return fmi_instantiate_model(instanceName, GUID, location, functions, visible, loggingOn);
+    return fmi_enter_event_mode(c);
 }
 
-FMI_Export void fmiFreeModelInstance(fmiComponent c)
+FMI_Export fmiStatus fmiNewDiscreteStates(fmiComponent c, fmiEventInfo* eventInfo)
 {
-	fmi_free_model_instance(c);
+    return fmi_new_discrete_states(c, eventInfo);
+}
+
+FMI_Export fmiStatus fmiEnterContinuousTimeMode(fmiComponent c)
+{
+    return fmi_enter_continuous_time_mode(c);
 }
 
 FMI_Export fmiStatus fmiSetTime(fmiComponent c, fmiReal fmitime)
@@ -108,14 +146,12 @@ FMI_Export fmiStatus fmiSetContinuousStates(fmiComponent c, const fmiReal x[], s
 	return fmi_set_continuous_states(c, x, nx);
 }
 
-FMI_Export fmiStatus fmiCompletedIntegratorStep(fmiComponent c, fmiBoolean* callEventUpdate)
+FMI_Export fmiStatus fmiCompletedIntegratorStep(fmiComponent c,
+    fmiBoolean noSetFMUStatePriorToCurrentPoint,
+    fmiBoolean* enterEventMode, fmiBoolean* terminateSimulation)
 {
-	return fmi_completed_integrator_step(c, callEventUpdate);
-}
-
-FMI_Export fmiStatus fmiInitializeModel(fmiComponent c, fmiBoolean toleranceControlled, fmiReal relativeTolerance, fmiEventInfo* eventInfo)
-{
-	return fmi_initialize(c, toleranceControlled, relativeTolerance, eventInfo);
+    return fmi_completed_integrator_step(c, noSetFMUStatePriorToCurrentPoint,
+                                         enterEventMode, terminateSimulation);
 }
 
 FMI_Export fmiStatus fmiGetDerivatives(fmiComponent c, fmiReal derivatives[] , size_t nx)
@@ -128,32 +164,22 @@ FMI_Export fmiStatus fmiGetEventIndicators(fmiComponent c, fmiReal eventIndicato
 	return fmi_get_event_indicators(c, eventIndicators, ni);
 }
 
-FMI_Export fmiStatus fmiEventUpdate(fmiComponent c, fmiBoolean intermediateResults, fmiEventInfo* eventInfo)
-{
-	return fmi_event_update(c, intermediateResults, eventInfo);
-}
-
-FMI_Export fmiStatus fmiCompletedEventIteration(fmiComponent c) {
-	if(c) return fmiOK;
-	return fmiError;
-}
-
 FMI_Export fmiStatus fmiGetContinuousStates(fmiComponent c, fmiReal states[], size_t nx)
 {
 	return fmi_get_continuous_states(c, states, nx);
 }
 
-FMI_Export fmiStatus fmiGetNominalContinuousStates(fmiComponent c, fmiReal x_nominal[], size_t nx)
+FMI_Export fmiStatus fmiGetNominalsOfContinuousStates(fmiComponent c, fmiReal x_nominal[], size_t nx)
 {
-	return fmi_get_nominal_continuousstates(c, x_nominal, nx);
-}
-
-FMI_Export fmiStatus fmiGetStateValueReferences(fmiComponent c, fmiValueReference vrx[], size_t nx)
-{
-	return fmi_get_state_value_references(c, vrx, nx);
+	return fmi_get_nominals_of_continuousstates(c, x_nominal, nx);
 }
 
 FMI_Export fmiStatus fmiTerminate(fmiComponent c)
 {
 	return fmi_terminate(c);
+}
+
+FMI_Export fmiStatus fmiReset(fmiComponent c)
+{
+	return fmi_reset(c);
 }

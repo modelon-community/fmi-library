@@ -163,7 +163,7 @@ void fmi2_import_destroy_dllfmu(fmi2_import_t* fmu) {
 	}
 }
 
-/* FMI 1.0 Common functions */
+/* FMI 2.0 Common functions */
 const char* fmi2_import_get_version(fmi2_import_t* fmu) {
 	if(!fmu->capi) {
 		jm_log_error(fmu->callbacks, module,"FMU CAPI is not loaded");
@@ -179,6 +179,59 @@ fmi2_status_t fmi2_import_set_debug_logging(fmi2_import_t* fmu, fmi2_boolean_t l
 	}
 	return fmi2_capi_set_debug_logging(fmu -> capi, loggingOn, nCategories, categories);
 }
+
+
+jm_status_enu_t fmi2_import_instantiate(fmi2_import_t* fmu,
+  fmi2_string_t instanceName, fmi2_type_t fmuType,
+  fmi2_string_t fmuResourceLocation, fmi2_boolean_t visible) {
+    fmi2_string_t fmuGUID = fmi2_import_get_GUID(fmu);
+    fmi2_boolean_t loggingOn = (fmu->callbacks->log_level > jm_log_level_nothing);
+    fmi2_component_t c;
+    if(!fmuResourceLocation) 
+        fmuResourceLocation = fmu->resourceLocation;
+    c = fmi2_capi_instantiate(fmu -> capi, instanceName, fmuType, fmuGUID,
+                              fmuResourceLocation, visible, loggingOn);
+    if (c == NULL) {
+        return jm_status_error;
+    } else {
+        return jm_status_success;
+    }
+}
+
+void fmi2_import_free_instance(fmi2_import_t* fmu) {
+    fmi2_capi_free_instance(fmu -> capi);
+}
+
+fmi2_status_t fmi2_import_setup_experiment(fmi2_import_t* fmu,
+    fmi2_boolean_t tolerance_defined, fmi2_real_t tolerance,
+    fmi2_real_t start_time, fmi2_boolean_t stop_time_defined,
+    fmi2_real_t stop_time)
+{
+    assert(fmu);
+    return fmi2_capi_setup_experiment(fmu->capi, tolerance_defined, tolerance,
+                                      start_time, stop_time_defined, stop_time);
+}
+
+fmi2_status_t fmi2_import_enter_initialization_mode(fmi2_import_t* fmu)
+{
+    assert(fmu);
+    return fmi2_capi_enter_initialization_mode(fmu->capi);
+}
+
+fmi2_status_t fmi2_import_exit_initialization_mode(fmi2_import_t* fmu)
+{
+    assert(fmu);
+    return fmi2_capi_exit_initialization_mode(fmu->capi);
+}
+
+fmi2_status_t fmi2_import_terminate(fmi2_import_t* fmu) {
+	return fmi2_capi_terminate(fmu -> capi);
+}
+
+fmi2_status_t fmi2_import_reset(fmi2_import_t* fmu) {
+	return fmi2_capi_reset(fmu -> capi);
+}
+
 
 fmi2_status_t fmi2_import_set_real(fmi2_import_t* fmu, const fmi2_value_reference_t vr[], size_t nvr, const fmi2_real_t    value[]) {
 	return fmi2_capi_set_real(fmu -> capi, vr, nvr, value);
@@ -243,22 +296,16 @@ fmi2_status_t fmi2_import_get_directional_derivative(fmi2_import_t* fmu, const f
 
 /* FMI 2.0 ME functions */
 
-jm_status_enu_t fmi2_import_instantiate_model(fmi2_import_t* fmu, fmi2_string_t instanceName, fmi2_string_t fmuResourceLocation, fmi2_boolean_t visible) {
-	fmi2_string_t fmuGUID = fmi2_import_get_GUID(fmu);
-	fmi2_boolean_t loggingOn = (fmu->callbacks->log_level > jm_log_level_nothing);
-	fmi2_component_t c;
-	if(!fmuResourceLocation) 
-		fmuResourceLocation = fmu->resourceLocation;
-	c = fmi2_capi_instantiate_model(fmu -> capi, instanceName, fmuGUID,  fmuResourceLocation, visible, loggingOn);
-	if (c == NULL) {
-		return jm_status_error;
-	} else {
-		return jm_status_success;
-	}
+fmi2_status_t fmi2_import_enter_event_mode(fmi2_import_t* fmu) {
+    return fmi2_capi_enter_event_mode(fmu->capi);
 }
 
-void fmi2_import_free_model_instance(fmi2_import_t* fmu) {
-	fmi2_capi_free_model_instance(fmu -> capi);
+fmi2_status_t fmi2_import_new_discrete_states(fmi2_import_t* fmu, fmi2_event_info_t* eventInfo) {
+    return fmi2_capi_new_discrete_states(fmu->capi, eventInfo);
+}
+
+fmi2_status_t fmi2_import_enter_continuous_time_mode(fmi2_import_t* fmu) {
+    return fmi2_capi_enter_continuous_time_mode(fmu->capi);
 }
 
 fmi2_status_t fmi2_import_set_time(fmi2_import_t* fmu, fmi2_real_t time) {
@@ -269,12 +316,11 @@ fmi2_status_t fmi2_import_set_continuous_states(fmi2_import_t* fmu, const fmi2_r
 	return fmi2_capi_set_continuous_states(fmu -> capi, x, nx);
 }
 
-fmi2_status_t fmi2_import_completed_integrator_step(fmi2_import_t* fmu, fmi2_boolean_t* callEventUpdate) {
-	return fmi2_capi_completed_integrator_step(fmu -> capi, callEventUpdate);
-}
-
-fmi2_status_t fmi2_import_initialize_model(fmi2_import_t* fmu, fmi2_boolean_t toleranceControlled, fmi2_real_t relativeTolerance, fmi2_event_info_t* eventInfo) {
-	return fmi2_capi_initialize_model(fmu -> capi, toleranceControlled, relativeTolerance, eventInfo);
+fmi2_status_t fmi2_import_completed_integrator_step(fmi2_import_t* fmu,
+  fmi2_boolean_t noSetFMUStatePriorToCurrentPoint,
+  fmi2_boolean_t* enterEventMode, fmi2_boolean_t* terminateSimulation) {
+    return fmi2_capi_completed_integrator_step(fmu -> capi, noSetFMUStatePriorToCurrentPoint,
+                                               enterEventMode, terminateSimulation);
 }
 
 fmi2_status_t fmi2_import_get_derivatives(fmi2_import_t* fmu, fmi2_real_t derivatives[], size_t nx) {
@@ -285,57 +331,15 @@ fmi2_status_t fmi2_import_get_event_indicators(fmi2_import_t* fmu, fmi2_real_t e
 	return fmi2_capi_get_event_indicators(fmu -> capi, eventIndicators, ni);
 }
 
-fmi2_status_t fmi2_import_eventUpdate(fmi2_import_t* fmu, fmi2_boolean_t intermediateResults, fmi2_event_info_t* eventInfo) {
-	return fmi2_capi_eventUpdate(fmu -> capi, intermediateResults, eventInfo);
-}
-
-fmi2_status_t fmi2_import_completed_event_iteration(fmi2_import_t* fmu) {
-	return fmi2_capi_completed_event_iteration(fmu -> capi);
-}
-
 fmi2_status_t fmi2_import_get_continuous_states(fmi2_import_t* fmu, fmi2_real_t states[], size_t nx) {
 	return fmi2_capi_get_continuous_states(fmu -> capi, states, nx);
 }
 
-fmi2_status_t fmi2_import_get_nominal_continuous_states(fmi2_import_t* fmu, fmi2_real_t x_nominal[], size_t nx) {
-	return fmi2_capi_get_nominal_continuous_states(fmu -> capi, x_nominal, nx);
+fmi2_status_t fmi2_import_get_nominals_of_continuous_states(fmi2_import_t* fmu, fmi2_real_t x_nominal[], size_t nx) {
+	return fmi2_capi_get_nominals_of_continuous_states(fmu -> capi, x_nominal, nx);
 }
 
-fmi2_status_t fmi2_import_terminate(fmi2_import_t* fmu) {
-	return fmi2_capi_terminate(fmu -> capi);
-}
-
-/* FMI 1.0 CS functions */
-
-jm_status_enu_t fmi2_import_instantiate_slave(fmi2_import_t* fmu, fmi2_string_t instanceName, fmi2_string_t fmuResourceLocation, fmi2_boolean_t visible) {
- 	fmi2_string_t fmuGUID = fmi2_import_get_GUID(fmu);
-	fmi2_boolean_t loggingOn = (fmu->callbacks->log_level > jm_log_level_nothing);
-	fmi2_component_t c;
-	if(!fmuResourceLocation) fmuResourceLocation = fmu->resourceLocation;
-	jm_log_verbose(fmu->callbacks, module, "Instantiating the slave with FMU resources in '%s'", fmuResourceLocation);
-	c = fmi2_capi_instantiate_slave(fmu -> capi, instanceName, fmuGUID, fmuResourceLocation, visible, loggingOn);
-	if (c == NULL) {
-		return jm_status_error;
-	} else {
-		return jm_status_success;
-	}
-}
-
-fmi2_status_t fmi2_import_initialize_slave(fmi2_import_t* fmu, fmi2_real_t  relativeTolerance, fmi2_real_t tStart, fmi2_boolean_t StopTimeDefined, fmi2_real_t tStop) {
-	return fmi2_capi_initialize_slave(fmu -> capi, relativeTolerance, tStart, StopTimeDefined, tStop);
-}
-
-fmi2_status_t fmi2_import_terminate_slave(fmi2_import_t* fmu) {
-	return fmi2_capi_terminate_slave(fmu -> capi);
-}
-
-fmi2_status_t fmi2_import_reset_slave(fmi2_import_t* fmu) {
-	return fmi2_capi_reset_slave(fmu -> capi);
-}
-
-void fmi2_import_free_slave_instance(fmi2_import_t* fmu) {
-	fmi2_capi_free_slave_instance(fmu -> capi);
-}
+/* FMI 2.0 CS functions */
 
 fmi2_status_t fmi2_import_set_real_input_derivatives(fmi2_import_t* fmu, const fmi2_value_reference_t vr[], size_t nvr, const fmi2_integer_t order[], const  fmi2_real_t value[]) {
 	return fmi2_capi_set_real_input_derivatives(fmu -> capi, vr, nvr, order, value);

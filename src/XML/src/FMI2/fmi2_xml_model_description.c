@@ -67,6 +67,11 @@ fmi2_xml_model_description_t * fmi2_xml_allocate_model_description( jm_callbacks
 
     md->defaultExperimentTolerance = FMI2_DEFAULT_EXPERIMENT_TOLERANCE;
 
+    md->defaultExperimentStepSize = FMI2_DEFAULT_EXPERIMENT_STEPSIZE;
+
+    jm_vector_init(jm_string)(&md->sourceFilesME, 0, cb);
+	jm_vector_init(jm_string)(&md->sourceFilesCS, 0, cb);
+
 	jm_vector_init(jm_string)(&md->vendorList, 0, cb);
 	jm_vector_init(jm_string)(&md->logCategories, 0, cb);
 
@@ -121,6 +126,14 @@ void fmi2_xml_clear_model_description( fmi2_xml_model_description_t* md) {
     md->defaultExperimentStopTime = 0;
 
     md->defaultExperimentTolerance = 0;
+
+    md->defaultExperimentStepSize = 0;
+
+    jm_vector_foreach(jm_string)(&md->sourceFilesME, (void(*)(const char*))md->callbacks->free);
+    jm_vector_free_data(jm_string)(&md->sourceFilesME);	
+
+    jm_vector_foreach(jm_string)(&md->sourceFilesCS, (void(*)(const char*))md->callbacks->free);
+    jm_vector_free_data(jm_string)(&md->sourceFilesCS);	
 
     jm_vector_foreach(jm_string)(&md->vendorList, (void(*)(const char*))md->callbacks->free);
     jm_vector_free_data(jm_string)(&md->vendorList);
@@ -238,20 +251,16 @@ double fmi2_xml_get_default_experiment_start(fmi2_xml_model_description_t* md) {
     return md->defaultExperimentStartTime;
 }
 
-void fmi2_xml_set_default_experiment_start(fmi2_xml_model_description_t* md, double t){
-    md->defaultExperimentStartTime = t;
-}
-
 double fmi2_xml_get_default_experiment_stop(fmi2_xml_model_description_t* md){
     return md->defaultExperimentStopTime;
 }
 
-void fmi2_xml_set_default_experiment_stop(fmi2_xml_model_description_t* md, double t){
-    md->defaultExperimentStopTime = t;
-}
-
 double fmi2_xml_get_default_experiment_tolerance(fmi2_xml_model_description_t* md){
     return md->defaultExperimentTolerance;
+}
+
+double fmi2_xml_get_default_experiment_step(fmi2_xml_model_description_t* md){
+    return md->defaultExperimentStepSize;
 }
 
 fmi2_fmu_kind_enu_t fmi2_xml_get_fmu_kind(fmi2_xml_model_description_t* md) {
@@ -265,10 +274,6 @@ unsigned int* fmi2_xml_get_capabilities(fmi2_xml_model_description_t* md) {
 unsigned int fmi2_xml_get_capability(fmi2_xml_model_description_t* md, fmi2_capabilities_enu_t id) {
 	assert((unsigned)id < (unsigned)fmi2_capabilities_Num);
 	return md->capabilities[id];
-}
-
-void fmi2_xml_set_default_experiment_tolerance(fmi2_xml_model_description_t* md, double tol){
-    md->defaultExperimentTolerance = tol;
 }
 
 fmi2_xml_unit_definitions_t* fmi2_xml_get_unit_definitions(fmi2_xml_model_description_t* md) {
@@ -297,6 +302,16 @@ size_t fmi2_xml_get_vendors_num(fmi2_xml_model_description_t* md) {
 jm_vector(jm_string)* fmi2_xml_get_log_categories(fmi2_xml_model_description_t* md) {
 	assert(md);
 	return &md->logCategories;
+}
+
+jm_vector(jm_string)* fmi2_xml_get_source_files_me(fmi2_xml_model_description_t* md) {
+	assert(md);
+	return &md->sourceFilesME;
+}
+
+jm_vector(jm_string)* fmi2_xml_get_source_files_cs(fmi2_xml_model_description_t* md) {
+	assert(md);
+	return &md->sourceFilesCS;
 }
 
 fmi2_xml_model_structure_t* fmi2_xml_get_model_structure(fmi2_xml_model_description_t* md) {
@@ -376,15 +391,15 @@ int fmi2_xml_handle_fmiModelDescription(fmi2_xml_parser_context_t *context, cons
 			return -1;
 		}
 		if( (md->fmuKind != fmi2_fmu_kind_cs) && !fmi2_xml_is_valid_model_ID(fmi2_xml_get_model_identifier_ME(md))) {
-			fmi2_xml_parse_error(context, "Model indetifier '%s' is not valid (must be a valid C-identifier)", fmi2_xml_get_model_identifier_ME(md));
+			fmi2_xml_parse_error(context, "Model identifier '%s' is not valid (must be a valid C-identifier)", fmi2_xml_get_model_identifier_ME(md));
 			return -1;
 		}
 		if( (md->fmuKind != fmi2_fmu_kind_me) && !fmi2_xml_is_valid_model_ID(fmi2_xml_get_model_identifier_CS(md))) {
-			fmi2_xml_parse_error(context, "Model indetifier '%s' is not valid (must be a valid C-identifier)", fmi2_xml_get_model_identifier_CS(md));
+			fmi2_xml_parse_error(context, "Model identifier '%s' is not valid (must be a valid C-identifier)", fmi2_xml_get_model_identifier_CS(md));
 			return -1;
 		}
 		if( (md->fmuKind == fmi2_fmu_kind_me_and_cs) && (strcmp(fmi2_xml_get_model_identifier_CS(md), fmi2_xml_get_model_identifier_ME(md)) == 0)) {
-			fmi2_xml_parse_error(context, "Model indetifiers for ModelExchange and CoSimulation must be different");
+			fmi2_xml_parse_error(context, "Model identifiers for ModelExchange and CoSimulation must be different");
 			return -1;
 		}
 		if(!md->modelStructure) {
@@ -399,8 +414,25 @@ int fmi2_xml_handle_ModelExchange(fmi2_xml_parser_context_t *context, const char
     fmi2_xml_model_description_t* md = context->modelDescription;
     if(!data) {
 		jm_log_verbose(context->callbacks, module, "Parsing XML element ModelExchange");
+
+        /*  reset handles for the elements that are specific under ModelExchange */
+        fmi2_xml_set_element_handle(context, "SourceFiles", FMI2_XML_ELM_ID(SourceFiles));
+        fmi2_xml_set_element_handle(context, "File", FMI2_XML_ELM_ID(File));
+
 		md->fmuKind = fmi2_fmu_kind_me;
         /* process the attributes */
+
+        /* <xs:attribute name="providesDirectionalDerivative" type="xs:boolean" default="false"/> */
+        if (fmi2_xml_is_attr_defined(context, fmi_attr_id_providesDirectionalDerivatives)) {
+			fmi2_xml_parse_error(context, "Attribute 'providesDirectionalDerivatives' has been renamed to 'providesDirectionalDerivative'.");
+            if (fmi2_xml_set_attr_boolean(context,fmi2_xml_elmID_ModelExchange, fmi_attr_id_providesDirectionalDerivatives,0,
+                &md->capabilities[fmi2_me_providesDirectionalDerivatives],0)) return -1;
+        }
+        else {
+            if (fmi2_xml_set_attr_boolean(context,fmi2_xml_elmID_ModelExchange, fmi_attr_id_providesDirectionalDerivative,0,
+                &md->capabilities[fmi2_me_providesDirectionalDerivatives],0)) return -1;
+        }
+
         return (	/* <xs:attribute name="modelIdentifier" type="xs:normalizedString" use="required"> */
                     fmi2_xml_set_attr_string(context, fmi2_xml_elmID_ModelExchange, fmi_attr_id_modelIdentifier, 1, &(md->modelIdentifierME)) ||
 					/* 	<xs:attribute name="needsExecutionTool" type="xs:boolean" default="false"> */
@@ -420,10 +452,7 @@ int fmi2_xml_handle_ModelExchange(fmi2_xml_parser_context_t *context, const char
                                              &md->capabilities[fmi2_me_canGetAndSetFMUstate],0) ||
 					/* <xs:attribute name="canSerializeFMUstate" type="xs:boolean" default="false"/> */
                     fmi2_xml_set_attr_boolean(context,fmi2_xml_elmID_ModelExchange, fmi_attr_id_canSerializeFMUstate,0,
-                                             &md->capabilities[fmi2_me_canSerializeFMUstate],0) ||
-					/* <xs:attribute name="providesDirectionalDerivatives" type="xs:boolean" default="false"/> */
-                    fmi2_xml_set_attr_boolean(context,fmi2_xml_elmID_ModelExchange, fmi_attr_id_providesDirectionalDerivatives,0,
-                                             &md->capabilities[fmi2_me_providesDirectionalDerivatives],0)
+                                             &md->capabilities[fmi2_me_canSerializeFMUstate],0)
                    );
     }
     else {
@@ -436,11 +465,28 @@ int fmi2_xml_handle_CoSimulation(fmi2_xml_parser_context_t *context, const char*
     fmi2_xml_model_description_t* md = context->modelDescription;
     if(!data) {
 		jm_log_verbose(context->callbacks, module, "Parsing XML element CoSimulation");
+
+        /*  reset handles for the elements that are specific under CoSimulation */
+        fmi2_xml_set_element_handle(context, "SourceFiles", FMI2_XML_ELM_ID(SourceFilesCS));
+        fmi2_xml_set_element_handle(context, "File", FMI2_XML_ELM_ID(FileCS));
+
 		if(md->fmuKind == fmi2_fmu_kind_me)
 			md->fmuKind = fmi2_fmu_kind_me_and_cs;
 		else
 			md->fmuKind = fmi2_fmu_kind_cs;
         /* process the attributes */
+
+        /* <xs:attribute name="providesDirectionalDerivative" type="xs:boolean" default="false"/> */
+        if (fmi2_xml_is_attr_defined(context, fmi_attr_id_providesDirectionalDerivatives)) {
+			fmi2_xml_parse_error(context, "Attribute 'providesDirectionalDerivatives' has been renamed to 'providesDirectionalDerivative'.");
+            if (fmi2_xml_set_attr_boolean(context,fmi2_xml_elmID_ModelExchange, fmi_attr_id_providesDirectionalDerivatives,0,
+                &md->capabilities[fmi2_me_providesDirectionalDerivatives],0)) return -1;
+        }
+        else {
+            if (fmi2_xml_set_attr_boolean(context,fmi2_xml_elmID_ModelExchange, fmi_attr_id_providesDirectionalDerivative,0,
+                &md->capabilities[fmi2_me_providesDirectionalDerivatives],0)) return -1;
+        }
+
         return (	/* <xs:attribute name="modelIdentifier" type="xs:normalizedString" use="required"> */
                     fmi2_xml_set_attr_string(context, fmi2_xml_elmID_CoSimulation, fmi_attr_id_modelIdentifier, 1, &(md->modelIdentifierCS)) ||
 					/* 	<xs:attribute name="needsExecutionTool" type="xs:boolean" default="false"> */
@@ -449,9 +495,6 @@ int fmi2_xml_handle_CoSimulation(fmi2_xml_parser_context_t *context, const char*
 					/* <xs:attribute name="canHandleVariableCommunicationStepSize" type="xs:boolean" default="false"/> */
                     fmi2_xml_set_attr_boolean(context,fmi2_xml_elmID_CoSimulation, fmi_attr_id_canHandleVariableCommunicationStepSize,0,
                                              &md->capabilities[fmi2_cs_canHandleVariableCommunicationStepSize],0) ||
-					/* <xs:attribute name="canHandleEvents" type="xs:boolean" default="false"/>*/
-                    fmi2_xml_set_attr_boolean(context,fmi2_xml_elmID_CoSimulation, fmi_attr_id_canHandleEvents,0,
-                                             &md->capabilities[fmi2_cs_canHandleEvents],0) ||
 					/* <xs:attribute name="canInterpolateInputs" type="xs:boolean" default="false"/>*/
                     fmi2_xml_set_attr_boolean(context,fmi2_xml_elmID_CoSimulation, fmi_attr_id_canInterpolateInputs,0,
                                              &md->capabilities[fmi2_cs_canInterpolateInputs],0) ||
@@ -461,9 +504,6 @@ int fmi2_xml_handle_CoSimulation(fmi2_xml_parser_context_t *context, const char*
 					/* <xs:attribute name="canRunAsynchronuously" type="xs:boolean" default="false"/> */
                     fmi2_xml_set_attr_boolean(context,fmi2_xml_elmID_CoSimulation, fmi_attr_id_canRunAsynchronuously,0,
                                              &md->capabilities[fmi2_cs_canRunAsynchronuously],0) ||
-					/* <xs:attribute name="canSignalEvents" type="xs:boolean" default="false"/> */
-                    fmi2_xml_set_attr_boolean(context,fmi2_xml_elmID_CoSimulation, fmi_attr_id_canSignalEvents,0,
-                                             &md->capabilities[fmi2_cs_canSignalEvents],0) ||
 					/* <xs:attribute name="canBeInstantiatedOnlyOncePerProcess" type="xs:boolean" default="false"/> */
                     fmi2_xml_set_attr_boolean(context,fmi2_xml_elmID_CoSimulation, fmi_attr_id_canBeInstantiatedOnlyOncePerProcess,0,
                                              &md->capabilities[fmi2_cs_canBeInstantiatedOnlyOncePerProcess],0) ||
@@ -488,6 +528,65 @@ int fmi2_xml_handle_CoSimulation(fmi2_xml_parser_context_t *context, const char*
     }
 }
 
+int fmi2_xml_handle_SourceFiles(fmi2_xml_parser_context_t *context, const char* data) {
+    return 0;
+}
+
+static int push_back_jm_string(fmi2_xml_parser_context_t *context, jm_vector(jm_string) *stringvector, jm_vector(char)* buf) {
+    size_t len;
+    char* string = 0;
+    jm_string *pstring;
+
+    pstring = jm_vector_push_back(jm_string)(stringvector, string);
+	len = jm_vector_get_size(char)(buf);
+    if(pstring )
+        *pstring = string = (char*)(context->callbacks->malloc(len + 1));
+	if(!pstring || !string) {
+	    fmi2_xml_parse_fatal(context, "Could not allocate memory");
+		return -1;
+	}
+    memcpy(string, jm_vector_get_itemp(char)(buf,0), len);
+    string[len] = 0;
+    return 0;
+}
+
+
+int fmi2_xml_handle_File(fmi2_xml_parser_context_t *context, const char* data) {
+    if(!data) {
+        fmi2_xml_model_description_t* md = context->modelDescription;
+        jm_vector(char)* bufName = fmi2_xml_reserve_parse_buffer(context,1,100);
+
+        if(!bufName) return -1;
+        /* <xs:attribute name="name" type="xs:normalizedString" use="required"> */
+        if( fmi2_xml_set_attr_string(context, fmi2_xml_elmID_File, fmi_attr_id_name, 1, bufName))
+            return -1;
+        return push_back_jm_string(context, &md->sourceFilesME, bufName);
+    }
+    else {
+        return 0;
+    }
+}
+
+int fmi2_xml_handle_SourceFilesCS(fmi2_xml_parser_context_t *context, const char* data) {
+    return 0;
+}
+
+int fmi2_xml_handle_FileCS(fmi2_xml_parser_context_t *context, const char* data) {
+    if(!data) {
+        fmi2_xml_model_description_t* md = context->modelDescription;
+        jm_vector(char)* bufName = fmi2_xml_reserve_parse_buffer(context,1,100);
+
+        if(!bufName) return -1;
+        /* <xs:attribute name="name" type="xs:normalizedString" use="required"> */
+        if( fmi2_xml_set_attr_string(context, fmi2_xml_elmID_File, fmi_attr_id_name, 1, bufName))
+            return -1;
+        return push_back_jm_string(context, &md->sourceFilesCS, bufName);
+    }
+    else {
+        return 0;
+    }
+}
+
 int fmi2_xml_handle_LogCategories(fmi2_xml_parser_context_t *context, const char* data) {
 /*    fmi2_xml_model_description_t* md = context->modelDescription; */
     if(!data) {
@@ -504,27 +603,14 @@ int fmi2_xml_handle_LogCategories(fmi2_xml_parser_context_t *context, const char
 int fmi2_xml_handle_Category(fmi2_xml_parser_context_t *context, const char* data) {
     if(!data) {
         /* process the attributes */
-		size_t len;
         fmi2_xml_model_description_t* md = context->modelDescription;
         jm_vector(char)* bufName = fmi2_xml_reserve_parse_buffer(context,1,100);
-        jm_string *pcategory;
-		char* category = 0;
-			
+
         if(!bufName) return -1;
 		/* <xs:attribute name="name" type="xs:normalizedString"> */
-            if( fmi2_xml_set_attr_string(context, fmi2_xml_elmID_Category, fmi_attr_id_name, 1, bufName))
-				return -1;
-            pcategory = jm_vector_push_back(jm_string)(&md->vendorList, category);
-			len = jm_vector_get_size(char)(bufName);
-            if(pcategory )
-                *pcategory = category = (char*)(context->callbacks->malloc(len + 1));
-	        if(!pcategory || !category) {
-	            fmi2_xml_parse_fatal(context, "Could not allocate memory");
-		        return -1;
-			}
-            memcpy(category, jm_vector_get_itemp(char)(bufName,0), len);
-            category[len] = 0;
-        return (0);
+        if( fmi2_xml_set_attr_string(context, fmi2_xml_elmID_Category, fmi_attr_id_name, 1, bufName))
+			return -1;
+        return push_back_jm_string(context, &md->logCategories, bufName);
     }
     else {
         /* don't do anything. might give out a warning if(data[0] != 0) */
@@ -538,12 +624,14 @@ int fmi2_xml_handle_DefaultExperiment(fmi2_xml_parser_context_t *context, const 
         /* process the attributes */
         return (
         /* <xs:attribute name="startTime" type="xs:double"/> */
-                    fmi2_xml_set_attr_double(context, fmi2_xml_elmID_DefaultExperiment, fmi_attr_id_startTime, 0, &md->defaultExperimentStartTime, 0) ||
+                fmi2_xml_set_attr_double(context, fmi2_xml_elmID_DefaultExperiment, fmi_attr_id_startTime, 0, &md->defaultExperimentStartTime, 0) ||
         /* <xs:attribute name="stopTime" type="xs:double"/>  */
-                    fmi2_xml_set_attr_double(context, fmi2_xml_elmID_DefaultExperiment, fmi_attr_id_stopTime, 0, &md->defaultExperimentStopTime, 1) ||
+                fmi2_xml_set_attr_double(context, fmi2_xml_elmID_DefaultExperiment, fmi_attr_id_stopTime, 0, &md->defaultExperimentStopTime, 1) ||
         /* <xs:attribute name="tolerance" type="xs:double">  */
-                    fmi2_xml_set_attr_double(context, fmi2_xml_elmID_DefaultExperiment, fmi_attr_id_tolerance, 0, &md->defaultExperimentTolerance, FMI2_DEFAULT_EXPERIMENT_TOLERANCE)
-                    );
+                fmi2_xml_set_attr_double(context, fmi2_xml_elmID_DefaultExperiment, fmi_attr_id_tolerance, 0, &md->defaultExperimentTolerance, FMI2_DEFAULT_EXPERIMENT_TOLERANCE) ||
+        /* <xs:attribute name="stepSize" type="xs:double">   */
+                fmi2_xml_set_attr_double(context, fmi2_xml_elmID_DefaultExperiment, fmi_attr_id_stepSize, 0, &md->defaultExperimentStepSize, FMI2_DEFAULT_EXPERIMENT_STEPSIZE)
+        );
     }
     else {
         /* don't do anything. might give out a warning if(data[0] != 0) */

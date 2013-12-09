@@ -74,6 +74,25 @@ Types for Common Functions
 	LOAD_DLL_FUNCTION(fmiGetVersion);
 	LOAD_DLL_FUNCTION(fmiSetDebugLogging);
 
+/* Enter and exit initialization mode, terminate and reset */
+/* typedef fmiStatus fmiTerminateTYPE              (fmiComponent);
+   typedef fmiStatus fmiResetTYPE     (fmiComponent); */
+	LOAD_DLL_FUNCTION(fmiTerminate);
+	LOAD_DLL_FUNCTION(fmiReset);
+
+    /* Creation and destruction of instances and setting debug status */
+    /*typedef fmiComponent fmiInstantiateTYPE (fmiString, fmiType, fmiString, fmiString, const fmiCallbackFunctions*, fmiBoolean, fmiBoolean);
+    typedef void         fmiFreeInstanceTYPE(fmiComponent);*/
+    LOAD_DLL_FUNCTION(fmiInstantiate);
+    LOAD_DLL_FUNCTION(fmiFreeInstance);
+
+   /* typedef fmiStatus fmiSetupExperimentTYPE        (fmiComponent, fmiBoolean, fmiReal, fmiReal, fmiBoolean, fmiReal);
+   typedef fmiStatus fmiEnterInitializationModeTYPE(fmiComponent);
+   typedef fmiStatus fmiExitInitializationModeTYPE (fmiComponent); */
+    LOAD_DLL_FUNCTION(fmiSetupExperiment);
+    LOAD_DLL_FUNCTION(fmiEnterInitializationMode);
+    LOAD_DLL_FUNCTION(fmiExitInitializationMode);
+
 	/* Getting and setting variable values */
 /*   typedef fmiStatus fmiGetRealTYPE   (fmiComponent, const fmiValueReference[], size_t, fmiReal   []);
    typedef fmiStatus fmiGetIntegerTYPE(fmiComponent, const fmiValueReference[], size_t, fmiInteger[]);
@@ -121,27 +140,13 @@ static jm_status_enu_t fmi2_capi_load_cs_fcn(fmi2_capi_t* fmu, unsigned int capa
    LOAD_DLL_FUNCTION_WITH_FLAG(fmiSerializeFMUstate,fmi2_cs_canSerializeFMUstate);
    LOAD_DLL_FUNCTION_WITH_FLAG(fmiDeSerializeFMUstate,fmi2_cs_canSerializeFMUstate);
 
-/* Getting partial derivatives */
-/*   typedef fmiStatus fmiGetPartialDerivativesTYPE   (fmiComponent, setMatrixElement, void*, void*, void*, void*);
-   typedef fmiStatus fmiGetDirectionalDerivativeTYPE(fmiComponent, const fmiValueReference[], size_t,
+/* Getting directional derivatives */
+/*   typedef fmiStatus fmiGetDirectionalDerivativeTYPE(fmiComponent, const fmiValueReference[], size_t,
                                                                    const fmiValueReference[], size_t,
                                                                    const fmiReal[], fmiReal[]); */
     /*???  LOAD_DLL_FUNCTION_WITH_FLAG(fmiGetDirectionalDerivative,fmi2_cs_providesDirectionalDerivatives); */
 
-/* Creation and destruction of slave instances */
-/*   typedef fmiComponent fmiInstantiateSlaveTYPE (fmiString, fmiString, fmiString, const fmiCallbackFunctions*, fmiBoolean, fmiBoolean);
-   typedef void         fmiFreeSlaveInstanceTYPE(fmiComponent); */
-    LOAD_DLL_FUNCTION(fmiInstantiateSlave);
-	LOAD_DLL_FUNCTION(fmiFreeSlaveInstance);
-
 /* Simulating the slave */
-/*   typedef fmiStatus fmiInitializeSlaveTYPE(fmiComponent, fmiReal, fmiReal, fmiBoolean, fmiReal);
-   typedef fmiStatus fmiTerminateSlaveTYPE (fmiComponent);
-   typedef fmiStatus fmiResetSlaveTYPE     (fmiComponent); */
-	LOAD_DLL_FUNCTION(fmiInitializeSlave);
-	LOAD_DLL_FUNCTION(fmiTerminateSlave);
-	LOAD_DLL_FUNCTION(fmiResetSlave);
-
 /*   typedef fmiStatus fmiSetRealInputDerivativesTYPE (fmiComponent, const fmiValueReference [], size_t, const fmiInteger [], const fmiReal []);
    typedef fmiStatus fmiGetRealOutputDerivativesTYPE(fmiComponent, const fmiValueReference [], size_t, const fmiInteger [], fmiReal []); */
 	LOAD_DLL_FUNCTION(fmiSetRealInputDerivatives);
@@ -167,7 +172,7 @@ static jm_status_enu_t fmi2_capi_load_cs_fcn(fmi2_capi_t* fmu, unsigned int capa
 	return jm_status; 
 }
 
-/* Load FMI 1.0 Model Exchange functions */
+/* Load FMI 2.0 Model Exchange functions */
 static jm_status_enu_t fmi2_capi_load_me_fcn(fmi2_capi_t* fmu, unsigned int capabilities[])
 {
 	jm_status_enu_t jm_status = jm_status_success;
@@ -189,47 +194,39 @@ static jm_status_enu_t fmi2_capi_load_me_fcn(fmi2_capi_t* fmu, unsigned int capa
    LOAD_DLL_FUNCTION_WITH_FLAG(fmiSerializeFMUstate,fmi2_me_canSerializeFMUstate);
    LOAD_DLL_FUNCTION_WITH_FLAG(fmiDeSerializeFMUstate,fmi2_me_canSerializeFMUstate);
 
-/* Getting partial derivatives */
-/*   typedef fmiStatus fmiGetPartialDerivativesTYPE   (fmiComponent, setMatrixElement, void*, void*, void*, void*);
-   typedef fmiStatus fmiGetDirectionalDerivativeTYPE(fmiComponent, const fmiValueReference[], size_t,
+/* Getting directional derivatives */
+/*   typedef fmiStatus fmiGetDirectionalDerivativeTYPE(fmiComponent, const fmiValueReference[], size_t,
                                                                    const fmiValueReference[], size_t,
                                                                    const fmiReal[], fmiReal[]); */
     LOAD_DLL_FUNCTION_WITH_FLAG(fmiGetDirectionalDerivative,fmi2_me_providesDirectionalDerivatives); 
 
-	/* Creation and destruction of model instances and setting debug status */
-   /*typedef fmiComponent fmiInstantiateModelTYPE (fmiString, fmiString, fmiString, const fmiCallbackFunctions*, fmiBoolean, fmiBoolean);
-    typedef void         fmiFreeModelInstanceTYPE(fmiComponent);*/
-	LOAD_DLL_FUNCTION(fmiInstantiateModel);
-	LOAD_DLL_FUNCTION(fmiFreeModelInstance);
+/* Enter and exit the different modes */
+/*   typedef fmiStatus fmiEnterEventModeTYPE         (fmiComponent);
+   typedef fmiStatus fmiNewDiscreteStatesTYPE      (fmiComponent, fmiEventInfo*);
+   typedef fmiStatus fmiEnterContinuousTimeModeTYPE(fmiComponent);
+   typedef fmiStatus fmiCompletedIntegratorStepTYPE(fmiComponent, fmiBoolean*);*/
+	LOAD_DLL_FUNCTION(fmiEnterEventMode);
+	LOAD_DLL_FUNCTION(fmiNewDiscreteStates);
+	LOAD_DLL_FUNCTION(fmiEnterContinuousTimeMode);
+	LOAD_DLL_FUNCTION(fmiCompletedIntegratorStep);
 
 /* Providing independent variables and re-initialization of caching */
    /*typedef fmiStatus fmiSetTimeTYPE                (fmiComponent, fmiReal);
-   typedef fmiStatus fmiSetContinuousStatesTYPE    (fmiComponent, const fmiReal[], size_t);
-   typedef fmiStatus fmiCompletedIntegratorStepTYPE(fmiComponent, fmiBoolean*); */
+   typedef fmiStatus fmiSetContinuousStatesTYPE    (fmiComponent, const fmiReal[], size_t);*/
 	LOAD_DLL_FUNCTION(fmiSetTime);
 	LOAD_DLL_FUNCTION(fmiSetContinuousStates);
-	LOAD_DLL_FUNCTION(fmiCompletedIntegratorStep);
 
 /* Evaluation of the model equations */
-/*   typedef fmiStatus fmiInitializeModelTYPE        (fmiComponent, fmiBoolean, fmiReal, fmiEventInfo*);
-   typedef fmiStatus fmiEventUpdateTYPE            (fmiComponent, fmiBoolean, fmiEventInfo*);
-   typedef fmiStatus fmiCompletedEventIterationTYPE(fmiComponent);
-   typedef fmiStatus fmiTerminateTYPE              (fmiComponent); */
-	LOAD_DLL_FUNCTION(fmiInitializeModel);
-	LOAD_DLL_FUNCTION(fmiEventUpdate);
-	LOAD_DLL_FUNCTION_WITH_FLAG(fmiCompletedEventIteration, fmi2_me_completedEventIterationIsProvided);
-	LOAD_DLL_FUNCTION(fmiTerminate);
 
 /*
    typedef fmiStatus fmiGetDerivativesTYPE            (fmiComponent, fmiReal[], size_t);
    typedef fmiStatus fmiGetEventIndicatorsTYPE        (fmiComponent, fmiReal[], size_t);
    typedef fmiStatus fmiGetContinuousStatesTYPE       (fmiComponent, fmiReal[], size_t);
-   typedef fmiStatus fmiGetNominalContinuousStatesTYPE(fmiComponent, fmiReal[], size_t);
-   typedef fmiStatus fmiGetStateValueReferencesTYPE   (fmiComponent, fmiValueReference[], size_t); */
+   typedef fmiStatus fmiGetNominalsOfContinuousStatesTYPE(fmiComponent, fmiReal[], size_t);*/
 	LOAD_DLL_FUNCTION(fmiGetDerivatives);
 	LOAD_DLL_FUNCTION(fmiGetEventIndicators);
 	LOAD_DLL_FUNCTION(fmiGetContinuousStates);
-	LOAD_DLL_FUNCTION(fmiGetNominalContinuousStates);
+	LOAD_DLL_FUNCTION(fmiGetNominalsOfContinuousStates);
    
 	return jm_status; 
 }
@@ -370,7 +367,7 @@ jm_status_enu_t fmi2_capi_free_dll(fmi2_capi_t* fmu)
 	return jm_status_success;
 }
 
-/* Common FMI 1.0 functions */
+/* Common FMI 2.0 functions */
 
 const char* fmi2_capi_get_version(fmi2_capi_t* fmu)
 {
@@ -388,6 +385,62 @@ const char* fmi2_capi_get_types_platform(fmi2_capi_t* fmu)
 fmi2_status_t fmi2_capi_set_debug_logging(fmi2_capi_t* fmu, fmi2_boolean_t loggingOn, size_t nCategories, fmi2_string_t categories[])
 {
 	return fmu->fmiSetDebugLogging(fmu->c, loggingOn, nCategories, categories);
+}
+
+fmi2_component_t fmi2_capi_instantiate(fmi2_capi_t* fmu,
+  fmi2_string_t instanceName, fmi2_type_t fmuType, fmi2_string_t fmuGUID,
+  fmi2_string_t fmuResourceLocation, fmi2_boolean_t visible,
+  fmi2_boolean_t loggingOn)
+{
+    return fmu->c = fmu->fmiInstantiate(instanceName, fmuType, fmuGUID,
+        fmuResourceLocation, &fmu->callBackFunctions, visible, loggingOn);
+}
+
+void fmi2_capi_free_instance(fmi2_capi_t* fmu)
+{
+    if(fmu->c) {
+        fmu->fmiFreeInstance(fmu->c);
+        fmu->c = 0;
+    }
+}
+
+
+fmi2_status_t fmi2_capi_setup_experiment(fmi2_capi_t* fmu,
+    fmi2_boolean_t tolerance_defined, fmi2_real_t tolerance,
+    fmi2_real_t start_time, fmi2_boolean_t stop_time_defined,
+    fmi2_real_t stop_time)
+{
+    assert(fmu); assert(fmu->c);
+    jm_log_verbose(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Calling fmiSetupExperiment");
+    return fmu->fmiSetupExperiment(fmu->c, tolerance_defined, tolerance,
+                                   start_time, stop_time_defined, stop_time);
+}
+
+fmi2_status_t fmi2_capi_enter_initialization_mode(fmi2_capi_t* fmu)
+{
+    assert(fmu); assert(fmu->c);
+    jm_log_verbose(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Calling fmiEnterInitializationMode");
+    return fmu->fmiEnterInitializationMode(fmu->c);
+}
+
+fmi2_status_t fmi2_capi_exit_initialization_mode(fmi2_capi_t* fmu)
+{
+    assert(fmu); assert(fmu->c);
+    jm_log_verbose(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Calling fmiExitInitializationMode");
+    return fmu->fmiExitInitializationMode(fmu->c);
+}
+
+
+fmi2_status_t fmi2_capi_terminate(fmi2_capi_t* fmu)
+{
+	assert(fmu);
+	jm_log_debug(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Calling fmiTerminate");
+	return fmu->fmiTerminate(fmu->c);
+}
+
+fmi2_status_t fmi2_capi_reset(fmi2_capi_t* fmu)
+{
+	return fmu->fmiReset(fmu->c);
 }
 
 fmi2_status_t fmi2_capi_get_fmu_state           (fmi2_capi_t* fmu, fmi2_FMU_state_t* s) {

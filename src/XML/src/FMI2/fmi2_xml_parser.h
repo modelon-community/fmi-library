@@ -48,14 +48,22 @@ extern "C" {
     EXPAND_XML_ATTRNAME(nominal) \
     EXPAND_XML_ATTRNAME(declaredType) \
     EXPAND_XML_ATTRNAME(start) \
+    EXPAND_XML_ATTRNAME(derivative) \
+    EXPAND_XML_ATTRNAME(reinit) \
     EXPAND_XML_ATTRNAME(startTime) \
     EXPAND_XML_ATTRNAME(stopTime) \
     EXPAND_XML_ATTRNAME(tolerance) \
+    EXPAND_XML_ATTRNAME(stepSize) \
     EXPAND_XML_ATTRNAME(value) \
     EXPAND_XML_ATTRNAME(valueReference) \
     EXPAND_XML_ATTRNAME(variability) \
     EXPAND_XML_ATTRNAME(causality) \
     EXPAND_XML_ATTRNAME(initial) \
+    EXPAND_XML_ATTRNAME(previous) \
+    EXPAND_XML_ATTRNAME(canHandleMultipleSetPerTimeInstant) \
+    EXPAND_XML_ATTRNAME(index) \
+    EXPAND_XML_ATTRNAME(dependencies) \
+    EXPAND_XML_ATTRNAME(dependenciesKind) \
     EXPAND_XML_ATTRNAME(modelName) \
     EXPAND_XML_ATTRNAME(modelIdentifier) \
     EXPAND_XML_ATTRNAME(guid) \
@@ -75,22 +83,11 @@ extern "C" {
 	EXPAND_XML_ATTRNAME(canNotUseMemoryManagementFunctions) \
 	EXPAND_XML_ATTRNAME(canGetAndSetFMUstate) \
 	EXPAND_XML_ATTRNAME(canSerializeFMUstate) \
-	EXPAND_XML_ATTRNAME(providesDirectionalDerivatives) \
-    EXPAND_XML_ATTRNAME(canHandleEvents) \
+	EXPAND_XML_ATTRNAME(providesDirectionalDerivatives) /* Beta4 spelling. TODO: remove */ \
+	EXPAND_XML_ATTRNAME(providesDirectionalDerivative) \
     EXPAND_XML_ATTRNAME(canInterpolateInputs) \
     EXPAND_XML_ATTRNAME(maxOutputDerivativeOrder) \
-    EXPAND_XML_ATTRNAME(canRunAsynchronuously) \
-    EXPAND_XML_ATTRNAME(canSignalEvents)\
-	EXPAND_XML_ATTRNAME(derivative) \
-	EXPAND_XML_ATTRNAME(state) \
-	EXPAND_XML_ATTRNAME(stateDependencies) \
-	EXPAND_XML_ATTRNAME(stateFactorKinds) \
-	EXPAND_XML_ATTRNAME(inputDependencies) \
-	EXPAND_XML_ATTRNAME(inputFactorKinds)
-/*	EXPAND_XML_ATTRNAME(providesPartialDerivativesOf_DerivativeFunction_wrt_States)\
-	EXPAND_XML_ATTRNAME(providesPartialDerivativesOf_DerivativeFunction_wrt_Inputs)\
-	EXPAND_XML_ATTRNAME(providesPartialDerivativesOf_OutputFunction_wrt_States)\
-	EXPAND_XML_ATTRNAME(providesPartialDerivativesOf_OutputFunction_wrt_Inputs) \*/
+    EXPAND_XML_ATTRNAME(canRunAsynchronuously)
 
 #define FMI2_XML_ATTR_ID(attr) fmi_attr_id_##attr,
 typedef enum fmi2_xml_attr_enu_t {
@@ -103,6 +100,8 @@ typedef enum fmi2_xml_attr_enu_t {
     EXPAND_XML_ELMNAME(fmiModelDescription) \
 	EXPAND_XML_ELMNAME(ModelExchange) \
     EXPAND_XML_ELMNAME(CoSimulation) \
+    EXPAND_XML_ELMNAME(SourceFiles) \
+    EXPAND_XML_ELMNAME(File) \
     EXPAND_XML_ELMNAME(UnitDefinitions) \
     EXPAND_XML_ELMNAME(Unit) \
     EXPAND_XML_ELMNAME(BaseUnit) \
@@ -124,12 +123,12 @@ typedef enum fmi2_xml_attr_enu_t {
     EXPAND_XML_ELMNAME(String) \
     EXPAND_XML_ELMNAME(Enumeration) \
     EXPAND_XML_ELMNAME(ModelStructure) \
-    EXPAND_XML_ELMNAME(Derivatives) \
-    EXPAND_XML_ELMNAME(Inputs) \
     EXPAND_XML_ELMNAME(Outputs) \
-    EXPAND_XML_ELMNAME(Derivative) \
-    EXPAND_XML_ELMNAME(Input) \
-    EXPAND_XML_ELMNAME(Output)
+    EXPAND_XML_ELMNAME(Derivatives) \
+    EXPAND_XML_ELMNAME(DiscreteStates) \
+    EXPAND_XML_ELMNAME(InitialUnknowns) \
+    EXPAND_XML_ELMNAME(Unknown)
+
 
 /** \brief Element that can be placed under different parents get alternative names from the info struct */
 #define FMI2_XML_ELMLIST_ALT(EXPAND_XML_ELMNAME) \
@@ -138,7 +137,12 @@ typedef enum fmi2_xml_attr_enu_t {
     EXPAND_XML_ELMNAME(BooleanVariable) \
     EXPAND_XML_ELMNAME(StringVariable) \
     EXPAND_XML_ELMNAME(EnumerationVariable)  \
-    EXPAND_XML_ELMNAME(VariableTool)
+    EXPAND_XML_ELMNAME(VariableTool) \
+    EXPAND_XML_ELMNAME(SourceFilesCS) \
+    EXPAND_XML_ELMNAME(FileCS) \
+    EXPAND_XML_ELMNAME(DerivativeUnknown) \
+    EXPAND_XML_ELMNAME(DiscreteStateUnknown) \
+    EXPAND_XML_ELMNAME(InitialUnknown)
 
 
 typedef struct fmi2_xml_parser_context_t fmi2_xml_parser_context_t;

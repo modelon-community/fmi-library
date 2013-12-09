@@ -143,11 +143,9 @@ FMILIB_EXPORT const char* fmi2_base_type_to_string(fmi2_base_type_enu_t bt);
 #define FMI2_CS_CAPABILITIES(H) \
 	H(needsExecutionTool) \
 	H(canHandleVariableCommunicationStepSize) \
-	H(canHandleEvents) \
 	H(canInterpolateInputs) \
 	H(maxOutputDerivativeOrder) \
 	H(canRunAsynchronuously) \
-	H(canSignalEvents) \
 	H(canBeInstantiatedOnlyOncePerProcess) \
 	H(canNotUseMemoryManagementFunctions) \
 	H(canGetAndSetFMUstate) \
@@ -199,8 +197,10 @@ FMILIB_EXPORT size_t fmi2_SI_base_unit_exp_to_string(const int exp[fmi2_SI_base_
 /** \brief Dependency factor kinds are used as part of ModelStructure definition */
 typedef enum fmi2_dependency_factor_kind_enu_t
 {
-	fmi2_dependency_factor_kind_nonlinear = 0,
+	fmi2_dependency_factor_kind_dependent = 0,
+	fmi2_dependency_factor_kind_constant,
 	fmi2_dependency_factor_kind_fixed,
+	fmi2_dependency_factor_kind_tunable,
 	fmi2_dependency_factor_kind_discrete,
 	fmi2_dependency_factor_kind_num
 } fmi2_dependency_factor_kind_enu_t;

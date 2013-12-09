@@ -146,6 +146,80 @@ const char* fmi2_capi_get_version(fmi2_capi_t* fmu);
 fmi2_status_t fmi2_capi_set_debug_logging(fmi2_capi_t* fmu, fmi2_boolean_t loggingOn, size_t nCategories, fmi2_string_t categories[]);
 
 /**
+ * \brief Calls the FMI function fmiInstantiate(...) 
+ * 
+ * @param fmu C-API struct that has succesfully loaded the FMI function. 
+ * @param instanceName The name of the instance.
+ * @param fmuType fmi2_model_exchange or fmi2_cosimulation.
+ * @param fmuGUID The GUID identifier.
+ * @param fmuResourceLocation Access path to the FMU archive resources.
+ * @param visible Indicates whether or not the simulator application window shoule be visible.
+ * @param loggingOn Enable or disable the debug logger.
+ * @return An instance of a model.
+ */
+fmi2_component_t fmi2_capi_instantiate(fmi2_capi_t* fmu,
+    fmi2_string_t instanceName, fmi2_type_t fmuType, fmi2_string_t fmuGUID,
+    fmi2_string_t fmuResourceLocation, fmi2_boolean_t visible,
+    fmi2_boolean_t loggingOn);
+
+/**
+ * \brief Calls the FMI function fmiFreeInstance(...) 
+ * 
+ * @param fmu C-API struct that has succesfully loaded the FMI function.
+ */
+void fmi2_capi_free_instance(fmi2_capi_t* fmu);
+
+
+/**
+ * \brief Calls the FMI function fmiSetupExperiment(...)
+ * 
+ * @param fmu C-API struct that has succesfully loaded the FMI function.
+ * @param toleranceDefined True if the @p tolerance argument is to be used
+ * @param tolerance Solvers internal to the FMU should use this tolerance or finer, if @p toleranceDefined is true
+ * @param startTime Start time of the experiment
+ * @param stopTimeDefined True if the @p stopTime argument is to be used
+ * @param stopTime Stop time of the experiment, if @p stopTimeDefined is true
+ * @return FMI status.
+ */
+fmi2_status_t fmi2_capi_setup_experiment(fmi2_capi_t* fmu,
+    fmi2_boolean_t toleranceDefined, fmi2_real_t tolerance,
+    fmi2_real_t startTime, fmi2_boolean_t stopTimeDefined,
+    fmi2_real_t stopTime);
+
+/**
+ * \brief Calls the FMI function fmiEnterInitializationMode(...)
+ * 
+ * @param fmu C-API struct that has succesfully loaded the FMI function.
+ * @return FMI status.
+ */
+fmi2_status_t fmi2_capi_enter_initialization_mode(fmi2_capi_t* fmu);
+
+/**
+ * \brief Calls the FMI function fmiExitInitializationMode(...)
+ * 
+ * @param fmu C-API struct that has succesfully loaded the FMI function.
+ * @return FMI status.
+ */
+fmi2_status_t fmi2_capi_exit_initialization_mode(fmi2_capi_t* fmu);
+
+/**
+ * \brief Calls the FMI function fmiTerminate(...)
+ * 
+ * @param fmu C-API struct that has succesfully loaded the FMI function.
+ * @return FMI status.
+ */
+fmi2_status_t fmi2_capi_terminate(fmi2_capi_t* fmu);
+
+/**
+ * \brief Calls the FMI function fmiReset(...) 
+ * 
+ * @param fmu C-API struct that has succesfully loaded the FMI function.
+ * @return FMI status.
+ */
+fmi2_status_t fmi2_capi_reset(fmi2_capi_t* fmu);
+
+
+/**
  * \brief Calls the FMI function fmiSetReal(...) 
  * 
  * @param fmu C-API struct that has succesfully loaded the FMI function.
@@ -249,8 +323,7 @@ fmi2_status_t fmi2_capi_serialized_fmu_state_size(fmi2_capi_t* fmu, fmi2_FMU_sta
 fmi2_status_t fmi2_capi_serialize_fmu_state     (fmi2_capi_t* fmu, fmi2_FMU_state_t s , fmi2_byte_t data[], size_t sz);
 fmi2_status_t fmi2_capi_de_serialize_fmu_state  (fmi2_capi_t* fmu, const fmi2_byte_t data[], size_t sz, fmi2_FMU_state_t* s);
 
-/* Getting partial derivatives */
-/*   typedef fmi2_status_t (*fmi2_get_partial_derivatives_ft)   (fmi2_component_t, fmi2_set_matrix_element_ft, void*, void*, void*, void*); */
+/* Getting directional derivatives */
 fmi2_status_t fmi2_capi_get_directional_derivative(fmi2_capi_t* fmu, const fmi2_value_reference_t v_ref[], size_t nv,
                                                                    const fmi2_value_reference_t z_ref[], size_t nz,
                                                                    const fmi2_real_t dv[], fmi2_real_t dz[]);
@@ -260,26 +333,31 @@ fmi2_status_t fmi2_capi_get_directional_derivative(fmi2_capi_t* fmu, const fmi2_
  *  @{
  */
 
-
 /**
- * \brief Calls the FMI function fmiInstantiateModel(...) 
- * 
- * @param fmu C-API struct that has succesfully loaded the FMI function. 
- * @param instanceName The name of the instance.
- * @param fmuGUID The GUID identifier.
- * @param fmuResourceLocation Access path to the FMU archive resources.
- * @param visible Indicates whether or not the simulator application window shoule be visible.
- * @param loggingOn Enable or disable the debug logger.
- * @return An instance of a model.
- */
-fmi2_component_t fmi2_capi_instantiate_model(fmi2_capi_t* fmu, fmi2_string_t instanceName, fmi2_string_t fmuGUID, fmi2_string_t fmuResourceLocation, 
-																 fmi2_boolean_t visible, fmi2_boolean_t loggingOn);
-/**
- * \brief Calls the FMI function fmiFreeModelInstance(...) 
+ * \brief Calls the FMI function fmiEnterEventMode(...) 
  * 
  * @param fmu C-API struct that has succesfully loaded the FMI function.
+ * @return FMI status.
  */
-void fmi2_capi_free_model_instance(fmi2_capi_t* fmu);
+fmi2_status_t fmi2_capi_enter_event_mode(fmi2_capi_t* fmu);
+
+/**
+ * \brief Calls the FMI function fmiNewDiscreteStates(...) 
+ * 
+ * @param fmu C-API struct that has succesfully loaded the FMI function.
+ * @param eventInfo Pointer to fmi2_event_info_t structure that will be filled in.
+ * @return FMI status.
+ */
+fmi2_status_t fmi2_capi_new_discrete_states(fmi2_capi_t* fmu, fmi2_event_info_t* eventInfo);
+
+/**
+ * \brief Calls the FMI function fmiEnterContinuousTimeMode(...) 
+ * 
+ * @param fmu C-API struct that has succesfully loaded the FMI function.
+ * @return FMI status.
+ */
+fmi2_status_t fmi2_capi_enter_continuous_time_mode(fmi2_capi_t* fmu);
+
 
 /**
  * \brief Calls the FMI function fmiSetTime(...) 
@@ -304,21 +382,16 @@ fmi2_status_t fmi2_capi_set_continuous_states(fmi2_capi_t* fmu, const fmi2_real_
  * \brief Calls the FMI function fmiCompletedIntegratorStep(...) 
  * 
  * @param fmu C-API struct that has succesfully loaded the FMI function.
- * @param callEventUpdate (Output) Call fmiEventUpdate indicator.
+ * @param noSetFMUStatePriorToCurrentPoint True if fmiSetFMUState will no
+          longer be called for time instants prior to current time in this
+          simulation run.
+ * @param enterEventMode (Output) Call fmiEnterEventMode indicator.
+ * @param terminateSimulation (Output) Terminate simulation indicator.
  * @return FMI status.
  */
-fmi2_status_t fmi2_capi_completed_integrator_step(fmi2_capi_t* fmu, fmi2_boolean_t* callEventUpdate);
-
-/**
- * \brief Calls the FMI function fmiInitializeModel(...) 
- * 
- * @param fmu C-API struct that has succesfully loaded the FMI function.
- * @param toleranceControlled Enable or disable the use of relativeTolerance in the FMU.
- * @param relativeTolerance A relative tolerance used in the FMU.
- * @param eventInfo (Output) fmiEventInfo struct.
- * @return FMI status.
- */
-fmi2_status_t fmi2_capi_initialize_model(fmi2_capi_t* fmu, fmi2_boolean_t toleranceControlled, fmi2_real_t relativeTolerance, fmi2_event_info_t* eventInfo);
+fmi2_status_t fmi2_capi_completed_integrator_step(fmi2_capi_t* fmu,
+    fmi2_boolean_t noSetFMUStatePriorToCurrentPoint,
+    fmi2_boolean_t* enterEventMode, fmi2_boolean_t* terminateSimulation);
 
 /**
  * \brief Calls the FMI function fmiGetDerivatives(...) 
@@ -341,24 +414,6 @@ fmi2_status_t fmi2_capi_get_derivatives(fmi2_capi_t* fmu, fmi2_real_t derivative
 fmi2_status_t fmi2_capi_get_event_indicators(fmi2_capi_t* fmu, fmi2_real_t eventIndicators[], size_t ni);
 
 /**
- * \brief Calls the FMI function fmiEventUpdate(...) 
- * 
- * @param fmu C-API struct that has succesfully loaded the FMI function.
- * @param intermediateResults Indicate whether or not the fmiEventUpdate shall return after every internal event interation.
- * @param eventInfo (Output) An fmiEventInfo struct.
- * @return FMI status.
- */
-fmi2_status_t fmi2_capi_eventUpdate(fmi2_capi_t* fmu, fmi2_boolean_t intermediateResults, fmi2_event_info_t* eventInfo);
-
-/**
- * \brief Wrapper for the FMI function fmiCompletedEventIteration(...) 
- * 
- * @param fmu C-API struct that has succesfully loaded the FMI function.
- * @return FMI status.
- */
-fmi2_status_t fmi2_capi_completed_event_iteration(fmi2_capi_t* fmu);
-
-/**
  * \brief Calls the FMI function fmiGetContinuousStates(...) 
  * 
  * @param fmu C-API struct that has succesfully loaded the FMI function.
@@ -369,76 +424,20 @@ fmi2_status_t fmi2_capi_completed_event_iteration(fmi2_capi_t* fmu);
 fmi2_status_t fmi2_capi_get_continuous_states(fmi2_capi_t* fmu, fmi2_real_t states[], size_t nx);
 
 /**
- * \brief Calls the FMI function fmiGetNominalContinuousStates(...) 
+ * \brief Calls the FMI function fmiGetNominalsOfContinuousStates(...) 
  * 
  * @param fmu C-API struct that has succesfully loaded the FMI function.
  * @param x_nominal (Output) The nominal values.
  * @param nx Number of nominal values.
  * @return FMI status.
  */
-fmi2_status_t fmi2_capi_get_nominal_continuous_states(fmi2_capi_t* fmu, fmi2_real_t x_nominal[], size_t nx);
-
-/**
- * \brief Calls the FMI function fmiTerminate(...) 
- * 
- * @param fmu C-API struct that has succesfully loaded the FMI function.
- * @return FMI status.
- */
-fmi2_status_t fmi2_capi_terminate(fmi2_capi_t* fmu);
+fmi2_status_t fmi2_capi_get_nominals_of_continuous_states(fmi2_capi_t* fmu, fmi2_real_t x_nominal[], size_t nx);
 
 /**@} */
 
 /** \addtogroup fmi2_capi_cs
  *  @{
  */
-
-/**
- * \brief Calls the FMI function fmiInstantiateSlave(...) 
- * 
- * @param fmu C-API struct that has succesfully loaded the FMI function.
- * @param instanceName The name of the instance.
- * @param fmuGUID The GUID identifier.
- * @param fmuResourceLocation Access path to the FMU archive resources.
- * @param visible Indicates whether or not the simulator application window shoule be visible.
- * @param loggingOn Enable or disable the debug logger.
- * @return An instance of a model.
- */
-fmi2_component_t fmi2_capi_instantiate_slave(fmi2_capi_t* fmu, fmi2_string_t instanceName, fmi2_string_t fmuGUID, fmi2_string_t fmuResourceLocation, 
-																 fmi2_boolean_t visible, fmi2_boolean_t loggingOn);
-/**
- * \brief Calls the FMI function fmiInitializeSlave(...) 
- * 
- * @param fmu C-API struct that has succesfully loaded the FMI function.
- * @param relativeTolerance suggests a relative (local) tolerance in case the slave utilizes a numerical integrator with variable step size and error estimation.
- * @param tStart Start time of the simulation
- * @param StopTimeDefined Indicates whether or not the stop time is used.
- * @param tStop The stop time of the simulation.
- * @return FMI status.
- */
-fmi2_status_t fmi2_capi_initialize_slave(fmi2_capi_t* fmu, fmi2_real_t  relativeTolerance, fmi2_real_t tStart, fmi2_boolean_t StopTimeDefined, fmi2_real_t tStop);
-
-/**
- * \brief Calls the FMI function fmiTerminateSlave(...) 
- * 
- * @param fmu C-API struct that has succesfully loaded the FMI function.
- * @return FMI status.
- */
-fmi2_status_t fmi2_capi_terminate_slave(fmi2_capi_t* fmu);
-
-/**
- * \brief Calls the FMI function fmiResetSlave(...) 
- * 
- * @param fmu C-API struct that has succesfully loaded the FMI function.
- * @return FMI status.
- */
-fmi2_status_t fmi2_capi_reset_slave(fmi2_capi_t* fmu);
-
-/**
- * \brief Calls the FMI function fmiFreeSlaveInstance(...) 
- * 
- * @param fmu C-API struct that has succesfully loaded the FMI function.
- */
-void fmi2_capi_free_slave_instance(fmi2_capi_t* fmu);
 
 /**
  * \brief Calls the FMI function fmiSetRealInputDerivatives(...) 

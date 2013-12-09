@@ -70,20 +70,12 @@ fmi2_initial_enu_t fmi2_import_get_initial(fmi2_import_variable_t* v) {
 	return fmi2_xml_get_initial(v);
 }
 
-size_t fmi2_import_get_input_index(fmi2_import_variable_t* v){
-	return fmi2_xml_get_input_index(v);
+fmi2_import_variable_t* fmi2_import_get_previous(fmi2_import_variable_t* v) {
+	return fmi2_xml_get_previous(v);    
 }
 
-size_t fmi2_import_get_output_index(fmi2_import_variable_t* v){
-	return fmi2_xml_get_output_index(v);
-}
-
-size_t fmi2_import_get_state_index(fmi2_import_variable_t* v){
-	return fmi2_xml_get_state_index(v);
-}
-
-size_t fmi2_import_get_derivative_index(fmi2_import_variable_t* v){
-	return fmi2_xml_get_derivative_index(v);
+fmi2_boolean_t fmi2_import_get_canHandleMultipleSetPerTimeInstant(fmi2_import_variable_t* v) {
+	return fmi2_xml_get_canHandleMultipleSetPerTimeInstant(v);
 }
 
 
@@ -109,6 +101,14 @@ fmi2_import_bool_variable_t* fmi2_import_get_variable_as_boolean(fmi2_import_var
 
 fmi2_real_t fmi2_import_get_real_variable_start(fmi2_import_real_variable_t* v) {
 	return fmi2_xml_get_real_variable_start(v);
+}
+
+fmi2_import_real_variable_t* fmi2_import_get_real_variable_derivative_of(fmi2_import_real_variable_t* v) {
+    return fmi2_xml_get_real_variable_derivative_of(v);
+}
+
+fmi2_boolean_t fmi2_import_get_real_variable_reinit(fmi2_import_real_variable_t* v) {
+    return fmi2_xml_get_real_variable_reinit(v);
 }
 
 fmi2_real_t fmi2_import_get_real_variable_max(fmi2_import_real_variable_t* v) {

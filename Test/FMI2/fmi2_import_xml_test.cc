@@ -372,10 +372,30 @@ int main(int argc, char *argv[])
     printf("NumberOfContinuousStates = " FMILIB_SIZET_FORMAT "\n", fmi2_import_get_number_of_continuous_states(fmu));
     printf("NumberOfEventIndicators = " FMILIB_SIZET_FORMAT "\n", fmi2_import_get_number_of_event_indicators(fmu));
 
-    printf("Default experiment start = %g, end = %g, tolerance = %g\n",
+    printf("Default experiment start = %g, end = %g, tolerance = %g, step = %g\n",
            fmi2_import_get_default_experiment_start(fmu),
            fmi2_import_get_default_experiment_stop(fmu),
-           fmi2_import_get_default_experiment_tolerance(fmu));
+           fmi2_import_get_default_experiment_tolerance(fmu),
+           fmi2_import_get_default_experiment_step(fmu));
+
+    {
+        int n_sources = fmi2_import_get_source_files_me_num(fmu);
+        int k;
+        printf("There are %d source files for ME\n", n_sources);
+        for (k=0; k < n_sources; k++) {
+            printf("\t%s\n", fmi2_import_get_source_file_me(fmu, k));
+        }
+    }
+    {
+        int n_sources = fmi2_import_get_source_files_cs_num(fmu);
+        int k;
+        printf("There are %d source files for CS\n", n_sources);
+        for (k=0; k < n_sources; k++) {
+            printf("\t%s\n", fmi2_import_get_source_file_cs(fmu, k));
+        }
+    }
+
+
     {
         size_t i, nv = fmi2_import_get_vendors_num(fmu);
         printf("There are %u tool annotation records \n", (unsigned)nv);
@@ -430,7 +450,7 @@ int main(int argc, char *argv[])
     {
         size_t nv, i;
         fmi2_import_variable_list_t* vl = fmi2_import_get_variable_list(fmu, 0);
-		fmi2_import_variable_list_t* ders = fmi2_import_get_derivatives_list( fmu);
+/*		fmi2_import_variable_list_t* ders = fmi2_import_get_derivatives_list( fmu); */
 		const fmi2_value_reference_t* vrl = fmi2_import_get_value_referece_list(vl);
 
 
@@ -446,19 +466,19 @@ int main(int argc, char *argv[])
 				do_exit(1);
 			}
             else {
-				size_t stateIndex = fmi2_import_get_state_index(var);
                 printVariableInfo(fmu, var);
+/*				size_t stateIndex = fmi2_import_get_state_index(var);
 				if(stateIndex) {
 					printf("This variable is a state. Its derivative: %s\n", 
 						fmi2_import_get_variable_name(fmi2_import_get_variable(ders, stateIndex-1)));
-				}
+				} */
 				testVariableSearch(fmu, var);
 			}
         }
         fmi2_import_free_variable_list(vl);
-        fmi2_import_free_variable_list(ders);
+/*        fmi2_import_free_variable_list(ders); */
     }
-	{
+/*	{
 		fmi2_import_variable_list_t* vl = fmi2_import_get_inputs_list( fmu);
         size_t i, n = 0;
 		if(vl) 
@@ -531,7 +551,7 @@ int main(int argc, char *argv[])
         fmi2_import_free_variable_list(inputs);
         fmi2_import_free_variable_list(states);
 	}	
-
+*/
 	fmi2_import_free(fmu);
 	fmi_import_free_context(context);
 	

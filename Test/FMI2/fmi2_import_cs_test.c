@@ -85,17 +85,30 @@ int test_simulate_cs(fmi2_import_t* fmu)
     printf("GUID:      %s\n", fmuGUID);
 
 
-	jmstatus = fmi2_import_instantiate_slave(fmu, instanceName, fmuLocation, visible);
+    jmstatus = fmi2_import_instantiate(fmu, instanceName, fmi2_cosimulation, fmuLocation, visible);
 	if (jmstatus == jm_status_error) {
-		printf("fmi2_import_instantiate_model failed\n");
+		printf("fmi2_import_instantiate failed\n");
 		do_exit(CTEST_RETURN_FAIL);
 	}
 
-	fmistatus = fmi2_import_initialize_slave(fmu, relativeTol, tstart, StopTimeDefined, tend);
+        fmistatus = fmi2_import_setup_experiment(fmu, fmi2_true,
+            relativeTol, tstart, StopTimeDefined, tend);
     if(fmistatus != fmi2_status_ok) {
-        printf("fmi2_import_initialize_slave failed\n");
-		do_exit(CTEST_RETURN_FAIL);
+        printf("fmi2_import_setup_experiment failed\n");
+        do_exit(CTEST_RETURN_FAIL);
     }
+
+        fmistatus = fmi2_import_enter_initialization_mode(fmu);
+    if(fmistatus != fmi2_status_ok) {
+        printf("fmi2_import_enter_initialization_mode failed\n");
+        do_exit(CTEST_RETURN_FAIL);
+    }
+
+        fmistatus = fmi2_import_exit_initialization_mode(fmu);
+    if(fmistatus != fmi2_status_ok) {
+        printf("fmi2_import_exit_initialization_mode failed\n");
+        do_exit(CTEST_RETURN_FAIL);
+    }        
 
 	tcur = tstart;
 	printf("%10s %10s\n", "Ball height", "Ball speed");
@@ -142,9 +155,9 @@ int test_simulate_cs(fmi2_import_t* fmu)
 		}
 	}
 
-	fmistatus = fmi2_import_terminate_slave(fmu);
+	fmistatus = fmi2_import_terminate(fmu);
 
-	fmi2_import_free_slave_instance(fmu);
+	fmi2_import_free_instance(fmu);
 
 	return 0;
 }

@@ -39,7 +39,7 @@ typedef struct fmi2_xml_callbacks_t fmi2_xml_callbacks_t;
 *
 *	@param context as specified when setting up the callbacks,
 *   @param parentName - tool name as given by name attibute to the Tool elelent,
-*   @param parent - NULL for model level annotations; fmi2_import_t variable pointer for variable annotations. 
+*   @param parent - NULL for model level annotations; fmi2_import_variable_t * variable pointer for variable annotations. 
 *   @param elm - name of the element, 
 *   @param attr - attributes (names and values).
 *  The function should return 0 on success or error code on exit (in which case parsing will be aborted).

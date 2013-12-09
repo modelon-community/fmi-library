@@ -115,6 +115,77 @@ FMILIB_EXPORT const char* fmi2_import_get_version(fmi2_import_t* fmu);
  FMILIB_EXPORT fmi2_status_t fmi2_import_set_debug_logging(fmi2_import_t* fmu, fmi2_boolean_t loggingOn, size_t nCategories, fmi2_string_t categories[]);
 
 /**
+ * \brief Wrapper for the FMI function fmiInstantiate(...) 
+ * 
+ * @param fmu A model description object returned by fmi2_import_parse_xml() that has loaded the FMI functions, see fmi2_import_load_fcn().
+ * @param instanceName The name of the instance.
+ * @param fmuType fmi2_model_exchange or fmi2_cosimulation.
+ * @param fmuResourceLocation Access path URI to the FMU archive resources. If this is NULL pointer the FMU will get the path to the unzipped location.
+ * @param visible Indicates whether or not the simulator application window shoule be visible.
+ * @return Error status. Returnes jm_status_error if fmiInstantiate returned NULL, otherwise jm_status_success.
+ */
+FMILIB_EXPORT jm_status_enu_t fmi2_import_instantiate(fmi2_import_t* fmu,
+    fmi2_string_t instanceName, fmi2_type_t fmuType,
+    fmi2_string_t fmuResourceLocation, fmi2_boolean_t visible);
+
+/**
+ * \brief Wrapper for the FMI function fmiFreeInstance(...) 
+ * 
+ * @param fmu An fmu description object returned by fmi2_import_parse_xml() that has loaded the FMI functions, see fmi2_import_load_fcn().
+ */
+FMILIB_EXPORT void fmi2_import_free_instance(fmi2_import_t* fmu);
+
+
+/**
+ * \brief Calls the FMI function fmiSetupExperiment(...)
+ * 
+ * @param fmu A model description object returned by fmi2_import_parse_xml() that has loaded the FMI functions, see fmi2_import_load_fcn().
+ * @param tolerance_defined True if the @p tolerance argument is to be used
+ * @param tolerance Solvers internal to the FMU should use this tolerance or finer, if @p tolerance_defined is true
+ * @param start_time Start time of the experiment
+ * @param stop_time_defined True if the @p stop_time argument is to be used
+ * @param stop_time Stop time of the experiment, if @p stop_time_defined is true
+ * @return FMI status.
+ */
+FMILIB_EXPORT fmi2_status_t fmi2_import_setup_experiment(fmi2_import_t* fmu,
+    fmi2_boolean_t toleranceDefined, fmi2_real_t tolerance,
+    fmi2_real_t startTime, fmi2_boolean_t stopTimeDefined,
+    fmi2_real_t stopTime);
+
+/**
+ * \brief Calls the FMI function fmiEnterInitializationMode(...)
+ * 
+ * @param fmu A model description object returned by fmi2_import_parse_xml() that has loaded the FMI functions, see fmi2_import_load_fcn().
+ * @return FMI status.
+ */
+FMILIB_EXPORT fmi2_status_t fmi2_import_enter_initialization_mode(fmi2_import_t* fmu);
+
+/**
+ * \brief Calls the FMI function fmiExitInitializationMode(...)
+ * 
+ * @param fmu A model description object returned by fmi2_import_parse_xml() that has loaded the FMI functions, see fmi2_import_load_fcn().
+ * @return FMI status.
+ */
+FMILIB_EXPORT fmi2_status_t fmi2_import_exit_initialization_mode(fmi2_import_t* fmu);
+
+/**
+ * \brief Wrapper for the FMI function fmiTerminate(...) 
+ * 
+ * @param fmu A model description object returned by fmi2_import_parse_xml() that has loaded the FMI functions, see fmi2_import_load_fcn().
+ * @return FMI status.
+ */
+FMILIB_EXPORT fmi2_status_t fmi2_import_terminate(fmi2_import_t* fmu);
+
+/**
+ * \brief Wrapper for the FMI function fmiReset(...) 
+ * 
+ * @param fmu A model description object returned by fmi2_import_parse_xml() that has loaded the FMI functions, see fmi2_import_load_fcn().
+ * @return FMI status.
+ */
+FMILIB_EXPORT fmi2_status_t fmi2_import_reset(fmi2_import_t* fmu);
+
+
+/**
  * \brief Wrapper for the FMI function fmiSetReal(...) 
  * 
  * @param fmu A model description object returned by fmi2_import_parse_xml() that has loaded the FMI functions, see fmi2_import_load_fcn().
@@ -270,8 +341,6 @@ FMILIB_EXPORT fmi2_status_t fmi2_import_serialize_fmu_state     (fmi2_import_t* 
  */
 FMILIB_EXPORT fmi2_status_t fmi2_import_de_serialize_fmu_state  (fmi2_import_t* fmu, const fmi2_byte_t data[], size_t sz, fmi2_FMU_state_t* s);
 
-/* Getting partial derivatives: fmiGetPartialDerivatives is not in standard */
-/*   typedef fmi2_status_t (*fmi2_get_partial_derivatives_ft)   (fmi2_component_t, fmi2_set_matrix_element_ft, void*, void*, void*, void*); */
 
 
 /**
@@ -297,24 +366,30 @@ FMILIB_EXPORT fmi2_status_t fmi2_import_get_directional_derivative(fmi2_import_t
  * @{
  */
 
-
 /**
- * \brief Wrapper for the FMI function fmiInstantiateModel(...) 
+ * \brief Calls the FMI function fmiEnterEventMode(...) 
  * 
  * @param fmu A model description object returned by fmi2_import_parse_xml() that has loaded the FMI functions, see fmi2_import_load_fcn().
- * @param instanceName The name of the instance.
- * @param fmuResourceLocation Access path URI to the FMU archive resources. If this is NULL pointer the FMU will get the path to the unzipped location.
- * @param visible Indicates whether or not the simulator application window shoule be visible.
- * @return Error status. Returnes jm_status_error if fmiInstantiateModel returned NULL, otherwise jm_status_success.
+ * @return FMI status.
  */
-FMILIB_EXPORT jm_status_enu_t fmi2_import_instantiate_model(fmi2_import_t* fmu, fmi2_string_t instanceName, fmi2_string_t fmuResourceLocation, fmi2_boolean_t visible);
+FMILIB_EXPORT fmi2_status_t fmi2_import_enter_event_mode(fmi2_import_t* fmu);
 
 /**
- * \brief Wrapper for the FMI function fmiFreeModelInstance(...) 
+ * \brief Calls the FMI function fmiNewDiscreteStates(...) 
  * 
  * @param fmu A model description object returned by fmi2_import_parse_xml() that has loaded the FMI functions, see fmi2_import_load_fcn().
+ * @param eventInfo Pointer to fmi2_event_info_t structure that will be filled in.
+ * @return FMI status.
  */
-FMILIB_EXPORT void fmi2_import_free_model_instance(fmi2_import_t* fmu);
+FMILIB_EXPORT fmi2_status_t fmi2_import_new_discrete_states(fmi2_import_t* fmu, fmi2_event_info_t* eventInfo);
+
+/**
+ * \brief Calls the FMI function fmiEnterContinuousTimeMode(...) 
+ * 
+ * @param fmu A model description object returned by fmi2_import_parse_xml() that has loaded the FMI functions, see fmi2_import_load_fcn().
+ * @return FMI status.
+ */
+FMILIB_EXPORT fmi2_status_t fmi2_import_enter_continuous_time_mode(fmi2_import_t* fmu);
 
 /**
  * \brief Wrapper for the FMI function fmiSetTime(...) 
@@ -339,21 +414,16 @@ FMILIB_EXPORT fmi2_status_t fmi2_import_set_continuous_states(fmi2_import_t* fmu
  * \brief Wrapper for the FMI function fmiCompletedIntegratorStep(...) 
  * 
  * @param fmu A model description object returned by fmi2_import_parse_xml() that has loaded the FMI functions, see fmi2_import_load_fcn().
- * @param callEventUpdate (Output) Call fmiEventUpdate indicator.
+ * @param noSetFMUStatePriorToCurrentPoint True if fmiSetFMUState will no
+          longer be called for time instants prior to current time in this
+          simulation run.
+ * @param enterEventMode (Output) Call fmiEnterEventMode indicator.
+ * @param terminateSimulation (Output) Terminate simulation indicator.
  * @return FMI status.
  */
-FMILIB_EXPORT fmi2_status_t fmi2_import_completed_integrator_step(fmi2_import_t* fmu, fmi2_boolean_t* callEventUpdate);
-
-/**
- * \brief Wrapper for the FMI function fmiInitialize(...) 
- * 
- * @param fmu A model description object returned by fmi2_import_parse_xml() that has loaded the FMI functions, see fmi2_import_load_fcn().
- * @param toleranceControlled Enable or disable the use of relativeTolerance in the FMU.
- * @param relativeTolerance A relative tolerance used in the FMU.
- * @param eventInfo (Output) fmiEventInfo struct.
- * @return FMI status.
- */
-FMILIB_EXPORT fmi2_status_t fmi2_import_initialize_model(fmi2_import_t* fmu, fmi2_boolean_t toleranceControlled, fmi2_real_t relativeTolerance, fmi2_event_info_t* eventInfo);
+FMILIB_EXPORT fmi2_status_t fmi2_import_completed_integrator_step(fmi2_import_t* fmu,
+    fmi2_boolean_t noSetFMUStatePriorToCurrentPoint,
+    fmi2_boolean_t* enterEventMode, fmi2_boolean_t* terminateSimulation);
 
 /**
  * \brief Wrapper for the FMI function fmiGetDerivatives(...) 
@@ -376,24 +446,6 @@ FMILIB_EXPORT fmi2_status_t fmi2_import_get_derivatives(fmi2_import_t* fmu, fmi2
 FMILIB_EXPORT fmi2_status_t fmi2_import_get_event_indicators(fmi2_import_t* fmu, fmi2_real_t eventIndicators[], size_t ni);
 
 /**
- * \brief Wrapper for the FMI function fmiEventUpdate(...) 
- * 
- * @param fmu A model description object returned by fmi2_import_parse_xml() that has loaded the FMI functions, see fmi2_import_load_fcn().
- * @param intermediateResults Indicate whether or not the fmiEventUpdate shall return after every internal event interation.
- * @param eventInfo (Output) An fmiEventInfo struct.
- * @return FMI status.
- */
-FMILIB_EXPORT fmi2_status_t fmi2_import_eventUpdate(fmi2_import_t* fmu, fmi2_boolean_t intermediateResults, fmi2_event_info_t* eventInfo);
-
-/**
- * \brief Wrapper for the FMI function fmiCompletedEventIteration(...) 
- * 
- * @param fmu A model description object returned by fmi2_import_parse_xml() that has loaded the FMI functions, see fmi2_import_load_fcn().
- * @return FMI status.
- */
-FMILIB_EXPORT fmi2_status_t fmi2_import_completed_event_iteration(fmi2_import_t* fmu);
-
-/**
  * \brief Wrapper for the FMI function fmiGetContinuousStates(...) 
  * 
  * @param fmu A model description object returned by fmi2_import_parse_xml() that has loaded the FMI functions, see fmi2_import_load_fcn().
@@ -404,22 +456,14 @@ FMILIB_EXPORT fmi2_status_t fmi2_import_completed_event_iteration(fmi2_import_t*
 FMILIB_EXPORT fmi2_status_t fmi2_import_get_continuous_states(fmi2_import_t* fmu, fmi2_real_t states[], size_t nx);
 
 /**
- * \brief Wrapper for the FMI function fmiGetNominalContinuousStates(...) 
+ * \brief Wrapper for the FMI function fmiGetNominalsOfContinuousStates(...) 
  * 
  * @param fmu A model description object returned by fmi2_import_parse_xml() that has loaded the FMI functions, see fmi2_import_load_fcn().
  * @param x_nominal (Output) The nominal values.
  * @param nx Number of nominal values.
  * @return FMI status.
  */
-FMILIB_EXPORT fmi2_status_t fmi2_import_get_nominal_continuous_states(fmi2_import_t* fmu, fmi2_real_t x_nominal[], size_t nx);
-
-/**
- * \brief Wrapper for the FMI function fmiTerminate(...) 
- * 
- * @param fmu A model description object returned by fmi2_import_parse_xml() that has loaded the FMI functions, see fmi2_import_load_fcn().
- * @return FMI status.
- */
-FMILIB_EXPORT fmi2_status_t fmi2_import_terminate(fmi2_import_t* fmu);
+FMILIB_EXPORT fmi2_status_t fmi2_import_get_nominals_of_continuous_states(fmi2_import_t* fmu, fmi2_real_t x_nominal[], size_t nx);
 
 /**@} */
 
@@ -428,53 +472,6 @@ FMILIB_EXPORT fmi2_status_t fmi2_import_terminate(fmi2_import_t* fmu);
  * @{
  */
 
-
-/**
- * \brief Wrapper for the FMI function fmiInstantiateSlave(...) 
- * 
- * @param fmu A model description object returned by fmi2_import_parse_xml() that has loaded the FMI functions, see fmi2_import_load_fcn().
- * @param instanceName The name of the instance.
- * @param fmuResourceLocation Access path to the resource subdir in the FMU archive.
- * @param visible Indicates whether or not the simulator application window shoule be visible.
- * @return Error status. Returnes jm_status_error if fmiInstantiateSlave returned NULL, otherwise jm_status_success.
- */
-FMILIB_EXPORT jm_status_enu_t fmi2_import_instantiate_slave(fmi2_import_t* fmu, fmi2_string_t instanceName, fmi2_string_t fmuResourceLocation, fmi2_boolean_t visible);
-
-/**
- * \brief Wrapper for the FMI function fmiInitializeSlave(...) 
- * 
- * @param fmu A model description object returned by fmi2_import_parse_xml() that has loaded the FMI functions, see fmi2_import_load_fcn().
- * @param relativeTolerance suggests a relative (local) tolerance in case the slave utilizes a numerical integrator with variable step size and error estimation.
- * @param tStart Start time of the simulation
- * @param StopTimeDefined Indicates whether or not the stop time is used.
- * @param tStop The stop time of the simulation.
- * @return FMI status.
- */
-FMILIB_EXPORT fmi2_status_t fmi2_import_initialize_slave(fmi2_import_t* fmu,  fmi2_real_t  relativeTolerance, 
-					fmi2_real_t tStart, fmi2_boolean_t StopTimeDefined, fmi2_real_t tStop);
-
-/**
- * \brief Wrapper for the FMI function fmiTerminateSlave(...) 
- * 
- * @param fmu A model description object returned by fmi2_import_parse_xml() that has loaded the FMI functions, see fmi2_import_load_fcn().
- * @return FMI status.
- */
-FMILIB_EXPORT fmi2_status_t fmi2_import_terminate_slave(fmi2_import_t* fmu);
-
-/**
- * \brief Wrapper for the FMI function fmiResetSlave(...) 
- * 
- * @param fmu A model description object returned by fmi2_import_parse_xml() that has loaded the FMI functions, see fmi2_import_load_fcn().
- * @return FMI status.
- */
-FMILIB_EXPORT fmi2_status_t fmi2_import_reset_slave(fmi2_import_t* fmu);
-
-/**
- * \brief Wrapper for the FMI function fmiFreeSlaveInstance(...) 
- * 
- * @param fmu A model description object returned by fmi2_import_parse_xml() that has loaded the FMI functions, see fmi2_import_load_fcn().
- */
-FMILIB_EXPORT void fmi2_import_free_slave_instance(fmi2_import_t* fmu);
 
 /**
  * \brief Wrapper for the FMI function fmiSetRealInputDerivatives(...) 

@@ -73,10 +73,12 @@ FMILIB_EXPORT const char* fmi2_variability_to_string(fmi2_variability_enu_t v);
 /**  \brief Causality property for variables */
 typedef enum fmi2_causality_enu_t {
         fmi2_causality_enu_parameter = 0,
-        fmi2_causality_enu_input  = 1,
-        fmi2_causality_enu_output  = 2,
-        fmi2_causality_enu_local  = 3,
-        fmi2_causality_enu_unknown = 4
+        fmi2_causality_enu_calculated_parameter = 1,
+        fmi2_causality_enu_input  = 2,
+        fmi2_causality_enu_output  = 3,
+        fmi2_causality_enu_local  = 4,
+        fmi2_causality_enu_independent = 5,
+        fmi2_causality_enu_unknown = 6
 } fmi2_causality_enu_t;
 
 /** \brief Convert a #fmi2_causality_enu_t constant into string  */

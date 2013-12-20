@@ -335,6 +335,8 @@ int fmi2_xml_handle_ScalarVariable(fmi2_xml_parser_context_t *context, const cha
                                                              {"input",fmi2_causality_enu_input},
                                                              {"output",fmi2_causality_enu_output},
                                                              {"parameter",fmi2_causality_enu_parameter},
+                                                             {"calculatedParameter",fmi2_causality_enu_calculated_parameter},
+                                                             {"independent",fmi2_causality_enu_independent},
 															{0,0}};
                 jm_name_ID_map_t variabilityConventionMap[] = {{"continuous",fmi2_variability_enu_continuous},
                                                                {"constant", fmi2_variability_enu_constant},

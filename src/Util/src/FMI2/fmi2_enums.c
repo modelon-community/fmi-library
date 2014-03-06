@@ -63,7 +63,9 @@ const char* fmi2_causality_to_string(fmi2_causality_enu_t c) {
     case fmi2_causality_enu_input: return "input";
     case fmi2_causality_enu_output: return "output";
     case fmi2_causality_enu_parameter: return "parameter";
+    case fmi2_causality_enu_calculated_parameter: return "calculatedParameter";
     case fmi2_causality_enu_local: return "local";
+    case fmi2_causality_enu_independent: return "independent";
 	default: break;
     };
     return "Unknown";
@@ -111,12 +113,12 @@ const char* fmi2_initial_to_string(fmi2_initial_enu_t ini) {
 }
 
 fmi2_initial_enu_t initialDefaultsTable[fmi2_variability_enu_unknown][fmi2_causality_enu_unknown] = {
-	/*                parameter                    input                      output                    local */
-	/* constant */  {fmi2_initial_enu_unknown, fmi2_initial_enu_unknown, fmi2_initial_enu_exact,      fmi2_initial_enu_exact},
-	/* fixed   */   {fmi2_initial_enu_exact,   fmi2_initial_enu_exact,   fmi2_initial_enu_calculated, fmi2_initial_enu_calculated},
-	/* tunable */   {fmi2_initial_enu_exact,   fmi2_initial_enu_exact,   fmi2_initial_enu_calculated, fmi2_initial_enu_calculated},
-	/* discrete */  {fmi2_initial_enu_unknown, fmi2_initial_enu_exact,   fmi2_initial_enu_calculated, fmi2_initial_enu_calculated},
-	/* continuous */{fmi2_initial_enu_unknown, fmi2_initial_enu_exact,   fmi2_initial_enu_calculated, fmi2_initial_enu_calculated}
+	/*              parameter                  calculated parameter,        input                     output                       local                        independent */
+	/* constant */  {fmi2_initial_enu_unknown, fmi2_initial_enu_unknown,    fmi2_initial_enu_unknown, fmi2_initial_enu_exact,      fmi2_initial_enu_exact,      fmi2_initial_enu_unknown},
+	/* fixed   */   {fmi2_initial_enu_exact,   fmi2_initial_enu_calculated, fmi2_initial_enu_approx,  fmi2_initial_enu_calculated, fmi2_initial_enu_calculated, fmi2_initial_enu_unknown},
+	/* tunable */   {fmi2_initial_enu_exact,   fmi2_initial_enu_calculated, fmi2_initial_enu_approx,  fmi2_initial_enu_calculated, fmi2_initial_enu_calculated, fmi2_initial_enu_unknown},
+	/* discrete */  {fmi2_initial_enu_unknown, fmi2_initial_enu_unknown,    fmi2_initial_enu_approx,  fmi2_initial_enu_calculated, fmi2_initial_enu_calculated, fmi2_initial_enu_unknown},
+	/* continuous */{fmi2_initial_enu_unknown, fmi2_initial_enu_unknown,    fmi2_initial_enu_approx,  fmi2_initial_enu_calculated, fmi2_initial_enu_calculated, fmi2_initial_enu_calculated}
 };
 
 fmi2_initial_enu_t fmi2_get_default_initial(fmi2_variability_enu_t v, fmi2_causality_enu_t c) {

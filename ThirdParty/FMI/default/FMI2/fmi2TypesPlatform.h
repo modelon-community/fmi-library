@@ -1,5 +1,5 @@
-#ifndef fmiTypesPlatform_h
-#define fmiTypesPlatform_h
+#ifndef fmi2TypesPlatform_h
+#define fmi2TypesPlatform_h
 
 /* Standard header file to define the argument types of the
    functions of the Functional Mock-up Interface 2.0.
@@ -7,6 +7,8 @@
    by the simulation engine.
 
    Revisions:
+   - Apr.  9, 2014: all prefixes "fmi" renamed to "fmi2" (decision from April 8)
+   - Mar   31, 2014: New datatype fmiChar introduced.
    - Feb.  17, 2013: Changed fmiTypesPlatform from "standard32" to "default".
                      Removed fmiUndefinedValueReference since no longer needed
                      (because every state is defined in ScalarVariables).
@@ -77,34 +79,37 @@
 */
 
 /* Platform (unique identification of this header file) */
-#define fmiTypesPlatform "default"
+#define fmi2TypesPlatform "default"
 
 /* Type definitions of variables passed as arguments
    Version "default" means:
 
-   fmiComponent           : an opaque object pointer
-   fmiComponentEnvironment: an opaque object pointer
-   fmiFMUstate            : an opaque object pointer
-   fmiValueReference      : handle to the value of a variable
-   fmiReal                : double precision floating-point type.
-   fmiInteger             : basic signed integer type
-   fmiBoolean             : basic signed integer type
-   fmiString              : a pointer to a character string
-   fmiByte                : smallest addressable unit of the machine, typically one byte.
+   fmi2Component           : an opaque object pointer
+   fmi2ComponentEnvironment: an opaque object pointer
+   fmi2FMUstate            : an opaque object pointer
+   fmi2ValueReference      : handle to the value of a variable
+   fmi2Real                : double precision floating-point data type
+   fmi2Integer             : basic signed integer data type
+   fmi2Boolean             : basic signed integer data type
+   fmi2Char                : character data type
+   fmi2String              : a pointer to a vector of fmi2Char characters
+                             ('\0' terminated, UTF8 encoded)
+   fmi2Byte                : smallest addressable unit of the machine, typically one byte.
 */
-   typedef void*        fmiComponent;               /* Pointer to FMU instance       */
-   typedef void*        fmiComponentEnvironment;    /* Pointer to FMU environment    */
-   typedef void*        fmiFMUstate;                /* Pointer to internal FMU state */
-   typedef unsigned int fmiValueReference;
-   typedef double       fmiReal   ;
-   typedef int          fmiInteger;
-   typedef int          fmiBoolean;
-   typedef const char*  fmiString ;
-   typedef char         fmiByte   ;
+   typedef void*           fmi2Component;               /* Pointer to FMU instance       */
+   typedef void*           fmi2ComponentEnvironment;    /* Pointer to FMU environment    */
+   typedef void*           fmi2FMUstate;                /* Pointer to internal FMU state */
+   typedef unsigned int    fmi2ValueReference;
+   typedef double          fmi2Real   ;
+   typedef int             fmi2Integer;
+   typedef int             fmi2Boolean;
+   typedef char            fmi2Char;
+   typedef const fmi2Char* fmi2String;
+   typedef char            fmi2Byte;
 
-/* Values for fmiBoolean  */
-#define fmiTrue  1
-#define fmiFalse 0
+/* Values for fmi2Boolean  */
+#define fmi2True  1
+#define fmi2False 0
 
 
-#endif /* fmiTypesPlatform_h */
+#endif /* fmi2TypesPlatform_h */

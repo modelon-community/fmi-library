@@ -31,7 +31,7 @@ extern "C" {
 #define FMI_CAPI_MODULE_NAME "FMICAPI"
 
 /** 
- * \brief C-API struct used as a placeholder for the FMI funktions and shared library handler. 
+ * \brief C-API struct used as a placeholder for the FMI functions and shared library handler. 
  */
 struct fmi2_capi_t {
 	const char* dllPath;
@@ -49,63 +49,63 @@ struct fmi2_capi_t {
 	int debugMode;
 
 	/* FMI common */
-	fmi2_get_version_ft					fmiGetVersion;
-	fmi2_set_debug_logging_ft			fmiSetDebugLogging;
-    fmi2_instantiate_ft			fmiInstantiate;
-    fmi2_free_instance_ft			fmiFreeInstance;    
+	fmi2_get_version_ft					fmi2GetVersion;
+	fmi2_set_debug_logging_ft			fmi2SetDebugLogging;
+    fmi2_instantiate_ft			fmi2Instantiate;
+    fmi2_free_instance_ft			fmi2FreeInstance;    
 
-    fmi2_setup_experiment_ft 				fmiSetupExperiment;
-    fmi2_enter_initialization_mode_ft 			fmiEnterInitializationMode;
-    fmi2_exit_initialization_mode_ft 			fmiExitInitializationMode;
+    fmi2_setup_experiment_ft 				fmi2SetupExperiment;
+    fmi2_enter_initialization_mode_ft 			fmi2EnterInitializationMode;
+    fmi2_exit_initialization_mode_ft 			fmi2ExitInitializationMode;
 
-    fmi2_terminate_ft					fmiTerminate;
-    fmi2_reset_ft					fmiReset;
+    fmi2_terminate_ft					fmi2Terminate;
+    fmi2_reset_ft					fmi2Reset;
 
-    fmi2_set_real_ft					fmiSetReal;
-    fmi2_set_integer_ft					fmiSetInteger;
-    fmi2_set_boolean_ft					fmiSetBoolean;
-    fmi2_set_string_ft					fmiSetString;
-	fmi2_get_real_ft					fmiGetReal;
-    fmi2_get_integer_ft					fmiGetInteger;
-    fmi2_get_boolean_ft					fmiGetBoolean;
-    fmi2_get_string_ft					fmiGetString;
+    fmi2_set_real_ft					fmi2SetReal;
+    fmi2_set_integer_ft					fmi2SetInteger;
+    fmi2_set_boolean_ft					fmi2SetBoolean;
+    fmi2_set_string_ft					fmi2SetString;
+	fmi2_get_real_ft					fmi2GetReal;
+    fmi2_get_integer_ft					fmi2GetInteger;
+    fmi2_get_boolean_ft					fmi2GetBoolean;
+    fmi2_get_string_ft					fmi2GetString;
 
-	fmi2_get_fmu_state_ft				fmiGetFMUstate;
-	fmi2_set_fmu_state_ft				fmiSetFMUstate;
-	fmi2_free_fmu_state_ft				fmiFreeFMUstate;
+	fmi2_get_fmu_state_ft				fmi2GetFMUstate;
+	fmi2_set_fmu_state_ft				fmi2SetFMUstate;
+	fmi2_free_fmu_state_ft				fmi2FreeFMUstate;
 	
-	fmi2_serialized_fmu_state_size_ft	fmiSerializedFMUstateSize;
-	fmi2_serialize_fmu_state_ft			fmiSerializeFMUstate;
-    fmi2_de_serialize_fmu_state_ft		fmiDeSerializeFMUstate;
+	fmi2_serialized_fmu_state_size_ft	fmi2SerializedFMUstateSize;
+	fmi2_serialize_fmu_state_ft			fmi2SerializeFMUstate;
+    fmi2_de_serialize_fmu_state_ft		fmi2DeSerializeFMUstate;
 
 /* Getting partial derivatives */
-	fmi2_get_directional_derivative_ft			fmiGetDirectionalDerivative;
+	fmi2_get_directional_derivative_ft			fmi2GetDirectionalDerivative;
 
 	/* FMI ME */
-    fmi2_enter_event_mode_ft		fmiEnterEventMode;
-    fmi2_new_discrete_states_ft		fmiNewDiscreteStates;
-    fmi2_enter_continuous_time_mode_ft	fmiEnterContinuousTimeMode;
-    fmi2_completed_integrator_step_ft	fmiCompletedIntegratorStep;
+    fmi2_enter_event_mode_ft		fmi2EnterEventMode;
+    fmi2_new_discrete_states_ft		fmi2NewDiscreteStates;
+    fmi2_enter_continuous_time_mode_ft	fmi2EnterContinuousTimeMode;
+    fmi2_completed_integrator_step_ft	fmi2CompletedIntegratorStep;
 
-    fmi2_get_types_platform_ft			fmiGetTypesPlatform;    
+    fmi2_get_types_platform_ft			fmi2GetTypesPlatform;    
 
-    fmi2_set_time_ft					fmiSetTime;
-    fmi2_set_continuous_states_ft		fmiSetContinuousStates;
-    fmi2_get_derivatives_ft				fmiGetDerivatives;
-    fmi2_get_event_indicators_ft		fmiGetEventIndicators;
-    fmi2_get_continuous_states_ft		fmiGetContinuousStates;
-    fmi2_get_nominals_of_continuous_states_ft fmiGetNominalsOfContinuousStates;
+    fmi2_set_time_ft					fmi2SetTime;
+    fmi2_set_continuous_states_ft		fmi2SetContinuousStates;
+    fmi2_get_derivatives_ft				fmi2GetDerivatives;
+    fmi2_get_event_indicators_ft		fmi2GetEventIndicators;
+    fmi2_get_continuous_states_ft		fmi2GetContinuousStates;
+    fmi2_get_nominals_of_continuous_states_ft fmi2GetNominalsOfContinuousStates;
 
 	/* FMI CS */
-    fmi2_set_real_input_derivatives_ft	fmiSetRealInputDerivatives;
-    fmi2_get_real_output_derivatives_ft	fmiGetRealOutputDerivatives;
-    fmi2_do_step_ft						fmiDoStep;
-    fmi2_cancel_step_ft					fmiCancelStep;
-    fmi2_get_status_ft					fmiGetStatus;
-    fmi2_get_real_status_ft				fmiGetRealStatus;
-    fmi2_get_integer_status_ft			fmiGetIntegerStatus;
-    fmi2_get_boolean_status_ft			fmiGetBooleanStatus;
-    fmi2_get_string_status_ft			fmiGetStringStatus;
+    fmi2_set_real_input_derivatives_ft	fmi2SetRealInputDerivatives;
+    fmi2_get_real_output_derivatives_ft	fmi2GetRealOutputDerivatives;
+    fmi2_do_step_ft						fmi2DoStep;
+    fmi2_cancel_step_ft					fmi2CancelStep;
+    fmi2_get_status_ft					fmi2GetStatus;
+    fmi2_get_real_status_ft				fmi2GetRealStatus;
+    fmi2_get_integer_status_ft			fmi2GetIntegerStatus;
+    fmi2_get_boolean_status_ft			fmi2GetBooleanStatus;
+    fmi2_get_string_status_ft			fmi2GetStringStatus;
 
 };
 

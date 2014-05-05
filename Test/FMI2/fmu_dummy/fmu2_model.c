@@ -27,15 +27,15 @@ static int calc_initialize(component_ptr_t comp)
 	comp->reals	[VAR_R_GRATIVY]		= -9.81;
 	comp->reals	[VAR_R_BOUNCE_CONF]	= 0.5;
 	if(comp->loggingOn) {
-		comp->functions.logger(comp->functions.componentEnvironment, comp->instanceName, fmiOK, "INFO", "###### Initializing component ######");
-		comp->functions.logger(comp->functions.componentEnvironment, comp->instanceName, fmiOK, "INFO", "Init #r%d#=%g", VAR_R_HIGHT, comp->states[VAR_R_HIGHT]);
-		comp->functions.logger(comp->functions.componentEnvironment, comp->instanceName, fmiOK, "INFO", "Init #r%d#=%g",VAR_R_HIGHT_SPEED, comp->states[VAR_R_HIGHT_SPEED]);
-		comp->functions.logger(comp->functions.componentEnvironment, comp->instanceName, fmiOK, "INFO", "Init #r%d#=%g",VAR_R_GRATIVY, comp->reals	[VAR_R_GRATIVY]);
-		comp->functions.logger(comp->functions.componentEnvironment, comp->instanceName, fmiOK, "INFO", "Init #r%d#=%g",VAR_R_BOUNCE_CONF, comp->reals	[VAR_R_BOUNCE_CONF]);
-/*		comp->functions.logger(comp->functions.componentEnvironment, comp->instanceName, fmiOK, "ERROR", "Bad reference: #r-1#");
-		comp->functions.logger(comp->functions.componentEnvironment, comp->instanceName, fmiOK, "ERROR", "Bad reference: #r1");
-		comp->functions.logger(comp->functions.componentEnvironment, comp->instanceName, fmiOK, "ERROR", "Bad reference: #t1#");
-		comp->functions.logger(comp->functions.componentEnvironment, comp->instanceName, fmiOK, "ERROR", "Bad reference: #r10#");*/
+		comp->functions->logger(comp->functions->componentEnvironment, comp->instanceName, fmi2OK, "INFO", "###### Initializing component ######");
+		comp->functions->logger(comp->functions->componentEnvironment, comp->instanceName, fmi2OK, "INFO", "Init #r%d#=%g", VAR_R_HIGHT, comp->states[VAR_R_HIGHT]);
+		comp->functions->logger(comp->functions->componentEnvironment, comp->instanceName, fmi2OK, "INFO", "Init #r%d#=%g",VAR_R_HIGHT_SPEED, comp->states[VAR_R_HIGHT_SPEED]);
+		comp->functions->logger(comp->functions->componentEnvironment, comp->instanceName, fmi2OK, "INFO", "Init #r%d#=%g",VAR_R_GRATIVY, comp->reals	[VAR_R_GRATIVY]);
+		comp->functions->logger(comp->functions->componentEnvironment, comp->instanceName, fmi2OK, "INFO", "Init #r%d#=%g",VAR_R_BOUNCE_CONF, comp->reals	[VAR_R_BOUNCE_CONF]);
+/*		comp->functions->logger(comp->functions->componentEnvironment, comp->instanceName, fmi2OK, "ERROR", "Bad reference: #r-1#");
+		comp->functions->logger(comp->functions->componentEnvironment, comp->instanceName, fmi2OK, "ERROR", "Bad reference: #r1");
+		comp->functions->logger(comp->functions->componentEnvironment, comp->instanceName, fmi2OK, "ERROR", "Bad reference: #t1#");
+		comp->functions->logger(comp->functions->componentEnvironment, comp->instanceName, fmi2OK, "ERROR", "Bad reference: #r10#");*/
 	}
 	return 0;
 }
@@ -49,26 +49,26 @@ static int calc_get_derivatives(component_ptr_t comp)
 
 static int calc_get_event_indicators(component_ptr_t comp)
 {	
-	fmiReal event_tol = 1e-16;
+	fmi2Real event_tol = 1e-16;
 	comp->event_indicators[EVENT_HIGHT]		= comp->states[VAR_R_HIGHT] + (comp->states[VAR_R_HIGHT] >= 0 ? event_tol : -event_tol);
 	return 0;
 }
 
 static int calc_event_update(component_ptr_t comp)
 {	
-    comp->eventInfo.newDiscreteStatesNeeded           = fmiFalse;
-    comp->eventInfo.terminateSimulation               = fmiFalse;
-    comp->eventInfo.nominalsOfContinuousStatesChanged = fmiFalse;
-    comp->eventInfo.nextEventTimeDefined              = fmiFalse;
+    comp->eventInfo.newDiscreteStatesNeeded           = fmi2False;
+    comp->eventInfo.terminateSimulation               = fmi2False;
+    comp->eventInfo.nominalsOfContinuousStatesChanged = fmi2False;
+    comp->eventInfo.nextEventTimeDefined              = fmi2False;
     comp->eventInfo.nextEventTime                     = -0.0;
 	if ((comp->states[VAR_R_HIGHT] < 0) && (comp->states[VAR_R_HIGHT_SPEED] < 0)) {
 		comp->states[VAR_R_HIGHT_SPEED] = - comp->reals[VAR_R_BOUNCE_CONF] * comp->states[VAR_R_HIGHT_SPEED];
 		comp->states[VAR_R_HIGHT] = 0;
 
-        comp->eventInfo.valuesOfContinuousStatesChanged = fmiTrue;
+        comp->eventInfo.valuesOfContinuousStatesChanged = fmi2True;
 		return 0;
 	} else {
-        comp->eventInfo.valuesOfContinuousStatesChanged = fmiFalse;
+        comp->eventInfo.valuesOfContinuousStatesChanged = fmi2False;
 		return 1; /* Should not call the event update */
 	}
 }
@@ -80,26 +80,26 @@ const char* fmi_get_version()
 	return FMI_VERSION;
 }
 
-fmiStatus fmi_set_debug_logging(fmiComponent c, fmiBoolean loggingOn)
+fmi2Status fmi_set_debug_logging(fmi2Component c, fmi2Boolean loggingOn)
 {
-	component_ptr_t comp = (fmiComponent)c;
+	component_ptr_t comp = (fmi2Component)c;
 	if (comp == NULL) {
-		return fmiFatal;
+		return fmi2Fatal;
 	} else {
 		comp->loggingOn = loggingOn;
-		return fmiOK;
+		return fmi2OK;
 	}
 }
 
-fmiStatus fmi_get_real(fmiComponent c, const fmiValueReference vr[], size_t nvr, fmiReal value[])
+fmi2Status fmi_get_real(fmi2Component c, const fmi2ValueReference vr[], size_t nvr, fmi2Real value[])
 {
-	component_ptr_t comp = (fmiComponent)c;
+	component_ptr_t comp = (fmi2Component)c;
 	if (comp == NULL) {
-		return fmiFatal;
+		return fmi2Fatal;
 	} else {
 		size_t k;
 		for (k = 0; k < nvr; k++) {
-			fmiValueReference cvr = vr[k];
+			fmi2ValueReference cvr = vr[k];
 			if (cvr < N_STATES) {
 				value[k] = comp->states[cvr];
 			} 
@@ -111,156 +111,156 @@ fmiStatus fmi_get_real(fmiComponent c, const fmiValueReference vr[], size_t nvr,
 				value[k] = comp->reals[cvr];
 			}	
 		}
-		return fmiOK;
+		return fmi2OK;
 	}
 }
 
-fmiStatus fmi_get_integer(fmiComponent c, const fmiValueReference vr[], size_t nvr, fmiInteger value[])
+fmi2Status fmi_get_integer(fmi2Component c, const fmi2ValueReference vr[], size_t nvr, fmi2Integer value[])
 {
-	component_ptr_t comp = (fmiComponent)c;
+	component_ptr_t comp = (fmi2Component)c;
 	if (comp == NULL) {
-		return fmiFatal;
+		return fmi2Fatal;
 	} else {
 		size_t k;
 		for (k = 0; k < nvr; k++) {
 			value[k] = comp->integers[vr[k]];
 		}
-		return fmiOK;
+		return fmi2OK;
 	}
 }
 
-fmiStatus fmi_get_boolean(fmiComponent c, const fmiValueReference vr[], size_t nvr, fmiBoolean value[])
+fmi2Status fmi_get_boolean(fmi2Component c, const fmi2ValueReference vr[], size_t nvr, fmi2Boolean value[])
 {
-	component_ptr_t comp = (fmiComponent)c;
+	component_ptr_t comp = (fmi2Component)c;
 	if (comp == NULL) {
-		return fmiFatal;
+		return fmi2Fatal;
 	} else {
 		size_t k;
 		for (k = 0; k < nvr; k++) {
 			value[k] = comp->booleans[vr[k]];
 		}
-		return fmiOK;
+		return fmi2OK;
 	}
 }
 
-fmiStatus fmi_get_string(fmiComponent c, const fmiValueReference vr[], size_t nvr, fmiString  value[])
+fmi2Status fmi_get_string(fmi2Component c, const fmi2ValueReference vr[], size_t nvr, fmi2String  value[])
 {
-	component_ptr_t comp = (fmiComponent)c;
+	component_ptr_t comp = (fmi2Component)c;
 	if (comp == NULL) {
-		return fmiFatal;
+		return fmi2Fatal;
 	} else {
 		size_t k;
 		for (k = 0; k < nvr; k++) {
 			value[k] = comp->strings[vr[k]];
 		}
-		return fmiOK;
+		return fmi2OK;
 	}
 }
 
-fmiStatus fmi_set_real(fmiComponent c, const fmiValueReference vr[], size_t nvr, const fmiReal value[])
+fmi2Status fmi_set_real(fmi2Component c, const fmi2ValueReference vr[], size_t nvr, const fmi2Real value[])
 {
-	component_ptr_t comp = (fmiComponent)c;
+	component_ptr_t comp = (fmi2Component)c;
 	if (comp == NULL) {
-		return fmiFatal;
+		return fmi2Fatal;
 	} else {
 		size_t k;
 		for (k = 0; k < nvr; k++) {
-			fmiValueReference cvr = vr[k];
+			fmi2ValueReference cvr = vr[k];
 			if (cvr < N_STATES) {
 				comp->states[cvr] = value[k]; 
 			} 
 			else if(cvr == 4) {
-				comp->functions.logger(c, comp->instanceName,fmiWarning, "WARNING", "Cannot set acceleration value (calculated)");
-				return fmiError;
+				comp->functions->logger(c, comp->instanceName,fmi2Warning, "WARNING", "Cannot set acceleration value (calculated)");
+				return fmi2Error;
 			}
 			else {
 				comp->reals[cvr] = value[k]; 
 			}			
 		}
-		return fmiOK;
+		return fmi2OK;
 	}
 }
 
-fmiStatus fmi_set_integer(fmiComponent c, const fmiValueReference vr[], size_t nvr, const fmiInteger value[])
+fmi2Status fmi_set_integer(fmi2Component c, const fmi2ValueReference vr[], size_t nvr, const fmi2Integer value[])
 {
-	component_ptr_t comp = (fmiComponent)c;
+	component_ptr_t comp = (fmi2Component)c;
 	if (comp == NULL) {
-		return fmiFatal;
+		return fmi2Fatal;
 	} else {
 		size_t k;
 		for (k = 0; k < nvr; k++) {
 			comp->integers[vr[k]] = value[k]; 
 		}
-		return fmiOK;
+		return fmi2OK;
 	}
 }
 
-fmiStatus fmi_set_boolean(fmiComponent c, const fmiValueReference vr[], size_t nvr, const fmiBoolean value[])
+fmi2Status fmi_set_boolean(fmi2Component c, const fmi2ValueReference vr[], size_t nvr, const fmi2Boolean value[])
 {
-	component_ptr_t comp = (fmiComponent)c;
+	component_ptr_t comp = (fmi2Component)c;
 	if (comp == NULL) {
-		return fmiFatal;
+		return fmi2Fatal;
 	} else {
 		size_t k;
 		for (k = 0; k < nvr; k++) {
 			comp->booleans[vr[k]] = value[k]; 
 		}
-		return fmiOK;
+		return fmi2OK;
 	}
 }
 
-fmiStatus fmi_set_string(fmiComponent c, const fmiValueReference vr[], size_t nvr, const fmiString  value[])
+fmi2Status fmi_set_string(fmi2Component c, const fmi2ValueReference vr[], size_t nvr, const fmi2String  value[])
 {
-	component_ptr_t comp = (fmiComponent)c;
+	component_ptr_t comp = (fmi2Component)c;
 	if (comp == NULL) {
-		return fmiFatal;
+		return fmi2Fatal;
 	} else {
 		size_t k;
 		for (k = 0; k < nvr; k++) {			
 			size_t len;
-			fmiString s_dist;
-			fmiString s_src = value[k];
+			fmi2String s_dist;
+			fmi2String s_src = value[k];
 
 			len = strlen((char*)s_src) + 1;
-			s_dist = comp->functions.allocateMemory(len, sizeof(char));
+			s_dist = comp->functions->allocateMemory(len, sizeof(char));
 			if (s_dist == NULL) {
-				return fmiFatal;
+				return fmi2Fatal;
 			}			
 			strcpy((char*)s_dist, (char*)s_src);
 			if(comp->strings[vr[k]]) {
-				comp->functions.freeMemory((void*)comp->strings[vr[k]]);
+				comp->functions->freeMemory((void*)comp->strings[vr[k]]);
 			}
 			comp->strings[vr[k]] = s_dist;
 		}
 
 		/******* Logger test *******/
-		if(comp->loggingOn == fmiTrue) {
+		if(comp->loggingOn == fmi2True) {
 			for (k = 0; k < nvr; k++) {
-				fmiValueReference cvr = vr[k];
+				fmi2ValueReference cvr = vr[k];
 				if (cvr == VAR_S_LOGGER_TEST) {
-					comp->functions.logger(comp->functions.componentEnvironment, comp->instanceName, fmiFatal, "INFO", "%s",value[k]);
+					comp->functions->logger(comp->functions->componentEnvironment, comp->instanceName, fmi2Fatal, "INFO", "%s",value[k]);
 				}
 			}
 		}
 		/******* End of logger test *******/
-		return fmiOK;
+		return fmi2OK;
 	}
 }
 
 /* FMI 2.0 ME Functions */
 const char* fmi_get_model_types_platform()
 {
-	return fmiTypesPlatform;
+	return fmi2TypesPlatform;
 }
 
 /* static FILE* find_string(FILE* fp, char* str, int len) {
 
 } */
 
-fmiComponent fmi_instantiate(fmiString instanceName, fmiType fmuType,
-  fmiString fmuGUID, fmiString fmuLocation,
-  const fmiCallbackFunctions *functions, fmiBoolean visible,
-  fmiBoolean loggingOn)
+fmi2Component fmi_instantiate(fmi2String instanceName, fmi2Type fmuType,
+  fmi2String fmuGUID, fmi2String fmuLocation,
+  const fmi2CallbackFunctions *functions, fmi2Boolean visible,
+  fmi2Boolean loggingOn)
 {
 	component_ptr_t comp;
 	int k, p;
@@ -273,7 +273,9 @@ fmiComponent fmi_instantiate(fmiString instanceName, fmiType fmuType,
 	} else {	
 		sprintf(comp->instanceName, "%s", instanceName);
 		sprintf(comp->GUID, "%s",fmuGUID);
-		comp->functions		= *functions;
+		comp->functions		= functions;
+		/*comp->functions->allocateMemory = functions->allocateMemory;*/
+		
 		comp->loggingOn		= loggingOn;
 
 		/* Set default values */
@@ -284,7 +286,7 @@ fmiComponent fmi_instantiate(fmiString instanceName, fmiType fmuType,
 		for (k = 0; k < N_EVENT_INDICATORS; k++) comp->event_indicators[k]	= 1e10;
 		for (k = 0; k < N_REAL;				k++) comp->reals[k]				= 0.0;
 		for (k = 0; k < N_INTEGER;			k++) comp->integers[k]			= 0;
-		for (k = 0; k < N_BOOLEAN;			k++) comp->booleans[k]			= fmiFalse;
+		for (k = 0; k < N_BOOLEAN;			k++) comp->booleans[k]			= fmi2False;
 		for (k = 0; k < N_STRING;			k++) comp->strings[k]			= NULL;
 
 		/* Used in CS only */
@@ -307,26 +309,26 @@ fmiComponent fmi_instantiate(fmiString instanceName, fmiType fmuType,
 	}
 }
 
-void fmi_free_instance(fmiComponent c)
+void fmi_free_instance(fmi2Component c)
 {
 	int i;
-	component_ptr_t comp = (fmiComponent)c;
+	component_ptr_t comp = (fmi2Component)c;
 	for(i = 0; i < N_STRING; i++) {
-		comp->functions.freeMemory((void*)(comp->strings[i]));
+		comp->functions->freeMemory((void*)(comp->strings[i]));
 		comp->strings[i] = 0;
 	}
-	comp->functions.freeMemory(c);
+	comp->functions->freeMemory(c);
 }
 
-fmiStatus fmi_setup_experiment(fmiComponent c, fmiBoolean toleranceDefined,
-                               fmiReal tolerance, fmiReal startTime,
-                               fmiBoolean stopTimeDefined,
-                               fmiReal stopTime)
+fmi2Status fmi_setup_experiment(fmi2Component c, fmi2Boolean toleranceDefined,
+                               fmi2Real tolerance, fmi2Real startTime,
+                               fmi2Boolean stopTimeDefined,
+                               fmi2Real stopTime)
 {
-    component_ptr_t comp = (fmiComponent)c;
+    component_ptr_t comp = (fmi2Component)c;
 
     if (comp == NULL) {
-        return fmiFatal;
+        return fmi2Fatal;
     } else {
         comp->toleranceControlled = toleranceDefined;
         comp->relativeTolerance = tolerance;
@@ -335,91 +337,91 @@ fmiStatus fmi_setup_experiment(fmiComponent c, fmiBoolean toleranceDefined,
         comp->StopTimeDefined = stopTimeDefined;
         comp->tStop = stopTime;
 
-        return fmiOK;
+        return fmi2OK;
     }
 }
 
-fmiStatus fmi_enter_initialization_mode(fmiComponent c)
+fmi2Status fmi_enter_initialization_mode(fmi2Component c)
 {
     if (c == NULL) {
-        return fmiFatal;
+        return fmi2Fatal;
     } else {
         calc_initialize(c);
-        return fmiOK;
+        return fmi2OK;
     }
 }
 
-fmiStatus fmi_exit_initialization_mode(fmiComponent c)
+fmi2Status fmi_exit_initialization_mode(fmi2Component c)
 {
-    return fmiOK;
+    return fmi2OK;
 }
 
-fmiStatus fmi_enter_event_mode(fmiComponent c)
+fmi2Status fmi_enter_event_mode(fmi2Component c)
 {
-    return fmiOK;
+    return fmi2OK;
 }
 
-fmiStatus fmi_new_discrete_states(fmiComponent c, fmiEventInfo* eventInfo)
+fmi2Status fmi_new_discrete_states(fmi2Component c, fmi2EventInfo* eventInfo)
 {
-	component_ptr_t comp = (fmiComponent)c;
+	component_ptr_t comp = (fmi2Component)c;
 	if (comp == NULL) {
-		return fmiFatal;
+		return fmi2Fatal;
 	} else {
 		calc_event_update(comp);
 
 		*eventInfo = comp->eventInfo;
-		return fmiOK;
+		return fmi2OK;
 	}
 }
 
-fmiStatus fmi_enter_continuous_time_mode(fmiComponent c)
+fmi2Status fmi_enter_continuous_time_mode(fmi2Component c)
 {
-    return fmiOK;
+    return fmi2OK;
 }
 
-fmiStatus fmi_set_time(fmiComponent c, fmiReal fmitime)
+fmi2Status fmi_set_time(fmi2Component c, fmi2Real fmitime)
 {
-	component_ptr_t comp = (fmiComponent)c;
+	component_ptr_t comp = (fmi2Component)c;
 	if (comp == NULL) {
-		return fmiFatal;
+		return fmi2Fatal;
 	} else {
 		comp->fmitime = fmitime;
-		return fmiOK;
+		return fmi2OK;
 	}
 }
 
-fmiStatus fmi_set_continuous_states(fmiComponent c, const fmiReal x[], size_t nx)
+fmi2Status fmi_set_continuous_states(fmi2Component c, const fmi2Real x[], size_t nx)
 {
-	component_ptr_t comp = (fmiComponent)c;
+	component_ptr_t comp = (fmi2Component)c;
 	if (comp == NULL) {
-		return fmiFatal;
+		return fmi2Fatal;
 	} else {
 		size_t k;
 		for (k = 0; k < nx; k++) {
 			comp->states[k] = x[k];
 		}
-		return fmiOK;
+		return fmi2OK;
 	}
 }
 
-fmiStatus fmi_completed_integrator_step(fmiComponent c,
-  fmiBoolean noSetFMUStatePriorToCurrentPoint,
-  fmiBoolean* enterEventMode, fmiBoolean* terminateSimulation)
+fmi2Status fmi_completed_integrator_step(fmi2Component c,
+  fmi2Boolean noSetFMUStatePriorToCurrentPoint,
+  fmi2Boolean* enterEventMode, fmi2Boolean* terminateSimulation)
 {
-	component_ptr_t comp = (fmiComponent)c;
+	component_ptr_t comp = (fmi2Component)c;
 	if (comp == NULL) {
-		return fmiFatal;
+		return fmi2Fatal;
 	} else {
-		*enterEventMode = fmiFalse;
-		return fmiOK;
+		*enterEventMode = fmi2False;
+		return fmi2OK;
 	}
 }
 
-fmiStatus fmi_get_derivatives(fmiComponent c, fmiReal derivatives[] , size_t nx)
+fmi2Status fmi_get_derivatives(fmi2Component c, fmi2Real derivatives[] , size_t nx)
 {
-	component_ptr_t comp = (fmiComponent)c;
+	component_ptr_t comp = (fmi2Component)c;
 	if (comp == NULL) {
-		return fmiFatal;
+		return fmi2Fatal;
 	} else {
 		size_t k;
 
@@ -428,15 +430,15 @@ fmiStatus fmi_get_derivatives(fmiComponent c, fmiReal derivatives[] , size_t nx)
 		for (k = 0; k < nx; k++) {
 			derivatives[k] = comp->states_der[k];
 		}
-		return fmiOK;
+		return fmi2OK;
 	}
 }
 
-fmiStatus fmi_get_event_indicators(fmiComponent c, fmiReal eventIndicators[], size_t ni)
+fmi2Status fmi_get_event_indicators(fmi2Component c, fmi2Real eventIndicators[], size_t ni)
 {
-	component_ptr_t comp = (fmiComponent)c;
+	component_ptr_t comp = (fmi2Component)c;
 	if (comp == NULL) {
-		return fmiFatal;
+		return fmi2Fatal;
 	} else {
 		size_t k;
 
@@ -445,113 +447,113 @@ fmiStatus fmi_get_event_indicators(fmiComponent c, fmiReal eventIndicators[], si
 		for (k = 0; k < ni; k++) {
 			eventIndicators[k] = comp->event_indicators[k];
 		}
-		return fmiOK;
+		return fmi2OK;
 	}
 }
 
-fmiStatus fmi_get_continuous_states(fmiComponent c, fmiReal states[], size_t nx)
+fmi2Status fmi_get_continuous_states(fmi2Component c, fmi2Real states[], size_t nx)
 {
-	component_ptr_t comp = (fmiComponent)c;
+	component_ptr_t comp = (fmi2Component)c;
 	if (comp == NULL) {
-		return fmiFatal;
+		return fmi2Fatal;
 	} else {
 		size_t k;
 
 		for (k = 0; k < nx; k++) {
 			states[k] = comp->states[k];
 		}
-		return fmiOK;
+		return fmi2OK;
 	}
 }
 
-fmiStatus fmi_get_nominals_of_continuousstates(fmiComponent c, fmiReal x_nominal[], size_t nx)
+fmi2Status fmi_get_nominals_of_continuousstates(fmi2Component c, fmi2Real x_nominal[], size_t nx)
 {
-	component_ptr_t comp = (fmiComponent)c;
+	component_ptr_t comp = (fmi2Component)c;
 	if (comp == NULL) {
-		return fmiFatal;
+		return fmi2Fatal;
 	} else {
 		size_t k;
 		for (k = 0; k < nx; k++) {
 			x_nominal[k] = comp->states_nom[k];
 		}
-		return fmiOK;
+		return fmi2OK;
 	}
 }
 
-fmiStatus fmi_terminate(fmiComponent c)
+fmi2Status fmi_terminate(fmi2Component c)
 {
-	component_ptr_t comp = (fmiComponent)c;
+	component_ptr_t comp = (fmi2Component)c;
 	if (comp == NULL) {
-		return fmiFatal;
+		return fmi2Fatal;
 	} else {
-		return fmiOK;
+		return fmi2OK;
 	}
 }
 
 /* FMI 2.0 CS Functions */
 const char* fmi_get_types_platform()
 {
-	return fmiTypesPlatform;
+	return fmi2TypesPlatform;
 }
 
-fmiStatus fmi_reset(fmiComponent c)
+fmi2Status fmi_reset(fmi2Component c)
 {
-	return fmiOK;
+	return fmi2OK;
 }
 
-fmiStatus fmi_set_real_input_derivatives(fmiComponent c, const fmiValueReference vr[], size_t nvr, const fmiInteger order[], const fmiReal value[])
+fmi2Status fmi_set_real_input_derivatives(fmi2Component c, const fmi2ValueReference vr[], size_t nvr, const fmi2Integer order[], const fmi2Real value[])
 {
 
-	component_ptr_t comp	= (fmiComponent)c;
+	component_ptr_t comp	= (fmi2Component)c;
 	size_t k;
 
 	for (k = 0; k < nvr; k++) {
 		comp->input_real[vr[k]][order[k]] = value[k];
 		if (value[k] != MAGIC_TEST_VALUE) {/* Tests that the value is set to MAGIC_TEST_VALUE */
-			return fmiFatal;
+			return fmi2Fatal;
 		}
 	}
 
-	return fmiOK;
+	return fmi2OK;
 }
 
-fmiStatus fmi_get_real_output_derivatives(fmiComponent c, const fmiValueReference vr[], size_t nvr, const fmiInteger order[], fmiReal value[])
+fmi2Status fmi_get_real_output_derivatives(fmi2Component c, const fmi2ValueReference vr[], size_t nvr, const fmi2Integer order[], fmi2Real value[])
 {
-	component_ptr_t comp	= (fmiComponent)c;
+	component_ptr_t comp	= (fmi2Component)c;
 	size_t k;
 
 	for (k = 0; k < nvr; k++) {
 		value[k] = comp->output_real[vr[k]][order[k]];
 	}
 
-	return fmiOK;
+	return fmi2OK;
 }
 
-fmiStatus fmi_cancel_step(fmiComponent c)
+fmi2Status fmi_cancel_step(fmi2Component c)
 {
-	return fmiOK;
+	return fmi2OK;
 }
 
-fmiStatus fmi_do_step(fmiComponent c, fmiReal currentCommunicationPoint, fmiReal communicationStepSize, fmiBoolean newStep)
+fmi2Status fmi_do_step(fmi2Component c, fmi2Real currentCommunicationPoint, fmi2Real communicationStepSize, fmi2Boolean newStep)
 {
-	component_ptr_t comp	= (fmiComponent)c;
+	component_ptr_t comp	= (fmi2Component)c;
 
 	if (comp == NULL) {
-		return fmiFatal;
+		return fmi2Fatal;
 	} else {
-		fmiReal tstart = currentCommunicationPoint;
-		fmiReal tcur;
-		fmiReal tend = currentCommunicationPoint + communicationStepSize;
-		fmiReal hcur; 
-		fmiReal hdef = 0.01;	/* Default time step length */
-		fmiReal z_cur[N_EVENT_INDICATORS];
-		fmiReal z_pre[N_EVENT_INDICATORS];
-		fmiReal states[N_STATES];
-		fmiReal states_der[N_STATES];
-		fmiEventInfo eventInfo;
-		fmiBoolean callEventUpdate;
-		fmiBoolean terminateSimulation;
-		fmiStatus fmistatus;	
+		fmi2Real tstart = currentCommunicationPoint;
+		fmi2Real tcur;
+		fmi2Real tend = currentCommunicationPoint + communicationStepSize;
+		fmi2Real hcur; 
+		fmi2Real hdef = 0.01;	/* Default time step length */
+		fmi2Real z_cur[N_EVENT_INDICATORS];
+		fmi2Real z_pre[N_EVENT_INDICATORS];
+		fmi2Real states[N_STATES];
+		fmi2Real states_der[N_STATES];
+		fmi2EventInfo eventInfo;
+		fmi2Boolean callEventUpdate;
+		fmi2Boolean terminateSimulation;
+		fmi2Status fmi2Status;	
 		size_t k;
 		size_t counter = 0;
 
@@ -560,7 +562,7 @@ fmiStatus fmi_do_step(fmiComponent c, fmiReal currentCommunicationPoint, fmiReal
 
 		tcur = tstart;
 		hcur = hdef;
-		callEventUpdate = fmiFalse;
+		callEventUpdate = fmi2False;
 		eventInfo = comp->eventInfo;
 
 		while (tcur < tend && counter < 100) {
@@ -582,10 +584,10 @@ fmiStatus fmi_do_step(fmiComponent c, fmiReal currentCommunicationPoint, fmiReal
 			/* Handle any events */
 			if (callEventUpdate || zero_crossning_event ||
 			  (eventInfo.nextEventTimeDefined && tcur == eventInfo.nextEventTime)) {
-				fmistatus = fmi_new_discrete_states(comp, &eventInfo);
-				fmistatus = fmi_get_continuous_states(comp, states, N_STATES);
-				fmistatus = fmi_get_event_indicators(comp, z_cur, N_EVENT_INDICATORS);
-				fmistatus = fmi_get_event_indicators(comp, z_pre, N_EVENT_INDICATORS);
+				fmi2Status = fmi_new_discrete_states(comp, &eventInfo);
+				fmi2Status = fmi_get_continuous_states(comp, states, N_STATES);
+				fmi2Status = fmi_get_event_indicators(comp, z_cur, N_EVENT_INDICATORS);
+				fmi2Status = fmi_get_event_indicators(comp, z_pre, N_EVENT_INDICATORS);
 			}
 
 			/* Updated next time step */
@@ -610,75 +612,75 @@ fmiStatus fmi_do_step(fmiComponent c, fmiReal currentCommunicationPoint, fmiReal
 			}
 
 			/* Integrate a step */
-			fmistatus = fmi_get_derivatives(comp, states_der, N_STATES);
+			fmi2Status = fmi_get_derivatives(comp, states_der, N_STATES);
 			for (k = 0; k < N_STATES; k++) {
 				states[k] = states[k] + hcur*states_der[k];	
 				/* if (k == 0) printf("states[%u] = %f states_der[k] = %f hcur =%f\n", k, states[k], states_der[k], hcur); */
 			}
 
 			/* Set states */
-			fmistatus = fmi_set_continuous_states(comp, states, N_STATES);
+			fmi2Status = fmi_set_continuous_states(comp, states, N_STATES);
 			/* Step is complete */
-			fmistatus = fmi_completed_integrator_step(comp, fmiTrue,
+			fmi2Status = fmi_completed_integrator_step(comp, fmi2True,
                             &callEventUpdate, &terminateSimulation);
             
-            if(fmistatus != fmiOK) break;
+            if(fmi2Status != fmi2OK) break;
 
 		}
 		for (k = 0; k < N_STATES; k++) { /* Update states */
 			comp->reals[k] = comp->states[k];
 		}
-		return fmiOK;
+		return fmi2OK;
 	}
 }
 
-fmiStatus fmi_get_status(fmiComponent c, const fmiStatusKind s, fmiStatus*  value)
+fmi2Status fmi_get_status(fmi2Component c, const fmi2StatusKind s, fmi2Status*  value)
 {
 	switch (s) {
-		case fmiDoStepStatus:
+		case fmi2DoStepStatus:
 			/* Return fmiPending if we are waiting. Otherwise the result from fmiDoStep */
-			*value = fmiOK;
-			return fmiOK;
+			*value = fmi2OK;
+			return fmi2OK;
 		default: /* Not defined for status for this function */
-			return fmiDiscard;
+			return fmi2Discard;
 	}
 }
 
-fmiStatus fmi_get_real_status(fmiComponent c, const fmiStatusKind s, fmiReal*    value)
+fmi2Status fmi_get_real_status(fmi2Component c, const fmi2StatusKind s, fmi2Real*    value)
 {
 	switch (s) {
-		case fmiLastSuccessfulTime:
+		case fmi2LastSuccessfulTime:
 			/* Return fmiPending if we are waiting. Otherwise return end time for last call to fmiDoStep */
 			*value = 0.01;
-			return fmiOK;
+			return fmi2OK;
 		default: /* Not defined for status for this function */
-			return fmiDiscard;
+			return fmi2Discard;
 	}
 }
 
-fmiStatus fmi_get_integer_status(fmiComponent c, const fmiStatusKind s, fmiInteger* value)
+fmi2Status fmi_get_integer_status(fmi2Component c, const fmi2StatusKind s, fmi2Integer* value)
 {
 	switch (s) {
 		default: /* Not defined for status for this function */
-			return fmiDiscard;
+			return fmi2Discard;
 	}
 }
 
-fmiStatus fmi_get_boolean_status(fmiComponent c, const fmiStatusKind s, fmiBoolean* value)
+fmi2Status fmi_get_boolean_status(fmi2Component c, const fmi2StatusKind s, fmi2Boolean* value)
 {
 	switch (s) {
 		default: /* Not defined for status for this function */
-			return fmiDiscard;
+			return fmi2Discard;
 	}
 }
 
-fmiStatus fmi_get_string_status(fmiComponent c, const fmiStatusKind s, fmiString*  value)
+fmi2Status fmi_get_string_status(fmi2Component c, const fmi2StatusKind s, fmi2String*  value)
 {
 	switch (s) {
-		case fmiPendingStatus:
-			*value = "Did fmiDoStep really return with fmiPending? Then its time to implement this function";
-			return fmiDiscard;
+		case fmi2PendingStatus:
+			*value = "Did fmi2DoStep really return with fmi2Pending? Then its time to implement this function";
+			return fmi2Discard;
 		default: /* Not defined for status for this function */
-			return fmiDiscard;
+			return fmi2Discard;
 	}
 }

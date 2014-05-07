@@ -48,23 +48,27 @@ extern "C" {
 typedef struct {
 	/** \brief Number of constants */
 	unsigned int num_constants;
-	/** \brief  Number of tunable */
-	unsigned int num_tunable;
 	/** \brief  Number of fixed */
 	unsigned int num_fixed;
+	/** \brief  Number of tunable */
+	unsigned int num_tunable;
 	/** \brief  Number of discrete variables */
 	unsigned int num_discrete;
 	/** \brief  Number of continuous variables */
 	unsigned int num_continuous;
 
+	/** \brief  Number of parameters*/
+	unsigned int num_parameters;
+	/** \brief  Number of calculated parameters*/
+	unsigned int num_calculated_parameters;
 	/** \brief  Number of inputs */
 	unsigned int num_inputs;
 	/** \brief  Number of outputs */
 	unsigned int num_outputs;
 	/** \brief  Number of local variables */
 	unsigned int num_local;
-	/** \brief  Number of parameters*/
-	unsigned int num_parameters;
+	/** \brief  Number of independent variables */
+	unsigned int num_independent;
 
 	/** \brief  Number of real variables*/
 	unsigned int num_real_vars; 

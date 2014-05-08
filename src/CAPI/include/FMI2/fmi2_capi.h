@@ -34,7 +34,7 @@ extern "C" {
 	*/
 
 /** \addtogroup fmi2_capi Standard FMI 2.0 "C" API
- * \brief The "C" API loads and frees the FMI functions and it is through theise functions all the communcation with the FMU occures. The FMI import library wrappes these functions in a more convenient way.
+ * \brief The "C" API loads and frees the FMI functions and it is through these functions all the communication with the FMU occurs. The FMI import library wraps these functions in a more convenient way.
  *  @{
  */
 

@@ -23,22 +23,22 @@ extern "C" {
 
 fmi2_status_t fmi2_capi_set_real_input_derivatives(fmi2_capi_t* fmu, const  fmi2_value_reference_t vr[], size_t nvr, const fmi2_integer_t order[], const  fmi2_real_t value[])  
 {
-	return fmu->fmiSetRealInputDerivatives(fmu->c, vr, nvr, order, value);
+	return fmu->fmi2SetRealInputDerivatives(fmu->c, vr, nvr, order, value);
 }
 
 fmi2_status_t fmi2_capi_get_real_output_derivatives(fmi2_capi_t* fmu, const  fmi2_value_reference_t vr[], size_t nvr, const fmi2_integer_t order[], fmi2_real_t value[])   
 {
-	return fmu->fmiGetRealOutputDerivatives(fmu->c, vr, nvr, order, value);
+	return fmu->fmi2GetRealOutputDerivatives(fmu->c, vr, nvr, order, value);
 }
 
 fmi2_status_t fmi2_capi_cancel_step(fmi2_capi_t* fmu)   
 {
-	return fmu->fmiCancelStep(fmu->c);
+	return fmu->fmi2CancelStep(fmu->c);
 }
 
 fmi2_status_t fmi2_capi_do_step(fmi2_capi_t* fmu, fmi2_real_t currentCommunicationPoint, fmi2_real_t communicationStepSize, fmi2_boolean_t newStep)
 {
-	return fmu->fmiDoStep(fmu->c, currentCommunicationPoint, communicationStepSize, newStep);
+	return fmu->fmi2DoStep(fmu->c, currentCommunicationPoint, communicationStepSize, newStep);
 }
 
 /* fmiGetStatus* */
@@ -48,11 +48,11 @@ fmi2_status_t FNAME1(fmi2_capi_t* fmu, const fmi2_status_kind_t s, FSTATUSTYPE* 
 	return fmu->FNAME2(fmu->c, s, value); \
 }
 
-FMIGETSTATUSX(fmi2_capi_get_status,		fmiGetStatus,		fmi2_status_t)
-FMIGETSTATUSX(fmi2_capi_get_real_status,		fmiGetRealStatus,	fmi2_real_t)
-FMIGETSTATUSX(fmi2_capi_get_integer_status,	fmiGetIntegerStatus,	fmi2_integer_t)
-FMIGETSTATUSX(fmi2_capi_get_boolean_status,	fmiGetBooleanStatus,	fmi2_boolean_t)
-FMIGETSTATUSX(fmi2_capi_get_string_status,		fmiGetStringStatus,	fmi2_string_t)
+FMIGETSTATUSX(fmi2_capi_get_status,		fmi2GetStatus,		fmi2_status_t)
+FMIGETSTATUSX(fmi2_capi_get_real_status,		fmi2GetRealStatus,	fmi2_real_t)
+FMIGETSTATUSX(fmi2_capi_get_integer_status,	fmi2GetIntegerStatus,	fmi2_integer_t)
+FMIGETSTATUSX(fmi2_capi_get_boolean_status,	fmi2GetBooleanStatus,	fmi2_boolean_t)
+FMIGETSTATUSX(fmi2_capi_get_string_status,		fmi2GetStringStatus,	fmi2_string_t)
 
 #ifdef __cplusplus
 }

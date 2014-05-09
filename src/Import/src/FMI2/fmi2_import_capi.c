@@ -91,7 +91,7 @@ jm_status_enu_t fmi2_import_create_dllfmu(fmi2_import_t* fmu, fmi2_fmu_kind_enu_
 	if(jm_portability_set_current_working_directory(dllDirPath) != jm_status_success) {
 		jm_log_fatal(fmu->callbacks, module, "Could not change to the DLL directory %s", dllDirPath);
 		if(ENOENT == errno)
-			jm_log_fatal(fmu->callbacks, module, "No binary for this platform?");
+			jm_log_fatal(fmu->callbacks, module, "The FMU contains no binary for this platform.");
 		else
 			jm_log_fatal(fmu->callbacks, module, "System error: %s", strerror(errno));
 	}

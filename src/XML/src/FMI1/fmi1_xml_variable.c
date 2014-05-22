@@ -243,8 +243,9 @@ size_t fmi1_xml_get_direct_dependency_size(fmi1_xml_model_description_t* md,fmi1
 	if(v->directDependency) {
 		return jm_vector_get_size(jm_voidp)(v->directDependency);
 	}
-	else
-		return 0;
+	else{
+		return jm_vector_get_size(jm_voidp)(md->inputVariables);
+	}
 }
 
 /* DirectDependency is returned for variables with causality Output. Null pointer for others. */
@@ -255,7 +256,16 @@ jm_status_enu_t fmi1_xml_get_direct_dependency(fmi1_xml_model_description_t* md,
 	if(v->directDependency) {
 		size = jm_vector_get_size(jm_voidp)(v->directDependency);
 		if(jm_vector_reserve(jm_voidp)(list, size) < size) return jm_status_error;
-	    jm_vector_copy(jm_voidp)(list,v->directDependency);
+		jm_vector_copy(jm_voidp)(list,v->directDependency);
+	}
+	/*no direct dependency defined, deliver all inputs, see FMI for ME spec. p 38.*/
+	else{
+		if (md->inputVariables){
+			jm_vector_copy(jm_voidp)(list,md->inputVariables);
+		}
+		else {
+			jm_log_error(md->callbacks,module, "List of input variables not found.");
+		}
 	}
 	return jm_status_success;
 }
@@ -851,10 +861,18 @@ int fmi1_xml_handle_ModelVariables(fmi1_xml_parser_context_t *context, const cha
 
         fmi1_xml_model_description_t* md = context->modelDescription;
         jm_vector(jm_voidp)* varByVR;
+		jm_vector(jm_voidp)* inputVars;
+		jm_vector(jm_voidp)* outputVars;
         size_t i, numvar;
-
-        numvar = jm_vector_get_size(jm_named_ptr)(&md->variablesByName);
-        /* vars with  vr = fmiUndefinedValueReference were already skipped. Just sanity: */
+		size_t num_in = 0;
+		size_t num_out = 0;
+		numvar = jm_vector_get_size(jm_named_ptr)(&md->variablesByName);
+		inputVars = jm_vector_alloc(jm_voidp)(numvar,numvar,md->callbacks);
+		outputVars = jm_vector_alloc(jm_voidp)(numvar,numvar,md->callbacks);
+		if (!inputVars || !outputVars) {
+			fmi1_xml_parse_fatal(context, "Could not allocate memory");
+		}
+		/* vars with  vr = fmiUndefinedValueReference were already skipped. Just sanity: */
         /* remove any variable with vr = fmiUndefinedValueReference */
         for(i = 0; i< numvar; i++) {
             jm_named_ptr named = jm_vector_get_item(jm_named_ptr)(&md->variablesByName, i);
@@ -866,6 +884,15 @@ int fmi1_xml_handle_ModelVariables(fmi1_xml_parser_context_t *context, const cha
                 md->callbacks->free(v);
                 assert(0);
             }
+			if (v->causality == fmi1_causality_enu_input){
+				jm_vector_set_item(jm_voidp)(inputVars, num_in, jm_vector_get_item(jm_named_ptr)(&md->variablesByName,i).ptr);
+				num_in++;
+			}
+			if (v->causality == fmi1_causality_enu_output){
+				jm_vector_set_item(jm_voidp)(outputVars, num_out, jm_vector_get_item(jm_named_ptr)(&md->variablesByName,i).ptr);
+				num_out++;
+			}
+
         }
 
         /* store the list of vars in origianl order */
@@ -878,9 +905,34 @@ int fmi1_xml_handle_ModelVariables(fmi1_xml_parser_context_t *context, const cha
 					jm_vector_set_item(jm_voidp)(md->variablesOrigOrder, i, jm_vector_get_item(jm_named_ptr)(&md->variablesByName,i).ptr);
 				}
 			}
-		}		
+			
+		}
 
-        /* sort the variables by names */
+		/* store the list of input vars */
+		md->inputVariables = jm_vector_alloc(jm_voidp)(num_in,num_in,md->callbacks);
+		md->outputVariables = jm_vector_alloc(jm_voidp)(num_out,num_out,md->callbacks);
+		if(md->inputVariables) {
+				size_t i;
+				for(i= 0; i < num_in; ++i) {
+					jm_vector_set_item(jm_voidp)(md->inputVariables, i, jm_vector_get_item(jm_voidp)(inputVars,i));
+				}
+			}
+		else {
+			fmi1_xml_parse_fatal(context, "Could not allocate memory");
+		}
+		if(md->outputVariables) {
+				size_t i;
+				for(i= 0; i < num_out; ++i) {
+					jm_vector_set_item(jm_voidp)(md->outputVariables, i, jm_vector_get_item(jm_voidp)(outputVars,i));
+				}
+			}
+		else {
+			fmi1_xml_parse_fatal(context, "Could not allocate memory");
+		}
+		jm_vector_free_data(jm_voidp)(inputVars);
+		jm_vector_free_data(jm_voidp)(outputVars);
+		
+		/* sort the variables by names */
         jm_vector_qsort(jm_named_ptr)(&md->variablesByName,jm_compare_named);
 
         /* create VR index */
@@ -892,12 +944,13 @@ int fmi1_xml_handle_ModelVariables(fmi1_xml_parser_context_t *context, const cha
 				size_t i;
 				for(i= 0; i < size; ++i) {
 					jm_vector_set_item(jm_voidp)(md->variablesByVR, i, jm_vector_get_item(jm_named_ptr)(&md->variablesByName,i).ptr);
+
 				}
 			}
 		}
 
         md->status = fmi1_xml_model_description_enu_empty;
-		if(!md->variablesByVR || !md->variablesOrigOrder) {
+		if(!md->variablesByVR || !md->variablesOrigOrder || !md->inputVariables || !md->outputVariables) {
             fmi1_xml_parse_fatal(context, "Could not allocate memory");
             return -1;
         }

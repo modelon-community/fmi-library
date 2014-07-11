@@ -399,8 +399,8 @@ int fmi2_xml_handle_fmiModelDescription(fmi2_xml_parser_context_t *context, cons
 			return -1;
 		}
 		if( (md->fmuKind == fmi2_fmu_kind_me_and_cs) && (strcmp(fmi2_xml_get_model_identifier_CS(md), fmi2_xml_get_model_identifier_ME(md)) == 0)) {
-			fmi2_xml_parse_error(context, "Model identifiers for ModelExchange and CoSimulation must be different");
-			return -1;
+			jm_log_info(context->callbacks,module, "Found model identifiers for ModelExchange and CoSimulation");
+			return 1;
 		}
 		if(!md->modelStructure) {
 			fmi2_xml_parse_fatal(context, "No model structure information available. Cannot continue.");

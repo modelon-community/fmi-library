@@ -17,53 +17,54 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 
 #ifndef FMU2_MODEL_H_
 #define FMU2_MODEL_H_
-#include <FMI2/fmiFunctions.h>
+#include <FMI2/fmi2Functions.h>
+
 #include <fmu_dummy/fmu2_model_defines.h>
-#ifndef FMI_Export
-	#define FMI_Export DllExport
+#ifndef FMI2_Export
+	#define FMI2_Export DllExport
 #endif
 typedef struct {
 	/*************** FMI ME 2.0 ****************/
-	fmiReal					states			[N_STATES];
-	fmiReal					states_nom		[N_STATES];
-	fmiReal					states_der		[N_STATES];
-	fmiReal					event_indicators[N_EVENT_INDICATORS];
-	fmiReal					reals			[N_REAL];
-	fmiInteger				integers		[N_INTEGER];
-	fmiBoolean				booleans		[N_BOOLEAN];
-	fmiString				strings			[N_STRING];
+	fmi2Real					states			[N_STATES];
+	fmi2Real					states_nom		[N_STATES];
+	fmi2Real					states_der		[N_STATES];
+	fmi2Real					event_indicators[N_EVENT_INDICATORS];
+	fmi2Real					reals			[N_REAL];
+	fmi2Integer				integers		[N_INTEGER];
+	fmi2Boolean				booleans		[N_BOOLEAN];
+	fmi2String				strings			[N_STRING];
 
 	/* fmiInstantiateModel */
-	fmiBoolean				loggingOn;
+	fmi2Boolean				loggingOn;
 	char					instanceName	[BUFFER];
 	char					GUID			[BUFFER];
-	fmiCallbackFunctions	functions;
+	const fmi2CallbackFunctions*	functions;
 
 	/* fmiSetTime */
-	fmiReal					fmitime;
+	fmi2Real					fmitime;
 
 	/* fmiInitializeModel */
-	fmiBoolean				toleranceControlled;
-	fmiReal					relativeTolerance;
-	fmiEventInfo			eventInfo;
+	fmi2Boolean				toleranceControlled;
+	fmi2Real					relativeTolerance;
+	fmi2EventInfo			eventInfo;
 
 	/*************** FMI CS 2.0. Depends on the ME fields above and functions ****************/
-	fmiReal					states_prev		[N_STATES];
+	fmi2Real					states_prev		[N_STATES];
 
 	/* fmiInstantiateSlave */
 	char					fmuLocation		[BUFFER];
-	fmiBoolean				visible;
+	fmi2Boolean				visible;
 
 	/* fmiInitializeSlave */
-	fmiReal					tStart;
-	fmiBoolean				StopTimeDefined;
-	fmiReal					tStop;
+	fmi2Real					tStart;
+	fmi2Boolean				StopTimeDefined;
+	fmi2Real					tStop;
 
 	/* fmiSetRealInputDerivatives */
-	fmiReal					input_real		[N_INPUT_REAL][N_INPUT_REAL_MAX_ORDER + 1];
+	fmi2Real					input_real		[N_INPUT_REAL][N_INPUT_REAL_MAX_ORDER + 1];
 
 	/* fmiGetRealOutputDerivatives */
-	fmiReal					output_real		[N_OUTPUT_REAL][N_OUTPUT_REAL_MAX_ORDER + 1];
+	fmi2Real					output_real		[N_OUTPUT_REAL][N_OUTPUT_REAL_MAX_ORDER + 1];
 
 } component_t;
 
@@ -72,176 +73,176 @@ typedef component_t* component_ptr_t;
 /* FMI 2.0 Common Functions */
 const char*		fmi_get_version();
 
-fmiStatus		fmi_set_debug_logging(
-													fmiComponent c,
-													fmiBoolean loggingOn);
+fmi2Status		fmi_set_debug_logging(
+													fmi2Component c,
+													fmi2Boolean loggingOn);
 
-fmiComponent fmi_instantiate (
-    fmiString instanceName,
-    fmiType fmuType,
-    fmiString fmuGUID,
-    fmiString fmuLocation,
-    const fmiCallbackFunctions* functions,
-    fmiBoolean visible,
-    fmiBoolean loggingOn);
+fmi2Component fmi_instantiate (
+    fmi2String instanceName,
+    fmi2Type fmuType,
+    fmi2String fmuGUID,
+    fmi2String fmuLocation,
+    const fmi2CallbackFunctions* functions,
+    fmi2Boolean visible,
+    fmi2Boolean loggingOn);
 
 void fmi_free_instance(
-    fmiComponent c);
+    fmi2Component c);
 
-fmiStatus fmi_setup_experiment(fmiComponent c,
-    fmiBoolean toleranceDefined, fmiReal tolerance,
-    fmiReal startTime, fmiBoolean stopTimeDefined,
-    fmiReal stopTime);
-fmiStatus		fmi_enter_initialization_mode(fmiComponent c);
-fmiStatus		fmi_exit_initialization_mode(fmiComponent c);
+fmi2Status fmi_setup_experiment(fmi2Component c,
+    fmi2Boolean toleranceDefined, fmi2Real tolerance,
+    fmi2Real startTime, fmi2Boolean stopTimeDefined,
+    fmi2Real stopTime);
+fmi2Status		fmi_enter_initialization_mode(fmi2Component c);
+fmi2Status		fmi_exit_initialization_mode(fmi2Component c);
 
-fmiStatus		fmi_terminate(fmiComponent c);
+fmi2Status		fmi_terminate(fmi2Component c);
 
-fmiStatus		fmi_reset(
-													fmiComponent c);
+fmi2Status		fmi_reset(
+													fmi2Component c);
 
 
-fmiStatus		fmi_get_real(			
-													fmiComponent c,
-													const fmiValueReference vr[],
-													size_t nvr, fmiReal value[]);
+fmi2Status		fmi_get_real(			
+													fmi2Component c,
+													const fmi2ValueReference vr[],
+													size_t nvr, fmi2Real value[]);
 
-fmiStatus		fmi_get_integer(	
-													fmiComponent c,
-													const fmiValueReference vr[],
+fmi2Status		fmi_get_integer(	
+													fmi2Component c,
+													const fmi2ValueReference vr[],
 													size_t nvr,
-													fmiInteger value[]);
-fmiStatus		fmi_get_boolean(
-													fmiComponent c,
-													const fmiValueReference vr[],
+													fmi2Integer value[]);
+fmi2Status		fmi_get_boolean(
+													fmi2Component c,
+													const fmi2ValueReference vr[],
 													size_t nvr,
-													fmiBoolean value[]);
+													fmi2Boolean value[]);
 
-fmiStatus		fmi_get_string(
-													fmiComponent c,
-													const fmiValueReference vr[],
+fmi2Status		fmi_get_string(
+													fmi2Component c,
+													const fmi2ValueReference vr[],
 													size_t nvr,
-													fmiString  value[]);
+													fmi2String  value[]);
 
-fmiStatus		fmi_set_real(
-													fmiComponent c,
-													const fmiValueReference vr[],
+fmi2Status		fmi_set_real(
+													fmi2Component c,
+													const fmi2ValueReference vr[],
 													size_t nvr,
-													const fmiReal value[]);
-fmiStatus		fmi_set_integer(
-													fmiComponent c,
-													const fmiValueReference vr[],
+													const fmi2Real value[]);
+fmi2Status		fmi_set_integer(
+													fmi2Component c,
+													const fmi2ValueReference vr[],
 													size_t nvr,
-													const fmiInteger value[]);
+													const fmi2Integer value[]);
 
-fmiStatus		fmi_set_boolean(
-													fmiComponent c,
-													const fmiValueReference vr[],
+fmi2Status		fmi_set_boolean(
+													fmi2Component c,
+													const fmi2ValueReference vr[],
 													size_t nvr,
-													const fmiBoolean value[]);
+													const fmi2Boolean value[]);
 
-fmiStatus		fmi_set_string(
-													fmiComponent c,
-													const fmiValueReference vr[],
+fmi2Status		fmi_set_string(
+													fmi2Component c,
+													const fmi2ValueReference vr[],
 													size_t nvr,
-													const fmiString  value[]);
+													const fmi2String  value[]);
 
 /* FMI 2.0 ME Functions */
 const char*		fmi_get_model_types_platform();
 
-fmiStatus		fmi_enter_event_mode(fmiComponent c);
-fmiStatus		fmi_new_discrete_states(fmiComponent c, fmiEventInfo* eventInfo);
-fmiStatus		fmi_enter_continuous_time_mode(fmiComponent c);
+fmi2Status		fmi_enter_event_mode(fmi2Component c);
+fmi2Status		fmi_new_discrete_states(fmi2Component c, fmi2EventInfo* eventInfo);
+fmi2Status		fmi_enter_continuous_time_mode(fmi2Component c);
 
-fmiStatus		fmi_set_time(
-													fmiComponent c,
-													fmiReal fmitime);
+fmi2Status		fmi_set_time(
+													fmi2Component c,
+													fmi2Real fmitime);
 
-fmiStatus		fmi_set_continuous_states(
-													fmiComponent c,
-													const fmiReal x[],
+fmi2Status		fmi_set_continuous_states(
+													fmi2Component c,
+													const fmi2Real x[],
 													size_t nx);
 
-fmiStatus fmi_completed_integrator_step(
-    fmiComponent c,
-    fmiBoolean noSetFMUStatePriorToCurrentPoint,
-    fmiBoolean* enterEventMode, fmiBoolean* terminateSimulation);
+fmi2Status fmi_completed_integrator_step(
+    fmi2Component c,
+    fmi2Boolean noSetFMUStatePriorToCurrentPoint,
+    fmi2Boolean* enterEventMode, fmi2Boolean* terminateSimulation);
 
-fmiStatus		fmi_get_derivatives(
-													fmiComponent c,
-													fmiReal derivatives[],
+fmi2Status		fmi_get_derivatives(
+													fmi2Component c,
+													fmi2Real derivatives[],
 													size_t nx);
 
-fmiStatus		fmi_get_event_indicators(
-													fmiComponent c,
-													fmiReal eventIndicators[],
+fmi2Status		fmi_get_event_indicators(
+													fmi2Component c,
+													fmi2Real eventIndicators[],
 													size_t ni);
 
-fmiStatus		fmi_get_continuous_states(
-													fmiComponent c,
-													fmiReal states[],
+fmi2Status		fmi_get_continuous_states(
+													fmi2Component c,
+													fmi2Real states[],
 													size_t nx);
 
-fmiStatus		fmi_get_nominals_of_continuousstates(	
-													fmiComponent c,
-													fmiReal x_nominal[],
+fmi2Status		fmi_get_nominals_of_continuousstates(	
+													fmi2Component c,
+													fmi2Real x_nominal[],
 													size_t nx);
 
 
 /* FMI 2.0 CS Functions */
-#ifdef fmiFunctions_h
+#ifdef fmi2Functions_h
 
 const char*		fmi_get_types_platform();
 
 void			fmi_free_slave_instance(
-													fmiComponent c);
+													fmi2Component c);
 
-fmiStatus		fmi_set_real_input_derivatives(
-													fmiComponent c,
-													const fmiValueReference vr[],
+fmi2Status		fmi_set_real_input_derivatives(
+													fmi2Component c,
+													const fmi2ValueReference vr[],
 													size_t nvr,
-													const fmiInteger order[],
-													const fmiReal value[]);
+													const fmi2Integer order[],
+													const fmi2Real value[]);
 
-fmiStatus		fmi_get_real_output_derivatives(
-													fmiComponent c,
-													const fmiValueReference vr[],
+fmi2Status		fmi_get_real_output_derivatives(
+													fmi2Component c,
+													const fmi2ValueReference vr[],
 													size_t nvr,
-													const fmiInteger order[],
-													fmiReal value[]);
+													const fmi2Integer order[],
+													fmi2Real value[]);
 
-fmiStatus		fmi_cancel_step(
-													fmiComponent c);
-fmiStatus		fmi_do_step(
-													fmiComponent c,
-													fmiReal currentCommunicationPoint,
-													fmiReal communicationStepSize,
-													fmiBoolean newStep);
+fmi2Status		fmi_cancel_step(
+													fmi2Component c);
+fmi2Status		fmi_do_step(
+													fmi2Component c,
+													fmi2Real currentCommunicationPoint,
+													fmi2Real communicationStepSize,
+													fmi2Boolean newStep);
 
-fmiStatus		fmi_get_status(
-													fmiComponent c,
-													const fmiStatusKind s,
-													fmiStatus*  value);
+fmi2Status		fmi_get_status(
+													fmi2Component c,
+													const fmi2StatusKind s,
+													fmi2Status*  value);
 
-fmiStatus		fmi_get_real_status(
-													fmiComponent c,
-													const fmiStatusKind s,
-													fmiReal*    value);
+fmi2Status		fmi_get_real_status(
+													fmi2Component c,
+													const fmi2StatusKind s,
+													fmi2Real*    value);
 
-fmiStatus		fmi_get_integer_status(
-													fmiComponent c,
-													const fmiStatusKind s,
-													fmiInteger* value);
+fmi2Status		fmi_get_integer_status(
+													fmi2Component c,
+													const fmi2StatusKind s,
+													fmi2Integer* value);
 
-fmiStatus		fmi_get_boolean_status(
-													fmiComponent c,
-													const fmiStatusKind s,
-													fmiBoolean* value);
+fmi2Status		fmi_get_boolean_status(
+													fmi2Component c,
+													const fmi2StatusKind s,
+													fmi2Boolean* value);
 
-fmiStatus		fmi_get_string_status(
-													fmiComponent c,
-													const fmiStatusKind s,
-													fmiString*  value);
+fmi2Status		fmi_get_string_status(
+													fmi2Component c,
+													const fmi2StatusKind s,
+													fmi2String*  value);
 
-#endif /* End of fmiFunctions_h */
+#endif /* End of fmi2Functions_h */
 #endif /* End of header FMU2_MODEL_H_ */

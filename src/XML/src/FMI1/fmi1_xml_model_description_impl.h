@@ -76,6 +76,10 @@ struct fmi1_xml_model_description_t {
 
 	jm_vector(jm_voidp)* variablesByVR;
 
+	jm_vector(jm_voidp)* inputVariables;
+
+	jm_vector(jm_voidp)* outputVariables;
+
     fmi1_fmu_kind_enu_t fmuKind;
 
     fmi1_xml_capabilities_t capabilities;

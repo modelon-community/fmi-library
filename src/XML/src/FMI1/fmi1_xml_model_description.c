@@ -77,6 +77,10 @@ fmi1_xml_model_description_t * fmi1_xml_allocate_model_description( jm_callbacks
 
 	md->variablesByVR = 0;
 
+	md->inputVariables = 0;
+
+	md->outputVariables = 0;
+
     jm_vector_init(jm_string)(&md->descriptions, 0, cb);
 
     md->fmuKind = fmi1_fmu_kind_enu_me;
@@ -134,6 +138,17 @@ void fmi1_xml_clear_model_description( fmi1_xml_model_description_t* md) {
 		jm_vector_free(jm_voidp)(md->variablesByVR);
 		md->variablesByVR = 0;
 	}
+
+	if(md->inputVariables) {
+		jm_vector_free(jm_voidp)(md->inputVariables);
+		md->inputVariables = 0;
+	}
+
+	if(md->outputVariables) {
+		jm_vector_free(jm_voidp)(md->outputVariables);
+		md->outputVariables = 0;
+	}
+
 
     jm_vector_foreach(jm_string)(&md->descriptions, (void(*)(const char*))md->callbacks->free);
     jm_vector_free_data(jm_string)(&md->descriptions);
@@ -389,3 +404,6 @@ fmi1_xml_variable_t* fmi1_xml_get_variable_by_vr(fmi1_xml_model_description_t* m
 }
 
 
+jm_vector(jm_voidp)* fmi1_xml_get_input_variable_list(fmi1_xml_model_description_t* md) {
+	return md->inputVariables;
+}

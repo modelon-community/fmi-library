@@ -309,6 +309,7 @@ char* jm_create_URL_from_abs_path(jm_callbacks* cb, const char* path) {
 			ch = (unsigned char)path[i];
 			if( (ch == '/') || ((ch >= 'A') && (ch <= 'Z')) 
 				|| ((ch >= 'a') && (ch <= 'z'))
+				|| ((ch >= '0') && (ch <= '9'))
 				|| (ch == '-') || (ch == '_') || (ch == '.') ||(ch == '~')) {
 					*curBuf = ch;
 					curBuf++;

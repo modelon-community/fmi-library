@@ -73,7 +73,7 @@ void fmi1_capi_destroy_dllfmu(fmi1_capi_t* fmu);
 fmi1_capi_t* fmi1_capi_create_dllfmu(jm_callbacks* callbacks, const char* dllPath, const char* modelIdentifier, fmi1_callback_functions_t callBackFunctions, fmi1_fmu_kind_enu_t standard);
 
 /**
- * \brief Loads the FMI functions from the shared library. The shared library must be loaded before this function can be called, see fmi1_import_load_dll.
+ * \brief Loads the FMI functions from the shared library. The shared library must be loaded before this function can be called, see fmi1_import_create_dllfmu().
  * 
  * @param fmu A model description object returned by fmi1_import_allocate.
  * @return Error status. If the function returns with an error, no other C-API functions than fmi1_import_free_dll and fmi1_import_destroy_dllfmu are allowed to be called.
@@ -81,7 +81,7 @@ fmi1_capi_t* fmi1_capi_create_dllfmu(jm_callbacks* callbacks, const char* dllPat
 jm_status_enu_t fmi1_capi_load_fcn(fmi1_capi_t* fmu);
 
 /**
- * \brief Loads the FMU큦 shared library. The shared library functions are not loaded in this call, see fmi1_import_load_fcn.
+ * \brief Loads the FMU큦 shared library. The shared library functions are not loaded in this call, see fmi1_import_create_dllfmu.
  * 
  * @param fmu A model description object returned by fmi1_import_allocate.
  * @return Error status. If the function returns with an error, no other C-API functions than fmi1_import_destroy_dllfmu are allowed to be called.
@@ -89,7 +89,7 @@ jm_status_enu_t fmi1_capi_load_fcn(fmi1_capi_t* fmu);
 jm_status_enu_t fmi1_capi_load_dll(fmi1_capi_t* fmu);
 
 /**
- * \brief Frees the handle to the FMU큦 shared library. After this function returnes, no other C-API functions than fmi1_import_destroy_dllfmu and fmi1_import_load_dll are allowed to be called.
+ * \brief Frees the handle to the FMU큦 shared library. After this function returnes, no other C-API functions than fmi1_import_destroy_dllfmu and fmi1_import_create_dllfmu are allowed to be called.
  * 
  * @param fmu A model description object returned by fmi1_import_allocate that has loaded the FMU큦 shared library, see fmi1_import_load_dll.
  * @return Error status.

@@ -73,7 +73,7 @@ void fmi2_capi_destroy_dllfmu(fmi2_capi_t* fmu);
 fmi2_capi_t* fmi2_capi_create_dllfmu(jm_callbacks* callbacks, const char* dllPath, const char* modelIdentifier, const fmi2_callback_functions_t* callBackFunctions, fmi2_fmu_kind_enu_t standard);
 
 /**
- * \brief Loads the FMI functions from the shared library. The shared library must be loaded before this function can be called, see fmi2_import_load_dll.
+ * \brief Loads the FMI functions from the shared library. The shared library must be loaded before this function can be called, see fmi2_import_create_dllfmu.
  * 
  * @param fmu A model description object returned by fmi2_import_allocate.
  * @param capabilities An array of capability flags according to fmi2_capabilities_enu_t order.
@@ -82,7 +82,7 @@ fmi2_capi_t* fmi2_capi_create_dllfmu(jm_callbacks* callbacks, const char* dllPat
 jm_status_enu_t fmi2_capi_load_fcn(fmi2_capi_t* fmu, unsigned int capabilities[]);
 
 /**
- * \brief Loads the FMU큦 shared library. The shared library functions are not loaded in this call, see fmi2_import_load_fcn.
+ * \brief Loads the FMU큦 shared library. The shared library functions are not loaded in this call, see fmi2_import_create_dllfmu.
  * 
  * @param fmu A model description object returned by fmi2_import_allocate.
  * @return Error status. If the function returns with an error, no other C-API functions than fmi2_import_destroy_dllfmu are allowed to be called.
@@ -90,9 +90,9 @@ jm_status_enu_t fmi2_capi_load_fcn(fmi2_capi_t* fmu, unsigned int capabilities[]
 jm_status_enu_t fmi2_capi_load_dll(fmi2_capi_t* fmu);
 
 /**
- * \brief Frees the handle to the FMU큦 shared library. After this function returnes, no other C-API functions than fmi2_import_destroy_dllfmu and fmi2_import_load_dll are allowed to be called.
+ * \brief Frees the handle to the FMU큦 shared library. After this function returnes, no other C-API functions than fmi2_import_destroy_dllfmu and fmi2_import_create_dllfmu are allowed to be called.
  * 
- * @param fmu A model description object returned by fmi2_import_allocate that has loaded the FMU큦 shared library, see fmi2_import_load_dll.
+ * @param fmu A model description object returned by fmi2_import_allocate that has loaded the FMU큦 shared library, see fmi2_import_create_dllfmu.
  * @return Error status.
  */
 jm_status_enu_t fmi2_capi_free_dll(fmi2_capi_t* fmu);

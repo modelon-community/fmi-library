@@ -348,7 +348,7 @@ int fmi2_xml_handle_fmiModelDescription(fmi2_xml_parser_context_t *context, cons
     jm_name_ID_map_t namingConventionMap[] = {{"flat",fmi2_naming_enu_flat},{"structured", fmi2_naming_enu_structured},{0,0}};
     fmi2_xml_model_description_t* md = context->modelDescription;
     if(!data) {
-		unsigned int numEventIndicators;
+		unsigned int numEventIndicators=0;
 		int ret;
         if(context -> currentElmID != fmi2_xml_elmID_none) {
             fmi2_xml_parse_fatal(context, "fmi2_xml_model_description must be the root XML element");
@@ -379,8 +379,8 @@ int fmi2_xml_handle_fmiModelDescription(fmi2_xml_parser_context_t *context, cons
                     fmi2_xml_set_attr_string(context, fmi2_xml_elmID_fmiModelDescription, fmi_attr_id_generationDateAndTime, 0, &(md->generationDateAndTime)) ||
                     /* <xs:attribute name="variableNamingConvention" use="optional" default="flat"> */
                     fmi2_xml_set_attr_enum(context, fmi2_xml_elmID_fmiModelDescription, fmi_attr_id_variableNamingConvention, 0, (unsigned*)&(md->namingConvension), fmi2_naming_enu_flat, namingConventionMap) ||
-                    /* <xs:attribute name="numberOfEventIndicators" type="xs:unsignedInt" use="required"/> */
-                    fmi2_xml_set_attr_uint(context, fmi2_xml_elmID_fmiModelDescription, fmi_attr_id_numberOfEventIndicators, 1, &numEventIndicators,0);
+                    /* <xs:attribute name="numberOfEventIndicators" type="xs:unsignedInt"/> */
+                    fmi2_xml_set_attr_uint(context, fmi2_xml_elmID_fmiModelDescription, fmi_attr_id_numberOfEventIndicators, 0, &numEventIndicators,0);
 					md->numberOfEventIndicators = numEventIndicators;
 		return (ret );
     }

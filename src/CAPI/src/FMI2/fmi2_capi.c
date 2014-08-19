@@ -465,7 +465,7 @@ fmi2_status_t fmi2_capi_de_serialize_fmu_state  (fmi2_capi_t* fmu, const fmi2_by
 fmi2_status_t fmi2_capi_get_directional_derivative(fmi2_capi_t* fmu, const fmi2_value_reference_t v_ref[], size_t nv,
                                                                    const fmi2_value_reference_t z_ref[], size_t nz,
                                                                    const fmi2_real_t dv[], fmi2_real_t dz[]){
-	return fmu->fmi2GetDirectionalDerivative(fmu -> c,v_ref, nv, z_ref, nz, dv, dz);
+	return fmu->fmi2GetDirectionalDerivative(fmu -> c, z_ref, nz, v_ref, nv, dv, dz);
 }
 
 

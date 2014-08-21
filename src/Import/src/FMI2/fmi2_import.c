@@ -339,6 +339,13 @@ const char* fmi2_import_get_log_category(fmi2_import_t* fmu, size_t  index) {
 	return jm_vector_get_item(jm_string)(fmi2_xml_get_log_categories(fmu->md), index);
 }
 
+/** \brief Get the log category description by index */
+const char* fmi2_import_get_log_category_description(fmi2_import_t* fmu, size_t  index) {
+	if(!fmi2_import_check_has_FMU(fmu)) return 0;
+
+	return jm_vector_get_item(jm_string)(fmi2_xml_get_log_category_descriptions(fmu->md), index);
+}
+
 /** \brief Get the number of source files for ME defined in the XML */
 size_t fmi2_import_get_source_files_me_num(fmi2_import_t* fmu) {
 	if(!fmi2_import_check_has_FMU(fmu)) return 0;

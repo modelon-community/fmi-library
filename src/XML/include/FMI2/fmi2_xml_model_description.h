@@ -226,6 +226,9 @@ const char* fmi2_xml_get_vendor_name(fmi2_xml_model_description_t* md, size_t  i
 /** \brief Get the log categories defined in the XML */
 jm_vector(jm_string)* fmi2_xml_get_log_categories(fmi2_xml_model_description_t* md);
 
+/** \brief Get descriptions for the log categories defined in the XML */
+jm_vector(jm_string)* fmi2_xml_get_log_category_descriptions(fmi2_xml_model_description_t* md);
+
 /** \brief Get the source files for ME defined in the XML */
 jm_vector(jm_string)* fmi2_xml_get_source_files_me(fmi2_xml_model_description_t* md);
 

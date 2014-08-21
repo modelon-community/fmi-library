@@ -74,6 +74,7 @@ fmi2_xml_model_description_t * fmi2_xml_allocate_model_description( jm_callbacks
 
 	jm_vector_init(jm_string)(&md->vendorList, 0, cb);
 	jm_vector_init(jm_string)(&md->logCategories, 0, cb);
+	jm_vector_init(jm_string)(&md->logCategoryDescriptions, 0, cb);
 
     jm_vector_init(jm_named_ptr)(&md->unitDefinitions, 0, cb);
     jm_vector_init(jm_named_ptr)(&md->displayUnitDefinitions, 0, cb);
@@ -140,6 +141,9 @@ void fmi2_xml_clear_model_description( fmi2_xml_model_description_t* md) {
 
     jm_vector_foreach(jm_string)(&md->logCategories, (void(*)(const char*))md->callbacks->free);
     jm_vector_free_data(jm_string)(&md->logCategories);	
+
+    jm_vector_foreach(jm_string)(&md->logCategoryDescriptions, (void(*)(const char*))md->callbacks->free);
+    jm_vector_free_data(jm_string)(&md->logCategoryDescriptions);	
 
     jm_named_vector_free_data(&md->unitDefinitions);
     jm_named_vector_free_data(&md->displayUnitDefinitions);
@@ -304,6 +308,11 @@ jm_vector(jm_string)* fmi2_xml_get_log_categories(fmi2_xml_model_description_t* 
 	return &md->logCategories;
 }
 
+jm_vector(jm_string)* fmi2_xml_get_log_category_descriptions(fmi2_xml_model_description_t* md) {
+	assert(md);
+	return &md->logCategoryDescriptions;
+}
+
 jm_vector(jm_string)* fmi2_xml_get_source_files_me(fmi2_xml_model_description_t* md) {
 	assert(md);
 	return &md->sourceFilesME;
@@ -348,7 +357,7 @@ int fmi2_xml_handle_fmiModelDescription(fmi2_xml_parser_context_t *context, cons
     jm_name_ID_map_t namingConventionMap[] = {{"flat",fmi2_naming_enu_flat},{"structured", fmi2_naming_enu_structured},{0,0}};
     fmi2_xml_model_description_t* md = context->modelDescription;
     if(!data) {
-		unsigned int numEventIndicators;
+		unsigned int numEventIndicators=0;
 		int ret;
         if(context -> currentElmID != fmi2_xml_elmID_none) {
             fmi2_xml_parse_fatal(context, "fmi2_xml_model_description must be the root XML element");
@@ -379,8 +388,8 @@ int fmi2_xml_handle_fmiModelDescription(fmi2_xml_parser_context_t *context, cons
                     fmi2_xml_set_attr_string(context, fmi2_xml_elmID_fmiModelDescription, fmi_attr_id_generationDateAndTime, 0, &(md->generationDateAndTime)) ||
                     /* <xs:attribute name="variableNamingConvention" use="optional" default="flat"> */
                     fmi2_xml_set_attr_enum(context, fmi2_xml_elmID_fmiModelDescription, fmi_attr_id_variableNamingConvention, 0, (unsigned*)&(md->namingConvension), fmi2_naming_enu_flat, namingConventionMap) ||
-                    /* <xs:attribute name="numberOfEventIndicators" type="xs:unsignedInt" use="required"/> */
-                    fmi2_xml_set_attr_uint(context, fmi2_xml_elmID_fmiModelDescription, fmi_attr_id_numberOfEventIndicators, 1, &numEventIndicators,0);
+                    /* <xs:attribute name="numberOfEventIndicators" type="xs:unsignedInt"/> */
+                    fmi2_xml_set_attr_uint(context, fmi2_xml_elmID_fmiModelDescription, fmi_attr_id_numberOfEventIndicators, 0, &numEventIndicators,0);
 					md->numberOfEventIndicators = numEventIndicators;
 		return (ret );
     }
@@ -479,12 +488,12 @@ int fmi2_xml_handle_CoSimulation(fmi2_xml_parser_context_t *context, const char*
         /* <xs:attribute name="providesDirectionalDerivative" type="xs:boolean" default="false"/> */
         if (fmi2_xml_is_attr_defined(context, fmi_attr_id_providesDirectionalDerivatives)) {
 			fmi2_xml_parse_error(context, "Attribute 'providesDirectionalDerivatives' has been renamed to 'providesDirectionalDerivative'.");
-            if (fmi2_xml_set_attr_boolean(context,fmi2_xml_elmID_ModelExchange, fmi_attr_id_providesDirectionalDerivatives,0,
-                &md->capabilities[fmi2_me_providesDirectionalDerivatives],0)) return -1;
+            if (fmi2_xml_set_attr_boolean(context,fmi2_xml_elmID_CoSimulation, fmi_attr_id_providesDirectionalDerivatives,0,
+                &md->capabilities[fmi2_cs_providesDirectionalDerivatives],0)) return -1;
         }
         else {
-            if (fmi2_xml_set_attr_boolean(context,fmi2_xml_elmID_ModelExchange, fmi_attr_id_providesDirectionalDerivative,0,
-                &md->capabilities[fmi2_me_providesDirectionalDerivatives],0)) return -1;
+            if (fmi2_xml_set_attr_boolean(context,fmi2_xml_elmID_CoSimulation, fmi_attr_id_providesDirectionalDerivative,0,
+                &md->capabilities[fmi2_cs_providesDirectionalDerivatives],0)) return -1;
         }
 
         return (	/* <xs:attribute name="modelIdentifier" type="xs:normalizedString" use="required"> */
@@ -516,10 +525,6 @@ int fmi2_xml_handle_CoSimulation(fmi2_xml_parser_context_t *context, const char*
 					/* <xs:attribute name="canSerializeFMUstate" type="xs:boolean" default="false"/> */
                     fmi2_xml_set_attr_boolean(context,fmi2_xml_elmID_CoSimulation, fmi_attr_id_canSerializeFMUstate,0,
                                              &md->capabilities[fmi2_cs_canSerializeFMUstate],0) 
-		/* Not in specification? */
-					/* <xs:attribute name="providesDirectionalDerivatives" type="xs:boolean" default="false"/> */  
-/*        ||            fmi2_xml_set_attr_boolean(context,fmi2_xml_elmID_CoSimulation, fmi_attr_id_providesDirectionalDerivatives,0,
-                                             &md->capabilities[fmi2_cs_providesDirectionalDerivatives],0) */
                    );
     }
     else {
@@ -606,11 +611,15 @@ int fmi2_xml_handle_Category(fmi2_xml_parser_context_t *context, const char* dat
         fmi2_xml_model_description_t* md = context->modelDescription;
         jm_vector(char)* bufName = fmi2_xml_reserve_parse_buffer(context,1,100);
 
-        if(!bufName) return -1;
+        if (!bufName) return -1;
 		/* <xs:attribute name="name" type="xs:normalizedString"> */
-        if( fmi2_xml_set_attr_string(context, fmi2_xml_elmID_Category, fmi_attr_id_name, 1, bufName))
+        if (fmi2_xml_set_attr_string(context, fmi2_xml_elmID_Category, fmi_attr_id_name, 1, bufName))
 			return -1;
-        return push_back_jm_string(context, &md->logCategories, bufName);
+        if (push_back_jm_string(context, &md->logCategories, bufName) < 0) return -1;
+
+        if (fmi2_xml_set_attr_string(context, fmi2_xml_elmID_Category, fmi_attr_id_description, 0, bufName) < 0) return -1;
+        if (push_back_jm_string(context, &md->logCategoryDescriptions, bufName) < 0) return -1;
+        return 0;
     }
     else {
         /* don't do anything. might give out a warning if(data[0] != 0) */

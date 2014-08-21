@@ -151,7 +151,8 @@ FMILIB_EXPORT const char* fmi2_base_type_to_string(fmi2_base_type_enu_t bt);
 	H(canBeInstantiatedOnlyOncePerProcess) \
 	H(canNotUseMemoryManagementFunctions) \
 	H(canGetAndSetFMUstate) \
-	H(canSerializeFMUstate)
+	H(canSerializeFMUstate) \
+	H(providesDirectionalDerivatives)
 
 /** \brief Capability flags for ModelExchange and CoSimulation */
 typedef enum fmi2_capabilities_enu_t {

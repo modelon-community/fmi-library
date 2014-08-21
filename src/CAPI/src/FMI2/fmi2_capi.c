@@ -143,8 +143,8 @@ static jm_status_enu_t fmi2_capi_load_cs_fcn(fmi2_capi_t* fmu, unsigned int capa
 /* Getting directional derivatives */
 /*   typedef fmi2Status fmi2GetDirectionalDerivativeTYPE(fmi2Component, const fmi2ValueReference[], size_t,
                                                                    const fmi2ValueReference[], size_t,
-                                                                   const fmi2Real[], fmi2Real[]);
-    /*???  LOAD_DLL_FUNCTION_WITH_FLAG(fmi2GetDirectionalDerivative,fmi2_cs_providesDirectionalDerivatives); */
+                                                                   const fmi2Real[], fmi2Real[]);*/
+    LOAD_DLL_FUNCTION_WITH_FLAG(fmi2GetDirectionalDerivative,fmi2_cs_providesDirectionalDerivatives); 
 
 /* Simulating the slave */
 /*   typedef fmi2Status fmi2SetRealInputDerivativesTYPE (fmi2Component, const fmi2ValueReference [], size_t, const fmi2Integer [], const fmi2Real []);

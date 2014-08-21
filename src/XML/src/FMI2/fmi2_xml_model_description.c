@@ -74,6 +74,7 @@ fmi2_xml_model_description_t * fmi2_xml_allocate_model_description( jm_callbacks
 
 	jm_vector_init(jm_string)(&md->vendorList, 0, cb);
 	jm_vector_init(jm_string)(&md->logCategories, 0, cb);
+	jm_vector_init(jm_string)(&md->logCategoryDescriptions, 0, cb);
 
     jm_vector_init(jm_named_ptr)(&md->unitDefinitions, 0, cb);
     jm_vector_init(jm_named_ptr)(&md->displayUnitDefinitions, 0, cb);
@@ -140,6 +141,9 @@ void fmi2_xml_clear_model_description( fmi2_xml_model_description_t* md) {
 
     jm_vector_foreach(jm_string)(&md->logCategories, (void(*)(const char*))md->callbacks->free);
     jm_vector_free_data(jm_string)(&md->logCategories);	
+
+    jm_vector_foreach(jm_string)(&md->logCategoryDescriptions, (void(*)(const char*))md->callbacks->free);
+    jm_vector_free_data(jm_string)(&md->logCategoryDescriptions);	
 
     jm_named_vector_free_data(&md->unitDefinitions);
     jm_named_vector_free_data(&md->displayUnitDefinitions);
@@ -302,6 +306,11 @@ size_t fmi2_xml_get_vendors_num(fmi2_xml_model_description_t* md) {
 jm_vector(jm_string)* fmi2_xml_get_log_categories(fmi2_xml_model_description_t* md) {
 	assert(md);
 	return &md->logCategories;
+}
+
+jm_vector(jm_string)* fmi2_xml_get_log_category_descriptions(fmi2_xml_model_description_t* md) {
+	assert(md);
+	return &md->logCategoryDescriptions;
 }
 
 jm_vector(jm_string)* fmi2_xml_get_source_files_me(fmi2_xml_model_description_t* md) {
@@ -602,11 +611,15 @@ int fmi2_xml_handle_Category(fmi2_xml_parser_context_t *context, const char* dat
         fmi2_xml_model_description_t* md = context->modelDescription;
         jm_vector(char)* bufName = fmi2_xml_reserve_parse_buffer(context,1,100);
 
-        if(!bufName) return -1;
+        if (!bufName) return -1;
 		/* <xs:attribute name="name" type="xs:normalizedString"> */
-        if( fmi2_xml_set_attr_string(context, fmi2_xml_elmID_Category, fmi_attr_id_name, 1, bufName))
+        if (fmi2_xml_set_attr_string(context, fmi2_xml_elmID_Category, fmi_attr_id_name, 1, bufName))
 			return -1;
-        return push_back_jm_string(context, &md->logCategories, bufName);
+        if (push_back_jm_string(context, &md->logCategories, bufName) < 0) return -1;
+
+        if (fmi2_xml_set_attr_string(context, fmi2_xml_elmID_Category, fmi_attr_id_description, 0, bufName) < 0) return -1;
+        if (push_back_jm_string(context, &md->logCategoryDescriptions, bufName) < 0) return -1;
+        return 0;
     }
     else {
         /* don't do anything. might give out a warning if(data[0] != 0) */

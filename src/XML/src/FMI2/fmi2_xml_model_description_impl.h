@@ -73,6 +73,7 @@ struct fmi2_xml_model_description_t {
     jm_vector(jm_string) sourceFilesCS;
 
     jm_vector(jm_string) logCategories;
+    jm_vector(jm_string) logCategoryDescriptions;
 
 	jm_vector(jm_string) vendorList;
 

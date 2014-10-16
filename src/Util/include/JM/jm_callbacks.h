@@ -68,7 +68,7 @@ typedef void (*jm_free_f)(jm_voidp p);
 typedef void (*jm_logger_f)(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_level, jm_string message);
 
 /** \brief Maximum message size that can be stored in the ::jm_callbacks struct */
-#define JM_MAX_ERROR_MESSAGE_SIZE 200
+#define JM_MAX_ERROR_MESSAGE_SIZE 2000
 
 /** \brief The callbacks struct is sent to all the modules in the library */
 struct jm_callbacks {

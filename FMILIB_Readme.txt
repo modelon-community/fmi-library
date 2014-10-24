@@ -8,8 +8,8 @@
 
 \mainpage FMI Library: part of JModelica.org
 
-\version     2.0
-\date        21 August 2014 
+\version     2.0.1
+\date        24 October 2014 
 \section Summary
 FMI library is intended as a foundation for applications interfacing FMUs 
 (Functional Mockup Units) that follow FMI Standard. This version of the library supports FMI 1.0 and FMI2.0.

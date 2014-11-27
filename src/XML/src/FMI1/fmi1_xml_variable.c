@@ -929,8 +929,8 @@ int fmi1_xml_handle_ModelVariables(fmi1_xml_parser_context_t *context, const cha
 		else {
 			fmi1_xml_parse_fatal(context, "Could not allocate memory");
 		}
-		jm_vector_free_data(jm_voidp)(inputVars);
-		jm_vector_free_data(jm_voidp)(outputVars);
+		jm_vector_free(jm_voidp)(inputVars);
+		jm_vector_free(jm_voidp)(outputVars);
 		
 		/* sort the variables by names */
         jm_vector_qsort(jm_named_ptr)(&md->variablesByName,jm_compare_named);

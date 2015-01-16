@@ -17,7 +17,7 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 #include <stdio.h>
 #include <string.h>
 
-#include <fmu_dummy/fmu1_model.h>
+#include <fmu1_model.h>
 
 /* Model calculation functions */
 static int calc_initialize(component_ptr_t comp)

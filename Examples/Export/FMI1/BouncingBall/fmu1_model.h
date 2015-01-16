@@ -18,7 +18,7 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 #ifndef FM1_MODEL_H_
 #define FM1_MODEL_H_
 
-#include <fmu_dummy/fmu1_model_defines.h>
+#include <fmu1_model_defines.h>
 
 typedef struct {
 	/*************** FMI ME 1.0 ****************/

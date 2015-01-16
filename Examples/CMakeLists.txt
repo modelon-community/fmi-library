@@ -33,7 +33,7 @@ IF (NOT DEFINED ${FMILIBRARYHOME})
 	set(FMILIBRARYHOME ${FMIExamples_SOURCE_DIR}/..)
 		
 	# User configuration options and parameters
-	SET(FMILIB_INSTALL_PREFIX ${FMIExamples_BINARY_DIR}/../install CACHE PATH "Prefix prepended to install directories")
+	SET(FMILIB_INSTALL_PREFIX "${FMIExamples_BINARY_DIR}/../install" PATH "Prefix prepended to install directories")
 	set(FMILIB_THIRDPARTYLIBS  ${FMILIBRARYHOME}/ThirdParty CACHE PATH "Path to the ThirdParty library dir" )
 	set(FMILIB_FMI_STANDARD_HEADERS  ${FMILIB_THIRDPARTYLIBS}/FMI/default CACHE PATH "Path to the FMI standard headers dir" )
 
@@ -121,14 +121,10 @@ IF (NOT DEFINED ${FMILIBRARYHOME})
 		endif()
 	ENDIF(CMAKE_COMPILER_IS_GNUCC)
 
-	# The config files will end up in the binary dir
-	#include_directories("${FMILibrary_BINARY_DIR}")
-
 	if(FMIEXAMPLES_BUILD_FOR_SHARED_LIBS) 
 		SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${CMAKE_SHARED_LIBRARY_C_FLAGS}")
 		SET(WITH_PIC ON) # this is used in MERGE_LIBRARIES below
 	endif()
-
 
 
 	#Cmake variables set in config files.
@@ -166,16 +162,20 @@ IF (NOT DEFINED ${FMILIBRARYHOME})
 	
 		set(FMIEXAMPLES_FMI_PLATFORM ${FMI_PLATFORM} CACHE STRING ${FMIEXAMPLES_FMI_PLATFORM_DOC} FORCE)
 	else()
-		set(FMIEXAMPLES_PLATFORM ${FMIEXAMPLES_FMI_PLATFORM})
+		set(FMI_PLATFORM ${FMIEXAMPLES_FMI_PLATFORM})
 	endif()
 
 	
-	install(DIRECTORY 
-		${FMILIB_FMI_STANDARD_HEADERS}/FMI1
-		${FMILIB_FMI_STANDARD_HEADERS}/FMI2
-		DESTINATION include
-		FILES_MATCHING PATTERN "*.h")
+#	install(DIRECTORY 
+#		${FMILIB_FMI_STANDARD_HEADERS}/FMI1
+#		${FMILIB_FMI_STANDARD_HEADERS}/FMI2
+#		DESTINATION include
+#		FILES_MATCHING PATTERN "*.h")
 
+	# this is used when searching for include files e.g. using the FIND_PATH() command.
+	#MESSAGE( STATUS "FMILIB_FMI_STANDARD_HEADERS: " ${FMILIB_FMI_STANDARD_HEADERS} )
+	
+	include_directories("${FMILIB_FMI_STANDARD_HEADERS}")
 		
 	function(to_native_c_path path native_c_path)
 		if (WIN32)
@@ -201,12 +201,15 @@ IF (NOT DEFINED ${FMILIBRARYHOME})
 		#Move files to the FMU directories and compress 
 		ADD_CUSTOM_COMMAND(
 		OUTPUT ${OUTPUT_FOLDER_T}/${MODEL_IDENTIFIER_T}_${FILE_NAME_CS_ME_EXT_T}.fmu
-		DEPENDS "${XML_PATH_T}" ${TARGET_NAME_T} compress_test_fmu_zip	   
+		#DEPENDS "${XML_PATH_T}" ${TARGET_NAME_T} compress_test_fmu_zip	   
+		DEPENDS "${XML_PATH_T}" ${TARGET_NAME_T} ${ZIP_COMMAND}	   
 		COMMAND "${CMAKE_COMMAND}" -E remove -f "${OUTPUT_FOLDER_T}/${MODEL_IDENTIFIER_T}_${FILE_NAME_CS_ME_EXT_T}.fmu"
 		COMMAND "${CMAKE_COMMAND}" -E copy "${XML_PATH_T}" "${FMU_OUTPUT_FOLDER_T}/modelDescription.xml"
 		COMMAND "${CMAKE_COMMAND}" -E copy "${SHARED_LIBRARY_PATH_T}" "${FMU_OUTPUT_SHARED_LIBRARY_PATH_T}"
-		COMMAND "${COMPRESS_EXECUTABLE}" "${MODEL_IDENTIFIER_T}.fmu" "modelDescription.xml" "${FMU_OUTPUT_SHARED_LIBRARY_PATH_OUT_T}" WORKING_DIRECTORY "${FMU_OUTPUT_FOLDER_T}"
-		COMMAND "${CMAKE_COMMAND}" -E copy "${FMU_OUTPUT_FOLDER_T}/${MODEL_IDENTIFIER_T}.fmu" "${OUTPUT_FOLDER_T}/${MODEL_IDENTIFIER_T}_${FILE_NAME_CS_ME_EXT_T}.fmu"
+		#COMMAND "${COMPRESS_EXECUTABLE}" "${MODEL_IDENTIFIER_T}.fmu" "modelDescription.xml" "${FMU_OUTPUT_SHARED_LIBRARY_PATH_OUT_T}" WORKING_DIRECTORY "${FMU_OUTPUT_FOLDER_T}"
+		#COMMAND ${ZIP_COMMAND} "${OUTPUT_FOLDER_T}/${MODEL_IDENTIFIER_T}.zip" "${FMU_OUTPUT_FOLDER_T}/modelDescription.xml" "${FMU_OUTPUT_FOLDER_T}"
+		COMMAND ${ZIP_COMMAND} "${OUTPUT_FOLDER_T}/${MODEL_IDENTIFIER_T}.zip" "${FMU_OUTPUT_FOLDER_T}/modelDescription.xml" "${FMU_OUTPUT_FOLDER_T}/*"
+		COMMAND "${CMAKE_COMMAND}" -E rename "${OUTPUT_FOLDER_T}/${MODEL_IDENTIFIER_T}.zip" "${OUTPUT_FOLDER_T}/${MODEL_IDENTIFIER_T}_${FILE_NAME_CS_ME_EXT_T}.fmu"
 		)
 	
 		get_target_property(DLL_SOURCES ${TARGET_NAME_T} SOURCES)
@@ -226,23 +229,13 @@ ELSE()
 	
 ENDIF()
 
+
 #set(FMIEXAMPLESHOME ${FMILIBRARYHOME}/Examples)
 #set(FMILibrary_SOURCE_DIR ${FMILIBRARYHOME})
 #set(FMIExamples_SOURCE_DIR ${FMIEXAMPLESHOME})
 #set(FMIEXAMPLESBUILD ${FMIExamples_BINARY_DIR})
 
 set(FMUEXPORTDIR ${FMIExamples_SOURCE_DIR}/Export)
-
-# User configuration options and parameters
-#SET(FMIEXAMPLES_INSTALL_PREFIX ${FMIExamples_BINARY_DIR}/../install CACHE PATH "Prefix prepended to install directories")
-#set(FMIEXAMPLES_THIRDPARTYLIBS  ${FMILIBRARYHOME}/ThirdParty CACHE PATH "Path to the ThirdParty library dir" )
-#set(FMIEXAMPLES_FMI_STANDARD_HEADERS  ${FMILIB_THIRDPARTYLIBS}/FMI/default CACHE PATH "Path to the FMI standard headers dir" )
-
-# User configuration options and parameters
-#SET(FMILIB_INSTALL_PREFIX ${FMILibrary_BINARY_DIR}/../install CACHE PATH "Prefix prepended to install directories")
-#set(FMILIB_THIRDPARTYLIBS  ${FMILibrary_SOURCE_DIR}/ThirdParty CACHE PATH "Path to the ThirdParty library dir" )
-#set(FMILIB_FMI_STANDARD_HEADERS  ${FMILIB_THIRDPARTYLIBS}/FMI/default CACHE PATH "Path to the FMI standard headers dir" )
-
 
 set(EXPORT_OUTPUT_FOLDER "${FMIExamples_BINARY_DIR}/ExampleExport")
 
@@ -252,6 +245,8 @@ set(FMU_BB_ME_MODEL_IDENTIFIER ExampleBouncingBall) #This must be the same as in
 set(FMU_BB_CS_MODEL_IDENTIFIER ExampleBouncingBall) #This must be the same as in the xml-file
 
 set(FMU_BB_FOLDER ${FMUEXPORTDIR}/FMI1/BouncingBall)
+
+include_directories("${FMU_BB_FOLDER}")
 
 set(FMU_BB_ME_SOURCE
   ${FMU_BB_FOLDER}/fmu1_model_me.c
@@ -264,29 +259,63 @@ set(FMU_BB_HEADERS
   ${FMU_BB_FOLDER}/fmu1_model_defines.h
 )
 
-add_library(bb_fmu1_dll_me SHARED ${FMU_BB_ME_SOURCE} ${FMU_BB_HEADERS})
-add_library(bb_fmu1_dll_cs SHARED ${FMU_BB_CS_SOURCE} ${FMU_BB_HEADERS})
+add_library(ExampleBouncingBall_fmu1_dll_me SHARED ${FMU_BB_ME_SOURCE} ${FMU_BB_HEADERS})
+add_library(ExampleBouncingBall_fmu1_dll_cs SHARED ${FMU_BB_CS_SOURCE} ${FMU_BB_HEADERS})
 
 set(XML_BB_ME_PATH ${FMU_BB_FOLDER}/modelDescription_me.xml)
 set(XML_BB_CS_PATH ${FMU_BB_FOLDER}/modelDescription_cs.xml)
 
 
-set(SHARED_LIBRARY_BB_ME_PATH ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${CMAKE_SHARED_LIBRARY_PREFIX}bb_fmu1_dll_me${CMAKE_SHARED_LIBRARY_SUFFIX})
-set(SHARED_LIBRARY_BB_CS_PATH ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${CMAKE_SHARED_LIBRARY_PREFIX}bb_fmu1_dll_cs${CMAKE_SHARED_LIBRARY_SUFFIX})
+set(SHARED_LIBRARY_BB_ME_PATH ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${CMAKE_SHARED_LIBRARY_PREFIX}ExampleBouncingBall_fmu1_dll_me${CMAKE_SHARED_LIBRARY_SUFFIX})
+set(SHARED_LIBRARY_BB_CS_PATH ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${CMAKE_SHARED_LIBRARY_PREFIX}ExampleBouncingBall_fmu1_dll_cs${CMAKE_SHARED_LIBRARY_SUFFIX})
+
+
+FIND_PROGRAM(ZIP_EXECUTABLE wzzip PATHS "$ENV{ProgramFiles}/WinZip")
+IF(ZIP_EXECUTABLE)
+  SET(ZIP_COMMAND "\"${ZIP_EXECUTABLE}\" -P \"<ARCHIVE>\" @<FILELIST>")
+ENDIF(ZIP_EXECUTABLE)
+
+MESSAGE( STATUS "ZIP_EXECUTABLE: " ${ZIP_EXECUTABLE} )
+
+FIND_PROGRAM(ZIP_EXECUTABLE 7z PATHS "$ENV{ProgramFiles}/7-Zip") 
+IF(ZIP_EXECUTABLE)
+ #SET(ZIP_COMMAND "\"${ZIP_EXECUTABLE}\" a -tzip \"<ARCHIVE>\" @<FILELIST>")
+  SET(ZIP_COMMAND ${ZIP_EXECUTABLE} a -tzip)
+ENDIF(ZIP_EXECUTABLE)
+
+MESSAGE( STATUS "ZIP_EXECUTABLE: " ${ZIP_EXECUTABLE} )
+MESSAGE( STATUS "ZIP_COMMAND: " ${ZIP_COMMAND} )
+MESSAGE( STATUS "CMAKE_COMMAND: " ${CMAKE_COMMAND} )
+
+#find_package(Java)
+#
+#execute_process(
+#    COMMAND
+#        "${Java_JAR_EXECUTABLE}" "cfM" "archive.zip" 
+#        "-C" "${CMAKE_CURRENT_SOURCE_DIR}" "testfile.txt" 
+#        "-C" "${CMAKE_CURRENT_SOURCE_DIR}" "testdir"
+#    RESULT_VARIABLE _result
+#)
+
 
 #Create BouncingBall FMU 1.0 ME/CS Model and generate library path to be used in test config
-
 to_native_c_path("\"${SHARED_LIBRARY_BB_ME_PATH}\"" DLL_OUTPUT_PATH_BB_ME_DEFINE)
 to_native_c_path("\"${SHARED_LIBRARY_BB_CS_PATH}\"" DLL_OUTPUT_PATH_BB_CS_DEFINE)
 
-to_native_c_path("\"${CMAKE_CURRENT_BINARY_DIR}/\" CMAKE_INTDIR \"/${CMAKE_SHARED_LIBRARY_PREFIX}bb_fmu1_dll_me${CMAKE_SHARED_LIBRARY_SUFFIX}\""
+to_native_c_path("\"${CMAKE_CURRENT_BINARY_DIR}/\" CMAKE_INTDIR \"/${CMAKE_SHARED_LIBRARY_PREFIX}ExampleBouncingBall_fmu1_dll_me${CMAKE_SHARED_LIBRARY_SUFFIX}\""
 				BB_FMU1_DLL_ME_PATH)
-to_native_c_path("\"${CMAKE_CURRENT_BINARY_DIR}/\" CMAKE_INTDIR \"/${CMAKE_SHARED_LIBRARY_PREFIX}bb_fmu1_dll_cs${CMAKE_SHARED_LIBRARY_SUFFIX}\""
+to_native_c_path("\"${CMAKE_CURRENT_BINARY_DIR}/\" CMAKE_INTDIR \"/${CMAKE_SHARED_LIBRARY_PREFIX}ExampleBouncingBall_fmu1_dll_cs${CMAKE_SHARED_LIBRARY_SUFFIX}\""
 				BB_FMU1_DLL_CS_PATH)
 
+
 #function(compress_fmu OUTPUT_FOLDER MODEL_IDENTIFIER FILE_NAME_CS_ME_EXT TARGET_NAME XML_PATH SHARED_LIBRARY_PATH)
-compress_fmu("${EXPORT_OUTPUT_FOLDER}" "${FMU_BB_ME_MODEL_IDENTIFIER}" "me" "bb_fmu1_dll_me" "${XML_BB_ME_PATH}" "${SHARED_LIBRARY_BB_ME_PATH}")
-compress_fmu("${EXPORT_OUTPUT_FOLDER}" "${FMU_BB_CS_MODEL_IDENTIFIER}" "cs" "bb_fmu1_dll_cs" "${XML_BB_CS_PATH}" "${SHARED_LIBRARY_BB_CS_PATH}")
+compress_fmu("${EXPORT_OUTPUT_FOLDER}" "${FMU_BB_ME_MODEL_IDENTIFIER}" "me" "ExampleBouncingBall_fmu1_dll_me" "${XML_BB_ME_PATH}" "${SHARED_LIBRARY_BB_ME_PATH}")
+compress_fmu("${EXPORT_OUTPUT_FOLDER}" "${FMU_BB_CS_MODEL_IDENTIFIER}" "cs" "ExampleBouncingBall_fmu1_dll_cs" "${XML_BB_CS_PATH}" "${SHARED_LIBRARY_BB_CS_PATH}")
+#compress_fmu("${EXPORT_OUTPUT_FOLDER}" "${FMU_BB_CS_MODEL_IDENTIFIER}" "cs" "bb_fmu1_dll_cs" "${XML_BB_CS_PATH}" "${SHARED_LIBRARY_BB_CS_PATH}")
 
 
-#install( FILE 
+install(FILES 
+			"${EXPORT_OUTPUT_FOLDER}/${FMU_BB_ME_MODEL_IDENTIFIER}_ME.fmu"
+			"${EXPORT_OUTPUT_FOLDER}/${FMU_BB_CS_MODEL_IDENTIFIER}_CS.fmu"
+		DESTINATION .)
+		

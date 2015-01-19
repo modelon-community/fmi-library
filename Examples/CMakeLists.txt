@@ -33,7 +33,7 @@ IF (NOT DEFINED ${FMILIBRARYHOME})
 	set(FMILIBRARYHOME ${FMIExamples_SOURCE_DIR}/..)
 		
 	# User configuration options and parameters
-	SET(FMILIB_INSTALL_PREFIX "${FMIExamples_BINARY_DIR}/../install" PATH "Prefix prepended to install directories")
+	SET(FMILIB_INSTALL_PREFIX ${FMIExamples_BINARY_DIR}/../install CACHE INTERNAL "Prefix prepended to install directories")
 	set(FMILIB_THIRDPARTYLIBS  ${FMILIBRARYHOME}/ThirdParty CACHE PATH "Path to the ThirdParty library dir" )
 	set(FMILIB_FMI_STANDARD_HEADERS  ${FMILIB_THIRDPARTYLIBS}/FMI/default CACHE PATH "Path to the FMI standard headers dir" )
 
@@ -239,53 +239,15 @@ set(FMUEXPORTDIR ${FMIExamples_SOURCE_DIR}/Export)
 
 set(EXPORT_OUTPUT_FOLDER "${FMIExamples_BINARY_DIR}/ExampleExport")
 
-
-#Defines for the BouncingBall FMU
-set(FMU_BB_ME_MODEL_IDENTIFIER ExampleBouncingBall) #This must be the same as in the xml-file
-set(FMU_BB_CS_MODEL_IDENTIFIER ExampleBouncingBall) #This must be the same as in the xml-file
-
-set(FMU_BB_FOLDER ${FMUEXPORTDIR}/FMI1/BouncingBall)
-
-include_directories("${FMU_BB_FOLDER}")
-
-set(FMU_BB_ME_SOURCE
-  ${FMU_BB_FOLDER}/fmu1_model_me.c
-)
-set(FMU_BB_CS_SOURCE
-  ${FMU_BB_FOLDER}/fmu1_model_cs.c
-)
-set(FMU_BB_HEADERS
-  ${FMU_BB_FOLDER}/fmu1_model.h
-  ${FMU_BB_FOLDER}/fmu1_model_defines.h
-)
-
-add_library(ExampleBouncingBall_fmu1_dll_me SHARED ${FMU_BB_ME_SOURCE} ${FMU_BB_HEADERS})
-add_library(ExampleBouncingBall_fmu1_dll_cs SHARED ${FMU_BB_CS_SOURCE} ${FMU_BB_HEADERS})
-
-set(XML_BB_ME_PATH ${FMU_BB_FOLDER}/modelDescription_me.xml)
-set(XML_BB_CS_PATH ${FMU_BB_FOLDER}/modelDescription_cs.xml)
-
-
-set(SHARED_LIBRARY_BB_ME_PATH ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${CMAKE_SHARED_LIBRARY_PREFIX}ExampleBouncingBall_fmu1_dll_me${CMAKE_SHARED_LIBRARY_SUFFIX})
-set(SHARED_LIBRARY_BB_CS_PATH ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${CMAKE_SHARED_LIBRARY_PREFIX}ExampleBouncingBall_fmu1_dll_cs${CMAKE_SHARED_LIBRARY_SUFFIX})
-
-
 FIND_PROGRAM(ZIP_EXECUTABLE wzzip PATHS "$ENV{ProgramFiles}/WinZip")
 IF(ZIP_EXECUTABLE)
   SET(ZIP_COMMAND "\"${ZIP_EXECUTABLE}\" -P \"<ARCHIVE>\" @<FILELIST>")
 ENDIF(ZIP_EXECUTABLE)
 
-MESSAGE( STATUS "ZIP_EXECUTABLE: " ${ZIP_EXECUTABLE} )
-
 FIND_PROGRAM(ZIP_EXECUTABLE 7z PATHS "$ENV{ProgramFiles}/7-Zip") 
 IF(ZIP_EXECUTABLE)
- #SET(ZIP_COMMAND "\"${ZIP_EXECUTABLE}\" a -tzip \"<ARCHIVE>\" @<FILELIST>")
   SET(ZIP_COMMAND ${ZIP_EXECUTABLE} a -tzip)
 ENDIF(ZIP_EXECUTABLE)
-
-MESSAGE( STATUS "ZIP_EXECUTABLE: " ${ZIP_EXECUTABLE} )
-MESSAGE( STATUS "ZIP_COMMAND: " ${ZIP_COMMAND} )
-MESSAGE( STATUS "CMAKE_COMMAND: " ${CMAKE_COMMAND} )
 
 #find_package(Java)
 #
@@ -298,24 +260,73 @@ MESSAGE( STATUS "CMAKE_COMMAND: " ${CMAKE_COMMAND} )
 #)
 
 
+#Defines for the BouncingBall FMU
+set(FMU_BB1_ME_MODEL_IDENTIFIER ExampleBouncingBall1) #This must be the same as in the xml-file
+set(FMU_BB1_CS_MODEL_IDENTIFIER ExampleBouncingBall1) #This must be the same as in the xml-file
+set(FMU_BB2_CS_MODEL_IDENTIFIER ExampleBouncingBall2) #This must be the same as in the xml-file
+
+set(FMU_BB1_FOLDER ${FMUEXPORTDIR}/FMI1/BouncingBall)
+set(FMU_BB2_FOLDER ${FMUEXPORTDIR}/FMI2/BouncingBall)
+
+include_directories("${FMU_BB1_FOLDER}")
+include_directories("${FMU_BB2_FOLDER}")
+
+set(FMU_BB1_ME_SOURCE
+  ${FMU_BB1_FOLDER}/fmu1_model_me.c
+)
+set(FMU_BB1_CS_SOURCE
+  ${FMU_BB1_FOLDER}/fmu1_model_cs.c
+)
+set(FMU_BB1_HEADERS
+  ${FMU_BB1_FOLDER}/fmu1_model.h
+  ${FMU_BB1_FOLDER}/fmu1_model_defines.h
+)
+
+set(FMU_BB2_CS_SOURCE
+  ${FMU_BB2_FOLDER}/fmu2_model_cs_me.c
+)
+set(FMU_BB2_HEADERS
+  ${FMU_BB2_FOLDER}/fmu2_model.h
+  ${FMU_BB2_FOLDER}/fmu2_model_defines.h
+)
+
+
+add_library(ExampleBouncingBall_fmu1_dll_me SHARED ${FMU_BB1_ME_SOURCE} ${FMU_BB1_HEADERS})
+add_library(ExampleBouncingBall_fmu1_dll_cs SHARED ${FMU_BB1_CS_SOURCE} ${FMU_BB1_HEADERS})
+add_library(ExampleBouncingBall_fmu2_dll_cs SHARED ${FMU_BB2_CS_SOURCE} ${FMU_BB2_HEADERS})
+
+
+set(XML_BB1_ME_PATH ${FMU_BB1_FOLDER}/modelDescription_me.xml)
+set(XML_BB1_CS_PATH ${FMU_BB1_FOLDER}/modelDescription_cs.xml)
+set(XML_BB2_CS_PATH ${FMU_BB2_FOLDER}/modelDescription_cs_me.xml)
+
+set(SHARED_LIBRARY_BB1_ME_PATH ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${CMAKE_SHARED_LIBRARY_PREFIX}ExampleBouncingBall_fmu1_dll_me${CMAKE_SHARED_LIBRARY_SUFFIX})
+set(SHARED_LIBRARY_BB1_CS_PATH ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${CMAKE_SHARED_LIBRARY_PREFIX}ExampleBouncingBall_fmu1_dll_cs${CMAKE_SHARED_LIBRARY_SUFFIX})
+set(SHARED_LIBRARY_BB2_CS_PATH ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${CMAKE_SHARED_LIBRARY_PREFIX}ExampleBouncingBall_fmu2_dll_cs${CMAKE_SHARED_LIBRARY_SUFFIX})
+
 #Create BouncingBall FMU 1.0 ME/CS Model and generate library path to be used in test config
-to_native_c_path("\"${SHARED_LIBRARY_BB_ME_PATH}\"" DLL_OUTPUT_PATH_BB_ME_DEFINE)
-to_native_c_path("\"${SHARED_LIBRARY_BB_CS_PATH}\"" DLL_OUTPUT_PATH_BB_CS_DEFINE)
+to_native_c_path("\"${SHARED_LIBRARY_BB1_ME_PATH}\"" DLL_OUTPUT_PATH_BB_ME_DEFINE)
+to_native_c_path("\"${SHARED_LIBRARY_BB1_CS_PATH}\"" DLL_OUTPUT_PATH_BB_CS_DEFINE)
+to_native_c_path("\"${SHARED_LIBRARY_BB2_CS_PATH}\"" DLL_OUTPUT_PATH_BB_CS_DEFINE)
 
 to_native_c_path("\"${CMAKE_CURRENT_BINARY_DIR}/\" CMAKE_INTDIR \"/${CMAKE_SHARED_LIBRARY_PREFIX}ExampleBouncingBall_fmu1_dll_me${CMAKE_SHARED_LIBRARY_SUFFIX}\""
 				BB_FMU1_DLL_ME_PATH)
 to_native_c_path("\"${CMAKE_CURRENT_BINARY_DIR}/\" CMAKE_INTDIR \"/${CMAKE_SHARED_LIBRARY_PREFIX}ExampleBouncingBall_fmu1_dll_cs${CMAKE_SHARED_LIBRARY_SUFFIX}\""
 				BB_FMU1_DLL_CS_PATH)
+to_native_c_path("\"${CMAKE_CURRENT_BINARY_DIR}/\" CMAKE_INTDIR \"/${CMAKE_SHARED_LIBRARY_PREFIX}ExampleBouncingBall_fmu2_dll_cs${CMAKE_SHARED_LIBRARY_SUFFIX}\""
+				BB_FMU2_DLL_CS_PATH)
+				
+				
+compress_fmu("${EXPORT_OUTPUT_FOLDER}" "${FMU_BB1_ME_MODEL_IDENTIFIER}" "me" "ExampleBouncingBall_fmu1_dll_me" "${XML_BB1_ME_PATH}" "${SHARED_LIBRARY_BB1_ME_PATH}")
+compress_fmu("${EXPORT_OUTPUT_FOLDER}" "${FMU_BB1_CS_MODEL_IDENTIFIER}" "cs" "ExampleBouncingBall_fmu1_dll_cs" "${XML_BB1_CS_PATH}" "${SHARED_LIBRARY_BB1_CS_PATH}")
+compress_fmu("${EXPORT_OUTPUT_FOLDER}" "${FMU_BB2_CS_MODEL_IDENTIFIER}" "cs" "ExampleBouncingBall_fmu2_dll_cs" "${XML_BB2_CS_PATH}" "${SHARED_LIBRARY_BB2_CS_PATH}")
 
 
-#function(compress_fmu OUTPUT_FOLDER MODEL_IDENTIFIER FILE_NAME_CS_ME_EXT TARGET_NAME XML_PATH SHARED_LIBRARY_PATH)
-compress_fmu("${EXPORT_OUTPUT_FOLDER}" "${FMU_BB_ME_MODEL_IDENTIFIER}" "me" "ExampleBouncingBall_fmu1_dll_me" "${XML_BB_ME_PATH}" "${SHARED_LIBRARY_BB_ME_PATH}")
-compress_fmu("${EXPORT_OUTPUT_FOLDER}" "${FMU_BB_CS_MODEL_IDENTIFIER}" "cs" "ExampleBouncingBall_fmu1_dll_cs" "${XML_BB_CS_PATH}" "${SHARED_LIBRARY_BB_CS_PATH}")
-#compress_fmu("${EXPORT_OUTPUT_FOLDER}" "${FMU_BB_CS_MODEL_IDENTIFIER}" "cs" "bb_fmu1_dll_cs" "${XML_BB_CS_PATH}" "${SHARED_LIBRARY_BB_CS_PATH}")
-
+file(MAKE_DIRECTORY "${FMILIB_INSTALL_PREFIX}/ExampleFMUs")
 
 install(FILES 
-			"${EXPORT_OUTPUT_FOLDER}/${FMU_BB_ME_MODEL_IDENTIFIER}_ME.fmu"
-			"${EXPORT_OUTPUT_FOLDER}/${FMU_BB_CS_MODEL_IDENTIFIER}_CS.fmu"
-		DESTINATION .)
+			"${EXPORT_OUTPUT_FOLDER}/${FMU_BB1_ME_MODEL_IDENTIFIER}_ME.fmu"
+			"${EXPORT_OUTPUT_FOLDER}/${FMU_BB1_CS_MODEL_IDENTIFIER}_CS.fmu"
+			"${EXPORT_OUTPUT_FOLDER}/${FMU_BB2_CS_MODEL_IDENTIFIER}_CS.fmu"
+		DESTINATION ExampleFMUs)
 		

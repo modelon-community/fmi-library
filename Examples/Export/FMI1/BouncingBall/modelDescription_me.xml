@@ -2,7 +2,7 @@
 <fmiModelDescription
   fmiVersion="1.0"
   modelName="ExampleBouncingBall"
-  modelIdentifier="ExampleBouncingBall"
+  modelIdentifier="ExampleBouncingBall1"
   generationTool="None"
   description="A bouncing ball model"
   guid="123"

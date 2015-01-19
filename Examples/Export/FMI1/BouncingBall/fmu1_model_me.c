@@ -31,7 +31,7 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 
 #include "fmu1_model.c"
 
-#define MODEL_IDENTIFIER ExampleBouncingBall
+#define MODEL_IDENTIFIER ExampleBouncingBall1
 
 /* FMI 1.0 Common Functions */
 DllExport const char* fmiGetVersion()

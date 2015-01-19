@@ -29,7 +29,7 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 
 #include <fmu1_model.h>
 //#include "config_test.h"
-#define MODEL_IDENTIFIER ExampleBouncingBall
+#define MODEL_IDENTIFIER ExampleBouncingBall1
 
 #include "fmu1_model.c"
 

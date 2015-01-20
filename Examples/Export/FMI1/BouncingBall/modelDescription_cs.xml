@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <fmiModelDescription
   fmiVersion="1.0"
-  modelName="ExampleBouncingBall"
-  modelIdentifier="ExampleBouncingBall1"
-  generationTool="None"
+  modelName="BouncingBall_FMI1_CS"
+  modelIdentifier="BouncingBall_FMI1_CS"
+  generationTool="FMILibrary"
   description="A bouncing ball model"
   guid="123"
   numberOfContinuousStates="2"

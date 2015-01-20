@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <fmiModelDescription
   fmiVersion="1.0"
-  modelName="ExampleBouncingBall"
-  modelIdentifier="ExampleBouncingBall1"
-  generationTool="None"
+  modelName="BouncingBall_FMI1_ME"
+  modelIdentifier="BouncingBall_FMI1_ME"
+  generationTool="FMILibrary"
   description="A bouncing ball model"
   guid="123"
   numberOfContinuousStates="2"
@@ -17,14 +17,11 @@
  
 <ModelVariables>
   <ScalarVariable name="HIGHT" valueReference="0" description="Hight of the ball">
-     <RealType/> <Real start="1.0" fixed="true"/> <Integer/>
-  </ScalarVariable>
+    <Real start="1.0" fixed="true"/> 
+ </ScalarVariable>
   <ScalarVariable name="HIGHT_SPEED" valueReference="1" description="Speed of the ball">
      <Real start="4.0" fixed="true"/>
   </ScalarVariable>   
-  <ScalarVariable name="HIGHT_SPEED_ALIAS" valueReference="1" description="Speed of the ball">
-     <Real start="4.0" fixed="true"/> <DirectDependency><Name>xxx</Name> </DirectDependency>
-  </ScalarVariable> 
   <ScalarVariable name="GRAVITY" valueReference="2" description="Gravity constant">
      <Real start="-9.81"/>
   </ScalarVariable>
@@ -41,11 +38,5 @@
      <Boolean/>
   </ScalarVariable>  
 </ModelVariables>
-<ModelVariables>
-    <ScalarVariable name="LOGGER_TEST_BOOLEAN" valueReference="0" description="This is only used to test logger replace function #b0#">
-     <Boolean/>
-  </ScalarVariable>  
-</ModelVariables>
-
 </fmiModelDescription>
 

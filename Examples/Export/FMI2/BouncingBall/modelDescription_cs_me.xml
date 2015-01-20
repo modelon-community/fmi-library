@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <fmiModelDescription
   fmiVersion="2.0"
-  modelName="BouncingBall"
-  generationTool="None"
+  modelName="BouncingBall_FMI2"
+  generationTool="FMILibrary"
   description="A bouncing ball model"
   guid="123"
   numberOfEventIndicators="1">
-  <ModelExchange modelIdentifier="ExampleBouncingBall2" />
+  <ModelExchange modelIdentifier="BouncingBall_FMI2" />
   <CoSimulation 
-	modelIdentifier="ExampleBouncingBall2" 
+	modelIdentifier="BouncingBall_FMI2" 
 	canHandleVariableCommunicationStepSize="true"
 	/>
 <ModelVariables>
@@ -21,7 +21,7 @@
   <ScalarVariable name="HIGHT_SPEED alias" valueReference="1" description="Speed of the ball">
      <Real />
 	 </ScalarVariable> 
-  <ScalarVariable name="HIGHT_ACC" valueReference="4" description="Speed of the ball">
+  <ScalarVariable name="HIGHT_ACC" valueReference="4" description="Acceleration of the ball">
      <Real />	 
   </ScalarVariable>   
   <ScalarVariable name="A variable" valueReference="100" initial="exact" description="Speed of the ball">
@@ -51,10 +51,6 @@
     <Unknown index="2"/>
     <Unknown index="4" dependencies="6" dependenciesKind="constant"/>
   </Derivatives>
-  <DiscreteStates>
-  </DiscreteStates>
-  <InitialUnknowns>
-  </InitialUnknowns>
 </ModelStructure>
 </fmiModelDescription>
 

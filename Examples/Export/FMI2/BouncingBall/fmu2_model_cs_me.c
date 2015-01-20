@@ -28,7 +28,7 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 
 #include <fmu2_model.h>
 //#include "config_test.h"
-#define MODEL_IDENTIFIER ExampleBouncingBall2
+#define MODEL_IDENTIFIER BouncingBall_FMI2
 
 #include "fmu2_model.c"
 

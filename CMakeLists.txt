@@ -64,6 +64,8 @@ option(FMILIB_ENABLE_LOG_LEVEL_DEBUG "Enable log level 'debug'. If the option is
 option(FMILIB_PRINT_DEBUG_MESSAGES "Enable printing of status messages from the build script. Intended for debugging." OFF)
 mark_as_advanced(FMILIB_PRINT_DEBUG_MESSAGES FMILIB_DEBUG_TRACE)
 
+option (FMILIB_GENERATE_EXPORT_EXAMPLE_FMU "Generate FMU Export Examples" ON)
+
 if(NOT FMILIB_BUILD_SHARED_LIB AND NOT FMILIB_BUILD_STATIC_LIB)
 	message(FATAL_ERROR "Either shared or static library build must be chosen")
 endif()
@@ -377,3 +379,8 @@ if(FMILIB_GENERATE_DOXYGEN_DOC)
  
 	include(UseDoxygen/UseDoxygen)
 endif(FMILIB_GENERATE_DOXYGEN_DOC)
+
+if(FMILIB_GENERATE_EXPORT_EXAMPLE_FMU)
+	add_subdirectory(Examples)
+
+endif(FMILIB_GENERATE_EXPORT_EXAMPLE_FMU)

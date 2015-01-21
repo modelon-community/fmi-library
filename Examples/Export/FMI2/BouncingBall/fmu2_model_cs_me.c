@@ -118,6 +118,50 @@ FMI2_Export fmi2Status fmi2SetString(fmi2Component c, const fmi2ValueReference v
 	return fmi_set_string(c, vr, nvr, value);
 }
 
+/* FMI 2.0 optional Functions */
+
+FMI2_Export fmi2Status fmi2GetFMUstate(fmi2Component c, fmi2FMUstate* FMUstate)
+{
+	return  fmiFunction_not_supported(c, "fmi2GetFMUstate");
+}
+
+FMI2_Export fmi2Status fmi2SetFMUstate(fmi2Component c, fmi2FMUstate FMUstate)
+{
+	return  fmiFunction_not_supported(c, "fmi2SetFMUstate");
+}
+
+FMI2_Export fmi2Status fmi2FreeFMUstate(fmi2Component c, fmi2FMUstate* FMUstate)
+{
+	return  fmiFunction_not_supported(c, "fmi2FreeFMUstate");
+}
+     
+FMI2_Export fmi2Status fmi2SerializedFMUstateSize(fmi2Component c, fmi2FMUstate FMUstate, size_t* size)
+{
+	return  fmiFunction_not_supported(c, "fmi2SerializedFMUstateSize");
+}
+
+FMI2_Export fmi2Status fmi2SerializeFMUstate(fmi2Component c, fmi2FMUstate FMUstate, fmi2Byte serializedState[], size_t size)
+{
+	return  fmiFunction_not_supported(c, "fmi2SerializeFMUstate");
+}
+
+FMI2_Export fmi2Status fmi2DeSerializeFMUstate(fmi2Component c, const fmi2Byte serializedState[], size_t size, fmi2FMUstate* FMUstate)
+{
+	return  fmiFunction_not_supported(c, "fmi2DeSerializeFMUstate");
+}
+
+FMI2_Export fmi2Status fmi2GetDirectionalDerivative(fmi2Component c, 
+										const fmi2ValueReference vUnknown_ref[], 
+										size_t nUnknown, 
+										const fmi2ValueReference vKnown_ref[] , 
+										size_t nKnown,
+                                        const fmi2Real dvKnown[], 
+										fmi2Real dvUnknown[])
+{
+	return  fmiFunction_not_supported(c, "fmi2GetDirectionalDerivative");
+}
+
+
 /* FMI 2.0 CS Functions */
 FMI2_Export const char* fmi2GetTypesPlatform()
 {

@@ -32,10 +32,6 @@ static int calc_initialize(component_ptr_t comp)
 		comp->functions->logger(comp->functions->componentEnvironment, comp->instanceName, fmi2OK, "INFO", "Init #r%d#=%g",VAR_R_HIGHT_SPEED, comp->states[VAR_R_HIGHT_SPEED]);
 		comp->functions->logger(comp->functions->componentEnvironment, comp->instanceName, fmi2OK, "INFO", "Init #r%d#=%g",VAR_R_GRATIVY, comp->reals	[VAR_R_GRATIVY]);
 		comp->functions->logger(comp->functions->componentEnvironment, comp->instanceName, fmi2OK, "INFO", "Init #r%d#=%g",VAR_R_BOUNCE_CONF, comp->reals	[VAR_R_BOUNCE_CONF]);
-/*		comp->functions->logger(comp->functions->componentEnvironment, comp->instanceName, fmi2OK, "ERROR", "Bad reference: #r-1#");
-		comp->functions->logger(comp->functions->componentEnvironment, comp->instanceName, fmi2OK, "ERROR", "Bad reference: #r1");
-		comp->functions->logger(comp->functions->componentEnvironment, comp->instanceName, fmi2OK, "ERROR", "Bad reference: #t1#");
-		comp->functions->logger(comp->functions->componentEnvironment, comp->instanceName, fmi2OK, "ERROR", "Bad reference: #r10#");*/
 	}
 	return 0;
 }
@@ -570,26 +566,6 @@ fmi2Status fmi_do_step(fmi2Component c, fmi2Real currentCommunicationPoint, fmi2
 			int zero_crossning_event = 0;
 			counter++;
 
-			fmi_set_time(comp, tcur);
-			fmi_get_event_indicators(comp, z_cur, N_EVENT_INDICATORS);
-
-			/* Check if an event inidcator has triggered */
-			for (k = 0; k < N_EVENT_INDICATORS; k++) {
-				if (z_cur[k]*z_pre[k] < 0) {
-					zero_crossning_event = 1;
-					break;
-				}
-			}
-
-			/* Handle any events */
-			if (callEventUpdate || zero_crossning_event ||
-			  (eventInfo.nextEventTimeDefined && tcur == eventInfo.nextEventTime)) {
-				fmi2Status = fmi_new_discrete_states(comp, &eventInfo);
-				fmi2Status = fmi_get_continuous_states(comp, states, N_STATES);
-				fmi2Status = fmi_get_event_indicators(comp, z_cur, N_EVENT_INDICATORS);
-				fmi2Status = fmi_get_event_indicators(comp, z_pre, N_EVENT_INDICATORS);
-			}
-
 			/* Updated next time step */
 			if (eventInfo.nextEventTimeDefined) {
 				if (tcur + hdef < eventInfo.nextEventTime) {
@@ -611,6 +587,8 @@ fmi2Status fmi_do_step(fmi2Component c, fmi2Real currentCommunicationPoint, fmi2
 					tcur = t_full;
 			}
 
+			fmi_set_time(comp, tcur);
+
 			/* Integrate a step */
 			fmi2Status = fmi_get_derivatives(comp, states_der, N_STATES);
 			for (k = 0; k < N_STATES; k++) {
@@ -623,7 +601,28 @@ fmi2Status fmi_do_step(fmi2Component c, fmi2Real currentCommunicationPoint, fmi2
 			/* Step is complete */
 			fmi2Status = fmi_completed_integrator_step(comp, fmi2True,
                             &callEventUpdate, &terminateSimulation);
-            
+			
+			fmi_get_event_indicators(comp, z_cur, N_EVENT_INDICATORS);
+			/* Check if an event inidcator has triggered */
+			for (k = 0; k < N_EVENT_INDICATORS; k++) {
+				if (z_cur[k]*z_pre[k] < 0) {
+					zero_crossning_event = 1;
+					break;
+				}
+			}
+
+
+			/* Handle any events */
+			if (callEventUpdate || zero_crossning_event ||
+			  (eventInfo.nextEventTimeDefined && tcur == eventInfo.nextEventTime)) {
+				fmi2Status = fmi_new_discrete_states(comp, &eventInfo);
+				fmi2Status = fmi_get_continuous_states(comp, states, N_STATES);
+				fmi2Status = fmi_get_event_indicators(comp, z_cur, N_EVENT_INDICATORS);
+				fmi2Status = fmi_get_event_indicators(comp, z_pre, N_EVENT_INDICATORS);
+			}
+	
+			fmi_get_event_indicators(comp, z_pre, N_EVENT_INDICATORS);
+
             if(fmi2Status != fmi2OK) break;
 
 		}

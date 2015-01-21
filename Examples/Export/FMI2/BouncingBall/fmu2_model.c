@@ -684,3 +684,14 @@ fmi2Status fmi_get_string_status(fmi2Component c, const fmi2StatusKind s, fmi2St
 			return fmi2Discard;
 	}
 }
+
+fmi2Status fmiFunction_not_supported(fmi2Component c, const char *functionName) {
+    component_ptr_t comp	= (fmi2Component)c;
+    if(!comp){
+		return fmi2Error;
+	}
+	if(comp->loggingOn) {
+		comp->functions->logger(comp->functions->componentEnvironment, comp->instanceName, fmi2OK, "Error", "###### Function %s is not implemented. ######", functionName);
+	}
+	return fmi2Error;
+}

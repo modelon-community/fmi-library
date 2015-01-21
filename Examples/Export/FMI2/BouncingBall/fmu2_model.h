@@ -244,5 +244,9 @@ fmi2Status		fmi_get_string_status(
 													const fmi2StatusKind s,
 													fmi2String*  value);
 
+fmi2Status		fmiFunction_not_supported(
+													fmi2Component c, 
+													const char *functionName);
+
 #endif /* End of fmi2Functions_h */
 #endif /* End of header FMU2_MODEL_H_ */

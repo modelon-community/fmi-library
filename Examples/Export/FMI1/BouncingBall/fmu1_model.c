@@ -29,13 +29,9 @@ static int calc_initialize(component_ptr_t comp)
 	if(comp->loggingOn) {
 		comp->functions.logger(comp, comp->instanceName, fmiOK, "INFO", "###### Initializing component ######");
 		comp->functions.logger(comp, comp->instanceName, fmiOK, "INFO", "Init #r%d#=%g", VAR_R_HIGHT, comp->states[VAR_R_HIGHT]);
-		comp->functions.logger(comp, comp->instanceName, fmiOK, "INFO", "Init #r%d#=%g",VAR_R_HIGHT_SPEED, comp->states[VAR_R_HIGHT_SPEED]);
-		comp->functions.logger(comp, comp->instanceName, fmiOK, "INFO", "Init #r%d#=%g",VAR_R_GRATIVY, comp->reals	[VAR_R_GRATIVY]);
-		comp->functions.logger(comp, comp->instanceName, fmiOK, "INFO", "Init #r%d#=%g",VAR_R_BOUNCE_CONF, comp->reals	[VAR_R_BOUNCE_CONF]);
-		comp->functions.logger(comp, comp->instanceName, fmiOK, "ERROR", "Bad reference: #r-1#");
-		comp->functions.logger(comp, comp->instanceName, fmiOK, "ERROR", "Bad reference: #r1");
-		comp->functions.logger(comp, comp->instanceName, fmiOK, "ERROR", "Bad reference: #t1#");
-		comp->functions.logger(comp, comp->instanceName, fmiOK, "ERROR", "Bad reference: #r10#");
+		comp->functions.logger(comp, comp->instanceName, fmiOK, "INFO", "Init #r%d#=%g", VAR_R_HIGHT_SPEED, comp->states[VAR_R_HIGHT_SPEED]);
+		comp->functions.logger(comp, comp->instanceName, fmiOK, "INFO", "Init #r%d#=%g", VAR_R_GRATIVY, comp->reals	[VAR_R_GRATIVY]);
+		comp->functions.logger(comp, comp->instanceName, fmiOK, "INFO", "Init #r%d#=%g", VAR_R_BOUNCE_CONF, comp->reals	[VAR_R_BOUNCE_CONF]);
 	}
 	return 0;
 }
@@ -66,6 +62,7 @@ static int calc_event_update(component_ptr_t comp)
 		comp->eventInfo.terminateSimulation			= fmiFalse;
 		comp->eventInfo.upcomingTimeEvent			= fmiFalse;
 		comp->eventInfo.nextEventTime				= -0.0;
+		
 		return 0;
 	} else {
 		return 1; /* Should not call the event update */
@@ -244,12 +241,6 @@ const char* fmi_get_model_types_platform()
 	return FMI_PLATFORM_TYPE;
 }
 
-#define FMI_TEST_LOGGER_TEST_RESULT_FILE "C:\\P510-JModelica\\FMIToolbox\\trunk\\external\\FMIL\\build\\testfolder\\"
-#define FMI_TEST_LOGGER_TEST_SOURCE_FILE "C:\\P510-JModelica\\FMIToolbox\\trunk\\external\\FMIL\\build\\testfolder\\"
-
-/* static FILE* find_string(FILE* fp, char* str, int len) {
-
-} */
 
 fmiComponent fmi_instantiate_model(fmiString instanceName, fmiString GUID, fmiCallbackFunctions functions, fmiBoolean loggingOn)
 {
@@ -598,25 +589,6 @@ fmiStatus fmi_do_step(fmiComponent c, fmiReal currentCommunicationPoint, fmiReal
 			int zero_crossning_event = 0;
 			counter++;
 
-			fmi_set_time(comp, tcur);
-			fmi_get_event_indicators(comp, z_cur, N_EVENT_INDICATORS);
-
-			/* Check if an event inidcator has triggered */
-			for (k = 0; k < N_EVENT_INDICATORS; k++) {
-				if (z_cur[k]*z_pre[k] < 0) {
-					zero_crossning_event = 1;
-					break;
-				}
-			}
-
-			/* Handle any events */
-			if (callEventUpdate || zero_crossning_event || (eventInfo.upcomingTimeEvent && tcur == eventInfo.nextEventTime)) {
-				fmistatus = fmi_event_update(comp, intermediateResults, &eventInfo);
-				fmistatus = fmi_get_continuous_states(comp, states, N_STATES);
-				fmistatus = fmi_get_event_indicators(comp, z_cur, N_EVENT_INDICATORS);
-				fmistatus = fmi_get_event_indicators(comp, z_pre, N_EVENT_INDICATORS);
-			}
-
 			/* Updated next time step */
 			if (eventInfo.upcomingTimeEvent) {
 				if (tcur + hdef < eventInfo.nextEventTime) {
@@ -638,6 +610,8 @@ fmiStatus fmi_do_step(fmiComponent c, fmiReal currentCommunicationPoint, fmiReal
 					tcur = t_full;
 			}
 
+			fmi_set_time(comp, tcur);
+
 			/* Integrate a step */
 			fmistatus = fmi_get_derivatives(comp, states_der, N_STATES);
 			for (k = 0; k < N_STATES; k++) {
@@ -650,6 +624,26 @@ fmiStatus fmi_do_step(fmiComponent c, fmiReal currentCommunicationPoint, fmiReal
 			/* Step is complete */
 			fmistatus = fmi_completed_integrator_step(comp, &callEventUpdate);
 
+			fmi_get_event_indicators(comp, z_cur, N_EVENT_INDICATORS);
+			/* Check if an event inidcator has triggered */
+			for (k = 0; k < N_EVENT_INDICATORS; k++) {
+				if (z_cur[k]*z_pre[k] < 0) {
+					zero_crossning_event = 1;
+					break;
+				}
+			}
+			
+			/* Handle any events */
+			if (callEventUpdate || zero_crossning_event || (eventInfo.upcomingTimeEvent && tcur == eventInfo.nextEventTime)) {
+				if(comp->loggingOn) {
+					comp->functions.logger(comp, comp->instanceName, fmiOK, "INFO", "###### Event was triggered at %g s.######",tcur);
+				}
+				fmistatus = fmi_event_update(comp, intermediateResults, &eventInfo);
+				fmistatus = fmi_get_continuous_states(comp, states, N_STATES);
+				fmistatus = fmi_get_event_indicators(comp, z_cur, N_EVENT_INDICATORS);
+			}
+			fmistatus = fmi_get_event_indicators(comp, z_pre, N_EVENT_INDICATORS);
+			
             if(fmistatus != fmiOK) break;
 		}
 		for (k = 0; k < N_STATES; k++) { /* Update states */

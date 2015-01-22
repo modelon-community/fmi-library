@@ -23,7 +23,7 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 #include <FMI1/fmiModelFunctions.h>
 
 #include <fmu1_model.h>
-//#include "config_test.h"
+
 
    typedef enum {fmiDoStepStatus,
                  fmiPendingStatus,

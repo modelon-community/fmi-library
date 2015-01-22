@@ -8,13 +8,7 @@
   guid="123"
   numberOfContinuousStates="2"
   numberOfEventIndicators="1">
-  <TypeDefinitions>
-    <Type
-      name="Modelica.Blocks.Interfaces.RealOutput">
-      <RealType/>
-    </Type>
-  </TypeDefinitions>
- 
+  
 <ModelVariables>
   <ScalarVariable name="HIGHT" valueReference="0" description="Hight of the ball">
     <Real start="1.0" fixed="true"/> 

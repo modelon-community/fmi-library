@@ -23,14 +23,14 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 static int calc_initialize(component_ptr_t comp)
 {
 	comp->states[VAR_R_HIGHT]		= 1.0;
-	comp->states[VAR_R_HIGHT_SPEED] = 4;
-	comp->reals	[VAR_R_GRATIVY]		= -9.81;
+	comp->states[VAR_R_SPEED] = 4;
+	comp->reals	[VAR_R_GRAVITY]		= -9.81;
 	comp->reals	[VAR_R_BOUNCE_CONF]	= 0.5;
 	if(comp->loggingOn) {
 		comp->functions.logger(comp, comp->instanceName, fmiOK, "INFO", "###### Initializing component ######");
 		comp->functions.logger(comp, comp->instanceName, fmiOK, "INFO", "Init #r%d#=%g", VAR_R_HIGHT, comp->states[VAR_R_HIGHT]);
-		comp->functions.logger(comp, comp->instanceName, fmiOK, "INFO", "Init #r%d#=%g", VAR_R_HIGHT_SPEED, comp->states[VAR_R_HIGHT_SPEED]);
-		comp->functions.logger(comp, comp->instanceName, fmiOK, "INFO", "Init #r%d#=%g", VAR_R_GRATIVY, comp->reals	[VAR_R_GRATIVY]);
+		comp->functions.logger(comp, comp->instanceName, fmiOK, "INFO", "Init #r%d#=%g", VAR_R_SPEED, comp->states[VAR_R_SPEED]);
+		comp->functions.logger(comp, comp->instanceName, fmiOK, "INFO", "Init #r%d#=%g", VAR_R_GRAVITY, comp->reals	[VAR_R_GRAVITY]);
 		comp->functions.logger(comp, comp->instanceName, fmiOK, "INFO", "Init #r%d#=%g", VAR_R_BOUNCE_CONF, comp->reals	[VAR_R_BOUNCE_CONF]);
 	}
 	return 0;
@@ -38,8 +38,8 @@ static int calc_initialize(component_ptr_t comp)
 
 static int calc_get_derivatives(component_ptr_t comp)
 {
-	comp->states_der[VAR_R_HIGHT]		= comp->states[VAR_R_HIGHT_SPEED];
-	comp->states_der[VAR_R_HIGHT_SPEED] = comp->reals[VAR_R_GRATIVY];
+	comp->states_der[VAR_R_HIGHT]		= comp->states[VAR_R_SPEED];
+	comp->states_der[VAR_R_SPEED] = comp->reals[VAR_R_GRAVITY];
 	return 0;
 }
 
@@ -53,7 +53,7 @@ static int calc_get_event_indicators(component_ptr_t comp)
 static int calc_event_update(component_ptr_t comp)
 {	
 	if (comp->states[VAR_R_HIGHT] < 0) {
-		comp->states[VAR_R_HIGHT_SPEED] = - comp->reals[VAR_R_BOUNCE_CONF] * comp->states[VAR_R_HIGHT_SPEED];
+		comp->states[VAR_R_SPEED] = - comp->reals[VAR_R_BOUNCE_CONF] * comp->states[VAR_R_SPEED];
 		comp->states[VAR_R_HIGHT] = 0;
 
 		comp->eventInfo.iterationConverged			= fmiTrue;

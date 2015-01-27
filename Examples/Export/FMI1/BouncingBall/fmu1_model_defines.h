@@ -29,9 +29,9 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 /* ValueReferences for the variables and parameters in the model */
 /* States */
 #define VAR_R_HIGHT				0
-#define VAR_R_HIGHT_SPEED		1
+#define VAR_R_SPEED		1
 /* Real */
-#define VAR_R_GRATIVY			2
+#define VAR_R_GRAVITY			2
 #define VAR_R_BOUNCE_CONF		3
 
 /* Event indicators */

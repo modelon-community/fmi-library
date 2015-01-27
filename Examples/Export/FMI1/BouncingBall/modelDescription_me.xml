@@ -13,7 +13,7 @@
   <ScalarVariable name="HIGHT" valueReference="0" description="Hight of the ball">
     <Real start="1.0" fixed="true"/> 
  </ScalarVariable>
-  <ScalarVariable name="HIGHT_SPEED" valueReference="1" description="Speed of the ball">
+  <ScalarVariable name="SPEED" valueReference="1" description="Speed of the ball">
      <Real start="4.0" fixed="true"/>
   </ScalarVariable>   
   <ScalarVariable name="GRAVITY" valueReference="2" description="Gravity constant">

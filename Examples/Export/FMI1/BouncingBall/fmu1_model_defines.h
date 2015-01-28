@@ -26,16 +26,16 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 #define MAGIC_TEST_VALUE		13.0	/* A test value for some functions  */
 
 /* BouncingBall model with redundant values */
-/* ValueReferences for the variables and parameters in the model */
+/* ValueReferences for the variables and parameters in the model, separated by datatype */
 /* States */
-#define VAR_R_HIGHT				0
-#define VAR_R_SPEED		1
+#define VAR_R_position			0
+#define VAR_R_der_position		1
 /* Real */
-#define VAR_R_GRAVITY			2
-#define VAR_R_BOUNCE_CONF		3
+#define VAR_R_gravity			2
+#define VAR_R_bounce_coeff		3
 
 /* Event indicators */
-#define EVENT_HIGHT				0
+#define EVENT_position			0
 
 /* Event indicators */
 #define VAR_S_LOGGER_TEST		0
@@ -64,7 +64,9 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 #else
 #error "Either fmiPlatform or fmiModelTypesPlatform must be defined"
 #endif
-#define FMI_GUID			"123"
 
+/*Unique GUIDs for ME and CS FMUs*/
+#define FMI_CS_GUID			"ef7ce57c-8fb5-4556-b0c9-4bfd7f91b793"
+#define FMI_ME_GUID			"b6106da2-8e21-464c-8a3f-a1723bebbd94"
 
 #endif /* End of header FMU1_MODEL_DEFINES_H_ */

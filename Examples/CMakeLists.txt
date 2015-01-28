@@ -165,16 +165,6 @@ IF (NOT DEFINED ${FMILIBRARYHOME})
 		set(FMI_PLATFORM ${FMIEXAMPLES_FMI_PLATFORM})
 	endif()
 
-	
-#	install(DIRECTORY 
-#		${FMILIB_FMI_STANDARD_HEADERS}/FMI1
-#		${FMILIB_FMI_STANDARD_HEADERS}/FMI2
-#		DESTINATION include
-#		FILES_MATCHING PATTERN "*.h")
-
-	# this is used when searching for include files e.g. using the FIND_PATH() command.
-	#MESSAGE( STATUS "FMILIB_FMI_STANDARD_HEADERS: " ${FMILIB_FMI_STANDARD_HEADERS} )
-	
 	include_directories("${FMILIB_FMI_STANDARD_HEADERS}")
 		
 	function(to_native_c_path path native_c_path)
@@ -201,14 +191,12 @@ IF (NOT DEFINED ${FMILIBRARYHOME})
 		#Move files to the FMU directories and compress 
 		ADD_CUSTOM_COMMAND(
 		OUTPUT ${OUTPUT_FOLDER_T}/${MODEL_IDENTIFIER_T}.fmu
-		#DEPENDS "${XML_PATH_T}" ${TARGET_NAME_T} compress_test_fmu_zip	   
-		DEPENDS "${XML_PATH_T}" ${TARGET_NAME_T} ${ZIP_COMMAND}	   
+		DEPENDS "${XML_PATH_T}" ${TARGET_NAME_T}	   
 		COMMAND "${CMAKE_COMMAND}" -E remove -f "${OUTPUT_FOLDER_T}/${MODEL_IDENTIFIER_T}.fmu"
 		COMMAND "${CMAKE_COMMAND}" -E copy "${XML_PATH_T}" "${FMU_OUTPUT_FOLDER_T}/modelDescription.xml"
 		COMMAND "${CMAKE_COMMAND}" -E copy "${SHARED_LIBRARY_PATH_T}" "${FMU_OUTPUT_SHARED_LIBRARY_PATH_T}"
-		#COMMAND "${COMPRESS_EXECUTABLE}" "${MODEL_IDENTIFIER_T}.fmu" "modelDescription.xml" "${FMU_OUTPUT_SHARED_LIBRARY_PATH_OUT_T}" WORKING_DIRECTORY "${FMU_OUTPUT_FOLDER_T}"
-		#COMMAND ${ZIP_COMMAND} "${OUTPUT_FOLDER_T}/${MODEL_IDENTIFIER_T}.zip" "${FMU_OUTPUT_FOLDER_T}/modelDescription.xml" "${FMU_OUTPUT_FOLDER_T}"
-		COMMAND ${ZIP_COMMAND} "${OUTPUT_FOLDER_T}/${MODEL_IDENTIFIER_T}.zip" "${FMU_OUTPUT_FOLDER_T}/modelDescription.xml" "${FMU_OUTPUT_FOLDER_T}/*"
+		WORKING_DIRECTORY ${FMU_OUTPUT_FOLDER_T}
+		COMMAND ${ZIP_COMMAND} "${OUTPUT_FOLDER_T}/${MODEL_IDENTIFIER_T}.zip" "*"
 		COMMAND "${CMAKE_COMMAND}" -E rename "${OUTPUT_FOLDER_T}/${MODEL_IDENTIFIER_T}.zip" "${OUTPUT_FOLDER_T}/${MODEL_IDENTIFIER_T}.fmu"
 		)
 	
@@ -218,8 +206,6 @@ IF (NOT DEFINED ${FMILIBRARYHOME})
 		add_custom_target( ${tname} ALL
 			DEPENDS ${OUTPUT_FOLDER_T}/${MODEL_IDENTIFIER_T}.fmu 
 			SOURCES "${XML_PATH_T}" ${DLL_SOURCES})
-#		set_target_properties( ${tname} ${TARGET_NAME_T}
- #                       PROPERTIES FOLDER "TestFMUs")
 	
 	endfunction(compress_fmu)
 
@@ -229,54 +215,49 @@ ELSE()
 	
 ENDIF()
 
-
-#set(FMIEXAMPLESHOME ${FMILIBRARYHOME}/Examples)
-#set(FMILibrary_SOURCE_DIR ${FMILIBRARYHOME})
-#set(FMIExamples_SOURCE_DIR ${FMIEXAMPLESHOME})
-#set(FMIEXAMPLESBUILD ${FMIExamples_BINARY_DIR})
-
 set(FMUEXPORTDIR ${FMIExamples_SOURCE_DIR}/Export)
 
 set(EXPORT_OUTPUT_FOLDER "${FMIExamples_BINARY_DIR}/ExampleExport")
 
+IF(NOT ZIP_COMMAND)
 if(WIN32 OR WIN64) 
 	
-	FIND_PROGRAM(ZIP_EXECUTABLE wzzip PATHS "$ENV{ProgramFiles}/WinZip")
-	IF(ZIP_EXECUTABLE)
-		SET(ZIP_COMMAND "\"${ZIP_EXECUTABLE}\" -P \"<ARCHIVE>\" @<FILELIST>")
-	ENDIF(ZIP_EXECUTABLE)
-
+	SET(ZIP_COMMAND "zip" "-r")
+	
 	FIND_PROGRAM(ZIP_EXECUTABLE 7z PATHS "$ENV{ProgramFiles}/7-Zip") 
 	IF(ZIP_EXECUTABLE)
 		SET(ZIP_COMMAND ${ZIP_EXECUTABLE} a -tzip)
 	ENDIF(ZIP_EXECUTABLE)
 	
 	IF(NOT ZIP_EXECUTABLE)
-		MESSAGE( STATUS "Error, no Zip Program found.")
-	ENDIF(ZIP_EXECUTABLE)
+		FIND_PROGRAM(ZIP_EXECUTABLE wzzip PATHS "$ENV{ProgramFiles}/WinZip")
+		IF(ZIP_EXECUTABLE)
+			SET(ZIP_COMMAND "\"${ZIP_EXECUTABLE}\" -P \"<ARCHIVE>\" @<FILELIST>")
+		ENDIF(ZIP_EXECUTABLE)
+	ENDIF(NOT ZIP_EXECUTABLE)
+	
+	IF(NOT ZIP_EXECUTABLE)
+		MESSAGE( STATUS "Warning, no Zip Program found, using default.")
+		#SET(ZIP_COMMAND "${ZIP_EXECUTABLE} -r")
+		MESSAGE( STATUS ${ZIP_EXECUTABLE})
+		MESSAGE( STATUS ${ZIP_COMMAND})
+	ENDIF(NOT ZIP_EXECUTABLE)
 
+	MESSAGE( STATUS ${ZIP_EXECUTABLE})
+	MESSAGE( STATUS ${ZIP_COMMAND})
 else()
-	SET(ZIP_COMMAND zip a -tzip)
+	SET(ZIP_COMMAND "zip" "-r")
 endif()
-
-#find_package(Java)
-#
-#execute_process(
-#    COMMAND
-#        "${Java_JAR_EXECUTABLE}" "cfM" "archive.zip" 
-#        "-C" "${CMAKE_CURRENT_SOURCE_DIR}" "testfile.txt" 
-#        "-C" "${CMAKE_CURRENT_SOURCE_DIR}" "testdir"
-#    RESULT_VARIABLE _result
-#)
-
+ENDIF(NOT ZIP_COMMAND)
 
 #Defines for the BouncingBall FMU
-set(FMU_BB1_ME_MODEL_IDENTIFIER BouncingBall_FMI1_ME) #This must be the same as in the xml-file
-set(FMU_BB1_CS_MODEL_IDENTIFIER BouncingBall_FMI1_CS) #This must be the same as in the xml-file
-set(FMU_BB2_MODEL_IDENTIFIER BouncingBall_FMI2) #This must be the same as in the xml-file
+set(BB_ID "FMU_BB")
+set(${BB_ID}1_ME_MODEL_IDENTIFIER BouncingBall_FMI1_ME) #This must be the same as in the xml-file
+set(${BB_ID}1_CS_MODEL_IDENTIFIER BouncingBall_FMI1_CS) #This must be the same as in the xml-file
+set(${BB_ID}2_MODEL_IDENTIFIER BouncingBall_FMI2) #This must be the same as in the xml-file
 
-set(FMU_BB1_FOLDER ${FMUEXPORTDIR}/FMI1/BouncingBall)
-set(FMU_BB2_FOLDER ${FMUEXPORTDIR}/FMI2/BouncingBall)
+set(${BB_ID}1_FOLDER ${FMUEXPORTDIR}/FMI1/BouncingBall)
+set(${BB_ID}2_FOLDER ${FMUEXPORTDIR}/FMI2/BouncingBall)
 
 include_directories("${FMU_BB1_FOLDER}")
 include_directories("${FMU_BB2_FOLDER}")

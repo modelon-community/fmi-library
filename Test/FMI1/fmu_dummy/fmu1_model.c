@@ -598,25 +598,6 @@ fmiStatus fmi_do_step(fmiComponent c, fmiReal currentCommunicationPoint, fmiReal
 			int zero_crossning_event = 0;
 			counter++;
 
-			fmi_set_time(comp, tcur);
-			fmi_get_event_indicators(comp, z_cur, N_EVENT_INDICATORS);
-
-			/* Check if an event inidcator has triggered */
-			for (k = 0; k < N_EVENT_INDICATORS; k++) {
-				if (z_cur[k]*z_pre[k] < 0) {
-					zero_crossning_event = 1;
-					break;
-				}
-			}
-
-			/* Handle any events */
-			if (callEventUpdate || zero_crossning_event || (eventInfo.upcomingTimeEvent && tcur == eventInfo.nextEventTime)) {
-				fmistatus = fmi_event_update(comp, intermediateResults, &eventInfo);
-				fmistatus = fmi_get_continuous_states(comp, states, N_STATES);
-				fmistatus = fmi_get_event_indicators(comp, z_cur, N_EVENT_INDICATORS);
-				fmistatus = fmi_get_event_indicators(comp, z_pre, N_EVENT_INDICATORS);
-			}
-
 			/* Updated next time step */
 			if (eventInfo.upcomingTimeEvent) {
 				if (tcur + hdef < eventInfo.nextEventTime) {
@@ -638,6 +619,8 @@ fmiStatus fmi_do_step(fmiComponent c, fmiReal currentCommunicationPoint, fmiReal
 					tcur = t_full;
 			}
 
+			fmi_set_time(comp, tcur);
+
 			/* Integrate a step */
 			fmistatus = fmi_get_derivatives(comp, states_der, N_STATES);
 			for (k = 0; k < N_STATES; k++) {
@@ -649,6 +632,24 @@ fmiStatus fmi_do_step(fmiComponent c, fmiReal currentCommunicationPoint, fmiReal
 			fmistatus = fmi_set_continuous_states(comp, states, N_STATES);
 			/* Step is complete */
 			fmistatus = fmi_completed_integrator_step(comp, &callEventUpdate);
+
+			fmi_get_event_indicators(comp, z_cur, N_EVENT_INDICATORS);
+
+			/* Check if an event inidcator has triggered */
+			for (k = 0; k < N_EVENT_INDICATORS; k++) {
+				if (z_cur[k]*z_pre[k] < 0) {
+					zero_crossning_event = 1;
+					break;
+				}
+			}
+
+			/* Handle any events */
+			if (callEventUpdate || zero_crossning_event || (eventInfo.upcomingTimeEvent && tcur == eventInfo.nextEventTime)) {
+				fmistatus = fmi_event_update(comp, intermediateResults, &eventInfo);
+				fmistatus = fmi_get_continuous_states(comp, states, N_STATES);
+				fmistatus = fmi_get_event_indicators(comp, z_cur, N_EVENT_INDICATORS);
+			}
+			fmistatus = fmi_get_event_indicators(comp, z_pre, N_EVENT_INDICATORS);
 
             if(fmistatus != fmiOK) break;
 		}

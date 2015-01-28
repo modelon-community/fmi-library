@@ -5,32 +5,30 @@
   modelIdentifier="BouncingBall_FMI1_ME"
   generationTool="FMILibrary"
   description="A bouncing ball model"
-  guid="123"
+  guid="b6106da2-8e21-464c-8a3f-a1723bebbd94"
   numberOfContinuousStates="2"
   numberOfEventIndicators="1">
-  
+
+  <DefaultExperiment
+	startTime = "0.0"
+    stopTime ="2.5"
+    tolerance = "0.0001"/>   
 <ModelVariables>
-  <ScalarVariable name="HIGHT" valueReference="0" description="Hight of the ball">
-    <Real start="1.0" fixed="true"/> 
- </ScalarVariable>
-  <ScalarVariable name="SPEED" valueReference="1" description="Speed of the ball">
-     <Real start="4.0" fixed="true"/>
-  </ScalarVariable>   
-  <ScalarVariable name="GRAVITY" valueReference="2" description="Gravity constant">
-     <Real start="-9.81"/>
+  <ScalarVariable name="position" valueReference="0" description="Position of the ball">
+     <Real start="1.0" min ="0.0" unit="m" fixed="true"/>
   </ScalarVariable>
-  <ScalarVariable name="BOUNCE_COF" valueReference="3" description="Bouncing coefficient">
-     <Real start="0.5" fixed="true"/>
+  <ScalarVariable name="der(position)" valueReference="1" description="Derivative of Ball position">
+     <Real start="4.0" fixed="true" unit="m/s"/>
   </ScalarVariable>
-  <ScalarVariable name="LOGGER_TEST" valueReference="0" description="The logger will print the value of this variable when it is set.">
-     <String/>
-  </ScalarVariable>  
-    <ScalarVariable name="LOGGER_TEST_INTEGER" valueReference="0" description="This is only used to test logger replace function #i0#">
-     <Integer/>
-  </ScalarVariable>  
-    <ScalarVariable name="LOGGER_TEST_BOOLEAN" valueReference="0" description="This is only used to test logger replace function #b0#">
-     <Boolean/>
-  </ScalarVariable>  
+  <ScalarVariable name="speed" valueReference="1" description="Speed of the ball" alias="alias" causality = "output">
+  <Real start="4.0" fixed="true" unit="m/s"/>
+  </ScalarVariable> 
+  <ScalarVariable name="gravity" valueReference="2" description="Gravity constant" variability="parameter">
+     <Real start="-9.81" max ="0.0" unit="m/(s^2)" fixed="true"/>
+  </ScalarVariable>
+  <ScalarVariable name="bounce_coef" valueReference="3" description="Bouncing coefficient" variability="parameter">
+     <Real start="0.5" min="0.0" fixed="true"/>
+  </ScalarVariable>
 </ModelVariables>
 </fmiModelDescription>
 

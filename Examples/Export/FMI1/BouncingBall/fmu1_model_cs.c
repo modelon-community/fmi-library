@@ -27,8 +27,6 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 #include <FMI1/fmiPlatformTypes.h>
 #include <FMI1/fmiFunctions.h>
 
-/*#define FMI_GUID "f2baf4b5-6046-4c3c-a0d8-884195cf99ed"*/
-
 #include <fmu1_model.h>
 #define MODEL_IDENTIFIER BouncingBall_FMI1_CS
 

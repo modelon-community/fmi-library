@@ -18,24 +18,20 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 /* This header is used to generate the FMU test DLL and in the C API test that uses the DLL */
 #ifndef FMU2_MODEL_DEFINES_H_
 
-/*#define STRINGIFY(a)			#a
-#define STRINGIFY2(a)			STRINGIFY(a)
-#define MODEL_IDENTIFIER_STR	STRINGIFY2(MODEL_IDENTIFIER) */
-
 #define BUFFER					1024
 #define MAGIC_TEST_VALUE		13.0	/* A test value for some functions  */
 
 /* BouncingBall model with redundant values */
-/* ValueReferences for the variables and parameters in the model */
+/* ValueReferences for the variables and parameters in the model, separated by datatype */
 /* States */
-#define VAR_R_HIGHT				0
-#define VAR_R_HIGHT_SPEED		1
+#define VAR_R_position			0
+#define VAR_R_der_position		1
 /* Real */
-#define VAR_R_GRATIVY			2
-#define VAR_R_BOUNCE_CONF		3
+#define VAR_R_gravity			2
+#define VAR_R_bounce_coeff		3
 
 /* Event indicators */
-#define EVENT_HIGHT				0
+#define EVENT_position			0
 
 /* Event indicators */
 #define VAR_S_LOGGER_TEST		0
@@ -56,7 +52,6 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 
 #define FMI_VERSION			"2.0"
 
-#define FMI_GUID			"123"
-
+#define FMI_GUID			"f2baf4b5-6046-4c3c-a0d8-884195cf99ed"
 
 #endif /* End of header FMU2_MODEL_DEFINES_H_ */

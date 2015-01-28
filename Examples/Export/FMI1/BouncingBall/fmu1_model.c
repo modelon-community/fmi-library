@@ -22,39 +22,39 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 /* Model calculation functions */
 static int calc_initialize(component_ptr_t comp)
 {
-	comp->states[VAR_R_HIGHT]		= 1.0;
-	comp->states[VAR_R_SPEED] = 4;
-	comp->reals	[VAR_R_GRAVITY]		= -9.81;
-	comp->reals	[VAR_R_BOUNCE_CONF]	= 0.5;
+	comp->states[VAR_R_position]		= 1.0;
+	comp->states[VAR_R_der_position] = 4;
+	comp->reals	[VAR_R_gravity]		= -9.81;
+	comp->reals	[VAR_R_bounce_coeff]	= 0.5;
 	if(comp->loggingOn) {
 		comp->functions.logger(comp, comp->instanceName, fmiOK, "INFO", "###### Initializing component ######");
-		comp->functions.logger(comp, comp->instanceName, fmiOK, "INFO", "Init #r%d#=%g", VAR_R_HIGHT, comp->states[VAR_R_HIGHT]);
-		comp->functions.logger(comp, comp->instanceName, fmiOK, "INFO", "Init #r%d#=%g", VAR_R_SPEED, comp->states[VAR_R_SPEED]);
-		comp->functions.logger(comp, comp->instanceName, fmiOK, "INFO", "Init #r%d#=%g", VAR_R_GRAVITY, comp->reals	[VAR_R_GRAVITY]);
-		comp->functions.logger(comp, comp->instanceName, fmiOK, "INFO", "Init #r%d#=%g", VAR_R_BOUNCE_CONF, comp->reals	[VAR_R_BOUNCE_CONF]);
+		comp->functions.logger(comp, comp->instanceName, fmiOK, "INFO", "Init #r%d#=%g", VAR_R_position, comp->states[VAR_R_position]);
+		comp->functions.logger(comp, comp->instanceName, fmiOK, "INFO", "Init #r%d#=%g", VAR_R_der_position, comp->states[VAR_R_der_position]);
+		comp->functions.logger(comp, comp->instanceName, fmiOK, "INFO", "Init #r%d#=%g", VAR_R_gravity, comp->reals	[VAR_R_gravity]);
+		comp->functions.logger(comp, comp->instanceName, fmiOK, "INFO", "Init #r%d#=%g", VAR_R_bounce_coeff, comp->reals	[VAR_R_bounce_coeff]);
 	}
 	return 0;
 }
 
 static int calc_get_derivatives(component_ptr_t comp)
 {
-	comp->states_der[VAR_R_HIGHT]		= comp->states[VAR_R_SPEED];
-	comp->states_der[VAR_R_SPEED] = comp->reals[VAR_R_GRAVITY];
+	comp->states_der[VAR_R_position]		= comp->states[VAR_R_der_position];
+	comp->states_der[VAR_R_der_position] = comp->reals[VAR_R_gravity];
 	return 0;
 }
 
 static int calc_get_event_indicators(component_ptr_t comp)
 {	
 	fmiReal event_tol = 1e-16;
-	comp->event_indicators[EVENT_HIGHT]		= comp->states[VAR_R_HIGHT] + (comp->states[VAR_R_HIGHT] >= 0 ? event_tol : -event_tol);
+	comp->event_indicators[EVENT_position]		= comp->states[VAR_R_position] + (comp->states[VAR_R_position] >= 0 ? event_tol : -event_tol);
 	return 0;
 }
 
 static int calc_event_update(component_ptr_t comp)
 {	
-	if (comp->states[VAR_R_HIGHT] < 0) {
-		comp->states[VAR_R_SPEED] = - comp->reals[VAR_R_BOUNCE_CONF] * comp->states[VAR_R_SPEED];
-		comp->states[VAR_R_HIGHT] = 0;
+	if (comp->states[VAR_R_position] < 0) {
+		comp->states[VAR_R_der_position] = - comp->reals[VAR_R_bounce_coeff] * comp->states[VAR_R_der_position];
+		comp->states[VAR_R_position] = 0;
 
 		comp->eventInfo.iterationConverged			= fmiTrue;
 		comp->eventInfo.stateValueReferencesChanged = fmiFalse;
@@ -250,7 +250,7 @@ fmiComponent fmi_instantiate_model(fmiString instanceName, fmiString GUID, fmiCa
 	comp = (component_ptr_t)functions.allocateMemory(1, sizeof(component_t));
 	if (comp == NULL) {
 		return NULL;
-	} else if (strcmp(GUID, FMI_GUID) != 0) {
+	} else if (strcmp(GUID, FMI_ME_GUID) != 0) {
 		return NULL;
 	} else {	
 		sprintf(comp->instanceName, "%s", instanceName);
@@ -475,7 +475,7 @@ fmiComponent fmi_instantiate_slave(fmiString instanceName, fmiString fmuGUID, fm
 	comp = fmi_instantiate_model(instanceName, fmuGUID, functions, loggingOn);
 	if (comp == NULL) {
 		return NULL;
-	} else if (strcmp(fmuGUID, FMI_GUID) != 0) {
+	} else if (strcmp(fmuGUID, FMI_CS_GUID) != 0) {
 		return NULL;
 	} else {	
 		sprintf(comp->fmuLocation, "%s",fmuLocation);

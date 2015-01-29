@@ -472,7 +472,7 @@ fmiComponent fmi_instantiate_slave(fmiString instanceName, fmiString fmuGUID, fm
 {
 	component_ptr_t comp;
 
-	comp = fmi_instantiate_model(instanceName, fmuGUID, functions, loggingOn);
+	comp = fmi_instantiate_model(instanceName, FMI_ME_GUID, functions, loggingOn);
 	if (comp == NULL) {
 		return NULL;
 	} else if (strcmp(fmuGUID, FMI_CS_GUID) != 0) {

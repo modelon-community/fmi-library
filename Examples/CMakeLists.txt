@@ -24,9 +24,6 @@ IF("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
 ENDIF()
 
 #option(FMIEXAMPLES_GENERATE_BUILD_STAMP "Generate a build time stamp and include in into the library" OFF)
-#option(FMIEXAMPLES_ENABLE_LOG_LEVEL_DEBUG "Enable log level 'debug'. If the option is off then the debug level is not compiled in." OFF)
-#option(FMIEXAMPLES_PRINT_DEBUG_MESSAGES "Enable printing of status messages from the build script. Intended for debugging." OFF)
-
 
 IF (NOT DEFINED ${FMILIBRARYHOME})
 	
@@ -43,10 +40,6 @@ IF (NOT DEFINED ${FMILIBRARYHOME})
 		option (FMIEXAMPLES_BUILD_WITH_STATIC_RTLIB "Use static run-time libraries (/MT or /MTd linker flags)" OFF)
 	endif()
 
-	option(FMIEXAMPLES_BUILD_STATIC_LIB	 "Build the library as static." OFF)
-	option(FMIEXAMPLES_BUILD_SHARED_LIB	 "Build the library as shared (dll/so/dylib)." ON)
-	#option(FMILIB_INSTALL_SUBLIBS	 "Install sub-libraries (fmicapi. fmixml, jmutil, fmiimport, fmizip)" OFF)
-
 	IF(NOT (WIN32 OR CYGWIN OR APPLE))
 	# On LINUX position independent code (-fPIC) must be used on all files to be linked into .so
 	# On other systems this is not needed (either is default or relocation is done)
@@ -59,12 +52,8 @@ IF (NOT DEFINED ${FMILIBRARYHOME})
 		set(FMILIB_BUILD_FOR_SHARED_LIBS OFF CACHE INTERNAL "The static library 'fmilib' can be linked into shared libraries. Mostly needed on Linux." FORCE)
 	endif()
 
-	#option (FMILIB_GENERATE_DOXYGEN_DOC "Generate doxygen doc target" ON)
 
 	#option(FMILIB_GENERATE_BUILD_STAMP "Generate a build time stamp and include in into the library" OFF)
-	option(FMIEXAMPLES_ENABLE_LOG_LEVEL_DEBUG "Enable log level 'debug'. If the option is of then the debug level is not compiled in." OFF)
-	option(FMIEXAMPLES_PRINT_DEBUG_MESSAGES "Enable printing of status messages from the build script. Intended for debugging." OFF)
-	mark_as_advanced(FMIEXAMPLES_PRINT_DEBUG_MESSAGES FMILIB_DEBUG_TRACE)
 
 	if(FMIEXAMPLES_DEFAULT_BUILD_TYPE_RELEASE)
 		set (FMIEXAMPLES_DEFAULT_BUILD_TYPE "Release")

@@ -6,30 +6,37 @@
   description="A bouncing ball model"
   guid="f2baf4b5-6046-4c3c-a0d8-884195cf99ed"
   numberOfEventIndicators="1">
-  <ModelExchange modelIdentifier="BouncingBall_FMI2" />
-  <CoSimulation 
+<ModelExchange modelIdentifier="BouncingBall_FMI2"
+    canBeInstantiatedOnlyOncePerProcess="true"
+    canGetAndSetFMUstate="false"
+    providesDirectionalDerivative="false"/>
+<CoSimulation 
 	modelIdentifier="BouncingBall_FMI2" 
 	canHandleVariableCommunicationStepSize="true"
-	/>
-  <DefaultExperiment
+    canInterpolateInputs="false"
+    maxOutputDerivativeOrder="1"
+    canBeInstantiatedOnlyOncePerProcess="true"
+    canGetAndSetFMUstate="false"
+    providesDirectionalDerivative="false"/>
+<DefaultExperiment
 	startTime = "0.0"
     stopTime ="2.5"
     tolerance = "0.0001"/>   
 
 <ModelVariables>
-  <ScalarVariable name="position" valueReference="0" description="Position of the ball">
+  <ScalarVariable name="position" valueReference="0" initial="exact" description="Position of the ball">
      <Real start="1.0" min ="0.0" unit="m"/>
   </ScalarVariable>
-  <ScalarVariable name="der(position)" valueReference="1" description="Derivative of Ball position">
-     <Real start="4.0" unit="m/s"/>
+  <ScalarVariable name="der(position)" valueReference="1" initial="approx" description="Derivative of ball position">
+     <Real start="4.0" unit="m/s" derivative="0"/>
   </ScalarVariable>
   <ScalarVariable name="speed" valueReference="1" description="Speed of the ball" causality = "output">
-  <Real start="4.0" unit="m/s"/>
+  <Real unit="m/s" derivative="0"/>
   </ScalarVariable> 
-  <ScalarVariable name="gravity" valueReference="2" description="Gravity constant" variability="tunable">
-     <Real start="-9.81" max ="0.0" unit="m/(s^2)"/>
+  <ScalarVariable name="gravity" valueReference="2" description="Gravity constant" causality="parameter" variability="tunable">
+     <Real start="-9.81" max ="0.0" unit="m/s2"/>
   </ScalarVariable>
-  <ScalarVariable name="bounce_coef" valueReference="3" description="Bouncing coefficient" variability="tunable">
+  <ScalarVariable name="bounce_coef" valueReference="3" description="Bouncing coefficient" causality="parameter" variability="tunable">
      <Real start="0.5" min="0.0" />
   </ScalarVariable>
 </ModelVariables>

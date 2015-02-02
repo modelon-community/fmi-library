@@ -422,7 +422,11 @@ int fmi1_xml_handle_DirectDependency(fmi1_xml_parser_context_t *context, const c
     else {
         fmi1_xml_model_description_t* md = context->modelDescription;
         fmi1_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
-        if(jm_vector_get_size(jm_voidp)(&context->directDependencyBuf)) {
+        /* 
+        - always create the list to be able to differentiate no depedendencies from all dependencies (no DirectDependency element present)
+        if(jm_vector_get_size(jm_voidp)(&context->directDependencyBuf)) 
+        */
+        {
             variable->directDependency = jm_vector_clone(jm_voidp)(&context->directDependencyBuf);
             if(!variable->directDependency) {
                 fmi1_xml_parse_fatal(context, "Could not allocate memory");

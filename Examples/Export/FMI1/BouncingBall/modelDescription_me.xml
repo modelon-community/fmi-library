@@ -12,7 +12,7 @@
   <DefaultExperiment
 	startTime = "0.0"
     stopTime ="2.5"
-    tolerance = "0.0001"/>   
+    tolerance = "0.01"/>   
 <ModelVariables>
   <ScalarVariable name="position" valueReference="0" description="Position of the ball">
      <Real start="1.0" min ="0.0" unit="m" fixed="true"/>

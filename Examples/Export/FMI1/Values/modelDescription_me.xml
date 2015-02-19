@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<fmiModelDescription
+  fmiVersion="1.0"
+  modelName="Values_FMI1_ME"
+  modelIdentifier="Values_FMI1_ME"
+  generationTool="FMILibrary"
+  description="A simple pass-through model for all FMI data types"
+  guid="4f045bb4-1a9d-46fb-9904-513a4c41c7c0"
+  numberOfContinuousStates="0"
+  numberOfEventIndicators="0">
+  
+<DefaultExperiment
+	startTime = "0.0"
+    stopTime ="1"
+    tolerance = "0.1"/>   
+ 
+<ModelVariables>
+  
+  <ScalarVariable name="boolean_in" valueReference="0" description="boolean input" causality = "input">
+     <Boolean start="false"/>
+  </ScalarVariable>
+  
+  <ScalarVariable name="integer_in" valueReference="0" description="integer input" causality = "input">
+     <Integer start="1"/>
+  </ScalarVariable>
+
+  <ScalarVariable name="real_in" valueReference="0" description="real input" causality = "input">
+     <Integer start="3.1426"/>
+  </ScalarVariable>
+
+  <ScalarVariable name="string_in" valueReference="0" description="string input" causality = "input">
+     <String start="Hello FMU."/>
+  </ScalarVariable>
+
+  <ScalarVariable name="boolean_out" valueReference="1" description="boolean output" causality = "output">
+     <Boolean/>
+  </ScalarVariable>
+  
+  <ScalarVariable name="integer_out" valueReference="1" description="integer output" causality = "output">
+  </ScalarVariable>
+
+  <ScalarVariable name="string_out" valueReference="1" description="the string month[int_out]" causality = "output">
+     <String/>
+  </ScalarVariable>
+
+  </ModelVariables>
+
+</fmiModelDescription>
+

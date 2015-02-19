@@ -166,13 +166,17 @@ IF (NOT DEFINED ${FMILIBRARYHOME})
 	endfunction()
 
 	#Move files and compress them to an FMU
-	function(compress_fmu OUTPUT_FOLDER_T MODEL_IDENTIFIER_T  TARGET_NAME_T XML_PATH_T SHARED_LIBRARY_PATH_T)
+	function(compress_fmu OUTPUT_FOLDER_T MODEL_IDENTIFIER_T  TARGET_NAME_T XML_PATH_T DOCS_PATH SHARED_LIBRARY_PATH_T)
 		set(FMU_OUTPUT_FOLDER_T ${OUTPUT_FOLDER_T}/${MODEL_IDENTIFIER_T})
 		set(FMU_OUTPUT_SHARED_LIBRARY_PATH_T ${FMU_OUTPUT_FOLDER_T}/binaries/${FMI_PLATFORM}/${MODEL_IDENTIFIER_T}${CMAKE_SHARED_LIBRARY_SUFFIX})
 
 		#Must create the FMU directory in a separate command..
 		if(NOT EXISTS ${FMU_OUTPUT_FOLDER_T}/binaries/${FMI_PLATFORM})
 			file(MAKE_DIRECTORY ${FMU_OUTPUT_FOLDER_T}/binaries/${FMI_PLATFORM})		
+		endif()
+		#Directory for documentation
+		if(NOT EXISTS ${FMU_OUTPUT_FOLDER_T}/documentation)
+			file(MAKE_DIRECTORY ${FMU_OUTPUT_FOLDER_T}/documentation)		
 		endif()
 
 		file(TO_NATIVE_PATH binaries/${FMI_PLATFORM}/${MODEL_IDENTIFIER_T}${CMAKE_SHARED_LIBRARY_SUFFIX} FMU_OUTPUT_SHARED_LIBRARY_PATH_OUT_T)
@@ -183,6 +187,13 @@ IF (NOT DEFINED ${FMILIBRARYHOME})
 		DEPENDS "${XML_PATH_T}" ${TARGET_NAME_T}	   
 		COMMAND "${CMAKE_COMMAND}" -E remove -f "${OUTPUT_FOLDER_T}/${MODEL_IDENTIFIER_T}.fmu"
 		COMMAND "${CMAKE_COMMAND}" -E copy "${XML_PATH_T}" "${FMU_OUTPUT_FOLDER_T}/modelDescription.xml"
+		#IF(IS_DIRECTORY ${DOCS_PATH})
+			COMMAND "${CMAKE_COMMAND}" -E copy_directory "${DOCS_PATH}" "${FMU_OUTPUT_FOLDER_T}/documentation"
+		#ENDIF()
+		#IF(IS_DIRECTORY ${RESOURCE_PATH})
+		#	COMMAND "${CMAKE_COMMAND}" -E copy_directory "${RESOURCE_PATH}" "${FMU_OUTPUT_FOLDER_T}/resources"
+		#ENDIF()
+
 		COMMAND "${CMAKE_COMMAND}" -E copy "${SHARED_LIBRARY_PATH_T}" "${FMU_OUTPUT_SHARED_LIBRARY_PATH_T}"
 		WORKING_DIRECTORY ${FMU_OUTPUT_FOLDER_T}
 		COMMAND ${ZIP_COMMAND} "${OUTPUT_FOLDER_T}/${MODEL_IDENTIFIER_T}.zip" "*"
@@ -234,76 +245,122 @@ else()
 endif()
 ENDIF(NOT ZIP_COMMAND)
 
+
+# Set generic settings and call compress 
+function(set_generic_fmu FMU_ID FMU_NAME FMUEXPORTDIR)
+	set(FMU_1_ME_MODEL_IDENTIFIER ${FMU_NAME}_FMI1_ME) #This must be the same as in the xml-file
+	set(FMU_1_CS_MODEL_IDENTIFIER ${FMU_NAME}_FMI1_CS) #This must be the same as in the xml-file
+	set(FMU_2_MODEL_IDENTIFIER ${FMU_NAME}_FMI2) #This must be the same as in the xml-file
+	
+	set(FMU1_FOLDER ${FMUEXPORTDIR}/FMI1/${FMU_NAME})
+	set(FMU2_FOLDER ${FMUEXPORTDIR}/FMI2/${FMU_NAME})
+	
+	include_directories(${FMU1_FOLDER})
+	include_directories(${FMU2_FOLDER})
+	
+	set(FMU1_ME_SOURCE
+		${FMU1_FOLDER}/fmu1_model_me.c
+	)
+	set(FMI1_CS_SOURCE
+		${FMU1_FOLDER}/fmu1_model_cs.c
+	)
+	set(FMU1_HEADERS
+		${FMU1_FOLDER}/fmu1_model.h
+		${FMU1_FOLDER}/fmu1_model_defines.h
+	)
+	
+	set(FMU2_SOURCE
+		${FMU2_FOLDER}/fmu2_model_cs_me.c
+	)
+	set(FMU2_HEADERS
+		${FMU2_FOLDER}/fmu2_model.h
+		${FMU2_FOLDER}/fmu2_model_defines.h
+	)
+	
+	set(LibName_1_ME ${FMU_NAME}_fmu1_dll_me)
+	set(LibName_1_CS ${FMU_NAME}_fmu1_dll_cs)
+	set(LibName_2 ${FMU_NAME}_fmu2_dll)
+	
+	add_library(${LibName_1_ME} SHARED ${FMU1_ME_SOURCE} ${FMU1_HEADERS})
+	add_library(${LibName_1_CS} SHARED ${FMI1_CS_SOURCE} ${FMU1_HEADERS})
+	add_library(${LibName_2} SHARED ${FMU2_SOURCE} ${FMU2_HEADERS})
+	
+	
+	set(XML_FMU1_ME_PATH ${FMU1_FOLDER}/modelDescription_me.xml)
+	set(DOCS_FMU1_ME_PATH ${FMU1_FOLDER}/doc)
+	#set(DOCS_FMU1_ME_PATH ${FMU1_FOLDER}/resource)
+	set(XML_FMU1_CS_PATH ${FMU1_FOLDER}/modelDescription_cs.xml)
+	set(DOCS_FMU1_CS_PATH ${FMU1_FOLDER}/doc)
+	#set(DOCS_FMU1_ME_PATH ${FMU1_FOLDER}/resource)
+	set(XML_FMU2_PATH ${FMU2_FOLDER}/modelDescription_cs_me.xml)
+	set(DOCS_FMU2_PATH ${FMU2_FOLDER}/doc)
+	#set(DOCS_FMU2_PATH ${FMU2_FOLDER}/resource)
+	
+	set(SHARED_LIBRARY_FMU1_ME_PATH ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${CMAKE_SHARED_LIBRARY_PREFIX}${LibName_1_ME}${CMAKE_SHARED_LIBRARY_SUFFIX})
+	set(SHARED_LIBRARY_FMU1_CS_PATH ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${CMAKE_SHARED_LIBRARY_PREFIX}${LibName_1_CS}${CMAKE_SHARED_LIBRARY_SUFFIX})
+	set(SHARED_LIBRARY_FMU2_PATH ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${CMAKE_SHARED_LIBRARY_PREFIX}${LibName_2}${CMAKE_SHARED_LIBRARY_SUFFIX})
+	
+	to_native_c_path("\"${CMAKE_CURRENT_BINARY_DIR}/\" CMAKE_INTDIR \"/${CMAKE_SHARED_LIBRARY_PREFIX}${LibName_1_ME}${CMAKE_SHARED_LIBRARY_SUFFIX}\""
+					${FMU_ID}_FMU1_DLL_ME_PATH)
+	to_native_c_path("\"${CMAKE_CURRENT_BINARY_DIR}/\" CMAKE_INTDIR \"/${CMAKE_SHARED_LIBRARY_PREFIX}${LibName_1_CS}${CMAKE_SHARED_LIBRARY_SUFFIX}\""
+					${FMU_ID}_FMU1_DLL_CS_PATH)
+	to_native_c_path("\"${CMAKE_CURRENT_BINARY_DIR}/\" CMAKE_INTDIR \"/${CMAKE_SHARED_LIBRARY_PREFIX}${LibName_2}${CMAKE_SHARED_LIBRARY_SUFFIX}\""
+					${FMU_ID}_FMU2_DLL_PATH)
+					
+					
+	compress_fmu("${EXPORT_OUTPUT_FOLDER}" "${FMU_1_ME_MODEL_IDENTIFIER}" "${LibName_1_ME}" "${XML_FMU1_ME_PATH}" "${DOCS_FMU1_ME_PATH}" "${SHARED_LIBRARY_FMU1_ME_PATH}")
+	compress_fmu("${EXPORT_OUTPUT_FOLDER}" "${FMU_1_CS_MODEL_IDENTIFIER}" "${LibName_1_CS}" "${XML_FMU1_CS_PATH}" "${DOCS_FMU1_CS_PATH}" "${SHARED_LIBRARY_FMU1_CS_PATH}")
+	compress_fmu("${EXPORT_OUTPUT_FOLDER}" "${FMU_2_MODEL_IDENTIFIER}" "${LibName_2}" "${XML_FMU2_PATH}" "${DOCS_FMU2_PATH}" "${SHARED_LIBRARY_FMU2_PATH}")
+	
+endfunction(set_generic_fmu)
+
 #Defines for the BouncingBall FMU
-set(BB_ID "FMU_BB")
-set(${BB_ID}1_ME_MODEL_IDENTIFIER BouncingBall_FMI1_ME) #This must be the same as in the xml-file
-set(${BB_ID}1_CS_MODEL_IDENTIFIER BouncingBall_FMI1_CS) #This must be the same as in the xml-file
-set(${BB_ID}2_MODEL_IDENTIFIER BouncingBall_FMI2) #This must be the same as in the xml-file
+#################################
 
-set(${BB_ID}1_FOLDER ${FMUEXPORTDIR}/FMI1/BouncingBall)
-set(${BB_ID}2_FOLDER ${FMUEXPORTDIR}/FMI2/BouncingBall)
+set(BB_ID "BB")
+set(BB_NAME "BouncingBall")
 
-include_directories("${FMU_BB1_FOLDER}")
-include_directories("${FMU_BB2_FOLDER}")
-
-set(FMU_BB1_ME_SOURCE
-  ${FMU_BB1_FOLDER}/fmu1_model_me.c
-)
-set(FMU_BB1_CS_SOURCE
-  ${FMU_BB1_FOLDER}/fmu1_model_cs.c
-)
-set(FMU_BB1_HEADERS
-  ${FMU_BB1_FOLDER}/fmu1_model.h
-  ${FMU_BB1_FOLDER}/fmu1_model_defines.h
-)
-
-set(FMU_BB2_SOURCE
-  ${FMU_BB2_FOLDER}/fmu2_model_cs_me.c
-)
-set(FMU_BB2_HEADERS
-  ${FMU_BB2_FOLDER}/fmu2_model.h
-  ${FMU_BB2_FOLDER}/fmu2_model_defines.h
-)
+set_generic_fmu("${BB_ID}" "${BB_NAME}" "${FMUEXPORTDIR}")
 
 
-add_library(BouncingBall_fmu1_dll_me SHARED ${FMU_BB1_ME_SOURCE} ${FMU_BB1_HEADERS})
-add_library(BouncingBall_fmu1_dll_cs SHARED ${FMU_BB1_CS_SOURCE} ${FMU_BB1_HEADERS})
-add_library(BouncingBall_fmu2_dll SHARED ${FMU_BB2_SOURCE} ${FMU_BB2_HEADERS})
+#Defines for the Values FMU
+#################################
 
+set(VAL_ID "VAL")
+set(VAL_NAME "Values")
 
-set(XML_BB1_ME_PATH ${FMU_BB1_FOLDER}/modelDescription_me.xml)
-set(XML_BB1_CS_PATH ${FMU_BB1_FOLDER}/modelDescription_cs.xml)
-set(XML_BB2_PATH ${FMU_BB2_FOLDER}/modelDescription_cs_me.xml)
+set_generic_fmu("${VAL_ID}" "${VAL_NAME}" "${FMUEXPORTDIR}")
 
-set(SHARED_LIBRARY_BB1_ME_PATH ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${CMAKE_SHARED_LIBRARY_PREFIX}BouncingBall_fmu1_dll_me${CMAKE_SHARED_LIBRARY_SUFFIX})
-set(SHARED_LIBRARY_BB1_CS_PATH ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${CMAKE_SHARED_LIBRARY_PREFIX}BouncingBall_fmu1_dll_cs${CMAKE_SHARED_LIBRARY_SUFFIX})
-set(SHARED_LIBRARY_BB2_PATH ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${CMAKE_SHARED_LIBRARY_PREFIX}BouncingBall_fmu2_dll${CMAKE_SHARED_LIBRARY_SUFFIX})
+#Defines for the Trigger FMU
+#################################
 
-#Create BouncingBall FMU 1.0 ME/CS Model and generate library path to be used in test config
-#to_native_c_path("\"${SHARED_LIBRARY_BB1_ME_PATH}\"" DLL_OUTPUT_PATH_BB_ME_DEFINE)
-#to_native_c_path("\"${SHARED_LIBRARY_BB1_CS_PATH}\"" DLL_OUTPUT_PATH_BB_CS_DEFINE)
-#to_native_c_path("\"${SHARED_LIBRARY_BB2_PATH}\"" DLL_OUTPUT_PATH_BB_CS_DEFINE)
+#set(TG_ID "TG")
+#set(TG_NAME "Trigger")
 
-to_native_c_path("\"${CMAKE_CURRENT_BINARY_DIR}/\" CMAKE_INTDIR \"/${CMAKE_SHARED_LIBRARY_PREFIX}BouncingBall_fmu1_dll_me${CMAKE_SHARED_LIBRARY_SUFFIX}\""
-				BB_FMU1_DLL_ME_PATH)
-to_native_c_path("\"${CMAKE_CURRENT_BINARY_DIR}/\" CMAKE_INTDIR \"/${CMAKE_SHARED_LIBRARY_PREFIX}BouncingBall_fmu1_dll_cs${CMAKE_SHARED_LIBRARY_SUFFIX}\""
-				BB_FMU1_DLL_CS_PATH)
-to_native_c_path("\"${CMAKE_CURRENT_BINARY_DIR}/\" CMAKE_INTDIR \"/${CMAKE_SHARED_LIBRARY_PREFIX}BouncingBall_fmu2_dll${CMAKE_SHARED_LIBRARY_SUFFIX}\""
-				BB_FMU2_DLL_PATH)
-				
-				
-compress_fmu("${EXPORT_OUTPUT_FOLDER}" "${FMU_BB1_ME_MODEL_IDENTIFIER}" "BouncingBall_fmu1_dll_me" "${XML_BB1_ME_PATH}" "${SHARED_LIBRARY_BB1_ME_PATH}")
-compress_fmu("${EXPORT_OUTPUT_FOLDER}" "${FMU_BB1_CS_MODEL_IDENTIFIER}" "BouncingBall_fmu1_dll_cs" "${XML_BB1_CS_PATH}" "${SHARED_LIBRARY_BB1_CS_PATH}")
-compress_fmu("${EXPORT_OUTPUT_FOLDER}" "${FMU_BB2_MODEL_IDENTIFIER}" "BouncingBall_fmu2_dll" "${XML_BB2_PATH}" "${SHARED_LIBRARY_BB2_PATH}")
+#set_generic_fmu("${TG_ID}" "${TG_NAME}" "${FMUEXPORTDIR}")
+
 
 
 file(MAKE_DIRECTORY "${FMILIB_INSTALL_PREFIX}/ExampleFMUs")
 
 install(FILES 
-			"${EXPORT_OUTPUT_FOLDER}/${FMU_BB1_ME_MODEL_IDENTIFIER}.fmu"
-			"${EXPORT_OUTPUT_FOLDER}/${FMU_BB1_CS_MODEL_IDENTIFIER}.fmu"
-			"${EXPORT_OUTPUT_FOLDER}/${FMU_BB2_MODEL_IDENTIFIER}.fmu"
-		DESTINATION ExampleFMUs)
+#			"${EXPORT_OUTPUT_FOLDER}/${FMU_BB1_ME_MODEL_IDENTIFIER}.fmu"
+#			"${EXPORT_OUTPUT_FOLDER}/${FMU_BB1_CS_MODEL_IDENTIFIER}.fmu"
+#			"${EXPORT_OUTPUT_FOLDER}/${FMU_BB2_MODEL_IDENTIFIER}.fmu"
+
+			"${EXPORT_OUTPUT_FOLDER}/${BB_NAME}_FMI1_ME.fmu"
+			"${EXPORT_OUTPUT_FOLDER}/${BB_NAME}_FMI1_CS.fmu"
+			"${EXPORT_OUTPUT_FOLDER}/${BB_NAME}_FMI2.fmu"
+
+			"${EXPORT_OUTPUT_FOLDER}/${VAL_NAME}_FMI1_ME.fmu"
+			"${EXPORT_OUTPUT_FOLDER}/${VAL_NAME}_FMI1_CS.fmu"
+			"${EXPORT_OUTPUT_FOLDER}/${VAL_NAME}_FMI2.fmu"
+
+			"${EXPORT_OUTPUT_FOLDER}/${TG_NAME}_FMI1_ME.fmu"
+			"${EXPORT_OUTPUT_FOLDER}/${TG_NAME}_FMI1_CS.fmu"
+			"${EXPORT_OUTPUT_FOLDER}/${TG_NAME}_FMI2.fmu"
+
+			DESTINATION ExampleFMUs)
 		
 IF(${FMILIB_BUILD_TESTS})		
 	ADD_TEST(ctest_import_FMI_Example_BB1_ME ../fmi_import_test "${EXPORT_OUTPUT_FOLDER}/${FMU_BB1_ME_MODEL_IDENTIFIER}.fmu" ${EXPORT_OUTPUT_FOLDER})

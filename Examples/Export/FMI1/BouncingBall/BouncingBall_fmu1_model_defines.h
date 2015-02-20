@@ -16,7 +16,7 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 */
 
 /* This header is used to generate the FMU test DLL and in the C API test that uses the DLL */
-#ifndef FMU1_MODEL_DEFINES_H_
+#ifndef BB_FMU1_MODEL_DEFINES_H_
 
 #define STRINGIFY(a)			#a
 #define STRINGIFY2(a)			STRINGIFY(a)
@@ -69,4 +69,7 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 #define FMI_CS_GUID			"ef7ce57c-8fb5-4556-b0c9-4bfd7f91b793"
 #define FMI_ME_GUID			"b6106da2-8e21-464c-8a3f-a1723bebbd94"
 
-#endif /* End of header FMU1_MODEL_DEFINES_H_ */
+
+#include <fmu1_model.h>
+
+#endif /* End of header BB_FMU1_MODEL_DEFINES_H_ */

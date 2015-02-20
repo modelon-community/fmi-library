@@ -17,7 +17,7 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 #include <stdio.h>
 #include <string.h>
 
-#include <fmu1_model.h>
+#include <BouncingBall_fmu1_model_defines.h>
 
 /* Model calculation functions */
 static int calc_initialize(component_ptr_t comp)

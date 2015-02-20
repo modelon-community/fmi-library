@@ -27,7 +27,8 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 #include <FMI1/fmiPlatformTypes.h>
 #include <FMI1/fmiFunctions.h>
 
-#include <fmu1_model.h>
+#include <BouncingBall_fmu1_model_defines.h>
+
 #define MODEL_IDENTIFIER BouncingBall_FMI1_CS
 
 #include "fmu1_model.c"

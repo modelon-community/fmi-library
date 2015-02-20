@@ -22,8 +22,7 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 #include <FMI1/fmiModelTypes.h>
 #include <FMI1/fmiModelFunctions.h>
 
-#include <fmu1_model.h>
-//#include "config_test.h"
+//#include <Values_fmu1_model_defines.h>
 
    typedef enum {fmiDoStepStatus,
                  fmiPendingStatus,
@@ -31,7 +30,7 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 
 #include "fmu1_model.c"
 
-#define MODEL_IDENTIFIER BouncingBall_FMI1_ME
+#define MODEL_IDENTIFIER Values_FMI1_ME
 
 /* FMI 1.0 Common Functions */
 DllExport const char* fmiGetVersion()

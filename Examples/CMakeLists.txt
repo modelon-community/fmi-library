@@ -256,8 +256,7 @@ function(set_generic_fmu FMU_ID FMU_NAME FMUEXPORTDIR)
 	set(FMU2_FOLDER ${FMUEXPORTDIR}/FMI2/${FMU_NAME})
 	
 	include_directories(${FMU1_FOLDER})
-	include_directories(${FMU2_FOLDER})
-	
+		
 	set(FMU1_ME_SOURCE
 		${FMU1_FOLDER}/fmu1_model_me.c
 	)
@@ -266,15 +265,17 @@ function(set_generic_fmu FMU_ID FMU_NAME FMUEXPORTDIR)
 	)
 	set(FMU1_HEADERS
 		${FMU1_FOLDER}/fmu1_model.h
-		${FMU1_FOLDER}/fmu1_model_defines.h
+		${FMU1_FOLDER}/${FMU_NAME}_fmu1_model_defines.h
 	)
+	
+	include_directories(${FMU2_FOLDER})
 	
 	set(FMU2_SOURCE
 		${FMU2_FOLDER}/fmu2_model_cs_me.c
 	)
 	set(FMU2_HEADERS
 		${FMU2_FOLDER}/fmu2_model.h
-		${FMU2_FOLDER}/fmu2_model_defines.h
+		${FMU2_FOLDER}/${FMU_NAME}_fmu2_model_defines.h
 	)
 	
 	set(LibName_1_ME ${FMU_NAME}_fmu1_dll_me)
@@ -312,7 +313,23 @@ function(set_generic_fmu FMU_ID FMU_NAME FMUEXPORTDIR)
 	compress_fmu("${EXPORT_OUTPUT_FOLDER}" "${FMU_1_CS_MODEL_IDENTIFIER}" "${LibName_1_CS}" "${XML_FMU1_CS_PATH}" "${DOCS_FMU1_CS_PATH}" "${SHARED_LIBRARY_FMU1_CS_PATH}")
 	compress_fmu("${EXPORT_OUTPUT_FOLDER}" "${FMU_2_MODEL_IDENTIFIER}" "${LibName_2}" "${XML_FMU2_PATH}" "${DOCS_FMU2_PATH}" "${SHARED_LIBRARY_FMU2_PATH}")
 	
+	# Add FMUs to install
+	install(FILES 
+			"${EXPORT_OUTPUT_FOLDER}/${FMU_1_ME_MODEL_IDENTIFIER}.fmu"
+			"${EXPORT_OUTPUT_FOLDER}/${FMU_1_CS_MODEL_IDENTIFIER}.fmu"
+			"${EXPORT_OUTPUT_FOLDER}/${FMU_2_MODEL_IDENTIFIER}.fmu"
+			DESTINATION ExampleFMUs)
+	
+	# add import test for FMUs
+	IF(${FMILIB_BUILD_TESTS})		
+		ADD_TEST(ctest_import_FMI_Example_${FMU_ID}1_ME ../fmi_import_test "${EXPORT_OUTPUT_FOLDER}/${FMU_1_ME_MODEL_IDENTIFIER}.fmu" ${EXPORT_OUTPUT_FOLDER})
+		ADD_TEST(ctest_import_FMI_Example_${FMU_ID}1_CS ../fmi_import_test "${EXPORT_OUTPUT_FOLDER}/${FMU_1_CS_MODEL_IDENTIFIER}.fmu" ${EXPORT_OUTPUT_FOLDER})
+		ADD_TEST(ctest_import_FMI_Example_${FMU_ID}2 ../fmi_import_test "${EXPORT_OUTPUT_FOLDER}/${FMU_2_MODEL_IDENTIFIER}.fmu" ${EXPORT_OUTPUT_FOLDER})
+	ENDIF()
+	
 endfunction(set_generic_fmu)
+
+file(MAKE_DIRECTORY "${FMILIB_INSTALL_PREFIX}/ExampleFMUs")
 
 #Defines for the BouncingBall FMU
 #################################
@@ -340,32 +357,27 @@ set_generic_fmu("${VAL_ID}" "${VAL_NAME}" "${FMUEXPORTDIR}")
 #set_generic_fmu("${TG_ID}" "${TG_NAME}" "${FMUEXPORTDIR}")
 
 
-
-file(MAKE_DIRECTORY "${FMILIB_INSTALL_PREFIX}/ExampleFMUs")
-
-install(FILES 
+#install(FILES 
 #			"${EXPORT_OUTPUT_FOLDER}/${FMU_BB1_ME_MODEL_IDENTIFIER}.fmu"
 #			"${EXPORT_OUTPUT_FOLDER}/${FMU_BB1_CS_MODEL_IDENTIFIER}.fmu"
 #			"${EXPORT_OUTPUT_FOLDER}/${FMU_BB2_MODEL_IDENTIFIER}.fmu"
+#
+#			"${EXPORT_OUTPUT_FOLDER}/${BB_NAME}_FMI1_ME.fmu"
+#			"${EXPORT_OUTPUT_FOLDER}/${BB_NAME}_FMI1_CS.fmu"
+#			"${EXPORT_OUTPUT_FOLDER}/${BB_NAME}_FMI2.fmu"
 
-			"${EXPORT_OUTPUT_FOLDER}/${BB_NAME}_FMI1_ME.fmu"
-			"${EXPORT_OUTPUT_FOLDER}/${BB_NAME}_FMI1_CS.fmu"
-			"${EXPORT_OUTPUT_FOLDER}/${BB_NAME}_FMI2.fmu"
+#			"${EXPORT_OUTPUT_FOLDER}/${VAL_NAME}_FMI1_ME.fmu"
+#			"${EXPORT_OUTPUT_FOLDER}/${VAL_NAME}_FMI1_CS.fmu"
+#			"${EXPORT_OUTPUT_FOLDER}/${VAL_NAME}_FMI2.fmu"
 
-			"${EXPORT_OUTPUT_FOLDER}/${VAL_NAME}_FMI1_ME.fmu"
-			"${EXPORT_OUTPUT_FOLDER}/${VAL_NAME}_FMI1_CS.fmu"
-			"${EXPORT_OUTPUT_FOLDER}/${VAL_NAME}_FMI2.fmu"
+#			"${EXPORT_OUTPUT_FOLDER}/${TG_NAME}_FMI1_ME.fmu"
+#			"${EXPORT_OUTPUT_FOLDER}/${TG_NAME}_FMI1_CS.fmu"
+#			"${EXPORT_OUTPUT_FOLDER}/${TG_NAME}_FMI2.fmu"
 
-			"${EXPORT_OUTPUT_FOLDER}/${TG_NAME}_FMI1_ME.fmu"
-			"${EXPORT_OUTPUT_FOLDER}/${TG_NAME}_FMI1_CS.fmu"
-			"${EXPORT_OUTPUT_FOLDER}/${TG_NAME}_FMI2.fmu"
-
-			DESTINATION ExampleFMUs)
+#			DESTINATION ExampleFMUs)
 		
-IF(${FMILIB_BUILD_TESTS})		
-	ADD_TEST(ctest_import_FMI_Example_BB1_ME ../fmi_import_test "${EXPORT_OUTPUT_FOLDER}/${FMU_BB1_ME_MODEL_IDENTIFIER}.fmu" ${EXPORT_OUTPUT_FOLDER})
-	ADD_TEST(ctest_import_FMI_Example_BB1_CS ../fmi_import_test "${EXPORT_OUTPUT_FOLDER}/${FMU_BB1_CS_MODEL_IDENTIFIER}.fmu" ${EXPORT_OUTPUT_FOLDER})
-	ADD_TEST(ctest_import_FMI_Example_BB2 ../fmi_import_test "${EXPORT_OUTPUT_FOLDER}/${FMU_BB2_MODEL_IDENTIFIER}.fmu" ${EXPORT_OUTPUT_FOLDER})
-ENDIF()
-
-
+#IF(${FMILIB_BUILD_TESTS})		
+#	ADD_TEST(ctest_import_FMI_Example_BB1_ME ../fmi_import_test "${EXPORT_OUTPUT_FOLDER}/${FMU_BB1_ME_MODEL_IDENTIFIER}.fmu" ${EXPORT_OUTPUT_FOLDER})
+#	ADD_TEST(ctest_import_FMI_Example_BB1_CS ../fmi_import_test "${EXPORT_OUTPUT_FOLDER}/${FMU_BB1_CS_MODEL_IDENTIFIER}.fmu" ${EXPORT_OUTPUT_FOLDER})
+#	ADD_TEST(ctest_import_FMI_Example_BB2 ../fmi_import_test "${EXPORT_OUTPUT_FOLDER}/${FMU_BB2_MODEL_IDENTIFIER}.fmu" ${EXPORT_OUTPUT_FOLDER})
+#ENDIF()

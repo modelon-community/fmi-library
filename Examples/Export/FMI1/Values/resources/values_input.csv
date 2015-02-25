@@ -1,4 +1,4 @@
-"Time","boolean_input","integer_input","real_input","string_input"
+"time","boolean_in","integer_in","real_in","string_in"
 0,0,0,0,"Hello FMU!"
 0.1,1,1,0.1,"Hello FMU!"
 0.2,1,2,0.2,"Hello FMU!"

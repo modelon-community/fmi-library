@@ -29,26 +29,34 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 
 /* Values feedthrough for all dataypes */
 /* ValueReferences for the variables and parameters in the model */
+/*Dummy state*/
+#define VAR_R_dummy				0
+#define VAR_R_der_dummy			1
+/* Real */
+#define VAR_R_real_input		2
+#define VAR_R_real_output		3
 /* Booelan */
 #define VAR_B_boolean_input		0
 #define VAR_B_boolean_output	1
 /* Integer */
 #define VAR_I_integer_input		0
 #define VAR_I_integer_output	1
-/* Real */
-#define VAR_R_real_input		0
-#define VAR_R_real_output		1
 /* String */
 #define VAR_S_string_input		0
 #define VAR_S_string_output		1
 
 /* Event indicators */
+#define EVENT_boolean			0
+#define EVENT_integer			1
+#define EVENT_real				2
+//#define EVENT_string			3
+
 #define VAR_S_LOGGER_TEST		0
 
 /* Sizes */
 #define N_STATES				1
-#define N_EVENT_INDICATORS		1
-#define N_REAL					2
+#define N_EVENT_INDICATORS		3
+#define N_REAL					4
 #define N_INTEGER				2
 #define N_BOOLEAN				2
 #define N_STRING				2

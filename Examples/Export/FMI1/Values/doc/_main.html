@@ -2,20 +2,18 @@
     <head>
         <style> 
         @font-face {
-           font-family: BMWType_Light;
-           src: url(bmwl.ttf);
+           font-family: Arial;
         }
             
         @font-face {
-           font-family: BMWType_Bold;
-           src: url(bmwbob.ttf);
+           font-family: Arial;
         }
 
         h1 {
             -webkit-font-smoothing: antialiased;
             color: rgb(38, 38, 38);
             display: block;
-            font-family: BMWType_Light, Arial, sans-serif;
+            font-family: Arial, sans-serif;
             font-size: 32px;
             font-weight: normal;
             height: 32px;
@@ -65,7 +63,7 @@
             font-weight: normal;
             font-size: 22px;
             color: #262626;
-            font-family: BMWType_Light, Arial, sans-serif;
+            font-family: Arial, sans-serif;
         }
             
         td {
@@ -147,45 +145,32 @@
     <body>
         
         <div id="page">
-            <img src="id_moduls_bmwi.png" class="top-logo">
 
             <div class="content">
 
-                <h1>Bouncing Ball</h1>
+                <h1>Values</h1>
 
-                <p>This FMU encorporates a simple bouncing ball example. Calculated is the movement of a ball from an initial position and speed under influence of gravity. Gravity accelerates the ball towards the ground.</p>
+                <p>This FMU encorporates a simple feedthrough for all data types.</p>
                 
-                <figure>
-                    <img src="bouncing_ball.png" width="200" height="300">
-                    <figcaption>Sketch of model priciple</figcaption>
-                </figure>
-				
-				<p> Upon contact with the ground the ball bounces back with reduced speed. This is encorporated by an event that ist triggered initializing the speed with altered sign and value. The physical equations on which this example is based are the following:</p>
+                <p>It contains an input for boolean, integer, real and string as The real varaible is treated as an discrete and events are created if the input variable changes.</p>
 
-				<figure>
-                    <img src="formula_gravity.png" width="200" height="300">
-                    <figcaption>These formulas dtermin the behaviour of the ball</figcaption>
-                </figure>
-				
 				
                 <table>
                     <tr>
-                        <th class="name">Variables</th>
+                        <th class="name">Inputs</th>
                         <th>Description</th>
-						<th>Start Value</th>
-						<th>Unit</th>
                     </tr>
                     <tr>
-                        <td>position</td>
-                        <td>Postion of the ball</td>
-						<td>1.0</td>
-						<td>m</td>
+                        <td>boolean_in</td>
                     </tr>
                     <tr>
-                        <td>der_position</td>
-                        <td>Derivative of ball position</td>
-						<td>4.0</td>
-						<td>m/s</td>
+                        <td>integer_in</td>
+                    </tr>
+                    <tr>
+                        <td>real_in</td>
+                    </tr>
+                    <tr>
+                        <td>string_in</td>
                     </tr>
                 </table>
 
@@ -193,37 +178,21 @@
                     <tr>
                         <th class="name">Outputs</th>
                         <th>Description</th>
-						<th>Start Value</th>
-						<th>Unit</th>
+			          </tr>
+			        <tr>
+                        <td>boolean_out</td>
                     </tr>
-					<tr>	
-						<td>speed</td>
-                        <td>Speed of the ball</td>
-						<td>4.0</td>
-						<td>m/s</td>
+                    <tr>
+                        <td>integer_out</td>
+                    </tr>
+                    <tr>
+                        <td>real_out</td>
+                    </tr>
+                    <tr>
+                        <td>string_out</td>
                     </tr>
                 </table>
 
-                <table>
-                    <tr>
-                        <th class="name">Parameters</th>
-                        <th>Description</th>
-						<th>Start Value</th>
-						<th>Unit</th>
-                    </tr>
-					<tr>	
-						<td>gravity</td>
-                        <td>gravity constant</td>
-						<td>-9.81</td>
-						<td>m/s2</td>
-                    </tr>
-					<tr>	
-						<td>bounce_coef</td>
-                        <td>Bouncing coefficient of ball</td>
-						<td>0.5</td>
-						<td>-</td>
-                    </tr>
-                </table>
 
                 <figure>
                     <img src="results.png" width="541" height="392">
@@ -234,10 +203,6 @@
         
         </div>
             
-        <footer>
-            <div class="credits">powered by <img src="logo.png" class="logo"></div>
-        </footer>
-        
     </body>
     
 </html>

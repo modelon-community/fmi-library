@@ -25,7 +25,7 @@
      <Integer start="1"/>
   </ScalarVariable>
 
-  <ScalarVariable name="real_in" valueReference="0" description="real input" causality = "input">
+  <ScalarVariable name="real_in" valueReference="2" description="real input" causality = "input">
      <Real start="3.1426"/>
   </ScalarVariable>
 
@@ -38,10 +38,14 @@
   </ScalarVariable>
   
   <ScalarVariable name="integer_out" valueReference="1" description="integer output" causality = "output">
+  <Integer/>
+  </ScalarVariable>
+
+  <ScalarVariable name="real_out" valueReference="3" description="real output" causality = "output">
   <Real/>
   </ScalarVariable>
 
-  <ScalarVariable name="string_out" valueReference="1" description="the string month[int_out]" causality = "output">
+  <ScalarVariable name="string_out" valueReference="1" description="string output" causality = "output">
      <String/>
   </ScalarVariable>
 

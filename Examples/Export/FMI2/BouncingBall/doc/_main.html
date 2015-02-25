@@ -1,0 +1,228 @@
+<html>
+    <head>
+        <style> 
+        @font-face {
+           font-family: Arial;
+        }
+            
+        @font-face {
+           font-family: Arial;
+        }
+
+        h1 {
+            -webkit-font-smoothing: antialiased;
+            color: rgb(38, 38, 38);
+            display: block;
+            font-family: Arial, sans-serif;
+            font-size: 32px;
+            font-weight: normal;
+            height: 32px;
+            letter-spacing: normal;
+            line-height: 32px;
+            margin-bottom: -3px;
+            margin-left: 0px;
+            margin-right: 0px;
+            margin-top: 0px;
+            padding-bottom: 3px;
+        }
+            
+        body, p, th, td {
+            -webkit-font-smoothing: antialiased;
+            color: rgb(54, 54, 54);
+            font-family: arial, helvetica, sans-serif;
+            font-size: 13px;
+        }
+            
+        body {
+            background-color: #f9f9f9;
+            margin: 0;
+        }
+            
+        #page {
+            background-color: #ffffff;
+            padding: 80px 0 10px 0px;
+        }
+            
+        p {
+            margin: 1.5em auto 1.5em auto;
+        }
+         
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 1.5em auto 1.5em auto;
+        }
+            
+        tr {
+            border-bottom: 2px solid #e6e6e6;
+        }
+            
+        th {
+            -webkit-font-smoothing: antialiased;
+            text-align: left;
+            font-weight: normal;
+            font-size: 22px;
+            color: #262626;
+            font-family: Arial, sans-serif;
+        }
+            
+        td {
+            -webkit-font-smoothing: antialiased;
+            font-family: arial, helvetica, sans-serif;
+            font-size: 13px;
+            font-weight: normal;
+            padding: 4px 0 4px 0;
+        }
+            
+        .content {
+            box-sizing: border-box;
+            width: 600px;
+            margin: 50px auto 5em auto;
+            background-color: #ffffff;
+        }
+            
+        figure {
+            margin: 4em auto 1em auto;
+            text-align: center;
+        }
+
+        figcaption {
+            padding: 1.2em;
+        }
+            
+        .logo {
+            /*
+            -webkit-filter: grayscale(100%);
+            -webkit-transition: all 0.4s ease;
+            */
+            vertical-align: baseline; 
+            position: relative;
+            top: 4px;
+        }
+            
+        .logo:hover {
+            -webkit-filter: grayscale(0%);
+        }
+            
+        footer {
+            width: 100%;
+            color: #999;
+            text-align: right;
+            /*
+            background-image: url(bg-driving-pleasure-01.jpg);
+            background-repeat: no-repeat;
+            */
+            
+            border-top: 1px solid #e5e5e5;
+        }
+            
+        .top-logo {
+            position: absolute;
+            top: 0;
+            right: 50px;
+        }
+            
+        footer > .credits {
+            padding: 12px 20px 20px;
+            vertical-align: bottom;
+        }
+            
+        .credits {
+            
+        }
+            
+        .name {
+            width: 200px;
+        }
+            
+        sub, sup {
+            font-size: 0.6em;
+        }
+            
+        </style>
+    </head>
+
+    <body>
+        
+        <div id="page">
+
+            <div class="content">
+
+                <h1>Bouncing Ball</h1>
+
+                <p>This FMU encorporates a simple bouncing ball example. Calculated is the movement of a ball from an initial position and speed under influence of gravity. Gravity accelerates the ball towards the ground.</p>
+                
+                <figure>
+                    <img src="bouncing_ball.png" width="200" height="300">
+                    <figcaption>Sketch of model priciple</figcaption>
+                </figure>
+
+						
+<p> Upon contact with the ground the ball bounces back with reduced speed. This is encorporated by an event that ist triggered initializing the speed with altered sign and value. The physical equations on which this example is based are the following:</p>
+				<figure>
+                    <img src="formula_spd.png" width="157" height="67">
+                </figure>
+
+				<figure>
+                    <img src="formula_acc.png" width="93" height="67">
+                </figure>
+
+				<figure>
+                    <img src="Event.png" width="299" height="32">
+                    <figcaption>Reinitialization of speed at event instance.</figcaption>
+                </figure>
+				
+				
+                <table>
+                    <tr>
+                        <th class="name">Variables</th>
+                        <th>Description</th>
+					</tr>
+                    <tr>
+                        <td>position</td>
+                        <td>Postion of the ball</td>
+					</tr>
+                    <tr>
+                        <td>der_position</td>
+                        <td>Derivative of ball position</td>
+					</tr>
+                </table>
+
+                <table>
+                    <tr>
+                        <th class="name">Outputs</th>
+                        <th>Description</th>
+					</tr>
+					<tr>	
+						<td>speed</td>
+                        <td>Speed of the ball</td>
+					</tr>
+                </table>
+
+                <table>
+                    <tr>
+                        <th class="name">Parameters</th>
+                        <th>Description</th>
+					</tr>
+					<tr>	
+						<td>gravity</td>
+                        <td>Gravity constant</td>
+					</tr>
+					<tr>	
+						<td>bounce_coef</td>
+                        <td>Bouncing coefficient of ball</td>
+					</tr>
+                </table>
+
+                <figure>
+                    <img src="results.png" width="541" height="392">
+                    <figcaption>Results for default experiment configuration</figcaption>
+                </figure>
+
+            </div>
+        
+        </div>
+            
+    </body>
+    
+</html>

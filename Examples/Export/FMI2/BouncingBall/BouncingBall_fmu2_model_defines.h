@@ -54,4 +54,6 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 
 #define FMI_GUID			"f2baf4b5-6046-4c3c-a0d8-884195cf99ed"
 
+#include <fmu2_model.h>
+
 #endif /* End of header FMU2_MODEL_DEFINES_H_ */

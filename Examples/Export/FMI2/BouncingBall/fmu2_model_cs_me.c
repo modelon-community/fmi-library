@@ -26,7 +26,7 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 /* Standard FMI 2.0 ME and CS types */
 #include <FMI2/fmi2Functions.h>
 
-#include <fmu2_model.h>
+#include <BouncingBall_fmu2_model_defines.h>
 
 #define MODEL_IDENTIFIER BouncingBall_FMI2
 

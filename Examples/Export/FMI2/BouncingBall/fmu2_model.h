@@ -17,9 +17,9 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 
 #ifndef FMU2_MODEL_H_
 #define FMU2_MODEL_H_
+
 #include <FMI2/fmi2Functions.h>
 
-#include <fmu2_model_defines.h>
 #ifndef FMI2_Export
 	#define FMI2_Export DllExport
 #endif

@@ -23,8 +23,8 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 static int calc_initialize(component_ptr_t comp)
 {
 	comp->states[VAR_R_position]		= 1.0;
-	comp->states[VAR_R_der_position] = 4;
-	comp->reals	[VAR_R_gravity]		= -9.81;
+	comp->states[VAR_R_der_position]	= 4;
+	comp->reals	[VAR_R_gravity]			= -9.81;
 	comp->reals	[VAR_R_bounce_coeff]	= 0.5;
 	if(comp->loggingOn) {
 		comp->functions.logger(comp, comp->instanceName, fmiOK, "INFO", "###### Initializing component ######");

@@ -18,20 +18,24 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 #if __GNUC__ >= 4
     #pragma GCC visibility push(default)
 #endif
+
 /* Standard FMI 1.0 ME and CS types */
 #include <FMI1/fmiModelTypes.h>
 #include <FMI1/fmiModelFunctions.h>
 
-#include <BouncingBall_fmu1_model_defines.h>
-
-   typedef enum {fmiDoStepStatus,
-                 fmiPendingStatus,
-                 fmiLastSuccessfulTime} fmiStatusKind;
-
-#include "fmu1_model.c"
-
+/*Definition of model identifier - must be equal to corresponding xml!*/
 #define MODEL_IDENTIFIER BouncingBall_FMI1_ME
 
+
+typedef enum {fmiDoStepStatus,
+				fmiPendingStatus,
+				fmiLastSuccessfulTime} fmiStatusKind;
+
+/*Inclusion of model specific functions.*/
+#include "fmu1_model.c"
+
+
+/*Exposition of FMI API*/
 /* FMI 1.0 Common Functions */
 DllExport const char* fmiGetVersion()
 {

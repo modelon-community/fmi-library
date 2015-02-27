@@ -17,15 +17,30 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 #include <stdio.h>
 #include <string.h>
 
+/*Include model specific definition e.g. number of states and values references, as well as all generic FMI function and type declarations -> fmu1_model.h*/
 #include <BouncingBall_fmu1_model_defines.h>
 
+
 /* Model calculation functions */
-static int calc_initialize(component_ptr_t comp)
-{
+
+/*Set all default values for the model here. This needs to be separate from the initialization routine, as it might be overwritten altered by the master*/
+static int set_default_values(component_ptr_t comp){
+		
+	/*Set values according to values from xml*/
 	comp->states[VAR_R_position]		= 1.0;
 	comp->states[VAR_R_der_position]	= 4;
 	comp->reals	[VAR_R_gravity]			= -9.81;
 	comp->reals	[VAR_R_bounce_coeff]	= 0.5;
+	
+	return 0;
+}
+
+/*Initial settings,values that are calculated and eventually the first time event are to be set here.*/
+static int calc_initialize(component_ptr_t comp)
+{
+	/*No additional settings required for this model.*/
+
+	/*Info output of initializes values*/
 	if(comp->loggingOn) {
 		comp->functions.logger(comp, comp->instanceName, fmiOK, "INFO", "###### Initializing component ######");
 		comp->functions.logger(comp, comp->instanceName, fmiOK, "INFO", "Init #r%d#=%g", VAR_R_position, comp->states[VAR_R_position]);
@@ -36,6 +51,7 @@ static int calc_initialize(component_ptr_t comp)
 	return 0;
 }
 
+/*Calculation of state derivatives*/
 static int calc_get_derivatives(component_ptr_t comp)
 {
 	comp->states_der[VAR_R_position]		= comp->states[VAR_R_der_position];
@@ -43,19 +59,25 @@ static int calc_get_derivatives(component_ptr_t comp)
 	return 0;
 }
 
+/*Calculation of event indicators to verify if state event has happened*/
 static int calc_get_event_indicators(component_ptr_t comp)
 {	
 	fmiReal event_tol = 1e-16;
+
+	/*Check if position got negative*/
 	comp->event_indicators[EVENT_position]		= comp->states[VAR_R_position] + (comp->states[VAR_R_position] >= 0 ? event_tol : -event_tol);
 	return 0;
 }
 
+/*Calculations for handling an event, e.g. reinitialization of states*/
 static int calc_event_update(component_ptr_t comp)
 {	
+	/*check for position reinitialization*/
 	if (comp->states[VAR_R_position] < 0) {
 		comp->states[VAR_R_der_position] = - comp->reals[VAR_R_bounce_coeff] * comp->states[VAR_R_der_position];
 		comp->states[VAR_R_position] = 0;
 
+		/*Update Eventinfo*/
 		comp->eventInfo.iterationConverged			= fmiTrue;
 		comp->eventInfo.stateValueReferencesChanged = fmiFalse;
 		comp->eventInfo.stateValuesChanged			= fmiTrue;
@@ -76,6 +98,7 @@ const char* fmi_get_version()
 	return FMI_VERSION;
 }
 
+/*Pass on logger switch*/
 fmiStatus fmi_set_debug_logging(fmiComponent c, fmiBoolean loggingOn)
 {
 	component_ptr_t comp = (fmiComponent)c;
@@ -87,6 +110,8 @@ fmiStatus fmi_set_debug_logging(fmiComponent c, fmiBoolean loggingOn)
 	}
 }
 
+
+/*Read current real values*/
 fmiStatus fmi_get_real(fmiComponent c, const fmiValueReference vr[], size_t nvr, fmiReal value[])
 {
 	component_ptr_t comp = (fmiComponent)c;
@@ -107,6 +132,7 @@ fmiStatus fmi_get_real(fmiComponent c, const fmiValueReference vr[], size_t nvr,
 	}
 }
 
+/*Read current integer values*/
 fmiStatus fmi_get_integer(fmiComponent c, const fmiValueReference vr[], size_t nvr, fmiInteger value[])
 {
 	component_ptr_t comp = (fmiComponent)c;
@@ -121,6 +147,7 @@ fmiStatus fmi_get_integer(fmiComponent c, const fmiValueReference vr[], size_t n
 	}
 }
 
+/*Read current boolean values*/
 fmiStatus fmi_get_boolean(fmiComponent c, const fmiValueReference vr[], size_t nvr, fmiBoolean value[])
 {
 	component_ptr_t comp = (fmiComponent)c;
@@ -135,6 +162,7 @@ fmiStatus fmi_get_boolean(fmiComponent c, const fmiValueReference vr[], size_t n
 	}
 }
 
+/*Read current string values*/
 fmiStatus fmi_get_string(fmiComponent c, const fmiValueReference vr[], size_t nvr, fmiString  value[])
 {
 	component_ptr_t comp = (fmiComponent)c;
@@ -149,6 +177,7 @@ fmiStatus fmi_get_string(fmiComponent c, const fmiValueReference vr[], size_t nv
 	}
 }
 
+/*Write current real values*/
 fmiStatus fmi_set_real(fmiComponent c, const fmiValueReference vr[], size_t nvr, const fmiReal value[])
 {
 	component_ptr_t comp = (fmiComponent)c;
@@ -169,6 +198,7 @@ fmiStatus fmi_set_real(fmiComponent c, const fmiValueReference vr[], size_t nvr,
 	}
 }
 
+/*Write current integer values*/
 fmiStatus fmi_set_integer(fmiComponent c, const fmiValueReference vr[], size_t nvr, const fmiInteger value[])
 {
 	component_ptr_t comp = (fmiComponent)c;
@@ -183,6 +213,7 @@ fmiStatus fmi_set_integer(fmiComponent c, const fmiValueReference vr[], size_t n
 	}
 }
 
+/*Write current boolean values*/
 fmiStatus fmi_set_boolean(fmiComponent c, const fmiValueReference vr[], size_t nvr, const fmiBoolean value[])
 {
 	component_ptr_t comp = (fmiComponent)c;
@@ -197,6 +228,7 @@ fmiStatus fmi_set_boolean(fmiComponent c, const fmiValueReference vr[], size_t n
 	}
 }
 
+/*Write current string values*/
 fmiStatus fmi_set_string(fmiComponent c, const fmiValueReference vr[], size_t nvr, const fmiString  value[])
 {
 	component_ptr_t comp = (fmiComponent)c;
@@ -285,6 +317,9 @@ fmiComponent fmi_instantiate_model(fmiString instanceName, fmiString GUID, fmiCa
 				comp->output_real[k][p] = MAGIC_TEST_VALUE;
 			}
 		}
+		
+		/*Set default inital values*/
+		set_default_values(comp);
 
 		return comp;
 	}
@@ -294,6 +329,10 @@ void fmi_free_model_instance(fmiComponent c)
 {
 	int i;
 	component_ptr_t comp = (fmiComponent)c;
+	if(comp->loggingOn){
+		comp->functions.logger(comp, comp->instanceName, fmiOK, "INFO", "###### Freeing model instance. ######");		
+	}
+
 	for(i = 0; i < N_STRING; i++) {
 		comp->functions.freeMemory((void*)(comp->strings[i]));
 		comp->strings[i] = 0;
@@ -468,6 +507,7 @@ const char* fmi_get_types_platform()
 	return FMI_PLATFORM_TYPE;
 }
 
+/*instantiation of slave, uses and extends ME model definitions*/
 fmiComponent fmi_instantiate_slave(fmiString instanceName, fmiString fmuGUID, fmiString fmuLocation, fmiString mimeType, fmiReal timeout, fmiBoolean visible, fmiBoolean interactive, fmiCallbackFunctions functions, fmiBoolean loggingOn)
 {
 	component_ptr_t comp;
@@ -487,6 +527,7 @@ fmiComponent fmi_instantiate_slave(fmiString instanceName, fmiString fmuGUID, fm
 	}
 }
 
+/*initialization of slave, uses and extends ME model definitions*/
 fmiStatus fmi_initialize_slave(fmiComponent c, fmiReal tStart, fmiBoolean StopTimeDefined, fmiReal tStop)
 {
 	component_ptr_t comp	= (fmiComponent)c;
@@ -512,6 +553,9 @@ fmiStatus fmi_terminate_slave(fmiComponent c)
 
 fmiStatus fmi_reset_slave(fmiComponent c)
 {
+	/*Set values to default again*/
+	set_default_values(c);
+
 	return fmiOK;
 }
 
@@ -520,6 +564,7 @@ void fmi_free_slave_instance(fmiComponent c)
 	fmi_free_model_instance(c);
 }
 
+/*get input derivatives, not used, dummy*/
 fmiStatus fmi_set_real_input_derivatives(fmiComponent c, const fmiValueReference vr[], size_t nvr, const fmiInteger order[], const fmiReal value[])
 {
 
@@ -536,6 +581,7 @@ fmiStatus fmi_set_real_input_derivatives(fmiComponent c, const fmiValueReference
 	return fmiOK;
 }
 
+/*get output derivatives, not used*/
 fmiStatus fmi_get_real_output_derivatives(fmiComponent c, const fmiValueReference vr[], size_t nvr, const fmiInteger order[], fmiReal value[])
 {
 	component_ptr_t comp	= (fmiComponent)c;
@@ -548,11 +594,13 @@ fmiStatus fmi_get_real_output_derivatives(fmiComponent c, const fmiValueReferenc
 	return fmiOK;
 }
 
+/*cancel step, not used,dummy*/
 fmiStatus fmi_cancel_step(fmiComponent c)
 {
 	return fmiOK;
 }
 
+/*Integration routine for CoSimulation, resembles explicit Euler with substeps*/
 fmiStatus fmi_do_step(fmiComponent c, fmiReal currentCommunicationPoint, fmiReal communicationStepSize, fmiBoolean newStep)
 {
 	component_ptr_t comp	= (fmiComponent)c;

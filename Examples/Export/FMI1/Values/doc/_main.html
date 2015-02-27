@@ -152,8 +152,9 @@
 
                 <p>This FMU encorporates a simple feedthrough for all data types.</p>
                 
-                <p>It contains an input for boolean, integer, real and string as The real varaible is treated as an discrete and events are created if the input variable changes.</p>
+                <p>It contains an inputs for boolean, integer, real and string values. The real variable is treated as continuous variable, all others are disctrete. The inputs for the discrete values are passed on one time step delayed due to the delayed eventhandling.</p>
 
+				<p>The /resources/ folder of the FMU contains an example csv input file.<p>
 				
                 <table>
                     <tr>

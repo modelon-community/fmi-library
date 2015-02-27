@@ -20,28 +20,55 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 #include <Values_fmu1_model_defines.h>
 
 /* Model calculation functions */
+
+/*Set all default values for the model here. This needs to be separate from the initialization routine, as it might be overwritten altered by the master*/
+static int set_default_values(component_ptr_t comp){
+	/*value for dummy state*/
+	comp->states	[VAR_R_dummy]		= 1.0;
+	comp->event_indicators[0]			= 1.0;
+
+	/*Set values according to values from xml*/
+	comp->booleans	[VAR_B_boolean_input]	= fmiFalse;
+	comp->integers	[VAR_I_integer_input]	= 1;
+	comp->reals		[VAR_R_real_input]		= 3.1426;
+	comp->strings	[VAR_S_string_input]	= "Hello FMU.";
+		
+	return 0;
+}
+
+/*Initial settings,values that are calculated and eventually the first time event are to be set here.*/
 static int calc_initialize(component_ptr_t comp)
 {
+		/*Write initial outputs*/
+/*		size_t len;
+		fmiString s_dist;
+		fmiString s_src = comp->strings[VAR_S_string_input];
+		
+		len = strlen((char*)comp->strings[VAR_S_string_input]) + 1;
+		s_dist = comp->functions.allocateMemory(len, sizeof(char));
 
-	comp->booleans	[VAR_B_boolean_input]	= fmiFalse;
-	comp->booleans	[VAR_B_boolean_output]	= fmiFalse;
-	
-	comp->integers	[VAR_I_integer_input]	= 0;
-	comp->integers	[VAR_I_integer_output]	= 0;
-	
-	comp->reals		[VAR_R_dummy]			= 1.0;
-	comp->reals		[VAR_R_der_dummy]		= 0.0;
-	comp->reals		[VAR_R_real_input]		= 3.1426;
-	comp->reals		[VAR_R_real_output]		= 3.1426;
-	
-	comp->strings	[VAR_S_string_input]	= "Hello FMU.";
-	comp->strings	[VAR_S_string_output]	= "Hello FMU.";
+		if(comp->strings[VAR_S_string_output]) {
+			comp->functions.freeMemory((void*)comp->strings[VAR_S_string_output]);
+		}
 
-	comp->event_indicators[EVENT_boolean] = 1;
-	comp->event_indicators[EVENT_integer] = 1;
-	comp->event_indicators[EVENT_real] = 1;
-	//comp->event_indicators[EVENT_string] = 1;
+		comp->strings	[VAR_S_string_output]= comp->functions.allocateMemory(len, sizeof(char));
 
+		if (comp->strings	[VAR_S_string_output] == NULL) {
+			return fmiFatal;
+		}			
+		strcpy((char*)comp->strings[VAR_S_string_output],(char*)comp->strings[VAR_S_string_input]);
+	*/
+		comp->strings[VAR_S_string_output]		= "Not yet working.";
+
+		comp->booleans	[VAR_B_boolean_output]	= comp->booleans[VAR_B_boolean_input];	
+		comp->integers	[VAR_I_integer_output]	= comp->integers[VAR_I_integer_input];
+		comp->reals		[VAR_R_real_output]		= comp->reals	[VAR_R_real_input];		
+	
+		comp->eventInfo.iterationConverged			= fmiTrue;
+		comp->eventInfo.stateValueReferencesChanged = fmiFalse;
+		comp->eventInfo.stateValuesChanged			= fmiFalse;
+		comp->eventInfo.terminateSimulation			= fmiFalse;
+		
 
 	if(comp->loggingOn) {
 		comp->functions.logger(comp, comp->instanceName, fmiOK, "INFO", "###### Initializing component ######");
@@ -56,86 +83,65 @@ static int calc_initialize(component_ptr_t comp)
 	
 	}
 
-
 	return 0;
 }
 
+/*Calculation of state derivatives*/
 static int calc_get_derivatives(component_ptr_t comp)
 {
-	comp->states_der[0] = 0;
+	/*dummy derivative*/
+	comp->states_der[VAR_R_dummy] = 0;
 
 	return 0;
 }
 
+/*Calculation of event indicators to verify if state event has happened*/
 static int calc_get_event_indicators(component_ptr_t comp)
 {	
-	fmiReal event_tol = 1e-16;
-
-	if(comp->loggingOn) {
-		comp->functions.logger(comp, comp->instanceName, fmiOK, "INFO", "###### Get Event indicators! FMITime: %f######",comp->fmitime);
-	}
-	
-	//	comp->event_indicators[EVENT_boolean] = comp->booleans[VAR_B_boolean_input] != comp->booleans[VAR_B_boolean_output] ? -comp->event_indicators[EVENT_boolean] : comp->event_indicators[EVENT_boolean];
-
-	if (comp->booleans	[VAR_B_boolean_input] != 	comp->booleans	[VAR_B_boolean_output]) {
-		comp->event_indicators[EVENT_boolean] = -comp->event_indicators[EVENT_boolean];
-		comp->functions.logger(comp, comp->instanceName, fmiOK, "INFO", "###### Boolean changed, Input: %s, output %s. ######",(comp->booleans[VAR_B_boolean_input])?"fmiTrue":"fmiFalse", (comp->booleans[VAR_B_boolean_output])?"fmiTrue":"fmiFalse");
-		comp->callEventUpdate = fmiTrue;
-		//comp->callEventUpdate = fmiFalse;
-	}
-	
-	//comp->event_indicators[EVENT_integer]		= comp->integers[VAR_I_integer_output] != comp->integers[VAR_I_integer_input]  ? -comp->event_indicators[EVENT_integer] : comp->event_indicators[EVENT_integer];
-
-	if (comp->integers	[VAR_I_integer_input] != comp->integers	[VAR_I_integer_output]){
-		comp->event_indicators[EVENT_integer]		=  -comp->event_indicators[EVENT_integer];
-		comp->functions.logger(comp, comp->instanceName, fmiOK, "INFO", "###### Integer changed, Input: %d, output %d. ######",comp->integers	[VAR_I_integer_input], comp->integers	[VAR_I_integer_output] );
-		comp->callEventUpdate = fmiTrue;
-		//comp->callEventUpdate = fmiFalse;
-	}
-		
-	//comp->event_indicators[EVENT_real]		= comp->integers[VAR_R_real_output] != comp->integers[VAR_R_real_output]  ? -comp->event_indicators[EVENT_real] : comp->event_indicators[EVENT_real];
-	
-	if (comp->reals	[VAR_R_real_input] != comp->reals	[VAR_R_real_output]){
-		comp->event_indicators[EVENT_real]		= -comp->event_indicators[EVENT_real];
-		comp->functions.logger(comp, comp->instanceName, fmiOK, "INFO", "###### Real changed Input: %f, output %f. ######",comp->reals	[VAR_R_real_input], comp->reals	[VAR_R_real_output] );
-		comp->callEventUpdate = fmiTrue;
-		//comp->callEventUpdate = fmiFalse;
-	}
-
-	//todo implement string!
+	/*no state events, therefor nothing to do here.*/
 
 	return 0;
 }
 
+/*Calculations for handling an event, e.g. reinitialization of states*/
 static int calc_event_update(component_ptr_t comp)
 {	
+	/*Write output if input has changed.*/
 	int eventOn = 0;
+	/*Set boolean output, if input has changed */
 	if (comp->booleans	[VAR_B_boolean_input] != 	comp->booleans	[VAR_B_boolean_output]) {
 		comp->booleans	[VAR_B_boolean_output] = 	comp->booleans	[VAR_B_boolean_input];
-		comp->functions.logger(comp, comp->instanceName, fmiOK, "INFO", "Event Update, Boolean change ######");
 		eventOn = 1;
 	}
 
+	/*Set integer output, if input has changed */
 	if (comp->integers	[VAR_I_integer_input] != comp->integers	[VAR_I_integer_output]){
 		comp->integers	[VAR_I_integer_output] = comp->integers	[VAR_I_integer_input];
-		comp->functions.logger(comp, comp->instanceName, fmiOK, "INFO", "Event Update, Integer change ######");
 		eventOn = 1;
 	}
 
-	if (comp->reals		[VAR_R_real_input] != comp->reals[VAR_R_real_output]){
-		comp->reals		[VAR_R_real_output] = 	comp->reals		[VAR_R_real_input];
-		comp->functions.logger(comp, comp->instanceName, fmiOK, "INFO", "Event Update, Real change ######");
+	/*Set string output, if input has changed */
+/*	if (!strcmp(comp->strings[VAR_S_string_input], comp->strings[VAR_S_string_output])){
+			size_t len;
+			fmiString s_dist;
+			fmiString s_src = comp->strings[VAR_S_string_input];
+
+			len = strlen((char*)s_src) + 1;
+			s_dist = comp->functions.allocateMemory(len, sizeof(char));
+			if (s_dist == NULL) {
+				return fmiFatal;
+			}			
+			strcpy((char*)s_dist, (char*)s_src);
+			if(comp->strings[VAR_S_string_output]) {
+				comp->functions.freeMemory((void*)comp->strings[VAR_S_string_output]);
+			}
+			comp->strings[VAR_S_string_output] = s_dist;
 		eventOn = 1;
 	}
-
-	/*	if (	comp->strings	[VAR_S_string_input] 	comp->strings	[VAR_S_string_output]){
-			comp->strings	[VAR_S_string_output] = fmi_set_string(comp, 1, comp->strings[VAR_S_string_input])
-			eventOn = 1;
-	}
-*/
+	*/
 	if (eventOn > 0) {
 		if(comp->loggingOn) {
-			comp->functions.logger(comp, comp->instanceName, fmiOK, "INFO", "###### Event Update! ######");
+			comp->functions.logger(comp, comp->instanceName, fmiOK, "INFO", "###### Event Update. ######");
 		}
 		comp->eventInfo.iterationConverged			= fmiTrue;
 		comp->eventInfo.stateValueReferencesChanged = fmiFalse;
@@ -159,6 +165,7 @@ const char* fmi_get_version()
 	return FMI_VERSION;
 }
 
+/*Pass on logger switch*/
 fmiStatus fmi_set_debug_logging(fmiComponent c, fmiBoolean loggingOn)
 {
 	component_ptr_t comp = (fmiComponent)c;
@@ -170,6 +177,7 @@ fmiStatus fmi_set_debug_logging(fmiComponent c, fmiBoolean loggingOn)
 	}
 }
 
+/*Read current real values*/
 fmiStatus fmi_get_real(fmiComponent c, const fmiValueReference vr[], size_t nvr, fmiReal value[])
 {
 	component_ptr_t comp = (fmiComponent)c;
@@ -190,6 +198,7 @@ fmiStatus fmi_get_real(fmiComponent c, const fmiValueReference vr[], size_t nvr,
 	}
 }
 
+/*Read current integer values*/
 fmiStatus fmi_get_integer(fmiComponent c, const fmiValueReference vr[], size_t nvr, fmiInteger value[])
 {
 	component_ptr_t comp = (fmiComponent)c;
@@ -204,6 +213,7 @@ fmiStatus fmi_get_integer(fmiComponent c, const fmiValueReference vr[], size_t n
 	}
 }
 
+/*Read current boolean values*/
 fmiStatus fmi_get_boolean(fmiComponent c, const fmiValueReference vr[], size_t nvr, fmiBoolean value[])
 {
 	component_ptr_t comp = (fmiComponent)c;
@@ -218,6 +228,7 @@ fmiStatus fmi_get_boolean(fmiComponent c, const fmiValueReference vr[], size_t n
 	}
 }
 
+/*Read current string values*/
 fmiStatus fmi_get_string(fmiComponent c, const fmiValueReference vr[], size_t nvr, fmiString  value[])
 {
 	component_ptr_t comp = (fmiComponent)c;
@@ -232,6 +243,7 @@ fmiStatus fmi_get_string(fmiComponent c, const fmiValueReference vr[], size_t nv
 	}
 }
 
+/*Write current real values*/
 fmiStatus fmi_set_real(fmiComponent c, const fmiValueReference vr[], size_t nvr, const fmiReal value[])
 {
 	component_ptr_t comp = (fmiComponent)c;
@@ -252,6 +264,7 @@ fmiStatus fmi_set_real(fmiComponent c, const fmiValueReference vr[], size_t nvr,
 	}
 }
 
+/*Write current integer values*/
 fmiStatus fmi_set_integer(fmiComponent c, const fmiValueReference vr[], size_t nvr, const fmiInteger value[])
 {
 	component_ptr_t comp = (fmiComponent)c;
@@ -266,6 +279,7 @@ fmiStatus fmi_set_integer(fmiComponent c, const fmiValueReference vr[], size_t n
 	}
 }
 
+/*Write current boolean values*/
 fmiStatus fmi_set_boolean(fmiComponent c, const fmiValueReference vr[], size_t nvr, const fmiBoolean value[])
 {
 	component_ptr_t comp = (fmiComponent)c;
@@ -280,6 +294,7 @@ fmiStatus fmi_set_boolean(fmiComponent c, const fmiValueReference vr[], size_t n
 	}
 }
 
+/*Write current string values*/
 fmiStatus fmi_set_string(fmiComponent c, const fmiValueReference vr[], size_t nvr, const fmiString  value[])
 {
 	component_ptr_t comp = (fmiComponent)c;
@@ -369,19 +384,28 @@ fmiComponent fmi_instantiate_model(fmiString instanceName, fmiString GUID, fmiCa
 			}
 		}
 
+		/*Set default inital values*/
+		set_default_values(comp);
+
 		return comp;
 	}
 }
 
 void fmi_free_model_instance(fmiComponent c)
 {
-	int i;
 	component_ptr_t comp = (fmiComponent)c;
-	
+	int i;
 	if(comp->loggingOn){
 		comp->functions.logger(comp, comp->instanceName, fmiOK, "INFO", "###### Freeing model instance. ######");		
 	}
-	//comp->functions.freeMemory((void *)comp->strings);
+
+	//for(i = 0; i < N_STRING; i++) {
+		//if(comp->strings[i]!=NULL){
+		//	comp->functions.freeMemory((void*)(comp->strings[i]));
+		//}
+		//comp->strings[i] = 0;
+	//}
+//comp->functions.freeMemory((void *)comp->strings);
 	comp->functions.freeMemory(c);
 }
 
@@ -403,11 +427,6 @@ fmiStatus fmi_set_continuous_states(fmiComponent c, const fmiReal x[], size_t nx
 		return fmiFatal;
 	} else {
 		size_t k;
-
-		/*Set outputs*/ /*has no effect here!!!*/
-//		comp->booleans[VAR_B_boolean_output] = comp->booleans[VAR_B_boolean_input];
-//		comp->integers[VAR_I_integer_output] = comp->integers[VAR_I_integer_input];
-//		comp->reals[VAR_R_real_output] = comp->reals[VAR_R_real_input];
 
 		for (k = 0; k < nx; k++) {
 			comp->states[k] = x[k];
@@ -609,6 +628,8 @@ fmiStatus fmi_terminate_slave(fmiComponent c)
 
 fmiStatus fmi_reset_slave(fmiComponent c)
 {
+	/*Set values to default again*/
+	set_default_values(c);
 	return fmiOK;
 }
 
@@ -617,6 +638,7 @@ void fmi_free_slave_instance(fmiComponent c)
 	fmi_free_model_instance(c);
 }
 
+/*get input derivatives, not used, dummy*/
 fmiStatus fmi_set_real_input_derivatives(fmiComponent c, const fmiValueReference vr[], size_t nvr, const fmiInteger order[], const fmiReal value[])
 {
 
@@ -633,6 +655,7 @@ fmiStatus fmi_set_real_input_derivatives(fmiComponent c, const fmiValueReference
 	return fmiOK;
 }
 
+/*get output derivatives, not used*/
 fmiStatus fmi_get_real_output_derivatives(fmiComponent c, const fmiValueReference vr[], size_t nvr, const fmiInteger order[], fmiReal value[])
 {
 	component_ptr_t comp	= (fmiComponent)c;
@@ -645,11 +668,14 @@ fmiStatus fmi_get_real_output_derivatives(fmiComponent c, const fmiValueReferenc
 	return fmiOK;
 }
 
+
+/*cancel step, not used,dummy*/
 fmiStatus fmi_cancel_step(fmiComponent c)
 {
 	return fmiOK;
 }
 
+/*Integration routine for CoSimulation, resembles explicit Euler with substeps*/
 fmiStatus fmi_do_step(fmiComponent c, fmiReal currentCommunicationPoint, fmiReal communicationStepSize, fmiBoolean newStep)
 {
 	component_ptr_t comp	= (fmiComponent)c;

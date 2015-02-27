@@ -27,14 +27,14 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 #include <FMI1/fmiPlatformTypes.h>
 #include <FMI1/fmiFunctions.h>
 
-#include <Values_fmu1_model_defines.h>
-
+/*Definition of model identifier - must be equal to corresponding xml!*/
 #define MODEL_IDENTIFIER Values_FMI1_CS
 
+/*Inclusion of model specific functions.*/
 #include "fmu1_model.c"
 
 
-
+/*Exposition of FMI API*/
 /* FMI 1.0 Common Functions */
 DllExport const char* fmiGetVersion()
 {

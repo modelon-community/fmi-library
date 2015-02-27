@@ -351,10 +351,10 @@ set_generic_fmu("${VAL_ID}" "${VAL_NAME}" "${FMUEXPORTDIR}")
 #Defines for the Trigger FMU
 #################################
 
-#set(TG_ID "TG")
-#set(TG_NAME "Trigger")
+set(TRG_ID "TRG")
+set(TRG_NAME "Trigger")
 
-#set_generic_fmu("${TG_ID}" "${TG_NAME}" "${FMUEXPORTDIR}")
+set_generic_fmu("${TRG_ID}" "${TRG_NAME}" "${FMUEXPORTDIR}")
 
 
 #install(FILES 

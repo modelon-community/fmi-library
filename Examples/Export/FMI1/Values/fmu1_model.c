@@ -23,16 +23,16 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 
 /*Set all default values for the model here. This needs to be separate from the initialization routine, as it might be overwritten altered by the master*/
 static int set_default_values(component_ptr_t comp){
-	/*value for dummy state*/
-	comp->states	[VAR_R_dummy]		= 1.0;
-	comp->event_indicators[0]			= 1.0;
 
+	/*values for dummies*/
+	comp->states[VAR_R_dummy]			= 1.0;
+	comp->event_indicators[0]			= 1.0;
+	
 	/*Set values according to values from xml*/
 	comp->booleans	[VAR_B_boolean_input]	= fmiFalse;
 	comp->integers	[VAR_I_integer_input]	= 1;
 	comp->reals		[VAR_R_real_input]		= 3.1426;
-	comp->strings	[VAR_S_string_input]	= "Hello FMU.";
-		
+			
 	return 0;
 }
 
@@ -40,26 +40,10 @@ static int set_default_values(component_ptr_t comp){
 static int calc_initialize(component_ptr_t comp)
 {
 		/*Write initial outputs*/
-/*		size_t len;
-		fmiString s_dist;
-		fmiString s_src = comp->strings[VAR_S_string_input];
-		
-		len = strlen((char*)comp->strings[VAR_S_string_input]) + 1;
-		s_dist = comp->functions.allocateMemory(len, sizeof(char));
-
-		if(comp->strings[VAR_S_string_output]) {
-			comp->functions.freeMemory((void*)comp->strings[VAR_S_string_output]);
-		}
-
-		comp->strings	[VAR_S_string_output]= comp->functions.allocateMemory(len, sizeof(char));
-
-		if (comp->strings	[VAR_S_string_output] == NULL) {
-			return fmiFatal;
-		}			
-		strcpy((char*)comp->strings[VAR_S_string_output],(char*)comp->strings[VAR_S_string_input]);
-	*/
-		comp->strings[VAR_S_string_output]		= "Not yet working.";
-
+		comp->strings[VAR_S_string_input]	= "Hello FMU.";	
+				
+		/*outputs*/
+		comp->strings[VAR_S_string_output]		= "String output deactivated.";
 		comp->booleans	[VAR_B_boolean_output]	= comp->booleans[VAR_B_boolean_input];	
 		comp->integers	[VAR_I_integer_output]	= comp->integers[VAR_I_integer_input];
 		comp->reals		[VAR_R_real_output]		= comp->reals	[VAR_R_real_input];		
@@ -120,25 +104,6 @@ static int calc_event_update(component_ptr_t comp)
 		eventOn = 1;
 	}
 
-	/*Set string output, if input has changed */
-/*	if (!strcmp(comp->strings[VAR_S_string_input], comp->strings[VAR_S_string_output])){
-			size_t len;
-			fmiString s_dist;
-			fmiString s_src = comp->strings[VAR_S_string_input];
-
-			len = strlen((char*)s_src) + 1;
-			s_dist = comp->functions.allocateMemory(len, sizeof(char));
-			if (s_dist == NULL) {
-				return fmiFatal;
-			}			
-			strcpy((char*)s_dist, (char*)s_src);
-			if(comp->strings[VAR_S_string_output]) {
-				comp->functions.freeMemory((void*)comp->strings[VAR_S_string_output]);
-			}
-			comp->strings[VAR_S_string_output] = s_dist;
-		eventOn = 1;
-	}
-	*/
 	if (eventOn > 0) {
 		if(comp->loggingOn) {
 			comp->functions.logger(comp, comp->instanceName, fmiOK, "INFO", "###### Event Update. ######");
@@ -394,18 +359,10 @@ fmiComponent fmi_instantiate_model(fmiString instanceName, fmiString GUID, fmiCa
 void fmi_free_model_instance(fmiComponent c)
 {
 	component_ptr_t comp = (fmiComponent)c;
-	int i;
 	if(comp->loggingOn){
 		comp->functions.logger(comp, comp->instanceName, fmiOK, "INFO", "###### Freeing model instance. ######");		
 	}
 
-	//for(i = 0; i < N_STRING; i++) {
-		//if(comp->strings[i]!=NULL){
-		//	comp->functions.freeMemory((void*)(comp->strings[i]));
-		//}
-		//comp->strings[i] = 0;
-	//}
-//comp->functions.freeMemory((void *)comp->strings);
 	comp->functions.freeMemory(c);
 }
 

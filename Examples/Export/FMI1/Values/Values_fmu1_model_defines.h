@@ -44,9 +44,7 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 #define VAR_S_string_output		1
 
 /* Event indicators */
-#define EVENT_boolean			0
-//#define EVENT_integer			1
-//#define EVENT_string			2
+#define EVENT_dummy				0
 
 #define VAR_S_LOGGER_TEST		0
 

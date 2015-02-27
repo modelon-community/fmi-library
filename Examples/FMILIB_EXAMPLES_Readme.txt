@@ -8,8 +8,7 @@
 
 \mainpage FMI Library Examples
 
-\version     2.0.2
-\date        29 January 2015 
+\date        27 February 2015 
 \section Summary
 FMI Library Examples is intended as an introduction to handcoding FMUs (Functional Mockup Units) that follow FMI Standard. This version of the library supports FMI 1.0 and FMI2.0.
 See <http://www.fmi-standard.org/> 
@@ -91,9 +90,67 @@ For FMI 1.0 the code produces separate ModelExchange and CoSimulation FMUs, for 
 is according to standard implemented in one FMU. Therefore the code is setup in sections 
 providing function definition for CS, ME and common definitions, which are used for both. 
 
-The file "fmuX_model.c" contains all functional code (equations for calculations, getting and 
-setting values,...) required for both implementations. 
-The files "fmu1_model_cs.c" and "fmu1_model_me.c" contain the indirections to match all function 
-declarations required by the FMI standard. For FMI 2.0 this can be applied in one file 
+Here is a quick overview over the files to adjust to get started:
+
+Generic Files:
+- fmu1_model.h
+- fmu2_model.h
+
+These Files contain generic type and function definitions and can be used without changes.
+
+In order to write an FMU by yourself prove fitting changes to the following files:
+
+FMI 1.0
+
+1. modelDescription_me.xml / modelDescription_cs.xml
+
+Provide the following:
+- determine number of states and event indicators
+- set up entries for all variables required, ideally with start value, min,max, unit, description, 
+  make sure that the value references are unique by type
+- fix inputs, outputs, derivatives and aliases if required
+- if possible set default experiment
+- get a guid (e.g. https://www.guidgenerator.com/)
+
+2. <Modelname>_fmi1_model_defines.h
+
+- set numberof states, reals, itegers, etc. and make sure that these match the data from the XML-file 
+- the defines set here resemble the „value references" from the XML file
+- define event_indicators
+- provide matching guids here, copy from xml!
+
+3. fmu1_model_me.c / fmu1_model_cs.c
+
+These files contain the indirections to match all function declarations required
+ by the FMI standard. For FMI 2.0 this can be applied in one file 
 "fmu2_model_cs_me.c".
 
+- change Model Identifier to match the string from the XML-file
+
+4. fmu1_model.c
+
+This is the source that basically contains the model behaviour, here you need to do most of the changes.
+In is implemented in way that it provides everything for ModelExchange and CoSimulation. The CoSimulation basically 
+extends the ModelExchange definitin with a simple explicit Euler solver.
+
+Provide the following routines (not exhaustive!):
+
+- set_default_values()
+  Set initial values according to your xml-file definitions.
+
+- calc_initialize()
+  additional values, calculation or event settings to be done during initialization, e.g. first time event.
+
+- calc_get_derivatives()
+  calculation routines for your state derivatives.
+
+- calc_get_event_indicators()
+  event indicator calculation for your state events.
+
+- calc_event_update()
+  operations to be done during an event update, e.g. reinitialization of states.
+
+- Most of the following routines (get/set,...) usually do not need further modificaiton, 
+  as they mainly provide basic functions.
+  
+- If you need additional features/functions make sure to provide them in the right routine.

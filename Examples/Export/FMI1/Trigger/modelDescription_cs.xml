@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<fmiModelDescription
+  fmiVersion="1.0"
+  modelName="Trigger_FMI1_CS"
+  modelIdentifier="Trigger_FMI1_CS"
+  generationTool="FMILibrary"
+  description="Model counting time events up to a threshold ands reinitializing a decreasing state"
+  guid="3c0a3829-fcff-4723-b20f-81e82072b375"
+  numberOfContinuousStates="1"
+  numberOfEventIndicators="1">
+  
+<DefaultExperiment
+	startTime = "0.0"
+    stopTime ="2.0"
+    tolerance = "0.01"/>   
+ 
+<ModelVariables>
+  
+  <ScalarVariable name="counter" valueReference="4" description="integer counter" causality="output" >
+     <Integer start="1"/>
+  </ScalarVariable>
+
+  <ScalarVariable name="state event trigger" valueReference="0" description="state which creates events" causality="output">
+     <Real/>
+  </ScalarVariable>
+  
+  <ScalarVariable name="time increment" valueReference="1" description="time increment for counter" variability="parameter">
+     <Real start="0.1"/>
+  </ScalarVariable>
+
+  <ScalarVariable name="state start value" valueReference="2" description="start value for state" variability="parameter">
+     <Real start="2.0"/>
+  </ScalarVariable>
+
+  <ScalarVariable name="state derivative" valueReference="3" description="start value for state" variability="parameter">
+     <Real start="-3.0"/>
+  </ScalarVariable>
+
+  <ScalarVariable name="count limit" valueReference="5" description="threshold to terminate simulation" variability="parameter">
+     <Integer start="10"/>
+  </ScalarVariable>
+  
+</ModelVariables>
+<Implementation>
+  <CoSimulation_StandAlone>
+    <Capabilities
+      canHandleVariableCommunicationStepSize="true"/>
+  </CoSimulation_StandAlone>
+</Implementation>
+
+</fmiModelDescription>
+

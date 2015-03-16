@@ -714,7 +714,9 @@ int fmi1_xml_handle_String(fmi1_xml_parser_context_t *context, const char* data)
                 fmi1_xml_parse_fatal(context, "Could not allocate memory");
                 return -1;
             }
-            memcpy(start->start, jm_vector_get_itemp_char(bufStartStr,0), strlen);
+            if (strlen != 0) { /* No need to memcpy empty strings (gives assetion error) */
+                memcpy(start->start, jm_vector_get_itemp_char(bufStartStr,0), strlen);
+            }
             start->start[strlen] = 0;
             variable->typeBase = &start->typeBase;
         }

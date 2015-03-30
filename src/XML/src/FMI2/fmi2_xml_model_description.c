@@ -550,7 +550,9 @@ static int push_back_jm_string(fmi2_xml_parser_context_t *context, jm_vector(jm_
 	    fmi2_xml_parse_fatal(context, "Could not allocate memory");
 		return -1;
 	}
-    memcpy(string, jm_vector_get_itemp(char)(buf,0), len);
+    if (len != 0) { /* No need to memcpy empty strings (gives assetion error) */ 
+        memcpy(string, jm_vector_get_itemp(char)(buf,0), len);
+    }
     string[len] = 0;
     return 0;
 }

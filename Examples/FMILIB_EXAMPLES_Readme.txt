@@ -10,11 +10,13 @@
 
 \date        27 February 2015 
 \section Summary
-FMI Library Examples is intended as an introduction to handcoding FMUs (Functional Mockup Units) that follow FMI Standard. This version of the library supports FMI 1.0 and FMI2.0.
+FMI Library Examples is intended as an introduction to handcoding FMUs 
+(Functional Mockup Units) that follow FMI Standard. This version of the library
+ supports FMI 1.0 and FMI2.0.
 See <http://www.fmi-standard.org/> 
 
-The test code provided with the library examples can serve as starting point for the 
-development of custom FMUs.
+The test code provided with the library examples can serve as starting point for 
+the development of custom FMUs.
 
 \section config Configuring and building
 CMake (see <http://www.cmake.org/>) is used to generate the native build scripts
@@ -27,24 +29,29 @@ Windows and Linux. The build script is KNOWN NOT TO WORK WITH CMake 2.8.3 and
 below (due to ExternalProject interface changes). CMake 2.8.4 and 2.8.5 are not 
 tested.
 
-The examples are built with the FMI Library by default, but may also be built independently. When building standalone, please make sure to provide the FMI Standard Headers.
+The examples are built with the FMI Library by default, but may also be built 
+independently. When building standalone, please make sure to provide the FMI 
+Standard Headers.
 
 To build from a terminal command line on Linux or Mac with default settings use:
 \code
 	mkdir build-fmilexamples; cd build-fmilexamples
-	cmake -DFMILIB_INSTALL_PREFIX=<prefix> -DFMILIB_FMI_STANDARD_HEADERS=../ThirdParty/FMI/default <path to FMILExamples source>
+	cmake -DFMILIB_INSTALL_PREFIX=<prefix> -DFMILIB_FMI_STANDARD_HEADERS=
+	../ThirdParty/FMI/default <path to FMILExamples source>
 	make install
 \endcode
 To build in MSYS terminal with g++/gcc on Windows:
 \code
 	mkdir build-fmilexamples; cd build-fmilexamples
-	cmake -DFMILIB_INSTALL_PREFIX=<prefix> -DFMILIB_FMI_STANDARD_HEADERS=../ThirdParty/FMI/default -G "MSYS Makefiles" <path to FMILExamples source>
+	cmake -DFMILIB_INSTALL_PREFIX=<prefix> -DFMILIB_FMI_STANDARD_HEADERS=
+	../ThirdParty/FMI/default -G "MSYS Makefiles" <path to FMILExamples source>
 	make install test
 \endcode
 To build from command line with Microsoft Visual Studio compilers on Windows:
 \code
 	mkdir build-fmil; cd build-fmil
-	cmake -DFMILIB_INSTALL_PREFIX=<prefix> -DFMILIB_FMI_STANDARD_HEADERS=../ThirdParty/FMI/default -G "Visual Studio 10" <path to FMIL source>
+	cmake -DFMILIB_INSTALL_PREFIX=<prefix> -DFMILIB_FMI_STANDARD_HEADERS=
+	../ThirdParty/FMI/default -G "Visual Studio 10" <path to FMIL source>
 	cmake --build . --config MinSizeRel --target install
 \endcode
 
@@ -83,12 +90,14 @@ The following build configuration options are provided:
 
 
 \section code Code Overview
-The FMI Library Examples contains example code to compile FMUs according to FMI Standard 
-1.0 and 2.0. The sources are diveded by the implemented standard and by example type.
+The FMI Library Examples contains example code to compile FMUs according to FMI
+ Standard 1.0 and 2.0. The sources are diveded by the implemented standard and 
+ by example type.
 
-For FMI 1.0 the code produces separate ModelExchange and CoSimulation FMUs, for FMI 2.0 this 
-is according to standard implemented in one FMU. Therefore the code is setup in sections 
-providing function definition for CS, ME and common definitions, which are used for both. 
+For FMI 1.0 the code produces separate ModelExchange and CoSimulation FMUs, for 
+FMI 2.0 this is according to standard implemented in one FMU. Therefore the 
+code is setup in sections providing function definition for CS, ME and common 
+definitions, which are used for both. 
 
 Here is a quick overview over the files to adjust to get started:
 
@@ -96,9 +105,11 @@ Generic Files:
 - fmu1_model.h
 - fmu2_model.h
 
-These Files contain generic type and function definitions and can be used without changes.
+These Files contain generic type and function definitions and can be used 
+without changes.
 
-In order to write an FMU by yourself prove fitting changes to the following files:
+In order to write an FMU by yourself prove fitting changes to the following 
+files:
 
 FMI 1.0
 
@@ -106,32 +117,34 @@ FMI 1.0
 
 Provide the following:
 - determine number of states and event indicators
-- set up entries for all variables required, ideally with start value, min,max, unit, description, 
-  make sure that the value references are unique by type
+- set up entries for all variables required, ideally with start value, min,max,
+  unit, description, make sure that the value references are unique by type
 - fix inputs, outputs, derivatives and aliases if required
 - if possible set default experiment
 - get a guid (e.g. https://www.guidgenerator.com/)
 
 2. <Modelname>_fmi1_model_defines.h
 
-- set numberof states, reals, itegers, etc. and make sure that these match the data from the XML-file 
+- set numberof states, reals, itegers, etc. and make sure that these match the 
+  data from the XML-file 
 - the defines set here resemble the „value references" from the XML file
 - define event_indicators
 - provide matching guids here, copy from xml!
 
 3. fmu1_model_me.c / fmu1_model_cs.c
 
-These files contain the indirections to match all function declarations required
- by the FMI standard. For FMI 2.0 this can be applied in one file 
+These files contain the indirections to match all function declarations re-
+quired by the FMI standard. For FMI 2.0 this can be applied in one file 
 "fmu2_model_cs_me.c".
 
 - change Model Identifier to match the string from the XML-file
 
 4. fmu1_model.c
 
-This is the source that basically contains the model behaviour, here you need to do most of the changes.
-In is implemented in way that it provides everything for ModelExchange and CoSimulation. The CoSimulation basically 
-extends the ModelExchange definitin with a simple explicit Euler solver.
+This is the source that basically contains the model behaviour, here you need
+to do most of the changes. In is implemented in way that it provides every-
+thing for ModelExchange and CoSimulation. The CoSimulation basically extends 
+the ModelExchange definitin with a simple explicit Euler solver.
 
 Provide the following routines (not exhaustive!):
 
@@ -139,7 +152,8 @@ Provide the following routines (not exhaustive!):
   Set initial values according to your xml-file definitions.
 
 - calc_initialize()
-  additional values, calculation or event settings to be done during initialization, e.g. first time event.
+  additional values, calculation or event settings to be done during initiali-
+  zation, e.g. first time event.
 
 - calc_get_derivatives()
   calculation routines for your state derivatives.
@@ -150,7 +164,8 @@ Provide the following routines (not exhaustive!):
 - calc_event_update()
   operations to be done during an event update, e.g. reinitialization of states.
 
-- Most of the following routines (get/set,...) usually do not need further modificaiton, 
-  as they mainly provide basic functions.
+- Most of the following routines (get/set,...) usually do not need further 
+  modificaiton, as they mainly provide basic functions.
   
-- If you need additional features/functions make sure to provide them in the right routine.
+- If you need additional features/functions make sure to provide them in the 
+  right routine.

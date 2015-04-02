@@ -30,9 +30,9 @@ typedef struct {
 	fmi2Real					states_der		[N_STATES];
 	fmi2Real					event_indicators[N_EVENT_INDICATORS];
 	fmi2Real					reals			[N_REAL];
-	fmi2Integer				integers		[N_INTEGER];
-	fmi2Boolean				booleans		[N_BOOLEAN];
-	fmi2String				strings			[N_STRING];
+	fmi2Integer					integers		[N_INTEGER];
+	fmi2Boolean					booleans		[N_BOOLEAN];
+	fmi2String					strings			[N_STRING];
 
 	/* fmiInstantiateModel */
 	fmi2Boolean				loggingOn;

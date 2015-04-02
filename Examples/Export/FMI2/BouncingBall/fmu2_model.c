@@ -17,15 +17,29 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 #include <stdio.h>
 #include <string.h>
 
-#include <BouncingBall_fmu2_model_defines.h>
+/*Include model specific definition e.g. number of states and values references, as well as all generic FMI function and type declarations -> fmu2_model.h*/
+#include "BouncingBall_fmu2_model_defines.h"
 
 /* Model calculation functions */
+
+/*Set all default values for the model here. This needs to be separate from the initialization routine, as it might be overwritten altered by the master*/
+static int set_default_values(component_ptr_t comp){
+		
+	/*Set values according to values from xml*/
+	comp->states[VAR_R_position]		= 1.0;
+	comp->states[VAR_R_der_position]	= 4;
+	comp->reals	[VAR_R_gravity]			= -9.81;
+	comp->reals	[VAR_R_bounce_coeff]	= 0.5;
+	
+	return 0;
+}
+
+/*Initial settings,values that are calculated and eventually the first time event are to be set here.*/
 static int calc_initialize(component_ptr_t comp)
 {
-	comp->states[VAR_R_position]		= 1.0;
-	comp->states[VAR_R_der_position] = 4;
-	comp->reals	[VAR_R_gravity]		= -9.81;
-	comp->reals	[VAR_R_bounce_coeff]	= 0.5;
+	/*No additional settings required for this model.*/
+
+	/*Info output of initializes values*/
 	if(comp->loggingOn) {
 		comp->functions->logger(comp->functions->componentEnvironment, comp->instanceName, fmi2OK, "INFO", "###### Initializing component ######");
 		comp->functions->logger(comp->functions->componentEnvironment, comp->instanceName, fmi2OK, "INFO", "Init #r%d#=%g", VAR_R_position, comp->states[VAR_R_position]);
@@ -36,30 +50,37 @@ static int calc_initialize(component_ptr_t comp)
 	return 0;
 }
 
+/*Calculation of state derivatives*/
 static int calc_get_derivatives(component_ptr_t comp)
 {
 	comp->states_der[VAR_R_position]		= comp->states[VAR_R_der_position];
-	comp->states_der[VAR_R_der_position] = comp->reals[VAR_R_gravity];
+	comp->states_der[VAR_R_der_position]	= comp->reals[VAR_R_gravity];
 	return 0;
 }
 
+/*Calculation of event indicators to verify if state event has happened*/
 static int calc_get_event_indicators(component_ptr_t comp)
 {	
 	fmi2Real event_tol = 1e-16;
+	/*Check if position got negative*/
 	comp->event_indicators[EVENT_position]		= comp->states[VAR_R_position] + (comp->states[VAR_R_position] >= 0 ? event_tol : -event_tol);
 	return 0;
 }
 
+/*Calculations for handling an event, e.g. reinitialization of states*/
 static int calc_event_update(component_ptr_t comp)
 {	
-    comp->eventInfo.newDiscreteStatesNeeded           = fmi2False;
+    /*Update Eventinfo*/
+	comp->eventInfo.newDiscreteStatesNeeded           = fmi2False;
     comp->eventInfo.terminateSimulation               = fmi2False;
     comp->eventInfo.nominalsOfContinuousStatesChanged = fmi2False;
     comp->eventInfo.nextEventTimeDefined              = fmi2False;
     comp->eventInfo.nextEventTime                     = -0.0;
-	if ((comp->states[VAR_R_position] < 0) && (comp->states[VAR_R_der_position] < 0)) {
+	
+	/*check for position reinitialization*/
+	if ((comp->states[VAR_R_position] < 0)) {
 		comp->states[VAR_R_der_position] = - comp->reals[VAR_R_bounce_coeff] * comp->states[VAR_R_der_position];
-		comp->states[VAR_R_position] = 0;
+		comp->states[VAR_R_position] = 0.0;
 
         comp->eventInfo.valuesOfContinuousStatesChanged = fmi2True;
 		return 0;
@@ -76,6 +97,7 @@ const char* fmi_get_version()
 	return FMI_VERSION;
 }
 
+/*Pass on logger switch*/
 fmi2Status fmi_set_debug_logging(fmi2Component c, fmi2Boolean loggingOn)
 {
 	component_ptr_t comp = (fmi2Component)c;
@@ -87,6 +109,7 @@ fmi2Status fmi_set_debug_logging(fmi2Component c, fmi2Boolean loggingOn)
 	}
 }
 
+/*Read current real values*/
 fmi2Status fmi_get_real(fmi2Component c, const fmi2ValueReference vr[], size_t nvr, fmi2Real value[])
 {
 	component_ptr_t comp = (fmi2Component)c;
@@ -111,6 +134,7 @@ fmi2Status fmi_get_real(fmi2Component c, const fmi2ValueReference vr[], size_t n
 	}
 }
 
+/*Read current integer values*/
 fmi2Status fmi_get_integer(fmi2Component c, const fmi2ValueReference vr[], size_t nvr, fmi2Integer value[])
 {
 	component_ptr_t comp = (fmi2Component)c;
@@ -125,6 +149,7 @@ fmi2Status fmi_get_integer(fmi2Component c, const fmi2ValueReference vr[], size_
 	}
 }
 
+/*Read current boolean values*/
 fmi2Status fmi_get_boolean(fmi2Component c, const fmi2ValueReference vr[], size_t nvr, fmi2Boolean value[])
 {
 	component_ptr_t comp = (fmi2Component)c;
@@ -139,6 +164,7 @@ fmi2Status fmi_get_boolean(fmi2Component c, const fmi2ValueReference vr[], size_
 	}
 }
 
+/*Read current string values*/
 fmi2Status fmi_get_string(fmi2Component c, const fmi2ValueReference vr[], size_t nvr, fmi2String  value[])
 {
 	component_ptr_t comp = (fmi2Component)c;
@@ -153,6 +179,7 @@ fmi2Status fmi_get_string(fmi2Component c, const fmi2ValueReference vr[], size_t
 	}
 }
 
+/*Write current real values*/
 fmi2Status fmi_set_real(fmi2Component c, const fmi2ValueReference vr[], size_t nvr, const fmi2Real value[])
 {
 	component_ptr_t comp = (fmi2Component)c;
@@ -177,6 +204,7 @@ fmi2Status fmi_set_real(fmi2Component c, const fmi2ValueReference vr[], size_t n
 	}
 }
 
+/*Write current integer values*/
 fmi2Status fmi_set_integer(fmi2Component c, const fmi2ValueReference vr[], size_t nvr, const fmi2Integer value[])
 {
 	component_ptr_t comp = (fmi2Component)c;
@@ -191,6 +219,7 @@ fmi2Status fmi_set_integer(fmi2Component c, const fmi2ValueReference vr[], size_
 	}
 }
 
+/*Write current boolean values*/
 fmi2Status fmi_set_boolean(fmi2Component c, const fmi2ValueReference vr[], size_t nvr, const fmi2Boolean value[])
 {
 	component_ptr_t comp = (fmi2Component)c;
@@ -205,6 +234,7 @@ fmi2Status fmi_set_boolean(fmi2Component c, const fmi2ValueReference vr[], size_
 	}
 }
 
+/*Write current string values*/
 fmi2Status fmi_set_string(fmi2Component c, const fmi2ValueReference vr[], size_t nvr, const fmi2String  value[])
 {
 	component_ptr_t comp = (fmi2Component)c;
@@ -249,9 +279,6 @@ const char* fmi_get_model_types_platform()
 	return fmi2TypesPlatform;
 }
 
-/* static FILE* find_string(FILE* fp, char* str, int len) {
-
-} */
 
 fmi2Component fmi_instantiate(fmi2String instanceName, fmi2Type fmuType,
   fmi2String fmuGUID, fmi2String fmuLocation,
@@ -270,8 +297,7 @@ fmi2Component fmi_instantiate(fmi2String instanceName, fmi2Type fmuType,
 		sprintf(comp->instanceName, "%s", instanceName);
 		sprintf(comp->GUID, "%s",fmuGUID);
 		comp->functions		= functions;
-		/*comp->functions->allocateMemory = functions->allocateMemory;*/
-		
+				
 		comp->loggingOn		= loggingOn;
 
 		/* Set default values */
@@ -301,6 +327,10 @@ fmi2Component fmi_instantiate(fmi2String instanceName, fmi2Type fmuType,
 	
 		sprintf(comp->fmuLocation, "%s",fmuLocation);
 		comp->visible		= visible;
+
+		/*Set default inital values*/
+		set_default_values(comp);
+
 		return comp;
 	}
 }
@@ -410,7 +440,7 @@ fmi2Status fmi_completed_integrator_step(fmi2Component c,
 		return fmi2Fatal;
 	} else {
 		*enterEventMode = fmi2False;
-		*terminateSimulation = fmi2False;
+		*terminateSimulation = comp->eventInfo.terminateSimulation;
 		return fmi2OK;
 	}
 }
@@ -496,6 +526,8 @@ const char* fmi_get_types_platform()
 
 fmi2Status fmi_reset(fmi2Component c)
 {
+	/*Set values to default again*/
+	set_default_values(c);
 	return fmi2OK;
 }
 
@@ -563,7 +595,7 @@ fmi2Status fmi_do_step(fmi2Component c, fmi2Real currentCommunicationPoint, fmi2
 		callEventUpdate = fmi2False;
 		eventInfo = comp->eventInfo;
 
-		while (tcur < tend && counter < 100) {
+		while (tcur < tend && counter < 100 && !comp->eventInfo.terminateSimulation) {
 			size_t k;
 			int zero_crossning_event = 0;
 			counter++;

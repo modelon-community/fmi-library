@@ -18,7 +18,6 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 #include <string.h>
 
 
-
 #if __GNUC__ >= 4
     #pragma GCC visibility push(default)
 #endif
@@ -26,14 +25,13 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 /* Standard FMI 2.0 ME and CS types */
 #include <FMI2/fmi2Functions.h>
 
-#include <BouncingBall_fmu2_model_defines.h>
-
+/*Definition of model identifier - must be equal to corresponding xml!*/
 #define MODEL_IDENTIFIER BouncingBall_FMI2
 
+/*Inclusion of model specific functions.*/
 #include "fmu2_model.c"
 
-
-
+/*Exposition of FMI API*/
 /* FMI 2.0 Common Functions */
 FMI2_Export const char* fmi2GetVersion()
 {

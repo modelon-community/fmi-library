@@ -16,7 +16,7 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 */
 
 /* This header is used to generate the FMU test DLL and in the C API test that uses the DLL */
-#ifndef FMU2_MODEL_DEFINES_H_
+#ifndef FMU_BB2_MODEL_DEFINES_H_
 
 #define BUFFER					1024
 #define MAGIC_TEST_VALUE		13.0	/* A test value for some functions  */
@@ -40,9 +40,9 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 #define N_STATES				2
 #define N_EVENT_INDICATORS		1
 #define N_REAL					4
-#define N_INTEGER				4
-#define N_BOOLEAN				4
-#define N_STRING				4
+#define N_INTEGER				1 /*Dummy value for init*/
+#define N_BOOLEAN				1 /*Dummy value for init*/
+#define N_STRING				1 /*Dummy value for init*/
 
 #define N_INPUT_REAL			2 /* CS only */
 #define N_INPUT_REAL_MAX_ORDER	2 /* CS only */
@@ -52,8 +52,9 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 
 #define FMI_VERSION			"2.0"
 
+/*GUID*/
 #define FMI_GUID			"f2baf4b5-6046-4c3c-a0d8-884195cf99ed"
 
 #include <fmu2_model.h>
 
-#endif /* End of header FMU2_MODEL_DEFINES_H_ */
+#endif /* End of header BB_FMU2_MODEL_DEFINES_H_ */

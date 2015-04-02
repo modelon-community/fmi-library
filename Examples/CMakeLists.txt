@@ -319,14 +319,14 @@ function(set_generic_fmu FMU_ID FMU_NAME FMUEXPORTDIR)
 	install(FILES 
 			"${EXPORT_OUTPUT_FOLDER}/${FMU_1_ME_MODEL_IDENTIFIER}.fmu"
 			"${EXPORT_OUTPUT_FOLDER}/${FMU_1_CS_MODEL_IDENTIFIER}.fmu"
-			#"${EXPORT_OUTPUT_FOLDER}/${FMU_2_MODEL_IDENTIFIER}.fmu"
+			"${EXPORT_OUTPUT_FOLDER}/${FMU_2_MODEL_IDENTIFIER}.fmu"
 			DESTINATION ExampleFMUs)
 	
 	# add import test for FMUs
 	IF(${FMILIB_BUILD_TESTS})		
 		ADD_TEST(ctest_import_FMI_Example_${FMU_ID}1_ME ../fmi_import_test "${EXPORT_OUTPUT_FOLDER}/${FMU_1_ME_MODEL_IDENTIFIER}.fmu" ${EXPORT_OUTPUT_FOLDER})
 		ADD_TEST(ctest_import_FMI_Example_${FMU_ID}1_CS ../fmi_import_test "${EXPORT_OUTPUT_FOLDER}/${FMU_1_CS_MODEL_IDENTIFIER}.fmu" ${EXPORT_OUTPUT_FOLDER})
-		#ADD_TEST(ctest_import_FMI_Example_${FMU_ID}2 ../fmi_import_test "${EXPORT_OUTPUT_FOLDER}/${FMU_2_MODEL_IDENTIFIER}.fmu" ${EXPORT_OUTPUT_FOLDER})
+		ADD_TEST(ctest_import_FMI_Example_${FMU_ID}2 ../fmi_import_test "${EXPORT_OUTPUT_FOLDER}/${FMU_2_MODEL_IDENTIFIER}.fmu" ${EXPORT_OUTPUT_FOLDER})
 	ENDIF()
 	
 endfunction(set_generic_fmu)

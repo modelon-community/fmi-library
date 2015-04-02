@@ -16,7 +16,7 @@
  
 <ModelVariables>
   
-  <ScalarVariable name="counter" valueReference="4" description="integer counter" causality="output" >
+  <ScalarVariable name="counter" valueReference="0" description="integer counter" causality="output" >
      <Integer start="1"/>
   </ScalarVariable>
 
@@ -36,7 +36,7 @@
      <Real start="-3.0"/>
   </ScalarVariable>
 
-  <ScalarVariable name="count limit" valueReference="5" description="threshold to terminate simulation" variability="parameter">
+  <ScalarVariable name="count limit" valueReference="1" description="threshold to terminate simulation" variability="parameter">
      <Integer start="10"/>
   </ScalarVariable>
 

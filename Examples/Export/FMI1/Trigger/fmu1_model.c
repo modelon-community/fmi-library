@@ -17,7 +17,8 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 #include <stdio.h>
 #include <string.h>
 
-#include <Trigger_fmu1_model_defines.h>
+/*Include model specific definition e.g. number of states and values references, as well as all generic FMI function and type declarations -> fmu1_model.h*/
+#include "Trigger_fmu1_model_defines.h"
 
 /* Model calculation functions */
 /*Set all default values for the model here. This needs to be separate from the initialization routine, as it might be overwritten altered by the master*/
@@ -39,7 +40,7 @@ static int set_default_values(component_ptr_t comp){
 static int calc_initialize(component_ptr_t comp)
 {
 	comp->states[VAR_R_state]			= comp->reals[VAR_R_state_init];
-	comp->states_der[VAR_R_state] = comp->reals[VAR_R_state_derivative];
+	comp->states_der[VAR_R_state]		= comp->reals[VAR_R_state_derivative];
 	
 	/*Set first event*/
 	comp->eventInfo.upcomingTimeEvent	= fmiTrue;

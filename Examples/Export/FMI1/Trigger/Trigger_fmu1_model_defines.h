@@ -31,19 +31,18 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 /* ValueReferences for the variables and parameters in the model */
 /*Dummy state*/
 #define VAR_R_state				0
-//#define VAR_R_der_state		1
 /* Real */
 #define VAR_R_time_increment	1
 #define VAR_R_state_init		2
 #define VAR_R_state_derivative	3
 
 /* Integer */
-#define VAR_I_integer_cnt		4
-#define VAR_I_integer_stop		5
+#define VAR_I_integer_cnt		0
+#define VAR_I_integer_stop		1
 
 /* Event indicators */
 #define EVENT_state_zero		0
-//#define EVENT_step			2
+//#define EVENT_step			1
 
 #define VAR_S_LOGGER_TEST		0
 
@@ -51,9 +50,9 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 #define N_STATES				1
 #define N_EVENT_INDICATORS		1
 #define N_REAL					4
-#define N_INTEGER				6
-#define N_BOOLEAN				4
-#define N_STRING				4
+#define N_INTEGER				2
+#define N_BOOLEAN				1 /*Dummy value for init*/
+#define N_STRING				1 /*Dummy value for init*/
 
 #define N_INPUT_REAL			2 /* CS only */
 #define N_INPUT_REAL_MAX_ORDER	2 /* CS only */
@@ -73,6 +72,6 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 #define FMI_CS_GUID			"3c0a3829-fcff-4723-b20f-81e82072b375"
 #define FMI_ME_GUID			"39664140-478e-49e7-aaef-e47230aef062"
 
-#include <fmu1_model.h>
+#include "fmu1_model.h"
 
 #endif /* End of header FMU_TRG1_MODEL_DEFINES_H_ */

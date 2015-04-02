@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription
+  fmiVersion="2.0"
+  modelName="Trigger_FMI2"
+  generationTool="FMILibrary"
+  description="Model counting time events up to a threshold ands reinitializing a decreasing state"
+  guid="676d9c34-a938-4cee-b3b1-44a83c42d98b"
+  numberOfEventIndicators="1">
+<ModelExchange modelIdentifier="Trigger_FMI2"
+    canBeInstantiatedOnlyOncePerProcess="true"
+    canGetAndSetFMUstate="false"
+    providesDirectionalDerivative="false"/>
+<CoSimulation 
+	modelIdentifier="Trigger_FMI2" 
+	canHandleVariableCommunicationStepSize="true"
+    canInterpolateInputs="false"
+    maxOutputDerivativeOrder="1"
+    canBeInstantiatedOnlyOncePerProcess="true"
+    canGetAndSetFMUstate="false"
+    providesDirectionalDerivative="false"/>
+<DefaultExperiment
+	startTime = "0.0"
+    stopTime ="2.0"
+    tolerance = "0.01"/>   
+
+<ModelVariables>
+  <ScalarVariable name="counter" valueReference="0" description="integer counter" causality="output" >
+     <Integer/>
+  </ScalarVariable>
+  <ScalarVariable name="state event trigger" valueReference="0" description="state which creates events" causality="output">
+     <Real/>
+  </ScalarVariable>
+  <ScalarVariable name="time increment" valueReference="1" description="time increment for counter" causality="parameter" variability="tunable">
+     <Real start="0.1"/>
+  </ScalarVariable>
+  <ScalarVariable name="state start value" valueReference="2" description="start value for state" causality="parameter" variability="tunable">
+     <Real start="2.0"/>
+  </ScalarVariable>
+  <ScalarVariable name="state derivative" valueReference="3" description="start value for state" causality="parameter" variability="tunable">
+     <Real start="-3.0"/>
+  </ScalarVariable>
+  <ScalarVariable name="count limit" valueReference="1" description="threshold to terminate simulation" causality="parameter" variability="tunable">
+     <Integer start="10"/>
+  </ScalarVariable>
+</ModelVariables>
+<ModelStructure>
+  <Outputs>
+    <Unknown index="1"/>
+	<Unknown index="2"/>
+  </Outputs>
+</ModelStructure>
+</fmiModelDescription>

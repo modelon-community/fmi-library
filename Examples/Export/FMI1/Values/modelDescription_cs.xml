@@ -25,7 +25,7 @@
      <Integer start="1"/>
   </ScalarVariable>
 
-  <ScalarVariable name="real_in" valueReference="2" description="real input" causality = "input">
+  <ScalarVariable name="real_in" valueReference="1" description="real input" causality = "input">
      <Real start="3.1426"/>
   </ScalarVariable>
 
@@ -41,7 +41,7 @@
   <Integer/>
   </ScalarVariable>
 
-  <ScalarVariable name="real_out" valueReference="3" description="real output" causality = "output">
+  <ScalarVariable name="real_out" valueReference="2" description="real output" causality = "output">
   <Real/>
   </ScalarVariable>
 

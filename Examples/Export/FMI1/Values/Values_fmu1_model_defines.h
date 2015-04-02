@@ -49,8 +49,8 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 #define VAR_S_LOGGER_TEST		0
 
 /* Sizes */
-#define N_STATES				1
-#define N_EVENT_INDICATORS		1
+#define N_STATES				1 /*dummy value 1*/
+#define N_EVENT_INDICATORS		1 /*dummy value 1*/
 #define N_REAL					3
 #define N_INTEGER				2
 #define N_BOOLEAN				2
@@ -74,6 +74,6 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 #define FMI_CS_GUID			"215c89d9-4ec7-42a4-9d47-c561fe7aa231"
 #define FMI_ME_GUID			"4f045bb4-1a9d-46fb-9904-513a4c41c7c0"
 
-#include <fmu1_model.h>
+#include "fmu1_model.h"
 
 #endif /* End of header FMU1_MODEL_DEFINES_H_ */

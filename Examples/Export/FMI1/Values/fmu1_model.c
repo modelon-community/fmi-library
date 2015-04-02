@@ -17,7 +17,7 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 #include <stdio.h>
 #include <string.h>
 
-#include <Values_fmu1_model_defines.h>
+#include "Values_fmu1_model_defines.h"
 
 /* Model calculation functions */
 
@@ -32,6 +32,7 @@ static int set_default_values(component_ptr_t comp){
 	comp->booleans	[VAR_B_boolean_input]	= fmiFalse;
 	comp->integers	[VAR_I_integer_input]	= 1;
 	comp->reals		[VAR_R_real_input]		= 3.1426;
+	comp->strings[VAR_S_string_input]	= "Hello FMU.";	
 			
 	return 0;
 }
@@ -40,9 +41,6 @@ static int set_default_values(component_ptr_t comp){
 static int calc_initialize(component_ptr_t comp)
 {
 		/*Write initial outputs*/
-		comp->strings[VAR_S_string_input]	= "Hello FMU.";	
-				
-		/*outputs*/
 		comp->strings[VAR_S_string_output]		= "String output deactivated.";
 		comp->booleans	[VAR_B_boolean_output]	= comp->booleans[VAR_B_boolean_input];	
 		comp->integers	[VAR_I_integer_output]	= comp->integers[VAR_I_integer_input];
@@ -82,7 +80,7 @@ static int calc_get_derivatives(component_ptr_t comp)
 /*Calculation of event indicators to verify if state event has happened*/
 static int calc_get_event_indicators(component_ptr_t comp)
 {	
-	/*no state events, therefor nothing to do here.*/
+	/*no state events, therefore nothing to do here.*/
 
 	return 0;
 }
@@ -106,7 +104,7 @@ static int calc_event_update(component_ptr_t comp)
 
 	if (eventOn > 0) {
 		if(comp->loggingOn) {
-			comp->functions.logger(comp, comp->instanceName, fmiOK, "INFO", "###### Event Update. ######");
+			comp->functions.logger(comp, comp->instanceName, fmiOK, "INFO", "Input change triggered event.");
 		}
 		comp->eventInfo.iterationConverged			= fmiTrue;
 		comp->eventInfo.stateValueReferencesChanged = fmiFalse;
@@ -403,7 +401,7 @@ fmiStatus fmi_completed_integrator_step(fmiComponent c, fmiBoolean* callEventUpd
 		comp->booleans	[VAR_B_boolean_output]	= 	comp->booleans	[VAR_B_boolean_input];
 		comp->integers	[VAR_I_integer_output]	=	comp->integers	[VAR_I_integer_input];
 		comp->reals		[VAR_R_real_output]		= 	comp->reals		[VAR_R_real_input];
-		//comp->strings	[VAR_S_string_output]	= 	comp->strings	[VAR_S_string_input];
+		comp->strings	[VAR_S_string_output]	= 	comp->strings	[VAR_S_string_input];
 	
 		*callEventUpdate = comp->callEventUpdate;
 		return fmiOK;

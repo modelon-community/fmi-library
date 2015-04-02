@@ -6,8 +6,8 @@
   generationTool="FMILibrary"
   description="A simple pass-through model for all FMI data types"
   guid="4f045bb4-1a9d-46fb-9904-513a4c41c7c0"
-  numberOfContinuousStates="1"
-  numberOfEventIndicators="1">
+  numberOfContinuousStates="0"
+  numberOfEventIndicators="0">
   
 <DefaultExperiment
 	startTime = "0.0"

@@ -201,12 +201,14 @@ IF (NOT DEFINED ${FMILIBRARYHOME})
 		)
 	
 		get_target_property(DLL_SOURCES ${TARGET_NAME_T} SOURCES)
-  
-		set(tname ${MODEL_IDENTIFIER_T}_FMU)
-		add_custom_target( ${tname} ALL
-			DEPENDS ${OUTPUT_FOLDER_T}/${MODEL_IDENTIFIER_T}.fmu 
-			SOURCES "${XML_PATH_T}" ${DLL_SOURCES})
-	
+		
+		if(${FMIEXAMPLES_SEP_FMU_TARGET})
+			set(tname ${MODEL_IDENTIFIER_T}_FMU)
+			add_custom_target( ${tname} ALL
+				DEPENDS ${OUTPUT_FOLDER_T}/${MODEL_IDENTIFIER_T}.fmu 
+				SOURCES "${XML_PATH_T}" ${DLL_SOURCES})
+		endif()
+		
 	endfunction(compress_fmu)
 
 ELSE()
@@ -218,6 +220,13 @@ ENDIF()
 set(FMUEXPORTDIR ${FMIExamples_SOURCE_DIR}/Export)
 
 set(EXPORT_OUTPUT_FOLDER "${FMIExamples_BINARY_DIR}/ExampleExport")
+
+option (FMIEXAMPLES_SEP_FMU_TARGET "Switch to generate separate target for each FMU." OFF)
+option (FMIEXAMPLES_BUILD_CC_ARTIFACTS "Switch to produce artifacts for FMU CrossCheck. Can be overwritten by FMIEXAMPLES_BUILD_CC_ARTIFACTS command line switch." OFF)
+
+IF(${FMIEXAMPLES_BUILD_CC_ARTIFACTS})
+	include("${FMIExamples_SOURCE_DIR}/CreateArtifacts.cmake")
+ENDIF()
 
 IF(NOT ZIP_COMMAND)
 if(WIN32 OR WIN64) 
@@ -237,7 +246,7 @@ if(WIN32 OR WIN64)
 	ENDIF(NOT ZIP_EXECUTABLE)
 	
 	IF(NOT ZIP_EXECUTABLE)
-		MESSAGE( STATUS "Warning, no Zip Program found, using default.")
+		MESSAGE( STATUS "Warning, no Zip Program found, please set manually.")
 	ENDIF(NOT ZIP_EXECUTABLE)
 
 else()
@@ -248,9 +257,10 @@ ENDIF(NOT ZIP_COMMAND)
 
 # Set generic settings and call compress 
 function(set_generic_fmu FMU_ID FMU_NAME FMUEXPORTDIR)
-	set(FMU_1_ME_MODEL_IDENTIFIER ${FMU_NAME}_FMI1_ME) #This must be the same as in the xml-file
-	set(FMU_1_CS_MODEL_IDENTIFIER ${FMU_NAME}_FMI1_CS) #This must be the same as in the xml-file
-	set(FMU_2_MODEL_IDENTIFIER ${FMU_NAME}_FMI2) #This must be the same as in the xml-file
+	message(STATUS "Generating defintions for ${FMU_NAME}")
+	set(FMU_1_ME_MODEL_IDENTIFIER ${FMU_NAME}_fmi1_me) #This must be the same as in the xml-file
+	set(FMU_1_CS_MODEL_IDENTIFIER ${FMU_NAME}_fmi1_cs) #This must be the same as in the xml-file
+	set(FMU_2_MODEL_IDENTIFIER ${FMU_NAME}_fmi2) #This must be the same as in the xml-file
 	
 	set(FMU1_FOLDER ${FMUEXPORTDIR}/FMI1/${FMU_NAME})
 	set(FMU2_FOLDER ${FMUEXPORTDIR}/FMI2/${FMU_NAME})
@@ -278,13 +288,13 @@ function(set_generic_fmu FMU_ID FMU_NAME FMUEXPORTDIR)
 		${FMU2_FOLDER}/${FMU_NAME}_fmu2_model_defines.h
 	)
 	
-	set(LibName_1_ME ${FMU_NAME}_fmu1_dll_me)
-	set(LibName_1_CS ${FMU_NAME}_fmu1_dll_cs)
-	set(LibName_2 ${FMU_NAME}_fmu2_dll)
+	set(LIBNAME_1_ME ${FMU_NAME}_fmu1_me_lib)
+	set(LIBNAME_1_CS ${FMU_NAME}_fmu1_cs_lib)
+	set(LIBNAME_2 ${FMU_NAME}_fmu2_lib)
 	
-	add_library(${LibName_1_ME} SHARED ${FMU1_ME_SOURCE} ${FMU1_HEADERS})
-	add_library(${LibName_1_CS} SHARED ${FMI1_CS_SOURCE} ${FMU1_HEADERS})
-	add_library(${LibName_2} SHARED ${FMU2_SOURCE} ${FMU2_HEADERS})
+	add_library(${LIBNAME_1_ME} SHARED ${FMU1_ME_SOURCE} ${FMU1_HEADERS})
+	add_library(${LIBNAME_1_CS} SHARED ${FMI1_CS_SOURCE} ${FMU1_HEADERS})
+	add_library(${LIBNAME_2} SHARED ${FMU2_SOURCE} ${FMU2_HEADERS})
 	
 	
 	set(XML_FMU1_ME_PATH ${FMU1_FOLDER}/modelDescription_me.xml)
@@ -299,21 +309,21 @@ function(set_generic_fmu FMU_ID FMU_NAME FMUEXPORTDIR)
 	set(DOCS_FMU2_PATH ${FMU2_FOLDER}/doc)
 	set(RES_FMU2_PATH ${FMU2_FOLDER}/resources)
 	
-	set(SHARED_LIBRARY_FMU1_ME_PATH ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${CMAKE_SHARED_LIBRARY_PREFIX}${LibName_1_ME}${CMAKE_SHARED_LIBRARY_SUFFIX})
-	set(SHARED_LIBRARY_FMU1_CS_PATH ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${CMAKE_SHARED_LIBRARY_PREFIX}${LibName_1_CS}${CMAKE_SHARED_LIBRARY_SUFFIX})
-	set(SHARED_LIBRARY_FMU2_PATH ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${CMAKE_SHARED_LIBRARY_PREFIX}${LibName_2}${CMAKE_SHARED_LIBRARY_SUFFIX})
+	set(SHARED_LIBRARY_FMU1_ME_PATH ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${CMAKE_SHARED_LIBRARY_PREFIX}${LIBNAME_1_ME}${CMAKE_SHARED_LIBRARY_SUFFIX})
+	set(SHARED_LIBRARY_FMU1_CS_PATH ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${CMAKE_SHARED_LIBRARY_PREFIX}${LIBNAME_1_CS}${CMAKE_SHARED_LIBRARY_SUFFIX})
+	set(SHARED_LIBRARY_FMU2_PATH ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${CMAKE_SHARED_LIBRARY_PREFIX}${LIBNAME_2}${CMAKE_SHARED_LIBRARY_SUFFIX})
 	
-	to_native_c_path("\"${CMAKE_CURRENT_BINARY_DIR}/\" CMAKE_INTDIR \"/${CMAKE_SHARED_LIBRARY_PREFIX}${LibName_1_ME}${CMAKE_SHARED_LIBRARY_SUFFIX}\""
+	to_native_c_path("\"${CMAKE_CURRENT_BINARY_DIR}/\" CMAKE_INTDIR \"/${CMAKE_SHARED_LIBRARY_PREFIX}${LIBNAME_1_ME}${CMAKE_SHARED_LIBRARY_SUFFIX}\""
 					${FMU_ID}_FMU1_DLL_ME_PATH)
-	to_native_c_path("\"${CMAKE_CURRENT_BINARY_DIR}/\" CMAKE_INTDIR \"/${CMAKE_SHARED_LIBRARY_PREFIX}${LibName_1_CS}${CMAKE_SHARED_LIBRARY_SUFFIX}\""
+	to_native_c_path("\"${CMAKE_CURRENT_BINARY_DIR}/\" CMAKE_INTDIR \"/${CMAKE_SHARED_LIBRARY_PREFIX}${LIBNAME_1_CS}${CMAKE_SHARED_LIBRARY_SUFFIX}\""
 					${FMU_ID}_FMU1_DLL_CS_PATH)
-	to_native_c_path("\"${CMAKE_CURRENT_BINARY_DIR}/\" CMAKE_INTDIR \"/${CMAKE_SHARED_LIBRARY_PREFIX}${LibName_2}${CMAKE_SHARED_LIBRARY_SUFFIX}\""
+	to_native_c_path("\"${CMAKE_CURRENT_BINARY_DIR}/\" CMAKE_INTDIR \"/${CMAKE_SHARED_LIBRARY_PREFIX}${LIBNAME_2}${CMAKE_SHARED_LIBRARY_SUFFIX}\""
 					${FMU_ID}_FMU2_DLL_PATH)
 					
 					
-	compress_fmu("${EXPORT_OUTPUT_FOLDER}" "${FMU_1_ME_MODEL_IDENTIFIER}" "${LibName_1_ME}" "${XML_FMU1_ME_PATH}" "${DOCS_FMU1_ME_PATH}" "${RES_FMU1_ME_PATH}" "${SHARED_LIBRARY_FMU1_ME_PATH}")
-	compress_fmu("${EXPORT_OUTPUT_FOLDER}" "${FMU_1_CS_MODEL_IDENTIFIER}" "${LibName_1_CS}" "${XML_FMU1_CS_PATH}" "${DOCS_FMU1_CS_PATH}" "${RES_FMU1_CS_PATH}""${SHARED_LIBRARY_FMU1_CS_PATH}")
-	compress_fmu("${EXPORT_OUTPUT_FOLDER}" "${FMU_2_MODEL_IDENTIFIER}" "${LibName_2}" "${XML_FMU2_PATH}" "${DOCS_FMU2_PATH}" "${RES_FMU2_PATH}" "${SHARED_LIBRARY_FMU2_PATH}")
+	compress_fmu("${EXPORT_OUTPUT_FOLDER}" "${FMU_1_ME_MODEL_IDENTIFIER}" "${LIBNAME_1_ME}" "${XML_FMU1_ME_PATH}" "${DOCS_FMU1_ME_PATH}" "${RES_FMU1_ME_PATH}" "${SHARED_LIBRARY_FMU1_ME_PATH}")
+	compress_fmu("${EXPORT_OUTPUT_FOLDER}" "${FMU_1_CS_MODEL_IDENTIFIER}" "${LIBNAME_1_CS}" "${XML_FMU1_CS_PATH}" "${DOCS_FMU1_CS_PATH}" "${RES_FMU1_CS_PATH}""${SHARED_LIBRARY_FMU1_CS_PATH}")
+	compress_fmu("${EXPORT_OUTPUT_FOLDER}" "${FMU_2_MODEL_IDENTIFIER}" "${LIBNAME_2}" "${XML_FMU2_PATH}" "${DOCS_FMU2_PATH}" "${RES_FMU2_PATH}" "${SHARED_LIBRARY_FMU2_PATH}")
 	
 	# Add FMUs to install
 	install(FILES 
@@ -324,8 +334,8 @@ function(set_generic_fmu FMU_ID FMU_NAME FMUEXPORTDIR)
 	
 	# add import test for FMUs
 	IF(${FMILIB_BUILD_TESTS})		
-		ADD_TEST(ctest_import_FMI_Example_${FMU_ID}1_ME ../fmi_import_test "${EXPORT_OUTPUT_FOLDER}/${FMU_1_ME_MODEL_IDENTIFIER}.fmu" ${EXPORT_OUTPUT_FOLDER})
-		ADD_TEST(ctest_import_FMI_Example_${FMU_ID}1_CS ../fmi_import_test "${EXPORT_OUTPUT_FOLDER}/${FMU_1_CS_MODEL_IDENTIFIER}.fmu" ${EXPORT_OUTPUT_FOLDER})
+		ADD_TEST(ctest_import_FMI_Example_${FMU_ID}1_me ../fmi_import_test "${EXPORT_OUTPUT_FOLDER}/${FMU_1_ME_MODEL_IDENTIFIER}.fmu" ${EXPORT_OUTPUT_FOLDER})
+		ADD_TEST(ctest_import_FMI_Example_${FMU_ID}1_cs ../fmi_import_test "${EXPORT_OUTPUT_FOLDER}/${FMU_1_CS_MODEL_IDENTIFIER}.fmu" ${EXPORT_OUTPUT_FOLDER})
 		ADD_TEST(ctest_import_FMI_Example_${FMU_ID}2 ../fmi_import_test "${EXPORT_OUTPUT_FOLDER}/${FMU_2_MODEL_IDENTIFIER}.fmu" ${EXPORT_OUTPUT_FOLDER})
 	ENDIF()
 	
@@ -341,6 +351,10 @@ set(BB_NAME "BouncingBall")
 
 set_generic_fmu("${BB_ID}" "${BB_NAME}" "${FMUEXPORTDIR}")
 
+if(${FMIEXAMPLES_BUILD_CC_ARTIFACTS})
+	set(BB_CCOPTS "-s 2.5 -h 0.01")
+	produce_CC_Artifacts("${BB_ID}" "${BB_NAME}" "${FMUEXPORTDIR}" "${BB_CCOPTS}")
+endif(${FMIEXAMPLES_BUILD_CC_ARTIFACTS})
 
 #Defines for the Values FMU
 #################################
@@ -350,6 +364,11 @@ set(VAL_NAME "Values")
 
 set_generic_fmu("${VAL_ID}" "${VAL_NAME}" "${FMUEXPORTDIR}")
 
+if(${FMIEXAMPLES_BUILD_CC_ARTIFACTS})
+	set(VAL_CCOPTS "-s 2.5 -h 0.01")
+	produce_CC_Artifacts("${VAL_ID}" "${VAL_NAME}" "${FMUEXPORTDIR}" "${VAL_CCOPTS}")
+endif(${FMIEXAMPLES_BUILD_CC_ARTIFACTS})
+
 #Defines for the Trigger FMU
 #################################
 
@@ -358,3 +377,7 @@ set(TRG_NAME "Trigger")
 
 set_generic_fmu("${TRG_ID}" "${TRG_NAME}" "${FMUEXPORTDIR}")
 
+if(${FMIEXAMPLES_BUILD_CC_ARTIFACTS})
+	set(TRG_CCOPTS "-s 2.0 -h 0.01")
+	produce_CC_Artifacts("${TRG_ID}" "${TRG_NAME}" "${FMUEXPORTDIR}" "${TRG_CCOPTS}")
+endif(${FMIEXAMPLES_BUILD_CC_ARTIFACTS})

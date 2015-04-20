@@ -24,7 +24,7 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 
 
 /*Definition of model identifier - must be equal to corresponding xml!*/
-#define MODEL_IDENTIFIER Trigger_FMI1_ME
+#define MODEL_IDENTIFIER Trigger_fmi1_me
 
 typedef enum {fmiDoStepStatus,
                  fmiPendingStatus,

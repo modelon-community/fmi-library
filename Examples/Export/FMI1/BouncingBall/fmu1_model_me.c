@@ -24,7 +24,7 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 #include <FMI1/fmiModelFunctions.h>
 
 /*Definition of model identifier - must be equal to corresponding xml!*/
-#define MODEL_IDENTIFIER BouncingBall_FMI1_ME
+#define MODEL_IDENTIFIER BouncingBall_fmi1_me
 
 
 typedef enum {fmiDoStepStatus,

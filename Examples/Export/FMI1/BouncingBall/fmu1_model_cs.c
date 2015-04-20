@@ -28,7 +28,7 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 #include <FMI1/fmiFunctions.h>
 
 /*Definition of model identifier - must be equal to corresponding xml!*/
-#define MODEL_IDENTIFIER BouncingBall_FMI1_CS
+#define MODEL_IDENTIFIER BouncingBall_fmi1_cs
 
 /*Inclusion of model specific functions.*/
 #include "fmu1_model.c"

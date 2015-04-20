@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <fmiModelDescription
   fmiVersion="1.0"
-  modelName="BouncingBall_FMI1_ME"
-  modelIdentifier="BouncingBall_FMI1_ME"
+  modelName="BouncingBall_fmi1_me"
+  modelIdentifier="BouncingBall_fmi1_me"
   generationTool="FMILibrary"
   description="A bouncing ball model"
   guid="b6106da2-8e21-464c-8a3f-a1723bebbd94"

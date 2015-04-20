@@ -23,7 +23,7 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 #include <FMI1/fmiModelFunctions.h>
 
 /*Definition of model identifier - must be equal to corresponding xml!*/
-#define MODEL_IDENTIFIER Values_FMI1_ME
+#define MODEL_IDENTIFIER Values_fmi1_me
 
 typedef enum {fmiDoStepStatus,
                  fmiPendingStatus,

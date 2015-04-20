@@ -26,7 +26,7 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 #include <FMI1/fmiFunctions.h>
 
 /*Definition of model identifier - must be equal to corresponding xml!*/
-#define MODEL_IDENTIFIER Trigger_FMI1_CS
+#define MODEL_IDENTIFIER Trigger_fmi1_cs
 
 /*Inclusion of model specific functions.*/
 #include "fmu1_model.c"

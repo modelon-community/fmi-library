@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <fmiModelDescription
   fmiVersion="1.0"
-  modelName="Trigger_FMI1_CS"
-  modelIdentifier="Trigger_FMI1_CS"
+  modelName="Trigger_fmi1_cs"
+  modelIdentifier="Trigger_fmi1_cs"
   generationTool="FMILibrary"
   description="Model counting time events up to a threshold ands reinitializing a decreasing state"
   guid="3c0a3829-fcff-4723-b20f-81e82072b375"

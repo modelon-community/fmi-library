@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <fmiModelDescription
   fmiVersion="1.0"
-  modelName="Values_FMI1_ME"
-  modelIdentifier="Values_FMI1_ME"
+  modelName="Values_fmi1_me"
+  modelIdentifier="Values_fmi1_me"
   generationTool="FMILibrary"
   description="A simple pass-through model for all FMI data types"
   guid="4f045bb4-1a9d-46fb-9904-513a4c41c7c0"

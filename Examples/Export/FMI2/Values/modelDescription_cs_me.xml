@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <fmiModelDescription
   fmiVersion="2.0"
-  modelName="Values_FMI2"
+  modelName="Values_fmi2"
   generationTool="FMILibrary"
   description="A simple pass-through model for all FMI data types"
   guid="283b6866-f3cb-4483-a80c-d255238c0c39"
   numberOfEventIndicators="0">
-<ModelExchange modelIdentifier="Values_FMI2"
+<ModelExchange modelIdentifier="Values_fmi2"
     canBeInstantiatedOnlyOncePerProcess="true"
     canGetAndSetFMUstate="false"
     providesDirectionalDerivative="false"/>
 <CoSimulation 
-	modelIdentifier="Values_FMI2" 
+	modelIdentifier="Values_fmi2" 
 	canHandleVariableCommunicationStepSize="true"
     canInterpolateInputs="false"
     maxOutputDerivativeOrder="1"

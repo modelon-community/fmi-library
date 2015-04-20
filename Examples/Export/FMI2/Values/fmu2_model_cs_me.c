@@ -28,7 +28,7 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 
 #include <Values_fmu2_model_defines.h>
 
-#define MODEL_IDENTIFIER Values_FMI2
+#define MODEL_IDENTIFIER Values_fmi2
 
 #include "fmu2_model.c"
 

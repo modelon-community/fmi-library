@@ -27,7 +27,7 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 #include <FMI2/fmi2Functions.h>
 
 /*Definition of model identifier - must be equal to corresponding xml!*/
-#define MODEL_IDENTIFIER Values_FMI2
+#define MODEL_IDENTIFIER Values_fmi2
 
 /*Inclusion of model specific functions.*/
 #include "fmu2_model.c"

@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <fmiModelDescription
   fmiVersion="2.0"
-  modelName="BouncingBall_FMI2"
+  modelName="BouncingBall_fmi2"
   generationTool="FMILibrary"
   description="A bouncing ball model"
   guid="f2baf4b5-6046-4c3c-a0d8-884195cf99ed"
   numberOfEventIndicators="1">
-<ModelExchange modelIdentifier="BouncingBall_FMI2"
+<ModelExchange modelIdentifier="BouncingBall_fmi2"
     canBeInstantiatedOnlyOncePerProcess="true"
     canGetAndSetFMUstate="false"
     providesDirectionalDerivative="false"/>
 <CoSimulation 
-	modelIdentifier="BouncingBall_FMI2" 
+	modelIdentifier="BouncingBall_fmi2" 
 	canHandleVariableCommunicationStepSize="true"
     canInterpolateInputs="false"
     maxOutputDerivativeOrder="1"
@@ -33,7 +33,7 @@
   <ScalarVariable name="speed" valueReference="1" description="Speed of the ball" causality = "output">
   <Real unit="m/s" derivative="0"/>
   </ScalarVariable> 
-  <ScalarVariable name="gravity" valueReference="2" description="Gravity constant" causality="parameter" variability="constant">
+  <ScalarVariable name="gravity" valueReference="2" description="Gravity constant" causality="parameter" variability="tunable">
      <Real start="-9.81" max ="0.0" unit="m/s2"/>
   </ScalarVariable>
   <ScalarVariable name="bounce_coef" valueReference="3" description="Bouncing coefficient" causality="parameter" variability="tunable">

@@ -19,9 +19,9 @@ set(fmuCheck ${FMI_COMPLIANCE_CHECKER}/fmuCheck.${FMI_PLATFORM})
 set(FMU_LOC "${EXPORT_OUTPUT_FOLDER}")
 
 if(WIN32 OR WIN64)
-	set(CCBATCHEXT "_cc.bat")
+	set(CCBATCHEXT "_ref.bat")
 else()
-	set(CCBATCHEXT "_cc.sh")
+	set(CCBATCHEXT "_ref.sh")
 endif()
 
 set(FMU_VARIANTS
@@ -37,7 +37,7 @@ function(produce_CC_Artifacts FMU_ID FMU_NAME FMUEXPORTDIR CCOPTS)
 	foreach(variants ${FMU_VARIANTS})
 		set(WRKDIR ${FMIExamples_BINARY_DIR}/${FMI_PLATFORM}/${FMU_NAME}_${variants})
 		file(MAKE_DIRECTORY ${WRKDIR})
-		file(WRITE ${WRKDIR}/${FMU_NAME}_${variants}${CCBATCHEXT} "${fmuCheck} -o ${FMU_NAME}_${variants}_cc.csv -e ${FMU_NAME}_${variants}_cc.log ${CCOPTS} ${FMU_NAME}_${variants}.fmu ")
+		file(WRITE ${WRKDIR}/${FMU_NAME}_${variants}${CCBATCHEXT} "${fmuCheck} -o ${FMU_NAME}_${variants}_ref.csv -e ${FMU_NAME}_${variants}_ref.log ${CCOPTS} ${FMU_NAME}_${variants}.fmu ")
 		
 		message(STATUS "Generating CC Artifacts for ${FMI_PLATFORM}/${FMU_NAME}_${variants}")
 		#Execute_process(
@@ -47,13 +47,13 @@ function(produce_CC_Artifacts FMU_ID FMU_NAME FMUEXPORTDIR CCOPTS)
 
 			
 		add_custom_target("CreateCrossCheckRef_${FMU_NAME}_${variants}" ALL
-				DEPENDS ${WRKDIR}/${FMU_NAME}_${variants}_cc.csv
+				DEPENDS ${WRKDIR}/${FMU_NAME}_${variants}_ref.csv
 			#	COMMAND "${CMAKE_COMMAND}" -E time ${CCBATCHEXT}				
 			#	WORKING_DIRECTORY ${WRKDIR}
 				SOURCES ${WRKDIR}/${FMU_NAME}_${variants}${CCBATCHEXT})
 		
 		ADD_CUSTOM_COMMAND(
-			OUTPUT ${WRKDIR}/${FMU_NAME}_${variants}_cc.csv
+			OUTPUT ${WRKDIR}/${FMU_NAME}_${variants}_ref.csv
 			COMMAND "${CMAKE_COMMAND}" -E copy "${FMU_LOC}/${FMU_NAME}_${variants}.fmu" "${WRKDIR}/${FMU_NAME}_${variants}.fmu"
 			COMMAND "${CMAKE_COMMAND}" -E time ${FMU_NAME}_${variants}${CCBATCHEXT}
 			WORKING_DIRECTORY ${WRKDIR}
@@ -68,8 +68,8 @@ function(produce_CC_Artifacts FMU_ID FMU_NAME FMUEXPORTDIR CCOPTS)
 			
 		INSTALL (FILES
 			${WRKDIR}/${FMU_NAME}_${variants}${CCBATCHEXT}
-			${WRKDIR}/${FMU_NAME}_${variants}_cc.csv
-			${WRKDIR}/${FMU_NAME}_${variants}_cc.log
+			${WRKDIR}/${FMU_NAME}_${variants}_ref.csv
+			${WRKDIR}/${FMU_NAME}_${variants}_ref.log
 			${WRKDIR}/${FMU_NAME}_${variants}.fmu
 			DESTINATION CrossCheck/${FMI_PLATFORM}/${FMU_NAME}_${variants}
 		)

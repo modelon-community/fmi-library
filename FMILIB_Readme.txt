@@ -142,6 +142,20 @@ The following build configuration options are provided:
   The function \e fmilib_get_build_stamp() may be used to retrieve the time 
   stamp. \code const char* fmilib_get_build_stamp(void); \endcode
 
+- \b FMIEXAMPLES_BUILD_CC_ARTIFACTS Generate all file artifacts required for 
+  cross checking the FMIL Example FMUs. \n
+  Default: OFF\n
+  If activated make sure to provide FMI_COMPLIANCE_CHECKER.
+
+- \b FMI_COMPLIANCE_CHECKER Path to executable(s) of the FMI Compliance Checker 
+  required to produce the CrossCheck artifacts. Must be provided manually!\n
+  Default: "ThirdParty/Checker"
+  
+- \b FMIEXAMPLES_SEP_FMU_TARGET Create a separate target for each FMU to be 
+  able to build each FMU separately.\n
+  Default: OFF
+
+  
 \section testing Automatic tests
 The FMI library comes with a number of automatic tests. Building of the test 
 is controlled by \a FMILIB_BUILD_TESTS configuration option. The test 

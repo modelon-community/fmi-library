@@ -122,10 +122,6 @@ fmi2Status fmi_get_real(fmi2Component c, const fmi2ValueReference vr[], size_t n
 			if (cvr < N_STATES) {
 				value[k] = comp->states[cvr];
 			} 
-			else if(cvr == 4) {
-				calc_get_derivatives(comp);
-				value[k] = comp->states_der[1];
-			}
 			else {
 				value[k] = comp->reals[cvr];
 			}	
@@ -191,10 +187,6 @@ fmi2Status fmi_set_real(fmi2Component c, const fmi2ValueReference vr[], size_t n
 			fmi2ValueReference cvr = vr[k];
 			if (cvr < N_STATES) {
 				comp->states[cvr] = value[k]; 
-			} 
-			else if(cvr == 4) {
-				comp->functions->logger(c, comp->instanceName,fmi2Warning, "WARNING", "Cannot set acceleration value (calculated)");
-				return fmi2Error;
 			}
 			else {
 				comp->reals[cvr] = value[k]; 

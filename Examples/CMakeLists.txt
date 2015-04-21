@@ -36,10 +36,6 @@ IF (NOT DEFINED ${FMILIBRARYHOME})
 
 	option (FMILIB_DEFAULT_BUILD_TYPE_RELEASE "Default build-type used for Makefile generation is 'Release'. Can be overwritten by CMAKE_BUILD_TYPE command line switch." ON)
 	
-	if(MSVC)
-		option (FMIEXAMPLES_BUILD_WITH_STATIC_RTLIB "Use static run-time libraries (/MT or /MTd linker flags)" OFF)
-	endif()
-
 	IF(NOT (WIN32 OR CYGWIN OR APPLE))
 	# On LINUX position independent code (-fPIC) must be used on all files to be linked into .so
 	# On other systems this is not needed (either is default or relocation is done)
@@ -123,8 +119,7 @@ IF (NOT DEFINED ${FMILIBRARYHOME})
 		set(FMI_FILE_SEP "/")
 	endif(WIN32)
 
-	set(FMIEXAMPLES_FMI_PLATFORM_DOC "FMI platform defines the subdirectory within FMU where binary is located")
-	set(FMIEXAMPLES_FMI_PLATFORM ”unknown” CACHE STRING ${FMIEXAMPLES_FMI_PLATFORM_DOC})
+	set(FMIEXAMPLES_FMI_PLATFORM ”unknown”)
 	if(FMIEXAMPLES_FMI_PLATFORM MATCHES ”unknown”)
 		if(CMAKE_HOST_WIN32) #Set to true when the host system is Windows and on cygwin.
 			if(CMAKE_CL_64)
@@ -149,7 +144,7 @@ IF (NOT DEFINED ${FMILIBRARYHOME})
 			set(FMI_PLATFORM not_supported)
 		endif()
 	
-		set(FMIEXAMPLES_FMI_PLATFORM ${FMI_PLATFORM} CACHE STRING ${FMIEXAMPLES_FMI_PLATFORM_DOC} FORCE)
+		set(FMIEXAMPLES_FMI_PLATFORM ${FMI_PLATFORM})
 	else()
 		set(FMI_PLATFORM ${FMIEXAMPLES_FMI_PLATFORM})
 	endif()
@@ -221,8 +216,8 @@ set(FMUEXPORTDIR ${FMIExamples_SOURCE_DIR}/Export)
 
 set(EXPORT_OUTPUT_FOLDER "${FMIExamples_BINARY_DIR}/ExampleExport")
 
-option (FMIEXAMPLES_SEP_FMU_TARGET "Switch to generate separate target for each FMU." OFF)
-option (FMIEXAMPLES_BUILD_CC_ARTIFACTS "Switch to produce artifacts for FMU CrossCheck. Can be overwritten by FMIEXAMPLES_BUILD_CC_ARTIFACTS command line switch." OFF)
+option (FMIEXAMPLES_SEP_FMU_TARGET "Switch to generate separate target for each FMU build set." OFF)
+option (FMIEXAMPLES_BUILD_CC_ARTIFACTS "Switch to produce artifacts for FMU CrossCheck. If activated FMI Compliance Checker executable is required." OFF)
 
 IF(${FMIEXAMPLES_BUILD_CC_ARTIFACTS})
 	include("${FMIExamples_SOURCE_DIR}/CreateArtifacts.cmake")

@@ -32,14 +32,8 @@ static int set_default_values(component_ptr_t comp){
 	comp->booleans	[VAR_B_boolean_input]	= fmi2False;
 	comp->integers	[VAR_I_integer_input]	= 1;
 	comp->reals		[VAR_R_real_input]		= 3.1426;
+	comp->strings[VAR_S_string_input]	= "Hello FMU.";
 
-	comp->eventInfo.newDiscreteStatesNeeded				= fmi2False;
-	comp->eventInfo.terminateSimulation					= fmi2False;
-	comp->eventInfo.nominalsOfContinuousStatesChanged	= fmi2False;
-	comp->eventInfo.valuesOfContinuousStatesChanged		= fmi2False;
-	comp->eventInfo.nextEventTimeDefined				= fmi2False;
-	comp->eventInfo.nextEventTime						= -0.0;
- 
 	return 0;
 }
 
@@ -51,7 +45,14 @@ static int calc_initialize(component_ptr_t comp)
 	comp->booleans	[VAR_B_boolean_output]	= comp->booleans[VAR_B_boolean_input];	
 	comp->integers	[VAR_I_integer_output]	= comp->integers[VAR_I_integer_input];
 	comp->reals		[VAR_R_real_output]		= comp->reals	[VAR_R_real_input];		
-	
+
+	comp->eventInfo.newDiscreteStatesNeeded				= fmi2False;
+	comp->eventInfo.terminateSimulation					= fmi2False;
+	comp->eventInfo.nominalsOfContinuousStatesChanged	= fmi2False;
+	comp->eventInfo.valuesOfContinuousStatesChanged		= fmi2False;
+	comp->eventInfo.nextEventTimeDefined				= fmi2False;
+	comp->eventInfo.nextEventTime						= -0.0;
+
 	if(comp->loggingOn) {
 		comp->functions->logger(comp->functions->componentEnvironment, comp->instanceName, fmi2OK, "INFO", "###### Initializing component ######");
 		comp->functions->logger(comp->functions->componentEnvironment, comp->instanceName, fmi2OK, "INFO", "Init #r%d#=%g", VAR_R_real_input,comp->reals			[VAR_R_real_input]);
@@ -365,8 +366,6 @@ void fmi_free_instance(fmi2Component c)
 	int i;
 	component_ptr_t comp = (fmi2Component)c;
 	for(i = 0; i < N_STRING; i++) {
-//		comp->functions->freeMemory((void*)(comp->strings[i]));
-//		comp->strings[i] = 0;
 	}
 	comp->functions->freeMemory(c);
 }
@@ -465,8 +464,8 @@ fmi2Status fmi_completed_integrator_step(fmi2Component c,
 		return fmi2Fatal;
 	} else {
 		*enterEventMode = fmi2False;
-		*terminateSimulation = comp->eventInfo.terminateSimulation;
-		//*terminateSimulation = fmi2False;
+		//*terminateSimulation = comp->eventInfo.terminateSimulation;
+		*terminateSimulation = fmi2False;
 		return fmi2OK;
 	}
 }

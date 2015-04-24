@@ -32,59 +32,65 @@ set(FMU_VARIANTS
 
 
 
-function(produce_CC_Artifacts FMU_ID FMU_NAME FMUEXPORTDIR CCOPTS)
+function(produce_CC_Artifacts FMU_ID FMU_NAME FMUEXPORTDIR STOPT STEPS INPUTFLAG)
 		
 	foreach(variants ${FMU_VARIANTS})
 		set(WRKDIR ${FMIExamples_BINARY_DIR}/${FMI_PLATFORM}/${FMU_NAME}_${variants})
 		file(MAKE_DIRECTORY ${WRKDIR})
-		file(WRITE ${WRKDIR}/${FMU_NAME}_${variants}${CCBATCHEXT} "${fmuCheck} -o ${FMU_NAME}_${variants}_ref.csv -e ${FMU_NAME}_${variants}_ref.log ${CCOPTS} ${FMU_NAME}_${variants}.fmu ")
-		
-		message(STATUS "Generating CC Artifacts for ${FMI_PLATFORM}/${FMU_NAME}_${variants}")
-		#Execute_process(
-		#	COMMAND "${CMAKE_COMMAND}" -E ${fmuCheck} -o result.csv -e log.txt ${CCOPTS} ${FMU_LOC}/${FMU_NAME}_${variants}.fmu
-		#	WORKING_DIRECTORY ${WRKDIR}
-		#	RESULT_VARIABLE passed)
 
+		message(STATUS "Generating CC Artifacts for ${FMI_PLATFORM}/${FMU_NAME}_${variants}")
 			
 		add_custom_target("CreateCrossCheckRef_${FMU_NAME}_${variants}" ALL
 				DEPENDS ${WRKDIR}/${FMU_NAME}_${variants}_ref.csv
-			#	COMMAND "${CMAKE_COMMAND}" -E time ${CCBATCHEXT}				
-			#	WORKING_DIRECTORY ${WRKDIR}
 				SOURCES ${WRKDIR}/${FMU_NAME}_${variants}${CCBATCHEXT})
+
+		IF(INPUTFLAG)
+			message(STATUS "Detected input!")
+			set(INPUTOPT "-i ${FMU_NAME}_${variants}_in.csv")
+			Execute_process(COMMAND "${CMAKE_COMMAND}" -E copy "${FMU_LOC}/${FMU_NAME}_${variants}/resources/${FMU_NAME}_${variants}_in.csv" "${WRKDIR}/${FMU_NAME}_${variants}_in.csv")
+			INSTALL (FILES
+			${WRKDIR}/${FMU_NAME}_${variants}_in.csv
+			DESTINATION CrossCheck/${FMI_PLATFORM}/${FMU_NAME}_${variants}
+		)			
+		ELSE()
+			set(INPUTOPT "")
+		ENDIF()
+
+		file(WRITE ${WRKDIR}/${FMU_NAME}_${variants}${CCBATCHEXT} "${fmuCheck} -o ${FMU_NAME}_${variants}_ref.csv -e ${FMU_NAME}_${variants}_ref.log -s ${STOPT} -h ${STEPS} ${INPUTOPT} ${FMU_NAME}_${variants}.fmu ")
+
+		file(WRITE ${WRKDIR}/${FMU_NAME}_${variants}_ref.opt "StartTime, 0.0
+StopTime, ${STOPT}
+StepSize, ${STEPS}")
+
+				
+		if(WIN32 OR WIN64)
 		
 		ADD_CUSTOM_COMMAND(
 			OUTPUT ${WRKDIR}/${FMU_NAME}_${variants}_ref.csv
 			COMMAND "${CMAKE_COMMAND}" -E copy "${FMU_LOC}/${FMU_NAME}_${variants}.fmu" "${WRKDIR}/${FMU_NAME}_${variants}.fmu"
-			COMMAND "${CMAKE_COMMAND}" -E time ${FMU_NAME}_${variants}${CCBATCHEXT}
+			COMMAND "${CMAKE_COMMAND}" -E time "${FMU_NAME}_${variants}${CCBATCHEXT}"
 			WORKING_DIRECTORY ${WRKDIR}
-			#RESULT_VARIABLE passed
-			#if(passed EQUAL 0)
-			#	file(WRITE passed "")
-			#else()
-			#	file(WRITE failed "")
-			#message(FATAL_ERROR "Simulation of ${FMU_NAME}_${variants}.fmu failed")
-			#endif()
 			DEPENDS ${FMU_LOC}/${FMU_NAME}_${variants}.fmu)
+			
+		else()
+		
+		ADD_CUSTOM_COMMAND(
+			OUTPUT ${WRKDIR}/${FMU_NAME}_${variants}_ref.csv
+			COMMAND "${CMAKE_COMMAND}" -E copy "${FMU_LOC}/${FMU_NAME}_${variants}.fmu" "${WRKDIR}/${FMU_NAME}_${variants}.fmu"
+			COMMAND "${CMAKE_COMMAND}" -E time "chmod +x ${FMU_NAME}_${variants}${CCBATCHEXT}"
+			COMMAND "${CMAKE_COMMAND}" -E time ./${FMU_NAME}_${variants}${CCBATCHEXT}
+			WORKING_DIRECTORY ${WRKDIR}
+			DEPENDS ${FMU_LOC}/${FMU_NAME}_${variants}.fmu)
+		
+		endif()
 			
 		INSTALL (FILES
 			${WRKDIR}/${FMU_NAME}_${variants}${CCBATCHEXT}
 			${WRKDIR}/${FMU_NAME}_${variants}_ref.csv
 			${WRKDIR}/${FMU_NAME}_${variants}_ref.log
+			${WRKDIR}/${FMU_NAME}_${variants}_ref.opt
 			${WRKDIR}/${FMU_NAME}_${variants}.fmu
 			DESTINATION CrossCheck/${FMI_PLATFORM}/${FMU_NAME}_${variants}
 		)
-		#Execute_process(
-		#	COMMAND simulate.bat
-		#	RESULT_VARIABLE passed)
-		#Execute_process(
-		#	COMMAND ${CHECKER} -o result.csv -e log.txt -h 1e0 -s 25 ${TESTFMUSDIR}/
-		#	RESULT_VARIABLE passed)
-		#if(passed EQUAL 0)
-		#	file(WRITE passed "")
-		#else()
-		#	file(WRITE failed "")
-		#	message(FATAL_ERROR "Simulation of ${FMU_NAME}_${variants}.fmu failed")
-		#endif()
-		#ADD_TEST(CCArtifacts_${FMU_NAME}_${variants} ${WRKDIR}/${CCBATCHEXT})
 	endforeach(variants)
 endfunction(produce_CC_Artifacts)

@@ -646,7 +646,6 @@ fmi2Status fmi_do_step(fmi2Component c, fmi2Real currentCommunicationPoint, fmi2
 			fmi2Status = fmi_get_derivatives(comp, states_der, N_STATES);
 			for (k = 0; k < N_STATES; k++) {
 				states[k] = states[k] + hcur*states_der[k];	
-				/* if (k == 0) printf("states[%u] = %f states_der[k] = %f hcur =%f\n", k, states[k], states_der[k], hcur); */
 			}
 
 			/* Set states */

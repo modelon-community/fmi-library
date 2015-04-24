@@ -182,19 +182,15 @@ IF (NOT DEFINED ${FMILIBRARYHOME})
 		DEPENDS "${XML_PATH_T}" ${TARGET_NAME_T}	   
 		COMMAND "${CMAKE_COMMAND}" -E remove -f "${OUTPUT_FOLDER_T}/${MODEL_IDENTIFIER_T}.fmu"
 		COMMAND "${CMAKE_COMMAND}" -E copy "${XML_PATH_T}" "${FMU_OUTPUT_FOLDER_T}/modelDescription.xml"
-		#IF(IS_DIRECTORY ${DOCS_PATH})
-			COMMAND "${CMAKE_COMMAND}" -E copy_directory "${DOCS_PATH}" "${FMU_OUTPUT_FOLDER_T}/documentation"
-		#ENDIF()
-		#IF(IS_DIRECTORY ${RESOURCE_PATH})
-			COMMAND "${CMAKE_COMMAND}" -E copy_directory "${RESOURCE_PATH}" "${FMU_OUTPUT_FOLDER_T}/resources"
-		#ENDIF()
+		COMMAND "${CMAKE_COMMAND}" -E copy_directory "${DOCS_PATH}" "${FMU_OUTPUT_FOLDER_T}/documentation"
+		COMMAND "${CMAKE_COMMAND}" -E copy_directory "${RESOURCE_PATH}" "${FMU_OUTPUT_FOLDER_T}/resources"
 
 		COMMAND "${CMAKE_COMMAND}" -E copy "${SHARED_LIBRARY_PATH_T}" "${FMU_OUTPUT_SHARED_LIBRARY_PATH_T}"
 		WORKING_DIRECTORY ${FMU_OUTPUT_FOLDER_T}
 		COMMAND ${ZIP_COMMAND} "${OUTPUT_FOLDER_T}/${MODEL_IDENTIFIER_T}.zip" "*"
 		COMMAND "${CMAKE_COMMAND}" -E rename "${OUTPUT_FOLDER_T}/${MODEL_IDENTIFIER_T}.zip" "${OUTPUT_FOLDER_T}/${MODEL_IDENTIFIER_T}.fmu"
 		)
-	
+		
 		get_target_property(DLL_SOURCES ${TARGET_NAME_T} SOURCES)
 		
 		if(${FMIEXAMPLES_SEP_FMU_TARGET})
@@ -347,8 +343,10 @@ set(BB_NAME "BouncingBall")
 set_generic_fmu("${BB_ID}" "${BB_NAME}" "${FMUEXPORTDIR}")
 
 if(${FMIEXAMPLES_BUILD_CC_ARTIFACTS})
-	set(BB_CCOPTS "-s 2.5 -h 0.01")
-	produce_CC_Artifacts("${BB_ID}" "${BB_NAME}" "${FMUEXPORTDIR}" "${BB_CCOPTS}")
+	set(BB_STOPT "2.5")
+	set(BB_STEPS "0.01")
+	set(BB_INPTFLG OFF)
+	produce_CC_Artifacts("${BB_ID}" "${BB_NAME}" "${FMUEXPORTDIR}" "${BB_STOPT}" "${BB_STEPS}" "${BB_INPTFLG}")
 endif(${FMIEXAMPLES_BUILD_CC_ARTIFACTS})
 
 #Defines for the Values FMU
@@ -360,8 +358,10 @@ set(VAL_NAME "Values")
 set_generic_fmu("${VAL_ID}" "${VAL_NAME}" "${FMUEXPORTDIR}")
 
 if(${FMIEXAMPLES_BUILD_CC_ARTIFACTS})
-	set(VAL_CCOPTS "-s 2.5 -h 0.01")
-	produce_CC_Artifacts("${VAL_ID}" "${VAL_NAME}" "${FMUEXPORTDIR}" "${VAL_CCOPTS}")
+	set(VAL_STOPT "2.5")
+	set(VAL_STEPS "0.01")
+	set(VAL_INPTFLG ON)
+	produce_CC_Artifacts("${VAL_ID}" "${VAL_NAME}" "${FMUEXPORTDIR}" "${VAL_STOPT}" "${VAL_STEPS}" "${VAL_INPTFLG}")
 endif(${FMIEXAMPLES_BUILD_CC_ARTIFACTS})
 
 #Defines for the Trigger FMU
@@ -373,6 +373,8 @@ set(TRG_NAME "Trigger")
 set_generic_fmu("${TRG_ID}" "${TRG_NAME}" "${FMUEXPORTDIR}")
 
 if(${FMIEXAMPLES_BUILD_CC_ARTIFACTS})
-	set(TRG_CCOPTS "-s 2.0 -h 0.01")
-	produce_CC_Artifacts("${TRG_ID}" "${TRG_NAME}" "${FMUEXPORTDIR}" "${TRG_CCOPTS}")
+	set(TRG_STOPT "2.0")
+	set(TRG_STEPS "0.01")
+	set(TRG_INPTFLG OFF)
+	produce_CC_Artifacts("${TRG_ID}" "${TRG_NAME}" "${FMUEXPORTDIR}" "${TRG_STOPT}" "${TRG_STEPS}" "${TRG_INPTFLG}")
 endif(${FMIEXAMPLES_BUILD_CC_ARTIFACTS})

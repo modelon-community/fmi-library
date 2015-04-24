@@ -355,7 +355,6 @@ void fmi_free_model_instance(fmiComponent c)
 	if(comp->loggingOn){
 		comp->functions.logger(comp, comp->instanceName, fmiOK, "INFO", "###### Freeing model instance. ######");		
 	}
-	//comp->functions.freeMemory((void *)comp->strings);
 	comp->functions.freeMemory(c);
 }
 

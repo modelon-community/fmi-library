@@ -464,8 +464,7 @@ fmi2Status fmi_completed_integrator_step(fmi2Component c,
 		return fmi2Fatal;
 	} else {
 		*enterEventMode = fmi2False;
-		//*terminateSimulation = comp->eventInfo.terminateSimulation;
-		*terminateSimulation = fmi2False;
+		*terminateSimulation = comp->eventInfo.terminateSimulation;
 		return fmi2OK;
 	}
 }

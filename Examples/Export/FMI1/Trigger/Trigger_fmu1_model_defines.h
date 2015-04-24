@@ -42,7 +42,6 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 
 /* Event indicators */
 #define EVENT_state_zero		0
-//#define EVENT_step			1
 
 #define VAR_S_LOGGER_TEST		0
 

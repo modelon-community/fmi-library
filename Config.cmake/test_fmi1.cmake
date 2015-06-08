@@ -82,8 +82,8 @@ to_native_c_path("${TEST_OUTPUT_FOLDER}/${FMU_DUMMY_CS_MODEL_IDENTIFIER}_cs_tc.f
 to_native_c_path(${TEST_OUTPUT_FOLDER}/tempfolder FMU_TEMPFOLDER)
 
 ADD_TEST(ctest_fmi_import_me_test fmi_import_me_test ${FMU_ME_PATH} ${FMU_TEMPFOLDER})
-ADD_TEST(ctest_fmi_import_cs_test fmi_import_cs_test ${FMU_CS_PATH} ${FMU_TEMPFOLDER})
-ADD_TEST(ctest_fmi_import_cs_tc_test fmi_import_cs_test ${FMU_CS_TC_PATH} ${FMU_TEMPFOLDER})
+ADD_TEST(ctest_fmi_import_cs_test fmi_import_cs_test ${FMU_CS_PATH} ${FMU_TEMPFOLDER} "modelDescription_cs.xml")
+ADD_TEST(ctest_fmi_import_cs_tc_test fmi_import_cs_test ${FMU_CS_TC_PATH} ${FMU_TEMPFOLDER} "modelDescription_cs_tc.xml")
 # the next test relies on the output from the previous one.
 ADD_TEST(ctest_fmi_import_xml_test_empty fmi_import_xml_test ${FMU_DUMMY_FOLDER})
 ADD_TEST(ctest_fmi_import_xml_test fmi_import_xml_test ${FMU_TEMPFOLDER})

@@ -576,30 +576,31 @@ int fmi1_xml_handle_Integer(fmi1_xml_parser_context_t *context, const char* data
 
         if(!declaredType) return -1;
 
-        if(
-                fmi1_xml_is_attr_defined(context,fmi_attr_id_min) ||
-                fmi1_xml_is_attr_defined(context,fmi_attr_id_max) ||
-                fmi1_xml_is_attr_defined(context,fmi_attr_id_quantity)
-                ) {
-            fmi1_xml_integer_type_props_t* props = 0;
+        {
+            int hasQuan = fmi1_xml_is_attr_defined(context, fmi_attr_id_quantity);
+            int hasMin =  fmi1_xml_is_attr_defined(context, fmi_attr_id_min);
+            int hasMax = fmi1_xml_is_attr_defined(context, fmi_attr_id_max);
 
-            if(declaredType->structKind != fmi1_xml_type_struct_enu_typedef)
-                props = (fmi1_xml_integer_type_props_t*)declaredType;
+            if(hasQuan ||hasMin || hasMax) {
+                    fmi1_xml_integer_type_props_t* props = 0;
+
+                    if(declaredType->structKind != fmi1_xml_type_struct_enu_typedef)
+                        props = (fmi1_xml_integer_type_props_t*)declaredType;
+                    else
+                        props = (fmi1_xml_integer_type_props_t*)(declaredType->baseTypeStruct);
+                    assert((props->typeBase.structKind == fmi1_xml_type_struct_enu_props) || (props->typeBase.structKind == fmi1_xml_type_struct_enu_base));
+                    fmi1_xml_reserve_parse_buffer(context, 1, 0);
+                    fmi1_xml_reserve_parse_buffer(context, 2, 0);
+                    type = fmi1_xml_parse_integer_type_properties(context, fmi1_xml_elmID_Integer);
+                    if(!type) return -1;
+                    type->typeBase.baseTypeStruct = declaredType;
+                    if(!hasMin) type->typeMin = props->typeMin;
+                    if(!hasMax) type->typeMax = props->typeMax;
+                    if(!hasQuan) type->quantity = props->quantity;
+            }
             else
-                props = (fmi1_xml_integer_type_props_t*)(declaredType->baseTypeStruct);
-            assert((props->typeBase.structKind == fmi1_xml_type_struct_enu_props) || (props->typeBase.structKind == fmi1_xml_type_struct_enu_base));
-            fmi1_xml_reserve_parse_buffer(context, 1, 0);
-            fmi1_xml_reserve_parse_buffer(context, 2, 0);
-            type = fmi1_xml_parse_integer_type_properties(context, fmi1_xml_elmID_Integer);
-            if(!type) return -1;
-            type->typeBase.baseTypeStruct = declaredType;
-            if(!fmi1_xml_is_attr_defined(context,fmi_attr_id_min)) type->typeMin = props->typeMin;
-            if(!fmi1_xml_is_attr_defined(context,fmi_attr_id_max)) type->typeMax = props->typeMax;
-            if(!fmi1_xml_is_attr_defined(context,fmi_attr_id_quantity)) type->quantity = props->quantity;
+                type = (fmi1_xml_integer_type_props_t*)declaredType;
         }
-        else
-            type = (fmi1_xml_integer_type_props_t*)declaredType;
-
         variable->typeBase = &type->typeBase;
 
         hasStart = fmi1_xml_is_attr_defined(context,fmi_attr_id_start);
@@ -750,29 +751,31 @@ int fmi1_xml_handle_Enumeration(fmi1_xml_parser_context_t *context, const char* 
 
         if(!declaredType) return -1;
 
-        if(
-                fmi1_xml_is_attr_defined(context,fmi_attr_id_min) ||
-                fmi1_xml_is_attr_defined(context,fmi_attr_id_max) ||
-                fmi1_xml_is_attr_defined(context,fmi_attr_id_quantity)
-                ) {
-            fmi1_xml_integer_type_props_t* props = 0;
+        {
+            int hasQuan = fmi1_xml_is_attr_defined(context, fmi_attr_id_quantity);
+            int hasMin =  fmi1_xml_is_attr_defined(context, fmi_attr_id_min);
+            int hasMax = fmi1_xml_is_attr_defined(context, fmi_attr_id_max);
 
-            if(declaredType->structKind != fmi1_xml_type_struct_enu_typedef)
-                props = (fmi1_xml_integer_type_props_t*)declaredType;
+            if(hasQuan || hasMin || hasMax) {
+                fmi1_xml_integer_type_props_t* props = 0;
+
+                if(declaredType->structKind != fmi1_xml_type_struct_enu_typedef)
+                    props = (fmi1_xml_integer_type_props_t*)declaredType;
+                else
+                    props = (fmi1_xml_integer_type_props_t*)declaredType->baseTypeStruct;
+                assert(props->typeBase.structKind == fmi1_xml_type_struct_enu_props);
+                fmi1_xml_reserve_parse_buffer(context, 1, 0);
+                fmi1_xml_reserve_parse_buffer(context, 2, 0);
+                type = fmi1_xml_parse_integer_type_properties(context, fmi1_xml_elmID_Enumeration);
+                if(!type) return -1;
+                type->typeBase.baseTypeStruct = declaredType;
+                if(!hasMin) type->typeMin = props->typeMin;
+                if(!hasMax) type->typeMax = props->typeMax;
+                if(!hasQuan) type->quantity = props->quantity;
+            }
             else
-                props = (fmi1_xml_integer_type_props_t*)declaredType->baseTypeStruct;
-            assert(props->typeBase.structKind == fmi1_xml_type_struct_enu_props);
-            fmi1_xml_reserve_parse_buffer(context, 1, 0);
-            fmi1_xml_reserve_parse_buffer(context, 2, 0);
-            type = fmi1_xml_parse_integer_type_properties(context, fmi1_xml_elmID_Enumeration);
-            if(!type) return -1;
-            type->typeBase.baseTypeStruct = declaredType;
-            if(!fmi1_xml_is_attr_defined(context,fmi_attr_id_min)) type->typeMin = props->typeMin;
-            if(!fmi1_xml_is_attr_defined(context,fmi_attr_id_max)) type->typeMax = props->typeMax;
-            if(!fmi1_xml_is_attr_defined(context,fmi_attr_id_quantity)) type->quantity = props->quantity;
+                type = (fmi1_xml_integer_type_props_t*)declaredType;
         }
-        else
-            type = (fmi1_xml_integer_type_props_t*)declaredType;
 
         variable->typeBase = &type->typeBase;
 

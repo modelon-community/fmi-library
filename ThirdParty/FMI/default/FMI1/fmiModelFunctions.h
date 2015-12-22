@@ -47,7 +47,7 @@
    - Dec. 3 , 2008: First version by Martin Otter (DLR) and Hans Olsson (Dynasim).
 
 
-   Copyright © 2008-2009, MODELISAR consortium. All rights reserved.
+   Copyright ï¿½ 2008-2009, MODELISAR consortium. All rights reserved.
    This file is licensed by the copyright holders under the BSD License
    (http://www.opensource.org/licenses/bsd-license.html):
 
@@ -207,4 +207,4 @@
    DllExport fmiStatus fmiGetStateValueReferences   (fmiComponent c, fmiValueReference vrx[], size_t nx);
    DllExport fmiStatus fmiTerminate                 (fmiComponent c);
 
-#endif // fmiModelFunctions_h
+#endif /* fmiModelFunctions_h */

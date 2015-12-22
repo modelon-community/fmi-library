@@ -25,7 +25,7 @@
    - October 16, 2010: First public Version
 
 
-   Copyright © 2008-2010, MODELISAR consortium. All rights reserved.
+   Copyright ï¿½ 2008-2010, MODELISAR consortium. All rights reserved.
    This file is licensed by the copyright holders under the BSD License
    (http://www.opensource.org/licenses/bsd-license.html):
 
@@ -228,4 +228,4 @@ Functions for FMI for Co-Simulation
    DllExport fmiStatus fmiGetStringStatus (fmiComponent c, const fmiStatusKind s, fmiString*  value);
 
 
-#endif // fmiFunctions_h
+#endif /* fmiFunctions_h */

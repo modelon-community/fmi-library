@@ -962,24 +962,45 @@ int fmi2_xml_handle_ModelVariables(fmi2_xml_parser_context_t *context, const cha
             do {
                 fmi2_xml_variable_t* a = (fmi2_xml_variable_t*)jm_vector_get_item(jm_voidp)(varByVR, 0);
 				int startPresent = fmi2_xml_get_variable_has_start(a);
+                int isConstant = (fmi2_xml_get_variability(a) == fmi2_variability_enu_constant);
 				a->aliasKind = fmi2_variable_is_not_alias;
 
                 foundBadAlias = 0;
                 
-
                 for(i = 1; i< numvar; i++) {
                     fmi2_xml_variable_t* b = (fmi2_xml_variable_t*)jm_vector_get_item(jm_voidp)(varByVR, i);
 					int b_startPresent = fmi2_xml_get_variable_has_start(b);
+                    int b_isConstant = (fmi2_xml_get_variability(b) == fmi2_variability_enu_constant);
                     if((fmi2_xml_get_variable_base_type(a) == fmi2_xml_get_variable_base_type(b))
-                            && (a->vr == b->vr)) {							
+                            && (a->vr == b->vr)) {
 	                        /* an alias */
                             jm_log_verbose(context->callbacks,module,"Variables %s and %s reference the same vr %u. Marking '%s' as alias.",
 											      a->name, b->name, b->vr, b->name);
                             b->aliasKind = fmi2_variable_is_alias;
-							if(startPresent && b_startPresent) {
-								jm_log_error(context->callbacks,module,
-									"Only one variable among aliases is allowed to have start attribute (variables: %s and %s)",
-										a->name, b->name);
+                            
+                            if(!isConstant != !b_isConstant) {
+                                jm_log_error(context->callbacks,module,
+                                "Only constants can be aliases with constants (variables: %s and %s)",
+                                    a->name, b->name);
+                                fmi2_xml_eliminate_bad_alias(context,i);
+                                numvar = jm_vector_get_size(jm_voidp)(varByVR);
+                                foundBadAlias = 1;
+                                break;
+                            } else if (isConstant) {
+                                if (!startPresent  || !b_startPresent) {
+                                    jm_log_error(context->callbacks,module,
+                                        "Constants in alias set must all have start attributes (variables: %s and %s)",
+                                        a->name, b->name);
+                                    fmi2_xml_eliminate_bad_alias(context,i);
+                                    numvar = jm_vector_get_size(jm_voidp)(varByVR);
+                                    foundBadAlias = 1;
+                                    break;
+                                }
+                                /* TODO: Check that both start values are the same */
+                            } else if(startPresent && b_startPresent) {
+                                jm_log_error(context->callbacks,module,
+                                    "Only one variable among non constant aliases is allowed to have start attribute (variables: %s and %s) %d, %d, const enum value: %d",
+                                        a->name, b->name, fmi2_xml_get_variability(a), fmi2_xml_get_variability(b), fmi2_variability_enu_constant);
 								fmi2_xml_eliminate_bad_alias(context,i);
                                 numvar = jm_vector_get_size(jm_voidp)(varByVR);
 								foundBadAlias = 1;
@@ -993,6 +1014,7 @@ int fmi2_xml_handle_ModelVariables(fmi2_xml_parser_context_t *context, const cha
 					else {
 						b->aliasKind = fmi2_variable_is_not_alias;
 						startPresent = b_startPresent;
+                        isConstant = b_isConstant;
 						a = b;
 					}
                 }

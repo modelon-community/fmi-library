@@ -63,7 +63,15 @@
   <!-- 10 -->
   <ScalarVariable name="LOGGER_TEST_BOOLEAN" valueReference="0" description="This is only used to test logger replace function #b0#">
      <Boolean/>
-  </ScalarVariable>  
+  </ScalarVariable>
+  <!-- 11 -->
+  <ScalarVariable name="CONSTANT_ALIAS_1" valueReference="200" description="constant in alias set" variability="constant" initial="exact">
+     <Real start="121"/>
+  </ScalarVariable>
+  <!-- 12 -->
+  <ScalarVariable name="CONSTANT_ALIAS_2" valueReference="200" description="constant in alias set" variability="constant" initial="exact">
+     <Real start="121"/>
+  </ScalarVariable>
 </ModelVariables>
 <ModelStructure>
   <Outputs>

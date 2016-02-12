@@ -14,17 +14,17 @@
       <RealType/>
     </Type>
   </TypeDefinitions>
- 
+
 <ModelVariables>
   <ScalarVariable name="HIGHT" valueReference="0" description="Hight of the ball">
      <RealType/> <Real start="1.0" fixed="true"/> <Integer/>
   </ScalarVariable>
   <ScalarVariable name="HIGHT_SPEED" valueReference="1" description="Speed of the ball">
      <Real start="4.0" fixed="true"/>
-  </ScalarVariable>   
+  </ScalarVariable>
   <ScalarVariable name="HIGHT_SPEED_ALIAS" valueReference="1" description="Speed of the ball">
      <Real start="4.0" fixed="true"/> <DirectDependency><Name>xxx</Name> </DirectDependency>
-  </ScalarVariable> 
+  </ScalarVariable>
   <ScalarVariable name="GRAVITY" valueReference="2" description="Gravity constant">
      <Real start="-9.81"/>
   </ScalarVariable>
@@ -33,17 +33,20 @@
   </ScalarVariable>
   <ScalarVariable name="LOGGER_TEST" valueReference="0" description="The logger will print the value of this variable when it is set.">
      <String/>
-  </ScalarVariable>  
+  </ScalarVariable>
     <ScalarVariable name="LOGGER_TEST_INTEGER" valueReference="0" description="This is only used to test logger replace function #i0#">
      <Integer/>
-  </ScalarVariable>  
+  </ScalarVariable>
     <ScalarVariable name="LOGGER_TEST_BOOLEAN" valueReference="0" description="This is only used to test logger replace function #b0#">
      <Boolean/>
-  </ScalarVariable>  
+  </ScalarVariable>
+  <ScalarVariable name="BAD_INPUT" valueReference="4" causality="input" description="Input without start value, the logger should warn about this">
+    <Real/>
+  </ScalarVariable>
 </ModelVariables>
 <ModelVariables>
     <ScalarVariable name="LOGGER_TEST_BOOLEAN" valueReference="0" description="This is only used to test logger replace function #b0#">
      <Boolean/>
-  </ScalarVariable>  
+  </ScalarVariable>
 </ModelVariables>
 

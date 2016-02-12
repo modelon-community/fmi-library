@@ -91,7 +91,7 @@ jm_status_enu_t fmi1_xml_get_variable_aliases(fmi1_xml_model_description_t* md,f
         cur = (fmi1_xml_variable_t*)jm_vector_get_item(jm_voidp)(md->variablesByVR, i);
         while(fmi1_xml_get_variable_vr(cur) == vr) {
             if(!jm_vector_push_back(jm_voidp)(list, cur)) {
-                jm_log_fatal(md->callbacks,module,"Could not allocate memory");                
+                jm_log_fatal(md->callbacks,module,"Could not allocate memory");
                 return jm_status_error;
             };
             i--;
@@ -413,7 +413,7 @@ int fmi1_xml_handle_DirectDependency(fmi1_xml_parser_context_t *context, const c
         fmi1_xml_model_description_t* md = context->modelDescription;
         fmi1_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
         if(variable->causality != fmi1_causality_enu_output) {
-			jm_log_error(context->callbacks,module, 
+			jm_log_error(context->callbacks,module,
 				"DirectDependency XML element cannot be defined for '%s' since causality is not output. Skipping.", variable->name);
 			context->skipElementCnt = 1;
             return 0;
@@ -422,9 +422,9 @@ int fmi1_xml_handle_DirectDependency(fmi1_xml_parser_context_t *context, const c
     else {
         fmi1_xml_model_description_t* md = context->modelDescription;
         fmi1_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
-        /* 
+        /*
         - always create the list to be able to differentiate no depedendencies from all dependencies (no DirectDependency element present)
-        if(jm_vector_get_size(jm_voidp)(&context->directDependencyBuf)) 
+        if(jm_vector_get_size(jm_voidp)(&context->directDependencyBuf))
         */
         {
             variable->directDependency = jm_vector_clone(jm_voidp)(&context->directDependencyBuf);
@@ -457,7 +457,7 @@ int fmi1_xml_handle_Name(fmi1_xml_parser_context_t *context, const char* data) {
 			while(strchr(TRIM_SPACE, data[namelen-1])) namelen--;
 		}
         if(i>=namelen) {
-			jm_log_error(context->callbacks, module, 
+			jm_log_error(context->callbacks, module,
 				"Unexpected empty Name element for DirectDependency of variable %s. Ignoring.", variable->name);
             return 0;
         }
@@ -476,341 +476,341 @@ int fmi1_xml_handle_Name(fmi1_xml_parser_context_t *context, const char* data) {
     return 0;
 }
 
-int fmi1_xml_handle_Real(fmi1_xml_parser_context_t *context, const char* data) {
-    if(context->skipOneVariableFlag) return 0;
+static void fmi1_log_warning_if_start_required(
+    fmi1_xml_parser_context_t *context,
+    fmi1_xml_variable_t *variable)
+{
+    if (fmi1_xml_is_attr_defined(context, fmi_attr_id_fixed)) {
+        jm_log_warning(context->callbacks, module,
+                       "Warning: variable %s: 'fixed' attributed is only allowed when start is defined",
+                       variable->name);
 
-    if(!data) {
-        fmi1_xml_model_description_t* md = context->modelDescription;
-        fmi1_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
-        fmi1_xml_type_definitions_t* td = &md->typeDefinitions;
-        fmi1_xml_variable_type_base_t * declaredType = 0;
-        fmi1_xml_real_type_props_t * type = 0;
-        int hasStart;
-
-        assert(!variable->typeBase);
-
-        declaredType = fmi1_get_declared_type(context, fmi1_xml_elmID_Real, &td->defaultRealType.typeBase);
-
-        if(!declaredType) return -1;
-
-        {
-            int hasUnit = fmi1_xml_is_attr_defined(context, fmi_attr_id_unit) ||
-                    fmi1_xml_is_attr_defined(context, fmi_attr_id_displayUnit);
-            int hasMin =  fmi1_xml_is_attr_defined(context, fmi_attr_id_min);
-            int hasMax = fmi1_xml_is_attr_defined(context, fmi_attr_id_max);
-            int hasNom = fmi1_xml_is_attr_defined(context, fmi_attr_id_nominal);
-            int hasQuan = fmi1_xml_is_attr_defined(context, fmi_attr_id_quantity);
-            int hasRelQ = fmi1_xml_is_attr_defined(context, fmi_attr_id_relativeQuantity);
-
-
-            if(hasUnit || hasMin || hasMax || hasNom || hasQuan || hasRelQ) {
-                fmi1_xml_real_type_props_t* props = 0;
-
-                if(declaredType->structKind == fmi1_xml_type_struct_enu_typedef)
-                    props = (fmi1_xml_real_type_props_t*)(declaredType->baseTypeStruct);
-                else
-                    props = (fmi1_xml_real_type_props_t* )declaredType;
-
-                fmi1_xml_reserve_parse_buffer(context, 1, 0);
-                fmi1_xml_reserve_parse_buffer(context, 2, 0);
-
-                type = fmi1_xml_parse_real_type_properties(context, fmi1_xml_elmID_Real);
-
-                if(!type) return -1;
-                type->typeBase.baseTypeStruct = declaredType;
-                if( !hasUnit) type->displayUnit = props->displayUnit;
-                if( !hasMin)  type->typeMin = props->typeMin;
-                if( !hasMax) type->typeMax = props->typeMax;
-                if( !hasNom) type->typeNominal = props->typeNominal;
-                if( !hasQuan) type->quantity = props->quantity;
-                if( !hasRelQ) type->typeBase.relativeQuantity = props->typeBase.relativeQuantity;
-            }
-            else
-                type = (fmi1_xml_real_type_props_t*)declaredType;
-        }
-        variable->typeBase = &type->typeBase;
-
-        hasStart = fmi1_xml_is_attr_defined(context, fmi_attr_id_start);
-        if(hasStart) {
-            fmi1_xml_variable_start_real_t * start = (fmi1_xml_variable_start_real_t*)fmi1_xml_alloc_variable_type_start(td, &type->typeBase, sizeof(fmi1_xml_variable_start_real_t));
-            int isFixedBuf;
-            if(!start) {
-                fmi1_xml_parse_fatal(context, "Could not allocate memory");
-                return -1;
-            }
-            if(
-                /*  <xs:attribute name="start" type="xs:double"/> */
-                    fmi1_xml_set_attr_double(context, fmi1_xml_elmID_Real, fmi_attr_id_start, 0, &start->start, 0) ||
-                /*  <xs:attribute name="fixed" type="xs:boolean"> */
-                    fmi1_xml_set_attr_boolean(context, fmi1_xml_elmID_Real, fmi_attr_id_fixed, 0, &(isFixedBuf), 1)
-                )
-                    return -1;
-            start->typeBase.isFixed = isFixedBuf;
-            variable->typeBase = &start->typeBase;
-        }
-        else {
-            if(fmi1_xml_is_attr_defined(context,fmi_attr_id_fixed)) {
-                jm_log_warning(context->callbacks, module, "When parsing variable %s: 'fixed' attributed is only allowed when start is defined", variable->name);
-            }
-        }
+    } else if (variable->causality == fmi1_causality_enu_input) {
+        jm_log_warning(context->callbacks, module,
+                       "Warning: variable %s: start value required for input variables",
+                       variable->name);
     }
-    else {
+}
+
+int fmi1_xml_handle_Real(fmi1_xml_parser_context_t *context, const char* data) {
+    fmi1_xml_model_description_t* md = context->modelDescription;
+    fmi1_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
+    fmi1_xml_type_definitions_t* td = &md->typeDefinitions;
+    fmi1_xml_variable_type_base_t * declaredType = 0;
+    fmi1_xml_real_type_props_t * type = 0;
+    int hasStart;
+
+    if(context->skipOneVariableFlag){
+        return 0;
+    } else if(data) {
         /* don't do anything. might give out a warning if(data[0] != 0) */
         return 0;
     }
+    assert(!variable->typeBase);
+
+    declaredType = fmi1_get_declared_type(context, fmi1_xml_elmID_Real, &td->defaultRealType.typeBase);
+
+    if(!declaredType) return -1;
+
+    {
+        int hasUnit = fmi1_xml_is_attr_defined(context, fmi_attr_id_unit) ||
+                fmi1_xml_is_attr_defined(context, fmi_attr_id_displayUnit);
+        int hasMin =  fmi1_xml_is_attr_defined(context, fmi_attr_id_min);
+        int hasMax = fmi1_xml_is_attr_defined(context, fmi_attr_id_max);
+        int hasNom = fmi1_xml_is_attr_defined(context, fmi_attr_id_nominal);
+        int hasQuan = fmi1_xml_is_attr_defined(context, fmi_attr_id_quantity);
+        int hasRelQ = fmi1_xml_is_attr_defined(context, fmi_attr_id_relativeQuantity);
+
+
+        if(hasUnit || hasMin || hasMax || hasNom || hasQuan || hasRelQ) {
+            fmi1_xml_real_type_props_t* props = 0;
+
+            if(declaredType->structKind == fmi1_xml_type_struct_enu_typedef)
+                props = (fmi1_xml_real_type_props_t*)(declaredType->baseTypeStruct);
+            else
+                props = (fmi1_xml_real_type_props_t* )declaredType;
+
+            fmi1_xml_reserve_parse_buffer(context, 1, 0);
+            fmi1_xml_reserve_parse_buffer(context, 2, 0);
+
+            type = fmi1_xml_parse_real_type_properties(context, fmi1_xml_elmID_Real);
+
+            if(!type) return -1;
+            type->typeBase.baseTypeStruct = declaredType;
+            if( !hasUnit) type->displayUnit = props->displayUnit;
+            if( !hasMin)  type->typeMin = props->typeMin;
+            if( !hasMax) type->typeMax = props->typeMax;
+            if( !hasNom) type->typeNominal = props->typeNominal;
+            if( !hasQuan) type->quantity = props->quantity;
+            if( !hasRelQ) type->typeBase.relativeQuantity = props->typeBase.relativeQuantity;
+        }
+        else
+            type = (fmi1_xml_real_type_props_t*)declaredType;
+    }
+    variable->typeBase = &type->typeBase;
+
+    hasStart = fmi1_xml_is_attr_defined(context, fmi_attr_id_start);
+    if(hasStart) {
+        fmi1_xml_variable_start_real_t * start = (fmi1_xml_variable_start_real_t*)fmi1_xml_alloc_variable_type_start(td, &type->typeBase, sizeof(fmi1_xml_variable_start_real_t));
+        int isFixedBuf;
+        if(!start) {
+            fmi1_xml_parse_fatal(context, "Could not allocate memory");
+            return -1;
+        }
+        if(
+            /*  <xs:attribute name="start" type="xs:double"/> */
+                fmi1_xml_set_attr_double(context, fmi1_xml_elmID_Real, fmi_attr_id_start, 0, &start->start, 0) ||
+            /*  <xs:attribute name="fixed" type="xs:boolean"> */
+                fmi1_xml_set_attr_boolean(context, fmi1_xml_elmID_Real, fmi_attr_id_fixed, 0, &(isFixedBuf), 1)
+            )
+                return -1;
+        start->typeBase.isFixed = isFixedBuf;
+        variable->typeBase = &start->typeBase;
+    } else {
+        fmi1_log_warning_if_start_required(context, variable);
+    }
+
     return 0;
 }
 
 int fmi1_xml_handle_Integer(fmi1_xml_parser_context_t *context, const char* data) {
-    if(context->skipOneVariableFlag) return 0;
+    fmi1_xml_model_description_t* md = context->modelDescription;
+    fmi1_xml_type_definitions_t* td = &md->typeDefinitions;
+    fmi1_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
+    fmi1_xml_variable_type_base_t * declaredType = 0;
+    fmi1_xml_integer_type_props_t * type = 0;
+    int hasStart;
 
-    if(!data) {
-        fmi1_xml_model_description_t* md = context->modelDescription;
-        fmi1_xml_type_definitions_t* td = &md->typeDefinitions;
-        fmi1_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
-        fmi1_xml_variable_type_base_t * declaredType = 0;
-        fmi1_xml_integer_type_props_t * type = 0;
-        int hasStart;
-
-        declaredType = fmi1_get_declared_type(context, fmi1_xml_elmID_Integer,&td->defaultIntegerType.typeBase) ;
-
-        if(!declaredType) return -1;
-
-        {
-            int hasQuan = fmi1_xml_is_attr_defined(context, fmi_attr_id_quantity);
-            int hasMin =  fmi1_xml_is_attr_defined(context, fmi_attr_id_min);
-            int hasMax = fmi1_xml_is_attr_defined(context, fmi_attr_id_max);
-
-            if(hasQuan ||hasMin || hasMax) {
-                    fmi1_xml_integer_type_props_t* props = 0;
-
-                    if(declaredType->structKind != fmi1_xml_type_struct_enu_typedef)
-                        props = (fmi1_xml_integer_type_props_t*)declaredType;
-                    else
-                        props = (fmi1_xml_integer_type_props_t*)(declaredType->baseTypeStruct);
-                    assert((props->typeBase.structKind == fmi1_xml_type_struct_enu_props) || (props->typeBase.structKind == fmi1_xml_type_struct_enu_base));
-                    fmi1_xml_reserve_parse_buffer(context, 1, 0);
-                    fmi1_xml_reserve_parse_buffer(context, 2, 0);
-                    type = fmi1_xml_parse_integer_type_properties(context, fmi1_xml_elmID_Integer);
-                    if(!type) return -1;
-                    type->typeBase.baseTypeStruct = declaredType;
-                    if(!hasMin) type->typeMin = props->typeMin;
-                    if(!hasMax) type->typeMax = props->typeMax;
-                    if(!hasQuan) type->quantity = props->quantity;
-            }
-            else
-                type = (fmi1_xml_integer_type_props_t*)declaredType;
-        }
-        variable->typeBase = &type->typeBase;
-
-        hasStart = fmi1_xml_is_attr_defined(context,fmi_attr_id_start);
-        if(hasStart) {
-            fmi1_xml_variable_start_integer_t * start = (fmi1_xml_variable_start_integer_t*)fmi1_xml_alloc_variable_type_start(td, &type->typeBase, sizeof(fmi1_xml_variable_start_integer_t));
-            int isFixedBuf;
-            if(!start) {
-                fmi1_xml_parse_fatal(context, "Could not allocate memory");
-                return -1;
-            }
-            
-                /*  <xs:attribute name="start" type="xs:integer"/> */
-                    fmi1_xml_set_attr_int(context, fmi1_xml_elmID_Integer, fmi_attr_id_start, 0, &start->start, 0);
-                /*  <xs:attribute name="fixed" type="xs:boolean"> */
-                    fmi1_xml_set_attr_boolean(context, fmi1_xml_elmID_Integer, fmi_attr_id_fixed, 0, &isFixedBuf, 1);
-
-            start->typeBase.isFixed = isFixedBuf;
-            variable->typeBase = &start->typeBase;
-        }
-        else {
-            if(fmi1_xml_is_attr_defined(context,fmi_attr_id_fixed)) {
-                jm_log_warning(context->callbacks, module, "When parsing variable %s: 'fixed' attributed is only allowed when start is defined", variable->name);
-            }
-        }
-    }
-    else {
+    if (context->skipOneVariableFlag) {
+        return 0;
+    } else if (data) {
         /* don't do anything. might give out a warning if(data[0] != 0) */
         return 0;
     }
-    return 0;
-}
 
-int fmi1_xml_handle_Boolean(fmi1_xml_parser_context_t *context, const char* data) {
-    if(context->skipOneVariableFlag) return 0;
+    declaredType = fmi1_get_declared_type(context, fmi1_xml_elmID_Integer,&td->defaultIntegerType.typeBase) ;
 
-    if(!data) {
-        fmi1_xml_model_description_t* md = context->modelDescription;
-        fmi1_xml_type_definitions_t* td = &md->typeDefinitions;
-        fmi1_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
-        int hasStart;
+    if(!declaredType) return -1;
 
-		assert(!variable->typeBase);
+    {
+        int hasQuan = fmi1_xml_is_attr_defined(context, fmi_attr_id_quantity);
+        int hasMin =  fmi1_xml_is_attr_defined(context, fmi_attr_id_min);
+        int hasMax = fmi1_xml_is_attr_defined(context, fmi_attr_id_max);
 
-        variable->typeBase = fmi1_get_declared_type(context, fmi1_xml_elmID_Boolean, &td->defaultBooleanType) ;
-
-        if(!variable->typeBase) return -1;
-
-        hasStart = fmi1_xml_is_attr_defined(context,fmi_attr_id_start);
-        if(hasStart) {
-            int isFixedBuf;
-            fmi1_xml_variable_start_integer_t * start = (fmi1_xml_variable_start_integer_t*)fmi1_xml_alloc_variable_type_start(td, variable->typeBase, sizeof(fmi1_xml_variable_start_integer_t ));
-            if(!start) {
-                fmi1_xml_parse_fatal(context, "Could not allocate memory");
-                return -1;
-            }
-            if(
-                  /*  <xs:attribute name="start" type="xs:boolean"/> */
-                    fmi1_xml_set_attr_boolean(context, fmi1_xml_elmID_Boolean, fmi_attr_id_start, 0, (int*)&start->start, 0) ||
-                /*  <xs:attribute name="fixed" type="xs:boolean"> */
-                    fmi1_xml_set_attr_boolean(context, fmi1_xml_elmID_Boolean, fmi_attr_id_fixed, 0, &isFixedBuf, 1)
-                )
-                    return -1;
-            start->typeBase.isFixed = isFixedBuf;
-            variable->typeBase = &start->typeBase;
-        }
-        else {
-            if(fmi1_xml_is_attr_defined(context,fmi_attr_id_fixed)) {
-                jm_log_warning(context->callbacks, module,"When parsing variable %s: 'fixed' attributed is only allowed when start is defined", variable->name);
-            }            
-        }
-    }
-    else {
-        /* don't do anything. might give out a warning if(data[0] != 0) */
-        return 0;
-    }
-    return 0;
-}
-
-int fmi1_xml_handle_String(fmi1_xml_parser_context_t *context, const char* data) {
-    if(context->skipOneVariableFlag) return 0;
-
-    if(!data) {
-        fmi1_xml_model_description_t* md = context->modelDescription;
-        fmi1_xml_type_definitions_t* td = &md->typeDefinitions;
-        fmi1_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
-        int hasStart;
-
-		assert(!variable->typeBase);
-
-        variable->typeBase = fmi1_get_declared_type(context, fmi1_xml_elmID_String,&td->defaultStringType) ;
-
-        if(!variable->typeBase) return -1;
-
-        hasStart = fmi1_xml_is_attr_defined(context,fmi_attr_id_start);
-        if(hasStart) {
-            jm_vector(char)* bufStartStr = fmi1_xml_reserve_parse_buffer(context,1, 100);
-            size_t strlen;
-            int isFixed;
-            fmi1_xml_variable_start_string_t * start;
-            if(
-                 /*   <xs:attribute name="start" type="xs:string"/> */
-                    fmi1_xml_set_attr_string(context, fmi1_xml_elmID_String, fmi_attr_id_start, 0, bufStartStr) ||
-                /*  <xs:attribute name="fixed" type="xs:boolean"> */
-                    fmi1_xml_set_attr_boolean(context, fmi1_xml_elmID_Boolean, fmi_attr_id_fixed, 0, &isFixed, 1)
-                )
-                    return -1;
-            strlen = jm_vector_get_size_char(bufStartStr);
-
-            start = (fmi1_xml_variable_start_string_t*)fmi1_xml_alloc_variable_type_start(td, variable->typeBase, sizeof(fmi1_xml_variable_start_string_t) + strlen);
-
-            if(!start) {
-                fmi1_xml_parse_fatal(context, "Could not allocate memory");
-                return -1;
-            }
-            if (strlen != 0) { /* No need to memcpy empty strings (gives assetion error) */
-                memcpy(start->start, jm_vector_get_itemp_char(bufStartStr,0), strlen);
-            }
-            start->start[strlen] = 0;
-            variable->typeBase = &start->typeBase;
-        }
-        else {
-            if(fmi1_xml_is_attr_defined(context,fmi_attr_id_fixed)) {
-                jm_log_warning(context->callbacks, module, "When parsing variable %s: 'fixed' attributed is only allowed when start is defined", variable->name);
-            }
-        }
-    }
-    else {
-        /* don't do anything. might give out a warning if(data[0] != 0) */
-        return 0;
-    }
-    return 0;
-}
-
-int fmi1_xml_handle_Enumeration(fmi1_xml_parser_context_t *context, const char* data) {
-    if(context->skipOneVariableFlag) return 0;
-
-    if(!data) {
-        fmi1_xml_model_description_t* md = context->modelDescription;
-        fmi1_xml_type_definitions_t* td = &md->typeDefinitions;
-        fmi1_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
-        fmi1_xml_variable_type_base_t * declaredType = 0;
-        fmi1_xml_integer_type_props_t * type = 0;
-        int hasStart;
-
-		assert(!variable->typeBase);
-
-        declaredType = fmi1_get_declared_type(context, fmi1_xml_elmID_Enumeration,&td->defaultEnumType.typeBase);
-
-        if(!declaredType) return -1;
-
-        {
-            int hasQuan = fmi1_xml_is_attr_defined(context, fmi_attr_id_quantity);
-            int hasMin =  fmi1_xml_is_attr_defined(context, fmi_attr_id_min);
-            int hasMax = fmi1_xml_is_attr_defined(context, fmi_attr_id_max);
-
-            if(hasQuan || hasMin || hasMax) {
+        if(hasQuan ||hasMin || hasMax) {
                 fmi1_xml_integer_type_props_t* props = 0;
 
                 if(declaredType->structKind != fmi1_xml_type_struct_enu_typedef)
                     props = (fmi1_xml_integer_type_props_t*)declaredType;
                 else
-                    props = (fmi1_xml_integer_type_props_t*)declaredType->baseTypeStruct;
-                assert(props->typeBase.structKind == fmi1_xml_type_struct_enu_props);
+                    props = (fmi1_xml_integer_type_props_t*)(declaredType->baseTypeStruct);
+                assert((props->typeBase.structKind == fmi1_xml_type_struct_enu_props) || (props->typeBase.structKind == fmi1_xml_type_struct_enu_base));
                 fmi1_xml_reserve_parse_buffer(context, 1, 0);
                 fmi1_xml_reserve_parse_buffer(context, 2, 0);
-                type = fmi1_xml_parse_integer_type_properties(context, fmi1_xml_elmID_Enumeration);
+                type = fmi1_xml_parse_integer_type_properties(context, fmi1_xml_elmID_Integer);
                 if(!type) return -1;
                 type->typeBase.baseTypeStruct = declaredType;
                 if(!hasMin) type->typeMin = props->typeMin;
                 if(!hasMax) type->typeMax = props->typeMax;
                 if(!hasQuan) type->quantity = props->quantity;
-            }
-            else
-                type = (fmi1_xml_integer_type_props_t*)declaredType;
         }
-
-        variable->typeBase = &type->typeBase;
-
-        hasStart = fmi1_xml_is_attr_defined(context,fmi_attr_id_start);
-        if(hasStart) {
-            fmi1_xml_variable_start_integer_t * start = (fmi1_xml_variable_start_integer_t*)fmi1_xml_alloc_variable_type_start(td, &type->typeBase, sizeof(fmi1_xml_variable_start_integer_t ));
-            int isFixedBuf;
-            if(!start) {
-                fmi1_xml_parse_fatal(context, "Could not allocate memory");
-                return -1;
-            }
-            if(
-                /*  <xs:attribute name="start" type="xs:integer"/> */
-                    fmi1_xml_set_attr_int(context, fmi1_xml_elmID_Enumeration, fmi_attr_id_start, 0, &start->start, 0) ||
-                /*  <xs:attribute name="fixed" type="xs:boolean"> */
-                    fmi1_xml_set_attr_boolean(context, fmi1_xml_elmID_Enumeration, fmi_attr_id_fixed, 0, &isFixedBuf, 1)
-                )
-                    return -1;
-            start->typeBase.isFixed = isFixedBuf;
-            variable->typeBase = &start->typeBase;
-        }
-        else {
-            if(fmi1_xml_is_attr_defined(context,fmi_attr_id_fixed)) {
-                jm_log_warning(context->callbacks, module, "When parsing variable %s: 'fixed' attributed is only allowed when start is defined", variable->name);
-            }            
-        }
+        else
+            type = (fmi1_xml_integer_type_props_t*)declaredType;
     }
-    else {
+    variable->typeBase = &type->typeBase;
+
+    hasStart = fmi1_xml_is_attr_defined(context,fmi_attr_id_start);
+    if(hasStart) {
+        fmi1_xml_variable_start_integer_t * start = (fmi1_xml_variable_start_integer_t*)fmi1_xml_alloc_variable_type_start(td, &type->typeBase, sizeof(fmi1_xml_variable_start_integer_t));
+        int isFixedBuf;
+        if(!start) {
+            fmi1_xml_parse_fatal(context, "Could not allocate memory");
+            return -1;
+        }
+
+            /*  <xs:attribute name="start" type="xs:integer"/> */
+                fmi1_xml_set_attr_int(context, fmi1_xml_elmID_Integer, fmi_attr_id_start, 0, &start->start, 0);
+            /*  <xs:attribute name="fixed" type="xs:boolean"> */
+                fmi1_xml_set_attr_boolean(context, fmi1_xml_elmID_Integer, fmi_attr_id_fixed, 0, &isFixedBuf, 1);
+
+        start->typeBase.isFixed = isFixedBuf;
+        variable->typeBase = &start->typeBase;
+    } else {
+        fmi1_log_warning_if_start_required(context, variable);
+    }
+
+    return 0;
+}
+
+int fmi1_xml_handle_Boolean(fmi1_xml_parser_context_t *context, const char* data) {
+    fmi1_xml_model_description_t* md = context->modelDescription;
+    fmi1_xml_type_definitions_t* td = &md->typeDefinitions;
+    fmi1_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
+    int hasStart;
+
+    if (context->skipOneVariableFlag) {
+        return 0;
+    } else if (data) {
         /* don't do anything. might give out a warning if(data[0] != 0) */
         return 0;
+    }
+
+	assert(!variable->typeBase);
+
+    variable->typeBase = fmi1_get_declared_type(context, fmi1_xml_elmID_Boolean, &td->defaultBooleanType) ;
+
+    if(!variable->typeBase) return -1;
+
+    hasStart = fmi1_xml_is_attr_defined(context,fmi_attr_id_start);
+    if(hasStart) {
+        int isFixedBuf;
+        fmi1_xml_variable_start_integer_t * start = (fmi1_xml_variable_start_integer_t*)fmi1_xml_alloc_variable_type_start(td, variable->typeBase, sizeof(fmi1_xml_variable_start_integer_t ));
+        if(!start) {
+            fmi1_xml_parse_fatal(context, "Could not allocate memory");
+            return -1;
+        }
+        if(
+              /*  <xs:attribute name="start" type="xs:boolean"/> */
+                fmi1_xml_set_attr_boolean(context, fmi1_xml_elmID_Boolean, fmi_attr_id_start, 0, (int*)&start->start, 0) ||
+            /*  <xs:attribute name="fixed" type="xs:boolean"> */
+                fmi1_xml_set_attr_boolean(context, fmi1_xml_elmID_Boolean, fmi_attr_id_fixed, 0, &isFixedBuf, 1)
+            )
+                return -1;
+        start->typeBase.isFixed = isFixedBuf;
+        variable->typeBase = &start->typeBase;
+    } else {
+        fmi1_log_warning_if_start_required(context, variable);
+    }
+
+    return 0;
+}
+
+int fmi1_xml_handle_String(fmi1_xml_parser_context_t *context, const char* data) {
+    fmi1_xml_model_description_t* md = context->modelDescription;
+    fmi1_xml_type_definitions_t* td = &md->typeDefinitions;
+    fmi1_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
+    int hasStart;
+
+    if (context->skipOneVariableFlag) {
+        return 0;
+    } else if (data) {
+        /* don't do anything. might give out a warning if(data[0] != 0) */
+        return 0;
+    }
+
+	assert(!variable->typeBase);
+
+    variable->typeBase = fmi1_get_declared_type(context, fmi1_xml_elmID_String,&td->defaultStringType) ;
+
+    if(!variable->typeBase) return -1;
+
+    hasStart = fmi1_xml_is_attr_defined(context,fmi_attr_id_start);
+    if(hasStart) {
+        jm_vector(char)* bufStartStr = fmi1_xml_reserve_parse_buffer(context,1, 100);
+        size_t strlen;
+        int isFixed;
+        fmi1_xml_variable_start_string_t * start;
+        if(
+             /*   <xs:attribute name="start" type="xs:string"/> */
+                fmi1_xml_set_attr_string(context, fmi1_xml_elmID_String, fmi_attr_id_start, 0, bufStartStr) ||
+            /*  <xs:attribute name="fixed" type="xs:boolean"> */
+                fmi1_xml_set_attr_boolean(context, fmi1_xml_elmID_Boolean, fmi_attr_id_fixed, 0, &isFixed, 1)
+            )
+                return -1;
+        strlen = jm_vector_get_size_char(bufStartStr);
+
+        start = (fmi1_xml_variable_start_string_t*)fmi1_xml_alloc_variable_type_start(td, variable->typeBase, sizeof(fmi1_xml_variable_start_string_t) + strlen);
+
+        if(!start) {
+            fmi1_xml_parse_fatal(context, "Could not allocate memory");
+            return -1;
+        }
+        if (strlen != 0) { /* No need to memcpy empty strings (gives assetion error) */
+            memcpy(start->start, jm_vector_get_itemp_char(bufStartStr,0), strlen);
+        }
+        start->start[strlen] = 0;
+        variable->typeBase = &start->typeBase;
+    } else {
+        fmi1_log_warning_if_start_required(context, variable);
+    }
+
+    return 0;
+}
+
+int fmi1_xml_handle_Enumeration(fmi1_xml_parser_context_t *context, const char* data) {
+
+    fmi1_xml_model_description_t* md = context->modelDescription;
+    fmi1_xml_type_definitions_t* td = &md->typeDefinitions;
+    fmi1_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
+    fmi1_xml_variable_type_base_t * declaredType = 0;
+    fmi1_xml_integer_type_props_t * type = 0;
+    int hasStart;
+
+    if (context->skipOneVariableFlag) {
+        return 0;
+    } else if (data) {
+        /* don't do anything. might give out a warning if(data[0] != 0) */
+        return 0;
+    }
+
+	assert(!variable->typeBase);
+
+    declaredType = fmi1_get_declared_type(context, fmi1_xml_elmID_Enumeration,&td->defaultEnumType.typeBase);
+
+    if(!declaredType) return -1;
+
+    {
+        int hasQuan = fmi1_xml_is_attr_defined(context, fmi_attr_id_quantity);
+        int hasMin =  fmi1_xml_is_attr_defined(context, fmi_attr_id_min);
+        int hasMax = fmi1_xml_is_attr_defined(context, fmi_attr_id_max);
+
+        if(hasQuan || hasMin || hasMax) {
+            fmi1_xml_integer_type_props_t* props = 0;
+
+            if(declaredType->structKind != fmi1_xml_type_struct_enu_typedef)
+                props = (fmi1_xml_integer_type_props_t*)declaredType;
+            else
+                props = (fmi1_xml_integer_type_props_t*)declaredType->baseTypeStruct;
+            assert(props->typeBase.structKind == fmi1_xml_type_struct_enu_props);
+            fmi1_xml_reserve_parse_buffer(context, 1, 0);
+            fmi1_xml_reserve_parse_buffer(context, 2, 0);
+            type = fmi1_xml_parse_integer_type_properties(context, fmi1_xml_elmID_Enumeration);
+            if(!type) return -1;
+            type->typeBase.baseTypeStruct = declaredType;
+            if(!hasMin) type->typeMin = props->typeMin;
+            if(!hasMax) type->typeMax = props->typeMax;
+            if(!hasQuan) type->quantity = props->quantity;
+        }
+        else
+            type = (fmi1_xml_integer_type_props_t*)declaredType;
+    }
+
+    variable->typeBase = &type->typeBase;
+
+    hasStart = fmi1_xml_is_attr_defined(context,fmi_attr_id_start);
+    if(hasStart) {
+        fmi1_xml_variable_start_integer_t * start = (fmi1_xml_variable_start_integer_t*)fmi1_xml_alloc_variable_type_start(td, &type->typeBase, sizeof(fmi1_xml_variable_start_integer_t ));
+        int isFixedBuf;
+        if(!start) {
+            fmi1_xml_parse_fatal(context, "Could not allocate memory");
+            return -1;
+        }
+        if(
+            /*  <xs:attribute name="start" type="xs:integer"/> */
+                fmi1_xml_set_attr_int(context, fmi1_xml_elmID_Enumeration, fmi_attr_id_start, 0, &start->start, 0) ||
+            /*  <xs:attribute name="fixed" type="xs:boolean"> */
+                fmi1_xml_set_attr_boolean(context, fmi1_xml_elmID_Enumeration, fmi_attr_id_fixed, 0, &isFixedBuf, 1)
+            )
+                return -1;
+        start->typeBase.isFixed = isFixedBuf;
+        variable->typeBase = &start->typeBase;
+    } else {
+        fmi1_log_warning_if_start_required(context, variable);
     }
     return 0;
 }
 
-static int fmi1_xml_compare_variable_original_index (const void* first, const void* second) { 
+static int fmi1_xml_compare_variable_original_index (const void* first, const void* second) {
 	size_t a = (*(fmi1_xml_variable_t**)first)->originalIndex;
 	size_t b = (*(fmi1_xml_variable_t**)second)->originalIndex;
     if(a < b) return -1;
@@ -839,9 +839,9 @@ void fmi1_xml_eliminate_bad_alias(fmi1_xml_parser_context_t *context, size_t ind
 
 		index = jm_vector_bsearch_index(jm_voidp)(md->variablesOrigOrder, (jm_voidp*)&v, fmi1_xml_compare_variable_original_index);
         assert(index <= n);
-		
+
 		jm_vector_remove_item(jm_voidp)(md->variablesOrigOrder,index);
-		
+
 		jm_log_error(context->callbacks, module,"Removing incorrect alias variable '%s'", v->name);
         md->callbacks->free(v);
     }
@@ -857,7 +857,7 @@ static int fmi1_xml_compare_vr_and_original_index (const void* first, const void
 		if(ai > bi) ret = 1;
 		if(ai < bi) ret = -1;
 	}
-	
+
 	return ret;
 }
 
@@ -914,7 +914,7 @@ int fmi1_xml_handle_ModelVariables(fmi1_xml_parser_context_t *context, const cha
 					jm_vector_set_item(jm_voidp)(md->variablesOrigOrder, i, jm_vector_get_item(jm_named_ptr)(&md->variablesByName,i).ptr);
 				}
 			}
-			
+
 		}
 
 		/* store the list of input vars */
@@ -940,7 +940,7 @@ int fmi1_xml_handle_ModelVariables(fmi1_xml_parser_context_t *context, const cha
 		}
 		jm_vector_free(jm_voidp)(inputVars);
 		jm_vector_free(jm_voidp)(outputVars);
-		
+
 		/* sort the variables by names */
         jm_vector_qsort(jm_named_ptr)(&md->variablesByName,jm_compare_named);
 

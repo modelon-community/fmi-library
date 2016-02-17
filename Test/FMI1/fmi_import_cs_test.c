@@ -35,7 +35,7 @@ void importlogger(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_leve
 void fmilogger(fmi1_component_t c, fmi1_string_t instanceName, fmi1_status_t status, fmi1_string_t category, fmi1_string_t message, ...)
 {
 	/* char msg[BUFFER];*/
-	va_list argp;	
+	va_list argp;
 	va_start(argp, message);
 	/* vsnprintf(msg, BUFFER, message, argp); */
 	fmi1_log_forwarding_v(c, instanceName, status, category, message, argp);
@@ -201,7 +201,7 @@ int test_simulate_cs(fmi1_import_t* fmu)
 	fmi1_boolean_t visible = fmi1_false;
 	fmi1_boolean_t interactive = fmi1_false;
 /*	fmi1_boolean_t loggingOn = fmi1_true; */
-	
+
 	/* fmi1_real_t simulation_results[] = {-0.001878, -1.722275}; */
 	fmi1_real_t simulation_results[] = {0.0143633,   -1.62417};
 	fmi1_value_reference_t compare_real_variables_vr[] = {0, 1};
@@ -247,7 +247,7 @@ int test_simulate_cs(fmi1_import_t* fmu)
 
 		fmistatus = fmi1_import_get_real(fmu, &vr, 1, &rvalue);
 		printf("rvalue = %f\n", rvalue);
-#endif 
+#endif
 		fmistatus = fmi1_import_do_step(fmu, tcur, hstep, newStep);
 
 		for (k = 0; k < sizeof(compare_real_variables_vr)/sizeof(fmi1_value_reference_t); k++) {
@@ -270,7 +270,7 @@ int test_simulate_cs(fmi1_import_t* fmu)
 	for (k = 0; k < sizeof(compare_real_variables_vr)/sizeof(fmi1_value_reference_t); k++) {
 		fmi1_value_reference_t vr = compare_real_variables_vr[k];
 		fmi1_real_t rvalue;
-		fmi1_real_t res;	
+		fmi1_real_t res;
 		fmistatus = fmi1_import_get_real(fmu, &vr, 1, &rvalue);
 		res = rvalue - simulation_results[k];
 		res = res > 0 ? res: -res; /* Take abs */
@@ -301,12 +301,12 @@ int main(int argc, char *argv[])
 	jm_status_enu_t status;
 	int k;
 
-	fmi1_import_t* fmu;	
+	fmi1_import_t* fmu;
 
-	if(argc < 3) {
-		printf("Usage: %s <fmu_file> <temporary_dir>\n", argv[0]);
+	if(argc < 4) {
+		printf("Usage: %s <fmu_file> <temporary_dir> <modelDescription_file>\n", argv[0]);
 		do_exit(CTEST_RETURN_FAIL);
-	} 
+	}
 	for (k = 0; k < argc; k ++)
 		printf("argv[%d] = %s\n", k, argv[k]);
 
@@ -345,7 +345,7 @@ int main(int argc, char *argv[])
 		printf("Error parsing XML, exiting\n");
 		do_exit(CTEST_RETURN_FAIL);
 	}
-	
+
 
 	status = fmi1_import_create_dllfmu(fmu, callBackFunctions, 1);
 	if (status == jm_status_error) {
@@ -360,7 +360,7 @@ int main(int argc, char *argv[])
 
 	fmi1_import_free(fmu);
 	fmi_import_free_context(context);
-	
+
 	printf("Everything seems to be OK since you got this far=)!\n");
 
 	do_exit(CTEST_RETURN_SUCCESS);

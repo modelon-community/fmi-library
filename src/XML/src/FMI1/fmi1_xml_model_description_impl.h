@@ -82,7 +82,7 @@ struct fmi1_xml_model_description_t {
 
     fmi1_fmu_kind_enu_t fmuKind;
 
-    fmi1_xml_capabilities_t capabilities;
+    fmi1_xml_capabilities_t *capabilities;
 
     jm_vector(char) entryPoint;
     jm_vector(char) mimeType;

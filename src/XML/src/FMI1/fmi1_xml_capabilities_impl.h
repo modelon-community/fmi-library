@@ -33,7 +33,7 @@ struct fmi1_xml_capabilities_t {
     int canNotUseMemoryManagementFunctions;
 };
 
-void fmi1_xml_init_capabilities(fmi1_xml_capabilities_t* c);
+fmi1_xml_capabilities_t *fmi1_xml_default_capabilities(jm_callbacks *cb);
 
 #ifdef __cplusplus
 }

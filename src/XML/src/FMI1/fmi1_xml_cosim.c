@@ -23,7 +23,7 @@ fmi1_fmu_kind_enu_t fmi1_xml_get_fmu_kind(fmi1_xml_model_description_t* md) {
 }
 
 fmi1_xml_capabilities_t* fmi1_xml_get_capabilities(fmi1_xml_model_description_t* md){
-    return &md->capabilities;
+    return md->capabilities;
 }
 
 size_t fmi1_xml_get_number_of_additional_models(fmi1_xml_model_description_t* md) {

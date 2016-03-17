@@ -34,6 +34,9 @@ void fmi_import_free_context( fmi_import_context_t* c) {
 	fmi_xml_free_context(c);
 }
 
+void fmi_import_set_configuration( fmi_import_context_t* c, int conf) {
+    fmi_xml_set_configuration(c, conf);
+}
 
 fmi_version_enu_t fmi_import_get_fmi_version( fmi_import_context_t* c, const char* fileName, const char* dirName) {
 	fmi_version_enu_t ret = fmi_version_unknown_enu;

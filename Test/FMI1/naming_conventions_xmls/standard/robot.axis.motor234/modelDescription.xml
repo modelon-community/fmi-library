@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription
+  fmiVersion="1.0"
+  modelName="none"
+  modelIdentifier="none"
+  variableNamingConvention="structured"
+  guid="123"
+  numberOfContinuousStates="0"
+  numberOfEventIndicators="1">
+<ModelVariables>
+    <ScalarVariable name="robot.axis.'motor ##234'" valueReference="0">
+     <Integer/>
+  </ScalarVariable>
+</ModelVariables>
+</fmiModelDescription>
+

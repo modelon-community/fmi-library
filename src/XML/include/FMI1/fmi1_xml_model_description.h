@@ -104,15 +104,26 @@ typedef struct fmi1_xml_capabilities_t fmi1_xml_capabilities_t;
 fmi1_xml_model_description_t* fmi1_xml_allocate_model_description( jm_callbacks* callbacks);
 
 /**
+    \brief If this configuration option is set, the model description will be
+    checked to follow the variable naming conventions. Variables not following
+    the convention will be logged.
+*/
+#define FMI1_XML_NAME_CHECK 1
+
+/**
    \brief Parse XML file
    Repeaded calls invalidate the data structures created with the previous call to fmiParseXML,
    i.e., fmiClearModelDescrition is automatically called before reading in the new file.
 
     @param md A model description object as returned by fmi1_xml_allocate_model_description.
     @param fileName A name (full path) of the XML file name with model definition.
+    @param configuration Specifies how to parse the model description, 0 is
+           default. Other possible configuration is FMI_XML_NAME_CHECK.
    @return 0 if parsing was successfull. Non-zero value indicates an error.
 */
-int fmi1_xml_parse_model_description( fmi1_xml_model_description_t* md, const char* fileName);
+int fmi1_xml_parse_model_description( fmi1_xml_model_description_t* md,
+                                      const char* fileName,
+                                      int configuration);
 
 /**
    Clears the data associated with the model description. This is useful if the same object

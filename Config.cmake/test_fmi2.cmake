@@ -62,6 +62,8 @@ to_native_c_path("${TEST_OUTPUT_FOLDER}/${FMU2_DUMMY_ME_MODEL_IDENTIFIER}_me.fmu
 to_native_c_path("${TEST_OUTPUT_FOLDER}/${FMU2_DUMMY_CS_MODEL_IDENTIFIER}_cs.fmu" FMU2_CS_PATH)
 to_native_c_path("${TEST_OUTPUT_FOLDER}/${FMU2_DUMMY_CS_MODEL_IDENTIFIER}_mf.fmu" FMU2_MF_PATH)
 
+add_executable (fmi2_check_variable_naming_conventions_test ${RTTESTDIR}/FMI2/fmi2_check_variable_naming_conventions_test.c )
+target_link_libraries (fmi2_check_variable_naming_conventions_test  ${FMILIBFORTEST}  )
 add_executable (fmi2_import_xml_test ${RTTESTDIR}/FMI2/fmi2_import_xml_test.cc )
 target_link_libraries (fmi2_import_xml_test  ${FMILIBFORTEST}  )
 add_executable (fmi2_import_me_test ${RTTESTDIR}/FMI2/fmi2_import_me_test.c )
@@ -69,9 +71,15 @@ target_link_libraries (fmi2_import_me_test  ${FMILIBFORTEST}  )
 add_executable (fmi2_import_cs_test ${RTTESTDIR}/FMI2/fmi2_import_cs_test.c )
 target_link_libraries (fmi2_import_cs_test  ${FMILIBFORTEST}  )
 set_target_properties(
+	fmi2_check_variable_naming_conventions_test
 	fmi2_import_xml_test 
 	fmi2_import_me_test fmi2_import_cs_test
-    PROPERTIES FOLDER "Test/FMI2")
+    PROPERTIES FOLDER "Test/FMI2"
+)
+set(FAIL_NAME_CHECK 0)
+set(PASS_NAME_CHECK 1)
+
+add_test(ctest_fmi2_check_variable_naming_conventions_test fmi2_check_variable_naming_conventions_test ${RTTESTDIR}/FMI2/naming_conventions_xmls/)
 ADD_TEST(ctest_fmi2_import_xml_test_empty fmi2_import_xml_test ${FMU2_DUMMY_FOLDER})
 add_test(ctest_fmi2_import_xml_test_me fmi2_import_xml_test ${TEST_OUTPUT_FOLDER}/${FMU2_DUMMY_ME_MODEL_IDENTIFIER}_me)
 add_test(ctest_fmi2_import_xml_test_cs fmi2_import_xml_test ${TEST_OUTPUT_FOLDER}/${FMU2_DUMMY_CS_MODEL_IDENTIFIER}_cs)
@@ -82,6 +90,7 @@ add_test(ctest_fmi2_import_test_cs fmi2_import_cs_test ${FMU2_CS_PATH} ${FMU_TEM
 
 if(FMILIB_BUILD_BEFORE_TESTS)
 	SET_TESTS_PROPERTIES ( 
+		ctest_fmi2_check_variable_naming_conventions_test
 		ctest_fmi2_import_xml_test_me
 		ctest_fmi2_import_xml_test_cs
 		ctest_fmi2_import_xml_test_mf

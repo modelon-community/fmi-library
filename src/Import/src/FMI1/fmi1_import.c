@@ -65,6 +65,7 @@ fmi1_import_t* fmi1_import_parse_xml( fmi_import_context_t* context, const char*
 	char absPath[FILENAME_MAX + 2];
 	jm_callbacks* cb;
 	fmi1_import_t* fmu;
+    int configuration;
 
 	if(!context) return 0;
 
@@ -81,7 +82,12 @@ fmi1_import_t* fmi1_import_parse_xml( fmi_import_context_t* context, const char*
 	
 	jm_log_verbose( cb, "FMILIB", "Parsing model description XML");
 
-	if(fmi1_xml_parse_model_description( fmu->md, xmlPath)) {
+    /* convert the import configuration to the xml configuration */
+    if (context->configuration & FMI_IMPORT_NAME_CHECK) {
+        configuration |= FMI1_XML_NAME_CHECK;
+    }
+
+	if(fmi1_xml_parse_model_description( fmu->md, xmlPath, configuration)) {
 		fmi1_import_free(fmu);
 		cb->free(xmlPath);
 		return 0;

@@ -64,6 +64,8 @@ compress_fmu("${TEST_OUTPUT_FOLDER}" "${FMU_DUMMY_ME_MODEL_IDENTIFIER}" "me" "fm
 compress_fmu("${TEST_OUTPUT_FOLDER}" "${FMU_DUMMY_CS_MODEL_IDENTIFIER}" "cs" "fmu1_dll_cs" "${XML_CS_PATH}" "${SHARED_LIBRARY_CS_PATH}")
 compress_fmu("${TEST_OUTPUT_FOLDER}" "${FMU_DUMMY_CS_MODEL_IDENTIFIER}" "cs_tc" "fmu1_dll_cs" "${XML_CS_TC_PATH}" "${SHARED_LIBRARY_CS_PATH}")
 
+add_executable (fmi1_check_variable_naming_conventions_test ${RTTESTDIR}/FMI1/fmi1_check_variable_naming_conventions_test.c )
+target_link_libraries (fmi1_check_variable_naming_conventions_test  ${FMILIBFORTEST}  )
 add_executable (fmi_import_xml_test ${RTTESTDIR}/FMI1/fmi_import_xml_test.cc )
 target_link_libraries (fmi_import_xml_test  ${FMILIBFORTEST}  )
 
@@ -81,6 +83,7 @@ to_native_c_path("${TEST_OUTPUT_FOLDER}/${FMU_DUMMY_CS_MODEL_IDENTIFIER}_cs_tc.f
 # set(FMU_TEMPFOLDER ${TEST_OUTPUT_FOLDER}/tempfolder)
 to_native_c_path(${TEST_OUTPUT_FOLDER}/tempfolder FMU_TEMPFOLDER)
 
+add_test(ctest_fmi1_check_variable_naming_conventions_test fmi1_check_variable_naming_conventions_test ${RTTESTDIR}/FMI1/naming_conventions_xmls/)
 ADD_TEST(ctest_fmi_import_me_test fmi_import_me_test ${FMU_ME_PATH} ${FMU_TEMPFOLDER})
 ADD_TEST(ctest_fmi_import_cs_test fmi_import_cs_test ${FMU_CS_PATH} ${FMU_TEMPFOLDER} "modelDescription_cs.xml")
 ADD_TEST(ctest_fmi_import_cs_tc_test fmi_import_cs_test ${FMU_CS_TC_PATH} ${FMU_TEMPFOLDER} "modelDescription_cs_tc.xml")
@@ -112,6 +115,7 @@ set_target_properties(
 	fmi1_capi_cs_test
 	fmi1_capi_me_test
 	fmi1_logger_test
+    fmi1_check_variable_naming_conventions_test
     PROPERTIES FOLDER "Test/FMI1")
 
 SET_TESTS_PROPERTIES ( 
@@ -129,6 +133,7 @@ if(FMILIB_BUILD_BEFORE_TESTS)
 		ctest_fmi1_capi_cs_test
 		ctest_fmi1_capi_me_test
 		ctest_fmi1_logger_test_run
+		ctest_fmi1_check_variable_naming_conventions_test
 		PROPERTIES DEPENDS ctest_build_all)
 endif()
 

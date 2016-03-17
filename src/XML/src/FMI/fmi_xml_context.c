@@ -41,6 +41,7 @@ fmi_xml_context_t* fmi_xml_allocate_context( jm_callbacks* callbacks) {
 	c->callbacks = callbacks;
 	c->parser = 0;
 	c->fmi_version = fmi_version_unknown_enu;
+    c->configuration = 0;
 	jm_log_debug(callbacks, MODULE, "Returning allocated context");
     return c;
 }
@@ -53,6 +54,10 @@ void fmi_xml_free_context(fmi_xml_context_t *context) {
         context->parser = 0;
     }
     context->callbacks->free(context);
+}
+
+void fmi_xml_set_configuration(fmi_xml_context_t *context, int configuration) {
+    context->configuration = configuration;
 }
 
 void fmi_xml_fatal(fmi_xml_context_t *context, const char* fmt, ...) {

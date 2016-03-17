@@ -49,7 +49,9 @@ void test_check_name(char *xml_dir, int name_check_should_pass, int configuratio
     callbacks->log_level = jm_log_level_all;
     callbacks->context = 0;
     context = fmi_import_allocate_context(callbacks);
-    fmi_import_set_configuration(context, configuration);
+    if (configuration != 0) {
+        fmi_import_set_configuration(context, configuration);
+    }
 
     name_check_passed = 1;
     full_path = concat(name_check_test_directory, xml_dir);

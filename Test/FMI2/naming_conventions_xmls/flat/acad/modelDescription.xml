@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription
+  fmiVersion="2.0"
+  modelName="none"
+  guid="123"
+  numberOfEventIndicators="1">
+  <CoSimulation 
+	modelIdentifier="none1" 
+	canHandleVariableCommunicationStepSize="true"
+	/>
+<ModelVariables>
+  <ScalarVariable name="a" valueReference="0">
+     <Integer/>
+  </ScalarVariable>
+  <ScalarVariable name="c" valueReference="1">
+     <Integer/>
+  </ScalarVariable>
+  <ScalarVariable name="a" valueReference="2">
+     <Integer/>
+  </ScalarVariable>
+  <ScalarVariable name="d" valueReference="3">
+     <Integer/>
+  </ScalarVariable>
+</ModelVariables>
+<ModelStructure>
+</ModelStructure>
+</fmiModelDescription>
+

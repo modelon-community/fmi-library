@@ -157,8 +157,9 @@ int main(int argc, char *argv[])
     pass_name_check("list/cba");
     fail_name_check("list/acad");
 
+    /* flat hierarchy test */
+    fail_name_check("flat/acad");
+    pass_name_check("flat/q-char-nonescaped");
+
     return 0;
 }
-
-
-

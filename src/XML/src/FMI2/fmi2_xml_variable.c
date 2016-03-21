@@ -567,17 +567,10 @@ int fmi2_xml_handle_RealVariable(fmi2_xml_parser_context_t *context, const char*
                 fmi_attr_id_reinit, 0, &reinit, 0)) return -1;
             variable->reinit = (char)reinit;
 
-            if (variable->variability != fmi2_variability_enu_continuous) {
-                /* If derivative is set, this variable must be continuous. */
-                if (derivativeOf) {
-                    fmi2_xml_parse_error(context, "The derivative attribute may only appear on continuous-time Real variables.");
-                    /* return -1; */
-                }
-                if (reinit) {
-                    fmi2_xml_parse_error(context, "The reinit attribute may only be set on continuous-time states.");
-                    return -1;
-                }
+            if (variable->variability != fmi2_variability_enu_continuous && reinit) {
                 /* If reinit is true, this variable must be continuous. */
+                fmi2_xml_parse_error(context, "The reinit attribute may only be set on continuous-time states.");
+                return -1;
             }
         }
     }

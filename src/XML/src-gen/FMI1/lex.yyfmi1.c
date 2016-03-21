@@ -453,7 +453,6 @@ static yyconst flex_int16_t yy_chk[95] =
 #define yymore() yymore_used_but_not_detected
 #define YY_MORE_ADJ 0
 #define YY_RESTORE_YY_MORE_OFFSET
-#line 1 "C:/Users/victor.johnsson/Documents/Projects/FMIL/trunk/src/XML//src/FMI1/fmi1_xml_variable_name_scan.l"
 /*
     Copyright (C) 2012 Modelon AB
 
@@ -468,12 +467,10 @@ static yyconst flex_int16_t yy_chk[95] =
     You should have received a copy of the FMILIB_License.txt file
     along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 */
-#line 17 "C:/Users/victor.johnsson/Documents/Projects/FMIL/trunk/src/XML//src/FMI1/fmi1_xml_variable_name_scan.l"
 #include "fmi1_xml_variable_name_parser.tab.h"
 #define YYSTYPE YYFMI1STYPE
 
 #define LEX_VAL(ID_NAME) return ID_NAME;
-#line 477 "lex.yyfmi1.c"
 
 #define INITIAL 0
 
@@ -483,6 +480,11 @@ static yyconst flex_int16_t yy_chk[95] =
  * The user has a chance to override it with an option.
  */
 #include <unistd.h>
+#else
+/*windows compatibility case*/
+#include <io.h>
+#define isatty _isatty
+#define fileno _fileno
 #endif
     
 #ifndef YY_EXTRA_TYPE
@@ -710,11 +712,6 @@ YY_DECL
 	register int yy_act;
     struct yyguts_t * yyg = (struct yyguts_t*)yyscanner;
 
-#line 35 "C:/Users/victor.johnsson/Documents/Projects/FMIL/trunk/src/XML//src/FMI1/fmi1_xml_variable_name_scan.l"
-
-
-#line 717 "lex.yyfmi1.c"
-
     yylval = yylval_param;
 
 	if ( !yyg->yy_init )
@@ -800,72 +797,58 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 37 "C:/Users/victor.johnsson/Documents/Projects/FMIL/trunk/src/XML//src/FMI1/fmi1_xml_variable_name_scan.l"
 {LEX_VAL(DER)}
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 38 "C:/Users/victor.johnsson/Documents/Projects/FMIL/trunk/src/XML//src/FMI1/fmi1_xml_variable_name_scan.l"
 {LEX_VAL('(')}
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 39 "C:/Users/victor.johnsson/Documents/Projects/FMIL/trunk/src/XML//src/FMI1/fmi1_xml_variable_name_scan.l"
 {LEX_VAL(')')}
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 40 "C:/Users/victor.johnsson/Documents/Projects/FMIL/trunk/src/XML//src/FMI1/fmi1_xml_variable_name_scan.l"
 {LEX_VAL(',')}
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 41 "C:/Users/victor.johnsson/Documents/Projects/FMIL/trunk/src/XML//src/FMI1/fmi1_xml_variable_name_scan.l"
 {LEX_VAL(',')}
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 42 "C:/Users/victor.johnsson/Documents/Projects/FMIL/trunk/src/XML//src/FMI1/fmi1_xml_variable_name_scan.l"
 {LEX_VAL('.')}
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 43 "C:/Users/victor.johnsson/Documents/Projects/FMIL/trunk/src/XML//src/FMI1/fmi1_xml_variable_name_scan.l"
 {LEX_VAL('[')}
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 44 "C:/Users/victor.johnsson/Documents/Projects/FMIL/trunk/src/XML//src/FMI1/fmi1_xml_variable_name_scan.l"
 {LEX_VAL(']')}
 	YY_BREAK
 case 9:
 /* rule 9 can match eol */
 YY_RULE_SETUP
-#line 45 "C:/Users/victor.johnsson/Documents/Projects/FMIL/trunk/src/XML//src/FMI1/fmi1_xml_variable_name_scan.l"
 {LEX_VAL(Q_NAME)}
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 46 "C:/Users/victor.johnsson/Documents/Projects/FMIL/trunk/src/XML//src/FMI1/fmi1_xml_variable_name_scan.l"
 {LEX_VAL(NONDIGIT)}
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 47 "C:/Users/victor.johnsson/Documents/Projects/FMIL/trunk/src/XML//src/FMI1/fmi1_xml_variable_name_scan.l"
 {LEX_VAL(UNSIGNED_INTEGER)}
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 48 "C:/Users/victor.johnsson/Documents/Projects/FMIL/trunk/src/XML//src/FMI1/fmi1_xml_variable_name_scan.l"
 {LEX_VAL(*yytext)}
 	YY_BREAK
 
 case 13:
 YY_RULE_SETUP
-#line 51 "C:/Users/victor.johnsson/Documents/Projects/FMIL/trunk/src/XML//src/FMI1/fmi1_xml_variable_name_scan.l"
 ECHO;
 	YY_BREAK
-#line 869 "lex.yyfmi1.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2029,4 +2012,3 @@ void yyfmi1free (void * ptr , yyscan_t yyscanner)
 
 #define YYTABLES_NAME "yytables"
 
-#line 50 "C:/Users/victor.johnsson/Documents/Projects/FMIL/trunk/src/XML//src/FMI1/fmi1_xml_variable_name_scan.l"

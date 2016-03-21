@@ -226,6 +226,11 @@ void yyfmi2free (void * ,yyscan_t yyscanner );
  * The user has a chance to override it with an option.
  */
 #include <unistd.h>
+#else
+/*windows compatibility case*/
+#include <io.h>
+#define isatty _isatty
+#define fileno _fileno
 #endif
     
 #ifndef YY_EXTRA_TYPE
@@ -334,8 +339,6 @@ extern int yyfmi2lex \
 #undef YY_DECL
 #endif
 
-#line 50 "C:/Users/victor.johnsson/Documents/Projects/FMIL/trunk/src/XML//src/FMI2/fmi2_xml_variable_name_scan.l"
-
-#line 340 "C:/Users/victor.johnsson/Documents/Projects/FMIL/trunk/src/XML//src-gen/FMI2/fmi2_xml_variable_name_lex.h"
+#line 338 "C:/Users/victor.johnsson/Documents/Projects/FMIL/trunk/src/XML//src-gen/FMI2/fmi2_xml_variable_name_lex.h"
 #undef yyfmi2IN_HEADER
 #endif /* yyfmi2HEADER_H */

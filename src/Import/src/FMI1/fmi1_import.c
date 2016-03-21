@@ -65,7 +65,7 @@ fmi1_import_t* fmi1_import_parse_xml( fmi_import_context_t* context, const char*
 	char absPath[FILENAME_MAX + 2];
 	jm_callbacks* cb;
 	fmi1_import_t* fmu;
-    int configuration;
+    int configuration = 0;
 
 	if(!context) return 0;
 

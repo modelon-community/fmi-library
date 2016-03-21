@@ -70,8 +70,7 @@
 #define yynerrs         yyfmi1nerrs
 
 /* Copy the first part of user declarations.  */
-/* Line 371 of yacc.c  */
-#line 17 "C:/Users/victor.johnsson/Documents/Projects/FMIL/trunk/src/XML//src/FMI1/fmi1_xml_variable_name_parser.y"
+
 
 
 /*
@@ -92,8 +91,7 @@ void yyfmi1error(yyscan_t* scanner, jm_callbacks* cb, char* name, char const *ms
 }
 
 
-/* Line 371 of yacc.c  */
-#line 97 "fmi1_xml_variable_name_parser.tab.c"
+
 
 # ifndef YY_NULL
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -171,8 +169,7 @@ int yyfmi1parse ();
 
 /* Copy the second part of user declarations.  */
 
-/* Line 390 of yacc.c  */
-#line 176 "fmi1_xml_variable_name_parser.tab.c"
+
 
 #ifdef short
 # undef short
@@ -1401,8 +1398,7 @@ yyreduce:
   switch (yyn)
     {
       
-/* Line 1792 of yacc.c  */
-#line 1406 "fmi1_xml_variable_name_parser.tab.c"
+
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1633,5 +1629,4 @@ yyreturn:
 }
 
 
-/* Line 2055 of yacc.c  */
-#line 89 "C:/Users/victor.johnsson/Documents/Projects/FMIL/trunk/src/XML//src/FMI1/fmi1_xml_variable_name_parser.y"
+

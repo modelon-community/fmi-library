@@ -8,7 +8,7 @@
 
 \mainpage FMI Library: part of JModelica.org
 
-\version     2.0.2b1
+\version     2.0.2b2
 \date        22 March 2016 
 \section Summary
 FMI library is intended as a foundation for applications interfacing FMUs 

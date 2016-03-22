@@ -106,7 +106,7 @@ int main(int argc, char *argv[])
     pass_name_check("standard/resistor12.u");
     pass_name_check("standard/v_min");
     pass_name_check("standard/robot.axis.motor234");
-    pass_name_check("standard/derpipe34.t142");
+    pass_name_check("standard/derpipe34.T142");
 
     /* Implementation test examples */
     fail_name_check("implementation/empty");

@@ -111,9 +111,10 @@ fmi2_import_t* fmi2_import_parse_xml( fmi_import_context_t* context, const char*
 }
 
 void fmi2_import_free(fmi2_import_t* fmu) {
-    jm_callbacks* cb = fmu->callbacks;
+    jm_callbacks* cb;
 
 	if(!fmu) return;
+    cb = fmu->callbacks;
 	jm_log_verbose( fmu->callbacks, "FMILIB", "Releasing allocated library resources");	
 
 	fmi2_import_destroy_dllfmu(fmu);

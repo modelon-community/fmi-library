@@ -398,7 +398,7 @@ fmi2_component_t fmi2_capi_instantiate(fmi2_capi_t* fmu,
 
 void fmi2_capi_free_instance(fmi2_capi_t* fmu)
 {
-    if(fmu->c) {
+    if(fmu != NULL && fmu->c != NULL) {
         fmu->fmi2FreeInstance(fmu->c);
         fmu->c = 0;
     }

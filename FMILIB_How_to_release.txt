@@ -1,0 +1,45 @@
+FMILIB_How_to_release.txt
+
+Instructions for how to release FMILibrary.
+
+1. Update version and date in FMILIB_Readme.txt.
+
+2. Create a tag for the new release.
+
+3. Follow instructions in
+https://trac.modelon.se/P510-JModelica/browser/FMILibrary/FMILIB_build_and_package.sh
+and run the script to build the release.
+
+4. Upload the following generate release files to the JModelica server (may have
+   to be done by Modelon IT):
+
+   - FMILibrary-<version>.pdf
+   - FMILibrary-<version>-htmldoc.tgz (unzipped)
+   - FMILibrary-<version>-src.zip
+   - FMILibrary-<version>-win32.zip
+
+   Check where they should be uploaded by comparing with the links here:
+   http://www.jmodelica.org/FMILibrary
+
+5. Create a new page for the "html with frames", see
+   http://www.jmodelica.org/FMILibrary.
+
+   a) To do this drupal access is needed to
+      http://www.jmodelica.org. Create a user on jmodelica.org and ask
+      Jesper Mattson at Modelon for access to create and edit pages.
+
+   b) Log in at http://www.jmodelica.org.
+
+   c) Create a new page (Main menu->Create content->Page)
+
+   d) Add title and write this html source in the page:
+      <p>[[[http://www.jmodelica.org/api-docs/FMIL_docs/<version>/index.html]]]</p>
+
+   e) Expand Input format and set full HTML.
+
+   f) Preview and make sure that the the documentation is shown correctly.
+
+   g) Save the page.
+
+6. Edit http://www.jmodelica.org/FMILibrary to point to the uploaded files and
+   the page created in the previous step.

@@ -476,18 +476,18 @@ int fmi1_xml_handle_Name(fmi1_xml_parser_context_t *context, const char* data) {
     return 0;
 }
 
-static void fmi1_log_warning_if_start_required(
+static void fmi1_log_error_if_start_required(
     fmi1_xml_parser_context_t *context,
     fmi1_xml_variable_t *variable)
 {
     if (fmi1_xml_is_attr_defined(context, fmi_attr_id_fixed)) {
-        jm_log_warning(context->callbacks, module,
-                       "Warning: variable %s: 'fixed' attributed is only allowed when start is defined",
+        jm_log_error(context->callbacks, module,
+                       "Error: variable %s: 'fixed' attributed is only allowed when start is defined",
                        variable->name);
 
     } else if (variable->causality == fmi1_causality_enu_input) {
-        jm_log_warning(context->callbacks, module,
-                       "Warning: variable %s: start value required for input variables",
+        jm_log_error(context->callbacks, module,
+                       "Error: variable %s: start value required for input variables",
                        variable->name);
     }
 }
@@ -567,7 +567,7 @@ int fmi1_xml_handle_Real(fmi1_xml_parser_context_t *context, const char* data) {
         start->typeBase.isFixed = isFixedBuf;
         variable->typeBase = &start->typeBase;
     } else {
-        fmi1_log_warning_if_start_required(context, variable);
+        fmi1_log_error_if_start_required(context, variable);
     }
 
     return 0;
@@ -636,7 +636,7 @@ int fmi1_xml_handle_Integer(fmi1_xml_parser_context_t *context, const char* data
         start->typeBase.isFixed = isFixedBuf;
         variable->typeBase = &start->typeBase;
     } else {
-        fmi1_log_warning_if_start_required(context, variable);
+        fmi1_log_error_if_start_required(context, variable);
     }
 
     return 0;
@@ -679,7 +679,7 @@ int fmi1_xml_handle_Boolean(fmi1_xml_parser_context_t *context, const char* data
         start->typeBase.isFixed = isFixedBuf;
         variable->typeBase = &start->typeBase;
     } else {
-        fmi1_log_warning_if_start_required(context, variable);
+        fmi1_log_error_if_start_required(context, variable);
     }
 
     return 0;
@@ -731,7 +731,7 @@ int fmi1_xml_handle_String(fmi1_xml_parser_context_t *context, const char* data)
         start->start[strlen] = 0;
         variable->typeBase = &start->typeBase;
     } else {
-        fmi1_log_warning_if_start_required(context, variable);
+        fmi1_log_error_if_start_required(context, variable);
     }
 
     return 0;
@@ -805,7 +805,7 @@ int fmi1_xml_handle_Enumeration(fmi1_xml_parser_context_t *context, const char* 
         start->typeBase.isFixed = isFixedBuf;
         variable->typeBase = &start->typeBase;
     } else {
-        fmi1_log_warning_if_start_required(context, variable);
+        fmi1_log_error_if_start_required(context, variable);
     }
     return 0;
 }

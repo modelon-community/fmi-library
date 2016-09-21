@@ -450,29 +450,29 @@ int   fmi2_xml_get_has_start(fmi2_xml_parser_context_t *context, fmi2_xml_variab
 	return hasStart;
 }
 
-static void fmi2_log_warning_if_start_required(
+static void fmi2_log_error_if_start_required(
     fmi2_xml_parser_context_t *context,
     fmi2_xml_variable_t *variable)
 {
     if (variable->causality == fmi2_causality_enu_input) {
-        jm_log_warning(context->callbacks,
-                       "Warning: variable %s: start value required for input variables",
+        jm_log_error(context->callbacks,
+                       "Error: variable %s: start value required for input variables",
                        variable->name);
     } else if (variable->causality == fmi2_causality_enu_parameter) {
-        jm_log_warning(context->callbacks,
-                       "Warning: variable %s: start value required for parameter variables",
+        jm_log_error(context->callbacks,
+                       "Error: variable %s: start value required for parameter variables",
                        variable->name);
     } else if (variable->variability == fmi2_variability_enu_constant) {
-        jm_log_warning(context->callbacks,
-                       "Warning: variable %s: start value required for variables with constant variability",
+        jm_log_error(context->callbacks,
+                       "Error: variable %s: start value required for variables with constant variability",
                        variable->name);
     } else if (variable->initial == fmi2_initial_enu_exact) {
-        jm_log_warning(context->callbacks,
-                       "Warning: variable %s: start value required for variables with initial == \"exact\"",
+        jm_log_error(context->callbacks,
+                       "Error: variable %s: start value required for variables with initial == \"exact\"",
                        variable->name);
     } else if (variable->initial == fmi2_initial_enu_approx) {
-        jm_log_warning(context->callbacks,
-                       "Warning: variable %s: start value required for variables with initial == \"approx\"",
+        jm_log_error(context->callbacks,
+                       "Error: variable %s: start value required for variables with initial == \"approx\"",
                        variable->name);
     }
 }
@@ -548,7 +548,7 @@ int fmi2_xml_handle_RealVariable(fmi2_xml_parser_context_t *context, const char*
                     return -1;
             variable->typeBase = &start->typeBase;
         } else {
-            fmi2_log_warning_if_start_required(context, variable);
+            fmi2_log_error_if_start_required(context, variable);
         }
 
         {
@@ -638,7 +638,7 @@ int fmi2_xml_handle_IntegerVariable(fmi2_xml_parser_context_t *context, const ch
 			}
 			variable->typeBase = &start->typeBase;
         } else {
-            fmi2_log_warning_if_start_required(context, variable);
+            fmi2_log_error_if_start_required(context, variable);
         }
     }
     else {
@@ -677,7 +677,7 @@ int fmi2_xml_handle_BooleanVariable(fmi2_xml_parser_context_t *context, const ch
                     return -1;
             variable->typeBase = &start->typeBase;
         } else {
-            fmi2_log_warning_if_start_required(context, variable);
+            fmi2_log_error_if_start_required(context, variable);
         }
     }
     else {
@@ -726,7 +726,7 @@ int fmi2_xml_handle_StringVariable(fmi2_xml_parser_context_t *context, const cha
             start->start[strlen] = 0;
             variable->typeBase = &start->typeBase;
         } else {
-            fmi2_log_warning_if_start_required(context, variable);
+            fmi2_log_error_if_start_required(context, variable);
         }
     }
     else {
@@ -822,7 +822,7 @@ int fmi2_xml_handle_EnumerationVariable(fmi2_xml_parser_context_t *context, cons
 				start->start = type->typeMin;
             variable->typeBase = &start->typeBase;
         } else {
-            fmi2_log_warning_if_start_required(context, variable);
+            fmi2_log_error_if_start_required(context, variable);
         }
     }
     else {

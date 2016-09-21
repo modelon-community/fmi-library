@@ -16,6 +16,11 @@
 #include <string.h>
 #include <stdio.h>
 
+/* For checking variable naming conventions */
+#include <fmi1_xml_variable_name_parser.tab.h>
+#define YYSTYPE YYFMI1STYPE
+#include <fmi1_xml_variable_name_lex.h>
+
 #include "fmi1_xml_model_description_impl.h"
 #include "fmi1_xml_parser.h"
 
@@ -54,7 +59,7 @@ const char *fmi1_xmlAttrNames[] = {
 #define fmi1_xml_scheme_Enumeration {fmi1_xml_elmID_ScalarVariable, 0, 0}
 #define fmi1_xml_scheme_Implementation {fmi1_xml_elmID_fmiModelDescription, 5, 0}
 #define fmi1_xml_scheme_CoSimulation_StandAlone {fmi1_xml_elmID_Implementation, 0, 0}
-/* NOTE: Capabilities need special handling since it can appear both under 
+/* NOTE: Capabilities need special handling since it can appear both under
 	CoSimulation_StandAlone and CoSimulation_Tool
 */
 #define fmi1_xml_scheme_Capabilities {fmi1_xml_elmID_CoSimulation_StandAlone, 0, 0}
@@ -116,7 +121,7 @@ void fmi1_xml_parse_fatal(fmi1_xml_parser_context_t *context, const char* fmt, .
 void fmi1_xml_parse_error(fmi1_xml_parser_context_t *context, const char* fmt, ...) {
     va_list args;
     va_start (args, fmt);
-	if(context->parser) {		
+	if(context->parser) {
         jm_log_error(context->callbacks, module, "Detected on line:%u of modelDescription.xml", XML_GetCurrentLineNumber(context->parser));
         jm_log_error_v(context->callbacks, module, fmt, args);
     }
@@ -178,7 +183,7 @@ int fmi1_xml_set_attr_string(fmi1_xml_parser_context_t *context, fmi1_xml_elm_en
 
 int fmi1_xml_set_attr_uint(fmi1_xml_parser_context_t *context, fmi1_xml_elm_enu_t elmID, fmi1_xml_attr_enu_t attrID, int required, unsigned int* field, unsigned int defaultVal) {
     int ret;
-    jm_string elmName, attrName, strVal;    
+    jm_string elmName, attrName, strVal;
 
     ret = fmi1_get_attr_str(context, elmID, attrID,required,&strVal);
     if(ret) return ret;
@@ -359,14 +364,14 @@ static void XMLCALL fmi1_parse_element_start(void *c, const char *elm, const cha
 	fmi1_xml_elm_enu_t currentID;
     int i;
     fmi1_xml_parser_context_t *context = c;
-    
+
 	if(context->skipElementCnt) {
 		context->skipElementCnt++;
         jm_log_warning(context->callbacks, module, "[Line:%u] Skipping nested XML element '%s'",
 			XML_GetCurrentLineNumber(context->parser), elm);
 		return;
 	}
-	
+
 	keyEl.elementName = elm;
 	/* find the element handle by name */
     currentElMap = jm_vector_bsearch(fmi1_xml_element_handle_map_t)(context->elmMap, &keyEl, fmi1_xml_compare_elmName);
@@ -386,7 +391,7 @@ static void XMLCALL fmi1_parse_element_start(void *c, const char *elm, const cha
 
 		if((fmi1_xml_scheme_info[currentID].parentID != parentID) &&
 			((currentID != fmi1_xml_elmID_Capabilities) || (parentID != fmi1_xml_elmID_CoSimulation_Tool))) {
-				jm_log_error(context->callbacks, module, 
+				jm_log_error(context->callbacks, module,
 					"[Line:%u] XML element '%s' cannot be placed inside '%s', skipping",
 					XML_GetCurrentLineNumber(context->parser), elm, fmi1_element_handle_map[parentID].elementName);
 				context->skipElementCnt = 1;
@@ -395,7 +400,7 @@ static void XMLCALL fmi1_parse_element_start(void *c, const char *elm, const cha
 		if(siblingID != fmi1_xml_elmID_none) {
 			if(siblingID == currentID) {
 				if(!fmi1_xml_scheme_info[currentID].multipleAllowed) {
-					jm_log_error(context->callbacks, module, 
+					jm_log_error(context->callbacks, module,
 						"[Line:%u] Multiple instances of XML element '%s' are not allowed, skipping",
 						XML_GetCurrentLineNumber(context->parser), elm);
 					context->skipElementCnt = 1;
@@ -407,7 +412,7 @@ static void XMLCALL fmi1_parse_element_start(void *c, const char *elm, const cha
 				int curSiblingIndex = fmi1_xml_scheme_info[currentID].siblingIndex;
 
 				if(lastSiblingIndex >= curSiblingIndex) {
-					jm_log_error(context->callbacks, module, 
+					jm_log_error(context->callbacks, module,
 						"[Line:%u] XML element '%s' cannot be placed after element '%s', skipping",
 						XML_GetCurrentLineNumber(context->parser), elm, fmi1_element_handle_map[siblingID].elementName);
 					context->skipElementCnt = 1;
@@ -478,7 +483,7 @@ static void XMLCALL fmi1_parse_element_end(void* c, const char *elm) {
 
     if(currentID != context -> currentElmID) {
         /* missmatch error*/
-        fmi1_xml_parse_fatal(context, "Element end '%s' does not match element start '%s' in XML", elm, 
+        fmi1_xml_parse_fatal(context, "Element end '%s' does not match element start '%s' in XML", elm,
 			fmi1_element_handle_map[context -> currentElmID].elementName);
         return;
     }
@@ -521,7 +526,44 @@ static void XMLCALL fmi1_parse_element_data(void* c, const XML_Char *s, int len)
         }
 }
 
-int fmi1_xml_parse_model_description(fmi1_xml_model_description_t* md, const char* filename) {
+static int is_cs_fmu(fmi1_xml_model_description_t *md)
+{
+    return md->fmuKind == fmi1_fmu_kind_enu_cs_tool ||
+           md->fmuKind == fmi1_fmu_kind_enu_cs_standalone;
+}
+
+static void fmi1_check_variable_naming_conventions(fmi1_xml_model_description_t *md) {
+    size_t n = jm_vector_get_size(jm_named_ptr)(&md->variablesByName);
+    size_t k;
+    yyscan_t scanner;
+    YY_BUFFER_STATE buf;
+
+    /* check for duplicate variable names */
+    for (k = 1; k < n; k++) {
+        const char *v1 = jm_vector_get_item(jm_named_ptr)(&md->variablesByName, k - 1).name;
+        const char *v2 = jm_vector_get_item(jm_named_ptr)(&md->variablesByName, k).name;
+        if(strcmp(v1, v2) == 0) {
+            jm_log_error(md->callbacks, module,
+                    "Two variables with the same name %s found. This is not allowed.",
+                    v1);
+        }
+    }
+
+    /* check variable name syntax */
+    if (md->namingConvension == fmi1_naming_enu_structured) {
+        yyfmi1lex_init(&scanner);
+        for (k = 0; k < n; k++) {
+            char *name = ((fmi1_xml_variable_t *) jm_vector_get_item(jm_voidp)(
+                    md->variablesOrigOrder, k))->name;
+            buf = yyfmi1_scan_string(name, scanner);
+            yyfmi1parse(scanner, md->callbacks, name);
+            yyfmi1_delete_buffer(buf, scanner);
+        }
+        yyfmi1lex_destroy(scanner);
+    }
+}
+
+int fmi1_xml_parse_model_description(fmi1_xml_model_description_t* md, const char* filename, int configuration) {
     XML_Memory_Handling_Suite memsuite;
     fmi1_xml_parser_context_t* context;
     XML_Parser parser = NULL;
@@ -529,7 +571,8 @@ int fmi1_xml_parse_model_description(fmi1_xml_model_description_t* md, const cha
 
     context = (fmi1_xml_parser_context_t*)md->callbacks->calloc(1, sizeof(fmi1_xml_parser_context_t));
     if(!context) {
-        jm_log_fatal(md->callbacks, "FMIXML", "Could not allocate memory for XML parser context");
+        jm_log_fatal(md->callbacks, module,
+                     "Could not allocate memory for XML parser context");
     }
     context->callbacks = md->callbacks;
     context->modelDescription = md;
@@ -589,7 +632,7 @@ int fmi1_xml_parse_model_description(fmi1_xml_model_description_t* md, const cha
              fclose(file);
 		     fmi1_xml_parse_free_context(context);
              return -1; /* failure */
-        }        
+        }
     }
     fclose(file);
     /* done later XML_ParserFree(parser);*/
@@ -597,6 +640,25 @@ int fmi1_xml_parse_model_description(fmi1_xml_model_description_t* md, const cha
         fmi1_xml_parse_fatal(context, "Unexpected end of file (not all elements ended) when parsing %s", filename);
         fmi1_xml_parse_free_context(context);
         return -1;
+    }
+
+    /* Check if the 'capabilities' element was parsed in a CS FMU. If not,
+     * md->capabilities == NULL and default values should be set.
+     */
+    if (is_cs_fmu(md) && md->capabilities == NULL) {
+        jm_log_error(md->callbacks, module,
+                     "No \"Capabilities\" element found, using default capabilities.");
+
+        md->capabilities = fmi1_xml_default_capabilities(md->callbacks);
+        if (md->capabilities == NULL) {
+            jm_log_fatal(md->callbacks, module, "Failed to allocate memory");
+            fmi1_xml_parse_free_context(context);
+            return -1;
+        }
+    }
+
+    if (configuration & FMI1_XML_NAME_CHECK) {
+        fmi1_check_variable_naming_conventions(md);
     }
 
     md->status = fmi1_xml_model_description_enu_ok;

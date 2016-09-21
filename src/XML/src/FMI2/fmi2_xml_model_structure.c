@@ -85,10 +85,16 @@ jm_vector(jm_voidp)* fmi2_xml_get_initial_unknowns(fmi2_xml_model_structure_t* m
 
 void fmi2_xml_get_dependencies(fmi2_xml_dependencies_t* dep, size_t** startIndex, size_t** dependency, char** factorKind){ 
     if(dep) { 
-        *startIndex = jm_vector_get_itemp(size_t)(&dep->startIndex, 0); 
-        *dependency = jm_vector_get_itemp(size_t)(&dep->dependencyIndex, 0); 
-        *factorKind = jm_vector_get_itemp(char)(&dep->dependencyFactorKind, 0); 
-    } 
+        if (jm_vector_get_size(size_t)(&dep->dependencyIndex) == 0) {
+            *startIndex = NULL;
+            *dependency = NULL;
+            *factorKind = NULL;
+        } else {
+            *startIndex = jm_vector_get_itemp(size_t)(&dep->startIndex, 0);
+            *dependency = jm_vector_get_itemp(size_t)(&dep->dependencyIndex, 0);
+            *factorKind = jm_vector_get_itemp(char)(&dep->dependencyFactorKind, 0);
+        }
+    }
     else { 
         *startIndex = 0; 
     } 

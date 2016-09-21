@@ -231,7 +231,7 @@ void printVariableInfo(fmi1_import_t* fmu,
 			n = fmi1_import_get_variable_list_size(vl);
 		i = (unsigned)n;
 		assert( n == i);		
-        if(n>0) {
+        if(vl) {
             printf("Listing direct dependencies: \n");
             for(i = 0;i<n;i++)
                 printf("\t%s\n",fmi1_import_get_variable_name(fmi1_import_get_variable(vl, i)));

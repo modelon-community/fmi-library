@@ -31,10 +31,12 @@ extern "C" {
 
 struct fmi_xml_context_t {
 	jm_callbacks* callbacks;
-	
+
     XML_Parser parser;
 
 	fmi_version_enu_t fmi_version;
+
+    int configuration;
 };
 
 #ifdef __cplusplus

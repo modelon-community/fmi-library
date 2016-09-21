@@ -40,7 +40,13 @@
   </ScalarVariable>  
     <ScalarVariable name="LOGGER_TEST_BOOLEAN" valueReference="0" description="This is only used to test logger replace function #b0#">
      <Boolean/>
-  </ScalarVariable>  
+  </ScalarVariable>
+  <ScalarVariable name="LOGGER_TEST_DERIVATIVE" valueReference="10" description="This is to test that the derivative attribute may appear on any Real variables.">
+     <Real/>
+  </ScalarVariable>
+  <ScalarVariable name="LOGGER_TEST_DERIVATIVE_DER" valueReference="11" variability="fixed" description="This is to test that the derivative attribute may appear on any Real variables.">
+     <Real derivative="12"/>
+  </ScalarVariable>
 </ModelVariables>
 <ModelStructure>
 </ModelStructure>

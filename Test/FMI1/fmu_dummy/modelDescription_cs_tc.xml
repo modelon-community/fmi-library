@@ -8,6 +8,22 @@
   guid="123"
   numberOfContinuousStates="2"
   numberOfEventIndicators="1">
+<TypeDefinitions>
+    <Type
+    name="IntegerType">
+      <IntegerType min="2" max="22"/>
+    </Type>
+  <Type
+    name="EnumerationType">
+    <EnumerationType min="1" max="5">
+      <Item name="n1"/>
+      <Item name="n2"/>
+      <Item name="n3"/>
+      <Item name="n4"/>
+      <Item name="n5"/>
+    </EnumerationType>
+  </Type>
+</TypeDefinitions>
 <ModelVariables>
   <ScalarVariable name="HIGHT" valueReference="0" description="Hight of the ball">
      <Real start="1.0" fixed="true"/>
@@ -29,7 +45,22 @@
   </ScalarVariable>  
     <ScalarVariable name="LOGGER_TEST_BOOLEAN" valueReference="0" description="This is only used to test logger replace function #b0#">
      <Boolean/>
-  </ScalarVariable>   
+  </ScalarVariable>
+  <ScalarVariable name="INTEGER" valueReference="1">
+     <Integer min="1" max="11"/>
+  </ScalarVariable>
+  <ScalarVariable name="INTEGER_DECLAREDTYPE" valueReference="2">
+     <Integer declaredType="IntegerType"/>
+  </ScalarVariable>
+  <ScalarVariable name="INTEGER_DECLAREDTYPE_OVERWRITE" valueReference="3">
+    <Integer declaredType="IntegerType" min="1" max="11"/>
+  </ScalarVariable>
+  <ScalarVariable name="ENUMERATION_DECLAREDTYPE" valueReference="4">
+    <Enumeration declaredType="EnumerationType"/>
+  </ScalarVariable>
+  <ScalarVariable name="ENUMERATION_DECLAREDTYPE_OVERWRITE" valueReference="5">
+    <Enumeration declaredType="EnumerationType" min="2" max="3"/>
+  </ScalarVariable>
 </ModelVariables>
 <Implementation>
   <CoSimulation_Tool>

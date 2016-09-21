@@ -37,6 +37,25 @@ void do_event_iteration(fmi2_import_t *fmu, fmi2_event_info_t *eventInfo)
         fmi2_import_new_discrete_states(fmu, eventInfo);
     }
 }
+
+int test_parsed_all_varialbes(fmi2_import_t* fmu)
+{ /* Test that all variables where parsed */
+    fmi2_import_model_counts_t  mc;
+    unsigned int                n_total;
+    
+    fmi2_import_collect_model_counts(fmu, &mc);
+    n_total = mc.num_constants
+            + mc.num_fixed
+            + mc.num_tunable
+            + mc.num_discrete
+            + mc.num_continuous
+            + mc.num_independent;
+    
+    
+    if (n_total != 12) {
+        do_exit(CTEST_RETURN_FAIL);
+    }
+}
 	   
 int test_simulate_me(fmi2_import_t* fmu)
 {	
@@ -258,7 +277,9 @@ int main(int argc, char *argv[])
 		printf("Could not create the DLL loading mechanism(C-API test).\n");
 		do_exit(CTEST_RETURN_FAIL);
 	}
-	
+    
+    test_parsed_all_varialbes(fmu);
+    
 	test_simulate_me(fmu);
 
 	fmi2_import_destroy_dllfmu(fmu);

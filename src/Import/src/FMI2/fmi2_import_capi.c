@@ -199,7 +199,9 @@ jm_status_enu_t fmi2_import_instantiate(fmi2_import_t* fmu,
 }
 
 void fmi2_import_free_instance(fmi2_import_t* fmu) {
-    fmi2_capi_free_instance(fmu -> capi);
+    if (fmu != NULL) {
+        fmi2_capi_free_instance(fmu -> capi);
+    }
 }
 
 fmi2_status_t fmi2_import_setup_experiment(fmi2_import_t* fmu,

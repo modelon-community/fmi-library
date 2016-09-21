@@ -85,7 +85,7 @@ fmi1_xml_model_description_t * fmi1_xml_allocate_model_description( jm_callbacks
 
     md->fmuKind = fmi1_fmu_kind_enu_me;
 
-    fmi1_xml_init_capabilities(&md->capabilities);
+    md->capabilities = NULL;
 
     jm_vector_init(jm_string)(&md->additionalModels, 0, cb);
 
@@ -171,7 +171,7 @@ const char* fmi1_xml_get_last_error(fmi1_xml_model_description_t* md) {
 
 void fmi1_xml_clear_last_error(fmi1_xml_model_description_t* md) {
 	jm_clear_last_error(md->callbacks);
-    
+
     /* return (md->status != fmi1_xml_model_description_enu_error); */
 }
 
@@ -180,6 +180,7 @@ void fmi1_xml_free_model_description(fmi1_xml_model_description_t* md) {
 	if(!md) return;
 	cb = md->callbacks;
     fmi1_xml_clear_model_description(md);
+    cb->free(md->capabilities);
     cb->free(md);
 }
 

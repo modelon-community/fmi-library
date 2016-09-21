@@ -25,11 +25,7 @@
 
 #include <FMI2/fmi2_import.h>
 
-
-void mylogger(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_level, jm_string message)
-{
-        printf("module = %s, log level = %d: %s\n", module, log_level, message);
-}
+int expect_error;
 
 int annotation_start_handle(void *context, const char *parentName, void *parent, const char *elm, const char **attr) {
 	int i = 0;
@@ -67,6 +63,14 @@ void do_exit(int code)
 	printf("Press 'Enter' to exit\n");
 /*	getchar(); */
 	exit(code);
+}
+
+void mylogger(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_level, jm_string message)
+{
+    printf("[%s][%s] %s\n", module, jm_log_level_to_string(log_level), message);
+    if (!expect_error && log_level == jm_log_level_error) {
+        do_exit(1);
+    }
 }
 
 void print_int(int i,void* data) {
@@ -323,6 +327,7 @@ int main(int argc, char *argv[])
 	}
 
 	tmpPath = argv[1];
+    expect_error = argc > 2;
 
 	callbacks.malloc = malloc;
     callbacks.calloc = calloc;
@@ -350,7 +355,6 @@ int main(int argc, char *argv[])
         fmi_import_free_context(context);
 		do_exit(1);
 	}
-
 
     printf("Model name: %s\n", fmi2_import_get_model_name(fmu));
     printf("Model GUID: %s\n", fmi2_import_get_GUID(fmu));

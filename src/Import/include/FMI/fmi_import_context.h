@@ -77,6 +77,21 @@ FMILIB_EXPORT fmi_import_context_t* fmi_import_allocate_context( jm_callbacks* c
 FMILIB_EXPORT void fmi_import_free_context( fmi_import_context_t* c);
 
 /**
+    \brief If this configuration option is set, the model description will be
+    checked to follow the variable naming conventions. Variables not following
+    the convention will be logged.
+*/
+#define FMI_IMPORT_NAME_CHECK 1
+
+/**
+    \brief Sets advanced configuration, if zero is passed default configuration
+    is set. Currently only one non default configuration is available:
+    FMI_IMPORT_XML_NAME_CHECK.
+    @param conf - specifies the configuration to use
+*/
+FMILIB_EXPORT void fmi_import_set_configuration( fmi_import_context_t* c, int conf);
+
+/**
 	\brief Unzip an FMU specified by the fileName into directory dirName and parse XML to get FMI standard version.
 	@param c - library context.
 	@param fileName - an FMU file name.

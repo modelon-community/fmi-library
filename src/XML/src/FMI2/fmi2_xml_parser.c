@@ -16,6 +16,11 @@
 #include <string.h>
 #include <stdio.h>
 
+/* For checking variable naming conventions */
+#include <fmi2_xml_variable_name_parser.tab.h>
+#define YYSTYPE YYFMI2STYPE
+#include <fmi2_xml_variable_name_lex.h>
+
 #include "fmi2_xml_model_description_impl.h"
 #include "fmi2_xml_parser.h"
 
@@ -614,7 +619,41 @@ static void XMLCALL fmi2_parse_element_data(void* c, const XML_Char *s, int len)
 		}
 }
 
-int fmi2_xml_parse_model_description(fmi2_xml_model_description_t* md, const char* filename, fmi2_xml_callbacks_t* xml_callbacks) {
+void fmi2_check_variable_naming_conventions(fmi2_xml_model_description_t *md) {
+    size_t n = jm_vector_get_size(jm_named_ptr)(&md->variablesByName);
+    size_t k;
+    yyscan_t scanner;
+    YY_BUFFER_STATE buf;
+
+    /* check for duplicate variable names */
+    for (k = 1; k < n; k++) {
+        const char *v1 = jm_vector_get_item(jm_named_ptr)(&md->variablesByName, k - 1).name;
+        const char *v2 = jm_vector_get_item(jm_named_ptr)(&md->variablesByName, k).name;
+        if(strcmp(v1, v2) == 0) {
+            jm_log_error(md->callbacks, module,
+                    "Two variables with the same name %s found. This is not allowed.",
+                    v1);
+        }
+    }
+
+    /* check variable name syntax */
+    if (md->namingConvension == fmi2_naming_enu_structured) {
+        yyfmi2lex_init(&scanner);
+        for (k = 0; k < n; k++) {
+            char *name = ((fmi2_xml_variable_t *) jm_vector_get_item(jm_voidp)(
+                    md->variablesOrigOrder, k))->name;
+            buf = yyfmi2_scan_string(name, scanner);
+            yyfmi2parse(scanner, md->callbacks, name);
+            yyfmi2_delete_buffer(buf, scanner);
+        }
+        yyfmi2lex_destroy(scanner);
+    }
+}
+
+int fmi2_xml_parse_model_description(fmi2_xml_model_description_t* md,
+                                     const char* filename,
+                                     fmi2_xml_callbacks_t* xml_callbacks,
+                                     int configuration) {
     XML_Memory_Handling_Suite memsuite;
     fmi2_xml_parser_context_t* context;
     XML_Parser parser = NULL;
@@ -692,6 +731,10 @@ int fmi2_xml_parse_model_description(fmi2_xml_model_description_t* md, const cha
         fmi2_xml_parse_fatal(context, "Unexpected end of file (not all elements ended) when parsing %s", filename);
         fmi2_xml_parse_free_context(context);
         return -1;
+    }
+
+    if (configuration & FMI2_XML_NAME_CHECK) {
+        fmi2_check_variable_naming_conventions(md);
     }
 
     md->status = fmi2_xml_model_description_enu_ok;

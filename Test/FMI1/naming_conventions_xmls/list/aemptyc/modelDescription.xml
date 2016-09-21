@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription
+  fmiVersion="1.0"
+  modelName="none"
+  modelIdentifier="none"
+  variableNamingConvention="structured"
+  guid="123"
+  numberOfContinuousStates="0"
+  numberOfEventIndicators="1">
+<ModelVariables>
+  <ScalarVariable name="a" valueReference="0">
+     <Integer/>
+  </ScalarVariable>
+  <ScalarVariable name="''" valueReference="1">
+     <Integer/>
+  </ScalarVariable>
+  <ScalarVariable name="c" valueReference="2">
+     <Integer/>
+  </ScalarVariable>
+</ModelVariables>
+</fmiModelDescription>
+

@@ -17,6 +17,7 @@
 #define JM_STRING_SET_H
 
 #include <string.h>
+#include <stdio.h>
 
 #include "jm_types.h"
 #include "jm_vector.h"
@@ -49,9 +50,38 @@ typedef struct jm_vector_jm_string jm_string_set; /* equivalent to "typedef jm_v
 \return If found returns a pointer to the string saved in the set. If not found returns NULL.
 */
 static jm_string jm_string_set_find(jm_string_set* s, jm_string str) {
-    jm_string* found = jm_vector_find(jm_string)(s,&str,jm_compare_string);
+    jm_string* found = jm_vector_bsearch(jm_string)(s,&str,jm_compare_string);
     if(found) return *found;
     return 0;
+}
+
+/**
+\brief Find index of a string in a set.
+
+\param s A string set.
+\param str Search string.
+\return If found returns the index to the string saved in the set. If not found returns the insertion index of the string.
+*/
+static size_t jm_string_set_find_index(jm_string_set* s, jm_string str) {
+    size_t len = jm_vector_get_size(jm_string)(s);
+    size_t first = 0;
+    size_t mid = 0;
+    size_t last = len - 1;
+    if(len == 0) {
+        return 0;
+    }
+    while (first <= last) {
+        mid = (last + first)/2;
+        if (strcmp(jm_vector_get_item(jm_string)(s,mid), str) == 0) {
+            return mid;
+        } else if (strcmp(jm_vector_get_item(jm_string)(s,mid), str) > 0) {
+            if (mid == 0) return first;
+            last = mid - 1;
+        } else if (strcmp(jm_vector_get_item(jm_string)(s,mid), str) < 0) {
+            first = mid + 1;
+        }
+    }
+    return first;
 }
 
 /**
@@ -62,20 +92,26 @@ static jm_string jm_string_set_find(jm_string_set* s, jm_string str) {
 *  @return A pointer to the inserted (or found) element or zero pointer if failed.
 */
 static jm_string jm_string_set_put(jm_string_set* s, jm_string str) {
-    jm_string found = jm_string_set_find(s, str);
-    if(found) return found;
-    {
-        char* newstr = 0;
-        size_t len = strlen(str) + 1;
-        jm_string* pnewstr = jm_vector_push_back(jm_string)(s, newstr);
-        if(pnewstr) *pnewstr = newstr = s->callbacks->malloc(len);
-        if(!pnewstr || !newstr) return 0;
-        memcpy(newstr, str, len);
-        jm_vector_qsort(jm_string)(s, jm_compare_string);
-        found = newstr;
+    jm_string* pnewstr;
+    char* newstr = 0;
+    size_t len = strlen(str) + 1;
+    size_t idx = jm_string_set_find_index(s, str);
+
+    if (idx != jm_vector_get_size(jm_string)(s)) {
+        if (strcmp(jm_vector_get_item(jm_string)(s, idx), str) != 0) {
+            pnewstr = jm_vector_insert(jm_string)(s, idx, str);
+        } else {
+            return jm_vector_get_item(jm_string)(s, idx);
+        }
+    } else {
+        pnewstr = jm_vector_push_back(jm_string)(s, str);
     }
-    return found;
+    if(pnewstr) *pnewstr = newstr = s->callbacks->malloc(len);
+    if(!pnewstr || !newstr) return 0;
+    memcpy(newstr, str, len);
+    return *pnewstr;
 }
+
 /** @}
 	*/
 

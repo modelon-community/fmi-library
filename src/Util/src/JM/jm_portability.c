@@ -331,17 +331,17 @@ char* jm_create_URL_from_abs_path(jm_callbacks* cb, const char* path) {
 	return url;
 }
 
- int rpl_vsnprintf(char *, size_t, const char *, va_list);
+int vsnprintf(char *, size_t, const char *, va_list);
 
- int jm_vsnprintf(char * str, size_t size, const char * fmt, va_list al) {
-     return rpl_vsnprintf(str, size, fmt, al);
- }
+int jm_vsnprintf(char * str, size_t size, const char * fmt, va_list al) {
+    return vsnprintf(str, size, fmt, al);
+}
 
- int jm_snprintf(char * str, size_t size, const char * fmt, ...) {
+int jm_snprintf(char * str, size_t size, const char * fmt, ...) {
     va_list args;
     int ret;
     va_start (args, fmt);
-    ret = rpl_vsnprintf(str, size, fmt, args);
+    ret = vsnprintf(str, size, fmt, args);
     va_end (args);
     return ret;
- }
+}

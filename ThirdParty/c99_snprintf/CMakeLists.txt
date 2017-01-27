@@ -24,11 +24,28 @@ CHECK_INCLUDE_FILES(stdlib.h HAVE_STDLIB_H)
 CHECK_INCLUDE_FILES(inttypes.h 	HAVE_INTTYPES_H)
 CHECK_INCLUDE_FILES(locale.h   	HAVE_LOCALE_H)
 
-INCLUDE (CheckFunctionExists) 
-CHECK_FUNCTION_EXISTS(vsnprintf HAVE_VSNPRINTF)
-CHECK_FUNCTION_EXISTS(snprintf	HAVE_SNPRINTF)
-CHECK_FUNCTION_EXISTS(vasprintf 	HAVE_VASPRINTF)
-CHECK_FUNCTION_EXISTS(asprintf    	HAVE_ASPRINTF)
+INCLUDE (CheckSymbolExists)
+INCLUDE (CheckFunctionExists)
+CHECK_SYMBOL_EXISTS(vsnprintf stdio.h HAVE_VSNPRINTF_SYM)
+CHECK_SYMBOL_EXISTS(snprintf  stdio.h HAVE_SNPRINTF_SYM)
+CHECK_SYMBOL_EXISTS(vasprintf stdio.h HAVE_VASPRINTF_SYM)
+CHECK_SYMBOL_EXISTS(asprintf  stdio.h HAVE_ASPRINTF_SYM)
+CHECK_FUNCTION_EXISTS(vsnprintf HAVE_VSNPRINTF_FCN)
+CHECK_FUNCTION_EXISTS(snprintf  HAVE_SNPRINTF_FCN)
+CHECK_FUNCTION_EXISTS(vasprintf HAVE_VASPRINTF_FCN)
+CHECK_FUNCTION_EXISTS(asprintf  HAVE_ASPRINTF_FCN)
+
+MACRO(FMIL_EVAL_CONDITION var_to_store_cond_eval)
+   IF(${ARGN})
+     SET(${var_to_store_cond_eval} 1)
+   ELSE(${ARGN})
+     SET(${var_to_store_cond_eval} 0)
+   ENDIF(${ARGN})
+ENDMACRO(FMIL_EVAL_CONDITION)
+FMIL_EVAL_CONDITION(HAVE_VSNPRINTF  HAVE_VSNPRINTF_SYM OR HAVE_VSNPRINTF_FCN)
+FMIL_EVAL_CONDITION(HAVE_SNPRINTF   HAVE_SNPRINTF_SYM  OR HAVE_SNPRINTF_FCN)
+FMIL_EVAL_CONDITION(HAVE_VASPRINTF  HAVE_VASPRINTF_SYM OR HAVE_VASPRINTF_FCN)
+FMIL_EVAL_CONDITION(HAVE_ASPRINTF   HAVE_ASPRINTF_SYM  OR HAVE_ASPRINTF_FCN)
 
 CHECK_FUNCTION_EXISTS(localeconv    	HAVE_LOCALECONV)
  
@@ -86,12 +103,24 @@ foreach(check ${CHECKS})
         set(DEFINES ${DEFINES} -D${check}=${${check}})
     endif()
 endforeach()
-add_definitions(
-    -Dvsnprintf=rpl_vsnprintf
-    -Dsnprintf=rpl_snprintf
-    -Dvasprintf=rpl_vasprintf
-    -Dasprintf=rpl_asprintf
-    ${DEFINES})
+
+if(NOT HAVE_VSNPRINTF)
+    set(DEFINES ${DEFINES} -Dvsnprintf=rpl_vsnprintf)
+endif()
+
+if(NOT HAVE_SNPRINTF)
+    set(DEFINES ${DEFINES} -Dsnprintf=rpl_snprintf)
+endif()
+
+if(NOT HAVE_VASPRINTF)
+    set(DEFINES ${DEFINES} -Dvasprintf=rpl_vasprintf)
+endif()
+
+if(NOT HAVE_ASPRINTF)
+    set(DEFINES ${DEFINES} -Dasprintf=rpl_asprintf)
+endif()
+
+add_definitions(${DEFINES})
 
 file(WRITE ${CMAKE_BINARY_DIR}/c99snprintf_defs "${DEFINES}")
 

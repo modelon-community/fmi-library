@@ -36,11 +36,11 @@ fmi2_xml_model_structure_t* fmi2_xml_allocate_model_structure(jm_callbacks* cb) 
 
 	ms->isValidFlag = 1;
 
-    ms->outputDeps = fmi2_xml_allocate_dependencies(cb); 
-    ms->derivativeDeps = fmi2_xml_allocate_dependencies(cb); 
-    ms->discreteStateDeps = fmi2_xml_allocate_dependencies(cb); 
-    ms->initialUnknownDeps = fmi2_xml_allocate_dependencies(cb); 
-	 	 
+    ms->outputDeps = fmi2_xml_allocate_dependencies(cb);
+    ms->derivativeDeps = fmi2_xml_allocate_dependencies(cb);
+    ms->discreteStateDeps = fmi2_xml_allocate_dependencies(cb);
+    ms->initialUnknownDeps = fmi2_xml_allocate_dependencies(cb);
+
 	if(!ms->outputDeps || !ms->derivativeDeps || !ms->discreteStateDeps || !ms->initialUnknownDeps) {
 		fmi2_xml_free_model_structure(ms);
 		return 0;
@@ -58,7 +58,7 @@ void fmi2_xml_free_model_structure(fmi2_xml_model_structure_t* ms) {
 	jm_vector_free_data(jm_voidp)(&ms->derivatives);
 	jm_vector_free_data(jm_voidp)(&ms->discreteStates);
 	jm_vector_free_data(jm_voidp)(&ms->initialUnknowns);
-	
+
     fmi2_xml_free_dependencies(ms->outputDeps);
     fmi2_xml_free_dependencies(ms->derivativeDeps);
     fmi2_xml_free_dependencies(ms->discreteStateDeps);
@@ -83,8 +83,8 @@ jm_vector(jm_voidp)* fmi2_xml_get_initial_unknowns(fmi2_xml_model_structure_t* m
 }
 
 
-void fmi2_xml_get_dependencies(fmi2_xml_dependencies_t* dep, size_t** startIndex, size_t** dependency, char** factorKind){ 
-    if(dep) { 
+void fmi2_xml_get_dependencies(fmi2_xml_dependencies_t* dep, size_t** startIndex, size_t** dependency, char** factorKind){
+    if(dep) {
         if (jm_vector_get_size(size_t)(&dep->dependencyIndex) == 0) {
             *startIndex = NULL;
             *dependency = NULL;
@@ -95,30 +95,30 @@ void fmi2_xml_get_dependencies(fmi2_xml_dependencies_t* dep, size_t** startIndex
             *factorKind = jm_vector_get_itemp(char)(&dep->dependencyFactorKind, 0);
         }
     }
-    else { 
-        *startIndex = 0; 
-    } 
-} 
+    else {
+        *startIndex = 0;
+    }
+}
 
-void fmi2_xml_get_outputs_dependencies(fmi2_xml_model_structure_t* ms,  
-                                           size_t** startIndex, size_t** dependency, char** factorKind) { 
-    fmi2_xml_get_dependencies(ms->outputDeps, startIndex, dependency, factorKind); 
-} 
+void fmi2_xml_get_outputs_dependencies(fmi2_xml_model_structure_t* ms,
+                                           size_t** startIndex, size_t** dependency, char** factorKind) {
+    fmi2_xml_get_dependencies(ms->outputDeps, startIndex, dependency, factorKind);
+}
 
-void fmi2_xml_get_derivatives_dependencies(fmi2_xml_model_structure_t* ms,  
-                                           size_t** startIndex, size_t** dependency, char** factorKind) { 
-    fmi2_xml_get_dependencies(ms->derivativeDeps, startIndex, dependency, factorKind); 
-} 
+void fmi2_xml_get_derivatives_dependencies(fmi2_xml_model_structure_t* ms,
+                                           size_t** startIndex, size_t** dependency, char** factorKind) {
+    fmi2_xml_get_dependencies(ms->derivativeDeps, startIndex, dependency, factorKind);
+}
 
-void fmi2_xml_get_discrete_states_dependencies(fmi2_xml_model_structure_t* ms,  
-                                           size_t** startIndex, size_t** dependency, char** factorKind) { 
-    fmi2_xml_get_dependencies(ms->discreteStateDeps, startIndex, dependency, factorKind); 
-} 
+void fmi2_xml_get_discrete_states_dependencies(fmi2_xml_model_structure_t* ms,
+                                           size_t** startIndex, size_t** dependency, char** factorKind) {
+    fmi2_xml_get_dependencies(ms->discreteStateDeps, startIndex, dependency, factorKind);
+}
 
-void fmi2_xml_get_initial_unknowns_dependencies(fmi2_xml_model_structure_t* ms,  
-                                           size_t** startIndex, size_t** dependency, char** factorKind) { 
-    fmi2_xml_get_dependencies(ms->initialUnknownDeps, startIndex, dependency, factorKind); 
-} 
+void fmi2_xml_get_initial_unknowns_dependencies(fmi2_xml_model_structure_t* ms,
+                                           size_t** startIndex, size_t** dependency, char** factorKind) {
+    fmi2_xml_get_dependencies(ms->initialUnknownDeps, startIndex, dependency, factorKind);
+}
 
 
 fmi2_xml_dependencies_t* fmi2_xml_allocate_dependencies(jm_callbacks* cb) {
@@ -243,13 +243,13 @@ int fmi2_xml_parse_dependencies(fmi2_xml_parser_context_t *context,
 {
     fmi2_xml_model_description_t* md = context->modelDescription;
     fmi2_xml_model_structure_t* ms = md->modelStructure;
-    
+
     const char* listInd;
     const char* listKind;
     size_t numDepInd = 0;
     size_t numDepKind = 0;
     size_t totNumDep = jm_vector_get_size(size_t)(&deps->dependencyIndex);
-    
+
     /*  <xs:attribute name="dependencies">
             <xs:simpleType>
                 <xs:list itemType="xs:unsignedInt"/>
@@ -276,7 +276,7 @@ int fmi2_xml_parse_dependencies(fmi2_xml_parser_context_t *context,
                 return 0;
              }
              if(ind < 1) {
-                 fmi2_xml_parse_error(context, "XML element 'Unknown': item %d=%d is less than one in the list for attribute 'dependencies'", 
+                 fmi2_xml_parse_error(context, "XML element 'Unknown': item %d=%d is less than one in the list for attribute 'dependencies'",
                      numDepInd, ind);
                 ms->isValidFlag = 0;
                 return 0;
@@ -354,7 +354,7 @@ int fmi2_xml_parse_dependencies(fmi2_xml_parser_context_t *context,
                 else if (!(kind == fmi2_dependency_factor_kind_dependent || kind == fmi2_dependency_factor_kind_constant)) {
                     fmi2_xml_parse_error(context, "XML element 'Unknown' within 'InitialUnknowns': only 'dependent' and 'constant' allowed in list for attribute 'dependenciesKind'");
                     ms->isValidFlag = 0;
-                    return 0;                 
+                    return 0;
                 }
              }
              if(!jm_vector_push_back(char)(&deps->dependencyFactorKind, kind)) {
@@ -367,7 +367,7 @@ int fmi2_xml_parse_dependencies(fmi2_xml_parser_context_t *context,
     if(listInd && listKind) {
         /* both lists are present - the number of items must match */
         if(numDepInd != numDepKind) {
-            fmi2_xml_parse_error(context, "XML element 'Unknown': different number of items (%u and %u) in the lists for 'dependencies' and 'dependenciesKind'", 
+            fmi2_xml_parse_error(context, "XML element 'Unknown': different number of items (%u and %u) in the lists for 'dependencies' and 'dependenciesKind'",
                                  numDepInd, numDepKind);
             ms->isValidFlag = 0;
             return 0;
@@ -401,27 +401,27 @@ int fmi2_xml_parse_dependencies(fmi2_xml_parser_context_t *context,
     if(!jm_vector_push_back(size_t)(&deps->startIndex, totNumDep + numDepInd)) {
         fmi2_xml_parse_fatal(context, "Could not allocate memory");
         return -1;
-    }    
+    }
 
     return 0;
 }
 
 
-int fmi2_xml_parse_unknown(fmi2_xml_parser_context_t *context, 
+int fmi2_xml_parse_unknown(fmi2_xml_parser_context_t *context,
                            fmi2_xml_elm_enu_t parentElmID,
                            jm_vector(jm_voidp) *destVarList,
                            fmi2_xml_dependencies_t* deps)
 {
     fmi2_xml_model_description_t* md = context->modelDescription;
     fmi2_xml_model_structure_t* ms = md->modelStructure;
-    
+
     unsigned int index;
     fmi2_xml_variable_t* variable;
-    
-    /* <xs:attribute name="index" type="xs:unsignedInt" use="required"> */        
+
+    /* <xs:attribute name="index" type="xs:unsignedInt" use="required"> */
     if (fmi2_xml_set_attr_uint(context, fmi2_xml_elmID_Unknown, fmi_attr_id_index, 1, &index, 0)) return -1;
     index--; /* Convert from one- to zero-based indexing */
-    
+
     /* Ok to just check upper bound since index is unsigned. */
     if (index >= jm_vector_get_size(jm_voidp)(md->variablesOrigOrder)) {
         fmi2_xml_parse_error(context, "The index attribute must have a value between 1 and the number of model variables.");
@@ -429,7 +429,7 @@ int fmi2_xml_parse_unknown(fmi2_xml_parser_context_t *context,
         return -1;
     }
     variable = (fmi2_xml_variable_t*)jm_vector_get_item(jm_voidp)(md->variablesOrigOrder, index);
-    
+
     if (!jm_vector_push_back(jm_voidp)(destVarList, variable)) {
         fmi2_xml_parse_fatal(context, "Could not allocate memory");
         ms->isValidFlag = 0;
@@ -457,8 +457,20 @@ int fmi2_xml_handle_DerivativeUnknown(fmi2_xml_parser_context_t *context, const 
     if(!data) {
         fmi2_xml_model_description_t* md = context->modelDescription;
         fmi2_xml_model_structure_t* ms = md->modelStructure;
+        int status = fmi2_xml_parse_unknown(context, fmi2_xml_elmID_Derivatives, &ms->derivatives, ms->derivativeDeps);
 
-        return fmi2_xml_parse_unknown(context, fmi2_xml_elmID_Derivatives, &ms->derivatives, ms->derivativeDeps);
+        if (status) {
+            return status;
+        } else {
+            fmi2_xml_real_variable_t *der = (fmi2_xml_real_variable_t*) jm_vector_get_last(jm_voidp)(&ms->derivatives);
+            if (!fmi2_xml_get_real_variable_derivative_of(der)) {
+                ms->isValidFlag = 0;
+                fmi2_xml_parse_error(context,
+                        "The state derivative '%s' does not specify the state variable that it is a derivative of.",
+                        fmi2_xml_get_variable_name(der));
+                return -1;
+            }
+        }
     }
     else {
     }

@@ -75,7 +75,6 @@ CHECK_SYMBOL_EXISTS(va_copy stdarg.h HAVE_VA_COPY)
 CHECK_SYMBOL_EXISTS(__va_copy stdarg.h HAVE___VA_COPY)
 
 set(CHECKS
-        HAVE_VSNPRINTF
         HAVE_SNPRINTF
         HAVE_VASPRINTF
         HAVE_ASPRINTF
@@ -97,6 +96,12 @@ set(CHECKS
         HAVE_PTRDIFF_T
         HAVE_VA_COPY
         HAVE___VA_COPY)
+
+if (MSVC AND (MSVC_VERSION LESS 1900))
+    set(HAVE_VSNPRINTF FALSE)
+else()
+    set(CHECKS ${CHECKS} HAVE_VSNPRINTF)
+endif()
 
 foreach(check ${CHECKS})
     if(${${check}})

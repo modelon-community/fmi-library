@@ -164,7 +164,6 @@ void fmi2_xml_free_dependencies(fmi2_xml_dependencies_t* dep) {
 
 int fmi2_xml_check_model_structure(fmi2_xml_model_description_t* md) {
 	fmi2_xml_model_structure_t* ms = md->modelStructure;
-	jm_callbacks* cb = md->callbacks;
 
 	if(!ms || !ms->isValidFlag) return 0;
 
@@ -467,12 +466,10 @@ int fmi2_xml_handle_DerivativeUnknown(fmi2_xml_parser_context_t *context, const 
                 ms->isValidFlag = 0;
                 fmi2_xml_parse_error(context,
                         "The state derivative '%s' does not specify the state variable that it is a derivative of.",
-                        fmi2_xml_get_variable_name(der));
+                        fmi2_xml_get_variable_name((fmi2_xml_variable_t *) der));
                 return -1;
             }
         }
-    }
-    else {
     }
     return 0;
 }

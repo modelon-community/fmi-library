@@ -132,13 +132,26 @@ const char* jm_get_system_temp_dir() {
 
 #ifdef WIN32
 #include <io.h>
-#define mktemp _mktemp
 #else
-char* mktemp(char*);
+#include <stdlib.h>
 #endif
- 
-char* jm_mktemp(char* tmplt) {
-	return mktemp(tmplt);
+char *jm_mkdtemp(jm_callbacks *cb, char *tmplt)
+{
+#ifdef WIN32
+    /* Windows does not have mkdtemp, use mktemp + mkdir */
+
+    if(!_mktemp(tmplt)) {
+        jm_log_fatal(cb, module, "Could not create a unique temporary directory name");
+        return NULL;
+    }
+    if(jm_mkdir(cb, tmplt) != jm_status_success) {
+        return NULL;
+    }
+    return tmplt;
+
+#else
+    return mkdtemp(tmplt);
+#endif
 }
 
 #ifdef WIN32
@@ -263,15 +276,10 @@ char* jm_mk_temp_dir(jm_callbacks* cb, const char* systemTempDir, const char* te
 	}
 	sprintf(tmpPath,"%s%sXXXXXX",tmpDir,tempPrefix);/*safe*/
 
-	if(!jm_mktemp(tmpPath)) {
-		jm_log_fatal(cb, module,"Could not create a unique temporary directory name");
-		cb->free(tmpPath);
-		return 0;
-	}
-	if(jm_mkdir(cb,tmpPath) != jm_status_success) {
-		cb->free(tmpPath);
-		return 0;
-	}
+    if (jm_mkdtemp(cb, tmpPath) == NULL) {
+        jm_log_fatal(cb, module,"Could not create a unique temporary directory");
+    }
+
 	return tmpPath;
 }
 

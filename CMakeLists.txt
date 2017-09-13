@@ -175,6 +175,30 @@ if(NOT FMILIB_STATIC_LIB_ONLY)
 	add_definitions(-DFMILIB_BUILDING_LIBRARY)
 endif()
 
+include(CheckSymbolExists)
+include(CheckFunctionExists)
+CHECK_SYMBOL_EXISTS(va_copy stdarg.h HAVE_VA_COPY)
+CHECK_SYMBOL_EXISTS(__va_copy stdarg.h HAVE___VA_COPY)
+
+CHECK_SYMBOL_EXISTS(vsnprintf stdio.h HAVE_VSNPRINTF_SYM)
+CHECK_FUNCTION_EXISTS(vsnprintf HAVE_VSNPRINTF_FCN)
+
+MACRO(FMIL_EVAL_CONDITION var_to_store_cond_eval)
+   IF(${ARGN})
+     SET(${var_to_store_cond_eval} 1)
+   ELSE(${ARGN})
+     SET(${var_to_store_cond_eval} 0)
+   ENDIF(${ARGN})
+ENDMACRO(FMIL_EVAL_CONDITION)
+
+FMIL_EVAL_CONDITION(HAVE_VSNPRINTF HAVE_VSNPRINTF_SYM OR HAVE_VSNPRINTF_FCN)
+
+# MSVC < 19.0 (Visual Studio 2015) have a non-standard vsnprintf
+# implementation. Use the one provided by c99snprintf instead
+if (MSVC AND (MSVC_VERSION LESS 1900))
+    set(HAVE_VSNPRINTF FALSE)
+endif()
+
 add_subdirectory(ThirdParty/c99_snprintf)
 
 SET(CMAKE_MODULE_PATH ${FMILIBRARYHOME}/Config.cmake)
@@ -201,10 +225,6 @@ if(FMILIB_FMI_PLATFORM MATCHES ”unknown”)
 else()
 	set(FMI_PLATFORM ${FMILIB_FMI_PLATFORM})
 endif()
-
-include(CheckSymbolExists)
-CHECK_SYMBOL_EXISTS(va_copy stdarg.h HAVE_VA_COPY)
-CHECK_SYMBOL_EXISTS(__va_copy stdarg.h HAVE___VA_COPY)
 
 configure_file (
   "${FMILibrary_SOURCE_DIR}/Config.cmake/config_fmilib.h.cmake"

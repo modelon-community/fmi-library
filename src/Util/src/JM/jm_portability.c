@@ -339,18 +339,10 @@ char* jm_create_URL_from_abs_path(jm_callbacks* cb, const char* path) {
 	return url;
 }
 
-
-/*
- * MSVC < 19.0 (Visual Studio 2015) have a non-standard vsnprintf
- * implementation. Use the one provided by c99snprintf instead.
- */
-#if defined(_MSC_VER) && _MSC_VER < 1900
-#define vsnprintf rpl_vsnprintf
-#endif
-int vsnprintf(char *, size_t, const char *, va_list);
+int jm_rpl_vsnprintf(char *, size_t, const char *, va_list);
 
 int jm_vsnprintf(char * str, size_t size, const char * fmt, va_list al) {
-    return vsnprintf(str, size, fmt, al);
+    return jm_rpl_vsnprintf(str, size, fmt, al);
 }
 
 int jm_snprintf(char * str, size_t size, const char * fmt, ...) {

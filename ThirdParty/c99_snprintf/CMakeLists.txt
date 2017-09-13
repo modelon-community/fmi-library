@@ -26,23 +26,13 @@ CHECK_INCLUDE_FILES(locale.h   	HAVE_LOCALE_H)
 
 INCLUDE (CheckSymbolExists)
 INCLUDE (CheckFunctionExists)
-CHECK_SYMBOL_EXISTS(vsnprintf stdio.h HAVE_VSNPRINTF_SYM)
 CHECK_SYMBOL_EXISTS(snprintf  stdio.h HAVE_SNPRINTF_SYM)
 CHECK_SYMBOL_EXISTS(vasprintf stdio.h HAVE_VASPRINTF_SYM)
 CHECK_SYMBOL_EXISTS(asprintf  stdio.h HAVE_ASPRINTF_SYM)
-CHECK_FUNCTION_EXISTS(vsnprintf HAVE_VSNPRINTF_FCN)
 CHECK_FUNCTION_EXISTS(snprintf  HAVE_SNPRINTF_FCN)
 CHECK_FUNCTION_EXISTS(vasprintf HAVE_VASPRINTF_FCN)
 CHECK_FUNCTION_EXISTS(asprintf  HAVE_ASPRINTF_FCN)
 
-MACRO(FMIL_EVAL_CONDITION var_to_store_cond_eval)
-   IF(${ARGN})
-     SET(${var_to_store_cond_eval} 1)
-   ELSE(${ARGN})
-     SET(${var_to_store_cond_eval} 0)
-   ENDIF(${ARGN})
-ENDMACRO(FMIL_EVAL_CONDITION)
-FMIL_EVAL_CONDITION(HAVE_VSNPRINTF  HAVE_VSNPRINTF_SYM OR HAVE_VSNPRINTF_FCN)
 FMIL_EVAL_CONDITION(HAVE_SNPRINTF   HAVE_SNPRINTF_SYM  OR HAVE_SNPRINTF_FCN)
 FMIL_EVAL_CONDITION(HAVE_VASPRINTF  HAVE_VASPRINTF_SYM OR HAVE_VASPRINTF_FCN)
 FMIL_EVAL_CONDITION(HAVE_ASPRINTF   HAVE_ASPRINTF_SYM  OR HAVE_ASPRINTF_FCN)
@@ -97,12 +87,6 @@ set(CHECKS
         HAVE_VA_COPY
         HAVE___VA_COPY)
 
-if (MSVC AND (MSVC_VERSION LESS 1900))
-    set(HAVE_VSNPRINTF FALSE)
-else()
-    set(CHECKS ${CHECKS} HAVE_VSNPRINTF)
-endif()
-
 foreach(check ${CHECKS})
     if(${${check}})
         set(DEFINES ${DEFINES} -D${check}=${${check}})
@@ -110,19 +94,25 @@ foreach(check ${CHECKS})
 endforeach()
 
 if(NOT HAVE_VSNPRINTF)
-    set(DEFINES ${DEFINES} -Dvsnprintf=rpl_vsnprintf)
+    set(DEFINES ${DEFINES} -Drpl_vsnprintf=jm_rpl_vsnprintf)
 endif()
 
 if(NOT HAVE_SNPRINTF)
-    set(DEFINES ${DEFINES} -Dsnprintf=rpl_snprintf)
+    set(DEFINES ${DEFINES}
+        -Dsnprintf=jm_rpl_snprintf
+        -Drpl_snprintf=jm_rpl_snprintf)
 endif()
 
 if(NOT HAVE_VASPRINTF)
-    set(DEFINES ${DEFINES} -Dvasprintf=rpl_vasprintf)
+    set(DEFINES ${DEFINES}
+        -Dvasprintf=jm_rpl_vasprintf
+        -Drpl_vasprintf=jm_rpl_vasprintf)
 endif()
 
 if(NOT HAVE_ASPRINTF)
-    set(DEFINES ${DEFINES} -Dasprintf=rpl_asprintf)
+    set(DEFINES ${DEFINES}
+        -Dasprintf=jm_rpl_asprintf
+        -Drpl_asprintf=jm_rpl_asprintf)
 endif()
 
 add_definitions(${DEFINES})

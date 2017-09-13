@@ -155,4 +155,9 @@ FMILIB_EXPORT const char* fmilib_get_build_stamp(void);
 #cmakedefine HAVE_VA_COPY
 #cmakedefine HAVE___VA_COPY
 
+#cmakedefine HAVE_VSNPRINTF
+#ifdef HAVE_VSNPRINTF
+#define jm_rpl_vsnprintf vsnprintf
+#endif
+
 #endif

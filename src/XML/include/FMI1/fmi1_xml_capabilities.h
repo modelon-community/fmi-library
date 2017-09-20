@@ -47,7 +47,7 @@ int fmi1_xml_get_canInterpolateInputs(fmi1_xml_capabilities_t* );
 unsigned int fmi1_xml_get_maxOutputDerivativeOrder(fmi1_xml_capabilities_t* );
 	/** \brief Retrieve  canRunAsynchronuously flag. */
 int fmi1_xml_get_canRunAsynchronuously(fmi1_xml_capabilities_t* );
-	/** \brief Retrieve  canSignalEvents flag. */
+	/** \brief Deprecated since 1.0.1, do not use. */
 int fmi1_xml_get_canSignalEvents(fmi1_xml_capabilities_t* );
 	/** \brief Retrieve  canBeInstantiatedOnlyOncePerProcess flag. */
 int fmi1_xml_get_canBeInstantiatedOnlyOncePerProcess(fmi1_xml_capabilities_t* );

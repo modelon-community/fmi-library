@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription
+  fmiVersion="1.0"
+  modelName="deprecated_cs"
+  modelIdentifier="deprecated_cs"
+  generationTool="None"
+  description="For testing the canSignalEvents deprecation logging"
+  guid="123"
+  numberOfContinuousStates="0"
+  numberOfEventIndicators="1">
+<ModelVariables>
+</ModelVariables>
+<Implementation>
+  <CoSimulation_StandAlone>
+    <Capabilities
+      canSignalEvents="true"/>
+  </CoSimulation_StandAlone>
+</Implementation>
+</fmiModelDescription>

@@ -54,7 +54,7 @@ FMILIB_EXPORT int fmi1_import_get_canInterpolateInputs(fmi1_import_capabilities_
 FMILIB_EXPORT unsigned int fmi1_import_get_maxOutputDerivativeOrder(fmi1_import_capabilities_t* );
 	/** \brief Retrieve  canRunAsynchronuously flag. */
 FMILIB_EXPORT int fmi1_import_get_canRunAsynchronuously(fmi1_import_capabilities_t* );
-	/** \brief Retrieve  canSignalEvents flag. */
+	/** \brief Deprecated since 1.0.1, do not use. */
 FMILIB_EXPORT int fmi1_import_get_canSignalEvents(fmi1_import_capabilities_t* );
 	/** \brief Retrieve  canBeInstantiatedOnlyOncePerProcess flag. */
 FMILIB_EXPORT int fmi1_import_get_canBeInstantiatedOnlyOncePerProcess(fmi1_import_capabilities_t* );

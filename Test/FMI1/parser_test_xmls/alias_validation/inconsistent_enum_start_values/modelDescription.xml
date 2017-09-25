@@ -4,20 +4,26 @@
   modelName="all_alias"
   modelIdentifier="all_alias"
   generationTool="None"
-  description="For testing alias validation. A correct alias set with 3 vars."
+  description="For testing alias validation. Enums with inconsistent start values."
   guid="123"
   numberOfContinuousStates="0"
   numberOfEventIndicators="0">
+  
+<TypeDefinitions>
+    <Type name="enum1">
+        <EnumerationType>
+            <Item name="item1" />
+            <Item name="item2" />
+        </EnumerationType>
+    </Type>
+</TypeDefinitions>
 
 <ModelVariables>
   <ScalarVariable name="v1" valueReference="0" alias="noAlias">
-     <Real start="1.0" fixed="true"/>
+     <Enumeration declaredType="enum1" start="1" fixed="true"/>
   </ScalarVariable>
   <ScalarVariable name="v2" valueReference="0" alias="alias">
-     <Real start="1.0" fixed="true"/>
-  </ScalarVariable>
-  <ScalarVariable name="v3" valueReference="0" alias="negatedAlias">
-     <Real start="-1.0" fixed="true"/>
+     <Enumeration declaredType="enum1" start="2" fixed="true"/>
   </ScalarVariable>
 </ModelVariables>
 

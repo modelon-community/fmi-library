@@ -929,6 +929,164 @@ static fmi1_xml_variable_t* findNextBaseAliasIdx(
     return NULL;
 }
 
+static int fmi1_alias_check_sign(
+    fmi1_xml_variable_t* a,
+    fmi1_xml_variable_t* b)
+{
+    if ((a->aliasKind == fmi1_variable_is_negated_alias) != 
+        (b->aliasKind == fmi1_variable_is_negated_alias))
+    {
+        return -1;
+    } else {
+        return 1;
+    }
+}
+
+static const char* fmi1_alias_negated_string(fmi1_xml_variable_t* a) {
+    return  a->aliasKind == fmi1_variable_is_negated_alias ?
+        "(negated alias)" : "";
+}
+
+#define FMIL_ABS(X) (((X) > 0) ? (X) : -(X))
+
+static int fmi1_real_alias_consistent_start_values(
+    jm_callbacks* cb,
+    fmi1_xml_variable_t* a,
+    fmi1_xml_variable_t* b)
+{
+    double a_start = fmi1_xml_get_real_variable_start(fmi1_xml_get_variable_as_real(a));
+    double b_start = fmi1_xml_get_real_variable_start(fmi1_xml_get_variable_as_real(b));
+    int check_sign = fmi1_alias_check_sign(a, b);
+    int consistent;
+
+    consistent = FMIL_ABS(a_start - check_sign*b_start) < 1e-14 * FMIL_ABS(a_start);
+    if (!consistent) {
+        jm_log_error(cb, module, "Inconsistent start values in alias set, "
+            "start value '%16.16f' of '%s'%s does not match "
+            "start value '%16.16f' of '%s'%s.",
+            a_start, a->name, fmi1_alias_negated_string(a),
+            b_start, b->name, fmi1_alias_negated_string(b));
+    }
+
+    return consistent;
+}
+
+static int fmi1_int_alias_consistent_start_values(
+    jm_callbacks* cb,
+    fmi1_xml_variable_t* a,
+    fmi1_xml_variable_t* b)
+{
+    int a_start = fmi1_xml_get_integer_variable_start(fmi1_xml_get_variable_as_integer(a));
+    int b_start = fmi1_xml_get_integer_variable_start(fmi1_xml_get_variable_as_integer(b));
+    int check_sign = fmi1_alias_check_sign(a, b);
+    int consistent;
+
+    consistent = (a_start == check_sign*b_start);
+    if (!consistent) {
+        jm_log_error(cb, module, "Inconsistent start values in alias set, "
+            "start value '%d' of '%s'%s does not match "
+            "start value '%d' of '%s'%s.",
+            a_start, a->name, fmi1_alias_negated_string(a),
+            b_start, b->name, fmi1_alias_negated_string(b));
+    }
+
+    return consistent;
+}
+
+static int fmi1_enum_alias_consistent_start_values(
+    jm_callbacks* cb,
+    fmi1_xml_variable_t* a,
+    fmi1_xml_variable_t* b)
+{
+    int a_start = fmi1_xml_get_enum_variable_start(fmi1_xml_get_variable_as_enum(a));
+    int b_start = fmi1_xml_get_enum_variable_start(fmi1_xml_get_variable_as_enum(b));
+    int check_sign = fmi1_alias_check_sign(a, b);
+    int consistent;
+
+    consistent = (check_sign > 0) && (a_start == b_start);
+    if (!consistent) {
+        jm_log_error(cb, module, "Inconsistent start values in alias set, "
+            "start value '%d' of '%s'%s does not match "
+            "start value '%d' of '%s'%s.",
+            a_start, a->name, fmi1_alias_negated_string(a),
+            b_start, b->name, fmi1_alias_negated_string(b));
+    }
+
+    return consistent;
+}
+
+static int fmi1_bool_alias_consistent_start_values(
+    jm_callbacks* cb,
+    fmi1_xml_variable_t* a,
+    fmi1_xml_variable_t* b)
+{
+    fmi1_boolean_t a_start = fmi1_xml_get_boolean_variable_start(fmi1_xml_get_variable_as_boolean(a));
+    fmi1_boolean_t b_start = fmi1_xml_get_boolean_variable_start(fmi1_xml_get_variable_as_boolean(b));
+    int check_sign = fmi1_alias_check_sign(a, b);
+    int consistent;
+
+    if (check_sign > 0) {
+        consistent = ((!a_start) == (!b_start));
+    } else {
+        consistent = ((!a_start) != (!b_start));
+    }
+    if (!consistent) {
+        jm_log_error(cb, module, "Inconsistent start values in alias set, "
+            "start value '%s' of '%s'%s does not match "
+            "start value '%s' of '%s'%s.",
+            a_start ? "true" : "false", a->name, fmi1_alias_negated_string(a),
+            b_start ? "true" : "false", b->name, fmi1_alias_negated_string(b));
+    }
+
+    return consistent;
+}
+
+static int fmi1_str_alias_consistent_start_values(
+    jm_callbacks* cb,
+    fmi1_xml_variable_t* a,
+    fmi1_xml_variable_t* b)
+{
+    const char* a_start = fmi1_xml_get_string_variable_start(fmi1_xml_get_variable_as_string(a));
+    const char* b_start = fmi1_xml_get_string_variable_start(fmi1_xml_get_variable_as_string(b));
+    int check_sign = fmi1_alias_check_sign(a, b);
+    int consistent;
+
+    consistent = check_sign > 0 && strcmp(a_start, b_start) == 0;
+    if (!consistent) {
+        jm_log_error(cb, module, "Inconsistent start values in alias set, "
+            "start value '%s' of '%s'%s does not match "
+            "start value '%s' of '%s'%s.",
+            a_start, a->name, fmi1_alias_negated_string(a),
+            b_start, b->name, fmi1_alias_negated_string(b));
+    }
+
+    return consistent;
+}
+
+static int fmi1_alias_consistent_start_values(
+    jm_callbacks* cb,
+    fmi1_xml_variable_t* a,
+    fmi1_xml_variable_t* b)
+{
+    int consistent;
+    fmi1_base_type_enu_t type = fmi1_xml_get_variable_base_type(a);
+    assert(fmi1_same_vr_and_base_type(a, b));
+
+    switch (type) {
+        case fmi1_base_type_real:
+            return fmi1_real_alias_consistent_start_values(cb, a, b);
+        case fmi1_base_type_int:
+            return fmi1_int_alias_consistent_start_values(cb, a, b);
+        case fmi1_base_type_bool:
+            return fmi1_bool_alias_consistent_start_values(cb, a, b);
+        case fmi1_base_type_str:
+            return fmi1_str_alias_consistent_start_values(cb, a, b);
+        case fmi1_base_type_enum:
+            return fmi1_enum_alias_consistent_start_values(cb, a, b);
+        default: assert(0); return 0;
+    }
+}
+
 static size_t handleAliasSet(
     fmi1_xml_parser_context_t *context,
     jm_vector(jm_voidp)* varByVR,
@@ -936,6 +1094,7 @@ static size_t handleAliasSet(
     size_t start_idx)
 {
     size_t numvar, cur_list_idx;
+    fmi1_xml_variable_t* v_with_start = NULL;
 
     numvar = jm_vector_get_size(jm_voidp)(varByVR);
     if (numvar <= start_idx) {
@@ -944,27 +1103,33 @@ static size_t handleAliasSet(
     }
 
     assert(base_alias->aliasKind == fmi1_variable_is_not_alias);
+    if (fmi1_xml_get_variable_has_start(base_alias)) {
+        /* If base alias have start, use it as the correct value
+         * when comparing against other vars so we don'r remove
+         * it from the alias set */
+        v_with_start = base_alias;
+    }
     for(cur_list_idx = start_idx; cur_list_idx < numvar; cur_list_idx++) {
-        fmi1_xml_variable_t* b = (fmi1_xml_variable_t*)jm_vector_get_item(jm_voidp)(varByVR, cur_list_idx);
+        fmi1_xml_variable_t* v = (fmi1_xml_variable_t*)jm_vector_get_item(jm_voidp)(varByVR, cur_list_idx);
         
-        if (b == base_alias) {
+        if (v == base_alias) {
             /* The base alias, nothing to do */
             continue;
         }
-        if (!fmi1_same_vr_and_base_type(base_alias, b)) {
+        if (!fmi1_same_vr_and_base_type(base_alias, v)) {
             /* Not the same vr and type, end of the alias set */
             break;
         } else {
             /* Next variable in list have same type and valueRef */
-            if (b->aliasKind == fmi1_variable_is_not_alias) {
+            if (v->aliasKind == fmi1_variable_is_not_alias) {
                 /* But is for some reason marked as 'noAlias' => make it an alias */
                 fmi1_xml_variable_t* c;
                 size_t i, j;
 
                 jm_log_error(context->callbacks, module, "Variables %s and %s reference the "
                     "same vr %u. Marking '%s' as alias.",
-                     base_alias->name, b->name, b->vr, b->name);
-                b->aliasKind = fmi1_variable_is_alias;
+                     base_alias->name, v->name, v->vr, v->name);
+                v->aliasKind = fmi1_variable_is_alias;
 
                 /* Ok, now we sort b into a later position in the var list
                  * which is consistent with the lists sorting */
@@ -972,13 +1137,13 @@ static size_t handleAliasSet(
                 j = cur_list_idx + 1;
                 while(j < numvar) {
                     c = (fmi1_xml_variable_t*)jm_vector_get_item(jm_voidp)(varByVR, j);
-                    if(fmi1_xml_compare_vr(&b,&c) <= 0) break;
+                    if(fmi1_xml_compare_vr(&v,&c) <= 0) break;
                     j++;
                 }
                 j--;
                 if(i != j) {
                     c = (fmi1_xml_variable_t*)jm_vector_get_item(jm_voidp)(varByVR, j);
-                    jm_vector_set_item(jm_voidp)(varByVR, j, b);
+                    jm_vector_set_item(jm_voidp)(varByVR, j, v);
                     jm_vector_set_item(jm_voidp)(varByVR, i, c);
                 }
 
@@ -986,10 +1151,15 @@ static size_t handleAliasSet(
                  * current loop iteration: */
                 cur_list_idx--;
                 continue;
-            } else if (b->aliasKind == fmi1_variable_is_alias) {
-                /* TODO: Check start value */
-            } else { /* b->aliasKind == fmi1_variable_is_negated_alias */
-                /* TODO: Check start value */
+            } else if (fmi1_xml_get_variable_has_start(v)) {
+                if (v_with_start == NULL) {
+                    v_with_start = v;
+                } else if (!fmi1_alias_consistent_start_values(
+                                context->callbacks, v_with_start, v))
+                {
+                    fmi1_xml_eliminate_bad_alias(context, varByVR, cur_list_idx);
+                    cur_list_idx--; numvar--;
+                }
             }
         }
     }

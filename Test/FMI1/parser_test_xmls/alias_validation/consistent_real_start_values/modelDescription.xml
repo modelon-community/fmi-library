@@ -4,7 +4,7 @@
   modelName="all_alias"
   modelIdentifier="all_alias"
   generationTool="None"
-  description="For testing alias validation. A correct alias set with 3 vars."
+  description="For testing alias validation. Reals with consistent start values."
   guid="123"
   numberOfContinuousStates="0"
   numberOfEventIndicators="0">

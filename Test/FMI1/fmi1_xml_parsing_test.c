@@ -101,6 +101,11 @@ void parser_log_expected_message(char *xml_dir)
     test_parser_with_cleanup(xml_dir, DO_LOG_EXPECTED_MSG, 0);
 }
 
+void parser_no_log_expected_message(char *xml_dir)
+{
+    test_parser_with_cleanup(xml_dir, NO_LOG_EXPECTED_MSG, 0);
+}
+
 typedef int (*fmu_test_f)(fmi1_import_t* fmu);
 
 void test_parsing_and_fmu(char *xml_dir, fmu_test_f fmu_test, int should_log_expected_msg)
@@ -208,6 +213,19 @@ int should_have_no_vars(fmi1_import_t* fmu) {
     return fmi1_import_get_variable_list_size(vars) == 0;
 }
 
+int should_have_1_no_alias_var(fmi1_import_t* fmu) {
+    fmi1_import_variable_list_t* vars;
+    fmi1_import_variable_t* var;
+
+    vars = fmi1_import_get_variable_list(fmu);
+    if (fmi1_import_get_variable_list_size(vars) != 1) {
+        return 0;
+    }
+
+    var = fmi1_import_get_variable(vars, 0);
+    return (fmi1_import_get_variable_alias_kind(var) == fmi1_variable_is_not_alias);
+}
+
 int should_have_size_2_alias_group(fmi1_import_t* fmu) {
     fmi1_import_variable_list_t* vars;
     fmi1_import_variable_t* var;
@@ -306,6 +324,87 @@ void test_alias_set_error_handling(void) {
 
     expected_message = "Variables v1 and v2 reference the same vr 0. Marking 'v2' as alias.";
     test_parsing_pass_and_fmu("alias_validation/all_no_alias_two_sets", should_have_size_2_no_alis);
+
+    expected_message = "Inconsistent start values in alias set";
+    parser_no_log_expected_message("alias_validation/consistent_real_start_values");
+
+    expected_message = "Inconsistent start values in alias set";
+    parser_no_log_expected_message("alias_validation/consistent_int_start_values");
+
+    expected_message = "Inconsistent start values in alias set";
+    parser_no_log_expected_message("alias_validation/consistent_enum_start_values");
+
+    expected_message = "Inconsistent start values in alias set";
+    parser_no_log_expected_message("alias_validation/consistent_bool_start_values");
+
+    expected_message = "Inconsistent start values in alias set";
+    parser_no_log_expected_message("alias_validation/consistent_str_start_values");
+
+    expected_message = "Inconsistent start values in alias set, "
+        "start value '1.0"; /* Cannot check more of message due to potential roundings */
+    test_parsing_fail_and_fmu("alias_validation/inconsistent_real_start_values",
+        should_have_1_no_alias_var);
+
+    expected_message = "Inconsistent start values in alias set, "
+        "start value '1' of 'v1' does not match "
+        "start value '3' of 'v2'.";
+    test_parsing_fail_and_fmu("alias_validation/inconsistent_int_start_values",
+        should_have_1_no_alias_var);
+
+    expected_message = "Inconsistent start values in alias set, "
+        "start value '1' of 'v1' does not match "
+        "start value '2' of 'v2'.";
+    test_parsing_fail_and_fmu("alias_validation/inconsistent_enum_start_values",
+        should_have_1_no_alias_var);
+
+    expected_message = "Inconsistent start values in alias set, "
+        "start value 'true' of 'v1' does not match "
+        "start value 'false' of 'v2'.";
+    test_parsing_fail_and_fmu("alias_validation/inconsistent_bool_start_values",
+        should_have_1_no_alias_var);
+
+    expected_message = "Inconsistent start values in alias set, "
+        "start value 'a' of 'v1' does not match "
+        "start value 'b' of 'v2'.";
+    test_parsing_fail_and_fmu("alias_validation/inconsistent_str_start_values",
+        should_have_1_no_alias_var);
+
+    expected_message = "Inconsistent start values in alias set, "
+        "start value '1.0"; /* Cannot check more of message due to potential roundings */
+    test_parsing_fail_and_fmu("alias_validation/inconsistent_neg_real_start_values",
+        should_have_1_no_alias_var);
+
+    expected_message = "Inconsistent start values in alias set, "
+        "start value '1' of 'v1' does not match "
+        "start value '1' of 'v2'(negated alias).";
+    test_parsing_fail_and_fmu("alias_validation/inconsistent_neg_int_start_values",
+        should_have_1_no_alias_var);
+
+    expected_message = "Inconsistent start values in alias set, "
+        "start value '1' of 'v1' does not match "
+        "start value '1' of 'v2'(negated alias).";
+    test_parsing_fail_and_fmu("alias_validation/inconsistent_neg_enum_start_values",
+        should_have_1_no_alias_var);
+
+    expected_message = "Inconsistent start values in alias set, "
+        "start value 'true' of 'v1' does not match "
+        "start value 'true' of 'v2'(negated alias).";
+    test_parsing_fail_and_fmu("alias_validation/inconsistent_neg_bool_start_values",
+        should_have_1_no_alias_var);
+
+    expected_message = "Inconsistent start values in alias set, "
+        "start value 'a' of 'v1' does not match "
+        "start value 'a' of 'v2'(negated alias).";
+    test_parsing_fail_and_fmu("alias_validation/inconsistent_neg_str_start_values",
+        should_have_1_no_alias_var);
+
+    expected_message = "Inconsistent start values in alias set";
+    parser_no_log_expected_message("alias_validation/consistent_real_start_values2");
+
+    expected_message = "Inconsistent start values in alias set, "
+        "start value '1' of 'v2' does not match "
+        "start value '3' of 'v3'.";
+    parser_log_expected_message("alias_validation/inconsistent_int_start_values2");
 }
 
 void test_deprecation_errors(void) {

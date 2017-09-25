@@ -50,7 +50,7 @@ fmi1_xml_variable_t* fmi1_xml_get_variable_alias_base(fmi1_xml_model_description
     fmi1_xml_variable_t key;
     fmi1_xml_variable_t *pkey = &key, *base;
     void ** found;
-	if(!md->variablesByVR) return 0;
+    if(!md->variablesByVR) return 0;
     if(v->aliasKind == fmi1_variable_is_not_alias) return v;
     key = *v;
     key.aliasKind = fmi1_variable_is_not_alias;
@@ -818,33 +818,55 @@ static int fmi1_xml_compare_variable_original_index (const void* first, const vo
 	return 0;
 }
 
-void fmi1_xml_eliminate_bad_alias(fmi1_xml_parser_context_t *context, size_t indexVR) {
-    fmi1_xml_model_description_t* md = context->modelDescription;
-    jm_vector(jm_voidp)* varByVR = md->variablesByVR;
+void fmi1_xml_eliminate_bad_alias(fmi1_xml_parser_context_t *context, jm_vector(jm_voidp)* varByVR, size_t indexVR) {
+    size_t n, index;
+    
     fmi1_xml_variable_t* v = (fmi1_xml_variable_t*)jm_vector_get_item(jm_voidp)(varByVR, indexVR);
     fmi1_value_reference_t vr = v->vr;
     fmi1_base_type_enu_t vt = fmi1_xml_get_variable_base_type(v);
-    size_t i, n = jm_vector_get_size(jm_voidp)(varByVR);
+    jm_named_ptr key;
+
+    n = jm_vector_get_size(jm_voidp)(varByVR);
+    v = (fmi1_xml_variable_t*)jm_vector_get_item(jm_voidp)(varByVR, indexVR);
+        
+    jm_vector_remove_item_jm_voidp(varByVR, indexVR);
+    key.name = v->name;
+    index = jm_vector_bsearch_index(jm_named_ptr)(&context->modelDescription->variablesByName, &key, jm_compare_named);
+    assert(index <= n);
+    jm_vector_remove_item(jm_named_ptr)(&context->modelDescription->variablesByName, index);
+
+    index = jm_vector_bsearch_index(jm_voidp)(context->modelDescription->variablesOrigOrder, (jm_voidp*)&v, fmi1_xml_compare_variable_original_index);
+    assert(index <= n);
+
+	jm_vector_remove_item(jm_voidp)(context->modelDescription->variablesOrigOrder,index);
+
+    jm_log_error(context->callbacks, module,"Removing incorrect alias variable '%s'", v->name);
+    context->callbacks->free(v);
+}
+
+static size_t fmi1_xml_eliminate_bad_alias_set(fmi1_xml_parser_context_t *context, size_t indexVR) {
+    size_t i, n, removed_aliases;
+    
+    jm_vector(jm_voidp)* varByVR = context->modelDescription->variablesByVR;
+    fmi1_xml_variable_t* v = (fmi1_xml_variable_t*)jm_vector_get_item(jm_voidp)(varByVR, indexVR);
+    fmi1_value_reference_t vr = v->vr;
+    fmi1_base_type_enu_t vt = fmi1_xml_get_variable_base_type(v);
+
+    jm_log_error(context->callbacks, module, "Alias set with vr=%u "
+                "(type=%s) do not have a 'noAlias' variable.", v->vr,
+                fmi1_base_type_to_string(fmi1_xml_get_variable_base_type(v)));
+
+    removed_aliases = 0;
+    n = jm_vector_get_size(jm_voidp)(varByVR);
     for(i = 0; i< n; i++) {
-        jm_named_ptr key;
-        size_t index;
         v = (fmi1_xml_variable_t*)jm_vector_get_item(jm_voidp)(varByVR, i);
-        if((v->vr != vr)||(vt != fmi1_xml_get_variable_base_type(v))) continue;
-        jm_vector_remove_item_jm_voidp(varByVR,i);
-        n--; i--;
-        key.name = v->name;
-        index = jm_vector_bsearch_index(jm_named_ptr)(&md->variablesByName, &key, jm_compare_named);
-        assert(index <= n);
-        jm_vector_remove_item(jm_named_ptr)(&md->variablesByName,index);
-
-		index = jm_vector_bsearch_index(jm_voidp)(md->variablesOrigOrder, (jm_voidp*)&v, fmi1_xml_compare_variable_original_index);
-        assert(index <= n);
-
-		jm_vector_remove_item(jm_voidp)(md->variablesOrigOrder,index);
-
-		jm_log_error(context->callbacks, module,"Removing incorrect alias variable '%s'", v->name);
-        md->callbacks->free(v);
+        if ((v->vr == vr) && (vt == fmi1_xml_get_variable_base_type(v))) {
+            fmi1_xml_eliminate_bad_alias(context, varByVR, i);
+            n--; i--; removed_aliases++;
+        }
     }
+
+    return removed_aliases;
 }
 
 static int fmi1_xml_compare_vr_and_original_index (const void* first, const void* second) {
@@ -859,6 +881,134 @@ static int fmi1_xml_compare_vr_and_original_index (const void* first, const void
 	}
 
 	return ret;
+}
+
+static int fmi1_same_vr_and_base_type(
+    fmi1_xml_variable_t* a,
+    fmi1_xml_variable_t* b)
+{
+    return (a->vr == b->vr) && 
+        (fmi1_xml_get_variable_base_type(a) == fmi1_xml_get_variable_base_type(b));
+}
+
+static fmi1_xml_variable_t* findNextBaseAliasIdx(
+    fmi1_xml_parser_context_t *context,
+    jm_vector(jm_voidp)* varByVR,
+    size_t cur_list_idx)
+{
+    size_t n, i;
+    fmi1_xml_variable_t* a;
+
+    n = jm_vector_get_size(jm_voidp)(varByVR);
+    a = (fmi1_xml_variable_t*)jm_vector_get_item(jm_voidp)(varByVR, cur_list_idx);
+    if (a->aliasKind == fmi1_variable_is_not_alias) {
+        return a;
+    }
+
+    for (i = cur_list_idx + 1; i < n; i++) {
+        fmi1_xml_variable_t* b =
+            (fmi1_xml_variable_t*)jm_vector_get_item(jm_voidp)(varByVR, i);
+
+        if (!fmi1_same_vr_and_base_type(a, b)) {
+            size_t aliases_removed;
+
+            /* End of alias set, did not find base in current so remove it */
+            aliases_removed = fmi1_xml_eliminate_bad_alias_set(context, i - 1);
+
+            /* Setup for iterating through the next alias set */
+            n -= aliases_removed; i -= aliases_removed;
+            a = b;
+        }
+        if (b->aliasKind == fmi1_variable_is_not_alias) {
+            return b;
+        }
+    }
+
+    /* Did not find a next base alias */
+    fmi1_xml_eliminate_bad_alias_set(context, i - 1);
+    return NULL;
+}
+
+static size_t handleAliasSet(
+    fmi1_xml_parser_context_t *context,
+    jm_vector(jm_voidp)* varByVR,
+    fmi1_xml_variable_t* base_alias,
+    size_t start_idx)
+{
+    size_t numvar, cur_list_idx;
+
+    numvar = jm_vector_get_size(jm_voidp)(varByVR);
+    if (numvar <= start_idx) {
+        /* Nothing to do if past the end of the list */
+        return start_idx + 1;
+    }
+
+    assert(base_alias->aliasKind == fmi1_variable_is_not_alias);
+    for(cur_list_idx = start_idx; cur_list_idx < numvar; cur_list_idx++) {
+        fmi1_xml_variable_t* b = (fmi1_xml_variable_t*)jm_vector_get_item(jm_voidp)(varByVR, cur_list_idx);
+        
+        if (b == base_alias) {
+            /* The base alias, nothing to do */
+            continue;
+        }
+        if (!fmi1_same_vr_and_base_type(base_alias, b)) {
+            /* Not the same vr and type, end of the alias set */
+            break;
+        } else {
+            /* Next variable in list have same type and valueRef */
+            if (b->aliasKind == fmi1_variable_is_not_alias) {
+                /* But is for some reason marked as 'noAlias' => make it an alias */
+                fmi1_xml_variable_t* c;
+                size_t i, j;
+
+                jm_log_error(context->callbacks, module, "Variables %s and %s reference the "
+                    "same vr %u. Marking '%s' as alias.",
+                     base_alias->name, b->name, b->vr, b->name);
+                b->aliasKind = fmi1_variable_is_alias;
+
+                /* Ok, now we sort b into a later position in the var list
+                 * which is consistent with the lists sorting */
+                i = cur_list_idx;
+                j = cur_list_idx + 1;
+                while(j < numvar) {
+                    c = (fmi1_xml_variable_t*)jm_vector_get_item(jm_voidp)(varByVR, j);
+                    if(fmi1_xml_compare_vr(&b,&c) <= 0) break;
+                    j++;
+                }
+                j--;
+                if(i != j) {
+                    c = (fmi1_xml_variable_t*)jm_vector_get_item(jm_voidp)(varByVR, j);
+                    jm_vector_set_item(jm_voidp)(varByVR, j, b);
+                    jm_vector_set_item(jm_voidp)(varByVR, i, c);
+                }
+
+                /* Now that this inconsistency is taken care of we repeat
+                 * current loop iteration: */
+                cur_list_idx--;
+                continue;
+            } else if (b->aliasKind == fmi1_variable_is_alias) {
+                /* TODO: Check start value */
+            } else { /* b->aliasKind == fmi1_variable_is_negated_alias */
+                /* TODO: Check start value */
+            }
+        }
+    }
+
+    return cur_list_idx;
+}
+
+static void fmi1_checking_alias_info(
+    fmi1_xml_parser_context_t *context,
+    jm_vector(jm_voidp)* varByVR)
+{
+    size_t cur_list_idx = 0;
+
+    jm_log_verbose(context->callbacks, module,"Checking alias information");
+    while (cur_list_idx < jm_vector_get_size(jm_voidp)(varByVR)) {
+        fmi1_xml_variable_t* base_alias = findNextBaseAliasIdx(context, varByVR, cur_list_idx);
+        if (base_alias == NULL) break;
+        cur_list_idx = handleAliasSet(context, varByVR, base_alias, cur_list_idx);
+    }
 }
 
 int fmi1_xml_handle_ModelVariables(fmi1_xml_parser_context_t *context, const char* data) {
@@ -965,81 +1115,8 @@ int fmi1_xml_handle_ModelVariables(fmi1_xml_parser_context_t *context, const cha
         }
         varByVR = md->variablesByVR;
         jm_vector_qsort(jm_voidp)(varByVR, fmi1_xml_compare_vr_and_original_index);
-        numvar = jm_vector_get_size(jm_named_ptr)(&md->variablesByName);
-
-        if(numvar > 0) {
-            int foundBadAlias;
-
-			jm_log_verbose(context->callbacks, module,"Checking alias information");
-            do {
-                fmi1_xml_variable_t* a = (fmi1_xml_variable_t*)jm_vector_get_item(jm_voidp)(varByVR, 0);
-                foundBadAlias = 0;
-
-                if(a->aliasKind == fmi1_variable_is_alias) {
-					jm_log_error(context->callbacks, module, "All variables with vr %d (base type %s) are marked as aliases.",
-                                          a->vr, fmi1_base_type_to_string(fmi1_xml_get_variable_base_type(a)));
-                    fmi1_xml_eliminate_bad_alias(context,0);
-                    foundBadAlias = 1;
-                    continue;
-                }
-                numvar = jm_vector_get_size(jm_voidp)(varByVR);
-
-                for(i = 1; i< numvar; i++) {
-                    fmi1_xml_variable_t* b = (fmi1_xml_variable_t*)jm_vector_get_item(jm_voidp)(varByVR, i);
-                    if((fmi1_xml_get_variable_base_type(a)!=fmi1_xml_get_variable_base_type(b))
-                            || (a->vr != b->vr)) {
-                        /* a different vr */
-                        if(a->aliasKind == fmi1_variable_is_negated_alias) {
-                            jm_log_error(context->callbacks,module,"All variables with vr %u (base type %s) are marked as negated aliases",
-                                                  a->vr, fmi1_base_type_to_string(fmi1_xml_get_variable_base_type(a)));
-                            fmi1_xml_eliminate_bad_alias(context,i-1);
-                            foundBadAlias = 1;
-                            break;
-                        }
-                        if(b->aliasKind == fmi1_variable_is_alias) {
-                            jm_log_error(context->callbacks,module,"All variables with vr %u (base type %s) are marked as aliases",
-                                                b->vr, fmi1_base_type_to_string(fmi1_xml_get_variable_base_type(b)));
-                          fmi1_xml_eliminate_bad_alias(context,i);
-                          foundBadAlias = 1;
-                          break;
-                        }
-                    }
-                    else {
-                        if(   (a->aliasKind == fmi1_variable_is_negated_alias)
-                                && (b->aliasKind == fmi1_variable_is_alias)) {
-                            jm_log_error(context->callbacks,module, "All variables with vr %u (base type %s) are marked as aliases",
-                                                b->vr, fmi1_base_type_to_string(fmi1_xml_get_variable_base_type(b)));
-                          fmi1_xml_eliminate_bad_alias(context,i);
-                          foundBadAlias = 1;
-                          break;
-                        }
-                        if((a->aliasKind == fmi1_variable_is_not_alias) && (a->aliasKind == b->aliasKind)) {
-                            fmi1_xml_variable_t* c;
-                            size_t j = i+1;
-                            jm_log_error(context->callbacks,module,"Variables %s and %s reference the same vr %u. Marking '%s' as alias.",
-                                                a->name, b->name, b->vr, b->name);
-                            b->aliasKind = fmi1_variable_is_alias;
-
-                            while(j < numvar) {
-                                c = (fmi1_xml_variable_t*)jm_vector_get_item(jm_voidp)(varByVR, j);
-                                if(fmi1_xml_compare_vr(&b,&c) <= 0) break;
-                                j++;
-                            }
-                            j--;
-                            if(i != j) {
-                                c = (fmi1_xml_variable_t*)jm_vector_get_item(jm_voidp)(varByVR, j);
-                                jm_vector_set_item(jm_voidp)(varByVR, j, b);
-                                jm_vector_set_item(jm_voidp)(varByVR, i, c);
-                            }
-                            foundBadAlias = 1;
-                            i--;
-                            continue;
-                        }
-                    }
-                    a = b;
-                }
-            } while(foundBadAlias);
-        }
+        
+        fmi1_checking_alias_info(context, varByVR);
 
         numvar = jm_vector_get_size(jm_named_ptr)(&md->variablesByName);
 		jm_log_verbose(context->callbacks, module,"Setting up direct dependencies cross-references");

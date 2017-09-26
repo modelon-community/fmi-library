@@ -948,6 +948,7 @@ static const char* fmi1_alias_negated_string(fmi1_xml_variable_t* a) {
 }
 
 #define FMIL_ABS(X) (((X) > 0) ? (X) : -(X))
+#define FMIL_MAX(X, Y) ((X) > (Y) ? (X) : (Y))
 
 static int fmi1_real_alias_consistent_start_values(
     jm_callbacks* cb,
@@ -956,10 +957,12 @@ static int fmi1_real_alias_consistent_start_values(
 {
     double a_start = fmi1_xml_get_real_variable_start(fmi1_xml_get_variable_as_real(a));
     double b_start = fmi1_xml_get_real_variable_start(fmi1_xml_get_variable_as_real(b));
+    double scaling;
     int check_sign = fmi1_alias_check_sign(a, b);
     int consistent;
 
-    consistent = FMIL_ABS(a_start - check_sign*b_start) < 1e-14 * FMIL_ABS(a_start);
+    scaling = FMIL_MAX(FMIL_ABS(a_start), 1.0);
+    consistent = FMIL_ABS(a_start - check_sign*b_start) < 1e-14 * scaling;
     if (!consistent) {
         jm_log_error(cb, module, "Inconsistent start values in alias set, "
             "start value '%16.16f' of '%s'%s does not match "

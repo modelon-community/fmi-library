@@ -405,6 +405,9 @@ void test_alias_set_error_handling(void) {
         "start value '1' of 'v2' does not match "
         "start value '3' of 'v3'.";
     parser_log_expected_message("alias_validation/inconsistent_int_start_values2");
+
+    expected_message = "Inconsistent start values in alias set";
+    test_parsing_pass_and_fmu("alias_validation/consistent_real_zero_start_values", should_have_size_2_alias_group);
 }
 
 void test_deprecation_errors(void) {

@@ -1071,7 +1071,6 @@ static int fmi1_alias_consistent_start_values(
     fmi1_xml_variable_t* a,
     fmi1_xml_variable_t* b)
 {
-    int consistent;
     fmi1_base_type_enu_t type = fmi1_xml_get_variable_base_type(a);
     assert(fmi1_same_vr_and_base_type(a, b));
 

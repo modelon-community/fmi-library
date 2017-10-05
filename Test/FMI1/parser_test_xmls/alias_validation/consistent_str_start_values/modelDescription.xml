@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<fmiModelDescription
+  fmiVersion="1.0"
+  modelName="all_alias"
+  modelIdentifier="all_alias"
+  generationTool="None"
+  description="For testing alias validation. Strings with consistent start values."
+  guid="123"
+  numberOfContinuousStates="0"
+  numberOfEventIndicators="0">
+
+<ModelVariables>
+  <ScalarVariable name="v1" valueReference="0" alias="noAlias">
+     <String start="a" fixed="true"/>
+  </ScalarVariable>
+  <ScalarVariable name="v2" valueReference="0" alias="alias">
+     <String start="a" fixed="true"/>
+  </ScalarVariable>
+  <ScalarVariable name="v3" valueReference="0" alias="negatedAlias">
+     <String/>
+  </ScalarVariable>
+</ModelVariables>
+
+</fmiModelDescription>
+

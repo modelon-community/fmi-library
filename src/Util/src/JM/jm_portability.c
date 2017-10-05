@@ -132,13 +132,26 @@ const char* jm_get_system_temp_dir() {
 
 #ifdef WIN32
 #include <io.h>
-#define mktemp _mktemp
 #else
-char* mktemp(char*);
+#include <stdlib.h>
 #endif
- 
-char* jm_mktemp(char* tmplt) {
-	return mktemp(tmplt);
+char *jm_mkdtemp(jm_callbacks *cb, char *tmplt)
+{
+#ifdef WIN32
+    /* Windows does not have mkdtemp, use mktemp + mkdir */
+
+    if(!_mktemp(tmplt)) {
+        jm_log_fatal(cb, module, "Could not create a unique temporary directory name");
+        return NULL;
+    }
+    if(jm_mkdir(cb, tmplt) != jm_status_success) {
+        return NULL;
+    }
+    return tmplt;
+
+#else
+    return mkdtemp(tmplt);
+#endif
 }
 
 #ifdef WIN32
@@ -263,15 +276,10 @@ char* jm_mk_temp_dir(jm_callbacks* cb, const char* systemTempDir, const char* te
 	}
 	sprintf(tmpPath,"%s%sXXXXXX",tmpDir,tempPrefix);/*safe*/
 
-	if(!jm_mktemp(tmpPath)) {
-		jm_log_fatal(cb, module,"Could not create a unique temporary directory name");
-		cb->free(tmpPath);
-		return 0;
-	}
-	if(jm_mkdir(cb,tmpPath) != jm_status_success) {
-		cb->free(tmpPath);
-		return 0;
-	}
+    if (jm_mkdtemp(cb, tmpPath) == NULL) {
+        jm_log_fatal(cb, module,"Could not create a unique temporary directory");
+    }
+
 	return tmpPath;
 }
 
@@ -331,17 +339,17 @@ char* jm_create_URL_from_abs_path(jm_callbacks* cb, const char* path) {
 	return url;
 }
 
- int rpl_vsnprintf(char *, size_t, const char *, va_list);
+int jm_rpl_vsnprintf(char *, size_t, const char *, va_list);
 
- int jm_vsnprintf(char * str, size_t size, const char * fmt, va_list al) {
-     return rpl_vsnprintf(str, size, fmt, al);
- }
+int jm_vsnprintf(char * str, size_t size, const char * fmt, va_list al) {
+    return jm_rpl_vsnprintf(str, size, fmt, al);
+}
 
- int jm_snprintf(char * str, size_t size, const char * fmt, ...) {
+int jm_snprintf(char * str, size_t size, const char * fmt, ...) {
     va_list args;
     int ret;
     va_start (args, fmt);
-    ret = rpl_vsnprintf(str, size, fmt, args);
+    ret = jm_vsnprintf(str, size, fmt, args);
     va_end (args);
     return ret;
- }
+}

@@ -134,7 +134,7 @@ JM_TEMPLATE_INSTANCE_TYPE* jm_vector_insert(JM_TEMPLATE_INSTANCE_TYPE)(jm_vector
                 if( jm_vector_reserve(JM_TEMPLATE_INSTANCE_TYPE)(a, reserve) != reserve) return 0;
         }
         assert(a->size < a->capacity);
-        memmove((void*)(a->items+index+1),(void*)(a->items+index), a->size - index);
+        memmove((void*)(a->items+index+1),(void*)(a->items+index), (a->size - index)*sizeof(JM_TEMPLATE_INSTANCE_TYPE));
         a->items[index] = item;
         pitem = &(a->items[index]);
         a->size++;

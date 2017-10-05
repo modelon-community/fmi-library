@@ -175,6 +175,30 @@ if(NOT FMILIB_STATIC_LIB_ONLY)
 	add_definitions(-DFMILIB_BUILDING_LIBRARY)
 endif()
 
+include(CheckSymbolExists)
+include(CheckFunctionExists)
+CHECK_SYMBOL_EXISTS(va_copy stdarg.h HAVE_VA_COPY)
+CHECK_SYMBOL_EXISTS(__va_copy stdarg.h HAVE___VA_COPY)
+
+CHECK_SYMBOL_EXISTS(vsnprintf stdio.h HAVE_VSNPRINTF_SYM)
+CHECK_FUNCTION_EXISTS(vsnprintf HAVE_VSNPRINTF_FCN)
+
+MACRO(FMIL_EVAL_CONDITION var_to_store_cond_eval)
+   IF(${ARGN})
+     SET(${var_to_store_cond_eval} 1)
+   ELSE(${ARGN})
+     SET(${var_to_store_cond_eval} 0)
+   ENDIF(${ARGN})
+ENDMACRO(FMIL_EVAL_CONDITION)
+
+FMIL_EVAL_CONDITION(HAVE_VSNPRINTF HAVE_VSNPRINTF_SYM OR HAVE_VSNPRINTF_FCN)
+
+# MSVC < 19.0 (Visual Studio 2015) have a non-standard vsnprintf
+# implementation. Use the one provided by c99snprintf instead
+if (MSVC AND (MSVC_VERSION LESS 1900))
+    set(HAVE_VSNPRINTF FALSE)
+endif()
+
 add_subdirectory(ThirdParty/c99_snprintf)
 
 SET(CMAKE_MODULE_PATH ${FMILIBRARYHOME}/Config.cmake)
@@ -195,37 +219,12 @@ endif(WIN32)
 set(FMILIB_FMI_PLATFORM_DOC "FMI platform defines the subdirectory within FMU where binary is located")
 set(FMILIB_FMI_PLATFORM ”unknown” CACHE STRING ${FMILIB_FMI_PLATFORM_DOC})
 if(FMILIB_FMI_PLATFORM MATCHES ”unknown”)
-	if(CMAKE_HOST_WIN32) #Set to true when the host system is Windows and on cygwin.
-		if(CMAKE_CL_64)
-		set(FMI_PLATFORM win64)
-		else(CMAKE_CL_64)
-		set(FMI_PLATFORM win32)
-		endif(CMAKE_CL_64)
-	elseif(CMAKE_HOST_APPLE) #Set to true when the host system is Apple OSX. 
-		if(CMAKE_SIZEOF_VOID_P EQUAL 4)
-			set(FMI_PLATFORM darwin32)
-		else(CMAKE_SIZEOF_VOID_P EQUAL 4)
-			set(FMI_PLATFORM darwin64)
-		endif(CMAKE_SIZEOF_VOID_P EQUAL 4)
-	elseif(CMAKE_HOST_UNIX) #Set to true when the host system is UNIX or UNIX like (i.e. APPLE and CYGWIN). 
-		if(CMAKE_SIZEOF_VOID_P EQUAL 4)
-			set(FMI_PLATFORM linux32)
-		else(CMAKE_SIZEOF_VOID_P EQUAL 4)
-			set(FMI_PLATFORM linux64)
-		endif(CMAKE_SIZEOF_VOID_P EQUAL 4)
-	else(CMAKE_HOST_WIN32)
-		message(SEND_ERROR "Target platform is not supported by the tests")
-		set(FMI_PLATFORM not_supported)
-	endif()
-	
+    include(fmiplatform)
+    fmi_platform(FMI_PLATFORM)
 	set(FMILIB_FMI_PLATFORM ${FMI_PLATFORM} CACHE STRING ${FMILIB_FMI_PLATFORM_DOC} FORCE)
 else()
 	set(FMI_PLATFORM ${FMILIB_FMI_PLATFORM})
 endif()
-
-include(CheckSymbolExists)
-CHECK_SYMBOL_EXISTS(va_copy stdarg.h HAVE_VA_COPY)
-CHECK_SYMBOL_EXISTS(__va_copy stdarg.h HAVE___VA_COPY)
 
 configure_file (
   "${FMILibrary_SOURCE_DIR}/Config.cmake/config_fmilib.h.cmake"
@@ -283,7 +282,11 @@ endif()
 
 if(FMILIB_BUILD_SHARED_LIB)
 	add_library(fmilib_shared SHARED ${FMILIB_SHARED_SRC})
-	target_link_libraries(fmilib_shared LINK_INTERFACE_LIBRARIES)
+
+    if (UNIX)
+        target_compile_definitions(fmilib_shared PRIVATE -D_GNU_SOURCE)
+    endif()
+
 	target_link_libraries(fmilib_shared ${FMILIB_SHARED_SUBLIBS})
 	set(FMILIB_TARGETS ${FMILIB_TARGETS} fmilib_shared)
 endif()

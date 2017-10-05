@@ -24,11 +24,18 @@ CHECK_INCLUDE_FILES(stdlib.h HAVE_STDLIB_H)
 CHECK_INCLUDE_FILES(inttypes.h 	HAVE_INTTYPES_H)
 CHECK_INCLUDE_FILES(locale.h   	HAVE_LOCALE_H)
 
-INCLUDE (CheckFunctionExists) 
-CHECK_FUNCTION_EXISTS(vsnprintf HAVE_VSNPRINTF)
-CHECK_FUNCTION_EXISTS(snprintf	HAVE_SNPRINTF)
-CHECK_FUNCTION_EXISTS(vasprintf 	HAVE_VASPRINTF)
-CHECK_FUNCTION_EXISTS(asprintf    	HAVE_ASPRINTF)
+INCLUDE (CheckSymbolExists)
+INCLUDE (CheckFunctionExists)
+CHECK_SYMBOL_EXISTS(snprintf  stdio.h HAVE_SNPRINTF_SYM)
+CHECK_SYMBOL_EXISTS(vasprintf stdio.h HAVE_VASPRINTF_SYM)
+CHECK_SYMBOL_EXISTS(asprintf  stdio.h HAVE_ASPRINTF_SYM)
+CHECK_FUNCTION_EXISTS(snprintf  HAVE_SNPRINTF_FCN)
+CHECK_FUNCTION_EXISTS(vasprintf HAVE_VASPRINTF_FCN)
+CHECK_FUNCTION_EXISTS(asprintf  HAVE_ASPRINTF_FCN)
+
+FMIL_EVAL_CONDITION(HAVE_SNPRINTF   HAVE_SNPRINTF_SYM  OR HAVE_SNPRINTF_FCN)
+FMIL_EVAL_CONDITION(HAVE_VASPRINTF  HAVE_VASPRINTF_SYM OR HAVE_VASPRINTF_FCN)
+FMIL_EVAL_CONDITION(HAVE_ASPRINTF   HAVE_ASPRINTF_SYM  OR HAVE_ASPRINTF_FCN)
 
 CHECK_FUNCTION_EXISTS(localeconv    	HAVE_LOCALECONV)
  
@@ -58,40 +65,57 @@ CHECK_SYMBOL_EXISTS(va_copy stdarg.h HAVE_VA_COPY)
 CHECK_SYMBOL_EXISTS(__va_copy stdarg.h HAVE___VA_COPY)
 
 set(CHECKS
-#    	HAVE_VSNPRINTF
-#     	HAVE_SNPRINTF
-#     	HAVE_VASPRINTF
-#     	HAVE_ASPRINTF
-     	HAVE_STDARG_H
-     	HAVE_STDDEF_H
-     	HAVE_STDINT_H
-     	HAVE_STDLIB_H
-     	HAVE_INTTYPES_H
-     	HAVE_LOCALE_H
-     	HAVE_LOCALECONV
-     	HAVE_LCONV_DECIMAL_POINT
-     	HAVE_LCONV_THOUSANDS_SEP
-     	HAVE_LONG_DOUBLE
-     	HAVE_LONG_LONG_INT
-     	HAVE_UNSIGNED_LONG_LONG_INT
-     	HAVE_INTMAX_T
-     	HAVE_UINTMAX_T
-     	HAVE_UINTPTR_T
-     	HAVE_PTRDIFF_T
-     	HAVE_VA_COPY
-     	HAVE___VA_COPY)
+        HAVE_SNPRINTF
+        HAVE_VASPRINTF
+        HAVE_ASPRINTF
+        HAVE_STDARG_H
+        HAVE_STDDEF_H
+        HAVE_STDINT_H
+        HAVE_STDLIB_H
+        HAVE_INTTYPES_H
+        HAVE_LOCALE_H
+        HAVE_LOCALECONV
+        HAVE_LCONV_DECIMAL_POINT
+        HAVE_LCONV_THOUSANDS_SEP
+        HAVE_LONG_DOUBLE
+        HAVE_LONG_LONG_INT
+        HAVE_UNSIGNED_LONG_LONG_INT
+        HAVE_INTMAX_T
+        HAVE_UINTMAX_T
+        HAVE_UINTPTR_T
+        HAVE_PTRDIFF_T
+        HAVE_VA_COPY
+        HAVE___VA_COPY)
 
 foreach(check ${CHECKS})
     if(${${check}})
         set(DEFINES ${DEFINES} -D${check}=${${check}})
     endif()
 endforeach()
-add_definitions(
-    -Dvsnprintf=rpl_vsnprintf
-    -Dsnprintf=rpl_snprintf
-    -Dvasprintf=rpl_vasprintf
-    -Dasprintf=rpl_asprintf
-    ${DEFINES})
+
+if(NOT HAVE_VSNPRINTF)
+    set(DEFINES ${DEFINES} -Drpl_vsnprintf=jm_rpl_vsnprintf)
+endif()
+
+if(NOT HAVE_SNPRINTF)
+    set(DEFINES ${DEFINES}
+        -Dsnprintf=jm_rpl_snprintf
+        -Drpl_snprintf=jm_rpl_snprintf)
+endif()
+
+if(NOT HAVE_VASPRINTF)
+    set(DEFINES ${DEFINES}
+        -Dvasprintf=jm_rpl_vasprintf
+        -Drpl_vasprintf=jm_rpl_vasprintf)
+endif()
+
+if(NOT HAVE_ASPRINTF)
+    set(DEFINES ${DEFINES}
+        -Dasprintf=jm_rpl_asprintf
+        -Drpl_asprintf=jm_rpl_asprintf)
+endif()
+
+add_definitions(${DEFINES})
 
 file(WRITE ${CMAKE_BINARY_DIR}/c99snprintf_defs "${DEFINES}")
 

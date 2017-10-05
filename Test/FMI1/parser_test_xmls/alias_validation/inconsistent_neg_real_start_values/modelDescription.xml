@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<fmiModelDescription
+  fmiVersion="1.0"
+  modelName="all_alias"
+  modelIdentifier="all_alias"
+  generationTool="None"
+  description="For testing alias validation. Reals with inconsistent start values."
+  guid="123"
+  numberOfContinuousStates="0"
+  numberOfEventIndicators="0">
+
+<ModelVariables>
+  <ScalarVariable name="v1" valueReference="0" alias="noAlias">
+     <Real start="1.0" fixed="true"/>
+  </ScalarVariable>
+  <ScalarVariable name="v2" valueReference="0" alias="negatedAlias">
+     <Real start="1.0" fixed="true"/>
+  </ScalarVariable>
+</ModelVariables>
+
+</fmiModelDescription>
+

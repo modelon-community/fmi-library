@@ -40,6 +40,9 @@ set(XML_ME_PATH ${FMU2_DUMMY_FOLDER}/modelDescription_me.xml)
 set(XML_CS_PATH ${FMU2_DUMMY_FOLDER}/modelDescription_cs.xml)
 set(XML_MF_PATH ${FMU2_DUMMY_FOLDER}/modelDescription_malformed.xml)
 
+set(VARIALBE_TEST_MODEL_DESC_DIR
+        ${RTTESTDIR}/FMI2/parser_test_xmls/variable_test)
+
 set(SHARED_LIBRARY_ME_PATH ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${CMAKE_SHARED_LIBRARY_PREFIX}fmu2_dll_me${CMAKE_SHARED_LIBRARY_SUFFIX})
 set(SHARED_LIBRARY_CS_PATH ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${CMAKE_SHARED_LIBRARY_PREFIX}fmu2_dll_cs${CMAKE_SHARED_LIBRARY_SUFFIX})
 
@@ -70,10 +73,13 @@ add_executable (fmi2_import_me_test ${RTTESTDIR}/FMI2/fmi2_import_me_test.c )
 target_link_libraries (fmi2_import_me_test  ${FMILIBFORTEST}  )
 add_executable (fmi2_import_cs_test ${RTTESTDIR}/FMI2/fmi2_import_cs_test.c )
 target_link_libraries (fmi2_import_cs_test  ${FMILIBFORTEST}  )
+add_executable(fmi2_import_variable_test ${RTTESTDIR}/FMI2/fmi2_import_variable_test.c)
+target_link_libraries(fmi2_import_variable_test ${FMILIBFORTEST})
 set_target_properties(
 	fmi2_xml_parsing_test
-	fmi2_import_xml_test 
+	fmi2_import_xml_test
 	fmi2_import_me_test fmi2_import_cs_test
+    fmi2_import_variable_test
     PROPERTIES FOLDER "Test/FMI2"
 )
 set(FAIL_NAME_CHECK 0)
@@ -88,9 +94,12 @@ add_test(ctest_fmi2_import_xml_test_mf fmi2_import_xml_test ${TEST_OUTPUT_FOLDER
   set_tests_properties(ctest_fmi2_import_xml_test_mf PROPERTIES WILL_FAIL TRUE)
 add_test(ctest_fmi2_import_test_me fmi2_import_me_test ${FMU2_ME_PATH} ${FMU_TEMPFOLDER})
 add_test(ctest_fmi2_import_test_cs fmi2_import_cs_test ${FMU2_CS_PATH} ${FMU_TEMPFOLDER})
+add_test(ctest_fmi2_import_variable_test
+         fmi2_import_variable_test
+         ${VARIALBE_TEST_MODEL_DESC_DIR})
 
 if(FMILIB_BUILD_BEFORE_TESTS)
-	SET_TESTS_PROPERTIES ( 
+	SET_TESTS_PROPERTIES (
 		ctest_fmi2_xml_parsing_test
 		ctest_fmi2_import_xml_test_me
 		ctest_fmi2_import_xml_test_cs
@@ -98,6 +107,6 @@ if(FMILIB_BUILD_BEFORE_TESTS)
 		ctest_fmi2_import_xml_test_empty
 		ctest_fmi2_import_test_me
 		ctest_fmi2_import_test_cs
+        ctest_fmi2_import_variable_test
 		PROPERTIES DEPENDS ctest_build_all)
 endif()
-

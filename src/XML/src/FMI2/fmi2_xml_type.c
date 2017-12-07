@@ -561,8 +561,10 @@ int fmi2_xml_handle_Enumeration(fmi2_xml_parser_context_t *context, const char* 
 													&md->typeDefinitions, 
 													&md->typeDefinitions.defaultEnumType.base.typeBase,
 													sizeof(fmi2_xml_enum_typedef_props_t));
-        props->base.typeBase.baseTypeStruct = 0;
-        if(props) jm_vector_init(jm_named_ptr)(&props->enumItems,0,context->callbacks);
+
+        if(props) {
+            fmi2_xml_init_enumeration_type_properties(props, context->callbacks);
+        }
         if(!bufQuantity || !props ||
                 /* <xs:attribute name="quantity" type="xs:normalizedString"/> */
                 fmi2_xml_set_attr_string(context, fmi2_xml_elmID_Integer, fmi_attr_id_quantity, 0, bufQuantity)
@@ -577,9 +579,9 @@ int fmi2_xml_handle_Enumeration(fmi2_xml_parser_context_t *context, const char* 
         type = named.ptr;
         type->typeBase.baseType = fmi2_base_type_enum;
         type->typeBase.baseTypeStruct = &props->base.typeBase;
-    }
-    else {
+    } else {
 		/* sort enum items, check that there are no duplicates */
+        fmi2_xml_enum_type_item_t *min, *max;
 		jm_named_ptr named = jm_vector_get_last(jm_named_ptr)(&context->modelDescription->typeDefinitions.typeDefinitions);
 		fmi2_xml_variable_typedef_t* type = named.ptr;
 		fmi2_xml_enum_typedef_props_t * props = (fmi2_xml_enum_typedef_props_t *)type->typeBase.baseTypeStruct;
@@ -590,11 +592,16 @@ int fmi2_xml_handle_Enumeration(fmi2_xml_parser_context_t *context, const char* 
 			fmi2_xml_enum_type_item_t* a = jm_vector_get_itemp(jm_named_ptr)(items, i-1)->ptr;
 			fmi2_xml_enum_type_item_t* b = jm_vector_get_itemp(jm_named_ptr)(items, i)->ptr;
 			if(a->value == b->value) {
-				jm_log_error(context->callbacks, module, "Enum items '%s' and '%s' within enumeration '%s' have the same value %d", 
+				jm_log_error(context->callbacks, module, "Enum items '%s' and '%s' within enumeration '%s' have the same value %d",
 					a->itemName, b->itemName, type->typeName, a->value);
 			}
 		}
-        return 0;
+
+        /* Set type min/max to smallest/largest enum value. */
+        min = jm_vector_get_itemp(jm_named_ptr)(items, 0)->ptr;
+        max = jm_vector_get_lastp(jm_named_ptr)(items)->ptr;
+        props->base.typeMin = min->value;
+        props->base.typeMax = max->value;
     }
     return 0;
 }

@@ -31,9 +31,9 @@ extern "C" {
   The type structures are designed to save memory and
   to enable handling of diff-sets in the future.
   For each basic type (Real, Integer, each Enumeration, String & Boolean)
-  there is a default instance of fmi2_xml_variable_type_base_t with 
-  structKind=fmi2_xml_type_struct_enu_props. Those instances have 
-  baseTypeStruct = NULL. 
+  there is a default instance of fmi2_xml_variable_type_base_t with
+  structKind=fmi2_xml_type_struct_enu_props. Those instances have
+  baseTypeStruct = NULL.
 
   Each type definition creates 1 or 2 instances:
   (1)  instance with structKind=fmi2_xml_type_struct_enu_typedef
@@ -65,15 +65,15 @@ struct fmi2_xml_variable_type_base_t {
 
     fmi2_xml_variable_type_base_t* next;    /** dynamically allocated fmi2_xml_variable_type_base structs are put on a linked list to prevent memory leaks*/
 
-    char structKind; /* one of fmi2_xml_type_contrains_kind.*/
+    fmi2_xml_type_struct_kind_enu_t structKind; /* one of fmi2_xml_type_contrains_kind.*/
     char baseType;   /* one of fmi2_xml_base_type */
     char isRelativeQuantity;   /* relativeQuantity flag set. Only used in fmi2_xml_real_type_props_t) */
 	char isUnbounded;          /* unbounded flag set only used in fmi2_xml_real_type_props_t) */
 } ;
 
-/* 
+/*
 	Variable type definition is general and is used for all types.
-	This is done to enable easy handling of SimpleType XML element 
+	This is done to enable easy handling of SimpleType XML element
 	(specific type element comes next).
 */
 struct fmi2_xml_variable_typedef_t {

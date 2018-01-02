@@ -31,21 +31,21 @@ static jm_status_enu_t fmi2_capi_get_fcn(fmi2_capi_t* fmu, const char* function_
 {
 		jm_status_enu_t jm_status = jm_portability_load_dll_function(fmu->dllHandle, (char*)function_name, dll_function_ptrptr);
 		if (jm_status == jm_status_error) {
-			jm_log_error(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Could not load the FMI function '%s'. %s", function_name, jm_portability_get_last_dll_error()); 
+			jm_log_error(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Could not load the FMI function '%s'. %s", function_name, jm_portability_get_last_dll_error());
 			*status = jm_status_error;
 		}
 		return jm_status;
 }
 
-static void fmi2_capi_get_fcn_with_flag(fmi2_capi_t* fmu, const char* function_name, 
-													jm_dll_function_ptr* dll_function_ptrptr, 
+static void fmi2_capi_get_fcn_with_flag(fmi2_capi_t* fmu, const char* function_name,
+													jm_dll_function_ptr* dll_function_ptrptr,
 													unsigned int capabilities[],
 													fmi2_capabilities_enu_t flag) {
 	jm_status_enu_t status = jm_status_success;
 	if(capabilities[flag]) {
 		fmi2_capi_get_fcn(fmu, function_name, dll_function_ptrptr, &status);
 		if(status != jm_status_success) {
-			jm_log_warning(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Resetting flag '%s'", fmi2_capability_to_string(flag)); 
+			jm_log_warning(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Resetting flag '%s'", fmi2_capability_to_string(flag));
 			capabilities[flag] = 0;
 		}
 	}
@@ -122,7 +122,7 @@ static jm_status_enu_t fmi2_capi_load_cs_fcn(fmi2_capi_t* fmu, unsigned int capa
 {
 	jm_status_enu_t jm_status = jm_status_success;
 
-	jm_log_verbose(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Loading functions for the co-simulation interface"); 
+	jm_log_verbose(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Loading functions for the co-simulation interface");
 
 	jm_status = fmi2_capi_load_common_fcn(fmu, capabilities);
 
@@ -144,7 +144,7 @@ static jm_status_enu_t fmi2_capi_load_cs_fcn(fmi2_capi_t* fmu, unsigned int capa
 /*   typedef fmi2Status fmi2GetDirectionalDerivativeTYPE(fmi2Component, const fmi2ValueReference[], size_t,
                                                                    const fmi2ValueReference[], size_t,
                                                                    const fmi2Real[], fmi2Real[]);*/
-    LOAD_DLL_FUNCTION_WITH_FLAG(fmi2GetDirectionalDerivative,fmi2_cs_providesDirectionalDerivatives); 
+    LOAD_DLL_FUNCTION_WITH_FLAG(fmi2GetDirectionalDerivative,fmi2_cs_providesDirectionalDerivatives);
 
 /* Simulating the slave */
 /*   typedef fmi2Status fmi2SetRealInputDerivativesTYPE (fmi2Component, const fmi2ValueReference [], size_t, const fmi2Integer [], const fmi2Real []);
@@ -169,7 +169,7 @@ static jm_status_enu_t fmi2_capi_load_cs_fcn(fmi2_capi_t* fmu, unsigned int capa
 	LOAD_DLL_FUNCTION(fmi2GetBooleanStatus);
 	LOAD_DLL_FUNCTION(fmi2GetStringStatus);
 
-	return jm_status; 
+	return jm_status;
 }
 
 /* Load FMI 2.0 Model Exchange functions */
@@ -177,7 +177,7 @@ static jm_status_enu_t fmi2_capi_load_me_fcn(fmi2_capi_t* fmu, unsigned int capa
 {
 	jm_status_enu_t jm_status = jm_status_success;
 
-	jm_log_verbose(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Loading functions for the model exchange interface"); 
+	jm_log_verbose(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Loading functions for the model exchange interface");
 
 	jm_status = fmi2_capi_load_common_fcn(fmu, capabilities);
 		/* Getting and setting the internal FMU state */
@@ -198,7 +198,7 @@ static jm_status_enu_t fmi2_capi_load_me_fcn(fmi2_capi_t* fmu, unsigned int capa
 /*   typedef fmi2Status fmi2GetDirectionalDerivativeTYPE(fmi2Component, const fmi2ValueReference[], size_t,
                                                                    const fmi2ValueReference[], size_t,
                                                                    const fmi2Real[], fmi2Real[]); */
-    LOAD_DLL_FUNCTION_WITH_FLAG(fmi2GetDirectionalDerivative,fmi2_me_providesDirectionalDerivatives); 
+    LOAD_DLL_FUNCTION_WITH_FLAG(fmi2GetDirectionalDerivative,fmi2_me_providesDirectionalDerivatives);
 
 /* Enter and exit the different modes */
 /*   typedef fmi2Status fmi2EnterEventModeTYPE         (fmi2Component);
@@ -227,8 +227,8 @@ static jm_status_enu_t fmi2_capi_load_me_fcn(fmi2_capi_t* fmu, unsigned int capa
 	LOAD_DLL_FUNCTION(fmi2GetEventIndicators);
 	LOAD_DLL_FUNCTION(fmi2GetContinuousStates);
 	LOAD_DLL_FUNCTION(fmi2GetNominalsOfContinuousStates);
-   
-	return jm_status; 
+
+	return jm_status;
 }
 
 void fmi2_capi_destroy_dllfmu(fmi2_capi_t* fmu)
@@ -320,7 +320,7 @@ jm_status_enu_t fmi2_capi_load_dll(fmi2_capi_t* fmu)
 	assert(fmu && fmu->dllPath);
 	fmu->dllHandle = jm_portability_load_dll_handle(fmu->dllPath); /* Load the shared library */
 	if (fmu->dllHandle == NULL) {
-		jm_log_fatal(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Could not load the DLL: %s", jm_portability_get_last_dll_error());
+		jm_log_fatal(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Could not load the FMU binary: %s", jm_portability_get_last_dll_error());
 		return jm_status_error;
 	} else {
 		jm_log_verbose(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Loaded FMU binary from %s", fmu->dllPath);
@@ -345,19 +345,19 @@ fmi2_fmu_kind_enu_t fmi2_capi_get_fmu_kind(fmi2_capi_t* fmu) {
 
 jm_status_enu_t fmi2_capi_free_dll(fmi2_capi_t* fmu)
 {
-	if (fmu == NULL) {		
+	if (fmu == NULL) {
 		return jm_status_error; /* Return without writing any log message */
 	}
 
 	if (fmu->dllHandle) {
 		jm_status_enu_t status =
 			(fmu->debugMode != 0) ?
-                /* When running valgrind this may be convenient to track mem leaks */ 
+                /* When running valgrind this may be convenient to track mem leaks */
                 jm_status_success:
                 jm_portability_free_dll_handle(fmu->dllHandle);
 		fmu->dllHandle = 0;
 		if (status == jm_status_error) { /* Free the library handle */
-			jm_log(fmu->callbacks, FMI_CAPI_MODULE_NAME, jm_log_level_error, "Could not free the DLL: %s", jm_portability_get_last_dll_error());
+			jm_log(fmu->callbacks, FMI_CAPI_MODULE_NAME, jm_log_level_error, "Could not free the FMU binary: %s", jm_portability_get_last_dll_error());
 			return jm_status_error;
 		} else {
 			jm_log_verbose(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Successfully unloaded FMU binary");

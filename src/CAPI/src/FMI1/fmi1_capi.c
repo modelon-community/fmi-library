@@ -13,7 +13,7 @@
     along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 */
 
-#ifdef __cplusplus 
+#ifdef __cplusplus
 extern "C" {
 #endif
 
@@ -35,11 +35,11 @@ static jm_status_enu_t fmi1_capi_get_fcn(fmi1_capi_t* fmu, const char* function_
 {
 	char fname[FUNCTION_NAME_LENGTH_MAX];
     int len;
-	
+
 	if (strlen(fmu->modelIdentifier) + strlen(function_name) + 2 > FUNCTION_NAME_LENGTH_MAX) {
 		jm_log_fatal(fmu->callbacks, FMI_CAPI_MODULE_NAME, "DLL function name is too long. Max name length is set to %s.", STRINGIFY(FUNCTION_NAME_LENGTH_MAX));
 		return jm_status_error;
-	}	
+	}
 
 	len = jm_snprintf(fname,FUNCTION_NAME_LENGTH_MAX,"%s_%s",fmu->modelIdentifier, function_name);
 
@@ -59,7 +59,7 @@ static jm_status_enu_t fmi1_capi_load_cs_fcn(fmi1_capi_t* fmu)
 {
 	jm_status_enu_t jm_status = jm_status_success;
 
-	jm_log_verbose(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Loading functions for the co-simulation interface"); 
+	jm_log_verbose(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Loading functions for the co-simulation interface");
 
 	/* Workaround for Dymola 2012 and SimulationX 3.x */
 	if (fmi1_capi_get_fcn(fmu, "fmiGetTypesPlatform",(jm_dll_function_ptr*)&fmu->fmiGetTypesPlatform) == jm_status_error) {
@@ -96,7 +96,7 @@ static jm_status_enu_t fmi1_capi_load_cs_fcn(fmi1_capi_t* fmu)
 	LOAD_DLL_FUNCTION(fmiGetInteger);
 	LOAD_DLL_FUNCTION(fmiGetBoolean);
 	LOAD_DLL_FUNCTION(fmiGetString);
-	return jm_status; 
+	return jm_status;
 }
 
 /* Load FMI 1.0 Model Exchange functions */
@@ -104,7 +104,7 @@ static jm_status_enu_t fmi1_capi_load_me_fcn(fmi1_capi_t* fmu)
 {
 	jm_status_enu_t jm_status = jm_status_success;
 
-	jm_log_verbose(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Loading functions for the model exchange interface"); 
+	jm_log_verbose(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Loading functions for the model exchange interface");
 
 	LOAD_DLL_FUNCTION(fmiGetModelTypesPlatform);
 	LOAD_DLL_FUNCTION(fmiInstantiateModel);
@@ -132,7 +132,7 @@ static jm_status_enu_t fmi1_capi_load_me_fcn(fmi1_capi_t* fmu)
 	LOAD_DLL_FUNCTION(fmiGetBoolean);
 	LOAD_DLL_FUNCTION(fmiGetString);
 
-	return jm_status; 
+	return jm_status;
 }
 
 void fmi1_capi_destroy_dllfmu(fmi1_capi_t* fmu)
@@ -222,7 +222,7 @@ jm_status_enu_t fmi1_capi_load_dll(fmi1_capi_t* fmu)
 	assert(fmu && fmu->dllPath);
 	fmu->dllHandle = jm_portability_load_dll_handle(fmu->dllPath); /* Load the shared library */
 	if (fmu->dllHandle == NULL) {
-		jm_log_fatal(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Could not load the DLL: %s", jm_portability_get_last_dll_error());
+		jm_log_fatal(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Could not load the FMU binary: %s", jm_portability_get_last_dll_error());
 		return jm_status_error;
 	} else {
 		jm_log_verbose(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Loaded FMU binary from %s", fmu->dllPath);
@@ -242,19 +242,19 @@ int fmi1_capi_get_debug_mode(fmi1_capi_t* fmu) {
 
 jm_status_enu_t fmi1_capi_free_dll(fmi1_capi_t* fmu)
 {
-	if (fmu == NULL) {		
+	if (fmu == NULL) {
 		return jm_status_error; /* Return without writing any log message */
 	}
 
 	if (fmu->dllHandle) {
 		jm_status_enu_t status =
 			(fmu->debugMode != 0) ?
-                /* When running valgrind this may be convenient to track mem leaks */ 
+                /* When running valgrind this may be convenient to track mem leaks */
                 jm_status_success:
                 jm_portability_free_dll_handle(fmu->dllHandle);
 		fmu->dllHandle = 0;
 		if (status == jm_status_error) { /* Free the library handle */
-			jm_log(fmu->callbacks, FMI_CAPI_MODULE_NAME, jm_log_level_error, "Could not free the DLL: %s", jm_portability_get_last_dll_error());
+			jm_log(fmu->callbacks, FMI_CAPI_MODULE_NAME, jm_log_level_error, "Could not free the FMU binary: %s", jm_portability_get_last_dll_error());
 			return jm_status_error;
 		} else {
 			jm_log_verbose(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Successfully unloaded FMU binary");

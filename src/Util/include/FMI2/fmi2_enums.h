@@ -84,6 +84,25 @@ typedef enum fmi2_causality_enu_t {
 /** \brief Convert a #fmi2_causality_enu_t constant into string  */
 FMILIB_EXPORT const char* fmi2_causality_to_string(fmi2_causality_enu_t c);
 
+/**
+ * \brief Get the default variability for a given causality. NOTE: the FMI 2.0
+ *        defines the default to always be continuous, but this is incompatible
+ *        with causalities "parameter" and "calculatedParameter". These will
+ *        instead be treated as having variability "fixed".
+ *
+ * \return A default variability compatible with the given causality.
+ *
+ */
+FMILIB_EXPORT fmi2_variability_enu_t fmi2_get_default_variability(fmi2_causality_enu_t c);
+
+/**
+ * \brief Check if a given combination of variablity and causality is valid.
+ *
+ * \return 0 if not valid, non-zero otherwise
+ */
+FMILIB_EXPORT int fmi2_is_valid_variability_causality(fmi2_variability_enu_t v,
+                                                      fmi2_causality_enu_t c);
+
 /**  \brief Initial property for variables */
 typedef enum fmi2_initial_enu_t {
         fmi2_initial_enu_exact,

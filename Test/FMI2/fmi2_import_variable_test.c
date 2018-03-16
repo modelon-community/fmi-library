@@ -73,12 +73,12 @@ static int enum_maximal_test(fmi2_import_t *xml)
     ASSERT_MSG(fmi2_import_get_variable_vr(v) == 5, "Bad vr");
     ASSERT_MSG(strcmp(fmi2_import_get_variable_description(v), "myDescription") == 0,
                "Wrong description");
-    ASSERT_MSG(fmi2_import_get_causality(v) == fmi2_causality_enu_input,
-               "Causality should be input");
+    ASSERT_MSG(fmi2_import_get_causality(v) == fmi2_causality_enu_output,
+               "Causality should be output");
     ASSERT_MSG(fmi2_import_get_variability(v) == fmi2_variability_enu_discrete,
                "Variability should be discrete");
-    ASSERT_MSG(fmi2_import_get_initial(v) == fmi2_initial_enu_approx,
-               "Initial should be approx");
+    ASSERT_MSG(fmi2_import_get_initial(v) == fmi2_initial_enu_exact,
+               "Initial should be exact");
 
     ev = fmi2_import_get_variable_as_enum(v);
     ASSERT_MSG(ev != NULL, "Failed to convert to enum variable");

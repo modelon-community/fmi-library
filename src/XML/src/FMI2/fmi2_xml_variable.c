@@ -364,15 +364,20 @@ int fmi2_xml_handle_ScalarVariable(fmi2_xml_parser_context_t *context, const cha
             if(fmi2_xml_set_attr_enum(context, fmi2_xml_elmID_ScalarVariable, fmi_attr_id_variability,0,&variability,fmi2_variability_enu_continuous,variabilityConventionMap))
                 variability = fmi2_variability_enu_continuous;
 
-            defaultInitial = fmi2_get_default_initial((fmi2_variability_enu_t)variability, (fmi2_causality_enu_t)causality);
-            if(defaultInitial == fmi2_initial_enu_unknown) {
-                fmi2_xml_parse_error(context,"Invalid combination of variability %s and causality %s. Setting variability to 'fixed'",
-                    fmi2_variability_to_string((fmi2_variability_enu_t)variability),
-                    fmi2_causality_to_string((fmi2_causality_enu_t)causality));
-                variability = fmi2_variability_enu_fixed;
-                defaultInitial = fmi2_get_default_initial((fmi2_variability_enu_t)variability, (fmi2_causality_enu_t)causality);
+            if (!fmi2_is_valid_variability_causality(variability, causality)) {
+                fmi2_variability_enu_t bad_variability = variability;
+                variability = fmi2_get_default_variability(causality);
+                fmi2_xml_parse_error(context,
+                    "Invalid combination of variability %s and causality %s. Setting variability to '%s'",
+                    fmi2_variability_to_string((fmi2_variability_enu_t) bad_variability),
+                    fmi2_causality_to_string((fmi2_causality_enu_t) causality),
+                    fmi2_variability_to_string(variability));
             }
             variable->variability = variability;
+
+            defaultInitial = fmi2_get_default_initial(
+                                        (fmi2_variability_enu_t) variability,
+                                        (fmi2_causality_enu_t) causality);
 
             /* <xs:attribute name="initial"> */
             if(fmi2_xml_set_attr_enum(context, fmi2_xml_elmID_ScalarVariable, fmi_attr_id_initial,0,&initial,defaultInitial,initialConventionMap))

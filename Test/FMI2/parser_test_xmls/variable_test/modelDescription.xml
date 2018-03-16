@@ -52,13 +52,13 @@
     <ScalarVariable name="minEnumVar" valueReference="4" variability="discrete">
         <Enumeration declaredType="MyEnum"/>
     </ScalarVariable>
-    <ScalarVariable name="maxEnumVar" causality="input" variability="discrete" valueReference="5" initial="approx" description="myDescription">
+    <ScalarVariable name="maxEnumVar" causality="output" variability="discrete" valueReference="5" initial="exact" description="myDescription">
         <Enumeration declaredType="MyEnum" quantity="enumerationQuantity" min="1" max="2" start="2"/>
     </ScalarVariable>
     <ScalarVariable name="minBoolVar" valueReference="6">
         <Boolean/>
     </ScalarVariable>
-    <ScalarVariable name="maxBoolVar" causality="independent" variability="continuous" valueReference="7" initial="approx" description="myDescription">
+    <ScalarVariable name="maxBoolVar" causality="output" variability="discrete" valueReference="7" initial="approx" description="myDescription">
         <Boolean start="true"/>
     </ScalarVariable>
     <ScalarVariable name="minStringVar" valueReference="8">
@@ -67,7 +67,7 @@
     <ScalarVariable name="maxStringVar" causality="local" variability="constant" valueReference="9" initial="exact" description="myDescription">
         <String start="stringStart"/>
     </ScalarVariable>
-    <ScalarVariable name="derivative"  causality="output" variability="fixed" valueReference="10" initial="approx" description="myDescription">
+    <ScalarVariable name="derivative"  causality="output" variability="continuous" valueReference="10" initial="approx" description="myDescription">
         <Real derivative="1" start="1.0"/>
     </ScalarVariable>
 </ModelVariables>

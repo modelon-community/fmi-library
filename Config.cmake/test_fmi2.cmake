@@ -75,6 +75,9 @@ add_executable (fmi2_import_cs_test ${RTTESTDIR}/FMI2/fmi2_import_cs_test.c )
 target_link_libraries (fmi2_import_cs_test  ${FMILIBFORTEST}  )
 add_executable(fmi2_import_variable_test ${RTTESTDIR}/FMI2/fmi2_import_variable_test.c)
 target_link_libraries(fmi2_import_variable_test ${FMILIBFORTEST})
+add_executable(fmi2_enum_test ${RTTESTDIR}/FMI2/fmi2_enum_test.c)
+target_link_libraries(fmi2_enum_test ${FMILIBFORTEST})
+
 set_target_properties(
 	fmi2_xml_parsing_test
 	fmi2_import_xml_test
@@ -97,6 +100,9 @@ add_test(ctest_fmi2_import_test_cs fmi2_import_cs_test ${FMU2_CS_PATH} ${FMU_TEM
 add_test(ctest_fmi2_import_variable_test
          fmi2_import_variable_test
          ${VARIALBE_TEST_MODEL_DESC_DIR})
+
+add_test(ctest_fmi2_enum_test
+         fmi2_enum_test)
 
 if(FMILIB_BUILD_BEFORE_TESTS)
 	SET_TESTS_PROPERTIES (

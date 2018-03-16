@@ -2,15 +2,7 @@
 
 #include <fmilib.h>
 #include "config_test.h"
-
-
-#define TEST_FAILED(msg) \
-    printf("  %s: %s\n", __FUNCTION__, msg); \
-    return 0; \
-
-#define ASSERT_MSG(cond, msg) if (!(cond)) { TEST_FAILED(msg); }
-
-#define TEST_OK (1)
+#include "fmil_test.h"
 
 static fmi2_import_t *parse_xml(const char *model_desc_path)
 {
@@ -36,7 +28,7 @@ static int enum_minimal_test(fmi2_import_t *xml)
     fmi2_import_variable_typedef_t *t;
     fmi2_import_enumeration_typedef_t *et;
 
-    ASSERT_MSG(v != NULL, "Could not find variable to test")
+    ASSERT_MSG(v != NULL, "Could not find variable to test");
     ASSERT_MSG(fmi2_import_get_variable_vr(v) == 4, "Bad vr");
     ASSERT_MSG(fmi2_import_get_variable_description(v) == NULL,
                "Default description not empty");
@@ -77,7 +69,7 @@ static int enum_maximal_test(fmi2_import_t *xml)
     fmi2_import_enum_variable_t *ev;
     fmi2_import_variable_typedef_t *t;
     fmi2_import_enumeration_typedef_t *et;
-    ASSERT_MSG(v != NULL, "Could not find variable to test")
+    ASSERT_MSG(v != NULL, "Could not find variable to test");
     ASSERT_MSG(fmi2_import_get_variable_vr(v) == 5, "Bad vr");
     ASSERT_MSG(strcmp(fmi2_import_get_variable_description(v), "myDescription") == 0,
                "Wrong description");

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<fmiModelDescription
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    fmiVersion="2.0"
+    modelName="VariableNoType"
+    guid="d7d98edb-d924-4104-87db-227bb677fc95">
+
+  <CoSimulation modelIdentifier="VariableNoType" />
+
+  <ModelVariables>
+    <ScalarVariable name="dummy1" valueReference="0" causality="input" />
+    <ScalarVariable name="dummy2" valueReference="1" causality="input" />
+  </ModelVariables>
+
+  <ModelStructure />
+
+</fmiModelDescription>

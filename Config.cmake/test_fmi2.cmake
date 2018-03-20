@@ -44,6 +44,8 @@ set(VARIALBE_TEST_MODEL_DESC_DIR
         ${RTTESTDIR}/FMI2/parser_test_xmls/variable_test)
 set(VARIABLE_NO_TYPE_MODEL_DESC_DIR
     ${RTTESTDIR}/FMI2/parser_test_xmls/variable_no_type)
+set(VARIABLE_BAD_VARIABILITY_CAUSALITY_MODEL_DESC_DIR
+    ${RTTESTDIR}/FMI2/parser_test_xmls/variable_bad_variability_causality)
 
 set(SHARED_LIBRARY_ME_PATH ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${CMAKE_SHARED_LIBRARY_PREFIX}fmu2_dll_me${CMAKE_SHARED_LIBRARY_SUFFIX})
 set(SHARED_LIBRARY_CS_PATH ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${CMAKE_SHARED_LIBRARY_PREFIX}fmu2_dll_cs${CMAKE_SHARED_LIBRARY_SUFFIX})
@@ -80,6 +82,9 @@ target_link_libraries(fmi2_import_variable_test ${FMILIBFORTEST})
 add_executable(fmi2_variable_no_type_test
                ${RTTESTDIR}/FMI2/fmi2_variable_no_type_test.c)
 target_link_libraries(fmi2_variable_no_type_test ${FMILIBFORTEST})
+add_executable(fmi2_variable_bad_variability_causality_test
+               ${RTTESTDIR}/FMI2/fmi2_variable_bad_variability_causality_test.c)
+target_link_libraries(fmi2_variable_bad_variability_causality_test ${FMILIBFORTEST})
 add_executable(fmi2_enum_test ${RTTESTDIR}/FMI2/fmi2_enum_test.c)
 target_link_libraries(fmi2_enum_test ${FMILIBFORTEST})
 
@@ -108,6 +113,9 @@ add_test(ctest_fmi2_import_variable_test
 add_test(ctest_fmi2_variable_no_type_test
          fmi2_variable_no_type_test
          ${VARIABLE_NO_TYPE_MODEL_DESC_DIR})
+add_test(ctest_fmi2_variable_bad_variability_causality_test
+         fmi2_variable_bad_variability_causality_test
+         ${VARIABLE_BAD_VARIABILITY_CAUSALITY_MODEL_DESC_DIR})
 add_test(ctest_fmi2_enum_test
          fmi2_enum_test)
 
@@ -123,5 +131,6 @@ if(FMILIB_BUILD_BEFORE_TESTS)
         ctest_fmi2_import_variable_test
         ctest_fmi2_variable_no_type_test
         ctest_fmi2_enum_test
+        ctest_fmi2_variable_bad_variability_causality_test
 		PROPERTIES DEPENDS ctest_build_all)
 endif()

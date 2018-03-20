@@ -2,21 +2,21 @@
 #include "fmil_test.h"
 #include "config_test.h"
 
-int test_default_variablity()
+int test_default_valid_variablity()
 {
     fmi2_causality_enu_t c;
     fmi2_variability_enu_t v;
 
-    v = fmi2_get_default_variability(fmi2_causality_enu_parameter);
+    v = fmi2_get_default_valid_variability(fmi2_causality_enu_parameter);
     ASSERT_MSG(v == fmi2_variability_enu_fixed,
                "Default parameter variability should be fixed");
 
-    v = fmi2_get_default_variability(fmi2_causality_enu_calculated_parameter);
+    v = fmi2_get_default_valid_variability(fmi2_causality_enu_calculated_parameter);
     ASSERT_MSG(v == fmi2_variability_enu_fixed,
                "Default calc param variability should be fixed");
 
     for (c = fmi2_causality_enu_input; c <= fmi2_causality_enu_unknown; c++) {
-        v = fmi2_get_default_variability(c);
+        v = fmi2_get_default_valid_variability(c);
         ASSERT_MSG(v == fmi2_variability_enu_continuous,
                 "Default variability for non-constants should be continuous");
     }
@@ -198,7 +198,7 @@ int main(void)
 {
     int ret = TEST_OK;
 
-    ret &= test_default_variablity();
+    ret &= test_default_valid_variablity();
     ret &= test_default_initial_param();
     ret &= test_default_initial_calc_param();
     ret &= test_default_initial_input();

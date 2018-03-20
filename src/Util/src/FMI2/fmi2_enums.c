@@ -121,7 +121,7 @@ fmi2_initial_enu_t initialDefaultsTable[fmi2_variability_enu_unknown][fmi2_causa
 	/* continuous */{fmi2_initial_enu_unknown, fmi2_initial_enu_unknown,    fmi2_initial_enu_unknown,  fmi2_initial_enu_calculated, fmi2_initial_enu_calculated, fmi2_initial_enu_unknown}
 };
 
-FMILIB_EXPORT fmi2_variability_enu_t fmi2_get_default_variability(fmi2_causality_enu_t c)
+FMILIB_EXPORT fmi2_variability_enu_t fmi2_get_default_valid_variability(fmi2_causality_enu_t c)
 {
 	if (c == fmi2_causality_enu_calculated_parameter || c == fmi2_causality_enu_parameter) {
 		return fmi2_variability_enu_fixed;
@@ -202,11 +202,11 @@ const char * fmi2_SI_base_unit_to_string(fmi2_SI_base_units_enu_t id) {
 	to a string of the form kg*m^2/s^2.
 
 	\param exp An array of SI base units exponents.
-	\param bufSize Size of the buffer to store the string. 
+	\param bufSize Size of the buffer to store the string.
 	\param buf Buffer to store the string
 	\return Required size of the buffer to store the string including the terminating zero.
-		This most likely be under [8*fmi2_SI_base_units_Num]. If the return value is larger or equal 
-		than bufSize than the string could not be fitted in the buffer. 
+		This most likely be under [8*fmi2_SI_base_units_Num]. If the return value is larger or equal
+		than bufSize than the string could not be fitted in the buffer.
 */
 size_t fmi2_SI_base_unit_exp_to_string(const int exp[fmi2_SI_base_units_Num], size_t bufSize, char buf[]){
 	int i = 0;
@@ -218,12 +218,12 @@ size_t fmi2_SI_base_unit_exp_to_string(const int exp[fmi2_SI_base_units_Num], si
 	/* count the exponents */
 	for(i = 0; i < fmi2_SI_base_units_Num; i++) {
 		if(exp[i] == 0) continue;
-		if(exp[i] < 0) 
+		if(exp[i] < 0)
 			num_neg_exp ++;
 		else
 			num_pos_exp ++;
 	}
-	if((num_neg_exp + num_pos_exp) == 0) { /* return "-" */ 
+	if((num_neg_exp + num_pos_exp) == 0) { /* return "-" */
 		 if (bufSize < 2) return 2;
 		 buf[0] = '-';
 		 buf[1] = 0;

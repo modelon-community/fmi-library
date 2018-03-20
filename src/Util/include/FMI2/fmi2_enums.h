@@ -93,7 +93,7 @@ FMILIB_EXPORT const char* fmi2_causality_to_string(fmi2_causality_enu_t c);
  * \return A default variability compatible with the given causality.
  *
  */
-FMILIB_EXPORT fmi2_variability_enu_t fmi2_get_default_variability(fmi2_causality_enu_t c);
+FMILIB_EXPORT fmi2_variability_enu_t fmi2_get_default_valid_variability(fmi2_causality_enu_t c);
 
 /**
  * \brief Check if a given combination of variablity and causality is valid.

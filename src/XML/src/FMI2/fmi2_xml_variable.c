@@ -366,11 +366,13 @@ int fmi2_xml_handle_ScalarVariable(fmi2_xml_parser_context_t *context, const cha
 
             if (!fmi2_is_valid_variability_causality(variability, causality)) {
                 fmi2_variability_enu_t bad_variability = variability;
-                variability = fmi2_get_default_variability(causality);
+                variability = fmi2_get_default_valid_variability(causality);
                 fmi2_xml_parse_error(context,
-                    "Invalid combination of variability %s and causality %s. Setting variability to '%s'",
+                    "Invalid combination of variability %s and causality %s for"
+                    " variable '%s'. Setting variability to '%s'",
                     fmi2_variability_to_string((fmi2_variability_enu_t) bad_variability),
                     fmi2_causality_to_string((fmi2_causality_enu_t) causality),
+                    variable->name,
                     fmi2_variability_to_string(variability));
             }
             variable->variability = variability;
@@ -384,11 +386,14 @@ int fmi2_xml_handle_ScalarVariable(fmi2_xml_parser_context_t *context, const cha
                 initial = defaultInitial;
             defaultInitial = fmi2_get_valid_initial((fmi2_variability_enu_t)variability, (fmi2_causality_enu_t)causality, (fmi2_initial_enu_t) initial);
             if(defaultInitial != initial) {
-                fmi2_xml_parse_error(context,"Initial '%s' is not allowed for variability '%s' and causality '%s'. Setting initial to '%s'",
+                fmi2_xml_parse_error(context,
+                    "Initial '%s' is not allowed for variability '%s' and "
+                    "causality '%s'. Setting initial to '%s' for variable '%s'",
                     fmi2_initial_to_string((fmi2_initial_enu_t)initial),
                     fmi2_variability_to_string((fmi2_variability_enu_t)variability),
                     fmi2_causality_to_string((fmi2_causality_enu_t)causality),
-                    fmi2_initial_to_string(defaultInitial));
+                    fmi2_initial_to_string(defaultInitial),
+                    variable->name);
                 initial = defaultInitial;
             }
             variable->initial = initial;

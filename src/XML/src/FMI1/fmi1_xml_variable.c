@@ -397,7 +397,7 @@ int fmi1_xml_handle_ScalarVariable(fmi1_xml_parser_context_t *context, const cha
             if(!variable->typeBase) {
                 jm_log_error(context->callbacks, module, "No variable type element for variable %s. Assuming Real.", variable->name);
 
-                return fmi1_xml_handle_Real(context, data);
+                return fmi1_xml_handle_Real(context, NULL);
             }
         }
         /* might give out a warning if(data[0] != 0) */

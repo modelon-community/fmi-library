@@ -424,6 +424,12 @@ void test_deprecation_errors(void) {
     parser_log_expected_message("deprecated/canSignalEvents");
 }
 
+void test_variable_no_type(void)
+{
+    expected_message = "No variable type element for variable v. Assuming Real.";
+    parser_log_expected_message("incorrect/variable_no_type");
+}
+
 int main(int argc, char *argv[])
 {
     if (argc == 2) {
@@ -436,6 +442,7 @@ int main(int argc, char *argv[])
     test_variable_naming_conventions();
     test_deprecation_errors();
     test_alias_set_error_handling();
+    test_variable_no_type();
 
     return 0;
 }

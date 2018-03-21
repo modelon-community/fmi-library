@@ -35,7 +35,7 @@ const char* fmi1_xml_get_variable_description(fmi1_xml_variable_t* v) {
 }
 
 size_t fmi1_xml_get_variable_original_order(fmi1_xml_variable_t* v) {
-	return v->originalIndex;
+    return v->originalIndex;
 }
 
 fmi1_value_reference_t fmi1_xml_get_variable_vr(fmi1_xml_variable_t* v) {
@@ -78,7 +78,7 @@ jm_status_enu_t fmi1_xml_get_variable_aliases(fmi1_xml_model_description_t* md,f
     i = baseIndex + 1;
     while(fmi1_xml_get_variable_vr(cur) == vr) {
         if(!jm_vector_push_back(jm_voidp)(list, cur)) {
-			jm_log_fatal(md->callbacks,module,"Could not allocate memory");
+            jm_log_fatal(md->callbacks,module,"Could not allocate memory");
             return jm_status_error;
         };
         if(i >= num) break;
@@ -157,22 +157,22 @@ fmi1_xml_display_unit_t* fmi1_xml_get_real_variable_display_unit(fmi1_xml_real_v
 double fmi1_xml_get_real_variable_max(fmi1_xml_real_variable_t* v) {
     fmi1_xml_variable_t* vv = (fmi1_xml_variable_t*)v;
     fmi1_xml_real_type_props_t* props = (fmi1_xml_real_type_props_t*)(fmi1_xml_find_type_props(vv->typeBase));
-	assert(props);
-	return props->typeMax;
+    assert(props);
+    return props->typeMax;
 }
 
 double fmi1_xml_get_real_variable_min(fmi1_xml_real_variable_t* v) {
     fmi1_xml_variable_t* vv = (fmi1_xml_variable_t*)v;
     fmi1_xml_real_type_props_t* props = (fmi1_xml_real_type_props_t*)(fmi1_xml_find_type_props(vv->typeBase));
-	assert(props);
-	return props->typeMin;
+    assert(props);
+    return props->typeMin;
 }
 
 double fmi1_xml_get_real_variable_nominal(fmi1_xml_real_variable_t* v){
     fmi1_xml_variable_t* vv = (fmi1_xml_variable_t*)v;
     fmi1_xml_real_type_props_t* props = (fmi1_xml_real_type_props_t*)(fmi1_xml_find_type_props(vv->typeBase));
-	assert(props);
-	return props->typeNominal;
+    assert(props);
+    return props->typeNominal;
 }
 
 int fmi1_xml_get_integer_variable_start(fmi1_xml_integer_variable_t* v){
@@ -187,29 +187,29 @@ int fmi1_xml_get_integer_variable_start(fmi1_xml_integer_variable_t* v){
 int fmi1_xml_get_integer_variable_min(fmi1_xml_integer_variable_t* v){
     fmi1_xml_variable_t* vv = (fmi1_xml_variable_t*)v;
     fmi1_xml_integer_type_props_t* props = (fmi1_xml_integer_type_props_t*)(fmi1_xml_find_type_props(vv->typeBase));
-	assert(props);
-	return props->typeMin;
+    assert(props);
+    return props->typeMin;
 }
 
 int fmi1_xml_get_integer_variable_max(fmi1_xml_integer_variable_t* v){
     fmi1_xml_variable_t* vv = (fmi1_xml_variable_t*)v;
     fmi1_xml_integer_type_props_t* props = (fmi1_xml_integer_type_props_t*)(fmi1_xml_find_type_props(vv->typeBase));
-	assert(props);
-	return props->typeMax;
+    assert(props);
+    return props->typeMax;
 }
 
 int fmi1_xml_get_enum_variable_min(fmi1_xml_enum_variable_t* v){
     fmi1_xml_variable_t* vv = (fmi1_xml_variable_t*)v;
     fmi1_xml_enum_type_props_t* props = (fmi1_xml_enum_type_props_t*)(fmi1_xml_find_type_props(vv->typeBase));
-	assert(props);
-	return props->typeMin;
+    assert(props);
+    return props->typeMin;
 }
 
 int fmi1_xml_get_enum_variable_max(fmi1_xml_enum_variable_t* v){
     fmi1_xml_variable_t* vv = (fmi1_xml_variable_t*)v;
     fmi1_xml_enum_type_props_t* props = (fmi1_xml_enum_type_props_t*)(fmi1_xml_find_type_props(vv->typeBase));
-	assert(props);
-	return props->typeMax;
+    assert(props);
+    return props->typeMax;
 }
 
 const char* fmi1_xml_get_string_variable_start(fmi1_xml_string_variable_t* v){
@@ -240,34 +240,34 @@ fmi1_boolean_t fmi1_xml_get_boolean_variable_start(fmi1_xml_bool_variable_t* v) 
 }
 
 size_t fmi1_xml_get_direct_dependency_size(fmi1_xml_model_description_t* md,fmi1_xml_variable_t*v) {
-	if(v->directDependency) {
-		return jm_vector_get_size(jm_voidp)(v->directDependency);
-	}
-	else{
-		return jm_vector_get_size(jm_voidp)(md->inputVariables);
-	}
+    if(v->directDependency) {
+        return jm_vector_get_size(jm_voidp)(v->directDependency);
+    }
+    else{
+        return jm_vector_get_size(jm_voidp)(md->inputVariables);
+    }
 }
 
 /* DirectDependency is returned for variables with causality Output. Null pointer for others. */
 jm_status_enu_t fmi1_xml_get_direct_dependency(fmi1_xml_model_description_t* md, fmi1_xml_variable_t* v, jm_vector(jm_voidp)* list) {
-	size_t size = 0;
-	if(fmi1_xml_get_causality(v) != fmi1_causality_enu_output) return jm_status_error;
-	jm_vector_resize(jm_voidp)(list, 0);
-	if(v->directDependency) {
-		size = jm_vector_get_size(jm_voidp)(v->directDependency);
-		if(jm_vector_reserve(jm_voidp)(list, size) < size) return jm_status_error;
-		jm_vector_copy(jm_voidp)(list,v->directDependency);
-	}
-	/*no direct dependency defined, deliver all inputs, see FMI for ME spec. p 38.*/
-	else{
-		if (md->inputVariables){
-			jm_vector_copy(jm_voidp)(list,md->inputVariables);
-		}
-		else {
-			jm_log_error(md->callbacks,module, "List of input variables not found.");
-		}
-	}
-	return jm_status_success;
+    size_t size = 0;
+    if(fmi1_xml_get_causality(v) != fmi1_causality_enu_output) return jm_status_error;
+    jm_vector_resize(jm_voidp)(list, 0);
+    if(v->directDependency) {
+        size = jm_vector_get_size(jm_voidp)(v->directDependency);
+        if(jm_vector_reserve(jm_voidp)(list, size) < size) return jm_status_error;
+        jm_vector_copy(jm_voidp)(list,v->directDependency);
+    }
+    /*no direct dependency defined, deliver all inputs, see FMI for ME spec. p 38.*/
+    else{
+        if (md->inputVariables){
+            jm_vector_copy(jm_voidp)(list,md->inputVariables);
+        }
+        else {
+            jm_log_error(md->callbacks,module, "List of input variables not found.");
+        }
+    }
+    return jm_status_success;
 }
 
 fmi1_xml_real_variable_t* fmi1_xml_get_variable_as_real(fmi1_xml_variable_t* v) {
@@ -302,92 +302,91 @@ void fmi1_xml_free_direct_dependencies(jm_named_ptr named) {
 
 int fmi1_xml_handle_ScalarVariable(fmi1_xml_parser_context_t *context, const char* data) {
     if(!data) {
-            fmi1_xml_model_description_t* md = context->modelDescription;
-            fmi1_xml_variable_t* variable;
-            fmi1_xml_variable_t dummyV;
-            const char* description = 0;
-            jm_named_ptr named, *pnamed;
-            jm_vector(char)* bufName = fmi1_xml_reserve_parse_buffer(context,1,100);
-            jm_vector(char)* bufDescr = fmi1_xml_reserve_parse_buffer(context,2,100);
-            unsigned int vr;
+        fmi1_xml_model_description_t* md = context->modelDescription;
+        fmi1_xml_variable_t* variable;
+        fmi1_xml_variable_t dummyV;
+        const char* description = 0;
+        jm_named_ptr named, *pnamed;
+        jm_vector(char)* bufName = fmi1_xml_reserve_parse_buffer(context,1,100);
+        jm_vector(char)* bufDescr = fmi1_xml_reserve_parse_buffer(context,2,100);
+        unsigned int vr;
 
-            if(!bufName || !bufDescr) return -1;
+        if(!bufName || !bufDescr) return -1;
 
-            /*   <xs:attribute name="valueReference" type="xs:unsignedInt" use="required"> */
-            if(fmi1_xml_set_attr_uint(context, fmi1_xml_elmID_ScalarVariable, fmi_attr_id_valueReference, 1, &vr, 0)) return -1;
+        /*   <xs:attribute name="valueReference" type="xs:unsignedInt" use="required"> */
+        if(fmi1_xml_set_attr_uint(context, fmi1_xml_elmID_ScalarVariable, fmi_attr_id_valueReference, 1, &vr, 0)) return -1;
 
-            if(vr == fmi1_undefined_value_reference) {
-                context->skipOneVariableFlag = 1;
-            }
+        if(vr == fmi1_undefined_value_reference) {
+            context->skipOneVariableFlag = 1;
+        }
 
-            if(
-            /*  <xs:attribute name="name" type="xs:normalizedString" use="required"/> */
-                fmi1_xml_set_attr_string(context, fmi1_xml_elmID_ScalarVariable, fmi_attr_id_name, 1, bufName) ||
-            /* <xs:attribute name="description" type="xs:string"/> */
-                fmi1_xml_set_attr_string(context, fmi1_xml_elmID_ScalarVariable, fmi_attr_id_description, 0, bufDescr)
-            ) return -1;
+        if(
+        /*  <xs:attribute name="name" type="xs:normalizedString" use="required"/> */
+            fmi1_xml_set_attr_string(context, fmi1_xml_elmID_ScalarVariable, fmi_attr_id_name, 1, bufName) ||
+        /* <xs:attribute name="description" type="xs:string"/> */
+            fmi1_xml_set_attr_string(context, fmi1_xml_elmID_ScalarVariable, fmi_attr_id_description, 0, bufDescr)
+        ) return -1;
 
-            if(context->skipOneVariableFlag) {
-				jm_log_error(context->callbacks,module, "Ignoring variable with undefined vr '%s'", jm_vector_get_itemp(char)(bufName,0));
-                return 0;
-            }
-            if(jm_vector_get_size(char)(bufDescr)) {
-                description = jm_string_set_put(&md->descriptions, jm_vector_get_itemp(char)(bufDescr,0));
-            }
+        if(context->skipOneVariableFlag) {
+            jm_log_error(context->callbacks,module, "Ignoring variable with undefined vr '%s'", jm_vector_get_itemp(char)(bufName,0));
+            return 0;
+        }
+        if(jm_vector_get_size(char)(bufDescr)) {
+            description = jm_string_set_put(&md->descriptions, jm_vector_get_itemp(char)(bufDescr,0));
+        }
 
-            named.ptr = 0;
-			named.name = 0;
-            pnamed = jm_vector_push_back(jm_named_ptr)(&md->variablesByName, named);
+        named.ptr = 0;
+        named.name = 0;
+        pnamed = jm_vector_push_back(jm_named_ptr)(&md->variablesByName, named);
 
-            if(pnamed) *pnamed = named = jm_named_alloc_v(bufName,sizeof(fmi1_xml_variable_t), dummyV.name - (char*)&dummyV, context->callbacks);
-            variable = named.ptr;
-            if( !pnamed || !variable ) {
-                fmi1_xml_parse_fatal(context, "Could not allocate memory");
+        if(pnamed) *pnamed = named = jm_named_alloc_v(bufName,sizeof(fmi1_xml_variable_t), dummyV.name - (char*)&dummyV, context->callbacks);
+        variable = named.ptr;
+        if( !pnamed || !variable ) {
+            fmi1_xml_parse_fatal(context, "Could not allocate memory");
+            return -1;
+        }
+        variable->vr = vr;
+        variable->description = description;
+        variable->typeBase = 0;
+        variable->directDependency = 0;
+        variable->originalIndex = jm_vector_get_size(jm_named_ptr)(&md->variablesByName) - 1;
+
+        {
+            jm_name_ID_map_t variabilityConventionMap[] = {{"continuous",fmi1_variability_enu_continuous},
+                                                            {"constant", fmi1_variability_enu_constant},
+                                                            {"parameter", fmi1_variability_enu_parameter},
+                                                            {"discrete", fmi1_variability_enu_discrete},{0,0}};
+            unsigned int variability;
+            /*  <xs:attribute name="variability" default="continuous"> */
+            if(fmi1_xml_set_attr_enum(context, fmi1_xml_elmID_ScalarVariable, fmi_attr_id_variability,0,&variability,fmi1_variability_enu_continuous,variabilityConventionMap))
                 return -1;
-            }
-            variable->vr = vr;
-            variable->description = description;
-            variable->typeBase = 0;
-            variable->directDependency = 0;
-			variable->originalIndex = jm_vector_get_size(jm_named_ptr)(&md->variablesByName) - 1;
-
-              {
-                jm_name_ID_map_t variabilityConventionMap[] = {{"continuous",fmi1_variability_enu_continuous},
-                                                               {"constant", fmi1_variability_enu_constant},
-                                                               {"parameter", fmi1_variability_enu_parameter},
-                                                               {"discrete", fmi1_variability_enu_discrete},{0,0}};
-                unsigned int variability;
-                /*  <xs:attribute name="variability" default="continuous"> */
-                if(fmi1_xml_set_attr_enum(context, fmi1_xml_elmID_ScalarVariable, fmi_attr_id_variability,0,&variability,fmi1_variability_enu_continuous,variabilityConventionMap))
-                    return -1;
-                variable->variability = variability;
-            }
-            {
-                jm_name_ID_map_t causalityConventionMap[] = {{"internal",fmi1_causality_enu_internal},
-                                                             {"input",fmi1_causality_enu_input},
-                                                             {"output",fmi1_causality_enu_output},
-                                                             {"none",fmi1_causality_enu_none},{0,0}};
-                /* <xs:attribute name="causality" default="internal"> */
-                unsigned int causality;
-                if(fmi1_xml_set_attr_enum(context, fmi1_xml_elmID_ScalarVariable, fmi_attr_id_causality,0,&causality,fmi1_causality_enu_internal,causalityConventionMap))
-                    return -1;
-                variable->causality = causality;
-            }
-            {
-                jm_name_ID_map_t aliasConventionMap[] = {{"alias", 1},
-                                                         {"negatedAlias", 2},
-                                                         {"noAlias", 0}, {0,0}};
-                unsigned int alias;
-                /* <xs:attribute name="alias" default="noAlias"> */
-                if(fmi1_xml_set_attr_enum(context, fmi1_xml_elmID_ScalarVariable, fmi_attr_id_alias ,0,&alias,0,aliasConventionMap))
-                    return -1;
-                if(alias == 0) variable->aliasKind = fmi1_variable_is_not_alias;
-                else if (alias == 1) variable->aliasKind = fmi1_variable_is_alias;
-                else if (alias == 2) variable->aliasKind = fmi1_variable_is_negated_alias;
-                else assert(0);
-            }
-    }
-    else {
+            variable->variability = variability;
+        }
+        {
+            jm_name_ID_map_t causalityConventionMap[] = {{"internal",fmi1_causality_enu_internal},
+                                                         {"input",fmi1_causality_enu_input},
+                                                         {"output",fmi1_causality_enu_output},
+                                                         {"none",fmi1_causality_enu_none},{0,0}};
+            /* <xs:attribute name="causality" default="internal"> */
+            unsigned int causality;
+            if(fmi1_xml_set_attr_enum(context, fmi1_xml_elmID_ScalarVariable, fmi_attr_id_causality,0,&causality,fmi1_causality_enu_internal,causalityConventionMap))
+                return -1;
+            variable->causality = causality;
+        }
+        {
+            jm_name_ID_map_t aliasConventionMap[] = {{"alias", 1},
+                                                     {"negatedAlias", 2},
+                                                     {"noAlias", 0}, {0,0}};
+            unsigned int alias;
+            /* <xs:attribute name="alias" default="noAlias"> */
+            if(fmi1_xml_set_attr_enum(context, fmi1_xml_elmID_ScalarVariable, fmi_attr_id_alias ,0,&alias,0,aliasConventionMap))
+                return -1;
+            if(alias == 0) variable->aliasKind = fmi1_variable_is_not_alias;
+            else if (alias == 1) variable->aliasKind = fmi1_variable_is_alias;
+            else if (alias == 2) variable->aliasKind = fmi1_variable_is_negated_alias;
+            else assert(0);
+        }
+    } else {
         if(context->skipOneVariableFlag) {
             context->skipOneVariableFlag = 0;
         }
@@ -396,9 +395,9 @@ int fmi1_xml_handle_ScalarVariable(fmi1_xml_parser_context_t *context, const cha
             fmi1_xml_model_description_t* md = context->modelDescription;
             fmi1_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
             if(!variable->typeBase) {
-				jm_log_error(context->callbacks, module, "No variable type element for variable %s. Assuming Real.", variable->name);
+                jm_log_error(context->callbacks, module, "No variable type element for variable %s. Assuming Real.", variable->name);
 
-				return fmi1_xml_handle_Real(context, data);
+                return fmi1_xml_handle_Real(context, data);
             }
         }
         /* might give out a warning if(data[0] != 0) */
@@ -413,9 +412,9 @@ int fmi1_xml_handle_DirectDependency(fmi1_xml_parser_context_t *context, const c
         fmi1_xml_model_description_t* md = context->modelDescription;
         fmi1_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
         if(variable->causality != fmi1_causality_enu_output) {
-			jm_log_error(context->callbacks,module,
-				"DirectDependency XML element cannot be defined for '%s' since causality is not output. Skipping.", variable->name);
-			context->skipElementCnt = 1;
+            jm_log_error(context->callbacks,module,
+                "DirectDependency XML element cannot be defined for '%s' since causality is not output. Skipping.", variable->name);
+            context->skipElementCnt = 1;
             return 0;
         }
     }
@@ -442,7 +441,7 @@ int fmi1_xml_handle_Name(fmi1_xml_parser_context_t *context, const char* data) {
     if(context->skipOneVariableFlag) return 0;
 
     if(!data) {
-		return 0;
+        return 0;
     }
     else {
         fmi1_xml_model_description_t* md = context->modelDescription;
@@ -452,13 +451,13 @@ int fmi1_xml_handle_Name(fmi1_xml_parser_context_t *context, const char* data) {
         jm_voidp* itemp;
         jm_string* namep;
 #define TRIM_SPACE " \n\r\t"
-		if(namelen) {
-			while(strchr(TRIM_SPACE, data[i])) i++;
-			while(strchr(TRIM_SPACE, data[namelen-1])) namelen--;
-		}
+        if(namelen) {
+            while(strchr(TRIM_SPACE, data[i])) i++;
+            while(strchr(TRIM_SPACE, data[namelen-1])) namelen--;
+        }
         if(i>=namelen) {
-			jm_log_error(context->callbacks, module,
-				"Unexpected empty Name element for DirectDependency of variable %s. Ignoring.", variable->name);
+            jm_log_error(context->callbacks, module,
+                "Unexpected empty Name element for DirectDependency of variable %s. Ignoring.", variable->name);
             return 0;
         }
         namep = jm_vector_push_back(jm_string)(&context->directDependencyStringsStore, name);
@@ -468,10 +467,10 @@ int fmi1_xml_handle_Name(fmi1_xml_parser_context_t *context, const char* data) {
             fmi1_xml_parse_fatal(context, "Could not allocate memory");
             return -1;
         }
-		for(j = 0; i<namelen;i++) {
-			name[j++] = data[i];
-		}
-		name[j] = 0;
+        for(j = 0; i<namelen;i++) {
+            name[j++] = data[i];
+        }
+        name[j] = 0;
     }
     return 0;
 }
@@ -655,7 +654,7 @@ int fmi1_xml_handle_Boolean(fmi1_xml_parser_context_t *context, const char* data
         return 0;
     }
 
-	assert(!variable->typeBase);
+    assert(!variable->typeBase);
 
     variable->typeBase = fmi1_get_declared_type(context, fmi1_xml_elmID_Boolean, &td->defaultBooleanType) ;
 
@@ -698,7 +697,7 @@ int fmi1_xml_handle_String(fmi1_xml_parser_context_t *context, const char* data)
         return 0;
     }
 
-	assert(!variable->typeBase);
+    assert(!variable->typeBase);
 
     variable->typeBase = fmi1_get_declared_type(context, fmi1_xml_elmID_String,&td->defaultStringType) ;
 
@@ -753,7 +752,7 @@ int fmi1_xml_handle_Enumeration(fmi1_xml_parser_context_t *context, const char* 
         return 0;
     }
 
-	assert(!variable->typeBase);
+    assert(!variable->typeBase);
 
     declaredType = fmi1_get_declared_type(context, fmi1_xml_elmID_Enumeration,&td->defaultEnumType.typeBase);
 
@@ -811,16 +810,16 @@ int fmi1_xml_handle_Enumeration(fmi1_xml_parser_context_t *context, const char* 
 }
 
 static int fmi1_xml_compare_variable_original_index (const void* first, const void* second) {
-	size_t a = (*(fmi1_xml_variable_t**)first)->originalIndex;
-	size_t b = (*(fmi1_xml_variable_t**)second)->originalIndex;
+    size_t a = (*(fmi1_xml_variable_t**)first)->originalIndex;
+    size_t b = (*(fmi1_xml_variable_t**)second)->originalIndex;
     if(a < b) return -1;
     if(a > b) return 1;
-	return 0;
+    return 0;
 }
 
 void fmi1_xml_eliminate_bad_alias(fmi1_xml_parser_context_t *context, jm_vector(jm_voidp)* varByVR, size_t indexVR) {
     size_t n, index;
-    
+
     fmi1_xml_variable_t* v = (fmi1_xml_variable_t*)jm_vector_get_item(jm_voidp)(varByVR, indexVR);
     fmi1_value_reference_t vr = v->vr;
     fmi1_base_type_enu_t vt = fmi1_xml_get_variable_base_type(v);
@@ -828,7 +827,7 @@ void fmi1_xml_eliminate_bad_alias(fmi1_xml_parser_context_t *context, jm_vector(
 
     n = jm_vector_get_size(jm_voidp)(varByVR);
     v = (fmi1_xml_variable_t*)jm_vector_get_item(jm_voidp)(varByVR, indexVR);
-        
+
     jm_vector_remove_item_jm_voidp(varByVR, indexVR);
     key.name = v->name;
     index = jm_vector_bsearch_index(jm_named_ptr)(&context->modelDescription->variablesByName, &key, jm_compare_named);
@@ -838,7 +837,7 @@ void fmi1_xml_eliminate_bad_alias(fmi1_xml_parser_context_t *context, jm_vector(
     index = jm_vector_bsearch_index(jm_voidp)(context->modelDescription->variablesOrigOrder, (jm_voidp*)&v, fmi1_xml_compare_variable_original_index);
     assert(index <= n);
 
-	jm_vector_remove_item(jm_voidp)(context->modelDescription->variablesOrigOrder,index);
+    jm_vector_remove_item(jm_voidp)(context->modelDescription->variablesOrigOrder,index);
 
     jm_log_error(context->callbacks, module,"Removing incorrect alias variable '%s'", v->name);
     context->callbacks->free(v);
@@ -846,7 +845,7 @@ void fmi1_xml_eliminate_bad_alias(fmi1_xml_parser_context_t *context, jm_vector(
 
 static size_t fmi1_xml_eliminate_bad_alias_set(fmi1_xml_parser_context_t *context, size_t indexVR) {
     size_t i, n, removed_aliases;
-    
+
     jm_vector(jm_voidp)* varByVR = context->modelDescription->variablesByVR;
     fmi1_xml_variable_t* v = (fmi1_xml_variable_t*)jm_vector_get_item(jm_voidp)(varByVR, indexVR);
     fmi1_value_reference_t vr = v->vr;
@@ -870,24 +869,24 @@ static size_t fmi1_xml_eliminate_bad_alias_set(fmi1_xml_parser_context_t *contex
 }
 
 static int fmi1_xml_compare_vr_and_original_index (const void* first, const void* second) {
-	int ret = fmi1_xml_compare_vr(first, second);
-	if(ret == 0) {
-	    fmi1_xml_variable_t* a = *(fmi1_xml_variable_t**)first;
-		fmi1_xml_variable_t* b = *(fmi1_xml_variable_t**)second;
-		size_t ai = a->originalIndex;
-		size_t bi = b->originalIndex;
-		if(ai > bi) ret = 1;
-		if(ai < bi) ret = -1;
-	}
+    int ret = fmi1_xml_compare_vr(first, second);
+    if(ret == 0) {
+        fmi1_xml_variable_t* a = *(fmi1_xml_variable_t**)first;
+        fmi1_xml_variable_t* b = *(fmi1_xml_variable_t**)second;
+        size_t ai = a->originalIndex;
+        size_t bi = b->originalIndex;
+        if(ai > bi) ret = 1;
+        if(ai < bi) ret = -1;
+    }
 
-	return ret;
+    return ret;
 }
 
 static int fmi1_same_vr_and_base_type(
     fmi1_xml_variable_t* a,
     fmi1_xml_variable_t* b)
 {
-    return (a->vr == b->vr) && 
+    return (a->vr == b->vr) &&
         (fmi1_xml_get_variable_base_type(a) == fmi1_xml_get_variable_base_type(b));
 }
 
@@ -933,7 +932,7 @@ static int fmi1_alias_check_sign(
     fmi1_xml_variable_t* a,
     fmi1_xml_variable_t* b)
 {
-    if ((a->aliasKind == fmi1_variable_is_negated_alias) != 
+    if ((a->aliasKind == fmi1_variable_is_negated_alias) !=
         (b->aliasKind == fmi1_variable_is_negated_alias))
     {
         return -1;
@@ -1113,7 +1112,7 @@ static size_t handleAliasSet(
     }
     for(cur_list_idx = start_idx; cur_list_idx < numvar; cur_list_idx++) {
         fmi1_xml_variable_t* v = (fmi1_xml_variable_t*)jm_vector_get_item(jm_voidp)(varByVR, cur_list_idx);
-        
+
         if (v == base_alias) {
             /* The base alias, nothing to do */
             continue;
@@ -1185,25 +1184,25 @@ static void fmi1_checking_alias_info(
 
 int fmi1_xml_handle_ModelVariables(fmi1_xml_parser_context_t *context, const char* data) {
     if(!data) {
-		jm_log_verbose(context->callbacks, module,"Parsing XML element ModelVariables");
+        jm_log_verbose(context->callbacks, module,"Parsing XML element ModelVariables");
     }
     else {
          /* postprocess variable list */
 
         fmi1_xml_model_description_t* md = context->modelDescription;
         jm_vector(jm_voidp)* varByVR;
-		jm_vector(jm_voidp)* inputVars;
-		jm_vector(jm_voidp)* outputVars;
+        jm_vector(jm_voidp)* inputVars;
+        jm_vector(jm_voidp)* outputVars;
         size_t i, numvar;
-		size_t num_in = 0;
-		size_t num_out = 0;
-		numvar = jm_vector_get_size(jm_named_ptr)(&md->variablesByName);
-		inputVars = jm_vector_alloc(jm_voidp)(numvar,numvar,md->callbacks);
-		outputVars = jm_vector_alloc(jm_voidp)(numvar,numvar,md->callbacks);
-		if (!inputVars || !outputVars) {
-			fmi1_xml_parse_fatal(context, "Could not allocate memory");
-		}
-		/* vars with  vr = fmiUndefinedValueReference were already skipped. Just sanity: */
+        size_t num_in = 0;
+        size_t num_out = 0;
+        numvar = jm_vector_get_size(jm_named_ptr)(&md->variablesByName);
+        inputVars = jm_vector_alloc(jm_voidp)(numvar,numvar,md->callbacks);
+        outputVars = jm_vector_alloc(jm_voidp)(numvar,numvar,md->callbacks);
+        if (!inputVars || !outputVars) {
+            fmi1_xml_parse_fatal(context, "Could not allocate memory");
+        }
+        /* vars with  vr = fmiUndefinedValueReference were already skipped. Just sanity: */
         /* remove any variable with vr = fmiUndefinedValueReference */
         for(i = 0; i< numvar; i++) {
             jm_named_ptr named = jm_vector_get_item(jm_named_ptr)(&md->variablesByName, i);
@@ -1215,83 +1214,83 @@ int fmi1_xml_handle_ModelVariables(fmi1_xml_parser_context_t *context, const cha
                 md->callbacks->free(v);
                 assert(0);
             }
-			if (v->causality == fmi1_causality_enu_input){
-				jm_vector_set_item(jm_voidp)(inputVars, num_in, jm_vector_get_item(jm_named_ptr)(&md->variablesByName,i).ptr);
-				num_in++;
-			}
-			if (v->causality == fmi1_causality_enu_output){
-				jm_vector_set_item(jm_voidp)(outputVars, num_out, jm_vector_get_item(jm_named_ptr)(&md->variablesByName,i).ptr);
-				num_out++;
-			}
+            if (v->causality == fmi1_causality_enu_input){
+                jm_vector_set_item(jm_voidp)(inputVars, num_in, jm_vector_get_item(jm_named_ptr)(&md->variablesByName,i).ptr);
+                num_in++;
+            }
+            if (v->causality == fmi1_causality_enu_output){
+                jm_vector_set_item(jm_voidp)(outputVars, num_out, jm_vector_get_item(jm_named_ptr)(&md->variablesByName,i).ptr);
+                num_out++;
+            }
 
         }
 
         /* store the list of vars in origianl order */
-		{
-			size_t size = jm_vector_get_size(jm_named_ptr)(&md->variablesByName);
-			md->variablesOrigOrder = jm_vector_alloc(jm_voidp)(size,size,md->callbacks);
-			if(md->variablesOrigOrder) {
-				size_t i;
-				for(i= 0; i < size; ++i) {
-					jm_vector_set_item(jm_voidp)(md->variablesOrigOrder, i, jm_vector_get_item(jm_named_ptr)(&md->variablesByName,i).ptr);
-				}
-			}
+        {
+            size_t size = jm_vector_get_size(jm_named_ptr)(&md->variablesByName);
+            md->variablesOrigOrder = jm_vector_alloc(jm_voidp)(size,size,md->callbacks);
+            if(md->variablesOrigOrder) {
+                size_t i;
+                for(i= 0; i < size; ++i) {
+                    jm_vector_set_item(jm_voidp)(md->variablesOrigOrder, i, jm_vector_get_item(jm_named_ptr)(&md->variablesByName,i).ptr);
+                }
+            }
 
-		}
+        }
 
-		/* store the list of input vars */
-		md->inputVariables = jm_vector_alloc(jm_voidp)(num_in,num_in,md->callbacks);
-		md->outputVariables = jm_vector_alloc(jm_voidp)(num_out,num_out,md->callbacks);
-		if(md->inputVariables) {
-				size_t i;
-				for(i= 0; i < num_in; ++i) {
-					jm_vector_set_item(jm_voidp)(md->inputVariables, i, jm_vector_get_item(jm_voidp)(inputVars,i));
-				}
-			}
-		else {
-			fmi1_xml_parse_fatal(context, "Could not allocate memory");
-		}
-		if(md->outputVariables) {
-				size_t i;
-				for(i= 0; i < num_out; ++i) {
-					jm_vector_set_item(jm_voidp)(md->outputVariables, i, jm_vector_get_item(jm_voidp)(outputVars,i));
-				}
-			}
-		else {
-			fmi1_xml_parse_fatal(context, "Could not allocate memory");
-		}
-		jm_vector_free(jm_voidp)(inputVars);
-		jm_vector_free(jm_voidp)(outputVars);
+        /* store the list of input vars */
+        md->inputVariables = jm_vector_alloc(jm_voidp)(num_in,num_in,md->callbacks);
+        md->outputVariables = jm_vector_alloc(jm_voidp)(num_out,num_out,md->callbacks);
+        if(md->inputVariables) {
+                size_t i;
+                for(i= 0; i < num_in; ++i) {
+                    jm_vector_set_item(jm_voidp)(md->inputVariables, i, jm_vector_get_item(jm_voidp)(inputVars,i));
+                }
+            }
+        else {
+            fmi1_xml_parse_fatal(context, "Could not allocate memory");
+        }
+        if(md->outputVariables) {
+                size_t i;
+                for(i= 0; i < num_out; ++i) {
+                    jm_vector_set_item(jm_voidp)(md->outputVariables, i, jm_vector_get_item(jm_voidp)(outputVars,i));
+                }
+            }
+        else {
+            fmi1_xml_parse_fatal(context, "Could not allocate memory");
+        }
+        jm_vector_free(jm_voidp)(inputVars);
+        jm_vector_free(jm_voidp)(outputVars);
 
-		/* sort the variables by names */
+        /* sort the variables by names */
         jm_vector_qsort(jm_named_ptr)(&md->variablesByName,jm_compare_named);
 
         /* create VR index */
         md->status = fmi1_xml_model_description_enu_ok;
-		{
-			size_t size = jm_vector_get_size(jm_named_ptr)(&md->variablesByName);
-			md->variablesByVR = jm_vector_alloc(jm_voidp)(size,size,md->callbacks);
-			if(md->variablesByVR) {
-				size_t i;
-				for(i= 0; i < size; ++i) {
-					jm_vector_set_item(jm_voidp)(md->variablesByVR, i, jm_vector_get_item(jm_named_ptr)(&md->variablesByName,i).ptr);
+        {
+            size_t size = jm_vector_get_size(jm_named_ptr)(&md->variablesByName);
+            md->variablesByVR = jm_vector_alloc(jm_voidp)(size,size,md->callbacks);
+            if(md->variablesByVR) {
+                size_t i;
+                for(i= 0; i < size; ++i) {
+                    jm_vector_set_item(jm_voidp)(md->variablesByVR, i, jm_vector_get_item(jm_named_ptr)(&md->variablesByName,i).ptr);
 
-				}
-			}
-		}
+                }
+            }
+        }
 
         md->status = fmi1_xml_model_description_enu_empty;
-		if(!md->variablesByVR || !md->variablesOrigOrder || !md->inputVariables || !md->outputVariables) {
+        if(!md->variablesByVR || !md->variablesOrigOrder || !md->inputVariables || !md->outputVariables) {
             fmi1_xml_parse_fatal(context, "Could not allocate memory");
             return -1;
         }
         varByVR = md->variablesByVR;
         jm_vector_qsort(jm_voidp)(varByVR, fmi1_xml_compare_vr_and_original_index);
-        
+
         fmi1_checking_alias_info(context, varByVR);
 
         numvar = jm_vector_get_size(jm_named_ptr)(&md->variablesByName);
-		jm_log_verbose(context->callbacks, module,"Setting up direct dependencies cross-references");
+        jm_log_verbose(context->callbacks, module,"Setting up direct dependencies cross-references");
         /* postprocess direct dependencies */
         for(i = 0; i< numvar; i++) {
             size_t numdep, j, var_i = 0;
@@ -1306,12 +1305,12 @@ int fmi1_xml_handle_ModelVariables(fmi1_xml_parser_context_t *context, const cha
                 jm_named_ptr key, *found;
                 fmi1_xml_variable_t* depvar;
                 key.name = name;
-				key.ptr = 0;
-				found = jm_vector_bsearch(jm_named_ptr)(&md->variablesByName, &key, jm_compare_named);
-				if(found)
-					depvar = found->ptr;
-				else
-					depvar = 0;
+                key.ptr = 0;
+                found = jm_vector_bsearch(jm_named_ptr)(&md->variablesByName, &key, jm_compare_named);
+                if(found)
+                    depvar = found->ptr;
+                else
+                    depvar = 0;
                 if(!depvar) {
                     jm_log_error(context->callbacks,module, "Could not find variable %s mentioned in dependecies of %s. Ignoring", name, variable->name);
                     continue;

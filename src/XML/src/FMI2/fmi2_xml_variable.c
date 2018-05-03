@@ -434,27 +434,22 @@ int fmi2_xml_handle_ScalarVariable(fmi2_xml_parser_context_t *context, const cha
     return 0;
 }
 
-int   fmi2_xml_get_has_start(fmi2_xml_parser_context_t *context, fmi2_xml_variable_t* variable) {
+int fmi2_xml_get_has_start(fmi2_xml_parser_context_t *context, fmi2_xml_variable_t* variable) {
     int hasStart = fmi2_xml_is_attr_defined(context, fmi_attr_id_start);
     if(!hasStart)  {
         /*
-           Variables with causality = "parameter" or "input", as well as variables with variability = "constant", must have a "start" value.
-           If initial = exact or approx, a start value must be provided.
-           The second condition is actually enough since parameters and inputs and constants must be "initial=exact"
-        */
-        if(    (variable->causality == (char)fmi2_causality_enu_parameter)
-            || (variable->causality == (char)fmi2_causality_enu_input)
-            || (variable->variability == (char)fmi2_variability_enu_constant)) {
-                assert(variable->initial != (char)fmi2_initial_enu_exact);
-        }
-
-        if (variable->initial != (char)fmi2_initial_enu_calculated)
-        {
-            fmi2_xml_parse_error(context, "Start attribute is required for this causality, variability and initial combination");
+         * Variables with causality = "parameter" or "input", as well as
+         * variables with variability = "constant", must have a "start" value.
+         * If initial = exact or approx, a start value must be provided.  The
+         * second condition is actually enough since parameters and inputs and
+         * constants must be "initial=exact"
+         */
+        if (variable->initial != (char)fmi2_initial_enu_calculated) {
+            fmi2_xml_parse_error(context,
+                    "Start attribute is required for this causality, variability and initial combination");
             hasStart = 1;
         }
-    }
-    else {
+    } else {
         /* If initial = calculated, it is not allowed to provide a start value. */
         if(variable->initial == (char)fmi2_initial_enu_calculated) {
             fmi2_xml_parse_error(context, "Start attribute is not allowed for variables with initial='calculated'");

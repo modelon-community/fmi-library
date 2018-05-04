@@ -438,11 +438,14 @@ int fmi2_xml_get_has_start(fmi2_xml_parser_context_t *context, fmi2_xml_variable
     int hasStart = fmi2_xml_is_attr_defined(context, fmi_attr_id_start);
     if(!hasStart)  {
         /*
-         * Variables with causality = "parameter" or "input", as well as
-         * variables with variability = "constant", must have a "start" value.
-         * If initial = exact or approx, a start value must be provided.  The
-         * second condition is actually enough since parameters and inputs and
-         * constants must be "initial=exact"
+         * A start value must be provided if
+         *  - causality = "parameter" or "input"
+         *  - variability = "constant"
+         *  - inintial = "exact" or "approx"
+         *
+         * Since the combinations of causality and variablity that require a
+         * start value also require initial = "exact" or "approx", it is
+         * enough to check for this condition.
          */
         if (variable->initial != (char)fmi2_initial_enu_calculated) {
             fmi2_xml_parse_error(context,

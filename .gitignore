@@ -4,3 +4,4 @@ testlogs-*/
 CMakeFiles/
 ThirdParty/winflexbison/
 doc/
+src/XML/src-gen/

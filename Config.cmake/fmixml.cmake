@@ -37,37 +37,49 @@ set(FMIXMLGENDIR ${FMIXMLDIR}/src-gen)
 set(USE_DEVELOPER_BUILD FALSE) #Enable/disable developer(debug) build
 if (${USE_DEVELOPER_BUILD})
 	set(BISON_FMIX_COMMAND_DEBUG -v -t)
+	set(BISON_FMI3_OUT_DEBUG ${FMIXMLGENDIR}/FMI3/fmi3_xml_variable_name_parser.output)
 	set(BISON_FMI2_OUT_DEBUG ${FMIXMLGENDIR}/FMI2/fmi2_xml_variable_name_parser.output)
 	set(BISON_FMI1_OUT_DEBUG ${FMIXMLGENDIR}/FMI1/fmi1_xml_variable_name_parser.output)
 endif()
+set(BISON_FMI3_SRC ${FMIXMLDIR}/src/FMI3/fmi3_xml_variable_name_parser.y)
 set(BISON_FMI2_SRC ${FMIXMLDIR}/src/FMI2/fmi2_xml_variable_name_parser.y)
 set(BISON_FMI1_SRC ${FMIXMLDIR}/src/FMI1/fmi1_xml_variable_name_parser.y)
+set(BISON_FMI3_OUT_HEADERS ${FMIXMLGENDIR}/FMI3/fmi3_xml_variable_name_parser.tab.h)
 set(BISON_FMI2_OUT_HEADERS ${FMIXMLGENDIR}/FMI2/fmi2_xml_variable_name_parser.tab.h)
 set(BISON_FMI1_OUT_HEADERS ${FMIXMLGENDIR}/FMI1/fmi1_xml_variable_name_parser.tab.h)
+set(BISON_FMI3_OUT_SRC ${FMIXMLGENDIR}/FMI3/fmi3_xml_variable_name_parser.tab.c)
 set(BISON_FMI2_OUT_SRC ${FMIXMLGENDIR}/FMI2/fmi2_xml_variable_name_parser.tab.c)
 set(BISON_FMI1_OUT_SRC ${FMIXMLGENDIR}/FMI1/fmi1_xml_variable_name_parser.tab.c)
+set(BISON_FMI3_OUT ${BISON_FMI3_OUT_SRC} ${BISON_FMI3_OUT_HEADERS} ${BISON_FMI3_OUT_DEBUG})
 set(BISON_FMI2_OUT ${BISON_FMI2_OUT_SRC} ${BISON_FMI2_OUT_HEADERS} ${BISON_FMI2_OUT_DEBUG})
 set(BISON_FMI1_OUT ${BISON_FMI1_OUT_SRC} ${BISON_FMI1_OUT_HEADERS} ${BISON_FMI1_OUT_DEBUG})
 if (${FMILIB_BUILD_LEX_AND_PARSER_FILES})
+	add_custom_command(OUTPUT ${BISON_FMI3_OUT} COMMAND ${BISON_COMMAND} ${BISON_FMIX_COMMAND_DEBUG} --no-lines -Dapi.prefix=yyfmi3 -d ${BISON_FMI3_SRC} DEPENDS ${BISON_FMI3_SRC} WORKING_DIRECTORY ${FMIXMLGENDIR}/FMI3)
 	add_custom_command(OUTPUT ${BISON_FMI2_OUT} COMMAND ${BISON_COMMAND} ${BISON_FMIX_COMMAND_DEBUG} --no-lines -Dapi.prefix=yyfmi2 -d ${BISON_FMI2_SRC} DEPENDS ${BISON_FMI2_SRC} WORKING_DIRECTORY ${FMIXMLGENDIR}/FMI2)
 	add_custom_command(OUTPUT ${BISON_FMI1_OUT} COMMAND ${BISON_COMMAND} ${BISON_FMIX_COMMAND_DEBUG} --no-lines -Dapi.prefix=yyfmi1 -d ${BISON_FMI1_SRC} DEPENDS ${BISON_FMI1_SRC} WORKING_DIRECTORY ${FMIXMLGENDIR}/FMI1)
 endif()
 
 #Build FLEX files
+set(FLEX_FMI3_SRC ${FMIXMLDIR}/src/FMI3/fmi3_xml_variable_name_scan.l)
 set(FLEX_FMI2_SRC ${FMIXMLDIR}/src/FMI2/fmi2_xml_variable_name_scan.l)
 set(FLEX_FMI1_SRC ${FMIXMLDIR}/src/FMI1/fmi1_xml_variable_name_scan.l)
+set(FLEX_FMI3_OUT_HEADERS ${FMIXMLGENDIR}/FMI3/fmi3_xml_variable_name_lex.h)
 set(FLEX_FMI2_OUT_HEADERS ${FMIXMLGENDIR}/FMI2/fmi2_xml_variable_name_lex.h)
 set(FLEX_FMI1_OUT_HEADERS ${FMIXMLGENDIR}/FMI1/fmi1_xml_variable_name_lex.h)
+set(FLEX_FMI3_OUT_SRC ${FMIXMLGENDIR}/FMI3/lex.yyfmi3.c)
 set(FLEX_FMI2_OUT_SRC ${FMIXMLGENDIR}/FMI2/lex.yyfmi2.c)
 set(FLEX_FMI1_OUT_SRC ${FMIXMLGENDIR}/FMI1/lex.yyfmi1.c)
+set(FLEX_FMI3_OPT_ARG --noline --header-file=${FLEX_FMI3_OUT_HEADERS} -Pyyfmi3)
 set(FLEX_FMI2_OPT_ARG --noline --header-file=${FLEX_FMI2_OUT_HEADERS} -Pyyfmi2)
 set(FLEX_FMI1_OPT_ARG --noline --header-file=${FLEX_FMI1_OUT_HEADERS} -Pyyfmi1)
 
 if (CMAKE_HOST_WIN32)
+	set(FLEX_FMI3_OPT_ARG ${FLEX_FMI3_OPT_ARG})
 	set(FLEX_FMI2_OPT_ARG ${FLEX_FMI2_OPT_ARG})
 	set(FLEX_FMI1_OPT_ARG ${FLEX_FMI1_OPT_ARG})
 endif()
 if (${FMILIB_BUILD_LEX_AND_PARSER_FILES})
+	add_custom_command(OUTPUT ${FLEX_FMI3_OUT_SRC} ${FLEX_FMI3_OUT_HEADERS} COMMAND ${FLEX_COMMAND} ${FLEX_FMI3_OPT_ARG} ${FLEX_FMI3_SRC} DEPENDS ${BISON_FMI3_OUT} ${FLEX_FMI3_SRC} WORKING_DIRECTORY ${FMIXMLGENDIR}/FMI3)
 	add_custom_command(OUTPUT ${FLEX_FMI2_OUT_SRC} ${FLEX_FMI2_OUT_HEADERS} COMMAND ${FLEX_COMMAND} ${FLEX_FMI2_OPT_ARG} ${FLEX_FMI2_SRC} DEPENDS ${BISON_FMI2_OUT} ${FLEX_FMI2_SRC} WORKING_DIRECTORY ${FMIXMLGENDIR}/FMI2)
 	add_custom_command(OUTPUT ${FLEX_FMI1_OUT_SRC} ${FLEX_FMI1_OUT_HEADERS} COMMAND ${FLEX_COMMAND} ${FLEX_FMI1_OPT_ARG} ${FLEX_FMI1_SRC} DEPENDS ${BISON_FMI1_OUT} ${FLEX_FMI1_SRC} WORKING_DIRECTORY ${FMIXMLGENDIR}/FMI1)
 endif()
@@ -114,6 +126,18 @@ set(FMIXMLHEADERS
     src/FMI2/fmi2_xml_unit_impl.h
     include/FMI2/fmi2_xml_variable.h
     src/FMI2/fmi2_xml_variable_impl.h
+
+    include/FMI3/fmi3_xml_model_description.h
+    src/FMI3/fmi3_xml_model_description_impl.h
+    include/FMI3/fmi3_xml_model_structure.h
+    src/FMI3/fmi3_xml_model_structure_impl.h
+    src/FMI3/fmi3_xml_parser.h
+    include/FMI3/fmi3_xml_type.h
+    src/FMI3/fmi3_xml_type_impl.h
+    include/FMI3/fmi3_xml_unit.h
+    src/FMI3/fmi3_xml_unit_impl.h
+    include/FMI3/fmi3_xml_variable.h
+    src/FMI3/fmi3_xml_variable_impl.h
  )
 
 set(FMIXMLSOURCE
@@ -135,6 +159,14 @@ set(FMIXMLSOURCE
     src/FMI2/fmi2_xml_unit.c
 	src/FMI2/fmi2_xml_vendor_annotations.c
 	src/FMI2/fmi2_xml_variable.c
+
+    src/FMI3/fmi3_xml_parser.c
+    src/FMI3/fmi3_xml_model_description.c
+    src/FMI3/fmi3_xml_model_structure.c
+    src/FMI3/fmi3_xml_type.c
+    src/FMI3/fmi3_xml_unit.c
+	src/FMI3/fmi3_xml_vendor_annotations.c
+	src/FMI3/fmi3_xml_variable.c
 )
 
 SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DXML_STATIC -DFMI_XML_QUERY")
@@ -203,14 +235,22 @@ endif()
 
 set(EXPAT_INCLUDE_DIRS ${CMAKE_BINARY_DIR}/ExpatEx/install/include)
 
-include_directories("${EXPAT_INCLUDE_DIRS}" "${FMILIB_THIRDPARTYLIBS}/FMI/" "${FMIXMLGENDIR}/FMI1" "${FMIXMLGENDIR}/FMI2")
+include_directories(
+    "${EXPAT_INCLUDE_DIRS}"
+    "${FMILIB_THIRDPARTYLIBS}/FMI/"
+    "${FMIXMLGENDIR}/FMI1"
+    "${FMIXMLGENDIR}/FMI2"
+    "${FMIXMLGENDIR}/FMI3"
+)
 
 PREFIXLIST(FMIXMLSOURCE  ${FMIXMLDIR}/)
 PREFIXLIST(FMIXMLHEADERS ${FMIXMLDIR}/)
 
 list(APPEND FMIXMLSOURCE
+    ${BISON_FMI3_OUT_SRC}
     ${BISON_FMI2_OUT_SRC}
     ${BISON_FMI1_OUT_SRC}
+    ${FLEX_FMI3_OUT_SRC}
     ${FLEX_FMI2_OUT_SRC}
     ${FLEX_FMI1_OUT_SRC}
 )

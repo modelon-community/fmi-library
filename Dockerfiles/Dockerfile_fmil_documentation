@@ -1,0 +1,9 @@
+FROM fmil_linux64:latest
+
+RUN apt-get update && apt-get install -y \
+    doxygen
+
+WORKDIR build-doc
+RUN cmake -DFMILIB_INSTALL_PREFIX="../install-documentation" ".."
+WORKDIR ..
+

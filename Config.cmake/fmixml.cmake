@@ -23,6 +23,14 @@ if (WIN32)
     if (${FMILIB_BUILD_LEX_AND_PARSER_FILES})
         set(BISON_COMMAND ${FMILIB_THIRDPARTYLIBS}/winflexbison/win_bison.exe CACHE PATH "Command for running bison, e.g C:/win_bison.exe")
         set(FLEX_COMMAND ${FMILIB_THIRDPARTYLIBS}/winflexbison/win_flex.exe CACHE PATH "Command for running flex, e.g C:/win_flex.exe")
+
+        # Verify that flex and bison exists - they are not included by default
+        # in ThirdParty directory, and must be downloaded from some 3rd party.
+        foreach(cmd BISON_COMMAND FLEX_COMMAND)
+            if (NOT EXISTS ${${cmd}})
+                message(FATAL_ERROR "Can't find program: ${${cmd}}")
+            endif()
+        endforeach()
     else()
         #Remove variables from cache -> GUI if not used
         unset(BISON_COMMAND CACHE)

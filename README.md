@@ -11,5 +11,4 @@ The documentation for the latest version of FMI Library can be found [here](http
 
 Please report issues related to FMI Library to the [GitHub issues page](https://github.com/modelon-community/fmi-library/issues).
 
-Contributions are accepted under the [Modelon Contributor License Agreement](https://github.com/modelon/contributing/blob/master/Modelon-Contributor%20License%20Agreement%202016.pdf).
 For information about contributing, see [here](https://github.com/modelon/contributing).

@@ -3,14 +3,12 @@ FMI Library
 
 FMI Library (FMIL) is a software package written in C that enables integration
 of Functional Mock-up Units (FMUs) import in applications. FMI Library is an
-independent open-source implementation of the FMI open standard
-(www.fmi-standard.org).
-More information can be found at the FMI Library website www.fmi-library.org.
+independent open-source implementation of the [FMI open standard](https://fmi-standard.org).
 
-The FMI Library code is hosted at https://svn.jmodelica.org/FMILibrary/.
-There is a git mirror at https://github.com/modelon/FMILibrary.   
-Active issues are tracked at http://trac.jmodelica.org/wiki/FMILibrary.   
-Discussion forums for FMI Library can be found at http://jmodelica.org/forum.
-Please report issues related to FMI Library at the forums.
+FMI Library is also part of the Modelica-based open-source platform [JModelica.org](https://jmodelica.org/).
 
-Contributions are accepted under the [JModelica.org Contributor License Agreement](http://www.jmodelica.org/page/14). For information about contributing, see [here](http://jmodelica.org/page/15).
+The documentation for the latest version of FMI Library can be found [here](https://jmodelica.org/fmil/FMILibrary-2.0.3-htmldoc/index.html).
+
+Please report issues related to FMI Library to the [GitHub issues page](https://github.com/modelon-community/fmi-library/issues).
+
+For information about contributing, see [here](https://github.com/modelon/contributing).

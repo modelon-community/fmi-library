@@ -112,7 +112,7 @@ const char* fmi3_initial_to_string(fmi3_initial_enu_t ini) {
     return "Undefined";
 }
 
-fmi3_initial_enu_t initialDefaultsTable[fmi3_variability_enu_unknown][fmi3_causality_enu_unknown] = {
+fmi3_initial_enu_t fmi3InitialDefaultsTable[fmi3_variability_enu_unknown][fmi3_causality_enu_unknown] = {
     /*              parameter                  calculated parameter,        input                     output                       local                        independent */
     /* constant */  {fmi3_initial_enu_unknown, fmi3_initial_enu_unknown,    fmi3_initial_enu_unknown,  fmi3_initial_enu_exact,      fmi3_initial_enu_exact,      fmi3_initial_enu_unknown},
     /* fixed   */   {fmi3_initial_enu_exact,   fmi3_initial_enu_calculated, fmi3_initial_enu_unknown,  fmi3_initial_enu_unknown,    fmi3_initial_enu_calculated, fmi3_initial_enu_unknown},
@@ -133,7 +133,7 @@ FMILIB_EXPORT fmi3_variability_enu_t fmi3_get_default_valid_variability(fmi3_cau
 FMILIB_EXPORT fmi3_initial_enu_t fmi3_get_default_initial(fmi3_variability_enu_t v, fmi3_causality_enu_t c) {
     if((unsigned)v >= (unsigned)fmi3_variability_enu_unknown) return fmi3_initial_enu_unknown;
     if((unsigned)c >= (unsigned)fmi3_causality_enu_unknown) return fmi3_initial_enu_unknown;
-    return initialDefaultsTable[v][c];
+    return fmi3InitialDefaultsTable[v][c];
 }
 
 static int valid_variability_causality[fmi3_variability_enu_unknown][fmi3_causality_enu_unknown] = {

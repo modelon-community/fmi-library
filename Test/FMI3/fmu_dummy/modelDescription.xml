@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription
+  fmiVersion="3.0"
+  modelName="Empty" 
+  guid="{B003C6D1-D687-49A9-8A5A-4A513EA0ED1C}"
+  description=""
+  generationTool=""
+  generationDateAndTime="2019-05-13T15:40:41"
+  variableNamingConvention="structured" 
+  numberOfContinuousStates="0"
+  numberOfEventIndicators="0"
+  author="">
+  <ModelExchange
+    modelIdentifier="Empty"
+  />
+  <DefaultExperiment
+    startTime="0"
+    stopTime="1"
+    tolerance="1e-005"
+    stepSize="5e-3"
+  />
+  <ModelVariables></ModelVariables>
+  <ModelStructure></ModelStructure>
+</fmiModelDescription>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription
+  fmiVersion="2.0"
+  modelName="BouncingBall_malformed"
+  generationTool="None"
+  description="A bouncing ball model"
+  guid="123"
+  numberOfEventIndicators="1">
+  <ModelExchange modelIdentifier="BouncingBall2_malformed" />
+  <TypeDefinitions>
+    <SimpleType
+      name="Modelica.Blocks.Interfaces.RealOutput">
+      <Real/>
+    </SimpleType>
+  </TypeDefinitions>
+
+<ModelVariables>
+  <ScalarVariable name="HIGHT" valueReference="0" initial="exact" causality="output" description="Hight of the ball">
+    <Real start="1.0" />
+  </ScalarVariable>
+  <ScalarVariable name="HIGHT_SPEED" valueReference="1" initial="exact" description="Speed of the ball">
+     <Real start="4.0" />
+	 </ScalarVariable>
+  <ScalarVariable name="HIGHT_SPEED alias" valueReference="1" description="Speed of the ball">
+     <Real />
+	 </ScalarVariable>
+  <ScalarVariable name="HIGHT_ACC" valueReference="4" description="Speed of the ball">
+     <Real />
+  </ScalarVariable>
+  <ScalarVariable name="A variable" valueReference="100" initial="exact" description="Speed of the ball">
+     <Real start="4.0" />
+  </ScalarVariable>
+  <ScalarVariable name="A bad alias" valueReference="100" initial="exact" description="Speed of the ball">
+     <Real start="4.0" />
+  </ScalarVariable>
+  <ScalarVariable name="GRAVITY" valueReference="2" description="Gravity constant" initial="exact">
+     <Real start="-9.81"/>
+  </ScalarVariable>
+  <ScalarVariable name="BOUNCE_COF" valueReference="3" description="Bouncing coefficient">
+     <Real start="0.5" />
+  </ScalarVariable>
+  <ScalarVariable name="BAD_INPUT" valueReference="4" causality="input" description="Input without start value, the logger should warn about this">
+    <Real/>
+  </ScalarVariable>
+  <ScalarVariable name="LOGGER_TEST" valueReference="0" description="The logger will print the value of this variable when it is set.">
+     <String/>
+  </ScalarVariable>
+    <ScalarVariable name="LOGGER_TEST_INTEGER" valueReference="0" description="This is only used to test logger replace function #i0#">
+     <Integer/>
+  </ScalarVariable>
+    <ScalarVariable name="LOGGER_TEST_BOOLEAN" valueReference="0" description="This is only used to test logger replace function #b0#">
+     <Boolean/>
+  </ScalarVariable>
+</ModelVariables>
+<ModelVariables>
+    <ScalarVariable name="LOGGER_TEST_BOOLEAN" valueReference="0" description="This is only used to test logger replace function #b0#">
+     <Boolean/>
+  </ScalarVariable>
+</ModelVariables>
+<ModelStructure>
+</ModelStructure>

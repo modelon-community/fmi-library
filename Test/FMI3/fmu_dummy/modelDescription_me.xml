@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription
+  fmiVersion="2.0"
+  modelName="BouncingBall"
+  generationTool="None"
+  description="A bouncing ball model"
+  guid="123"
+  numberOfEventIndicators="1">
+  <ModelExchange modelIdentifier="BouncingBall2" />
+  <TypeDefinitions>
+    <SimpleType
+      name="Modelica.Blocks.Interfaces.RealOutput">
+      <Real/>
+    </SimpleType>
+  </TypeDefinitions>
+  <VendorAnnotations>
+    <Tool name ="JModelica">
+      <JModelica name="model annotations">Test data</JModelica>
+    </Tool>
+  </VendorAnnotations>
+<ModelVariables>
+  <!--  1 -->
+  <ScalarVariable name="HIGHT" valueReference="0" initial="exact" causality="output" description="Hight of the ball">
+    <Real start="1.0" reinit="true" />
+  </ScalarVariable>
+  <!--  2 -->
+  <ScalarVariable name="HIGHT_SPEED" valueReference="1" initial="exact" description="Speed of the ball">
+     <Real start="4.0" derivative="1" reinit="true"/>
+    <Annotations>
+      <Tool name ="JModelica">
+        <JModelica name="HIGHT_SPEED variable annotations">Test data</JModelica>
+      </Tool>
+    </Annotations>
+  </ScalarVariable> 
+  <!--  3 -->
+  <ScalarVariable name="HIGHT_SPEED alias" valueReference="1" description="Speed of the ball">
+     <Real />
+  </ScalarVariable> 
+  <!--  4 -->
+  <ScalarVariable name="HIGHT_ACC" valueReference="4" description="Acceleration of the ball">
+     <Real derivative="2" />	 
+  </ScalarVariable>   
+  <!--  5 -->
+  <ScalarVariable name="A variable" valueReference="100" initial="exact" description="Speed of the ball">
+     <Real start="4.0" />
+  </ScalarVariable>
+  <!--  6 -->
+  <ScalarVariable name="GRAVITY" valueReference="2" description="Gravity constant" initial="exact">
+     <Real start="-9.81"/>
+  </ScalarVariable>
+  <!--  7 -->
+  <ScalarVariable name="BOUNCE_COF" valueReference="3" initial="exact" description="Bouncing coefficient">
+     <Real start="0.5" />
+  </ScalarVariable>
+  <!--  8 -->
+  <ScalarVariable name="LOGGER_TEST" valueReference="0" description="The logger will print the value of this variable when it is set.">
+     <String/>
+  </ScalarVariable>  
+  <!--  9 -->
+  <ScalarVariable name="LOGGER_TEST_INTEGER" valueReference="0" description="This is only used to test logger replace function #i0#">
+     <Integer/>
+  </ScalarVariable>  
+  <!-- 10 -->
+  <ScalarVariable name="LOGGER_TEST_BOOLEAN" valueReference="0" description="This is only used to test logger replace function #b0#">
+     <Boolean/>
+  </ScalarVariable>
+  <!-- 11 -->
+  <ScalarVariable name="CONSTANT_ALIAS_1" valueReference="200" description="constant in alias set" variability="constant" initial="exact">
+     <Real start="121"/>
+  </ScalarVariable>
+  <!-- 12 -->
+  <ScalarVariable name="CONSTANT_ALIAS_2" valueReference="200" description="constant in alias set" variability="constant" initial="exact">
+     <Real start="121"/>
+  </ScalarVariable>
+</ModelVariables>
+<ModelStructure>
+  <Outputs>
+    <Unknown index="1"/>
+  </Outputs>
+  <Derivatives>
+    <Unknown index="2"/>
+    <Unknown index="4" dependencies="6" dependenciesKind="constant"/>
+  </Derivatives>
+  <DiscreteStates>
+  </DiscreteStates>
+  <InitialUnknowns>
+  </InitialUnknowns>
+</ModelStructure>
+</fmiModelDescription>
+

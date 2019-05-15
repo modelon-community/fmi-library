@@ -27,6 +27,7 @@ set(JMUTILSOURCE
  
  FMI1/fmi1_enums.c
  FMI2/fmi2_enums.c
+ FMI3/fmi3_enums.c
 )
 
 set(JMUTILHEADERS
@@ -49,6 +50,11 @@ set(JMUTILHEADERS
   FMI2/fmi2_types.h
   FMI2/fmi2_enums.h
   FMI2/fmi2_xml_callbacks.h
+
+  FMI3/fmi3_functions.h
+  FMI3/fmi3_types.h
+  FMI3/fmi3_enums.h
+  FMI3/fmi3_xml_callbacks.h
 )
 
 PREFIXLIST(JMUTILSOURCE  ${JMUTILDIR}/src/)

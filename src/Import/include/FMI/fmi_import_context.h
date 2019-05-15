@@ -25,11 +25,14 @@
 #include <fmilib_config.h>
 #include <JM/jm_callbacks.h>
 #include <FMI2/fmi2_xml_callbacks.h>
+#include <FMI3/fmi3_xml_callbacks.h>
 #include <FMI/fmi_version.h> 
 #include <FMI1/fmi1_types.h>
 #include <FMI1/fmi1_enums.h>
 #include <FMI2/fmi2_types.h>
 #include <FMI2/fmi2_enums.h>
+#include <FMI3/fmi3_types.h>
+#include <FMI3/fmi3_enums.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -45,14 +48,15 @@ an ::fmi_import_context_t structure. This is done with a call to fmi_import_allo
 The next step is detection of FMI standard used in the specific FMU. This is achieved by
 calling fmi_import_get_fmi_version() function. When the standard is known a standard
 specific function for processing model description XML should be called to create an
-opaque FMU structure. This is done by calling either fmi1_import_parse_xml() or fmi2_import_parse_xml().
+opaque FMU structure. This is done by calling either fmi1_import_parse_xml(), fmi2_import_parse_xml(), or fmi3_import_parse_xml().
 With the FMU structure available one can proceed by loading the FMU binary 
-(fmi1_import_create_dllfmu() or fmi2_import_create_dllfmu()). After that 
+(fmi1_import_create_dllfmu(), fmi2_import_create_dllfmu() or fmi3_import_create_dllfmu()). After that 
 the code is able to interact with the FMU by means of the methonds presented 
-in \ref fmi1_import_capi and \ref fmi2_import_capi.
+in \ref fmi1_import_capi, \ref fmi2_import_capi and \ref fmi3_import_capi.
 
 \addtogroup  fmi1_import
 \addtogroup  fmi2_import
+\addtogroup  fmi3_import
 \addtogroup  fmi_import_utils
 @}
 \addtogroup fmi_import_context
@@ -110,6 +114,11 @@ typedef struct fmi1_import_t fmi1_import_t;
 typedef struct fmi2_import_t fmi2_import_t;
 
 /**
+	\brief FMU version 2.0 object
+*/
+typedef struct fmi3_import_t fmi3_import_t;
+
+/**
 	\brief Parse FMI 1.0 XML file found in the directory dirName.
 	\param c - library context.
 	\param dirName - a directory where the FMU was unpacked and XML file is present.
@@ -125,6 +134,15 @@ FMILIB_EXPORT fmi1_import_t* fmi1_import_parse_xml( fmi_import_context_t* c, con
 	\return fmi2_import_t:: opaque object pointer
 */
 FMILIB_EXPORT fmi2_import_t* fmi2_import_parse_xml( fmi_import_context_t* context, const char* dirPath, fmi2_xml_callbacks_t* xml_callbacks);
+
+/**
+    \brief Create ::fmi3_import_t structure and parse the FMI 2.0 XML file found in the directory dirName.
+	\param context - library context.
+	\param dirPath - a directory where the FMU was unpacked and XML file is present.
+	\param xml_callbacks Callbacks to use for processing of annotations (may be NULL).
+	\return fmi3_import_t:: opaque object pointer
+*/
+FMILIB_EXPORT fmi3_import_t* fmi3_import_parse_xml( fmi_import_context_t* context, const char* dirPath, fmi3_xml_callbacks_t* xml_callbacks);
 
 /** 
 @}

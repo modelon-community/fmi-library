@@ -250,8 +250,8 @@ int main(int argc, char *argv[])
 
 	version = fmi_import_get_fmi_version(context, FMUPath, tmpPath);
 
-	if(version != fmi_version_2_0_enu) {
-		printf("Only version 2.0 is supported by this code\n");
+	if(version != fmi_version_3_0_enu) {
+		printf("Only version 3.0 is supported by this code\n");
 		do_exit(CTEST_RETURN_FAIL);
 	}
 
@@ -263,7 +263,7 @@ int main(int argc, char *argv[])
 	}	
 
 	if(fmi3_import_get_fmu_kind(fmu) == fmi3_fmu_kind_cs) {
-		printf("Only ME 2.0 is supported by this code\n");
+		printf("Only ME 3.0 is supported by this code\n");
 		do_exit(CTEST_RETURN_FAIL);
 	}
 

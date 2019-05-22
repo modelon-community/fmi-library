@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <fmiModelDescription
-  fmiVersion="2.0"
+  fmiVersion="3.0"
   modelName="BouncingBall_malformed"
   generationTool="None"
   description="A bouncing ball model"
   guid="123"
   numberOfEventIndicators="1">
-  <ModelExchange modelIdentifier="BouncingBall2_malformed" />
+  <ModelExchange modelIdentifier="BouncingBall3_malformed" />
   <TypeDefinitions>
     <SimpleType
       name="Modelica.Blocks.Interfaces.RealOutput">

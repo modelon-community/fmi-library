@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <fmiModelDescription
-  fmiVersion="2.0"
+  fmiVersion="3.0"
   modelName="BouncingBall"
   generationTool="None"
   description="A bouncing ball model"
   guid="123"
   numberOfEventIndicators="1">
   <CoSimulation 
-	modelIdentifier="BouncingBall2" 
+	modelIdentifier="BouncingBall3"
 	canHandleVariableCommunicationStepSize="true"
 	/>
 <ModelVariables>

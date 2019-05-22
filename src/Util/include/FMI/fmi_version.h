@@ -36,6 +36,7 @@ typedef enum
 	fmi_version_unknown_enu = 0,
 	fmi_version_1_enu,
 	fmi_version_2_0_enu,
+	fmi_version_3_0_enu,
 	fmi_version_unsupported_enu
 } fmi_version_enu_t;
 

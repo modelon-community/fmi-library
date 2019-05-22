@@ -160,10 +160,10 @@ const char* fmi3_import_get_model_identifier_CS(fmi3_import_t* fmu) {
 	return fmi3_xml_get_model_identifier_CS(fmu->md);
 }
 
-const char* fmi3_import_get_GUID(fmi3_import_t* fmu){
+const char* fmi3_import_get_instantiation_token(fmi3_import_t* fmu){
 	if(!fmi3_import_check_has_FMU(fmu)) return 0;
 
-    return fmi3_xml_get_GUID(fmu->md);
+    return fmi3_xml_get_instantiation_token(fmu->md);
 }
 
 const char* fmi3_import_get_description(fmi3_import_t* fmu) {

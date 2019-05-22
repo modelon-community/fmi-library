@@ -357,7 +357,7 @@ int main(int argc, char *argv[])
 	}
 
     printf("Model name: %s\n", fmi3_import_get_model_name(fmu));
-    printf("Model GUID: %s\n", fmi3_import_get_GUID(fmu));
+    printf("Model instantiationToken: %s\n", fmi3_import_get_instantiation_token(fmu));
     printf("FMU kind: %s\n", fmi3_fmu_kind_to_string(fmi3_import_get_fmu_kind(fmu)));
     printf("Description: %s\n", fmi3_import_get_description(fmu));
     printf("Author: %s\n", fmi3_import_get_author(fmu));

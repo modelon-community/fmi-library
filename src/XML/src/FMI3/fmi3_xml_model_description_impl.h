@@ -34,7 +34,7 @@ struct fmi3_xml_model_description_t {
 
     jm_vector(char) modelName;
 
-    jm_vector(char) GUID;
+    jm_vector(char) instantiationToken;
 
     jm_vector(char) description;
 

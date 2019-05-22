@@ -4,7 +4,7 @@
   modelName="BouncingBall_malformed"
   generationTool="None"
   description="A bouncing ball model"
-  guid="123"
+  instantiationToken="123"
   numberOfEventIndicators="1">
   <ModelExchange modelIdentifier="BouncingBall3_malformed" />
   <TypeDefinitions>

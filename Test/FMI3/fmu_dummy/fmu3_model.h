@@ -37,7 +37,7 @@ typedef struct {
 	/* fmiInstantiateModel */
 	fmi3Boolean				loggingOn;
 	char					instanceName	[BUFFER];
-	char					GUID			[BUFFER];
+	char					instantiationToken			[BUFFER];
 	const fmi3CallbackFunctions*	functions;
 
 	/* fmiSetTime */
@@ -80,7 +80,7 @@ fmi3Status		fmi_set_debug_logging(
 fmi3Component fmi_instantiate (
     fmi3String instanceName,
     fmi3Type fmuType,
-    fmi3String fmuGUID,
+    fmi3String fmuInstantiationToken,
     fmi3String fmuLocation,
     const fmi3CallbackFunctions* functions,
     fmi3Boolean visible,

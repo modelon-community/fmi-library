@@ -184,12 +184,12 @@ fmi3_status_t fmi3_import_set_debug_logging(fmi3_import_t* fmu, fmi3_boolean_t l
 jm_status_enu_t fmi3_import_instantiate(fmi3_import_t* fmu,
   fmi3_string_t instanceName, fmi3_type_t fmuType,
   fmi3_string_t fmuResourceLocation, fmi3_boolean_t visible) {
-    fmi3_string_t fmuGUID = fmi3_import_get_GUID(fmu);
+    fmi3_string_t fmuInstantiationToken = fmi3_import_get_instantiation_token(fmu);
     fmi3_boolean_t loggingOn = (fmu->callbacks->log_level > jm_log_level_nothing);
     fmi3_component_t c;
     if(!fmuResourceLocation) 
         fmuResourceLocation = fmu->resourceLocation;
-    c = fmi3_capi_instantiate(fmu -> capi, instanceName, fmuType, fmuGUID,
+    c = fmi3_capi_instantiate(fmu -> capi, instanceName, fmuType, fmuInstantiationToken,
                               fmuResourceLocation, visible, loggingOn);
     if (c == NULL) {
         return jm_status_error;

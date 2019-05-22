@@ -119,10 +119,10 @@ FMILIB_EXPORT const char* fmi3_import_get_model_identifier_ME(fmi3_import_t* fmu
 FMILIB_EXPORT const char* fmi3_import_get_model_identifier_CS(fmi3_import_t* fmu);
 
 /** 
-\brief Get FMU GUID. 
+\brief Get FMU instantiationToken. 
 @param fmu An fmu object as returned by fmi3_import_parse_xml().
 */
-FMILIB_EXPORT const char* fmi3_import_get_GUID(fmi3_import_t* fmu);
+FMILIB_EXPORT const char* fmi3_import_get_instantiation_token(fmi3_import_t* fmu);
 
 /** 
 \brief Get FMU description.

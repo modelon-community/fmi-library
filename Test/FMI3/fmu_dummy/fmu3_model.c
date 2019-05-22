@@ -258,7 +258,7 @@ const char* fmi_get_model_types_platform()
 } */
 
 fmi3Component fmi_instantiate(fmi3String instanceName, fmi3Type fmuType,
-  fmi3String fmuGUID, fmi3String fmuLocation,
+  fmi3String fmuInstantiationToken, fmi3String fmuLocation,
   const fmi3CallbackFunctions *functions, fmi3Boolean visible,
   fmi3Boolean loggingOn)
 {
@@ -268,11 +268,11 @@ fmi3Component fmi_instantiate(fmi3String instanceName, fmi3Type fmuType,
 	comp = (component_ptr_t)functions->allocateMemory(1, sizeof(component_t));
 	if (comp == NULL) {
 		return NULL;
-	} else if (strcmp(fmuGUID, FMI_GUID) != 0) {
+	} else if (strcmp(fmuInstantiationToken, FMI_INSTANTIATION_TOKEN) != 0) {
 		return NULL;
 	} else {	
 		sprintf(comp->instanceName, "%s", instanceName);
-		sprintf(comp->GUID, "%s",fmuGUID);
+		sprintf(comp->instantiationToken, "%s",fmuInstantiationToken);
 		comp->functions		= functions;
 		/*comp->functions->allocateMemory = functions->allocateMemory;*/
 		

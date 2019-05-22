@@ -4,7 +4,7 @@
   modelName="BouncingBall"
   generationTool="None"
   description="A bouncing ball model"
-  guid="123"
+  instantiationToken="123"
   numberOfEventIndicators="1">
   <CoSimulation 
 	modelIdentifier="BouncingBall3"

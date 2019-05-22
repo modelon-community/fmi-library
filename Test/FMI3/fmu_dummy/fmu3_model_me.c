@@ -43,11 +43,11 @@ FMI3_Export fmi3Status fmi3SetDebugLogging(fmi3Component c, fmi3Boolean loggingO
 }
 
 FMI3_Export fmi3Component fmi3Instantiate(fmi3String instanceName,
-  fmi3Type fmuType, fmi3String GUID, fmi3String location,
+  fmi3Type fmuType, fmi3String instantiationToken, fmi3String location,
   const fmi3CallbackFunctions* functions, fmi3Boolean visible,
   fmi3Boolean loggingOn)
 {
-    return fmi_instantiate(instanceName, fmuType, GUID, location, functions,
+    return fmi_instantiate(instanceName, fmuType, instantiationToken, location, functions,
                            visible, loggingOn);
 }
 

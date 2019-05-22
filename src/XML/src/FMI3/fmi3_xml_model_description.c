@@ -47,7 +47,7 @@ fmi3_xml_model_description_t * fmi3_xml_allocate_model_description( jm_callbacks
     jm_vector_init(char)(&md->modelName, 0,cb);
     jm_vector_init(char)(&md->modelIdentifierME, 0,cb);
     jm_vector_init(char)(&md->modelIdentifierCS, 0,cb);
-    jm_vector_init(char)(&md->GUID, 0,cb);
+    jm_vector_init(char)(&md->instantiationToken, 0,cb);
     jm_vector_init(char)(&md->description, 0,cb);
     jm_vector_init(char)(&md->author, 0,cb);
     jm_vector_init(char)(&md->license, 0,cb);
@@ -109,7 +109,7 @@ void fmi3_xml_clear_model_description( fmi3_xml_model_description_t* md) {
     jm_vector_free_data(char)(&md->modelName);
     jm_vector_free_data(char)(&md->modelIdentifierME);
     jm_vector_free_data(char)(&md->modelIdentifierCS);
-    jm_vector_free_data(char)(&md->GUID);
+    jm_vector_free_data(char)(&md->instantiationToken);
     jm_vector_free_data(char)(&md->description);
     jm_vector_free_data(char)(&md->author);
     jm_vector_free_data(char)(&md->license);
@@ -201,8 +201,8 @@ const char* fmi3_xml_get_model_identifier_CS(fmi3_xml_model_description_t* md){
     return jm_vector_char2string(&md->modelIdentifierCS);
 }
 
-const char* fmi3_xml_get_GUID(fmi3_xml_model_description_t* md){
-    return jm_vector_char2string(&md->GUID);
+const char* fmi3_xml_get_instantiation_token(fmi3_xml_model_description_t* md){
+    return jm_vector_char2string(&md->instantiationToken);
 }
 
 const char* fmi3_xml_get_description(fmi3_xml_model_description_t* md){
@@ -371,7 +371,7 @@ int fmi3_xml_handle_fmiModelDescription(fmi3_xml_parser_context_t *context, cons
                     /* <xs:attribute name="modelName" type="xs:normalizedString" use="required"> */
                     fmi3_xml_set_attr_string(context, fmi3_xml_elmID_fmiModelDescription, fmi_attr_id_modelName, 1, &(md->modelName)) ||
 					/* <xs:attribute name="guid" type="xs:normalizedString" use="required"> */
-                    fmi3_xml_set_attr_string(context, fmi3_xml_elmID_fmiModelDescription, fmi_attr_id_guid, 1, &(md->GUID)) ||
+                    fmi3_xml_set_attr_string(context, fmi3_xml_elmID_fmiModelDescription, fmi_attr_id_instantiationToken, 1, &(md->instantiationToken)) ||
                     /* <xs:attribute name="description" type="xs:string"/> */
                     fmi3_xml_set_attr_string(context, fmi3_xml_elmID_fmiModelDescription, fmi_attr_id_description, 0, &(md->description)) ||
                     /* <xs:attribute name="author" type="xs:string"/> */

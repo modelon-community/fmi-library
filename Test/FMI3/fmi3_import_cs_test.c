@@ -56,7 +56,7 @@ int test_simulate_cs(fmi3_import_t* fmu)
 	jm_status_enu_t jmstatus;
 
 	fmi3_string_t instanceName = "Test CS model instance";
-	fmi3_string_t fmuGUID;
+	fmi3_string_t fmuInstantiationToken;
 	fmi3_string_t fmuLocation = "";
 	fmi3_boolean_t visible = fmi3_false;
 	fmi3_real_t relativeTol = 1e-4;
@@ -81,8 +81,8 @@ int test_simulate_cs(fmi3_import_t* fmu)
 	printf("Version returned from FMU:   %s\n", fmi3_import_get_version(fmu));
 	printf("Platform type returned:      %s\n", fmi3_import_get_types_platform(fmu));
 
-	fmuGUID = fmi3_import_get_GUID(fmu);
-    printf("GUID:      %s\n", fmuGUID);
+	fmuInstantiationToken = fmi3_import_get_instantiation_token(fmu);
+    printf("instantiationToken:      %s\n", fmuInstantiationToken);
 
 
     jmstatus = fmi3_import_instantiate(fmu, instanceName, fmi3_cosimulation, fmuLocation, visible);

@@ -170,7 +170,7 @@ const char* fmi3_xml_get_model_identifier_ME(fmi3_xml_model_description_t* md);
 
 const char* fmi3_xml_get_model_identifier_CS(fmi3_xml_model_description_t* md);
 
-const char* fmi3_xml_get_GUID(fmi3_xml_model_description_t* md);
+const char* fmi3_xml_get_instantiation_token(fmi3_xml_model_description_t* md);
 
 const char* fmi3_xml_get_description(fmi3_xml_model_description_t* md);
 

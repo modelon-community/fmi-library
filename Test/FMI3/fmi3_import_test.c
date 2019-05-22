@@ -43,7 +43,7 @@ int fmi3_test(fmi_import_context_t* context, const char* dirPath)
 	fmi3_callback_functions_t callBackFunctions;
 	const char* modelIdentifier;
 	const char* modelName;
-	const char*  GUID;
+	const char*  instantiationToken;
 	jm_status_enu_t status;
 
 	fmi3_import_t* fmu;	
@@ -62,7 +62,7 @@ int fmi3_test(fmi_import_context_t* context, const char* dirPath)
 		return (CTEST_RETURN_FAIL);
 	}
 	modelName = fmi3_import_get_model_name(fmu);
-	GUID = fmi3_import_get_GUID(fmu);
+	instantiationToken = fmi3_import_get_instantiation_token(fmu);
 
 	printf("Model name: %s\n", modelName);
 	if(fmi3_import_get_fmu_kind(fmu) != fmi3_fmu_kind_cs) {
@@ -79,7 +79,7 @@ int fmi3_test(fmi_import_context_t* context, const char* dirPath)
 		printf("Unxepected FMU kind, exiting\n");
 		return (CTEST_RETURN_FAIL);
 	}
-    printf("Model GUID: %s\n", GUID);
+    printf("Model instantiationToken: %s\n", instantiationToken);
 
 	status = fmi3_import_create_dllfmu(fmu, fmukind, &callBackFunctions);
 	if (status == jm_status_error) {

@@ -66,7 +66,7 @@ extern "C" {
     EXPAND_XML_ATTRNAME(dependenciesKind) \
     EXPAND_XML_ATTRNAME(modelName) \
     EXPAND_XML_ATTRNAME(modelIdentifier) \
-    EXPAND_XML_ATTRNAME(guid) \
+    EXPAND_XML_ATTRNAME(instantiationToken) \
     EXPAND_XML_ATTRNAME(author) \
     EXPAND_XML_ATTRNAME(copyright) \
     EXPAND_XML_ATTRNAME(license) \

@@ -2,7 +2,7 @@
 <fmiModelDescription
   fmiVersion="3.0"
   modelName="Empty" 
-  guid="{B003C6D1-D687-49A9-8A5A-4A513EA0ED1C}"
+  instantiationToken="{B003C6D1-D687-49A9-8A5A-4A513EA0ED1C}"
   description=""
   generationTool=""
   generationDateAndTime="2019-05-13T15:40:41"

@@ -56,7 +56,7 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 
 #define FMI_VERSION			"2.0"
 
-#define FMI_GUID			"123"
+#define FMI_INSTANTIATION_TOKEN			"123"
 
 
 #endif /* End of header FMU3_MODEL_DEFINES_H_ */

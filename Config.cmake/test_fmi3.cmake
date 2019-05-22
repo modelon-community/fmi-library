@@ -71,7 +71,7 @@ to_native_c_path("${TEST_OUTPUT_FOLDER}/${FMU3_DUMMY_CS_MODEL_IDENTIFIER}_mf.fmu
 
 add_executable (fmi3_xml_parsing_test ${RTTESTDIR}/FMI3/fmi3_xml_parsing_test.c)
 target_link_libraries (fmi3_xml_parsing_test  ${FMILIBFORTEST})
-add_executable (fmi3_import_xml_test ${RTTESTDIR}/FMI3/fmi3_import_xml_test.cc)
+add_executable (fmi3_import_xml_test ${RTTESTDIR}/FMI3/fmi3_import_xml_test.c)
 target_link_libraries (fmi3_import_xml_test  ${FMILIBFORTEST})
 add_executable (fmi3_import_me_test ${RTTESTDIR}/FMI3/fmi3_import_me_test.c)
 target_link_libraries (fmi3_import_me_test  ${FMILIBFORTEST})

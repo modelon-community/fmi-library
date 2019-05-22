@@ -4,7 +4,7 @@
     xmlns:xsd="http://www.w3.org/2001/XMLSchema"
     fmiVersion="2.0"
     modelName="VariableNoType"
-    guid="d7d98edb-d924-4104-87db-227bb677fc95">
+    instantiationToken="d7d98edb-d924-4104-87db-227bb677fc95">
 
   <CoSimulation modelIdentifier="badVariabilityCausality" />
 

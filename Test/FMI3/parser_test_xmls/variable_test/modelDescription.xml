@@ -2,7 +2,7 @@
 <fmiModelDescription
   fmiVersion="2.0"
   modelName="myModelName"
-  guid="myGuid"
+  instantiationToken="myInstantiationToken"
   description="myDescription"
   author="myAuthor"
   generationTool="myGenerationTool"

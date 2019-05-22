@@ -2,7 +2,7 @@
 <fmiModelDescription
   fmiVersion="2.0"
   modelName="none"
-  guid="123"
+  instantiationToken="123"
   numberOfEventIndicators="1">
   <CoSimulation 
 	modelIdentifier="none1" 

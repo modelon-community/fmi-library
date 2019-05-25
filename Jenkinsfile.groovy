@@ -3,18 +3,34 @@
 //  OCT-SDK-1.4: CMake, msys
 //  docker: docker
 
-def Config = [
+def Configs = [
     'win64': [
-        node: 'VisualStudio2010 && OCT-SDK-1.4'
+        name: 'win64',
+        os: 'windows',
+        node: 'VisualStudio2010 && OCT-SDK-1.4',
+        target_install: 'install',
+        target_test: 'test'
     ],
     'win64_static_runtime': [
-        node: 'VisualStudio2010 && OCT-SDK-1.4'
+        name: 'win64_static_runtime',
+        os: 'windows',
+        node: 'VisualStudio2010 && OCT-SDK-1.4',
+        target_install: 'install',
+        target_test: 'test'
     ], 
     'linux64': [
-        node: 'docker'
+        name: 'linux64',
+        os: 'linux',
+        node: 'docker',
+        target_install: 'install_docker',
+        target_test: 'test_docker'
     ], 
     'documentation': [
-        node: 'docker'
+        name: 'documentation',
+        os: 'linux',
+        node: 'docker',
+        target_install: 'documentation_docker',
+        target_test: 'N/A'
     ]
 ]
 
@@ -24,117 +40,91 @@ def version = '2.0.3-SNAPSHOT'
 library 'ModelonCommon@trunk'
 
 def tasks = [:]
-for (target_temp in ['win64', 'win64_static_runtime', 'linux64']) {
-    def target = target_temp // bind variable before use in closure
-    tasks[target] = {
-        node(Config[target].node) {
-            def testLogDir = "testlogs-${target}"
-            def installDir = "install-${target}"
+// for (conf_entry in Configs) // This doesn't work, causes SerializationError for the Map
+Configs.each { conf_entry ->
+    def conf = conf_entry.value // bind variable before use in closure
+    tasks[conf.name] = {
+        node(conf.node) {
+            def testLogDir = "build-${conf.name}/Testing/Temporary"
+            def installDir = "install-${conf.name}"
 
-            stage("Checkout: ${target}") {
+            stage("Checkout: ${conf.name}") {
                 checkout scm
+                fixFilePermissions(conf.os)
             }
 
-            stage("Build: ${target}") {
-                build(target)
+            stage("Build: ${conf.name}") {
+                build(conf)
             }
 
-            stage("Test: ${target}") {
-                test(target, testLogDir)
+            stage("Test: ${conf.name}") {
+                test(conf, testLogDir)
             }
 
-            stage("Sign: ${target}") {
+            stage("Sign: ${conf.name}") {
                 dir("${installDir}/lib") {
                     // Seems like .so files are not allowed to be signed,
                     // so just signing the .dll for now.
-                    signFiles(target, "*.dll")
+                    signFiles(conf.name, "*.dll")
                 }
             }
 
-            stage("Archive: ${target}") {
+            stage("Archive: ${conf.name}") {
                 archiveArtifacts(artifacts: "${installDir}/**")
                 archiveArtifacts(artifacts: "${testLogDir}/**")
             }
         }
     }
 }
-tasks['documentation'] = {
-    def target = 'documentation'
-    node(Config[target].node) {
+def conf = Configs['documentation']
+tasks[conf.name] = {
+    node(conf.node) {
 
-        stage("Checkout: doc") {
+        stage("Checkout: ${conf.name}") {
             checkout scm
+            fixFilePermissions(conf.os)
         }
 
-        stage("Build: doc") {
-            build(target)
+        stage("Build: ${conf.name}") {
+            build(conf)
         }
 
-        stage("Archive: doc") {
-            archiveArtifacts(artifacts: "doc/**")
+        stage("Archive: ${conf.name}") {
+            archiveArtifacts(artifacts: "install-${conf.name}/doc/html/**")
         }
     }
 }
 
 parallel tasks
 
-def build(target) {
-    if (target == 'win64' || target == 'win64_static_runtime') {
+def build(conf) {
+    if (conf.os == 'windows') {
         bat """
-            :: Add msys to path
-            set PATH=%DARWIN_SDK_HOME%\\MinGW\\msys\\1.0\\bin;%PATH%
-            :: Add cmake to path
-            set PATH=%DARWIN_SDK_HOME%\\CMake\\bin;%PATH%
-
-            :: Call bash which now is on top of PATH
-            call bash ./build.sh ${target} install
+            call build\\setenv.bat
+            make ${conf.target_install} CONFIG_FILE=build/config/${conf.name}
         """
-    } else if (target == 'linux64' || target == 'documentation') {
+    } else if (conf.os == 'linux') {
         sh """
-            # Fix permissions
-            chmod u+x ./Dockerfiles/build_images.sh
-            chmod u+x ./Dockerfiles/run.sh
-
-            # Build images
-            ./Dockerfiles/build_images.sh
-
-            # Run the build-script inside the image, and copy artifacts to
-            # repo root.
-            ./Dockerfiles/run.sh ${target} install
+            make ${conf.target_install} CONFIG_FILE=build/config/${conf.name}
         """
     } else {
-        error(message: "Invalid target: ${target}")
+        error(message: "Invalid configuration operating system: ${conf.os}")
     }
 }
 
-def test(target, testLogDir) {
-    def cmd_test = "ctest -C MinSizeRel"
+def test(conf, testLogDir) {
     def returnStatus
-    if (target == 'win64' || target == 'win64_static_runtime') {
+    if (conf.os == 'windows') {
         returnStatus = bat(returnStatus: true, script: """
-            :: Add msys to path
-            set PATH=%DARWIN_SDK_HOME%\\MinGW\\msys\\1.0\\bin;%PATH%
-            :: Add cmake to path
-            set PATH=%DARWIN_SDK_HOME%\\CMake\\bin;%PATH%
-            
-            :: Call bash which now is on top of PATH
-            call bash ./build.sh ${target} test
+            call build\\setenv.bat
+            make ${conf.target_test} CONFIG_FILE=build/config/${conf.name}
         """)
-    } else if (target == 'linux64') {
+    } else if (conf.os == 'linux') {
         returnStatus = sh(returnStatus: true, script: """
-            # Fix permissions
-            chmod u+x ./Dockerfiles/build_images.sh
-            chmod u+x ./Dockerfiles/run.sh
-
-            # Build images
-            ./Dockerfiles/build_images.sh
-
-            # Run the build-script inside the image, and copy artifacts to
-            # repo root
-            ./Dockerfiles/run.sh ${target} test
+            make ${conf.target_test} CONFIG_FILE=build/config/${conf.name}
         """)
     } else {
-        error(message: "Invalid target: ${target}")
+        error(message: "Invalid config operating system: ${conf.os}")
     }
     if (returnStatus != 0) {
         setBuildStatus('UNSTABLE', "Test failure. Exit code from ctest: ${returnStatus}")
@@ -183,3 +173,15 @@ def test(target, testLogDir) {
      currentBuild.result = status
      println("Build result manually set to ${status}. Reason:\n${msg}")
  }
+
+def fixFilePermissions(os) {
+    if (os == 'linux') {
+        sh """
+            # Allow internal docker script to run
+            chmod a+x build/docker/build.sh
+
+            # Allow copying artifacts to host
+            chmod 777 .
+        """
+    }
+}

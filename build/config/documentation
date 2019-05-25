@@ -1,0 +1,18 @@
+CONFIG=documentation
+
+# CMake
+SRC_DIR=.
+BUILD_DIR=build-$(CONFIG)
+INSTALL_DIR=install-$(CONFIG)
+GENERATOR="Unix Makefiles"
+
+# FMILIB_...
+GENERATE_DOXYGEN_DOC=1
+BUILD_WITH_STATIC_RTLIB=0
+BUILD_TESTS=0
+
+# Docker
+DOCKER_IMAGE_BASE=fmil_base:latest
+DOCKER_IMAGE_FMIL=fmil:latest
+ARTIFACT_DIR=/artifacts
+

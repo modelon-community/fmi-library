@@ -53,6 +53,10 @@ Configs.each { conf_entry ->
                 fixFilePermissions(conf.os)
             }
 
+            stage("Clean artifacts: ${conf.name}") {
+                clean(conf)
+            }
+
             stage("Build: ${conf.name}") {
                 build(conf)
             }
@@ -85,6 +89,10 @@ tasks[conf.name] = {
             fixFilePermissions(conf.os)
         }
 
+        stage("Clean artifacts: ${conf.name}") {
+            clean(conf)
+        }
+
         stage("Build: ${conf.name}") {
             build(conf)
         }
@@ -96,6 +104,22 @@ tasks[conf.name] = {
 }
 
 parallel tasks
+
+def clean(conf) {
+    if (conf.os == 'windows') {
+        bat """
+            call build\\setenv.bat
+            make clean
+        """
+    } else if (conf.os == 'linux') {
+        sh """
+            make clean
+        """
+    } else {
+        error(message: "Invalid configuration operating system: ${conf.os}")
+    }
+
+}
 
 def build(conf) {
     if (conf.os == 'windows') {
@@ -185,3 +209,4 @@ def fixFilePermissions(os) {
         """
     }
 }
+

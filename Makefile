@@ -26,4 +26,4 @@ generate:
 			../$(SRC_DIR)
 
 clean:
-	rm -rf $(BUILD_DIR) $(INSTALL_DIR)
+	rm -rf -v build-* install-*

@@ -24,19 +24,21 @@ else
     make $TARGET CONFIG_FILE=./build/config/$CONFIG
 fi
 
-# Copy artifacts to host
+# Copy build artifacts to host
 if [[ $TARGET == 'install' ]] || [[ $TARGET == 'documentation' ]]; then
-    chmod -R a+rwx $INSTALL_DIR
-    ls -la $ARTIFACT_DIR
-    grep "[[:space:]]ro[[:space:],]" /proc/mounts 
     cp -r $INSTALL_DIR $ARTIFACT_DIR
+    # Maybe common Unix knowledge, but make to set permissions for the
+    # directory on host directory, and not on docker directory. Or use 'cp -p'
+    # when copying, since permissions aren't copied otherwise.
+    chmod -R a+rwx $ARTIFACT_DIR/$INSTALL_DIR
 fi
 
+# Copy test logs to host
 if [[ $TARGET == 'test' ]]; then
     ARTIFACT_TEST_LOG_DIR=$ARTIFACT_DIR/$TEST_LOG_DIR
     mkdir -p $ARTIFACT_TEST_LOG_DIR || true
     rm -rf $ARTIFACT_TEST_LOG_DIR/*
-    chmod -R a+rwx $TEST_LOG_DIR
     cp $TEST_LOG_DIR/* $ARTIFACT_TEST_LOG_DIR
+    chmod -R a+rwx $ARTIFACT_DIR/$BUILD_DIR
 fi
 

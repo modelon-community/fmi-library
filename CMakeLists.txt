@@ -331,7 +331,7 @@ if(FMILIB_INSTALL_SUBLIBS)
 		DESTINATION .
         FILES_MATCHING PATTERN "*.h")
 endif()
-	
+
 install(DIRECTORY 
 	${FMILIB_FMI_STANDARD_HEADERS}/FMI1
 	${FMILIB_FMI_STANDARD_HEADERS}/FMI2
@@ -346,7 +346,8 @@ function(append_file_context file_out file_in)
 	file(APPEND ${file_out} "${text}")
 	set(text "")
 endfunction()
-	
+
+
 
 if(FMILIB_GENERATE_DOXYGEN_DOC)
 
@@ -380,3 +381,13 @@ if(FMILIB_GENERATE_DOXYGEN_DOC)
  
 	include(UseDoxygen/UseDoxygen)
 endif(FMILIB_GENERATE_DOXYGEN_DOC)
+
+# Debug only: prints the final value of all the non-environment variables
+if (FMILIB_DEBUG_PRINT_VARIABLES_ONLY)
+    get_cmake_property(_variableNames VARIABLES)
+    list(SORT _variableNames)
+    foreach (_variableName ${_variableNames})
+        message(STATUS "${_variableName}=${${_variableName}}")
+    endforeach()
+endif()
+

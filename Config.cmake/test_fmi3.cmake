@@ -40,7 +40,7 @@ set(XML_ME_PATH ${FMU3_DUMMY_FOLDER}/modelDescription_me.xml)
 set(XML_CS_PATH ${FMU3_DUMMY_FOLDER}/modelDescription_cs.xml)
 set(XML_MF_PATH ${FMU3_DUMMY_FOLDER}/modelDescription_malformed.xml)
 
-set(VARIALBE_TEST_MODEL_DESC_DIR
+set(VARIABLE_TEST_MODEL_DESC_DIR
     ${RTTESTDIR}/FMI3/parser_test_xmls/variable_test)
 set(VARIABLE_NO_TYPE_MODEL_DESC_DIR
     ${RTTESTDIR}/FMI3/parser_test_xmls/variable_no_type)
@@ -109,7 +109,7 @@ add_test(ctest_fmi3_import_test_me fmi3_import_me_test ${FMU3_ME_PATH} ${FMU_TEM
 add_test(ctest_fmi3_import_test_cs fmi3_import_cs_test ${FMU3_CS_PATH} ${FMU_TEMPFOLDER})
 add_test(ctest_fmi3_import_variable_test
          fmi3_import_variable_test
-         ${VARIALBE_TEST_MODEL_DESC_DIR})
+         ${VARIABLE_TEST_MODEL_DESC_DIR})
 add_test(ctest_fmi3_variable_no_type_test
          fmi3_variable_no_type_test
          ${VARIABLE_NO_TYPE_MODEL_DESC_DIR})

@@ -79,6 +79,9 @@ const char *fmi3_xmlAttrNames[fmi3_xml_attr_number] = {
 #define fmi3_xml_scheme_Annotations {fmi3_xml_elmID_ScalarVariable, 1, 0}
 #define fmi3_xml_scheme_VariableTool {fmi3_xml_elmID_Annotations, 0, 1}
 
+/* The expansion of below macro is also a macro. Example:
+ * EXPAND_ELM_SCHEME(Real) -> fmi3_xml_scheme_Real -> {fmi3_xml_elmID_SimpleType, 0, 0}
+ */
 #define EXPAND_ELM_SCHEME(elm) fmi3_xml_scheme_##elm ,
 
 fmi3_xml_scheme_info_t fmi3_xml_scheme_info[fmi3_xml_elm_number] = {
@@ -411,6 +414,11 @@ static void XMLCALL fmi3_parse_element_start(void *c, const char *elm, const cha
         /* not found error*/
         jm_log_error(context->callbacks, module, "[Line:%u] Unknown element '%s' in XML, skipping",
 			XML_GetCurrentLineNumber(context->parser), elm);
+        /* skipElementCnt:
+         *  Instead of calling exit when we find a first 'Unknown' element, we set skipElementCnt to 1, and continue parsing.
+         *  We then increase 'skipElementCnt' by 1 for each nested element we encounter (and decrease by 1 when leaving it).
+         *  'skipElementCnt' will be 0 when we leave the root 'Unknown' element.
+         */
 		context->skipElementCnt = 1;
         return;
     }

@@ -367,6 +367,23 @@ int fmi3_create_elm_map(fmi3_xml_parser_context_t* context) {
     return 0;
 }
 
+/**
+ * Sets the elementHandle and elemID for an item in the'fmi3_element_handle_map'
+ * array.
+ * Sample use case:
+ *      When we parse an XML element name, we must know its context. For example,
+ *      if we parse element "Integer", we must know if it should be handled as
+ *      ModelVariables/Integer, or as SimpleType/Integer. At the
+ *      "XML element start" tag for ModelVariables, we can therefore set the
+ *      correct "handle" functions.
+ *
+ * arg elm:
+ *      the name of a real XML element, the item to change will be the one in
+ *      'fmi3_element_handle_map' that has this name
+ * arg id:
+ *      get the handle and ID corresponding to this real or alternative XML
+ *      element
+ */
 void fmi3_xml_set_element_handle(fmi3_xml_parser_context_t *context, const char* elm, fmi3_xml_elm_enu_t id) {
     fmi3_xml_element_handle_map_t keyEl;
     fmi3_xml_element_handle_map_t* currentElMap;

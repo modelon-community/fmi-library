@@ -22,14 +22,14 @@ def Configs = [
         name: 'linux64',
         os: 'linux',
         node: 'docker',
-        target_install: 'install_docker',
-        target_test: 'test_docker'
+        target_install: '-C . -f build/docker/Makefile install',
+        target_test: '-C . -f build/docker/Makefile test'
     ], 
     'documentation': [
         name: 'documentation',
         os: 'linux',
         node: 'docker',
-        target_install: 'documentation_docker',
+        target_install: '-C . -f build/docker/Makefile documentation',
         target_test: 'N/A'
     ]
 ]

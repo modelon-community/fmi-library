@@ -1,7 +1,8 @@
-include $(CONFIG_FILE)
+# This file wraps the CMake build system for FMI Library, and is used by
+# Jenkins to build some predetermined configurations, do testing as a separate
+# stage, and build the documentation.
 
-install_docker test_docker documentation_docker:
-	make -C . -f build/docker/Makefile $(subst _docker,,$@) CONFIG_FILE="build/config/$(CONFIG)"
+include $(CONFIG_FILE)
 
 install: generate
 	cd $(BUILD_DIR) && \

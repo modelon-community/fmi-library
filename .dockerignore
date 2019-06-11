@@ -1,0 +1,10 @@
+install-*
+testlogs-*
+build-*
+!build.sh
+Dockerfiles/
+doc/
+Jenkinsfile.groovy
+.git*
+CMakeCache.txt
+

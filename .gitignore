@@ -1,0 +1,6 @@
+/build-*/
+install-*/
+testlogs-*/
+CMakeFiles/
+ThirdParty/winflexbison/
+doc/

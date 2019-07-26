@@ -10,9 +10,7 @@
 	canHandleVariableCommunicationStepSize="true"
 	/>
 <ModelVariables>
-    <ScalarVariable name="a[1]" valueReference="0">
-     <Integer/>
-  </ScalarVariable>
+  <Integer name="a[1]" valueReference="0"/>
 </ModelVariables>
 <ModelStructure>
 </ModelStructure>

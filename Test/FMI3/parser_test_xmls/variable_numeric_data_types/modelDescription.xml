@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <fmiModelDescription
   fmiVersion="2.0"
-  modelName="myModelName"
+  modelName="myName"
   instantiationToken="myInstantiationToken"
   description="myDescription"
   author="myAuthor"
   generationTool="myGenerationTool"
   generationDateAndTime="2002-05-30T09:00:00"
-  version="myModelVersion"
+  version="myVersion"
   variableNamingConvention="structured"
   numberOfEventIndicators="3">
 

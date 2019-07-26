@@ -10,9 +10,7 @@
 	canHandleVariableCommunicationStepSize="true"
 	/>
 <ModelVariables>
-    <ScalarVariable name="vehicle.engine.speed" valueReference="0">
-     <Integer/>
-  </ScalarVariable>
+  <Integer name="vehicle.engine.speed" valueReference="0"/>
 </ModelVariables>
 <ModelStructure>
 </ModelStructure>

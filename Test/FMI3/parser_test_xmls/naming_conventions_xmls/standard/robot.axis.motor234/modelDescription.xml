@@ -10,9 +10,7 @@
 	canHandleVariableCommunicationStepSize="true"
 	/>
 <ModelVariables>
-    <ScalarVariable name="robot.axis.'motor ##234'" valueReference="0">
-     <Integer/>
-  </ScalarVariable>
+  <Integer name="robot.axis.'motor ##234'" valueReference="0"/>
 </ModelVariables>
 <ModelStructure>
 </ModelStructure>

@@ -31,70 +31,81 @@ const char *fmi3_xmlAttrNames[fmi3_xml_attr_number] = {
     FMI3_XML_ATTRLIST(ATTR_STR)
 };
 
-/* fmi3_xml_scheme_ defines give parent ID, the index in a sequence among siblings, flag if multiple elems are allowed */
-#define fmi3_xml_scheme_fmiModelDescription {fmi3_xml_elmID_none, 0, 0}
-#define fmi3_xml_scheme_ModelExchange {fmi3_xml_elmID_fmiModelDescription, 0, 0}
-#define fmi3_xml_scheme_SourceFiles {fmi3_xml_elmID_ModelExchange, 0, 0}
-#define fmi3_xml_scheme_File {fmi3_xml_elmID_SourceFiles, 0, 1}
-#define fmi3_xml_scheme_CoSimulation {fmi3_xml_elmID_fmiModelDescription, 1, 0}
-#define fmi3_xml_scheme_SourceFilesCS {fmi3_xml_elmID_CoSimulation, 0, 0}
-#define fmi3_xml_scheme_FileCS {fmi3_xml_elmID_SourceFilesCS, 0, 1}
-#define fmi3_xml_scheme_UnitDefinitions {fmi3_xml_elmID_fmiModelDescription, 2, 0}
-#define fmi3_xml_scheme_Unit {fmi3_xml_elmID_UnitDefinitions, 0, 1}
-#define fmi3_xml_scheme_BaseUnit {fmi3_xml_elmID_Unit, 0, 0}
-#define fmi3_xml_scheme_DisplayUnit {fmi3_xml_elmID_Unit, 1, 1}
-#define fmi3_xml_scheme_TypeDefinitions {fmi3_xml_elmID_fmiModelDescription, 3, 0}
-#define fmi3_xml_scheme_SimpleType {fmi3_xml_elmID_TypeDefinitions, 0, 1}
-#define fmi3_xml_scheme_Real {fmi3_xml_elmID_SimpleType, 0, 0}
-#define fmi3_xml_scheme_Integer {fmi3_xml_elmID_SimpleType, 0, 0}
-#define fmi3_xml_scheme_Boolean {fmi3_xml_elmID_SimpleType, 0, 0}
-#define fmi3_xml_scheme_String {fmi3_xml_elmID_SimpleType, 0, 0}
-#define fmi3_xml_scheme_Enumeration {fmi3_xml_elmID_SimpleType, 0, 0}
-#define fmi3_xml_scheme_Item {fmi3_xml_elmID_Enumeration, 0, 1}
-#define fmi3_xml_scheme_LogCategories {fmi3_xml_elmID_fmiModelDescription, 4, 0}
-#define fmi3_xml_scheme_Category {fmi3_xml_elmID_LogCategories, 0, 1}
-#define fmi3_xml_scheme_DefaultExperiment {fmi3_xml_elmID_fmiModelDescription, 5, 0}
-#define fmi3_xml_scheme_VendorAnnotations {fmi3_xml_elmID_fmiModelDescription, 6, 0}
-#define fmi3_xml_scheme_Tool {fmi3_xml_elmID_VendorAnnotations, 0, 1}
-#define fmi3_xml_scheme_ModelVariables {fmi3_xml_elmID_fmiModelDescription, 7, 0}
-#define fmi3_xml_scheme_ScalarVariable {fmi3_xml_elmID_ModelVariables, 0, 1}
+/* fmi3_xml_scheme_<elem> params: super-type, parent ID, the index in a sequence among siblings, flag if multiple elems are allowed */
+#define fmi3_xml_scheme_fmiModelDescription {fmi3_xml_elmID_none, fmi3_xml_elmID_none, 0, 0}
+#define fmi3_xml_scheme_ModelExchange {fmi3_xml_elmID_none, fmi3_xml_elmID_fmiModelDescription, 0, 0}
+#define fmi3_xml_scheme_SourceFiles {fmi3_xml_elmID_none, fmi3_xml_elmID_ModelExchange, 0, 0}
+#define fmi3_xml_scheme_File {fmi3_xml_elmID_none, fmi3_xml_elmID_SourceFiles, 0, 1}
+#define fmi3_xml_scheme_CoSimulation {fmi3_xml_elmID_none, fmi3_xml_elmID_fmiModelDescription, 1, 0}
+#define fmi3_xml_scheme_SourceFilesCS {fmi3_xml_elmID_none, fmi3_xml_elmID_CoSimulation, 0, 0}
+#define fmi3_xml_scheme_FileCS {fmi3_xml_elmID_none, fmi3_xml_elmID_SourceFilesCS, 0, 1}
+#define fmi3_xml_scheme_UnitDefinitions {fmi3_xml_elmID_none, fmi3_xml_elmID_fmiModelDescription, 2, 0}
+#define fmi3_xml_scheme_Unit {fmi3_xml_elmID_none, fmi3_xml_elmID_UnitDefinitions, 0, 1}
+#define fmi3_xml_scheme_BaseUnit {fmi3_xml_elmID_none, fmi3_xml_elmID_Unit, 0, 0}
+#define fmi3_xml_scheme_DisplayUnit {fmi3_xml_elmID_none, fmi3_xml_elmID_Unit, 1, 1}
+#define fmi3_xml_scheme_TypeDefinitions {fmi3_xml_elmID_none, fmi3_xml_elmID_fmiModelDescription, 3, 0}
+#define fmi3_xml_scheme_SimpleType {fmi3_xml_elmID_none, fmi3_xml_elmID_TypeDefinitions, 0, 1}
+#define fmi3_xml_scheme_Real {fmi3_xml_elmID_none, fmi3_xml_elmID_SimpleType, 0, 0}
+#define fmi3_xml_scheme_Integer {fmi3_xml_elmID_none, fmi3_xml_elmID_SimpleType, 0, 0}
+#define fmi3_xml_scheme_Boolean {fmi3_xml_elmID_none, fmi3_xml_elmID_SimpleType, 0, 0}
+#define fmi3_xml_scheme_String {fmi3_xml_elmID_none, fmi3_xml_elmID_SimpleType, 0, 0}
+#define fmi3_xml_scheme_Enumeration {fmi3_xml_elmID_none, fmi3_xml_elmID_SimpleType, 0, 0}
+#define fmi3_xml_scheme_Item {fmi3_xml_elmID_none, fmi3_xml_elmID_Enumeration, 0, 1}
+#define fmi3_xml_scheme_LogCategories {fmi3_xml_elmID_none, fmi3_xml_elmID_fmiModelDescription, 4, 0}
+#define fmi3_xml_scheme_Category {fmi3_xml_elmID_none, fmi3_xml_elmID_LogCategories, 0, 1}
+#define fmi3_xml_scheme_DefaultExperiment {fmi3_xml_elmID_none, fmi3_xml_elmID_fmiModelDescription, 5, 0}
+#define fmi3_xml_scheme_VendorAnnotations {fmi3_xml_elmID_none, fmi3_xml_elmID_fmiModelDescription, 6, 0}
+#define fmi3_xml_scheme_Tool {fmi3_xml_elmID_none, fmi3_xml_elmID_VendorAnnotations, 0, 1}
+#define fmi3_xml_scheme_ModelVariables {fmi3_xml_elmID_none, fmi3_xml_elmID_fmiModelDescription, 7, 0}
 
-#define fmi3_xml_scheme_ModelStructure {fmi3_xml_elmID_fmiModelDescription, 8, 0}
-#define fmi3_xml_scheme_Outputs {fmi3_xml_elmID_ModelStructure, 0, 0}
-/*#define fmi3_xml_scheme_OutputUnknown {fmi3_xml_elmID_Outputs, 0, 1}*/
-#define fmi3_xml_scheme_Unknown {fmi3_xml_elmID_Outputs, 0, 1}
-#define fmi3_xml_scheme_Derivatives {fmi3_xml_elmID_ModelStructure, 1, 0}
-#define fmi3_xml_scheme_DerivativeUnknown {fmi3_xml_elmID_Derivatives, 0, 1}
-#define fmi3_xml_scheme_DiscreteStates {fmi3_xml_elmID_ModelStructure, 2, 0}
-#define fmi3_xml_scheme_DiscreteStateUnknown {fmi3_xml_elmID_DiscreteStates, 0, 1}
-#define fmi3_xml_scheme_InitialUnknowns {fmi3_xml_elmID_ModelStructure, 3, 0}
-#define fmi3_xml_scheme_InitialUnknown {fmi3_xml_elmID_InitialUnknowns, 0, 1}
+#define fmi3_xml_scheme_ModelStructure {fmi3_xml_elmID_none, fmi3_xml_elmID_fmiModelDescription, 8, 0}
+#define fmi3_xml_scheme_Outputs {fmi3_xml_elmID_none, fmi3_xml_elmID_ModelStructure, 0, 0}
+/*#define fmi3_xml_scheme_OutputUnknown {fmi3_xml_elmID_none, fmi3_xml_elmID_Outputs, 0, 1}*/
+#define fmi3_xml_scheme_Unknown {fmi3_xml_elmID_none, fmi3_xml_elmID_Outputs, 0, 1}
+#define fmi3_xml_scheme_Derivatives {fmi3_xml_elmID_none, fmi3_xml_elmID_ModelStructure, 1, 0}
+#define fmi3_xml_scheme_DerivativeUnknown {fmi3_xml_elmID_none, fmi3_xml_elmID_Derivatives, 0, 1}
+#define fmi3_xml_scheme_DiscreteStates {fmi3_xml_elmID_none, fmi3_xml_elmID_ModelStructure, 2, 0}
+#define fmi3_xml_scheme_DiscreteStateUnknown {fmi3_xml_elmID_none, fmi3_xml_elmID_DiscreteStates, 0, 1}
+#define fmi3_xml_scheme_InitialUnknowns {fmi3_xml_elmID_none, fmi3_xml_elmID_ModelStructure, 3, 0}
+#define fmi3_xml_scheme_InitialUnknown {fmi3_xml_elmID_none, fmi3_xml_elmID_InitialUnknowns, 0, 1}
 
-#define fmi3_xml_scheme_RealVariable {fmi3_xml_elmID_ScalarVariable, 0, 0}
-#define fmi3_xml_scheme_IntegerVariable {fmi3_xml_elmID_ScalarVariable, 0, 0}
-#define fmi3_xml_scheme_BooleanVariable {fmi3_xml_elmID_ScalarVariable, 0, 0}
-#define fmi3_xml_scheme_StringVariable {fmi3_xml_elmID_ScalarVariable, 0, 0}
-#define fmi3_xml_scheme_EnumerationVariable {fmi3_xml_elmID_ScalarVariable, 0, 0}
+#define fmi3_xml_scheme_Variable {fmi3_xml_elmID_none, fmi3_xml_elmID_ModelVariables, 0, 1}
+#define fmi3_xml_scheme_RealVariable {fmi3_xml_elmID_Variable, fmi3_xml_elmID_ModelVariables, 0, 1}
+#define fmi3_xml_scheme_IntegerVariable {fmi3_xml_elmID_Variable, fmi3_xml_elmID_ModelVariables, 0, 1}
+#define fmi3_xml_scheme_BooleanVariable {fmi3_xml_elmID_Variable, fmi3_xml_elmID_ModelVariables, 0, 1}
+#define fmi3_xml_scheme_StringVariable {fmi3_xml_elmID_Variable, fmi3_xml_elmID_ModelVariables, 0, 1}
+#define fmi3_xml_scheme_EnumerationVariable {fmi3_xml_elmID_Variable, fmi3_xml_elmID_ModelVariables, 0, 1}
 
-#define fmi3_xml_scheme_Annotations {fmi3_xml_elmID_ScalarVariable, 1, 0}
-#define fmi3_xml_scheme_VariableTool {fmi3_xml_elmID_Annotations, 0, 1}
+#define fmi3_xml_scheme_Annotations {fmi3_xml_elmID_none, fmi3_xml_elmID_Variable, 1, 0}
+#define fmi3_xml_scheme_VariableTool {fmi3_xml_elmID_none, fmi3_xml_elmID_Annotations, 0, 1}
 
-/* The expansion of below macro is also a macro. Example:
+/**
+ * The expansion of below macro is also a macro. Example:
  * EXPAND_ELM_SCHEME(Real) -> fmi3_xml_scheme_Real -> {fmi3_xml_elmID_SimpleType, 0, 0}
  */
 #define EXPAND_ELM_SCHEME(elm) fmi3_xml_scheme_##elm ,
 
+/* Global array of all scheme_info_t. Index it with fmi3_xml_elm_enu_t entries. */
 fmi3_xml_scheme_info_t fmi3_xml_scheme_info[fmi3_xml_elm_number] = {
     FMI3_XML_ELMLIST(EXPAND_ELM_SCHEME)
 	{fmi3_xml_elm_actual_number,0,0},
-	FMI3_XML_ELMLIST_ALT(EXPAND_ELM_SCHEME)};
+	FMI3_XML_ELMLIST_ALT(EXPAND_ELM_SCHEME)
+	FMI3_XML_ELMLIST_ABSTRACT(EXPAND_ELM_SCHEME)
+};
 
 #define EXPAND_ELM_NAME(elm) { #elm, fmi3_xml_handle_##elm, fmi3_xml_elmID_##elm},
 
+/**
+ * Global array of all defined fmi3_xml_element_handle_map_t structs.
+ * Typical use:
+ *      Parse element name, from element name find ID, use ID to index this
+ *      array.
+ */
 fmi3_xml_element_handle_map_t fmi3_element_handle_map[fmi3_xml_elm_number] = {
     FMI3_XML_ELMLIST(EXPAND_ELM_NAME)
 	{ NULL, NULL, fmi3_xml_elm_actual_number},
 	FMI3_XML_ELMLIST_ALT(EXPAND_ELM_NAME)
+	FMI3_XML_ELMLIST_ABSTRACT(EXPAND_ELM_NAME)
 };
 
 void fmi3_xml_parse_free_context(fmi3_xml_parser_context_t *context) {
@@ -394,6 +405,37 @@ void fmi3_xml_set_element_handle(fmi3_xml_parser_context_t *context, const char*
 	currentElMap->elemID = id;
 }
 
+/**
+/* Returns true if parent element's type or super type (recursively) matches
+ * the expected type.
+ */
+int fmi3_xml_is_valid_parent(fmi3_xml_elm_enu_t child_id, fmi3_xml_elm_enu_t parent_id) {
+    fmi3_xml_elm_enu_t p_id_expected = fmi3_xml_scheme_info[child_id].parentID;
+
+    while (parent_id != p_id_expected && parent_id != fmi3_xml_elmID_none) {
+        parent_id = fmi3_xml_scheme_info[parent_id].superID;
+    }
+    return parent_id == p_id_expected;
+}
+
+/**
+ * Returns top level super type of the element.
+ */
+int fmi3_xml_get_super_type_rec(fmi3_xml_elm_enu_t id) {
+    fmi3_xml_elm_enu_t id_top = id;
+    while (fmi3_xml_scheme_info[id_top].superID != fmi3_xml_elmID_none) {
+        id_top = fmi3_xml_scheme_info[id_top].superID;
+    }
+    return id_top;
+}
+
+/**
+/* Returns true if the top-level super types are the same.
+ */
+int fmi3_xml_are_same_type(fmi3_xml_elm_enu_t id1, fmi3_xml_elm_enu_t id2) {
+    return fmi3_xml_get_super_type_rec(id1) == fmi3_xml_get_super_type_rec(id2);
+}
+
 
 static void XMLCALL fmi3_parse_element_start(void *c, const char *elm, const char **attr) {
     jm_named_ptr key;
@@ -441,12 +483,13 @@ static void XMLCALL fmi3_parse_element_start(void *c, const char *elm, const cha
     }
 
     currentID = currentElMap->elemID;
+    context->currentElemIdStartTag = currentID;
 	/* Check that parent-child & siblings are fine */
 	{
 		fmi3_xml_elm_enu_t parentID = context->currentElmID;
 		fmi3_xml_elm_enu_t siblingID =  context->lastElmID;
 
-		if(fmi3_xml_scheme_info[currentID].parentID != parentID) {
+		if(!fmi3_xml_is_valid_parent(currentID, parentID)) {
 				jm_log_error(context->callbacks, module, 
 					"[Line:%u] XML element '%s' cannot be placed inside '%s', skipping",
 					XML_GetCurrentLineNumber(context->parser), elm, fmi3_element_handle_map[parentID].elementName);
@@ -454,8 +497,8 @@ static void XMLCALL fmi3_parse_element_start(void *c, const char *elm, const cha
 				return;
 		}
 		if(siblingID != fmi3_xml_elmID_none) {
-			if(siblingID == currentID) {
-				if(!fmi3_xml_scheme_info[currentID].multipleAllowed) {
+            if (fmi3_xml_are_same_type(currentID, siblingID)) {
+				if (!(fmi3_xml_scheme_info[currentID].multipleAllowed && fmi3_xml_scheme_info[siblingID].multipleAllowed)) {
 					jm_log_error(context->callbacks, module, 
 						"[Line:%u] Multiple instances of XML element '%s' are not allowed, skipping",
 						XML_GetCurrentLineNumber(context->parser), elm);
@@ -467,7 +510,7 @@ static void XMLCALL fmi3_parse_element_start(void *c, const char *elm, const cha
 				int lastSiblingIndex = fmi3_xml_scheme_info[siblingID].siblingIndex;
 				int curSiblingIndex = fmi3_xml_scheme_info[currentID].siblingIndex;
 
-				if(lastSiblingIndex >= curSiblingIndex) {
+                if (lastSiblingIndex >= curSiblingIndex) {
 					jm_log_error(context->callbacks, module, 
 						"[Line:%u] XML element '%s' cannot be placed after element '%s', skipping",
 						XML_GetCurrentLineNumber(context->parser), elm, fmi3_element_handle_map[siblingID].elementName);
@@ -476,6 +519,8 @@ static void XMLCALL fmi3_parse_element_start(void *c, const char *elm, const cha
 				}
 			}
 		}
+        /* lastElmID references the previous sibling-element's id - set it to 'none' before handling children*/
+        /* TODO: rename lastElmName --> lastSiblingElemId, in */
 		context->lastElmID = fmi3_xml_elmID_none;
 	}
 
@@ -582,7 +627,7 @@ static void XMLCALL fmi3_parse_element_end(void* c, const char *elm) {
     currentID = currentElMap->elemID;
 
     if(currentID != context -> currentElmID) {
-        /* missmatch error*/
+        /* missmatch error */
         fmi3_xml_parse_fatal(context, "Element end '%s' does not match element start '%s' in XML", elm, 
 			fmi3_element_handle_map[context -> currentElmID].elementName);
         return;

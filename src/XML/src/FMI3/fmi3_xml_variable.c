@@ -279,8 +279,13 @@ fmi3_xml_bool_variable_t* fmi3_xml_get_variable_as_boolean(fmi3_xml_variable_t* 
     return 0;
 }
 
-int fmi3_xml_handle_ScalarVariable(fmi3_xml_parser_context_t *context, const char* data) {
-    if(!data) {
+int fmi3_xml_handle_Variable(fmi3_xml_parser_context_t *context, const char* data) {
+    const int called_from_start_tag = !data;
+
+     /* The real ID of the variable, such as 'RealVariable' */
+    fmi3_xml_elm_enu_t elm_id = called_from_start_tag ? context->currentElemIdStartTag : context->currentElmID;
+
+    if (called_from_start_tag) {
         fmi3_xml_model_description_t* md = context->modelDescription;
         fmi3_xml_variable_t* variable;
         fmi3_xml_variable_t dummyV;
@@ -293,13 +298,13 @@ int fmi3_xml_handle_ScalarVariable(fmi3_xml_parser_context_t *context, const cha
         if(!bufName || !bufDescr) return -1;
 
         /*   <xs:attribute name="valueReference" type="xs:unsignedInt" use="optional but required for FMI"> */
-        if(fmi3_xml_set_attr_uint(context, fmi3_xml_elmID_ScalarVariable, fmi_attr_id_valueReference, 1, &vr, 0)) return -1;
+        if(fmi3_xml_set_attr_uint(context, elm_id, fmi_attr_id_valueReference, 1, &vr, 0)) return -1;
 
         if(
         /*  <xs:attribute name="name" type="xs:normalizedString" use="required"/> */
-            fmi3_xml_set_attr_string(context, fmi3_xml_elmID_ScalarVariable, fmi_attr_id_name, 1, bufName) ||
+            fmi3_xml_set_attr_string(context, fmi3_xml_elmID_Variable, fmi_attr_id_name, 1, bufName) ||
         /* <xs:attribute name="description" type="xs:string"/> */
-            fmi3_xml_set_attr_string(context, fmi3_xml_elmID_ScalarVariable, fmi_attr_id_description, 0, bufDescr)
+            fmi3_xml_set_attr_string(context, elm_id, fmi_attr_id_description, 0, bufDescr)
         ) return -1;
 
         if(context->skipOneVariableFlag) {
@@ -357,11 +362,11 @@ int fmi3_xml_handle_ScalarVariable(fmi3_xml_parser_context_t *context, const cha
             unsigned int causality, variability, initial;
             fmi3_initial_enu_t defaultInitial;
             /* <xs:attribute name="causality" default="local"> */
-            if(fmi3_xml_set_attr_enum(context, fmi3_xml_elmID_ScalarVariable, fmi_attr_id_causality,0,&causality,fmi3_causality_enu_local,causalityConventionMap))
+            if(fmi3_xml_set_attr_enum(context, elm_id, fmi_attr_id_causality,0,&causality,fmi3_causality_enu_local,causalityConventionMap))
                 causality = fmi3_causality_enu_local;
             variable->causality = causality;
             /*  <xs:attribute name="variability" default="continuous"> */
-            if(fmi3_xml_set_attr_enum(context, fmi3_xml_elmID_ScalarVariable, fmi_attr_id_variability,0,&variability,fmi3_variability_enu_continuous,variabilityConventionMap))
+            if(fmi3_xml_set_attr_enum(context, elm_id, fmi_attr_id_variability,0,&variability,fmi3_variability_enu_continuous,variabilityConventionMap))
                 variability = fmi3_variability_enu_continuous;
 
             if (!fmi3_is_valid_variability_causality(variability, causality)) {
@@ -380,7 +385,7 @@ int fmi3_xml_handle_ScalarVariable(fmi3_xml_parser_context_t *context, const cha
             defaultInitial = fmi3_get_default_initial(variability, causality);
 
             /* <xs:attribute name="initial"> */
-            if(fmi3_xml_set_attr_enum(context, fmi3_xml_elmID_ScalarVariable, fmi_attr_id_initial,0,&initial,defaultInitial,initialConventionMap))
+            if(fmi3_xml_set_attr_enum(context, elm_id, fmi_attr_id_initial,0,&initial,defaultInitial,initialConventionMap))
                 initial = defaultInitial;
             defaultInitial = fmi3_get_valid_initial(variability, causality, initial);
             if(defaultInitial != initial) {
@@ -400,9 +405,9 @@ int fmi3_xml_handle_ScalarVariable(fmi3_xml_parser_context_t *context, const cha
             unsigned int previous, multipleSet;
             if (
             /*   <xs:attribute name="previous" type="xs:unsignedInt"> */
-                fmi3_xml_set_attr_uint(context, fmi3_xml_elmID_ScalarVariable, fmi_attr_id_previous, 0, &previous, 0) ||
+                fmi3_xml_set_attr_uint(context, elm_id, fmi_attr_id_previous, 0, &previous, 0) ||
             /*   <xs:attribute name="canHandleMultipleSetPerTimeInstant" type="xs:boolean"> */
-                fmi3_xml_set_attr_boolean(context, fmi3_xml_elmID_ScalarVariable, fmi_attr_id_canHandleMultipleSetPerTimeInstant, 0, &multipleSet, 1)
+                fmi3_xml_set_attr_boolean(context, elm_id, fmi_attr_id_canHandleMultipleSetPerTimeInstant, 0, &multipleSet, 1)
             ) return -1;
 
                 /* Store the index as a pointer since we cannot access the variables list yet (we are constructing it). */
@@ -481,6 +486,8 @@ static void fmi3_log_error_if_start_required(
 
 int fmi3_xml_handle_RealVariable(fmi3_xml_parser_context_t *context, const char* data) {
     if(context->skipOneVariableFlag) return 0;
+
+    fmi3_xml_handle_Variable(context, data);
 
     if(!data) {
         fmi3_xml_model_description_t* md = context->modelDescription;
@@ -586,6 +593,8 @@ int fmi3_xml_handle_RealVariable(fmi3_xml_parser_context_t *context, const char*
 int fmi3_xml_handle_IntegerVariable(fmi3_xml_parser_context_t *context, const char* data) {
     if(context->skipOneVariableFlag) return 0;
 
+    fmi3_xml_handle_Variable(context, data);
+
     if(!data) {
         fmi3_xml_model_description_t* md = context->modelDescription;
         fmi3_xml_type_definitions_t* td = &md->typeDefinitions;
@@ -653,6 +662,8 @@ int fmi3_xml_handle_IntegerVariable(fmi3_xml_parser_context_t *context, const ch
 int fmi3_xml_handle_BooleanVariable(fmi3_xml_parser_context_t *context, const char* data) {
     if(context->skipOneVariableFlag) return 0;
 
+    fmi3_xml_handle_Variable(context, data);
+
     if(!data) {
         fmi3_xml_model_description_t* md = context->modelDescription;
         fmi3_xml_type_definitions_t* td = &md->typeDefinitions;
@@ -691,6 +702,8 @@ int fmi3_xml_handle_BooleanVariable(fmi3_xml_parser_context_t *context, const ch
 
 int fmi3_xml_handle_StringVariable(fmi3_xml_parser_context_t *context, const char* data) {
     if(context->skipOneVariableFlag) return 0;
+
+    fmi3_xml_handle_Variable(context, data);
 
     if(!data) {
         fmi3_xml_model_description_t* md = context->modelDescription;
@@ -772,6 +785,8 @@ fmi3_xml_enum_variable_props_t * fmi3_xml_parse_enum_properties(fmi3_xml_parser_
 
 int fmi3_xml_handle_EnumerationVariable(fmi3_xml_parser_context_t *context, const char* data) {
     if(context->skipOneVariableFlag) return 0;
+
+    fmi3_xml_handle_Variable(context, data);
 
     if(!data) {
         fmi3_xml_model_description_t* md = context->modelDescription;

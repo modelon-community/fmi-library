@@ -113,7 +113,6 @@ typedef enum fmi3_xml_attr_enu_t {
     EXPAND_XML_ELMNAME(VendorAnnotations) \
     EXPAND_XML_ELMNAME(Tool) \
     EXPAND_XML_ELMNAME(ModelVariables) \
-    EXPAND_XML_ELMNAME(ScalarVariable) \
     EXPAND_XML_ELMNAME(Annotations) \
 	EXPAND_XML_ELMNAME(LogCategories) \
 	EXPAND_XML_ELMNAME(Category) \
@@ -168,6 +167,7 @@ typedef enum fmi3_xml_elm_enu_t {
     FMI3_XML_ELMLIST(FMI3_XML_LIST_ELM_ID)
 	,fmi3_xml_elm_actual_number
 	FMI3_XML_ELMLIST_ALT(FMI3_XML_LIST_ELM_ID)
+	FMI3_XML_ELMLIST_ABSTRACT(FMI3_XML_LIST_ELM_ID)
     ,fmi3_xml_elm_number
 } fmi3_xml_elm_enu_t;
 
@@ -179,6 +179,7 @@ typedef struct fmi3_xml_element_handle_map_t fmi3_xml_element_handle_map_t;
 	multiple elements of this type are allowed in a sequence.
 */
 typedef struct {
+	fmi3_xml_elm_enu_t superID; /* ID of super type or NULL if none */
 	fmi3_xml_elm_enu_t parentID; /* expected parent ID for an element */
 	int siblingIndex;       /* index among siblings */
 	int multipleAllowed;	/* multiple elements of this kind kan come in a sequence as siblings*/
@@ -246,9 +247,11 @@ jm_define_comp_f(fmi3_xml_compare_elmName, fmi3_xml_element_handle_map_t, fmi3_x
  *      char* wrapped in jm_vector for dynamic memory.
  *      Contains the latest element text. For an MD without tool specific
  *      annotations, this will always be empty. This variable is currently
- *      only used as a switch though... TODO: Refactor to bool.
+ *      only used as a bool-switch though... TODO: Refactor to bool.
  *
  * lastElmID:
+ *      Element ID of the last processed sibling, or fmi3_xml_elmID_none if
+ *      no siblings have been processed.
  * currentElmID:
  *      Used for error checking and scheme verification.
  *      Values:
@@ -288,6 +291,7 @@ struct fmi3_xml_parser_context_t {
 
 	fmi3_xml_elm_enu_t lastElmID;
 	fmi3_xml_elm_enu_t currentElmID;
+    fmi3_xml_elm_enu_t currentElemIdStartTag;
 
     /* Variables for handling tool-specific XML elements */
 	int anyElmCount;
@@ -317,6 +321,9 @@ int fmi3_xml_get_attr_str(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t
 
 void fmi3_xml_set_element_handle(fmi3_xml_parser_context_t *context, const char* elm, fmi3_xml_elm_enu_t id);
 
+int fmi3_xml_is_valid_parent(fmi3_xml_elm_enu_t child_id, fmi3_xml_elm_enu_t parent_id);
+int fmi3_xml_get_super_type_rec(fmi3_xml_elm_enu_t id);
+int fmi3_xml_are_same_type(fmi3_xml_elm_enu_t id1, fmi3_xml_elm_enu_t id2);
 
 #ifdef __cplusplus
 }

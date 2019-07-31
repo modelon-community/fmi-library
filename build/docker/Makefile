@@ -24,6 +24,6 @@ install test documentation: docker_image
 
 docker_run_debug: docker_image
 	winpty docker run -it \
-		-v "/$(shell pwd):/$(ARTIFACT_DIR)" \
+		-v "/$(shell pwd):$(ARTIFACT_DIR)" \
 		$(DOCKER_IMAGE_FMIL)
 

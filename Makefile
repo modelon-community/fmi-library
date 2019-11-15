@@ -4,6 +4,8 @@
 
 include $(CONFIG_FILE)
 
+.PHONY: install test documentation generate clean
+
 install: generate
 	cd $(BUILD_DIR) && \
 		cmake --build . --config MinSizeRel --target '$@' 

@@ -44,6 +44,8 @@ set(VARIABLE_TEST_MODEL_DESC_DIR
     ${RTTESTDIR}/FMI3/parser_test_xmls/variable_test)
 set(VARIABLE_BAD_VARIABILITY_CAUSALITY_MODEL_DESC_DIR
     ${RTTESTDIR}/FMI3/parser_test_xmls/variable_bad_variability_causality)
+set(VAR_TYPE_TEST_MODEL_DESC_DIR
+    ${RTTESTDIR}/FMI3/parser_test_xmls/variable_types/float64)
 
 set(SHARED_LIBRARY_ME_PATH ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${CMAKE_SHARED_LIBRARY_PREFIX}fmu3_dll_me${CMAKE_SHARED_LIBRARY_SUFFIX})
 set(SHARED_LIBRARY_CS_PATH ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${CMAKE_SHARED_LIBRARY_PREFIX}fmu3_dll_cs${CMAKE_SHARED_LIBRARY_SUFFIX})
@@ -77,6 +79,8 @@ add_executable (fmi3_import_cs_test ${RTTESTDIR}/FMI3/fmi3_import_cs_test.c)
 target_link_libraries (fmi3_import_cs_test  ${FMILIBFORTEST})
 add_executable(fmi3_import_variable_test ${RTTESTDIR}/FMI3/fmi3_import_variable_test.c)
 target_link_libraries(fmi3_import_variable_test ${FMILIBFORTEST})
+add_executable(fmi3_import_variable_types_test ${RTTESTDIR}/FMI3/fmi3_import_variable_types_test.c)
+target_link_libraries(fmi3_import_variable_types_test ${FMILIBFORTEST})
 add_executable(fmi3_variable_bad_variability_causality_test
                ${RTTESTDIR}/FMI3/fmi3_variable_bad_variability_causality_test.c)
 target_link_libraries(fmi3_variable_bad_variability_causality_test ${FMILIBFORTEST})
@@ -88,6 +92,7 @@ set_target_properties(
     fmi3_import_xml_test
     fmi3_import_me_test fmi3_import_cs_test
     fmi3_import_variable_test
+    fmi3_import_variable_types_test
     PROPERTIES FOLDER "Test/FMI3"
 )
 set(FAIL_NAME_CHECK 0)
@@ -105,6 +110,9 @@ add_test(ctest_fmi3_import_test_cs fmi3_import_cs_test ${FMU3_CS_PATH} ${FMU_TEM
 add_test(ctest_fmi3_import_variable_test
          fmi3_import_variable_test
          ${VARIABLE_TEST_MODEL_DESC_DIR})
+add_test(ctest_fmi3_import_var_type_test
+         fmi3_import_variable_types_test
+         ${VAR_TYPE_TEST_MODEL_DESC_DIR})
 add_test(ctest_fmi3_variable_bad_variability_causality_test
          fmi3_variable_bad_variability_causality_test
          ${VARIABLE_BAD_VARIABILITY_CAUSALITY_MODEL_DESC_DIR})

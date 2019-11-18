@@ -79,6 +79,10 @@ fmi3_boolean_t fmi3_import_get_canHandleMultipleSetPerTimeInstant(fmi3_import_va
 }
 
 
+fmi3_import_float64_variable_t* fmi3_import_get_variable_as_float64(fmi3_import_variable_t* v) {
+	return fmi3_xml_get_variable_as_float64(v);
+}
+
 fmi3_import_real_variable_t* fmi3_import_get_variable_as_real(fmi3_import_variable_t* v) {
 	return fmi3_xml_get_variable_as_real(v);
 }
@@ -97,6 +101,10 @@ fmi3_import_string_variable_t* fmi3_import_get_variable_as_string(fmi3_import_va
 
 fmi3_import_bool_variable_t* fmi3_import_get_variable_as_boolean(fmi3_import_variable_t* v) {
 	return fmi3_xml_get_variable_as_boolean(v);
+}
+
+fmi3_real_t fmi3_import_get_float64_variable_start(fmi3_import_float64_variable_t* v) {
+	return fmi3_xml_get_float64_variable_start(v);
 }
 
 fmi3_real_t fmi3_import_get_real_variable_start(fmi3_import_real_variable_t* v) {

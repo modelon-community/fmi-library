@@ -149,57 +149,71 @@ void fmi3_xml_parse_error(fmi3_xml_parser_context_t *context, const char* fmt, .
     va_start (args, fmt);
 	if(context->parser)
 		jm_log_info(context->callbacks, module, "[Line:%u] Detected during parsing:", XML_GetCurrentLineNumber(context->parser));
-	jm_log_error_v(context->callbacks, module,fmt, args);
+	jm_log_error_v(context->callbacks, module, fmt, args);
     va_end (args);
 }
 
 
 int fmi3_xml_is_attr_defined(fmi3_xml_parser_context_t *context, fmi3_xml_attr_enu_t attrID) {
-    return ( jm_vector_get_item(jm_string)(context->attrBuffer, attrID) != 0);
+    return ( jm_vector_get_item(jm_string)(context->attrBuffer, attrID) != 0 );
 }
 
-int fmi3_xml_get_attr_str(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, int required,const char** valp) {
+/** 
+ * Read value from parse buffer "as is". Also resets the buffer's entry.
+ *    valp (return arg): points to attribute value 
+ */
+int fmi3_xml_get_attr_str(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, int required, const char** valp) {
 
-    jm_string elmName, attrName, value;
-
-    elmName = fmi3_element_handle_map[elmID].elementName;
-    attrName = fmi3_xmlAttrNames[attrID];
-    value = jm_vector_get_item(jm_string)(context->attrBuffer, attrID);
-    *valp =  value;
+    /* Read and clear attribute */
+    jm_string value = jm_vector_get_item(jm_string)(context->attrBuffer, attrID);
     jm_vector_set_item(jm_string)(context->attrBuffer, attrID, 0);
-    if(!(*valp)) {
-        if (required) {
-            fmi3_xml_parse_fatal(context, "Parsing XML element '%s': required attribute '%s' not found", elmName, attrName);
-            return -1;
-        }
-        else
-            return 0;
+
+    if (!value && required) {
+        jm_string elmName = fmi3_element_handle_map[elmID].elementName;
+        jm_string attrName = fmi3_xmlAttrNames[attrID];
+        fmi3_xml_parse_fatal(context, "Parsing XML element '%s': required attribute '%s' not found", elmName, attrName);
+        return -1;
     }
+
+    *valp = value; /* can be NULL */
     return 0;
 }
 
+/**
+ * Reads the attribute from attribute buffer as jm_vector(char). This will clear the attribute from the buffer.
+ *   field (return arg): contains value after function call
+ * TODO: Name is misleading for all _set_attr_<type> functions
+ */
 int fmi3_xml_set_attr_string(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, int required, jm_vector(char)* field) {
     int ret;
-    jm_string elmName, attrName, val;
+    jm_string val;
     size_t len;
-    ret = fmi3_xml_get_attr_str(context, elmID, attrID,required,&val);
-    if(ret) return ret;
-    if((!val || !val[0]) && !required) {
-        jm_vector_resize(char)(field, 1);
-        jm_vector_set_item(char)(field, 0, 0);
-        jm_vector_resize(char)(field, 0);
+
+    /* Get existing from attribute value */
+    ret = fmi3_xml_get_attr_str(context, elmID, attrID, required, &val);
+    if (ret) return ret;
+
+    if ((!val || !val[0]) && !required) {
+        /* Return empty string */
+        jm_vector_resize(char)(field, 1);       /* Allocate space for null character */
+        jm_vector_set_item(char)(field, 0, 0);  /* Push null character */
+        jm_vector_resize(char)(field, 0);       /* Make length same as for strlen */
         return 0;
     }
-    elmName = fmi3_element_handle_map[elmID].elementName;
-    attrName = fmi3_xmlAttrNames[attrID];
 
     len = strlen(val) + 1;
-    if(jm_vector_resize(char)(field, len) < len) {
+
+    /* Error check */
+    if (jm_vector_resize(char)(field, len) < len) {
+        jm_string elmName = fmi3_element_handle_map[elmID].elementName;
+        jm_string attrName = fmi3_xmlAttrNames[attrID];
         fmi3_xml_parse_fatal(context, "XML element '%s': could not allocate memory for setting '%s'='%s'", elmName, attrName, val);
         return -1;
     }
+
+    /* Write to buffer */
     /* copy terminating 0 as well but set vector size to be actual string length */
-    memcpy(jm_vector_get_itemp(char)(field,0), val, len);
+    memcpy(jm_vector_get_itemp(char)(field, 0), val, len);
     jm_vector_resize(char)(field, len - 1);
     return 0;
 }
@@ -280,7 +294,6 @@ int fmi3_xml_set_attr_double(fmi3_xml_parser_context_t *context, fmi3_xml_elm_en
 
     int ret;
     jm_string elmName, attrName, strVal;
-
 
     ret = fmi3_xml_get_attr_str(context, elmID, attrID,required,&strVal);
     if(ret) return ret;
@@ -439,16 +452,14 @@ int fmi3_xml_are_same_type(fmi3_xml_elm_enu_t id1, fmi3_xml_elm_enu_t id2) {
 
 
 static void XMLCALL fmi3_parse_element_start(void *c, const char *elm, const char **attr) {
-    jm_named_ptr key;
     fmi3_xml_element_handle_map_t keyEl;
     fmi3_xml_element_handle_map_t* currentElMap;
-    jm_named_ptr* currentMap;
 	fmi3_xml_elm_enu_t currentID;
     int i;
     fmi3_xml_parser_context_t *context = c;
     context->has_produced_data_warning = 0;
 
-	if(context->useAnyHandleFlg) {
+	if (context->useAnyHandleFlg) {
 		fmi3_xml_callbacks_t* anyH = context->anyHandle;
 		context->anyElmCount++;
 		if(anyH && anyH->startHandle) {
@@ -460,7 +471,7 @@ static void XMLCALL fmi3_parse_element_start(void *c, const char *elm, const cha
 		return;
 	}
 
-	if(context->skipElementCnt) {
+	if (context->skipElementCnt) {
 		context->skipElementCnt++;
         jm_log_warning(context->callbacks, module, "[Line:%u] Skipping nested XML element '%s'",
 			XML_GetCurrentLineNumber(context->parser), elm);
@@ -470,7 +481,7 @@ static void XMLCALL fmi3_parse_element_start(void *c, const char *elm, const cha
 	keyEl.elementName = elm;
 	/* find the element handle by name */
     currentElMap = jm_vector_bsearch(fmi3_xml_element_handle_map_t)(context->elmMap, &keyEl, fmi3_xml_compare_elmName);
-    if(!currentElMap) {
+    if (!currentElMap) {
         /* not found error*/
         jm_log_error(context->callbacks, module, "[Line:%u] Unknown element '%s' in XML, skipping",
 			XML_GetCurrentLineNumber(context->parser), elm);
@@ -490,14 +501,14 @@ static void XMLCALL fmi3_parse_element_start(void *c, const char *elm, const cha
 		fmi3_xml_elm_enu_t parentID = context->currentElmID;
 		fmi3_xml_elm_enu_t siblingID =  context->lastElmID;
 
-		if(!fmi3_xml_is_valid_parent(currentID, parentID)) {
+		if (!fmi3_xml_is_valid_parent(currentID, parentID)) {
 				jm_log_error(context->callbacks, module, 
 					"[Line:%u] XML element '%s' cannot be placed inside '%s', skipping",
 					XML_GetCurrentLineNumber(context->parser), elm, fmi3_element_handle_map[parentID].elementName);
 				context->skipElementCnt = 1;
 				return;
 		}
-		if(siblingID != fmi3_xml_elmID_none) {
+		if (siblingID != fmi3_xml_elmID_none) {
             if (fmi3_xml_are_same_type(currentID, siblingID)) {
 				if (!(fmi3_xml_scheme_info[currentID].multipleAllowed && fmi3_xml_scheme_info[siblingID].multipleAllowed)) {
 					jm_log_error(context->callbacks, module, 
@@ -506,8 +517,7 @@ static void XMLCALL fmi3_parse_element_start(void *c, const char *elm, const cha
 					context->skipElementCnt = 1;
 					return;
 				}
-			}
-			else {
+			} else {
 				int lastSiblingIndex = fmi3_xml_scheme_info[siblingID].siblingIndex;
 				int curSiblingIndex = fmi3_xml_scheme_info[currentID].siblingIndex;
 
@@ -527,11 +537,14 @@ static void XMLCALL fmi3_parse_element_start(void *c, const char *elm, const cha
 
     /* process the attributes  */
     i = 0;
-    while(attr[i]) {
+    while (attr[i]) {
+        jm_named_ptr key;
+        jm_named_ptr* attrMapping;
+
+        /* find attribute by name */
         key.name = attr[i];
-        /* find attribute by name  */
-        currentMap = jm_vector_bsearch(jm_named_ptr)(context->attrMap, &key, jm_compare_named);
-        if(!currentMap) {
+        attrMapping = jm_vector_bsearch(jm_named_ptr)(context->attrMap, &key, jm_compare_named);
+        if (!attrMapping) {
 #define XMLSchema_instance "http://www.w3.org/2001/XMLSchema-instance"
 			const size_t stdNSlen = strlen(XMLSchema_instance);
             const size_t attrStrLen = strlen(attr[i]);
@@ -565,30 +578,29 @@ static void XMLCALL fmi3_parse_element_start(void *c, const char *elm, const cha
 				/* not found error*/
 				jm_log_error(context->callbacks, module, "Unknown attribute '%s=%s' in XML", attr[i], attr[i+1]);
 			}
-        }
-		else  {
+        } else  {
             /* save attr value (still as string) for further handling  */
-            const char** mapItem = (const char**)currentMap->ptr;
+            const char** mapItem = (const char**)attrMapping->ptr;
             *mapItem = attr[i+1];
         }
         i += 2;
     }
 
     /* handle the element */
-	if( currentElMap->elementHandle(context, 0) ) {
+	if ( currentElMap->elementHandle(context, 0) ) {
 		/* try to skip and continue anyway */
         if(!context->skipElementCnt) context->skipElementCnt = 1; 
     }
-	if(context->skipElementCnt) return;
-    /* check that the element handle had process all the attributes */
-    for(i = 0; i < fmi3_xml_attr_number; i++) {
-        if(jm_vector_get_item(jm_string)(context->attrBuffer, i)) {
-            if(!context->skipOneVariableFlag)
+	if (context->skipElementCnt) return;
+    /* check that the element handler has processed all the attributes */
+    for (i = 0; i < fmi3_xml_attr_number; i++) {
+        if (jm_vector_get_item(jm_string)(context->attrBuffer, i)) {
+            if (!context->skipOneVariableFlag)
                 jm_log_warning(context->callbacks,module, "Attribute '%s' not processed by element '%s' handle", fmi3_xmlAttrNames[i], elm);
             jm_vector_set_item(jm_string)(context->attrBuffer, i,0);
         }
     }
-    if(context -> currentElmID != fmi3_xml_elmID_none) { /* with nested elements: put the parent on the stack*/
+    if (context -> currentElmID != fmi3_xml_elmID_none) { /* with nested elements: put the parent on the stack */
         jm_stack_push(int)(&context->elmStack, context -> currentElmID);
     }
     context -> currentElmID = currentID;

@@ -1,85 +1,99 @@
-#ifndef fmi3TypesPlatform_h
-#define fmi3TypesPlatform_h
+#ifndef fmi3PlatformTypes_h
+#define fmi3PlatformTypes_h
 
-/* Standard header file to define the argument types of the
-   functions of the Functional Mock-up Interface 2.0.
-   This header file must be utilized both by the model and
-   by the simulation engine.
+#define fmi3TypesPlatform "default"
 
-   Revisions:
-   - Apr.  9, 2014: all prefixes "fmi" renamed to "fmi3" (decision from April 8)
-   - Mar   31, 2014: New datatype fmiChar introduced.
-   - Feb.  17, 2013: Changed fmiTypesPlatform from "standard32" to "default".
-                     Removed fmiUndefinedValueReference since no longer needed
-                     (because every state is defined in ScalarVariables).
-   - March 20, 2012: Renamed from fmiPlatformTypes.h to fmiTypesPlatform.h
-   - Nov.  14, 2011: Use the header file "fmiPlatformTypes.h" for FMI 2.0
-                     both for "FMI for model exchange" and for "FMI for co-simulation"
-                     New types "fmiComponentEnvironment", "fmiState", and "fmiByte".
-                     The implementation of "fmiBoolean" is change from "char" to "int".
-                     The #define "fmiPlatform" changed to "fmiTypesPlatform"
-                     (in order that #define and function call are consistent)
-   - Oct.   4, 2010: Renamed header file from "fmiModelTypes.h" to fmiPlatformTypes.h"
-                     for the co-simulation interface
-   - Jan.   4, 2010: Renamed meModelTypes_h to fmiModelTypes_h (by Mauss, QTronic)
-   - Dec.  21, 2009: Changed "me" to "fmi" and "meModel" to "fmiComponent"
-                     according to meeting on Dec. 18 (by Martin Otter, DLR)
-   - Dec.   6, 2009: Added meUndefinedValueReference (by Martin Otter, DLR)
-   - Sept.  9, 2009: Changes according to FMI-meeting on July 21:
-                     Changed "version" to "platform", "standard" to "standard32",
-                     Added a precise definition of "standard32" as comment
-                     (by Martin Otter, DLR)
-   - July  19, 2009: Added "me" as prefix to file names, added meTrue/meFalse,
-                     and changed meValueReferenced from int to unsigned int
-                     (by Martin Otter, DLR).
-   - March  2, 2009: Moved enums and function pointer definitions to
-                     ModelFunctions.h (by Martin Otter, DLR).
-   - Dec.  3, 2008 : First version by Martin Otter (DLR) and
-                     Hans Olsson (Dynasim).
+/*
+Standard header file to define the argument types of the
+functions of the Functional Mock-up Interface 3.0-wg003.3.
+This header file must be utilized both by the model and
+by the simulation engine.
 
+Copyright (C) 2008-2011 MODELISAR consortium,
+              2012-2019 Modelica Association Project "FMI"
+              All rights reserved.
 
-   Copyright © 2008-2011 MODELISAR consortium,
-               2012-2013 Modelica Association Project "FMI"
-               All rights reserved.
-   This file is licensed by the copyright holders under the BSD 2-Clause License
-   (http://www.opensource.org/licenses/bsd-license.html):
+This file is licensed by the copyright holders under the 2-Clause BSD License
+(https://opensource.org/licenses/BSD-2-Clause):
 
-   ----------------------------------------------------------------------------
-   Redistribution and use in source and binary forms, with or without
-   modification, are permitted provided that the following conditions are met:
+----------------------------------------------------------------------------
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
 
-   - Redistributions of source code must retain the above copyright notice,
-     this list of conditions and the following disclaimer.
-   - Redistributions in binary form must reproduce the above copyright notice,
-     this list of conditions and the following disclaimer in the documentation
-     and/or other materials provided with the distribution.
-   - Neither the name of the copyright holders nor the names of its
-     contributors may be used to endorse or promote products derived
-     from this software without specific prior written permission.
+- Redistributions of source code must retain the above copyright notice,
+ this list of conditions and the following disclaimer.
 
-   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-   "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
-   TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
-   PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
-   CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
-   EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
-   PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
-   OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
-   WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
-   OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
-   ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-   ----------------------------------------------------------------------------
+- Redistributions in binary form must reproduce the above copyright notice,
+ this list of conditions and the following disclaimer in the documentation
+ and/or other materials provided with the distribution.
 
-   with the extension:
-
-   You may distribute or publicly perform any modification only under the
-   terms of this license.
-   (Note, this means that if you distribute a modified file,
-    the modified file must also be provided under this license).
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+----------------------------------------------------------------------------
 */
 
-/* Platform (unique identification of this header file) */
-#define fmi3TypesPlatform "default"
+/* Include the integer type definitions */
+#include <stdint.h>
+
+
+/* tag::Component[] */
+typedef void*           fmi3Instance;             /* Pointer to FMU instance */
+/* end::Component[] */
+
+/* tag::ComponentEnvironment[] */
+typedef void*           fmi3InstanceEnvironment;  /* Pointer to FMU environment */
+/* end::ComponentEnvironment[] */
+
+/* tag::FMUState[] */
+typedef void*           fmi3FMUState;              /* Pointer to internal FMU state */
+/* end::FMUState[] */
+
+/* tag::ValueReference[] */
+typedef unsigned int    fmi3ValueReference;        /* Handle to the value of a variable */
+/* end::ValueReference[] */
+
+/* tag::VariableTypes[] */
+typedef float           fmi3Float32;  /* Single precision floating point (32-bit) */
+typedef double          fmi3Float64;  /* Double precision floating point (64-bit) */
+typedef   int8_t        fmi3Int8;     /* 8-bit signed integer */
+typedef  uint8_t        fmi3UInt8;    /* 8-bit unsigned integer */
+typedef  int16_t        fmi3Int16;    /* 16-bit signed integer */
+typedef uint16_t        fmi3UInt16;   /* 16-bit unsigned integer */
+typedef  int32_t        fmi3Int32;    /* 32-bit signed integer */
+typedef uint32_t        fmi3UInt32;   /* 32-bit unsigned integer */
+typedef  int64_t        fmi3Int64;    /* 64-bit signed integer */
+typedef uint64_t        fmi3UInt64;   /* 64-bit unsigned integer */
+typedef int             fmi3Boolean;  /* Data type to be used with fmi3True and fmi3False */
+typedef char            fmi3Char;     /* Data type for one character */
+typedef const fmi3Char* fmi3String;   /* Data type for character strings
+                                         ('\0' terminated, UTF8 encoded) */
+typedef char            fmi3Byte;     /* Smallest addressable unit of the machine
+                                         (typically one byte) */
+typedef const fmi3Byte* fmi3Binary;   /* Data type for binary data
+                                         (out-of-band length terminated) */
+
+/* Values for fmi3Boolean */
+#define fmi3True  1
+#define fmi3False 0
+/* end::VariableTypes[] */
+
+
+
+
+/* Below typedefs are just copied from FMI 2.0 and are used while
+   switching to FMI 3.0 - so we don't have to change everything at once.
+   All of it should be removed when possible.
+*/
+
 
 /* Type definitions of variables passed as arguments
    Version "default" means:
@@ -106,6 +120,7 @@
    typedef char            fmi3Char;
    typedef const fmi3Char* fmi3String;
    typedef char            fmi3Byte;
+
 
 /* Values for fmi3Boolean  */
 #define fmi3True  1

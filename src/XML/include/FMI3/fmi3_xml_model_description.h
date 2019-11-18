@@ -67,6 +67,7 @@ typedef struct fmi3_xml_type_definitions_t fmi3_xml_type_definitions_t;
 typedef struct fmi3_xml_variable_t fmi3_xml_variable_t;
 
 /**Typed variables are needed to support specific attributes */
+typedef struct fmi3_xml_float64_variable_t fmi3_xml_float64_variable_t;
 typedef struct fmi3_xml_real_variable_t fmi3_xml_real_variable_t;
 typedef struct fmi3_xml_integer_variable_t fmi3_xml_integer_variable_t;
 typedef struct fmi3_xml_string_variable_t fmi3_xml_string_variable_t;

@@ -49,6 +49,8 @@ extern "C" {
 * 	However, typed variables are needed to support specific attributes.
 */
 typedef struct fmi3_xml_variable_t fmi3_import_variable_t;
+/** \brief  Opaque float64 variable */
+typedef struct fmi3_xml_float64_variable_t fmi3_import_float64_variable_t;
 /** \brief  Opaque real variable */
 typedef struct fmi3_xml_real_variable_t fmi3_import_real_variable_t;
 /** \brief Opaque integer variable */
@@ -115,8 +117,13 @@ FMILIB_EXPORT fmi3_boolean_t fmi3_import_get_canHandleMultipleSetPerTimeInstant(
 	
 	@return Typed object or NULL if base type does not match
 */
-FMILIB_EXPORT fmi3_import_real_variable_t* fmi3_import_get_variable_as_real(fmi3_import_variable_t*);
+FMILIB_EXPORT fmi3_import_float64_variable_t* fmi3_import_get_variable_as_float64(fmi3_import_variable_t*);
 
+/** \brief Cast general variable to a one with the specific type 
+	
+	@return Typed object or NULL if base type does not match
+*/
+FMILIB_EXPORT fmi3_import_real_variable_t* fmi3_import_get_variable_as_real(fmi3_import_variable_t*);
 /** \brief Cast general variable to a one with the specific type 
 	
 	@return Typed object or NULL if base type does not match
@@ -137,6 +144,13 @@ FMILIB_EXPORT fmi3_import_string_variable_t* fmi3_import_get_variable_as_string(
 	@return Typed object or NULL if base type does not match
 */
 FMILIB_EXPORT fmi3_import_bool_variable_t* fmi3_import_get_variable_as_boolean(fmi3_import_variable_t*);
+
+/** 
+	\brief Get the variable start attribute. 
+
+	@return The "start" attribute as specified in the XML file or variable nominal value.
+*/
+FMILIB_EXPORT fmi3_real_t fmi3_import_get_float64_variable_start(fmi3_import_float64_variable_t* v);
 
 /** 
 	\brief Get the variable start attribute. 

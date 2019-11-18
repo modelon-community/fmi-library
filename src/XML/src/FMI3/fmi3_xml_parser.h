@@ -116,6 +116,7 @@ typedef enum fmi3_xml_attr_enu_t {
     EXPAND_XML_ELMNAME(Annotations) \
 	EXPAND_XML_ELMNAME(LogCategories) \
 	EXPAND_XML_ELMNAME(Category) \
+    EXPAND_XML_ELMNAME(Float64) \
     EXPAND_XML_ELMNAME(Real) \
     EXPAND_XML_ELMNAME(Integer) \
     EXPAND_XML_ELMNAME(Boolean) \
@@ -131,6 +132,7 @@ typedef enum fmi3_xml_attr_enu_t {
 
 /** \brief Element that can be placed under different parents get alternative names from the info struct */
 #define FMI3_XML_ELMLIST_ALT(EXPAND_XML_ELMNAME) \
+    EXPAND_XML_ELMNAME(Float64Variable) \
     EXPAND_XML_ELMNAME(RealVariable) \
     EXPAND_XML_ELMNAME(IntegerVariable) \
     EXPAND_XML_ELMNAME(BooleanVariable) \
@@ -201,6 +203,8 @@ jm_define_comp_f(fmi3_xml_compare_elmName, fmi3_xml_element_handle_map_t, fmi3_x
 #define XML_BLOCK_SIZE 16000
 
 /**
+ * TODO: Move the descriptions to the variables
+ *
  * modelDescription:
  * callbacks:
  *
@@ -277,8 +281,9 @@ struct fmi3_xml_parser_context_t {
     jm_vector(jm_voidp) parseBuffer;
 
     jm_vector(jm_named_ptr)* attrMap;
-    jm_vector(fmi3_xml_element_handle_map_t)* elmMap;
     jm_vector(jm_string)* attrBuffer;
+
+    jm_vector(fmi3_xml_element_handle_map_t)* elmMap;
 
     fmi3_xml_unit_t* lastBaseUnit;
 

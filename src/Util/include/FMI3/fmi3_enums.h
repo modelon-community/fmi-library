@@ -136,6 +136,7 @@ typedef enum fmi3_variable_alias_kind_enu_t {
 /** \brief Base types used in type definitions */
 typedef enum fmi3_base_type_enu_t
 {
+    fmi3_base_type_float64,
     fmi3_base_type_real,
     fmi3_base_type_int,
     fmi3_base_type_bool,

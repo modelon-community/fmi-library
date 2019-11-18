@@ -35,21 +35,30 @@ jm_named_ptr jm_named_alloc(const char* name, size_t size, size_t nameoffset, jm
     return out;
 }
 
+/*
+ * Returns a named_ptr where the content of the pointer has been allocated.
+ * Calling function needs to verify that the allocated pointer
+ * is not NULL.
+ * 
+ * size: how much to allocate (just like for malloc)
+ * nameoffset: write the name at offset from the start of the requested 'size' (TODO: I have no idea why this has to be done here instead; caller can just do it after <named_ptr> has been returned?)
+ */
 jm_named_ptr jm_named_alloc_v(jm_vector(char)* name, size_t size, size_t nameoffset, jm_callbacks* c) {
     jm_named_ptr out;
     size_t namelen = jm_vector_get_size(char)(name);
     size_t sizefull = size + namelen;
-    out.ptr = c->malloc(sizefull);
+    out.ptr = c->malloc(sizefull); /* Optimization: malloc once instead of twice */
 	out.name = 0;
-    if(out.ptr) {
-        char * outname = out.ptr;
+    if (out.ptr) {
+        char* outname = out.ptr;
         outname += nameoffset;
-        if(namelen)
-            memcpy(outname, jm_vector_get_itemp(char)(name,0), namelen);
+        if (namelen) {
+            memcpy(outname, jm_vector_get_itemp(char)(name, 0), namelen);
+        }
         outname[namelen] = 0;
         out.name = outname;
     }
-    return out;
+    return out; /* this is the same as out.ptr */
 }
 
 #define JM_TEMPLATE_INSTANCE_TYPE jm_named_ptr

@@ -59,11 +59,23 @@ fmi3_initial_enu_t fmi3_xml_get_initial(fmi3_xml_variable_t*);
 fmi3_xml_variable_t* fmi3_xml_get_previous(fmi3_xml_variable_t* v);
 fmi3_boolean_t fmi3_xml_get_canHandleMultipleSetPerTimeInstant(fmi3_xml_variable_t* v);
 
+fmi3_xml_real_variable_t* fmi3_xml_get_variable_as_float64(fmi3_xml_variable_t*);
 fmi3_xml_real_variable_t* fmi3_xml_get_variable_as_real(fmi3_xml_variable_t*);
 fmi3_xml_integer_variable_t* fmi3_xml_get_variable_as_integer(fmi3_xml_variable_t*);
 fmi3_xml_enum_variable_t* fmi3_xml_get_variable_as_enum(fmi3_xml_variable_t*);
 fmi3_xml_string_variable_t* fmi3_xml_get_variable_as_string(fmi3_xml_variable_t*);
 fmi3_xml_bool_variable_t* fmi3_xml_get_variable_as_boolean(fmi3_xml_variable_t*);
+
+fmi3Float64 fmi3_xml_get_float64_variable_start(fmi3_xml_float64_variable_t* v);
+fmi3Float64 fmi3_xml_get_float64_variable_nominal(fmi3_xml_float64_variable_t* v);
+/* TODO:
+fmi3_xml_float64_variable_t* fmi3_xml_get_float64_variable_derivative_of(fmi3_xml_float64_variable_t* v);
+fmi3_boolean_t fmi3_xml_get_float64_variable_reinit(fmi3_xml_float64_variable_t* v);
+fmi3Float64 fmi3_xml_get_float64_variable_max(fmi3_xml_float64_variable_t* v);
+fmi3Float64 fmi3_xml_get_float64_variable_min(fmi3_xml_float64_variable_t* v);
+fmi3_xml_unit_t* fmi3_xml_get_float64_variable_unit(fmi3_xml_float64_variable_t* v);
+fmi3_xml_display_unit_t* fmi3_xml_get_float64_variable_display_unit(fmi3_xml_float64_variable_t* v);
+*/
 
 double fmi3_xml_get_real_variable_start(fmi3_xml_real_variable_t* v);
 fmi3_xml_real_variable_t* fmi3_xml_get_real_variable_derivative_of(fmi3_xml_real_variable_t* v);

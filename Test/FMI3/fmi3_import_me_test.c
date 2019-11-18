@@ -255,7 +255,7 @@ int main(int argc, char *argv[])
 		do_exit(CTEST_RETURN_FAIL);
 	}
 
-	fmu = fmi3_import_parse_xml(context, tmpPath,0);
+	fmu = fmi3_import_parse_xml(context, tmpPath, 0);
 
 	if(!fmu) {
 		printf("Error parsing XML, exiting\n");

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription
+    fmiVersion="2.0"
+    modelName="none"
+    variableNamingConvention="structured"
+    instantiationToken="123"
+    numberOfEventIndicators="1">
+  <CoSimulation 
+      modelIdentifier="none1" 
+      canHandleVariableCommunicationStepSize="true"/>
+  <ModelVariables>
+    <Float64 name="var_float64" valueReference="33" start="3.141592653589793" initial="exact"/>
+  </ModelVariables>
+  <ModelStructure>
+  </ModelStructure>
+</fmiModelDescription>
+

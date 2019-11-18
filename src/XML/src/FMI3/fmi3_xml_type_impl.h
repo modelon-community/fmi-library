@@ -61,11 +61,11 @@ typedef enum {
 typedef struct fmi3_xml_variable_type_base_t fmi3_xml_variable_type_base_t;
 
 struct fmi3_xml_variable_type_base_t {
-    fmi3_xml_variable_type_base_t* baseTypeStruct; /* The fmi3_xml_variable_type_base structs are put on a list that provide needed info on a variable */
+    fmi3_xml_variable_type_base_t* baseTypeStruct; /* The fmi3_xml_variable_type_base_t structs are put on a list that provide needed info on a variable */
 
-    fmi3_xml_variable_type_base_t* next;    /** dynamically allocated fmi3_xml_variable_type_base structs are put on a linked list to prevent memory leaks*/
+    fmi3_xml_variable_type_base_t* next;    /** dynamically allocated fmi3_xml_variable_type_base_t structs are put on a linked list to prevent memory leaks*/
 
-    fmi3_xml_type_struct_kind_enu_t structKind; /* one of fmi3_xml_type_contrains_kind.*/
+    fmi3_xml_type_struct_kind_enu_t structKind; /* defines the actual "subtype" of this struct */
     char baseType;   /* one of fmi3_xml_base_type */
     char isRelativeQuantity;   /* relativeQuantity flag set. Only used in fmi3_xml_real_type_props_t) */
 	char isUnbounded;          /* unbounded flag set only used in fmi3_xml_real_type_props_t) */
@@ -81,6 +81,17 @@ struct fmi3_xml_variable_typedef_t {
     jm_string description;
     char typeName[1];
 };
+
+typedef struct fmi3_xml_float64_type_props_t {
+    fmi3_xml_variable_type_base_t typeBase;
+    jm_string quantity;
+
+    fmi3_xml_display_unit_t* displayUnit;
+
+    fmi3Float64 typeMin;
+    fmi3Float64 typeMax;
+    fmi3Float64 typeNominal;
+} fmi3_xml_float64_type_props_t;
 
 typedef struct fmi3_xml_real_type_props_t {
     fmi3_xml_variable_type_base_t typeBase;
@@ -138,6 +149,11 @@ typedef struct fmi3_xml_variable_start_real_t {
     double start;
 } fmi3_xml_variable_start_real_t ;
 
+typedef struct fmi3_xml_variable_start_float64_t {
+    fmi3_xml_variable_type_base_t typeBase;
+    fmi3Float64 start;
+} fmi3_xml_variable_start_float64_t ;
+
 /* fmi3_xml_variable_start_integer is used for boolean and enums as well*/
 typedef struct fmi3_xml_variable_start_integer_t {
     fmi3_xml_variable_type_base_t typeBase;
@@ -172,8 +188,9 @@ struct fmi3_xml_type_definitions_t {
 
     jm_string_set quantities;
 
-    fmi3_xml_variable_type_base_t* typePropsList;
+    fmi3_xml_variable_type_base_t* typePropsList; /* intended purpose: memory deallocation ptr, but also used in fmi3_xml_handle_Item (TODO: remove that use) */
 
+    fmi3_xml_float64_type_props_t defaultFloat64Type;
     fmi3_xml_real_type_props_t defaultRealType;
     fmi3_xml_enum_typedef_props_t defaultEnumType;
     fmi3_xml_integer_type_props_t defaultIntegerType;

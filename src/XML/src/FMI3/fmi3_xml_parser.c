@@ -46,6 +46,7 @@ const char *fmi3_xmlAttrNames[fmi3_xml_attr_number] = {
 #define fmi3_xml_scheme_TypeDefinitions      {fmi3_xml_elmID_none,     fmi3_xml_elmID_fmiModelDescription, 3, 0}
 #define fmi3_xml_scheme_SimpleType           {fmi3_xml_elmID_none,     fmi3_xml_elmID_TypeDefinitions,     0, 1}
 #define fmi3_xml_scheme_Float64              {fmi3_xml_elmID_none,     fmi3_xml_elmID_SimpleType,          0, 0}
+#define fmi3_xml_scheme_Float32              {fmi3_xml_elmID_none,     fmi3_xml_elmID_SimpleType,          0, 0}
 #define fmi3_xml_scheme_Real                 {fmi3_xml_elmID_none,     fmi3_xml_elmID_SimpleType,          0, 0}
 #define fmi3_xml_scheme_Integer              {fmi3_xml_elmID_none,     fmi3_xml_elmID_SimpleType,          0, 0}
 #define fmi3_xml_scheme_Boolean              {fmi3_xml_elmID_none,     fmi3_xml_elmID_SimpleType,          0, 0}
@@ -71,6 +72,7 @@ const char *fmi3_xmlAttrNames[fmi3_xml_attr_number] = {
 
 #define fmi3_xml_scheme_Variable             {fmi3_xml_elmID_none,     fmi3_xml_elmID_ModelVariables,      0, 1}
 #define fmi3_xml_scheme_Float64Variable      {fmi3_xml_elmID_Variable, fmi3_xml_elmID_ModelVariables,      0, 1}
+#define fmi3_xml_scheme_Float32Variable      {fmi3_xml_elmID_Variable, fmi3_xml_elmID_ModelVariables,      0, 1}
 #define fmi3_xml_scheme_RealVariable         {fmi3_xml_elmID_Variable, fmi3_xml_elmID_ModelVariables,      0, 1}
 #define fmi3_xml_scheme_IntegerVariable      {fmi3_xml_elmID_Variable, fmi3_xml_elmID_ModelVariables,      0, 1}
 #define fmi3_xml_scheme_BooleanVariable      {fmi3_xml_elmID_Variable, fmi3_xml_elmID_ModelVariables,      0, 1}
@@ -290,26 +292,54 @@ int fmi3_xml_set_attr_int(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t
     return 0;
 }
 
-int fmi3_xml_set_attr_double(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, int required, double* field, double defaultVal) {
-
+int fmi3_xml_set_attr_float(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID,
+        int required, void* field, void* defaultVal, fmi3_bitness_enu_t bitness) {
     int ret;
-    jm_string elmName, attrName, strVal;
+    jm_string strVal;
+    char formatter[10]; /* used to format string to float */
 
-    ret = fmi3_xml_get_attr_str(context, elmID, attrID,required,&strVal);
-    if(ret) return ret;
-    if(!strVal && !required) {
-        *field = defaultVal;
+    /* Set formatter */
+    if (bitness == fmi3_bitness_64) {
+        strncpy(formatter, "%lf", sizeof(formatter));
+    }else if (bitness == fmi3_bitness_32) {
+        strncpy(formatter, "%f", sizeof(formatter));
+    } else {
+        assert(!"Invalid bitness for type float");
+    }
+
+    /* Get attribute as string */
+    ret = fmi3_xml_get_attr_str(context, elmID, attrID, required, &strVal);
+    if (ret) return ret;
+    if (!strVal && !required) {
+        if (bitness == fmi3_bitness_64) {
+            *(fmi3_float64_t*)field = *(fmi3_float64_t*)defaultVal;
+        } else if (bitness == fmi3_bitness_32) {
+            *(fmi3_float32_t*)field = *(fmi3_float32_t*)defaultVal;
+        } else {
+            assert(!"Invalid bitness for type float");
+        }
         return 0;
     }
 
-    elmName = fmi3_element_handle_map[elmID].elementName;
-    attrName = fmi3_xmlAttrNames[attrID];
-
-    if(sscanf(strVal, "%lf", field) != 1) {
+    /* Write attribute as float */
+    if (sscanf(strVal, formatter, field) != 1) {
+        jm_string elmName = fmi3_element_handle_map[elmID].elementName;
+        jm_string attrName = fmi3_xmlAttrNames[attrID];
         fmi3_xml_parse_error(context, "XML element '%s': could not parse value for real attribute '%s'='%s'", elmName, attrName, strVal);
         return -1;
     }
+
     return 0;
+}
+
+int fmi3_xml_set_attr_float64(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID,
+        int required, fmi3_float64_t* field, fmi3_float64_t defaultVal) {
+    return fmi3_xml_set_attr_float(context, elmID, attrID, required, field, &defaultVal, fmi3_bitness_64);
+}
+
+int fmi3_xml_set_attr_float32(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID,
+        int required, fmi3_float32_t* field, fmi3_float32_t defaultVal) {
+    return fmi3_xml_set_attr_float(context, elmID, attrID, required, field, &defaultVal, fmi3_bitness_32);
 }
 
 int fmi3_xml_alloc_parse_buffer(fmi3_xml_parser_context_t *context, size_t items) {

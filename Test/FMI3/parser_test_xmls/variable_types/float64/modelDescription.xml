@@ -9,7 +9,8 @@
       modelIdentifier="none1" 
       canHandleVariableCommunicationStepSize="true"/>
   <ModelVariables>
-    <Float64 name="var_float64" valueReference="33" start="3.141592653589793" initial="exact"/>
+    <Float64 name="name_float64" valueReference="33" start="3.141592653589793" initial="exact"/>
+    <Float32 name="name_float32" valueReference="34" start="3.14159274"        initial="exact"/> 
   </ModelVariables>
   <ModelStructure>
   </ModelStructure>

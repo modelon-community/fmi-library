@@ -82,16 +82,21 @@ struct fmi3_xml_variable_typedef_t {
     char typeName[1];
 };
 
-typedef struct fmi3_xml_float64_type_props_t {
+typedef union fmi3_float_union_t {
+    fmi3_float64_t float64;
+    fmi3_float32_t float32;
+} fmi3_float_union_t;
+
+typedef struct fmi3_xml_float_type_props_t {
     fmi3_xml_variable_type_base_t typeBase;
     jm_string quantity;
 
     fmi3_xml_display_unit_t* displayUnit;
 
-    fmi3Float64 typeMin;
-    fmi3Float64 typeMax;
-    fmi3Float64 typeNominal;
-} fmi3_xml_float64_type_props_t;
+    fmi3_float_union_t typeMin;
+    fmi3_float_union_t typeMax;
+    fmi3_float_union_t typeNominal;
+} fmi3_xml_float_type_props_t;
 
 typedef struct fmi3_xml_real_type_props_t {
     fmi3_xml_variable_type_base_t typeBase;
@@ -147,18 +152,18 @@ typedef struct fmi3_xml_enum_typedef_props_t {
 typedef struct fmi3_xml_variable_start_real_t {
     fmi3_xml_variable_type_base_t typeBase;
     double start;
-} fmi3_xml_variable_start_real_t ;
+} fmi3_xml_variable_start_real_t;
 
-typedef struct fmi3_xml_variable_start_float64_t {
+typedef struct fmi3_xml_variable_start_float_t {
     fmi3_xml_variable_type_base_t typeBase;
-    fmi3Float64 start;
-} fmi3_xml_variable_start_float64_t ;
+    fmi3_float_union_t start;
+} fmi3_xml_variable_start_float_t;
 
-/* fmi3_xml_variable_start_integer is used for boolean and enums as well*/
+/* fmi3_xml_variable_start_integer is used for boolean and enums as well */
 typedef struct fmi3_xml_variable_start_integer_t {
     fmi3_xml_variable_type_base_t typeBase;
     int start;
-} fmi3_xml_variable_start_integer_t ;
+} fmi3_xml_variable_start_integer_t;
 
 typedef struct fmi3_xml_variable_start_string_t {
     fmi3_xml_variable_type_base_t typeBase;
@@ -190,7 +195,8 @@ struct fmi3_xml_type_definitions_t {
 
     fmi3_xml_variable_type_base_t* typePropsList; /* intended purpose: memory deallocation ptr, but also used in fmi3_xml_handle_Item (TODO: remove that use) */
 
-    fmi3_xml_float64_type_props_t defaultFloat64Type;
+    fmi3_xml_float_type_props_t defaultFloat64Type;
+    fmi3_xml_float_type_props_t defaultFloat32Type;
     fmi3_xml_real_type_props_t defaultRealType;
     fmi3_xml_enum_typedef_props_t defaultEnumType;
     fmi3_xml_integer_type_props_t defaultIntegerType;
@@ -211,6 +217,8 @@ extern void fmi3_xml_free_enum_type(jm_named_ptr named);
 fmi3_xml_variable_type_base_t* fmi3_xml_alloc_variable_type_props(fmi3_xml_type_definitions_t* td, fmi3_xml_variable_type_base_t* base, size_t typeSize);
 
 fmi3_xml_variable_type_base_t* fmi3_xml_alloc_variable_type_start(fmi3_xml_type_definitions_t* td,fmi3_xml_variable_type_base_t* base, size_t typeSize);
+
+fmi3_xml_real_type_props_t* fmi3_xml_parse_float_type_properties(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID);
 
 fmi3_xml_real_type_props_t* fmi3_xml_parse_real_type_properties(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID);
 

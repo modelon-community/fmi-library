@@ -635,13 +635,13 @@ int fmi3_xml_handle_DefaultExperiment(fmi3_xml_parser_context_t *context, const 
         /* process the attributes */
         return (
         /* <xs:attribute name="startTime" type="xs:double"/> */
-                fmi3_xml_set_attr_double(context, fmi3_xml_elmID_DefaultExperiment, fmi_attr_id_startTime, 0, &md->defaultExperimentStartTime, 0) ||
+                fmi3_xml_set_attr_float64(context, fmi3_xml_elmID_DefaultExperiment, fmi_attr_id_startTime, 0, &md->defaultExperimentStartTime, 0) ||
         /* <xs:attribute name="stopTime" type="xs:double"/>  */
-                fmi3_xml_set_attr_double(context, fmi3_xml_elmID_DefaultExperiment, fmi_attr_id_stopTime, 0, &md->defaultExperimentStopTime, 1) ||
+                fmi3_xml_set_attr_float64(context, fmi3_xml_elmID_DefaultExperiment, fmi_attr_id_stopTime, 0, &md->defaultExperimentStopTime, 1) ||
         /* <xs:attribute name="tolerance" type="xs:double">  */
-                fmi3_xml_set_attr_double(context, fmi3_xml_elmID_DefaultExperiment, fmi_attr_id_tolerance, 0, &md->defaultExperimentTolerance, FMI3_DEFAULT_EXPERIMENT_TOLERANCE) ||
+                fmi3_xml_set_attr_float64(context, fmi3_xml_elmID_DefaultExperiment, fmi_attr_id_tolerance, 0, &md->defaultExperimentTolerance, FMI3_DEFAULT_EXPERIMENT_TOLERANCE) ||
         /* <xs:attribute name="stepSize" type="xs:double">   */
-                fmi3_xml_set_attr_double(context, fmi3_xml_elmID_DefaultExperiment, fmi_attr_id_stepSize, 0, &md->defaultExperimentStepSize, FMI3_DEFAULT_EXPERIMENT_STEPSIZE)
+                fmi3_xml_set_attr_float64(context, fmi3_xml_elmID_DefaultExperiment, fmi_attr_id_stepSize, 0, &md->defaultExperimentStepSize, FMI3_DEFAULT_EXPERIMENT_STEPSIZE)
         );
     }
     else {

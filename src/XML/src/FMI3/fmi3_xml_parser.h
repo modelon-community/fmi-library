@@ -117,6 +117,7 @@ typedef enum fmi3_xml_attr_enu_t {
 	EXPAND_XML_ELMNAME(LogCategories) \
 	EXPAND_XML_ELMNAME(Category) \
     EXPAND_XML_ELMNAME(Float64) \
+    EXPAND_XML_ELMNAME(Float32) \
     EXPAND_XML_ELMNAME(Real) \
     EXPAND_XML_ELMNAME(Integer) \
     EXPAND_XML_ELMNAME(Boolean) \
@@ -133,6 +134,7 @@ typedef enum fmi3_xml_attr_enu_t {
 /** \brief Element that can be placed under different parents get alternative names from the info struct */
 #define FMI3_XML_ELMLIST_ALT(EXPAND_XML_ELMNAME) \
     EXPAND_XML_ELMNAME(Float64Variable) \
+    EXPAND_XML_ELMNAME(Float32Variable) \
     EXPAND_XML_ELMNAME(RealVariable) \
     EXPAND_XML_ELMNAME(IntegerVariable) \
     EXPAND_XML_ELMNAME(BooleanVariable) \
@@ -320,7 +322,9 @@ int fmi3_xml_set_attr_uint(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_
 int fmi3_xml_set_attr_enum(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, int required, unsigned int* field, unsigned int defaultVal, jm_name_ID_map_t* nameMap);
 int fmi3_xml_set_attr_boolean(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, int required, unsigned int* field, unsigned int defaultVal);
 int fmi3_xml_set_attr_int(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, int required, int* field, int defaultVal);
-int fmi3_xml_set_attr_double(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, int required, double* field, double defaultVal);
+int fmi3_xml_set_attr_float(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, int required, void* field, void* defaultVal, fmi3_bitness_enu_t bitness);
+int fmi3_xml_set_attr_float64(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, int required, fmi3_float64_t* field, fmi3_float64_t defaultVal);
+int fmi3_xml_set_attr_float32(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, int required, fmi3_float32_t* field, fmi3_float32_t defaultVal);
 int fmi3_xml_is_attr_defined(fmi3_xml_parser_context_t *context, fmi3_xml_attr_enu_t attrID);
 int fmi3_xml_get_attr_str(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, int required,const char** valp);
 

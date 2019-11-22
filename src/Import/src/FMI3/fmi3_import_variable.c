@@ -78,9 +78,12 @@ fmi3_boolean_t fmi3_import_get_canHandleMultipleSetPerTimeInstant(fmi3_import_va
 	return fmi3_xml_get_canHandleMultipleSetPerTimeInstant(v);
 }
 
-
 fmi3_import_float64_variable_t* fmi3_import_get_variable_as_float64(fmi3_import_variable_t* v) {
 	return fmi3_xml_get_variable_as_float64(v);
+}
+
+fmi3_import_float32_variable_t* fmi3_import_get_variable_as_float32(fmi3_import_variable_t* v) {
+	return fmi3_xml_get_variable_as_float32(v);
 }
 
 fmi3_import_real_variable_t* fmi3_import_get_variable_as_real(fmi3_import_variable_t* v) {
@@ -103,8 +106,13 @@ fmi3_import_bool_variable_t* fmi3_import_get_variable_as_boolean(fmi3_import_var
 	return fmi3_xml_get_variable_as_boolean(v);
 }
 
-fmi3_real_t fmi3_import_get_float64_variable_start(fmi3_import_float64_variable_t* v) {
+/* float */
+fmi3_float64_t fmi3_import_get_float64_variable_start(fmi3_import_float64_variable_t* v) {
 	return fmi3_xml_get_float64_variable_start(v);
+}
+
+fmi3_float32_t fmi3_import_get_float32_variable_start(fmi3_import_float32_variable_t* v) {
+    return fmi3_xml_get_float32_variable_start(v);
 }
 
 fmi3_real_t fmi3_import_get_real_variable_start(fmi3_import_real_variable_t* v) {

@@ -217,6 +217,24 @@ void fmi3_xml_init_variable_type_base(fmi3_xml_variable_type_base_t* type, fmi3_
 	type->isUnbounded = 0;
 }
 
+void fmi3_xml_init_float64_type_properties(fmi3_xml_float_type_props_t* type) {
+    fmi3_xml_init_variable_type_base(&type->typeBase, fmi3_xml_type_struct_enu_props, fmi3_base_type_float64);
+    type->quantity = 0;    
+    type->typeMin.float64 = -DBL_MAX;
+    type->typeMax.float64 = DBL_MAX;
+    type->typeNominal.float64 = 1.0;
+    type->displayUnit = 0;
+}
+
+void fmi3_xml_init_float32_type_properties(fmi3_xml_float_type_props_t* type) {
+    fmi3_xml_init_variable_type_base(&type->typeBase, fmi3_xml_type_struct_enu_props, fmi3_base_type_float32);
+    type->quantity = 0;    
+    type->typeMin.float32 = -FLT_MAX;
+    type->typeMax.float32 = FLT_MAX;
+    type->typeNominal.float32 = 1.0;
+    type->displayUnit = 0;
+}
+
 void fmi3_xml_init_real_type_properties(fmi3_xml_real_type_props_t* type) {
     fmi3_xml_init_variable_type_base(&type->typeBase, fmi3_xml_type_struct_enu_props,fmi3_base_type_real);
     type->quantity = 0;    
@@ -254,6 +272,8 @@ void fmi3_xml_init_type_definitions(fmi3_xml_type_definitions_t* td, jm_callback
 
     jm_vector_init(jm_string)(&td->quantities, 0, cb);
 
+    fmi3_xml_init_float64_type_properties(&td->defaultFloat64Type);
+    fmi3_xml_init_float32_type_properties(&td->defaultFloat32Type);
     fmi3_xml_init_real_type_properties(&td->defaultRealType);
     fmi3_xml_init_enumeration_type_properties(&td->defaultEnumType,cb);
     fmi3_xml_init_integer_type_properties(&td->defaultIntegerType);
@@ -365,18 +385,24 @@ fmi3_xml_variable_type_base_t* fmi3_xml_alloc_variable_type_props(fmi3_xml_type_
     return type;
 }
 
-fmi3_xml_variable_type_base_t* fmi3_xml_alloc_variable_type_start(fmi3_xml_type_definitions_t* td,fmi3_xml_variable_type_base_t* base, size_t typeSize) {
+/* Adds a new type_base_start layer over the type_base_XX given in arg 'base' */
+fmi3_xml_variable_type_base_t* fmi3_xml_alloc_variable_type_start(fmi3_xml_type_definitions_t* td, fmi3_xml_variable_type_base_t* base, size_t typeSize) {
     jm_callbacks* cb = td->typeDefinitions.callbacks;
-    fmi3_xml_variable_type_base_t* type = cb->malloc(typeSize);
-    if(!type) return 0;
-    fmi3_xml_init_variable_type_base(type,fmi3_xml_type_struct_enu_start,base->baseType);
-    type->baseTypeStruct = base;
-    type->next = td->typePropsList;
-    td->typePropsList = type;
-    return type;
+
+    fmi3_xml_variable_type_base_t* start = cb->malloc(typeSize);
+    if (!start) return 0;
+    fmi3_xml_init_variable_type_base(start, fmi3_xml_type_struct_enu_start,base->baseType);
+    start->baseTypeStruct = base;
+
+    /* Push to top of typePropsList */
+    start->next = td->typePropsList;
+    td->typePropsList = start;
+
+    return start;
 }
 
-fmi3_xml_real_type_props_t* fmi3_xml_parse_float64_type_properties(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID) {
+/* TODO: All of this code is copied and is for Real */
+fmi3_xml_real_type_props_t* fmi3_xml_parse_float_type_properties(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID) {
     jm_named_ptr named, *pnamed;
     fmi3_xml_model_description_t* md = context->modelDescription;
     fmi3_xml_real_type_props_t* props;
@@ -426,11 +452,11 @@ fmi3_xml_real_type_props_t* fmi3_xml_parse_float64_type_properties(fmi3_xml_pars
 		    /*    <xs:attribute name="unbounded" type="xs:boolean" default="false"> */
             fmi3_xml_set_attr_boolean(context, elmID, fmi_attr_id_unbounded, 0, &unboundedBuf, 0) ||
             /* <xs:attribute name="min" type="xs:double"/> */
-            fmi3_xml_set_attr_double(context, elmID, fmi_attr_id_min, 0, &props->typeMin, -DBL_MAX) ||
+            fmi3_xml_set_attr_float64(context, elmID, fmi_attr_id_min, 0, &props->typeMin, -DBL_MAX) ||
             /* <xs:attribute name="max" type="xs:double"/> */
-            fmi3_xml_set_attr_double(context, elmID, fmi_attr_id_max, 0, &props->typeMax, DBL_MAX) ||
+            fmi3_xml_set_attr_float64(context, elmID, fmi_attr_id_max, 0, &props->typeMax, DBL_MAX) ||
             /*  <xs:attribute name="nominal" type="xs:double"/> */
-            fmi3_xml_set_attr_double(context, elmID, fmi_attr_id_nominal, 0, &props->typeNominal, 1)
+            fmi3_xml_set_attr_float64(context, elmID, fmi_attr_id_nominal, 0, &props->typeNominal, 1)
             ) return 0;
 	props->typeBase.isRelativeQuantity = (relQuanBuf) ? 1:0;
 	props->typeBase.isUnbounded = (unboundedBuf) ? 1 : 0;
@@ -487,15 +513,37 @@ fmi3_xml_real_type_props_t* fmi3_xml_parse_real_type_properties(fmi3_xml_parser_
 		    /*    <xs:attribute name="unbounded" type="xs:boolean" default="false"> */
             fmi3_xml_set_attr_boolean(context, elmID, fmi_attr_id_unbounded, 0, &unboundedBuf, 0) ||
             /* <xs:attribute name="min" type="xs:double"/> */
-            fmi3_xml_set_attr_double(context, elmID, fmi_attr_id_min, 0, &props->typeMin, -DBL_MAX) ||
+            fmi3_xml_set_attr_float64(context, elmID, fmi_attr_id_min, 0, &props->typeMin, -DBL_MAX) ||
             /* <xs:attribute name="max" type="xs:double"/> */
-            fmi3_xml_set_attr_double(context, elmID, fmi_attr_id_max, 0, &props->typeMax, DBL_MAX) ||
+            fmi3_xml_set_attr_float64(context, elmID, fmi_attr_id_max, 0, &props->typeMax, DBL_MAX) ||
             /*  <xs:attribute name="nominal" type="xs:double"/> */
-            fmi3_xml_set_attr_double(context, elmID, fmi_attr_id_nominal, 0, &props->typeNominal, 1)
+            fmi3_xml_set_attr_float64(context, elmID, fmi_attr_id_nominal, 0, &props->typeNominal, 1)
             ) return 0;
 	props->typeBase.isRelativeQuantity = (relQuanBuf) ? 1:0;
 	props->typeBase.isUnbounded = (unboundedBuf) ? 1 : 0;
     return props;
+}
+
+/* TODO */
+int fmi3_xml_handle_Float32(fmi3_xml_parser_context_t *context, const char* data) {
+    if(!data) {
+        fmi3_xml_model_description_t* md = context->modelDescription;
+        jm_named_ptr named;
+        fmi3_xml_variable_typedef_t* type;
+        fmi3_xml_real_type_props_t * props; /* todo */
+
+        props = fmi3_xml_parse_float_type_properties(context, fmi3_xml_elmID_Float64);
+        if(!props) return -1;
+        named = jm_vector_get_last(jm_named_ptr)(&md->typeDefinitions.typeDefinitions);
+        type = named.ptr;
+        type->typeBase.baseType = fmi3_base_type_float64;
+        type->typeBase.baseTypeStruct = &props->typeBase;
+    }
+    else {
+        /* don't do anything. might give out a warning if(data[0] != 0) */
+        return 0;
+    }
+    return 0;
 }
 
 int fmi3_xml_handle_Float64(fmi3_xml_parser_context_t *context, const char* data) {
@@ -505,7 +553,7 @@ int fmi3_xml_handle_Float64(fmi3_xml_parser_context_t *context, const char* data
         fmi3_xml_variable_typedef_t* type;
         fmi3_xml_real_type_props_t * props; /* todo */
 
-        props = fmi3_xml_parse_float64_type_properties(context, fmi3_xml_elmID_Float64);
+        props = fmi3_xml_parse_float_type_properties(context, fmi3_xml_elmID_Float64);
         if(!props) return -1;
         named = jm_vector_get_last(jm_named_ptr)(&md->typeDefinitions.typeDefinitions);
         type = named.ptr;
@@ -739,19 +787,20 @@ int fmi3_xml_handle_Item(fmi3_xml_parser_context_t *context, const char* data) {
 
 fmi3_xml_variable_type_base_t* fmi3_get_declared_type(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_variable_type_base_t* defaultType) {
     jm_named_ptr key, *found;
-    jm_vector(char)* bufDeclaredType = fmi3_xml_reserve_parse_buffer(context,1, 100);
-    /*         <xs:attribute name="declaredType" type="xs:normalizedString"> */
-    fmi3_xml_set_attr_string(context, elmID, fmi_attr_id_declaredType, 0, bufDeclaredType);
-    if(! jm_vector_get_size(char)(bufDeclaredType) ) return defaultType;
-    key.name = jm_vector_get_itemp(char)(bufDeclaredType,0);
-    found = jm_vector_bsearch(jm_named_ptr)(&(context->modelDescription->typeDefinitions.typeDefinitions),&key, jm_compare_named);
-    if(!found) {
+    jm_vector(char)* bufDeclaredType = fmi3_xml_reserve_parse_buffer(context, 1, 100);
+
+    fmi3_xml_set_attr_string(context, elmID, fmi_attr_id_declaredType, 0, bufDeclaredType); /* <xs:attribute name="declaredType" type="xs:normalizedString"> */
+    if ( !jm_vector_get_size(char)(bufDeclaredType) )
+        return defaultType;
+
+    key.name = jm_vector_get_itemp(char)(bufDeclaredType, 0);
+    found = jm_vector_bsearch(jm_named_ptr)(&(context->modelDescription->typeDefinitions.typeDefinitions), &key, jm_compare_named);
+    if (!found) {
         jm_log_error(context->callbacks, module, "Declared type %s not found in type definitions. Ignoring.", key.name);
         return defaultType;
-    }
-    else  {
+    } else {
         fmi3_xml_variable_type_base_t* retType = found->ptr;
-        if(retType->baseType != defaultType->baseType) {
+        if (retType->baseType != defaultType->baseType) {
             jm_log_error(context->callbacks, module, "Declared type %s does not match variable type. Ignoring.", key.name);
             return defaultType;
         }

@@ -40,6 +40,8 @@
 #define fmi3Char fmi3_char_t
 #define fmi3String fmi3_string_t
 #define fmi3Byte fmi3_byte_t
+#define fmi3Float64 fmi3_float64_t
+#define fmi3Float32 fmi3_float32_t
 
 /** @}*/
 /* Standard FMI 2.0 types */

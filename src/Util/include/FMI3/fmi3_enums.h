@@ -137,6 +137,7 @@ typedef enum fmi3_variable_alias_kind_enu_t {
 typedef enum fmi3_base_type_enu_t
 {
     fmi3_base_type_float64,
+    fmi3_base_type_float32,
     fmi3_base_type_real,
     fmi3_base_type_int,
     fmi3_base_type_bool,
@@ -227,6 +228,13 @@ typedef enum fmi3_dependency_factor_kind_enu_t
     fmi3_dependency_factor_kind_discrete,
     fmi3_dependency_factor_kind_num
 } fmi3_dependency_factor_kind_enu_t;
+
+
+/** \brief Bitness for types such as Float32/Float64 */
+typedef enum fmi3_bitness_enu_t {
+    fmi3_bitness_64,
+    fmi3_bitness_32
+} fmi3_bitness_enu_t;
 
 /**  \brief Convert dependency factor kind constant to string
     \param fc Dependency factor kind identifier.

@@ -218,7 +218,7 @@ fmi3_xml_variable_type_base_t* fmi3_xml_alloc_variable_type_props(fmi3_xml_type_
 
 fmi3_xml_variable_type_base_t* fmi3_xml_alloc_variable_type_start(fmi3_xml_type_definitions_t* td,fmi3_xml_variable_type_base_t* base, size_t typeSize);
 
-fmi3_xml_real_type_props_t* fmi3_xml_parse_float_type_properties(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID);
+fmi3_xml_float_type_props_t* fmi3_xml_parse_float_type_properties(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID, fmi3_xml_float_type_props_t* defaultType, fmi3_bitness_enu_t bitness);
 
 fmi3_xml_real_type_props_t* fmi3_xml_parse_real_type_properties(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID);
 

@@ -153,12 +153,23 @@ FMILIB_EXPORT fmi3_import_string_variable_t* fmi3_import_get_variable_as_string(
 */
 FMILIB_EXPORT fmi3_import_bool_variable_t* fmi3_import_get_variable_as_boolean(fmi3_import_variable_t*);
 
-/** 
-	\brief Get the variable start attribute. 
+/** \brief Get minimal value for the variable.
+
+	@return Either the value specified in the XML file or negated FLT_MAX as defined in <float.h>
+*/
+FMILIB_EXPORT fmi3_float32_t fmi3_import_get_float32_variable_min(fmi3_import_float32_variable_t* v);
+
+/** \brief Get maximum value for the variable.
+
+	@return Either the value specified in the XML file or FLT_MAX as defined in <float.h>
+*/
+FMILIB_EXPORT fmi3_float32_t fmi3_import_get_float32_variable_max(fmi3_import_float32_variable_t* v);
+
+/** \brief Get nominal value for the variable.
 
 	@return The "start" attribute as specified in the XML file or variable nominal value.
 */
-FMILIB_EXPORT fmi3_float64_t fmi3_import_get_float64_variable_start(fmi3_import_float64_variable_t* v);
+FMILIB_EXPORT fmi3_float32_t fmi3_import_get_float32_variable_nominal(fmi3_import_float32_variable_t* v);
 
 /** 
 	\brief Get the variable start attribute. 
@@ -166,6 +177,31 @@ FMILIB_EXPORT fmi3_float64_t fmi3_import_get_float64_variable_start(fmi3_import_
 	@return The "start" attribute as specified in the XML file or variable nominal value.
 */
 FMILIB_EXPORT fmi3_float32_t fmi3_import_get_float32_variable_start(fmi3_import_float32_variable_t* v);
+
+/** \brief Get minimal value for the variable.
+
+	@return Either the value specified in the XML file or negated DBL_MAX as defined in <float.h>
+*/
+FMILIB_EXPORT fmi3_float64_t fmi3_import_get_float64_variable_min(fmi3_import_float64_variable_t* v);
+
+/** \brief Get maximum value for the variable.
+
+	@return Either the value specified in the XML file or DBL_MAX as defined in <float.h>
+*/
+FMILIB_EXPORT fmi3_float64_t fmi3_import_get_float64_variable_max(fmi3_import_float64_variable_t* v);
+
+/** \brief Get nominal value for the variable.
+
+	@return The "start" attribute as specified in the XML file or variable nominal value.
+*/
+FMILIB_EXPORT fmi3_float64_t fmi3_import_get_float64_variable_nominal(fmi3_import_float64_variable_t* v);
+
+/** 
+	\brief Get the variable start attribute. 
+
+	@return The "start" attribute as specified in the XML file or variable nominal value.
+*/
+FMILIB_EXPORT fmi3_float64_t fmi3_import_get_float64_variable_start(fmi3_import_float64_variable_t* v);
 
 /** 
 	\brief Get the variable start attribute. 

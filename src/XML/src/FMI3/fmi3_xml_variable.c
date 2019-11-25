@@ -137,21 +137,43 @@ fmi3_boolean_t fmi3_xml_get_canHandleMultipleSetPerTimeInstant(fmi3_xml_variable
     return (fmi3_boolean_t)v->canHandleMultipleSetPerTimeInstant;
 }
 
-/* float nominal */
-static fmi3_float_union_t fmi3_xml_get_float_variable_nominal(fmi3_xml_float_variable_t* v) {
+
+static fmi3_xml_float_type_props_t* fmi3_xml_get_type_props_float(fmi3_xml_float_variable_t* v) {
     fmi3_xml_variable_t* vv = (fmi3_xml_variable_t*)v;
     fmi3_xml_float_type_props_t* props = (fmi3_xml_float_type_props_t*)(fmi3_xml_find_type_props(vv->typeBase));
     assert(props);
-    return props->typeNominal;
+    return props;
 }
 
-fmi3_float64_t fmi3_xml_get_float64_variable_nominal(fmi3_xml_float64_variable_t* v) {
-    fmi3_xml_get_float_variable_nominal((fmi3_xml_float_variable_t*)v).float64;
-}
+/* Function macro for generating wrappers for specific types
+ *   XX: function to generate, must be prefixed with '_' to avoid macro conflicts with 'min' and 'max'
+ *   TYPE: float32, float64
+ */
+#define def_get_float_variable_XX(XX, TYPE) \
+    fmi3_##TYPE##_t fmi3_xml_get_##TYPE##_variable##XX (fmi3_xml_##TYPE##_variable_t* v) { \
+        return fmi3_xml_get_float_variable##XX ((fmi3_xml_float_variable_t*)v).##TYPE ; \
+    }
 
-fmi3_float32_t fmi3_xml_get_float32_variable_nominal(fmi3_xml_float32_variable_t* v) {
-    return fmi3_xml_get_float_variable_nominal((fmi3_xml_float_variable_t*)v).float32;
+/* float min */
+static fmi3_float_union_t fmi3_xml_get_float_variable_min(fmi3_xml_float_variable_t* v) {
+    return fmi3_xml_get_type_props_float(v)->typeMin;
 }
+def_get_float_variable_XX(_min, float64)
+def_get_float_variable_XX(_min, float32)
+
+/* float max */
+static fmi3_float_union_t fmi3_xml_get_float_variable_max(fmi3_xml_float_variable_t* v) {
+    return fmi3_xml_get_type_props_float(v)->typeMax;
+}
+def_get_float_variable_XX(_max, float64)
+def_get_float_variable_XX(_max, float32)
+
+/* float nominal */
+static fmi3_float_union_t fmi3_xml_get_float_variable_nominal(fmi3_xml_float_variable_t* v) {
+    return fmi3_xml_get_type_props_float(v)->typeNominal;
+}
+def_get_float_variable_XX(_nominal, float64)
+def_get_float_variable_XX(_nominal, float32)
 
 /* float start */
 static fmi3_float_union_t fmi3_xml_get_float_variable_start(fmi3_xml_float_variable_t* v) {
@@ -162,14 +184,8 @@ static fmi3_float_union_t fmi3_xml_get_float_variable_start(fmi3_xml_float_varia
     }
     return fmi3_xml_get_float_variable_nominal(v);
 }
-
-fmi3_float64_t fmi3_xml_get_float64_variable_start(fmi3_xml_float64_variable_t* v) {
-    return fmi3_xml_get_float_variable_start((fmi3_xml_float_variable_t*)v).float64;
-}
-
-fmi3_float32_t fmi3_xml_get_float32_variable_start(fmi3_xml_float32_variable_t* v) {
-    return fmi3_xml_get_float_variable_start((fmi3_xml_float_variable_t*)v).float32;
-}
+def_get_float_variable_XX(_start, float64)
+def_get_float_variable_XX(_start, float32)
 
 /* real */
 double fmi3_xml_get_real_variable_start(fmi3_xml_real_variable_t* v) {
@@ -591,7 +607,7 @@ int fmi3_xml_handle_FloatVariable(fmi3_xml_parser_context_t* context, const char
                 fmi3_xml_reserve_parse_buffer(context, 1, 0);
                 fmi3_xml_reserve_parse_buffer(context, 2, 0);
 
-                type = fmi3_xml_parse_float_type_properties(context, elmID);
+                type = fmi3_xml_parse_float_type_properties(context, elmID, defaultType, bitness);
 
                 if (!type) return -1;
                 type->typeBase.baseTypeStruct = declaredType;
@@ -651,17 +667,15 @@ int fmi3_xml_handle_FloatVariable(fmi3_xml_parser_context_t* context, const char
     return 0;
 }
 
-int fmi3_xml_handle_Float64Variable(fmi3_xml_parser_context_t* context, const char* data) {
-    return fmi3_xml_handle_FloatVariable(context, data, fmi3_xml_elmID_Float64,
-            &context->modelDescription->typeDefinitions.defaultFloat64Type.typeBase,
-            fmi3_bitness_64);
-}
+#define def_handle_float_variable(BITNESS) \
+    int fmi3_xml_handle_Float##BITNESS##Variable(fmi3_xml_parser_context_t* context, const char* data) { \
+        return fmi3_xml_handle_FloatVariable(context, data, fmi3_xml_elmID_Float##BITNESS , \
+                &context->modelDescription->typeDefinitions.defaultFloat##BITNESS##Type.typeBase, \
+                fmi3_bitness_##BITNESS ); \
+    }
 
-int fmi3_xml_handle_Float32Variable(fmi3_xml_parser_context_t* context, const char* data) {
-    return fmi3_xml_handle_FloatVariable(context, data, fmi3_xml_elmID_Float32,
-            &context->modelDescription->typeDefinitions.defaultFloat32Type.typeBase,
-            fmi3_bitness_32);
-}
+def_handle_float_variable(64)
+def_handle_float_variable(32)
 
 int fmi3_xml_handle_RealVariable(fmi3_xml_parser_context_t *context, const char* data) {
     if(context->skipOneVariableFlag) return 0;

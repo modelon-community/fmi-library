@@ -401,63 +401,55 @@ fmi3_xml_variable_type_base_t* fmi3_xml_alloc_variable_type_start(fmi3_xml_type_
     return start;
 }
 
-/* TODO: All of this code is copied and is for Real */
-fmi3_xml_real_type_props_t* fmi3_xml_parse_float_type_properties(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID) {
+fmi3_xml_float_type_props_t* fmi3_xml_parse_float_type_properties(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID,
+        fmi3_xml_float_type_props_t* defaultType, fmi3_bitness_enu_t bitness) {
     jm_named_ptr named, *pnamed;
     fmi3_xml_model_description_t* md = context->modelDescription;
-    fmi3_xml_real_type_props_t* props;
+    fmi3_xml_float_type_props_t* props;
     const char* quantity = 0;
     unsigned int relQuanBuf, unboundedBuf;
 
-/*        jm_vector(char)* bufName = fmi_get_parse_buffer(context,1);
-    jm_vector(char)* bufDescr = fmi_get_parse_buffer(context,2); */
-    jm_vector(char)* bufQuantity = fmi3_xml_reserve_parse_buffer(context,3,100);
-    jm_vector(char)* bufUnit = fmi3_xml_reserve_parse_buffer(context,4,100);
-    jm_vector(char)* bufDispUnit = fmi3_xml_reserve_parse_buffer(context,5,100);
+    jm_vector(char)* bufQuantity = fmi3_xml_reserve_parse_buffer(context, 3, 100);
+    jm_vector(char)* bufUnit = fmi3_xml_reserve_parse_buffer(context, 4, 100);
+    jm_vector(char)* bufDispUnit = fmi3_xml_reserve_parse_buffer(context, 5, 100);
 
-    props = (fmi3_xml_real_type_props_t*)fmi3_xml_alloc_variable_type_props(&md->typeDefinitions, &md->typeDefinitions.defaultRealType.typeBase, sizeof(fmi3_xml_real_type_props_t));
+    props = (fmi3_xml_float_type_props_t*)fmi3_xml_alloc_variable_type_props(&md->typeDefinitions, &defaultType->typeBase, sizeof(fmi3_xml_float_type_props_t));
 
-    if(!bufQuantity || !bufUnit || !bufDispUnit || !props ||
-            /* <xs:attribute name="quantity" type="xs:normalizedString"/> */
-            fmi3_xml_set_attr_string(context, elmID, fmi_attr_id_quantity, 0, bufQuantity) ||
-            /* <xs:attribute name="unit" type="xs:normalizedString"/>  */
-            fmi3_xml_set_attr_string(context, elmID, fmi_attr_id_unit, 0, bufUnit) ||
-            /* <xs:attribute name="displayUnit" type="xs:normalizedString">  */
-            fmi3_xml_set_attr_string(context, elmID, fmi_attr_id_displayUnit, 0, bufDispUnit)
+    if (!bufQuantity || !bufUnit || !bufDispUnit || !props ||
+            fmi3_xml_set_attr_string(context, elmID, fmi_attr_id_quantity, 0, bufQuantity) || /* <xs:attribute name="quantity" type="xs:normalizedString"/> */
+            fmi3_xml_set_attr_string(context, elmID, fmi_attr_id_unit, 0, bufUnit) ||         /* <xs:attribute name="unit" type="xs:normalizedString"/>  */
+            fmi3_xml_set_attr_string(context, elmID, fmi_attr_id_displayUnit, 0, bufDispUnit) /* <xs:attribute name="displayUnit" type="xs:normalizedString">  */
             ) {
-        fmi3_xml_parse_fatal(context, "Error parsing real type properties");
+        fmi3_xml_parse_fatal(context, "Error parsing float type properties");
         return 0;
     }
-    if(jm_vector_get_size(char)(bufQuantity))
+    if (jm_vector_get_size(char)(bufQuantity))
         quantity = jm_string_set_put(&md->typeDefinitions.quantities, jm_vector_get_itemp(char)(bufQuantity, 0));
 
     props->quantity = quantity;
     props->displayUnit = 0;
-    if(jm_vector_get_size(char)(bufDispUnit)) {
+    if (jm_vector_get_size(char)(bufDispUnit)) {
         named.name = jm_vector_get_itemp(char)(bufDispUnit, 0);
         pnamed = jm_vector_bsearch(jm_named_ptr)(&(md->displayUnitDefinitions), &named, jm_compare_named);
-        if(!pnamed) {
-            fmi3_xml_parse_fatal(context, "Unknown display unit %s in real type definition", jm_vector_get_itemp(char)(bufDispUnit, 0));
+        if (!pnamed) {
+            fmi3_xml_parse_fatal(context, "Unknown display unit %s in float type definition", jm_vector_get_itemp(char)(bufDispUnit, 0));
             return 0;
         }
         props->displayUnit = pnamed->ptr;
-    }
-    else {
-        if(jm_vector_get_size(char)(bufUnit)) {
+    } else {
+        if (jm_vector_get_size(char)(bufUnit)) {
             props->displayUnit = fmi3_xml_get_parsed_unit(context, bufUnit, 1);
         }
     }
-    if(    /*    <xs:attribute name="relativeQuantity" type="xs:boolean" default="false"> */
-            fmi3_xml_set_attr_boolean(context, elmID, fmi_attr_id_relativeQuantity, 0, &relQuanBuf, 0) ||
-		    /*    <xs:attribute name="unbounded" type="xs:boolean" default="false"> */
-            fmi3_xml_set_attr_boolean(context, elmID, fmi_attr_id_unbounded, 0, &unboundedBuf, 0) ||
-            /* <xs:attribute name="min" type="xs:double"/> */
-            fmi3_xml_set_attr_float64(context, elmID, fmi_attr_id_min, 0, &props->typeMin, -DBL_MAX) ||
-            /* <xs:attribute name="max" type="xs:double"/> */
-            fmi3_xml_set_attr_float64(context, elmID, fmi_attr_id_max, 0, &props->typeMax, DBL_MAX) ||
-            /*  <xs:attribute name="nominal" type="xs:double"/> */
-            fmi3_xml_set_attr_float64(context, elmID, fmi_attr_id_nominal, 0, &props->typeNominal, 1)
+
+    if (
+            fmi3_xml_set_attr_boolean(context, elmID, fmi_attr_id_relativeQuantity, 0, &relQuanBuf, 0) || /* <xs:attribute name="relativeQuantity" type="xs:boolean" default="false"> */
+            fmi3_xml_set_attr_boolean(context, elmID, fmi_attr_id_unbounded, 0, &unboundedBuf, 0) ||      /* <xs:attribute name="unbounded" type="xs:boolean" default="false"> */
+            fmi3_xml_set_attr_float(context, elmID, fmi_attr_id_min, 0, &props->typeMin, &defaultType->typeMin, bitness) ||   /* <xs:attribute name="min" type="xs:double"/> */
+            fmi3_xml_set_attr_float(context, elmID, fmi_attr_id_max, 0, &props->typeMax, &defaultType->typeMax, bitness) ||    /* <xs:attribute name="max" type="xs:double"/> */
+            fmi3_xml_set_attr_float(context, elmID, fmi_attr_id_nominal, 0, &props->typeNominal, &defaultType->typeNominal, bitness)     /*  <xs:attribute name="nominal" type="xs:double"/> */
             ) return 0;
+
 	props->typeBase.isRelativeQuantity = (relQuanBuf) ? 1:0;
 	props->typeBase.isUnbounded = (unboundedBuf) ? 1 : 0;
     return props;
@@ -524,47 +516,33 @@ fmi3_xml_real_type_props_t* fmi3_xml_parse_real_type_properties(fmi3_xml_parser_
     return props;
 }
 
-/* TODO */
-int fmi3_xml_handle_Float32(fmi3_xml_parser_context_t *context, const char* data) {
-    if(!data) {
+int fmi3_xml_handle_Float(fmi3_xml_parser_context_t *context, const char* data, fmi3_xml_elm_enu_t elmId, fmi3_bitness_enu_t bitness,
+        fmi3_xml_float_type_props_t* defaultType, fmi3_base_type_enu_t baseType) {
+    if (!data) {
         fmi3_xml_model_description_t* md = context->modelDescription;
         jm_named_ptr named;
         fmi3_xml_variable_typedef_t* type;
-        fmi3_xml_real_type_props_t * props; /* todo */
+        fmi3_xml_float_type_props_t * props;
 
-        props = fmi3_xml_parse_float_type_properties(context, fmi3_xml_elmID_Float64);
-        if(!props) return -1;
+        props = fmi3_xml_parse_float_type_properties(context, elmId, defaultType, bitness);
+        if (!props) return -1;
         named = jm_vector_get_last(jm_named_ptr)(&md->typeDefinitions.typeDefinitions);
         type = named.ptr;
-        type->typeBase.baseType = fmi3_base_type_float64;
+        type->typeBase.baseType = baseType;
         type->typeBase.baseTypeStruct = &props->typeBase;
-    }
-    else {
+    } else {
         /* don't do anything. might give out a warning if(data[0] != 0) */
         return 0;
     }
     return 0;
 }
 
-int fmi3_xml_handle_Float64(fmi3_xml_parser_context_t *context, const char* data) {
-    if(!data) {
-        fmi3_xml_model_description_t* md = context->modelDescription;
-        jm_named_ptr named;
-        fmi3_xml_variable_typedef_t* type;
-        fmi3_xml_real_type_props_t * props; /* todo */
+int fmi3_xml_handle_Float32(fmi3_xml_parser_context_t* context, const char* data) {
+    return fmi3_xml_handle_Float(context, data, fmi3_xml_elmID_Float32, fmi3_bitness_32, &context->modelDescription->typeDefinitions.defaultFloat32Type, fmi3_base_type_float32);
+}
 
-        props = fmi3_xml_parse_float_type_properties(context, fmi3_xml_elmID_Float64);
-        if(!props) return -1;
-        named = jm_vector_get_last(jm_named_ptr)(&md->typeDefinitions.typeDefinitions);
-        type = named.ptr;
-        type->typeBase.baseType = fmi3_base_type_float64;
-        type->typeBase.baseTypeStruct = &props->typeBase;
-    }
-    else {
-        /* don't do anything. might give out a warning if(data[0] != 0) */
-        return 0;
-    }
-    return 0;
+int fmi3_xml_handle_Float64(fmi3_xml_parser_context_t* context, const char* data) {
+    return fmi3_xml_handle_Float(context, data, fmi3_xml_elmID_Float64, fmi3_bitness_64, &context->modelDescription->typeDefinitions.defaultFloat64Type, fmi3_base_type_float64);
 }
 
 int fmi3_xml_handle_Real(fmi3_xml_parser_context_t *context, const char* data) {

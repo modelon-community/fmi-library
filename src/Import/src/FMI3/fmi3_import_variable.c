@@ -107,13 +107,25 @@ fmi3_import_bool_variable_t* fmi3_import_get_variable_as_boolean(fmi3_import_var
 }
 
 /* float */
-fmi3_float64_t fmi3_import_get_float64_variable_start(fmi3_import_float64_variable_t* v) {
-	return fmi3_xml_get_float64_variable_start(v);
-}
 
-fmi3_float32_t fmi3_import_get_float32_variable_start(fmi3_import_float32_variable_t* v) {
-    return fmi3_xml_get_float32_variable_start(v);
-}
+/* Macro for generating variable value getters. Use leading underscore for variable value param, */
+/* since otherwise there's a risk of using the 'min' or 'max' macros. */
+#define def_import_get_variable_XX(XX, TYPE) \
+    fmi3_##TYPE##_t fmi3_import_get_##TYPE##_variable##XX##(fmi3_import_##TYPE##_variable_t* v) { \
+        return fmi3_xml_get_##TYPE##_variable##XX(v); \
+    }
+
+def_import_get_variable_XX(_start,      float32)
+def_import_get_variable_XX(_min,        float32)
+def_import_get_variable_XX(_max,        float32)
+def_import_get_variable_XX(_nominal,    float32)
+
+def_import_get_variable_XX(_start,      float64)
+def_import_get_variable_XX(_min,        float64)
+def_import_get_variable_XX(_max,        float64)
+def_import_get_variable_XX(_nominal,    float64)
+
+#undef def_import_get_variable_XX
 
 fmi3_real_t fmi3_import_get_real_variable_start(fmi3_import_real_variable_t* v) {
 	return fmi3_xml_get_real_variable_start(v);

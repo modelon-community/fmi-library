@@ -50,7 +50,7 @@ fmi3_value_reference_t fmi3_xml_get_variable_vr(fmi3_xml_variable_t*);
 fmi3_xml_variable_typedef_t* fmi3_xml_get_variable_declared_type(fmi3_xml_variable_t*);
 fmi3_base_type_enu_t fmi3_xml_get_variable_base_type(fmi3_xml_variable_t*);
 
-int   fmi3_xml_get_variable_has_start(fmi3_xml_variable_t*);
+int fmi3_xml_get_variable_has_start(fmi3_xml_variable_t*);
 
 fmi3_variability_enu_t fmi3_xml_get_variability(fmi3_xml_variable_t*);
 fmi3_causality_enu_t fmi3_xml_get_causality(fmi3_xml_variable_t*);
@@ -72,14 +72,26 @@ fmi3_float32_t fmi3_xml_get_float32_variable_nominal(fmi3_xml_float32_variable_t
 fmi3_float64_t fmi3_xml_get_float64_variable_start(fmi3_xml_float64_variable_t* v);
 fmi3_float32_t fmi3_xml_get_float32_variable_start(fmi3_xml_float32_variable_t* v);
 
-/* TODO:
-fmi3_xml_float64_variable_t* fmi3_xml_get_float64_variable_derivative_of(fmi3_xml_float64_variable_t* v);
-fmi3_boolean_t fmi3_xml_get_float64_variable_reinit(fmi3_xml_float64_variable_t* v);
-fmi3Float64 fmi3_xml_get_float64_variable_max(fmi3_xml_float64_variable_t* v);
-fmi3Float64 fmi3_xml_get_float64_variable_min(fmi3_xml_float64_variable_t* v);
-fmi3_xml_unit_t* fmi3_xml_get_float64_variable_unit(fmi3_xml_float64_variable_t* v);
-fmi3_xml_display_unit_t* fmi3_xml_get_float64_variable_display_unit(fmi3_xml_float64_variable_t* v);
-*/
+
+/* Function macro for generating header wrappers for specific types
+ * XX: function to generate, must be prefixed with '_' to avoid macro conflicts with 'min' and 'max'
+ * TYPE: float32, float64
+ */
+#define def_xml_get_variable_header_XX(XX, TYPE) \
+    fmi3_##TYPE##_t fmi3_xml_get_##TYPE##_variable##XX (fmi3_xml_##TYPE##_variable_t* v);
+
+def_xml_get_variable_header_XX(_start,      float32)
+def_xml_get_variable_header_XX(_min,        float32)
+def_xml_get_variable_header_XX(_max,        float32)
+def_xml_get_variable_header_XX(_nominal,    float32)
+
+def_xml_get_variable_header_XX(_start,      float64)
+def_xml_get_variable_header_XX(_min,        float64)
+def_xml_get_variable_header_XX(_max,        float64)
+def_xml_get_variable_header_XX(_nominal,    float64)
+
+#undef def_xml_get_variable_header_XX
+
 
 double fmi3_xml_get_real_variable_start(fmi3_xml_real_variable_t* v);
 fmi3_xml_real_variable_t* fmi3_xml_get_real_variable_derivative_of(fmi3_xml_real_variable_t* v);

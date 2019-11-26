@@ -42,6 +42,8 @@
 #define fmi3Byte fmi3_byte_t
 #define fmi3Float64 fmi3_float64_t
 #define fmi3Float32 fmi3_float32_t
+/* TODO: What happened here? Why do we define then undef like 30 rows below? */
+
 
 /** @}*/
 /* Standard FMI 2.0 types */

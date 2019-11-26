@@ -111,7 +111,7 @@ fmi3_import_bool_variable_t* fmi3_import_get_variable_as_boolean(fmi3_import_var
 /* Macro for generating variable value getters. Use leading underscore for variable value param, */
 /* since otherwise there's a risk of using the 'min' or 'max' macros. */
 #define def_import_get_variable_XX(XX, TYPE) \
-    fmi3_##TYPE##_t fmi3_import_get_##TYPE##_variable##XX##(fmi3_import_##TYPE##_variable_t* v) { \
+    fmi3_##TYPE##_t fmi3_import_get_##TYPE##_variable##XX(fmi3_import_##TYPE##_variable_t* v) { \
         return fmi3_xml_get_##TYPE##_variable##XX(v); \
     }
 

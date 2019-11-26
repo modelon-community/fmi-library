@@ -151,7 +151,7 @@ static fmi3_xml_float_type_props_t* fmi3_xml_get_type_props_float(fmi3_xml_float
  */
 #define def_get_float_variable_XX(XX, TYPE) \
     fmi3_##TYPE##_t fmi3_xml_get_##TYPE##_variable##XX (fmi3_xml_##TYPE##_variable_t* v) { \
-        return fmi3_xml_get_float_variable##XX ((fmi3_xml_float_variable_t*)v).##TYPE ; \
+        return fmi3_xml_get_float_variable##XX ((fmi3_xml_float_variable_t*)v).TYPE ; \
     }
 
 /* float min */
@@ -562,8 +562,8 @@ static void fmi3_log_error_if_start_required(
 }
 
 int fmi3_xml_handle_FloatVariable(fmi3_xml_parser_context_t* context, const char* data,
-        fmi3_xml_elm_enu_t elmID, /* ID of the type (not the variable) */
-        fmi3_xml_variable_type_base_t* defaultType, /* ID of the type (not the variable) */
+        fmi3_xml_elm_enu_t elmID, /* ID of the Type (not the Variable) */
+        fmi3_xml_float_type_props_t* defaultType,
         fmi3_bitness_enu_t bitness) {
 
     if (context->skipOneVariableFlag) return 0;
@@ -667,15 +667,18 @@ int fmi3_xml_handle_FloatVariable(fmi3_xml_parser_context_t* context, const char
     return 0;
 }
 
+/* Create handle_FloatXX wrappers */
 #define def_handle_float_variable(BITNESS) \
     int fmi3_xml_handle_Float##BITNESS##Variable(fmi3_xml_parser_context_t* context, const char* data) { \
-        return fmi3_xml_handle_FloatVariable(context, data, fmi3_xml_elmID_Float##BITNESS , \
+        return fmi3_xml_handle_FloatVariable(context, data, fmi3_xml_elmID_Float##BITNESS, \
                 &context->modelDescription->typeDefinitions.defaultFloat##BITNESS##Type.typeBase, \
-                fmi3_bitness_##BITNESS ); \
+                fmi3_bitness_##BITNESS); \
     }
 
 def_handle_float_variable(64)
 def_handle_float_variable(32)
+
+#undef def_handle_float_variable
 
 int fmi3_xml_handle_RealVariable(fmi3_xml_parser_context_t *context, const char* data) {
     if(context->skipOneVariableFlag) return 0;

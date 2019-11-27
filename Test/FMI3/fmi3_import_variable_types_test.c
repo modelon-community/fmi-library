@@ -194,7 +194,7 @@ int main(int argc, char **argv)
     fmi3_import_t *xml;
     int ret = 1;
     if (argc != 2) {
-        printf("Usage: %s <path_to_dir_containing_float64's_modelDescription>\n", argv[0]);
+        printf("Usage: %s <path_to_dir_containing_float_modelDescription>\n", argv[0]);
         return CTEST_RETURN_FAIL;
     }
 

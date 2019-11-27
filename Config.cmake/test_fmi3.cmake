@@ -46,6 +46,8 @@ set(VARIABLE_BAD_VARIABILITY_CAUSALITY_MODEL_DESC_DIR
     ${RTTESTDIR}/FMI3/parser_test_xmls/variable_bad_variability_causality)
 set(VAR_TYPE_TEST_MODEL_DESC_DIR
     ${RTTESTDIR}/FMI3/parser_test_xmls/variable_types/float)
+set(TYPE_DEFINITIONS_MODEL_DESC_DIR
+    ${RTTESTDIR}/FMI3/parser_test_xmls/type_definitions/float)
 
 set(SHARED_LIBRARY_ME_PATH ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${CMAKE_SHARED_LIBRARY_PREFIX}fmu3_dll_me${CMAKE_SHARED_LIBRARY_SUFFIX})
 set(SHARED_LIBRARY_CS_PATH ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${CMAKE_SHARED_LIBRARY_PREFIX}fmu3_dll_cs${CMAKE_SHARED_LIBRARY_SUFFIX})
@@ -113,6 +115,9 @@ add_test(ctest_fmi3_import_variable_test
 add_test(ctest_fmi3_import_var_type_test
          fmi3_import_variable_types_test
          ${VAR_TYPE_TEST_MODEL_DESC_DIR})
+add_test(ctest_fmi3_import_type_definitions_test
+         fmi3_import_type_definitions_test
+         ${TYPE_DEFINITIONS_MODEL_DESC_DIR})
 add_test(ctest_fmi3_variable_bad_variability_causality_test
          fmi3_variable_bad_variability_causality_test
          ${VARIABLE_BAD_VARIABILITY_CAUSALITY_MODEL_DESC_DIR})
@@ -128,6 +133,7 @@ if(FMILIB_BUILD_BEFORE_TESTS)
         ctest_fmi3_import_xml_test_empty
         ctest_fmi3_import_test_me
         ctest_fmi3_import_test_cs
+        ctest_fmi3_import_type_definitions_test
         ctest_fmi3_import_variable_test
         ctest_fmi3_enum_test
         ctest_fmi3_variable_bad_variability_causality_test

@@ -163,11 +163,14 @@ endmacro(PREFIXLIST)
 if(MSVC AND (${CMAKE_GENERATOR} MATCHES "Visual Studio 10"))
 	source_group("Source files\\FMI1" REGULAR_EXPRESSION "fmi1_.*.c") 
 	source_group("Source files\\FMI2" REGULAR_EXPRESSION "fmi2_.*.c") 
+	source_group("Source files\\FMI3" REGULAR_EXPRESSION "fmi3_.*.c") 
 	source_group("Header files\\FMI1" REGULAR_EXPRESSION "fmi1_.*.h") 
 	source_group("Header files\\FMI2" REGULAR_EXPRESSION "fmi2_.*.h") 
+	source_group("Header files\\FMI3" REGULAR_EXPRESSION "fmi3_.*.h") 
 	source_group("Private headers" REGULAR_EXPRESSION "fmi_.*impl.h") 
 	source_group("Private headers\\FMI1" REGULAR_EXPRESSION "fmi1_.*impl.h") 
 	source_group("Private headers\\FMI2" REGULAR_EXPRESSION "fmi2_.*impl.h") 
+	source_group("Private headers\\FMI3" REGULAR_EXPRESSION "fmi3_.*impl.h") 
 endif()
 
 set(FMILIBKIND STATIC)
@@ -335,6 +338,7 @@ endif()
 install(DIRECTORY 
 	${FMILIB_FMI_STANDARD_HEADERS}/FMI1
 	${FMILIB_FMI_STANDARD_HEADERS}/FMI2
+	${FMILIB_FMI_STANDARD_HEADERS}/FMI3
 	DESTINATION include
     FILES_MATCHING PATTERN "*.h")
 

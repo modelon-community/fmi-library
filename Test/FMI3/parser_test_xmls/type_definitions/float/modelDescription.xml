@@ -1,31 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- 
-    This file is based on the 'docs/examples/model_description.xml' in the
-    modelica/fmi-standard github repo.
- -->
 <fmiModelDescription
   fmiVersion="3.0"
-  modelName="MyLibrary.SpringMassDamper"
+  modelName="test_type_definitions"
   instantiationToken="{8c4e810f-3df3-4a00-8276-176fa3c9f9e0}"
-  description="Rotational Spring Mass Damper System"
+  description="N/A"
   version="1.0"
   generationDateAndTime="2011-09-23T16:57:33Z"
   variableNamingConvention="structured">
-  <ModelExchange modelIdentifier="MyLibrary_SpringMassDamper"/>
+  <ModelExchange modelIdentifier="model_identifier"/>
   <TypeDefinitions>
-    <Float64 name="Modelica.SIunits.Inertia" quantity="MomentOfInertia" unit="kg.m2" min="0.0"/>
-    <Float32 name="Modelica.SIunits.AngularVelocity" quantity="AngularVelocity" unit="rad/s" max="1000.0"/>
+    <Float64 name="Float64.name" quantity="typeQuantity" unit="kg.m2" min="0.0"/>
+    <Float32 name="Float32_name" quantity="type_quantity" unit="rad/s" max="1000.0" nominal="5"/>
   </TypeDefinitions>
-  <DefaultExperiment startTime="0.0" stopTime="3.0" tolerance="0.0001"/>
+  <DefaultExperiment startTime="0.0" stopTime="4.0" tolerance="0.000001"/>
   <ModelVariables>
-    <Float64 name="inertia1.J" valueReference="1073741824"
-      description="Moment of load inertia" causality="parameter" variability="fixed"
-      declaredType="Modelica.SIunits.Inertia" start="1"/>
-    <Float32 name="inertia1.w" valueReference="805306369"
-      description="Absolute angular velocity of component (= der(phi))" causality="output"
-      declaredType="Modelica.SIunits.AngularVelocity"/>
-    <Float64 name="x[1]" valueReference="0" initial="exact"/>
-    <Float64 name="der(x[1])" valueReference="2" derivative="0"/>
+    <Float64 name="var.name1" valueReference="1073741824" description="desc" causality="parameter"
+      declaredType="Float64.name"/>
+    <Float32 name="var.name2" valueReference="805306369" description="desc" causality="output"
+      declaredType="Float32_name"/>
   </ModelVariables>
   <ModelStructure>
   </ModelStructure>

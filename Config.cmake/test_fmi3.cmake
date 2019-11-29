@@ -73,19 +73,29 @@ to_native_c_path("${TEST_OUTPUT_FOLDER}/${FMU3_DUMMY_CS_MODEL_IDENTIFIER}_mf.fmu
 
 add_executable (fmi3_xml_parsing_test ${RTTESTDIR}/FMI3/fmi3_xml_parsing_test.c)
 target_link_libraries (fmi3_xml_parsing_test  ${FMILIBFORTEST})
+
 add_executable (fmi3_import_xml_test ${RTTESTDIR}/FMI3/fmi3_import_xml_test.c)
 target_link_libraries (fmi3_import_xml_test  ${FMILIBFORTEST})
+
 add_executable (fmi3_import_me_test ${RTTESTDIR}/FMI3/fmi3_import_me_test.c)
 target_link_libraries (fmi3_import_me_test  ${FMILIBFORTEST})
+
 add_executable (fmi3_import_cs_test ${RTTESTDIR}/FMI3/fmi3_import_cs_test.c)
 target_link_libraries (fmi3_import_cs_test  ${FMILIBFORTEST})
+
 add_executable(fmi3_import_variable_test ${RTTESTDIR}/FMI3/fmi3_import_variable_test.c)
 target_link_libraries(fmi3_import_variable_test ${FMILIBFORTEST})
+
+add_executable(fmi3_import_type_definitions_test ${RTTESTDIR}/FMI3/fmi3_import_type_definitions_test.c)
+target_link_libraries(fmi3_import_type_definitions_test ${FMILIBFORTEST})
+
 add_executable(fmi3_import_variable_types_test ${RTTESTDIR}/FMI3/fmi3_import_variable_types_test.c)
 target_link_libraries(fmi3_import_variable_types_test ${FMILIBFORTEST})
+
 add_executable(fmi3_variable_bad_variability_causality_test
                ${RTTESTDIR}/FMI3/fmi3_variable_bad_variability_causality_test.c)
 target_link_libraries(fmi3_variable_bad_variability_causality_test ${FMILIBFORTEST})
+
 add_executable(fmi3_enum_test ${RTTESTDIR}/FMI3/fmi3_enum_test.c)
 target_link_libraries(fmi3_enum_test ${FMILIBFORTEST})
 

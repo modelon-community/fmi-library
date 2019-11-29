@@ -40,6 +40,8 @@ extern "C" {
 /**@{ */
 /** \brief Opaque type definition object. */
 typedef struct fmi3_xml_real_typedef_t fmi3_import_real_typedef_t;
+/** \brief Opaque float definition object. */
+typedef struct fmi3_xml_float_typedef_t fmi3_import_float_typedef_t;
 /** \brief Opaque integer type definition object. */
 typedef struct fmi3_xml_integer_typedef_t fmi3_import_integer_typedef_t;
 /** \brief Opaque enumeration type definition object. */

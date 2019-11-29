@@ -44,6 +44,10 @@ fmi3_base_type_enu_t fmi3_import_get_base_type(fmi3_import_variable_typedef_t* t
 	return fmi3_xml_get_base_type(t);
 }
 
+fmi3_import_float_typedef_t* fmi3_import_get_type_as_float(fmi3_import_variable_typedef_t* t) {
+	return fmi3_xml_get_type_as_float(t);
+}
+
 fmi3_import_real_typedef_t* fmi3_import_get_type_as_real(fmi3_import_variable_typedef_t* t) {
 	return fmi3_xml_get_type_as_real(t);
 }

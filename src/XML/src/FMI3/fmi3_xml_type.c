@@ -55,6 +55,13 @@ fmi3_base_type_enu_t fmi3_xml_get_base_type(fmi3_xml_variable_typedef_t* t) {
     return t->typeBase.baseType;
 }
 
+fmi3_xml_float_typedef_t* fmi3_xml_get_type_as_float(fmi3_xml_variable_typedef_t* t) {
+    fmi3_base_type_enu_t bt = fmi3_xml_get_base_type(t);
+    if (bt == fmi3_base_type_float64 || bt == fmi3_base_type_float32)
+        return (fmi3_xml_float_typedef_t*)t;
+    return 0;
+}
+
 fmi3_xml_real_typedef_t* fmi3_xml_get_type_as_real(fmi3_xml_variable_typedef_t* t) {
     if(fmi3_xml_get_base_type(t) == fmi3_base_type_real) return (fmi3_xml_real_typedef_t*)t;
     return 0;
@@ -220,18 +227,18 @@ void fmi3_xml_init_variable_type_base(fmi3_xml_variable_type_base_t* type, fmi3_
 void fmi3_xml_init_float64_type_properties(fmi3_xml_float_type_props_t* type) {
     fmi3_xml_init_variable_type_base(&type->typeBase, fmi3_xml_type_struct_enu_props, fmi3_base_type_float64);
     type->quantity = 0;    
-    type->typeMin.float64 = -DBL_MAX;
-    type->typeMax.float64 = DBL_MAX;
-    type->typeNominal.float64 = 1.0;
+    type->typeMin.scalar64 = -DBL_MAX;
+    type->typeMax.scalar64 = DBL_MAX;
+    type->typeNominal.scalar64 = 1.0;
     type->displayUnit = 0;
 }
 
 void fmi3_xml_init_float32_type_properties(fmi3_xml_float_type_props_t* type) {
     fmi3_xml_init_variable_type_base(&type->typeBase, fmi3_xml_type_struct_enu_props, fmi3_base_type_float32);
     type->quantity = 0;    
-    type->typeMin.float32 = -FLT_MAX;
-    type->typeMax.float32 = FLT_MAX;
-    type->typeNominal.float32 = 1.0;
+    type->typeMin.scalar32 = -FLT_MAX;
+    type->typeMax.scalar32 = FLT_MAX;
+    type->typeNominal.scalar32 = 1.0;
     type->displayUnit = 0;
 }
 

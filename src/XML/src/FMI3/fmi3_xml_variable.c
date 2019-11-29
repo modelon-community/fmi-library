@@ -149,31 +149,31 @@ static fmi3_xml_float_type_props_t* fmi3_xml_get_type_props_float(fmi3_xml_float
  *   XX: function to generate, must be prefixed with '_' to avoid macro conflicts with 'min' and 'max'
  *   TYPE: float32, float64
  */
-#define def_get_float_variable_XX(XX, TYPE) \
+#define def_get_float_variable_XX(XX, TYPE, FIELD) \
     fmi3_##TYPE##_t fmi3_xml_get_##TYPE##_variable##XX (fmi3_xml_##TYPE##_variable_t* v) { \
-        return fmi3_xml_get_float_variable##XX ((fmi3_xml_float_variable_t*)v).TYPE ; \
+        return fmi3_xml_get_float_variable##XX ((fmi3_xml_float_variable_t*)v).FIELD ; \
     }
 
 /* float min */
 static fmi3_float_union_t fmi3_xml_get_float_variable_min(fmi3_xml_float_variable_t* v) {
     return fmi3_xml_get_type_props_float(v)->typeMin;
 }
-def_get_float_variable_XX(_min, float64)
-def_get_float_variable_XX(_min, float32)
+def_get_float_variable_XX(_min, float64, scalar64)
+def_get_float_variable_XX(_min, float32, scalar32)
 
 /* float max */
 static fmi3_float_union_t fmi3_xml_get_float_variable_max(fmi3_xml_float_variable_t* v) {
     return fmi3_xml_get_type_props_float(v)->typeMax;
 }
-def_get_float_variable_XX(_max, float64)
-def_get_float_variable_XX(_max, float32)
+def_get_float_variable_XX(_max, float64, scalar64)
+def_get_float_variable_XX(_max, float32, scalar32)
 
 /* float nominal */
 static fmi3_float_union_t fmi3_xml_get_float_variable_nominal(fmi3_xml_float_variable_t* v) {
     return fmi3_xml_get_type_props_float(v)->typeNominal;
 }
-def_get_float_variable_XX(_nominal, float64)
-def_get_float_variable_XX(_nominal, float32)
+def_get_float_variable_XX(_nominal, float64, scalar64)
+def_get_float_variable_XX(_nominal, float32, scalar32)
 
 /* float start */
 static fmi3_float_union_t fmi3_xml_get_float_variable_start(fmi3_xml_float_variable_t* v) {
@@ -184,8 +184,8 @@ static fmi3_float_union_t fmi3_xml_get_float_variable_start(fmi3_xml_float_varia
     }
     return fmi3_xml_get_float_variable_nominal(v);
 }
-def_get_float_variable_XX(_start, float64)
-def_get_float_variable_XX(_start, float32)
+def_get_float_variable_XX(_start, float64, scalar64)
+def_get_float_variable_XX(_start, float32, scalar32)
 
 /* real */
 double fmi3_xml_get_real_variable_start(fmi3_xml_real_variable_t* v) {

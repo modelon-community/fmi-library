@@ -83,8 +83,10 @@ struct fmi3_xml_variable_typedef_t {
 };
 
 typedef union fmi3_float_union_t {
-    fmi3_float64_t float64;
-    fmi3_float32_t float32;
+    fmi3_float64_t* array64;
+    fmi3_float32_t* array32;
+    fmi3_float64_t scalar64;
+    fmi3_float32_t scalar32;
 } fmi3_float_union_t;
 
 typedef struct fmi3_xml_float_type_props_t {

@@ -81,6 +81,11 @@ FMILIB_EXPORT fmi3_base_type_enu_t fmi3_import_get_base_type(fmi3_import_variabl
 /** \brief Cast the general type definition object to an object with a specific base type 
 	@return Pointer to the specific type object or NULL if base type does not match.
 */
+FMILIB_EXPORT fmi3_import_float_typedef_t* fmi3_import_get_type_as_float(fmi3_import_variable_typedef_t*);
+
+/** \brief Cast the general type definition object to an object with a specific base type 
+	@return Pointer to the specific type object or NULL if base type does not match.
+*/
 FMILIB_EXPORT fmi3_import_real_typedef_t* fmi3_import_get_type_as_real(fmi3_import_variable_typedef_t*);
 /** \brief Cast the general type definition object to an object with a specific base type 
 	@return Pointer to the specific type object or NULL if base type does not match.
@@ -97,6 +102,36 @@ FMILIB_EXPORT fmi3_import_enumeration_typedef_t* fmi3_import_get_type_as_enum(fm
 	Empty string is returned if attribute is not present for other types.
 */
 FMILIB_EXPORT const char* fmi3_import_get_type_quantity(fmi3_import_variable_typedef_t*);
+
+/** \brief Get minimal value for the type.
+
+	@return Either the value specified in the XML file or negated DBL_MAX as defined in <float.h>
+*/
+FMILIB_EXPORT fmi3_float64_t fmi3_import_get_float64_type_min(fmi3_import_float_typedef_t*);
+
+/** \brief Get maximum value for the type
+
+	@return Either the value specified in the XML file or DBL_MAX as defined in <float.h>
+*/
+FMILIB_EXPORT fmi3_float64_t fmi3_import_get_float64_type_max(fmi3_import_float_typedef_t*);
+
+/** \brief Get the nominal value associated with the type definition */
+FMILIB_EXPORT fmi3_float64_t fmi3_import_get_float64_type_nominal(fmi3_import_float_typedef_t*);
+
+/** \brief Get minimal value for the type.
+
+	@return Either the value specified in the XML file or negated FLT_MAX as defined in <float.h>
+*/
+FMILIB_EXPORT fmi3_float32_t fmi3_import_get_float32_type_min(fmi3_import_float_typedef_t*);
+
+/** \brief Get maximum value for the type
+
+	@return Either the value specified in the XML file or FLT_MAX as defined in <float.h>
+*/
+FMILIB_EXPORT fmi3_float32_t fmi3_import_get_float32_type_max(fmi3_import_float_typedef_t*);
+
+/** \brief Get the nominal value associated with the type definition */
+FMILIB_EXPORT fmi3_float32_t fmi3_import_get_float32_type_nominal(fmi3_import_float_typedef_t*);
 
 /** \brief Get minimal value for the type.
 

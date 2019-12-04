@@ -14,8 +14,8 @@
   </TypeDefinitions>
   <DefaultExperiment startTime="0.0" stopTime="4.0" tolerance="0.000001"/>
   <ModelVariables>
-    <Float64 name="var.name1" valueReference="1073741824" description="desc" causality="parameter"
-      declaredType="Float64.name"/>
+    <Float64 name="var.name1" valueReference="1073741824" description="desc" causality="parameter" variability="fixed" 
+      declaredType="Float64.name" start="3.33" />
     <Float32 name="var.name2" valueReference="805306369" description="desc" causality="output"
       declaredType="Float32_name"/>
   </ModelVariables>

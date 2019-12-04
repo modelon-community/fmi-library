@@ -25,7 +25,6 @@ static fmi3_import_t *parse_xml(const char *model_desc_path)
 static int test_type1(fmi3_import_t *xml)
 {
     fmi3_import_variable_t *v = fmi3_import_get_variable_by_name(xml, "var.name1");
-    fmi3_import_float64_variable_t *var;
     fmi3_import_variable_typedef_t *t;
     fmi3_import_float_typedef_t *type;
 
@@ -40,9 +39,34 @@ static int test_type1(fmi3_import_t *xml)
 
     type = fmi3_import_get_type_as_float(t);
     ASSERT_MSG(type != NULL, "failed to convert to float type definition");
-    ASSERT_MSG(fmi3_import_get_float64_type_max(type) == DBL_MAX, "wrong max for type"); /* from md */
-    ASSERT_MSG(fmi3_import_get_float64_type_min(type) == 0.0, "wrong min for type"); /* default */
-    ASSERT_MSG(fmi3_import_get_float64_type_nominal(type) == 1.0, "wrong nominal for type"); /* default */
+    ASSERT_MSG(fmi3_import_get_float64_type_max(type) == DBL_MAX, "wrong max for type");        /* default */
+    ASSERT_MSG(fmi3_import_get_float64_type_min(type) == 0.0, "wrong min for type");            /* from md */
+    ASSERT_MSG(fmi3_import_get_float64_type_nominal(type) == 1.0, "wrong nominal for type");    /* default */
+
+    return TEST_OK;
+}
+
+/* Parse small Float64 typedef */
+static int test_type2(fmi3_import_t *xml)
+{
+    fmi3_import_variable_t *v = fmi3_import_get_variable_by_name(xml, "var.name2");
+    fmi3_import_variable_typedef_t *t;
+    fmi3_import_float_typedef_t *type;
+
+    ASSERT_MSG(v != NULL, "could not find variable to test");
+    ASSERT_MSG(fmi3_import_get_variable_vr(v) == 805306369, "bad vr");
+
+    t = fmi3_import_get_variable_declared_type(v);
+    ASSERT_MSG(t != NULL, "no declaredType found for enum variable");
+
+    ASSERT_MSG(strcmp(fmi3_import_get_type_name(t), "Float32_name") == 0, "wrong type name");
+    ASSERT_MSG(strcmp(fmi3_import_get_type_quantity(t), "type_quantity") == 0, "wrong quantity in type definition");
+
+    type = fmi3_import_get_type_as_float(t);
+    ASSERT_MSG(type != NULL, "failed to convert to float type definition");
+    ASSERT_MSG(fmi3_import_get_float32_type_max(type) == 1000.0f, "wrong max for type");        /* from md */
+    ASSERT_MSG(fmi3_import_get_float32_type_min(type) == -FLT_MAX, "wrong min for type");       /* default */
+    ASSERT_MSG(fmi3_import_get_float32_type_nominal(type) == 5.0f, "wrong nominal for type");   /* from md */
 
     return TEST_OK;
 }
@@ -64,6 +88,7 @@ int main(int argc, char **argv)
     }
 
     ret &= test_type1(xml);
+    ret &= test_type2(xml);
 
     fmi3_import_free(xml);
     return ret == 0 ? CTEST_RETURN_FAIL : CTEST_RETURN_SUCCESS;

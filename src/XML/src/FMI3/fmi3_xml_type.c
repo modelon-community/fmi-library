@@ -82,6 +82,11 @@ const char* fmi3_xml_get_type_quantity(fmi3_xml_variable_typedef_t* t) {
 	const char * ret;
     if(props->structKind != fmi3_xml_type_struct_enu_props) return 0;
     switch(props->baseType) {
+    case fmi3_base_type_float64: /* fallthrough */
+    case fmi3_base_type_float32:
+        ret = ((fmi3_xml_float_type_props_t*)props)->quantity;
+        ret = ((fmi3_xml_float_type_props_t*)props)->quantity;
+		break;
     case fmi3_base_type_real:
         ret = ((fmi3_xml_real_type_props_t*)props)->quantity;
 		break;
@@ -100,6 +105,68 @@ const char* fmi3_xml_get_type_quantity(fmi3_xml_variable_typedef_t* t) {
     }
 	return (ret ? ret : 0);
 }
+
+/**
+ * Below functions are manually generated and then beautified from this macro.
+ * If functions/macro needs to be updated, edit the macro, preprocess it, beautify the output
+ * (replace __NEWLINE__ with a newline), and then replace the code below:
+ * TODO: automate this in build
+------------------------------------------------------------------------------------------------------------------------
+#define GEN_FUNC_xml_get_type_XX(XX, YY, TYPE, SIZE) \
+    fmi3_##TYPE##SIZE##_t fmi3_xml_get_##TYPE##SIZE##_type##XX (fmi3_xml_##TYPE##_typedef_t* t) {                __NEWLINE__ \
+        fmi3_xml_variable_typedef_t* vt = (void*)t;                                                              __NEWLINE__ \
+        fmi3_xml_##TYPE##_type_props_t* props = (fmi3_xml_##TYPE##_type_props_t*)(vt->typeBase.baseTypeStruct);  __NEWLINE__ \
+        return props->type##YY.scalar##SIZE;                                                                     __NEWLINE__ \
+    }                                                                                                            __NEWLINE__  
+
+GEN_FUNC_xml_get_type_XX(_min,     Min,     float, 64)
+GEN_FUNC_xml_get_type_XX(_max,     Max,     float, 64)
+GEN_FUNC_xml_get_type_XX(_nominal, Nominal, float, 64)
+GEN_FUNC_xml_get_type_XX(_min,     Min,     float, 32)
+GEN_FUNC_xml_get_type_XX(_max,     Max,     float, 32)
+GEN_FUNC_xml_get_type_XX(_nominal, Nominal, float, 32)
+
+#undef GEN_FUNC_xml_get_type_XX
+------------------------------------------------------------------------------------------------------------------------
+*/
+/* START: GEN_PROTO_get_type_XX */
+fmi3_float64_t fmi3_xml_get_float64_type_min(fmi3_xml_float_typedef_t* t) {
+    fmi3_xml_variable_typedef_t* vt = (void*)t;
+    fmi3_xml_float_type_props_t* props = (fmi3_xml_float_type_props_t*)(vt->typeBase.baseTypeStruct);
+    return props->typeMin.scalar64;
+}
+
+fmi3_float64_t fmi3_xml_get_float64_type_max(fmi3_xml_float_typedef_t* t) {
+    fmi3_xml_variable_typedef_t* vt = (void*)t;
+    fmi3_xml_float_type_props_t* props = (fmi3_xml_float_type_props_t*)(vt->typeBase.baseTypeStruct);
+    return props->typeMax.scalar64;
+}
+
+fmi3_float64_t fmi3_xml_get_float64_type_nominal(fmi3_xml_float_typedef_t* t) {
+    fmi3_xml_variable_typedef_t* vt = (void*)t;
+    fmi3_xml_float_type_props_t* props = (fmi3_xml_float_type_props_t*)(vt->typeBase.baseTypeStruct);
+    return props->typeNominal.scalar64;
+}
+
+fmi3_float32_t fmi3_xml_get_float32_type_min(fmi3_xml_float_typedef_t* t) {
+    fmi3_xml_variable_typedef_t* vt = (void*)t;
+    fmi3_xml_float_type_props_t* props = (fmi3_xml_float_type_props_t*)(vt->typeBase.baseTypeStruct);
+    return props->typeMin.scalar32;
+}
+
+fmi3_float32_t fmi3_xml_get_float32_type_max(fmi3_xml_float_typedef_t* t) {
+    fmi3_xml_variable_typedef_t* vt = (void*)t;
+    fmi3_xml_float_type_props_t* props = (fmi3_xml_float_type_props_t*)(vt->typeBase.baseTypeStruct);
+    return props->typeMax.scalar32;
+}
+
+fmi3_float32_t fmi3_xml_get_float32_type_nominal(fmi3_xml_float_typedef_t* t) {
+    fmi3_xml_variable_typedef_t* vt = (void*)t;
+    fmi3_xml_float_type_props_t* props = (fmi3_xml_float_type_props_t*)(vt->typeBase.baseTypeStruct);
+    return props->typeNominal.scalar32;
+}
+
+/* END: GEN_PROTO_get_type_XX */
 
 double fmi3_xml_get_real_type_min(fmi3_xml_real_typedef_t* t) {
     fmi3_xml_variable_typedef_t* vt = (void*)t;
@@ -523,8 +590,13 @@ fmi3_xml_real_type_props_t* fmi3_xml_parse_real_type_properties(fmi3_xml_parser_
     return props;
 }
 
-int fmi3_xml_handle_Float(fmi3_xml_parser_context_t *context, const char* data, fmi3_xml_elm_enu_t elmId, fmi3_bitness_enu_t bitness,
-        fmi3_xml_float_type_props_t* defaultType, fmi3_base_type_enu_t baseType) {
+int fmi3_xml_handle_Float(fmi3_xml_parser_context_t* context, const char* data, fmi3_xml_elm_enu_t elmId, fmi3_bitness_enu_t bitness,
+    fmi3_xml_float_type_props_t* defaultType, fmi3_base_type_enu_t baseType) {
+
+    int res = fmi3_xml_handle_SimpleType(context, data);
+    if (res)
+        return res;
+
     if (!data) {
         fmi3_xml_model_description_t* md = context->modelDescription;
         jm_named_ptr named;

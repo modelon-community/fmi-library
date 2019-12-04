@@ -522,7 +522,6 @@ int fmi3_xml_get_has_start(fmi3_xml_parser_context_t *context, fmi3_xml_variable
         if (variable->initial != (char)fmi3_initial_enu_calculated) {
             fmi3_xml_parse_error(context,
                     "Start attribute is required for this causality, variability and initial combination");
-            hasStart = 1;
         }
     } else {
         /* If initial = calculated, it is not allowed to provide a start value. */
@@ -582,7 +581,7 @@ int fmi3_xml_handle_FloatVariable(fmi3_xml_parser_context_t* context, const char
         assert(!variable->typeBase);
 
         /* Get declared type: either one of the basic types, or user defined */
-        declaredType = fmi3_get_declared_type(context, elmID, defaultType);
+        declaredType = fmi3_get_declared_type(context, elmID, &defaultType->typeBase);
         if (!declaredType) return -1;
 
         /* Set type properties */
@@ -668,11 +667,11 @@ int fmi3_xml_handle_FloatVariable(fmi3_xml_parser_context_t* context, const char
 }
 
 /* Create handle_FloatXX wrappers */
-#define def_handle_float_variable(BITNESS) \
-    int fmi3_xml_handle_Float##BITNESS##Variable(fmi3_xml_parser_context_t* context, const char* data) { \
-        return fmi3_xml_handle_FloatVariable(context, data, fmi3_xml_elmID_Float##BITNESS, \
-                &context->modelDescription->typeDefinitions.defaultFloat##BITNESS##Type.typeBase, \
-                fmi3_bitness_##BITNESS); \
+#define def_handle_float_variable(BITNESS)                                                                  \
+    int fmi3_xml_handle_Float##BITNESS##Variable(fmi3_xml_parser_context_t* context, const char* data) {    \
+        return fmi3_xml_handle_FloatVariable(context, data, fmi3_xml_elmID_Float##BITNESS,                  \
+                &context->modelDescription->typeDefinitions.defaultFloat##BITNESS##Type,                    \
+                fmi3_bitness_##BITNESS);                                                                    \
     }
 
 def_handle_float_variable(64)

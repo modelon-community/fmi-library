@@ -56,12 +56,42 @@ fmi3_base_type_enu_t fmi3_xml_get_base_type(fmi3_xml_variable_typedef_t*);
 
 /* Boolean and String has no extra attributes -> not needed*/
 
+fmi3_xml_float_typedef_t* fmi3_xml_get_type_as_float(fmi3_xml_variable_typedef_t* t);
 fmi3_xml_real_typedef_t* fmi3_xml_get_type_as_real(fmi3_xml_variable_typedef_t*);
 fmi3_xml_integer_typedef_t* fmi3_xml_get_type_as_int(fmi3_xml_variable_typedef_t*);
 fmi3_xml_enumeration_typedef_t* fmi3_xml_get_type_as_enum(fmi3_xml_variable_typedef_t*);
 
 /* Note that NULL-pointer is always returned for strings and booleans */
 const char* fmi3_xml_get_type_quantity(fmi3_xml_variable_typedef_t*);
+
+/**
+ * Below functions are manually generated and then beautified from this macro.
+ * If functions/macro needs to be updated, edit the macro, preprocess it, beautify the output
+ * (replace __NEWLINE__ with a newline), and then replace the code below:
+ * TODO: automate this in build
+------------------------------------------------------------------------------------------------------------------------
+#define GEN_PROTO_xml_get_type_XX(XX, TYPE, TYPE_SIZE) \
+    fmi3_##TYPE_SIZE##_t fmi3_xml_get_##TYPE_SIZE##_type##XX(fmi3_xml_##TYPE##_typedef_t*);
+
+GEN_PROTO_get_type_XX(_min,     float, float64)
+GEN_PROTO_get_type_XX(_max,     float, float64)
+GEN_PROTO_get_type_XX(_nominal, float, float64)
+GEN_PROTO_get_type_XX(_min,     float, float32)
+GEN_PROTO_get_type_XX(_max,     float, float32)
+GEN_PROTO_get_type_XX(_nominal, float, float32)
+
+#undef GEN_PROTO_get_type_XX
+------------------------------------------------------------------------------------------------------------------------
+*/
+/* START: GEN_PROTO_get_type_XX */
+fmi3_float64_t fmi3_xml_get_float64_type_min(fmi3_xml_float_typedef_t*);
+fmi3_float64_t fmi3_xml_get_float64_type_max(fmi3_xml_float_typedef_t*);
+fmi3_float64_t fmi3_xml_get_float64_type_nominal(fmi3_xml_float_typedef_t*);
+fmi3_float32_t fmi3_xml_get_float32_type_min(fmi3_xml_float_typedef_t*);
+fmi3_float32_t fmi3_xml_get_float32_type_max(fmi3_xml_float_typedef_t*);
+fmi3_float32_t fmi3_xml_get_float32_type_nominal(fmi3_xml_float_typedef_t*);
+/* END: GEN_PROTO_get_type_XX */
+
 
 double fmi3_xml_get_real_type_min(fmi3_xml_real_typedef_t*);
 double fmi3_xml_get_real_type_max(fmi3_xml_real_typedef_t*);

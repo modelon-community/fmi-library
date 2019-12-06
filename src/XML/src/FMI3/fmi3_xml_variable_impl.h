@@ -48,6 +48,10 @@ struct fmi3_xml_variable_t {
     char reinit; /** \brief Only for continuous Real variables */
     char canHandleMultipleSetPerTimeInstant;
 
+    /* array fields */
+    jm_vector(jm_voidp)* dimensionsVector; /* stores the dimensions and their attributes */
+    fmi3_integer_t* dimensionsArray; /* dynamic memory storage for resolved dimensions (i.e. vr's are dereferenced) */
+
     char name[1];
 };
 

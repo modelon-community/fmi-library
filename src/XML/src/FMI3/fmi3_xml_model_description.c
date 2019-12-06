@@ -104,6 +104,9 @@ fmi3_xml_model_description_t * fmi3_xml_allocate_model_description( jm_callbacks
 
 void fmi3_xml_clear_model_description( fmi3_xml_model_description_t* md) {
 
+    void(*cb_free)(const char*) = (void(*)(const char*))md->callbacks->free;
+    size_t i; /* loop variable */
+
     md->status = fmi3_xml_model_description_enu_empty;
     jm_vector_free_data(char)(&md->fmi3_xml_standard_version);
     jm_vector_free_data(char)(&md->modelName);
@@ -150,7 +153,14 @@ void fmi3_xml_clear_model_description( fmi3_xml_model_description_t* md) {
 
     fmi3_xml_free_type_definitions_data(&md->typeDefinitions);
 
-    jm_named_vector_free_data(&md->variablesByName);
+    /* free 'dimensions' for all variables */
+    for (i = 0; i < jm_vector_get_size(jm_voidp)(md->variablesByVR); i++) {
+        fmi3_xml_variable_t* var = (fmi3_xml_variable_t*)jm_vector_get_item(jm_voidp)(md->variablesByVR, i);
+        jm_vector_foreach(jm_voidp)(var->dimensionsVector, cb_free);
+        jm_vector_free(jm_voidp)(var->dimensionsVector);
+        cb_free(var->dimensionsArray);
+    }
+
 	if(md->variablesOrigOrder) {
 		jm_vector_free(jm_voidp)(md->variablesOrigOrder);
 		md->variablesOrigOrder = 0;
@@ -686,7 +696,7 @@ fmi3_xml_variable_t* fmi3_xml_get_variable_by_vr(fmi3_xml_model_description_t* m
 	key.vr = vr;
     key.aliasKind = fmi3_variable_is_not_alias;
 
-    found = jm_vector_bsearch(jm_voidp)(md->variablesByVR,(void**)&pkey, fmi3_xml_compare_vr);
+    found = jm_vector_bsearch(jm_voidp)(md->variablesByVR, (void**)&pkey, fmi3_xml_compare_vr);
     if(!found) return 0;
     v = (fmi3_xml_variable_t*)(*found);
     return v;

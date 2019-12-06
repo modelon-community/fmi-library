@@ -54,7 +54,21 @@ fmi3_base_type_enu_t fmi3_import_get_variable_base_type(fmi3_import_variable_t* 
 	return fmi3_xml_get_variable_base_type(v);
 }
 
-int   fmi3_import_get_variable_has_start(fmi3_import_variable_t* v) {
+fmi3_float64_t* fmi3_import_get_float64_variable_start_array(fmi3_import_variable_t* v) {
+    /* TODO: NYI */
+	return 0;
+}
+
+void fmi3_import_variable_get_dimensions(fmi3_import_t* fmu, fmi3_import_variable_t* v, const int** dimensions, size_t* nDimensions) {
+    fmi3_xml_variable_get_dimensions(v, fmu->md, dimensions, nDimensions);
+}
+
+int fmi3_import_variable_is_array(fmi3_import_variable_t* v) {
+	return fmi3_xml_variable_is_array(v);
+}
+
+
+int fmi3_import_get_variable_has_start(fmi3_import_variable_t* v) {
 	return fmi3_xml_get_variable_has_start(v);
 }
 

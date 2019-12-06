@@ -113,6 +113,7 @@ typedef enum fmi3_xml_attr_enu_t {
     EXPAND_XML_ELMNAME(VendorAnnotations) \
     EXPAND_XML_ELMNAME(Tool) \
     EXPAND_XML_ELMNAME(ModelVariables) \
+    EXPAND_XML_ELMNAME(Dimension) \
     EXPAND_XML_ELMNAME(Annotations) \
 	EXPAND_XML_ELMNAME(LogCategories) \
 	EXPAND_XML_ELMNAME(Category) \

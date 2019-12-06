@@ -79,7 +79,7 @@ FMILIB_EXPORT const char* fmi3_import_get_variable_description(fmi3_import_varia
 /** \brief Get variable value reference */
 FMILIB_EXPORT fmi3_value_reference_t fmi3_import_get_variable_vr(fmi3_import_variable_t*);
 
-/**   \brief For scalar variable gives the type definition is present
+/** \brief For scalar variable gives the type definition is present
 	@return Pointer of a type #fmi3_import_variable_typedef_t object or NULL of not present.
 */
 FMILIB_EXPORT fmi3_import_variable_typedef_t* fmi3_import_get_variable_declared_type(fmi3_import_variable_t*);
@@ -87,8 +87,27 @@ FMILIB_EXPORT fmi3_import_variable_typedef_t* fmi3_import_get_variable_declared_
 /** \brief Get variable base type */
 FMILIB_EXPORT fmi3_base_type_enu_t fmi3_import_get_variable_base_type(fmi3_import_variable_t*);
 
+/* TODO: update API doc for array related functions */
+
+/** \brief Get the start values of an array variable
+    @return Pointer to array with start values. Total length of array is given by product of the dimensions given by 
+        #fmi3_import_variable_get_dimensions
+*/
+FMILIB_EXPORT fmi3_float64_t* fmi3_import_get_float64_variable_start_array(fmi3_import_variable_t* v);
+
+/** \brief Get the size of the dimensions of an array variable
+    @return Pointer to array of dimension sizes. Length of this array is given by
+        #fmi3_import_variable_get_number_dimensions TODO
+*/
+FMILIB_EXPORT void fmi3_import_variable_get_dimensions(fmi3_import_t* fmu, fmi3_import_variable_t* v, const int** dimensions, size_t* nDimensions);
+
+/**   \brief Check if the variable is an array.
+	@return True if array, false if scalar.
+*/
+FMILIB_EXPORT int fmi3_import_variable_is_array(fmi3_import_variable_t*);
+
 /** \brief Check if the variable has "start" attribute */
-FMILIB_EXPORT int   fmi3_import_get_variable_has_start(fmi3_import_variable_t*);
+FMILIB_EXPORT int fmi3_import_get_variable_has_start(fmi3_import_variable_t*);
 
 /** \brief Get variability attribute */
 FMILIB_EXPORT fmi3_variability_enu_t fmi3_import_get_variability(fmi3_import_variable_t*);

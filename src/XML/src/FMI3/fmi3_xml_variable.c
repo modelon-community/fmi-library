@@ -26,6 +26,27 @@
 
 static const char* module = "FMI3XML";
 
+typedef struct fmi3_xml_dimension_t {
+    int is_vr;
+    fmi3_integer_t value; /* if is_vr: ref to other variable that holds the size, else the actual size */
+} fmi3_xml_dimension_t;
+
+fmi3_integer_t fmi3_xml_dimension_get_size(fmi3_xml_model_description_t* md, fmi3_xml_dimension_t dim) {
+    if (!dim.is_vr) {
+        return dim.value;
+    } else {
+        fmi3_integer_t vr = dim.value;
+        fmi3_xml_integer_variable_t* varRef = fmi3_xml_get_variable_as_integer(fmi3_xml_get_variable_by_vr(md, fmi3_base_type_int, vr));
+        
+        fmi3_integer_t start = fmi3_xml_get_integer_variable_start(varRef);
+        if (!start) {
+            assert(0); /* TODO: log error (start > 0 must exist in xml) */
+        }
+
+        return start;
+    }
+}
+
 const char* fmi3_xml_get_variable_name(fmi3_xml_variable_t* v) {
     return v->name;
 }
@@ -111,6 +132,33 @@ fmi3_xml_variable_typedef_t* fmi3_xml_get_variable_declared_type(fmi3_xml_variab
 fmi3_base_type_enu_t fmi3_xml_get_variable_base_type(fmi3_xml_variable_t* v) {
     fmi3_xml_variable_type_base_t* type = v->typeBase;
     return (type->baseType);
+}
+
+void fmi3_xml_variable_get_dimensions(fmi3_xml_variable_t* v, fmi3_xml_model_description_t* md, const int** dimensions, size_t* nDimensions) {
+    jm_vector(jm_voidp)* dimsVec = v->dimensionsVector;
+    fmi3_integer_t* dimsArr = v->dimensionsArray; /* has already been allocated */
+    size_t nDims = jm_vector_get_size(jm_voidp)(dimsVec);
+    size_t i;
+
+    /* copy from vector to array and resolve valueReferences as necessary */
+    for (i = 0; i < nDims; i++) {
+        fmi3_xml_dimension_t* d = (fmi3_xml_dimension_t*)jm_vector_get_item(jm_voidp)(dimsVec, i);
+        if (d->is_vr) {
+            /* only find static start value here, we might need a similar method (get_dimensions) during runtime as well */
+            fmi3_xml_integer_variable_t* var = (fmi3_xml_integer_variable_t*)fmi3_xml_get_variable_by_vr(md, fmi3_base_type_int, d->value);
+            *(dimsArr + i) = fmi3_xml_get_integer_variable_start(var);
+        } else { /* value was stored as start attribute */
+            *(dimsArr + i) = d->value;
+        }
+    }
+
+    *dimensions = (const int*)dimsArr;
+    *nDimensions = nDims;
+    return;
+}
+
+int fmi3_xml_variable_is_array(fmi3_xml_variable_t* v) {
+    return jm_vector_get_size(jm_voidp)(v->dimensionsVector) > 0;
 }
 
 int fmi3_xml_get_variable_has_start(fmi3_xml_variable_t* v) {
@@ -396,9 +444,9 @@ int fmi3_xml_handle_Variable(fmi3_xml_parser_context_t *context, const char* dat
             fmi3_xml_parse_fatal(context, "Could not allocate memory");
             return -1;
         }
+        variable = pnamed->ptr;
 
         /* Initialize rest of Variable */
-        variable = pnamed->ptr;
         variable->vr = vr;
         variable->description = description;
         /* default values */
@@ -409,6 +457,7 @@ int fmi3_xml_handle_Variable(fmi3_xml_parser_context_t *context, const char* dat
         variable->aliasKind = fmi3_variable_is_not_alias;
         variable->reinit = 0;
         variable->canHandleMultipleSetPerTimeInstant = 1;
+        variable->dimensionsVector = jm_vector_alloc(jm_voidp)(0, 0, context->callbacks);
 
         /* TODO: convert to function? */
         {
@@ -438,7 +487,7 @@ int fmi3_xml_handle_Variable(fmi3_xml_parser_context_t *context, const char* dat
             unsigned int causality, variability, initial;
             fmi3_initial_enu_t defaultInitial;
             /* <xs:attribute name="causality" default="local"> */
-            if(fmi3_xml_set_attr_enum(context, elm_id, fmi_attr_id_causality,0,&causality,fmi3_causality_enu_local,causalityConventionMap))
+            if (fmi3_xml_set_attr_enum(context, elm_id, fmi_attr_id_causality, 0, &causality, fmi3_causality_enu_local, causalityConventionMap))
                 causality = fmi3_causality_enu_local;
             variable->causality = causality;
             /*  <xs:attribute name="variability" default="continuous"> */
@@ -498,10 +547,9 @@ int fmi3_xml_handle_Variable(fmi3_xml_parser_context_t *context, const char* dat
         }
     }
     else { /* end of xml tag */
-        if(context->skipOneVariableFlag) {
+        if (context->skipOneVariableFlag) {
             context->skipOneVariableFlag = 0;
-        }
-        else {
+        } else {
             /* check that the type for the variable is set */
             fmi3_xml_model_description_t* md = context->modelDescription;
             fmi3_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
@@ -510,6 +558,22 @@ int fmi3_xml_handle_Variable(fmi3_xml_parser_context_t *context, const char* dat
 
                 return fmi3_xml_handle_RealVariable(context, NULL);
             }
+
+            /* allocate memory for the resolved dimensions; the main reason to do it here is
+             * because we have access to the callbacks */
+            {
+                fmi3_integer_t* dimsArr;
+                size_t nDims = jm_vector_get_size(jm_voidp)(variable->dimensionsVector);
+
+                dimsArr = context->callbacks->malloc(nDims * sizeof(fmi3_integer_t));
+                if (!dimsArr) {
+                    jm_log_error(context->callbacks, module, "Error: Unable to allocate memory for dimension as array");
+                    return -1;
+                }
+
+                variable->dimensionsArray = dimsArr;
+            }
+
         }
         /* might give out a warning if(data[0] != 0) */
     }
@@ -560,6 +624,66 @@ static void fmi3_log_error_if_start_required(
     }
 }
 
+int fmi3_xml_handle_Dimension(fmi3_xml_parser_context_t* context, const char* data) {
+    
+    if (context->skipOneVariableFlag) {
+        return 0; /* skip nested variable element */
+    }
+
+    if (!data) { /* start of tag */
+
+        fmi3_xml_variable_t* currentVar = jm_vector_get_last(jm_named_ptr)(&context->modelDescription->variablesByName).ptr;
+        fmi3_xml_dimension_t* dim;
+        fmi3_xml_attr_enu_t attrId;
+        int hasStart;
+        int hasVr;
+        
+        /* allocate */
+        dim = context->callbacks->malloc(sizeof(fmi3_xml_dimension_t));
+        if (!dim) {
+            jm_log_error(context->callbacks, module, "Error: Unable to allocate memory for dimension data");
+            return -1;
+        }
+
+        /* handle attributes*/
+        hasStart = fmi3_xml_is_attr_defined(context, fmi_attr_id_start);
+        hasVr = fmi3_xml_is_attr_defined(context, fmi_attr_id_valueReference);
+
+        /* error check */
+        if ( !(hasStart || hasVr) ) {
+            jm_log_error(context->callbacks, "Error parsing Dimension: no attribute 'start' or 'valueReference' found", "");
+            return -1;
+        } else if (hasStart && hasVr) {
+            jm_log_error(context->callbacks, "Error parsing Dimension: mutually exclusive attributes 'start' and 'valueReference' found", "");
+            return -1;
+        }
+
+        /* set data */
+        if (hasStart) {
+            dim->is_vr = 0;
+            attrId = fmi_attr_id_start;
+        } else if (hasVr) {
+            dim->is_vr = 1;
+            attrId = fmi_attr_id_valueReference;
+        }
+        if (fmi3_xml_set_attr_int(context, fmi3_xml_elmID_Dimension, attrId, 0, &dim->value, 0)) {
+            return -1;
+        }
+
+        /* update parent variable */
+        if (!jm_vector_push_back(jm_voidp)(currentVar->dimensionsVector, dim)) {
+            jm_log_error(context->callbacks, module, "Error: Unable to allocate memory for dimension data (vector alloc failed)");
+            return -1;
+        }
+
+    } else { /* end of tag */
+        /* do nothing */
+    }
+
+    return 0;
+}
+
+
 int fmi3_xml_handle_FloatVariable(fmi3_xml_parser_context_t* context, const char* data,
         fmi3_xml_elm_enu_t elmID, /* ID of the Type (not the Variable) */
         fmi3_xml_float_type_props_t* defaultType,
@@ -580,7 +704,7 @@ int fmi3_xml_handle_FloatVariable(fmi3_xml_parser_context_t* context, const char
 
         assert(!variable->typeBase);
 
-        /* Get declared type: either one of the basic types, or user defined */
+        /* Get declared type: either a default or user defined */
         declaredType = fmi3_get_declared_type(context, elmID, &defaultType->typeBase);
         if (!declaredType) return -1;
 
@@ -596,11 +720,13 @@ int fmi3_xml_handle_FloatVariable(fmi3_xml_parser_context_t* context, const char
             int hasUnb = fmi3_xml_is_attr_defined(context, fmi_attr_id_unbounded);
 
             if (hasUnit || hasMin || hasMax || hasNom || hasQuan || hasRelQ || hasUnb) {
-                fmi3_xml_float_type_props_t* props = 0;
+                /* create a new type_props that overrides declared type's properties when necessary */
+
+                fmi3_xml_float_type_props_t* props = 0; /* properties of the declared type */
 
                 if (declaredType->structKind == fmi3_xml_type_struct_enu_typedef)
                     props = (fmi3_xml_float_type_props_t*)(declaredType->baseTypeStruct);
-                else
+                else /* default type */
                     props = (fmi3_xml_float_type_props_t*)declaredType;
 
                 fmi3_xml_reserve_parse_buffer(context, 1, 0);
@@ -661,6 +787,8 @@ int fmi3_xml_handle_FloatVariable(fmi3_xml_parser_context_t* context, const char
         }
     } else {
         /* don't do anything. might give out a warning if(data[0] != 0) */
+
+        /* TODO: verify that dimension size == number of array start attribute values */
         return 0;
     }
     return 0;

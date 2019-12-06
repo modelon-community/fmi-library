@@ -42,6 +42,8 @@ set(XML_MF_PATH ${FMU2_DUMMY_FOLDER}/modelDescription_malformed.xml)
 
 set(VARIALBE_TEST_MODEL_DESC_DIR
     ${RTTESTDIR}/FMI2/parser_test_xmls/variable_test)
+set(DEFAULT_EXPERIMENT_MODEL_DESC_DIR
+    ${RTTESTDIR}/FMI2/parser_test_xmls/default_experiment/) # Trailing '/' necessary (for building system independent path)
 set(VARIABLE_NO_TYPE_MODEL_DESC_DIR
     ${RTTESTDIR}/FMI2/parser_test_xmls/variable_no_type)
 set(VARIABLE_BAD_VARIABILITY_CAUSALITY_MODEL_DESC_DIR
@@ -79,6 +81,8 @@ add_executable (fmi2_import_cs_test ${RTTESTDIR}/FMI2/fmi2_import_cs_test.c)
 target_link_libraries (fmi2_import_cs_test  ${FMILIBFORTEST})
 add_executable(fmi2_import_variable_test ${RTTESTDIR}/FMI2/fmi2_import_variable_test.c)
 target_link_libraries(fmi2_import_variable_test ${FMILIBFORTEST})
+add_executable(fmi2_import_default_experiment_test ${RTTESTDIR}/FMI2/fmi2_import_default_experiment_test.c)
+target_link_libraries(fmi2_import_default_experiment_test ${FMILIBFORTEST})
 add_executable(fmi2_variable_no_type_test
                ${RTTESTDIR}/FMI2/fmi2_variable_no_type_test.c)
 target_link_libraries(fmi2_variable_no_type_test ${FMILIBFORTEST})
@@ -93,6 +97,7 @@ set_target_properties(
     fmi2_import_xml_test
     fmi2_import_me_test fmi2_import_cs_test
     fmi2_import_variable_test
+    fmi2_import_default_experiment_test
     PROPERTIES FOLDER "Test/FMI2"
 )
 set(FAIL_NAME_CHECK 0)
@@ -110,6 +115,9 @@ add_test(ctest_fmi2_import_test_cs fmi2_import_cs_test ${FMU2_CS_PATH} ${FMU_TEM
 add_test(ctest_fmi2_import_variable_test
          fmi2_import_variable_test
          ${VARIALBE_TEST_MODEL_DESC_DIR})
+add_test(ctest_fmi2_import_default_experiment_test
+         fmi2_import_default_experiment_test
+         ${DEFAULT_EXPERIMENT_MODEL_DESC_DIR})
 add_test(ctest_fmi2_variable_no_type_test
          fmi2_variable_no_type_test
          ${VARIABLE_NO_TYPE_MODEL_DESC_DIR})
@@ -129,6 +137,7 @@ if(FMILIB_BUILD_BEFORE_TESTS)
         ctest_fmi2_import_test_me
         ctest_fmi2_import_test_cs
         ctest_fmi2_import_variable_test
+        ctest_fmi2_import_default_experiment_test
         ctest_fmi2_variable_no_type_test
         ctest_fmi2_enum_test
         ctest_fmi2_variable_bad_variability_causality_test

@@ -23,10 +23,25 @@ static fmi2_import_t *parse_xml(const char *model_desc_path)
 /* get values from DefaultExperiment */
 static int test_default_experiment_defined(fmi2_import_t *xml)
 {
+    /* TODO: test: has_ATTR */
+
     ASSERT_MSG(fmi2_import_get_default_experiment_start(xml) == 2.3, "wrong startTime");
     ASSERT_MSG(fmi2_import_get_default_experiment_stop(xml) == 3.55, "wrong stopTime");
     ASSERT_MSG(fmi2_import_get_default_experiment_tolerance(xml) == 1e-6, "wrong tolerance");
     ASSERT_MSG(fmi2_import_get_default_experiment_step(xml) == 2e-3, "wrong stepSize");
+
+    return TEST_OK;
+}
+
+/* get values from DefaultExperiment */
+static int test_default_experiment_undefined(fmi2_import_t *xml)
+{
+    /* TODO: test: has_ATTR */
+
+    ASSERT_MSG(fmi2_import_get_default_experiment_start(xml) == 0.0, "wrong default startTime");
+    ASSERT_MSG(fmi2_import_get_default_experiment_stop(xml) == 1.0, "wrong default stopTime");
+    ASSERT_MSG(fmi2_import_get_default_experiment_tolerance(xml) == 1e-4, "wrong default tolerance");
+    ASSERT_MSG(fmi2_import_get_default_experiment_step(xml) == 1e-2, "wrong default stepSize");
 
     return TEST_OK;
 }
@@ -46,6 +61,7 @@ int main(int argc, char **argv)
 
     printf("Running fmi2_import_variable_test\n");
 
+    /* test 1 */
     xml = parse_xml(strcat(strncpy(path_buf, argv[1], PATH_BUF_SIZE), "defined"));
     if (xml == NULL) {
         return CTEST_RETURN_FAIL;
@@ -53,14 +69,13 @@ int main(int argc, char **argv)
     ret &= test_default_experiment_defined(xml);
     fmi2_import_free(xml);
 
-    /*
-        xml = parse_xml(strcat(strncpy(path_buf, argv[1], PATH_BUF_SIZE), "undefined"));
-        if (xml == NULL) {
-            return CTEST_RETURN_FAIL;
-        }
-        ret &= test_default_experiment_undefined(xml2);
-        fmi2_import_free(xml);
-    */
+    /* test 2 */
+    xml = parse_xml(strcat(strncpy(path_buf, argv[1], PATH_BUF_SIZE), "undefined"));
+    if (xml == NULL) {
+        return CTEST_RETURN_FAIL;
+    }
+    ret &= test_default_experiment_undefined(xml);
+    fmi2_import_free(xml);
 
     return ret == 0 ? CTEST_RETURN_FAIL : CTEST_RETURN_SUCCESS;
 #undef PATH_BUF_SIZE

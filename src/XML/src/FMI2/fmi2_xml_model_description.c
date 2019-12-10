@@ -264,21 +264,35 @@ int fmi2_xml_get_default_experiment_has_step(fmi2_xml_model_description_t* md) {
     return md->defaultExperiment.stepSizeDefined;
 }
 
+#define LOG_WARN_IF_ATTR_NOT_DEFINED(ATTRIBUTE) \
+    if (!fmi2_xml_get_default_experiment_has_##ATTRIBUTE (md)) { \
+        jm_log(md->callbacks, module, jm_log_level_warning, "fmi2_xml_get_default_experiment_" #ATTRIBUTE ": returning default value, since no attribute was defined in modelDescription"); \
+    }
+
 double fmi2_xml_get_default_experiment_start(fmi2_xml_model_description_t* md) {
+    LOG_WARN_IF_ATTR_NOT_DEFINED(start);
+
     return md->defaultExperiment.startTime;
 }
 
 double fmi2_xml_get_default_experiment_stop(fmi2_xml_model_description_t* md) {
+    LOG_WARN_IF_ATTR_NOT_DEFINED(stop);
+
     return md->defaultExperiment.stopTime;
 }
 
 double fmi2_xml_get_default_experiment_tolerance(fmi2_xml_model_description_t* md) {
+    LOG_WARN_IF_ATTR_NOT_DEFINED(tolerance);
+
     return md->defaultExperiment.tolerance;
 }
 
 double fmi2_xml_get_default_experiment_step(fmi2_xml_model_description_t* md) {
+    LOG_WARN_IF_ATTR_NOT_DEFINED(step);
+
     return md->defaultExperiment.stepSize;
 }
+#undef LOG_WARN_IF_ATTR_NOT_DEFINED
 
 fmi2_fmu_kind_enu_t fmi2_xml_get_fmu_kind(fmi2_xml_model_description_t* md) {
 	return md->fmuKind;

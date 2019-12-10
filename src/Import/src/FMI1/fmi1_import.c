@@ -225,6 +225,33 @@ unsigned int fmi1_import_get_number_of_event_indicators(fmi1_import_t* fmu) {
 	return fmi1_xml_get_number_of_event_indicators(fmu->md);
 }
 
+int fmi1_import_get_default_experiment_has_start(fmi1_import_t* fmu) {
+	if(!fmu->md) {
+		jm_log_error(fmu->callbacks, module,"No FMU is loaded");
+		return 0;
+	}
+
+	return fmi1_xml_get_default_experiment_has_start(fmu->md);
+}
+
+int fmi1_import_get_default_experiment_has_stop(fmi1_import_t* fmu) {
+	if(!fmu->md) {
+		jm_log_error(fmu->callbacks, module,"No FMU is loaded");
+		return 0;
+	}
+
+	return fmi1_xml_get_default_experiment_has_stop(fmu->md);
+}
+
+int fmi1_import_get_default_experiment_has_tolerance(fmi1_import_t* fmu) {
+	if(!fmu->md) {
+		jm_log_error(fmu->callbacks, module,"No FMU is loaded");
+		return 0;
+	}
+
+	return fmi1_xml_get_default_experiment_has_tolerance(fmu->md);
+}
+
 double fmi1_import_get_default_experiment_start(fmi1_import_t* fmu) {
 	if(!fmu->md) {
 		jm_log_error(fmu->callbacks, module,"No FMU is loaded");

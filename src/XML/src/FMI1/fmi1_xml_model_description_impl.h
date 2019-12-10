@@ -24,6 +24,18 @@ typedef enum fmi1_xml_model_description_status_enu_t {
     fmi1_xml_model_description_enu_error
 } fmi1_xml_model_description_status_enu_t;
 
+#define FMI1_DEFAULT_EXPERIMENT_TOLERANCE 1e-4
+typedef struct fmi1_xml_default_experiment {
+    double  startTime;
+    int     startTimeDefined;
+
+    double  stopTime;
+    int     stopTimeDefined;
+
+    double  tolerance;
+    int     toleranceDefined;
+} fmi1_xml_default_experiment;
+
 /*  ModelDescription is the entry point for the package*/
 struct fmi1_xml_model_description_t {
 
@@ -53,13 +65,7 @@ struct fmi1_xml_model_description_t {
 
     unsigned int numberOfEventIndicators;
 
-    double defaultExperimentStartTime;
-
-    double defaultExperimentStopTime;
-
-#define FMI1_DEFAULT_EXPERIMENT_TOLERANCE 1e-4
-
-    double defaultExperimentTolerance;
+    fmi1_xml_default_experiment defaultExperiment;
 
     jm_vector(jm_voidp) vendorList;
 

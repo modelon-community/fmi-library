@@ -187,16 +187,16 @@ unsigned int fmi1_xml_get_number_of_continuous_states(fmi1_xml_model_description
 
 unsigned int fmi1_xml_get_number_of_event_indicators(fmi1_xml_model_description_t* md);
 
+int fmi1_xml_get_default_experiment_has_start(fmi1_xml_model_description_t* md);
+int fmi1_xml_get_default_experiment_has_stop(fmi1_xml_model_description_t* md);
+int fmi1_xml_get_default_experiment_has_tolerance(fmi1_xml_model_description_t* md);
+
 double fmi1_xml_get_default_experiment_start(fmi1_xml_model_description_t* md);
-
-void fmi1_xml_set_default_experiment_start(fmi1_xml_model_description_t* md, double);
-
 double fmi1_xml_get_default_experiment_stop(fmi1_xml_model_description_t* md);
-
-void fmi1_xml_set_default_experiment_stop(fmi1_xml_model_description_t* md, double);
-
 double fmi1_xml_get_default_experiment_tolerance(fmi1_xml_model_description_t* md);
 
+void fmi1_xml_set_default_experiment_start(fmi1_xml_model_description_t* md, double);
+void fmi1_xml_set_default_experiment_stop(fmi1_xml_model_description_t* md, double);
 void fmi1_xml_set_default_experiment_tolerance(fmi1_xml_model_description_t* md, double);
 
 fmi1_fmu_kind_enu_t fmi1_xml_get_fmu_kind(fmi1_xml_model_description_t* md);

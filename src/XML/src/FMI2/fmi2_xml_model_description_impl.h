@@ -23,8 +23,6 @@ typedef enum fmi2_xml_model_description_status_enu_t {
     fmi2_xml_model_description_enu_error
 } fmi2_xml_model_description_status_enu_t;
 
-
-
 #define FMI2_DEFAULT_EXPERIMENT_TOLERANCE 1e-4
 #define FMI2_DEFAULT_EXPERIMENT_STEPSIZE 1e-2
 typedef struct fmi2_xml_default_experiment {
@@ -40,7 +38,6 @@ typedef struct fmi2_xml_default_experiment {
     double  stepSize;
     int     stepSizeDefined;
 } fmi2_xml_default_experiment;
-
 
 /*  ModelDescription is the entry point for the package*/
 struct fmi2_xml_model_description_t {

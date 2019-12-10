@@ -58,11 +58,11 @@ fmi1_xml_model_description_t * fmi1_xml_allocate_model_description( jm_callbacks
     md->numberOfContinuousStates = 0;
     md->numberOfEventIndicators = 0;
 
-    md->defaultExperimentStartTime = 0;
+    md->defaultExperiment.startTime = 0;
 
-    md->defaultExperimentStopTime = 1.0;
+    md->defaultExperiment.stopTime = 1.0;
 
-    md->defaultExperimentTolerance = FMI1_DEFAULT_EXPERIMENT_TOLERANCE;
+    md->defaultExperiment.tolerance = FMI1_DEFAULT_EXPERIMENT_TOLERANCE;
 
     jm_vector_init(jm_voidp)(&md->vendorList, 0, cb);
 
@@ -114,11 +114,9 @@ void fmi1_xml_clear_model_description( fmi1_xml_model_description_t* md) {
     md->numberOfContinuousStates = 0;
     md->numberOfEventIndicators = 0;
 
-    md->defaultExperimentStartTime = 0;
-
-    md->defaultExperimentStopTime = 0;
-
-    md->defaultExperimentTolerance = 0;
+    md->defaultExperiment.startTime = 0;
+    md->defaultExperiment.stopTime = 0;
+    md->defaultExperiment.tolerance = 0;
 
     jm_vector_foreach(jm_voidp)(&md->vendorList, (void(*)(void*))fmi1_xml_vendor_free);
     jm_vector_free_data(jm_voidp)(&md->vendorList);
@@ -234,29 +232,50 @@ unsigned int fmi1_xml_get_number_of_event_indicators(fmi1_xml_model_description_
     return md->numberOfEventIndicators;
 }
 
+int fmi1_xml_get_default_experiment_has_start(fmi1_xml_model_description_t* md) {
+    return md->defaultExperiment.startTimeDefined;
+}
+
+int fmi1_xml_get_default_experiment_has_stop(fmi1_xml_model_description_t* md) {
+    return md->defaultExperiment.stopTimeDefined;
+}
+
+int fmi1_xml_get_default_experiment_has_tolerance(fmi1_xml_model_description_t* md) {
+    return md->defaultExperiment.toleranceDefined;
+}
+
+#define LOG_WARN_IF_ATTR_NOT_DEFINED(ATTRIBUTE) \
+    if (!fmi1_xml_get_default_experiment_has_##ATTRIBUTE (md)) { \
+        jm_log(md->callbacks, module, jm_log_level_warning, "fmi1_xml_get_default_experiment_" #ATTRIBUTE ": returning default value, since no attribute was defined in modelDescription"); \
+    }
+
 double fmi1_xml_get_default_experiment_start(fmi1_xml_model_description_t* md) {
-    return md->defaultExperimentStartTime;
+    LOG_WARN_IF_ATTR_NOT_DEFINED(start);
+    return md->defaultExperiment.startTime;
 }
 
 void fmi1_xml_set_default_experiment_start(fmi1_xml_model_description_t* md, double t){
-    md->defaultExperimentStartTime = t;
+    md->defaultExperiment.startTime = t;
 }
 
 double fmi1_xml_get_default_experiment_stop(fmi1_xml_model_description_t* md){
-    return md->defaultExperimentStopTime;
+    LOG_WARN_IF_ATTR_NOT_DEFINED(stop);
+    return md->defaultExperiment.stopTime;
 }
 
 void fmi1_xml_set_default_experiment_stop(fmi1_xml_model_description_t* md, double t){
-    md->defaultExperimentStopTime = t;
+    md->defaultExperiment.stopTime = t;
 }
 
 double fmi1_xml_get_default_experiment_tolerance(fmi1_xml_model_description_t* md){
-    return md->defaultExperimentTolerance;
+    LOG_WARN_IF_ATTR_NOT_DEFINED(tolerance);
+    return md->defaultExperiment.tolerance;
 }
 
 void fmi1_xml_set_default_experiment_tolerance(fmi1_xml_model_description_t* md, double tol){
-    md->defaultExperimentTolerance = tol;
+    md->defaultExperiment.tolerance = tol;
 }
+#undef LOG_WARN_IF_ATTR_NOT_DEFINED
 
 fmi1_xml_vendor_list_t* fmi1_xml_get_vendor_list(fmi1_xml_model_description_t* md) {
 	assert(md);
@@ -347,13 +366,21 @@ int fmi1_xml_handle_DefaultExperiment(fmi1_xml_parser_context_t *context, const 
     if(!data) {
         fmi1_xml_model_description_t* md = context->modelDescription;
         /* process the attributes */
+
+        /* save if attributes are defined */
+        md->defaultExperiment.startTimeDefined  = fmi1_xml_is_attr_defined(context, fmi_attr_id_startTime);
+        md->defaultExperiment.stopTimeDefined   = fmi1_xml_is_attr_defined(context, fmi_attr_id_stopTime);
+        md->defaultExperiment.toleranceDefined  = fmi1_xml_is_attr_defined(context, fmi_attr_id_tolerance);
+
+        /* save attribute values: from XML if exists, else defaults */
+        /* NOTE: the default values are hard-coded in the API documentation as well */
         return (
         /* <xs:attribute name="startTime" type="xs:double"/> */
-                    fmi1_xml_set_attr_double(context, fmi1_xml_elmID_DefaultExperiment, fmi_attr_id_startTime, 0, &md->defaultExperimentStartTime, 0) ||
+                    fmi1_xml_set_attr_double(context, fmi1_xml_elmID_DefaultExperiment, fmi_attr_id_startTime, 0, &md->defaultExperiment.startTime, 0) ||
         /* <xs:attribute name="stopTime" type="xs:double"/>  */
-                    fmi1_xml_set_attr_double(context, fmi1_xml_elmID_DefaultExperiment, fmi_attr_id_stopTime, 0, &md->defaultExperimentStopTime, 1) ||
+                    fmi1_xml_set_attr_double(context, fmi1_xml_elmID_DefaultExperiment, fmi_attr_id_stopTime, 0, &md->defaultExperiment.stopTime, 1) ||
         /* <xs:attribute name="tolerance" type="xs:double">  */
-                    fmi1_xml_set_attr_double(context, fmi1_xml_elmID_DefaultExperiment, fmi_attr_id_tolerance, 0, &md->defaultExperimentTolerance, FMI1_DEFAULT_EXPERIMENT_TOLERANCE)
+                    fmi1_xml_set_attr_double(context, fmi1_xml_elmID_DefaultExperiment, fmi_attr_id_tolerance, 0, &md->defaultExperiment.tolerance, FMI1_DEFAULT_EXPERIMENT_TOLERANCE)
                     );
     }
     else {

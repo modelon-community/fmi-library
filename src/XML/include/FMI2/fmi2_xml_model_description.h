@@ -190,12 +190,14 @@ size_t fmi2_xml_get_number_of_continuous_states(fmi2_xml_model_description_t* md
 
 size_t fmi2_xml_get_number_of_event_indicators(fmi2_xml_model_description_t* md);
 
+int fmi2_xml_get_default_experiment_has_start(fmi2_xml_model_description_t* md);
+int fmi2_xml_get_default_experiment_has_stop(fmi2_xml_model_description_t* md);
+int fmi2_xml_get_default_experiment_has_tolerance(fmi2_xml_model_description_t* md);
+int fmi2_xml_get_default_experiment_has_step(fmi2_xml_model_description_t* md);
+
 double fmi2_xml_get_default_experiment_start(fmi2_xml_model_description_t* md);
-
 double fmi2_xml_get_default_experiment_stop(fmi2_xml_model_description_t* md);
-
 double fmi2_xml_get_default_experiment_tolerance(fmi2_xml_model_description_t* md);
-
 double fmi2_xml_get_default_experiment_step(fmi2_xml_model_description_t* md);
 
 fmi2_fmu_kind_enu_t fmi2_xml_get_fmu_kind(fmi2_xml_model_description_t* md);

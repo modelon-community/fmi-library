@@ -180,16 +180,16 @@ FMILIB_EXPORT size_t fmi2_import_get_number_of_continuous_states(fmi2_import_t* 
 /** \brief Get the number of event indicators. */
 FMILIB_EXPORT size_t fmi2_import_get_number_of_event_indicators(fmi2_import_t* fmu);
 
-/** \brief Get if the start time for default experiment is specified in the XML file. */
+/** \brief Check if the start time for default experiment is specified in the XML file. */
 FMILIB_EXPORT int fmi2_import_get_default_experiment_has_start(fmi2_import_t* fmu);
 
-/** \brief Get if the stop time for default experiment is specified in the XML file. */
+/** \brief Check if the stop time for default experiment is specified in the XML file. */
 FMILIB_EXPORT int fmi2_import_get_default_experiment_has_stop(fmi2_import_t* fmu);
 
-/** \brief Get if the tolerance for default experiment is specified in the XML file. */
+/** \brief Check if the tolerance for default experiment is specified in the XML file. */
 FMILIB_EXPORT int fmi2_import_get_default_experiment_has_tolerance(fmi2_import_t* fmu);
 
-/** \brief Get if the step size time for default experiment is specified in the XML file. */
+/** \brief Check if the step size time for default experiment is specified in the XML file. */
 FMILIB_EXPORT int fmi2_import_get_default_experiment_has_step(fmi2_import_t* fmu);
 
 /** \brief Get the start time for default experiment as specified in the XML file.

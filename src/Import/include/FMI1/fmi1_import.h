@@ -169,13 +169,13 @@ FMILIB_EXPORT unsigned int fmi1_import_get_number_of_continuous_states(fmi1_impo
 /** \brief Get the number of event indicators. */
 FMILIB_EXPORT unsigned int fmi1_import_get_number_of_event_indicators(fmi1_import_t* fmu);
 
-/** \brief Get if the start time for default experiment is specified in the XML file. */
+/** \brief Check if the start time for default experiment is specified in the XML file. */
 FMILIB_EXPORT int fmi1_import_get_default_experiment_has_start(fmi1_import_t* fmu);
 
-/** \brief Get if the stop time for default experiment is specified in the XML file. */
+/** \brief Check if the stop time for default experiment is specified in the XML file. */
 FMILIB_EXPORT int fmi1_import_get_default_experiment_has_stop(fmi1_import_t* fmu);
 
-/** \brief Get if the tolerance for default experiment is specified in the XML file. */
+/** \brief Check if the tolerance for default experiment is specified in the XML file. */
 FMILIB_EXPORT int fmi1_import_get_default_experiment_has_tolerance(fmi1_import_t* fmu);
 
 /** \brief Get the start time for default experiment as specified in the XML file.

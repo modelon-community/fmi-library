@@ -64,6 +64,9 @@ compress_fmu("${TEST_OUTPUT_FOLDER}" "${FMU_DUMMY_ME_MODEL_IDENTIFIER}" "me" "fm
 compress_fmu("${TEST_OUTPUT_FOLDER}" "${FMU_DUMMY_CS_MODEL_IDENTIFIER}" "cs" "fmu1_dll_cs" "${XML_CS_PATH}" "${SHARED_LIBRARY_CS_PATH}")
 compress_fmu("${TEST_OUTPUT_FOLDER}" "${FMU_DUMMY_CS_MODEL_IDENTIFIER}" "cs_tc" "fmu1_dll_cs" "${XML_CS_TC_PATH}" "${SHARED_LIBRARY_CS_PATH}")
 
+add_executable (fmi1_import_default_experiment_test ${RTTESTDIR}/FMI1/fmi1_import_default_experiment_test.c)
+target_link_libraries (fmi1_import_default_experiment_test  ${FMILIBFORTEST}  )
+
 add_executable (fmi1_xml_parsing_test ${RTTESTDIR}/FMI1/fmi1_xml_parsing_test.c)
 target_link_libraries (fmi1_xml_parsing_test  ${FMILIBFORTEST}  )
 add_executable (fmi_import_xml_test ${RTTESTDIR}/FMI1/fmi_import_xml_test.c)
@@ -83,6 +86,7 @@ to_native_c_path("${TEST_OUTPUT_FOLDER}/${FMU_DUMMY_CS_MODEL_IDENTIFIER}_cs_tc.f
 # set(FMU_TEMPFOLDER ${TEST_OUTPUT_FOLDER}/tempfolder)
 to_native_c_path(${TEST_OUTPUT_FOLDER}/tempfolder FMU_TEMPFOLDER)
 
+add_test(ctest_fmi1_xml_parsing_test fmi1_import_default_experiment_test ${RTTESTDIR}/FMI1/parser_test_xmls/default_experiment/)
 add_test(ctest_fmi1_xml_parsing_test fmi1_xml_parsing_test ${RTTESTDIR}/FMI1/parser_test_xmls/)
 ADD_TEST(ctest_fmi_import_me_test fmi_import_me_test ${FMU_ME_PATH} ${FMU_TEMPFOLDER})
 ADD_TEST(ctest_fmi_import_cs_test fmi_import_cs_test ${FMU_CS_PATH} ${FMU_TEMPFOLDER} "modelDescription_cs.xml")
@@ -114,6 +118,7 @@ set_target_properties(
 	fmi1_capi_me_test
 	fmi1_logger_test
     fmi1_xml_parsing_test
+    fmi1_import_default_experiment_test
     PROPERTIES FOLDER "Test/FMI1")
 
 SET_TESTS_PROPERTIES ( 

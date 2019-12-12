@@ -17,7 +17,7 @@ docker_image:
 
 install test documentation: docker_image
 	docker run \
-		-v "$(shell pwd):/$(ARTIFACT_DIR)" \
+		-v "$(CURDIR):/$(ARTIFACT_DIR)" \
 		$(DOCKER_IMAGE_FMIL) \
 		//bin/bash -c "build/docker/build.sh \
 			$@ $(BUILD_DIR) $(INSTALL_DIR) $(ARTIFACT_DIR) $(CONFIG)"

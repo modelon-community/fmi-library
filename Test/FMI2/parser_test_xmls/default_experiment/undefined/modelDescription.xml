@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription
+  fmiVersion="2.0"
+  modelName="myModelName"
+  guid="myGuid"
+  description="myDescription"
+  author="myAuthor"
+  generationTool="myGenerationTool"
+  generationDateAndTime="2002-05-30T09:00:00"
+  version="myModelVersion"
+  variableNamingConvention="structured"
+  numberOfEventIndicators="3">
+
+<ModelExchange
+  modelIdentifier="myModelIdentifier" />
+
+<DefaultExperiment/>
+
+<ModelVariables/>
+<ModelStructure/>
+
+</fmiModelDescription>

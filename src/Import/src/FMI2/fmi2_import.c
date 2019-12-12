@@ -233,6 +233,30 @@ size_t fmi2_import_get_number_of_event_indicators(fmi2_import_t* fmu) {
 	return fmi2_xml_get_number_of_event_indicators(fmu->md);
 }
 
+int fmi2_import_get_default_experiment_has_start(fmi2_import_t* fmu) {
+	if(!fmi2_import_check_has_FMU(fmu)) return 0;
+
+	return fmi2_xml_get_default_experiment_has_start(fmu->md);
+}
+
+int fmi2_import_get_default_experiment_has_stop(fmi2_import_t* fmu) {
+	if(!fmi2_import_check_has_FMU(fmu)) return 0;
+
+	return fmi2_xml_get_default_experiment_has_stop(fmu->md);
+}
+
+int fmi2_import_get_default_experiment_has_tolerance(fmi2_import_t* fmu) {
+	if(!fmi2_import_check_has_FMU(fmu)) return 0;
+
+	return fmi2_xml_get_default_experiment_has_tolerance(fmu->md);
+}
+
+int fmi2_import_get_default_experiment_has_step(fmi2_import_t* fmu) {
+	if(!fmi2_import_check_has_FMU(fmu)) return 0;
+
+	return fmi2_xml_get_default_experiment_has_step(fmu->md);
+}
+
 double fmi2_import_get_default_experiment_start(fmi2_import_t* fmu) {
 	if(!fmi2_import_check_has_FMU(fmu)) return 0;
 

@@ -34,7 +34,7 @@ def Configs = [
     ]
 ]
 
-def version = '2.0.3-SNAPSHOT'
+def version = '2.0.4-SNAPSHOT'
 
 // Loads the 'signBinaries' function
 library 'ModelonCommon@trunk'

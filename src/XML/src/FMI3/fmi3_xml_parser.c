@@ -156,9 +156,26 @@ void fmi3_xml_parse_error(fmi3_xml_parser_context_t *context, const char* fmt, .
     va_end (args);
 }
 
+static int fmi3_xml_string_char_count(const char* str, char ch) {
+    int n = 0;
+    int i;
+
+    for (i = 0; i < strlen(str); i++) {
+        if (str[i] == ch) {
+            n++;
+        }
+    }
+
+    return n;
+}
+
+/* Get attribute as string without clearing the buffer entry */
+jm_string fmi3_xml_peek_attr_str(fmi3_xml_parser_context_t* context, fmi3_xml_attr_enu_t attrID) {
+    return jm_vector_get_item(jm_string)(context->attrBuffer, attrID);
+}
 
 int fmi3_xml_is_attr_defined(fmi3_xml_parser_context_t *context, fmi3_xml_attr_enu_t attrID) {
-    return ( jm_vector_get_item(jm_string)(context->attrBuffer, attrID) != 0 );
+    return (fmi3_xml_peek_attr_str(context, attrID) != 0);
 }
 
 /** 
@@ -168,7 +185,7 @@ int fmi3_xml_is_attr_defined(fmi3_xml_parser_context_t *context, fmi3_xml_attr_e
 int fmi3_xml_get_attr_str(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, int required, const char** valp) {
 
     /* Read and clear attribute */
-    jm_string value = jm_vector_get_item(jm_string)(context->attrBuffer, attrID);
+    jm_string value = fmi3_xml_peek_attr_str(context, attrID);
     jm_vector_set_item(jm_string)(context->attrBuffer, attrID, 0);
 
     if (!value && required) {
@@ -348,6 +365,105 @@ int fmi3_xml_set_attr_float64(fmi3_xml_parser_context_t *context, fmi3_xml_elm_e
 int fmi3_xml_set_attr_float32(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID,
         int required, fmi3_float32_t* field, fmi3_float32_t defaultVal) {
     return fmi3_xml_set_attr_float(context, elmID, attrID, required, field, &defaultVal, fmi3_bitness_32);
+}
+
+int fmi3_xml_str_to_float64_array(fmi3_xml_parser_context_t* context, const char* str, fmi3_float64_t** arrPtr, int* nArr) {
+    char* strCopy;
+    char delim[2] = " ";
+    int nVals = fmi3_xml_string_char_count(str, delim) + 1;
+    fmi3_float64_t* vals;
+    char* token;
+    const char formatter[10] = "%lf";
+    fmi3_float64_t* writeAddr;
+
+    strCopy = context->callbacks->malloc(strlen(str) + 1); /* plus one for null character */
+    if (!strCopy) {
+        /* TODO: failed to alloc mem */
+    }
+
+    vals = context->callbacks->malloc(nVals * sizeof(fmi3_float64_t));
+    if (!vals) {
+    }
+
+    if (nVals == 1) { /* scalar */
+        if (sscanf(str, formatter, vals) != 1) {
+            /* log error */
+
+            /* clean up */
+            context->callbacks->free(strCopy); /* TODO: add cleanup label perhaps */
+            /* TODO: how should values be cleaned up? always in the "large clean up func"? */
+
+            return -1;
+        }
+    }
+    else { /* array */
+
+        /* get the first token */
+        token = strtok(strCopy, delim);
+
+        /* walk through other tokens */
+        writeAddr = vals;
+        while (token != NULL) {
+            writeAddr = vals++;
+
+            /* write attribute as float */
+            if (sscanf(token, formatter, writeAddr) != 1) {
+                /* log error */
+
+                /* clean up */
+                context->callbacks->free(strCopy); /* TODO: add cleanup label perhaps */
+                /* TODO: how should values be cleaned up? always in the "large clean up func"? */
+
+                return -1;
+            }
+
+            token = strtok(NULL, delim); /* strtok maintains internal buffer - pass NULL as first arg to continue with previous string */
+        }
+    }
+
+    /* assign return arguments */
+    *arrPtr = vals;
+    *nArr = nVals;
+
+    /* clean up */
+    context->callbacks->free(strCopy);
+}
+/**
+ * Get attribute as float array. This will clear the attribute from the parser buffer.
+ *
+ *  field (return arg): where the float value will be stored
+ *
+ * TODO: Name is misleading for all _set_attr_<type> functions, I would call it "get_attr_as_float" or similar
+ */
+int fmi3_xml_set_attr_float64_array(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID,
+        int required, fmi3_float64_t** arrPtr, int* arrSize, void* defaultVal, jm_string str, fmi3_bitness_enu_t bitness) {
+    char formatter[10]; /* used to format string to float */
+
+    /* Set formatter */
+    if (bitness == fmi3_bitness_64) {
+        strncpy(formatter, "%lf", sizeof(formatter));
+    }else if (bitness == fmi3_bitness_32) {
+        strncpy(formatter, "%f", sizeof(formatter));
+    } else {
+        assert(!"Invalid bitness for type float");
+    }
+
+    if (!str) { /* verify str was added */
+        /* assuming attribute for arrays is always required */
+
+        /* TODO: log error */
+        return -1;
+    }
+
+    /* write all attributes to array of correct type */
+    if (fmi3_xml_str_to_float64_array(context, str, arrPtr, arrSize)) {
+        jm_string elmName = fmi3_element_handle_map[elmID].elementName;
+        jm_string attrName = fmi3_xmlAttrNames[attrID];
+        fmi3_xml_parse_error(context, "XML element '%s': could not parse value for real attribute '%s'='%s'", elmName, attrName, str);
+        return -1;
+    }
+
+    return 0;
 }
 
 int fmi3_xml_alloc_parse_buffer(fmi3_xml_parser_context_t *context, size_t items) {

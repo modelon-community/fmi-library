@@ -55,8 +55,7 @@ fmi3_base_type_enu_t fmi3_import_get_variable_base_type(fmi3_import_variable_t* 
 }
 
 fmi3_float64_t* fmi3_import_get_float64_variable_start_array(fmi3_import_variable_t* v) {
-    /* TODO: NYI */
-	return 0;
+    return fmi3_xml_get_float64_variable_start_array(v);
 }
 
 void fmi3_import_variable_get_dimensions(fmi3_import_t* fmu, fmi3_import_variable_t* v, const int** dimensions, size_t* nDimensions) {

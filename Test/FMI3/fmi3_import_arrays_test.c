@@ -25,15 +25,19 @@ static fmi3_import_t *parse_xml(const char *model_desc_path)
 static int test_array1(fmi3_import_t *xml)
 {
     fmi3_import_variable_t* v;
-    fmi3_float64_t starts_exp[1] = { 1.1 };
+    fmi3_float64_t starts_exp[1] = { 1.0 };
     fmi3_float64_t* starts;
     const int* dims;
     size_t nDims;
-    int is_array;
+    int is_array ;
     int i;
+    int has_start;
 
     v = fmi3_import_get_variable_by_name(xml, "array1");
     ASSERT_MSG(v != NULL, "variable not found by name");
+
+    has_start = fmi3_import_get_variable_has_start(v);
+    ASSERT_MSG(has_start == 1, "no start value found");
 
     is_array = fmi3_import_variable_is_array(v);
     ASSERT_MSG(is_array, "wrong variable type: expected array, but wasn't");
@@ -41,7 +45,6 @@ static int test_array1(fmi3_import_t *xml)
     fmi3_import_variable_get_dimensions(xml, v, &dims, &nDims);
     ASSERT_MSG(dims[0] == 1, "wrong dimension size");
 
-    /*
     starts = fmi3_import_get_float64_variable_start_array(v);
     for (i = 0; i < dims[0]; i++) {
         if (starts[i] != starts_exp[i]) {
@@ -49,7 +52,6 @@ static int test_array1(fmi3_import_t *xml)
             ASSERT_MSG(0, "wrong start value of array variable");
         }
     }
-    */
 
     return TEST_OK;
 }

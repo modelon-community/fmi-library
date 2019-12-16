@@ -44,7 +44,7 @@ set(VARIABLE_TEST_MODEL_DESC_DIR
     ${RTTESTDIR}/FMI3/parser_test_xmls/variable_test)
 set(VARIABLE_BAD_VARIABILITY_CAUSALITY_MODEL_DESC_DIR
     ${RTTESTDIR}/FMI3/parser_test_xmls/variable_bad_variability_causality)
-set(VAR_TYPE_TEST_MODEL_DESC_DIR
+set(VARIABLE_TYPES_TEST_MODEL_DESC_DIR
     ${RTTESTDIR}/FMI3/parser_test_xmls/variable_types/float)
 set(TYPE_DEFINITIONS_MODEL_DESC_DIR
     ${RTTESTDIR}/FMI3/parser_test_xmls/type_definitions/float)
@@ -127,9 +127,9 @@ add_test(ctest_fmi3_import_test_cs fmi3_import_cs_test ${FMU3_CS_PATH} ${FMU_TEM
 add_test(ctest_fmi3_import_variable_test
          fmi3_import_variable_test
          ${VARIABLE_TEST_MODEL_DESC_DIR})
-add_test(ctest_fmi3_import_var_type_test
+add_test(ctest_fmi3_import_variable_types_test
          fmi3_import_variable_types_test
-         ${VAR_TYPE_TEST_MODEL_DESC_DIR})
+         ${VARIABLE_TYPES_TEST_MODEL_DESC_DIR})
 add_test(ctest_fmi3_import_type_definitions_test
          fmi3_import_type_definitions_test
          ${TYPE_DEFINITIONS_MODEL_DESC_DIR})

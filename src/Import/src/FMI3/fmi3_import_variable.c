@@ -66,7 +66,6 @@ int fmi3_import_variable_is_array(fmi3_import_variable_t* v) {
 	return fmi3_xml_variable_is_array(v);
 }
 
-
 int fmi3_import_get_variable_has_start(fmi3_import_variable_t* v) {
 	return fmi3_xml_get_variable_has_start(v);
 }

@@ -31,7 +31,7 @@ struct fmi3_xml_variable_default_values {
     fmi3_float64_t float64;
 };
 
-static const struct fmi3_xml_variable_default_values VARIABLE_DEFAULT_VALUES = { 0, 0 };
+static struct fmi3_xml_variable_default_values VARIABLE_DEFAULT_VALUES = { 0, 0 };
 
 typedef struct fmi3_xml_dimension_t {
     int is_vr;

@@ -50,7 +50,7 @@ fmi3_value_reference_t fmi3_xml_get_variable_vr(fmi3_xml_variable_t*);
 fmi3_xml_variable_typedef_t* fmi3_xml_get_variable_declared_type(fmi3_xml_variable_t*);
 fmi3_base_type_enu_t fmi3_xml_get_variable_base_type(fmi3_xml_variable_t*);
 
-fmi3_float64_t* fmi3_xml_get_float64_variable_start_array(fmi3_xml_variable_t* v);
+fmi3_float64_t* fmi3_xml_get_float64_variable_start_array(fmi3_xml_float64_variable_t* v);
 void fmi3_xml_variable_get_dimensions(fmi3_xml_variable_t* v, fmi3_xml_model_description_t* md, const int** dimensions, size_t* nDimensions);
 int fmi3_xml_variable_is_array(fmi3_xml_variable_t* v);
 
@@ -70,13 +70,6 @@ fmi3_xml_integer_variable_t* fmi3_xml_get_variable_as_integer(fmi3_xml_variable_
 fmi3_xml_enum_variable_t* fmi3_xml_get_variable_as_enum(fmi3_xml_variable_t*);
 fmi3_xml_string_variable_t* fmi3_xml_get_variable_as_string(fmi3_xml_variable_t*);
 fmi3_xml_bool_variable_t* fmi3_xml_get_variable_as_boolean(fmi3_xml_variable_t*);
-
-/* TODO: should be OK to remove below prototypes */
-fmi3_float64_t fmi3_xml_get_float64_variable_nominal(fmi3_xml_float64_variable_t* v);
-fmi3_float32_t fmi3_xml_get_float32_variable_nominal(fmi3_xml_float32_variable_t* v);
-fmi3_float64_t fmi3_xml_get_float64_variable_start(fmi3_xml_float64_variable_t* v);
-fmi3_float32_t fmi3_xml_get_float32_variable_start(fmi3_xml_float32_variable_t* v);
-
 
 /* Function macro for generating header wrappers for specific types
  * XX: function to generate, must be prefixed with '_' to avoid macro conflicts with 'min' and 'max'

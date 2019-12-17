@@ -113,18 +113,7 @@ typedef const fmi3Byte* fmi3Binary;   /* Data type for binary data
    typedef void*           fmi3Component;               /* Pointer to FMU instance       */
    typedef void*           fmi3ComponentEnvironment;    /* Pointer to FMU environment    */
    typedef void*           fmi3FMUstate;                /* Pointer to internal FMU state */
-   typedef unsigned int    fmi3ValueReference;
-   typedef double          fmi3Real   ;
+   typedef double          fmi3Real;
    typedef int             fmi3Integer;
-   typedef int             fmi3Boolean;
-   typedef char            fmi3Char;
-   typedef const fmi3Char* fmi3String;
-   typedef char            fmi3Byte;
-
-
-/* Values for fmi3Boolean  */
-#define fmi3True  1
-#define fmi3False 0
-
 
 #endif /* fmi3TypesPlatform_h */

@@ -313,9 +313,8 @@ int fmi3_xml_set_attr_int(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t
 /**
  * Get attribute as float. This will clear the attribute from the parser buffer.
  *
- *  field (return arg): where the float value will be stored
- *
- * TODO: Name is misleading for all _set_attr_<type> functions, I would call it "get_attr_as_float" or similar
+ *  field: where the float value will be stored (return arg)
+ *  defaultVal: pointer to default value if attribute wasn't defined
  */
 int fmi3_xml_set_attr_float(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID,
         int required, void* field, void* defaultVal, fmi3_bitness_enu_t bitness) {

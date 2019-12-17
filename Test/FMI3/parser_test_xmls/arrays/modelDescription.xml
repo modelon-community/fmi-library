@@ -21,6 +21,12 @@
       <Dimension start="2"/>
     </Float64>
 
+    <Float64 name="array4" valueReference="4" initial="exact" start="1.0 2.0 3.0 4.0 5.0 6.0 7.0 8.0">
+      <Dimension start="2"/>
+      <Dimension start="2"/>
+      <Dimension start="2"/>
+    </Float64>
+
   </ModelVariables>
   
   <ModelStructure/>

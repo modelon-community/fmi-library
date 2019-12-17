@@ -92,6 +92,7 @@ static int test_array2(fmi3_import_t* xml)
 
     return TEST_OK;
 }
+
 /* parse 2x2 array */
 static int test_array3(fmi3_import_t* xml)
 {
@@ -137,6 +138,54 @@ static int test_array3(fmi3_import_t* xml)
     return TEST_OK;
 }
 
+/* parse 2x2x2 array */
+static int test_array4(fmi3_import_t* xml)
+{
+    fmi3_import_variable_t* v;
+    fmi3_float64_t starts_exp[2][2][2] = {{{1.0, 2.0}, {3.0, 4.0}}, {{5.0, 6.0}, {7.0, 8.0}}}; /* note to self: {: new row, {{: new column, {{{: new aisle */
+    fmi3_float64_t* starts;
+    const int* dims;
+    size_t nDims;
+    int is_array;
+    int r, c, a;
+    int has_start;
+    int nRows;
+    int nCols;
+    int nAisles; /* 3rd dimension */
+
+    v = fmi3_import_get_variable_by_name(xml, "array3");
+    ASSERT_MSG(v != NULL, "variable not found by name");
+
+    has_start = fmi3_import_get_variable_has_start(v);
+    ASSERT_MSG(has_start == 1, "no start value found");
+
+    is_array = fmi3_import_variable_is_array(v);
+    ASSERT_MSG(is_array, "wrong variable type: expected array, but wasn't");
+
+    fmi3_import_variable_get_dimensions(xml, v, &dims, &nDims);
+    ASSERT_MSG(dims[0] == 2, "wrong dimension size [0]");
+    ASSERT_MSG(dims[1] == 2, "wrong dimension size [1]");
+
+    nRows = dims[0];
+    nCols = dims[1];
+    nAisles = dims[2]; /* 3rd dimension */
+
+    /* check that all start values in the first row are OK */
+    starts = fmi3_import_get_float64_variable_start_array(v);
+    for (r = 0; r < nRows; r++) {
+        for (c = 0; c < nCols; c++) {
+            for (a = 0; a < nAisles; a++) {
+                if (starts[(r*nCols*nAisles) + (c*nAisles) + a] != starts_exp[r][c][a]) {
+                    printf("test failed at loop idx: %d", r);
+                    ASSERT_MSG(0, "wrong start value of array variable");
+                }
+            }
+        }
+    }
+
+    return TEST_OK;
+}
+
 int main(int argc, char **argv)
 {
     fmi3_import_t *xml;
@@ -156,6 +205,7 @@ int main(int argc, char **argv)
     ret &= test_array1(xml);
     ret &= test_array2(xml);
     ret &= test_array3(xml);
+    ret &= test_array4(xml);
 
     fmi3_import_free(xml);
     return ret == 0 ? CTEST_RETURN_FAIL : CTEST_RETURN_SUCCESS;

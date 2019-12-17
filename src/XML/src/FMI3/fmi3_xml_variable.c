@@ -150,6 +150,20 @@ fmi3_base_type_enu_t fmi3_xml_get_variable_base_type(fmi3_xml_variable_t* v) {
     return (type->baseType);
 }
 
+void fmi3_xml_variable_free_internals(jm_callbacks* callbacks, fmi3_xml_variable_t* var) {
+
+    void(*cb_free)(const char*) = (void(*)(const char*))callbacks->free;
+
+    if (fmi3_xml_variable_is_array(var)) {
+        if (!fmi3_xml_variable_is_array(var)) { /* fmi3_xml_variable_is_array function currently uses data that is freed a few lines below, so don't swap lines */
+            cb_free(fmi3_xml_get_float64_variable_start_array(var)); /* TODO: handle general case, but starting with float64 */
+        }
+        jm_vector_foreach(jm_voidp)(var->dimensionsVector, cb_free);
+        jm_vector_free(jm_voidp)(var->dimensionsVector);
+        cb_free(var->dimensionsArray);
+    }
+}
+
 void fmi3_xml_variable_get_dimensions(fmi3_xml_variable_t* v, fmi3_xml_model_description_t* md, const int** dimensions, size_t* nDimensions) {
     jm_vector(jm_voidp)* dimsVec = v->dimensionsVector;
     fmi3_integer_t* dimsArr = v->dimensionsArray; /* has already been allocated */

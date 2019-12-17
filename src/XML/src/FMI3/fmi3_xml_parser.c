@@ -430,12 +430,15 @@ int fmi3_xml_str_to_float64_array(fmi3_xml_parser_context_t* context, const char
         }
     }
 
+    /* clean up */
+    context->callbacks->free(strCopy);
+    strCopy = NULL;
+
     /* assign return arguments */
     *arrPtr = vals;
     *nArr = nVals;
 
-    /* clean up */
-    context->callbacks->free(strCopy);
+    return 0;
 }
 
 /**

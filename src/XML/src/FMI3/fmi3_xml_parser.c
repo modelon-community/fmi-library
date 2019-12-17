@@ -366,9 +366,22 @@ int fmi3_xml_set_attr_float32(fmi3_xml_parser_context_t *context, fmi3_xml_elm_e
     return fmi3_xml_set_attr_float(context, elmID, attrID, required, field, &defaultVal, fmi3_bitness_32);
 }
 
+/* TODO: Move this somewhere more accessible */
+#define JM_LOG_ERROR_NO_MEM()                                                                                               \
+    do {                                                                                                                    \
+        jm_log_error(context->callbacks, module, "Unable to allocate memory. File: %s, Line: %d", __FILE__, __LINE__);      \
+    } while (0);
+
+/**
+ * Parses a string to an array of float64 values
+ * 
+ * str: the string containing the float64 values, they must be separated by exactly one <space> character
+ * arrPtr: pointer to the array where the values will be stored. Memory is dynamically allocated for this array, and must be freed by caller
+ * nArr: the number of values in 'arrPtr'
+ */
 int fmi3_xml_str_to_float64_array(fmi3_xml_parser_context_t* context, const char* str, fmi3_float64_t** arrPtr, int* nArr) {
     char* strCopy;
-    char delim[2] = " ";
+    char delim = ' ';
     int nVals = fmi3_xml_string_char_count(str, delim) + 1;
     fmi3_float64_t* vals;
     char* token;
@@ -377,46 +390,43 @@ int fmi3_xml_str_to_float64_array(fmi3_xml_parser_context_t* context, const char
 
     strCopy = context->callbacks->malloc(strlen(str) + 1); /* plus one for null character */
     if (!strCopy) {
-        /* TODO: failed to alloc mem */
+        JM_LOG_ERROR_NO_MEM();
+        return -1;
     }
+    strcpy(strCopy, str);
 
-    vals = context->callbacks->malloc(nVals * sizeof(fmi3_float64_t));
+    vals = context->callbacks->malloc(nVals * sizeof(fmi3_float64_t)); /* always freed in the general modelDescription clean up */
     if (!vals) {
+        JM_LOG_ERROR_NO_MEM();
+        context->callbacks->free(strCopy);
+        return -1;
     }
 
     if (nVals == 1) { /* scalar */
         if (sscanf(str, formatter, vals) != 1) {
-            /* log error */
+            jm_log_error(context->callbacks, module, "Unable to parse to float: %s", str);
 
-            /* clean up */
-            context->callbacks->free(strCopy); /* TODO: add cleanup label perhaps */
-            /* TODO: how should values be cleaned up? always in the "large clean up func"? */
-
+            context->callbacks->free(strCopy);
             return -1;
         }
-    }
-    else { /* array */
+    } else { /* array */
 
         /* get the first token */
-        token = strtok(strCopy, delim);
+        token = strtok(strCopy, &delim);
 
         /* walk through other tokens */
         writeAddr = vals;
         while (token != NULL) {
-            writeAddr = vals++;
 
             /* write attribute as float */
-            if (sscanf(token, formatter, writeAddr) != 1) {
-                /* log error */
+            if (sscanf(token, formatter, writeAddr++) != 1) {
+                jm_log_error(context->callbacks, module, "Unable to parse to float: %s", token);
 
-                /* clean up */
-                context->callbacks->free(strCopy); /* TODO: add cleanup label perhaps */
-                /* TODO: how should values be cleaned up? always in the "large clean up func"? */
-
+                context->callbacks->free(strCopy);
                 return -1;
             }
 
-            token = strtok(NULL, delim); /* strtok maintains internal buffer - pass NULL as first arg to continue with previous string */
+            token = strtok(NULL, &delim); /* strtok maintains internal buffer - pass NULL as first arg to continue with previous string */
         }
     }
 
@@ -427,6 +437,7 @@ int fmi3_xml_str_to_float64_array(fmi3_xml_parser_context_t* context, const char
     /* clean up */
     context->callbacks->free(strCopy);
 }
+
 /**
  * Get attribute as float array. This will clear the attribute from the parser buffer.
  *

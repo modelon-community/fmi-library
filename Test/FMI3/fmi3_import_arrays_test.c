@@ -45,6 +45,43 @@ static int test_array1(fmi3_import_t *xml)
     fmi3_import_variable_get_dimensions(xml, v, &dims, &nDims);
     ASSERT_MSG(dims[0] == 1, "wrong dimension size");
 
+    /* check that all start values in the first row are OK */
+    starts = fmi3_import_get_float64_variable_start_array(v);
+    for (i = 0; i < dims[0]; i++) {
+        if (starts[i] != starts_exp[i]) {
+            printf("test failed at loop idx: %d", i);
+            ASSERT_MSG(0, "wrong start value of array variable");
+        }
+    }
+
+    return TEST_OK;
+}
+
+/* parse 1x2 array */
+static int test_array2(fmi3_import_t* xml)
+{
+    fmi3_import_variable_t* v;
+    fmi3_float64_t starts_exp[2] = { 1.0, 2.0 };
+    fmi3_float64_t* starts;
+    const int* dims;
+    size_t nDims;
+    int is_array;
+    int i;
+    int has_start;
+
+    v = fmi3_import_get_variable_by_name(xml, "array2");
+    ASSERT_MSG(v != NULL, "variable not found by name");
+
+    has_start = fmi3_import_get_variable_has_start(v);
+    ASSERT_MSG(has_start == 1, "no start value found");
+
+    is_array = fmi3_import_variable_is_array(v);
+    ASSERT_MSG(is_array, "wrong variable type: expected array, but wasn't");
+
+    fmi3_import_variable_get_dimensions(xml, v, &dims, &nDims);
+    ASSERT_MSG(dims[0] == 2, "wrong dimension size");
+
+    /* check that all start values in the first row are OK */
     starts = fmi3_import_get_float64_variable_start_array(v);
     for (i = 0; i < dims[0]; i++) {
         if (starts[i] != starts_exp[i]) {
@@ -73,6 +110,7 @@ int main(int argc, char **argv)
     }
 
     ret &= test_array1(xml);
+    ret &= test_array2(xml);
 
     fmi3_import_free(xml);
     return ret == 0 ? CTEST_RETURN_FAIL : CTEST_RETURN_SUCCESS;

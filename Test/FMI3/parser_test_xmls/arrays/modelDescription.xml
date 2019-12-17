@@ -11,6 +11,11 @@
     <Float64 name="array1" valueReference="1" initial="exact" start="1.0">
       <Dimension start="1"/>
     </Float64>
+
+    <Float64 name="array2" valueReference="2" initial="exact" start="1.0 2.0">
+      <Dimension start="2"/>
+    </Float64>
+
   </ModelVariables>
   
   <ModelStructure/>

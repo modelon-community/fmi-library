@@ -27,6 +27,25 @@
       <Dimension start="2"/>
     </Float64>
 
+    <Float32 name="array1_32" valueReference="1" initial="exact" start="1.0">
+      <Dimension start="1"/>
+    </Float32>
+
+    <Float32 name="array2_32" valueReference="2" initial="exact" start="1.0 2.0">
+      <Dimension start="2"/>
+    </Float32>
+
+    <Float32 name="array3_32" valueReference="3" initial="exact" start="1.0 2.0 3.0 4.0">
+      <Dimension start="2"/>
+      <Dimension start="2"/>
+    </Float32>
+
+    <Float32 name="array4_32" valueReference="4" initial="exact" start="1.0 2.0 3.0 4.0 5.0 6.0 7.0 8.0">
+      <Dimension start="2"/>
+      <Dimension start="2"/>
+      <Dimension start="2"/>
+    </Float32>
+
   </ModelVariables>
   
   <ModelStructure/>

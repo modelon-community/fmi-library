@@ -269,6 +269,7 @@ def_get_float_variable_XX(_nominal, float32, scalar32)
 def_get_float_variable_XX(_start, float64, scalar64)
 def_get_float_variable_XX(_start, float32, scalar32)
 def_get_float_variable_XX_array(_start, float64, array64)
+def_get_float_variable_XX_array(_start, float32, array32)
 
 /* real */
 double fmi3_xml_get_real_variable_start(fmi3_xml_real_variable_t* v) {
@@ -727,7 +728,8 @@ int fmi3_xml_handle_Dimension(fmi3_xml_parser_context_t* context, const char* da
 int fmi3_xml_handle_FloatVariable(fmi3_xml_parser_context_t* context, const char* data,
         fmi3_xml_elm_enu_t elmID, /* ID of the Type (not the Variable) */
         fmi3_xml_float_type_props_t* defaultType,
-        fmi3_bitness_enu_t bitness) {
+        fmi3_bitness_enu_t bitness, /* TODO: remove this arg */
+        const fmi3_xml_primitive_type_t* primType) {
 
     fmi3_xml_model_description_t* md;
     fmi3_xml_variable_t* variable;
@@ -838,8 +840,8 @@ int fmi3_xml_handle_FloatVariable(fmi3_xml_parser_context_t* context, const char
                 return -1;
             }
             if (fmi3_xml_variable_is_array(variable)) {
-                int nArr;
-                if (fmi3_xml_set_attr_float64_array(context, elmID, fmi_attr_id_start, 0, &start->start.array64, &nArr, 0, startAttr, bitness)) { /* TODO: handle all other types */
+                int nArr; /* TODO: do something with this, e.g. dimension size verification */
+                if (fmi3_xml_set_attr_array(context, elmID, fmi_attr_id_start, 0, &start->start.array64, &nArr, startAttr, primType)) { /* TODO: handle all other types */
                     return -1;
                 }
             } else { /* is scalar */
@@ -865,7 +867,8 @@ int fmi3_xml_handle_FloatVariable(fmi3_xml_parser_context_t* context, const char
     int fmi3_xml_handle_Float##BITNESS##Variable(fmi3_xml_parser_context_t* context, const char* data) {    \
         return fmi3_xml_handle_FloatVariable(context, data, fmi3_xml_elmID_Float##BITNESS,                  \
                 &context->modelDescription->typeDefinitions.defaultFloat##BITNESS##Type,                    \
-                fmi3_bitness_##BITNESS);                                                                    \
+                fmi3_bitness_##BITNESS,                                                                     \
+                &PRIMITIVE_TYPES.float##BITNESS);                                                           \
     }
 
 def_handle_float_variable(64)

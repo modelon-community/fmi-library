@@ -309,6 +309,20 @@ struct fmi3_xml_parser_context_t {
 	fmi3_xml_callbacks_t* anyHandle;
 };
 
+/* Meta data about primitive types */
+typedef struct fmi3_xml_primitive_type_t {
+    size_t size; /* size in bytes */
+    char formatter[10]; /* how to format this from string to the actual type */
+    char defaultValue[100]; /* provided as string to keep this type generic */
+} fmi3_xml_primitive_type_t;
+
+typedef struct fmi3_xml_primitive_types_t {
+    fmi3_xml_primitive_type_t float64;
+    fmi3_xml_primitive_type_t float32;
+} fmi3_xml_primitive_types_t;
+
+extern const fmi3_xml_primitive_types_t PRIMITIVE_TYPES;
+
 jm_vector(char) * fmi3_xml_reserve_parse_buffer(fmi3_xml_parser_context_t *context, size_t index, size_t size);
 jm_vector(char) * fmi3_xml_get_parse_buffer(fmi3_xml_parser_context_t *context, size_t index);
 int fmi3_xml_alloc_parse_buffer(fmi3_xml_parser_context_t *context, size_t items);
@@ -330,7 +344,7 @@ int fmi3_xml_is_attr_defined(fmi3_xml_parser_context_t *context, fmi3_xml_attr_e
 jm_string fmi3_xml_peek_attr_str(fmi3_xml_parser_context_t* context, fmi3_xml_attr_enu_t attrID);
 int fmi3_xml_get_attr_str(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, int required,const char** valp);
 
-int fmi3_xml_set_attr_float64_array(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, int required, fmi3_float64_t** arrPtr, int* arrSize, void* defaultVal, jm_string str, fmi3_bitness_enu_t bitness);
+int fmi3_xml_set_attr_array(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, int required, void** arrPtr, int* arrSize, jm_string str, const fmi3_xml_primitive_type_t* primType);
 
 void fmi3_xml_set_element_handle(fmi3_xml_parser_context_t *context, const char* elm, fmi3_xml_elm_enu_t id);
 

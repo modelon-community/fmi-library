@@ -22,7 +22,7 @@ static fmi3_import_t *parse_xml(const char *model_desc_path)
 }
 
 /* parse 1(x1) array */
-static int test_array1(fmi3_import_t *xml)
+static int test_array1_64(fmi3_import_t *xml)
 {
     fmi3_import_variable_t* v;
     fmi3_float64_t starts_exp[1] = { 1.0 };
@@ -33,7 +33,7 @@ static int test_array1(fmi3_import_t *xml)
     int i;
     int has_start;
 
-    v = fmi3_import_get_variable_by_name(xml, "array1");
+    v = fmi3_import_get_variable_by_name(xml, "array1_64");
     ASSERT_MSG(v != NULL, "variable not found by name");
 
     has_start = fmi3_import_get_variable_has_start(v);
@@ -45,7 +45,7 @@ static int test_array1(fmi3_import_t *xml)
     fmi3_import_variable_get_dimensions(xml, v, &dims, &nDims);
     ASSERT_MSG(dims[0] == 1, "wrong dimension size");
 
-    /* check that all start values in the first row are OK */
+    /* check that all start values row are OK */
     starts = fmi3_import_get_float64_variable_start_array(v);
     for (i = 0; i < dims[0]; i++) {
         if (starts[i] != starts_exp[i]) {
@@ -58,7 +58,7 @@ static int test_array1(fmi3_import_t *xml)
 }
 
 /* parse 1x2 array */
-static int test_array2(fmi3_import_t* xml)
+static int test_array2_64(fmi3_import_t* xml)
 {
     fmi3_import_variable_t* v;
     fmi3_float64_t starts_exp[2] = { 1.0, 2.0 };
@@ -69,7 +69,7 @@ static int test_array2(fmi3_import_t* xml)
     int i;
     int has_start;
 
-    v = fmi3_import_get_variable_by_name(xml, "array2");
+    v = fmi3_import_get_variable_by_name(xml, "array2_64");
     ASSERT_MSG(v != NULL, "variable not found by name");
 
     has_start = fmi3_import_get_variable_has_start(v);
@@ -81,7 +81,7 @@ static int test_array2(fmi3_import_t* xml)
     fmi3_import_variable_get_dimensions(xml, v, &dims, &nDims);
     ASSERT_MSG(dims[0] == 2, "wrong dimension size");
 
-    /* check that all start values in the first row are OK */
+    /* check that all start values row are OK */
     starts = fmi3_import_get_float64_variable_start_array(v);
     for (i = 0; i < dims[0]; i++) {
         if (starts[i] != starts_exp[i]) {
@@ -94,11 +94,9 @@ static int test_array2(fmi3_import_t* xml)
 }
 
 /* parse 2x2 array */
-static int test_array3(fmi3_import_t* xml)
+static int test_array_2x2_64(fmi3_import_t* xml, const char* varName, fmi3_float64_t starts_exp[2][2])
 {
     fmi3_import_variable_t* v;
-    fmi3_float64_t starts_exp[2][2] = {{ 1.0, 2.0 },
-                                       { 3.0, 4.0 }};
     fmi3_float64_t* starts;
     const int* dims;
     size_t nDims;
@@ -108,8 +106,8 @@ static int test_array3(fmi3_import_t* xml)
     int nRows;
     int nCols;
 
-    v = fmi3_import_get_variable_by_name(xml, "array3");
-    ASSERT_MSG(v != NULL, "variable not found by name");
+    v = fmi3_import_get_variable_by_name(xml, varName);
+    ASSERT_MSG(v != NULL, "variable not found by name: '%s'", varName);
 
     has_start = fmi3_import_get_variable_has_start(v);
     ASSERT_MSG(has_start == 1, "no start value found");
@@ -124,11 +122,11 @@ static int test_array3(fmi3_import_t* xml)
     nRows = dims[0];
     nCols = dims[1];
 
-    /* check that all start values in the first row are OK */
+    /* check that all start values row are OK */
     starts = fmi3_import_get_float64_variable_start_array(v);
     for (r = 0; r < nRows; r++) {
         for (c = 0; c < nCols; c++) {
-            if (starts[r*nCols + c] != starts_exp[r][c]) {
+            if (starts[r * nCols + c] != starts_exp[r][c]) {
                 printf("test failed at loop idx: %d", r);
                 ASSERT_MSG(0, "wrong start value of array variable");
             }
@@ -139,7 +137,7 @@ static int test_array3(fmi3_import_t* xml)
 }
 
 /* parse 2x2x2 array */
-static int test_array4(fmi3_import_t* xml)
+static int test_array4_64(fmi3_import_t* xml)
 {
     fmi3_import_variable_t* v;
     fmi3_float64_t starts_exp[2][2][2] = {{{1.0, 2.0}, {3.0, 4.0}}, {{5.0, 6.0}, {7.0, 8.0}}}; /* note to self: {: new row, {{: new column, {{{: new aisle */
@@ -153,7 +151,7 @@ static int test_array4(fmi3_import_t* xml)
     int nCols;
     int nAisles; /* 3rd dimension */
 
-    v = fmi3_import_get_variable_by_name(xml, "array4");
+    v = fmi3_import_get_variable_by_name(xml, "array4_64");
     ASSERT_MSG(v != NULL, "variable not found by name");
 
     has_start = fmi3_import_get_variable_has_start(v);
@@ -171,7 +169,7 @@ static int test_array4(fmi3_import_t* xml)
     nCols   = dims[1];
     nAisles = dims[2];
 
-    /* check that all start values in the first row are OK */
+    /* check that all start values row are OK */
     starts = fmi3_import_get_float64_variable_start_array(v);
     for (r = 0; r < nRows; r++) {
         for (c = 0; c < nCols; c++) {
@@ -211,7 +209,7 @@ static int test_array1_32(fmi3_import_t *xml)
     fmi3_import_variable_get_dimensions(xml, v, &dims, &nDims);
     ASSERT_MSG(dims[0] == 1, "wrong dimension size");
 
-    /* check that all start values in the first row are OK */
+    /* check that all start values row are OK */
     starts = fmi3_import_get_float32_variable_start_array(v);
     for (i = 0; i < dims[0]; i++) {
         if (starts[i] != starts_exp[i]) {
@@ -247,7 +245,7 @@ static int test_array2_32(fmi3_import_t* xml)
     fmi3_import_variable_get_dimensions(xml, v, &dims, &nDims);
     ASSERT_MSG(dims[0] == 2, "wrong dimension size");
 
-    /* check that all start values in the first row are OK */
+    /* check that all start values row are OK */
     starts = fmi3_import_get_float32_variable_start_array(v);
     for (i = 0; i < dims[0]; i++) {
         if (starts[i] != starts_exp[i]) {
@@ -260,11 +258,9 @@ static int test_array2_32(fmi3_import_t* xml)
 }
 
 /* parse 2x2 array */
-static int test_array3_32(fmi3_import_t* xml)
+static int test_array_2x2_32(fmi3_import_t* xml, const char* varName, fmi3_float32_t starts_exp[2][2])
 {
     fmi3_import_variable_t* v;
-    fmi3_float32_t starts_exp[2][2] = {{ 1.0, 2.0 },
-                                       { 3.0, 4.0 }};
     fmi3_float32_t* starts;
     const int* dims;
     size_t nDims;
@@ -274,8 +270,8 @@ static int test_array3_32(fmi3_import_t* xml)
     int nRows;
     int nCols;
 
-    v = fmi3_import_get_variable_by_name(xml, "array3_32");
-    ASSERT_MSG(v != NULL, "variable not found by name");
+    v = fmi3_import_get_variable_by_name(xml, varName);
+    ASSERT_MSG(v != NULL, "variable not found by name: '%s'", varName);
 
     has_start = fmi3_import_get_variable_has_start(v);
     ASSERT_MSG(has_start == 1, "no start value found");
@@ -290,11 +286,11 @@ static int test_array3_32(fmi3_import_t* xml)
     nRows = dims[0];
     nCols = dims[1];
 
-    /* check that all start values in the first row are OK */
+    /* check that all start values are OK */
     starts = fmi3_import_get_float32_variable_start_array(v);
     for (r = 0; r < nRows; r++) {
         for (c = 0; c < nCols; c++) {
-            if (starts[r*nCols + c] != starts_exp[r][c]) {
+            if (starts[r * nCols + c] != starts_exp[r][c]) {
                 printf("test failed at loop idx: %d", r);
                 ASSERT_MSG(0, "wrong start value of array variable");
             }
@@ -337,7 +333,7 @@ static int test_array4_32(fmi3_import_t* xml)
     nCols   = dims[1];
     nAisles = dims[2];
 
-    /* check that all start values in the first row are OK */
+    /* check that all start values are OK */
     starts = fmi3_import_get_float32_variable_start_array(v);
     for (r = 0; r < nRows; r++) {
         for (c = 0; c < nCols; c++) {
@@ -355,6 +351,16 @@ static int test_array4_32(fmi3_import_t* xml)
 
 int main(int argc, char **argv)
 {
+
+    fmi3_float64_t starts_exp_array3_64[2][2] =        {{ 1.0, 2.0 },
+                                                        { 3.0, 4.0 }};
+    fmi3_float32_t starts_exp_array3_32[2][2] =        {{ 1.0F, 2.0F },
+                                                        { 3.0F, 4.0F }};
+    fmi3_float64_t starts_exp_array5_64[2][2] = {{ 123.456,    +1234.456 },
+                                                 { -1.2344e56, -.45E-6   }};
+    fmi3_float32_t starts_exp_array5_32[2][2] = {{ 123.456F,    +1234.456F },
+                                                 { -3.4028e36F, -.45E-6F   }}; /* -1.2344e56 < -FLT_MAX, so not using same as for double */
+
     fmi3_import_t *xml;
     int ret = 1;
     if (argc != 2) {
@@ -369,15 +375,17 @@ int main(int argc, char **argv)
         return CTEST_RETURN_FAIL;
     }
 
-    ret &= test_array1(xml);
-    ret &= test_array2(xml);
-    ret &= test_array3(xml);
-    ret &= test_array4(xml);
+    ret &= test_array1_64(xml);
+    ret &= test_array2_64(xml);
+    ret &= test_array_2x2_64(xml, "array3_64", starts_exp_array3_64);
+    ret &= test_array4_64(xml);
+    ret &= test_array_2x2_64(xml, "array5_64", starts_exp_array5_64);
 
     ret &= test_array1_32(xml);
     ret &= test_array2_32(xml);
-    ret &= test_array3_32(xml);
+    ret &= test_array_2x2_32(xml, "array3_32", starts_exp_array3_32);
     ret &= test_array4_32(xml);
+    ret &= test_array_2x2_32(xml, "array5_32", starts_exp_array5_32);
     
     fmi3_import_free(xml);
     return ret == 0 ? CTEST_RETURN_FAIL : CTEST_RETURN_SUCCESS;

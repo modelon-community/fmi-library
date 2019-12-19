@@ -8,21 +8,27 @@
   <CoSimulation modelIdentifier="VariableTypes"/>
 
   <ModelVariables>
-    <Float64 name="array1" valueReference="1" initial="exact" start="1.0">
+    <Float64 name="array1_64" valueReference="1" initial="exact" start="1.0">
       <Dimension start="1"/>
     </Float64>
 
-    <Float64 name="array2" valueReference="2" initial="exact" start="1.0 2.0">
+    <Float64 name="array2_64" valueReference="2" initial="exact" start="1.0 2.0">
       <Dimension start="2"/>
     </Float64>
 
-    <Float64 name="array3" valueReference="3" initial="exact" start="1.0 2.0 3.0 4.0">
+    <Float64 name="array3_64" valueReference="3" initial="exact" start="1.0 2.0 3.0 4.0">
       <Dimension start="2"/>
       <Dimension start="2"/>
     </Float64>
 
-    <Float64 name="array4" valueReference="4" initial="exact" start="1.0 2.0 3.0 4.0 5.0 6.0 7.0 8.0">
+    <Float64 name="array4_64" valueReference="4" initial="exact" start="1.0 2.0 3.0 4.0 5.0 6.0 7.0 8.0">
       <Dimension start="2"/>
+      <Dimension start="2"/>
+      <Dimension start="2"/>
+    </Float64>
+
+    <!-- xs:double types -->
+    <Float64 name="array5_64" valueReference="5" initial="exact" start="123.456 +1234.456 -1.2344e56 -.45E-6">
       <Dimension start="2"/>
       <Dimension start="2"/>
     </Float64>
@@ -42,6 +48,12 @@
 
     <Float32 name="array4_32" valueReference="4" initial="exact" start="1.0 2.0 3.0 4.0 5.0 6.0 7.0 8.0">
       <Dimension start="2"/>
+      <Dimension start="2"/>
+      <Dimension start="2"/>
+    </Float32>
+
+    <!-- xs:float types -->
+    <Float32 name="array5_32" valueReference="5" initial="exact" start="123.456 +1234.456 -3.4028e36F -.45E-6">
       <Dimension start="2"/>
       <Dimension start="2"/>
     </Float32>

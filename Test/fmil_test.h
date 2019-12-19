@@ -4,23 +4,31 @@
 #include <stdio.h>
 
 #ifdef _MSC_VER /* Visual Studio */
-#define TEST_FAILED(msg)                                                    \
+#define TEST_FAILED(...)                                                    \
     do {                                                                    \
-        printf("  %s FAILED: %s\n", __FUNCTION__, msg);                            \
+        printf("  %s FAILED: ", __FUNCTION__);                              \
+        printf(__VA_ARGS__);                                                \
+        printf("\n");                                                       \
         return 0;                                                           \
     } while (0)
 #else /* __FUNCTION__ magic variable won't be available */
-#define TEST_FAILED(msg)                                                    \
+#define TEST_FAILED(...)                                                    \
     do {                                                                    \
-        printf("  test FAILED at line %d: %s\n", __LINE__, msg);           \
+        printf("  test FAILED at line %d: ", __LINE__);                     \
+        printf(__VA_ARGS__);                                                \
+        printf("\n");                                                       \
         return 0;                                                           \
     } while (0)
 #endif
 
-#define ASSERT_MSG(cond, msg)                                               \
+/** 
+ * Fails the test if 'cond' is not true. Use varargs argument for error 
+ * message formatting.
+ */
+#define ASSERT_MSG(cond, ...)                                               \
     do {                                                                    \
         if (!(cond)) {                                                      \
-            TEST_FAILED(msg);                                               \
+            TEST_FAILED(__VA_ARGS__);                                       \
         }                                                                   \
     } while (0)
 

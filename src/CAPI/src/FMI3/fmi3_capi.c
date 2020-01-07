@@ -117,7 +117,7 @@ Types for Common Functions
 	return jm_status;
 }
 
-/* Load FMI 2.0 Co-Simulation functions */
+/* Load FMI 3.0 Co-Simulation functions */
 static jm_status_enu_t fmi3_capi_load_cs_fcn(fmi3_capi_t* fmu, unsigned int capabilities[])
 {
 	jm_status_enu_t jm_status = jm_status_success;
@@ -172,7 +172,7 @@ static jm_status_enu_t fmi3_capi_load_cs_fcn(fmi3_capi_t* fmu, unsigned int capa
 	return jm_status;
 }
 
-/* Load FMI 2.0 Model Exchange functions */
+/* Load FMI 3.0 Model Exchange functions */
 static jm_status_enu_t fmi3_capi_load_me_fcn(fmi3_capi_t* fmu, unsigned int capabilities[])
 {
 	jm_status_enu_t jm_status = jm_status_success;
@@ -367,7 +367,7 @@ jm_status_enu_t fmi3_capi_free_dll(fmi3_capi_t* fmu)
 	return jm_status_success;
 }
 
-/* Common FMI 2.0 functions */
+/* Common FMI 3.0 functions */
 
 const char* fmi3_capi_get_version(fmi3_capi_t* fmu)
 {

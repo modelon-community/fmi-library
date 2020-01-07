@@ -44,7 +44,7 @@ extern "C" {
 #endif
 
 /**
- * \addtogroup  fmi3_import FMI 2.0 import interface
+ * \addtogroup  fmi3_import FMI 3.0 import interface
  *  All the structures used in the interfaces are intended to
  *  be treated as opaque objects by the client code.
  @{ 
@@ -52,7 +52,7 @@ extern "C" {
 
 /**	\addtogroup fmi3_import_init Constuction, destruction and error handling
  * 	\addtogroup fmi3_import_gen General information retrieval
- *	\addtogroup fmi3_import_capi Interface to the standard FMI 2.0 "C" API
+ *	\addtogroup fmi3_import_capi Interface to the standard FMI 3.0 "C" API
  *  \brief Convenient functions for calling the FMI functions. This interface wrappes the "C" API. 
  */
  /** @} */
@@ -153,7 +153,7 @@ FMILIB_EXPORT const char* fmi3_import_get_license(fmi3_import_t* fmu);
 */
 FMILIB_EXPORT const char* fmi3_import_get_model_version(fmi3_import_t* fmu);
 
-/** \brief Get FMI standard version (always 2.0). 
+/** \brief Get FMI standard version (always 3.0). 
 @param fmu An fmu object as returned by fmi3_import_parse_xml().
 */
 FMILIB_EXPORT const char* fmi3_import_get_model_standard_version(fmi3_import_t* fmu);

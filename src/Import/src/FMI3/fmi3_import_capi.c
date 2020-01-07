@@ -163,7 +163,7 @@ void fmi3_import_destroy_dllfmu(fmi3_import_t* fmu) {
 	}
 }
 
-/* FMI 2.0 Common functions */
+/* FMI 3.0 Common functions */
 const char* fmi3_import_get_version(fmi3_import_t* fmu) {
 	if(!fmu->capi) {
 		jm_log_error(fmu->callbacks, module,"FMU CAPI is not loaded");
@@ -296,7 +296,7 @@ fmi3_status_t fmi3_import_get_directional_derivative(fmi3_import_t* fmu, const f
 	return fmi3_capi_get_directional_derivative(fmu -> capi,v_ref, nv, z_ref, nz, dv, dz);
 }
 
-/* FMI 2.0 ME functions */
+/* FMI 3.0 ME functions */
 
 fmi3_status_t fmi3_import_enter_event_mode(fmi3_import_t* fmu) {
     return fmi3_capi_enter_event_mode(fmu->capi);
@@ -341,7 +341,7 @@ fmi3_status_t fmi3_import_get_nominals_of_continuous_states(fmi3_import_t* fmu, 
 	return fmi3_capi_get_nominals_of_continuous_states(fmu -> capi, x_nominal, nx);
 }
 
-/* FMI 2.0 CS functions */
+/* FMI 3.0 CS functions */
 
 fmi3_status_t fmi3_import_set_real_input_derivatives(fmi3_import_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, const fmi3_integer_t order[], const  fmi3_real_t value[]) {
 	return fmi3_capi_set_real_input_derivatives(fmu -> capi, vr, nvr, order, value);

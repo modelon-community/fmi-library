@@ -21,7 +21,7 @@
 
 #include "fmi3_types.h"
 /**	\file fmi3_functions.h
-	Mapping for the standard FMI 2.0 functions into fmi3_ namespace.
+	Mapping for the standard FMI 3.0 functions into fmi3_ namespace.
 
 	\addtogroup fmi3_utils
 	@{
@@ -36,7 +36,7 @@ extern "C" {
 #endif
 
 
-/** FMI 2.0 status codes */
+/** FMI 3.0 status codes */
 typedef enum {
 	fmi3_status_ok,
 	fmi3_status_warning,
@@ -57,16 +57,16 @@ typedef enum {
 /** Convert #fmi3_status_t variable to string  */
 FMILIB_EXPORT const char* fmi3_status_to_string(fmi3_status_t status);
 
-/** FMI 2.0 logger function type */
+/** FMI 3.0 logger function type */
 typedef void  (*fmi3_callback_logger_ft)        (fmi3_component_environment_t env, fmi3_string_t instanceName, fmi3_status_t status, fmi3_string_t category, fmi3_string_t message, ...);
-/** FMI 2.0 allocate memory function type */
+/** FMI 3.0 allocate memory function type */
 typedef void* (*fmi3_callback_allocate_memory_ft)(size_t nobj, size_t size);
-/** FMI 2.0 free memory  function type */
+/** FMI 3.0 free memory  function type */
 typedef void  (*fmi3_callback_free_memory_ft)    (void* obj);
-/** FMI 2.0 step finished callback function type */
+/** FMI 3.0 step finished callback function type */
 typedef void  (*fmi3_step_finished_ft)          (fmi3_component_environment_t env, fmi3_status_t status);
 
-/** The FMI 2.0 callbacks */
+/** The FMI 3.0 callbacks */
 typedef struct {
 	fmi3_callback_logger_ft         logger;
 	fmi3_callback_allocate_memory_ft allocateMemory;
@@ -75,7 +75,7 @@ typedef struct {
 	fmi3_component_environment_t    componentEnvironment;
 } fmi3_callback_functions_t;
 
-/** Event info structure as used in FMI 2.0 ME */
+/** Event info structure as used in FMI 3.0 ME */
 /* TODO: reuse from fmiFunctions.h */
 typedef struct {
     fmi3_boolean_t newDiscreteStatesNeeded;
@@ -86,7 +86,7 @@ typedef struct {
     fmi3_real_t    nextEventTime;
 } fmi3_event_info_t;
 
-/** Co-simulation status for FMI 2.0 CS */
+/** Co-simulation status for FMI 3.0 CS */
 /* TODO: reuse from fmiFunctions.h */
 typedef enum {
     fmi3_do_step_status,

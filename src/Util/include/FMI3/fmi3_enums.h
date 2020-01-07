@@ -23,7 +23,7 @@ extern "C" {
 #endif
 
 /** \file fmi3_enums.h
-    \brief Definions the enum types used with FMI 2.0 libs
+    \brief Definions the enum types used with FMI 3.0 libs
 */
 
 /**    \addtogroup fmi3_utils
@@ -31,7 +31,7 @@ extern "C" {
     \addtogroup fmi3_enums
     @}
 */
-/** \addtogroup fmi3_enums Enum types used with FMI 2.0 libs
+/** \addtogroup fmi3_enums Enum types used with FMI 3.0 libs
     @{
 */
 /** \brief Naming convention for the variables in XML file*/
@@ -45,7 +45,7 @@ typedef enum fmi3_variable_naming_convension_enu_t
 /** \brief Convert a #fmi3_variable_naming_convension_enu_t constant into string */
 FMILIB_EXPORT const char* fmi3_naming_convention_to_string(fmi3_variable_naming_convension_enu_t convention);
 
-/**  \brief FMU 2.0 kinds */
+/**  \brief FMU 3.0 kinds */
 typedef enum fmi3_fmu_kind_enu_t
 {
         fmi3_fmu_kind_unknown = 0,
@@ -85,7 +85,7 @@ typedef enum fmi3_causality_enu_t {
 FMILIB_EXPORT const char* fmi3_causality_to_string(fmi3_causality_enu_t c);
 
 /**
- * \brief Get the default variability for a given causality. NOTE: the FMI 2.0
+ * \brief Get the default variability for a given causality. NOTE: the FMI 3.0
  *        defines the default to always be continuous, but this is incompatible
  *        with causalities "parameter" and "calculatedParameter". These will
  *        instead be treated as having variability "fixed".

@@ -374,7 +374,7 @@ int fmi3_xml_handle_fmiModelDescription(fmi3_xml_parser_context_t *context, cons
 		jm_log_verbose(context->callbacks, module, "Parsing XML element fmiModelDescription");
 		md->fmuKind = fmi3_fmu_kind_unknown;
         /* process the attributes */
-		ret =        /* <xs:attribute name="fmiVersion" type="xs:normalizedString" use="required" fixed="2.0"/> */
+		ret =        /* <xs:attribute name="fmiVersion" type="xs:normalizedString" use="required" fixed="3.0"/> */
                     fmi3_xml_set_attr_string(context, fmi3_xml_elmID_fmiModelDescription, fmi_attr_id_fmiVersion, 1, &(md->fmi3_xml_standard_version)) ||
                     /* <xs:attribute name="modelName" type="xs:normalizedString" use="required"> */
                     fmi3_xml_set_attr_string(context, fmi3_xml_elmID_fmiModelDescription, fmi_attr_id_modelName, 1, &(md->modelName)) ||

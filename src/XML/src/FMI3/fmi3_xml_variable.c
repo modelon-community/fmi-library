@@ -841,7 +841,7 @@ int fmi3_xml_handle_FloatVariable(fmi3_xml_parser_context_t* context, const char
             }
             if (fmi3_xml_variable_is_array(variable)) {
                 int nArr; /* TODO: do something with this, e.g. dimension size verification */
-                if (fmi3_xml_set_attr_array(context, elmID, fmi_attr_id_start, 0, &start->start.array64, &nArr, startAttr, primType)) { /* TODO: handle all other types */
+                if (fmi3_xml_set_attr_array(context, elmID, fmi_attr_id_start, 0, &start->start, &nArr, startAttr, primType)) {
                     return -1;
                 }
             } else { /* is scalar */

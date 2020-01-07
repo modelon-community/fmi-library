@@ -391,6 +391,12 @@ int fmi3_xml_set_attr_float32(fmi3_xml_parser_context_t *context, fmi3_xml_elm_e
  * str: the string containing the float64 values, they must be separated by exactly one <space> character, must not be NULL
  * arrPtr: pointer to the array where the values will be stored. Memory is dynamically allocated for this array, and must be freed by caller
  * nArr: the number of values in 'arrPtr'
+ * 
+ * LIMITATION:
+ * some expressions that are not a valid target type will be incorrectly formatted (this only happen with invalid XMLs)
+ * If schema verification is done before parsing, this limitation won't surface
+ * example: float: "1.1;2.2", "1a3", "1e999"
+ *
  */
 static int fmi3_xml_str_to_array(fmi3_xml_parser_context_t* context, const char* str, void** arrPtr, int* nArr, const fmi3_xml_primitive_type_t* primType) {
     char* strCopy;
@@ -409,7 +415,7 @@ static int fmi3_xml_str_to_array(fmi3_xml_parser_context_t* context, const char*
         JM_LOG_ERROR_NO_MEM();
         return -1;
     }
-    strcpy(strCopy, str);
+    strncpy(strCopy, str, strlen(str) + 1);
 
     /* allocate memory for the start values */
     vals = context->callbacks->malloc(nVals * primType->size); /* freed in fmi3_xml_clear_model_description */
@@ -826,6 +832,7 @@ static void XMLCALL fmi3_parse_element_end(void* c, const char *elm) {
     jm_vector_push_back(char)(&context->elmData, 0);
 
 	if( currentElMap->elementHandle(context, jm_vector_get_itemp(char)(&context->elmData, 0) )) {
+        /* context->modelDescription->hasParsingError = 1;*/
         return;
     }
     jm_vector_resize(char)(&context->elmData, 0);

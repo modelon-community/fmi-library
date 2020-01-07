@@ -153,17 +153,17 @@ void fmi3_xml_clear_model_description( fmi3_xml_model_description_t* md) {
 
     fmi3_xml_free_type_definitions_data(&md->typeDefinitions);
 
-    /* free memory inside the variables */
-    for (i = 0; i < jm_vector_get_size(jm_voidp)(md->variablesByVR); i++) {
-        fmi3_xml_variable_t* var = (fmi3_xml_variable_t*)jm_vector_get_item(jm_voidp)(md->variablesByVR, i);
-        fmi3_xml_variable_free_internals(md->callbacks, var);
-    }
-
 	if(md->variablesOrigOrder) {
 		jm_vector_free(jm_voidp)(md->variablesOrigOrder);
 		md->variablesOrigOrder = 0;
 	}
     if(md->variablesByVR) {
+        /* free memory inside the variables */
+        for (i = 0; i < jm_vector_get_size(jm_voidp)(md->variablesByVR); i++) {
+            fmi3_xml_variable_t* var = (fmi3_xml_variable_t*)jm_vector_get_item(jm_voidp)(md->variablesByVR, i);
+            fmi3_xml_variable_free_internals(md->callbacks, var);
+        }
+
 		jm_vector_free(jm_voidp)(md->variablesByVR);
 		md->variablesByVR = 0;
 	}

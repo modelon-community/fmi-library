@@ -840,7 +840,7 @@ int fmi3_xml_handle_FloatVariable(fmi3_xml_parser_context_t* context, const char
                 return -1;
             }
             if (fmi3_xml_variable_is_array(variable)) {
-                int nArr; /* TODO: do something with this, e.g. dimension size verification */
+                size_t nArr; /* TODO: do something with this, e.g. dimension size verification */
                 if (fmi3_xml_set_attr_array(context, elmID, fmi_attr_id_start, 0, &start->start, &nArr, startAttr, primType)) {
                     return -1;
                 }

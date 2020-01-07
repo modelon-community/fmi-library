@@ -169,9 +169,9 @@ void fmi3_xml_parse_error(fmi3_xml_parser_context_t *context, const char* fmt, .
     va_end (args);
 }
 
-static int fmi3_xml_string_char_count(const char* str, char ch) {
-    int n = 0;
-    int i;
+static size_t fmi3_xml_string_char_count(const char* str, char ch) {
+    size_t n = 0;
+    size_t i;
 
     for (i = 0; i < strlen(str); i++) {
         if (str[i] == ch) {
@@ -398,10 +398,10 @@ int fmi3_xml_set_attr_float32(fmi3_xml_parser_context_t *context, fmi3_xml_elm_e
  * example: float: "1.1;2.2", "1a3", "1e999"
  *
  */
-static int fmi3_xml_str_to_array(fmi3_xml_parser_context_t* context, const char* str, void** arrPtr, int* nArr, const fmi3_xml_primitive_type_t* primType) {
+static int fmi3_xml_str_to_array(fmi3_xml_parser_context_t* context, const char* str, void** arrPtr, size_t* nArr, const fmi3_xml_primitive_type_t* primType) {
     char* strCopy;
     char delim = ' ';
-    int nVals = fmi3_xml_string_char_count(str, delim) + 1;
+    size_t nVals = fmi3_xml_string_char_count(str, delim) + 1;
     void* vals;
     char* token;
     const char* formatter = primType->formatter;
@@ -476,7 +476,7 @@ static int fmi3_xml_str_to_array(fmi3_xml_parser_context_t* context, const char*
  * TODO: Name is misleading for all _set_attr_<type> functions, I would call it "get_attr_as_float" or similar
  */
 int fmi3_xml_set_attr_array(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID,
-        int required, void** arrPtr, int* arrSize, jm_string str, const fmi3_xml_primitive_type_t* primType) {
+        int required, void** arrPtr, size_t* arrSize, jm_string str, const fmi3_xml_primitive_type_t* primType) {
 
     if (!str) {
         /* attribute must always be supplied by caller */

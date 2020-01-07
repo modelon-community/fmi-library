@@ -355,7 +355,6 @@ static int test_array4_32(fmi3_import_t* xml)
 static int test_array_bad(const char* md_parent_dir_path)
 {
     fmi3_import_t* xml = parse_xml(md_parent_dir_path);
-    const char* err_msg;
 
     if (xml != NULL) {
         fmi3_import_free(xml);

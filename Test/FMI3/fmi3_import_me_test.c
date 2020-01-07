@@ -55,6 +55,8 @@ int test_parsed_all_varialbes(fmi3_import_t* fmu)
     if (n_total != 12) {
         do_exit(CTEST_RETURN_FAIL);
     }
+
+    return 0;
 }
 	   
 int test_simulate_me(fmi3_import_t* fmu)

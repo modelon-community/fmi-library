@@ -116,6 +116,8 @@ int fmi3_xml_get_enum_variable_max(fmi3_xml_enum_variable_t* v);
 fmi3_variable_alias_kind_enu_t fmi3_xml_get_variable_alias_kind(fmi3_xml_variable_t*);
 fmi3_xml_variable_t* fmi3_xml_get_variable_alias_base(fmi3_xml_model_description_t* md,fmi3_xml_variable_t*);
 
+void fmi3_xml_variable_free_internals(jm_callbacks* callbacks, fmi3_xml_variable_t* var);
+
 /**
     Return the list of all the variables aliased to the given one (including the base one.
     The list is ordered: base variable, aliases, negated aliases.

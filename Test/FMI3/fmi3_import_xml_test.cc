@@ -13,6 +13,15 @@
     along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 */
 
+/*
+ * This file tests that C++ applications can use FMIL, i.e. that C++ directives are used in all headers:
+ *
+ *      #ifdef __cplusplus
+ *          extern "C" {
+ *      #endif
+ *
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>

@@ -73,11 +73,13 @@ to_native_c_path("${TEST_OUTPUT_FOLDER}/${FMU3_DUMMY_ME_MODEL_IDENTIFIER}_me.fmu
 to_native_c_path("${TEST_OUTPUT_FOLDER}/${FMU3_DUMMY_CS_MODEL_IDENTIFIER}_cs.fmu" FMU3_CS_PATH)
 to_native_c_path("${TEST_OUTPUT_FOLDER}/${FMU3_DUMMY_CS_MODEL_IDENTIFIER}_mf.fmu" FMU3_MF_PATH)
 
+# Test that it works for C++ applications
+add_executable (fmi3_import_xml_test ${RTTESTDIR}/FMI3/fmi3_import_xml_test.cc)
+target_link_libraries (fmi3_import_xml_test  ${FMILIBFORTEST})
+
+# General functionality tests
 add_executable (fmi3_xml_parsing_test ${RTTESTDIR}/FMI3/fmi3_xml_parsing_test.c)
 target_link_libraries (fmi3_xml_parsing_test  ${FMILIBFORTEST})
-
-add_executable (fmi3_import_xml_test ${RTTESTDIR}/FMI3/fmi3_import_xml_test.c)
-target_link_libraries (fmi3_import_xml_test  ${FMILIBFORTEST})
 
 add_executable (fmi3_import_me_test ${RTTESTDIR}/FMI3/fmi3_import_me_test.c)
 target_link_libraries (fmi3_import_me_test  ${FMILIBFORTEST})

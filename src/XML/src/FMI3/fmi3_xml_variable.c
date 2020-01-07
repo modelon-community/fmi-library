@@ -35,7 +35,8 @@ static struct fmi3_xml_variable_default_values VARIABLE_DEFAULT_VALUES = { 0, 0 
 
 typedef struct fmi3_xml_dimension_t {
     int is_vr;
-    fmi3_integer_t value; /* if is_vr: ref to other variable that holds the size, else the actual size */
+    unsigned int start;           /* value of the start attribute if 'is_vr' is false, else unassigned */
+    unsigned int vr;              /* value of the valueReference attribute if 'is_vr' is true, else unassigned */
 } fmi3_xml_dimension_t;
 
 static void* fmi3_xml_get_type_default_value(fmi3_bitness_enu_t bitness) {
@@ -50,11 +51,11 @@ static void* fmi3_xml_get_type_default_value(fmi3_bitness_enu_t bitness) {
     }
 }
 
-fmi3_integer_t fmi3_xml_dimension_get_size(fmi3_xml_model_description_t* md, fmi3_xml_dimension_t dim) {
+unsigned int fmi3_xml_dimension_get_size(fmi3_xml_model_description_t* md, fmi3_xml_dimension_t dim) {
     if (!dim.is_vr) {
-        return dim.value;
+        return dim.start;
     } else {
-        fmi3_integer_t vr = dim.value;
+        fmi3_integer_t vr = dim.vr;
         fmi3_xml_integer_variable_t* varRef = fmi3_xml_get_variable_as_integer(fmi3_xml_get_variable_by_vr(md, fmi3_base_type_int, vr));
         
         fmi3_integer_t start = fmi3_xml_get_integer_variable_start(varRef);
@@ -167,9 +168,9 @@ void fmi3_xml_variable_free_internals(jm_callbacks* callbacks, fmi3_xml_variable
     }
 }
 
-void fmi3_xml_variable_get_dimensions(fmi3_xml_variable_t* v, fmi3_xml_model_description_t* md, const int** dimensions, size_t* nDimensions) {
+void fmi3_xml_variable_get_dimensions(fmi3_xml_variable_t* v, fmi3_xml_model_description_t* md, const unsigned int** dimensions, size_t* nDimensions) {
     jm_vector(jm_voidp)* dimsVec = v->dimensionsVector;
-    fmi3_integer_t* dimsArr = v->dimensionsArray; /* has already been allocated */
+    unsigned int* dimsArr = v->dimensionsArray; /* has already been allocated */
     size_t nDims = jm_vector_get_size(jm_voidp)(dimsVec);
     size_t i;
 
@@ -178,14 +179,14 @@ void fmi3_xml_variable_get_dimensions(fmi3_xml_variable_t* v, fmi3_xml_model_des
         fmi3_xml_dimension_t* d = (fmi3_xml_dimension_t*)jm_vector_get_item(jm_voidp)(dimsVec, i);
         if (d->is_vr) {
             /* only find static start value here, we might need a similar method (get_dimensions) during runtime as well */
-            fmi3_xml_integer_variable_t* var = (fmi3_xml_integer_variable_t*)fmi3_xml_get_variable_by_vr(md, fmi3_base_type_int, d->value);
+            fmi3_xml_integer_variable_t* var = (fmi3_xml_integer_variable_t*)fmi3_xml_get_variable_by_vr(md, fmi3_base_type_int, d->vr);
             *(dimsArr + i) = fmi3_xml_get_integer_variable_start(var);
         } else { /* value was stored as start attribute */
-            *(dimsArr + i) = d->value;
+            *(dimsArr + i) = d->start;
         }
     }
 
-    *dimensions = (const int*)dimsArr;
+    *dimensions = (const unsigned int*)dimsArr;
     *nDimensions = nDims;
     return;
 }
@@ -706,12 +707,15 @@ int fmi3_xml_handle_Dimension(fmi3_xml_parser_context_t* context, const char* da
         if (hasStart) {
             dim->is_vr = 0;
             attrId = fmi_attr_id_start;
+            if (fmi3_xml_set_attr_uint(context, fmi3_xml_elmID_Dimension, attrId, 0, &dim->start, 0)) {
+                return -1;
+            }
         } else if (hasVr) {
             dim->is_vr = 1;
             attrId = fmi_attr_id_valueReference;
-        }
-        if (fmi3_xml_set_attr_int(context, fmi3_xml_elmID_Dimension, attrId, 0, &dim->value, 0)) {
-            return -1;
+            if (fmi3_xml_set_attr_uint(context, fmi3_xml_elmID_Dimension, attrId, 0, &dim->vr, 0)) {
+                return -1;
+            }
         }
 
         /* update parent variable */

@@ -105,7 +105,7 @@ FMILIB_EXPORT fmi3_float32_t* fmi3_import_get_float32_variable_start_array(fmi3_
     @return Pointer to array of dimension sizes. Length of this array is given by
         #fmi3_import_variable_get_number_dimensions TODO
 */
-FMILIB_EXPORT void fmi3_import_variable_get_dimensions(fmi3_import_t* fmu, fmi3_import_variable_t* v, const int** dimensions, size_t* nDimensions);
+FMILIB_EXPORT void fmi3_import_variable_get_dimensions(fmi3_import_t* fmu, fmi3_import_variable_t* v, const unsigned int** dimensions, size_t* nDimensions);
 
 /**   \brief Check if the variable is an array.
 	@return True if array, false if scalar.

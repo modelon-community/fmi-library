@@ -27,8 +27,8 @@ static int test_array1_64(fmi3_import_t *xml)
     fmi3_import_variable_t* v;
     fmi3_float64_t starts_exp[1] = { 1.0 };
     fmi3_float64_t* starts;
-    const int* dims;
-    size_t nDims;
+    const unsigned int* dims;
+    unsigned int nDims;
     int is_array ;
     int i;
     int has_start;
@@ -63,8 +63,8 @@ static int test_array2_64(fmi3_import_t* xml)
     fmi3_import_variable_t* v;
     fmi3_float64_t starts_exp[2] = { 1.0, 2.0 };
     fmi3_float64_t* starts;
-    const int* dims;
-    size_t nDims;
+    const unsigned int* dims;
+    unsigned int nDims;
     int is_array;
     int i;
     int has_start;
@@ -98,8 +98,8 @@ static int test_array_2x2_64(fmi3_import_t* xml, const char* varName, fmi3_float
 {
     fmi3_import_variable_t* v;
     fmi3_float64_t* starts;
-    const int* dims;
-    size_t nDims;
+    const unsigned int* dims;
+    unsigned int nDims;
     int is_array;
     int r, c;
     int has_start;
@@ -142,8 +142,8 @@ static int test_array4_64(fmi3_import_t* xml)
     fmi3_import_variable_t* v;
     fmi3_float64_t starts_exp[2][2][2] = {{{1.0, 2.0}, {3.0, 4.0}}, {{5.0, 6.0}, {7.0, 8.0}}}; /* note to self: {: new row, {{: new column, {{{: new aisle */
     fmi3_float64_t* starts;
-    const int* dims;
-    size_t nDims;
+    const unsigned int* dims;
+    unsigned int nDims;
     int is_array;
     int r, c, a;
     int has_start;
@@ -191,8 +191,8 @@ static int test_array1_32(fmi3_import_t *xml)
     fmi3_import_variable_t* v;
     fmi3_float32_t starts_exp[1] = { 1.0 };
     fmi3_float32_t* starts;
-    const int* dims;
-    size_t nDims;
+    const unsigned int* dims;
+    unsigned int nDims;
     int is_array ;
     int i;
     int has_start;
@@ -227,8 +227,8 @@ static int test_array2_32(fmi3_import_t* xml)
     fmi3_import_variable_t* v;
     fmi3_float32_t starts_exp[2] = { 1.0, 2.0 };
     fmi3_float32_t* starts;
-    const int* dims;
-    size_t nDims;
+    const unsigned int* dims;
+    unsigned int nDims;
     int is_array;
     int i;
     int has_start;
@@ -262,8 +262,8 @@ static int test_array_2x2_32(fmi3_import_t* xml, const char* varName, fmi3_float
 {
     fmi3_import_variable_t* v;
     fmi3_float32_t* starts;
-    const int* dims;
-    size_t nDims;
+    const unsigned int* dims;
+    unsigned int nDims;
     int is_array;
     int r, c;
     int has_start;
@@ -306,8 +306,8 @@ static int test_array4_32(fmi3_import_t* xml)
     fmi3_import_variable_t* v;
     fmi3_float32_t starts_exp[2][2][2] = {{{1.0, 2.0}, {3.0, 4.0}}, {{5.0, 6.0}, {7.0, 8.0}}}; /* note to self: {: new row, {{: new column, {{{: new aisle */
     fmi3_float32_t* starts;
-    const int* dims;
-    size_t nDims;
+    const unsigned int* dims;
+    unsigned int nDims;
     int is_array;
     int r, c, a;
     int has_start;

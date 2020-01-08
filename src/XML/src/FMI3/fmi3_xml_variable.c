@@ -167,9 +167,9 @@ void fmi3_xml_variable_free_internals(jm_callbacks* callbacks, fmi3_xml_variable
     }
 }
 
-void fmi3_xml_variable_get_dimensions(fmi3_xml_variable_t* v, fmi3_xml_model_description_t* md, const size_t** dimensions, size_t* nDimensions) {
+void fmi3_xml_variable_get_dimensions(fmi3_xml_variable_t* v, fmi3_xml_model_description_t* md, const unsigned int** dimensions, unsigned int* nDimensions) {
     jm_vector(jm_voidp)* dimsVec = &v->dimensionsVector;
-    size_t* dimsArr = v->dimensionsArray; /* has already been allocated */
+    unsigned int* dimsArr = v->dimensionsArray; /* has already been allocated */
     size_t nDims = jm_vector_get_size(jm_voidp)(dimsVec);
     size_t i;
 
@@ -606,7 +606,7 @@ int fmi3_xml_handle_Variable(fmi3_xml_parser_context_t *context, const char* dat
             if (fmi3_xml_variable_is_array(variable)) {
                 size_t nDims = jm_vector_get_size(jm_voidp)(&variable->dimensionsVector);
 
-                variable->dimensionsArray = context->callbacks->malloc(nDims * sizeof(size_t));
+                variable->dimensionsArray = context->callbacks->malloc(nDims * sizeof(unsigned int));
                 if (!variable->dimensionsArray) {
                     jm_log_error(context->callbacks, module, "Error: Unable to allocate memory for dimension as array");
                     return -1;

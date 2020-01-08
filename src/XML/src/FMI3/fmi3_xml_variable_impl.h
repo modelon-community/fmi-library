@@ -55,7 +55,7 @@ struct fmi3_xml_variable_t {
      * This field will be exposed to the user, but FMIL handles memory management,
      * and this is a convenient place to store it.
      */
-    size_t* dimensionsArray;
+    unsigned int* dimensionsArray;
 
     /* temp fields during parsing*/
     jm_string startAttr;

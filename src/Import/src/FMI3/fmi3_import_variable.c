@@ -62,7 +62,7 @@ fmi3_float32_t* fmi3_import_get_float32_variable_start_array(fmi3_import_variabl
     return fmi3_xml_get_float32_variable_start_array(v);
 }
 
-void fmi3_import_variable_get_dimensions(fmi3_import_t* fmu, fmi3_import_variable_t* v, const unsigned int** dimensions, size_t* nDimensions) {
+void fmi3_import_variable_get_dimensions(fmi3_import_t* fmu, fmi3_import_variable_t* v, const unsigned int** dimensions, unsigned int* nDimensions) {
     fmi3_xml_variable_get_dimensions(v, fmu->md, dimensions, nDimensions);
 }
 

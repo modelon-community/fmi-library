@@ -596,28 +596,22 @@ int fmi3_xml_handle_Variable(fmi3_xml_parser_context_t *context, const char* dat
             /* check that the type for the variable is set */
             fmi3_xml_model_description_t* md = context->modelDescription;
             fmi3_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
-            size_t nDims = jm_vector_get_size(jm_voidp)(&variable->dimensionsVector);
-
             if(!variable->typeBase) {
                 jm_log_error(context->callbacks, module, "No variable type element for variable %s. Assuming Real.", variable->name);
 
                 return fmi3_xml_handle_RealVariable(context, NULL);
             }
 
-            /* allocate memory for the resolved dimensions; the main reason to do it here is
-             * because we have access to the callbacks */
-            if (nDims > 0) {
-                size_t* dimsArr;
+            /* Allocate memory for the resolved dimensions. The main reason to do it here is because we have access to the callbacks. */
+            if (fmi3_xml_variable_is_array(variable)) {
+                size_t nDims = jm_vector_get_size(jm_voidp)(&variable->dimensionsVector);
 
-                dimsArr = context->callbacks->malloc(nDims * sizeof(size_t));
-                if (!dimsArr) {
+                variable->dimensionsArray = context->callbacks->malloc(nDims * sizeof(size_t));
+                if (!variable->dimensionsArray) {
                     jm_log_error(context->callbacks, module, "Error: Unable to allocate memory for dimension as array");
                     return -1;
                 }
-
-                variable->dimensionsArray = dimsArr;
             }
-
         }
         /* might give out a warning if(data[0] != 0) */
     }

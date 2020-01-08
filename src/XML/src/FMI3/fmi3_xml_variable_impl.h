@@ -50,12 +50,17 @@ struct fmi3_xml_variable_t {
 
     /* array fields */
     jm_vector(jm_voidp) dimensionsVector; /* stores the dimensions and their attributes */
-    size_t* dimensionsArray; /* dynamic memory storage for resolved dimensions (i.e. vr's are dereferenced) */
+    /*
+     * Dynamic memory storage for resolved dimensions (i.e. vr's are dereferenced).
+     * This field will be exposed to the user, but FMIL handles memory management,
+     * and this is a convenient place to store it.
+     */
+    size_t* dimensionsArray;
 
     /* temp fields during parsing*/
     jm_string startAttr;
 
-    /* name must be last... I don't know why yet, but things will break otherwise (for example, the md->variablesByName name will lose its delimiting \0  char */
+    /* name must be last... I don't know why yet, but things will break otherwise (for example, the md->variablesByName name will lose its delimiting \0 char */
     char name[1];
 };
 

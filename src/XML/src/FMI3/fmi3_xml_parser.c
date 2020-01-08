@@ -400,8 +400,8 @@ int fmi3_xml_set_attr_float32(fmi3_xml_parser_context_t *context, fmi3_xml_elm_e
  */
 static int fmi3_xml_str_to_array(fmi3_xml_parser_context_t* context, const char* str, void** arrPtr, size_t* nArr, const fmi3_xml_primitive_type_t* primType) {
     char* strCopy;
-    char delim = ' ';
-    size_t nVals = fmi3_xml_string_char_count(str, delim) + 1;
+    char* delim = " ";
+    size_t nVals = fmi3_xml_string_char_count(str, delim[0]) + 1;
     void* vals;
     char* token;
     const char* formatter = primType->formatter;
@@ -436,7 +436,7 @@ static int fmi3_xml_str_to_array(fmi3_xml_parser_context_t* context, const char*
     } else { /* array */
 
         /* get the first token */
-        token = strtok(strCopy, &delim);
+        token = strtok(strCopy, delim);
 
         /* walk through other tokens */
         writeAddr = vals;
@@ -454,7 +454,7 @@ static int fmi3_xml_str_to_array(fmi3_xml_parser_context_t* context, const char*
             writeAddr = (char*)writeAddr + primType->size; 
 
             /* get next token */
-            token = strtok(NULL, &delim); /* strtok maintains internal buffer - pass NULL as first arg to continue with previous string */
+            token = strtok(NULL, delim); /* strtok maintains internal buffer - pass NULL as first arg to continue with previous string */
         }
     }
 

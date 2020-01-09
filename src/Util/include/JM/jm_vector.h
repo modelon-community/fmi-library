@@ -262,7 +262,7 @@ Default definition below is jm_diff and is implemented as (int)(first-second)
 #define jm_vector_push_back(T) jm_mangle(jm_vector_push_back, T)
 
 /**
-*  jm_vector_foreach calls f for each element in the vector. "contect" parameter
+*  jm_vector_foreach calls f for each element in the vector. "context" parameter
 *  is passed directly to the function as the second argument for the second version.
 *  void jm_vector_foreach(T)(jm_vector(T)* a, void (*f)(T))
 *  void jm_vector_foreach_c(T)(jm_vector(T)* a, void (*f)(T, void*), void * context)

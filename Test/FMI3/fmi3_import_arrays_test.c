@@ -30,7 +30,7 @@ static int test_array1_64(fmi3_import_t *xml)
     const unsigned int* dims;
     unsigned int nDims;
     int is_array ;
-    int i;
+    unsigned int i;
     int has_start;
 
     v = fmi3_import_get_variable_by_name(xml, "array1_64");
@@ -66,7 +66,7 @@ static int test_array2_64(fmi3_import_t* xml)
     const unsigned int* dims;
     unsigned int nDims;
     int is_array;
-    int i;
+    unsigned int i;
     int has_start;
 
     v = fmi3_import_get_variable_by_name(xml, "array2_64");
@@ -194,7 +194,7 @@ static int test_array1_32(fmi3_import_t *xml)
     const unsigned int* dims;
     unsigned int nDims;
     int is_array ;
-    int i;
+    unsigned int i;
     int has_start;
 
     v = fmi3_import_get_variable_by_name(xml, "array1_32");
@@ -230,7 +230,7 @@ static int test_array2_32(fmi3_import_t* xml)
     const unsigned int* dims;
     unsigned int nDims;
     int is_array;
-    int i;
+    unsigned int i;
     int has_start;
 
     v = fmi3_import_get_variable_by_name(xml, "array2_32");

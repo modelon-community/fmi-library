@@ -26,6 +26,15 @@
 extern "C" {
 #endif
 
+typedef struct fmi3_xml_dimension_t {
+    int is_vr;
+    unsigned int start;           /* value of the start attribute if 'is_vr' is false, else unassigned */
+    unsigned int vr;              /* value of the valueReference attribute if 'is_vr' is true, else unassigned */
+} fmi3_xml_dimension_t;
+
+/* declare fmi3_xml_dimension_t vector functions */
+jm_vector_declare_template(fmi3_xml_dimension_t)
+
 /* General variable type is convenien to unify all the variable list operations */
 struct fmi3_xml_variable_t {
     fmi3_xml_variable_type_base_t* typeBase; /** \brief Type information of the variable */
@@ -49,7 +58,7 @@ struct fmi3_xml_variable_t {
     char canHandleMultipleSetPerTimeInstant;
 
     /* array fields */
-    jm_vector(jm_voidp) dimensionsVector; /* stores the dimensions and their attributes */
+    jm_vector(fmi3_xml_dimension_t) dimensionsVector; /* stores the dimensions and their attributes */
     /*
      * Dynamic memory storage for resolved dimensions (i.e. vr's are dereferenced).
      * This field will be exposed to the user, but FMIL handles memory management,

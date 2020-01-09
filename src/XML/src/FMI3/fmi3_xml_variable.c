@@ -26,18 +26,17 @@
 
 static const char* module = "FMI3XML";
 
+/* define fmi3_xml_dimension_t vector functions */
+#define JM_TEMPLATE_INSTANCE_TYPE fmi3_xml_dimension_t
+#include "JM/jm_vector_template.h"
+#undef JM_TEMPLATE_INSTANCE_TYPE
+
 struct fmi3_xml_variable_default_values {
     fmi3_float32_t float32;
     fmi3_float64_t float64;
 };
 
 static struct fmi3_xml_variable_default_values VARIABLE_DEFAULT_VALUES = { 0, 0 };
-
-typedef struct fmi3_xml_dimension_t {
-    int is_vr;
-    unsigned int start;           /* value of the start attribute if 'is_vr' is false, else unassigned */
-    unsigned int vr;              /* value of the valueReference attribute if 'is_vr' is true, else unassigned */
-} fmi3_xml_dimension_t;
 
 static void* fmi3_xml_get_type_default_value(fmi3_bitness_enu_t bitness) {
     switch (bitness) {
@@ -156,26 +155,24 @@ fmi3_base_type_enu_t fmi3_xml_get_variable_base_type(fmi3_xml_variable_t* v) {
 
 void fmi3_xml_variable_free_internals(jm_callbacks* callbacks, fmi3_xml_variable_t* var) {
 
-    jm_free_f cb_free = (jm_free_f)callbacks->free;
-
     if (fmi3_xml_variable_is_array(var)) {
         if (!fmi3_xml_variable_is_array(var)) { /* fmi3_xml_variable_is_array function currently uses data that is freed a few lines below, so don't swap lines */
-            cb_free(fmi3_xml_get_float64_variable_start_array(var)); /* TODO: handle general case, but starting with float64 */
+            callbacks->free(fmi3_xml_get_float64_variable_start_array(var)); /* TODO: handle general case, but starting with float64 */
         }
-        jm_vector_foreach(jm_voidp)(&var->dimensionsVector, cb_free);
-        cb_free(var->dimensionsArray);
+        jm_vector_free_data(jm_string)(&var->dimensionsVector);
+        callbacks->free(var->dimensionsArray);
     }
 }
 
 void fmi3_xml_variable_get_dimensions(fmi3_xml_variable_t* v, fmi3_xml_model_description_t* md, const unsigned int** dimensions, unsigned int* nDimensions) {
-    jm_vector(jm_voidp)* dimsVec = &v->dimensionsVector;
+    jm_vector(fmi3_xml_dimension_t)* dimsVec = &v->dimensionsVector;
     unsigned int* dimsArr = v->dimensionsArray; /* has already been allocated */
-    size_t nDims = jm_vector_get_size(jm_voidp)(dimsVec);
+    size_t nDims = jm_vector_get_size(fmi3_xml_dimension_t)(dimsVec);
     size_t i;
 
     /* copy from vector to array and resolve valueReferences as necessary */
     for (i = 0; i < nDims; i++) {
-        fmi3_xml_dimension_t* d = (fmi3_xml_dimension_t*)jm_vector_get_item(jm_voidp)(dimsVec, i);
+        fmi3_xml_dimension_t* d = jm_vector_get_itemp(fmi3_xml_dimension_t)(dimsVec, i);
         if (d->is_vr) {
             /* only find static start value here, we might need a similar method (get_dimensions) during runtime as well */
             fmi3_xml_integer_variable_t* var = (fmi3_xml_integer_variable_t*)fmi3_xml_get_variable_by_vr(md, fmi3_base_type_int, d->vr);
@@ -191,7 +188,7 @@ void fmi3_xml_variable_get_dimensions(fmi3_xml_variable_t* v, fmi3_xml_model_des
 }
 
 int fmi3_xml_variable_is_array(fmi3_xml_variable_t* v) {
-    return jm_vector_get_size(jm_voidp)(&v->dimensionsVector) > 0;
+    return jm_vector_get_size(fmi3_xml_dimension_t)(&v->dimensionsVector) > 0;
 }
 
 int fmi3_xml_get_variable_has_start(fmi3_xml_variable_t* v) {
@@ -496,7 +493,7 @@ int fmi3_xml_handle_Variable(fmi3_xml_parser_context_t *context, const char* dat
         variable->aliasKind = fmi3_variable_is_not_alias;
         variable->reinit = 0;
         variable->canHandleMultipleSetPerTimeInstant = 1;
-        jm_vector_init(jm_voidp)(&variable->dimensionsVector, 0, context->callbacks);
+        jm_vector_init(fmi3_xml_dimension_t)(&variable->dimensionsVector, 0, context->callbacks);
 
         /* Save start value for processing after reading all Dimensions */
         /* variable->startAttr = fmi3_xml_peek_attr_str(context, fmi_attr_id_start);*/
@@ -604,7 +601,7 @@ int fmi3_xml_handle_Variable(fmi3_xml_parser_context_t *context, const char* dat
 
             /* Allocate memory for the resolved dimensions. The main reason to do it here is because we have access to the callbacks. */
             if (fmi3_xml_variable_is_array(variable)) {
-                size_t nDims = jm_vector_get_size(jm_voidp)(&variable->dimensionsVector);
+                size_t nDims = jm_vector_get_size(fmi3_xml_dimension_t)(&variable->dimensionsVector);
 
                 variable->dimensionsArray = context->callbacks->malloc(nDims * sizeof(unsigned int));
                 if (!variable->dimensionsArray) {
@@ -671,17 +668,18 @@ int fmi3_xml_handle_Dimension(fmi3_xml_parser_context_t* context, const char* da
     if (!data) { /* start of tag */
 
         fmi3_xml_variable_t* currentVar = jm_vector_get_last(jm_named_ptr)(&context->modelDescription->variablesByName).ptr;
-        fmi3_xml_dimension_t* dim;
+        fmi3_xml_dimension_t dim;
         fmi3_xml_attr_enu_t attrId;
         int hasStart;
         int hasVr;
         
         /* allocate */
-        dim = context->callbacks->malloc(sizeof(fmi3_xml_dimension_t));
+        /* dim = context->callbacks->malloc(sizeof(fmi3_xml_dimension_t));
         if (!dim) {
             jm_log_error(context->callbacks, module, "Error: Unable to allocate memory for dimension data");
             return -1;
         }
+        */
 
         /* handle attributes*/
         hasStart = fmi3_xml_is_attr_defined(context, fmi_attr_id_start);
@@ -698,21 +696,21 @@ int fmi3_xml_handle_Dimension(fmi3_xml_parser_context_t* context, const char* da
 
         /* set data */
         if (hasStart) {
-            dim->is_vr = 0;
+            dim.is_vr = 0;
             attrId = fmi_attr_id_start;
-            if (fmi3_xml_set_attr_uint(context, fmi3_xml_elmID_Dimension, attrId, 0, &dim->start, 0)) {
+            if (fmi3_xml_set_attr_uint(context, fmi3_xml_elmID_Dimension, attrId, 0, &dim.start, 0)) {
                 return -1;
             }
         } else if (hasVr) {
-            dim->is_vr = 1;
+            dim.is_vr = 1;
             attrId = fmi_attr_id_valueReference;
-            if (fmi3_xml_set_attr_uint(context, fmi3_xml_elmID_Dimension, attrId, 0, &dim->vr, 0)) {
+            if (fmi3_xml_set_attr_uint(context, fmi3_xml_elmID_Dimension, attrId, 0, &dim.vr, 0)) {
                 return -1;
             }
         }
 
         /* update parent variable */
-        if (!jm_vector_push_back(jm_voidp)(&currentVar->dimensionsVector, dim)) {
+        if (!jm_vector_push_back(fmi3_xml_dimension_t)(&currentVar->dimensionsVector, dim)) {
             jm_log_error(context->callbacks, module, "Error: Unable to allocate memory for dimension data (vector alloc failed)");
             return -1;
         }

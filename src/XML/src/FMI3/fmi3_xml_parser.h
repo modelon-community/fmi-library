@@ -206,99 +206,99 @@ jm_define_comp_f(fmi3_xml_compare_elmName, fmi3_xml_element_handle_map_t, fmi3_x
 #define XML_BLOCK_SIZE 16000
 
 /**
- * TODO: Move the descriptions to the variables
- *
- * modelDescription:
- * callbacks:
- *
- * parser:
- * parseBuffer:
- *
- * attrMap:
- *      Used for writing to attrBuffer. Uses lookup by attribute name instead
- *      of attribute ID. The .ptr field points to attrBuffer[id(attr_name)].
- *      Currently ONLY used for writing.
- * elmMap:
- *      A vector that only contains mappings from element names to element
- *      handlers. Remember that there can be several mappings for the same
- *      element name, but with "alternative names".
- *      The mapping for an XML name therefore depends on the context. For
- *      example, when the ModelVariable element is found, the mapping for
- *      'Integer' must change the handler for the "alternative name":
- *      'fmi3_xml_handle_IntegerVariable'.
- * attrBuffer:
- *      Allows reading of parsed attr value. Reading the value consumes it.
- *      Finishing the parsing of an element also consumes it.
- *      Writing the value is done through field 'attrMap'.
- *
- * lastBaseUnit:
- * skipOneVariableFlag:
- * skipElementCnt:
- *      Incremented when an invalid element (or nested elements of invalid root
- *      element) is found. Decremented when invalid element end tags are parsed.
- * has_produced_data_warning:
- *      There is no guarantee that all text will be handled in one call to the
- *      function implementing the XML_CharacterDataHandler, and this variable
- *      saves if a warning has already been generated.
- *
- * elmStack:
- *      Used to get parent element.
- *      Top of stack:
- *      XML_StartElementHandler:
- *          on enter: grandparent or empty
- *          on exit: parent or empty (push)
- *      XML_EndElementHandler:
- *          on enter: parent or empty
- *          on exit: grandparent or empty (pop)
- * elmData:
- *      char* wrapped in jm_vector for dynamic memory.
- *      Contains the latest element text. For an MD without tool specific
- *      annotations, this will always be empty. This variable is currently
- *      only used as a bool-switch though... TODO: Refactor to bool.
- *
- * lastElmID:
- *      Element ID of the last processed sibling, or fmi3_xml_elmID_none if
- *      no siblings have been processed.
- * currentElmID:
- *      Used for error checking and scheme verification.
- *      Values:
- *      XML_StartElementHandler:
- *          on enter: parent
- *          on exit: self
- *      XML_EndElementHandler:
- *          on enter: self
- *          on exit: parent
- *
- * The fields below are used to handle tool-specific annotations.
- * anyElmCount:
- * useAnyHandleFlg:
- * anyToolName:
- * anyParent:
- * anyHandle:
+ * Struct for saving and accessing data between element handlers.
  */
 struct fmi3_xml_parser_context_t {
+
+    /**
+     * This is where the parsed XML is saved.
+     */
     fmi3_xml_model_description_t* modelDescription;
+
     jm_callbacks* callbacks;
 
     XML_Parser parser;
     jm_vector(jm_voidp) parseBuffer;
 
+    /**
+     * Used for writing to attrBuffer. Uses lookup by attribute name instead
+     * of attribute ID. The .ptr field points to attrBuffer[id(attr_name)].
+     * Currently ONLY used for writing.
+     */
     jm_vector(jm_named_ptr)* attrMap;
+
+    /**
+     * Allows reading of parsed attr value. Reading the value consumes it.
+     * Finishing the parsing of an element also consumes it.
+     * Writing the value is done through field 'attrMap'.
+     */
     jm_vector(jm_string)* attrBuffer;
 
+    /**
+     * A vector that only contains mappings from element names to element
+     * handlers. Remember that there can be several mappings for the same
+     * element name, but with "alternative names".
+     * The mapping for an XML name therefore depends on the context. For
+     * example, when the ModelVariable element is found, the mapping for
+     * 'Integer' must change the handler for the "alternative name":
+     * 'fmi3_xml_handle_IntegerVariable'.
+     */
     jm_vector(fmi3_xml_element_handle_map_t)* elmMap;
 
     fmi3_xml_unit_t* lastBaseUnit;
-
     int skipOneVariableFlag;
+
+    /**
+     * Incremented when an invalid element(or nested elements of invalid root
+     * element) is found. Decremented when invalid element end tags are parsed.
+     */
 	int skipElementCnt;
+
+    /**
+     * There is no guarantee that all text will be handled in one call to the
+     * function implementing the XML_CharacterDataHandler, and this variable
+     * saves if a warning has already been generated.
+     */
 	int has_produced_data_warning;
 
+    /**
+     * Used to get parent element.
+     * Top of stack:
+     *   XML_StartElementHandler:
+     *     on enter: grandparent or empty
+     *     on exit: parent or empty (push)
+     *   XML_EndElementHandler:
+     *     on enter: parent or empty
+     *     on exit: grandparent or empty (pop)
+     */
     jm_stack(int) elmStack;
+
+    /**
+     * Contains the latest element text. For an MD without tool specific
+     * annotations, this will always be empty. This variable is currently
+     * only used as a bool-switch though...
+     * TODO: Refactor to bool
+     */
     jm_vector(char) elmData;
 
+    /**
+     * Element ID of the last processed sibling, or fmi3_xml_elmID_none if
+     * no siblings have been processed.
+     */
 	fmi3_xml_elm_enu_t lastElmID;
+
+    /**
+     * Used for error checking and scheme verification.
+     * Values:
+     *   XML_StartElementHandler:
+     *     on enter: parent
+     *     on exit: self
+     *   XML_EndElementHandler:
+     *     on enter: self
+     *     on exit: parent
+     */
 	fmi3_xml_elm_enu_t currentElmID;
+
     fmi3_xml_elm_enu_t currentElemIdStartTag;
 
     /* Variables for handling tool-specific XML elements */

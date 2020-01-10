@@ -17,6 +17,9 @@
 #include "JM/jm_callbacks.h"
 #include "JM/jm_named_ptr.h"
 
+/**
+ * See documentation for 'jm_named_alloc_v'.
+ */
 jm_named_ptr jm_named_alloc(const char* name, size_t size, size_t nameoffset, jm_callbacks* c) {
     jm_named_ptr out;
     size_t namelen = strlen(name);
@@ -35,13 +38,20 @@ jm_named_ptr jm_named_alloc(const char* name, size_t size, size_t nameoffset, jm
     return out;
 }
 
-/*
+/**
  * Returns a named_ptr where the content of the pointer has been allocated.
  * Calling function needs to verify that the allocated pointer
  * is not NULL.
+ * It's common that the .ptr field holds a struct that ends with a 'char name[1]'
+ * field. That way, by setting 'nameoffset' correctly, the name field in the struct
+ * can share memory with the .name allocated by this function, by allowing the
+ * struct name to "overflow" the struct boundaries into the <named_ptr>.name memory.
  * 
  * size: how much to allocate (just like for malloc)
- * nameoffset: write the name at offset from the start of the requested 'size' (TODO: I have no idea why this has to be done here instead; caller can just do it after <named_ptr> has been returned?)
+ * nameoffset: write the name at offset from the start of the requested 'size'
+ *     Impl. note: this needs to be calculated by caller, because it's possible
+ *     to get different byte padding of the struct, and it allows the function
+ *     to be used without structs that end with a name field.
  */
 jm_named_ptr jm_named_alloc_v(jm_vector(char)* name, size_t size, size_t nameoffset, jm_callbacks* c) {
     jm_named_ptr out;
@@ -58,7 +68,7 @@ jm_named_ptr jm_named_alloc_v(jm_vector(char)* name, size_t size, size_t nameoff
         outname[namelen] = 0;
         out.name = outname;
     }
-    return out; /* this is the same as out.ptr */
+    return out;
 }
 
 #define JM_TEMPLATE_INSTANCE_TYPE jm_named_ptr

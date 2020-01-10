@@ -69,7 +69,7 @@ struct fmi3_xml_variable_t {
     /* temp fields during parsing*/
     jm_string startAttr;
 
-    /* name must be last... I don't know why yet, but things will break otherwise (for example, the md->variablesByName name will lose its delimiting \0 char */
+    /* 'name' field must be last, because its memory is allocated with jm_named_alloc[_v] */
     char name[1];
 };
 

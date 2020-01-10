@@ -285,7 +285,7 @@ int fmi1_xml_handle_Type(fmi1_xml_parser_context_t *context, const char* data) {
             pnamed = jm_vector_push_back(jm_named_ptr)(&td->typeDefinitions,named);
             if(pnamed) {
                 fmi1_xml_variable_typedef_t dummy;
-                *pnamed = named = jm_named_alloc_v(bufName, sizeof(fmi1_xml_variable_typedef_t), dummy.typeName - (char*)&dummy,  context->callbacks);
+                *pnamed = named = jm_named_alloc_v(bufName, sizeof(fmi1_xml_variable_typedef_t), dummy.typeName - (char*)&dummy, context->callbacks);
             }
             if(!pnamed || !named.ptr) {
                 fmi1_xml_parse_fatal(context, "Could not allocate memory");

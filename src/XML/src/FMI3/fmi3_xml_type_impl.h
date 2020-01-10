@@ -195,7 +195,8 @@ struct fmi3_xml_type_definitions_t {
 
     jm_string_set quantities;
 
-    fmi3_xml_variable_type_base_t* typePropsList; /* intended purpose: memory deallocation ptr, but also used in fmi3_xml_handle_Item (TODO: remove that use) */
+    /* intended purpose seems to be as memory deallocation ptr, but also used in fmi3_xml_handle_Item (TODO: see if can be changed to single purpose) */
+    fmi3_xml_variable_type_base_t* typePropsList;
 
     fmi3_xml_float_type_props_t defaultFloat64Type;
     fmi3_xml_float_type_props_t defaultFloat32Type;

@@ -58,8 +58,9 @@ unsigned int fmi3_xml_dimension_get_size(fmi3_xml_model_description_t* md, fmi3_
         fmi3_xml_integer_variable_t* varRef = fmi3_xml_get_variable_as_integer(fmi3_xml_get_variable_by_vr(md, fmi3_base_type_int, vr));
         
         fmi3_integer_t start = fmi3_xml_get_integer_variable_start(varRef);
-        if (!start) {
-            assert(0); /* TODO: log error (start > 0 must exist in xml) */
+        if (start == 0) {
+            jm_log_error(md->callbacks, module, "Start value for variable used as dimension length was 0. VR: '%d'", vr);
+            assert(0); /* TODO: how are errors (fatals) handled? */
         }
 
         return start;
@@ -143,7 +144,6 @@ jm_status_enu_t fmi3_xml_get_variable_aliases(fmi3_xml_model_description_t* md,f
     return jm_status_success;
 }
 
-
 fmi3_xml_variable_typedef_t* fmi3_xml_get_variable_declared_type(fmi3_xml_variable_t* v) {
     return (fmi3_xml_variable_typedef_t*)(fmi3_xml_find_type_struct(v->typeBase, fmi3_xml_type_struct_enu_typedef));
 }
@@ -192,7 +192,7 @@ int fmi3_xml_variable_is_array(fmi3_xml_variable_t* v) {
 }
 
 int fmi3_xml_get_variable_has_start(fmi3_xml_variable_t* v) {
-    return (v->typeBase->structKind == fmi3_xml_type_struct_enu_start); /* TODO: does this mean that the typeBaseStruct chain is ordered? doesn't look like it at other places */
+    return (v->typeBase->structKind == fmi3_xml_type_struct_enu_start); /* TODO: the typeBaseStruct chain is ordered, update UML-like docs with the different possible variations (and commit the docs) */
 }
 
 fmi3_variability_enu_t fmi3_xml_get_variability(fmi3_xml_variable_t* v) {
@@ -499,7 +499,7 @@ int fmi3_xml_handle_Variable(fmi3_xml_parser_context_t *context, const char* dat
         /* variable->startAttr = fmi3_xml_peek_attr_str(context, fmi_attr_id_start);*/
         variable->startAttr = fmi3_xml_peek_attr_str(context, fmi_attr_id_start);
 
-        /* TODO: convert to function? */
+        /* TODO: convert to function */
         {
             jm_name_ID_map_t causalityConventionMap[] = {
                 {"local",fmi3_causality_enu_local},
@@ -566,7 +566,7 @@ int fmi3_xml_handle_Variable(fmi3_xml_parser_context_t *context, const char* dat
             }
             variable->initial = initial;
         }
-        /* TODO: convert to function? */
+        /* TODO: convert to function */
         {
             unsigned int previous, multipleSet;
             if (
@@ -803,7 +803,6 @@ int fmi3_xml_handle_FloatVariable(fmi3_xml_parser_context_t* context, const char
 
             if (fmi3_xml_set_attr_uint(context, fmi3_xml_elmID_Float64, fmi_attr_id_derivative, 0, &derivativeOf, 0)) /* <xs:attribute name="derivative" type="xs:unsignedInt"> */
                 return -1;
-            /* TODO: consider: is it ok to read in an unsigned int to store in a size_t? */
             /* Store the index as a pointer since we cannot access the variables list yet (we are constructing it). */
             variable->derivativeOf = (void*)((char*)NULL + derivativeOf);
 

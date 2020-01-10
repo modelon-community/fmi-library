@@ -16,6 +16,11 @@
 #include <string.h>
 #include <stdio.h>
 
+/* Make sure that lexer uses compiler specific integer sizes */
+#if defined (_MSC_VER) && _MSC_VER >= 1600
+#include <stdint.h>
+#endif
+
 /* For checking variable naming conventions */
 #include <fmi3_xml_variable_name_parser.tab.h>
 #define YYSTYPE YYFMI3STYPE
@@ -215,7 +220,6 @@ int fmi3_xml_get_attr_str(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t
 /**
  * Reads the attribute from attribute buffer as jm_vector(char). This will clear the attribute from the buffer.
  *   field (return arg): contains value after function call
- * TODO: Name is misleading for all _set_attr_<type> functions
  */
 int fmi3_xml_set_attr_string(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, int required, jm_vector(char)* field) {
     int ret;
@@ -470,10 +474,8 @@ static int fmi3_xml_str_to_array(fmi3_xml_parser_context_t* context, const char*
 }
 /**
  * Get attribute as float array. This will clear the attribute from the parser buffer.
- *
- *  field (return arg): where the float value will be stored
- *
- * TODO: Name is misleading for all _set_attr_<type> functions, I would call it "get_attr_as_float" or similar
+ *  arrPtr (return arg): where the array will be stored
+ *  arrSize (return arg): size of 'arrPtr'
  */
 int fmi3_xml_set_attr_array(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID,
         int required, void** arrPtr, size_t* arrSize, jm_string str, const fmi3_xml_primitive_type_t* primType) {
@@ -713,8 +715,7 @@ static void XMLCALL fmi3_parse_element_start(void *c, const char *elm, const cha
 				}
 			}
 		}
-        /* lastElmID references the previous sibling-element's id - set it to 'none' before handling children*/
-        /* TODO: rename lastElmName --> lastSiblingElemId, in */
+        /* lastElmID references the previous sibling-element's id - set it to 'none' before handling children. TODO: rename lastElmName --> lastSiblingElemId */
 		context->lastElmID = fmi3_xml_elmID_none;
 	}
 

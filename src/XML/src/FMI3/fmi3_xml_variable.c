@@ -154,12 +154,10 @@ fmi3_base_type_enu_t fmi3_xml_get_variable_base_type(fmi3_xml_variable_t* v) {
 }
 
 void fmi3_xml_variable_free_internals(jm_callbacks* callbacks, fmi3_xml_variable_t* var) {
-
     if (fmi3_xml_variable_is_array(var)) {
-        if (!fmi3_xml_variable_is_array(var)) { /* fmi3_xml_variable_is_array function currently uses data that is freed a few lines below, so don't swap lines */
+        if (fmi3_xml_get_variable_has_start(var)) {
             callbacks->free(fmi3_xml_get_float64_variable_start_array(var)); /* TODO: handle general case, but starting with float64 */
         }
-        jm_vector_free_data(jm_string)(&var->dimensionsVector);
         callbacks->free(var->dimensionsArray);
     }
 }

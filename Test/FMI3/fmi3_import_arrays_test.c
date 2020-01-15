@@ -45,7 +45,7 @@ static int test_array1_64(fmi3_import_t *xml)
     fmi3_import_variable_get_dimensions(xml, v, &dims, &nDims);
     ASSERT_MSG(dims[0] == 1, "wrong dimension size");
 
-    /* check that all start values row are OK */
+    /* check that all start values are OK */
     starts = fmi3_import_get_float64_variable_start_array(fmi3_import_get_variable_as_float64(v));
     for (i = 0; i < dims[0]; i++) {
         if (starts[i] != starts_exp[i]) {
@@ -81,7 +81,7 @@ static int test_array2_64(fmi3_import_t* xml)
     fmi3_import_variable_get_dimensions(xml, v, &dims, &nDims);
     ASSERT_MSG(dims[0] == 2, "wrong dimension size");
 
-    /* check that all start values row are OK */
+    /* check that all start values are OK */
     starts = fmi3_import_get_float64_variable_start_array(fmi3_import_get_variable_as_float64(v));
     for (i = 0; i < dims[0]; i++) {
         if (starts[i] != starts_exp[i]) {
@@ -122,7 +122,7 @@ static int test_array_2x2_64(fmi3_import_t* xml, const char* varName, fmi3_float
     nRows = dims[0];
     nCols = dims[1];
 
-    /* check that all start values row are OK */
+    /* check that all start values are OK */
     starts = fmi3_import_get_float64_variable_start_array(fmi3_import_get_variable_as_float64(v));
     for (r = 0; r < nRows; r++) {
         for (c = 0; c < nCols; c++) {
@@ -169,7 +169,7 @@ static int test_array4_64(fmi3_import_t* xml)
     nCols   = dims[1];
     nAisles = dims[2];
 
-    /* check that all start values row are OK */
+    /* check that all start values are OK */
     starts = fmi3_import_get_float64_variable_start_array(fmi3_import_get_variable_as_float64(v));
     for (r = 0; r < nRows; r++) {
         for (c = 0; c < nCols; c++) {
@@ -209,7 +209,7 @@ static int test_array1_32(fmi3_import_t *xml)
     fmi3_import_variable_get_dimensions(xml, v, &dims, &nDims);
     ASSERT_MSG(dims[0] == 1, "wrong dimension size");
 
-    /* check that all start values row are OK */
+    /* check that all start values are OK */
     starts = fmi3_import_get_float32_variable_start_array(fmi3_import_get_variable_as_float32(v));
     for (i = 0; i < dims[0]; i++) {
         if (starts[i] != starts_exp[i]) {
@@ -245,7 +245,7 @@ static int test_array2_32(fmi3_import_t* xml)
     fmi3_import_variable_get_dimensions(xml, v, &dims, &nDims);
     ASSERT_MSG(dims[0] == 2, "wrong dimension size");
 
-    /* check that all start values row are OK */
+    /* check that all start values are OK */
     starts = fmi3_import_get_float32_variable_start_array(fmi3_import_get_variable_as_float32(v));
     for (i = 0; i < dims[0]; i++) {
         if (starts[i] != starts_exp[i]) {

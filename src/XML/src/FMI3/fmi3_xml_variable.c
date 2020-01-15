@@ -1539,6 +1539,14 @@ int fmi3_xml_handle_ModelVariables(fmi3_xml_parser_context_t *context, const cha
             } while(foundBadAlias);
         }
 
+        /* TODO: validate variables from Dimension VRs */
+        {
+            /*
+                TODO: create a new vector that contains all VRs from dimensions
+                from VR, find all variables and verify that they are integers with (causality == structuralParameter || variability == constant)
+            */
+        }
+
         numvar = jm_vector_get_size(jm_named_ptr)(&md->variablesByName);
 
         /* might give out a warning if(data[0] != 0) */

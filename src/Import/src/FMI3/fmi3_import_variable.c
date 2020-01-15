@@ -54,14 +54,6 @@ fmi3_base_type_enu_t fmi3_import_get_variable_base_type(fmi3_import_variable_t* 
 	return fmi3_xml_get_variable_base_type(v);
 }
 
-fmi3_float64_t* fmi3_import_get_float64_variable_start_array(fmi3_import_variable_t* v) {
-    return fmi3_xml_get_float64_variable_start_array(v);
-}
-
-fmi3_float32_t* fmi3_import_get_float32_variable_start_array(fmi3_import_variable_t* v) {
-    return fmi3_xml_get_float32_variable_start_array(v);
-}
-
 void fmi3_import_variable_get_dimensions(fmi3_import_t* fmu, fmi3_import_variable_t* v, const unsigned int** dimensions, unsigned int* nDimensions) {
     fmi3_xml_variable_get_dimensions(v, fmu->md, dimensions, nDimensions);
 }
@@ -122,26 +114,87 @@ fmi3_import_bool_variable_t* fmi3_import_get_variable_as_boolean(fmi3_import_var
 	return fmi3_xml_get_variable_as_boolean(v);
 }
 
-/* float */
+/**
+ * Macros for generating variable value getters. Use leading underscore for variable value param,
+ * since otherwise there's a risk of using the 'min' or 'max' macros.
 
-/* Macro for generating variable value getters. Use leading underscore for variable value param, */
-/* since otherwise there's a risk of using the 'min' or 'max' macros. */
+#define COMMENT(X) __COMMENT_START__ X __COMMENT_END__
+
 #define def_import_get_variable_XX(XX, TYPE) \
-    fmi3_##TYPE##_t fmi3_import_get_##TYPE##_variable##XX(fmi3_import_##TYPE##_variable_t* v) { \
-        return fmi3_xml_get_##TYPE##_variable##XX(v); \
-    }
+    fmi3_##TYPE##_t fmi3_import_get_##TYPE##_variable##XX(fmi3_import_##TYPE##_variable_t* v) { __NEWLINE__ \
+        return fmi3_xml_get_##TYPE##_variable##XX(v);                                           __NEWLINE__ \
+    }                                                                                           __NEWLINE__
 
-def_import_get_variable_XX(_start,      float32)
-def_import_get_variable_XX(_min,        float32)
-def_import_get_variable_XX(_max,        float32)
-def_import_get_variable_XX(_nominal,    float32)
+#define def_import_get_variable_XX_ptr(XX, TYPE) \
+    fmi3_##TYPE##_t* fmi3_import_get_##TYPE##_variable##XX(fmi3_import_##TYPE##_variable_t* v) { __NEWLINE__ \
+        return fmi3_xml_get_##TYPE##_variable##XX(v);                                            __NEWLINE__ \
+    }                                                                                            __NEWLINE__
 
-def_import_get_variable_XX(_start,      float64)
-def_import_get_variable_XX(_min,        float64)
-def_import_get_variable_XX(_max,        float64)
-def_import_get_variable_XX(_nominal,    float64)
+COMMENT(float32)
+def_import_get_variable_XX(_min,                float32)
+def_import_get_variable_XX(_max,                float32)
+def_import_get_variable_XX(_nominal,            float32)
+def_import_get_variable_XX(_start,              float32)
+def_import_get_variable_XX_ptr(_start_array,    float32)
 
-#undef def_import_get_variable_XX
+COMMENT(float64)
+def_import_get_variable_XX(_min,                float64)
+def_import_get_variable_XX(_max,                float64)
+def_import_get_variable_XX(_nominal,            float64)
+def_import_get_variable_XX(_start,              float64)
+def_import_get_variable_XX_ptr(_start_array,    float64)
+
+*/
+
+/**
+ * float64
+ */
+
+fmi3_float64_t fmi3_import_get_float64_variable_min(fmi3_import_float64_variable_t* v) {
+    return fmi3_xml_get_float64_variable_min(v);
+}
+
+fmi3_float64_t fmi3_import_get_float64_variable_max(fmi3_import_float64_variable_t* v) {
+    return fmi3_xml_get_float64_variable_max(v);
+}
+
+fmi3_float64_t fmi3_import_get_float64_variable_nominal(fmi3_import_float64_variable_t* v) {
+    return fmi3_xml_get_float64_variable_nominal(v);
+}
+
+fmi3_float64_t fmi3_import_get_float64_variable_start(fmi3_import_float64_variable_t* v) {
+    return fmi3_xml_get_float64_variable_start(v);
+}
+
+fmi3_float64_t* fmi3_import_get_float64_variable_start_array(fmi3_import_float64_variable_t* v) {
+    return fmi3_xml_get_float64_variable_start_array(v);
+}
+
+/**
+ * float32
+ */
+
+fmi3_float32_t fmi3_import_get_float32_variable_min(fmi3_import_float32_variable_t* v) {
+    return fmi3_xml_get_float32_variable_min(v);
+}
+
+fmi3_float32_t fmi3_import_get_float32_variable_max(fmi3_import_float32_variable_t* v) {
+    return fmi3_xml_get_float32_variable_max(v);
+}
+
+fmi3_float32_t fmi3_import_get_float32_variable_nominal(fmi3_import_float32_variable_t* v) {
+    return fmi3_xml_get_float32_variable_nominal(v);
+}
+
+fmi3_float32_t fmi3_import_get_float32_variable_start(fmi3_import_float32_variable_t* v) {
+    return fmi3_xml_get_float32_variable_start(v);
+}
+
+fmi3_float32_t* fmi3_import_get_float32_variable_start_array(fmi3_import_float32_variable_t* v) {
+    return fmi3_xml_get_float32_variable_start_array(v);
+}
+
+/* real */
 
 fmi3_real_t fmi3_import_get_real_variable_start(fmi3_import_real_variable_t* v) {
 	return fmi3_xml_get_real_variable_start(v);

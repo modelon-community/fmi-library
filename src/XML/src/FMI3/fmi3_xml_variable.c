@@ -153,15 +153,6 @@ fmi3_base_type_enu_t fmi3_xml_get_variable_base_type(fmi3_xml_variable_t* v) {
     return (type->baseType);
 }
 
-void fmi3_xml_variable_free_internals(jm_callbacks* callbacks, fmi3_xml_variable_t* var) {
-    if (fmi3_xml_variable_is_array(var)) {
-        if (fmi3_xml_get_variable_has_start(var)) {
-            callbacks->free(fmi3_xml_get_float64_variable_start_array(var)); /* TODO: handle general case, but starting with float64 */
-        }
-        callbacks->free(var->dimensionsArray);
-    }
-}
-
 void fmi3_xml_variable_get_dimensions(fmi3_xml_variable_t* v, fmi3_xml_model_description_t* md, const unsigned int** dimensions, unsigned int* nDimensions) {
     jm_vector(fmi3_xml_dimension_t)* dimsVec = &v->dimensionsVector;
     unsigned int* dimsArr = v->dimensionsArray; /* has already been allocated */
@@ -478,6 +469,41 @@ fmi3_xml_string_variable_t* fmi3_xml_get_variable_as_string(fmi3_xml_variable_t*
 fmi3_xml_bool_variable_t* fmi3_xml_get_variable_as_boolean(fmi3_xml_variable_t* v){
     if(fmi3_xml_get_variable_base_type(v) == fmi3_base_type_bool)  return (void*)v;
     return 0;
+}
+
+ /**
+  * Returns the pointer to allocated start values, independent of variable type.
+  */
+static void* fmi3_xml_get_variable_start_array(fmi3_xml_variable_t* v) {
+    assert(fmi3_xml_variable_is_array(v));
+
+    switch (fmi3_xml_get_variable_base_type(v)) {
+    case fmi3_base_type_float64: /* fallthrough */
+    case fmi3_base_type_float32:
+        return fmi3_xml_get_float_variable_start((fmi3_xml_float_variable_t*)v).ptr;
+        break;
+    case fmi3_base_type_real:   /* fallthrough */
+    case fmi3_base_type_int:    /* fallthrough */
+    case fmi3_base_type_bool:   /* fallthrough */
+    case fmi3_base_type_str:    /* fallthrough */
+    case fmi3_base_type_enum:   /* fallthrough */
+        assert(0); /* TODO: NYI */
+    default:
+        assert(0); /* impl. error */
+        break;
+    }
+
+    assert(0); /* impl. error */
+    return NULL;
+}
+
+void fmi3_xml_variable_free_internals(jm_callbacks* callbacks, fmi3_xml_variable_t* var) {
+    if (fmi3_xml_variable_is_array(var)) {
+        if (fmi3_xml_get_variable_has_start(var)) {
+            callbacks->free(fmi3_xml_get_variable_start_array(var));
+        }
+        callbacks->free(var->dimensionsArray);
+    }
 }
 
 int fmi3_xml_handle_Variable(fmi3_xml_parser_context_t *context, const char* data) {

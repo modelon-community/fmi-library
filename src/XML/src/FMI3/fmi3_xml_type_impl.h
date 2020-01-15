@@ -83,6 +83,7 @@ struct fmi3_xml_variable_typedef_t {
 };
 
 typedef union fmi3_float_union_t {
+    void* ptr; /* only used for deallocation (any other pointer field could be used, but this makes the code cleaner) */
     fmi3_float64_t* array64;
     fmi3_float32_t* array32;
     fmi3_float64_t scalar64;

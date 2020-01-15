@@ -754,14 +754,6 @@ int fmi3_xml_handle_Dimension(fmi3_xml_parser_context_t* context, const char* da
         int hasStart;
         int hasVr;
         
-        /* allocate */
-        /* dim = context->callbacks->malloc(sizeof(fmi3_xml_dimension_t));
-        if (!dim) {
-            jm_log_error(context->callbacks, module, "Error: Unable to allocate memory for dimension data");
-            return -1;
-        }
-        */
-
         /* handle attributes*/
         hasStart = fmi3_xml_is_attr_defined(context, fmi_attr_id_start);
         hasVr = fmi3_xml_is_attr_defined(context, fmi_attr_id_valueReference);

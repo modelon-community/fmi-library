@@ -807,13 +807,13 @@ int fmi3_xml_handle_Dimension(fmi3_xml_parser_context_t* context, const char* da
 int fmi3_xml_handle_FloatVariable(fmi3_xml_parser_context_t* context, const char* data,
         fmi3_xml_elm_enu_t elmID, /* ID of the Type (not the Variable) */
         fmi3_xml_float_type_props_t* defaultType,
-        fmi3_bitness_enu_t bitness, /* TODO: remove this arg */
         const fmi3_xml_primitive_type_t* primType) {
 
     fmi3_xml_model_description_t* md;
     fmi3_xml_variable_t* variable;
     fmi3_xml_type_definitions_t* td;
     fmi3_xml_float_type_props_t* type;
+    fmi3_bitness_enu_t bitness = primType->bitness;
 
     if (context->skipOneVariableFlag) {
         return 0;
@@ -839,7 +839,7 @@ int fmi3_xml_handle_FloatVariable(fmi3_xml_parser_context_t* context, const char
         /* Set type properties */
         {
             int hasUnit = fmi3_xml_is_attr_defined(context, fmi_attr_id_unit) ||
-                fmi3_xml_is_attr_defined(context, fmi_attr_id_displayUnit);
+                    fmi3_xml_is_attr_defined(context, fmi_attr_id_displayUnit);
             int hasMin = fmi3_xml_is_attr_defined(context, fmi_attr_id_min);
             int hasMax = fmi3_xml_is_attr_defined(context, fmi_attr_id_max);
             int hasNom = fmi3_xml_is_attr_defined(context, fmi_attr_id_nominal);
@@ -945,7 +945,6 @@ int fmi3_xml_handle_FloatVariable(fmi3_xml_parser_context_t* context, const char
     int fmi3_xml_handle_Float##BITNESS##Variable(fmi3_xml_parser_context_t* context, const char* data) {    \
         return fmi3_xml_handle_FloatVariable(context, data, fmi3_xml_elmID_Float##BITNESS,                  \
                 &context->modelDescription->typeDefinitions.defaultFloat##BITNESS##Type,                    \
-                fmi3_bitness_##BITNESS,                                                                     \
                 &PRIMITIVE_TYPES.float##BITNESS);                                                           \
     }
 

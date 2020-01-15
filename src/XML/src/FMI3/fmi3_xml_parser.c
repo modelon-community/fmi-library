@@ -120,11 +120,13 @@ fmi3_xml_element_handle_map_t fmi3_element_handle_map[fmi3_xml_elm_number] = {
 const fmi3_xml_primitive_types_t PRIMITIVE_TYPES = {
     { /* float64 */
         sizeof(fmi3_float64_t),
+        fmi3_bitness_64,
         "%lf",
         "0.0"
     },
     { /* float32 */
         sizeof(fmi3_float32_t),
+        fmi3_bitness_32,
         "%f",
         "0.0"
     }

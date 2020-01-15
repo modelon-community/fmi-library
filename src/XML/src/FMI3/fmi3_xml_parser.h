@@ -311,9 +311,10 @@ struct fmi3_xml_parser_context_t {
 
 /* Meta data about primitive types */
 typedef struct fmi3_xml_primitive_type_t {
-    size_t size; /* size in bytes */
-    char formatter[10]; /* how to format this from string to the actual type */
-    char defaultValue[100]; /* provided as string to keep this type generic */
+    size_t size;                    /* size in bytes */
+    fmi3_bitness_enu_t bitness;     /* type's bitness */
+    char formatter[10];             /* how to format this from string to the actual type */
+    char defaultValue[100];         /* provided as string to keep this type generic */
 } fmi3_xml_primitive_type_t;
 
 typedef struct fmi3_xml_primitive_types_t {

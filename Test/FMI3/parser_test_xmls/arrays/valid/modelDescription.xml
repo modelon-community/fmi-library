@@ -8,6 +8,7 @@
   <CoSimulation modelIdentifier="VariableTypes"/>
 
   <ModelVariables>
+    <!-- float64 -->
     <Float64 name="array1_64" valueReference="1" initial="exact" start="1.0">
       <Dimension start="1"/>
     </Float64>
@@ -27,35 +28,40 @@
       <Dimension start="2"/>
     </Float64>
 
-    <!-- xs:double types -->
-    <Float64 name="array5_64" valueReference="5" initial="exact" start="123.456 +1234.456 -1.2344e56 -.45E-6">
+    <Float64 name="array5_64" valueReference="5" initial="exact" start="123.456 +1234.456 -1.2344e56 -.45E-6"> <!-- xs:double types -->
       <Dimension start="2"/>
       <Dimension start="2"/>
     </Float64>
 
-    <Float32 name="array1_32" valueReference="1" initial="exact" start="1.0">
+    <!-- float32 -->
+    <Float32 name="array1_32" valueReference="101" initial="exact" start="1.0">
       <Dimension start="1"/>
     </Float32>
 
-    <Float32 name="array2_32" valueReference="2" initial="exact" start="1.0 2.0">
+    <Float32 name="array2_32" valueReference="102" initial="exact" start="1.0 2.0">
       <Dimension start="2"/>
     </Float32>
 
-    <Float32 name="array3_32" valueReference="3" initial="exact" start="1.0 2.0 3.0 4.0">
-      <Dimension start="2"/>
-      <Dimension start="2"/>
-    </Float32>
-
-    <Float32 name="array4_32" valueReference="4" initial="exact" start="1.0 2.0 3.0 4.0 5.0 6.0 7.0 8.0">
-      <Dimension start="2"/>
+    <Float32 name="array3_32" valueReference="103" initial="exact" start="1.0 2.0 3.0 4.0">
       <Dimension start="2"/>
       <Dimension start="2"/>
     </Float32>
 
-    <!-- xs:float types -->
-    <Float32 name="array5_32" valueReference="5" initial="exact" start="123.456 +1234.456 -3.4028e36F -.45E-6">
+    <Float32 name="array4_32" valueReference="104" initial="exact" start="1.0 2.0 3.0 4.0 5.0 6.0 7.0 8.0">
       <Dimension start="2"/>
       <Dimension start="2"/>
+      <Dimension start="2"/>
+    </Float32>
+
+    <Float32 name="array5_32" valueReference="105" initial="exact" start="123.456 +1234.456 -3.4028e36F -.45E-6"> <!-- xs:float types -->
+      <Dimension start="2"/>
+      <Dimension start="2"/>
+    </Float32>
+
+    <Float32 name="array6_32" valueReference="106" initial="exact" start="1.0 2.0 3.0 4.0 5.0 6.0">
+      <Dimension start="1"/>
+      <Dimension start="2"/>
+      <Dimension start="3"/>
     </Float32>
 
   </ModelVariables>

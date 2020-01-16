@@ -348,6 +348,58 @@ static int test_array4_32(fmi3_import_t* xml)
     return TEST_OK;
 }
 
+/**
+ * Returns total size of array TODO: should this perhaps be a util API method, or restructure input arg for fmi3_import_variable_get_dimensions to an "fmi3_import_dimension" struct?
+ */
+static unsigned int get_array_size(const unsigned int* dims, unsigned int nDim) {
+    unsigned int size = nDim > 0 ? 1 : 0;
+    unsigned int i;
+
+    for (i = 0; i < nDim; i++) {
+        size *= *(dims++);
+    }
+
+    return size;
+}
+
+/* parse 1x2x3 array, use more general API for size access */
+static int test_array6_32_general_size(fmi3_import_t* xml)
+{
+    fmi3_import_variable_t* v;
+    fmi3_float32_t starts_exp[1][2][3] = {{{1.0, 2.0, 3.0}, {4.0, 5.0, 6.0}}}; /* note to self: {: new row, {{: new column, {{{: new aisle */
+    fmi3_float32_t* starts;
+    const unsigned int* dims;
+    unsigned int nDims;
+    unsigned int arrSize;
+    unsigned int i;
+    int is_array;
+    int has_start;
+
+    v = fmi3_import_get_variable_by_name(xml, "array6_32");
+    ASSERT_MSG(v != NULL, "variable not found by name");
+
+    has_start = fmi3_import_get_variable_has_start(v);
+    ASSERT_MSG(has_start == 1, "no start value found");
+
+    is_array = fmi3_import_variable_is_array(v);
+    ASSERT_MSG(is_array, "wrong variable type: expected array, but wasn't");
+
+    fmi3_import_variable_get_dimensions(xml, v, &dims, &nDims);
+    ASSERT_MSG(nDims == 3, "wrong number of dimensions: %d, expected: %d", nDims, 3);
+    arrSize = get_array_size(dims, nDims);
+    ASSERT_MSG(arrSize == 6, "wrong total dimension size");
+
+    /* check start values */
+    starts = fmi3_import_get_float32_variable_start_array(fmi3_import_get_variable_as_float32(v));
+    for (i = 0; i < arrSize; i++) {
+        fmi3_float32_t exp = *((fmi3_float32_t*)starts_exp + i);
+        fmi3_float32_t act = *(starts + i);
+        ASSERT_MSG(exp == act, "wrong start value of array variable, loop_idx: %d, exp: %f, act: %f", i, exp, act);
+    }
+
+    return TEST_OK;
+}
+
 /** 
  * Attempt to parse a bad array. Test will fail if XML is successfully parsed.
  *   md_parent_dir_path: absolute path to the parent directory of the modelDescription.xml to parse
@@ -427,6 +479,7 @@ int main(int argc, char **argv)
     ret &= test_array_2x2_32(xml, "array3_32", starts_exp_array3_32);
     ret &= test_array4_32(xml);
     ret &= test_array_2x2_32(xml, "array5_32", starts_exp_array5_32);
+    ret &= test_array6_32_general_size(xml);
 
     fmi3_import_free(xml);
 
@@ -437,6 +490,8 @@ int main(int argc, char **argv)
      * passed if we did. Example: start="1e999", start="1a"
      * Regardless, I don't think FMIL should be responsible for full schema verification.
      */
+    printf("\nThe following tests are expected to fail...\n"); /* creating some space in the output log */
+    printf("---------------------------------------------------------------------------\n");
     for (i = 0; i < NUM_BAD_DIRS; i++) {
         strncpy(path_bad_specific, path_bad_base, BUFSIZE);
         strncat(path_bad_specific, "/", BUFSIZE);
@@ -444,6 +499,7 @@ int main(int argc, char **argv)
 
         ret &= test_array_bad(path_bad_specific);
     }
+    printf("---------------------------------------------------------------------------\n");
     
     return ret == 0 ? CTEST_RETURN_FAIL : CTEST_RETURN_SUCCESS;
 }

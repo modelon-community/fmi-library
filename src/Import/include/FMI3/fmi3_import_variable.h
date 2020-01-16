@@ -102,8 +102,7 @@ FMILIB_EXPORT fmi3_float64_t* fmi3_import_get_float64_variable_start_array(fmi3_
 FMILIB_EXPORT fmi3_float32_t* fmi3_import_get_float32_variable_start_array(fmi3_import_float32_variable_t* v);
 
 /** \brief Get the size of the dimensions of an array variable
-    @return Pointer to array of dimension sizes. Length of this array is given by
-        #fmi3_import_variable_get_number_dimensions TODO: implement this func
+    @return (return arguments) dimensions: pointer to array of dimension sizes. nDimensions: length of the 'dimensions' array
 */
 FMILIB_EXPORT void fmi3_import_variable_get_dimensions(fmi3_import_t* fmu, fmi3_import_variable_t* v, const unsigned int** dimensions, unsigned int* nDimensions);
 

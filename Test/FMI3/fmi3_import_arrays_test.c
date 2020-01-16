@@ -189,7 +189,7 @@ static int test_array4_64(fmi3_import_t* xml)
 static int test_array1_32(fmi3_import_t *xml)
 {
     fmi3_import_variable_t* v;
-    fmi3_float32_t starts_exp[1] = { 1.0 };
+    fmi3_float32_t starts_exp[1] = { 1.0F };
     fmi3_float32_t* starts;
     const unsigned int* dims;
     unsigned int nDims;
@@ -225,7 +225,7 @@ static int test_array1_32(fmi3_import_t *xml)
 static int test_array2_32(fmi3_import_t* xml)
 {
     fmi3_import_variable_t* v;
-    fmi3_float32_t starts_exp[2] = { 1.0, 2.0 };
+    fmi3_float32_t starts_exp[2] = { 1.0F, 2.0F };
     fmi3_float32_t* starts;
     const unsigned int* dims;
     unsigned int nDims;
@@ -304,7 +304,7 @@ static int test_array_2x2_32(fmi3_import_t* xml, const char* varName, fmi3_float
 static int test_array4_32(fmi3_import_t* xml)
 {
     fmi3_import_variable_t* v;
-    fmi3_float32_t starts_exp[2][2][2] = {{{1.0, 2.0}, {3.0, 4.0}}, {{5.0, 6.0}, {7.0, 8.0}}}; /* note to self: {: new row, {{: new column, {{{: new aisle */
+    fmi3_float32_t starts_exp[2][2][2] = {{{1.0F, 2.0F}, {3.0F, 4.0F}}, {{5.0F, 6.0F}, {7.0F, 8.0F}}}; /* note to self: {: new row, {{: new column, {{{: new aisle */
     fmi3_float32_t* starts;
     const unsigned int* dims;
     unsigned int nDims;
@@ -366,7 +366,7 @@ static unsigned int get_array_size(const unsigned int* dims, unsigned int nDim) 
 static int test_array6_32_general_size(fmi3_import_t* xml)
 {
     fmi3_import_variable_t* v;
-    fmi3_float32_t starts_exp[1][2][3] = {{{1.0, 2.0, 3.0}, {4.0, 5.0, 6.0}}}; /* note to self: {: new row, {{: new column, {{{: new aisle */
+    fmi3_float32_t starts_exp[1][2][3] = {{{1.0F, 2.0F, 3.0F}, {4.0F, 5.0F, 6.0F}}}; /* note to self: {: new row, {{: new column, {{{: new aisle */
     fmi3_float32_t* starts;
     const unsigned int* dims;
     unsigned int nDims;
@@ -388,6 +388,94 @@ static int test_array6_32_general_size(fmi3_import_t* xml)
     ASSERT_MSG(nDims == 3, "wrong number of dimensions: %d, expected: %d", nDims, 3);
     arrSize = get_array_size(dims, nDims);
     ASSERT_MSG(arrSize == 6, "wrong total dimension size");
+
+    /* check start values */
+    starts = fmi3_import_get_float32_variable_start_array(fmi3_import_get_variable_as_float32(v));
+    for (i = 0; i < arrSize; i++) {
+        fmi3_float32_t exp = *((fmi3_float32_t*)starts_exp + i);
+        fmi3_float32_t act = *(starts + i);
+        ASSERT_MSG(exp == act, "wrong start value of array variable, loop_idx: %d, exp: %f, act: %f", i, exp, act);
+    }
+
+    return TEST_OK;
+}
+
+/* parse 1x2 array, dimension size is specified by VR to constant integer */
+static int test_array7_32_dim_contains_vr(fmi3_import_t* xml)
+{
+    fmi3_import_variable_t* v;
+    fmi3_float32_t starts_exp[3] = { 1.0F, 2.0F, 3.3f };
+    fmi3_float32_t* starts;
+    const unsigned int* dims;
+    unsigned int nDims;
+    unsigned int nDimsExp = 1;
+    unsigned int arrSize;
+    unsigned int arrSizeExp = 3;
+    unsigned int i;
+    int is_array;
+    int has_start;
+
+    v = fmi3_import_get_variable_by_name(xml, "array7_32");
+    ASSERT_MSG(v != NULL, "variable not found by name");
+
+    has_start = fmi3_import_get_variable_has_start(v);
+    ASSERT_MSG(has_start == 1, "no start value found");
+
+    is_array = fmi3_import_variable_is_array(v);
+    ASSERT_MSG(is_array, "wrong variable type: expected array, but wasn't");
+
+    fmi3_import_variable_get_dimensions(xml, v, &dims, &nDims);
+    ASSERT_MSG(nDims == nDimsExp, "wrong number of dimensions: %d, expected: %d", nDims, nDimsExp);
+
+    /* verify that size resolves from VR */
+    arrSize = get_array_size(dims, nDims);
+    ASSERT_MSG(arrSize == arrSizeExp, "wrong total dimension size, actual: %d, exp: %d", arrSize, arrSizeExp);
+
+    /* check start values */
+    starts = fmi3_import_get_float32_variable_start_array(fmi3_import_get_variable_as_float32(v));
+    for (i = 0; i < arrSize; i++) {
+        fmi3_float32_t exp = *((fmi3_float32_t*)starts_exp + i);
+        fmi3_float32_t act = *(starts + i);
+        ASSERT_MSG(exp == act, "wrong start value of array variable, loop_idx: %d, exp: %f, act: %f", i, exp, act);
+    }
+
+    return TEST_OK;
+}
+
+/* parse 2x2x2 array,
+    dim1: start value
+    dim2: vr,
+    dim3: start value
+*/
+static int test_array8_32_dim_contains_vr_mixed(fmi3_import_t* xml)
+{
+    fmi3_import_variable_t* v;
+    fmi3_float32_t starts_exp[2][2][2] = {{{1.0F, 2.0F}, {3.0F, 4.0F}}, {{5.0F, 6.0F}, {7.0F, 8.0F}}};
+    fmi3_float32_t* starts;
+    const unsigned int* dims;
+    unsigned int nDims;
+    unsigned int nDimsExp = 3;
+    unsigned int arrSize;
+    unsigned int arrSizeExp = 8;
+    unsigned int i;
+    int is_array;
+    int has_start;
+
+    v = fmi3_import_get_variable_by_name(xml, "array8_32");
+    ASSERT_MSG(v != NULL, "variable not found by name");
+
+    has_start = fmi3_import_get_variable_has_start(v);
+    ASSERT_MSG(has_start == 1, "no start value found");
+
+    is_array = fmi3_import_variable_is_array(v);
+    ASSERT_MSG(is_array, "wrong variable type: expected array, but wasn't");
+
+    fmi3_import_variable_get_dimensions(xml, v, &dims, &nDims);
+    ASSERT_MSG(nDims == nDimsExp, "wrong number of dimensions: %d, expected: %d", nDims, nDimsExp);
+
+    /* verify that size resolves from VR */
+    arrSize = get_array_size(dims, nDims);
+    ASSERT_MSG(arrSize == arrSizeExp, "wrong total dimension size, actual: %d, exp: %d", arrSize, arrSizeExp);
 
     /* check start values */
     starts = fmi3_import_get_float32_variable_start_array(fmi3_import_get_variable_as_float32(v));
@@ -480,6 +568,8 @@ int main(int argc, char **argv)
     ret &= test_array4_32(xml);
     ret &= test_array_2x2_32(xml, "array5_32", starts_exp_array5_32);
     ret &= test_array6_32_general_size(xml);
+    ret &= test_array7_32_dim_contains_vr(xml);
+    ret &= test_array8_32_dim_contains_vr_mixed(xml);
 
     fmi3_import_free(xml);
 
@@ -489,6 +579,9 @@ int main(int argc, char **argv)
      * NOTE: there are some invalid attribute values that are not being tested, but that would have incorrectly
      * passed if we did. Example: start="1e999", start="1a"
      * Regardless, I don't think FMIL should be responsible for full schema verification.
+
+     * TODO: add test for fmi3_import_variable_is_array: give scalar as arg
+     *
      */
     printf("\nThe following tests are expected to fail...\n"); /* creating some space in the output log */
     printf("---------------------------------------------------------------------------\n");

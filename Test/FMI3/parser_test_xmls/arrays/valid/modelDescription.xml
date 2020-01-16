@@ -64,6 +64,20 @@
       <Dimension start="3"/>
     </Float32>
 
+    <Float32 name="array7_32" valueReference="107" initial="exact" start="1.0 2.0 3.3">
+      <Dimension valueReference="201"/>
+    </Float32>
+
+    <Float32 name="array8_32" valueReference="108" initial="exact" start="1.0 2.0 3.0 4.0 5.0 6.0 7.0 8.0">
+      <Dimension start="2"/>
+      <Dimension valueReference="202"/>
+      <Dimension start="2"/>
+    </Float32>
+
+    <!-- integer variables used as dimension specifiers -->
+    <Integer name="integer_1" valueReference="201" initial="exact" variability="constant" start="3" />
+    <Integer name="integer_2" valueReference="202" initial="exact" variability="constant" start="2" />
+
   </ModelVariables>
   
   <ModelStructure/>

@@ -1,0 +1,5 @@
+# This file allows commiting of the parent directory, since it's
+# not possible to commit empty directories
+
+*
+!.gitignore

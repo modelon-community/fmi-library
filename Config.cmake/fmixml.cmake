@@ -99,6 +99,48 @@ endif()
 #end of generate c source from Bison and Flex files
 ################################################################################
 
+### Generate FMIL source code ###
+
+set(TEMPLATE_FILES
+        fmi3_xml_variable_types
+        fmi3_xml_variable_types_h
+)
+
+set(TMPL_SRC_DST_LIST "")   # list of tuples (src, dst) that is passed to docker
+set(TMPL_SRC_LIST "")       # list of template source files
+set(TMPL_DST_LIST "")       # list of path to files generated from templates
+
+# Mounting binary dir as well, because all paths resolved from ${CMAKE_BINARY_DIR} will
+# be resolved to absolute paths on the host computer, and therefore not usable in docker
+# unless transformed (which is harder than just mounting).
+set(DOCKER_MNT_SRC /mnt_src)
+set(DOCKER_MNT_BIN /mnt_bin)
+foreach(file ${TEMPLATE_FILES})
+    set(SRC src/XML/templates/FMI3/${file}_template.c)
+    set(DST src/XML/generated/FMI3/${file}.c)
+    list(APPEND TMPL_SRC_DST_LIST \"${DOCKER_MNT_SRC}/${SRC}\" \"${DOCKER_MNT_BIN}/${DST}\") # used as args, so need quoting
+    list(APPEND TMPL_SRC_LIST ${CMAKE_SOURCE_DIR}/${SRC})
+    list(APPEND TMPL_DST_LIST ${CMAKE_BINARY_DIR}/${DST})
+endforeach()
+string (REPLACE ";" " " TMPL_SRC_DST_LIST_STR "${TMPL_SRC_DST_LIST}") # used as arg, so sub-args need space separatation
+
+add_custom_target(
+    generate_numeric_types ALL
+    DEPENDS ${TMPL_DST_LIST} # this file exists in the binary dir
+)
+set(DOCKER_TAG_CODEGEN fmil_cmake_codegen)
+set(DOCKER_CODEGEN_DIR ${DOCKER_MNT_SRC}/build/preprocess)
+add_custom_command(
+    OUTPUT ${TMPL_DST_LIST}
+    DEPENDS ${TMPL_SRC_LIST}
+    COMMAND docker build -t ${DOCKER_TAG_CODEGEN} . && docker run -v "${CMAKE_SOURCE_DIR}:${DOCKER_MNT_SRC}" -v "${CMAKE_BINARY_DIR}:${DOCKER_MNT_BIN}" ${DOCKER_TAG_CODEGEN} //bin/bash -c "chmod a+x ${DOCKER_CODEGEN_DIR}/preprocess*.sh && ${DOCKER_CODEGEN_DIR}/preprocess_list.sh ${TMPL_SRC_DST_LIST_STR}"
+    VERBATIM
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/build/preprocess
+    COMMENT "generating C code from macro templates..."
+)
+
+################################################################################
+
 # set(DOXYFILE_EXTRA_SOURCES "${DOXYFILE_EXTRA_SOURCES} \"${FMIXMLDIR}/include\"")
 
 include_directories("${FMIXMLDIR}/include" "${FMILIB_THIRDPARTYLIBS}/FMI/")
@@ -147,6 +189,7 @@ set(FMIXMLHEADERS
     include/FMI3/fmi3_xml_variable.h
     src/FMI3/fmi3_xml_variable_impl.h
     include/FMI3/fmi3_xml_dimension.h
+    src/
  )
 
 set(FMIXMLSOURCE
@@ -251,6 +294,7 @@ include_directories(
     "${FMIXMLGENDIR}/FMI1"
     "${FMIXMLGENDIR}/FMI2"
     "${FMIXMLGENDIR}/FMI3"
+    ${CMAKE_BINARY_DIR}/src/XML
 )
 
 PREFIXLIST(FMIXMLSOURCE  ${FMIXMLDIR}/)
@@ -268,7 +312,7 @@ list(APPEND FMIXMLSOURCE
 debug_message(STATUS "adding fmixml")
 
 add_library(fmixml ${FMILIBKIND} ${FMIXMLSOURCE} ${FMIXMLHEADERS})
-
 target_link_libraries(fmixml ${JMUTIL_LIBRARIES} expat)
+add_dependencies(fmixml generate_numeric_types)
 
 endif(NOT FMIXMLDIR)

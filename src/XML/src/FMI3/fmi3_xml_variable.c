@@ -195,22 +195,22 @@ static fmi3_xml_float_type_props_t* fmi3_xml_get_type_props_float(fmi3_xml_float
     return props;
 }
 
-/* float min */
+/* float: min */
 static fmi3_float_union_t fmi3_xml_get_float_variable_min(fmi3_xml_float_variable_t* v) {
     return fmi3_xml_get_type_props_float(v)->typeMin;
 }
 
-/* float max */
+/* float: max */
 static fmi3_float_union_t fmi3_xml_get_float_variable_max(fmi3_xml_float_variable_t* v) {
     return fmi3_xml_get_type_props_float(v)->typeMax;
 }
 
-/* float nominal */
+/* float: nominal */
 static fmi3_float_union_t fmi3_xml_get_float_variable_nominal(fmi3_xml_float_variable_t* v) {
     return fmi3_xml_get_type_props_float(v)->typeNominal;
 }
 
-/* float start */
+/* float: start */
 static fmi3_float_union_t fmi3_xml_get_float_variable_start(fmi3_xml_float_variable_t* v) {
     fmi3_xml_variable_t* vv = (fmi3_xml_variable_t*)v;
     if (fmi3_xml_get_variable_has_start(vv)) {
@@ -220,86 +220,8 @@ static fmi3_float_union_t fmi3_xml_get_float_variable_start(fmi3_xml_float_varia
     return fmi3_xml_get_float_variable_nominal(v); /* TODO: this is not valid for arrays - .arrayXX will always be null - why do we even want to return 'nominal'? */
 }
 
-/* Function macro for generating wrappers for specific types.
- *   XX: function to generate, must be prefixed with '_' to avoid macro conflicts with 'min' and 'max'
- *   TYPE: float32, float64
- * TODO: automate this in build
-
- #define COMMENT(X) __COMMENT_START__ X __COMMENT_END__
- #define def_get_float_variable_XX(XX, TYPE, FIELD) \
-    fmi3_##TYPE##_t fmi3_xml_get_##TYPE##_variable##XX(fmi3_xml_##TYPE##_variable_t* v) {      __NEWLINE__ \
-        return fmi3_xml_get_float_variable##XX((fmi3_xml_float_variable_t*)v).FIELD;           __NEWLINE__ \
-    }                                                                                          __NEWLINE__
-
-#define def_get_float_variable_XX_array(XX, TYPE, FIELD) \
-    fmi3_##TYPE##_t* fmi3_xml_get_##TYPE##_variable##XX##_array(fmi3_xml_##TYPE##_variable_t* v) {     __NEWLINE__ \
-        return fmi3_xml_get_float_variable##XX((fmi3_xml_float_variable_t*)v).FIELD;                   __NEWLINE__ \
-    }                                                                                                  __NEWLINE__
-
-COMMENT(float64)
-def_get_float_variable_XX(_min, float64, scalar64)
-def_get_float_variable_XX(_max, float64, scalar64)
-def_get_float_variable_XX(_nominal, float64, scalar64)
-def_get_float_variable_XX(_start, float64, scalar64)
-def_get_float_variable_XX_array(_start, float64, array64)
-
-COMMENT(float32)
-def_get_float_variable_XX(_min, float32, scalar32)
-def_get_float_variable_XX(_max, float32, scalar32)
-def_get_float_variable_XX(_nominal, float32, scalar32)
-def_get_float_variable_XX(_start, float32, scalar32)
-def_get_float_variable_XX_array(_start, float32, array32)
-
-*/
-
-/**
- * float64
- */
-
-fmi3_float64_t fmi3_xml_get_float64_variable_min(fmi3_xml_float64_variable_t* v) {
-    return fmi3_xml_get_float_variable_min((fmi3_xml_float_variable_t*)v).scalar64;
-}
-
-fmi3_float64_t fmi3_xml_get_float64_variable_max(fmi3_xml_float64_variable_t* v) {
-    return fmi3_xml_get_float_variable_max((fmi3_xml_float_variable_t*)v).scalar64;
-}
-
-fmi3_float64_t fmi3_xml_get_float64_variable_nominal(fmi3_xml_float64_variable_t* v) {
-    return fmi3_xml_get_float_variable_nominal((fmi3_xml_float_variable_t*)v).scalar64;
-}
-
-fmi3_float64_t fmi3_xml_get_float64_variable_start(fmi3_xml_float64_variable_t* v) {
-    return fmi3_xml_get_float_variable_start((fmi3_xml_float_variable_t*)v).scalar64;
-}
-
-fmi3_float64_t* fmi3_xml_get_float64_variable_start_array(fmi3_xml_float64_variable_t* v) {
-    return fmi3_xml_get_float_variable_start((fmi3_xml_float_variable_t*)v).array64;
-}
-
-/**
- * float32
- */
-
-fmi3_float32_t fmi3_xml_get_float32_variable_min(fmi3_xml_float32_variable_t* v) {
-    return fmi3_xml_get_float_variable_min((fmi3_xml_float_variable_t*)v).scalar32;
-}
-
-fmi3_float32_t fmi3_xml_get_float32_variable_max(fmi3_xml_float32_variable_t* v) {
-    return fmi3_xml_get_float_variable_max((fmi3_xml_float_variable_t*)v).scalar32;
-}
-
-fmi3_float32_t fmi3_xml_get_float32_variable_nominal(fmi3_xml_float32_variable_t* v) {
-    return fmi3_xml_get_float_variable_nominal((fmi3_xml_float_variable_t*)v).scalar32;
-}
-
-fmi3_float32_t fmi3_xml_get_float32_variable_start(fmi3_xml_float32_variable_t* v) {
-    return fmi3_xml_get_float_variable_start((fmi3_xml_float_variable_t*)v).scalar32;
-}
-
-fmi3_float32_t* fmi3_xml_get_float32_variable_start_array(fmi3_xml_float32_variable_t* v) {
-    return fmi3_xml_get_float_variable_start((fmi3_xml_float_variable_t*)v).array32;
-}
-
+/* include generated code */
+#include "generated/FMI3/fmi3_xml_variable_types.c"
 
 /* real */
 double fmi3_xml_get_real_variable_start(fmi3_xml_real_variable_t* v) {

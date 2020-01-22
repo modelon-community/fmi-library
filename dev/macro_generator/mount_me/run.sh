@@ -13,7 +13,7 @@ for f in $(ls input | grep -v .gitignore); do
 
     # add real comments
     sed -i 's@__COMMENT_START__@/**\n *@g' "output/$f"
-    sed -i 's@__COMMENT_END__@\n*/\n@g' "output/$f"
+    sed -i 's@__COMMENT_END__@\n*/@g' "output/$f"
 
     # indent all lines (vim ex mode)
     ex -s -c 'norm gg=G' -c wq "output/$f"

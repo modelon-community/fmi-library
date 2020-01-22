@@ -5,14 +5,20 @@
 
 
 /**
- * This function is called before a test fails via macro, so put a breakpoint
- * on it to make debugging easier
+ * This function is called before a test fails via macro, so you can put a 
+ * breakpoint on it to make debugging easier
  */
 static void enter_breakpoint()
 {
     /* you can put a breakpoint on this line */
 }
 
+/* 
+    TODO: all variadic macros are giving warnings when compiled with GCC, because
+    variadic macros were introduced in C99
+
+    - should I add some flag that suppress warning, or should I remove the vararg?
+ */
 
 #ifdef _MSC_VER /* Visual Studio */
 #define PRINT_FAILURE(...)                                                  \

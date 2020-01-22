@@ -48,6 +48,7 @@ set(FMIIMPORT_PUBHEADERS
 	include/FMI3/fmi3_import_unit.h
 	include/FMI3/fmi3_import_variable.h
 	include/FMI3/fmi3_import_variable_list.h
+	include/FMI3/fmi3_import_dimension.h
 	include/FMI3/fmi3_import_convenience.h
 
 	include/FMI/fmi_import_context.h
@@ -100,6 +101,7 @@ set(FMIIMPORTSOURCE
 	src/FMI3/fmi3_import_unit.c
 	src/FMI3/fmi3_import_variable.c
 	src/FMI3/fmi3_import_variable_list.c
+	src/FMI3/fmi3_import_dimension.c
 	src/FMI3/fmi3_import.c
 	src/FMI3/fmi3_import_convenience.c
 	)

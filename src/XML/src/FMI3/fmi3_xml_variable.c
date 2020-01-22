@@ -23,13 +23,9 @@
 #include "fmi3_xml_model_description_impl.h"
 
 #include "fmi3_xml_variable_impl.h"
+#include "FMI3/fmi3_xml_dimension.h"
 
 static const char* module = "FMI3XML";
-
-/* define fmi3_xml_dimension_t vector functions */
-#define JM_TEMPLATE_INSTANCE_TYPE fmi3_xml_dimension_t
-#include "JM/jm_vector_template.h"
-#undef JM_TEMPLATE_INSTANCE_TYPE
 
 struct fmi3_xml_variable_default_values {
     fmi3_float32_t float32;
@@ -47,23 +43,6 @@ static void* fmi3_xml_get_type_default_value(fmi3_bitness_enu_t bitness) {
         default:
             assert(0); /* implementation error */
             return NULL;
-    }
-}
-
-unsigned int fmi3_xml_dimension_get_size(fmi3_xml_model_description_t* md, fmi3_xml_dimension_t dim) {
-    if (!dim.is_vr) {
-        return dim.start;
-    } else {
-        fmi3_integer_t vr = dim.vr;
-        fmi3_xml_integer_variable_t* varRef = fmi3_xml_get_variable_as_integer(fmi3_xml_get_variable_by_vr(md, fmi3_base_type_int, vr));
-        
-        fmi3_integer_t start = fmi3_xml_get_integer_variable_start(varRef);
-        if (start == 0) {
-            jm_log_error(md->callbacks, module, "Start value for variable used as dimension length was 0. VR: '%d'", vr);
-            assert(0); /* TODO: how are errors (fatals) handled? */
-        }
-
-        return start;
     }
 }
 
@@ -153,7 +132,12 @@ fmi3_base_type_enu_t fmi3_xml_get_variable_base_type(fmi3_xml_variable_t* v) {
     return (type->baseType);
 }
 
-void fmi3_xml_variable_get_dimensions(fmi3_xml_variable_t* v, fmi3_xml_model_description_t* md, const unsigned int** dimensions, unsigned int* nDimensions) {
+void fmi3_xml_get_variable_dimensions(fmi3_xml_variable_t* v, fmi3_xml_dimension_t** dims, size_t* nDims) {
+    *dims = jm_vector_get_itemp(fmi3_xml_dimension_t)(&v->dimensionsVector, 0);
+    *nDims = jm_vector_get_size(fmi3_xml_dimension_t)(&v->dimensionsVector);
+}
+
+void get_variable_dimensions_start_sizes(fmi3_xml_model_description_t* md, fmi3_xml_variable_t* v, const size_t** dimensions, size_t* nDimensions) {
     jm_vector(fmi3_xml_dimension_t)* dimsVec = &v->dimensionsVector;
     unsigned int* dimsArr = v->dimensionsArray; /* has already been allocated */
     size_t nDims = jm_vector_get_size(fmi3_xml_dimension_t)(dimsVec);
@@ -162,7 +146,7 @@ void fmi3_xml_variable_get_dimensions(fmi3_xml_variable_t* v, fmi3_xml_model_des
     /* copy from vector to array and resolve valueReferences as necessary */
     for (i = 0; i < nDims; i++) {
         fmi3_xml_dimension_t* d = jm_vector_get_itemp(fmi3_xml_dimension_t)(dimsVec, i);
-        if (d->is_vr) {
+        if (d->has_vr) {
             /* only find static start value here, we might need a similar method (get_dimensions) during runtime as well */
             fmi3_xml_integer_variable_t* var = (fmi3_xml_integer_variable_t*)fmi3_xml_get_variable_by_vr(md, fmi3_base_type_int, d->vr);
             *(dimsArr + i) = fmi3_xml_get_integer_variable_start(var);
@@ -769,13 +753,13 @@ int fmi3_xml_handle_Dimension(fmi3_xml_parser_context_t* context, const char* da
 
         /* set data */
         if (hasStart) {
-            dim.is_vr = 0;
+            dim.has_vr = 0;
             attrId = fmi_attr_id_start;
             if (fmi3_xml_set_attr_uint(context, fmi3_xml_elmID_Dimension, attrId, 0, &dim.start, 0)) {
                 return -1;
             }
         } else if (hasVr) {
-            dim.is_vr = 1;
+            dim.has_vr = 1;
             attrId = fmi_attr_id_valueReference;
             if (fmi3_xml_set_attr_uint(context, fmi3_xml_elmID_Dimension, attrId, 0, &dim.vr, 0)) {
                 return -1;

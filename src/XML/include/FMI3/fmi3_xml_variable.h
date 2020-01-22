@@ -24,7 +24,7 @@
 
 #include "fmi3_xml_model_description.h"
 #include "fmi3_xml_type.h"
-
+#include "fmi3_xml_dimension.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -52,7 +52,8 @@ fmi3_base_type_enu_t fmi3_xml_get_variable_base_type(fmi3_xml_variable_t*);
 
 fmi3_float64_t* fmi3_xml_get_float64_variable_start_array(fmi3_xml_float64_variable_t* v);
 fmi3_float32_t* fmi3_xml_get_float32_variable_start_array(fmi3_xml_float32_variable_t* v);
-void fmi3_xml_variable_get_dimensions(fmi3_xml_variable_t* v, fmi3_xml_model_description_t* md, const unsigned int** dimensions, unsigned int* nDimensions);
+void fmi3_xml_get_variable_dimensions(fmi3_xml_variable_t* v, fmi3_xml_dimension_t** dims, size_t* nDims);
+
 int fmi3_xml_variable_is_array(fmi3_xml_variable_t* v);
 
 int fmi3_xml_get_variable_has_start(fmi3_xml_variable_t*);

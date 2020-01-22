@@ -3,23 +3,39 @@
 
 #include <stdio.h>
 
+
+/**
+ * This function is called before a test fails via macro, so put a breakpoint
+ * on it to make debugging easier
+ */
+static void enter_breakpoint()
+{
+    /* you can put a breakpoint on this line */
+}
+
+
 #ifdef _MSC_VER /* Visual Studio */
-#define TEST_FAILED(...)                                                    \
+#define PRINT_FAILURE(...)                                                  \
     do {                                                                    \
         printf("  %s FAILED: ", __FUNCTION__);                              \
         printf(__VA_ARGS__);                                                \
         printf("\n");                                                       \
-        return 0;                                                           \
-    } while (0)
+    } while(0)
 #else /* __FUNCTION__ magic variable won't be available */
-#define TEST_FAILED(...)                                                    \
+#define PRINT_FAILURE(...)                                                  \
     do {                                                                    \
         printf("  test FAILED at line %d: ", __LINE__);                     \
         printf(__VA_ARGS__);                                                \
         printf("\n");                                                       \
-        return 0;                                                           \
     } while (0)
 #endif
+
+#define TEST_FAILED(...)                                                    \
+    do {                                                                    \
+        PRINT_FAILURE(__VA_ARGS__);                                         \
+        enter_breakpoint();                                                 \
+        return 0;                                                           \
+    } while (0)
 
 /** 
  * Fails the test if 'cond' is not true. Use varargs argument for error 
@@ -32,6 +48,20 @@
         }                                                                   \
     } while (0)
 
+/** 
+ * Prints error and then 'goto' specified label if 'cond' is not true. Use
+ * varargs argument for error message formatting.
+ */
+#define ASSERT_MSG_GOTO(label, cond, ...)                                   \
+    do {                                                                    \
+        if (!(cond)) {                                                      \
+            PRINT_FAILURE(__VA_ARGS__);                                     \
+            enter_breakpoint();                                             \
+            goto label;                                                     \
+        }                                                                   \
+    } while (0)
+
 #define TEST_OK (1)
+#define TEST_FAIL (0)
 
 #endif /* FMILIB_TEST_H */

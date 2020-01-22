@@ -22,6 +22,7 @@
 #include <FMI3/fmi3_import_variable.h>
 #include "fmi3_import_impl.h"
 #include "fmi3_import_variable_list_impl.h"
+#include "FMI3/fmi3_import_dimension.h"
 
 fmi3_import_variable_t* fmi3_import_get_variable_by_name(fmi3_import_t* fmu, const char* name) {
 	return fmi3_xml_get_variable_by_name(fmu->md, name);
@@ -54,8 +55,8 @@ fmi3_base_type_enu_t fmi3_import_get_variable_base_type(fmi3_import_variable_t* 
 	return fmi3_xml_get_variable_base_type(v);
 }
 
-void fmi3_import_variable_get_dimensions(fmi3_import_t* fmu, fmi3_import_variable_t* v, const unsigned int** dimensions, unsigned int* nDimensions) {
-    fmi3_xml_variable_get_dimensions(v, fmu->md, dimensions, nDimensions);
+void fmi3_import_get_variable_dimensions(fmi3_import_variable_t* v, fmi3_import_dimension_t** dims, size_t* nDims) {
+    fmi3_xml_get_variable_dimensions(v, dims, nDims);
 }
 
 int fmi3_import_variable_is_array(fmi3_import_variable_t* v) {
@@ -269,10 +270,10 @@ fmi3_import_variable_t* fmi3_import_get_variable_alias_base(fmi3_import_t* fmu,f
 }
 
 /*
-    Return the list of all the variables aliased to the given one (including the base one.
+    Return the list of all the variables aliased to the given one (including the base one).
     The list is ordered: base variable, aliases, negated aliases.
 */
-fmi3_import_variable_list_t* fmi3_import_get_variable_aliases(fmi3_import_t* fmu,fmi3_import_variable_t* v) {
+fmi3_import_variable_list_t* fmi3_import_get_variable_aliases(fmi3_import_t* fmu, fmi3_import_variable_t* v) {
 	fmi3_import_variable_list_t* list = fmi3_import_alloc_variable_list(fmu, 0);
 	if(fmi3_xml_get_variable_aliases(fmu->md, v, &list->variables) != jm_status_success) {
 		fmi3_import_free_variable_list(list);

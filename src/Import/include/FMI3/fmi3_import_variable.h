@@ -26,6 +26,7 @@
 
 #include "fmi3_import_type.h"
 #include "fmi3_import_unit.h"
+#include "fmi3_import_dimension.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -67,7 +68,6 @@ typedef struct fmi3_xml_bool_variable_t fmi3_import_bool_variable_t;
 typedef struct fmi3_import_variable_list_t fmi3_import_variable_list_t;
 /**@} */
 
-
 /** \brief Get the variable name */
 FMILIB_EXPORT const char* fmi3_import_get_variable_name(fmi3_import_variable_t*);
 
@@ -87,24 +87,23 @@ FMILIB_EXPORT fmi3_import_variable_typedef_t* fmi3_import_get_variable_declared_
 /** \brief Get variable base type */
 FMILIB_EXPORT fmi3_base_type_enu_t fmi3_import_get_variable_base_type(fmi3_import_variable_t*);
 
-/* TODO: update API doc for array related functions */
-
 /** \brief Get the start values of an array variable
     @return Pointer to array with start values. Total length of array is given by product of the dimensions given by 
-        #fmi3_import_variable_get_dimensions. FMI Library handles memory for the array.
+        #fmi3_import_get_variable_dimensions. FMI Library handles memory for the array.
 */
 FMILIB_EXPORT fmi3_float64_t* fmi3_import_get_float64_variable_start_array(fmi3_import_float64_variable_t* v);
 
 /** \brief Get the start values of an array variable.
     @return Pointer to array with start values. Total length of array is given by product of the dimensions given by 
-        #fmi3_import_variable_get_dimensions. FMI Library handles memory for the array.
+        #fmi3_import_get_variable_dimensions. FMI Library handles memory for the array.
 */
 FMILIB_EXPORT fmi3_float32_t* fmi3_import_get_float32_variable_start_array(fmi3_import_float32_variable_t* v);
 
-/** \brief Get the size of the dimensions of an array variable
-    @return (return arguments) dimensions: pointer to array of dimension sizes. nDimensions: length of the 'dimensions' array
+/** \brief Get get a pointer to an array of dimensions.
+    @param dims: return arg, points to array of dimensions
+    @param nDims: return arg, contains number of dimensions
 */
-FMILIB_EXPORT void fmi3_import_variable_get_dimensions(fmi3_import_t* fmu, fmi3_import_variable_t* v, const unsigned int** dimensions, unsigned int* nDimensions);
+FMILIB_EXPORT void fmi3_import_get_variable_dimensions(fmi3_import_variable_t* v, fmi3_import_dimension_t** dims, size_t* nDims);
 
 /**   \brief Check if the variable is an array.
 	@return True if array, false if scalar.
@@ -294,6 +293,10 @@ FMILIB_EXPORT fmi3_variable_alias_kind_enu_t fmi3_import_get_variable_alias_kind
 
 /** \brief Get the original index in xml of the variable */
 FMILIB_EXPORT size_t fmi3_import_get_variable_original_order(fmi3_import_variable_t* v);
+
+
+/* Dimensions */
+
 
 /** @} */
 

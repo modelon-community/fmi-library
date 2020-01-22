@@ -19,21 +19,13 @@
 #include <JM/jm_vector.h>
 
 #include <FMI3/fmi3_xml_model_description.h>
+#include "FMI3/fmi3_xml_dimension.h"
 
 #include "fmi3_xml_type_impl.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-typedef struct fmi3_xml_dimension_t {
-    int is_vr;
-    unsigned int start;           /* value of the start attribute if 'is_vr' is false, else unassigned */
-    unsigned int vr;              /* value of the valueReference attribute if 'is_vr' is true, else unassigned */
-} fmi3_xml_dimension_t;
-
-/* declare fmi3_xml_dimension_t vector functions */
-jm_vector_declare_template(fmi3_xml_dimension_t)
 
 /* General variable type is convenien to unify all the variable list operations */
 struct fmi3_xml_variable_t {
@@ -64,7 +56,7 @@ struct fmi3_xml_variable_t {
      * This field will be exposed to the user, but FMIL handles memory management,
      * and this is a convenient place to store it.
      */
-    unsigned int* dimensionsArray;
+    unsigned int* dimensionsArray; /* TODO: this var can probably be removed now, since API was restructured (reduced) */
 
     /* temp fields during parsing*/
     jm_string startAttr;

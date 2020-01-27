@@ -110,15 +110,25 @@ set(TMPL_SRC_DST_LIST "")   # list of tuples (src, dst) that is passed to docker
 set(TMPL_SRC_LIST "")       # list of template source files
 set(TMPL_DST_LIST "")       # list of path to files generated from templates
 
-# Mounting binary dir as well, because all paths resolved from ${CMAKE_BINARY_DIR} will
-# be resolved to absolute paths on the host computer, and therefore not usable in docker
-# unless transformed (which is harder than just mounting).
-set(DOCKER_MNT_SRC /mnt_src)
-set(DOCKER_MNT_BIN /mnt_bin)
+# On Windows: create docker container that mount binary and source dir, and then
+#   performs the preprocessing.
+# On Linux: perform it directly
+if (WIN32)
+    set(SRC_PREFIX /mnt_src)
+    set(DST_PREFIX /mnt_bin)
+else()
+    set(SRC_PREFIX ${CMAKE_SOURCE_DIR})
+    set(DST_PREFIX ${CMAKE_BINARY_DIR})
+endif()
+
 foreach(file ${TEMPLATE_FILES})
     set(SRC src/XML/templates/FMI3/${file}_template.c)
     set(DST src/XML/gen/FMI3/${file}.c)
-    list(APPEND TMPL_SRC_DST_LIST \"${DOCKER_MNT_SRC}/${SRC}\" \"${DOCKER_MNT_BIN}/${DST}\") # used as args, so need quoting
+
+    # Create list of src/dst files as tuples:
+    list(APPEND TMPL_SRC_DST_LIST \"${SRC_PREFIX}/${SRC}\" \"${DST_PREFIX}/${DST}\") # used as args, so need quoting
+
+    # Save paths on the host so we can set dependencies:
     list(APPEND TMPL_SRC_LIST ${CMAKE_SOURCE_DIR}/${SRC})
     list(APPEND TMPL_DST_LIST ${CMAKE_BINARY_DIR}/${DST})
 endforeach()
@@ -128,15 +138,24 @@ add_custom_target(
     generate_numeric_types ALL
     DEPENDS ${TMPL_DST_LIST} # this file exists in the binary dir
 )
-set(DOCKER_TAG_CODEGEN fmil_cmake_codegen)
-set(DOCKER_CODEGEN_DIR ${DOCKER_MNT_SRC}/build/preprocess)
+
+set(CODEGEN_DIR ${SRC_PREFIX}/build/preprocess)
+if (WIN32)
+    set(DOCKER_TAG_CODEGEN fmil_cmake_codegen)
+    set(CMD_CODEGEN docker build -t ${DOCKER_TAG_CODEGEN} . && docker run -v "${CMAKE_SOURCE_DIR}:${SRC_PREFIX}" -v "${CMAKE_BINARY_DIR}:${DST_PREFIX}" ${DOCKER_TAG_CODEGEN} //bin/bash -c "chmod a+x ${CODEGEN_DIR}/preprocess*.sh && ${CODEGEN_DIR}/preprocess_list.sh ${TMPL_SRC_DST_LIST_STR}")
+else()
+    # command is wrapped in bash -c "..." because otherwise the (*) will be taken verbatim
+    set(CMD_CODEGEN bash -c "chmod a+x ${CODEGEN_DIR}/preprocess*.sh && ${CODEGEN_DIR}/preprocess_list.sh ${TMPL_SRC_DST_LIST_STR}")
+endif()
+
 add_custom_command(
     OUTPUT ${TMPL_DST_LIST}
     DEPENDS ${TMPL_SRC_LIST}
-    COMMAND docker build -t ${DOCKER_TAG_CODEGEN} . && docker run -v "${CMAKE_SOURCE_DIR}:${DOCKER_MNT_SRC}" -v "${CMAKE_BINARY_DIR}:${DOCKER_MNT_BIN}" ${DOCKER_TAG_CODEGEN} //bin/bash -c "chmod a+x ${DOCKER_CODEGEN_DIR}/preprocess*.sh && ${DOCKER_CODEGEN_DIR}/preprocess_list.sh ${TMPL_SRC_DST_LIST_STR}"
+    COMMAND ${CMD_CODEGEN}
+    COMMAND_EXPAND_LISTS
     VERBATIM
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/build/preprocess
-    COMMENT "generating C code from macro templates..."
+    COMMENT "generating C code from macro templates... (command: ${CMD_CODEGEN})"
 )
 
 ################################################################################

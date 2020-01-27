@@ -7,14 +7,14 @@ def Configs = [
     'win64': [
         name: 'win64',
         os: 'windows',
-        node: 'VisualStudio2010 && OCT-SDK-1.4',
+        node: 'VisualStudio2010 && OCT-SDK-1.4 && dockerWindows',
         target_install: 'install',
         target_test: 'test'
     ],
     'win64_static_runtime': [
         name: 'win64_static_runtime',
         os: 'windows',
-        node: 'VisualStudio2010 && OCT-SDK-1.4',
+        node: 'VisualStudio2010 && OCT-SDK-1.4 && dockerWindows',
         target_install: 'install',
         target_test: 'test'
     ], 

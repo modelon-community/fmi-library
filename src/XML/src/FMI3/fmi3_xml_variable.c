@@ -221,7 +221,7 @@ static fmi3_float_union_t fmi3_xml_get_float_variable_start(fmi3_xml_float_varia
 }
 
 /* include generated code */
-#include "generated/FMI3/fmi3_xml_variable_types.c"
+#include "gen/FMI3/fmi3_xml_variable_types.c"
 
 /* real */
 double fmi3_xml_get_real_variable_start(fmi3_xml_real_variable_t* v) {

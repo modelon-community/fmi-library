@@ -74,7 +74,7 @@ fmi3_xml_string_variable_t* fmi3_xml_get_variable_as_string(fmi3_xml_variable_t*
 fmi3_xml_bool_variable_t* fmi3_xml_get_variable_as_boolean(fmi3_xml_variable_t*);
 
  /* include generated prototypes */
-#include "generated/FMI3/fmi3_xml_variable_types_h.c"
+#include "gen/FMI3/fmi3_xml_variable_types_h.c"
 
 /**
  * real 

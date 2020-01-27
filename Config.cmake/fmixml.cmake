@@ -117,7 +117,7 @@ set(DOCKER_MNT_SRC /mnt_src)
 set(DOCKER_MNT_BIN /mnt_bin)
 foreach(file ${TEMPLATE_FILES})
     set(SRC src/XML/templates/FMI3/${file}_template.c)
-    set(DST src/XML/generated/FMI3/${file}.c)
+    set(DST src/XML/gen/FMI3/${file}.c)
     list(APPEND TMPL_SRC_DST_LIST \"${DOCKER_MNT_SRC}/${SRC}\" \"${DOCKER_MNT_BIN}/${DST}\") # used as args, so need quoting
     list(APPEND TMPL_SRC_LIST ${CMAKE_SOURCE_DIR}/${SRC})
     list(APPEND TMPL_DST_LIST ${CMAKE_BINARY_DIR}/${DST})

@@ -99,11 +99,10 @@ FMILIB_EXPORT fmi3_float64_t* fmi3_import_get_float64_variable_start_array(fmi3_
 */
 FMILIB_EXPORT fmi3_float32_t* fmi3_import_get_float32_variable_start_array(fmi3_import_float32_variable_t* v);
 
-/** \brief Get get a pointer to an array of dimensions.
-    @param dims: return arg, points to array of dimensions
-    @param nDims: return arg, contains number of dimensions
+/** \brief Get a list of the variable's array dimensions. Note that this list must be freed with #fmi3_import_free_dimension_list.
+    @return Dynamically allocated list of array dimensions.
 */
-FMILIB_EXPORT void fmi3_import_get_variable_dimensions(fmi3_import_variable_t* v, fmi3_import_dimension_t** dims, size_t* nDims);
+FMILIB_EXPORT fmi3_import_dimension_list_t* fmi3_import_get_variable_dimension_list(fmi3_import_t* fmu, fmi3_import_variable_t* v);
 
 /**   \brief Check if the variable is an array.
 	@return True if array, false if scalar.

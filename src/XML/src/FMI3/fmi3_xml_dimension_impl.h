@@ -13,31 +13,28 @@
     along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 */
 
-
-
-/** \file fmi3_xml_dimension.h
-*  \brief Public interface to the FMI XML C-library. Handling of variable dimensions.
-*/
-
-#ifndef FMI3_XML_DIMENSION_H_
-#define FMI3_XML_DIMENSION_H_
+#ifndef FMI3_XML_DIMENSION_IMPL_H_
+#define FMI3_XML_DIMENSION_IMPL_H_
 
 #include <JM/jm_vector.h>
+#include <FMI3/fmi3_xml_dimension.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-typedef struct fmi3_xml_dimension_t fmi3_xml_dimension_t;
-typedef struct jm_vector(fmi3_xml_dimension_t) jm_vector(fmi3_xml_dimension_t);
+struct fmi3_xml_dimension_t {
+    int has_vr;
+    unsigned int start;           /* value of the start attribute if 'has_vr' is false, else unassigned */
+    unsigned int vr;              /* value of the valueReference attribute if 'has_vr' is true, else unassigned */
+};
 
-int fmi3_xml_get_dimension_has_vr(fmi3_xml_dimension_t* dim);
-int fmi3_xml_get_dimension_has_start(fmi3_xml_dimension_t* dim);
-int fmi3_xml_get_dimension_start(fmi3_xml_dimension_t* dim);
-fmi3_value_reference_t fmi3_xml_get_dimension_vr(fmi3_xml_dimension_t* dim);
+/* declare fmi3_xml_dimension_t vector functions */
+jm_vector_declare_template(fmi3_xml_dimension_t)
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* FMI3_XML_DIMENSION_H_ */
+#endif /* FMI3_XML_DIMENSION_IMPL_H_ */
+

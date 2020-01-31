@@ -21,9 +21,9 @@
 #include "fmi3_xml_parser.h"
 #include "fmi3_xml_type_impl.h"
 #include "fmi3_xml_model_description_impl.h"
+#include "fmi3_xml_dimension_impl.h"
 
 #include "fmi3_xml_variable_impl.h"
-#include "FMI3/fmi3_xml_dimension.h"
 
 static const char* module = "FMI3XML";
 
@@ -132,9 +132,8 @@ fmi3_base_type_enu_t fmi3_xml_get_variable_base_type(fmi3_xml_variable_t* v) {
     return (type->baseType);
 }
 
-void fmi3_xml_get_variable_dimensions(fmi3_xml_variable_t* v, fmi3_xml_dimension_t** dims, size_t* nDims) {
-    *dims = jm_vector_get_itemp(fmi3_xml_dimension_t)(&v->dimensionsVector, 0);
-    *nDims = jm_vector_get_size(fmi3_xml_dimension_t)(&v->dimensionsVector);
+jm_vector(fmi3_xml_dimension_t)* fmi3_xml_get_variable_dimension_vector(fmi3_xml_variable_t* v) {
+    return &v->dimensionsVector;
 }
 
 void get_variable_dimensions_start_sizes(fmi3_xml_model_description_t* md, fmi3_xml_variable_t* v, const size_t** dimensions, size_t* nDimensions) {

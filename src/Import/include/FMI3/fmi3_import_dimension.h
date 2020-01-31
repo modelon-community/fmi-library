@@ -33,8 +33,8 @@
 extern "C" {
 #endif
 
-/* TODO: most of the import types are opaque, but fmi3_import_dimension_t is not, do I have to do it, and if yes, how do I do it? */
 typedef struct fmi3_xml_dimension_t fmi3_import_dimension_t;
+typedef struct fmi3_import_dimension_list_t fmi3_import_dimension_list_t;
 
 /** \brief Checks if the dimension contains the valueReference attribute */
 FMILIB_EXPORT int fmi3_import_get_dimension_has_vr(fmi3_import_dimension_t*);

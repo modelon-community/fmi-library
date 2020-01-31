@@ -13,22 +13,25 @@
     along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 */
 
-#include "fmi3_import_impl.h"
-#include "FMI3/fmi3_import_dimension.h"
+#ifndef FMI3_IMPORT_DIMENSION_LIST_IMPL_H
+#define FMI3_IMPORT_DIMENSION_LIST_IMPL_H
 
-int fmi3_import_get_dimension_has_vr(fmi3_import_dimension_t* dim) {
-    return fmi3_xml_get_dimension_has_vr(dim);
+#include "JM/jm_vector.h"
+
+#include "FMI3/fmi3_import.h"
+#include "FMI3/fmi3_import_dimension_list.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+struct fmi3_import_dimension_list_t {
+	fmi3_import_t* fmu;
+    jm_vector(fmi3_xml_dimension_t)* vec;
+};
+
+#ifdef __cplusplus
 }
+#endif
 
-int fmi3_import_get_dimension_has_start(fmi3_import_dimension_t* dim) {
-    return fmi3_xml_get_dimension_has_start(dim);
-}
-
-int fmi3_import_get_dimension_start(fmi3_import_dimension_t* dim) {
-    return fmi3_xml_get_dimension_start(dim);
-}
-
-fmi3_value_reference_t fmi3_import_get_dimension_vr(fmi3_import_dimension_t* dim) {
-    return fmi3_xml_get_dimension_vr(dim);
-}
-
+#endif /* FMI3_IMPORT_DIMENSION_LIST_IMPL_H */

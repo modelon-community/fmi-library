@@ -19,9 +19,9 @@
 #include <JM/jm_vector.h>
 
 #include <FMI3/fmi3_xml_model_description.h>
-#include "FMI3/fmi3_xml_dimension.h"
 
 #include "fmi3_xml_type_impl.h"
+#include "fmi3_xml_dimension_impl.h"
 
 #ifdef __cplusplus
 extern "C" {

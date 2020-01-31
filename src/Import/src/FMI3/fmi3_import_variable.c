@@ -23,6 +23,7 @@
 #include "fmi3_import_impl.h"
 #include "fmi3_import_variable_list_impl.h"
 #include "FMI3/fmi3_import_dimension.h"
+#include "FMI3/fmi3_import_dimension_list.h"
 
 fmi3_import_variable_t* fmi3_import_get_variable_by_name(fmi3_import_t* fmu, const char* name) {
 	return fmi3_xml_get_variable_by_name(fmu->md, name);
@@ -55,8 +56,8 @@ fmi3_base_type_enu_t fmi3_import_get_variable_base_type(fmi3_import_variable_t* 
 	return fmi3_xml_get_variable_base_type(v);
 }
 
-void fmi3_import_get_variable_dimensions(fmi3_import_variable_t* v, fmi3_import_dimension_t** dims, size_t* nDims) {
-    fmi3_xml_get_variable_dimensions(v, dims, nDims);
+fmi3_import_dimension_list_t* fmi3_import_get_variable_dimension_list(fmi3_import_t* fmu, fmi3_import_variable_t* v) {
+    return fmi3_import_alloc_dimension_list(fmu, v);
 }
 
 int fmi3_import_variable_is_array(fmi3_import_variable_t* v) {

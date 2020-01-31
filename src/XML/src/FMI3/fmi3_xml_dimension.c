@@ -15,7 +15,7 @@
 
 #include "JM/jm_vector.h"
 #include "fmi3_xml_model_description_impl.h"
-#include "FMI3/fmi3_xml_dimension.h"
+#include "fmi3_xml_dimension_impl.h"
 
 #include "FMI3/fmi3_xml_variable.h"
 
@@ -26,23 +26,18 @@ static const char* module = "FMI3XML";
 #include "JM/jm_vector_template.h"
 #undef JM_TEMPLATE_INSTANCE_TYPE
 
-/**
- * Get size as defined in XML (start attribute is returned for resolved VRs)
- */
-unsigned int fmi3_xml_dimension_get_size(fmi3_xml_model_description_t* md, fmi3_xml_dimension_t dim) {
-    if (!dim.has_vr) {
-        return dim.start;
-    } else {
-        fmi3_integer_t vr = dim.vr;
-        fmi3_xml_integer_variable_t* varRef = fmi3_xml_get_variable_as_integer(fmi3_xml_get_variable_by_vr(md, fmi3_base_type_int, vr));
-        
-        fmi3_integer_t start = fmi3_xml_get_integer_variable_start(varRef);
-        if (start == 0) {
-            jm_log_error(md->callbacks, module, "Start value for variable used as dimension length was 0. VR: '%d'", vr);
-            assert(0); /* TODO: how are errors (fatals) handled? */
-        }
 
-        return start;
-    }
+/* wrapables for import side: */
+int fmi3_xml_get_dimension_has_vr(fmi3_xml_dimension_t* dim) {
+    return dim->has_vr;
+}
+int fmi3_xml_get_dimension_has_start(fmi3_xml_dimension_t* dim) {
+    return !dim->has_vr;
+}
+int fmi3_xml_get_dimension_start(fmi3_xml_dimension_t* dim) {
+    return dim->start;
+}
+fmi3_value_reference_t fmi3_xml_get_dimension_vr(fmi3_xml_dimension_t* dim) {
+    return dim->vr;
 }
 

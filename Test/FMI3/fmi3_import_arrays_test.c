@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <float.h>
 
-#include <fmilib.h>
+#include "fmilib.h"
 #include "config_test.h"
 #include "fmil_test.h"
 
@@ -41,18 +41,22 @@ static size_t get_array_size(const int* dimSizes, size_t nDim) {
  * @param dimSizes: contains the start sizes, must be freed
  * TODO: should this perhaps be a util API method?
  */
-static int get_dimensions_start_sizes(fmi3_import_t* fmu, jm_callbacks* cb, fmi3_xml_dimension_t* dims, size_t nDims, int** dimSizes) {
+static int get_dimensions_start_sizes(fmi3_import_t* fmu, jm_callbacks* cb, fmi3_import_dimension_list_t* dimList, int** dimSizes) {
     size_t i;
-    int* sizes;
+    size_t nDims;
 
-    sizes = *dimSizes = cb->malloc(sizeof(int) * nDims);
-    if (!sizes) {
+    nDims = fmi3_import_get_dimension_list_size(dimList);
+
+    /* allocate memory for sizes array */
+    *dimSizes = cb->malloc(sizeof(int) * nDims);
+    if (!*dimSizes) {
+        printf("unable to alloc memory for dimSizes, line: %d", __LINE__);
         return 1;
-        assert("failed to get memory");
     }
 
+    /* fill the array */
     for (i = 0; i < nDims; i++) {
-        fmi3_xml_dimension_t* d = dims + i;
+        fmi3_import_dimension_t* d = fmi3_import_get_dimension_list_item(dimList, i);
 
         if (fmi3_import_get_dimension_has_vr(d)) {
             fmi3_import_integer_variable_t* var = (fmi3_import_integer_variable_t*)fmi3_import_get_variable_by_vr(fmu, fmi3_base_type_int, fmi3_import_get_dimension_vr(d));
@@ -72,7 +76,7 @@ static int test_array_ok_64(fmi3_import_t* xml, char* varName, fmi3_float64_t* s
 
     fmi3_import_variable_t* v;
     fmi3_float64_t* starts;
-    fmi3_import_dimension_t* dims;
+    fmi3_import_dimension_list_t* dimList;
     size_t nDims;
     int is_array;
     unsigned int i;
@@ -91,31 +95,35 @@ static int test_array_ok_64(fmi3_import_t* xml, char* varName, fmi3_float64_t* s
     is_array = fmi3_import_variable_is_array(v);
     ASSERT_MSG(is_array, "wrong variable type: expected array, but wasn't");
 
-    fmi3_import_get_variable_dimensions(v, &dims, &nDims);
+    dimList = fmi3_import_get_variable_dimension_list(xml, v); /* allocates memory */
+    nDims = fmi3_import_get_dimension_list_size(dimList);
 
     /* check num dimensions */
-    ASSERT_MSG(nDims == nDimsExp, "incorrect num of dims, exp: %d, act: %d", nDimsExp, nDims);
+    ASSERT_MSG_GOTO(cleanup1, nDims == nDimsExp, "incorrect num of dims, exp: %d, act: %d", nDimsExp, nDims);
 
     /* check resolved dimension start sizes */
-    get_dimensions_start_sizes(xml, cb, dims, nDims, &dimSizes);
+    ASSERT_MSG_GOTO(cleanup1, !get_dimensions_start_sizes(xml, cb, dimList, &dimSizes), "failed to get dimension start sizes"); /* allocates memory */
     for (i = 0; i < nDims; i++) {
-        ASSERT_MSG_GOTO(cleanup, dimSizes[i] == dimSizesExp[i], "incorrect dim size, idx: %d, exp: %d, act: %d", i, dimSizes[i], dimSizesExp[i]);
+        ASSERT_MSG_GOTO(cleanup2, dimSizes[i] == dimSizesExp[i], "incorrect dim size, idx: %d, exp: %d, act: %d", i, dimSizes[i], dimSizesExp[i]);
     }
 
     /* check num start values */
     starts = fmi3_import_get_float64_variable_start_array(fmi3_import_get_variable_as_float64(v));
     arraySize = get_array_size(dimSizes, nDims);
-    ASSERT_MSG_GOTO(cleanup, arraySize == nStartsExp, "incorrect array size, exp: %d, act: %d", arraySize, nStartsExp);
+    ASSERT_MSG_GOTO(cleanup2, arraySize == nStartsExp, "incorrect array size, exp: %d, act: %d", arraySize, nStartsExp);
 
     /* check start values */
     for (i = 0; i < arraySize; i++) {
-        ASSERT_MSG_GOTO(cleanup, starts[i] == startsExp[i], "wrong start value of array variable, idx: %d, exp: %f, act: %f", i, starts[i], startsExp[i]);
+        ASSERT_MSG_GOTO(cleanup2, starts[i] == startsExp[i], "wrong start value of array variable, idx: %d, exp: %f, act: %f", i, starts[i], startsExp[i]);
     }
 
     res = TEST_OK;
 
-cleanup:
+cleanup2:
+    fmi3_import_free_dimension_list(dimList);
+cleanup1:
     cb->free(dimSizes);
+
     return res;
 }
 
@@ -188,7 +196,7 @@ static int test_array_ok_32(fmi3_import_t* xml, char* varName, fmi3_float32_t* s
 
     fmi3_import_variable_t* v;
     fmi3_float32_t* starts;
-    fmi3_import_dimension_t* dims;
+    fmi3_import_dimension_list_t* dimList;
     size_t nDims;
     int is_array;
     unsigned int i;
@@ -207,31 +215,35 @@ static int test_array_ok_32(fmi3_import_t* xml, char* varName, fmi3_float32_t* s
     is_array = fmi3_import_variable_is_array(v);
     ASSERT_MSG(is_array, "wrong variable type: expected array, but wasn't");
 
-    fmi3_import_get_variable_dimensions(v, &dims, &nDims);
+    dimList = fmi3_import_get_variable_dimension_list(xml, v); /* allocates memory */
+    nDims = fmi3_import_get_dimension_list_size(dimList);
 
     /* check num dimensions */
-    ASSERT_MSG(nDims == nDimsExp, "incorrect num of dims, exp: %d, act: %d", nDimsExp, nDims);
+    ASSERT_MSG_GOTO(cleanup1, nDims == nDimsExp, "incorrect num of dims, exp: %d, act: %d", nDimsExp, nDims);
 
     /* check resolved dimension start sizes */
-    get_dimensions_start_sizes(xml, cb, dims, nDims, &dimSizes);
+    ASSERT_MSG_GOTO(cleanup1, !get_dimensions_start_sizes(xml, cb, dimList, &dimSizes), "failed to get dimension start sizes"); /* allocates memory */
     for (i = 0; i < nDims; i++) {
-        ASSERT_MSG_GOTO(cleanup, dimSizes[i] == dimSizesExp[i], "incorrect dim size, idx: %d, exp: %d, act: %d", i, dimSizes[i], dimSizesExp[i]);
+        ASSERT_MSG_GOTO(cleanup2, dimSizes[i] == dimSizesExp[i], "incorrect dim size, idx: %d, exp: %d, act: %d", i, dimSizes[i], dimSizesExp[i]);
     }
 
     /* check num start values */
     starts = fmi3_import_get_float32_variable_start_array(fmi3_import_get_variable_as_float32(v));
     arraySize = get_array_size(dimSizes, nDims);
-    ASSERT_MSG_GOTO(cleanup, arraySize == nStartsExp, "incorrect array size, exp: %d, act: %d", arraySize, nStartsExp);
+    ASSERT_MSG_GOTO(cleanup2, arraySize == nStartsExp, "incorrect array size, exp: %d, act: %d", arraySize, nStartsExp);
 
     /* check start values */
     for (i = 0; i < arraySize; i++) {
-        ASSERT_MSG_GOTO(cleanup, starts[i] == startsExp[i], "wrong start value of array variable, idx: %d, exp: %f, act: %f", i, starts[i], startsExp[i]);
+        ASSERT_MSG_GOTO(cleanup2, starts[i] == startsExp[i], "wrong start value of array variable, idx: %d, exp: %f, act: %f", i, starts[i], startsExp[i]);
     }
 
     res = TEST_OK;
 
-cleanup:
+cleanup2:
+    fmi3_import_free_dimension_list(dimList);
+cleanup1:
     cb->free(dimSizes);
+
     return res;
 }
 
@@ -356,8 +368,10 @@ static int test_array8_32_can_find_index_and_vr_of_dimensions(fmi3_import_t* xml
     size_t sizeTot = 1;
 
     fmi3_import_dimension_t* dim;
-    fmi3_import_dimension_t* dims;
+    fmi3_import_dimension_list_t* dimList;
     size_t nDims;
+
+    int res = TEST_FAIL;
 
     v = fmi3_import_get_variable_by_name(xml, "array8_32");
     ASSERT_MSG(v != NULL, "variable not found by name");
@@ -368,26 +382,27 @@ static int test_array8_32_can_find_index_and_vr_of_dimensions(fmi3_import_t* xml
     is_array = fmi3_import_variable_is_array(v);
     ASSERT_MSG(is_array, "wrong variable type: expected array, but wasn't");
 
-    fmi3_import_get_variable_dimensions(v, &dims, &nDims);
+    dimList = fmi3_import_get_variable_dimension_list(xml, v); /* allocates memory */
+    nDims = fmi3_import_get_dimension_list_size(dimList);
 
-    ASSERT_MSG(nDims == nDimsExp, "wrong number of dimensions: %d, expected: %d", nDims, nDimsExp);
+    ASSERT_MSG_GOTO(cleanup, nDims == nDimsExp, "wrong number of dimensions: %d, expected: %d", nDims, nDimsExp);
 
     /* check if vr or start attribute */
-    dim = dims + 0;
-    ASSERT_MSG(fmi3_import_get_dimension_has_start(dim), "failed to determine if start/vr");
-    ASSERT_MSG(!fmi3_import_get_dimension_has_vr(dim), "failed to determine if start/vr");
+    dim = fmi3_import_get_dimension_list_item(dimList, 0);
+    ASSERT_MSG_GOTO(cleanup, fmi3_import_get_dimension_has_start(dim), "failed to determine if start/vr");
+    ASSERT_MSG_GOTO(cleanup, !fmi3_import_get_dimension_has_vr(dim), "failed to determine if start/vr");
 
-    dim = dims + 1;
-    ASSERT_MSG(!fmi3_import_get_dimension_has_start(dim), "failed to determine if start/vr");
-    ASSERT_MSG(fmi3_import_get_dimension_has_vr(dim), "failed to determine if start/vr");
+    dim = fmi3_import_get_dimension_list_item(dimList, 1);
+    ASSERT_MSG_GOTO(cleanup, !fmi3_import_get_dimension_has_start(dim), "failed to determine if start/vr");
+    ASSERT_MSG_GOTO(cleanup, fmi3_import_get_dimension_has_vr(dim), "failed to determine if start/vr");
 
-    dim = dims + 2;
-    ASSERT_MSG(fmi3_import_get_dimension_has_start(dim), "failed to determine if start/vr");
-    ASSERT_MSG(!fmi3_import_get_dimension_has_vr(dim), "failed to determine if start/vr");
+    dim = fmi3_import_get_dimension_list_item(dimList, 2);
+    ASSERT_MSG_GOTO(cleanup, fmi3_import_get_dimension_has_start(dim), "failed to determine if start/vr");
+    ASSERT_MSG_GOTO(cleanup, !fmi3_import_get_dimension_has_vr(dim), "failed to determine if start/vr");
 
     /* check values (both start and integer) */
     for (i = 0; i < nDims; i++) {
-        dim = dims + i;
+        dim = fmi3_import_get_dimension_list_item(dimList, i);
         if (fmi3_import_get_dimension_has_start(dim)) {
             sizeTot *= fmi3_import_get_dimension_start(dim);
         }
@@ -405,16 +420,21 @@ static int test_array8_32_can_find_index_and_vr_of_dimensions(fmi3_import_t* xml
             */
         }
     }
-    ASSERT_MSG(sizeTot == 8, "failed to check all array values, stopped at idx: %d", sizeTot);
+    ASSERT_MSG_GOTO(cleanup, sizeTot == 8, "failed to check all array values, stopped at idx: %d", sizeTot);
 
     starts = fmi3_import_get_float32_variable_start_array(fmi3_import_get_variable_as_float32(v));
     for (i = 0; i < sizeTot; i++) {
         fmi3_float32_t exp = *((fmi3_float32_t*)startsExp + i);
         fmi3_float32_t act = *(starts + i);
-        ASSERT_MSG(exp == act, "wrong start value of array variable, loop_idx: %d, exp: %f, act: %f", i, exp, act);
+        ASSERT_MSG_GOTO(cleanup, exp == act, "wrong start value of array variable, loop_idx: %d, exp: %f, act: %f", i, exp, act);
     }
 
-    return TEST_OK;
+    res = TEST_OK;
+
+cleanup:
+    fmi3_import_free_dimension_list(dimList);
+
+    return res;
 }
 
 /** 

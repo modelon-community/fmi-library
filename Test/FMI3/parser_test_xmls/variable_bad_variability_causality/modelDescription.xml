@@ -10,7 +10,7 @@
 
   <ModelVariables>
     <!-- constant inputs cannot exist, trigger parser error handling -->
-    <Real name="dummy1" valueReference="0" causality="input" variability="constant" start="0.0"/>
+    <Float64 name="dummy1" valueReference="0" causality="input" variability="constant" start="0.0"/>
   </ModelVariables>
 
   <ModelStructure />

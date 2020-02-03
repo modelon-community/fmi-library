@@ -37,8 +37,8 @@
   stopTime="1.0"/>
 
 <ModelVariables>
-  <Real name="minRealVar" valueReference="0"/>
-  <Real name="maxRealVar" causality="parameter" variability="fixed" valueReference="1" initial="exact" description="myDescription" quantity="Temperature" unit="K" displayUnit="degC" min="3.2" max="6.5" nominal="3.5" start="5.9"/>
+  <Float64 name="minRealVar" valueReference="0"/>
+  <Float64 name="maxRealVar" causality="parameter" variability="fixed" valueReference="1" initial="exact" description="myDescription" quantity="Temperature" unit="K" displayUnit="degC" min="3.2" max="6.5" nominal="3.5" start="5.9"/>
   <Integer name="minIntVar" valueReference="2"/>
   <Integer name="maxIntVar" causality="calculatedParameter" variability="tunable" valueReference="3" initial="approx" description="myDescription" quantity="integerQuantity" min="3" max="7" start="6"/>
   <Enumeration name="minEnumVar" valueReference="4" variability="discrete" declaredType="MyEnum"/>
@@ -47,7 +47,7 @@
   <Boolean name="maxBoolVar" causality="output" variability="discrete" valueReference="7" initial="approx" description="myDescription" start="true"/>
   <String name="minStringVar" valueReference="8"/>
   <String name="maxStringVar" causality="local" variability="constant" valueReference="9" initial="exact" description="myDescription" start="stringStart"/>
-  <Real name="derivative"  causality="output" variability="continuous" valueReference="10" initial="approx" description="myDescription" derivative="1" start="1.0"/>
+  <Float64 name="derivative"  causality="output" variability="continuous" valueReference="10" initial="approx" description="myDescription" derivative="1" start="1.0"/>
 </ModelVariables>
 
 <ModelStructure>

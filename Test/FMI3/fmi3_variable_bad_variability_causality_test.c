@@ -9,7 +9,7 @@ static int test_invalid_variability_causality(fmi3_import_t *xml)
     const char *expected = "Invalid combination of variability constant and "
     "causality input for variable 'dummy1'. Setting variability to 'continuous'";
 
-    v = fmi3_import_get_variable_by_vr(xml, fmi3_base_type_real, 0);
+    v = fmi3_import_get_variable_by_vr(xml, fmi3_base_type_float64, 0);
     ASSERT_MSG(fmi3_import_get_variability(v) == fmi3_variability_enu_continuous,
                "Invalid variability constant should be changed to continuous");
 

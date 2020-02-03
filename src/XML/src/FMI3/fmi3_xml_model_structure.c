@@ -236,6 +236,9 @@ int fmi3_xml_handle_InitialUnknowns(fmi3_xml_parser_context_t *context, const ch
 }
 
 
+/**
+ * Parse the dependencies of an Unknown element
+ */
 int fmi3_xml_parse_dependencies(fmi3_xml_parser_context_t *context,
                                 fmi3_xml_elm_enu_t parentElmID,
 								fmi3_xml_dependencies_t* deps)
@@ -406,6 +409,11 @@ int fmi3_xml_parse_dependencies(fmi3_xml_parser_context_t *context,
 }
 
 
+/**
+ * Parses an Unknown element
+ * After successful call, the variable will be put on the destVarList stack,
+ * and the dependencies are stored in return-arg 'deps'.
+ */
 int fmi3_xml_parse_unknown(fmi3_xml_parser_context_t *context,
                            fmi3_xml_elm_enu_t parentElmID,
                            jm_vector(jm_voidp) *destVarList,
@@ -453,22 +461,36 @@ int fmi3_xml_handle_Unknown(fmi3_xml_parser_context_t *context, const char* data
 }
 
 int fmi3_xml_handle_DerivativeUnknown(fmi3_xml_parser_context_t *context, const char* data) {
-    if(!data) {
+    if (!data) {
         fmi3_xml_model_description_t* md = context->modelDescription;
         fmi3_xml_model_structure_t* ms = md->modelStructure;
-        int status = fmi3_xml_parse_unknown(context, fmi3_xml_elmID_Derivatives, &ms->derivatives, ms->derivativeDeps);
+        fmi3_xml_variable_t* derXX; /* float64 or float32 variable */
+        int validDeriv; /* valid derivative found */
 
-        if (status) {
+        /* perform the parsing */
+        int status = fmi3_xml_parse_unknown(context, fmi3_xml_elmID_Derivatives, &ms->derivatives, ms->derivativeDeps);
+        if (status)
             return status;
-        } else {
-            fmi3_xml_real_variable_t *der = (fmi3_xml_real_variable_t*) jm_vector_get_last(jm_voidp)(&ms->derivatives);
-            if (!fmi3_xml_get_real_variable_derivative_of(der)) {
-                ms->isValidFlag = 0;
-                fmi3_xml_parse_error(context,
-                        "The state derivative '%s' does not specify the state variable that it is a derivative of.",
-                        fmi3_xml_get_variable_name((fmi3_xml_variable_t *) der));
-                return -1;
-            }
+
+
+        /* validate return values */
+
+        /* derivatives can be any of floatXX */
+        derXX = (fmi3_xml_variable_t*)jm_vector_get_last(jm_voidp)(&ms->derivatives);
+        if (derXX->typeBase->baseType == fmi3_base_type_float64) {
+            fmi3_xml_float64_variable_t* der = (fmi3_xml_float64_variable_t*)jm_vector_get_last(jm_voidp)(&ms->derivatives);
+            validDeriv = fmi3_xml_get_float64_variable_derivative_of(der) != NULL;
+        }
+        else { /* float32 */
+            fmi3_xml_float32_variable_t* der = (fmi3_xml_float32_variable_t*)jm_vector_get_last(jm_voidp)(&ms->derivatives);
+            validDeriv = fmi3_xml_get_float32_variable_derivative_of(der) != NULL;
+        }
+        if (!validDeriv) {
+            ms->isValidFlag = 0;
+            fmi3_xml_parse_error(context,
+                    "The state derivative '%s' does not specify the state variable that it is a derivative of.",
+                    fmi3_xml_get_variable_name(derXX));
+            return -1;
         }
     }
     return 0;

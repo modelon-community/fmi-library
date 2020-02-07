@@ -1,4 +1,4 @@
-#include "fmi3_import_impl.h"
+#include "../src/FMI3/fmi3_import_impl.h"
 
 #define GEN_FUNC_import_get_type_XX(XX, TYPE, TYPE_SIZE)                                                    \
     fmi3_##TYPE_SIZE##_t fmi3_import_get_##TYPE_SIZE##_type##XX(fmi3_import_##TYPE##_typedef_t* t) {        \

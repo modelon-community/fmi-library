@@ -1,6 +1,6 @@
 #include "FMI3/fmi3_import_variable.h"
-#include "fmi3_import_impl.h"
-#include "fmi3_import_variable_list_impl.h"
+#include "../src/FMI3/fmi3_import_impl.h"
+#include "../src/FMI3/fmi3_import_variable_list_impl.h"
 #include "FMI3/fmi3_import_dimension.h"
 #include "FMI3/fmi3_import_dimension_list.h"
 

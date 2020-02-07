@@ -1,7 +1,7 @@
-#include "fmi3_xml_model_description_impl.h"
-#include "fmi3_xml_type_impl.h"
-#include "fmi3_xml_unit_impl.h"
-#include "fmi3_xml_parser.h"
+#include "../src/FMI3/fmi3_xml_model_description_impl.h"
+#include "../src/FMI3/fmi3_xml_type_impl.h"
+#include "../src/FMI3/fmi3_xml_unit_impl.h"
+#include "../src/FMI3/fmi3_xml_parser.h"
 
 
 #define def_fmi3_xml_get_TYPE_min(TYPE, SIZE)                                                                   \

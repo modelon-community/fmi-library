@@ -16,8 +16,8 @@
 #ifndef FMI3_XML_DIMENSION_IMPL_H_
 #define FMI3_XML_DIMENSION_IMPL_H_
 
-#include <JM/jm_vector.h>
-#include <FMI3/fmi3_xml_dimension.h>
+#include "JM/jm_vector.h"
+#include "FMI3/fmi3_xml_dimension.h"
 
 #ifdef __cplusplus
 extern "C" {

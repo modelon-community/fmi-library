@@ -29,7 +29,7 @@ extern "C" {
 #endif
 
 typedef struct fmi3_xml_dimension_t fmi3_xml_dimension_t;
-typedef struct jm_vector(fmi3_xml_dimension_t) jm_vector(fmi3_xml_dimension_t);
+typedef struct jm_vector(fmi3_xml_dimension_t) jm_vector(fmi3_xml_dimension_t); /* TODO: I believe this is causing warnings on gcc when we declare all the functions with the template (redefinition) */
 
 int fmi3_xml_get_dimension_has_vr(fmi3_xml_dimension_t* dim);
 int fmi3_xml_get_dimension_has_start(fmi3_xml_dimension_t* dim);

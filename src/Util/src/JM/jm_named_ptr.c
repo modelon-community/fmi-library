@@ -47,7 +47,8 @@ jm_named_ptr jm_named_alloc(const char* name, size_t size, size_t nameoffset, jm
  * can share memory with the .name allocated by this function, by allowing the
  * struct name to "overflow" the struct boundaries into the <named_ptr>.name memory.
  * 
- * size: how much to allocate (just like for malloc)
+ * size: size of memory for the .ptr (just like for malloc). Do NOT take into account size
+ *     for the name since this function handles that.
  * nameoffset: write the name at offset from the start of the requested 'size'
  *     Impl. note: this needs to be calculated by caller, because it's possible
  *     to get different byte padding of the struct, and it allows the function

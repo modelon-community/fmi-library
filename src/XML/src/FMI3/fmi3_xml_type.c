@@ -16,7 +16,7 @@
 #include <limits.h>
 #include <float.h>
 #include <string.h>
-#include <JM/jm_named_ptr.h>
+#include "JM/jm_named_ptr.h"
 
 #include "fmi3_xml_model_description_impl.h"
 #include "fmi3_xml_type_impl.h"
@@ -25,13 +25,6 @@
 
 static const char* module = "FMI3XML";
 
-fmi3_xml_display_unit_t* fmi3_xml_get_type_display_unit(fmi3_xml_real_typedef_t* t) {
-    fmi3_xml_variable_typedef_t* vt = (void*)t;
-    fmi3_xml_real_type_props_t * props = (fmi3_xml_real_type_props_t*)vt->typeBase.baseTypeStruct;
-    fmi3_xml_display_unit_t* du = props->displayUnit;
-	if(!du || (&du->baseUnit->defaultDisplay == du)) return 0;
-    return du;
-}
 
 unsigned int fmi3_xml_get_type_definition_number(fmi3_xml_type_definitions_t* td) {
     return (unsigned int)jm_vector_get_size(jm_named_ptr)(&td->typeDefinitions);
@@ -62,10 +55,6 @@ fmi3_xml_float_typedef_t* fmi3_xml_get_type_as_float(fmi3_xml_variable_typedef_t
     return 0;
 }
 
-fmi3_xml_real_typedef_t* fmi3_xml_get_type_as_real(fmi3_xml_variable_typedef_t* t) {
-    if(fmi3_xml_get_base_type(t) == fmi3_base_type_real) return (fmi3_xml_real_typedef_t*)t;
-    return 0;
-}
 fmi3_xml_integer_typedef_t* fmi3_xml_get_type_as_int(fmi3_xml_variable_typedef_t* t) {
     if(fmi3_xml_get_base_type(t) == fmi3_base_type_int) return (fmi3_xml_integer_typedef_t*)t;
     return 0;
@@ -85,10 +74,6 @@ const char* fmi3_xml_get_type_quantity(fmi3_xml_variable_typedef_t* t) {
     case fmi3_base_type_float64: /* fallthrough */
     case fmi3_base_type_float32:
         ret = ((fmi3_xml_float_type_props_t*)props)->quantity;
-        ret = ((fmi3_xml_float_type_props_t*)props)->quantity;
-		break;
-    case fmi3_base_type_real:
-        ret = ((fmi3_xml_real_type_props_t*)props)->quantity;
 		break;
     case fmi3_base_type_int:
         ret = ((fmi3_xml_integer_type_props_t*)props)->quantity;
@@ -106,106 +91,8 @@ const char* fmi3_xml_get_type_quantity(fmi3_xml_variable_typedef_t* t) {
 	return (ret ? ret : 0);
 }
 
-/**
- * Below functions are manually generated and then beautified from this macro.
- * If functions/macro needs to be updated, edit the macro, preprocess it, beautify the output
- * (replace __NEWLINE__ with a newline), and then replace the code below:
- * TODO: automate this in build
-------------------------------------------------------------------------------------------------------------------------
-#define GEN_FUNC_xml_get_type_XX(XX, YY, TYPE, SIZE) \
-    fmi3_##TYPE##SIZE##_t fmi3_xml_get_##TYPE##SIZE##_type##XX (fmi3_xml_##TYPE##_typedef_t* t) {                __NEWLINE__ \
-        fmi3_xml_variable_typedef_t* vt = (void*)t;                                                              __NEWLINE__ \
-        fmi3_xml_##TYPE##_type_props_t* props = (fmi3_xml_##TYPE##_type_props_t*)(vt->typeBase.baseTypeStruct);  __NEWLINE__ \
-        return props->type##YY.scalar##SIZE;                                                                     __NEWLINE__ \
-    }                                                                                                            __NEWLINE__  
-
-GEN_FUNC_xml_get_type_XX(_min,     Min,     float, 64)
-GEN_FUNC_xml_get_type_XX(_max,     Max,     float, 64)
-GEN_FUNC_xml_get_type_XX(_nominal, Nominal, float, 64)
-GEN_FUNC_xml_get_type_XX(_min,     Min,     float, 32)
-GEN_FUNC_xml_get_type_XX(_max,     Max,     float, 32)
-GEN_FUNC_xml_get_type_XX(_nominal, Nominal, float, 32)
-
-#undef GEN_FUNC_xml_get_type_XX
-------------------------------------------------------------------------------------------------------------------------
-*/
-/* START: GEN_PROTO_get_type_XX */
-fmi3_float64_t fmi3_xml_get_float64_type_min(fmi3_xml_float_typedef_t* t) {
-    fmi3_xml_variable_typedef_t* vt = (void*)t;
-    fmi3_xml_float_type_props_t* props = (fmi3_xml_float_type_props_t*)(vt->typeBase.baseTypeStruct);
-    return props->typeMin.scalar64;
-}
-
-fmi3_float64_t fmi3_xml_get_float64_type_max(fmi3_xml_float_typedef_t* t) {
-    fmi3_xml_variable_typedef_t* vt = (void*)t;
-    fmi3_xml_float_type_props_t* props = (fmi3_xml_float_type_props_t*)(vt->typeBase.baseTypeStruct);
-    return props->typeMax.scalar64;
-}
-
-fmi3_float64_t fmi3_xml_get_float64_type_nominal(fmi3_xml_float_typedef_t* t) {
-    fmi3_xml_variable_typedef_t* vt = (void*)t;
-    fmi3_xml_float_type_props_t* props = (fmi3_xml_float_type_props_t*)(vt->typeBase.baseTypeStruct);
-    return props->typeNominal.scalar64;
-}
-
-fmi3_float32_t fmi3_xml_get_float32_type_min(fmi3_xml_float_typedef_t* t) {
-    fmi3_xml_variable_typedef_t* vt = (void*)t;
-    fmi3_xml_float_type_props_t* props = (fmi3_xml_float_type_props_t*)(vt->typeBase.baseTypeStruct);
-    return props->typeMin.scalar32;
-}
-
-fmi3_float32_t fmi3_xml_get_float32_type_max(fmi3_xml_float_typedef_t* t) {
-    fmi3_xml_variable_typedef_t* vt = (void*)t;
-    fmi3_xml_float_type_props_t* props = (fmi3_xml_float_type_props_t*)(vt->typeBase.baseTypeStruct);
-    return props->typeMax.scalar32;
-}
-
-fmi3_float32_t fmi3_xml_get_float32_type_nominal(fmi3_xml_float_typedef_t* t) {
-    fmi3_xml_variable_typedef_t* vt = (void*)t;
-    fmi3_xml_float_type_props_t* props = (fmi3_xml_float_type_props_t*)(vt->typeBase.baseTypeStruct);
-    return props->typeNominal.scalar32;
-}
-
-/* END: GEN_PROTO_get_type_XX */
-
-double fmi3_xml_get_real_type_min(fmi3_xml_real_typedef_t* t) {
-    fmi3_xml_variable_typedef_t* vt = (void*)t;
-    fmi3_xml_real_type_props_t* props = (fmi3_xml_real_type_props_t*)(vt->typeBase.baseTypeStruct);
-    return props->typeMin;
-}
-
-double fmi3_xml_get_real_type_max(fmi3_xml_real_typedef_t* t) {
-    fmi3_xml_variable_typedef_t* vt = (void*)t;
-    fmi3_xml_real_type_props_t* props = (fmi3_xml_real_type_props_t*)(vt->typeBase.baseTypeStruct);
-    return props->typeMax;
-}
-
-double fmi3_xml_get_real_type_nominal(fmi3_xml_real_typedef_t* t) {
-    fmi3_xml_variable_typedef_t* vt = (void*)t;
-    fmi3_xml_real_type_props_t* props = (fmi3_xml_real_type_props_t*)(vt->typeBase.baseTypeStruct);
-    return props->typeNominal;
-}
-
-fmi3_xml_unit_t* fmi3_xml_get_real_type_unit(fmi3_xml_real_typedef_t* t) {    
-    fmi3_xml_variable_typedef_t* vt = (void*)t;
-    fmi3_xml_real_type_props_t* props = (fmi3_xml_real_type_props_t*)(vt->typeBase.baseTypeStruct);
-    fmi3_xml_display_unit_t* du = props->displayUnit;
-    if(du) return du->baseUnit;
-    return 0;
-}
-
-int fmi3_xml_get_real_type_is_relative_quantity(fmi3_xml_real_typedef_t* t) {
-    fmi3_xml_variable_typedef_t* vt = (void*)t;
-    fmi3_xml_real_type_props_t* props = (fmi3_xml_real_type_props_t*)(vt->typeBase.baseTypeStruct);
-	return props->typeBase.isRelativeQuantity;
-}
-
-int fmi3_xml_get_real_type_is_unbounded(fmi3_xml_real_typedef_t* t) {
-    fmi3_xml_variable_typedef_t* vt = (void*)t;
-    fmi3_xml_real_type_props_t* props = (fmi3_xml_real_type_props_t*)(vt->typeBase.baseTypeStruct);
-	return props->typeBase.isUnbounded;
-}
-
+/* include generated functions */
+#include "gen/FMI3/fmi3_xml_type_generics.c"
 
 fmi3_integer_t fmi3_xml_get_integer_type_min(fmi3_xml_integer_typedef_t* t) {
     fmi3_xml_variable_typedef_t* vt = (void*)t;
@@ -309,15 +196,6 @@ void fmi3_xml_init_float32_type_properties(fmi3_xml_float_type_props_t* type) {
     type->displayUnit = 0;
 }
 
-void fmi3_xml_init_real_type_properties(fmi3_xml_real_type_props_t* type) {
-    fmi3_xml_init_variable_type_base(&type->typeBase, fmi3_xml_type_struct_enu_props,fmi3_base_type_real);
-    type->quantity = 0;    
-    type->typeMin = -DBL_MAX;
-    type->typeMax = DBL_MAX;
-    type->typeNominal = 1.0;
-    type->displayUnit = 0;
-}
-
 void fmi3_xml_init_integer_type_properties(fmi3_xml_integer_type_props_t* type) {
     fmi3_xml_init_variable_type_base(&type->typeBase, fmi3_xml_type_struct_enu_props,fmi3_base_type_int);
     type->quantity = 0;
@@ -348,7 +226,6 @@ void fmi3_xml_init_type_definitions(fmi3_xml_type_definitions_t* td, jm_callback
 
     fmi3_xml_init_float64_type_properties(&td->defaultFloat64Type);
     fmi3_xml_init_float32_type_properties(&td->defaultFloat32Type);
-    fmi3_xml_init_real_type_properties(&td->defaultRealType);
     fmi3_xml_init_enumeration_type_properties(&td->defaultEnumType,cb);
     fmi3_xml_init_integer_type_properties(&td->defaultIntegerType);
 
@@ -400,42 +277,56 @@ int fmi3_xml_handle_TypeDefinitions(fmi3_xml_parser_context_t *context, const ch
 }
 
 int fmi3_xml_handle_SimpleType(fmi3_xml_parser_context_t *context, const char* data) {
-    if(!data) {
-            fmi3_xml_model_description_t* md = context->modelDescription;
-            fmi3_xml_type_definitions_t* td = &md->typeDefinitions;
-            jm_named_ptr named, *pnamed;
-            jm_vector(char)* bufName = fmi3_xml_reserve_parse_buffer(context,1,100);
-            jm_vector(char)* bufDescr = fmi3_xml_reserve_parse_buffer(context,2,100);
+    if (!data) {
+        fmi3_xml_model_description_t* md = context->modelDescription;
+        fmi3_xml_type_definitions_t* td = &md->typeDefinitions;
+        jm_named_ptr named, *pnamed;
+        fmi3_xml_variable_typedef_t dummy; 
+        fmi3_xml_variable_typedef_t* type;
+        size_t nameoffset = dummy.typeName - (char*)&dummy; /* calculate offset for name ptr in jm_named_ptr */
+        fmi3_base_type_enu_t placeHolderType = fmi3_base_type_float64; /* arbitrarily chosen baseType that will be overriden later */
 
-            if(!bufName || !bufDescr) return -1;
-            if(
-            /*  <xs:attribute name="name" type="xs:normalizedString" use="required"/> */
-                fmi3_xml_set_attr_string(context, fmi3_xml_elmID_SimpleType, fmi_attr_id_name, 1, bufName) ||
-            /* <xs:attribute name="description" type="xs:string"/> */
-                fmi3_xml_set_attr_string(context, fmi3_xml_elmID_SimpleType, fmi_attr_id_description, 0, bufDescr)
-                    ) return -1;
-            named.ptr = 0;
-			named.name = 0;
-            pnamed = jm_vector_push_back(jm_named_ptr)(&td->typeDefinitions,named);
-            if(pnamed) {
-                fmi3_xml_variable_typedef_t dummy;
-                *pnamed = named = jm_named_alloc_v(bufName, sizeof(fmi3_xml_variable_typedef_t), dummy.typeName - (char*)&dummy,  context->callbacks);
-            }
-            if(!pnamed || !named.ptr) {
-                fmi3_xml_parse_fatal(context, "Could not allocate memory");
-                return -1;
-            }
-            else {
-                fmi3_xml_variable_typedef_t* type = named.ptr;
-                fmi3_xml_init_variable_type_base(&type->typeBase,fmi3_xml_type_struct_enu_typedef,fmi3_base_type_real);
-                if(jm_vector_get_size(char)(bufDescr)) {
-                    const char* description = jm_string_set_put(&md->descriptions, jm_vector_get_itemp(char)(bufDescr,0));
-                    type->description = description;
-                }
-                else type->description = "";
-            }
-    }
-    else {
+        /* allocate buffers */
+        jm_vector(char)* bufName = fmi3_xml_reserve_parse_buffer(context,1,100);
+        jm_vector(char)* bufDescr = fmi3_xml_reserve_parse_buffer(context,2,100);
+        if (!bufName || !bufDescr)
+            return -1;
+
+        /* read attributes to buffers */
+        if (fmi3_xml_set_attr_string(context, fmi3_xml_elmID_SimpleType, fmi_attr_id_name, 1, bufName) ||         /* <xs:attribute name="name" type="xs:normalizedString" use="required"/> */
+            fmi3_xml_set_attr_string(context, fmi3_xml_elmID_SimpleType, fmi_attr_id_description, 0, bufDescr)) { /* <xs:attribute name="description" type="xs:string"/> */
+            return -1;
+        }
+
+        /* set default pointer fields to NULL so we later can verify if allocation works */
+        named.ptr = 0;
+        named.name = 0;
+
+        /* push to typeDefinitions */
+        pnamed = jm_vector_push_back(jm_named_ptr)(&td->typeDefinitions, named);
+        if (!pnamed) {
+            fmi3_xml_parse_fatal(context, "Could not allocate memory");
+            return -1;
+        }
+
+        /* allocate typedef and write name to both the typedef struct and the jm_named_ptr (they both point to same memory) */
+        *pnamed = jm_named_alloc_v(bufName, sizeof(fmi3_xml_variable_typedef_t), nameoffset, context->callbacks);
+        if (!pnamed->ptr) {
+            fmi3_xml_parse_fatal(context, "Could not allocate memory");
+            return -1;
+        }
+
+        /* initialize the type_base struct as a typedef, with a placeHolder type that will be overriden by the real primitive type */
+        type = pnamed->ptr;
+        fmi3_xml_init_variable_type_base(&type->typeBase, fmi3_xml_type_struct_enu_typedef, placeHolderType);
+        if (jm_vector_get_size(char)(bufDescr)) {
+            const char* description = jm_string_set_put(&md->descriptions, jm_vector_get_itemp(char)(bufDescr, 0));
+            type->description = description;
+        } else {
+            type->description = "";
+        }
+
+    } else { /* end of tag */
         jm_named_ptr named = jm_vector_get_last(jm_named_ptr)(&(context->modelDescription->typeDefinitions.typeDefinitions));
         fmi3_xml_variable_typedef_t* type = named.ptr;
         if(type->typeBase.baseTypeStruct == 0) {
@@ -529,67 +420,6 @@ fmi3_xml_float_type_props_t* fmi3_xml_parse_float_type_properties(fmi3_xml_parse
     return props;
 }
 
-fmi3_xml_real_type_props_t* fmi3_xml_parse_real_type_properties(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID) {
-    jm_named_ptr named, *pnamed;
-    fmi3_xml_model_description_t* md = context->modelDescription;
-    fmi3_xml_real_type_props_t* props;
-    const char* quantity = 0;
-    unsigned int relQuanBuf, unboundedBuf;
-
-/*        jm_vector(char)* bufName = fmi_get_parse_buffer(context,1);
-    jm_vector(char)* bufDescr = fmi_get_parse_buffer(context,2); */
-    jm_vector(char)* bufQuantity = fmi3_xml_reserve_parse_buffer(context,3,100);
-    jm_vector(char)* bufUnit = fmi3_xml_reserve_parse_buffer(context,4,100);
-    jm_vector(char)* bufDispUnit = fmi3_xml_reserve_parse_buffer(context,5,100);
-
-    props = (fmi3_xml_real_type_props_t*)fmi3_xml_alloc_variable_type_props(&md->typeDefinitions, &md->typeDefinitions.defaultRealType.typeBase, sizeof(fmi3_xml_real_type_props_t));
-
-    if(!bufQuantity || !bufUnit || !bufDispUnit || !props ||
-            /* <xs:attribute name="quantity" type="xs:normalizedString"/> */
-            fmi3_xml_set_attr_string(context, elmID, fmi_attr_id_quantity, 0, bufQuantity) ||
-            /* <xs:attribute name="unit" type="xs:normalizedString"/>  */
-            fmi3_xml_set_attr_string(context, elmID, fmi_attr_id_unit, 0, bufUnit) ||
-            /* <xs:attribute name="displayUnit" type="xs:normalizedString">  */
-            fmi3_xml_set_attr_string(context, elmID, fmi_attr_id_displayUnit, 0, bufDispUnit)
-            ) {
-        fmi3_xml_parse_fatal(context, "Error parsing real type properties");
-        return 0;
-    }
-    if(jm_vector_get_size(char)(bufQuantity))
-        quantity = jm_string_set_put(&md->typeDefinitions.quantities, jm_vector_get_itemp(char)(bufQuantity, 0));
-
-    props->quantity = quantity;
-    props->displayUnit = 0;
-    if(jm_vector_get_size(char)(bufDispUnit)) {
-        named.name = jm_vector_get_itemp(char)(bufDispUnit, 0);
-        pnamed = jm_vector_bsearch(jm_named_ptr)(&(md->displayUnitDefinitions), &named, jm_compare_named);
-        if(!pnamed) {
-            fmi3_xml_parse_fatal(context, "Unknown display unit %s in real type definition", jm_vector_get_itemp(char)(bufDispUnit, 0));
-            return 0;
-        }
-        props->displayUnit = pnamed->ptr;
-    }
-    else {
-        if(jm_vector_get_size(char)(bufUnit)) {
-            props->displayUnit = fmi3_xml_get_parsed_unit(context, bufUnit, 1);
-        }
-    }
-    if(    /*    <xs:attribute name="relativeQuantity" type="xs:boolean" default="false"> */
-            fmi3_xml_set_attr_boolean(context, elmID, fmi_attr_id_relativeQuantity, 0, &relQuanBuf, 0) ||
-		    /*    <xs:attribute name="unbounded" type="xs:boolean" default="false"> */
-            fmi3_xml_set_attr_boolean(context, elmID, fmi_attr_id_unbounded, 0, &unboundedBuf, 0) ||
-            /* <xs:attribute name="min" type="xs:double"/> */
-            fmi3_xml_set_attr_float64(context, elmID, fmi_attr_id_min, 0, &props->typeMin, -DBL_MAX) ||
-            /* <xs:attribute name="max" type="xs:double"/> */
-            fmi3_xml_set_attr_float64(context, elmID, fmi_attr_id_max, 0, &props->typeMax, DBL_MAX) ||
-            /*  <xs:attribute name="nominal" type="xs:double"/> */
-            fmi3_xml_set_attr_float64(context, elmID, fmi_attr_id_nominal, 0, &props->typeNominal, 1)
-            ) return 0;
-	props->typeBase.isRelativeQuantity = (relQuanBuf) ? 1:0;
-	props->typeBase.isUnbounded = (unboundedBuf) ? 1 : 0;
-    return props;
-}
-
 int fmi3_xml_handle_Float(fmi3_xml_parser_context_t* context, const char* data, fmi3_xml_elm_enu_t elmId, fmi3_bitness_enu_t bitness,
     fmi3_xml_float_type_props_t* defaultType, fmi3_base_type_enu_t baseType) {
 
@@ -622,27 +452,6 @@ int fmi3_xml_handle_Float32(fmi3_xml_parser_context_t* context, const char* data
 
 int fmi3_xml_handle_Float64(fmi3_xml_parser_context_t* context, const char* data) {
     return fmi3_xml_handle_Float(context, data, fmi3_xml_elmID_Float64, fmi3_bitness_64, &context->modelDescription->typeDefinitions.defaultFloat64Type, fmi3_base_type_float64);
-}
-
-int fmi3_xml_handle_Real(fmi3_xml_parser_context_t *context, const char* data) {
-    if(!data) {
-        fmi3_xml_model_description_t* md = context->modelDescription;
-        jm_named_ptr named;
-        fmi3_xml_variable_typedef_t* type;
-        fmi3_xml_real_type_props_t * props;
-
-        props = fmi3_xml_parse_real_type_properties(context, fmi3_xml_elmID_Real);
-        if(!props) return -1;
-        named = jm_vector_get_last(jm_named_ptr)(&md->typeDefinitions.typeDefinitions);
-        type = named.ptr;
-        type->typeBase.baseType = fmi3_base_type_real;
-        type->typeBase.baseTypeStruct = &props->typeBase;
-    }
-    else {
-        /* don't do anything. might give out a warning if(data[0] != 0) */
-        return 0;
-    }
-    return 0;
 }
 
 fmi3_xml_integer_type_props_t * fmi3_xml_parse_integer_type_properties(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID) {

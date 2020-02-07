@@ -138,7 +138,6 @@ typedef enum fmi3_base_type_enu_t
 {
     fmi3_base_type_float64,
     fmi3_base_type_float32,
-    fmi3_base_type_real,
     fmi3_base_type_int,
     fmi3_base_type_bool,
     fmi3_base_type_str,

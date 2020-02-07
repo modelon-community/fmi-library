@@ -119,7 +119,6 @@ typedef enum fmi3_xml_attr_enu_t {
 	EXPAND_XML_ELMNAME(Category) \
     EXPAND_XML_ELMNAME(Float64) \
     EXPAND_XML_ELMNAME(Float32) \
-    EXPAND_XML_ELMNAME(Real) \
     EXPAND_XML_ELMNAME(Integer) \
     EXPAND_XML_ELMNAME(Boolean) \
     EXPAND_XML_ELMNAME(String) \
@@ -136,7 +135,6 @@ typedef enum fmi3_xml_attr_enu_t {
 #define FMI3_XML_ELMLIST_ALT(EXPAND_XML_ELMNAME) \
     EXPAND_XML_ELMNAME(Float64Variable) \
     EXPAND_XML_ELMNAME(Float32Variable) \
-    EXPAND_XML_ELMNAME(RealVariable) \
     EXPAND_XML_ELMNAME(IntegerVariable) \
     EXPAND_XML_ELMNAME(BooleanVariable) \
     EXPAND_XML_ELMNAME(StringVariable) \

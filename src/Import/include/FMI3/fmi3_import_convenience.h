@@ -70,8 +70,11 @@ typedef struct {
 	/** \brief  Number of independent variables */
 	unsigned int num_independent;
 
-	/** \brief  Number of real variables*/
-	unsigned int num_real_vars; 
+	/** \brief  Number of float64 variables*/
+	unsigned int num_float64_vars; 
+	/** \brief  Number of float32 variables*/
+	unsigned int num_float32_vars; 
+
 	/** \brief  Number of integer variables*/
 	unsigned int num_integer_vars; 
 	/** \brief  Number of enumeration variables*/
@@ -91,7 +94,7 @@ FMILIB_EXPORT
 void fmi3_import_collect_model_counts(fmi3_import_t* fmu, fmi3_import_model_counts_t* counts);
 
 /**
-  \brief Print msgIn into msgOut by expanding variable references of the form #\<Type\>\<VR\># into variable names
+  \brief Transform msgIn into msgOut by expanding variable references of the form #\<Type\>\<VR\># into variable names
   and replacing '##' with a single #.
    \param fmu - An fmu object as returned by fmi3_import_parse_xml().
    \param msgIn - Log message as produced by an FMU.

@@ -201,7 +201,6 @@ struct fmi3_xml_type_definitions_t {
 
     fmi3_xml_float_type_props_t defaultFloat64Type;
     fmi3_xml_float_type_props_t defaultFloat32Type;
-    fmi3_xml_real_type_props_t defaultRealType;
     fmi3_xml_enum_typedef_props_t defaultEnumType;
     fmi3_xml_integer_type_props_t defaultIntegerType;
     fmi3_xml_bool_type_props_t defaultBooleanType;

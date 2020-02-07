@@ -8,10 +8,7 @@
   numberOfEventIndicators="1">
   <ModelExchange modelIdentifier="BouncingBall3" />
   <TypeDefinitions>
-    <SimpleType
-      name="Modelica.Blocks.Interfaces.RealOutput">
-      <Real/>
-    </SimpleType>
+      <Float64 name="Modelica.Blocks.Interfaces.RealOutput" />
   </TypeDefinitions>
   <VendorAnnotations>
     <Tool name ="JModelica">
@@ -20,25 +17,25 @@
   </VendorAnnotations>
 <ModelVariables>
   <!--  1 -->
-  <Real name="HIGHT" valueReference="0" initial="exact" causality="output" description="Hight of the ball" start="1.0" reinit="true" />
+  <Float64 name="HIGHT" valueReference="0" initial="exact" causality="output" description="Hight of the ball" start="1.0" reinit="true" />
   <!--  2 -->
-  <Real name="HIGHT_SPEED" valueReference="1" initial="exact" description="Speed of the ball" start="4.0" derivative="1" reinit="true">
+  <Float64 name="HIGHT_SPEED" valueReference="1" initial="exact" description="Speed of the ball" start="4.0" derivative="1" reinit="true">
     <Annotations>
       <Tool name ="JModelica">
         <JModelica name="HIGHT_SPEED variable annotations">Test data</JModelica>
       </Tool>
     </Annotations>
-  </Real> 
+  </Float64> 
   <!--  3 -->
-  <Real name="HIGHT_SPEED alias" valueReference="1" description="Speed of the ball"/>
+  <Float64 name="HIGHT_SPEED alias" valueReference="1" description="Speed of the ball"/>
   <!--  4 -->
-  <Real name="HIGHT_ACC" valueReference="4" description="Acceleration of the ball" derivative="2" />
+  <Float64 name="HIGHT_ACC" valueReference="4" description="Acceleration of the ball" derivative="2" />
   <!--  5 -->
-  <Real name="A variable" valueReference="100" initial="exact" description="Speed of the ball" start="4.0" />
+  <Float64 name="A variable" valueReference="100" initial="exact" description="Speed of the ball" start="4.0" />
   <!--  6 -->
-  <Real name="GRAVITY" valueReference="2" description="Gravity constant" initial="exact" start="-9.81"/>
+  <Float64 name="GRAVITY" valueReference="2" description="Gravity constant" initial="exact" start="-9.81"/>
   <!--  7 -->
-  <Real name="BOUNCE_COF" valueReference="3" initial="exact" description="Bouncing coefficient" start="0.5" />
+  <Float64 name="BOUNCE_COF" valueReference="3" initial="exact" description="Bouncing coefficient" start="0.5" />
   <!--  8 -->
   <String name="LOGGER_TEST" valueReference="0" description="The logger will print the value of this variable when it is set."/>
   <!--  9 -->
@@ -46,9 +43,9 @@
   <!-- 10 -->
   <Boolean name="LOGGER_TEST_BOOLEAN" valueReference="0" description="This is only used to test logger replace function #b0#"/>
   <!-- 11 -->
-  <Real name="CONSTANT_ALIAS_1" valueReference="200" description="constant in alias set" variability="constant" initial="exact" start="121"/>
+  <Float64 name="CONSTANT_ALIAS_1" valueReference="200" description="constant in alias set" variability="constant" initial="exact" start="121"/>
   <!-- 12 -->
-  <Real name="CONSTANT_ALIAS_2" valueReference="200" description="constant in alias set" variability="constant" initial="exact" start="121"/>
+  <Float64 name="CONSTANT_ALIAS_2" valueReference="200" description="constant in alias set" variability="constant" initial="exact" start="121"/>
 </ModelVariables>
 <ModelStructure>
   <Outputs>

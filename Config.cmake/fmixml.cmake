@@ -102,17 +102,19 @@ endif()
 ### Generate FMIL source code ###
 
 set(TEMPLATE_FILES
-        fmi3_xml_variable_types
-        fmi3_xml_variable_types_h
+    fmi3_xml_variable_generics
+    fmi3_xml_variable_generics_h
+    fmi3_xml_type_generics
+    fmi3_xml_type_generics_h
 )
 
 set(TMPL_SRC_DST_LIST "")   # list of tuples (src, dst) that is passed to docker
 set(TMPL_SRC_LIST "")       # list of template source files
 set(TMPL_DST_LIST "")       # list of path to files generated from templates
 
-# On Windows: create docker container that mount binary and source dir, and then
+# On Windows: create docker container that mounts cmake binary and source dir, and then
 #   performs the preprocessing.
-# On Linux: perform it directly
+# On Linux: perform same as windows but without docker
 if (WIN32)
     set(SRC_PREFIX /mnt_src)
     set(DST_PREFIX /mnt_bin)
@@ -122,29 +124,34 @@ else()
 endif()
 
 foreach(file ${TEMPLATE_FILES})
-    set(SRC src/XML/templates/FMI3/${file}_template.c)
+    # set temp loop variables
+    set(SRC src/XML/templates/FMI3/${file}.c)
     set(DST src/XML/gen/FMI3/${file}.c)
 
-    # Create list of src/dst files as tuples:
+    # create list of src/dst files as tuples:
     list(APPEND TMPL_SRC_DST_LIST \"${SRC_PREFIX}/${SRC}\" \"${DST_PREFIX}/${DST}\") # used as args, so need quoting
 
-    # Save paths on the host so we can set dependencies:
+    # save paths (on windows, not docker) so we can set build dependencies:
     list(APPEND TMPL_SRC_LIST ${CMAKE_SOURCE_DIR}/${SRC})
     list(APPEND TMPL_DST_LIST ${CMAKE_BINARY_DIR}/${DST})
 endforeach()
-string (REPLACE ";" " " TMPL_SRC_DST_LIST_STR "${TMPL_SRC_DST_LIST}") # used as arg, so sub-args need space separatation
+string (REPLACE ";" " " TMPL_SRC_DST_LIST_STR "${TMPL_SRC_DST_LIST}") # used as commandline arg, so sub-args need space separatation
 
 add_custom_target(
     generate_numeric_types ALL
-    DEPENDS ${TMPL_DST_LIST} # this file exists in the binary dir
+    DEPENDS ${TMPL_DST_LIST} # these files exist in the binary dir
 )
 
+# specify the (platform-dependent) command for generating the DST files
 set(CODEGEN_DIR ${SRC_PREFIX}/build/preprocess)
 if (WIN32)
+    # run via docker
     set(DOCKER_TAG_CODEGEN fmil_cmake_codegen)
     set(CMD_CODEGEN docker build -t ${DOCKER_TAG_CODEGEN} . && docker run -v "${CMAKE_SOURCE_DIR}:${SRC_PREFIX}" -v "${CMAKE_BINARY_DIR}:${DST_PREFIX}" ${DOCKER_TAG_CODEGEN} //bin/bash -c "chmod a+x ${CODEGEN_DIR}/preprocess*.sh && ${CODEGEN_DIR}/preprocess_list.sh ${TMPL_SRC_DST_LIST_STR}")
-else()
-    # command is wrapped in bash -c "..." because otherwise the (*) will be taken verbatim
+
+else() # linux
+    # - run directly on command line
+    # - command is wrapped in bash -c "..." because otherwise the (*) will be taken verbatim
     set(CMD_CODEGEN bash -c "chmod a+x ${CODEGEN_DIR}/preprocess*.sh && ${CODEGEN_DIR}/preprocess_list.sh ${TMPL_SRC_DST_LIST_STR}")
 endif()
 

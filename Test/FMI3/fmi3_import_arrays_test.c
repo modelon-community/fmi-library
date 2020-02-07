@@ -59,6 +59,7 @@ static int get_dimensions_start_sizes(fmi3_import_t* fmu, jm_callbacks* cb, fmi3
         fmi3_import_dimension_t* d = fmi3_import_get_dimension_list_item(dimList, i);
 
         if (fmi3_import_get_dimension_has_vr(d)) {
+            /* TODO: integer_variable --> fmi3UInt32 probably, watch: https://github.com/modelica/fmi-standard/issues/733 */
             fmi3_import_integer_variable_t* var = (fmi3_import_integer_variable_t*)fmi3_import_get_variable_by_vr(fmu, fmi3_base_type_int, fmi3_import_get_dimension_vr(d));
             *((*dimSizes) + i) = fmi3_import_get_integer_variable_start(var);
         } else { /* has start */

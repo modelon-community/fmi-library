@@ -36,6 +36,9 @@ mkdir -p "$(dirname "$dst")"
 dst_tmp="$dst.tmp" 
 cp "$src" "$dst_tmp"
 
+# disable '#include' tokens so they don't get expanded
+sed -i 's@^#include@__INCLUDE__@g' "$dst_tmp"
+
 # add newline tokens that later will be replaced with real newlines
 sed -i 's@\\@__NEWLINE__ \\@g' "$dst_tmp"
 
@@ -48,6 +51,9 @@ sed -i 's/__NEWLINE__/\n/g' "$dst"
 # add real comments
 sed -i 's@__COMMENT_START__@/**\n *@g' "$dst"
 sed -i 's@__COMMENT_END__@\n*/@g' "$dst"
+
+# add back the '#include' tokens
+sed -i 's@^__INCLUDE__@#include@g' "$dst"
 
 # indent all lines (vim ex mode)
 ex -s -c 'norm gg=G' -c wq "$dst"

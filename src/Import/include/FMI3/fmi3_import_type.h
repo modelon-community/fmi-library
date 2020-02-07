@@ -62,9 +62,6 @@ FMILIB_EXPORT unsigned int fmi3_import_get_type_definition_number(fmi3_import_ty
 */
 FMILIB_EXPORT fmi3_import_variable_typedef_t* fmi3_import_get_typedef(fmi3_import_type_definitions_t* td, unsigned int  index);
 
-/** \brief Get associated display unit for a type defition if any. */
-FMILIB_EXPORT fmi3_import_display_unit_t* fmi3_import_get_type_display_unit(fmi3_import_real_typedef_t*);
-
 /** \brief Get the type name*/
 FMILIB_EXPORT const char* fmi3_import_get_type_name(fmi3_import_variable_typedef_t*);
 
@@ -118,6 +115,15 @@ FMILIB_EXPORT fmi3_float64_t fmi3_import_get_float64_type_max(fmi3_import_float_
 /** \brief Get the nominal value associated with the type definition */
 FMILIB_EXPORT fmi3_float64_t fmi3_import_get_float64_type_nominal(fmi3_import_float_typedef_t*);
 
+/** \brief Get the unit object associated with the type definition if any*/
+FMILIB_EXPORT fmi3_import_unit_t* fmi3_import_get_float64_type_unit(fmi3_import_float_typedef_t*);
+
+/** \brief Get the 'relativeQuantity' flag */
+FMILIB_EXPORT int fmi3_import_get_float64_type_is_relative_quantity(fmi3_import_float_typedef_t*);
+
+/** \brief Get the 'unbounded' flag */
+FMILIB_EXPORT int fmi3_import_get_float64_type_is_unbounded(fmi3_import_float_typedef_t*);
+
 /** \brief Get minimal value for the type.
 
 	@return Either the value specified in the XML file or negated FLT_MAX as defined in <float.h>
@@ -132,6 +138,16 @@ FMILIB_EXPORT fmi3_float32_t fmi3_import_get_float32_type_max(fmi3_import_float_
 
 /** \brief Get the nominal value associated with the type definition */
 FMILIB_EXPORT fmi3_float32_t fmi3_import_get_float32_type_nominal(fmi3_import_float_typedef_t*);
+
+/** \brief Get the unit object associated with the type definition if any*/
+FMILIB_EXPORT fmi3_import_unit_t* fmi3_import_get_float32_type_unit(fmi3_import_float_typedef_t*);
+
+/** \brief Get the 'relativeQuantity' flag */
+FMILIB_EXPORT int fmi3_import_get_float32_type_is_relative_quantity(fmi3_import_float_typedef_t*);
+
+/** \brief Get the 'unbounded' flag */
+FMILIB_EXPORT int fmi3_import_get_float32_type_is_unbounded(fmi3_import_float_typedef_t*);
+
 
 /** \brief Get minimal value for the type.
 
@@ -195,10 +211,10 @@ FMILIB_EXPORT const char* fmi3_import_get_enum_type_item_description(fmi3_import
 FMILIB_EXPORT const char* fmi3_import_get_enum_type_value_name(fmi3_import_enumeration_typedef_t* t, int value);
 
 /**
-	\brief Get display unit associated with a real type definition.
+	\brief Get display unit associated with a type definition.
 	@return Display unit object of NULL if none was given.
 */
-FMILIB_EXPORT fmi3_import_display_unit_t* fmi3_import_get_type_display_unit(fmi3_import_real_typedef_t*);
+FMILIB_EXPORT fmi3_import_display_unit_t* fmi3_import_get_float64_type_display_unit(fmi3_import_float_typedef_t*);
 
 /**
 *  @}

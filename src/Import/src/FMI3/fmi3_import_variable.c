@@ -19,7 +19,7 @@
 *  \brief Methods to handle fmi3_import_variable_t.
 */
 
-#include <FMI3/fmi3_import_variable.h>
+#include "FMI3/fmi3_import_variable.h"
 #include "fmi3_import_impl.h"
 #include "fmi3_import_variable_list_impl.h"
 #include "FMI3/fmi3_import_dimension.h"
@@ -116,85 +116,8 @@ fmi3_import_bool_variable_t* fmi3_import_get_variable_as_boolean(fmi3_import_var
 	return fmi3_xml_get_variable_as_boolean(v);
 }
 
-/**
- * Macros for generating variable value getters. Use leading underscore for variable value param,
- * since otherwise there's a risk of using the 'min' or 'max' macros.
-
-#define COMMENT(X) __COMMENT_START__ X __COMMENT_END__
-
-#define def_import_get_variable_XX(XX, TYPE) \
-    fmi3_##TYPE##_t fmi3_import_get_##TYPE##_variable##XX(fmi3_import_##TYPE##_variable_t* v) { __NEWLINE__ \
-        return fmi3_xml_get_##TYPE##_variable##XX(v);                                           __NEWLINE__ \
-    }                                                                                           __NEWLINE__
-
-#define def_import_get_variable_XX_ptr(XX, TYPE) \
-    fmi3_##TYPE##_t* fmi3_import_get_##TYPE##_variable##XX(fmi3_import_##TYPE##_variable_t* v) { __NEWLINE__ \
-        return fmi3_xml_get_##TYPE##_variable##XX(v);                                            __NEWLINE__ \
-    }                                                                                            __NEWLINE__
-
-COMMENT(float32)
-def_import_get_variable_XX(_min,                float32)
-def_import_get_variable_XX(_max,                float32)
-def_import_get_variable_XX(_nominal,            float32)
-def_import_get_variable_XX(_start,              float32)
-def_import_get_variable_XX_ptr(_start_array,    float32)
-
-COMMENT(float64)
-def_import_get_variable_XX(_min,                float64)
-def_import_get_variable_XX(_max,                float64)
-def_import_get_variable_XX(_nominal,            float64)
-def_import_get_variable_XX(_start,              float64)
-def_import_get_variable_XX_ptr(_start_array,    float64)
-
-*/
-
-/**
- * float64
- */
-
-fmi3_float64_t fmi3_import_get_float64_variable_min(fmi3_import_float64_variable_t* v) {
-    return fmi3_xml_get_float64_variable_min(v);
-}
-
-fmi3_float64_t fmi3_import_get_float64_variable_max(fmi3_import_float64_variable_t* v) {
-    return fmi3_xml_get_float64_variable_max(v);
-}
-
-fmi3_float64_t fmi3_import_get_float64_variable_nominal(fmi3_import_float64_variable_t* v) {
-    return fmi3_xml_get_float64_variable_nominal(v);
-}
-
-fmi3_float64_t fmi3_import_get_float64_variable_start(fmi3_import_float64_variable_t* v) {
-    return fmi3_xml_get_float64_variable_start(v);
-}
-
-fmi3_float64_t* fmi3_import_get_float64_variable_start_array(fmi3_import_float64_variable_t* v) {
-    return fmi3_xml_get_float64_variable_start_array(v);
-}
-
-/**
- * float32
- */
-
-fmi3_float32_t fmi3_import_get_float32_variable_min(fmi3_import_float32_variable_t* v) {
-    return fmi3_xml_get_float32_variable_min(v);
-}
-
-fmi3_float32_t fmi3_import_get_float32_variable_max(fmi3_import_float32_variable_t* v) {
-    return fmi3_xml_get_float32_variable_max(v);
-}
-
-fmi3_float32_t fmi3_import_get_float32_variable_nominal(fmi3_import_float32_variable_t* v) {
-    return fmi3_xml_get_float32_variable_nominal(v);
-}
-
-fmi3_float32_t fmi3_import_get_float32_variable_start(fmi3_import_float32_variable_t* v) {
-    return fmi3_xml_get_float32_variable_start(v);
-}
-
-fmi3_float32_t* fmi3_import_get_float32_variable_start_array(fmi3_import_float32_variable_t* v) {
-    return fmi3_xml_get_float32_variable_start_array(v);
-}
+/* include generated functions */
+#include "gen/FMI3/fmi3_import_variable_generics.c"
 
 /* real */
 

@@ -193,6 +193,20 @@ FMILIB_EXPORT fmi3_float32_t fmi3_import_get_float32_variable_max(fmi3_import_fl
 */
 FMILIB_EXPORT fmi3_float32_t fmi3_import_get_float32_variable_nominal(fmi3_import_float32_variable_t* v);
 
+/** \brief Get associated "unit" object if any */
+FMILIB_EXPORT fmi3_import_unit_t* fmi3_import_get_float32_variable_unit(fmi3_import_float32_variable_t* v);
+
+/** \brief Get associated "display unit" object if any */
+FMILIB_EXPORT fmi3_import_display_unit_t* fmi3_import_get_float32_variable_display_unit(fmi3_import_float32_variable_t* v);
+
+/** 
+    \brief Get the variable that this is a derivative of, if defined.
+
+    @return If this variable is a derivative, return the variable that it is a derivative of;
+            NULL otherwise.
+*/
+FMILIB_EXPORT fmi3_import_float32_variable_t* fmi3_import_get_float32_variable_derivative_of(fmi3_import_float32_variable_t* v);
+
 /** 
 	\brief Get the variable start attribute. 
 
@@ -224,6 +238,20 @@ FMILIB_EXPORT fmi3_float64_t fmi3_import_get_float64_variable_nominal(fmi3_impor
 	@return The "start" attribute as specified in the XML file or variable nominal value.
 */
 FMILIB_EXPORT fmi3_float64_t fmi3_import_get_float64_variable_start(fmi3_import_float64_variable_t* v);
+
+/** \brief Get associated "unit" object if any */
+FMILIB_EXPORT fmi3_import_unit_t* fmi3_import_get_float64_variable_unit(fmi3_import_float64_variable_t* v);
+
+/** \brief Get associated "display unit" object if any */
+FMILIB_EXPORT fmi3_import_display_unit_t* fmi3_import_get_float64_variable_display_unit(fmi3_import_float64_variable_t* v);
+
+/** 
+    \brief Get the variable that this is a derivative of, if defined.
+
+    @return If this variable is a derivative, return the variable that it is a derivative of;
+            NULL otherwise.
+*/
+FMILIB_EXPORT fmi3_import_float64_variable_t* fmi3_import_get_float64_variable_derivative_of(fmi3_import_float64_variable_t* v);
 
 /** 
 	\brief Get the variable start attribute. 

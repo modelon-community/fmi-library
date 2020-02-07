@@ -52,7 +52,6 @@ const char *fmi3_xmlAttrNames[fmi3_xml_attr_number] = {
 #define fmi3_xml_scheme_SimpleType           {fmi3_xml_elmID_none,       fmi3_xml_elmID_TypeDefinitions,     0, 1}
 #define fmi3_xml_scheme_Float64              {fmi3_xml_elmID_SimpleType, fmi3_xml_elmID_TypeDefinitions,     0, 1}
 #define fmi3_xml_scheme_Float32              {fmi3_xml_elmID_SimpleType, fmi3_xml_elmID_TypeDefinitions,     0, 1}
-#define fmi3_xml_scheme_Real                 {fmi3_xml_elmID_none,       fmi3_xml_elmID_SimpleType,          0, 0}
 #define fmi3_xml_scheme_Integer              {fmi3_xml_elmID_none,       fmi3_xml_elmID_SimpleType,          0, 0}
 #define fmi3_xml_scheme_Boolean              {fmi3_xml_elmID_none,       fmi3_xml_elmID_SimpleType,          0, 0}
 #define fmi3_xml_scheme_String               {fmi3_xml_elmID_none,       fmi3_xml_elmID_SimpleType,          0, 0}
@@ -78,7 +77,6 @@ const char *fmi3_xmlAttrNames[fmi3_xml_attr_number] = {
 #define fmi3_xml_scheme_Variable             {fmi3_xml_elmID_none,       fmi3_xml_elmID_ModelVariables,      0, 1}
 #define fmi3_xml_scheme_Float64Variable      {fmi3_xml_elmID_Variable,   fmi3_xml_elmID_ModelVariables,      0, 1}
 #define fmi3_xml_scheme_Float32Variable      {fmi3_xml_elmID_Variable,   fmi3_xml_elmID_ModelVariables,      0, 1}
-#define fmi3_xml_scheme_RealVariable         {fmi3_xml_elmID_Variable,   fmi3_xml_elmID_ModelVariables,      0, 1}
 #define fmi3_xml_scheme_IntegerVariable      {fmi3_xml_elmID_Variable,   fmi3_xml_elmID_ModelVariables,      0, 1}
 #define fmi3_xml_scheme_BooleanVariable      {fmi3_xml_elmID_Variable,   fmi3_xml_elmID_ModelVariables,      0, 1}
 #define fmi3_xml_scheme_StringVariable       {fmi3_xml_elmID_Variable,   fmi3_xml_elmID_ModelVariables,      0, 1}
@@ -590,10 +588,10 @@ int fmi3_create_elm_map(fmi3_xml_parser_context_t* context) {
  *      correct "handle" functions.
  *
  * arg elm:
- *      the name of a real XML element, the item to change will be the one in
+ *      the actual XML element name, the item to change will be the one in
  *      'fmi3_element_handle_map' that has this name
  * arg id:
- *      get the handle and ID corresponding to this real or alternative XML
+ *      get the handle and ID corresponding to the main or alternative XML
  *      element
  */
 void fmi3_xml_set_element_handle(fmi3_xml_parser_context_t *context, const char* elm, fmi3_xml_elm_enu_t id) {

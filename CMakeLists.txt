@@ -289,6 +289,10 @@ endif()
 if(FMILIB_BUILD_SHARED_LIB)
 	add_library(fmilib_shared SHARED ${FMILIB_SHARED_SRC})
 
+    # Even if fmilib_shared is built from source files, it's still necessary that e.g.
+    # fmiimport's dependencies such as generated code is built first.
+    add_dependencies(fmilib_shared fmiimport)
+
     if (UNIX)
         target_compile_definitions(fmilib_shared PRIVATE -D_GNU_SOURCE)
     endif()

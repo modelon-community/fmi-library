@@ -54,8 +54,6 @@ typedef struct fmi3_xml_variable_t fmi3_import_variable_t;
 typedef struct fmi3_xml_float32_variable_t fmi3_import_float32_variable_t;
 /** \brief  Opaque float64 variable */
 typedef struct fmi3_xml_float64_variable_t fmi3_import_float64_variable_t;
-/** \brief  Opaque real variable */
-typedef struct fmi3_xml_real_variable_t fmi3_import_real_variable_t;
 /** \brief Opaque integer variable */
 typedef struct fmi3_xml_integer_variable_t fmi3_import_integer_variable_t;
 /** \brief Opaque string variable */
@@ -149,11 +147,6 @@ FMILIB_EXPORT fmi3_import_float64_variable_t* fmi3_import_get_variable_as_float6
 */
 FMILIB_EXPORT fmi3_import_float32_variable_t* fmi3_import_get_variable_as_float32(fmi3_import_variable_t*);
 
-/** \brief Cast general variable to a one with the specific type 
-	
-	@return Typed object or NULL if base type does not match
-*/
-FMILIB_EXPORT fmi3_import_real_variable_t* fmi3_import_get_variable_as_real(fmi3_import_variable_t*);
 /** \brief Cast general variable to a one with the specific type 
 	
 	@return Typed object or NULL if base type does not match
@@ -252,48 +245,6 @@ FMILIB_EXPORT fmi3_import_display_unit_t* fmi3_import_get_float64_variable_displ
             NULL otherwise.
 */
 FMILIB_EXPORT fmi3_import_float64_variable_t* fmi3_import_get_float64_variable_derivative_of(fmi3_import_float64_variable_t* v);
-
-/** 
-	\brief Get the variable start attribute. 
-
-	@return The "start" attribute as specified in the XML file or variable nominal value.
-*/
-FMILIB_EXPORT fmi3_real_t fmi3_import_get_real_variable_start(fmi3_import_real_variable_t* v);
-
-/** 
-    \brief Get the variable that this is a derivative of, if defined.
-
-    @return If this variable is a derivative, return the variable that it is a derivative of;
-            NULL otherwise.
-*/
-FMILIB_EXPORT fmi3_import_real_variable_t* fmi3_import_get_real_variable_derivative_of(fmi3_import_real_variable_t* v);
-
-/** \brief Get the reinit flag for a real variable.
-
-	@return True if the real variable may change value at events.
-*/
-FMILIB_EXPORT fmi3_boolean_t fmi3_import_get_real_variable_reinit(fmi3_import_real_variable_t* v);
-
-/** \brief Get maximum value for the variable
-
-	@return Either the value specified in the XML file or DBL_MAX as defined in <float.h>
-*/
-FMILIB_EXPORT fmi3_real_t fmi3_import_get_real_variable_max(fmi3_import_real_variable_t* v);
-
-/** \brief Get minimal value for the variable.
-
-	@return Either the value specified in the XML file or negated DBL_MAX as defined in <float.h>
-*/
-FMILIB_EXPORT fmi3_real_t fmi3_import_get_real_variable_min(fmi3_import_real_variable_t* v);
-
-/** \brief Get nominal value for the variable*/
-FMILIB_EXPORT fmi3_real_t fmi3_import_get_real_variable_nominal(fmi3_import_real_variable_t* v);
-
-/** \brief Get associated "unit" object if any */
-FMILIB_EXPORT fmi3_import_unit_t* fmi3_import_get_real_variable_unit(fmi3_import_real_variable_t* v);
-
-/** \brief Get associated "display unit" object if any */
-FMILIB_EXPORT fmi3_import_display_unit_t* fmi3_import_get_real_variable_display_unit(fmi3_import_real_variable_t* v);
 
 /** \brief Get start value for the variable */
 FMILIB_EXPORT const char* fmi3_import_get_string_variable_start(fmi3_import_string_variable_t* v);

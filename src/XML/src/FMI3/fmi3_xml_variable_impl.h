@@ -38,7 +38,7 @@ struct fmi3_xml_variable_t {
     /* NB: before parsing of <ModelVariables> has finished,
            derivativeOf and previous are stored as integer indices cast to pointers,
            until they can be looked up */
-    fmi3_xml_variable_t *derivativeOf;      /** \brief Only for continuous Real variables. If non-NULL, the variable that this is the derivative of. */
+    fmi3_xml_variable_t *derivativeOf;      /** \brief Only for continuous FloatXX variables. If non-NULL, the variable that this is the derivative of. */
     fmi3_xml_variable_t *previous;          /** \brief If non-NULL, the variable that holds the value of this variable at the previous super-dense time instant. */
 
     fmi3_value_reference_t vr;				/** \brief Value reference */
@@ -46,7 +46,7 @@ struct fmi3_xml_variable_t {
     char initial;
     char variability;
     char causality;
-    char reinit; /** \brief Only for continuous Real variables */
+    char reinit; /** \brief Only for continuous FloatXX variables */
     char canHandleMultipleSetPerTimeInstant;
 
     /* array fields */

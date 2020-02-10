@@ -88,7 +88,7 @@ const char *fmi3_xmlAttrNames[fmi3_xml_attr_number] = {
 
 /**
  * The expansion of below macro is also a macro. Example:
- * EXPAND_ELM_SCHEME(Real) -> fmi3_xml_scheme_Real -> {fmi3_xml_elmID_SimpleType, 0, 0}
+ * EXPAND_ELM_SCHEME(Float64) -> fmi3_xml_scheme_Float64 -> {fmi3_xml_elmID_SimpleType, fmi3_xml_elmID_TypeDefinitions, 0, 1}
  */
 #define EXPAND_ELM_SCHEME(elm) fmi3_xml_scheme_##elm ,
 
@@ -366,7 +366,7 @@ int fmi3_xml_set_attr_float(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu
     if (sscanf(strVal, formatter, field) != 1) {
         jm_string elmName = fmi3_element_handle_map[elmID].elementName;
         jm_string attrName = fmi3_xmlAttrNames[attrID];
-        fmi3_xml_parse_error(context, "XML element '%s': could not parse value for real attribute '%s'='%s'", elmName, attrName, strVal);
+        fmi3_xml_parse_error(context, "XML element '%s': could not parse value for float attribute '%s'='%s'", elmName, attrName, strVal);
         return -1;
     }
 

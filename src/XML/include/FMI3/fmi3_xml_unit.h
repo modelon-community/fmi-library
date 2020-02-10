@@ -71,7 +71,6 @@ double fmi3_xml_convert_to_SI_base_unit(double, fmi3_xml_unit_t*);
 */
 double fmi3_xml_convert_from_SI_base_unit(double, fmi3_xml_unit_t*);
 
-fmi3_xml_display_unit_t* fmi3_xml_get_type_display_unit(fmi3_xml_real_typedef_t*);
 fmi3_xml_unit_t* fmi3_xml_get_base_unit(fmi3_xml_display_unit_t*);
 const char* fmi3_xml_get_display_unit_name(fmi3_xml_display_unit_t*);
 double fmi3_xml_get_display_unit_factor(fmi3_xml_display_unit_t*);

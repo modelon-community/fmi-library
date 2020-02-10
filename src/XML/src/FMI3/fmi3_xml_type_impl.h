@@ -30,7 +30,7 @@ extern "C" {
 
   The type structures are designed to save memory and
   to enable handling of diff-sets in the future.
-  For each basic type (Real, Integer, each Enumeration, String & Boolean)
+  For each basic type (FloatXX, Integer, each Enumeration, String & Boolean)
   there is a default instance of fmi3_xml_variable_type_base_t with
   structKind=fmi3_xml_type_struct_enu_props. Those instances have
   baseTypeStruct = NULL.
@@ -67,8 +67,8 @@ struct fmi3_xml_variable_type_base_t {
 
     fmi3_xml_type_struct_kind_enu_t structKind; /* defines the actual "subtype" of this struct */
     char baseType;   /* one of fmi3_xml_base_type */
-    char isRelativeQuantity;   /* relativeQuantity flag set. Only used in fmi3_xml_real_type_props_t) */
-	char isUnbounded;          /* unbounded flag set only used in fmi3_xml_real_type_props_t) */
+    char isRelativeQuantity;   /* relativeQuantity flag set. Only used in fmi3_xml_float_type_props_t) */
+	char isUnbounded;          /* unbounded flag set only used in fmi3_xml_float_type_props_t) */
 } ;
 
 /*
@@ -100,17 +100,6 @@ typedef struct fmi3_xml_float_type_props_t {
     fmi3_float_union_t typeMax;
     fmi3_float_union_t typeNominal;
 } fmi3_xml_float_type_props_t;
-
-typedef struct fmi3_xml_real_type_props_t {
-    fmi3_xml_variable_type_base_t typeBase;
-    jm_string quantity;
-
-    fmi3_xml_display_unit_t* displayUnit;
-
-    double typeMin;
-    double typeMax;
-    double typeNominal;
-} fmi3_xml_real_type_props_t;
 
 typedef struct fmi3_xml_integer_type_props_t {
     fmi3_xml_variable_type_base_t typeBase;
@@ -151,11 +140,6 @@ typedef struct fmi3_xml_enum_typedef_props_t {
 	fmi3_xml_enum_variable_props_t base;
     jm_vector(jm_named_ptr) enumItems;
 } fmi3_xml_enum_typedef_props_t;
-
-typedef struct fmi3_xml_variable_start_real_t {
-    fmi3_xml_variable_type_base_t typeBase;
-    double start;
-} fmi3_xml_variable_start_real_t;
 
 typedef struct fmi3_xml_variable_start_float_t {
     fmi3_xml_variable_type_base_t typeBase;
@@ -223,17 +207,14 @@ fmi3_xml_variable_type_base_t* fmi3_xml_alloc_variable_type_start(fmi3_xml_type_
 
 fmi3_xml_float_type_props_t* fmi3_xml_parse_float_type_properties(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID, fmi3_xml_float_type_props_t* defaultType, fmi3_bitness_enu_t bitness);
 
-fmi3_xml_real_type_props_t* fmi3_xml_parse_real_type_properties(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID);
-
 fmi3_xml_integer_type_props_t *fmi3_xml_parse_integer_type_properties(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID);
 
+/* TODO: what are these extern? */
 extern int fmi3_check_last_elem_is_specific_type(fmi3_xml_parser_context_t *context);
 
 extern jm_named_ptr fmi3_xml_variable_type_alloc(fmi3_xml_parser_context_t* context, jm_vector(char)* name, jm_vector(char)* description, size_t size);
 
 extern void* fmi3_xml_variable_type_create(fmi3_xml_parser_context_t* context, size_t size, jm_vector(jm_named_ptr)* typeList );
-
-extern fmi3_xml_real_typedef_t* fmi3_xml_variable_type_create_real(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID, jm_vector(jm_named_ptr)* typeList );
 
 extern fmi3_xml_integer_typedef_t* fmi3_xml_variable_type_create_integer(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID, jm_vector(jm_named_ptr)* typeList );
 

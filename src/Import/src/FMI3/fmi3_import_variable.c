@@ -96,10 +96,6 @@ fmi3_import_float32_variable_t* fmi3_import_get_variable_as_float32(fmi3_import_
 	return fmi3_xml_get_variable_as_float32(v);
 }
 
-fmi3_import_real_variable_t* fmi3_import_get_variable_as_real(fmi3_import_variable_t* v) {
-	return fmi3_xml_get_variable_as_real(v);
-}
-
 fmi3_import_integer_variable_t* fmi3_import_get_variable_as_integer(fmi3_import_variable_t* v) {
 	return fmi3_xml_get_variable_as_integer(v);
 }
@@ -118,40 +114,6 @@ fmi3_import_bool_variable_t* fmi3_import_get_variable_as_boolean(fmi3_import_var
 
 /* include generated functions */
 #include "gen/FMI3/fmi3_import_variable_generics.c"
-
-/* real */
-
-fmi3_real_t fmi3_import_get_real_variable_start(fmi3_import_real_variable_t* v) {
-	return fmi3_xml_get_real_variable_start(v);
-}
-
-fmi3_import_real_variable_t* fmi3_import_get_real_variable_derivative_of(fmi3_import_real_variable_t* v) {
-    return fmi3_xml_get_real_variable_derivative_of(v);
-}
-
-fmi3_boolean_t fmi3_import_get_real_variable_reinit(fmi3_import_real_variable_t* v) {
-    return fmi3_xml_get_real_variable_reinit(v);
-}
-
-fmi3_real_t fmi3_import_get_real_variable_max(fmi3_import_real_variable_t* v) {
-	return fmi3_xml_get_real_variable_max(v);
-}
-
-fmi3_real_t fmi3_import_get_real_variable_min(fmi3_import_real_variable_t* v) {
-	return fmi3_xml_get_real_variable_min(v);
-}
-
-fmi3_real_t fmi3_import_get_real_variable_nominal(fmi3_import_real_variable_t* v) {
-	return fmi3_xml_get_real_variable_nominal(v);
-}
-
-fmi3_import_unit_t* fmi3_import_get_real_variable_unit(fmi3_import_real_variable_t* v) {
-	return fmi3_xml_get_real_variable_unit(v);
-}
-
-fmi3_import_display_unit_t* fmi3_import_get_real_variable_display_unit(fmi3_import_real_variable_t* v){
-	return fmi3_xml_get_real_variable_display_unit(v);
-}
 
 const char* fmi3_import_get_string_variable_start(fmi3_import_string_variable_t* v) {
 	return fmi3_xml_get_string_variable_start(v);

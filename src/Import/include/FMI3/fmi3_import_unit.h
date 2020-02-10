@@ -101,11 +101,11 @@ FMILIB_EXPORT const char* fmi3_import_get_display_unit_name(fmi3_import_display_
 /**
 	\brief Get the "factor" associated with the display unit.
 */
-FMILIB_EXPORT fmi3_real_t fmi3_import_get_display_unit_factor(fmi3_import_display_unit_t*);
+FMILIB_EXPORT fmi3_float64_t fmi3_import_get_display_unit_factor(fmi3_import_display_unit_t*);
 /**
 	\brief Get the "offset" associated with the display unit.
 */
-FMILIB_EXPORT fmi3_real_t fmi3_import_get_display_unit_offset(fmi3_import_display_unit_t*);
+FMILIB_EXPORT fmi3_float64_t fmi3_import_get_display_unit_offset(fmi3_import_display_unit_t*);
 
 /**
 	\brief Convert a value measured in "units" to a value measured with "display units"

@@ -222,62 +222,6 @@ static fmi3_float_union_t fmi3_xml_get_float_variable_start(fmi3_xml_float_varia
 /* include generated code */
 #include "gen/FMI3/fmi3_xml_variable_generics.c"
 
-/* real */
-double fmi3_xml_get_real_variable_start(fmi3_xml_real_variable_t* v) {
-    fmi3_xml_variable_t* vv = (fmi3_xml_variable_t*)v;
-    if(fmi3_xml_get_variable_has_start(vv)) {
-        fmi3_xml_variable_start_real_t* start = (fmi3_xml_variable_start_real_t*)(vv->typeBase);
-        return start->start;
-    }
-    return fmi3_xml_get_real_variable_nominal(v);
-}
-
-fmi3_xml_real_variable_t* fmi3_xml_get_real_variable_derivative_of(fmi3_xml_real_variable_t* v) {
-    fmi3_xml_variable_t *vv = (fmi3_xml_variable_t *)v;
-
-    return (fmi3_xml_real_variable_t *)vv->derivativeOf;
-}
-
-fmi3_boolean_t fmi3_xml_get_real_variable_reinit(fmi3_xml_real_variable_t* v) {
-    fmi3_xml_variable_t *vv = (fmi3_xml_variable_t *)v;
-    return (fmi3_boolean_t)vv->reinit;
-}
-
-fmi3_xml_unit_t* fmi3_xml_get_real_variable_unit(fmi3_xml_real_variable_t* v) {
-    fmi3_xml_variable_t* vv = (fmi3_xml_variable_t*)v;
-    fmi3_xml_real_type_props_t* props = (fmi3_xml_real_type_props_t*)(fmi3_xml_find_type_struct(vv->typeBase, fmi3_xml_type_struct_enu_props));
-    if(!props || !props->displayUnit) return 0;
-    return props->displayUnit->baseUnit;
-}
-
-fmi3_xml_display_unit_t* fmi3_xml_get_real_variable_display_unit(fmi3_xml_real_variable_t* v) {
-    fmi3_xml_variable_t* vv = (fmi3_xml_variable_t*)v;
-    fmi3_xml_real_type_props_t* props = (fmi3_xml_real_type_props_t*)(fmi3_xml_find_type_struct(vv->typeBase, fmi3_xml_type_struct_enu_props));
-    if(!props || !props->displayUnit || !props->displayUnit->displayUnit[0]) return 0;
-    return props->displayUnit;
-}
-
-double fmi3_xml_get_real_variable_max(fmi3_xml_real_variable_t* v) {
-    fmi3_xml_variable_t* vv = (fmi3_xml_variable_t*)v;
-    fmi3_xml_real_type_props_t* props = (fmi3_xml_real_type_props_t*)(fmi3_xml_find_type_props(vv->typeBase));
-    assert(props);
-    return props->typeMax;
-}
-
-double fmi3_xml_get_real_variable_min(fmi3_xml_real_variable_t* v) {
-    fmi3_xml_variable_t* vv = (fmi3_xml_variable_t*)v;
-    fmi3_xml_real_type_props_t* props = (fmi3_xml_real_type_props_t*)(fmi3_xml_find_type_props(vv->typeBase));
-    assert(props);
-    return props->typeMin;
-}
-
-double fmi3_xml_get_real_variable_nominal(fmi3_xml_real_variable_t* v){
-    fmi3_xml_variable_t* vv = (fmi3_xml_variable_t*)v;
-    fmi3_xml_real_type_props_t* props = (fmi3_xml_real_type_props_t*)(fmi3_xml_find_type_props(vv->typeBase));
-    assert(props);
-    return props->typeNominal;
-}
-
 int fmi3_xml_get_integer_variable_start(fmi3_xml_integer_variable_t* v){
     fmi3_xml_variable_t* vv = (fmi3_xml_variable_t*)v;
     if(fmi3_xml_get_variable_has_start(vv)) {
@@ -354,11 +298,6 @@ fmi3_xml_float32_variable_t* fmi3_xml_get_variable_as_float32(fmi3_xml_variable_
     return 0;
 }
 
-fmi3_xml_real_variable_t* fmi3_xml_get_variable_as_real(fmi3_xml_variable_t* v) {
-    /* TODO: REMOVE THIS FUNC */
-    return 0;
-}
-
 fmi3_xml_integer_variable_t* fmi3_xml_get_variable_as_integer(fmi3_xml_variable_t*v){
     if(fmi3_xml_get_variable_base_type(v) == fmi3_base_type_int)  return (void*)v;
     return 0;
@@ -413,7 +352,7 @@ void fmi3_xml_variable_free_internals(jm_callbacks* callbacks, fmi3_xml_variable
 int fmi3_xml_handle_Variable(fmi3_xml_parser_context_t *context, const char* data) {
     int at_start_tag = !data;
 
-     /* The real ID of the variable, such as 'RealVariable' */
+     /* The real ID of the variable, such as 'Float64Variable' */
     fmi3_xml_elm_enu_t elm_id = at_start_tag ? context->currentElemIdStartTag : context->currentElmID;
 
     if (at_start_tag) {

@@ -54,7 +54,6 @@ typedef struct fmi3_xml_model_structure_t fmi3_xml_model_structure_t;
 /**\name Type definitions supporting structures
 @{ */
 typedef struct fmi3_xml_float_typedef_t fmi3_xml_float_typedef_t;
-typedef struct fmi3_xml_real_typedef_t fmi3_xml_real_typedef_t;
 typedef struct fmi3_xml_integer_typedef_t fmi3_xml_integer_typedef_t;
 typedef struct fmi3_xml_enumeration_typedef_t fmi3_xml_enumeration_typedef_t;
 typedef struct fmi3_xml_variable_typedef_t fmi3_xml_variable_typedef_t;
@@ -71,7 +70,6 @@ typedef struct fmi3_xml_variable_t fmi3_xml_variable_t;
 typedef struct fmi3_xml_float_variable_t fmi3_xml_float_variable_t;
 typedef struct fmi3_xml_float64_variable_t fmi3_xml_float64_variable_t;
 typedef struct fmi3_xml_float32_variable_t fmi3_xml_float32_variable_t;
-typedef struct fmi3_xml_real_variable_t fmi3_xml_real_variable_t;
 typedef struct fmi3_xml_integer_variable_t fmi3_xml_integer_variable_t;
 typedef struct fmi3_xml_string_variable_t fmi3_xml_string_variable_t;
 typedef struct fmi3_xml_enum_variable_t fmi3_xml_enum_variable_t;

@@ -42,11 +42,13 @@ static int test_type1(fmi3_import_t *xml)
     ASSERT_MSG(fmi3_import_get_float64_type_max(type) == DBL_MAX, "wrong max for type");        /* default */
     ASSERT_MSG(fmi3_import_get_float64_type_min(type) == 0.0, "wrong min for type");            /* from md */
     ASSERT_MSG(fmi3_import_get_float64_type_nominal(type) == 1.0, "wrong nominal for type");    /* default */
+    ASSERT_MSG(fmi3_import_get_float64_type_is_relative_quantity(type) == fmi3_false, "wrong relativeQuantity value for type");
+    ASSERT_MSG(fmi3_import_get_float64_type_is_unbounded(type) == fmi3_false, "wrong unbounded value for type");
 
     return TEST_OK;
 }
 
-/* Parse small Float64 typedef */
+/* Parse small Float32 typedef */
 static int test_type2(fmi3_import_t *xml)
 {
     fmi3_import_variable_t *v = fmi3_import_get_variable_by_name(xml, "var.name2");
@@ -67,6 +69,8 @@ static int test_type2(fmi3_import_t *xml)
     ASSERT_MSG(fmi3_import_get_float32_type_max(type) == 1000.0f, "wrong max for type");        /* from md */
     ASSERT_MSG(fmi3_import_get_float32_type_min(type) == -FLT_MAX, "wrong min for type");       /* default */
     ASSERT_MSG(fmi3_import_get_float32_type_nominal(type) == 5.0f, "wrong nominal for type");   /* from md */
+    ASSERT_MSG(fmi3_import_get_float32_type_is_relative_quantity(type) == fmi3_false, "wrong relativeQuantity value for type");
+    ASSERT_MSG(fmi3_import_get_float32_type_is_unbounded(type) == fmi3_false, "wrong unbounded value for type");
 
     return TEST_OK;
 }

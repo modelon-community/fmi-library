@@ -189,6 +189,82 @@ static int test_var4(fmi3_import_t *xml)
     return TEST_OK;
 }
 
+/* Parse unit and display unit info for float32 variable */
+static int test_var5(fmi3_import_t* xml)
+{
+    fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "float64WithUnit");
+    fmi3_import_float64_variable_t* var;
+
+    fmi3_string_t u_name_exp = "K";
+    fmi3_string_t u_name_act;
+    fmi3_string_t du_name_exp = "degC";
+    fmi3_string_t du_name_act;
+
+    fmi3_import_unit_t* u;
+    fmi3_import_display_unit_t* du;
+
+    /* Arbitrarily chosen values that don't get truncated/rounded */
+    ASSERT_MSG(v != NULL, "could not find variable to test");
+
+    var = fmi3_import_get_variable_as_float64(v);
+    ASSERT_MSG(var != NULL, "failed to convert to Float64 variable");
+
+    /* just a few checks on unit and display unit, full check is done in fmi3_import_xml test (TODO: create bouncing ball example with different numeric types, for fmi3_import_xml test) */
+    /* unit */
+    u = fmi3_import_get_float64_variable_unit(var);
+    ASSERT_MSG(u != NULL, "failed to get unit");
+
+    u_name_act = fmi3_import_get_unit_name(u);
+    ASSERT_MSG(!strcmp(u_name_exp, u_name_act), "incorrect display unit name");
+
+    /* display unit */
+    du = fmi3_import_get_float64_variable_display_unit(var);
+    ASSERT_MSG(du != NULL, "failed to get display unit");
+
+    du_name_act = fmi3_import_get_display_unit_name(du);
+    ASSERT_MSG(!strcmp(du_name_exp, du_name_act), "incorrect display unit name");
+
+    return TEST_OK;
+}
+
+/* Parse unit and display unit info for float32 variable */
+static int test_var6(fmi3_import_t* xml)
+{
+    fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "float32WithUnit");
+    fmi3_import_float32_variable_t* var;
+
+    fmi3_string_t u_name_exp = "K";
+    fmi3_string_t u_name_act;
+    fmi3_string_t du_name_exp = "degC";
+    fmi3_string_t du_name_act;
+
+    fmi3_import_unit_t* u;
+    fmi3_import_display_unit_t* du;
+
+    /* Arbitrarily chosen values that don't get truncated/rounded */
+    ASSERT_MSG(v != NULL, "could not find variable to test");
+
+    var = fmi3_import_get_variable_as_float32(v);
+    ASSERT_MSG(var != NULL, "failed to convert to Float32 variable");
+
+    /* just a few checks on unit and display unit, full check is done in fmi3_import_xml test (TODO: create bouncing ball example with different numeric types, for fmi3_import_xml test) */
+    /* unit */
+    u = fmi3_import_get_float32_variable_unit(var);
+    ASSERT_MSG(u != NULL, "failed to get unit");
+
+    u_name_act = fmi3_import_get_unit_name(u);
+    ASSERT_MSG(!strcmp(u_name_exp, u_name_act), "incorrect display unit name");
+
+    /* display unit */
+    du = fmi3_import_get_float32_variable_display_unit(var);
+    ASSERT_MSG(du != NULL, "failed to get display unit");
+
+    du_name_act = fmi3_import_get_display_unit_name(du);
+    ASSERT_MSG(!strcmp(du_name_exp, du_name_act), "incorrect display unit name");
+
+    return TEST_OK;
+}
+
 int main(int argc, char **argv)
 {
     fmi3_import_t *xml;
@@ -209,6 +285,9 @@ int main(int argc, char **argv)
     ret &= test_var2(xml);
     ret &= test_var3(xml);
     ret &= test_var4(xml);
+
+    ret &= test_var5(xml);
+    ret &= test_var6(xml);
 
     fmi3_import_free(xml);
     return ret == 0 ? CTEST_RETURN_FAIL : CTEST_RETURN_SUCCESS;

@@ -225,18 +225,17 @@ void printVariableInfo(fmi3_import_t* fmu,
     printf("Base type: %s\n", fmi3_base_type_to_string(bt));
 
     printTypeInfo(fmi3_import_get_variable_declared_type(v));
-    if(bt == fmi3_base_type_float64) {
-        fmi3_import_float64_variable_t *rv = fmi3_import_get_variable_as_float64(v);
+    if (bt == fmi3_base_type_float64) {
+        fmi3_import_float64_variable_t* rv = fmi3_import_get_variable_as_float64(v);
         fmi3_import_unit_t* u = fmi3_import_get_float64_variable_unit(rv);
         fmi3_import_display_unit_t* du = fmi3_import_get_float64_variable_display_unit(rv);
-        printf("Unit: %s, display unit: %s\n", u ? fmi3_import_get_unit_name(u):0, du?fmi3_import_get_display_unit_name(du):"not provided");
+        printf("Unit: %s, display unit: %s\n", u ? fmi3_import_get_unit_name(u) : 0, du ? fmi3_import_get_display_unit_name(du) : "not provided");
     }
 
     if(fmi3_import_get_variable_has_start(v)) {
         printf("There is a start value\n");
 
         switch(fmi3_import_get_variable_base_type(v)) {
-        /* TODO: add float32 */
         case fmi3_base_type_float64: {
             fmi3_import_float64_variable_t *rv = fmi3_import_get_variable_as_float64(v);
             printf("start =%g\n", fmi3_import_get_float64_variable_start(rv));

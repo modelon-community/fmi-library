@@ -101,18 +101,9 @@ void fmi3_import_collect_model_counts(fmi3_import_t* fmu, fmi3_import_model_coun
     return;
 }
 
-/* TODO: remove this declaration, I see no reason why we would need it */
-void fmi3_import_expand_variable_references_impl(fmi3_import_t* fmu, const char* msgIn);
-
-void fmi3_import_expand_variable_references(fmi3_import_t* fmu, const char* msgIn, char* msgOut, size_t maxMsgSize) {
-	fmi3_import_expand_variable_references_impl(fmu, msgIn);
-	strncpy(msgOut, jm_vector_get_itemp(char)(&fmu->logMessageBufferExpanded,0), maxMsgSize);
-	msgOut[maxMsgSize - 1] = '\0';
-}
-
 /* Transform msgIn into msgOut by expanding variable references of the form #<Type><VR># into variable names
   and replacing '##' with a single # */
-void fmi3_import_expand_variable_references_impl(fmi3_import_t* fmu, const char* msgIn){
+static void fmi3_import_expand_variable_references_impl(fmi3_import_t* fmu, const char* msgIn){
 	jm_vector(char)* msgOut = &fmu->logMessageBufferExpanded;
 	fmi3_xml_model_description_t* md = fmu->md;
 	jm_callbacks* callbacks = fmu->callbacks;
@@ -242,14 +233,20 @@ void fmi3_import_expand_variable_references_impl(fmi3_import_t* fmu, const char*
     jm_vector_push_back(char)(msgOut, 0);
 }
 
-void  fmi3_log_forwarding(fmi3_component_environment_t c, fmi3_string_t instanceName, fmi3_status_t status, fmi3_string_t category, fmi3_string_t message, ...) {
+void fmi3_import_expand_variable_references(fmi3_import_t* fmu, const char* msgIn, char* msgOut, size_t maxMsgSize) {
+	fmi3_import_expand_variable_references_impl(fmu, msgIn);
+	strncpy(msgOut, jm_vector_get_itemp(char)(&fmu->logMessageBufferExpanded,0), maxMsgSize);
+	msgOut[maxMsgSize - 1] = '\0';
+}
+
+void fmi3_log_forwarding(fmi3_component_environment_t c, fmi3_string_t instanceName, fmi3_status_t status, fmi3_string_t category, fmi3_string_t message, ...) {
     va_list args;
     va_start (args, message);
 	fmi3_log_forwarding_v(c, instanceName, status, category, message, args);
     va_end (args);
 }
 
-void  fmi3_log_forwarding_v(fmi3_component_environment_t c, fmi3_string_t instanceName, fmi3_status_t status, fmi3_string_t category, fmi3_string_t message, va_list args) {
+void fmi3_log_forwarding_v(fmi3_component_environment_t c, fmi3_string_t instanceName, fmi3_status_t status, fmi3_string_t category, fmi3_string_t message, va_list args) {
 #define BUFSIZE JM_MAX_ERROR_MESSAGE_SIZE
     char buffer[BUFSIZE], *buf, *curp, *msg;
 	const char* statusStr;

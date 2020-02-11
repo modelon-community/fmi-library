@@ -101,28 +101,44 @@ FMILIB_EXPORT const char* fmi3_import_get_display_unit_name(fmi3_import_display_
 /**
 	\brief Get the "factor" associated with the display unit.
 */
-FMILIB_EXPORT fmi3_float64_t fmi3_import_get_display_unit_factor(fmi3_import_display_unit_t*);
+FMILIB_EXPORT double fmi3_import_get_display_unit_factor(fmi3_import_display_unit_t*);
 /**
 	\brief Get the "offset" associated with the display unit.
 */
-FMILIB_EXPORT fmi3_float64_t fmi3_import_get_display_unit_offset(fmi3_import_display_unit_t*);
+FMILIB_EXPORT double fmi3_import_get_display_unit_offset(fmi3_import_display_unit_t*);
 
 /**
 	\brief Convert a value measured in "units" to a value measured with "display units"
-	@param value The value to be converted.
+	@param value The value to be converted
 	@param du The display unit object
 	@param isRelativeQuantity specifies if "offset" should be incorporated into conversion
 */
-FMILIB_EXPORT fmi3_real_t fmi3_import_convert_to_display_unit(fmi3_real_t value , fmi3_import_display_unit_t* du, int isRelativeQuantity);
-
+FMILIB_EXPORT fmi3_float64_t fmi3_import_float64_convert_to_display_unit(fmi3_float64_t value , fmi3_import_display_unit_t* du, int isRelativeQuantity);
 
 /**
 	\brief Convert a value measured in "display units" to a value measured with "units"
-	@param value The value to be converted.
+	@param value The value to be converted
 	@param du The display unit object
 	@param isRelativeQuantity specifies if "offset" should be incorporated into conversion
 */
-FMILIB_EXPORT fmi3_real_t fmi3_import_convert_from_display_unit(fmi3_real_t value, fmi3_import_display_unit_t* du, int isRelativeQuantity);
+FMILIB_EXPORT fmi3_float64_t fmi3_import_float64_convert_from_display_unit(fmi3_float64_t value, fmi3_import_display_unit_t* du, int isRelativeQuantity);
+
+/**
+	\brief Convert a value measured in "units" to a value measured with "display units"
+	@param value The value to be converted
+	@param du The display unit object
+	@param isRelativeQuantity specifies if "offset" should be incorporated into conversion
+*/
+FMILIB_EXPORT fmi3_float32_t fmi3_import_float32_convert_to_display_unit(fmi3_float32_t value , fmi3_import_display_unit_t* du, int isRelativeQuantity);
+
+/**
+	\brief Convert a value measured in "display units" to a value measured with "units".
+	@param value The value to be converted
+	@param du The display unit object
+	@param isRelativeQuantity specifies if "offset" should be incorporated into conversion
+*/
+FMILIB_EXPORT fmi3_float32_t fmi3_import_float32_convert_from_display_unit(fmi3_float32_t value, fmi3_import_display_unit_t* du, int isRelativeQuantity);
+
 /** @} */
 #ifdef __cplusplus
 }

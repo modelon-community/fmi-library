@@ -22,8 +22,8 @@
 #define FMI3_IMPORT_IMPL_H_
 
 
-#include <FMI3/fmi3_import.h>
-#include <FMI3/fmi3_xml_model_description.h>
+#include "FMI3/fmi3_import.h"
+#include "FMI3/fmi3_xml_model_description.h"
 
 #include "../FMI/fmi_import_context_impl.h"
 #include "../src/FMI3/fmi3_capi_impl.h"

@@ -195,13 +195,15 @@ static int test_var5(fmi3_import_t* xml)
     fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "float64WithUnit");
     fmi3_import_float64_variable_t* var;
 
-    fmi3_string_t u_name_exp = "K";
-    fmi3_string_t u_name_act;
-    fmi3_string_t du_name_exp = "degC";
-    fmi3_string_t du_name_act;
+    fmi3_string_t u_name;
+    fmi3_string_t du_name;
 
     fmi3_import_unit_t* u;
     fmi3_import_display_unit_t* du;
+    fmi3_float64_t du_val_orig;
+    fmi3_float64_t du_val_exp;
+    fmi3_float64_t du_val_conv;
+    fmi3_float64_t du_val_reconv;
 
     /* Arbitrarily chosen values that don't get truncated/rounded */
     ASSERT_MSG(v != NULL, "could not find variable to test");
@@ -214,15 +216,23 @@ static int test_var5(fmi3_import_t* xml)
     u = fmi3_import_get_float64_variable_unit(var);
     ASSERT_MSG(u != NULL, "failed to get unit");
 
-    u_name_act = fmi3_import_get_unit_name(u);
-    ASSERT_MSG(!strcmp(u_name_exp, u_name_act), "incorrect display unit name");
+    u_name = fmi3_import_get_unit_name(u);
+    ASSERT_MSG(!strcmp("K", u_name), "incorrect display unit name");
 
     /* display unit */
     du = fmi3_import_get_float64_variable_display_unit(var);
     ASSERT_MSG(du != NULL, "failed to get display unit");
 
-    du_name_act = fmi3_import_get_display_unit_name(du);
-    ASSERT_MSG(!strcmp(du_name_exp, du_name_act), "incorrect display unit name");
+    du_name = fmi3_import_get_display_unit_name(du);
+    ASSERT_MSG(!strcmp("degC", du_name), "incorrect display unit name");
+
+    du_val_orig = 222.22;
+    du_val_exp = du_val_orig - 273.15;
+    du_val_conv = fmi3_import_float64_convert_to_display_unit(du_val_orig, du, 0);
+    ASSERT_MSG(du_val_exp == du_val_conv, "incorrect display unit name");
+
+    du_val_reconv = fmi3_import_float64_convert_from_display_unit(du_val_conv, du, 0);
+    ASSERT_MSG(du_val_orig == du_val_reconv, "incorrect conversion to display unit");
 
     return TEST_OK;
 }
@@ -233,13 +243,15 @@ static int test_var6(fmi3_import_t* xml)
     fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "float32WithUnit");
     fmi3_import_float32_variable_t* var;
 
-    fmi3_string_t u_name_exp = "K";
-    fmi3_string_t u_name_act;
-    fmi3_string_t du_name_exp = "degC";
-    fmi3_string_t du_name_act;
+    fmi3_string_t u_name;
+    fmi3_string_t du_name;
 
     fmi3_import_unit_t* u;
     fmi3_import_display_unit_t* du;
+    fmi3_float32_t du_val_orig;
+    fmi3_float32_t du_val_exp;
+    fmi3_float32_t du_val_conv;
+    fmi3_float32_t du_val_reconv;
 
     /* Arbitrarily chosen values that don't get truncated/rounded */
     ASSERT_MSG(v != NULL, "could not find variable to test");
@@ -252,15 +264,23 @@ static int test_var6(fmi3_import_t* xml)
     u = fmi3_import_get_float32_variable_unit(var);
     ASSERT_MSG(u != NULL, "failed to get unit");
 
-    u_name_act = fmi3_import_get_unit_name(u);
-    ASSERT_MSG(!strcmp(u_name_exp, u_name_act), "incorrect display unit name");
+    u_name = fmi3_import_get_unit_name(u);
+    ASSERT_MSG(!strcmp("K", u_name), "incorrect display unit name");
 
     /* display unit */
     du = fmi3_import_get_float32_variable_display_unit(var);
     ASSERT_MSG(du != NULL, "failed to get display unit");
 
-    du_name_act = fmi3_import_get_display_unit_name(du);
-    ASSERT_MSG(!strcmp(du_name_exp, du_name_act), "incorrect display unit name");
+    du_name = fmi3_import_get_display_unit_name(du);
+    ASSERT_MSG(!strcmp("degC", du_name), "incorrect display unit name");
+
+    du_val_orig = 222.22f;
+    du_val_exp = du_val_orig - 273.15f;
+    du_val_conv = fmi3_import_float32_convert_to_display_unit(du_val_orig, du, 0);
+    ASSERT_MSG(du_val_exp == du_val_conv, "incorrect conversion to display unit");
+
+    du_val_reconv = fmi3_import_float32_convert_from_display_unit(du_val_conv, du, 0);
+    ASSERT_MSG(du_val_orig == du_val_reconv, "incorrect conversion to display unit");
 
     return TEST_OK;
 }

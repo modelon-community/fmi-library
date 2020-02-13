@@ -47,7 +47,7 @@ set(VARIABLE_BAD_VARIABILITY_CAUSALITY_MODEL_DESC_DIR
 set(VARIABLE_TYPES_TEST_MODEL_DESC_DIR
     ${RTTESTDIR}/FMI3/parser_test_xmls/variable_types/float)
 set(TYPE_DEFINITIONS_MODEL_DESC_DIR
-    ${RTTESTDIR}/FMI3/parser_test_xmls/type_definitions/float)
+    ${RTTESTDIR}/FMI3/parser_test_xmls/type_definitions)
 set(ARRAYS_MODEL_DESC_DIR
     ${RTTESTDIR}/FMI3/parser_test_xmls/arrays)
 

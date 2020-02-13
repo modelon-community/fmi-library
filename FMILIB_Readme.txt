@@ -1,12 +1,12 @@
 % FMILIB_Readme.txt
-% Readme file for the FMI Library (part of JModelica.org)
+% Readme file for the FMI Library
 %  
 % Content of this file is used verbatim in doxygen generated documentation.
-% The documentation is available online in HTML and PDF form at
-% http://www.fmi-library.org
+% The documentation can be downloaded as HTML at
+% https://github.com/modelon-community/fmi-library/releases
 %
 
-\mainpage FMI Library: part of JModelica.org
+\mainpage FMI Library
 
 \version     2.1
 \date        18 December 2019
@@ -17,6 +17,8 @@ See <http://www.fmi-standard.org/>
 
 The test codes provided with the library can serve as starting point for the 
 development of custom applications. See Section \ref testing for details.
+
+FMI library is an open-source project and can be found at GitHub: <https://github.com/modelon-community/fmi-library/>
 
 \section config Configuring and building
 CMake (see <http://www.cmake.org/>) is used to generate the native build scripts

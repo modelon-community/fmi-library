@@ -355,7 +355,7 @@ fmi1_xml_real_type_props_t* fmi1_xml_parse_real_type_properties(fmi1_xml_parser_
     jm_named_ptr named, *pnamed;
     fmi1_xml_model_description_t* md = context->modelDescription;
     fmi1_xml_real_type_props_t* props;
-    const char* quantity = 0;
+    const char* quantity = "";
     int boolBuf;
 
 /*        jm_vector(char)* bufName = fmi_get_parse_buffer(context,1);
@@ -435,7 +435,7 @@ fmi1_xml_integer_type_props_t * fmi1_xml_parse_integer_type_properties(fmi1_xml_
 
     fmi1_xml_model_description_t* md = context->modelDescription;
     fmi1_xml_integer_type_props_t * props = 0;
-    const char* quantity = 0;
+    const char* quantity = "";
 
     /*        jm_vector(char)* bufName = fmi_get_parse_buffer(context,1);
             jm_vector(char)* bufDescr = fmi_get_parse_buffer(context,2); */

@@ -381,7 +381,7 @@ fmi2_xml_real_type_props_t* fmi2_xml_parse_real_type_properties(fmi2_xml_parser_
     jm_named_ptr named, *pnamed;
     fmi2_xml_model_description_t* md = context->modelDescription;
     fmi2_xml_real_type_props_t* props;
-    const char* quantity = 0;
+    const char* quantity = "";
     unsigned int relQuanBuf, unboundedBuf;
 
 /*        jm_vector(char)* bufName = fmi_get_parse_buffer(context,1);
@@ -463,7 +463,7 @@ fmi2_xml_integer_type_props_t * fmi2_xml_parse_integer_type_properties(fmi2_xml_
 
     fmi2_xml_model_description_t* md = context->modelDescription;
     fmi2_xml_integer_type_props_t * props = 0;
-    const char* quantity = 0;
+    const char* quantity = "";
 
     /*        jm_vector(char)* bufName = fmi_get_parse_buffer(context,1);
             jm_vector(char)* bufDescr = fmi_get_parse_buffer(context,2); */

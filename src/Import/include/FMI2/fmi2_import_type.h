@@ -55,10 +55,10 @@ FMILIB_EXPORT unsigned int fmi2_import_get_type_definition_number(fmi2_import_ty
 
 /** \brief Get a type definition specified by the index 
 	@param td the type definition list object
-	@param index the index of type definition. Must be less than the numbere returned by fmi2_import_get_type_definition_number()
+	@param index the index of type definition. Must be less than the number returned by fmi2_import_get_type_definition_number()
 	@return A type definition object or NULL if index is out of range.
 */
-FMILIB_EXPORT fmi2_import_variable_typedef_t* fmi2_import_get_typedef(fmi2_import_type_definitions_t* td, unsigned int  index);
+FMILIB_EXPORT fmi2_import_variable_typedef_t* fmi2_import_get_typedef(fmi2_import_type_definitions_t* td, unsigned int index);
 
 /** \brief Get associated display unit for a type defition if any. */
 FMILIB_EXPORT fmi2_import_display_unit_t* fmi2_import_get_type_display_unit(fmi2_import_real_typedef_t*);

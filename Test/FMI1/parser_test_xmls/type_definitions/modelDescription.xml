@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription
+  fmiVersion="3.0"
+  modelName="test_type_definitions"
+  modelIdentifier="model_identifier"
+  numberOfContinuousStates="0"
+  numberOfEventIndicators="0"
+  guid="{8c4e810f-3df3-4a00-8276-176fa3c9f9e0}"
+  description="N/A"
+  version="1.0"
+  generationDateAndTime="2011-09-23T16:57:33Z"
+  variableNamingConvention="structured">
+
+  <TypeDefinitions>
+
+    <!-- test that no specified quantity defaults to empty string -->
+    <Type name="name_real">
+        <RealType/>
+    </Type>
+    <Type name="name_integer">
+        <IntegerType/> 
+    </Type>
+    <Type name="name_enum">
+        <EnumerationType>
+            <Item name="EnumVar0"/>
+        </EnumerationType>
+    </Type>
+
+    <!-- test that no specified quantity defaults to null pointer -->
+    <Type name="name_string">
+        <StringType/>
+    </Type>
+    <Type name="name_boolean">
+        <BooleanType/>
+    </Type>
+
+  </TypeDefinitions>
+
+  <ModelVariables>
+  </ModelVariables>
+
+</fmiModelDescription>

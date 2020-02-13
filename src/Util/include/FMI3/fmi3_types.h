@@ -42,6 +42,14 @@
 #define fmi3Byte fmi3_byte_t
 #define fmi3Float64 fmi3_float64_t
 #define fmi3Float32 fmi3_float32_t
+#define fmi3Int64 fmi3_int64_t
+#define fmi3Int32 fmi3_int32_t
+#define fmi3Int16 fmi3_int16_t
+#define fmi3Int8 fmi3_int8_t
+#define fmi3UInt64 fmi3_uint64_t
+#define fmi3UInt32 fmi3_uint32_t
+#define fmi3UInt16 fmi3_uint16_t
+#define fmi3UInt8 fmi3_uint8_t
 
 /** @}*/
 /* Standard FMI 3.0 types */

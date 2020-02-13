@@ -120,6 +120,7 @@ typedef enum fmi3_xml_attr_enu_t {
     EXPAND_XML_ELMNAME(Float64) \
     EXPAND_XML_ELMNAME(Float32) \
     EXPAND_XML_ELMNAME(Integer) \
+    EXPAND_XML_ELMNAME(Int8) \
     EXPAND_XML_ELMNAME(Boolean) \
     EXPAND_XML_ELMNAME(String) \
     EXPAND_XML_ELMNAME(Enumeration) \
@@ -308,16 +309,19 @@ struct fmi3_xml_parser_context_t {
 };
 
 /* Meta data about primitive types */
+/* NOTE: elemID is should not be included because it's different during parsing of TypeDef / Variable */
 typedef struct fmi3_xml_primitive_type_t {
-    size_t size;                    /* size in bytes */
-    fmi3_bitness_enu_t bitness;     /* type's bitness */
-    char formatter[10];             /* how to format this from string to the actual type */
-    char defaultValue[100];         /* provided as string to keep this type generic */
+    size_t                  size;               /* size in bytes */
+    fmi3_bitness_enu_t      bitness;            /* type's bitness */
+    fmi3_base_type_enu_t    baseType;           /* enum value for primitive type (for a typedef object) */
+    char                    formatter[10];      /* how to format this from string to the actual type */
+    char                    defaultValue[100];  /* provided as string to keep this type generic */
 } fmi3_xml_primitive_type_t;
 
 typedef struct fmi3_xml_primitive_types_t {
     fmi3_xml_primitive_type_t float64;
     fmi3_xml_primitive_type_t float32;
+    fmi3_xml_primitive_type_t int8;
 } fmi3_xml_primitive_types_t;
 
 extern const fmi3_xml_primitive_types_t PRIMITIVE_TYPES;
@@ -336,6 +340,7 @@ int fmi3_xml_set_attr_uint(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_
 int fmi3_xml_set_attr_enum(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, int required, unsigned int* field, unsigned int defaultVal, jm_name_ID_map_t* nameMap);
 int fmi3_xml_set_attr_boolean(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, int required, unsigned int* field, unsigned int defaultVal);
 int fmi3_xml_set_attr_int(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, int required, int* field, int defaultVal);
+int fmi3_xml_set_attr_intXX(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, int required, void* field, void* defaultVal, fmi3_bitness_enu_t bitness);
 int fmi3_xml_set_attr_float(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, int required, void* field, void* defaultVal, fmi3_bitness_enu_t bitness);
 int fmi3_xml_set_attr_float64(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, int required, fmi3_float64_t* field, fmi3_float64_t defaultVal);
 int fmi3_xml_set_attr_float32(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, int required, fmi3_float32_t* field, fmi3_float32_t defaultVal);

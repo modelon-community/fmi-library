@@ -55,6 +55,7 @@ typedef struct fmi3_xml_model_structure_t fmi3_xml_model_structure_t;
 @{ */
 typedef struct fmi3_xml_float_typedef_t fmi3_xml_float_typedef_t;
 typedef struct fmi3_xml_integer_typedef_t fmi3_xml_integer_typedef_t;
+typedef struct fmi3_xml_int_typedef_t fmi3_xml_int_typedef_t;
 typedef struct fmi3_xml_enumeration_typedef_t fmi3_xml_enumeration_typedef_t;
 typedef struct fmi3_xml_variable_typedef_t fmi3_xml_variable_typedef_t;
 

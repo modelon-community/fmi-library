@@ -75,6 +75,42 @@ static int test_type2(fmi3_import_t *xml)
     return TEST_OK;
 }
 
+/* parse small int8 typedef */
+static int test_type3(fmi3_import_t *xml)
+{
+    fmi3_import_variable_t *v = fmi3_import_get_variable_by_name(xml, "v3");
+    fmi3_import_variable_typedef_t *t;
+    fmi3_import_int_typedef_t *type;
+    unsigned int n_typedef;
+    fmi3_import_type_definitions_t* tds;
+    unsigned int td_idx = 2;
+
+    tds = fmi3_import_get_type_definitions(xml);
+    ASSERT_MSG(tds != NULL, "could not get type definitions");
+
+    n_typedef = fmi3_import_get_type_definition_number(tds);
+    ASSERT_MSG(n_typedef > td_idx, "too few typedefs in test");
+
+    t = fmi3_import_get_typedef(tds, td_idx);
+    ASSERT_MSG(t != NULL, "no declaredType found for enum variable");
+
+    ASSERT_MSG(strcmp(fmi3_import_get_type_name(t), "name_int8") == 0, "wrong type name");
+    ASSERT_MSG(strcmp(fmi3_import_get_type_quantity(t), "") == 0, "wrong quantity in type definition"); /* testing default case: none specified in MD */
+
+    type = fmi3_import_get_type_as_intXX(t);
+    ASSERT_MSG(type != NULL, "failed to convert to int8 type definition");
+    ASSERT_MSG(fmi3_import_get_int8_type_min(type) == INT8_MIN, "wrong min for type");
+    /*
+    TODO: Continue adding checks
+    ASSERT_MSG(fmi3_import_get_float32_type_min(type) == -FLT_MAX, "wrong min for type");
+    ASSERT_MSG(fmi3_import_get_float32_type_nominal(type) == 5.0f, "wrong nominal for type");
+    ASSERT_MSG(fmi3_import_get_float32_type_is_relative_quantity(type) == fmi3_false, "wrong relativeQuantity value for type");
+    ASSERT_MSG(fmi3_import_get_float32_type_is_unbounded(type) == fmi3_false, "wrong unbounded value for type");
+    */
+
+    return TEST_OK;
+}
+
 int main(int argc, char **argv)
 {
     fmi3_import_t *xml;
@@ -93,6 +129,7 @@ int main(int argc, char **argv)
 
     ret &= test_type1(xml);
     ret &= test_type2(xml);
+    ret &= test_type3(xml);
 
     fmi3_import_free(xml);
     return ret == 0 ? CTEST_RETURN_FAIL : CTEST_RETURN_SUCCESS;

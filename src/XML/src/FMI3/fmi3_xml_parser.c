@@ -53,6 +53,7 @@ const char *fmi3_xmlAttrNames[fmi3_xml_attr_number] = {
 #define fmi3_xml_scheme_Float64              {fmi3_xml_elmID_SimpleType, fmi3_xml_elmID_TypeDefinitions,     0, 1}
 #define fmi3_xml_scheme_Float32              {fmi3_xml_elmID_SimpleType, fmi3_xml_elmID_TypeDefinitions,     0, 1}
 #define fmi3_xml_scheme_Integer              {fmi3_xml_elmID_none,       fmi3_xml_elmID_SimpleType,          0, 0}
+#define fmi3_xml_scheme_Int8                 {fmi3_xml_elmID_SimpleType, fmi3_xml_elmID_TypeDefinitions,     0, 1}
 #define fmi3_xml_scheme_Boolean              {fmi3_xml_elmID_none,       fmi3_xml_elmID_SimpleType,          0, 0}
 #define fmi3_xml_scheme_String               {fmi3_xml_elmID_none,       fmi3_xml_elmID_SimpleType,          0, 0}
 #define fmi3_xml_scheme_Enumeration          {fmi3_xml_elmID_none,       fmi3_xml_elmID_SimpleType,          0, 0}
@@ -119,13 +120,22 @@ const fmi3_xml_primitive_types_t PRIMITIVE_TYPES = {
     { /* float64 */
         sizeof(fmi3_float64_t),
         fmi3_bitness_64,
+        fmi3_base_type_float64,
         "%lf",
         "0.0"
     },
     { /* float32 */
         sizeof(fmi3_float32_t),
         fmi3_bitness_32,
+        fmi3_base_type_float32,
         "%f",
+        "0.0"
+    },
+    { /* int8 */
+        sizeof(fmi3_int8_t),
+        fmi3_bitness_8,
+        fmi3_base_type_int8,
+        "%d", /* TODO: this is probably not correct (and format specifiers are platform dep.) - consider reading as 64 bit and then cast down instead */
         "0.0"
     }
 };
@@ -306,6 +316,7 @@ int fmi3_xml_set_attr_boolean(fmi3_xml_parser_context_t *context, fmi3_xml_elm_e
     return fmi3_xml_set_attr_enum(context,elmID, attrID,required, field, defaultVal, fmi_boolean_i_dMap);
 }
 
+/* TODO: remove old */
 int fmi3_xml_set_attr_int(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, int required, int* field, int defaultVal) {
     int ret;
     jm_string elmName, attrName, strVal;
@@ -325,6 +336,38 @@ int fmi3_xml_set_attr_int(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t
         return -1;
     }
     return 0;
+}
+
+int fmi3_xml_set_attr_intXX(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID,
+        int required, void* field, void* defaultVal, fmi3_bitness_enu_t bitness) {
+    int ret;
+    jm_string elmName, attrName, strVal;
+
+    ret = fmi3_xml_get_attr_str(context, elmID, attrID, required, &strVal);
+    if (ret) return ret;
+    if (!strVal && !required) {
+        switch (bitness) {
+        case fmi3_bitness_8:
+            *(fmi3_int8_t*)field = *(fmi3_int8_t*)defaultVal;
+            break;
+        default:
+            assert(0); /* TODO: NYI */
+        }
+        return 0;
+    }
+
+    elmName = fmi3_element_handle_map[elmID].elementName;
+    attrName = fmi3_xmlAttrNames[attrID];
+
+    if (sscanf(strVal, "%d", field) != 1) {
+        fmi3_xml_parse_error(context, "XML element '%s': could not parse value for integer attribute '%s'='%s'", elmName, attrName, strVal);
+        return -1;
+    }
+    return 0;
+}
+
+int fmi3_xml_set_attr_int8(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, int required, fmi3_int8_t* field, fmi3_int8_t defaultVal) {
+    return fmi3_xml_set_attr_intXX(context, elmID, attrID, required, field, &defaultVal, fmi3_bitness_8);
 }
 
 /**

@@ -66,7 +66,7 @@ struct fmi3_xml_variable_type_base_t {
     fmi3_xml_variable_type_base_t* next;    /** dynamically allocated fmi3_xml_variable_type_base_t structs are put on a linked list to prevent memory leaks*/
 
     fmi3_xml_type_struct_kind_enu_t structKind; /* defines the actual "subtype" of this struct */
-    char baseType;   /* one of fmi3_xml_base_type */
+    fmi3_base_type_enu_t baseType;   /* one of fmi3_xml_base_type */
     char isRelativeQuantity;   /* relativeQuantity flag set. Only used in fmi3_xml_float_type_props_t) */
 	char isUnbounded;          /* unbounded flag set only used in fmi3_xml_float_type_props_t) */
 } ;
@@ -84,10 +84,10 @@ struct fmi3_xml_variable_typedef_t {
 
 typedef union fmi3_float_union_t {
     void* ptr; /* only used for deallocation (any other pointer field could be used, but this makes the code cleaner) */
-    fmi3_float64_t* array64;
-    fmi3_float32_t* array32;
-    fmi3_float64_t scalar64;
-    fmi3_float32_t scalar32;
+    fmi3_float64_t* array64s;
+    fmi3_float32_t* array32s;
+    fmi3_float64_t scalar64s;
+    fmi3_float32_t scalar32s;
 } fmi3_float_union_t;
 
 typedef struct fmi3_xml_float_type_props_t {
@@ -101,6 +101,7 @@ typedef struct fmi3_xml_float_type_props_t {
     fmi3_float_union_t typeNominal;
 } fmi3_xml_float_type_props_t;
 
+/* OLD: TODO: remove when all new variable types have been added */
 typedef struct fmi3_xml_integer_type_props_t {
     fmi3_xml_variable_type_base_t typeBase;
 
@@ -109,6 +110,36 @@ typedef struct fmi3_xml_integer_type_props_t {
     int typeMin;
     int typeMax;
 } fmi3_xml_integer_type_props_t;
+
+typedef union fmi3_int_union_t {
+    void* ptr; /* only used for deallocation (any other pointer field could be used, but this makes the code cleaner) */
+    fmi3_int64_t*   array64s;
+    fmi3_int32_t*   array32s;
+    fmi3_int16_t*   array16s;
+    fmi3_int8_t*    array8s;
+    fmi3_uint64_t*  array64u;
+    fmi3_uint32_t*  array32u;
+    fmi3_uint16_t*  array16u;
+    fmi3_uint8_t*   array8u;
+    fmi3_int64_t    scalar64s;
+    fmi3_int32_t    scalar32s;
+    fmi3_int16_t    scalar16s;
+    fmi3_int8_t     scalar8s;
+    fmi3_uint64_t   scalar64u;
+    fmi3_uint32_t   scalar32u;
+    fmi3_uint16_t   scalar16u;
+    fmi3_uint8_t    scalar8u;
+} fmi3_int_union_t;
+
+/* NEW */
+typedef struct fmi3_xml_int_type_props_t {
+    fmi3_xml_variable_type_base_t typeBase;
+
+    jm_string  quantity;
+
+    fmi3_int_union_t typeMin;
+    fmi3_int_union_t typeMax;
+} fmi3_xml_int_type_props_t;
 
 typedef fmi3_xml_variable_type_base_t fmi3_xml_string_type_props_t;
 typedef fmi3_xml_variable_type_base_t fmi3_xml_bool_type_props_t;
@@ -187,6 +218,7 @@ struct fmi3_xml_type_definitions_t {
     fmi3_xml_float_type_props_t defaultFloat32Type;
     fmi3_xml_enum_typedef_props_t defaultEnumType;
     fmi3_xml_integer_type_props_t defaultIntegerType;
+    fmi3_xml_int_type_props_t defaultInt8Type;
     fmi3_xml_bool_type_props_t defaultBooleanType;
     fmi3_xml_string_type_props_t defaultStringType;
 };
@@ -205,9 +237,10 @@ fmi3_xml_variable_type_base_t* fmi3_xml_alloc_variable_type_props(fmi3_xml_type_
 
 fmi3_xml_variable_type_base_t* fmi3_xml_alloc_variable_type_start(fmi3_xml_type_definitions_t* td,fmi3_xml_variable_type_base_t* base, size_t typeSize);
 
-fmi3_xml_float_type_props_t* fmi3_xml_parse_float_type_properties(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID, fmi3_xml_float_type_props_t* defaultType, fmi3_bitness_enu_t bitness);
+fmi3_xml_float_type_props_t* fmi3_xml_parse_float_type_properties(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID, fmi3_xml_float_type_props_t* defaultType, const fmi3_xml_primitive_type_t* primType);
 
-fmi3_xml_integer_type_props_t *fmi3_xml_parse_integer_type_properties(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID);
+fmi3_xml_integer_type_props_t *fmi3_xml_parse_integer_type_properties(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID); /* TODO: remove old */
+fmi3_xml_int_type_props_t* fmi3_xml_parse_int_type_properties(fmi3_xml_parser_context_t* context, fmi3_xml_int_type_props_t* defaultType, fmi3_xml_elm_enu_t elmID, const fmi3_xml_primitive_type_t* primType);
 
 /* TODO: what are these extern? */
 extern int fmi3_check_last_elem_is_specific_type(fmi3_xml_parser_context_t *context);

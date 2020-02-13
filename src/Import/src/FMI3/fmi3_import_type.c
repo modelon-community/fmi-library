@@ -49,6 +49,10 @@ fmi3_import_integer_typedef_t* fmi3_import_get_type_as_int(fmi3_import_variable_
 	return fmi3_xml_get_type_as_int(t);
 }
 
+fmi3_import_integer_typedef_t* fmi3_import_get_type_as_intXX(fmi3_import_variable_typedef_t* t) {
+	return fmi3_xml_get_type_as_intXX(t);
+}
+
 fmi3_import_enumeration_typedef_t* fmi3_import_get_type_as_enum(fmi3_import_variable_typedef_t* t) {
 	return fmi3_xml_get_type_as_enum(t);
 }

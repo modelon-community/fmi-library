@@ -41,23 +41,30 @@
         return fmi3_xml_get_float_variable##XX((fmi3_xml_float_variable_t*)v).FIELD;        \
     }
 
-#define gen_fmi3_xml_get_TYPE_variable_XX_array(XX, TYPE, FIELD)                                    \
-    fmi3_##TYPE##_t* fmi3_xml_get_##TYPE##_variable##XX##_array(fmi3_xml_##TYPE##_variable_t* v) {  \
-        return fmi3_xml_get_float_variable##XX((fmi3_xml_float_variable_t*)v).FIELD;                \
+#define gen_fmi3_xml_get_TYPE_variable_start_array(TYPE, FIELD)                                     \
+    fmi3_##TYPE##_t* fmi3_xml_get_##TYPE##_variable_start_array(fmi3_xml_##TYPE##_variable_t* v) {  \
+        return fmi3_xml_get_float_variable_start((fmi3_xml_float_variable_t*)v).FIELD;              \
     }
 
-#define gen_all_fmi3_xml_get_TYPE_variable_XX(TYPE, SIZE)               \
-    COMMENT(TYPE)                                                       \
-    gen_fmi3_xml_get_TYPE_variable_derivative_of(TYPE)                  \
-    gen_fmi3_xml_get_TYPE_variable_reinit(TYPE)                         \
-    gen_fmi3_xml_get_TYPE_variable_unit(TYPE)                           \
-    gen_fmi3_xml_get_TYPE_variable_display_unit(TYPE)                   \
-    gen_fmi3_xml_get_TYPE_variable_XX(_min, TYPE, scalar##SIZE)         \
-    gen_fmi3_xml_get_TYPE_variable_XX(_max, TYPE, scalar##SIZE)         \
-    gen_fmi3_xml_get_TYPE_variable_XX(_nominal, TYPE, scalar##SIZE)     \
-    gen_fmi3_xml_get_TYPE_variable_XX(_start, TYPE, scalar##SIZE)       \
-    gen_fmi3_xml_get_TYPE_variable_XX_array(_start, TYPE, array##SIZE)
 
-gen_all_fmi3_xml_get_TYPE_variable_XX(float64, 64)
-gen_all_fmi3_xml_get_TYPE_variable_XX(float32, 32)
+#define SIGNED s
+#define UNSIGNED u
+
+/* this macro is needed because otherwise the SIGN part won't get expanded */
+#define expand_field(DIM_TYPE, SIZE, SIGN) DIM_TYPE##SIZE##SIGN
+
+#define gen_all_fmi3_xml_get_TYPE_variable_XX(TYPE, SIZE, SIGN)                         \
+    COMMENT(TYPE)                                                                       \
+    gen_fmi3_xml_get_TYPE_variable_derivative_of(TYPE)                                  \
+    gen_fmi3_xml_get_TYPE_variable_reinit(TYPE)                                         \
+    gen_fmi3_xml_get_TYPE_variable_unit(TYPE)                                           \
+    gen_fmi3_xml_get_TYPE_variable_display_unit(TYPE)                                   \
+    gen_fmi3_xml_get_TYPE_variable_XX(_min, TYPE, expand_field(scalar, SIZE, SIGN))     \
+    gen_fmi3_xml_get_TYPE_variable_XX(_max, TYPE, expand_field(scalar, SIZE, SIGN))     \
+    gen_fmi3_xml_get_TYPE_variable_XX(_nominal, TYPE, expand_field(scalar, SIZE, SIGN)) \
+    gen_fmi3_xml_get_TYPE_variable_XX(_start, TYPE, expand_field(scalar, SIZE, SIGN))   \
+    gen_fmi3_xml_get_TYPE_variable_start_array(TYPE, expand_field(array, SIZE, SIGN))
+
+gen_all_fmi3_xml_get_TYPE_variable_XX(float64, 64, SIGNED)
+gen_all_fmi3_xml_get_TYPE_variable_XX(float32, 32, SIGNED)
 

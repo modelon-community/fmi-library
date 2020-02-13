@@ -16,7 +16,8 @@
 #define gen_fmi3_xml_get_TYPE_display_unit(TYPE, TYPE_SIZE) \
     fmi3_xml_display_unit_t* fmi3_xml_get_##TYPE_SIZE##_type_display_unit(fmi3_xml_##TYPE##_typedef_t*);
 
-#define gen_all_fmi3_xml_get_TYPE_XX(TYPE, SIZE)                                \
+/* float */
+#define gen_all_fmi3_xml_get_TYPE_XX_float(TYPE, SIZE)                          \
     gen_fmi3_xml_get_TYPE_XX(                   _min,       TYPE, TYPE##SIZE)   \
     gen_fmi3_xml_get_TYPE_XX(                   _max,       TYPE, TYPE##SIZE)   \
     gen_fmi3_xml_get_TYPE_XX(                   _nominal,   TYPE, TYPE##SIZE)   \
@@ -25,5 +26,13 @@
     gen_fmi3_xml_get_TYPE_is_unbounded(                     TYPE, TYPE##SIZE)   \
     gen_fmi3_xml_get_TYPE_display_unit(                     TYPE, TYPE##SIZE)
 
-gen_all_fmi3_xml_get_TYPE_XX(float, 64)
-gen_all_fmi3_xml_get_TYPE_XX(float, 32)
+gen_all_fmi3_xml_get_TYPE_XX_float(float, 64)
+gen_all_fmi3_xml_get_TYPE_XX_float(float, 32)
+
+/* int */
+#define gen_all_fmi3_xml_get_TYPE_XX_int(TYPE, SIZE)                            \
+    gen_fmi3_xml_get_TYPE_XX(                   _min,       TYPE, TYPE##SIZE)   \
+    gen_fmi3_xml_get_TYPE_XX(                   _max,       TYPE, TYPE##SIZE)
+
+gen_all_fmi3_xml_get_TYPE_XX_int(int, 8)
+

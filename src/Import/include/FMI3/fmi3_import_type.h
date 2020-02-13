@@ -41,7 +41,9 @@ extern "C" {
 /** \brief Opaque float definition object. */
 typedef struct fmi3_xml_float_typedef_t fmi3_import_float_typedef_t;
 /** \brief Opaque integer type definition object. */
-typedef struct fmi3_xml_integer_typedef_t fmi3_import_integer_typedef_t;
+typedef struct fmi3_xml_integer_typedef_t fmi3_import_integer_typedef_t; /* TODO: remove */
+/** \brief Opaque integer type definition object. */
+typedef struct fmi3_xml_int_typedef_t fmi3_import_int_typedef_t;
 /** \brief Opaque enumeration type definition object. */
 typedef struct fmi3_xml_enumeration_typedef_t fmi3_import_enumeration_typedef_t;
 /** \brief Opaque general variable type definition object. */
@@ -55,7 +57,7 @@ FMILIB_EXPORT unsigned int fmi3_import_get_type_definition_number(fmi3_import_ty
 
 /** \brief Get a type definition specified by the index 
 	@param td the type definition list object
-	@param index the index of type definition. Must be less than the numbere returned by fmi3_import_get_type_definition_number()
+	@param index the index of type definition. Must be less than the number returned by #fmi3_import_get_type_definition_number
 	@return A type definition object or NULL if index is out of range.
 */
 FMILIB_EXPORT fmi3_import_variable_typedef_t* fmi3_import_get_typedef(fmi3_import_type_definitions_t* td, unsigned int  index);
@@ -82,6 +84,12 @@ FMILIB_EXPORT fmi3_import_float_typedef_t* fmi3_import_get_type_as_float(fmi3_im
 	@return Pointer to the specific type object or NULL if base type does not match.
 */
 FMILIB_EXPORT fmi3_import_integer_typedef_t* fmi3_import_get_type_as_int(fmi3_import_variable_typedef_t*);
+
+/** \brief Cast the general type definition object to an object with a specific base type 
+	@return Pointer to the specific type object or NULL if base type does not match.
+*/
+FMILIB_EXPORT fmi3_import_integer_typedef_t* fmi3_import_get_type_as_intXX(fmi3_import_variable_typedef_t*); /* TODO: rename function after removing old get_type_as_int */
+
 /** \brief Cast the general type definition object to an object with a specific base type 
 	@return Pointer to the specific type object or NULL if base type does not match.
 */
@@ -159,6 +167,19 @@ FMILIB_EXPORT fmi3_import_display_unit_t* fmi3_import_get_float32_type_display_u
 	@return Either the value specified in the XML file or INT_MIN as defined in <limits.h>
 */
 FMILIB_EXPORT int fmi3_import_get_integer_type_min(fmi3_import_integer_typedef_t*);
+
+/** \brief Get maximum value for the type
+	
+	@return Either the value specified in the XML file or INT_MAX as defined in <limits.h>
+*/
+FMILIB_EXPORT fmi3_int8_t fmi3_import_get_int8_type_max(fmi3_import_int_typedef_t*);
+
+/** \brief Get minimal value for the type.
+	
+	@return Either the value specified in the XML file or INT_MIN as defined in <limits.h>
+*/
+FMILIB_EXPORT fmi3_int8_t fmi3_import_get_int8_type_min(fmi3_import_int_typedef_t*);
+
 /** \brief Get maximum value for the type
 	
 	@return Either the value specified in the XML file or INT_MAX as defined in <limits.h>

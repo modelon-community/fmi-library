@@ -102,7 +102,6 @@ typedef const fmi3Byte* fmi3Binary;   /* Data type for binary data
    fmi3ComponentEnvironment: an opaque object pointer
    fmi3FMUstate            : an opaque object pointer
    fmi3ValueReference      : handle to the value of a variable
-   fmi3Real                : double precision floating-point data type
    fmi3Integer             : basic signed integer data type
    fmi3Boolean             : basic signed integer data type
    fmi3Char                : character data type
@@ -113,7 +112,6 @@ typedef const fmi3Byte* fmi3Binary;   /* Data type for binary data
    typedef void*           fmi3Component;               /* Pointer to FMU instance       */
    typedef void*           fmi3ComponentEnvironment;    /* Pointer to FMU environment    */
    typedef void*           fmi3FMUstate;                /* Pointer to internal FMU state */
-   typedef double          fmi3Real;
    typedef int             fmi3Integer;
 
 #endif /* fmi3TypesPlatform_h */

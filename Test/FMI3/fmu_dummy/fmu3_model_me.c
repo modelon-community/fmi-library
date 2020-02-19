@@ -57,9 +57,9 @@ FMI3_Export void fmi3FreeInstance(fmi3Component c)
 }
 
 FMI3_Export fmi3Status fmi3SetupExperiment(fmi3Component c, 
-    fmi3Boolean toleranceDefined, fmi3Real tolerance,
-    fmi3Real startTime, fmi3Boolean stopTimeDefined,
-    fmi3Real stopTime)
+    fmi3Boolean toleranceDefined, fmi3Float64 tolerance,
+    fmi3Float64 startTime, fmi3Boolean stopTimeDefined,
+    fmi3Float64 stopTime)
 {
     return fmi_setup_experiment(c, toleranceDefined, tolerance, startTime,
                                 stopTimeDefined, stopTime);
@@ -75,9 +75,14 @@ FMI3_Export fmi3Status fmi3ExitInitializationMode(fmi3Component c)
     return fmi_exit_initialization_mode(c);
 }
 
-FMI3_Export fmi3Status fmi3GetReal(fmi3Component c, const fmi3ValueReference vr[], size_t nvr, fmi3Real value[])
+FMI3_Export fmi3Status fmi3GetFloat64(fmi3Component c, const fmi3ValueReference vr[], size_t nvr, fmi3Float64 value[], size_t nValues)
 {
-	return fmi_get_real(c, vr, nvr, value);
+	return fmi_get_float64(c, vr, nvr, value, nValues);
+}
+
+FMI3_Export fmi3Status fmi3GetFloat32(fmi3Component c, const fmi3ValueReference vr[], size_t nvr, fmi3Float32 value[], size_t nValues)
+{
+	return fmi3Error; /* NYI, need to impl. real -> floatXX parametrization first */
 }
 
 FMI3_Export fmi3Status fmi3GetInteger(fmi3Component c, const fmi3ValueReference vr[], size_t nvr, fmi3Integer value[])
@@ -95,9 +100,14 @@ FMI3_Export fmi3Status fmi3GetString(fmi3Component c, const fmi3ValueReference v
 	return fmi_get_string(c, vr, nvr, value);
 }
 
-FMI3_Export fmi3Status fmi3SetReal(fmi3Component c, const fmi3ValueReference vr[], size_t nvr, const fmi3Real value[])
+FMI3_Export fmi3Status fmi3SetFloat64(fmi3Component c, const fmi3ValueReference vr[], size_t nvr, const fmi3Float64 value[], size_t nValues)
 {
-	return fmi_set_real(c, vr, nvr, value);
+	return fmi_set_float64(c, vr, nvr, value, nValues);
+}
+
+FMI3_Export fmi3Status fmi3SetFloat32(fmi3Component c, const fmi3ValueReference vr[], size_t nvr, const fmi3Float32 value[], size_t nValues)
+{
+	return fmi3Error; /* NYI, need to impl. real -> floatXX parametrization first */
 }
 
 FMI3_Export fmi3Status fmi3SetInteger(fmi3Component c, const fmi3ValueReference vr[], size_t nvr, const fmi3Integer value[])
@@ -136,12 +146,12 @@ FMI3_Export fmi3Status fmi3EnterContinuousTimeMode(fmi3Component c)
     return fmi_enter_continuous_time_mode(c);
 }
 
-FMI3_Export fmi3Status fmi3SetTime(fmi3Component c, fmi3Real fmitime)
+FMI3_Export fmi3Status fmi3SetTime(fmi3Component c, fmi3Float64 fmitime)
 {
 	return fmi_set_time(c, fmitime);
 }
 
-FMI3_Export fmi3Status fmi3SetContinuousStates(fmi3Component c, const fmi3Real x[], size_t nx)
+FMI3_Export fmi3Status fmi3SetContinuousStates(fmi3Component c, const fmi3Float64 x[], size_t nx)
 {
 	return fmi_set_continuous_states(c, x, nx);
 }
@@ -154,22 +164,22 @@ FMI3_Export fmi3Status fmi3CompletedIntegratorStep(fmi3Component c,
                                          enterEventMode, terminateSimulation);
 }
 
-FMI3_Export fmi3Status fmi3GetDerivatives(fmi3Component c, fmi3Real derivatives[] , size_t nx)
+FMI3_Export fmi3Status fmi3GetDerivatives(fmi3Component c, fmi3Float64 derivatives[] , size_t nx)
 {
 	return fmi_get_derivatives(c, derivatives, nx);
 }
 
-FMI3_Export fmi3Status fmi3GetEventIndicators(fmi3Component c, fmi3Real eventIndicators[], size_t ni)
+FMI3_Export fmi3Status fmi3GetEventIndicators(fmi3Component c, fmi3Float64 eventIndicators[], size_t ni)
 {
 	return fmi_get_event_indicators(c, eventIndicators, ni);
 }
 
-FMI3_Export fmi3Status fmi3GetContinuousStates(fmi3Component c, fmi3Real states[], size_t nx)
+FMI3_Export fmi3Status fmi3GetContinuousStates(fmi3Component c, fmi3Float64 states[], size_t nx)
 {
 	return fmi_get_continuous_states(c, states, nx);
 }
 
-FMI3_Export fmi3Status fmi3GetNominalsOfContinuousStates(fmi3Component c, fmi3Real x_nominal[], size_t nx)
+FMI3_Export fmi3Status fmi3GetNominalsOfContinuousStates(fmi3Component c, fmi3Float64 x_nominal[], size_t nx)
 {
 	return fmi_get_nominals_of_continuousstates(c, x_nominal, nx);
 }

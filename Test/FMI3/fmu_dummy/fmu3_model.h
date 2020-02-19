@@ -23,13 +23,16 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 #ifndef FMI3_Export
 	#define FMI3_Export DllExport
 #endif
+
+#define fmi3Float64 fmi3Float64
+
 typedef struct {
 	/*************** FMI ME 2.0 ****************/
-	fmi3Real					states			[N_STATES];
-	fmi3Real					states_nom		[N_STATES];
-	fmi3Real					states_der		[N_STATES];
-	fmi3Real					event_indicators[N_EVENT_INDICATORS];
-	fmi3Real					reals			[N_REAL];
+	fmi3Float64					states			[N_STATES];
+	fmi3Float64					states_nom		[N_STATES];
+	fmi3Float64					states_der		[N_STATES];
+	fmi3Float64					event_indicators[N_EVENT_INDICATORS];
+	fmi3Float64					reals			[N_REAL];
 	fmi3Integer				integers		[N_INTEGER];
 	fmi3Boolean				booleans		[N_BOOLEAN];
 	fmi3String				strings			[N_STRING];
@@ -41,30 +44,30 @@ typedef struct {
 	const fmi3CallbackFunctions*	functions;
 
 	/* fmiSetTime */
-	fmi3Real					fmitime;
+	fmi3Float64					fmitime;
 
 	/* fmiInitializeModel */
 	fmi3Boolean				toleranceControlled;
-	fmi3Real					relativeTolerance;
+	fmi3Float64					relativeTolerance;
 	fmi3EventInfo			eventInfo;
 
 	/*************** FMI CS 2.0. Depends on the ME fields above and functions ****************/
-	fmi3Real					states_prev		[N_STATES];
+	fmi3Float64					states_prev		[N_STATES];
 
 	/* fmiInstantiateSlave */
 	char					fmuLocation		[BUFFER];
 	fmi3Boolean				visible;
 
 	/* fmiInitializeSlave */
-	fmi3Real					tStart;
+	fmi3Float64					tStart;
 	fmi3Boolean				StopTimeDefined;
-	fmi3Real					tStop;
+	fmi3Float64					tStop;
 
 	/* fmiSetRealInputDerivatives */
-	fmi3Real					input_real		[N_INPUT_REAL][N_INPUT_REAL_MAX_ORDER + 1];
+	fmi3Float64					input_real		[N_INPUT_REAL][N_INPUT_REAL_MAX_ORDER + 1];
 
 	/* fmiGetRealOutputDerivatives */
-	fmi3Real					output_real		[N_OUTPUT_REAL][N_OUTPUT_REAL_MAX_ORDER + 1];
+	fmi3Float64					output_real		[N_OUTPUT_REAL][N_OUTPUT_REAL_MAX_ORDER + 1];
 
 } component_t;
 
@@ -90,9 +93,9 @@ void fmi_free_instance(
     fmi3Component c);
 
 fmi3Status fmi_setup_experiment(fmi3Component c,
-    fmi3Boolean toleranceDefined, fmi3Real tolerance,
-    fmi3Real startTime, fmi3Boolean stopTimeDefined,
-    fmi3Real stopTime);
+    fmi3Boolean toleranceDefined, fmi3Float64 tolerance,
+    fmi3Float64 startTime, fmi3Boolean stopTimeDefined,
+    fmi3Float64 stopTime);
 fmi3Status		fmi_enter_initialization_mode(fmi3Component c);
 fmi3Status		fmi_exit_initialization_mode(fmi3Component c);
 
@@ -102,10 +105,11 @@ fmi3Status		fmi_reset(
 													fmi3Component c);
 
 
-fmi3Status		fmi_get_real(			
+fmi3Status		fmi_get_float64(			
 													fmi3Component c,
 													const fmi3ValueReference vr[],
-													size_t nvr, fmi3Real value[]);
+													size_t nvr, fmi3Float64 value[],
+													size_t nValues);
 
 fmi3Status		fmi_get_integer(	
 													fmi3Component c,
@@ -124,11 +128,12 @@ fmi3Status		fmi_get_string(
 													size_t nvr,
 													fmi3String  value[]);
 
-fmi3Status		fmi_set_real(
+fmi3Status		fmi_set_float64(
 													fmi3Component c,
 													const fmi3ValueReference vr[],
 													size_t nvr,
-													const fmi3Real value[]);
+													const fmi3Float64 value[],
+													size_t nValues);
 fmi3Status		fmi_set_integer(
 													fmi3Component c,
 													const fmi3ValueReference vr[],
@@ -156,11 +161,11 @@ fmi3Status		fmi_enter_continuous_time_mode(fmi3Component c);
 
 fmi3Status		fmi_set_time(
 													fmi3Component c,
-													fmi3Real fmitime);
+													fmi3Float64 fmitime);
 
 fmi3Status		fmi_set_continuous_states(
 													fmi3Component c,
-													const fmi3Real x[],
+													const fmi3Float64 x[],
 													size_t nx);
 
 fmi3Status fmi_completed_integrator_step(
@@ -170,22 +175,22 @@ fmi3Status fmi_completed_integrator_step(
 
 fmi3Status		fmi_get_derivatives(
 													fmi3Component c,
-													fmi3Real derivatives[],
+													fmi3Float64 derivatives[],
 													size_t nx);
 
 fmi3Status		fmi_get_event_indicators(
 													fmi3Component c,
-													fmi3Real eventIndicators[],
+													fmi3Float64 eventIndicators[],
 													size_t ni);
 
 fmi3Status		fmi_get_continuous_states(
 													fmi3Component c,
-													fmi3Real states[],
+													fmi3Float64 states[],
 													size_t nx);
 
 fmi3Status		fmi_get_nominals_of_continuousstates(	
 													fmi3Component c,
-													fmi3Real x_nominal[],
+													fmi3Float64 x_nominal[],
 													size_t nx);
 
 
@@ -202,22 +207,23 @@ fmi3Status		fmi_set_real_input_derivatives(
 													const fmi3ValueReference vr[],
 													size_t nvr,
 													const fmi3Integer order[],
-													const fmi3Real value[]);
+													const fmi3Float64 value[]);
 
 fmi3Status		fmi_get_real_output_derivatives(
 													fmi3Component c,
 													const fmi3ValueReference vr[],
 													size_t nvr,
 													const fmi3Integer order[],
-													fmi3Real value[]);
+													fmi3Float64 value[]);
 
 fmi3Status		fmi_cancel_step(
 													fmi3Component c);
 fmi3Status		fmi_do_step(
 													fmi3Component c,
-													fmi3Real currentCommunicationPoint,
-													fmi3Real communicationStepSize,
-													fmi3Boolean newStep);
+													fmi3Float64 currentCommunicationPoint,
+													fmi3Float64 communicationStepSize,
+													fmi3Boolean newStep,
+													fmi3Boolean* earlyReturn);
 
 fmi3Status		fmi_get_status(
 													fmi3Component c,
@@ -227,7 +233,7 @@ fmi3Status		fmi_get_status(
 fmi3Status		fmi_get_real_status(
 													fmi3Component c,
 													const fmi3StatusKind s,
-													fmi3Real*    value);
+													fmi3Float64*    value);
 
 fmi3Status		fmi_get_integer_status(
 													fmi3Component c,

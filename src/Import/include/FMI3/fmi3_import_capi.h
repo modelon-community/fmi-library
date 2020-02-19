@@ -148,9 +148,9 @@ FMILIB_EXPORT void fmi3_import_free_instance(fmi3_import_t* fmu);
  * @return FMI status.
  */
 FMILIB_EXPORT fmi3_status_t fmi3_import_setup_experiment(fmi3_import_t* fmu,
-    fmi3_boolean_t toleranceDefined, fmi3_real_t tolerance,
-    fmi3_real_t startTime, fmi3_boolean_t stopTimeDefined,
-    fmi3_real_t stopTime);
+    fmi3_boolean_t toleranceDefined, fmi3_float64_t tolerance,
+    fmi3_float64_t startTime, fmi3_boolean_t stopTimeDefined,
+    fmi3_float64_t stopTime);
 
 /**
  * \brief Calls the FMI function fmiEnterInitializationMode(...)
@@ -186,15 +186,28 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_reset(fmi3_import_t* fmu);
 
 
 /**
- * \brief Wrapper for the FMI function fmiSetReal(...) 
+ * \brief Wrapper for the FMI function fmiSetFloat64(...) 
  * 
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
  * @param vr Array of value references.
  * @param nvr Number of array elements.
  * @param value Array of variable values.
+ * @param nValues Total number of variable values, i.e. the number of elements in each array + the number of scalar variables.
  * @return FMI status.
  */
-FMILIB_EXPORT fmi3_status_t fmi3_import_set_real(fmi3_import_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, const fmi3_real_t    value[]);
+FMILIB_EXPORT fmi3_status_t fmi3_import_set_float64(fmi3_import_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, const fmi3_float64_t value[], size_t nValues);
+
+/**
+ * \brief Wrapper for the FMI function fmiSetFloat32(...) 
+ * 
+ * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
+ * @param vr Array of value references.
+ * @param nvr Number of array elements.
+ * @param value Array of variable values.
+ * @param nValues Total number of variable values, i.e. the number of elements in each array + the number of scalar variables.
+ * @return FMI status.
+ */
+FMILIB_EXPORT fmi3_status_t fmi3_import_set_float32(fmi3_import_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, const fmi3_float32_t value[], size_t nValues);
 
 /**
  * \brief Wrapper for the FMI function fmiSetInteger(...) 
@@ -229,17 +242,30 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_set_boolean(fmi3_import_t* fmu, const fm
  */
 FMILIB_EXPORT fmi3_status_t fmi3_import_set_string(fmi3_import_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, const fmi3_string_t  value[]);
 
-
 /**
- * \brief Wrapper for the FMI function fmiGetReal(...) 
+ * \brief Calls the FMI function fmiGetFloat64(...) 
  * 
- * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
+ * @param fmu C-API struct that has succesfully loaded the FMI function.
  * @param vr Array of value references.
  * @param nvr Number of array elements.
  * @param value (Output)Array of variable values.
+ * @param nValues Total number of variable values, i.e. the number of elements in each array + the number of scalar variables.
  * @return FMI status.
  */
-FMILIB_EXPORT fmi3_status_t fmi3_import_get_real(fmi3_import_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, fmi3_real_t    value[]);
+FMILIB_EXPORT fmi3_status_t fmi3_import_get_float64(fmi3_import_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, fmi3_float64_t value[], size_t nValues);
+
+/**
+ * \brief Calls the FMI function fmiGetFloat32(...) 
+ * 
+ * @param fmu C-API struct that has succesfully loaded the FMI function.
+ * @param vr Array of value references.
+ * @param nvr Number of array elements.
+ * @param value (Output)Array of variable values.
+ * @param nValues Total number of variable values, i.e. the number of elements in each array + the number of scalar variables.
+ * @return FMI status.
+ */
+FMILIB_EXPORT fmi3_status_t fmi3_import_get_float32(fmi3_import_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, fmi3_float32_t value[], size_t nValues);
+
 
 /**
  * \brief Wrapper for the FMI function fmiGetInteger(...) 
@@ -357,7 +383,7 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_de_serialize_fmu_state  (fmi3_import_t* 
  */
 FMILIB_EXPORT fmi3_status_t fmi3_import_get_directional_derivative(fmi3_import_t* fmu, const fmi3_value_reference_t v_ref[], size_t nv,
                                                                    const fmi3_value_reference_t z_ref[], size_t nz,
-                                                                   const fmi3_real_t dv[], fmi3_real_t dz[]);
+                                                                   const fmi3_float64_t dv[], fmi3_float64_t dz[]);
 
 /**@} */
 
@@ -398,7 +424,7 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_enter_continuous_time_mode(fmi3_import_t
  * @param time Set the current time.
  * @return FMI status.
  */
-FMILIB_EXPORT fmi3_status_t fmi3_import_set_time(fmi3_import_t* fmu, fmi3_real_t time);
+FMILIB_EXPORT fmi3_status_t fmi3_import_set_time(fmi3_import_t* fmu, fmi3_float64_t time);
 
 /**
  * \brief Wrapper for the FMI function fmiSetContinuousStates(...) 
@@ -408,7 +434,7 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_set_time(fmi3_import_t* fmu, fmi3_real_t
  * @param nx Number of states.
  * @return FMI status.
  */
-FMILIB_EXPORT fmi3_status_t fmi3_import_set_continuous_states(fmi3_import_t* fmu, const fmi3_real_t x[], size_t nx);
+FMILIB_EXPORT fmi3_status_t fmi3_import_set_continuous_states(fmi3_import_t* fmu, const fmi3_float64_t x[], size_t nx);
 
 /**
  * \brief Wrapper for the FMI function fmiCompletedIntegratorStep(...) 
@@ -433,7 +459,7 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_completed_integrator_step(fmi3_import_t*
  * @param nx Number of derivatives.
  * @return FMI status.
  */
-FMILIB_EXPORT fmi3_status_t fmi3_import_get_derivatives(fmi3_import_t* fmu, fmi3_real_t derivatives[], size_t nx);
+FMILIB_EXPORT fmi3_status_t fmi3_import_get_derivatives(fmi3_import_t* fmu, fmi3_float64_t derivatives[], size_t nx);
 
 /**
  * \brief Wrapper for the FMI function fmiGetEventIndicators(...) 
@@ -443,7 +469,7 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_get_derivatives(fmi3_import_t* fmu, fmi3
  * @param ni Number of event indicators.
  * @return FMI status.
  */
-FMILIB_EXPORT fmi3_status_t fmi3_import_get_event_indicators(fmi3_import_t* fmu, fmi3_real_t eventIndicators[], size_t ni);
+FMILIB_EXPORT fmi3_status_t fmi3_import_get_event_indicators(fmi3_import_t* fmu, fmi3_float64_t eventIndicators[], size_t ni);
 
 /**
  * \brief Wrapper for the FMI function fmiGetContinuousStates(...) 
@@ -453,7 +479,7 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_get_event_indicators(fmi3_import_t* fmu,
  * @param nx Number of states.
  * @return FMI status.
  */
-FMILIB_EXPORT fmi3_status_t fmi3_import_get_continuous_states(fmi3_import_t* fmu, fmi3_real_t states[], size_t nx);
+FMILIB_EXPORT fmi3_status_t fmi3_import_get_continuous_states(fmi3_import_t* fmu, fmi3_float64_t states[], size_t nx);
 
 /**
  * \brief Wrapper for the FMI function fmiGetNominalsOfContinuousStates(...) 
@@ -463,7 +489,7 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_get_continuous_states(fmi3_import_t* fmu
  * @param nx Number of nominal values.
  * @return FMI status.
  */
-FMILIB_EXPORT fmi3_status_t fmi3_import_get_nominals_of_continuous_states(fmi3_import_t* fmu, fmi3_real_t x_nominal[], size_t nx);
+FMILIB_EXPORT fmi3_status_t fmi3_import_get_nominals_of_continuous_states(fmi3_import_t* fmu, fmi3_float64_t x_nominal[], size_t nx);
 
 /**@} */
 
@@ -483,7 +509,7 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_get_nominals_of_continuous_states(fmi3_i
  * @param value Array of variable values.
  * @return FMI status.
  */
-FMILIB_EXPORT fmi3_status_t fmi3_import_set_real_input_derivatives(fmi3_import_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, const fmi3_integer_t order[], const  fmi3_real_t value[]);                                                  
+FMILIB_EXPORT fmi3_status_t fmi3_import_set_real_input_derivatives(fmi3_import_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, const fmi3_integer_t order[], const  fmi3_float64_t value[]);                                                  
 
 /**
  * \brief Wrapper for the FMI function fmiGetOutputDerivatives(...) 
@@ -495,7 +521,7 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_set_real_input_derivatives(fmi3_import_t
  * @param value (Output) Array of variable values.
  * @return FMI status.
  */
-FMILIB_EXPORT fmi3_status_t fmi3_import_get_real_output_derivatives(fmi3_import_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, const fmi3_integer_t order[], fmi3_real_t value[]);                                              
+FMILIB_EXPORT fmi3_status_t fmi3_import_get_real_output_derivatives(fmi3_import_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, const fmi3_integer_t order[], fmi3_float64_t value[]);                                              
 
 /**
  * \brief Wrapper for the FMI function fmiCancelStep(...) 
@@ -514,7 +540,7 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_cancel_step(fmi3_import_t* fmu);
  * @param newStep Indicates whether or not the last communication step was accepted by the master.
  * @return FMI status.
  */
-FMILIB_EXPORT fmi3_status_t fmi3_import_do_step(fmi3_import_t* fmu, fmi3_real_t currentCommunicationPoint, fmi3_real_t communicationStepSize, fmi3_boolean_t newStep);
+FMILIB_EXPORT fmi3_status_t fmi3_import_do_step(fmi3_import_t* fmu, fmi3_float64_t currentCommunicationPoint, fmi3_float64_t communicationStepSize, fmi3_boolean_t newStep);
 
 /**
  * \brief Wrapper for the FMI function fmiGetStatus(...) 
@@ -534,7 +560,7 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_get_status(fmi3_import_t* fmu, const fmi
  * @param value (Output) FMI real value.
  * @return FMI status.
  */
-FMILIB_EXPORT fmi3_status_t fmi3_import_get_real_status(fmi3_import_t* fmu, const fmi3_status_kind_t s, fmi3_real_t*    value);
+FMILIB_EXPORT fmi3_status_t fmi3_import_get_real_status(fmi3_import_t* fmu, const fmi3_status_kind_t s, fmi3_float64_t*    value);
 
 /**
  * \brief Wrapper for the FMI function fmiGetIntegerStatus(...) 

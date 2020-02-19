@@ -17,8 +17,6 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 
 #include <string.h>
 
-
-
 #if __GNUC__ >= 4
     #pragma GCC visibility push(default)
 #endif
@@ -31,7 +29,6 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 /* #define MODEL_IDENTIFIER FMU_DUMMY_CS_MODEL_IDENTIFIER */
 
 #include "fmu3_model.c"
-
 
 
 /* FMI 2.0 Common Functions */
@@ -60,9 +57,9 @@ FMI3_Export void fmi3FreeInstance(fmi3Component c)
 }
 
 FMI3_Export fmi3Status fmi3SetupExperiment(fmi3Component c, 
-    fmi3Boolean toleranceDefined, fmi3Real tolerance,
-    fmi3Real startTime, fmi3Boolean stopTimeDefined,
-    fmi3Real stopTime)
+    fmi3Boolean toleranceDefined, fmi3Float64 tolerance,
+    fmi3Float64 startTime, fmi3Boolean stopTimeDefined,
+    fmi3Float64 stopTime)
 {
     return fmi_setup_experiment(c, toleranceDefined, tolerance, startTime,
                                 stopTimeDefined, stopTime);
@@ -78,9 +75,14 @@ FMI3_Export fmi3Status fmi3ExitInitializationMode(fmi3Component c)
     return fmi_exit_initialization_mode(c);
 }
 
-FMI3_Export fmi3Status fmi3GetReal(fmi3Component c, const fmi3ValueReference vr[], size_t nvr, fmi3Real value[])
+FMI3_Export fmi3Status fmi3GetFloat64(fmi3Component c, const fmi3ValueReference vr[], size_t nvr, fmi3Float64 value[], size_t nValues)
 {
-	return fmi_get_real(c, vr, nvr, value);
+	return fmi_get_float64(c, vr, nvr, value, nValues);
+}
+
+FMI3_Export fmi3Status fmi3GetFloat32(fmi3Component c, const fmi3ValueReference vr[], size_t nvr, fmi3Float32 value[], size_t nValues)
+{
+	return fmi3Error; /* NYI, need to impl. real -> floatXX parametrization first */
 }
 
 FMI3_Export fmi3Status fmi3GetInteger(fmi3Component c, const fmi3ValueReference vr[], size_t nvr, fmi3Integer value[])
@@ -98,9 +100,14 @@ FMI3_Export fmi3Status fmi3GetString(fmi3Component c, const fmi3ValueReference v
 	return fmi_get_string(c, vr, nvr, value);
 }
 
-FMI3_Export fmi3Status fmi3SetReal(fmi3Component c, const fmi3ValueReference vr[], size_t nvr, const fmi3Real value[])
+FMI3_Export fmi3Status fmi3SetFloat64(fmi3Component c, const fmi3ValueReference vr[], size_t nvr, const fmi3Float64 value[], size_t nValues)
 {
-	return fmi_set_real(c, vr, nvr, value);
+	return fmi_set_float64(c, vr, nvr, value, nValues);
+}
+
+FMI3_Export fmi3Status fmi3SetFloat32(fmi3Component c, const fmi3ValueReference vr[], size_t nvr, const fmi3Float32 value[], size_t nValues)
+{
+	return fmi3Error; /* NYI, need to impl. real -> floatXX parametrization first */
 }
 
 FMI3_Export fmi3Status fmi3SetInteger(fmi3Component c, const fmi3ValueReference vr[], size_t nvr, const fmi3Integer value[])
@@ -134,12 +141,12 @@ FMI3_Export fmi3Status fmi3Reset(fmi3Component c)
 	return fmi_reset(c);
 }
 
-FMI3_Export fmi3Status fmi3SetRealInputDerivatives(fmi3Component c, const fmi3ValueReference vr[], size_t nvr, const fmi3Integer order[], const fmi3Real value[])
+FMI3_Export fmi3Status fmi3SetRealInputDerivatives(fmi3Component c, const fmi3ValueReference vr[], size_t nvr, const fmi3Integer order[], const fmi3Float64 value[])
 {
 	return fmi_set_real_input_derivatives(c, vr, nvr, order, value);
 }
 
-FMI3_Export fmi3Status fmi3GetRealOutputDerivatives(fmi3Component c, const fmi3ValueReference vr[], size_t nvr, const fmi3Integer order[], fmi3Real value[])
+FMI3_Export fmi3Status fmi3GetRealOutputDerivatives(fmi3Component c, const fmi3ValueReference vr[], size_t nvr, const fmi3Integer order[], fmi3Float64 value[])
 {
 	return fmi_get_real_output_derivatives(c, vr, nvr, order, value);
 }
@@ -149,9 +156,9 @@ FMI3_Export fmi3Status fmi3CancelStep(fmi3Component c)
 	return fmi_cancel_step(c);
 }
 
-FMI3_Export fmi3Status fmi3DoStep(fmi3Component c, fmi3Real currentCommunicationPoint, fmi3Real communicationStepSize, fmi3Boolean newStep)
+FMI3_Export fmi3Status fmi3DoStep(fmi3Component c, fmi3Float64 currentCommunicationPoint, fmi3Float64 communicationStepSize, fmi3Boolean newStep, fmi3Boolean* earlyReturn)
 {
-	return fmi_do_step(c, currentCommunicationPoint, communicationStepSize, newStep);
+	return fmi_do_step(c, currentCommunicationPoint, communicationStepSize, newStep, earlyReturn);
 }
 
 FMI3_Export fmi3Status fmi3GetStatus(fmi3Component c, const fmi3StatusKind s, fmi3Status*  value)
@@ -159,7 +166,7 @@ FMI3_Export fmi3Status fmi3GetStatus(fmi3Component c, const fmi3StatusKind s, fm
 	return fmi_get_status(c, s, value);
 }
 
-FMI3_Export fmi3Status fmi3GetRealStatus(fmi3Component c, const fmi3StatusKind s, fmi3Real*    value)
+FMI3_Export fmi3Status fmi3GetRealStatus(fmi3Component c, const fmi3StatusKind s, fmi3Float64*    value)
 {
 	return fmi_get_real_status(c, s, value);
 }

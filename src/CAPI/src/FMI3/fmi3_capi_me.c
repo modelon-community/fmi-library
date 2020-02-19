@@ -39,14 +39,14 @@ fmi3_status_t fmi3_capi_enter_continuous_time_mode(fmi3_capi_t* fmu)
     return fmu->fmi3EnterContinuousTimeMode(fmu->c);
 }
 
-fmi3_status_t fmi3_capi_set_time(fmi3_capi_t* fmu, fmi3_real_t time)
+fmi3_status_t fmi3_capi_set_time(fmi3_capi_t* fmu, fmi3_float64_t time)
 {
 	assert(fmu);
 	jm_log_debug(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Calling fmi3SetTime");
 	return fmu->fmi3SetTime(fmu->c, time);
 }
 
-fmi3_status_t fmi3_capi_set_continuous_states(fmi3_capi_t* fmu, const fmi3_real_t x[], size_t nx)
+fmi3_status_t fmi3_capi_set_continuous_states(fmi3_capi_t* fmu, const fmi3_float64_t x[], size_t nx)
 {
 	assert(fmu);
 	jm_log_debug(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Calling fmi3SetContinuousStates");
@@ -63,28 +63,28 @@ fmi3_status_t fmi3_capi_completed_integrator_step(fmi3_capi_t* fmu,
                                            enterEventMode, terminateSimulation);
 }
 
-fmi3_status_t fmi3_capi_get_derivatives(fmi3_capi_t* fmu, fmi3_real_t derivatives[], size_t nx)
+fmi3_status_t fmi3_capi_get_derivatives(fmi3_capi_t* fmu, fmi3_float64_t derivatives[], size_t nx)
 {
 	assert(fmu);
 	jm_log_debug(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Calling fmi3GetDerivatives");
 	return fmu->fmi3GetDerivatives(fmu->c, derivatives, nx);
 }
 
-fmi3_status_t fmi3_capi_get_event_indicators(fmi3_capi_t* fmu, fmi3_real_t eventIndicators[], size_t ni)
+fmi3_status_t fmi3_capi_get_event_indicators(fmi3_capi_t* fmu, fmi3_float64_t eventIndicators[], size_t ni)
 {
 	assert(fmu);
 	jm_log_debug(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Calling fmi3GetEventIndicators");
 	return fmu->fmi3GetEventIndicators(fmu->c, eventIndicators, ni);
 }
 
-fmi3_status_t fmi3_capi_get_continuous_states(fmi3_capi_t* fmu, fmi3_real_t states[], size_t nx)
+fmi3_status_t fmi3_capi_get_continuous_states(fmi3_capi_t* fmu, fmi3_float64_t states[], size_t nx)
 {
 	assert(fmu);
 	jm_log_debug(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Calling fmi3GetContinuousStates");
 	return fmu->fmi3GetContinuousStates(fmu->c, states, nx);
 }
 
-fmi3_status_t fmi3_capi_get_nominals_of_continuous_states(fmi3_capi_t* fmu, fmi3_real_t x_nominal[], size_t nx)
+fmi3_status_t fmi3_capi_get_nominals_of_continuous_states(fmi3_capi_t* fmu, fmi3_float64_t x_nominal[], size_t nx)
 {
 	assert(fmu);
 	jm_log_debug(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Calling fmi3GetNominalsOfContinuousStates");

@@ -83,7 +83,7 @@ typedef struct {
     fmi3_boolean_t nominalsOfContinuousStatesChanged;
     fmi3_boolean_t valuesOfContinuousStatesChanged;
     fmi3_boolean_t nextEventTimeDefined;
-    fmi3_real_t    nextEventTime;
+    fmi3_float64_t    nextEventTime;
 } fmi3_event_info_t;
 
 /** Co-simulation status for FMI 3.0 CS */
@@ -118,19 +118,21 @@ Types for Common Functions
    typedef void         (*fmi3_free_instance_ft)(fmi3_component_t);
 
 /* Enter and exit initialization mode, terminate and reset */
-   typedef fmi3_status_t (*fmi3_setup_experiment_ft)          (fmi3_component_t, fmi3_boolean_t, fmi3_real_t, fmi3_real_t, fmi3_boolean_t, fmi3_real_t);
+   typedef fmi3_status_t (*fmi3_setup_experiment_ft)          (fmi3_component_t, fmi3_boolean_t, fmi3_float64_t, fmi3_float64_t, fmi3_boolean_t, fmi3_float64_t);
    typedef fmi3_status_t (*fmi3_enter_initialization_mode_ft) (fmi3_component_t);
    typedef fmi3_status_t (*fmi3_exit_initialization_mode_ft)  (fmi3_component_t);
    typedef fmi3_status_t (*fmi3_terminate_ft)              (fmi3_component_t);
    typedef fmi3_status_t (*fmi3_reset_ft)     (fmi3_component_t);
 
 /* Getting and setting variable values */
-   typedef fmi3_status_t (*fmi3_get_real_ft)   (fmi3_component_t, const fmi3_value_reference_t[], size_t, fmi3_real_t   []);
+   typedef fmi3_status_t (*fmi3_get_float64_ft)   (fmi3_component_t, const fmi3_value_reference_t[], size_t, fmi3_float64_t [], size_t nValues);
+   typedef fmi3_status_t (*fmi3_get_float32_ft)   (fmi3_component_t, const fmi3_value_reference_t[], size_t, fmi3_float32_t [], size_t nValues);
    typedef fmi3_status_t (*fmi3_get_integer_ft)(fmi3_component_t, const fmi3_value_reference_t[], size_t, fmi3_integer_t[]);
    typedef fmi3_status_t (*fmi3_get_boolean_ft)(fmi3_component_t, const fmi3_value_reference_t[], size_t, fmi3_boolean_t[]);
    typedef fmi3_status_t (*fmi3_get_string_ft) (fmi3_component_t, const fmi3_value_reference_t[], size_t, fmi3_string_t []);
 
-   typedef fmi3_status_t (*fmi3_set_real_ft)   (fmi3_component_t, const fmi3_value_reference_t[], size_t, const fmi3_real_t   []);
+   typedef fmi3_status_t (*fmi3_set_float64_ft) (fmi3_component_t, const fmi3_value_reference_t[], size_t, const fmi3_float64_t[], size_t nValues);
+   typedef fmi3_status_t (*fmi3_set_float32_ft) (fmi3_component_t, const fmi3_value_reference_t[], size_t, const fmi3_float32_t[], size_t nValues);
    typedef fmi3_status_t (*fmi3_set_integer_ft)(fmi3_component_t, const fmi3_value_reference_t[], size_t, const fmi3_integer_t[]);
    typedef fmi3_status_t (*fmi3_set_boolean_ft)(fmi3_component_t, const fmi3_value_reference_t[], size_t, const fmi3_boolean_t[]);
    typedef fmi3_status_t (*fmi3_set_string_ft) (fmi3_component_t, const fmi3_value_reference_t[], size_t, const fmi3_string_t []);
@@ -146,7 +148,7 @@ Types for Common Functions
 /* Getting directional derivatives */
    typedef fmi3_status_t (*fmi3_get_directional_derivative_ft)(fmi3_component_t, const fmi3_value_reference_t[], size_t,
                                                                    const fmi3_value_reference_t[], size_t,
-                                                                   const fmi3_real_t[], fmi3_real_t[]);
+                                                                   const fmi3_float64_t[], fmi3_float64_t[]);
 
 /***************************************************
 Types for Functions for FMI for Model Exchange
@@ -159,14 +161,14 @@ Types for Functions for FMI for Model Exchange
    typedef fmi3_status_t (*fmi3_completed_integrator_step_ft) (fmi3_component_t, fmi3_boolean_t, fmi3_boolean_t*, fmi3_boolean_t*);
 
 /* Providing independent variables and re-initialization of caching */
-   typedef fmi3_status_t (*fmi3_set_time_ft)                (fmi3_component_t, fmi3_real_t);
-   typedef fmi3_status_t (*fmi3_set_continuous_states_ft)    (fmi3_component_t, const fmi3_real_t[], size_t);
+   typedef fmi3_status_t (*fmi3_set_time_ft)                (fmi3_component_t, fmi3_float64_t);
+   typedef fmi3_status_t (*fmi3_set_continuous_states_ft)    (fmi3_component_t, const fmi3_float64_t[], size_t);
 
 /* Evaluation of the model equations */
-   typedef fmi3_status_t (*fmi3_get_derivatives_ft)            (fmi3_component_t, fmi3_real_t[], size_t);
-   typedef fmi3_status_t (*fmi3_get_event_indicators_ft)        (fmi3_component_t, fmi3_real_t[], size_t);
-   typedef fmi3_status_t (*fmi3_get_continuous_states_ft)       (fmi3_component_t, fmi3_real_t[], size_t);
-   typedef fmi3_status_t (*fmi3_get_nominals_of_continuous_states_ft)(fmi3_component_t, fmi3_real_t[], size_t);
+   typedef fmi3_status_t (*fmi3_get_derivatives_ft)            (fmi3_component_t, fmi3_float64_t[], size_t);
+   typedef fmi3_status_t (*fmi3_get_event_indicators_ft)        (fmi3_component_t, fmi3_float64_t[], size_t);
+   typedef fmi3_status_t (*fmi3_get_continuous_states_ft)       (fmi3_component_t, fmi3_float64_t[], size_t);
+   typedef fmi3_status_t (*fmi3_get_nominals_of_continuous_states_ft)(fmi3_component_t, fmi3_float64_t[], size_t);
 
 
 /***************************************************
@@ -174,15 +176,15 @@ Types for_functions for FMI for Co-_simulation
 ****************************************************/
 
 /* Simulating the slave */
-   typedef fmi3_status_t (*fmi3_set_real_input_derivatives_ft) (fmi3_component_t, const fmi3_value_reference_t [], size_t, const fmi3_integer_t [], const fmi3_real_t []);
-   typedef fmi3_status_t (*fmi3_get_real_output_derivatives_ft)(fmi3_component_t, const fmi3_value_reference_t [], size_t, const fmi3_integer_t [], fmi3_real_t []);
+   typedef fmi3_status_t (*fmi3_set_real_input_derivatives_ft) (fmi3_component_t, const fmi3_value_reference_t [], size_t, const fmi3_integer_t [], const fmi3_float64_t []);
+   typedef fmi3_status_t (*fmi3_get_real_output_derivatives_ft)(fmi3_component_t, const fmi3_value_reference_t [], size_t, const fmi3_integer_t [], fmi3_float64_t []);
 
-   typedef fmi3_status_t (*fmi3_do_step_ft)     (fmi3_component_t, fmi3_real_t, fmi3_real_t, fmi3_boolean_t);
+   typedef fmi3_status_t (*fmi3_do_step_ft)     (fmi3_component_t, fmi3_float64_t, fmi3_float64_t, fmi3_boolean_t);
    typedef fmi3_status_t (*fmi3_cancel_step_ft) (fmi3_component_t);
 
 /* Inquire slave status */
    typedef fmi3_status_t (*fmi3_get_status_ft)       (fmi3_component_t, const fmi3_status_kind_t, fmi3_status_t* );
-   typedef fmi3_status_t (*fmi3_get_real_status_ft)   (fmi3_component_t, const fmi3_status_kind_t, fmi3_real_t*   );
+   typedef fmi3_status_t (*fmi3_get_real_status_ft)   (fmi3_component_t, const fmi3_status_kind_t, fmi3_float64_t*   );
    typedef fmi3_status_t (*fmi3_get_integer_status_ft)(fmi3_component_t, const fmi3_status_kind_t, fmi3_integer_t*);
    typedef fmi3_status_t (*fmi3_get_boolean_status_ft)(fmi3_component_t, const fmi3_status_kind_t, fmi3_boolean_t*);
    typedef fmi3_status_t (*fmi3_get_string_status_ft) (fmi3_component_t, const fmi3_status_kind_t, fmi3_string_t* );

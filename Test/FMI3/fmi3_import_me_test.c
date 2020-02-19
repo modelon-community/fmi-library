@@ -63,22 +63,22 @@ int test_simulate_me(fmi3_import_t* fmu)
 {	
 	fmi3_status_t fmistatus;
 	jm_status_enu_t jmstatus;
-	fmi3_real_t tstart = 0.0;
-	fmi3_real_t tcur;
-	fmi3_real_t hcur;
-	fmi3_real_t hdef = 0.1;
-	fmi3_real_t tend = 2.0;
+	fmi3_float64_t tstart = 0.0;
+	fmi3_float64_t tcur;
+	fmi3_float64_t hcur;
+	fmi3_float64_t hdef = 0.1;
+	fmi3_float64_t tend = 2.0;
 	size_t n_states;
 	size_t n_event_indicators;
-	fmi3_real_t* states;
-	fmi3_real_t states_end_results[] = {0.362000, -3.962000};
-	fmi3_real_t* states_der;
-	fmi3_real_t* event_indicators;
-	fmi3_real_t* event_indicators_prev;
+	fmi3_float64_t* states;
+	fmi3_float64_t states_end_results[] = {0.362000, -3.962000};
+	fmi3_float64_t* states_der;
+	fmi3_float64_t* event_indicators;
+	fmi3_float64_t* event_indicators_prev;
 	fmi3_boolean_t callEventUpdate;
 	fmi3_boolean_t terminateSimulation = fmi3_false;
 	fmi3_boolean_t toleranceControlled = fmi3_true;
-	fmi3_real_t relativeTolerance = 0.001;
+	fmi3_float64_t relativeTolerance = 0.001;
 	fmi3_event_info_t eventInfo;
 	size_t k;
 
@@ -88,7 +88,7 @@ int test_simulate_me(fmi3_import_t* fmu)
 	n_states = fmi3_import_get_number_of_continuous_states(fmu);
 	n_event_indicators = fmi3_import_get_number_of_event_indicators(fmu);
 
-	if (sizeof(states_end_results)/sizeof(fmi3_real_t) != n_states) {
+	if (sizeof(states_end_results)/sizeof(fmi3_float64_t) != n_states) {
 		printf("Number of states and results have different length n_states = %u n_results = %u\n", (unsigned)n_states, (unsigned)sizeof(states_end_results));
 		do_exit(CTEST_RETURN_FAIL);
 	}
@@ -134,13 +134,13 @@ int test_simulate_me(fmi3_import_t* fmu)
 
 	while ((tcur < tend) && (!(eventInfo.terminateSimulation || terminateSimulation))) {
 		size_t k;
-        fmi3_real_t tlast;
+        fmi3_float64_t tlast;
 		int zero_crossing_event = 0;
 
 		fmistatus = fmi3_import_set_time(fmu, tcur);
 
         { /* Swap event_indicators and event_indicators_prev so that we can get new indicators */
-            fmi3_real_t *temp = event_indicators;
+            fmi3_float64_t *temp = event_indicators;
             event_indicators = event_indicators_prev;
             event_indicators_prev = temp;
         }
@@ -193,7 +193,7 @@ int test_simulate_me(fmi3_import_t* fmu)
 
 	/* Validate result */
 	for (k = 0; k < n_states; k++) {
-		fmi3_real_t res = states[k] - states_end_results[k];
+		fmi3_float64_t res = states[k] - states_end_results[k];
 		res = res > 0 ? res: -res; /* Take abs */
 		if (res > 1e-10) {
 			printf("Simulation results is wrong  states[%u] %f != %f, |res| = %f\n", (unsigned)k, states[k], states_end_results[k], res);

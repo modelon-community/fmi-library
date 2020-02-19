@@ -34,7 +34,6 @@
 #define fmi3ComponentEnvironment fmi3_component_environment_t
 #define fmi3FMUstate fmi3_FMU_state_t
 #define fmi3ValueReference fmi3_value_reference_t
-#define fmi3Real fmi3_real_t
 #define fmi3Integer fmi3_integer_t
 #define fmi3Boolean fmi3_boolean_t
 #define fmi3Char fmi3_char_t
@@ -81,7 +80,6 @@ typedef enum {
 
 #undef fmi3Component
 #undef fmi3ValueReference
-#undef fmi3Real
 #undef fmi3Integer
 #undef fmi3Boolean
 #undef fmi3String

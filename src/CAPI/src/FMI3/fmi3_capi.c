@@ -86,7 +86,7 @@ Types for Common Functions
     LOAD_DLL_FUNCTION(fmi3Instantiate);
     LOAD_DLL_FUNCTION(fmi3FreeInstance);
 
-   /* typedef fmi3Status fmi3SetupExperimentTYPE        (fmi3Component, fmi3Boolean, fmi3Real, fmi3Real, fmi3Boolean, fmi3Real);
+   /* typedef fmi3Status fmi3SetupExperimentTYPE        (fmi3Component, fmi3Boolean, fmi3Float64, fmi3Float64, fmi3Boolean, fmi3Float64);
    typedef fmi3Status fmi3EnterInitializationModeTYPE(fmi3Component);
    typedef fmi3Status fmi3ExitInitializationModeTYPE (fmi3Component); */
     LOAD_DLL_FUNCTION(fmi3SetupExperiment);
@@ -94,22 +94,24 @@ Types for Common Functions
     LOAD_DLL_FUNCTION(fmi3ExitInitializationMode);
 
 	/* Getting and setting variable values */
-/*   typedef fmi3Status fmi3GetRealTYPE   (fmi3Component, const fmi3ValueReference[], size_t, fmi3Real   []);
+/*   TODO, NOTE: for floatXX and so on, I'm not copying any API to update this file: just check real header instead
    typedef fmi3Status fmi3GetIntegerTYPE(fmi3Component, const fmi3ValueReference[], size_t, fmi3Integer[]);
    typedef fmi3Status fmi3GetBooleanTYPE(fmi3Component, const fmi3ValueReference[], size_t, fmi3Boolean[]);
    typedef fmi3Status fmi3GetStringTYPE (fmi3Component, const fmi3ValueReference[], size_t, fmi3String []); */
 
-	LOAD_DLL_FUNCTION(fmi3GetReal);
+	LOAD_DLL_FUNCTION(fmi3GetFloat64);
+	LOAD_DLL_FUNCTION(fmi3GetFloat32);
 	LOAD_DLL_FUNCTION(fmi3GetInteger);
 	LOAD_DLL_FUNCTION(fmi3GetBoolean);
 	LOAD_DLL_FUNCTION(fmi3GetString);
 
-	/*   typedef fmi3Status fmi3SetRealTYPE   (fmi3Component, const fmi3ValueReference[], size_t, const fmi3Real   []);
+	/*   typedef fmi3Status fmi3SetRealTYPE   (fmi3Component, const fmi3ValueReference[], size_t, const fmi3Float64   []);
    typedef fmi3Status fmi3SetIntegerTYPE(fmi3Component, const fmi3ValueReference[], size_t, const fmi3Integer[]);
    typedef fmi3Status fmi3SetBooleanTYPE(fmi3Component, const fmi3ValueReference[], size_t, const fmi3Boolean[]);
    typedef fmi3Status fmi3SetStringTYPE (fmi3Component, const fmi3ValueReference[], size_t, const fmi3String []); */
 
-	LOAD_DLL_FUNCTION(fmi3SetReal);
+	LOAD_DLL_FUNCTION(fmi3SetFloat64);
+	LOAD_DLL_FUNCTION(fmi3SetFloat32);
 	LOAD_DLL_FUNCTION(fmi3SetInteger);
 	LOAD_DLL_FUNCTION(fmi3SetBoolean);
 	LOAD_DLL_FUNCTION(fmi3SetString);
@@ -143,23 +145,23 @@ static jm_status_enu_t fmi3_capi_load_cs_fcn(fmi3_capi_t* fmu, unsigned int capa
 /* Getting directional derivatives */
 /*   typedef fmi3Status fmi3GetDirectionalDerivativeTYPE(fmi3Component, const fmi3ValueReference[], size_t,
                                                                    const fmi3ValueReference[], size_t,
-                                                                   const fmi3Real[], fmi3Real[]);*/
+                                                                   const fmi3Float64[], fmi3Float64[]);*/
     LOAD_DLL_FUNCTION_WITH_FLAG(fmi3GetDirectionalDerivative,fmi3_cs_providesDirectionalDerivatives);
 
 /* Simulating the slave */
-/*   typedef fmi3Status fmi3SetRealInputDerivativesTYPE (fmi3Component, const fmi3ValueReference [], size_t, const fmi3Integer [], const fmi3Real []);
-   typedef fmi3Status fmi3GetRealOutputDerivativesTYPE(fmi3Component, const fmi3ValueReference [], size_t, const fmi3Integer [], fmi3Real []); */
+/*   typedef fmi3Status fmi3SetRealInputDerivativesTYPE (fmi3Component, const fmi3ValueReference [], size_t, const fmi3Integer [], const fmi3Float64 []);
+   typedef fmi3Status fmi3GetRealOutputDerivativesTYPE(fmi3Component, const fmi3ValueReference [], size_t, const fmi3Integer [], fmi3Float64 []); */
 	LOAD_DLL_FUNCTION(fmi3SetRealInputDerivatives);
 	LOAD_DLL_FUNCTION(fmi3GetRealOutputDerivatives);
 
-/*   typedef fmi3Status fmi3DoStepTYPE     (fmi3Component, fmi3Real, fmi3Real, fmi3Boolean);
+/*   typedef fmi3Status fmi3DoStepTYPE     (fmi3Component, fmi3Float64, fmi3Float64, fmi3Boolean);
    typedef fmi3Status fmi3CancelStepTYPE (fmi3Component); */
 	LOAD_DLL_FUNCTION(fmi3CancelStep);
 	LOAD_DLL_FUNCTION(fmi3DoStep);
 
 /* Inquire slave status */
 /*   typedef fmi3Status fmi3GetStatusTYPE       (fmi3Component, const fmi3StatusKind, fmi3Status* );
-   typedef fmi3Status fmi3GetRealStatusTYPE   (fmi3Component, const fmi3StatusKind, fmi3Real*   );
+   typedef fmi3Status fmi3GetRealStatusTYPE   (fmi3Component, const fmi3StatusKind, fmi3Float64*   );
    typedef fmi3Status fmi3GetIntegerStatusTYPE(fmi3Component, const fmi3StatusKind, fmi3Integer*);
    typedef fmi3Status fmi3GetBooleanStatusTYPE(fmi3Component, const fmi3StatusKind, fmi3Boolean*);
    typedef fmi3Status fmi3GetStringStatusTYPE (fmi3Component, const fmi3StatusKind, fmi3String* ); */
@@ -197,7 +199,7 @@ static jm_status_enu_t fmi3_capi_load_me_fcn(fmi3_capi_t* fmu, unsigned int capa
 /* Getting directional derivatives */
 /*   typedef fmi3Status fmi3GetDirectionalDerivativeTYPE(fmi3Component, const fmi3ValueReference[], size_t,
                                                                    const fmi3ValueReference[], size_t,
-                                                                   const fmi3Real[], fmi3Real[]); */
+                                                                   const fmi3Float64[], fmi3Float64[]); */
     LOAD_DLL_FUNCTION_WITH_FLAG(fmi3GetDirectionalDerivative,fmi3_me_providesDirectionalDerivatives);
 
 /* Enter and exit the different modes */
@@ -211,18 +213,18 @@ static jm_status_enu_t fmi3_capi_load_me_fcn(fmi3_capi_t* fmu, unsigned int capa
 	LOAD_DLL_FUNCTION(fmi3CompletedIntegratorStep);
 
 /* Providing independent variables and re-initialization of caching */
-   /*typedef fmi3Status fmi3SetTimeTYPE            (fmi3Component, fmi3Real);
-   typedef fmi3Status fmi3SetContinuousStatesTYPE(fmi3Component, const fmi3Real[], size_t);*/
+   /*typedef fmi3Status fmi3SetTimeTYPE            (fmi3Component, fmi3Float64);
+   typedef fmi3Status fmi3SetContinuousStatesTYPE(fmi3Component, const fmi3Float64[], size_t);*/
 	LOAD_DLL_FUNCTION(fmi3SetTime);
 	LOAD_DLL_FUNCTION(fmi3SetContinuousStates);
 
 /* Evaluation of the model equations */
 
 /*
-   typedef fmi3Status fmi3GetDerivativesTYPE               (fmi3Component, fmi3Real[], size_t);
-   typedef fmi3Status fmi3GetEventIndicatorsTYPE           (fmi3Component, fmi3Real[], size_t);
-   typedef fmi3Status fmi3GetContinuousStatesTYPE          (fmi3Component, fmi3Real[], size_t);
-   typedef fmi3Status fmi3GetNominalsOfContinuousStatesTYPE(fmi3Component, fmi3Real[], size_t);*/
+   typedef fmi3Status fmi3GetDerivativesTYPE               (fmi3Component, fmi3Float64[], size_t);
+   typedef fmi3Status fmi3GetEventIndicatorsTYPE           (fmi3Component, fmi3Float64[], size_t);
+   typedef fmi3Status fmi3GetContinuousStatesTYPE          (fmi3Component, fmi3Float64[], size_t);
+   typedef fmi3Status fmi3GetNominalsOfContinuousStatesTYPE(fmi3Component, fmi3Float64[], size_t);*/
 	LOAD_DLL_FUNCTION(fmi3GetDerivatives);
 	LOAD_DLL_FUNCTION(fmi3GetEventIndicators);
 	LOAD_DLL_FUNCTION(fmi3GetContinuousStates);
@@ -406,9 +408,9 @@ void fmi3_capi_free_instance(fmi3_capi_t* fmu)
 
 
 fmi3_status_t fmi3_capi_setup_experiment(fmi3_capi_t* fmu,
-    fmi3_boolean_t tolerance_defined, fmi3_real_t tolerance,
-    fmi3_real_t start_time, fmi3_boolean_t stop_time_defined,
-    fmi3_real_t stop_time)
+    fmi3_boolean_t tolerance_defined, fmi3_float64_t tolerance,
+    fmi3_float64_t start_time, fmi3_boolean_t stop_time_defined,
+    fmi3_float64_t stop_time)
 {
     assert(fmu); assert(fmu->c);
     jm_log_verbose(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Calling fmi3SetupExperiment");
@@ -464,8 +466,15 @@ fmi3_status_t fmi3_capi_de_serialize_fmu_state  (fmi3_capi_t* fmu, const fmi3_by
 
 fmi3_status_t fmi3_capi_get_directional_derivative(fmi3_capi_t* fmu, const fmi3_value_reference_t v_ref[], size_t nv,
                                                                    const fmi3_value_reference_t z_ref[], size_t nz,
-                                                                   const fmi3_real_t dv[], fmi3_real_t dz[]){
+                                                                   const fmi3_float64_t dv[], fmi3_float64_t dz[]){
 	return fmu->fmi3GetDirectionalDerivative(fmu -> c, z_ref, nz, v_ref, nv, dv, dz);
+}
+
+/* fmiSet* functions for fmi 3.0, TODO: change name back when fixed for all types and the 2.0 version is no longer needed */
+#define FMISETX_30(FNAME1, FNAME2, FTYPE) \
+fmi3_status_t FNAME1(fmi3_capi_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, const FTYPE value[], size_t nValues)	\
+{ \
+	return fmu->FNAME2(fmu->c, vr, nvr, value, nValues); \
 }
 
 
@@ -476,6 +485,14 @@ fmi3_status_t FNAME1(fmi3_capi_t* fmu, const fmi3_value_reference_t vr[], size_t
 	return fmu->FNAME2(fmu->c, vr, nvr, value); \
 }
 
+/* fmiGet* functions for fmi 3.0, TODO: change name back when fixed for all types and the 2.0 version is no longer needed */
+#define FMIGETX_30(FNAME1, FNAME2, FTYPE) \
+fmi3_status_t FNAME1(fmi3_capi_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, FTYPE value[], size_t nValues) \
+{ \
+	return fmu->FNAME2(fmu->c, vr, nvr, value, nValues); \
+}
+
+
 /* fmiGet* functions */
 #define FMIGETX(FNAME1, FNAME2, FTYPE) \
 fmi3_status_t FNAME1(fmi3_capi_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, FTYPE value[]) \
@@ -483,12 +500,15 @@ fmi3_status_t FNAME1(fmi3_capi_t* fmu, const fmi3_value_reference_t vr[], size_t
 	return fmu->FNAME2(fmu->c, vr, nvr, value); \
 }
 
-FMISETX(fmi3_capi_set_real,		fmi3SetReal,		fmi3_real_t)
-FMISETX(fmi3_capi_set_integer,	fmi3SetInteger,	fmi3_integer_t)
-FMISETX(fmi3_capi_set_boolean,	fmi3SetBoolean,	fmi3_boolean_t)
-FMISETX(fmi3_capi_set_string,	fmi3SetString,	fmi3_string_t)
+FMISETX_30(fmi3_capi_set_float64,	fmi3SetFloat64,	fmi3_float64_t)
+FMISETX_30(fmi3_capi_set_float32,	fmi3SetFloat32,	fmi3_float32_t)
+FMISETX(fmi3_capi_set_integer,		fmi3SetInteger,	fmi3_integer_t)
+FMISETX(fmi3_capi_set_boolean,		fmi3SetBoolean,	fmi3_boolean_t)
+FMISETX(fmi3_capi_set_string,		fmi3SetString,	fmi3_string_t)
 
-FMIGETX(fmi3_capi_get_real,	fmi3GetReal,		fmi3_real_t)
-FMIGETX(fmi3_capi_get_integer,	fmi3GetInteger,	fmi3_integer_t)
-FMIGETX(fmi3_capi_get_boolean,	fmi3GetBoolean,	fmi3_boolean_t)
-FMIGETX(fmi3_capi_get_string,	fmi3GetString,	fmi3_string_t)
+FMIGETX_30(fmi3_capi_get_float64,	fmi3GetFloat64, fmi3_float64_t)
+FMIGETX_30(fmi3_capi_get_float32,	fmi3GetFloat32, fmi3_float32_t)
+FMIGETX(fmi3_capi_get_integer,		fmi3GetInteger,	fmi3_integer_t)
+FMIGETX(fmi3_capi_get_boolean,	    fmi3GetBoolean,	fmi3_boolean_t)
+FMIGETX(fmi3_capi_get_string,	    fmi3GetString,	fmi3_string_t)
+

@@ -52,7 +52,8 @@ int test_parsed_all_varialbes(fmi3_import_t* fmu)
             + mc.num_independent;
     
     
-    if (n_total != 12) {
+    if (n_total != 13) {
+		printf("error: failed to parse all variables\n");
         do_exit(CTEST_RETURN_FAIL);
     }
 
@@ -193,14 +194,43 @@ int test_simulate_me(fmi3_import_t* fmu)
 
 	/* Validate result */
 	for (k = 0; k < n_states; k++) {
-		fmi3_float64_t res = states[k] - states_end_results[k];
-		res = res > 0 ? res: -res; /* Take abs */
-		if (res > 1e-10) {
-			printf("Simulation results is wrong  states[%u] %f != %f, |res| = %f\n", (unsigned)k, states[k], states_end_results[k], res);
+		fmi3_float64_t diff = states[k] - states_end_results[k];
+		diff = diff > 0 ? diff: -diff; /* Take abs */
+		if (diff > 1e-10) {
+			printf("Simulation results is wrong  states[%u] %f != %f, |res| = %f\n", (unsigned)k, states[k], states_end_results[k], diff);
 			do_exit(CTEST_RETURN_FAIL);
 		}
 	}
-	
+
+	/* Validate array variable results */
+	{
+#define ARR_SIZE (4)
+		fmi3_value_reference_t vr = 12;
+		fmi3_float64_t rvalues[ARR_SIZE];
+		fmi3_float64_t diff;
+		fmi3_float64_t tol = 3e-3; /* absolute tolerance */
+		size_t nValues = ARR_SIZE;
+		fmi3_float64_t ref_res[] = { states_end_results[0], states_end_results[1], states_end_results[1], -9.81 };
+
+		/* get result */
+		fmistatus = fmi3_import_get_float64(fmu, &vr, 1, &rvalues, nValues);
+		if (fmistatus != fmi3_status_ok) {
+			printf("error: get values for array failed\n");
+			do_exit(CTEST_RETURN_FAIL);
+		}
+
+		/* check result */
+		for (k = 0; k < ARR_SIZE; k++) {
+			diff = ref_res[k] - rvalues[k];
+			diff = diff > 0 ? diff : -diff;
+			if (diff > tol) {
+				printf("error: incorrect final result for array idx: '%d', exp: '%fl', act: '%fl', diff: '%fl', tol (abs.): '%fl'\n", k, ref_res[k], rvalues[k], diff, tol);
+				do_exit(CTEST_RETURN_FAIL);
+			}
+		}
+
+#undef ARR_SIZE
+	}
 
 	fmistatus = fmi3_import_terminate(fmu);
 

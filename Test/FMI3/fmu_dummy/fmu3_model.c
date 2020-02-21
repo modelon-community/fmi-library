@@ -98,19 +98,33 @@ fmi3Status fmi_get_float64(fmi3Component c, const fmi3ValueReference vr[], size_
 		return fmi3Fatal;
 	} else {
 		size_t k;
+		size_t m = 0; /* index in value, considering that arrays will require many indices */
 		for (k = 0; k < nvr; k++) {
 			fmi3ValueReference cvr = vr[k];
 			if (cvr < N_STATES) {
-				value[k] = comp->states[cvr];
+				value[m] = comp->states[cvr];
 			} 
 			else if(cvr == 4) {
 				calc_get_derivatives(comp);
-				value[k] = comp->states_der[1];
+				value[m] = comp->states_der[1];
+			}
+			else if (cvr == 12) { /* special case: array */
+				calc_get_derivatives(comp);
+				value[m++] = comp->states[0];
+				value[m++] = comp->states_der[0];
+				value[m++] = comp->states[1];
+				value[m++] = comp->states_der[1];
 			}
 			else {
-				value[k] = comp->reals[cvr];
-			}	
+				value[m] = comp->reals[cvr];
+			}
+			m++;
 		}
+
+		if (m - 1 != nValues) {
+            return fmi3Fatal;
+		}
+
 		return fmi3OK;
 	}
 }

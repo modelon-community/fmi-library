@@ -46,6 +46,13 @@
   <Float64 name="CONSTANT_ALIAS_1" valueReference="200" description="constant in alias set" variability="constant" initial="exact" start="121"/>
   <!-- 12 -->
   <Float64 name="CONSTANT_ALIAS_2" valueReference="200" description="constant in alias set" variability="constant" initial="exact" start="121"/>
+  <!-- 13 -->
+  <Float64 name="array_of_states" valueReference="12" causality="output" description="Variable testing of arrays. Outputs states and state derivatives: {{h, h'}, {v, v'}} (where h' = v)" start="1.0 4.0 4.0 -9.81">
+    <Dimension start="2"/>
+    <Dimension start="2"/>
+  </Float64>
+
+
 </ModelVariables>
 <ModelStructure>
   <Outputs>

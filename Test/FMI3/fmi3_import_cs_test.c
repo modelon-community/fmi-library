@@ -157,6 +157,36 @@ int test_simulate_cs(fmi3_import_t* fmu)
 		}
 	}
 
+	/* Validate array variable results */
+	{
+#define ARR_SIZE (4)
+		fmi3_value_reference_t vr = 12;
+		fmi3_float64_t rvalues[ARR_SIZE];
+		fmi3_float64_t diff;
+		fmi3_float64_t tol = 3e-3; /* absolute tolerance */
+		size_t nValues = ARR_SIZE;
+        fmi3_float64_t ref_res[] = {simulation_results[0], simulation_results[1], simulation_results[1], -9.81};
+
+		/* get result */
+		fmistatus = fmi3_import_get_float64(fmu, &vr, 1, &rvalues, nValues);
+		if (fmistatus != fmi3_status_ok) {
+			printf("error: get values for array failed\n");
+			do_exit(CTEST_RETURN_FAIL);
+		}
+
+		/* check result */
+		for (k = 0; k < ARR_SIZE; k++) {
+			diff = ref_res[k] - rvalues[k];
+			diff = diff > 0 ? diff : -diff;
+			if (diff > tol) {
+				printf("error: incorrect final result for array idx: '%d', exp: '%fl', act: '%fl', diff: '%fl', tol (abs.): '%fl'\n", k, ref_res[k], rvalues[k], diff, tol);
+				do_exit(CTEST_RETURN_FAIL);
+			}
+		}
+
+#undef ARR_SIZE
+	}
+
 	fmistatus = fmi3_import_terminate(fmu);
 
 	fmi3_import_free_instance(fmu);

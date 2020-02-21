@@ -15,7 +15,7 @@ static fmi1_import_t *parse_xml(const char *model_desc_path)
         return NULL;
     }
 
-    xml = fmi1_import_parse_xml(ctx, model_desc_path, NULL);
+    xml = fmi1_import_parse_xml(ctx, model_desc_path);
 
     fmi_import_free_context(ctx);
     return xml;

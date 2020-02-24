@@ -7,14 +7,14 @@ def Configs = [
     'win64': [
         name: 'win64',
         os: 'windows',
-        node: 'VisualStudio2010 && OCT-SDK-1.4',
+        node: 'VisualStudio2010 && OCT-SDK-1.4 && dockerWindows',
         target_install: 'install',
         target_test: 'test'
     ],
     'win64_static_runtime': [
         name: 'win64_static_runtime',
         os: 'windows',
-        node: 'VisualStudio2010 && OCT-SDK-1.4',
+        node: 'VisualStudio2010 && OCT-SDK-1.4 && dockerWindows',
         target_install: 'install',
         target_test: 'test'
     ], 
@@ -33,8 +33,6 @@ def Configs = [
         target_test: 'N/A'
     ]
 ]
-
-def version = '2.0.4-SNAPSHOT'
 
 // Loads the 'signBinaries' function
 library 'ModelonCommon@trunk'
@@ -103,7 +101,16 @@ tasks[conf.name] = {
     }
 }
 
-parallel tasks
+// Currently getting cygwin heap error when parallellizing win64 and win64_static_runtime, so not doing that for now
+def parallellTasks = [
+    'linux64': tasks.linux64,
+    'win64': tasks.win64,
+    'documentation': tasks.documentation,
+]
+parallel parallellTasks
+
+tasks.win64_static_runtime()
+
 
 def clean(conf) {
     if (conf.os == 'windows') {

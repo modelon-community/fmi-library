@@ -61,11 +61,13 @@ struct fmi3_capi_t {
     fmi3_terminate_ft					fmi3Terminate;
     fmi3_reset_ft					fmi3Reset;
 
-    fmi3_set_real_ft					fmi3SetReal;
+    fmi3_set_float64_ft					fmi3SetFloat64;
+    fmi3_set_float32_ft					fmi3SetFloat32;
     fmi3_set_integer_ft					fmi3SetInteger;
     fmi3_set_boolean_ft					fmi3SetBoolean;
     fmi3_set_string_ft					fmi3SetString;
-	fmi3_get_real_ft					fmi3GetReal;
+	fmi3_get_float64_ft					fmi3GetFloat64;
+    fmi3_get_float32_ft					fmi3GetFloat32;
     fmi3_get_integer_ft					fmi3GetInteger;
     fmi3_get_boolean_ft					fmi3GetBoolean;
     fmi3_get_string_ft					fmi3GetString;

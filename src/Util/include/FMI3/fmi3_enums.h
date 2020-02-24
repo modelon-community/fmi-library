@@ -23,7 +23,7 @@ extern "C" {
 #endif
 
 /** \file fmi3_enums.h
-    \brief Definions the enum types used with FMI 2.0 libs
+    \brief Definions the enum types used with FMI 3.0 libs
 */
 
 /**    \addtogroup fmi3_utils
@@ -31,7 +31,7 @@ extern "C" {
     \addtogroup fmi3_enums
     @}
 */
-/** \addtogroup fmi3_enums Enum types used with FMI 2.0 libs
+/** \addtogroup fmi3_enums Enum types used with FMI 3.0 libs
     @{
 */
 /** \brief Naming convention for the variables in XML file*/
@@ -45,7 +45,7 @@ typedef enum fmi3_variable_naming_convension_enu_t
 /** \brief Convert a #fmi3_variable_naming_convension_enu_t constant into string */
 FMILIB_EXPORT const char* fmi3_naming_convention_to_string(fmi3_variable_naming_convension_enu_t convention);
 
-/**  \brief FMU 2.0 kinds */
+/**  \brief FMU 3.0 kinds */
 typedef enum fmi3_fmu_kind_enu_t
 {
         fmi3_fmu_kind_unknown = 0,
@@ -85,7 +85,7 @@ typedef enum fmi3_causality_enu_t {
 FMILIB_EXPORT const char* fmi3_causality_to_string(fmi3_causality_enu_t c);
 
 /**
- * \brief Get the default variability for a given causality. NOTE: the FMI 2.0
+ * \brief Get the default variability for a given causality. NOTE: the FMI 3.0
  *        defines the default to always be continuous, but this is incompatible
  *        with causalities "parameter" and "calculatedParameter". These will
  *        instead be treated as having variability "fixed".
@@ -136,8 +136,10 @@ typedef enum fmi3_variable_alias_kind_enu_t {
 /** \brief Base types used in type definitions */
 typedef enum fmi3_base_type_enu_t
 {
-    fmi3_base_type_real,
+    fmi3_base_type_float64,
+    fmi3_base_type_float32,
     fmi3_base_type_int,
+    fmi3_base_type_int8,
     fmi3_base_type_bool,
     fmi3_base_type_str,
     fmi3_base_type_enum
@@ -226,6 +228,15 @@ typedef enum fmi3_dependency_factor_kind_enu_t
     fmi3_dependency_factor_kind_discrete,
     fmi3_dependency_factor_kind_num
 } fmi3_dependency_factor_kind_enu_t;
+
+
+/** \brief Bitness for types such as Float32/Float64 */
+typedef enum fmi3_bitness_enu_t {
+    fmi3_bitness_64 = 1,
+    fmi3_bitness_32,
+    fmi3_bitness_16,
+    fmi3_bitness_8
+} fmi3_bitness_enu_t;
 
 /**  \brief Convert dependency factor kind constant to string
     \param fc Dependency factor kind identifier.

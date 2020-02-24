@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- 
+    this file is partial/full copy of the example in the github repo:
+        fmi-standard\docs\examples\variable_types.xml
+-->
+<fmiModelDescription fmiVersion="3.0-alpha" modelName="VariableTypes" instantiationToken="">
+
+  <CoSimulation modelIdentifier="VariableTypes"/>
+
+  <ModelVariables>
+
+    <!-- string value in start -->
+    <Float64 name="array" valueReference="1" initial="exact" start="a">
+      <Dimension start="1"/>
+    </Float64>
+
+  </ModelVariables>
+  
+  <ModelStructure/>
+
+</fmiModelDescription>

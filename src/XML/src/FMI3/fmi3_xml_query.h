@@ -12,6 +12,9 @@
     You should have received a copy of the FMILIB_License.txt file
     along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 */
+
+/* TODO: this file (and .c) doesn't seem like it's being used - delete? */
+
 #ifndef FMI3_XML_QUERY_H
 #define FMI3_XML_QUERY_H
 

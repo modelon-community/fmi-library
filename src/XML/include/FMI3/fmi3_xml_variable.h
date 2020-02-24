@@ -24,7 +24,7 @@
 
 #include "fmi3_xml_model_description.h"
 #include "fmi3_xml_type.h"
-
+#include "fmi3_xml_dimension.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -50,7 +50,14 @@ fmi3_value_reference_t fmi3_xml_get_variable_vr(fmi3_xml_variable_t*);
 fmi3_xml_variable_typedef_t* fmi3_xml_get_variable_declared_type(fmi3_xml_variable_t*);
 fmi3_base_type_enu_t fmi3_xml_get_variable_base_type(fmi3_xml_variable_t*);
 
-int   fmi3_xml_get_variable_has_start(fmi3_xml_variable_t*);
+fmi3_float64_t* fmi3_xml_get_float64_variable_start_array(fmi3_xml_float64_variable_t* v);
+fmi3_float32_t* fmi3_xml_get_float32_variable_start_array(fmi3_xml_float32_variable_t* v);
+
+jm_vector(fmi3_xml_dimension_t)* fmi3_xml_get_variable_dimension_vector(fmi3_xml_variable_t* v);
+
+int fmi3_xml_variable_is_array(fmi3_xml_variable_t* v);
+
+int fmi3_xml_get_variable_has_start(fmi3_xml_variable_t*);
 
 fmi3_variability_enu_t fmi3_xml_get_variability(fmi3_xml_variable_t*);
 fmi3_causality_enu_t fmi3_xml_get_causality(fmi3_xml_variable_t*);
@@ -59,20 +66,15 @@ fmi3_initial_enu_t fmi3_xml_get_initial(fmi3_xml_variable_t*);
 fmi3_xml_variable_t* fmi3_xml_get_previous(fmi3_xml_variable_t* v);
 fmi3_boolean_t fmi3_xml_get_canHandleMultipleSetPerTimeInstant(fmi3_xml_variable_t* v);
 
-fmi3_xml_real_variable_t* fmi3_xml_get_variable_as_real(fmi3_xml_variable_t*);
+fmi3_xml_float64_variable_t* fmi3_xml_get_variable_as_float64(fmi3_xml_variable_t*);
+fmi3_xml_float32_variable_t* fmi3_xml_get_variable_as_float32(fmi3_xml_variable_t*);
 fmi3_xml_integer_variable_t* fmi3_xml_get_variable_as_integer(fmi3_xml_variable_t*);
 fmi3_xml_enum_variable_t* fmi3_xml_get_variable_as_enum(fmi3_xml_variable_t*);
 fmi3_xml_string_variable_t* fmi3_xml_get_variable_as_string(fmi3_xml_variable_t*);
 fmi3_xml_bool_variable_t* fmi3_xml_get_variable_as_boolean(fmi3_xml_variable_t*);
 
-double fmi3_xml_get_real_variable_start(fmi3_xml_real_variable_t* v);
-fmi3_xml_real_variable_t* fmi3_xml_get_real_variable_derivative_of(fmi3_xml_real_variable_t* v);
-fmi3_boolean_t fmi3_xml_get_real_variable_reinit(fmi3_xml_real_variable_t* v);
-double fmi3_xml_get_real_variable_max(fmi3_xml_real_variable_t* v);
-double fmi3_xml_get_real_variable_min(fmi3_xml_real_variable_t* v);
-double fmi3_xml_get_real_variable_nominal(fmi3_xml_real_variable_t* v);
-fmi3_xml_unit_t* fmi3_xml_get_real_variable_unit(fmi3_xml_real_variable_t* v);
-fmi3_xml_display_unit_t* fmi3_xml_get_real_variable_display_unit(fmi3_xml_real_variable_t* v);
+ /* include generated prototypes */
+#include "gen/FMI3/fmi3_xml_variable_generics_h.c"
 
 const char* fmi3_xml_get_string_variable_start(fmi3_xml_string_variable_t* v);
 fmi3_boolean_t fmi3_xml_get_boolean_variable_start(fmi3_xml_bool_variable_t* v);
@@ -88,6 +90,8 @@ int fmi3_xml_get_enum_variable_max(fmi3_xml_enum_variable_t* v);
 
 fmi3_variable_alias_kind_enu_t fmi3_xml_get_variable_alias_kind(fmi3_xml_variable_t*);
 fmi3_xml_variable_t* fmi3_xml_get_variable_alias_base(fmi3_xml_model_description_t* md,fmi3_xml_variable_t*);
+
+void fmi3_xml_variable_free_internals(jm_callbacks* callbacks, fmi3_xml_variable_t* var);
 
 /**
     Return the list of all the variables aliased to the given one (including the base one.

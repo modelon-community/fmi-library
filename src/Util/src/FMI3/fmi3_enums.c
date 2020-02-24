@@ -92,8 +92,10 @@ const char* fmi3_status_to_string(fmi3_status_t status) {
 
 const char* fmi3_base_type_to_string(fmi3_base_type_enu_t bt) {
     switch(bt) {
-    case fmi3_base_type_real: return "Real";
+    case fmi3_base_type_float64: return "Float64";
+    case fmi3_base_type_float32: return "Float32";
     case fmi3_base_type_int: return "Integer";
+    case fmi3_base_type_int8: return "Int8";
     case fmi3_base_type_bool: return "Boolean";
     case fmi3_base_type_str: return "String";
     case fmi3_base_type_enum: return "Enumeration";

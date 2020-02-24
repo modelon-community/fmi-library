@@ -1,3 +1,4 @@
+
 /*
     Copyright (C) 2012 Modelon AB
 
@@ -18,10 +19,6 @@
 #include <string.h>
 
 #include "fmi3_import_impl.h"
-
-fmi3_import_display_unit_t* fmi3_import_get_type_display_unit(fmi3_import_real_typedef_t* t) {
-	return fmi3_xml_get_type_display_unit(t);
-}
 
 unsigned int fmi3_import_get_type_definition_number(fmi3_import_type_definitions_t* td) {
 	return fmi3_xml_get_type_definition_number(td);
@@ -44,46 +41,29 @@ fmi3_base_type_enu_t fmi3_import_get_base_type(fmi3_import_variable_typedef_t* t
 	return fmi3_xml_get_base_type(t);
 }
 
-fmi3_import_real_typedef_t* fmi3_import_get_type_as_real(fmi3_import_variable_typedef_t* t) {
-	return fmi3_xml_get_type_as_real(t);
+fmi3_import_float_typedef_t* fmi3_import_get_type_as_float(fmi3_import_variable_typedef_t* t) {
+	return fmi3_xml_get_type_as_float(t);
 }
 
 fmi3_import_integer_typedef_t* fmi3_import_get_type_as_int(fmi3_import_variable_typedef_t* t) {
 	return fmi3_xml_get_type_as_int(t);
 }
 
+fmi3_import_integer_typedef_t* fmi3_import_get_type_as_intXX(fmi3_import_variable_typedef_t* t) {
+	return fmi3_xml_get_type_as_intXX(t);
+}
+
 fmi3_import_enumeration_typedef_t* fmi3_import_get_type_as_enum(fmi3_import_variable_typedef_t* t) {
 	return fmi3_xml_get_type_as_enum(t);
 }
 
-/* Note that 0-pointer is returned for strings and booleans, empty string quantity if not defined*/
+/* Note that 0-pointer is returned for strings and booleans, empty string quantity if not defined */
 const char* fmi3_import_get_type_quantity(fmi3_import_variable_typedef_t* t) {
 	return fmi3_xml_get_type_quantity(t);
 }
 
-fmi3_real_t fmi3_import_get_real_type_min(fmi3_import_real_typedef_t* t) {
-	return fmi3_xml_get_real_type_min(t);
-}
-
-fmi3_real_t fmi3_import_get_real_type_max(fmi3_import_real_typedef_t* t) {
-	return fmi3_xml_get_real_type_max(t);
-}
-
-fmi3_real_t fmi3_import_get_real_type_nominal(fmi3_import_real_typedef_t* t) {
-	return fmi3_xml_get_real_type_nominal(t);
-}
-
-fmi3_import_unit_t* fmi3_import_get_real_type_unit(fmi3_import_real_typedef_t* t) {    
-	return fmi3_xml_get_real_type_unit(t);
-}
-
-int fmi3_import_get_real_type_is_relative_quantity(fmi3_import_real_typedef_t* t) {
-	return fmi3_xml_get_real_type_is_relative_quantity(t);
-}
-
-int fmi3_import_get_real_type_is_unbounded(fmi3_import_real_typedef_t* t) {
-	return fmi3_xml_get_real_type_is_unbounded(t);
-}
+/* include generated generic functions */
+#include "gen/FMI3/fmi3_import_type_generics.c"
 
 fmi3_integer_t fmi3_import_get_integer_type_min(fmi3_import_integer_typedef_t* t) {
 	return fmi3_xml_get_integer_type_min(t);

@@ -21,6 +21,7 @@
 #include <FMI3/fmi3_xml_model_description.h>
 
 #include "fmi3_xml_type_impl.h"
+#include "fmi3_xml_dimension_impl.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -37,7 +38,7 @@ struct fmi3_xml_variable_t {
     /* NB: before parsing of <ModelVariables> has finished,
            derivativeOf and previous are stored as integer indices cast to pointers,
            until they can be looked up */
-    fmi3_xml_variable_t *derivativeOf;      /** \brief Only for continuous Real variables. If non-NULL, the variable that this is the derivative of. */
+    fmi3_xml_variable_t *derivativeOf;      /** \brief Only for continuous FloatXX variables. If non-NULL, the variable that this is the derivative of. */
     fmi3_xml_variable_t *previous;          /** \brief If non-NULL, the variable that holds the value of this variable at the previous super-dense time instant. */
 
     fmi3_value_reference_t vr;				/** \brief Value reference */
@@ -45,9 +46,22 @@ struct fmi3_xml_variable_t {
     char initial;
     char variability;
     char causality;
-    char reinit; /** \brief Only for continuous Real variables */
+    char reinit; /** \brief Only for continuous FloatXX variables */
     char canHandleMultipleSetPerTimeInstant;
 
+    /* array fields */
+    jm_vector(fmi3_xml_dimension_t) dimensionsVector; /* stores the dimensions and their attributes */
+    /*
+     * Dynamic memory storage for resolved dimensions (i.e. vr's are dereferenced).
+     * This field will be exposed to the user, but FMIL handles memory management,
+     * and this is a convenient place to store it.
+     */
+    unsigned int* dimensionsArray; /* TODO: this var can probably be removed now, since API was restructured (reduced) */
+
+    /* temp fields during parsing*/
+    jm_string startAttr;
+
+    /* 'name' field must be last, because its memory is allocated with jm_named_alloc[_v] */
     char name[1];
 };
 

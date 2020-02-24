@@ -21,10 +21,30 @@
 #include "fmi3_xml_parser.h"
 #include "fmi3_xml_type_impl.h"
 #include "fmi3_xml_model_description_impl.h"
+#include "fmi3_xml_dimension_impl.h"
 
 #include "fmi3_xml_variable_impl.h"
 
 static const char* module = "FMI3XML";
+
+struct fmi3_xml_variable_default_values {
+    fmi3_float32_t float32;
+    fmi3_float64_t float64;
+};
+
+static struct fmi3_xml_variable_default_values VARIABLE_DEFAULT_VALUES = { 0, 0 };
+
+static void* fmi3_xml_get_type_default_value(fmi3_bitness_enu_t bitness) {
+    switch (bitness) {
+        case fmi3_bitness_32:
+            return &VARIABLE_DEFAULT_VALUES.float32;
+        case fmi3_bitness_64:
+            return &VARIABLE_DEFAULT_VALUES.float64;
+        default:
+            assert(0); /* implementation error */
+            return NULL;
+    }
+}
 
 const char* fmi3_xml_get_variable_name(fmi3_xml_variable_t* v) {
     return v->name;
@@ -103,7 +123,6 @@ jm_status_enu_t fmi3_xml_get_variable_aliases(fmi3_xml_model_description_t* md,f
     return jm_status_success;
 }
 
-
 fmi3_xml_variable_typedef_t* fmi3_xml_get_variable_declared_type(fmi3_xml_variable_t* v) {
     return (fmi3_xml_variable_typedef_t*)(fmi3_xml_find_type_struct(v->typeBase, fmi3_xml_type_struct_enu_typedef));
 }
@@ -113,8 +132,39 @@ fmi3_base_type_enu_t fmi3_xml_get_variable_base_type(fmi3_xml_variable_t* v) {
     return (type->baseType);
 }
 
+jm_vector(fmi3_xml_dimension_t)* fmi3_xml_get_variable_dimension_vector(fmi3_xml_variable_t* v) {
+    return &v->dimensionsVector;
+}
+
+void get_variable_dimensions_start_sizes(fmi3_xml_model_description_t* md, fmi3_xml_variable_t* v, const size_t** dimensions, size_t* nDimensions) {
+    jm_vector(fmi3_xml_dimension_t)* dimsVec = &v->dimensionsVector;
+    unsigned int* dimsArr = v->dimensionsArray; /* has already been allocated */
+    size_t nDims = jm_vector_get_size(fmi3_xml_dimension_t)(dimsVec);
+    size_t i;
+
+    /* copy from vector to array and resolve valueReferences as necessary */
+    for (i = 0; i < nDims; i++) {
+        fmi3_xml_dimension_t* d = jm_vector_get_itemp(fmi3_xml_dimension_t)(dimsVec, i);
+        if (d->has_vr) {
+            /* only find static start value here, we might need a similar method (get_dimensions) during runtime as well */
+            fmi3_xml_integer_variable_t* var = (fmi3_xml_integer_variable_t*)fmi3_xml_get_variable_by_vr(md, fmi3_base_type_int, d->vr);
+            *(dimsArr + i) = fmi3_xml_get_integer_variable_start(var);
+        } else { /* value was stored as start attribute */
+            *(dimsArr + i) = d->start;
+        }
+    }
+
+    *dimensions = (const size_t*)dimsArr;
+    *nDimensions = nDims;
+    return;
+}
+
+int fmi3_xml_variable_is_array(fmi3_xml_variable_t* v) {
+    return jm_vector_get_size(fmi3_xml_dimension_t)(&v->dimensionsVector) > 0;
+}
+
 int fmi3_xml_get_variable_has_start(fmi3_xml_variable_t* v) {
-    return (v->typeBase->structKind == fmi3_xml_type_struct_enu_start);
+    return (v->typeBase->structKind == fmi3_xml_type_struct_enu_start); /* TODO: the typeBaseStruct chain is ordered, update UML-like docs with the different possible variations (and commit the docs) */
 }
 
 fmi3_variability_enu_t fmi3_xml_get_variability(fmi3_xml_variable_t* v) {
@@ -137,61 +187,40 @@ fmi3_boolean_t fmi3_xml_get_canHandleMultipleSetPerTimeInstant(fmi3_xml_variable
     return (fmi3_boolean_t)v->canHandleMultipleSetPerTimeInstant;
 }
 
-
-double fmi3_xml_get_real_variable_start(fmi3_xml_real_variable_t* v) {
+static fmi3_xml_float_type_props_t* fmi3_xml_get_type_props_float(fmi3_xml_float_variable_t* v) {
     fmi3_xml_variable_t* vv = (fmi3_xml_variable_t*)v;
-    if(fmi3_xml_get_variable_has_start(vv)) {
-        fmi3_xml_variable_start_real_t* start = (fmi3_xml_variable_start_real_t*)(vv->typeBase);
+    fmi3_xml_float_type_props_t* props = (fmi3_xml_float_type_props_t*)(fmi3_xml_find_type_props(vv->typeBase));
+    assert(props);
+    return props;
+}
+
+/* float: min */
+static fmi3_float_union_t fmi3_xml_get_float_variable_min(fmi3_xml_float_variable_t* v) {
+    return fmi3_xml_get_type_props_float(v)->typeMin;
+}
+
+/* float: max */
+static fmi3_float_union_t fmi3_xml_get_float_variable_max(fmi3_xml_float_variable_t* v) {
+    return fmi3_xml_get_type_props_float(v)->typeMax;
+}
+
+/* float: nominal */
+static fmi3_float_union_t fmi3_xml_get_float_variable_nominal(fmi3_xml_float_variable_t* v) {
+    return fmi3_xml_get_type_props_float(v)->typeNominal;
+}
+
+/* float: start */
+static fmi3_float_union_t fmi3_xml_get_float_variable_start(fmi3_xml_float_variable_t* v) {
+    fmi3_xml_variable_t* vv = (fmi3_xml_variable_t*)v;
+    if (fmi3_xml_get_variable_has_start(vv)) {
+        fmi3_xml_variable_start_float_t* start = (fmi3_xml_variable_start_float_t*)(vv->typeBase);
         return start->start;
     }
-        return fmi3_xml_get_real_variable_nominal(v);
+    return fmi3_xml_get_float_variable_nominal(v); /* TODO: this is not valid for arrays - .arrayXX will always be null - why do we even want to return 'nominal'? */
 }
 
-fmi3_xml_real_variable_t* fmi3_xml_get_real_variable_derivative_of(fmi3_xml_real_variable_t* v) {
-    fmi3_xml_variable_t *vv = (fmi3_xml_variable_t *)v;
-
-    return (fmi3_xml_real_variable_t *)vv->derivativeOf;
-}
-
-fmi3_boolean_t fmi3_xml_get_real_variable_reinit(fmi3_xml_real_variable_t* v) {
-    fmi3_xml_variable_t *vv = (fmi3_xml_variable_t *)v;
-    return (fmi3_boolean_t)vv->reinit;
-}
-
-fmi3_xml_unit_t* fmi3_xml_get_real_variable_unit(fmi3_xml_real_variable_t* v) {
-    fmi3_xml_variable_t* vv = (fmi3_xml_variable_t*)v;
-    fmi3_xml_real_type_props_t* props = (fmi3_xml_real_type_props_t*)(fmi3_xml_find_type_struct(vv->typeBase, fmi3_xml_type_struct_enu_props));
-    if(!props || !props->displayUnit) return 0;
-    return props->displayUnit->baseUnit;
-}
-
-fmi3_xml_display_unit_t* fmi3_xml_get_real_variable_display_unit(fmi3_xml_real_variable_t* v) {
-    fmi3_xml_variable_t* vv = (fmi3_xml_variable_t*)v;
-    fmi3_xml_real_type_props_t* props = (fmi3_xml_real_type_props_t*)(fmi3_xml_find_type_struct(vv->typeBase, fmi3_xml_type_struct_enu_props));
-    if(!props || !props->displayUnit || !props->displayUnit->displayUnit[0]) return 0;
-    return props->displayUnit;
-}
-
-double fmi3_xml_get_real_variable_max(fmi3_xml_real_variable_t* v) {
-    fmi3_xml_variable_t* vv = (fmi3_xml_variable_t*)v;
-    fmi3_xml_real_type_props_t* props = (fmi3_xml_real_type_props_t*)(fmi3_xml_find_type_props(vv->typeBase));
-    assert(props);
-    return props->typeMax;
-}
-
-double fmi3_xml_get_real_variable_min(fmi3_xml_real_variable_t* v) {
-    fmi3_xml_variable_t* vv = (fmi3_xml_variable_t*)v;
-    fmi3_xml_real_type_props_t* props = (fmi3_xml_real_type_props_t*)(fmi3_xml_find_type_props(vv->typeBase));
-    assert(props);
-    return props->typeMin;
-}
-
-double fmi3_xml_get_real_variable_nominal(fmi3_xml_real_variable_t* v){
-    fmi3_xml_variable_t* vv = (fmi3_xml_variable_t*)v;
-    fmi3_xml_real_type_props_t* props = (fmi3_xml_real_type_props_t*)(fmi3_xml_find_type_props(vv->typeBase));
-    assert(props);
-    return props->typeNominal;
-}
+/* include generated code */
+#include "gen/FMI3/fmi3_xml_variable_generics.c"
 
 int fmi3_xml_get_integer_variable_start(fmi3_xml_integer_variable_t* v){
     fmi3_xml_variable_t* vv = (fmi3_xml_variable_t*)v;
@@ -257,8 +286,15 @@ fmi3_boolean_t fmi3_xml_get_boolean_variable_start(fmi3_xml_bool_variable_t* v) 
         return 0;
 }
 
-fmi3_xml_real_variable_t* fmi3_xml_get_variable_as_real(fmi3_xml_variable_t* v) {
-    if(fmi3_xml_get_variable_base_type(v) == fmi3_base_type_real)  return (void*)v;
+fmi3_xml_float64_variable_t* fmi3_xml_get_variable_as_float64(fmi3_xml_variable_t* v) {
+    if (fmi3_xml_get_variable_base_type(v) == fmi3_base_type_float64)
+        return (void*)v;
+    return 0;
+}
+
+fmi3_xml_float32_variable_t* fmi3_xml_get_variable_as_float32(fmi3_xml_variable_t* v) {
+    if (fmi3_xml_get_variable_base_type(v) == fmi3_base_type_float32)
+        return (void*)v;
     return 0;
 }
 
@@ -279,49 +315,101 @@ fmi3_xml_bool_variable_t* fmi3_xml_get_variable_as_boolean(fmi3_xml_variable_t* 
     return 0;
 }
 
-int fmi3_xml_handle_ScalarVariable(fmi3_xml_parser_context_t *context, const char* data) {
-    if(!data) {
+ /**
+  * Returns the pointer to allocated start values, independent of variable type.
+  */
+static void* fmi3_xml_get_variable_start_array(fmi3_xml_variable_t* v) {
+    assert(fmi3_xml_variable_is_array(v));
+
+    switch (fmi3_xml_get_variable_base_type(v)) {
+    case fmi3_base_type_float64: /* fallthrough */
+    case fmi3_base_type_float32:
+        return fmi3_xml_get_float_variable_start((fmi3_xml_float_variable_t*)v).ptr;
+        break;
+    case fmi3_base_type_int:    /* fallthrough */
+    case fmi3_base_type_bool:   /* fallthrough */
+    case fmi3_base_type_str:    /* fallthrough */
+    case fmi3_base_type_enum:   /* fallthrough */
+        assert(0); /* TODO: NYI */
+    default:
+        assert(0); /* impl. error */
+        break;
+    }
+
+    assert(0); /* impl. error */
+    return NULL;
+}
+
+void fmi3_xml_variable_free_internals(jm_callbacks* callbacks, fmi3_xml_variable_t* var) {
+    if (fmi3_xml_variable_is_array(var)) {
+        if (fmi3_xml_get_variable_has_start(var)) {
+            callbacks->free(fmi3_xml_get_variable_start_array(var));
+        }
+        callbacks->free(var->dimensionsArray);
+    }
+}
+
+int fmi3_xml_handle_Variable(fmi3_xml_parser_context_t *context, const char* data) {
+    int at_start_tag = !data;
+
+     /* The real ID of the variable, such as 'Float64Variable' */
+    fmi3_xml_elm_enu_t elm_id = at_start_tag ? context->currentElemIdStartTag : context->currentElmID;
+
+    if (at_start_tag) {
         fmi3_xml_model_description_t* md = context->modelDescription;
         fmi3_xml_variable_t* variable;
         fmi3_xml_variable_t dummyV;
         const char* description = 0;
         jm_named_ptr named, *pnamed;
-        jm_vector(char)* bufName = fmi3_xml_reserve_parse_buffer(context,1,100);
-        jm_vector(char)* bufDescr = fmi3_xml_reserve_parse_buffer(context,2,100);
+        jm_vector(char)* bufName = fmi3_xml_reserve_parse_buffer(context, 1, 100);
+        jm_vector(char)* bufDescr = fmi3_xml_reserve_parse_buffer(context, 2, 100);
         unsigned int vr;
+        int errLocal = 0;
 
         if(!bufName || !bufDescr) return -1;
 
-        /*   <xs:attribute name="valueReference" type="xs:unsignedInt" use="optional but required for FMI"> */
-        if(fmi3_xml_set_attr_uint(context, fmi3_xml_elmID_ScalarVariable, fmi_attr_id_valueReference, 1, &vr, 0)) return -1;
+        /* Get vr */
+        if (fmi3_xml_set_attr_uint(context, elm_id, fmi_attr_id_valueReference, 1, &vr, 0)) /* <xs:attribute name="valueReference" type="xs:unsignedInt" use="optional but required for FMI"> */
+            return -1;
 
-        if(
-        /*  <xs:attribute name="name" type="xs:normalizedString" use="required"/> */
-            fmi3_xml_set_attr_string(context, fmi3_xml_elmID_ScalarVariable, fmi_attr_id_name, 1, bufName) ||
-        /* <xs:attribute name="description" type="xs:string"/> */
-            fmi3_xml_set_attr_string(context, fmi3_xml_elmID_ScalarVariable, fmi_attr_id_description, 0, bufDescr)
-        ) return -1;
+        /* Get name and description */
+        errLocal = fmi3_xml_set_attr_string(context, fmi3_xml_elmID_Variable, fmi_attr_id_name, 1, bufName);    /*  <xs:attribute name="name" type="xs:normalizedString" use="required"/> */
+        errLocal |= fmi3_xml_set_attr_string(context, elm_id, fmi_attr_id_description, 0, bufDescr);            /* <xs:attribute name="description" type="xs:string"/> */
+        if (errLocal)
+            return -1;
 
-        if(context->skipOneVariableFlag) {
+        /* Return early if undefined variable */
+        if (context->skipOneVariableFlag) {
             jm_log_error(context->callbacks,module, "Ignoring variable with undefined vr '%s'", jm_vector_get_itemp(char)(bufName,0));
             return 0;
         }
-        if(jm_vector_get_size(char)(bufDescr)) {
+
+        /* Get description if exists */
+        if (jm_vector_get_size(char)(bufDescr)) {
             description = jm_string_set_put(&md->descriptions, jm_vector_get_itemp(char)(bufDescr,0));
         }
 
+        /* Add Variable ptr to modelDescription obj */
         named.ptr = 0;
         named.name = 0;
         pnamed = jm_vector_push_back(jm_named_ptr)(&md->variablesByName, named);
-
-        if(pnamed) *pnamed = named = jm_named_alloc_v(bufName,sizeof(fmi3_xml_variable_t), dummyV.name - (char*)&dummyV, context->callbacks);
-        variable = named.ptr;
-        if( !pnamed || !variable ) {
+        if (!pnamed) {
             fmi3_xml_parse_fatal(context, "Could not allocate memory");
             return -1;
         }
+
+        /* Set p.name and allocate Variable */
+        *pnamed = jm_named_alloc_v(bufName, sizeof(fmi3_xml_variable_t), dummyV.name - (char*)&dummyV, context->callbacks);
+        if (!pnamed->ptr) {
+            fmi3_xml_parse_fatal(context, "Could not allocate memory");
+            return -1;
+        }
+        variable = pnamed->ptr;
+
+        /* Initialize rest of Variable */
         variable->vr = vr;
         variable->description = description;
+        /* default values */
         variable->typeBase = 0;
         variable->originalIndex = jm_vector_get_size(jm_named_ptr)(&md->variablesByName) - 1;
         variable->derivativeOf = 0;
@@ -329,7 +417,13 @@ int fmi3_xml_handle_ScalarVariable(fmi3_xml_parser_context_t *context, const cha
         variable->aliasKind = fmi3_variable_is_not_alias;
         variable->reinit = 0;
         variable->canHandleMultipleSetPerTimeInstant = 1;
+        jm_vector_init(fmi3_xml_dimension_t)(&variable->dimensionsVector, 0, context->callbacks);
 
+        /* Save start value for processing after reading all Dimensions */
+        /* variable->startAttr = fmi3_xml_peek_attr_str(context, fmi_attr_id_start);*/
+        variable->startAttr = fmi3_xml_peek_attr_str(context, fmi_attr_id_start);
+
+        /* TODO: convert to function */
         {
             jm_name_ID_map_t causalityConventionMap[] = {
                 {"local",fmi3_causality_enu_local},
@@ -357,11 +451,11 @@ int fmi3_xml_handle_ScalarVariable(fmi3_xml_parser_context_t *context, const cha
             unsigned int causality, variability, initial;
             fmi3_initial_enu_t defaultInitial;
             /* <xs:attribute name="causality" default="local"> */
-            if(fmi3_xml_set_attr_enum(context, fmi3_xml_elmID_ScalarVariable, fmi_attr_id_causality,0,&causality,fmi3_causality_enu_local,causalityConventionMap))
+            if (fmi3_xml_set_attr_enum(context, elm_id, fmi_attr_id_causality, 0, &causality, fmi3_causality_enu_local, causalityConventionMap))
                 causality = fmi3_causality_enu_local;
             variable->causality = causality;
             /*  <xs:attribute name="variability" default="continuous"> */
-            if(fmi3_xml_set_attr_enum(context, fmi3_xml_elmID_ScalarVariable, fmi_attr_id_variability,0,&variability,fmi3_variability_enu_continuous,variabilityConventionMap))
+            if(fmi3_xml_set_attr_enum(context, elm_id, fmi_attr_id_variability,0,&variability,fmi3_variability_enu_continuous,variabilityConventionMap))
                 variability = fmi3_variability_enu_continuous;
 
             if (!fmi3_is_valid_variability_causality(variability, causality)) {
@@ -380,7 +474,7 @@ int fmi3_xml_handle_ScalarVariable(fmi3_xml_parser_context_t *context, const cha
             defaultInitial = fmi3_get_default_initial(variability, causality);
 
             /* <xs:attribute name="initial"> */
-            if(fmi3_xml_set_attr_enum(context, fmi3_xml_elmID_ScalarVariable, fmi_attr_id_initial,0,&initial,defaultInitial,initialConventionMap))
+            if(fmi3_xml_set_attr_enum(context, elm_id, fmi_attr_id_initial,0,&initial,defaultInitial,initialConventionMap))
                 initial = defaultInitial;
             defaultInitial = fmi3_get_valid_initial(variability, causality, initial);
             if(defaultInitial != initial) {
@@ -396,13 +490,14 @@ int fmi3_xml_handle_ScalarVariable(fmi3_xml_parser_context_t *context, const cha
             }
             variable->initial = initial;
         }
+        /* TODO: convert to function */
         {
             unsigned int previous, multipleSet;
             if (
             /*   <xs:attribute name="previous" type="xs:unsignedInt"> */
-                fmi3_xml_set_attr_uint(context, fmi3_xml_elmID_ScalarVariable, fmi_attr_id_previous, 0, &previous, 0) ||
+                fmi3_xml_set_attr_uint(context, elm_id, fmi_attr_id_previous, 0, &previous, 0) ||
             /*   <xs:attribute name="canHandleMultipleSetPerTimeInstant" type="xs:boolean"> */
-                fmi3_xml_set_attr_boolean(context, fmi3_xml_elmID_ScalarVariable, fmi_attr_id_canHandleMultipleSetPerTimeInstant, 0, &multipleSet, 1)
+                fmi3_xml_set_attr_boolean(context, elm_id, fmi_attr_id_canHandleMultipleSetPerTimeInstant, 0, &multipleSet, 1)
             ) return -1;
 
                 /* Store the index as a pointer since we cannot access the variables list yet (we are constructing it). */
@@ -415,18 +510,28 @@ int fmi3_xml_handle_ScalarVariable(fmi3_xml_parser_context_t *context, const cha
             }
         }
     }
-    else {
-        if(context->skipOneVariableFlag) {
+    else { /* end of xml tag */
+        if (context->skipOneVariableFlag) {
             context->skipOneVariableFlag = 0;
-        }
-        else {
+        } else {
             /* check that the type for the variable is set */
             fmi3_xml_model_description_t* md = context->modelDescription;
             fmi3_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
             if(!variable->typeBase) {
-                jm_log_error(context->callbacks, module, "No variable type element for variable %s. Assuming Real.", variable->name);
+                jm_log_error(context->callbacks, module, "No variable type element for variable %s. Assuming Float64.", variable->name);
 
-                return fmi3_xml_handle_RealVariable(context, NULL);
+                return fmi3_xml_handle_Float64Variable(context, NULL);
+            }
+
+            /* Allocate memory for the resolved dimensions. The main reason to do it here is because we have access to the callbacks. */
+            if (fmi3_xml_variable_is_array(variable)) {
+                size_t nDims = jm_vector_get_size(fmi3_xml_dimension_t)(&variable->dimensionsVector);
+
+                variable->dimensionsArray = context->callbacks->malloc(nDims * sizeof(unsigned int));
+                if (!variable->dimensionsArray) {
+                    jm_log_error(context->callbacks, module, "Error: Unable to allocate memory for dimension as array");
+                    return -1;
+                }
             }
         }
         /* might give out a warning if(data[0] != 0) */
@@ -436,15 +541,14 @@ int fmi3_xml_handle_ScalarVariable(fmi3_xml_parser_context_t *context, const cha
 
 int fmi3_xml_get_has_start(fmi3_xml_parser_context_t *context, fmi3_xml_variable_t* variable) {
     int hasStart = fmi3_xml_is_attr_defined(context, fmi_attr_id_start);
-    if(!hasStart)  {
+    if (!hasStart) {
         if (variable->initial != (char)fmi3_initial_enu_calculated) {
             fmi3_xml_parse_error(context,
                     "Start attribute is required for this causality, variability and initial combination");
-            hasStart = 1;
         }
     } else {
         /* If initial = calculated, it is not allowed to provide a start value. */
-        if(variable->initial == (char)fmi3_initial_enu_calculated) {
+        if (variable->initial == (char)fmi3_initial_enu_calculated) {
             fmi3_xml_parse_error(context, "Start attribute is not allowed for variables with initial='calculated'");
             hasStart = 0;
         }
@@ -479,94 +583,147 @@ static void fmi3_log_error_if_start_required(
     }
 }
 
-int fmi3_xml_handle_RealVariable(fmi3_xml_parser_context_t *context, const char* data) {
-    if(context->skipOneVariableFlag) return 0;
+int fmi3_xml_handle_Dimension(fmi3_xml_parser_context_t* context, const char* data) {
+    
+    if (context->skipOneVariableFlag) {
+        return 0; /* skip nested variable element */
+    }
 
-    if(!data) {
-        fmi3_xml_model_description_t* md = context->modelDescription;
-        fmi3_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
-        fmi3_xml_type_definitions_t* td = &md->typeDefinitions;
-        fmi3_xml_variable_type_base_t * declaredType = 0;
-        fmi3_xml_real_type_props_t * type = 0;
+    if (!data) { /* start of tag */
+
+        fmi3_xml_variable_t* currentVar = jm_vector_get_last(jm_named_ptr)(&context->modelDescription->variablesByName).ptr;
+        fmi3_xml_dimension_t dim;
+        fmi3_xml_attr_enu_t attrId;
         int hasStart;
+        int hasVr;
+        
+        /* handle attributes*/
+        hasStart = fmi3_xml_is_attr_defined(context, fmi_attr_id_start);
+        hasVr = fmi3_xml_is_attr_defined(context, fmi_attr_id_valueReference);
+
+        /* error check */
+        if ( !(hasStart || hasVr) ) {
+            jm_log_error(context->callbacks, "Error parsing Dimension: no attribute 'start' or 'valueReference' found", "");
+            return -1;
+        } else if (hasStart && hasVr) {
+            jm_log_error(context->callbacks, "Error parsing Dimension: mutually exclusive attributes 'start' and 'valueReference' found", "");
+            return -1;
+        }
+
+        /* set data */
+        if (hasStart) {
+            dim.has_vr = 0;
+            attrId = fmi_attr_id_start;
+            if (fmi3_xml_set_attr_uint(context, fmi3_xml_elmID_Dimension, attrId, 0, &dim.start, 0)) {
+                return -1;
+            }
+        } else if (hasVr) {
+            dim.has_vr = 1;
+            attrId = fmi_attr_id_valueReference;
+            if (fmi3_xml_set_attr_uint(context, fmi3_xml_elmID_Dimension, attrId, 0, &dim.vr, 0)) {
+                return -1;
+            }
+        }
+
+        /* update parent variable */
+        if (!jm_vector_push_back(fmi3_xml_dimension_t)(&currentVar->dimensionsVector, dim)) {
+            jm_log_error(context->callbacks, module, "Error: Unable to allocate memory for dimension data (vector alloc failed)");
+            return -1;
+        }
+
+    } else { /* end of tag */
+        /* do nothing */
+    }
+
+    return 0;
+}
+
+
+int fmi3_xml_handle_FloatVariable(fmi3_xml_parser_context_t* context, const char* data,
+        fmi3_xml_float_type_props_t* defaultType,
+        fmi3_xml_elm_enu_t elmID, /* ID of the Type (not the Variable) */
+        const fmi3_xml_primitive_type_t* primType) {
+
+    fmi3_xml_model_description_t* md;
+    fmi3_xml_variable_t* variable;
+    fmi3_xml_type_definitions_t* td;
+    fmi3_xml_float_type_props_t* type;
+    fmi3_bitness_enu_t bitness = primType->bitness;
+
+    if (context->skipOneVariableFlag) {
+        return 0;
+    }
+
+    /* Extract common Variable info */
+    fmi3_xml_handle_Variable(context, data);
+
+    md = context->modelDescription;
+    variable = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
+    td = &md->typeDefinitions;
+    type = 0;
+
+    if (!data) { /* start of tag */
+        fmi3_xml_variable_type_base_t* declaredType = 0;
 
         assert(!variable->typeBase);
 
-        declaredType = fmi3_get_declared_type(context, fmi3_xml_elmID_Real, &td->defaultRealType.typeBase);
+        /* Get declared type: either a default or user defined */
+        declaredType = fmi3_get_declared_type(context, elmID, &defaultType->typeBase);
+        if (!declaredType) return -1;
 
-        if(!declaredType) return -1;
-
+        /* Set type properties */
         {
             int hasUnit = fmi3_xml_is_attr_defined(context, fmi_attr_id_unit) ||
                     fmi3_xml_is_attr_defined(context, fmi_attr_id_displayUnit);
-            int hasMin =  fmi3_xml_is_attr_defined(context, fmi_attr_id_min);
+            int hasMin = fmi3_xml_is_attr_defined(context, fmi_attr_id_min);
             int hasMax = fmi3_xml_is_attr_defined(context, fmi_attr_id_max);
             int hasNom = fmi3_xml_is_attr_defined(context, fmi_attr_id_nominal);
             int hasQuan = fmi3_xml_is_attr_defined(context, fmi_attr_id_quantity);
             int hasRelQ = fmi3_xml_is_attr_defined(context, fmi_attr_id_relativeQuantity);
             int hasUnb = fmi3_xml_is_attr_defined(context, fmi_attr_id_unbounded);
 
+            if (hasUnit || hasMin || hasMax || hasNom || hasQuan || hasRelQ || hasUnb) {
+                /* create a new type_props that overrides declared type's properties when necessary */
 
-            if(hasUnit || hasMin || hasMax || hasNom || hasQuan || hasRelQ ||hasUnb) {
-                fmi3_xml_real_type_props_t* props = 0;
+                fmi3_xml_float_type_props_t* props = 0; /* properties of the declared type */
 
-                if(declaredType->structKind == fmi3_xml_type_struct_enu_typedef)
-                    props = (fmi3_xml_real_type_props_t*)(declaredType->baseTypeStruct);
-                else
-                    props = (fmi3_xml_real_type_props_t* )declaredType;
+                if (declaredType->structKind == fmi3_xml_type_struct_enu_typedef)
+                    props = (fmi3_xml_float_type_props_t*)(declaredType->baseTypeStruct);
+                else /* default type */
+                    props = (fmi3_xml_float_type_props_t*)declaredType;
 
                 fmi3_xml_reserve_parse_buffer(context, 1, 0);
                 fmi3_xml_reserve_parse_buffer(context, 2, 0);
 
-                type = fmi3_xml_parse_real_type_properties(context, fmi3_xml_elmID_Real);
+                type = fmi3_xml_parse_float_type_properties(context, elmID, defaultType, primType);
 
-                if(!type) return -1;
+                if (!type) return -1;
                 type->typeBase.baseTypeStruct = declaredType;
-                if( !hasUnit) type->displayUnit = props->displayUnit;
-                if( !hasMin)  type->typeMin = props->typeMin;
-                if( !hasMax) type->typeMax = props->typeMax;
-                if( !hasNom) type->typeNominal = props->typeNominal;
-                if( !hasQuan) type->quantity = props->quantity;
-                if( !hasRelQ) type->typeBase.isRelativeQuantity = type->typeBase.isRelativeQuantity;
-                if( !hasUnb) type->typeBase.isUnbounded = type->typeBase.isUnbounded;
+                if (!hasUnit) type->displayUnit = props->displayUnit;
+                if (!hasMin)  type->typeMin = props->typeMin;
+                if (!hasMax)  type->typeMax = props->typeMax;
+                if (!hasNom)  type->typeNominal = props->typeNominal;
+                if (!hasQuan) type->quantity = props->quantity;
+                if (!hasRelQ) type->typeBase.isRelativeQuantity = type->typeBase.isRelativeQuantity;
+                if (!hasUnb)  type->typeBase.isUnbounded = type->typeBase.isUnbounded;
+            } else {
+                type = (fmi3_xml_float_type_props_t*)declaredType;
             }
-            else
-                type = (fmi3_xml_real_type_props_t*)declaredType;
         }
         variable->typeBase = &type->typeBase;
 
-        hasStart = fmi3_xml_get_has_start(context, variable);
-
-        if(hasStart) {
-            fmi3_xml_variable_start_real_t * start = (fmi3_xml_variable_start_real_t*)fmi3_xml_alloc_variable_type_start(td, &type->typeBase, sizeof(fmi3_xml_variable_start_real_t));
-            if(!start) {
-                fmi3_xml_parse_fatal(context, "Could not allocate memory");
-                return -1;
-            }
-            if(
-                /*  <xs:attribute name="start" type="xs:double"/> */
-                    fmi3_xml_set_attr_double(context, fmi3_xml_elmID_Real, fmi_attr_id_start, 0, &start->start, 0)
-                )
-                    return -1;
-            variable->typeBase = &start->typeBase;
-        } else {
-            fmi3_log_error_if_start_required(context, variable);
-        }
-
+        /* Handle rest of attributes except start */
         {
-            /*   <xs:attribute name="derivative" type="xs:unsignedInt"> */
             unsigned int derivativeOf;
             unsigned int reinit;
 
-            if(fmi3_xml_set_attr_uint(context, fmi3_xml_elmID_Real,
-                fmi_attr_id_derivative, 0, &derivativeOf, 0)) return -1;
-            /* TODO: consider: is it ok to read in an unsigned int to store in a size_t? */
+            if (fmi3_xml_set_attr_uint(context, fmi3_xml_elmID_Float64, fmi_attr_id_derivative, 0, &derivativeOf, 0)) /* <xs:attribute name="derivative" type="xs:unsignedInt"> */
+                return -1;
             /* Store the index as a pointer since we cannot access the variables list yet (we are constructing it). */
-            variable->derivativeOf = (void *)((char *)NULL + derivativeOf);
+            variable->derivativeOf = (void*)((char*)NULL + derivativeOf);
 
-            /*   <xs:attribute name="reinit" type="xs:boolean" use="optional" default="false"> */
-            if(fmi3_xml_set_attr_boolean(context, fmi3_xml_elmID_Real,
-                fmi_attr_id_reinit, 0, &reinit, 0)) return -1;
+            if (fmi3_xml_set_attr_boolean(context, fmi3_xml_elmID_Float64, fmi_attr_id_reinit, 0, &reinit, 0)) /* <xs:attribute name="reinit" type="xs:boolean" use="optional" default="false"> */
+                return -1;
             variable->reinit = (char)reinit;
 
             if (variable->variability != fmi3_variability_enu_continuous && reinit) {
@@ -575,16 +732,65 @@ int fmi3_xml_handle_RealVariable(fmi3_xml_parser_context_t *context, const char*
                 return -1;
             }
         }
-    }
-    else {
-        /* don't do anything. might give out a warning if(data[0] != 0) */
-        return 0;
+        /* TODO: handle this cleanly: */
+        /* just read the attribute, so we don't get any warning from it being unused in the buffer... it is saved as startAttr in the variable */
+        {
+            char* tmp; /* unused */
+            fmi3_xml_get_attr_str(context, fmi3_xml_elmID_Float64, fmi_attr_id_start, 0, &tmp);
+        }
+    } else { /* end of tag */
+        /* set start value */
+
+        /* We must wait until after parsing dimensions, because we can't otherwise know
+         * if it's a 1x1 array or a scalar variable just by reading the start value. */
+        int hasStart = variable->startAttr != NULL;
+        if (hasStart) {
+            jm_string startAttr = variable->startAttr;
+
+            fmi3_xml_variable_start_float_t* start = (fmi3_xml_variable_start_float_t*)fmi3_xml_alloc_variable_type_start(td, variable->typeBase, sizeof(fmi3_xml_variable_start_float_t));
+            if (!start) {
+                fmi3_xml_parse_fatal(context, "Could not allocate memory");
+                return -1;
+            }
+            if (fmi3_xml_variable_is_array(variable)) {
+                size_t nArr; /* TODO: do something with this, e.g. dimension size verification */
+                if (fmi3_xml_set_attr_array(context, elmID, fmi_attr_id_start, 0, (void**)&start->start, &nArr, startAttr, primType)) {
+                    return -1;
+                }
+            } else { /* is scalar */
+                /* restore the attribute buffer before it's used in set_attr_float */
+                jm_vector_set_item(jm_string)(context->attrBuffer, fmi_attr_id_start, startAttr);
+
+                if (fmi3_xml_set_attr_float(context, elmID, fmi_attr_id_start, 0, &start->start, fmi3_xml_get_type_default_value(bitness), bitness)) {
+                    return -1;
+                }
+            }
+            variable->typeBase = &start->typeBase;
+        } else {
+            fmi3_log_error_if_start_required(context, variable);
+        }
+
+        /* TODO: verify that dimension size == number of array start attribute values */
     }
     return 0;
 }
 
+/* Create handle_FloatVariableXX wrappers */
+#define gen_fmi3_xml_handle_FloatVariableXX(BITNESS)                                                        \
+    int fmi3_xml_handle_Float##BITNESS##Variable(fmi3_xml_parser_context_t* context, const char* data) {    \
+        return fmi3_xml_handle_FloatVariable(context, data,                                                 \
+                &context->modelDescription->typeDefinitions.defaultFloat##BITNESS##Type,                    \
+                fmi3_xml_elmID_Float##BITNESS, &PRIMITIVE_TYPES.float##BITNESS);                            \
+    }
+
+gen_fmi3_xml_handle_FloatVariableXX(64)
+gen_fmi3_xml_handle_FloatVariableXX(32)
+#undef gen_fmi3_xml_handle_FloatVariableXX
+
 int fmi3_xml_handle_IntegerVariable(fmi3_xml_parser_context_t *context, const char* data) {
     if(context->skipOneVariableFlag) return 0;
+
+    fmi3_xml_handle_Variable(context, data);
 
     if(!data) {
         fmi3_xml_model_description_t* md = context->modelDescription;
@@ -653,6 +859,8 @@ int fmi3_xml_handle_IntegerVariable(fmi3_xml_parser_context_t *context, const ch
 int fmi3_xml_handle_BooleanVariable(fmi3_xml_parser_context_t *context, const char* data) {
     if(context->skipOneVariableFlag) return 0;
 
+    fmi3_xml_handle_Variable(context, data);
+
     if(!data) {
         fmi3_xml_model_description_t* md = context->modelDescription;
         fmi3_xml_type_definitions_t* td = &md->typeDefinitions;
@@ -691,6 +899,8 @@ int fmi3_xml_handle_BooleanVariable(fmi3_xml_parser_context_t *context, const ch
 
 int fmi3_xml_handle_StringVariable(fmi3_xml_parser_context_t *context, const char* data) {
     if(context->skipOneVariableFlag) return 0;
+
+    fmi3_xml_handle_Variable(context, data);
 
     if(!data) {
         fmi3_xml_model_description_t* md = context->modelDescription;
@@ -772,6 +982,8 @@ fmi3_xml_enum_variable_props_t * fmi3_xml_parse_enum_properties(fmi3_xml_parser_
 
 int fmi3_xml_handle_EnumerationVariable(fmi3_xml_parser_context_t *context, const char* data) {
     if(context->skipOneVariableFlag) return 0;
+
+    fmi3_xml_handle_Variable(context, data);
 
     if(!data) {
         fmi3_xml_model_description_t* md = context->modelDescription;
@@ -897,7 +1109,8 @@ int fmi3_xml_handle_ModelVariables(fmi3_xml_parser_context_t *context, const cha
     if(!data) {
         jm_log_verbose(context->callbacks, module,"Parsing XML element ModelVariables");
         /*  reset handles for the elements that are specific under ModelVariables */
-        fmi3_xml_set_element_handle(context, "Real", FMI3_XML_ELM_ID(RealVariable));
+        fmi3_xml_set_element_handle(context, "Float64", FMI3_XML_ELM_ID(Float64Variable));
+        fmi3_xml_set_element_handle(context, "Float32", FMI3_XML_ELM_ID(Float32Variable));
         fmi3_xml_set_element_handle(context, "Integer", FMI3_XML_ELM_ID(IntegerVariable));
         fmi3_xml_set_element_handle(context, "Enumeration", FMI3_XML_ELM_ID(EnumerationVariable));
         fmi3_xml_set_element_handle(context, "String", FMI3_XML_ELM_ID(StringVariable));
@@ -1051,6 +1264,14 @@ int fmi3_xml_handle_ModelVariables(fmi3_xml_parser_context_t *context, const cha
                     }
                 }
             } while(foundBadAlias);
+        }
+
+        /* TODO: validate variables from Dimension VRs */
+        {
+            /*
+                TODO: create a new vector that contains all VRs from dimensions
+                from VR, find all variables and verify that they are integers with (causality == structuralParameter || variability == constant)
+            */
         }
 
         numvar = jm_vector_get_size(jm_named_ptr)(&md->variablesByName);

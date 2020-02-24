@@ -26,6 +26,7 @@
 
 #include "fmi3_import_type.h"
 #include "fmi3_import_unit.h"
+#include "fmi3_import_dimension.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -49,8 +50,10 @@ extern "C" {
 * 	However, typed variables are needed to support specific attributes.
 */
 typedef struct fmi3_xml_variable_t fmi3_import_variable_t;
-/** \brief  Opaque real variable */
-typedef struct fmi3_xml_real_variable_t fmi3_import_real_variable_t;
+/** \brief  Opaque float32 variable */
+typedef struct fmi3_xml_float32_variable_t fmi3_import_float32_variable_t;
+/** \brief  Opaque float64 variable */
+typedef struct fmi3_xml_float64_variable_t fmi3_import_float64_variable_t;
 /** \brief Opaque integer variable */
 typedef struct fmi3_xml_integer_variable_t fmi3_import_integer_variable_t;
 /** \brief Opaque string variable */
@@ -63,7 +66,6 @@ typedef struct fmi3_xml_bool_variable_t fmi3_import_bool_variable_t;
 typedef struct fmi3_import_variable_list_t fmi3_import_variable_list_t;
 /**@} */
 
-
 /** \brief Get the variable name */
 FMILIB_EXPORT const char* fmi3_import_get_variable_name(fmi3_import_variable_t*);
 
@@ -75,7 +77,7 @@ FMILIB_EXPORT const char* fmi3_import_get_variable_description(fmi3_import_varia
 /** \brief Get variable value reference */
 FMILIB_EXPORT fmi3_value_reference_t fmi3_import_get_variable_vr(fmi3_import_variable_t*);
 
-/**   \brief For scalar variable gives the type definition is present
+/** \brief For scalar variable gives the type definition is present
 	@return Pointer of a type #fmi3_import_variable_typedef_t object or NULL of not present.
 */
 FMILIB_EXPORT fmi3_import_variable_typedef_t* fmi3_import_get_variable_declared_type(fmi3_import_variable_t*);
@@ -83,8 +85,30 @@ FMILIB_EXPORT fmi3_import_variable_typedef_t* fmi3_import_get_variable_declared_
 /** \brief Get variable base type */
 FMILIB_EXPORT fmi3_base_type_enu_t fmi3_import_get_variable_base_type(fmi3_import_variable_t*);
 
+/** \brief Get the start values of an array variable
+    @return Pointer to array with start values. Total length of array is given by product of the dimensions given by 
+        #fmi3_import_get_variable_dimensions. FMI Library handles memory for the array.
+*/
+FMILIB_EXPORT fmi3_float64_t* fmi3_import_get_float64_variable_start_array(fmi3_import_float64_variable_t* v);
+
+/** \brief Get the start values of an array variable.
+    @return Pointer to array with start values. Total length of array is given by product of the dimensions given by 
+        #fmi3_import_get_variable_dimensions. FMI Library handles memory for the array.
+*/
+FMILIB_EXPORT fmi3_float32_t* fmi3_import_get_float32_variable_start_array(fmi3_import_float32_variable_t* v);
+
+/** \brief Get a list of the variable's array dimensions. Note that this list must be freed with #fmi3_import_free_dimension_list.
+    @return Dynamically allocated list of array dimensions.
+*/
+FMILIB_EXPORT fmi3_import_dimension_list_t* fmi3_import_get_variable_dimension_list(fmi3_import_t* fmu, fmi3_import_variable_t* v);
+
+/**   \brief Check if the variable is an array.
+	@return True if array, false if scalar.
+*/
+FMILIB_EXPORT int fmi3_import_variable_is_array(fmi3_import_variable_t*);
+
 /** \brief Check if the variable has "start" attribute */
-FMILIB_EXPORT int   fmi3_import_get_variable_has_start(fmi3_import_variable_t*);
+FMILIB_EXPORT int fmi3_import_get_variable_has_start(fmi3_import_variable_t*);
 
 /** \brief Get variability attribute */
 FMILIB_EXPORT fmi3_variability_enu_t fmi3_import_get_variability(fmi3_import_variable_t*);
@@ -115,7 +139,13 @@ FMILIB_EXPORT fmi3_boolean_t fmi3_import_get_canHandleMultipleSetPerTimeInstant(
 	
 	@return Typed object or NULL if base type does not match
 */
-FMILIB_EXPORT fmi3_import_real_variable_t* fmi3_import_get_variable_as_real(fmi3_import_variable_t*);
+FMILIB_EXPORT fmi3_import_float64_variable_t* fmi3_import_get_variable_as_float64(fmi3_import_variable_t*);
+
+/** \brief Cast general variable to a one with the specific type 
+	
+	@return Typed object or NULL if base type does not match
+*/
+FMILIB_EXPORT fmi3_import_float32_variable_t* fmi3_import_get_variable_as_float32(fmi3_import_variable_t*);
 
 /** \brief Cast general variable to a one with the specific type 
 	
@@ -138,12 +168,29 @@ FMILIB_EXPORT fmi3_import_string_variable_t* fmi3_import_get_variable_as_string(
 */
 FMILIB_EXPORT fmi3_import_bool_variable_t* fmi3_import_get_variable_as_boolean(fmi3_import_variable_t*);
 
-/** 
-	\brief Get the variable start attribute. 
+/** \brief Get minimal value for the variable.
+
+	@return Either the value specified in the XML file or negated FLT_MAX as defined in <float.h>
+*/
+FMILIB_EXPORT fmi3_float32_t fmi3_import_get_float32_variable_min(fmi3_import_float32_variable_t* v);
+
+/** \brief Get maximum value for the variable.
+
+	@return Either the value specified in the XML file or FLT_MAX as defined in <float.h>
+*/
+FMILIB_EXPORT fmi3_float32_t fmi3_import_get_float32_variable_max(fmi3_import_float32_variable_t* v);
+
+/** \brief Get nominal value for the variable.
 
 	@return The "start" attribute as specified in the XML file or variable nominal value.
 */
-FMILIB_EXPORT fmi3_real_t fmi3_import_get_real_variable_start(fmi3_import_real_variable_t* v);
+FMILIB_EXPORT fmi3_float32_t fmi3_import_get_float32_variable_nominal(fmi3_import_float32_variable_t* v);
+
+/** \brief Get associated "unit" object if any */
+FMILIB_EXPORT fmi3_import_unit_t* fmi3_import_get_float32_variable_unit(fmi3_import_float32_variable_t* v);
+
+/** \brief Get associated "display unit" object if any */
+FMILIB_EXPORT fmi3_import_display_unit_t* fmi3_import_get_float32_variable_display_unit(fmi3_import_float32_variable_t* v);
 
 /** 
     \brief Get the variable that this is a derivative of, if defined.
@@ -151,34 +198,53 @@ FMILIB_EXPORT fmi3_real_t fmi3_import_get_real_variable_start(fmi3_import_real_v
     @return If this variable is a derivative, return the variable that it is a derivative of;
             NULL otherwise.
 */
-FMILIB_EXPORT fmi3_import_real_variable_t* fmi3_import_get_real_variable_derivative_of(fmi3_import_real_variable_t* v);
+FMILIB_EXPORT fmi3_import_float32_variable_t* fmi3_import_get_float32_variable_derivative_of(fmi3_import_float32_variable_t* v);
 
-/** \brief Get the reinit flag for a real variable.
+/** 
+	\brief Get the variable start attribute. 
 
-	@return True if the real variable may change value at events.
+	@return The "start" attribute as specified in the XML file or variable nominal value.
 */
-FMILIB_EXPORT fmi3_boolean_t fmi3_import_get_real_variable_reinit(fmi3_import_real_variable_t* v);
-
-/** \brief Get maximum value for the variable
-
-	@return Either the value specified in the XML file or DBL_MAX as defined in <float.h>
-*/
-FMILIB_EXPORT fmi3_real_t fmi3_import_get_real_variable_max(fmi3_import_real_variable_t* v);
+FMILIB_EXPORT fmi3_float32_t fmi3_import_get_float32_variable_start(fmi3_import_float32_variable_t* v);
 
 /** \brief Get minimal value for the variable.
 
 	@return Either the value specified in the XML file or negated DBL_MAX as defined in <float.h>
 */
-FMILIB_EXPORT fmi3_real_t fmi3_import_get_real_variable_min(fmi3_import_real_variable_t* v);
+FMILIB_EXPORT fmi3_float64_t fmi3_import_get_float64_variable_min(fmi3_import_float64_variable_t* v);
 
-/** \brief Get nominal value for the variable*/
-FMILIB_EXPORT fmi3_real_t fmi3_import_get_real_variable_nominal(fmi3_import_real_variable_t* v);
+/** \brief Get maximum value for the variable.
+
+	@return Either the value specified in the XML file or DBL_MAX as defined in <float.h>
+*/
+FMILIB_EXPORT fmi3_float64_t fmi3_import_get_float64_variable_max(fmi3_import_float64_variable_t* v);
+
+/** \brief Get nominal value for the variable.
+
+	@return The "start" attribute as specified in the XML file or variable nominal value.
+*/
+FMILIB_EXPORT fmi3_float64_t fmi3_import_get_float64_variable_nominal(fmi3_import_float64_variable_t* v);
+
+/** 
+	\brief Get the variable start attribute. 
+
+	@return The "start" attribute as specified in the XML file or variable nominal value.
+*/
+FMILIB_EXPORT fmi3_float64_t fmi3_import_get_float64_variable_start(fmi3_import_float64_variable_t* v);
 
 /** \brief Get associated "unit" object if any */
-FMILIB_EXPORT fmi3_import_unit_t* fmi3_import_get_real_variable_unit(fmi3_import_real_variable_t* v);
+FMILIB_EXPORT fmi3_import_unit_t* fmi3_import_get_float64_variable_unit(fmi3_import_float64_variable_t* v);
 
 /** \brief Get associated "display unit" object if any */
-FMILIB_EXPORT fmi3_import_display_unit_t* fmi3_import_get_real_variable_display_unit(fmi3_import_real_variable_t* v);
+FMILIB_EXPORT fmi3_import_display_unit_t* fmi3_import_get_float64_variable_display_unit(fmi3_import_float64_variable_t* v);
+
+/** 
+    \brief Get the variable that this is a derivative of, if defined.
+
+    @return If this variable is a derivative, return the variable that it is a derivative of;
+            NULL otherwise.
+*/
+FMILIB_EXPORT fmi3_import_float64_variable_t* fmi3_import_get_float64_variable_derivative_of(fmi3_import_float64_variable_t* v);
 
 /** \brief Get start value for the variable */
 FMILIB_EXPORT const char* fmi3_import_get_string_variable_start(fmi3_import_string_variable_t* v);
@@ -205,6 +271,10 @@ FMILIB_EXPORT fmi3_variable_alias_kind_enu_t fmi3_import_get_variable_alias_kind
 
 /** \brief Get the original index in xml of the variable */
 FMILIB_EXPORT size_t fmi3_import_get_variable_original_order(fmi3_import_variable_t* v);
+
+
+/* Dimensions */
+
 
 /** @} */
 

@@ -33,18 +33,18 @@ extern "C" {
 	\brief Public interfaces for the FMI CAPI library. 
 	*/
 
-/** \addtogroup fmi3_capi Standard FMI 2.0 "C" API
+/** \addtogroup fmi3_capi Standard FMI 3.0 "C" API
  * \brief The "C" API loads and frees the FMI functions and it is through these functions all the communication with the FMU occurs. The FMI import library wraps these functions in a more convenient way.
  *  @{
  */
 
-/**	\addtogroup fmi3_capi_const_destroy FMI 2.0 Utility functions
+/**	\addtogroup fmi3_capi_const_destroy FMI 3.0 Utility functions
  *		\brief Utility functions used to load and free the FMI functions.
- *	\addtogroup fmi3_capi_me FMI 2.0 (ME) Model Exchange functions
+ *	\addtogroup fmi3_capi_me FMI 3.0 (ME) Model Exchange functions
  *		\brief List of Model Exchange wrapper functions. Common functions are not listed.
- *	\addtogroup fmi3_capi_cs FMI 2.0 (CS) Co-Simulation functions 
+ *	\addtogroup fmi3_capi_cs FMI 3.0 (CS) Co-Simulation functions 
  *		\brief List of Co-Simulation wrapper functions. Common functions are not listed.
- *	\addtogroup fmi3_capi_common FMI 2.0 (ME & CS) Common functions
+ *	\addtogroup fmi3_capi_common FMI 3.0 (ME & CS) Common functions
  *		\brief List of wrapper functions that are in common for both Model Exchange and Co-Simulation.
  */
 
@@ -182,9 +182,9 @@ void fmi3_capi_free_instance(fmi3_capi_t* fmu);
  * @return FMI status.
  */
 fmi3_status_t fmi3_capi_setup_experiment(fmi3_capi_t* fmu,
-    fmi3_boolean_t toleranceDefined, fmi3_real_t tolerance,
-    fmi3_real_t startTime, fmi3_boolean_t stopTimeDefined,
-    fmi3_real_t stopTime);
+    fmi3_boolean_t toleranceDefined, fmi3_float64_t tolerance,
+    fmi3_float64_t startTime, fmi3_boolean_t stopTimeDefined,
+    fmi3_float64_t stopTime);
 
 /**
  * \brief Calls the FMI function fmiEnterInitializationMode(...)
@@ -220,15 +220,30 @@ fmi3_status_t fmi3_capi_reset(fmi3_capi_t* fmu);
 
 
 /**
- * \brief Calls the FMI function fmiSetReal(...) 
+ * \brief Calls the FMI function fmiSetFloat64(...) 
  * 
  * @param fmu C-API struct that has succesfully loaded the FMI function.
  * @param vr Array of value references.
  * @param nvr Number of array elements.
  * @param value Array of variable values.
+ * @param nValues Total number of variable values, i.e. the number of elements in each array + the number of scalar variables.
+
  * @return FMI status.
  */
-fmi3_status_t fmi3_capi_set_real(fmi3_capi_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, const fmi3_real_t    value[]);
+fmi3_status_t fmi3_capi_set_float64(fmi3_capi_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, const fmi3_float64_t value[], size_t nValues);
+
+/**
+ * \brief Calls the FMI function fmiSetFloat32(...) 
+ * 
+ * @param fmu C-API struct that has succesfully loaded the FMI function.
+ * @param vr Array of value references.
+ * @param nvr Number of array elements.
+ * @param value Array of variable values.
+ * @param nValues Total number of variable values, i.e. the number of elements in each array + the number of scalar variables.
+
+ * @return FMI status.
+ */
+fmi3_status_t fmi3_capi_set_float32(fmi3_capi_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, const fmi3_float32_t value[], size_t nValues);
 
 /**
  * \brief Calls the FMI function fmiSetInteger(...) 
@@ -264,15 +279,28 @@ fmi3_status_t fmi3_capi_set_boolean(fmi3_capi_t* fmu, const fmi3_value_reference
 fmi3_status_t fmi3_capi_set_string(fmi3_capi_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, const fmi3_string_t  value[]);
 
 /**
- * \brief Calls the FMI function fmiGetReal(...) 
+ * \brief Calls the FMI function fmiGetFloat64(...) 
  * 
  * @param fmu C-API struct that has succesfully loaded the FMI function.
  * @param vr Array of value references.
  * @param nvr Number of array elements.
  * @param value (Output)Array of variable values.
+ * @param nValues Total number of variable values, i.e. the number of elements in each array + the number of scalar variables.
  * @return FMI status.
  */
-fmi3_status_t fmi3_capi_get_real(fmi3_capi_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, fmi3_real_t    value[]);
+fmi3_status_t fmi3_capi_get_float64(fmi3_capi_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, fmi3_float64_t value[], size_t nValues);
+
+/**
+ * \brief Calls the FMI function fmiGetFloat32(...) 
+ * 
+ * @param fmu C-API struct that has succesfully loaded the FMI function.
+ * @param vr Array of value references.
+ * @param nvr Number of array elements.
+ * @param value (Output)Array of variable values.
+ * @param nValues Total number of variable values, i.e. the number of elements in each array + the number of scalar variables.
+ * @return FMI status.
+ */
+fmi3_status_t fmi3_capi_get_float32(fmi3_capi_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, fmi3_float32_t value[], size_t nValues);
 
 /**
  * \brief Calls the FMI function fmiGetInteger(...) 
@@ -326,7 +354,7 @@ fmi3_status_t fmi3_capi_de_serialize_fmu_state  (fmi3_capi_t* fmu, const fmi3_by
 /* Getting directional derivatives */
 fmi3_status_t fmi3_capi_get_directional_derivative(fmi3_capi_t* fmu, const fmi3_value_reference_t v_ref[], size_t nv,
                                                                    const fmi3_value_reference_t z_ref[], size_t nz,
-                                                                   const fmi3_real_t dv[], fmi3_real_t dz[]);
+                                                                   const fmi3_float64_t dv[], fmi3_float64_t dz[]);
 /**@} */
 
 /** \addtogroup fmi3_capi_me
@@ -366,7 +394,7 @@ fmi3_status_t fmi3_capi_enter_continuous_time_mode(fmi3_capi_t* fmu);
  * @param time Set the current time.
  * @return FMI status.
  */
-fmi3_status_t fmi3_capi_set_time(fmi3_capi_t* fmu, fmi3_real_t time);
+fmi3_status_t fmi3_capi_set_time(fmi3_capi_t* fmu, fmi3_float64_t time);
 
 /**
  * \brief Calls the FMI function fmiSetContinuousStates(...) 
@@ -376,7 +404,7 @@ fmi3_status_t fmi3_capi_set_time(fmi3_capi_t* fmu, fmi3_real_t time);
  * @param nx Number of states.
  * @return FMI status.
  */
-fmi3_status_t fmi3_capi_set_continuous_states(fmi3_capi_t* fmu, const fmi3_real_t x[], size_t nx);
+fmi3_status_t fmi3_capi_set_continuous_states(fmi3_capi_t* fmu, const fmi3_float64_t x[], size_t nx);
 
 /**
  * \brief Calls the FMI function fmiCompletedIntegratorStep(...) 
@@ -401,7 +429,7 @@ fmi3_status_t fmi3_capi_completed_integrator_step(fmi3_capi_t* fmu,
  * @param nx Number of derivatives.
  * @return FMI status.
  */
-fmi3_status_t fmi3_capi_get_derivatives(fmi3_capi_t* fmu, fmi3_real_t derivatives[]    , size_t nx);
+fmi3_status_t fmi3_capi_get_derivatives(fmi3_capi_t* fmu, fmi3_float64_t derivatives[]    , size_t nx);
 
 /**
  * \brief Calls the FMI function fmiGetEventIndicators(...) 
@@ -411,7 +439,7 @@ fmi3_status_t fmi3_capi_get_derivatives(fmi3_capi_t* fmu, fmi3_real_t derivative
  * @param ni Number of event indicators.
  * @return FMI status.
  */
-fmi3_status_t fmi3_capi_get_event_indicators(fmi3_capi_t* fmu, fmi3_real_t eventIndicators[], size_t ni);
+fmi3_status_t fmi3_capi_get_event_indicators(fmi3_capi_t* fmu, fmi3_float64_t eventIndicators[], size_t ni);
 
 /**
  * \brief Calls the FMI function fmiGetContinuousStates(...) 
@@ -421,7 +449,7 @@ fmi3_status_t fmi3_capi_get_event_indicators(fmi3_capi_t* fmu, fmi3_real_t event
  * @param nx Number of states.
  * @return FMI status.
  */
-fmi3_status_t fmi3_capi_get_continuous_states(fmi3_capi_t* fmu, fmi3_real_t states[], size_t nx);
+fmi3_status_t fmi3_capi_get_continuous_states(fmi3_capi_t* fmu, fmi3_float64_t states[], size_t nx);
 
 /**
  * \brief Calls the FMI function fmiGetNominalsOfContinuousStates(...) 
@@ -431,7 +459,7 @@ fmi3_status_t fmi3_capi_get_continuous_states(fmi3_capi_t* fmu, fmi3_real_t stat
  * @param nx Number of nominal values.
  * @return FMI status.
  */
-fmi3_status_t fmi3_capi_get_nominals_of_continuous_states(fmi3_capi_t* fmu, fmi3_real_t x_nominal[], size_t nx);
+fmi3_status_t fmi3_capi_get_nominals_of_continuous_states(fmi3_capi_t* fmu, fmi3_float64_t x_nominal[], size_t nx);
 
 /**@} */
 
@@ -449,7 +477,7 @@ fmi3_status_t fmi3_capi_get_nominals_of_continuous_states(fmi3_capi_t* fmu, fmi3
  * @param value Array of variable values.
  * @return FMI status.
  */
-fmi3_status_t fmi3_capi_set_real_input_derivatives(fmi3_capi_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, const fmi3_integer_t order[], const  fmi3_real_t value[]);                                                  
+fmi3_status_t fmi3_capi_set_real_input_derivatives(fmi3_capi_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, const fmi3_integer_t order[], const  fmi3_float64_t value[]);                                                  
 
 /**
  * \brief Calls the FMI function fmiGetOutputDerivatives(...) 
@@ -461,7 +489,7 @@ fmi3_status_t fmi3_capi_set_real_input_derivatives(fmi3_capi_t* fmu, const fmi3_
  * @param value (Output) Array of variable values.
  * @return FMI status.
  */
-fmi3_status_t fmi3_capi_get_real_output_derivatives(fmi3_capi_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, const fmi3_integer_t order[], fmi3_real_t value[]);                                              
+fmi3_status_t fmi3_capi_get_real_output_derivatives(fmi3_capi_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, const fmi3_integer_t order[], fmi3_float64_t value[]);                                              
 
 /**
  * \brief Calls the FMI function fmiCancelStep(...) 
@@ -480,7 +508,7 @@ fmi3_status_t fmi3_capi_cancel_step(fmi3_capi_t* fmu);
  * @param newStep Indicates whether or not the last communication step was accepted by the master.
  * @return FMI status.
  */
-fmi3_status_t fmi3_capi_do_step(fmi3_capi_t* fmu, fmi3_real_t currentCommunicationPoint, fmi3_real_t communicationStepSize, fmi3_boolean_t newStep);
+fmi3_status_t fmi3_capi_do_step(fmi3_capi_t* fmu, fmi3_float64_t currentCommunicationPoint, fmi3_float64_t communicationStepSize, fmi3_boolean_t newStep);
 
 /**
  * \brief Calls the FMI function fmiGetStatus(...) 
@@ -500,7 +528,7 @@ fmi3_status_t fmi3_capi_get_status(fmi3_capi_t* fmu, const fmi3_status_kind_t s,
  * @param value (Output) FMI real value.
  * @return FMI status.
  */
-fmi3_status_t fmi3_capi_get_real_status(fmi3_capi_t* fmu, const fmi3_status_kind_t s, fmi3_real_t*    value);
+fmi3_status_t fmi3_capi_get_real_status(fmi3_capi_t* fmu, const fmi3_status_kind_t s, fmi3_float64_t*    value);
 
 /**
  * \brief Calls the FMI function fmiGetIntegerStatus(...) 

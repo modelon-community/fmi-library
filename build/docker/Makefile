@@ -17,13 +17,13 @@ docker_image:
 
 install test documentation: docker_image
 	docker run \
-		-v "$(CURDIR):/$(ARTIFACT_DIR)" \
+		-v "/$(CURDIR):$(ARTIFACT_DIR)" \
 		$(DOCKER_IMAGE_FMIL) \
 		//bin/bash -c "build/docker/build.sh \
 			$@ $(BUILD_DIR) $(INSTALL_DIR) $(ARTIFACT_DIR) $(CONFIG)"
 
 docker_run_debug: docker_image
 	winpty docker run -it \
-		-v "/$(shell pwd):/$(ARTIFACT_DIR)" \
+		-v "/$(shell pwd):$(ARTIFACT_DIR)" \
 		$(DOCKER_IMAGE_FMIL)
 

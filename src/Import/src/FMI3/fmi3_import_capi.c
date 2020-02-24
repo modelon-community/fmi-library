@@ -163,7 +163,7 @@ void fmi3_import_destroy_dllfmu(fmi3_import_t* fmu) {
 	}
 }
 
-/* FMI 2.0 Common functions */
+/* FMI 3.0 Common functions */
 const char* fmi3_import_get_version(fmi3_import_t* fmu) {
 	if(!fmu->capi) {
 		jm_log_error(fmu->callbacks, module,"FMU CAPI is not loaded");
@@ -205,9 +205,9 @@ void fmi3_import_free_instance(fmi3_import_t* fmu) {
 }
 
 fmi3_status_t fmi3_import_setup_experiment(fmi3_import_t* fmu,
-    fmi3_boolean_t tolerance_defined, fmi3_real_t tolerance,
-    fmi3_real_t start_time, fmi3_boolean_t stop_time_defined,
-    fmi3_real_t stop_time)
+    fmi3_boolean_t tolerance_defined, fmi3_float64_t tolerance,
+    fmi3_float64_t start_time, fmi3_boolean_t stop_time_defined,
+    fmi3_float64_t stop_time)
 {
     assert(fmu);
     return fmi3_capi_setup_experiment(fmu->capi, tolerance_defined, tolerance,
@@ -235,8 +235,12 @@ fmi3_status_t fmi3_import_reset(fmi3_import_t* fmu) {
 }
 
 
-fmi3_status_t fmi3_import_set_real(fmi3_import_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, const fmi3_real_t    value[]) {
-	return fmi3_capi_set_real(fmu -> capi, vr, nvr, value);
+fmi3_status_t fmi3_import_set_float64(fmi3_import_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, const fmi3_float64_t value[], size_t nValues) {
+	return fmi3_capi_set_float64(fmu -> capi, vr, nvr, value, nValues);
+}
+
+fmi3_status_t fmi3_import_set_float32(fmi3_import_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, const fmi3_float32_t value[], size_t nValues) {
+	return fmi3_capi_set_float32(fmu -> capi, vr, nvr, value, nValues);
 }
 
 fmi3_status_t fmi3_import_set_integer(fmi3_import_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, const fmi3_integer_t value[]) {
@@ -251,8 +255,12 @@ fmi3_status_t fmi3_import_set_string(fmi3_import_t* fmu, const fmi3_value_refere
 	return fmi3_capi_set_string(fmu -> capi, vr, nvr, value);
 }
 
-fmi3_status_t fmi3_import_get_real(fmi3_import_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, fmi3_real_t    value[]) {
-	return fmi3_capi_get_real(fmu -> capi, vr, nvr, value);
+fmi3_status_t fmi3_import_get_float64(fmi3_import_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, fmi3_float64_t value[], size_t nValues) {
+	return fmi3_capi_get_float64(fmu -> capi, vr, nvr, value, nValues);
+}
+
+fmi3_status_t fmi3_import_get_float32(fmi3_import_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, fmi3_float32_t value[], size_t nValues) {
+	return fmi3_capi_get_float32(fmu -> capi, vr, nvr, value, nValues);
 }
 
 fmi3_status_t fmi3_import_get_integer(fmi3_import_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, fmi3_integer_t value[]) {
@@ -292,11 +300,11 @@ fmi3_status_t fmi3_import_de_serialize_fmu_state  (fmi3_import_t* fmu, const fmi
 
 fmi3_status_t fmi3_import_get_directional_derivative(fmi3_import_t* fmu, const fmi3_value_reference_t v_ref[], size_t nv,
                                                                    const fmi3_value_reference_t z_ref[], size_t nz,
-                                                                   const fmi3_real_t dv[], fmi3_real_t dz[]){
+                                                                   const fmi3_float64_t dv[], fmi3_float64_t dz[]){
 	return fmi3_capi_get_directional_derivative(fmu -> capi,v_ref, nv, z_ref, nz, dv, dz);
 }
 
-/* FMI 2.0 ME functions */
+/* FMI 3.0 ME functions */
 
 fmi3_status_t fmi3_import_enter_event_mode(fmi3_import_t* fmu) {
     return fmi3_capi_enter_event_mode(fmu->capi);
@@ -310,11 +318,11 @@ fmi3_status_t fmi3_import_enter_continuous_time_mode(fmi3_import_t* fmu) {
     return fmi3_capi_enter_continuous_time_mode(fmu->capi);
 }
 
-fmi3_status_t fmi3_import_set_time(fmi3_import_t* fmu, fmi3_real_t time) {
+fmi3_status_t fmi3_import_set_time(fmi3_import_t* fmu, fmi3_float64_t time) {
 	return fmi3_capi_set_time(fmu -> capi, time);
 }
 
-fmi3_status_t fmi3_import_set_continuous_states(fmi3_import_t* fmu, const fmi3_real_t x[], size_t nx) {
+fmi3_status_t fmi3_import_set_continuous_states(fmi3_import_t* fmu, const fmi3_float64_t x[], size_t nx) {
 	return fmi3_capi_set_continuous_states(fmu -> capi, x, nx);
 }
 
@@ -325,29 +333,29 @@ fmi3_status_t fmi3_import_completed_integrator_step(fmi3_import_t* fmu,
                                                enterEventMode, terminateSimulation);
 }
 
-fmi3_status_t fmi3_import_get_derivatives(fmi3_import_t* fmu, fmi3_real_t derivatives[], size_t nx) {
+fmi3_status_t fmi3_import_get_derivatives(fmi3_import_t* fmu, fmi3_float64_t derivatives[], size_t nx) {
 	return fmi3_capi_get_derivatives(fmu -> capi, derivatives, nx);
 }
 
-fmi3_status_t fmi3_import_get_event_indicators(fmi3_import_t* fmu, fmi3_real_t eventIndicators[], size_t ni) {
+fmi3_status_t fmi3_import_get_event_indicators(fmi3_import_t* fmu, fmi3_float64_t eventIndicators[], size_t ni) {
 	return fmi3_capi_get_event_indicators(fmu -> capi, eventIndicators, ni);
 }
 
-fmi3_status_t fmi3_import_get_continuous_states(fmi3_import_t* fmu, fmi3_real_t states[], size_t nx) {
+fmi3_status_t fmi3_import_get_continuous_states(fmi3_import_t* fmu, fmi3_float64_t states[], size_t nx) {
 	return fmi3_capi_get_continuous_states(fmu -> capi, states, nx);
 }
 
-fmi3_status_t fmi3_import_get_nominals_of_continuous_states(fmi3_import_t* fmu, fmi3_real_t x_nominal[], size_t nx) {
+fmi3_status_t fmi3_import_get_nominals_of_continuous_states(fmi3_import_t* fmu, fmi3_float64_t x_nominal[], size_t nx) {
 	return fmi3_capi_get_nominals_of_continuous_states(fmu -> capi, x_nominal, nx);
 }
 
-/* FMI 2.0 CS functions */
+/* FMI 3.0 CS functions */
 
-fmi3_status_t fmi3_import_set_real_input_derivatives(fmi3_import_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, const fmi3_integer_t order[], const  fmi3_real_t value[]) {
+fmi3_status_t fmi3_import_set_real_input_derivatives(fmi3_import_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, const fmi3_integer_t order[], const  fmi3_float64_t value[]) {
 	return fmi3_capi_set_real_input_derivatives(fmu -> capi, vr, nvr, order, value);
 }
                                                   
-fmi3_status_t fmi3_import_get_real_output_derivatives(fmi3_import_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, const fmi3_integer_t order[], fmi3_real_t value[]) {
+fmi3_status_t fmi3_import_get_real_output_derivatives(fmi3_import_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, const fmi3_integer_t order[], fmi3_float64_t value[]) {
 	return fmi3_capi_get_real_output_derivatives(fmu -> capi, vr, nvr, order, value);
 }
                                               
@@ -355,7 +363,7 @@ fmi3_status_t fmi3_import_cancel_step(fmi3_import_t* fmu) {
 	return fmi3_capi_cancel_step(fmu -> capi);
 }
 
-fmi3_status_t fmi3_import_do_step(fmi3_import_t* fmu, fmi3_real_t currentCommunicationPoint, fmi3_real_t communicationStepSize, fmi3_boolean_t newStep) {
+fmi3_status_t fmi3_import_do_step(fmi3_import_t* fmu, fmi3_float64_t currentCommunicationPoint, fmi3_float64_t communicationStepSize, fmi3_boolean_t newStep) {
 	return fmi3_capi_do_step(fmu -> capi, currentCommunicationPoint, communicationStepSize, newStep);
 }
 
@@ -363,7 +371,7 @@ fmi3_status_t fmi3_import_get_status(fmi3_import_t* fmu, const fmi3_status_kind_
 	return fmi3_capi_get_status(fmu -> capi, s, value);
 }
 
-fmi3_status_t fmi3_import_get_real_status(fmi3_import_t* fmu, const fmi3_status_kind_t s, fmi3_real_t*    value) {
+fmi3_status_t fmi3_import_get_real_status(fmi3_import_t* fmu, const fmi3_status_kind_t s, fmi3_float64_t*    value) {
 	return fmi3_capi_get_real_status(fmu -> capi, s, value);
 }
 

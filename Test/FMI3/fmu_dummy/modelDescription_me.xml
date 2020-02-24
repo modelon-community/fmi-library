@@ -8,10 +8,7 @@
   numberOfEventIndicators="1">
   <ModelExchange modelIdentifier="BouncingBall3" />
   <TypeDefinitions>
-    <SimpleType
-      name="Modelica.Blocks.Interfaces.RealOutput">
-      <Real/>
-    </SimpleType>
+      <Float64 name="Modelica.Blocks.Interfaces.RealOutput" />
   </TypeDefinitions>
   <VendorAnnotations>
     <Tool name ="JModelica">
@@ -20,58 +17,42 @@
   </VendorAnnotations>
 <ModelVariables>
   <!--  1 -->
-  <ScalarVariable name="HIGHT" valueReference="0" initial="exact" causality="output" description="Hight of the ball">
-    <Real start="1.0" reinit="true" />
-  </ScalarVariable>
+  <Float64 name="HIGHT" valueReference="0" initial="exact" causality="output" description="Hight of the ball" start="1.0" reinit="true" />
   <!--  2 -->
-  <ScalarVariable name="HIGHT_SPEED" valueReference="1" initial="exact" description="Speed of the ball">
-     <Real start="4.0" derivative="1" reinit="true"/>
+  <Float64 name="HIGHT_SPEED" valueReference="1" initial="exact" description="Speed of the ball" start="4.0" derivative="1" reinit="true">
     <Annotations>
       <Tool name ="JModelica">
         <JModelica name="HIGHT_SPEED variable annotations">Test data</JModelica>
       </Tool>
     </Annotations>
-  </ScalarVariable> 
+  </Float64> 
   <!--  3 -->
-  <ScalarVariable name="HIGHT_SPEED alias" valueReference="1" description="Speed of the ball">
-     <Real />
-  </ScalarVariable> 
+  <Float64 name="HIGHT_SPEED alias" valueReference="1" description="Speed of the ball"/>
   <!--  4 -->
-  <ScalarVariable name="HIGHT_ACC" valueReference="4" description="Acceleration of the ball">
-     <Real derivative="2" />	 
-  </ScalarVariable>   
+  <Float64 name="HIGHT_ACC" valueReference="4" description="Acceleration of the ball" derivative="2" />
   <!--  5 -->
-  <ScalarVariable name="A variable" valueReference="100" initial="exact" description="Speed of the ball">
-     <Real start="4.0" />
-  </ScalarVariable>
+  <Float64 name="A variable" valueReference="100" initial="exact" description="Speed of the ball" start="4.0" />
   <!--  6 -->
-  <ScalarVariable name="GRAVITY" valueReference="2" description="Gravity constant" initial="exact">
-     <Real start="-9.81"/>
-  </ScalarVariable>
+  <Float64 name="GRAVITY" valueReference="2" description="Gravity constant" initial="exact" start="-9.81"/>
   <!--  7 -->
-  <ScalarVariable name="BOUNCE_COF" valueReference="3" initial="exact" description="Bouncing coefficient">
-     <Real start="0.5" />
-  </ScalarVariable>
+  <Float64 name="BOUNCE_COF" valueReference="3" initial="exact" description="Bouncing coefficient" start="0.5" />
   <!--  8 -->
-  <ScalarVariable name="LOGGER_TEST" valueReference="0" description="The logger will print the value of this variable when it is set.">
-     <String/>
-  </ScalarVariable>  
+  <String name="LOGGER_TEST" valueReference="0" description="The logger will print the value of this variable when it is set."/>
   <!--  9 -->
-  <ScalarVariable name="LOGGER_TEST_INTEGER" valueReference="0" description="This is only used to test logger replace function #i0#">
-     <Integer/>
-  </ScalarVariable>  
+  <Integer name="LOGGER_TEST_INTEGER" valueReference="0" description="This is only used to test logger replace function #i0#"/>
   <!-- 10 -->
-  <ScalarVariable name="LOGGER_TEST_BOOLEAN" valueReference="0" description="This is only used to test logger replace function #b0#">
-     <Boolean/>
-  </ScalarVariable>
+  <Boolean name="LOGGER_TEST_BOOLEAN" valueReference="0" description="This is only used to test logger replace function #b0#"/>
   <!-- 11 -->
-  <ScalarVariable name="CONSTANT_ALIAS_1" valueReference="200" description="constant in alias set" variability="constant" initial="exact">
-     <Real start="121"/>
-  </ScalarVariable>
+  <Float64 name="CONSTANT_ALIAS_1" valueReference="200" description="constant in alias set" variability="constant" initial="exact" start="121"/>
   <!-- 12 -->
-  <ScalarVariable name="CONSTANT_ALIAS_2" valueReference="200" description="constant in alias set" variability="constant" initial="exact">
-     <Real start="121"/>
-  </ScalarVariable>
+  <Float64 name="CONSTANT_ALIAS_2" valueReference="200" description="constant in alias set" variability="constant" initial="exact" start="121"/>
+  <!-- 13 -->
+  <Float64 name="array_of_states" valueReference="12" causality="output" description="Variable testing of arrays. Outputs states and state derivatives: {{h, h'}, {v, v'}} (where h' = v)" start="1.0 4.0 4.0 -9.81">
+    <Dimension start="2"/>
+    <Dimension start="2"/>
+  </Float64>
+
+
 </ModelVariables>
 <ModelStructure>
   <Outputs>

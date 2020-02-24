@@ -49,7 +49,7 @@ static int calc_get_derivatives(component_ptr_t comp)
 
 static int calc_get_event_indicators(component_ptr_t comp)
 {	
-	fmi3Real event_tol = 1e-16;
+	fmi3Float64 event_tol = 1e-16;
 	comp->event_indicators[EVENT_HIGHT]		= comp->states[VAR_R_HIGHT] + (comp->states[VAR_R_HIGHT] >= 0 ? event_tol : -event_tol);
 	return 0;
 }
@@ -91,26 +91,40 @@ fmi3Status fmi_set_debug_logging(fmi3Component c, fmi3Boolean loggingOn)
 	}
 }
 
-fmi3Status fmi_get_real(fmi3Component c, const fmi3ValueReference vr[], size_t nvr, fmi3Real value[])
+fmi3Status fmi_get_float64(fmi3Component c, const fmi3ValueReference vr[], size_t nvr, fmi3Float64 value[], size_t nValues)
 {
 	component_ptr_t comp = (fmi3Component)c;
 	if (comp == NULL) {
 		return fmi3Fatal;
 	} else {
 		size_t k;
+		size_t m = 0; /* index in value, considering that arrays will require many indices */
 		for (k = 0; k < nvr; k++) {
 			fmi3ValueReference cvr = vr[k];
 			if (cvr < N_STATES) {
-				value[k] = comp->states[cvr];
+				value[m] = comp->states[cvr];
 			} 
 			else if(cvr == 4) {
 				calc_get_derivatives(comp);
-				value[k] = comp->states_der[1];
+				value[m] = comp->states_der[1];
+			}
+			else if (cvr == 12) { /* special case: array */
+				calc_get_derivatives(comp);
+				value[m++] = comp->states[0];
+				value[m++] = comp->states_der[0];
+				value[m++] = comp->states[1];
+				value[m++] = comp->states_der[1];
 			}
 			else {
-				value[k] = comp->reals[cvr];
-			}	
+				value[m] = comp->reals[cvr];
+			}
+			m++;
 		}
+
+		if (m - 1 != nValues) {
+            return fmi3Fatal;
+		}
+
 		return fmi3OK;
 	}
 }
@@ -157,7 +171,12 @@ fmi3Status fmi_get_string(fmi3Component c, const fmi3ValueReference vr[], size_t
 	}
 }
 
-fmi3Status fmi_set_real(fmi3Component c, const fmi3ValueReference vr[], size_t nvr, const fmi3Real value[])
+/* TODO: nValues is just used for verification, i.e. to check that sum(lenght(vr[i])) == nValues;
+ * currently it seems it's not decided whether this parameter will remain, so not implementing anything
+ * for now
+ * https://github.com/modelica/fmi-standard/issues/512
+ */
+fmi3Status fmi_set_float64(fmi3Component c, const fmi3ValueReference vr[], size_t nvr, const fmi3Float64 value[], size_t nValues)
 {
 	component_ptr_t comp = (fmi3Component)c;
 	if (comp == NULL) {
@@ -170,12 +189,12 @@ fmi3Status fmi_set_real(fmi3Component c, const fmi3ValueReference vr[], size_t n
 				comp->states[cvr] = value[k]; 
 			} 
 			else if(cvr == 4) {
-				comp->functions->logger(c, comp->instanceName,fmi3Warning, "WARNING", "Cannot set acceleration value (calculated)");
+				comp->functions->logger(c, comp->instanceName, fmi3Warning, "WARNING", "Cannot set acceleration value (calculated)");
 				return fmi3Error;
 			}
 			else {
 				comp->reals[cvr] = value[k]; 
-			}			
+			}
 		}
 		return fmi3OK;
 	}
@@ -321,9 +340,9 @@ void fmi_free_instance(fmi3Component c)
 }
 
 fmi3Status fmi_setup_experiment(fmi3Component c, fmi3Boolean toleranceDefined,
-                               fmi3Real tolerance, fmi3Real startTime,
+                               fmi3Float64 tolerance, fmi3Float64 startTime,
                                fmi3Boolean stopTimeDefined,
-                               fmi3Real stopTime)
+                               fmi3Float64 stopTime)
 {
     component_ptr_t comp = (fmi3Component)c;
 
@@ -379,7 +398,7 @@ fmi3Status fmi_enter_continuous_time_mode(fmi3Component c)
     return fmi3OK;
 }
 
-fmi3Status fmi_set_time(fmi3Component c, fmi3Real fmitime)
+fmi3Status fmi_set_time(fmi3Component c, fmi3Float64 fmitime)
 {
 	component_ptr_t comp = (fmi3Component)c;
 	if (comp == NULL) {
@@ -390,7 +409,7 @@ fmi3Status fmi_set_time(fmi3Component c, fmi3Real fmitime)
 	}
 }
 
-fmi3Status fmi_set_continuous_states(fmi3Component c, const fmi3Real x[], size_t nx)
+fmi3Status fmi_set_continuous_states(fmi3Component c, const fmi3Float64 x[], size_t nx)
 {
 	component_ptr_t comp = (fmi3Component)c;
 	if (comp == NULL) {
@@ -417,7 +436,7 @@ fmi3Status fmi_completed_integrator_step(fmi3Component c,
 	}
 }
 
-fmi3Status fmi_get_derivatives(fmi3Component c, fmi3Real derivatives[] , size_t nx)
+fmi3Status fmi_get_derivatives(fmi3Component c, fmi3Float64 derivatives[] , size_t nx)
 {
 	component_ptr_t comp = (fmi3Component)c;
 	if (comp == NULL) {
@@ -434,7 +453,7 @@ fmi3Status fmi_get_derivatives(fmi3Component c, fmi3Real derivatives[] , size_t 
 	}
 }
 
-fmi3Status fmi_get_event_indicators(fmi3Component c, fmi3Real eventIndicators[], size_t ni)
+fmi3Status fmi_get_event_indicators(fmi3Component c, fmi3Float64 eventIndicators[], size_t ni)
 {
 	component_ptr_t comp = (fmi3Component)c;
 	if (comp == NULL) {
@@ -451,7 +470,7 @@ fmi3Status fmi_get_event_indicators(fmi3Component c, fmi3Real eventIndicators[],
 	}
 }
 
-fmi3Status fmi_get_continuous_states(fmi3Component c, fmi3Real states[], size_t nx)
+fmi3Status fmi_get_continuous_states(fmi3Component c, fmi3Float64 states[], size_t nx)
 {
 	component_ptr_t comp = (fmi3Component)c;
 	if (comp == NULL) {
@@ -466,7 +485,7 @@ fmi3Status fmi_get_continuous_states(fmi3Component c, fmi3Real states[], size_t 
 	}
 }
 
-fmi3Status fmi_get_nominals_of_continuousstates(fmi3Component c, fmi3Real x_nominal[], size_t nx)
+fmi3Status fmi_get_nominals_of_continuousstates(fmi3Component c, fmi3Float64 x_nominal[], size_t nx)
 {
 	component_ptr_t comp = (fmi3Component)c;
 	if (comp == NULL) {
@@ -501,7 +520,7 @@ fmi3Status fmi_reset(fmi3Component c)
 	return fmi3OK;
 }
 
-fmi3Status fmi_set_real_input_derivatives(fmi3Component c, const fmi3ValueReference vr[], size_t nvr, const fmi3Integer order[], const fmi3Real value[])
+fmi3Status fmi_set_real_input_derivatives(fmi3Component c, const fmi3ValueReference vr[], size_t nvr, const fmi3Integer order[], const fmi3Float64 value[])
 {
 
 	component_ptr_t comp	= (fmi3Component)c;
@@ -517,7 +536,7 @@ fmi3Status fmi_set_real_input_derivatives(fmi3Component c, const fmi3ValueRefere
 	return fmi3OK;
 }
 
-fmi3Status fmi_get_real_output_derivatives(fmi3Component c, const fmi3ValueReference vr[], size_t nvr, const fmi3Integer order[], fmi3Real value[])
+fmi3Status fmi_get_real_output_derivatives(fmi3Component c, const fmi3ValueReference vr[], size_t nvr, const fmi3Integer order[], fmi3Float64 value[])
 {
 	component_ptr_t comp	= (fmi3Component)c;
 	size_t k;
@@ -534,22 +553,22 @@ fmi3Status fmi_cancel_step(fmi3Component c)
 	return fmi3OK;
 }
 
-fmi3Status fmi_do_step(fmi3Component c, fmi3Real currentCommunicationPoint, fmi3Real communicationStepSize, fmi3Boolean newStep)
+fmi3Status fmi_do_step(fmi3Component c, fmi3Float64 currentCommunicationPoint, fmi3Float64 communicationStepSize, fmi3Boolean newStep, fmi3Boolean* earlyReturn)
 {
 	component_ptr_t comp	= (fmi3Component)c;
 
 	if (comp == NULL) {
 		return fmi3Fatal;
 	} else {
-		fmi3Real tstart = currentCommunicationPoint;
-		fmi3Real tcur;
-		fmi3Real tend = currentCommunicationPoint + communicationStepSize;
-		fmi3Real hcur; 
-		fmi3Real hdef = 0.01;	/* Default time step length */
-		fmi3Real z_cur[N_EVENT_INDICATORS];
-		fmi3Real z_pre[N_EVENT_INDICATORS];
-		fmi3Real states[N_STATES];
-		fmi3Real states_der[N_STATES];
+		fmi3Float64 tstart = currentCommunicationPoint;
+		fmi3Float64 tcur;
+		fmi3Float64 tend = currentCommunicationPoint + communicationStepSize;
+		fmi3Float64 hcur; 
+		fmi3Float64 hdef = 0.01;	/* Default time step length */
+		fmi3Float64 z_cur[N_EVENT_INDICATORS];
+		fmi3Float64 z_pre[N_EVENT_INDICATORS];
+		fmi3Float64 states[N_STATES];
+		fmi3Float64 states_der[N_STATES];
 		fmi3EventInfo eventInfo;
 		fmi3Boolean callEventUpdate;
 		fmi3Boolean terminateSimulation;
@@ -646,7 +665,7 @@ fmi3Status fmi_get_status(fmi3Component c, const fmi3StatusKind s, fmi3Status*  
 	}
 }
 
-fmi3Status fmi_get_real_status(fmi3Component c, const fmi3StatusKind s, fmi3Real*    value)
+fmi3Status fmi_get_real_status(fmi3Component c, const fmi3StatusKind s, fmi3Float64*    value)
 {
 	switch (s) {
 		case fmi3LastSuccessfulTime:

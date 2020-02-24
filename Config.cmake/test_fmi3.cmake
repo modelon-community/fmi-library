@@ -42,10 +42,14 @@ set(XML_MF_PATH ${FMU3_DUMMY_FOLDER}/modelDescription_malformed.xml)
 
 set(VARIABLE_TEST_MODEL_DESC_DIR
     ${RTTESTDIR}/FMI3/parser_test_xmls/variable_test)
-set(VARIABLE_NO_TYPE_MODEL_DESC_DIR
-    ${RTTESTDIR}/FMI3/parser_test_xmls/variable_no_type)
 set(VARIABLE_BAD_VARIABILITY_CAUSALITY_MODEL_DESC_DIR
     ${RTTESTDIR}/FMI3/parser_test_xmls/variable_bad_variability_causality)
+set(VARIABLE_TYPES_TEST_MODEL_DESC_DIR
+    ${RTTESTDIR}/FMI3/parser_test_xmls/variable_types/float)
+set(TYPE_DEFINITIONS_MODEL_DESC_DIR
+    ${RTTESTDIR}/FMI3/parser_test_xmls/type_definitions)
+set(ARRAYS_MODEL_DESC_DIR
+    ${RTTESTDIR}/FMI3/parser_test_xmls/arrays)
 
 set(SHARED_LIBRARY_ME_PATH ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${CMAKE_SHARED_LIBRARY_PREFIX}fmu3_dll_me${CMAKE_SHARED_LIBRARY_SUFFIX})
 set(SHARED_LIBRARY_CS_PATH ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${CMAKE_SHARED_LIBRARY_PREFIX}fmu3_dll_cs${CMAKE_SHARED_LIBRARY_SUFFIX})
@@ -69,22 +73,36 @@ to_native_c_path("${TEST_OUTPUT_FOLDER}/${FMU3_DUMMY_ME_MODEL_IDENTIFIER}_me.fmu
 to_native_c_path("${TEST_OUTPUT_FOLDER}/${FMU3_DUMMY_CS_MODEL_IDENTIFIER}_cs.fmu" FMU3_CS_PATH)
 to_native_c_path("${TEST_OUTPUT_FOLDER}/${FMU3_DUMMY_CS_MODEL_IDENTIFIER}_mf.fmu" FMU3_MF_PATH)
 
+# Test that it works for C++ applications
+add_executable (fmi3_import_xml_test ${RTTESTDIR}/FMI3/fmi3_import_xml_test.cc)
+target_link_libraries (fmi3_import_xml_test  ${FMILIBFORTEST})
+
+# General functionality tests
 add_executable (fmi3_xml_parsing_test ${RTTESTDIR}/FMI3/fmi3_xml_parsing_test.c)
 target_link_libraries (fmi3_xml_parsing_test  ${FMILIBFORTEST})
-add_executable (fmi3_import_xml_test ${RTTESTDIR}/FMI3/fmi3_import_xml_test.c)
-target_link_libraries (fmi3_import_xml_test  ${FMILIBFORTEST})
+
 add_executable (fmi3_import_me_test ${RTTESTDIR}/FMI3/fmi3_import_me_test.c)
 target_link_libraries (fmi3_import_me_test  ${FMILIBFORTEST})
+
 add_executable (fmi3_import_cs_test ${RTTESTDIR}/FMI3/fmi3_import_cs_test.c)
 target_link_libraries (fmi3_import_cs_test  ${FMILIBFORTEST})
+
 add_executable(fmi3_import_variable_test ${RTTESTDIR}/FMI3/fmi3_import_variable_test.c)
 target_link_libraries(fmi3_import_variable_test ${FMILIBFORTEST})
-add_executable(fmi3_variable_no_type_test
-               ${RTTESTDIR}/FMI3/fmi3_variable_no_type_test.c)
-target_link_libraries(fmi3_variable_no_type_test ${FMILIBFORTEST})
+
+add_executable(fmi3_import_type_definitions_test ${RTTESTDIR}/FMI3/fmi3_import_type_definitions_test.c)
+target_link_libraries(fmi3_import_type_definitions_test ${FMILIBFORTEST})
+
+add_executable(fmi3_import_arrays_test ${RTTESTDIR}/FMI3/fmi3_import_arrays_test.c)
+target_link_libraries(fmi3_import_arrays_test ${FMILIBFORTEST})
+
+add_executable(fmi3_import_variable_types_test ${RTTESTDIR}/FMI3/fmi3_import_variable_types_test.c)
+target_link_libraries(fmi3_import_variable_types_test ${FMILIBFORTEST})
+
 add_executable(fmi3_variable_bad_variability_causality_test
                ${RTTESTDIR}/FMI3/fmi3_variable_bad_variability_causality_test.c)
 target_link_libraries(fmi3_variable_bad_variability_causality_test ${FMILIBFORTEST})
+
 add_executable(fmi3_enum_test ${RTTESTDIR}/FMI3/fmi3_enum_test.c)
 target_link_libraries(fmi3_enum_test ${FMILIBFORTEST})
 
@@ -93,6 +111,7 @@ set_target_properties(
     fmi3_import_xml_test
     fmi3_import_me_test fmi3_import_cs_test
     fmi3_import_variable_test
+    fmi3_import_variable_types_test
     PROPERTIES FOLDER "Test/FMI3"
 )
 set(FAIL_NAME_CHECK 0)
@@ -110,9 +129,15 @@ add_test(ctest_fmi3_import_test_cs fmi3_import_cs_test ${FMU3_CS_PATH} ${FMU_TEM
 add_test(ctest_fmi3_import_variable_test
          fmi3_import_variable_test
          ${VARIABLE_TEST_MODEL_DESC_DIR})
-add_test(ctest_fmi3_variable_no_type_test
-         fmi3_variable_no_type_test
-         ${VARIABLE_NO_TYPE_MODEL_DESC_DIR})
+add_test(ctest_fmi3_import_variable_types_test
+         fmi3_import_variable_types_test
+         ${VARIABLE_TYPES_TEST_MODEL_DESC_DIR})
+add_test(ctest_fmi3_import_type_definitions_test
+         fmi3_import_type_definitions_test
+         ${TYPE_DEFINITIONS_MODEL_DESC_DIR})
+add_test(ctest_fmi3_import_arrays_test
+         fmi3_import_arrays_test
+         ${ARRAYS_MODEL_DESC_DIR})
 add_test(ctest_fmi3_variable_bad_variability_causality_test
          fmi3_variable_bad_variability_causality_test
          ${VARIABLE_BAD_VARIABILITY_CAUSALITY_MODEL_DESC_DIR})
@@ -128,8 +153,9 @@ if(FMILIB_BUILD_BEFORE_TESTS)
         ctest_fmi3_import_xml_test_empty
         ctest_fmi3_import_test_me
         ctest_fmi3_import_test_cs
+        ctest_fmi3_import_type_definitions_test
+        ctest_fmi3_import_arrays_test
         ctest_fmi3_import_variable_test
-        ctest_fmi3_variable_no_type_test
         ctest_fmi3_enum_test
         ctest_fmi3_variable_bad_variability_causality_test
         PROPERTIES DEPENDS ctest_build_all)

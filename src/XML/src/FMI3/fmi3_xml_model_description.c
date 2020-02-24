@@ -104,6 +104,9 @@ fmi3_xml_model_description_t * fmi3_xml_allocate_model_description( jm_callbacks
 
 void fmi3_xml_clear_model_description( fmi3_xml_model_description_t* md) {
 
+    void(*cb_free)(const char*) = (void(*)(const char*))md->callbacks->free;
+    size_t i; /* loop variable */
+
     md->status = fmi3_xml_model_description_enu_empty;
     jm_vector_free_data(char)(&md->fmi3_xml_standard_version);
     jm_vector_free_data(char)(&md->modelName);
@@ -150,12 +153,17 @@ void fmi3_xml_clear_model_description( fmi3_xml_model_description_t* md) {
 
     fmi3_xml_free_type_definitions_data(&md->typeDefinitions);
 
-    jm_named_vector_free_data(&md->variablesByName);
 	if(md->variablesOrigOrder) {
 		jm_vector_free(jm_voidp)(md->variablesOrigOrder);
 		md->variablesOrigOrder = 0;
 	}
     if(md->variablesByVR) {
+        /* free memory inside the variables */
+        for (i = 0; i < jm_vector_get_size(jm_voidp)(md->variablesByVR); i++) {
+            fmi3_xml_variable_t* var = (fmi3_xml_variable_t*)jm_vector_get_item(jm_voidp)(md->variablesByVR, i);
+            fmi3_xml_variable_free_internals(md->callbacks, var);
+        }
+
 		jm_vector_free(jm_voidp)(md->variablesByVR);
 		md->variablesByVR = 0;
 	}
@@ -366,7 +374,7 @@ int fmi3_xml_handle_fmiModelDescription(fmi3_xml_parser_context_t *context, cons
 		jm_log_verbose(context->callbacks, module, "Parsing XML element fmiModelDescription");
 		md->fmuKind = fmi3_fmu_kind_unknown;
         /* process the attributes */
-		ret =        /* <xs:attribute name="fmiVersion" type="xs:normalizedString" use="required" fixed="2.0"/> */
+		ret =        /* <xs:attribute name="fmiVersion" type="xs:normalizedString" use="required" fixed="3.0"/> */
                     fmi3_xml_set_attr_string(context, fmi3_xml_elmID_fmiModelDescription, fmi_attr_id_fmiVersion, 1, &(md->fmi3_xml_standard_version)) ||
                     /* <xs:attribute name="modelName" type="xs:normalizedString" use="required"> */
                     fmi3_xml_set_attr_string(context, fmi3_xml_elmID_fmiModelDescription, fmi_attr_id_modelName, 1, &(md->modelName)) ||
@@ -635,13 +643,13 @@ int fmi3_xml_handle_DefaultExperiment(fmi3_xml_parser_context_t *context, const 
         /* process the attributes */
         return (
         /* <xs:attribute name="startTime" type="xs:double"/> */
-                fmi3_xml_set_attr_double(context, fmi3_xml_elmID_DefaultExperiment, fmi_attr_id_startTime, 0, &md->defaultExperimentStartTime, 0) ||
+                fmi3_xml_set_attr_float64(context, fmi3_xml_elmID_DefaultExperiment, fmi_attr_id_startTime, 0, &md->defaultExperimentStartTime, 0) ||
         /* <xs:attribute name="stopTime" type="xs:double"/>  */
-                fmi3_xml_set_attr_double(context, fmi3_xml_elmID_DefaultExperiment, fmi_attr_id_stopTime, 0, &md->defaultExperimentStopTime, 1) ||
+                fmi3_xml_set_attr_float64(context, fmi3_xml_elmID_DefaultExperiment, fmi_attr_id_stopTime, 0, &md->defaultExperimentStopTime, 1) ||
         /* <xs:attribute name="tolerance" type="xs:double">  */
-                fmi3_xml_set_attr_double(context, fmi3_xml_elmID_DefaultExperiment, fmi_attr_id_tolerance, 0, &md->defaultExperimentTolerance, FMI3_DEFAULT_EXPERIMENT_TOLERANCE) ||
+                fmi3_xml_set_attr_float64(context, fmi3_xml_elmID_DefaultExperiment, fmi_attr_id_tolerance, 0, &md->defaultExperimentTolerance, FMI3_DEFAULT_EXPERIMENT_TOLERANCE) ||
         /* <xs:attribute name="stepSize" type="xs:double">   */
-                fmi3_xml_set_attr_double(context, fmi3_xml_elmID_DefaultExperiment, fmi_attr_id_stepSize, 0, &md->defaultExperimentStepSize, FMI3_DEFAULT_EXPERIMENT_STEPSIZE)
+                fmi3_xml_set_attr_float64(context, fmi3_xml_elmID_DefaultExperiment, fmi_attr_id_stepSize, 0, &md->defaultExperimentStepSize, FMI3_DEFAULT_EXPERIMENT_STEPSIZE)
         );
     }
     else {
@@ -686,7 +694,7 @@ fmi3_xml_variable_t* fmi3_xml_get_variable_by_vr(fmi3_xml_model_description_t* m
 	key.vr = vr;
     key.aliasKind = fmi3_variable_is_not_alias;
 
-    found = jm_vector_bsearch(jm_voidp)(md->variablesByVR,(void**)&pkey, fmi3_xml_compare_vr);
+    found = jm_vector_bsearch(jm_voidp)(md->variablesByVR, (void**)&pkey, fmi3_xml_compare_vr);
     if(!found) return 0;
     v = (fmi3_xml_variable_t*)(*found);
     return v;

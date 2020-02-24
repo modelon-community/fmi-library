@@ -114,7 +114,7 @@ typedef struct fmi1_import_t fmi1_import_t;
 typedef struct fmi2_import_t fmi2_import_t;
 
 /**
-	\brief FMU version 2.0 object
+	\brief FMU version 3.0 object
 */
 typedef struct fmi3_import_t fmi3_import_t;
 

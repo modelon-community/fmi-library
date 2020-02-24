@@ -13,6 +13,15 @@
     along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 */
 
+/*
+ * This file tests that C++ applications can use FMIL, i.e. that C++ directives are used in all headers:
+ *
+ *      #ifdef __cplusplus
+ *          extern "C" {
+ *      #endif
+ *
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -99,13 +108,13 @@ void printTypeInfo(fmi3_import_variable_typedef_t* vt) {
         printf("Quantity: %s\n", quan);
     }
     switch(fmi3_import_get_base_type(vt)) {
-    case fmi3_base_type_real: {
-        fmi3_import_real_typedef_t* rt = fmi3_import_get_type_as_real(vt);
-        fmi3_real_t min = fmi3_import_get_real_type_min(rt);
-        fmi3_real_t max = fmi3_import_get_real_type_max(rt);
-        fmi3_real_t nom = fmi3_import_get_real_type_nominal(rt);
-        fmi3_import_unit_t* u = fmi3_import_get_real_type_unit(rt);
-        fmi3_import_display_unit_t* du = fmi3_import_get_type_display_unit(rt);
+    case fmi3_base_type_float64: {
+        fmi3_import_float_typedef_t* rt = fmi3_import_get_type_as_float(vt);
+        fmi3_float64_t min = fmi3_import_get_float64_type_min(rt);
+        fmi3_float64_t max = fmi3_import_get_float64_type_max(rt);
+        fmi3_float64_t nom = fmi3_import_get_float64_type_nominal(rt);
+        fmi3_import_unit_t* u = fmi3_import_get_float64_type_unit(rt);
+        fmi3_import_display_unit_t* du = fmi3_import_get_float64_type_display_unit(rt);
 
         printf("Min %g, max %g, nominal %g\n", min, max, nom);
 
@@ -123,7 +132,7 @@ void printTypeInfo(fmi3_import_variable_typedef_t* vt) {
                    fmi3_import_get_display_unit_name(du),
                    fmi3_import_get_display_unit_factor(du),
                    fmi3_import_get_display_unit_offset(du),
-                   fmi3_import_get_real_type_is_relative_quantity(rt)?"yes":"no"
+                   fmi3_import_get_float64_type_is_relative_quantity(rt)?"yes":"no"
                    );
         }
 
@@ -216,20 +225,20 @@ void printVariableInfo(fmi3_import_t* fmu,
     printf("Base type: %s\n", fmi3_base_type_to_string(bt));
 
     printTypeInfo(fmi3_import_get_variable_declared_type(v));
-    if(bt == fmi3_base_type_real) {
-        fmi3_import_real_variable_t *rv = fmi3_import_get_variable_as_real(v);
-        fmi3_import_unit_t * u = fmi3_import_get_real_variable_unit(rv);
-        fmi3_import_display_unit_t * du = fmi3_import_get_real_variable_display_unit(rv);
-        printf("Unit: %s, display unit: %s\n", u ? fmi3_import_get_unit_name(u):0, du?fmi3_import_get_display_unit_name(du):"not provided");
+    if (bt == fmi3_base_type_float64) {
+        fmi3_import_float64_variable_t* rv = fmi3_import_get_variable_as_float64(v);
+        fmi3_import_unit_t* u = fmi3_import_get_float64_variable_unit(rv);
+        fmi3_import_display_unit_t* du = fmi3_import_get_float64_variable_display_unit(rv);
+        printf("Unit: %s, display unit: %s\n", u ? fmi3_import_get_unit_name(u) : 0, du ? fmi3_import_get_display_unit_name(du) : "not provided");
     }
 
     if(fmi3_import_get_variable_has_start(v)) {
         printf("There is a start value\n");
 
         switch(fmi3_import_get_variable_base_type(v)) {
-        case fmi3_base_type_real: {
-            fmi3_import_real_variable_t *rv = fmi3_import_get_variable_as_real(v);
-            printf("start =%g\n", fmi3_import_get_real_variable_start(rv));
+        case fmi3_base_type_float64: {
+            fmi3_import_float64_variable_t *rv = fmi3_import_get_variable_as_float64(v);
+            printf("start =%g\n", fmi3_import_get_float64_variable_start(rv));
             break;
         }
         case fmi3_base_type_int:{

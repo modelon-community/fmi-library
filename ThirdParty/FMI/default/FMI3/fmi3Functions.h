@@ -195,11 +195,13 @@ Common Functions
 #define fmi3ExitInitializationMode   fmi3FullName(fmi3ExitInitializationMode)
 #define fmi3Terminate                fmi3FullName(fmi3Terminate)
 #define fmi3Reset                    fmi3FullName(fmi3Reset)
-#define fmi3GetReal                  fmi3FullName(fmi3GetReal)
+#define fmi3GetFloat32               fmi3FullName(fmi3GetFloat32)
+#define fmi3GetFloat64               fmi3FullName(fmi3GetFloat64)
 #define fmi3GetInteger               fmi3FullName(fmi3GetInteger)
 #define fmi3GetBoolean               fmi3FullName(fmi3GetBoolean)
 #define fmi3GetString                fmi3FullName(fmi3GetString)
-#define fmi3SetReal                  fmi3FullName(fmi3SetReal)
+#define fmi3SetFloat32               fmi3FullName(fmi3SetFloat32)
+#define fmi3SetFloat64               fmi3FullName(fmi3SetFloat64)
 #define fmi3SetInteger               fmi3FullName(fmi3SetInteger)
 #define fmi3SetBoolean               fmi3FullName(fmi3SetBoolean)
 #define fmi3SetString                fmi3FullName(fmi3SetString)
@@ -230,8 +232,8 @@ Functions for FMI3 for Model Exchange
 /***************************************************
 Functions for FMI3 for Co-Simulation
 ****************************************************/
-#define fmi3SetRealInputDerivatives      fmi3FullName(fmi3SetRealInputDerivatives)
-#define fmi3GetRealOutputDerivatives     fmi3FullName(fmi3GetRealOutputDerivatives)
+#define fmi3SetInputDerivatives      fmi3FullName(fmi3SetInputDerivatives)
+#define fmi3GetOutputDerivatives     fmi3FullName(fmi3GetOutputDerivatives)
 #define fmi3DoStep                       fmi3FullName(fmi3DoStep)
 #define fmi3CancelStep                   fmi3FullName(fmi3CancelStep)
 #define fmi3GetStatus                    fmi3FullName(fmi3GetStatus)
@@ -265,12 +267,14 @@ Common Functions
    FMI3_Export fmi3ResetTYPE                   fmi3Reset;
 
 /* Getting and setting variables values */
-   FMI3_Export fmi3GetRealTYPE    fmi3GetReal;
+   FMI3_Export fmi3GetFloat32TYPE fmi3GetFloat32;
+   FMI3_Export fmi3GetFloat64TYPE fmi3GetFloat64;
    FMI3_Export fmi3GetIntegerTYPE fmi3GetInteger;
    FMI3_Export fmi3GetBooleanTYPE fmi3GetBoolean;
    FMI3_Export fmi3GetStringTYPE  fmi3GetString;
 
-   FMI3_Export fmi3SetRealTYPE    fmi3SetReal;
+   FMI3_Export fmi3SetFloat32TYPE fmi3SetFloat32;
+   FMI3_Export fmi3SetFloat64TYPE fmi3SetFloat64;
    FMI3_Export fmi3SetIntegerTYPE fmi3SetInteger;
    FMI3_Export fmi3SetBooleanTYPE fmi3SetBoolean;
    FMI3_Export fmi3SetStringTYPE  fmi3SetString;
@@ -313,8 +317,8 @@ Functions for FMI3 for Co-Simulation
 ****************************************************/
 
 /* Simulating the slave */
-   FMI3_Export fmi3SetRealInputDerivativesTYPE  fmi3SetRealInputDerivatives;
-   FMI3_Export fmi3GetRealOutputDerivativesTYPE fmi3GetRealOutputDerivatives;
+   FMI3_Export fmi3SetInputDerivativesTYPE    fmi3SetInputDerivatives;
+   FMI3_Export fmi3GetOutputDerivativesTYPE   fmi3GetOutputDerivatives;
 
    FMI3_Export fmi3DoStepTYPE     fmi3DoStep;
    FMI3_Export fmi3CancelStepTYPE fmi3CancelStep;

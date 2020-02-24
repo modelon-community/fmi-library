@@ -70,8 +70,11 @@ typedef struct {
 	/** \brief  Number of independent variables */
 	unsigned int num_independent;
 
-	/** \brief  Number of real variables*/
-	unsigned int num_real_vars; 
+	/** \brief  Number of float64 variables*/
+	unsigned int num_float64_vars; 
+	/** \brief  Number of float32 variables*/
+	unsigned int num_float32_vars; 
+
 	/** \brief  Number of integer variables*/
 	unsigned int num_integer_vars; 
 	/** \brief  Number of enumeration variables*/
@@ -91,7 +94,7 @@ FMILIB_EXPORT
 void fmi3_import_collect_model_counts(fmi3_import_t* fmu, fmi3_import_model_counts_t* counts);
 
 /**
-  \brief Print msgIn into msgOut by expanding variable references of the form #\<Type\>\<VR\># into variable names
+  \brief Transform msgIn into msgOut by expanding variable references of the form #\<Type\>\<VR\># into variable names
   and replacing '##' with a single #.
    \param fmu - An fmu object as returned by fmi3_import_parse_xml().
    \param msgIn - Log message as produced by an FMU.
@@ -103,7 +106,7 @@ void fmi3_import_expand_variable_references(fmi3_import_t* fmu, const char* msgI
 
 
 /**
-	\brief An implementation of FMI 2.0 logger that forwards the messages to logger function inside ::jm_callbacks structure.
+	\brief An implementation of FMI 3.0 logger that forwards the messages to logger function inside ::jm_callbacks structure.
 	
 	The function is using a global array of active FMUs to find out which FMU is sending the log messege. It then
 	forwards the message to the logger connected to the particular ::fmi3_import_t struct. The function is called by the FMU.
@@ -115,7 +118,7 @@ FMILIB_EXPORT
 void  fmi3_log_forwarding(fmi3_component_t c, fmi3_string_t instanceName, fmi3_status_t status, fmi3_string_t category, fmi3_string_t message, ...);
 
 /**
-	\brief An implementation of FMI 2.0 logger that forwards the messages to logger function inside ::jm_callbacks structure.
+	\brief An implementation of FMI 3.0 logger that forwards the messages to logger function inside ::jm_callbacks structure.
 	
 	See fmi3_log_forwarding() for more information.
 */
@@ -123,7 +126,7 @@ FMILIB_EXPORT
 void  fmi3_log_forwarding_v(fmi3_component_t c, fmi3_string_t instanceName, fmi3_status_t status, fmi3_string_t category, fmi3_string_t message, va_list args);
 
 
-/** \brief  Default FMI 2.0 logger may be used when instantiating FMUs */
+/** \brief  Default FMI 3.0 logger may be used when instantiating FMUs */
 FMILIB_EXPORT
 void  fmi3_default_callback_logger(fmi3_component_t c, fmi3_string_t instanceName, fmi3_status_t status, fmi3_string_t category, fmi3_string_t message, ...);
 
@@ -131,7 +134,7 @@ void  fmi3_default_callback_logger(fmi3_component_t c, fmi3_string_t instanceNam
 
     The functions sets up the redirection. Note that the context field in ::jm_callbacks is set to point to the provided ::fmi3_callback_functions_t.
 	\param cb FMI Library callbacks
-	\param fmiCallbacks FMI 2.0 standard callbacks
+	\param fmiCallbacks FMI 3.0 standard callbacks
 */
 FMILIB_EXPORT
 void fmi3_import_init_logger(jm_callbacks* cb, fmi3_callback_functions_t* fmiCallbacks);

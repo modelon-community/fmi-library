@@ -182,9 +182,9 @@ int fmi3_xml_handle_BaseUnit(fmi3_xml_parser_context_t *context, const char* dat
 			ret =     	
 				FMI3_SI_BASE_UNITS(FMI3_PARSE_SI_BASE_UNIT_ENU) 
 				/*  <xs:attribute name="factor" type="xs:double" default="1"/>  */
-                fmi3_xml_set_attr_double(context, fmi3_xml_elmID_BaseUnit, fmi_attr_id_factor, 0, &unit->factor, 1)  ||
+                fmi3_xml_set_attr_float64(context, fmi3_xml_elmID_BaseUnit, fmi_attr_id_factor, 0, &unit->factor, 1)  ||
                 /*  <xs:attribute name="offset" type="xs:double" default="0"/>  */
-                fmi3_xml_set_attr_double(context, fmi3_xml_elmID_BaseUnit, fmi_attr_id_offset, 0, &unit->offset, 0);
+                fmi3_xml_set_attr_float64(context, fmi3_xml_elmID_BaseUnit, fmi_attr_id_offset, 0, &unit->offset, 0);
 
 			if(unit->factor == 0) {
 				unit->factor = 1.0;
@@ -254,9 +254,9 @@ int fmi3_xml_handle_DisplayUnit(fmi3_xml_parser_context_t *context, const char* 
             /* finally process the attributes */
 			ret =     
 				/*  <xs:attribute name="factor" type="xs:double" default="1"/>  */
-                fmi3_xml_set_attr_double(context, fmi3_xml_elmID_DisplayUnit, fmi_attr_id_factor, 0, &dispUnit->factor, 1)  ||
+                fmi3_xml_set_attr_float64(context, fmi3_xml_elmID_DisplayUnit, fmi_attr_id_factor, 0, &dispUnit->factor, 1)  ||
                 /*  <xs:attribute name="offset" type="xs:double" default="0"/>  */
-                fmi3_xml_set_attr_double(context, fmi3_xml_elmID_DisplayUnit, fmi_attr_id_offset, 0, &dispUnit->offset, 0);
+                fmi3_xml_set_attr_float64(context, fmi3_xml_elmID_DisplayUnit, fmi_attr_id_offset, 0, &dispUnit->offset, 0);
 			if(dispUnit->factor == 0) {
 				dispUnit->factor = 1.0;
 				if(!ret) {

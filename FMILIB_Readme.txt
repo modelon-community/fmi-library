@@ -29,6 +29,15 @@ Windows and Linux. The build script is KNOWN NOT TO WORK WITH CMake 2.8.3 and
 below (due to ExternalProject interface changes). CMake 2.8.4 and 2.8.5 are not 
 tested.
 
+Docker is needed on Windows since it's used to generate C functions.
+
+The following tools (usually comes with the distribution) are needed on Linux, and
+need to be available on the system path. They are used to generate C functions:
+- bash
+- sed
+- cpp
+- ex (Vim Ex mode)
+
 To build from a terminal command line on Linux or Mac with default settings use:
 \code
 	mkdir build-fmil; cd build-fmil

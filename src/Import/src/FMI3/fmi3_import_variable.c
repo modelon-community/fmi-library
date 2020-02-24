@@ -19,9 +19,11 @@
 *  \brief Methods to handle fmi3_import_variable_t.
 */
 
-#include <FMI3/fmi3_import_variable.h>
+#include "FMI3/fmi3_import_variable.h"
 #include "fmi3_import_impl.h"
 #include "fmi3_import_variable_list_impl.h"
+#include "FMI3/fmi3_import_dimension.h"
+#include "FMI3/fmi3_import_dimension_list.h"
 
 fmi3_import_variable_t* fmi3_import_get_variable_by_name(fmi3_import_t* fmu, const char* name) {
 	return fmi3_xml_get_variable_by_name(fmu->md, name);
@@ -54,7 +56,15 @@ fmi3_base_type_enu_t fmi3_import_get_variable_base_type(fmi3_import_variable_t* 
 	return fmi3_xml_get_variable_base_type(v);
 }
 
-int   fmi3_import_get_variable_has_start(fmi3_import_variable_t* v) {
+fmi3_import_dimension_list_t* fmi3_import_get_variable_dimension_list(fmi3_import_t* fmu, fmi3_import_variable_t* v) {
+    return fmi3_import_alloc_dimension_list(fmu, v);
+}
+
+int fmi3_import_variable_is_array(fmi3_import_variable_t* v) {
+	return fmi3_xml_variable_is_array(v);
+}
+
+int fmi3_import_get_variable_has_start(fmi3_import_variable_t* v) {
 	return fmi3_xml_get_variable_has_start(v);
 }
 
@@ -78,9 +88,12 @@ fmi3_boolean_t fmi3_import_get_canHandleMultipleSetPerTimeInstant(fmi3_import_va
 	return fmi3_xml_get_canHandleMultipleSetPerTimeInstant(v);
 }
 
+fmi3_import_float64_variable_t* fmi3_import_get_variable_as_float64(fmi3_import_variable_t* v) {
+	return fmi3_xml_get_variable_as_float64(v);
+}
 
-fmi3_import_real_variable_t* fmi3_import_get_variable_as_real(fmi3_import_variable_t* v) {
-	return fmi3_xml_get_variable_as_real(v);
+fmi3_import_float32_variable_t* fmi3_import_get_variable_as_float32(fmi3_import_variable_t* v) {
+	return fmi3_xml_get_variable_as_float32(v);
 }
 
 fmi3_import_integer_variable_t* fmi3_import_get_variable_as_integer(fmi3_import_variable_t* v) {
@@ -99,37 +112,8 @@ fmi3_import_bool_variable_t* fmi3_import_get_variable_as_boolean(fmi3_import_var
 	return fmi3_xml_get_variable_as_boolean(v);
 }
 
-fmi3_real_t fmi3_import_get_real_variable_start(fmi3_import_real_variable_t* v) {
-	return fmi3_xml_get_real_variable_start(v);
-}
-
-fmi3_import_real_variable_t* fmi3_import_get_real_variable_derivative_of(fmi3_import_real_variable_t* v) {
-    return fmi3_xml_get_real_variable_derivative_of(v);
-}
-
-fmi3_boolean_t fmi3_import_get_real_variable_reinit(fmi3_import_real_variable_t* v) {
-    return fmi3_xml_get_real_variable_reinit(v);
-}
-
-fmi3_real_t fmi3_import_get_real_variable_max(fmi3_import_real_variable_t* v) {
-	return fmi3_xml_get_real_variable_max(v);
-}
-
-fmi3_real_t fmi3_import_get_real_variable_min(fmi3_import_real_variable_t* v) {
-	return fmi3_xml_get_real_variable_min(v);
-}
-
-fmi3_real_t fmi3_import_get_real_variable_nominal(fmi3_import_real_variable_t* v) {
-	return fmi3_xml_get_real_variable_nominal(v);
-}
-
-fmi3_import_unit_t* fmi3_import_get_real_variable_unit(fmi3_import_real_variable_t* v) {
-	return fmi3_xml_get_real_variable_unit(v);
-}
-
-fmi3_import_display_unit_t* fmi3_import_get_real_variable_display_unit(fmi3_import_real_variable_t* v){
-	return fmi3_xml_get_real_variable_display_unit(v);
-}
+/* include generated functions */
+#include "gen/FMI3/fmi3_import_variable_generics.c"
 
 const char* fmi3_import_get_string_variable_start(fmi3_import_string_variable_t* v) {
 	return fmi3_xml_get_string_variable_start(v);
@@ -172,10 +156,10 @@ fmi3_import_variable_t* fmi3_import_get_variable_alias_base(fmi3_import_t* fmu,f
 }
 
 /*
-    Return the list of all the variables aliased to the given one (including the base one.
+    Return the list of all the variables aliased to the given one (including the base one).
     The list is ordered: base variable, aliases, negated aliases.
 */
-fmi3_import_variable_list_t* fmi3_import_get_variable_aliases(fmi3_import_t* fmu,fmi3_import_variable_t* v) {
+fmi3_import_variable_list_t* fmi3_import_get_variable_aliases(fmi3_import_t* fmu, fmi3_import_variable_t* v) {
 	fmi3_import_variable_list_t* list = fmi3_import_alloc_variable_list(fmu, 0);
 	if(fmi3_xml_get_variable_aliases(fmu->md, v, &list->variables) != jm_status_success) {
 		fmi3_import_free_variable_list(list);

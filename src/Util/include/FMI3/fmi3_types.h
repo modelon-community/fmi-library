@@ -25,7 +25,7 @@
 	@}
 */
 
-/**	\addtogroup fmi3_utils Functions and types supporting FMI 2.0 processing.
+/**	\addtogroup fmi3_utils Functions and types supporting FMI 3.0 processing.
 	@{
 */
 /** \name Renaming of typedefs 
@@ -34,15 +34,24 @@
 #define fmi3ComponentEnvironment fmi3_component_environment_t
 #define fmi3FMUstate fmi3_FMU_state_t
 #define fmi3ValueReference fmi3_value_reference_t
-#define fmi3Real fmi3_real_t
 #define fmi3Integer fmi3_integer_t
 #define fmi3Boolean fmi3_boolean_t
 #define fmi3Char fmi3_char_t
 #define fmi3String fmi3_string_t
 #define fmi3Byte fmi3_byte_t
+#define fmi3Float64 fmi3_float64_t
+#define fmi3Float32 fmi3_float32_t
+#define fmi3Int64 fmi3_int64_t
+#define fmi3Int32 fmi3_int32_t
+#define fmi3Int16 fmi3_int16_t
+#define fmi3Int8 fmi3_int8_t
+#define fmi3UInt64 fmi3_uint64_t
+#define fmi3UInt32 fmi3_uint32_t
+#define fmi3UInt16 fmi3_uint16_t
+#define fmi3UInt8 fmi3_uint8_t
 
 /** @}*/
-/* Standard FMI 2.0 types */
+/* Standard FMI 3.0 types */
 #ifdef fmi3TypesPlatform_h
 #undef fmi3TypesPlatform_h
 #endif
@@ -71,7 +80,6 @@ typedef enum {
 
 #undef fmi3Component
 #undef fmi3ValueReference
-#undef fmi3Real
 #undef fmi3Integer
 #undef fmi3Boolean
 #undef fmi3String

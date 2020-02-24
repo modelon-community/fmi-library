@@ -76,8 +76,11 @@ void fmi3_import_collect_model_counts(fmi3_import_t* fmu, fmi3_import_model_coun
 		default: assert(0);
 		}
 		switch(fmi3_xml_get_variable_base_type(var)) {
-		case fmi3_base_type_real:
-			counts->num_real_vars++;
+		case fmi3_base_type_float64:
+			counts->num_float64_vars++;
+			break;
+		case fmi3_base_type_float32:
+			counts->num_float32_vars++;
 			break;
 		case fmi3_base_type_int:
 			counts->num_integer_vars++;
@@ -98,17 +101,9 @@ void fmi3_import_collect_model_counts(fmi3_import_t* fmu, fmi3_import_model_coun
     return;
 }
 
-void fmi3_import_expand_variable_references_impl(fmi3_import_t* fmu, const char* msgIn);
-
-void fmi3_import_expand_variable_references(fmi3_import_t* fmu, const char* msgIn, char* msgOut, size_t maxMsgSize) {
-	fmi3_import_expand_variable_references_impl(fmu, msgIn);
-	strncpy(msgOut, jm_vector_get_itemp(char)(&fmu->logMessageBufferExpanded,0),maxMsgSize);
-	msgOut[maxMsgSize - 1] = '\0';
-}
-
-/* Print msgIn into msgOut by expanding variable references of the form #<Type><VR># into variable names
+/* Transform msgIn into msgOut by expanding variable references of the form #<Type><VR># into variable names
   and replacing '##' with a single # */
-void fmi3_import_expand_variable_references_impl(fmi3_import_t* fmu, const char* msgIn){
+static void fmi3_import_expand_variable_references_impl(fmi3_import_t* fmu, const char* msgIn){
 	jm_vector(char)* msgOut = &fmu->logMessageBufferExpanded;
 	fmi3_xml_model_description_t* md = fmu->md;
 	jm_callbacks* callbacks = fmu->callbacks;
@@ -152,15 +147,20 @@ void fmi3_import_expand_variable_references_impl(fmi3_import_t* fmu, const char*
 			fmi3_value_reference_t vr;
 			char typeChar = msgIn[i++];
 			size_t pastePos = jm_vector_get_size(char)(msgOut);
-			fmi3_base_type_enu_t baseType;
+
+            /*
+                TODO: remove everything associated with baseType, in this func because vrs will
+                be globally unique: https://github.com/modelica/fmi-standard/issues/522
+                - This function's doc. must also be changed
+                - Removing real for now, and not adding anything for floatXX
+            */
+			fmi3_base_type_enu_t baseType; 
+
 			size_t num_digits;
 			fmi3_xml_variable_t* var;
 			const char* name;
 			size_t nameLen;
 			switch(typeChar) {
-				case 'r': 
-					baseType = fmi3_base_type_real;
-					break;
 				case 'i': 
 					baseType = fmi3_base_type_int;
 					break;
@@ -233,14 +233,20 @@ void fmi3_import_expand_variable_references_impl(fmi3_import_t* fmu, const char*
     jm_vector_push_back(char)(msgOut, 0);
 }
 
-void  fmi3_log_forwarding(fmi3_component_environment_t c, fmi3_string_t instanceName, fmi3_status_t status, fmi3_string_t category, fmi3_string_t message, ...) {
+void fmi3_import_expand_variable_references(fmi3_import_t* fmu, const char* msgIn, char* msgOut, size_t maxMsgSize) {
+	fmi3_import_expand_variable_references_impl(fmu, msgIn);
+	strncpy(msgOut, jm_vector_get_itemp(char)(&fmu->logMessageBufferExpanded,0), maxMsgSize);
+	msgOut[maxMsgSize - 1] = '\0';
+}
+
+void fmi3_log_forwarding(fmi3_component_environment_t c, fmi3_string_t instanceName, fmi3_status_t status, fmi3_string_t category, fmi3_string_t message, ...) {
     va_list args;
     va_start (args, message);
 	fmi3_log_forwarding_v(c, instanceName, status, category, message, args);
     va_end (args);
 }
 
-void  fmi3_log_forwarding_v(fmi3_component_environment_t c, fmi3_string_t instanceName, fmi3_status_t status, fmi3_string_t category, fmi3_string_t message, va_list args) {
+void fmi3_log_forwarding_v(fmi3_component_environment_t c, fmi3_string_t instanceName, fmi3_status_t status, fmi3_string_t category, fmi3_string_t message, va_list args) {
 #define BUFSIZE JM_MAX_ERROR_MESSAGE_SIZE
     char buffer[BUFSIZE], *buf, *curp, *msg;
 	const char* statusStr;

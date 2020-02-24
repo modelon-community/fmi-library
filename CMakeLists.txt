@@ -113,14 +113,17 @@ if(MSVC)
 	endif(FMILIB_BUILD_WITH_STATIC_RTLIB)
 
 	foreach(flag_var
-		CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE
-		CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO
-		CMAKE_C_FLAGS CMAKE_C_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE
-		CMAKE_C_FLAGS_MINSIZEREL CMAKE_C_FLAGS_RELWITHDEBINFO)
+            CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE
+            CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO
+            CMAKE_C_FLAGS CMAKE_C_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE
+            CMAKE_C_FLAGS_MINSIZEREL CMAKE_C_FLAGS_RELWITHDEBINFO)
+
+        # Replace flags for static/shared lib
 		if(${${flag_var}} MATCHES "${replace_from}")
 			string(REPLACE "${replace_from}" "${replace_to}" tmp "${${flag_var}}")
 			set(${flag_var} ${tmp} CACHE STRING "compiler flags" FORCE)
 		endif()
+
 	endforeach(flag_var)	
 endif(MSVC)
 
@@ -163,11 +166,14 @@ endmacro(PREFIXLIST)
 if(MSVC AND (${CMAKE_GENERATOR} MATCHES "Visual Studio 10"))
 	source_group("Source files\\FMI1" REGULAR_EXPRESSION "fmi1_.*.c") 
 	source_group("Source files\\FMI2" REGULAR_EXPRESSION "fmi2_.*.c") 
+	source_group("Source files\\FMI3" REGULAR_EXPRESSION "fmi3_.*.c") 
 	source_group("Header files\\FMI1" REGULAR_EXPRESSION "fmi1_.*.h") 
 	source_group("Header files\\FMI2" REGULAR_EXPRESSION "fmi2_.*.h") 
+	source_group("Header files\\FMI3" REGULAR_EXPRESSION "fmi3_.*.h") 
 	source_group("Private headers" REGULAR_EXPRESSION "fmi_.*impl.h") 
 	source_group("Private headers\\FMI1" REGULAR_EXPRESSION "fmi1_.*impl.h") 
 	source_group("Private headers\\FMI2" REGULAR_EXPRESSION "fmi2_.*impl.h") 
+	source_group("Private headers\\FMI3" REGULAR_EXPRESSION "fmi3_.*impl.h") 
 endif()
 
 set(FMILIBKIND STATIC)
@@ -283,6 +289,10 @@ endif()
 if(FMILIB_BUILD_SHARED_LIB)
 	add_library(fmilib_shared SHARED ${FMILIB_SHARED_SRC})
 
+    # Even if fmilib_shared is built from source files, it's still necessary that e.g.
+    # fmiimport's dependencies such as generated code is built first.
+    add_dependencies(fmilib_shared fmiimport)
+
     if (UNIX)
         target_compile_definitions(fmilib_shared PRIVATE -D_GNU_SOURCE)
     endif()
@@ -335,6 +345,7 @@ endif()
 install(DIRECTORY 
 	${FMILIB_FMI_STANDARD_HEADERS}/FMI1
 	${FMILIB_FMI_STANDARD_HEADERS}/FMI2
+	${FMILIB_FMI_STANDARD_HEADERS}/FMI3
 	DESTINATION include
     FILES_MATCHING PATTERN "*.h")
 

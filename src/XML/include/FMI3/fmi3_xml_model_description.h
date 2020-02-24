@@ -40,8 +40,8 @@ extern "C" {
   @}
 */
 /**
-  \addtogroup fmi3_xml FMI 2.0 XML parsing library.
-   \brief The FMI 2.0 XML parsing library supports processing of model description XML files.
+  \addtogroup fmi3_xml FMI 3.0 XML parsing library.
+   \brief The FMI 3.0 XML parsing library supports processing of model description XML files.
    @{
   \name Declarations of structs used in the interface.
   \brief All the structures used in the interfaces are intended to
@@ -51,10 +51,11 @@ extern "C" {
 /** \brief Model structure object */
 typedef struct fmi3_xml_model_structure_t fmi3_xml_model_structure_t;
 
-/**\name  Type definitions supporting structures
+/**\name Type definitions supporting structures
 @{ */
-typedef struct fmi3_xml_real_typedef_t fmi3_xml_real_typedef_t;
+typedef struct fmi3_xml_float_typedef_t fmi3_xml_float_typedef_t;
 typedef struct fmi3_xml_integer_typedef_t fmi3_xml_integer_typedef_t;
+typedef struct fmi3_xml_int_typedef_t fmi3_xml_int_typedef_t;
 typedef struct fmi3_xml_enumeration_typedef_t fmi3_xml_enumeration_typedef_t;
 typedef struct fmi3_xml_variable_typedef_t fmi3_xml_variable_typedef_t;
 
@@ -63,11 +64,13 @@ typedef struct fmi3_xml_type_definitions_t fmi3_xml_type_definitions_t;
 
 /**\name Scalar Variable types */
 /** @{ */
-/**General variable type is convenien to unify all the variable list operations */
+/**General variable type is convenient to unify all the variable list operations */
 typedef struct fmi3_xml_variable_t fmi3_xml_variable_t;
 
 /**Typed variables are needed to support specific attributes */
-typedef struct fmi3_xml_real_variable_t fmi3_xml_real_variable_t;
+typedef struct fmi3_xml_float_variable_t fmi3_xml_float_variable_t;
+typedef struct fmi3_xml_float64_variable_t fmi3_xml_float64_variable_t;
+typedef struct fmi3_xml_float32_variable_t fmi3_xml_float32_variable_t;
 typedef struct fmi3_xml_integer_variable_t fmi3_xml_integer_variable_t;
 typedef struct fmi3_xml_string_variable_t fmi3_xml_string_variable_t;
 typedef struct fmi3_xml_enum_variable_t fmi3_xml_enum_variable_t;

@@ -10,9 +10,7 @@
 	canHandleVariableCommunicationStepSize="true"
 	/>
 <ModelVariables>
-    <ScalarVariable name="v_min" valueReference="0">
-     <Integer/>
-  </ScalarVariable>
+  <Integer name="v_min" valueReference="0"/>
 </ModelVariables>
 <ModelStructure>
 </ModelStructure>

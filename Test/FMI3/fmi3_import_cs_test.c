@@ -59,21 +59,23 @@ int test_simulate_cs(fmi3_import_t* fmu)
 	fmi3_string_t fmuInstantiationToken;
 	fmi3_string_t fmuLocation = "";
 	fmi3_boolean_t visible = fmi3_false;
-	fmi3_real_t relativeTol = 1e-4;
+	fmi3_float64_t relativeTol = 1e-4;
 /*	fmi3_boolean_t loggingOn = fmi3_true; */
 	
-	/* fmi3_real_t simulation_results[] = {-0.001878, -1.722275}; */
-	fmi3_real_t simulation_results[] = {0.0143633,   -1.62417};
+	/* fmi3_float64_t simulation_results[] = {-0.001878, -1.722275}; */
+	fmi3_float64_t simulation_results[] = {0.0143633,   -1.62417};
 	fmi3_value_reference_t compare_real_variables_vr[] = {0, 1};
 	size_t k;
 
-	fmi3_real_t tstart = 0.0;
-	fmi3_real_t tcur = tstart;
-	fmi3_real_t hstep = 0.1;
-	fmi3_real_t tend = 2.0;
+	fmi3_float64_t tstart = 0.0;
+	fmi3_float64_t tcur = tstart;
+	fmi3_float64_t hstep = 0.1;
+	fmi3_float64_t tend = 2.0;
 	fmi3_boolean_t StopTimeDefined = fmi3_false;
 
-	if (sizeof(compare_real_variables_vr)/sizeof(fmi3_value_reference_t) != sizeof(simulation_results)/sizeof(fmi3_real_t)) {
+	size_t nValues = 1;
+
+	if (sizeof(compare_real_variables_vr)/sizeof(fmi3_value_reference_t) != sizeof(simulation_results)/sizeof(fmi3_float64_t)) {
 		printf("Number of simulation values and reference values are different\n");
 		do_exit(CTEST_RETURN_FAIL);
 	}
@@ -115,7 +117,7 @@ int test_simulate_cs(fmi3_import_t* fmu)
 	while (tcur < tend) {
 		fmi3_boolean_t newStep = fmi3_true;
 #if 0 /* Prints a real value.. */
-		fmi3_real_t rvalue;
+		fmi3_float64_t rvalue;
 		fmi3_value_reference_t vr = 0;
 
 		fmistatus = fmi3_import_get_real(fmu, &vr, 1, &rvalue);
@@ -125,12 +127,12 @@ int test_simulate_cs(fmi3_import_t* fmu)
 
 		for (k = 0; k < sizeof(compare_real_variables_vr)/sizeof(fmi3_value_reference_t); k++) {
 			fmi3_value_reference_t vr = compare_real_variables_vr[k];
-			fmi3_real_t rvalue;
-			fmistatus = fmi3_import_get_real(fmu, &vr, 1, &rvalue);
+			fmi3_float64_t rvalue;
+			fmistatus = fmi3_import_get_float64(fmu, &vr, 1, &rvalue, nValues);
 		}
 		{
-			fmi3_real_t val[2];
-			fmi3_import_get_real(fmu, compare_real_variables_vr, 2, val);
+			fmi3_float64_t val[2];
+			fmi3_import_get_float64(fmu, compare_real_variables_vr, 2, val, nValues);
 			printf("%10g %10g\n", val[0],val[1]);
 		}
 
@@ -142,9 +144,9 @@ int test_simulate_cs(fmi3_import_t* fmu)
 	/* Validate result */
 	for (k = 0; k < sizeof(compare_real_variables_vr)/sizeof(fmi3_value_reference_t); k++) {
 		fmi3_value_reference_t vr = compare_real_variables_vr[k];
-		fmi3_real_t rvalue;
-		fmi3_real_t res;	
-		fmistatus = fmi3_import_get_real(fmu, &vr, 1, &rvalue);
+		fmi3_float64_t rvalue;
+		fmi3_float64_t res;	
+		fmistatus = fmi3_import_get_float64(fmu, &vr, 1, &rvalue, nValues);
 		res = rvalue - simulation_results[k];
 		res = res > 0 ? res: -res; /* Take abs */
 		if (res > 3e-3) {
@@ -153,6 +155,36 @@ int test_simulate_cs(fmi3_import_t* fmu)
 			printf("\n");
 			do_exit(CTEST_RETURN_FAIL);
 		}
+	}
+
+	/* Validate array variable results */
+	{
+#define ARR_SIZE (4)
+		fmi3_value_reference_t vr = 12;
+		fmi3_float64_t rvalues[ARR_SIZE];
+		fmi3_float64_t diff;
+		fmi3_float64_t tol = 3e-3; /* absolute tolerance */
+		size_t nValues = ARR_SIZE;
+        fmi3_float64_t ref_res[] = {simulation_results[0], simulation_results[1], simulation_results[1], -9.81};
+
+		/* get result */
+		fmistatus = fmi3_import_get_float64(fmu, &vr, 1, &rvalues, nValues);
+		if (fmistatus != fmi3_status_ok) {
+			printf("error: get values for array failed\n");
+			do_exit(CTEST_RETURN_FAIL);
+		}
+
+		/* check result */
+		for (k = 0; k < ARR_SIZE; k++) {
+			diff = ref_res[k] - rvalues[k];
+			diff = diff > 0 ? diff : -diff;
+			if (diff > tol) {
+				printf("error: incorrect final result for array idx: '%d', exp: '%fl', act: '%fl', diff: '%fl', tol (abs.): '%fl'\n", k, ref_res[k], rvalues[k], diff, tol);
+				do_exit(CTEST_RETURN_FAIL);
+			}
+		}
+
+#undef ARR_SIZE
 	}
 
 	fmistatus = fmi3_import_terminate(fmu);

@@ -52,31 +52,34 @@ int test_parsed_all_varialbes(fmi3_import_t* fmu)
             + mc.num_independent;
     
     
-    if (n_total != 12) {
+    if (n_total != 13) {
+		printf("error: failed to parse all variables\n");
         do_exit(CTEST_RETURN_FAIL);
     }
+
+    return 0;
 }
 	   
 int test_simulate_me(fmi3_import_t* fmu)
 {	
 	fmi3_status_t fmistatus;
 	jm_status_enu_t jmstatus;
-	fmi3_real_t tstart = 0.0;
-	fmi3_real_t tcur;
-	fmi3_real_t hcur;
-	fmi3_real_t hdef = 0.1;
-	fmi3_real_t tend = 2.0;
+	fmi3_float64_t tstart = 0.0;
+	fmi3_float64_t tcur;
+	fmi3_float64_t hcur;
+	fmi3_float64_t hdef = 0.1;
+	fmi3_float64_t tend = 2.0;
 	size_t n_states;
 	size_t n_event_indicators;
-	fmi3_real_t* states;
-	fmi3_real_t states_end_results[] = {0.362000, -3.962000};
-	fmi3_real_t* states_der;
-	fmi3_real_t* event_indicators;
-	fmi3_real_t* event_indicators_prev;
+	fmi3_float64_t* states;
+	fmi3_float64_t states_end_results[] = {0.362000, -3.962000};
+	fmi3_float64_t* states_der;
+	fmi3_float64_t* event_indicators;
+	fmi3_float64_t* event_indicators_prev;
 	fmi3_boolean_t callEventUpdate;
 	fmi3_boolean_t terminateSimulation = fmi3_false;
 	fmi3_boolean_t toleranceControlled = fmi3_true;
-	fmi3_real_t relativeTolerance = 0.001;
+	fmi3_float64_t relativeTolerance = 0.001;
 	fmi3_event_info_t eventInfo;
 	size_t k;
 
@@ -86,7 +89,7 @@ int test_simulate_me(fmi3_import_t* fmu)
 	n_states = fmi3_import_get_number_of_continuous_states(fmu);
 	n_event_indicators = fmi3_import_get_number_of_event_indicators(fmu);
 
-	if (sizeof(states_end_results)/sizeof(fmi3_real_t) != n_states) {
+	if (sizeof(states_end_results)/sizeof(fmi3_float64_t) != n_states) {
 		printf("Number of states and results have different length n_states = %u n_results = %u\n", (unsigned)n_states, (unsigned)sizeof(states_end_results));
 		do_exit(CTEST_RETURN_FAIL);
 	}
@@ -132,13 +135,13 @@ int test_simulate_me(fmi3_import_t* fmu)
 
 	while ((tcur < tend) && (!(eventInfo.terminateSimulation || terminateSimulation))) {
 		size_t k;
-        fmi3_real_t tlast;
+        fmi3_float64_t tlast;
 		int zero_crossing_event = 0;
 
 		fmistatus = fmi3_import_set_time(fmu, tcur);
 
         { /* Swap event_indicators and event_indicators_prev so that we can get new indicators */
-            fmi3_real_t *temp = event_indicators;
+            fmi3_float64_t *temp = event_indicators;
             event_indicators = event_indicators_prev;
             event_indicators_prev = temp;
         }
@@ -191,14 +194,43 @@ int test_simulate_me(fmi3_import_t* fmu)
 
 	/* Validate result */
 	for (k = 0; k < n_states; k++) {
-		fmi3_real_t res = states[k] - states_end_results[k];
-		res = res > 0 ? res: -res; /* Take abs */
-		if (res > 1e-10) {
-			printf("Simulation results is wrong  states[%u] %f != %f, |res| = %f\n", (unsigned)k, states[k], states_end_results[k], res);
+		fmi3_float64_t diff = states[k] - states_end_results[k];
+		diff = diff > 0 ? diff: -diff; /* Take abs */
+		if (diff > 1e-10) {
+			printf("Simulation results is wrong  states[%u] %f != %f, |res| = %f\n", (unsigned)k, states[k], states_end_results[k], diff);
 			do_exit(CTEST_RETURN_FAIL);
 		}
 	}
-	
+
+	/* Validate array variable results */
+	{
+#define ARR_SIZE (4)
+		fmi3_value_reference_t vr = 12;
+		fmi3_float64_t rvalues[ARR_SIZE];
+		fmi3_float64_t diff;
+		fmi3_float64_t tol = 3e-3; /* absolute tolerance */
+		size_t nValues = ARR_SIZE;
+		fmi3_float64_t ref_res[] = { states_end_results[0], states_end_results[1], states_end_results[1], -9.81 };
+
+		/* get result */
+		fmistatus = fmi3_import_get_float64(fmu, &vr, 1, &rvalues, nValues);
+		if (fmistatus != fmi3_status_ok) {
+			printf("error: get values for array failed\n");
+			do_exit(CTEST_RETURN_FAIL);
+		}
+
+		/* check result */
+		for (k = 0; k < ARR_SIZE; k++) {
+			diff = ref_res[k] - rvalues[k];
+			diff = diff > 0 ? diff : -diff;
+			if (diff > tol) {
+				printf("error: incorrect final result for array idx: '%d', exp: '%fl', act: '%fl', diff: '%fl', tol (abs.): '%fl'\n", k, ref_res[k], rvalues[k], diff, tol);
+				do_exit(CTEST_RETURN_FAIL);
+			}
+		}
+
+#undef ARR_SIZE
+	}
 
 	fmistatus = fmi3_import_terminate(fmu);
 
@@ -255,7 +287,7 @@ int main(int argc, char *argv[])
 		do_exit(CTEST_RETURN_FAIL);
 	}
 
-	fmu = fmi3_import_parse_xml(context, tmpPath,0);
+	fmu = fmi3_import_parse_xml(context, tmpPath, 0);
 
 	if(!fmu) {
 		printf("Error parsing XML, exiting\n");

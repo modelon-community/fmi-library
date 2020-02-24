@@ -10,9 +10,7 @@
 	canHandleVariableCommunicationStepSize="true"
 	/>
 <ModelVariables>
-    <ScalarVariable name="resistor12.u" valueReference="0">
-     <Integer/>
-  </ScalarVariable>
+  <Integer name="resistor12.u" valueReference="0"/>
 </ModelVariables>
 <ModelStructure>
 </ModelStructure>

@@ -18,6 +18,8 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 /* This header is used to generate the FMU test DLL and in the C API test that uses the DLL */
 #ifndef FMU3_MODEL_DEFINES_H_
 
+#include "FMI3/fmi3TypesPlatform.h"
+
 /*#define STRINGIFY(a)			#a
 #define STRINGIFY2(a)			STRINGIFY(a)
 #define MODEL_IDENTIFIER_STR	STRINGIFY2(MODEL_IDENTIFIER) */
@@ -57,6 +59,5 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 #define FMI_VERSION			"2.0"
 
 #define FMI_INSTANTIATION_TOKEN			"123"
-
 
 #endif /* End of header FMU3_MODEL_DEFINES_H_ */

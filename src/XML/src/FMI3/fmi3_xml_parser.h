@@ -113,12 +113,14 @@ typedef enum fmi3_xml_attr_enu_t {
     EXPAND_XML_ELMNAME(VendorAnnotations) \
     EXPAND_XML_ELMNAME(Tool) \
     EXPAND_XML_ELMNAME(ModelVariables) \
-    EXPAND_XML_ELMNAME(ScalarVariable) \
+    EXPAND_XML_ELMNAME(Dimension) \
     EXPAND_XML_ELMNAME(Annotations) \
 	EXPAND_XML_ELMNAME(LogCategories) \
 	EXPAND_XML_ELMNAME(Category) \
-    EXPAND_XML_ELMNAME(Real) \
+    EXPAND_XML_ELMNAME(Float64) \
+    EXPAND_XML_ELMNAME(Float32) \
     EXPAND_XML_ELMNAME(Integer) \
+    EXPAND_XML_ELMNAME(Int8) \
     EXPAND_XML_ELMNAME(Boolean) \
     EXPAND_XML_ELMNAME(String) \
     EXPAND_XML_ELMNAME(Enumeration) \
@@ -132,7 +134,8 @@ typedef enum fmi3_xml_attr_enu_t {
 
 /** \brief Element that can be placed under different parents get alternative names from the info struct */
 #define FMI3_XML_ELMLIST_ALT(EXPAND_XML_ELMNAME) \
-    EXPAND_XML_ELMNAME(RealVariable) \
+    EXPAND_XML_ELMNAME(Float64Variable) \
+    EXPAND_XML_ELMNAME(Float32Variable) \
     EXPAND_XML_ELMNAME(IntegerVariable) \
     EXPAND_XML_ELMNAME(BooleanVariable) \
     EXPAND_XML_ELMNAME(StringVariable) \
@@ -144,12 +147,23 @@ typedef enum fmi3_xml_attr_enu_t {
     EXPAND_XML_ELMNAME(DiscreteStateUnknown) \
     EXPAND_XML_ELMNAME(InitialUnknown)
 
+/** \brief Abstract elements that are only used in the scheme verification */
+#define FMI3_XML_ELMLIST_ABSTRACT(EXPAND_XML_ELMNAME) \
+    EXPAND_XML_ELMNAME(Variable)
 
+/* Build prototypes for all elm_handle_* functions */
 typedef struct fmi3_xml_parser_context_t fmi3_xml_parser_context_t;
 #define EXPAND_ELM_HANDLE(elm) extern int fmi3_xml_handle_##elm(fmi3_xml_parser_context_t *context, const char* data);
 FMI3_XML_ELMLIST(EXPAND_ELM_HANDLE)
 FMI3_XML_ELMLIST_ALT(EXPAND_ELM_HANDLE)
+FMI3_XML_ELMLIST_ABSTRACT(EXPAND_ELM_HANDLE)
 
+/**
+ * Create an enum over all XML elements. This enum can be used to index
+ * the following arrays:
+ *      - fmi3_xml_scheme_info
+ *      - fmi3_element_handle_map
+ */
 #define FMI3_XML_ELM_ID(elm) fmi3_xml_elmID_##elm
 #define FMI3_XML_LIST_ELM_ID(elm) ,FMI3_XML_ELM_ID(elm)
 typedef enum fmi3_xml_elm_enu_t {
@@ -157,6 +171,7 @@ typedef enum fmi3_xml_elm_enu_t {
     FMI3_XML_ELMLIST(FMI3_XML_LIST_ELM_ID)
 	,fmi3_xml_elm_actual_number
 	FMI3_XML_ELMLIST_ALT(FMI3_XML_LIST_ELM_ID)
+	FMI3_XML_ELMLIST_ABSTRACT(FMI3_XML_LIST_ELM_ID)
     ,fmi3_xml_elm_number
 } fmi3_xml_elm_enu_t;
 
@@ -168,6 +183,7 @@ typedef struct fmi3_xml_element_handle_map_t fmi3_xml_element_handle_map_t;
 	multiple elements of this type are allowed in a sequence.
 */
 typedef struct {
+	fmi3_xml_elm_enu_t superID; /* ID of super type or NULL if none */
 	fmi3_xml_elm_enu_t parentID; /* expected parent ID for an element */
 	int siblingIndex;       /* index among siblings */
 	int multipleAllowed;	/* multiple elements of this kind kan come in a sequence as siblings*/
@@ -188,35 +204,127 @@ jm_define_comp_f(fmi3_xml_compare_elmName, fmi3_xml_element_handle_map_t, fmi3_x
 
 #define XML_BLOCK_SIZE 16000
 
+/**
+ * Struct for saving and accessing data between element handlers.
+ */
 struct fmi3_xml_parser_context_t {
+
+    /**
+     * This is where the parsed XML is saved.
+     */
     fmi3_xml_model_description_t* modelDescription;
+
     jm_callbacks* callbacks;
 
     XML_Parser parser;
     jm_vector(jm_voidp) parseBuffer;
 
+    /**
+     * Used for writing to attrBuffer. Uses lookup by attribute name instead
+     * of attribute ID. The .ptr field points to attrBuffer[id(attr_name)].
+     * Currently ONLY used for writing.
+     */
     jm_vector(jm_named_ptr)* attrMap;
-    jm_vector(fmi3_xml_element_handle_map_t)* elmMap;
+
+    /**
+     * Allows reading of parsed attr value. Reading the value consumes it.
+     * Finishing the parsing of an element also consumes it.
+     * Writing the value is done through field 'attrMap'.
+     */
     jm_vector(jm_string)* attrBuffer;
 
-    fmi3_xml_unit_t* lastBaseUnit;
+    /**
+     * A vector that only contains mappings from element names to element
+     * handlers. Remember that there can be several mappings for the same
+     * element name, but with "alternative names".
+     * The mapping for an XML name therefore depends on the context. For
+     * example, when the ModelVariable element is found, the mapping for
+     * 'Integer' must change the handler for the "alternative name":
+     * 'fmi3_xml_handle_IntegerVariable'.
+     */
+    jm_vector(fmi3_xml_element_handle_map_t)* elmMap;
 
+    fmi3_xml_unit_t* lastBaseUnit;
     int skipOneVariableFlag;
+
+    /**
+     * Incremented when an invalid element(or nested elements of invalid root
+     * element) is found. Decremented when invalid element end tags are parsed.
+     */
 	int skipElementCnt;
+
+    /**
+     * There is no guarantee that all text will be handled in one call to the
+     * function implementing the XML_CharacterDataHandler, and this variable
+     * saves if a warning has already been generated.
+     */
 	int has_produced_data_warning;
 
+    /**
+     * Used to get parent element.
+     * Top of stack:
+     *   XML_StartElementHandler:
+     *     on enter: grandparent or empty
+     *     on exit: parent or empty (push)
+     *   XML_EndElementHandler:
+     *     on enter: parent or empty
+     *     on exit: grandparent or empty (pop)
+     */
     jm_stack(int) elmStack;
+
+    /**
+     * Contains the latest element text. For an MD without tool specific
+     * annotations, this will always be empty. This variable is currently
+     * only used as a bool-switch though...
+     * TODO: Refactor to bool
+     */
     jm_vector(char) elmData;
 
+    /**
+     * Element ID of the last processed sibling, or fmi3_xml_elmID_none if
+     * no siblings have been processed.
+     */
 	fmi3_xml_elm_enu_t lastElmID;
+
+    /**
+     * Used for error checking and scheme verification.
+     * Values:
+     *   XML_StartElementHandler:
+     *     on enter: parent
+     *     on exit: self
+     *   XML_EndElementHandler:
+     *     on enter: self
+     *     on exit: parent
+     */
 	fmi3_xml_elm_enu_t currentElmID;
 
+    fmi3_xml_elm_enu_t currentElemIdStartTag;
+
+    /* Variables for handling tool-specific XML elements */
 	int anyElmCount;
 	int useAnyHandleFlg;
 	char* anyToolName;
 	void* anyParent;
 	fmi3_xml_callbacks_t* anyHandle;
 };
+
+/* Meta data about primitive types */
+/* NOTE: elemID is should not be included because it's different during parsing of TypeDef / Variable */
+typedef struct fmi3_xml_primitive_type_t {
+    size_t                  size;               /* size in bytes */
+    fmi3_bitness_enu_t      bitness;            /* type's bitness */
+    fmi3_base_type_enu_t    baseType;           /* enum value for primitive type (for a typedef object) */
+    char                    formatter[10];      /* how to format this from string to the actual type */
+    char                    defaultValue[100];  /* provided as string to keep this type generic */
+} fmi3_xml_primitive_type_t;
+
+typedef struct fmi3_xml_primitive_types_t {
+    fmi3_xml_primitive_type_t float64;
+    fmi3_xml_primitive_type_t float32;
+    fmi3_xml_primitive_type_t int8;
+} fmi3_xml_primitive_types_t;
+
+extern const fmi3_xml_primitive_types_t PRIMITIVE_TYPES;
 
 jm_vector(char) * fmi3_xml_reserve_parse_buffer(fmi3_xml_parser_context_t *context, size_t index, size_t size);
 jm_vector(char) * fmi3_xml_get_parse_buffer(fmi3_xml_parser_context_t *context, size_t index);
@@ -232,12 +340,21 @@ int fmi3_xml_set_attr_uint(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_
 int fmi3_xml_set_attr_enum(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, int required, unsigned int* field, unsigned int defaultVal, jm_name_ID_map_t* nameMap);
 int fmi3_xml_set_attr_boolean(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, int required, unsigned int* field, unsigned int defaultVal);
 int fmi3_xml_set_attr_int(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, int required, int* field, int defaultVal);
-int fmi3_xml_set_attr_double(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, int required, double* field, double defaultVal);
+int fmi3_xml_set_attr_intXX(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, int required, void* field, void* defaultVal, fmi3_bitness_enu_t bitness);
+int fmi3_xml_set_attr_float(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, int required, void* field, void* defaultVal, fmi3_bitness_enu_t bitness);
+int fmi3_xml_set_attr_float64(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, int required, fmi3_float64_t* field, fmi3_float64_t defaultVal);
+int fmi3_xml_set_attr_float32(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, int required, fmi3_float32_t* field, fmi3_float32_t defaultVal);
 int fmi3_xml_is_attr_defined(fmi3_xml_parser_context_t *context, fmi3_xml_attr_enu_t attrID);
+jm_string fmi3_xml_peek_attr_str(fmi3_xml_parser_context_t* context, fmi3_xml_attr_enu_t attrID);
 int fmi3_xml_get_attr_str(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, int required,const char** valp);
+
+int fmi3_xml_set_attr_array(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, int required, void** arrPtr, size_t* arrSize, jm_string str, const fmi3_xml_primitive_type_t* primType);
 
 void fmi3_xml_set_element_handle(fmi3_xml_parser_context_t *context, const char* elm, fmi3_xml_elm_enu_t id);
 
+int fmi3_xml_is_valid_parent(fmi3_xml_elm_enu_t child_id, fmi3_xml_elm_enu_t parent_id);
+int fmi3_xml_get_super_type_rec(fmi3_xml_elm_enu_t id);
+int fmi3_xml_are_same_type(fmi3_xml_elm_enu_t id1, fmi3_xml_elm_enu_t id2);
 
 #ifdef __cplusplus
 }

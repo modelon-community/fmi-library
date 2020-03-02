@@ -123,6 +123,10 @@ fmi2_real_t fmi2_import_get_real_variable_nominal(fmi2_import_real_variable_t* v
 	return fmi2_xml_get_real_variable_nominal(v);
 }
 
+fmi2_string_t fmi2_import_get_real_variable_quantity(fmi2_import_real_variable_t* v) {
+	return fmi2_xml_get_real_variable_quantity(v);
+}
+
 fmi2_import_unit_t* fmi2_import_get_real_variable_unit(fmi2_import_real_variable_t* v) {
 	return fmi2_xml_get_real_variable_unit(v);
 }
@@ -139,6 +143,10 @@ fmi2_boolean_t fmi2_import_get_boolean_variable_start(fmi2_import_bool_variable_
 	return fmi2_xml_get_boolean_variable_start(v);
 }
 
+fmi2_string_t fmi2_import_get_integer_variable_quantity(fmi2_import_integer_variable_t* v) {
+	return fmi2_xml_get_integer_variable_quantity(v);
+}
+
 int fmi2_import_get_integer_variable_start(fmi2_import_integer_variable_t* v) {
 	return fmi2_xml_get_integer_variable_start(v);
 }
@@ -149,6 +157,10 @@ int fmi2_import_get_integer_variable_min(fmi2_import_integer_variable_t* v) {
 
 int fmi2_import_get_integer_variable_max(fmi2_import_integer_variable_t* v) {
 	return fmi2_xml_get_integer_variable_max(v);
+}
+
+fmi2_string_t fmi2_import_get_enum_variable_quantity(fmi2_import_enum_variable_t* v) {
+	return fmi2_xml_get_enum_variable_quantity(v);
 }
 
 int fmi2_import_get_enum_variable_start(fmi2_import_enum_variable_t* v) {

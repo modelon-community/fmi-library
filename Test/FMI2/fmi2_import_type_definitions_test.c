@@ -46,6 +46,51 @@ static int test_quantity_default(fmi2_import_t *xml)
     return TEST_OK;
 }
 
+/* verify quantity on variable, same for all variables */
+static int test_var_quantity(fmi2_import_t *xml, fmi2_string_t exp, const char* varNames[])
+{
+    fmi2_import_variable_t* v;
+    fmi2_string_t quantity;
+
+    /* real */
+    v = fmi2_import_get_variable_by_name(xml, varNames[0]);
+    ASSERT_MSG(v != NULL, "variable wasn't found by name");
+    quantity = fmi2_import_get_real_variable_quantity(fmi2_import_get_variable_as_real(v));
+    ASSERT_MSG(quantity == exp || /* this allows exp == NULL */
+            strcmp(quantity, "velocity") == 0, "wrong variable attribute value: quantity");
+
+    /* int */
+    v = fmi2_import_get_variable_by_name(xml, varNames[1]);
+    ASSERT_MSG(v != NULL, "variable wasn't found by name");
+    quantity = fmi2_import_get_integer_variable_quantity(fmi2_import_get_variable_as_integer(v));
+    ASSERT_MSG(quantity == exp || /* this allows exp == NULL */
+            strcmp(quantity, "velocity") == 0, "wrong variable attribute value: quantity");
+
+    /* enum */
+    v = fmi2_import_get_variable_by_name(xml, varNames[2]);
+    ASSERT_MSG(v != NULL, "variable wasn't found by name");
+    quantity = fmi2_import_get_enum_variable_quantity(fmi2_import_get_variable_as_enum(v));
+    ASSERT_MSG(quantity == exp || /* this allows exp == NULL */
+            strcmp(quantity, "velocity") == 0, "wrong variable attribute value: quantity");
+
+    return TEST_OK;
+}
+
+/* verify vars with defined quantity */
+static int test_var_quantity_defined(fmi2_import_t *xml)
+{
+    const char* varNames[] = { "real_with_attr", "int_with_attr", "enum_with_attr" };
+    return test_var_quantity(xml, "velocity", varNames);
+}
+
+/* verify vars with undefined quantity */
+static int test_var_quantity_undefined(fmi2_import_t *xml)
+{
+    const char* varNames[] = { "real_no_attr", "int_no_attr", "enum_no_attr" };
+    return test_var_quantity(xml, NULL, varNames);
+}
+
+
 int main(int argc, char **argv)
 {
     fmi2_import_t *xml;
@@ -62,7 +107,12 @@ int main(int argc, char **argv)
         return CTEST_RETURN_FAIL;
     }
 
+    /* typedefs */
     ret &= test_quantity_default(xml);
+
+    /* var type attributes */
+    ret &= test_var_quantity_defined(xml);
+    ret &= test_var_quantity_undefined(xml);
 
     fmi2_import_free(xml);
     return ret == 0 ? CTEST_RETURN_FAIL : CTEST_RETURN_SUCCESS;

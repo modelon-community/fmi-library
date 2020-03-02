@@ -158,6 +158,13 @@ fmi2_boolean_t fmi2_xml_get_real_variable_reinit(fmi2_xml_real_variable_t* v) {
     return (fmi2_boolean_t)vv->reinit;
 }
 
+fmi2_string_t fmi2_xml_get_real_variable_quantity(fmi2_xml_real_variable_t* v) {
+    fmi2_xml_variable_t* vv = (fmi2_xml_variable_t*)v;
+    fmi2_xml_real_type_props_t* props = (fmi2_xml_real_type_props_t*)(fmi2_xml_find_type_struct(vv->typeBase, fmi2_xml_type_struct_enu_props));
+    if(!props) return NULL;
+    return (fmi2_string_t)props->quantity;
+}
+
 fmi2_xml_unit_t* fmi2_xml_get_real_variable_unit(fmi2_xml_real_variable_t* v) {
     fmi2_xml_variable_t* vv = (fmi2_xml_variable_t*)v;
     fmi2_xml_real_type_props_t* props = (fmi2_xml_real_type_props_t*)(fmi2_xml_find_type_struct(vv->typeBase, fmi2_xml_type_struct_enu_props));
@@ -193,6 +200,13 @@ double fmi2_xml_get_real_variable_nominal(fmi2_xml_real_variable_t* v){
     return props->typeNominal;
 }
 
+fmi2_string_t fmi2_xml_get_integer_variable_quantity(fmi2_xml_integer_variable_t* v) {
+    fmi2_xml_variable_t* vv = (fmi2_xml_variable_t*)v;
+    fmi2_xml_integer_type_props_t* props = (fmi2_xml_integer_type_props_t*)(fmi2_xml_find_type_struct(vv->typeBase, fmi2_xml_type_struct_enu_props));
+    if(!props) return NULL;
+    return (fmi2_string_t)props->quantity;
+}
+
 int fmi2_xml_get_integer_variable_start(fmi2_xml_integer_variable_t* v){
     fmi2_xml_variable_t* vv = (fmi2_xml_variable_t*)v;
     if(fmi2_xml_get_variable_has_start(vv)) {
@@ -214,6 +228,13 @@ int fmi2_xml_get_integer_variable_max(fmi2_xml_integer_variable_t* v){
     fmi2_xml_integer_type_props_t* props = (fmi2_xml_integer_type_props_t*)(fmi2_xml_find_type_props(vv->typeBase));
     assert(props);
     return props->typeMax;
+}
+
+fmi2_string_t fmi2_xml_get_enum_variable_quantity(fmi2_xml_enum_variable_t* v) {
+    fmi2_xml_variable_t* vv = (fmi2_xml_variable_t*)v;
+    fmi2_xml_enum_variable_props_t* props = (fmi2_xml_enum_variable_props_t*)(fmi2_xml_find_type_struct(vv->typeBase, fmi2_xml_type_struct_enu_props));
+    if(!props) return NULL;
+    return (fmi2_string_t)props->quantity;
 }
 
 int fmi2_xml_get_enum_variable_min(fmi2_xml_enum_variable_t* v){

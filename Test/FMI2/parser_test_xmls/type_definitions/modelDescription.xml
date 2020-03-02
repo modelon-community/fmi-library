@@ -35,6 +35,29 @@
   </TypeDefinitions>
 
   <ModelVariables>
+
+    <!-- test defined variable attributes -->
+    <ScalarVariable name="real_with_attr" valueReference="1001">
+        <Real quantity="velocity" />
+    </ScalarVariable>
+    <ScalarVariable name="int_with_attr" valueReference="1002">
+        <Integer quantity="velocity" />
+    </ScalarVariable>
+    <ScalarVariable name="enum_with_attr" valueReference="1003">
+        <Enumeration quantity="velocity" declaredType="name_enum" />
+    </ScalarVariable>
+
+    <!-- test undefined variable attributes -->
+    <ScalarVariable name="real_no_attr" valueReference="2001">
+        <Real/>
+    </ScalarVariable>
+    <ScalarVariable name="int_no_attr" valueReference="2002">
+        <Integer/>
+    </ScalarVariable>
+    <ScalarVariable name="enum_no_attr" valueReference="2003">
+        <Enumeration declaredType="name_enum" />
+    </ScalarVariable>
+      
   </ModelVariables>
 
   <ModelStructure>

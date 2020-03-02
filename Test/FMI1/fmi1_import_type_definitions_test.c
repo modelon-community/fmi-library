@@ -36,18 +36,11 @@ static int test_quantity_default(fmi1_import_t *xml)
     n_tds = fmi1_import_get_type_definition_number(tds);
     ASSERT_MSG(n_tds >= 5, "too few typedefs found");
 
-    /* check types that should by default return empty string */
+    /* check that NULL is returned for all types */
     for (i = 0; i < n_tds ; i++) {
         t = fmi1_import_get_typedef(tds, i);
         tname = fmi1_import_get_type_name(t);
-        if (    !strcmp("name_real", tname) ||
-                !strcmp("name_integer", tname) ||
-                !strcmp("name_enumeration", tname)) {
-            ASSERT_MSG(strcmp(str_empty, fmi1_import_get_type_quantity(t)) == 0, "expected default quantity to be an empty string");
-        } else if (    !strcmp("name_string", tname) ||
-                       !strcmp("name_boolean", tname)) {
-            ASSERT_MSG(fmi1_import_get_type_quantity(t) == NULL, "expected default quantity to be null ptr");
-        }
+        ASSERT_MSG(fmi1_import_get_type_quantity(t) == NULL, "expected default quantity to be null ptr");
     }
 
     return TEST_OK;

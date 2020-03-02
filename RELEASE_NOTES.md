@@ -8,7 +8,7 @@ Note that version 2.1 is the first version with release notes. Please see the co
 
 # Bug fixes
 
-- `fmi2_import_get_type_quantity` now returns empty string for Real, Integer and Enumeration types (incorrectly returned NULL before)
+- `fmi2_import_get_type_quantity` now returns NULL for all types if 'quantity' is not specified (API documentation previously stated that an empty string would be returned for Real, Integer and Enumeration, but NULL was incorrectly returned - this means that only the API documentation is affected by this change)
 
 ## 2.1
 

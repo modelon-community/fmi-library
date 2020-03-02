@@ -69,7 +69,6 @@ fmi2_xml_enumeration_typedef_t* fmi2_xml_get_type_as_enum(fmi2_xml_variable_type
     return 0;
 }
 
-/* Note that 0-pointer is returned for strings and booleans, empty string quantity if not defined*/
 const char* fmi2_xml_get_type_quantity(fmi2_xml_variable_typedef_t* t) {
     fmi2_xml_variable_type_base_t* props = t->typeBase.baseTypeStruct;
 	const char * ret;
@@ -381,7 +380,7 @@ fmi2_xml_real_type_props_t* fmi2_xml_parse_real_type_properties(fmi2_xml_parser_
     jm_named_ptr named, *pnamed;
     fmi2_xml_model_description_t* md = context->modelDescription;
     fmi2_xml_real_type_props_t* props;
-    const char* quantity = "";
+    const char* quantity = NULL;
     unsigned int relQuanBuf, unboundedBuf;
 
 /*        jm_vector(char)* bufName = fmi_get_parse_buffer(context,1);
@@ -463,7 +462,7 @@ fmi2_xml_integer_type_props_t * fmi2_xml_parse_integer_type_properties(fmi2_xml_
 
     fmi2_xml_model_description_t* md = context->modelDescription;
     fmi2_xml_integer_type_props_t * props = 0;
-    const char* quantity = "";
+    const char* quantity = NULL;
 
     /*        jm_vector(char)* bufName = fmi_get_parse_buffer(context,1);
             jm_vector(char)* bufDescr = fmi_get_parse_buffer(context,2); */
@@ -554,7 +553,7 @@ int fmi2_xml_handle_Enumeration(fmi2_xml_parser_context_t *context, const char* 
         fmi2_xml_model_description_t* md = context->modelDescription;
         fmi2_xml_enum_typedef_props_t * props;
         fmi2_xml_variable_typedef_t* type;
-        const char * quantity = 0;
+        const char * quantity = NULL;
         jm_vector(char)* bufQuantity = fmi2_xml_reserve_parse_buffer(context,3,100);
 
         props = (fmi2_xml_enum_typedef_props_t*)fmi2_xml_alloc_variable_type_props(

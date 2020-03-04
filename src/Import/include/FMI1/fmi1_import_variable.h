@@ -160,6 +160,9 @@ FMILIB_EXPORT fmi1_real_t fmi1_import_get_real_variable_min(fmi1_import_real_var
 /** \brief Get nominal value for the variable*/
 FMILIB_EXPORT fmi1_real_t fmi1_import_get_real_variable_nominal(fmi1_import_real_variable_t* v);
 
+/** \brief Get "quantity" attribute if defined, else NULL-pointer. */
+FMILIB_EXPORT fmi1_string_t fmi1_import_get_real_variable_quantity(fmi1_import_real_variable_t* v);
+
 /** \brief Get associated "unit" object if any */
 FMILIB_EXPORT fmi1_import_unit_t* fmi1_import_get_real_variable_unit(fmi1_import_real_variable_t* v);
 
@@ -172,6 +175,8 @@ FMILIB_EXPORT const char* fmi1_import_get_string_variable_start(fmi1_import_stri
 /** \brief Get start value for the variable */
 FMILIB_EXPORT fmi1_boolean_t fmi1_import_get_boolean_variable_start(fmi1_import_bool_variable_t* v);
 
+/** \brief Get "quantity" attribute if defined, else NULL-pointer. */
+FMILIB_EXPORT fmi1_string_t fmi1_import_get_integer_variable_quantity(fmi1_import_integer_variable_t* v);
 /** \brief Get start value for the variable*/
 FMILIB_EXPORT int fmi1_import_get_integer_variable_start(fmi1_import_integer_variable_t* v);
 /** \brief Get minimal value for the variable */
@@ -179,6 +184,8 @@ FMILIB_EXPORT int fmi1_import_get_integer_variable_min(fmi1_import_integer_varia
 /** \brief Get max value for the variable */
 FMILIB_EXPORT int fmi1_import_get_integer_variable_max(fmi1_import_integer_variable_t* v);
 
+/** \brief Get "quantity" attribute if defined, else NULL-pointer. */
+FMILIB_EXPORT fmi1_string_t fmi1_import_get_enum_variable_quantity(fmi1_import_enum_variable_t* v);
 /** \brief Get start value for the variable*/
 FMILIB_EXPORT int fmi1_import_get_enum_variable_start(fmi1_import_enum_variable_t* v);
 /** \brief Get minimal value for the variable */

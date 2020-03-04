@@ -56,7 +56,6 @@ fmi2_import_enumeration_typedef_t* fmi2_import_get_type_as_enum(fmi2_import_vari
 	return fmi2_xml_get_type_as_enum(t);
 }
 
-/* Note that 0-pointer is returned for strings and booleans, empty string quantity if not defined*/
 const char* fmi2_import_get_type_quantity(fmi2_import_variable_typedef_t* t) {
 	return fmi2_xml_get_type_quantity(t);
 }

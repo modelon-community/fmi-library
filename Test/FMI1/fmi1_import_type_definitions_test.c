@@ -57,21 +57,21 @@ static int test_var_quantity(fmi1_import_t *xml, fmi1_string_t exp, const char* 
     ASSERT_MSG(v != NULL, "variable wasn't found by name");
     quantity = fmi1_import_get_real_variable_quantity(fmi1_import_get_variable_as_real(v));
     ASSERT_MSG(quantity == exp || /* this allows exp == NULL */
-            strcmp(quantity, "velocity") == 0, "wrong variable attribute value: quantity");
+            strcmp(quantity, exp) == 0, "wrong variable attribute value: quantity");
 
     /* int */
     v = fmi1_import_get_variable_by_name(xml, varNames[1]);
     ASSERT_MSG(v != NULL, "variable wasn't found by name");
     quantity = fmi1_import_get_integer_variable_quantity(fmi1_import_get_variable_as_integer(v));
     ASSERT_MSG(quantity == exp || /* this allows exp == NULL */
-            strcmp(quantity, "velocity") == 0, "wrong variable attribute value: quantity");
+            strcmp(quantity, exp) == 0, "wrong variable attribute value: quantity");
 
     /* enum */
     v = fmi1_import_get_variable_by_name(xml, varNames[2]);
     ASSERT_MSG(v != NULL, "variable wasn't found by name");
     quantity = fmi1_import_get_enum_variable_quantity(fmi1_import_get_variable_as_enum(v));
     ASSERT_MSG(quantity == exp || /* this allows exp == NULL */
-            strcmp(quantity, "velocity") == 0, "wrong variable attribute value: quantity");
+            strcmp(quantity, exp) == 0, "wrong variable attribute value: quantity");
 
     return TEST_OK;
 }

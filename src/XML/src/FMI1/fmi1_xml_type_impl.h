@@ -69,13 +69,13 @@ struct fmi1_xml_variable_type_base_t {
 
 /* Variable type definition is general and is used for all types*/
 struct fmi1_xml_variable_typedef_t {
-    fmi1_xml_variable_type_base_t typeBase;
+    fmi1_xml_variable_type_base_t super;
     jm_string description;
     char typeName[1];
 };
 
 typedef struct fmi1_xml_real_type_props_t {
-    fmi1_xml_variable_type_base_t typeBase;
+    fmi1_xml_variable_type_base_t super;
     jm_string quantity;
 
     fmi1_xml_display_unit_t* displayUnit;
@@ -86,7 +86,7 @@ typedef struct fmi1_xml_real_type_props_t {
 } fmi1_xml_real_type_props_t;
 
 typedef struct fmi1_xml_integer_type_props_t {
-    fmi1_xml_variable_type_base_t typeBase;
+    fmi1_xml_variable_type_base_t super;
 
     jm_string  quantity;
 
@@ -103,7 +103,7 @@ typedef struct fmi1_xml_enum_type_item_t {
 } fmi1_xml_enum_type_item_t;
 
 typedef struct fmi1_xml_enum_type_props_t {
-    fmi1_xml_variable_type_base_t typeBase;
+    fmi1_xml_variable_type_base_t super;
 
     jm_string quantity;
     int typeMin;
@@ -112,18 +112,18 @@ typedef struct fmi1_xml_enum_type_props_t {
 } fmi1_xml_enum_type_props_t;
 
 typedef struct fmi1_xml_variable_start_real_t {
-    fmi1_xml_variable_type_base_t typeBase;
+    fmi1_xml_variable_type_base_t super;
     double start;
 } fmi1_xml_variable_start_real_t ;
 
 /* fmi1_xml_variable_start_integer is used for boolean and enums as well*/
 typedef struct fmi1_xml_variable_start_integer_t {
-    fmi1_xml_variable_type_base_t typeBase;
+    fmi1_xml_variable_type_base_t super;
     int start;
 } fmi1_xml_variable_start_integer_t ;
 
 typedef struct fmi1_xml_variable_start_string_t {
-    fmi1_xml_variable_type_base_t typeBase;
+    fmi1_xml_variable_type_base_t super;
     char start[1];
 } fmi1_xml_variable_start_string_t;
 

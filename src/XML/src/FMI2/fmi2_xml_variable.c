@@ -562,8 +562,8 @@ int fmi2_xml_handle_RealVariable(fmi2_xml_parser_context_t *context, const char*
                 if( !hasMax)    type->typeMax                       = props->typeMax;
                 if( !hasNom)    type->typeNominal                   = props->typeNominal;
                 if( !hasQuan)   type->quantity                      = props->quantity;
-                if( !hasRelQ)   type->super.isRelativeQuantity      = type->super.isRelativeQuantity;
-                if( !hasUnb)    type->super.isUnbounded             = type->super.isUnbounded;
+                if( !hasRelQ)   type->super.isRelativeQuantity      = props->super.isRelativeQuantity;
+                if( !hasUnb)    type->super.isUnbounded             = props->super.isUnbounded;
             }
             else {
             /* this can be a typedef_t, for example if the the variable has a declaredType, but doesn't

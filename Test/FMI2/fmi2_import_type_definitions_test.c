@@ -90,6 +90,43 @@ static int test_var_quantity_undefined(fmi2_import_t *xml)
     return test_var_quantity(xml, NULL, varNames);
 }
 
+/* verify real-specific type attributes on variable */
+static int test_real_var_attributes_exist(fmi2_import_t *xml, fmi2_boolean_t expUnbounded, fmi2_boolean_t expRelativeQuantity, fmi2_string_t varName)
+{
+    fmi2_import_variable_t* v;
+    fmi2_import_real_variable_t* vReal;
+    int unbounded;
+    char* relativeQuantity;
+
+    /* real */
+    v = fmi2_import_get_variable_by_name(xml, varName);
+    ASSERT_MSG(v != NULL, "variable wasn't found by name");
+
+    vReal = fmi2_import_get_variable_as_real(v);
+    unbounded = fmi2_import_get_real_variable_unbounded(vReal);
+    ASSERT_MSG(unbounded == expUnbounded, "wrong variable attribute value: unbounded");
+
+    relativeQuantity = fmi2_import_get_real_variable_relative_quantity(vReal);
+    ASSERT_MSG(relativeQuantity == expRelativeQuantity, "wrong variable attribute value: relativeQuantity");
+
+    return TEST_OK;
+}
+
+static int test_real_var_attributes_defined(fmi2_import_t *xml)
+{
+    fmi2_boolean_t expUnbounded = fmi2_true;
+    fmi2_boolean_t expRelativeQuantity = fmi2_true;
+
+    return test_real_var_attributes_exist(xml, expUnbounded, expRelativeQuantity, "real_with_attr");
+}
+
+static int test_real_var_attributes_undefined(fmi2_import_t *xml)
+{
+    fmi2_boolean_t expUnbounded = fmi2_false;
+    fmi2_boolean_t expRelativeQuantity = fmi2_false;
+
+    return test_real_var_attributes_exist(xml, expUnbounded, expRelativeQuantity, "real_no_attr");
+}
 
 int main(int argc, char **argv)
 {
@@ -113,6 +150,8 @@ int main(int argc, char **argv)
     /* var type attributes */
     ret &= test_var_quantity_defined(xml);
     ret &= test_var_quantity_undefined(xml);
+    ret &= test_real_var_attributes_defined(xml);
+    ret &= test_real_var_attributes_undefined(xml);
 
     fmi2_import_free(xml);
     return ret == 0 ? CTEST_RETURN_FAIL : CTEST_RETURN_SUCCESS;

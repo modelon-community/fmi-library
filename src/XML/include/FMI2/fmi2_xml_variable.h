@@ -71,6 +71,8 @@ fmi2_boolean_t fmi2_xml_get_real_variable_reinit(fmi2_xml_real_variable_t* v);
 double fmi2_xml_get_real_variable_max(fmi2_xml_real_variable_t* v);
 double fmi2_xml_get_real_variable_min(fmi2_xml_real_variable_t* v);
 double fmi2_xml_get_real_variable_nominal(fmi2_xml_real_variable_t* v);
+fmi2_boolean_t fmi2_xml_get_real_variable_relative_quantity(fmi2_xml_real_variable_t* v);
+fmi2_boolean_t fmi2_xml_get_real_variable_unbounded(fmi2_xml_real_variable_t* v);
 fmi2_string_t fmi2_xml_get_real_variable_quantity(fmi2_xml_real_variable_t* v);
 fmi2_xml_unit_t* fmi2_xml_get_real_variable_unit(fmi2_xml_real_variable_t* v);
 fmi2_xml_display_unit_t* fmi2_xml_get_real_variable_display_unit(fmi2_xml_real_variable_t* v);

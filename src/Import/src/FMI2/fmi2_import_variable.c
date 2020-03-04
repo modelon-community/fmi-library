@@ -123,6 +123,14 @@ fmi2_real_t fmi2_import_get_real_variable_nominal(fmi2_import_real_variable_t* v
 	return fmi2_xml_get_real_variable_nominal(v);
 }
 
+fmi2_boolean_t fmi2_import_get_real_variable_unbounded(fmi2_import_real_variable_t* v) {
+	return fmi2_xml_get_real_variable_unbounded(v);
+}
+
+fmi2_boolean_t fmi2_import_get_real_variable_relative_quantity(fmi2_import_real_variable_t* v) {
+	return fmi2_xml_get_real_variable_relative_quantity(v);
+}
+
 fmi2_string_t fmi2_import_get_real_variable_quantity(fmi2_import_real_variable_t* v) {
 	return fmi2_xml_get_real_variable_quantity(v);
 }

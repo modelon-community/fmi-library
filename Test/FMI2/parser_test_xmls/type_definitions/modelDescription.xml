@@ -38,7 +38,7 @@
 
     <!-- test defined variable attributes -->
     <ScalarVariable name="real_with_attr" valueReference="1001">
-        <Real quantity="velocity" />
+        <Real quantity="velocity" unbounded="true" relativeQuantity="true" />
     </ScalarVariable>
     <ScalarVariable name="int_with_attr" valueReference="1002">
         <Integer quantity="velocity" />
@@ -57,6 +57,7 @@
     <ScalarVariable name="enum_no_attr" valueReference="2003">
         <Enumeration declaredType="name_enum" />
     </ScalarVariable>
+
       
   </ModelVariables>
 

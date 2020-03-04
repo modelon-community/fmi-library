@@ -158,6 +158,20 @@ fmi2_boolean_t fmi2_xml_get_real_variable_reinit(fmi2_xml_real_variable_t* v) {
     return (fmi2_boolean_t)vv->reinit;
 }
 
+fmi2_boolean_t fmi2_xml_get_real_variable_relative_quantity(fmi2_xml_real_variable_t* v) {
+    fmi2_xml_variable_t* vv = (fmi2_xml_variable_t*)v;
+    fmi2_xml_real_type_props_t* props = (fmi2_xml_real_type_props_t*)(fmi2_xml_find_type_struct(vv->typeBase, fmi2_xml_type_struct_enu_props));
+    assert(props);
+    return props->typeBase.isRelativeQuantity;
+}
+
+fmi2_boolean_t fmi2_xml_get_real_variable_unbounded(fmi2_xml_real_variable_t* v) {
+    fmi2_xml_variable_t* vv = (fmi2_xml_variable_t*)v;
+    fmi2_xml_real_type_props_t* props = (fmi2_xml_real_type_props_t*)(fmi2_xml_find_type_struct(vv->typeBase, fmi2_xml_type_struct_enu_props));
+    assert(props);
+    return props->typeBase.isUnbounded;
+}
+
 fmi2_string_t fmi2_xml_get_real_variable_quantity(fmi2_xml_real_variable_t* v) {
     fmi2_xml_variable_t* vv = (fmi2_xml_variable_t*)v;
     fmi2_xml_real_type_props_t* props = (fmi2_xml_real_type_props_t*)(fmi2_xml_find_type_struct(vv->typeBase, fmi2_xml_type_struct_enu_props));

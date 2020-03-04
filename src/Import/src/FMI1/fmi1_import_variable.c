@@ -116,6 +116,10 @@ fmi1_real_t fmi1_import_get_real_variable_nominal(fmi1_import_real_variable_t* v
 	return fmi1_xml_get_real_variable_nominal(v);
 }
 
+fmi1_boolean_t fmi1_import_get_real_variable_relative_quantity(fmi1_import_real_variable_t* v) {
+	return fmi1_xml_get_real_variable_relative_quantity(v);
+}
+
 fmi1_string_t fmi1_import_get_real_variable_quantity(fmi1_import_real_variable_t* v) {
 	return fmi1_xml_get_real_variable_quantity(v);
 }

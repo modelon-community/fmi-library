@@ -139,6 +139,12 @@ FMILIB_EXPORT fmi1_import_string_variable_t* fmi1_import_get_variable_as_string(
 FMILIB_EXPORT fmi1_import_bool_variable_t* fmi1_import_get_variable_as_boolean(fmi1_import_variable_t*);
 
 /** 
+	\brief Get the variable "relativeQuantity" attribute. 
+	@return The "relativeQuantity" attribute as specified in the XML file. False if undefined.
+*/
+FMILIB_EXPORT fmi1_boolean_t fmi1_import_get_real_variable_relative_quantity(fmi1_import_real_variable_t* v);
+
+/** 
 	\brief Get the variable start attribute. 
 
 	@return The "start" attriburte as specified in the XML file or variable nominal value.

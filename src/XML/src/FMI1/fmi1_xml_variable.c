@@ -140,10 +140,17 @@ double fmi1_xml_get_real_variable_start(fmi1_xml_real_variable_t* v) {
         return fmi1_xml_get_real_variable_nominal(v);
 }
 
+fmi1_boolean_t fmi1_xml_get_real_variable_relative_quantity(fmi1_xml_real_variable_t* v) {
+    fmi1_xml_variable_t* vv = (fmi1_xml_variable_t*)v;
+    fmi1_xml_real_type_props_t* props = (fmi1_xml_real_type_props_t*)(fmi1_xml_find_type_props(vv->typeBase));
+    assert(props);
+    return props->super.relativeQuantity;
+}
+
 fmi1_string_t fmi1_xml_get_real_variable_quantity(fmi1_xml_real_variable_t* v) {
     fmi1_xml_variable_t* vv = (fmi1_xml_variable_t*)v;
-    fmi1_xml_real_type_props_t* props = (fmi1_xml_real_type_props_t*)(fmi1_xml_find_type_struct(vv->typeBase, fmi1_xml_type_struct_enu_props));
-    if(!props) return NULL;
+    fmi1_xml_real_type_props_t* props = (fmi1_xml_real_type_props_t*)(fmi1_xml_find_type_props(vv->typeBase));
+    assert(props);
     return (fmi1_string_t)props->quantity;
 }
 
@@ -557,12 +564,12 @@ int fmi1_xml_handle_Real(fmi1_xml_parser_context_t *context, const char* data) {
 
             if(!type) return -1;
             type->super.baseTypeStruct = declaredType;
-            if( !hasUnit) type->displayUnit = props->displayUnit;
-            if( !hasMin)  type->typeMin = props->typeMin;
-            if( !hasMax) type->typeMax = props->typeMax;
-            if( !hasNom) type->typeNominal = props->typeNominal;
-            if( !hasQuan) type->quantity = props->quantity;
-            if( !hasRelQ) type->super.relativeQuantity = props->super.relativeQuantity;
+            if( !hasUnit) type->displayUnit             = props->displayUnit;
+            if( !hasMin)  type->typeMin                 = props->typeMin;
+            if( !hasMax)  type->typeMax                 = props->typeMax;
+            if( !hasNom)  type->typeNominal             = props->typeNominal;
+            if( !hasQuan) type->quantity                = props->quantity;
+            if( !hasRelQ) type->super.relativeQuantity  = props->super.relativeQuantity;
         }
         else
             type = (fmi1_xml_real_type_props_t*)declaredType;

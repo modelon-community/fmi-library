@@ -34,13 +34,18 @@
         <BooleanType/>
     </Type>
 
+    <!-- test that attributes in typedef are returned if not defined in variable -->
+    <Type name="real_type_with_attributes">
+        <RealType relativeQuantity="true" />
+    </Type>
+
   </TypeDefinitions>
 
   <ModelVariables>
 
     <!-- test defined variable attributes -->
     <ScalarVariable name="real_with_attr" valueReference="1001">
-        <Real quantity="velocity" />
+        <Real quantity="velocity" relativeQuantity="true" />
     </ScalarVariable>
     <ScalarVariable name="int_with_attr" valueReference="1002">
         <Integer quantity="velocity" />
@@ -58,6 +63,14 @@
     </ScalarVariable>
     <ScalarVariable name="enum_no_attr" valueReference="2003">
         <Enumeration declaredType="name_enum" />
+    </ScalarVariable>
+
+    <!-- test that attributes in typedef are returned if not defined in variable -->
+    <ScalarVariable name="real_with_typedef" valueReference="3001">
+        <Real declaredType="real_type_with_attributes" />
+    </ScalarVariable>
+    <ScalarVariable name="real_with_typedef_override" valueReference="3002">
+        <Real quantity="position" declaredType="real_type_with_attributes" />
     </ScalarVariable>
 
   </ModelVariables>

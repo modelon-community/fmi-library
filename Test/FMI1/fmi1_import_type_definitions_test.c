@@ -90,6 +90,53 @@ static int test_var_quantity_undefined(fmi1_import_t *xml)
     return test_var_quantity(xml, NULL, varNames);
 }
 
+/* verify real-specific type attributes on variable */
+static int test_real_var_attributes_exist(fmi1_import_t *xml, fmi1_boolean_t expRelativeQuantity, fmi1_string_t varName)
+{
+    fmi1_import_variable_t* v;
+    fmi1_import_real_variable_t* vReal;
+    fmi1_boolean_t relativeQuantity;
+
+    /* real */
+    v = fmi1_import_get_variable_by_name(xml, varName);
+    ASSERT_MSG(v != NULL, "variable wasn't found by name");
+
+    vReal = fmi1_import_get_variable_as_real(v);
+
+    relativeQuantity = fmi1_import_get_real_variable_relative_quantity(vReal);
+    ASSERT_MSG(relativeQuantity == expRelativeQuantity, "wrong variable attribute value: relativeQuantity");
+
+    return TEST_OK;
+}
+
+static int test_real_var_attributes_defined(fmi1_import_t *xml)
+{
+    fmi1_boolean_t expRelativeQuantity = fmi1_true;
+
+    return test_real_var_attributes_exist(xml, expRelativeQuantity, "real_with_attr");
+}
+
+static int test_real_var_attributes_undefined(fmi1_import_t *xml)
+{
+    fmi1_boolean_t expRelativeQuantity = fmi1_false;
+
+    return test_real_var_attributes_exist(xml, expRelativeQuantity, "real_no_attr");
+}
+
+static int test_real_var_attributes_defined_in_typedef(fmi1_import_t *xml)
+{
+    fmi1_boolean_t expRelativeQuantity = fmi1_true;
+
+    return test_real_var_attributes_exist(xml, expRelativeQuantity, "real_with_typedef");
+}
+
+static int test_real_var_attributes_defined_in_typedef_partially(fmi1_import_t *xml)
+{
+    fmi1_boolean_t expRelativeQuantity = fmi1_true;
+
+    return test_real_var_attributes_exist(xml, expRelativeQuantity, "real_with_typedef_override");
+}
+
 int main(int argc, char **argv)
 {
     fmi1_import_t *xml;
@@ -112,6 +159,10 @@ int main(int argc, char **argv)
     /* var type attributes */
     ret &= test_var_quantity_defined(xml);
     ret &= test_var_quantity_undefined(xml);
+    ret &= test_real_var_attributes_defined(xml);
+    ret &= test_real_var_attributes_undefined(xml);
+    ret &= test_real_var_attributes_defined_in_typedef(xml);
+    ret &= test_real_var_attributes_defined_in_typedef_partially(xml);
 
     fmi1_import_free(xml);
     return ret == 0 ? CTEST_RETURN_FAIL : CTEST_RETURN_SUCCESS;

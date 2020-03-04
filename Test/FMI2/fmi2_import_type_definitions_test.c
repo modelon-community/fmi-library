@@ -95,8 +95,8 @@ static int test_real_var_attributes_exist(fmi2_import_t *xml, fmi2_boolean_t exp
 {
     fmi2_import_variable_t* v;
     fmi2_import_real_variable_t* vReal;
-    int unbounded;
-    char* relativeQuantity;
+    fmi2_boolean_t unbounded;
+    fmi2_boolean_t relativeQuantity;
 
     /* real */
     v = fmi2_import_get_variable_by_name(xml, varName);
@@ -128,6 +128,22 @@ static int test_real_var_attributes_undefined(fmi2_import_t *xml)
     return test_real_var_attributes_exist(xml, expUnbounded, expRelativeQuantity, "real_no_attr");
 }
 
+static int test_real_var_attributes_defined_in_typedef(fmi2_import_t *xml)
+{
+    fmi2_boolean_t expUnbounded = fmi2_false;
+    fmi2_boolean_t expRelativeQuantity = fmi2_true;
+
+    return test_real_var_attributes_exist(xml, expUnbounded, expRelativeQuantity, "real_with_typedef");
+}
+
+static int test_real_var_attributes_defined_in_typedef_partially(fmi2_import_t *xml)
+{
+    fmi2_boolean_t expUnbounded = fmi2_false;
+    fmi2_boolean_t expRelativeQuantity = fmi2_true;
+
+    return test_real_var_attributes_exist(xml, expUnbounded, expRelativeQuantity, "real_with_typedef_override");
+}
+
 int main(int argc, char **argv)
 {
     fmi2_import_t *xml;
@@ -152,6 +168,8 @@ int main(int argc, char **argv)
     ret &= test_var_quantity_undefined(xml);
     ret &= test_real_var_attributes_defined(xml);
     ret &= test_real_var_attributes_undefined(xml);
+    ret &= test_real_var_attributes_defined_in_typedef(xml);
+    ret &= test_real_var_attributes_defined_in_typedef_partially(xml);
 
     fmi2_import_free(xml);
     return ret == 0 ? CTEST_RETURN_FAIL : CTEST_RETURN_SUCCESS;

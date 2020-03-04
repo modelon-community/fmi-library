@@ -162,14 +162,14 @@ fmi2_boolean_t fmi2_xml_get_real_variable_relative_quantity(fmi2_xml_real_variab
     fmi2_xml_variable_t* vv = (fmi2_xml_variable_t*)v;
     fmi2_xml_real_type_props_t* props = (fmi2_xml_real_type_props_t*)(fmi2_xml_find_type_struct(vv->typeBase, fmi2_xml_type_struct_enu_props));
     assert(props);
-    return props->typeBase.isRelativeQuantity;
+    return props->super.isRelativeQuantity;
 }
 
 fmi2_boolean_t fmi2_xml_get_real_variable_unbounded(fmi2_xml_real_variable_t* v) {
     fmi2_xml_variable_t* vv = (fmi2_xml_variable_t*)v;
     fmi2_xml_real_type_props_t* props = (fmi2_xml_real_type_props_t*)(fmi2_xml_find_type_struct(vv->typeBase, fmi2_xml_type_struct_enu_props));
     assert(props);
-    return props->typeBase.isUnbounded;
+    return props->super.isUnbounded;
 }
 
 fmi2_string_t fmi2_xml_get_real_variable_quantity(fmi2_xml_real_variable_t* v) {
@@ -527,7 +527,7 @@ int fmi2_xml_handle_RealVariable(fmi2_xml_parser_context_t *context, const char*
 
         assert(!variable->typeBase);
 
-        declaredType = fmi2_get_declared_type(context, fmi2_xml_elmID_Real, &td->defaultRealType.typeBase);
+        declaredType = fmi2_get_declared_type(context, fmi2_xml_elmID_Real, &td->defaultRealType.super);
 
         if(!declaredType) return -1;
 
@@ -556,24 +556,27 @@ int fmi2_xml_handle_RealVariable(fmi2_xml_parser_context_t *context, const char*
                 type = fmi2_xml_parse_real_type_properties(context, fmi2_xml_elmID_Real);
 
                 if(!type) return -1;
-                type->typeBase.baseTypeStruct = declaredType;
-                if( !hasUnit) type->displayUnit = props->displayUnit;
-                if( !hasMin)  type->typeMin = props->typeMin;
-                if( !hasMax) type->typeMax = props->typeMax;
-                if( !hasNom) type->typeNominal = props->typeNominal;
-                if( !hasQuan) type->quantity = props->quantity;
-                if( !hasRelQ) type->typeBase.isRelativeQuantity = type->typeBase.isRelativeQuantity;
-                if( !hasUnb) type->typeBase.isUnbounded = type->typeBase.isUnbounded;
+                type->super.baseTypeStruct = declaredType;
+                if( !hasUnit)   type->displayUnit                   = props->displayUnit;
+                if( !hasMin)    type->typeMin                       = props->typeMin;
+                if( !hasMax)    type->typeMax                       = props->typeMax;
+                if( !hasNom)    type->typeNominal                   = props->typeNominal;
+                if( !hasQuan)   type->quantity                      = props->quantity;
+                if( !hasRelQ)   type->super.isRelativeQuantity      = type->super.isRelativeQuantity;
+                if( !hasUnb)    type->super.isUnbounded             = type->super.isUnbounded;
             }
-            else
-                type = (fmi2_xml_real_type_props_t*)declaredType;
+            else {
+            /* this can be a typedef_t, for example if the the variable has a declaredType, but doesn't
+               override any attributes. Don't know if intended or if it's a dormant bug */
+                type = (fmi2_xml_real_type_props_t*)declaredType; 
+            }
         }
-        variable->typeBase = &type->typeBase;
+        variable->typeBase = &type->super;
 
         hasStart = fmi2_xml_get_has_start(context, variable);
 
         if(hasStart) {
-            fmi2_xml_variable_start_real_t * start = (fmi2_xml_variable_start_real_t*)fmi2_xml_alloc_variable_type_start(td, &type->typeBase, sizeof(fmi2_xml_variable_start_real_t));
+            fmi2_xml_variable_start_real_t * start = (fmi2_xml_variable_start_real_t*)fmi2_xml_alloc_variable_type_start(td, &type->super, sizeof(fmi2_xml_variable_start_real_t));
             if(!start) {
                 fmi2_xml_parse_fatal(context, "Could not allocate memory");
                 return -1;
@@ -583,7 +586,7 @@ int fmi2_xml_handle_RealVariable(fmi2_xml_parser_context_t *context, const char*
                     fmi2_xml_set_attr_double(context, fmi2_xml_elmID_Real, fmi_attr_id_start, 0, &start->start, 0)
                 )
                     return -1;
-            variable->typeBase = &start->typeBase;
+            variable->typeBase = &start->super;
         } else {
             fmi2_log_error_if_start_required(context, variable);
         }
@@ -629,7 +632,7 @@ int fmi2_xml_handle_IntegerVariable(fmi2_xml_parser_context_t *context, const ch
         fmi2_xml_integer_type_props_t * type = 0;
         int hasStart;
 
-        declaredType = fmi2_get_declared_type(context, fmi2_xml_elmID_Integer,&td->defaultIntegerType.typeBase) ;
+        declaredType = fmi2_get_declared_type(context, fmi2_xml_elmID_Integer,&td->defaultIntegerType.super) ;
 
         if(!declaredType) return -1;
         {
@@ -643,12 +646,12 @@ int fmi2_xml_handle_IntegerVariable(fmi2_xml_parser_context_t *context, const ch
                 props = (fmi2_xml_integer_type_props_t*)declaredType;
             else
                 props = (fmi2_xml_integer_type_props_t*)(declaredType->baseTypeStruct);
-            assert(props->typeBase.structKind == fmi2_xml_type_struct_enu_props);
+            assert(props->super.structKind == fmi2_xml_type_struct_enu_props);
             fmi2_xml_reserve_parse_buffer(context, 1, 0);
             fmi2_xml_reserve_parse_buffer(context, 2, 0);
             type = fmi2_xml_parse_integer_type_properties(context, fmi2_xml_elmID_Integer);
             if(!type) return -1;
-            type->typeBase.baseTypeStruct = declaredType;
+            type->super.baseTypeStruct = declaredType;
             if(!hasMin) type->typeMin = props->typeMin;
             if(!hasMax) type->typeMax = props->typeMax;
             if(!hasQuan) type->quantity = props->quantity;
@@ -656,11 +659,11 @@ int fmi2_xml_handle_IntegerVariable(fmi2_xml_parser_context_t *context, const ch
         else
             type = (fmi2_xml_integer_type_props_t*)declaredType;
         }
-        variable->typeBase = &type->typeBase;
+        variable->typeBase = &type->super;
 
         hasStart = fmi2_xml_get_has_start(context, variable);
         if(hasStart) {
-            fmi2_xml_variable_start_integer_t * start = (fmi2_xml_variable_start_integer_t*)fmi2_xml_alloc_variable_type_start(td, &type->typeBase, sizeof(fmi2_xml_variable_start_integer_t));
+            fmi2_xml_variable_start_integer_t * start = (fmi2_xml_variable_start_integer_t*)fmi2_xml_alloc_variable_type_start(td, &type->super, sizeof(fmi2_xml_variable_start_integer_t));
             if(!start) {
                 fmi2_xml_parse_fatal(context, "Could not allocate memory");
                 return -1;
@@ -673,7 +676,7 @@ int fmi2_xml_handle_IntegerVariable(fmi2_xml_parser_context_t *context, const ch
                     jm_log_error(context->callbacks, module, "Start value zero will be assumed.");
                     start->start = 0;
             }
-            variable->typeBase = &start->typeBase;
+            variable->typeBase = &start->super;
         } else {
             fmi2_log_error_if_start_required(context, variable);
         }
@@ -712,7 +715,7 @@ int fmi2_xml_handle_BooleanVariable(fmi2_xml_parser_context_t *context, const ch
                     fmi2_xml_set_attr_boolean(context, fmi2_xml_elmID_Boolean, fmi_attr_id_start, 0, (unsigned*)&start->start, 0)
                 )
                     return -1;
-            variable->typeBase = &start->typeBase;
+            variable->typeBase = &start->super;
         } else {
             fmi2_log_error_if_start_required(context, variable);
         }
@@ -761,7 +764,7 @@ int fmi2_xml_handle_StringVariable(fmi2_xml_parser_context_t *context, const cha
                 memcpy(start->start, jm_vector_get_itemp_char(bufStartStr,0), strlen);
             }
             start->start[strlen] = 0;
-            variable->typeBase = &start->typeBase;
+            variable->typeBase = &start->super;
         } else {
             fmi2_log_error_if_start_required(context, variable);
         }
@@ -785,7 +788,7 @@ fmi2_xml_enum_variable_props_t * fmi2_xml_parse_enum_properties(fmi2_xml_parser_
     jm_vector(char)* bufQuantity = fmi2_xml_reserve_parse_buffer(context,3,100);
 
     props = (fmi2_xml_enum_variable_props_t*)fmi2_xml_alloc_variable_type_props(&md->typeDefinitions,
-                    &md->typeDefinitions.defaultEnumType.base.typeBase, sizeof(fmi2_xml_enum_variable_props_t));
+                    &md->typeDefinitions.defaultEnumType.base.super, sizeof(fmi2_xml_enum_variable_props_t));
 
     if(!bufQuantity || !props ||
             /* <xs:attribute name="quantity" type="xs:normalizedString"/> */
@@ -818,7 +821,7 @@ int fmi2_xml_handle_EnumerationVariable(fmi2_xml_parser_context_t *context, cons
 
         assert(!variable->typeBase);
 
-        declaredType = fmi2_get_declared_type(context, fmi2_xml_elmID_Enumeration,&td->defaultEnumType.base.typeBase);
+        declaredType = fmi2_get_declared_type(context, fmi2_xml_elmID_Enumeration,&td->defaultEnumType.base.super);
 
         if(!declaredType) return -1;
 
@@ -833,21 +836,21 @@ int fmi2_xml_handle_EnumerationVariable(fmi2_xml_parser_context_t *context, cons
                 props = (fmi2_xml_enum_variable_props_t*)declaredType;
             else
                 props = (fmi2_xml_enum_variable_props_t*)declaredType->baseTypeStruct;
-            assert(props->typeBase.structKind == fmi2_xml_type_struct_enu_props);
+            assert(props->super.structKind == fmi2_xml_type_struct_enu_props);
             fmi2_xml_reserve_parse_buffer(context, 1, 0);
             fmi2_xml_reserve_parse_buffer(context, 2, 0);
             type = fmi2_xml_parse_enum_properties(context, props);
             if(!type) return -1;
-            type->typeBase.baseTypeStruct = declaredType;
+            type->super.baseTypeStruct = declaredType;
         }
         else
             type = (fmi2_xml_enum_variable_props_t*)declaredType;
 
-        variable->typeBase = &type->typeBase;
+        variable->typeBase = &type->super;
 
         hasStart = fmi2_xml_get_has_start(context, variable);
         if(hasStart) {
-            fmi2_xml_variable_start_integer_t * start = (fmi2_xml_variable_start_integer_t*)fmi2_xml_alloc_variable_type_start(td, &type->typeBase, sizeof(fmi2_xml_variable_start_integer_t ));
+            fmi2_xml_variable_start_integer_t * start = (fmi2_xml_variable_start_integer_t*)fmi2_xml_alloc_variable_type_start(td, &type->super, sizeof(fmi2_xml_variable_start_integer_t ));
             if(!start) {
                 fmi2_xml_parse_fatal(context, "Could not allocate memory");
                 return -1;
@@ -857,7 +860,7 @@ int fmi2_xml_handle_EnumerationVariable(fmi2_xml_parser_context_t *context, cons
                     fmi2_xml_set_attr_int(context, fmi2_xml_elmID_Enumeration, fmi_attr_id_start, 0, &start->start, 0)
                 )
                 start->start = type->typeMin;
-            variable->typeBase = &start->typeBase;
+            variable->typeBase = &start->super;
         } else {
             fmi2_log_error_if_start_required(context, variable);
         }

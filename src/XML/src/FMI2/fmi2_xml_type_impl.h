@@ -66,7 +66,7 @@ struct fmi2_xml_variable_type_base_t {
     fmi2_xml_variable_type_base_t* next;    /** dynamically allocated fmi2_xml_variable_type_base structs are put on a linked list to prevent memory leaks*/
 
     fmi2_xml_type_struct_kind_enu_t structKind; /* one of fmi2_xml_type_contrains_kind.*/
-    char baseType;   /* one of fmi2_xml_base_type */
+    char baseType;   /* one of fmi2_xml_base_type (indicating the primitive data type) */
     char isRelativeQuantity;   /* relativeQuantity flag set. Only used in fmi2_xml_real_type_props_t) */
 	char isUnbounded;          /* unbounded flag set only used in fmi2_xml_real_type_props_t) */
 } ;
@@ -83,7 +83,7 @@ struct fmi2_xml_variable_typedef_t {
 };
 
 typedef struct fmi2_xml_real_type_props_t {
-    fmi2_xml_variable_type_base_t typeBase;
+    fmi2_xml_variable_type_base_t super;
     jm_string quantity;
 
     fmi2_xml_display_unit_t* displayUnit;
@@ -94,7 +94,7 @@ typedef struct fmi2_xml_real_type_props_t {
 } fmi2_xml_real_type_props_t;
 
 typedef struct fmi2_xml_integer_type_props_t {
-    fmi2_xml_variable_type_base_t typeBase;
+    fmi2_xml_variable_type_base_t super;
 
     jm_string  quantity;
 
@@ -120,7 +120,7 @@ static int fmi1_xml_compare_enum_val (const void* first, const void* second) {
 }
 
 typedef struct fmi2_xml_enum_variable_props_t {
-    fmi2_xml_variable_type_base_t typeBase;
+    fmi2_xml_variable_type_base_t super;
 
     jm_string  quantity;
 
@@ -134,18 +134,18 @@ typedef struct fmi2_xml_enum_typedef_props_t {
 } fmi2_xml_enum_typedef_props_t;
 
 typedef struct fmi2_xml_variable_start_real_t {
-    fmi2_xml_variable_type_base_t typeBase;
+    fmi2_xml_variable_type_base_t super;
     double start;
 } fmi2_xml_variable_start_real_t ;
 
 /* fmi2_xml_variable_start_integer is used for boolean and enums as well*/
 typedef struct fmi2_xml_variable_start_integer_t {
-    fmi2_xml_variable_type_base_t typeBase;
+    fmi2_xml_variable_type_base_t super;
     int start;
 } fmi2_xml_variable_start_integer_t ;
 
 typedef struct fmi2_xml_variable_start_string_t {
-    fmi2_xml_variable_type_base_t typeBase;
+    fmi2_xml_variable_type_base_t super;
     char start[1];
 } fmi2_xml_variable_start_string_t;
 

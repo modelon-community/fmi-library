@@ -32,6 +32,11 @@
         <Boolean/>
     </SimpleType>
 
+    <!-- test that attributes in typedef are returned if not defined in variable -->
+    <SimpleType name="real_type_with_attributes">
+        <Real relativeQuantity="true" unbounded="false" />
+    </SimpleType>
+
   </TypeDefinitions>
 
   <ModelVariables>
@@ -58,6 +63,13 @@
         <Enumeration declaredType="name_enum" />
     </ScalarVariable>
 
+    <!-- test that attributes in typedef are returned if not defined in variable -->
+    <ScalarVariable name="real_with_typedef" valueReference="3001">
+        <Real declaredType="real_type_with_attributes" />
+    </ScalarVariable>
+    <ScalarVariable name="real_with_typedef_override" valueReference="3001">
+        <Real quantity="position" declaredType="real_type_with_attributes" />
+    </ScalarVariable>
       
   </ModelVariables>
 

@@ -6,7 +6,7 @@ Note that version 2.1 is the first version with release notes. Please see the co
 
 ## 2.2
 
-# Bug fixes
+### Bug fixes
 
 - Added missing getters for attributes defined on a variable:
     - Real: quantity, relativeQuantity, unbound

@@ -71,16 +71,20 @@ double fmi1_xml_get_real_variable_start(fmi1_xml_real_variable_t* v);
 double fmi1_xml_get_real_variable_max(fmi1_xml_real_variable_t* v);
 double fmi1_xml_get_real_variable_min(fmi1_xml_real_variable_t* v);
 double fmi1_xml_get_real_variable_nominal(fmi1_xml_real_variable_t* v);
+fmi1_boolean_t fmi1_xml_get_real_variable_relative_quantity(fmi1_xml_real_variable_t* v);
+fmi1_string_t fmi1_xml_get_real_variable_quantity(fmi1_xml_real_variable_t* v);
 fmi1_xml_unit_t* fmi1_xml_get_real_variable_unit(fmi1_xml_real_variable_t* v);
 fmi1_xml_display_unit_t* fmi1_xml_get_real_variable_display_unit(fmi1_xml_real_variable_t* v);
 
 const char* fmi1_xml_get_string_variable_start(fmi1_xml_string_variable_t* v);
 fmi1_boolean_t fmi1_xml_get_boolean_variable_start(fmi1_xml_bool_variable_t* v);
 
+fmi1_string_t fmi1_xml_get_integer_variable_quantity(fmi1_xml_integer_variable_t* v);
 int fmi1_xml_get_integer_variable_start(fmi1_xml_integer_variable_t* v);
 int fmi1_xml_get_integer_variable_min(fmi1_xml_integer_variable_t* v);
 int fmi1_xml_get_integer_variable_max(fmi1_xml_integer_variable_t* v);
 
+fmi1_string_t fmi1_xml_get_enum_variable_quantity(fmi1_xml_enum_variable_t* v);
 int fmi1_xml_get_enum_variable_start(fmi1_xml_enum_variable_t* v);
 int fmi1_xml_get_enum_variable_min(fmi1_xml_enum_variable_t* v);
 int fmi1_xml_get_enum_variable_max(fmi1_xml_enum_variable_t* v);

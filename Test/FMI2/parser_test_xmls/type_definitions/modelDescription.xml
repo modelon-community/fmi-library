@@ -32,9 +32,45 @@
         <Boolean/>
     </SimpleType>
 
+    <!-- test that attributes in typedef are returned if not defined in variable -->
+    <SimpleType name="real_type_with_attributes">
+        <Real relativeQuantity="true" unbounded="false" />
+    </SimpleType>
+
   </TypeDefinitions>
 
   <ModelVariables>
+
+    <!-- test defined variable attributes -->
+    <ScalarVariable name="real_with_attr" valueReference="1001">
+        <Real quantity="velocity" unbounded="true" relativeQuantity="true" />
+    </ScalarVariable>
+    <ScalarVariable name="int_with_attr" valueReference="1002">
+        <Integer quantity="velocity" />
+    </ScalarVariable>
+    <ScalarVariable name="enum_with_attr" valueReference="1003">
+        <Enumeration quantity="velocity" declaredType="name_enum" />
+    </ScalarVariable>
+
+    <!-- test undefined variable attributes -->
+    <ScalarVariable name="real_no_attr" valueReference="2001">
+        <Real/>
+    </ScalarVariable>
+    <ScalarVariable name="int_no_attr" valueReference="2002">
+        <Integer/>
+    </ScalarVariable>
+    <ScalarVariable name="enum_no_attr" valueReference="2003">
+        <Enumeration declaredType="name_enum" />
+    </ScalarVariable>
+
+    <!-- test that attributes in typedef are returned if not defined in variable -->
+    <ScalarVariable name="real_with_typedef" valueReference="3001">
+        <Real declaredType="real_type_with_attributes" />
+    </ScalarVariable>
+    <ScalarVariable name="real_with_typedef_override" valueReference="3001">
+        <Real quantity="position" declaredType="real_type_with_attributes" />
+    </ScalarVariable>
+      
   </ModelVariables>
 
   <ModelStructure>

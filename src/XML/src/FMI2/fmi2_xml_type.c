@@ -122,13 +122,13 @@ fmi2_xml_unit_t* fmi2_xml_get_real_type_unit(fmi2_xml_real_typedef_t* t) {
 int fmi2_xml_get_real_type_is_relative_quantity(fmi2_xml_real_typedef_t* t) {
     fmi2_xml_variable_typedef_t* vt = (void*)t;
     fmi2_xml_real_type_props_t* props = (fmi2_xml_real_type_props_t*)(vt->typeBase.baseTypeStruct);
-	return props->typeBase.isRelativeQuantity;
+	return props->super.isRelativeQuantity;
 }
 
 int fmi2_xml_get_real_type_is_unbounded(fmi2_xml_real_typedef_t* t) {
     fmi2_xml_variable_typedef_t* vt = (void*)t;
     fmi2_xml_real_type_props_t* props = (fmi2_xml_real_type_props_t*)(vt->typeBase.baseTypeStruct);
-	return props->typeBase.isUnbounded;
+	return props->super.isUnbounded;
 }
 
 
@@ -217,7 +217,7 @@ void fmi2_xml_init_variable_type_base(fmi2_xml_variable_type_base_t* type, fmi2_
 }
 
 void fmi2_xml_init_real_type_properties(fmi2_xml_real_type_props_t* type) {
-    fmi2_xml_init_variable_type_base(&type->typeBase, fmi2_xml_type_struct_enu_props,fmi2_base_type_real);
+    fmi2_xml_init_variable_type_base(&type->super, fmi2_xml_type_struct_enu_props,fmi2_base_type_real);
     type->quantity = 0;    
     type->typeMin = -DBL_MAX;
     type->typeMax = DBL_MAX;
@@ -226,14 +226,14 @@ void fmi2_xml_init_real_type_properties(fmi2_xml_real_type_props_t* type) {
 }
 
 void fmi2_xml_init_integer_type_properties(fmi2_xml_integer_type_props_t* type) {
-    fmi2_xml_init_variable_type_base(&type->typeBase, fmi2_xml_type_struct_enu_props,fmi2_base_type_int);
+    fmi2_xml_init_variable_type_base(&type->super, fmi2_xml_type_struct_enu_props,fmi2_base_type_int);
     type->quantity = 0;
     type->typeMin = INT_MIN;
     type->typeMax = INT_MAX;
 }
 
 void fmi2_xml_init_enumeration_variable_properties(fmi2_xml_enum_variable_props_t* type, jm_callbacks* cb) {
-    fmi2_xml_init_variable_type_base(&type->typeBase, fmi2_xml_type_struct_enu_props,fmi2_base_type_enum);
+    fmi2_xml_init_variable_type_base(&type->super, fmi2_xml_type_struct_enu_props,fmi2_base_type_enum);
 	type->quantity = 0;
     type->typeMin = 0;
     type->typeMax = 0;
@@ -389,7 +389,7 @@ fmi2_xml_real_type_props_t* fmi2_xml_parse_real_type_properties(fmi2_xml_parser_
     jm_vector(char)* bufUnit = fmi2_xml_reserve_parse_buffer(context,4,100);
     jm_vector(char)* bufDispUnit = fmi2_xml_reserve_parse_buffer(context,5,100);
 
-    props = (fmi2_xml_real_type_props_t*)fmi2_xml_alloc_variable_type_props(&md->typeDefinitions, &md->typeDefinitions.defaultRealType.typeBase, sizeof(fmi2_xml_real_type_props_t));
+    props = (fmi2_xml_real_type_props_t*)fmi2_xml_alloc_variable_type_props(&md->typeDefinitions, &md->typeDefinitions.defaultRealType.super, sizeof(fmi2_xml_real_type_props_t));
 
     if(!bufQuantity || !bufUnit || !bufDispUnit || !props ||
             /* <xs:attribute name="quantity" type="xs:normalizedString"/> */
@@ -432,8 +432,8 @@ fmi2_xml_real_type_props_t* fmi2_xml_parse_real_type_properties(fmi2_xml_parser_
             /*  <xs:attribute name="nominal" type="xs:double"/> */
             fmi2_xml_set_attr_double(context, elmID, fmi_attr_id_nominal, 0, &props->typeNominal, 1)
             ) return 0;
-	props->typeBase.isRelativeQuantity = (relQuanBuf) ? 1:0;
-	props->typeBase.isUnbounded = (unboundedBuf) ? 1 : 0;
+	props->super.isRelativeQuantity = (relQuanBuf) ? 1:0;
+	props->super.isUnbounded = (unboundedBuf) ? 1 : 0;
     return props;
 }
 
@@ -449,7 +449,7 @@ int fmi2_xml_handle_Real(fmi2_xml_parser_context_t *context, const char* data) {
         named = jm_vector_get_last(jm_named_ptr)(&md->typeDefinitions.typeDefinitions);
         type = named.ptr;
         type->typeBase.baseType = fmi2_base_type_real;
-        type->typeBase.baseTypeStruct = &props->typeBase;
+        type->typeBase.baseTypeStruct = &props->super;
     }
     else {
         /* don't do anything. might give out a warning if(data[0] != 0) */
@@ -468,7 +468,7 @@ fmi2_xml_integer_type_props_t * fmi2_xml_parse_integer_type_properties(fmi2_xml_
             jm_vector(char)* bufDescr = fmi_get_parse_buffer(context,2); */
     jm_vector(char)* bufQuantity = fmi2_xml_reserve_parse_buffer(context,3,100);
 
-    props = (fmi2_xml_integer_type_props_t*)fmi2_xml_alloc_variable_type_props(&md->typeDefinitions, &md->typeDefinitions.defaultIntegerType.typeBase, sizeof(fmi2_xml_integer_type_props_t));
+    props = (fmi2_xml_integer_type_props_t*)fmi2_xml_alloc_variable_type_props(&md->typeDefinitions, &md->typeDefinitions.defaultIntegerType.super, sizeof(fmi2_xml_integer_type_props_t));
 
     if(!bufQuantity || !props ||
             /* <xs:attribute name="quantity" type="xs:normalizedString"/> */
@@ -501,7 +501,7 @@ int fmi2_xml_handle_Integer(fmi2_xml_parser_context_t *context, const char* data
         named = jm_vector_get_last(jm_named_ptr)(&md->typeDefinitions.typeDefinitions);
         type = named.ptr;
         type->typeBase.baseType = fmi2_base_type_int;
-        type->typeBase.baseTypeStruct = &props->typeBase;
+        type->typeBase.baseTypeStruct = &props->super;
     }
     else {
         /* don't do anything. might give out a warning if(data[0] != 0) */
@@ -558,7 +558,7 @@ int fmi2_xml_handle_Enumeration(fmi2_xml_parser_context_t *context, const char* 
 
         props = (fmi2_xml_enum_typedef_props_t*)fmi2_xml_alloc_variable_type_props(
 													&md->typeDefinitions, 
-													&md->typeDefinitions.defaultEnumType.base.typeBase,
+													&md->typeDefinitions.defaultEnumType.base.super,
 													sizeof(fmi2_xml_enum_typedef_props_t));
 
         if(props) {
@@ -577,7 +577,7 @@ int fmi2_xml_handle_Enumeration(fmi2_xml_parser_context_t *context, const char* 
         named = jm_vector_get_last(jm_named_ptr)(&context->modelDescription->typeDefinitions.typeDefinitions);
         type = named.ptr;
         type->typeBase.baseType = fmi2_base_type_enum;
-        type->typeBase.baseTypeStruct = &props->base.typeBase;
+        type->typeBase.baseTypeStruct = &props->base.super;
     } else {
 		/* sort enum items, check that there are no duplicates */
         fmi2_xml_enum_type_item_t *min, *max;
@@ -618,8 +618,8 @@ int fmi2_xml_handle_Item(fmi2_xml_parser_context_t *context, const char* data) {
             size_t descrlen;
 			int value;
 
-            assert((enumProps->base.typeBase.structKind == fmi2_xml_type_struct_enu_props) 
-				&& (enumProps->base.typeBase.baseType == fmi2_base_type_enum));
+            assert((enumProps->base.super.structKind == fmi2_xml_type_struct_enu_props) 
+				&& (enumProps->base.super.baseType == fmi2_base_type_enum));
 
             if(!bufName || !bufDescr ||
             /*  <xs:attribute name="name" type="xs:normalizedString" use="required"/> */

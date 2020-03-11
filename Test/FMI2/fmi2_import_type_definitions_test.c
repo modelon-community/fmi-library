@@ -46,6 +46,104 @@ static int test_quantity_default(fmi2_import_t *xml)
     return TEST_OK;
 }
 
+/* verify quantity on variable, same for all variables */
+static int test_var_quantity(fmi2_import_t *xml, fmi2_string_t exp, const char* varNames[])
+{
+    fmi2_import_variable_t* v;
+    fmi2_string_t quantity;
+
+    /* real */
+    v = fmi2_import_get_variable_by_name(xml, varNames[0]);
+    ASSERT_MSG(v != NULL, "variable wasn't found by name");
+    quantity = fmi2_import_get_real_variable_quantity(fmi2_import_get_variable_as_real(v));
+    ASSERT_MSG(quantity == exp || /* this allows exp == NULL */
+            strcmp(quantity, exp) == 0, "wrong variable attribute value: quantity");
+
+    /* int */
+    v = fmi2_import_get_variable_by_name(xml, varNames[1]);
+    ASSERT_MSG(v != NULL, "variable wasn't found by name");
+    quantity = fmi2_import_get_integer_variable_quantity(fmi2_import_get_variable_as_integer(v));
+    ASSERT_MSG(quantity == exp || /* this allows exp == NULL */
+            strcmp(quantity, exp) == 0, "wrong variable attribute value: quantity");
+
+    /* enum */
+    v = fmi2_import_get_variable_by_name(xml, varNames[2]);
+    ASSERT_MSG(v != NULL, "variable wasn't found by name");
+    quantity = fmi2_import_get_enum_variable_quantity(fmi2_import_get_variable_as_enum(v));
+    ASSERT_MSG(quantity == exp || /* this allows exp == NULL */
+            strcmp(quantity, exp) == 0, "wrong variable attribute value: quantity");
+
+    return TEST_OK;
+}
+
+/* verify vars with defined quantity */
+static int test_var_quantity_defined(fmi2_import_t *xml)
+{
+    const char* varNames[] = { "real_with_attr", "int_with_attr", "enum_with_attr" };
+    return test_var_quantity(xml, "velocity", varNames);
+}
+
+/* verify vars with undefined quantity */
+static int test_var_quantity_undefined(fmi2_import_t *xml)
+{
+    const char* varNames[] = { "real_no_attr", "int_no_attr", "enum_no_attr" };
+    return test_var_quantity(xml, NULL, varNames);
+}
+
+/* verify real-specific type attributes on variable */
+static int test_real_var_attributes_exist(fmi2_import_t *xml, fmi2_boolean_t expUnbounded, fmi2_boolean_t expRelativeQuantity, fmi2_string_t varName)
+{
+    fmi2_import_variable_t* v;
+    fmi2_import_real_variable_t* vReal;
+    fmi2_boolean_t unbounded;
+    fmi2_boolean_t relativeQuantity;
+
+    /* real */
+    v = fmi2_import_get_variable_by_name(xml, varName);
+    ASSERT_MSG(v != NULL, "variable wasn't found by name");
+
+    vReal = fmi2_import_get_variable_as_real(v);
+    unbounded = fmi2_import_get_real_variable_unbounded(vReal);
+    ASSERT_MSG(unbounded == expUnbounded, "wrong variable attribute value: unbounded");
+
+    relativeQuantity = fmi2_import_get_real_variable_relative_quantity(vReal);
+    ASSERT_MSG(relativeQuantity == expRelativeQuantity, "wrong variable attribute value: relativeQuantity");
+
+    return TEST_OK;
+}
+
+static int test_real_var_attributes_defined(fmi2_import_t *xml)
+{
+    fmi2_boolean_t expUnbounded = fmi2_true;
+    fmi2_boolean_t expRelativeQuantity = fmi2_true;
+
+    return test_real_var_attributes_exist(xml, expUnbounded, expRelativeQuantity, "real_with_attr");
+}
+
+static int test_real_var_attributes_undefined(fmi2_import_t *xml)
+{
+    fmi2_boolean_t expUnbounded = fmi2_false;
+    fmi2_boolean_t expRelativeQuantity = fmi2_false;
+
+    return test_real_var_attributes_exist(xml, expUnbounded, expRelativeQuantity, "real_no_attr");
+}
+
+static int test_real_var_attributes_defined_in_typedef(fmi2_import_t *xml)
+{
+    fmi2_boolean_t expUnbounded = fmi2_false;
+    fmi2_boolean_t expRelativeQuantity = fmi2_true;
+
+    return test_real_var_attributes_exist(xml, expUnbounded, expRelativeQuantity, "real_with_typedef");
+}
+
+static int test_real_var_attributes_defined_in_typedef_partially(fmi2_import_t *xml)
+{
+    fmi2_boolean_t expUnbounded = fmi2_false;
+    fmi2_boolean_t expRelativeQuantity = fmi2_true;
+
+    return test_real_var_attributes_exist(xml, expUnbounded, expRelativeQuantity, "real_with_typedef_override");
+}
+
 int main(int argc, char **argv)
 {
     fmi2_import_t *xml;
@@ -62,7 +160,16 @@ int main(int argc, char **argv)
         return CTEST_RETURN_FAIL;
     }
 
+    /* typedefs */
     ret &= test_quantity_default(xml);
+
+    /* var type attributes */
+    ret &= test_var_quantity_defined(xml);
+    ret &= test_var_quantity_undefined(xml);
+    ret &= test_real_var_attributes_defined(xml);
+    ret &= test_real_var_attributes_undefined(xml);
+    ret &= test_real_var_attributes_defined_in_typedef(xml);
+    ret &= test_real_var_attributes_defined_in_typedef_partially(xml);
 
     fmi2_import_free(xml);
     return ret == 0 ? CTEST_RETURN_FAIL : CTEST_RETURN_SUCCESS;

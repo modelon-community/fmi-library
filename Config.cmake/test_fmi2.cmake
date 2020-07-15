@@ -40,6 +40,8 @@ set(XML_ME_PATH ${FMU2_DUMMY_FOLDER}/modelDescription_me.xml)
 set(XML_CS_PATH ${FMU2_DUMMY_FOLDER}/modelDescription_cs.xml)
 set(XML_MF_PATH ${FMU2_DUMMY_FOLDER}/modelDescription_malformed.xml)
 
+set(PARSER_TEST_XML_DIR ${RTTESTDIR}/FMI2/parser_test_xmls)
+
 set(VARIALBE_TEST_MODEL_DESC_DIR
     ${RTTESTDIR}/FMI2/parser_test_xmls/variable_test)
 set(DEFAULT_EXPERIMENT_MODEL_DESC_DIR
@@ -87,6 +89,8 @@ add_executable(fmi2_import_default_experiment_test ${RTTESTDIR}/FMI2/fmi2_import
 target_link_libraries(fmi2_import_default_experiment_test ${FMILIBFORTEST})
 add_executable(fmi2_type_definitions_test ${RTTESTDIR}/FMI2/fmi2_import_type_definitions_test.c)
 target_link_libraries(fmi2_type_definitions_test ${FMILIBFORTEST})
+add_executable(fmi2_unit_test ${RTTESTDIR}/FMI2/fmi2_import_unit_test.c)
+target_link_libraries(fmi2_unit_test ${FMILIBFORTEST})
 add_executable(fmi2_variable_no_type_test
                ${RTTESTDIR}/FMI2/fmi2_variable_no_type_test.c)
 target_link_libraries(fmi2_variable_no_type_test ${FMILIBFORTEST})
@@ -131,6 +135,9 @@ add_test(ctest_fmi2_variable_bad_variability_causality_test
 add_test(ctest_fmi2_type_definitions_test
          fmi2_type_definitions_test
          ${TYPE_DEFINITIONS_MODEL_DESC_DIR})
+add_test(ctest_fmi2_unit_test
+         fmi2_unit_test
+         ${PARSER_TEST_XML_DIR})
 add_test(ctest_fmi2_enum_test
          fmi2_enum_test)
 
@@ -147,6 +154,7 @@ if(FMILIB_BUILD_BEFORE_TESTS)
         ctest_fmi2_import_default_experiment_test
         ctest_fmi2_variable_no_type_test
         ctest_fmi2_type_definitions_test
+        ctest_fmi2_unit_test
         ctest_fmi2_enum_test
         ctest_fmi2_variable_bad_variability_causality_test
         PROPERTIES DEPENDS ctest_build_all)

@@ -122,48 +122,77 @@ int fmi2_xml_handle_UnitDefinitions(fmi2_xml_parser_context_t *context, const ch
     return 0;
 }
 
-
-fmi2_xml_display_unit_t* fmi2_xml_get_parsed_unit(fmi2_xml_parser_context_t *context, jm_vector(char)* name, int sorted) {
-    fmi2_xml_unit_t dummy, *unit;
+/**
+ * Returns the default display unit (which contains a reference to the unit)
+ * if the unit has been parsed from UnitDefinitions.
+ */
+fmi2_xml_display_unit_t* fmi2_xml_get_parsed_unit(fmi2_xml_parser_context_t *context, jm_vector(char)* name,
+        int sorted) {
+    fmi2_xml_unit_t* unit;
     jm_named_ptr named, *pnamed;
     fmi2_xml_model_description_t* md = context->modelDescription;
-	int i;
+
 	if(jm_vector_get_size(char)(name))
 		named.name = jm_vector_get_itemp(char)(name,0);
 	else
 		named.name = "";
 
-	if(sorted)
-        pnamed = jm_vector_bsearch(jm_named_ptr)(&(md->unitDefinitions), &named,jm_compare_named);
+	if (sorted)
+        pnamed = jm_vector_bsearch(jm_named_ptr)(&(md->unitDefinitions), &named, jm_compare_named);
     else
-        pnamed = jm_vector_find(jm_named_ptr)(&(md->unitDefinitions), &named,jm_compare_named);
+        pnamed = jm_vector_find(jm_named_ptr)(&(md->unitDefinitions), &named, jm_compare_named);
 
-    if(pnamed) {
-        unit = pnamed->ptr;
-        return &unit->defaultDisplay;
+    if(!pnamed) {
+        return NULL;
     }
 
-    named.ptr = 0;
-    pnamed = jm_vector_push_back(jm_named_ptr)(&(md->unitDefinitions),named);
-    if(pnamed) *pnamed = named = jm_named_alloc_v(name,sizeof(fmi2_xml_unit_t),dummy.baseUnit - (char*)&dummy,context->callbacks);
+    unit = pnamed->ptr;
+    return &unit->defaultDisplay;
+}
 
-    if(!pnamed || !named.ptr) {
+/**
+ * Parses a new unit and returns the default (not-yet-parsed) display unit.
+ */
+static fmi2_xml_display_unit_t* fmi2_xml_parse_unit(fmi2_xml_parser_context_t* context, jm_vector(char)* name,
+        int sorted) {
+    fmi2_xml_unit_t dummy, * unit;
+    jm_named_ptr named, * pnamed;
+    fmi2_xml_model_description_t* md = context->modelDescription;
+    int i;
+
+    if (jm_vector_get_size(char)(name))
+        named.name = jm_vector_get_itemp(char)(name, 0);
+    else
+        named.name = "";
+
+    named.ptr = 0;
+    pnamed = jm_vector_push_back(jm_named_ptr)(&(md->unitDefinitions), named);
+    if (pnamed) {
+        *pnamed = named = jm_named_alloc_v(name, sizeof(fmi2_xml_unit_t), dummy.baseUnit - (char*)&dummy,
+                context->callbacks);
+    }
+
+    if (!pnamed || !named.ptr) {
         fmi2_xml_parse_fatal(context, "Could not allocate memory");
         return 0;
     }
 
+    /* Initialize default unit, which can be overriden if optional sub-elements exist */
     unit = named.ptr;
-	unit->factor = 1.0;
-	unit->offset = 0.0;
-	for(i = 0; i < fmi2_SI_base_units_Num; i++)
-		unit->SI_base_unit_exp[i] = 0;
+    unit->factor = 1.0;
+    unit->offset = 0.0;
+    for (i = 0; i < fmi2_SI_base_units_Num; i++)
+        unit->SI_base_unit_exp[i] = 0;
     unit->defaultDisplay.baseUnit = unit;
     unit->defaultDisplay.offset = 0;
     unit->defaultDisplay.factor = 1.0;
     unit->defaultDisplay.displayUnit[0] = 0;
-    jm_vector_init(jm_voidp)(&(unit->displayUnits),0,context->callbacks);
+    jm_vector_init(jm_voidp)(&(unit->displayUnits), 0, context->callbacks);
 
-    if(sorted) jm_vector_qsort_jm_named_ptr(&(md->unitDefinitions), jm_compare_named);
+    if (sorted) {
+        jm_vector_qsort_jm_named_ptr(&(md->unitDefinitions), jm_compare_named);
+    }
+
     return &unit->defaultDisplay;
 }
 
@@ -207,14 +236,21 @@ int fmi2_xml_handle_BaseUnit(fmi2_xml_parser_context_t *context, const char* dat
 int fmi2_xml_handle_Unit(fmi2_xml_parser_context_t *context, const char* data) {
     if(!data) {
             fmi2_xml_display_unit_t* unit;
-            jm_vector(char)* buf = fmi2_xml_reserve_parse_buffer(context,1,100);
 
-            if(!buf) return -1;
-            if( 
-				/*  <xs:attribute name="name" type="xs:normalizedString" use="required"> */
-                fmi2_xml_set_attr_string(context, fmi2_xml_elmID_BaseUnit, fmi_attr_id_name, 1, buf) ||
-                !(unit = fmi2_xml_get_parsed_unit(context, buf, 0))
-               ) return -1;
+            jm_vector(char)* nameBuf = fmi2_xml_reserve_parse_buffer(context,1,100);
+            if(!nameBuf) return -1;
+
+            if (fmi2_xml_set_attr_string(context, fmi2_xml_elmID_BaseUnit, fmi_attr_id_name, 1, nameBuf)) {
+                return -1;
+            }
+
+            if (fmi2_xml_get_parsed_unit(context, nameBuf, 0)) {
+                fmi2_xml_parse_error(context,
+                        "Found units with duplicate names: %s", jm_vector_get_itemp(char)(nameBuf, 0));
+                return -1;
+            }
+
+            unit = fmi2_xml_parse_unit(context, nameBuf, 0);
             context->lastBaseUnit = unit->baseUnit;
     }
     else {
@@ -264,7 +300,7 @@ int fmi2_xml_handle_DisplayUnit(fmi2_xml_parser_context_t *context, const char* 
 				}
 			}
 
-            return ( ret );
+            return ret;
     }
     else {
         /* don't do anything. might give out a warning if(data[0] != 0) */

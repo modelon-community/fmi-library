@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription
+  fmiVersion="2.0"
+  modelName="myModelName"
+  guid="myGuid"
+  description="myDescription"
+  author="myAuthor"
+  generationTool="myGenerationTool"
+  generationDateAndTime="2002-05-30T09:00:00"
+  version="myModelVersion"
+  variableNamingConvention="structured"
+  numberOfEventIndicators="3">
+
+<ModelExchange modelIdentifier="myModelIdentifier"/>
+
+<UnitDefinitions>
+    <Unit name="K">
+        <BaseUnit K="1"/>
+        <DisplayUnit name="degF" factor="1.7999999999999998" offset="-459.67"/>
+        <DisplayUnit name="degC" offset="-273.15"/>
+    </Unit>
+</UnitDefinitions>
+
+<TypeDefinitions>
+    <SimpleType name="Temperature">
+        <Real unit="K"/>
+    </SimpleType>
+</TypeDefinitions>
+
+<ModelVariables>
+    <ScalarVariable name="maxRealVar" causality="parameter" variability="fixed" valueReference="1" initial="exact">
+        <Real unit="K" displayUnit="degC" start="0.0"/>
+    </ScalarVariable>
+</ModelVariables>
+
+<ModelStructure>
+</ModelStructure>
+
+</fmiModelDescription>

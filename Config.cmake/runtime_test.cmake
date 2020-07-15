@@ -107,10 +107,13 @@ function(compress_fmu OUTPUT_FOLDER_T MODEL_IDENTIFIER_T FILE_NAME_CS_ME_EXT_T T
 	
 endfunction(compress_fmu)
 
-set(FMILIBFORTEST fmilib)
+# Build the test util 'fmil_test'
+add_library(fmil_testutil STATIC ${RTTESTDIR}/fmil_test.c)
+
+set(FMILIBFORTEST fmilib fmil_testutil)
 
 if(FMILIB_BUILD_SHARED_LIB AND (FMILIB_LINK_TEST_TO_SHAREDLIB OR NOT FMILIB_BUILD_STATIC_LIB))
-	set(FMILIBFORTEST fmilib_shared)
+	set(FMILIBFORTEST fmilib_shared fmil_testutil)
 	if(CMAKE_COMPILER_IS_GNUCC)
 		set(FMILIBFORTEST ${FMILIBFORTEST})
 	endif()

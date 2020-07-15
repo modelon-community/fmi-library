@@ -377,7 +377,6 @@ fmi2_xml_variable_type_base_t* fmi2_xml_alloc_variable_type_start(fmi2_xml_type_
 
 
 fmi2_xml_real_type_props_t* fmi2_xml_parse_real_type_properties(fmi2_xml_parser_context_t* context, fmi2_xml_elm_enu_t elmID) {
-    jm_named_ptr named, *pnamed;
     fmi2_xml_model_description_t* md = context->modelDescription;
     fmi2_xml_real_type_props_t* props;
     const char* quantity = NULL;
@@ -400,27 +399,29 @@ fmi2_xml_real_type_props_t* fmi2_xml_parse_real_type_properties(fmi2_xml_parser_
             fmi2_xml_set_attr_string(context, elmID, fmi_attr_id_displayUnit, 0, bufDispUnit)
             ) {
         fmi2_xml_parse_fatal(context, "Error parsing real type properties");
-        return 0;
+        return NULL;
     }
+
     if(jm_vector_get_size(char)(bufQuantity))
         quantity = jm_string_set_put(&md->typeDefinitions.quantities, jm_vector_get_itemp(char)(bufQuantity, 0));
-
     props->quantity = quantity;
+
+    if (jm_vector_get_size(char)(bufDispUnit) && !jm_vector_get_size(char)(bufUnit)) {
+        fmi2_xml_parse_fatal(context, "Type or variable definition contained attribute for display unit '%s', but not for unit",
+                jm_vector_get_itemp(char)(bufDispUnit, 0));
+        return NULL;
+    }
+
     props->displayUnit = 0;
-    if(jm_vector_get_size(char)(bufDispUnit)) {
-        named.name = jm_vector_get_itemp(char)(bufDispUnit, 0);
-        pnamed = jm_vector_bsearch(jm_named_ptr)(&(md->displayUnitDefinitions), &named, jm_compare_named);
-        if(!pnamed) {
-            fmi2_xml_parse_fatal(context, "Unknown display unit %s in real type definition", jm_vector_get_itemp(char)(bufDispUnit, 0));
-            return 0;
-        }
-        props->displayUnit = pnamed->ptr;
-    }
-    else {
-        if(jm_vector_get_size(char)(bufUnit)) {
-            props->displayUnit = fmi2_xml_get_parsed_unit(context, bufUnit, 1);
+    if (jm_vector_get_size(char)(bufUnit)) {
+        props->displayUnit = fmi2_xml_get_parsed_unit(context, bufUnit, 1);
+        if (!props->displayUnit) {
+            fmi2_xml_parse_fatal(context, "Type or variable referenced unit '%s' that does not exist in unit definitions",
+                    jm_vector_get_itemp(char)(bufUnit, 0));
+            return NULL;
         }
     }
+
     if(    /*    <xs:attribute name="relativeQuantity" type="xs:boolean" default="false"> */
             fmi2_xml_set_attr_boolean(context, elmID, fmi_attr_id_relativeQuantity, 0, &relQuanBuf, 0) ||
 		    /*    <xs:attribute name="unbounded" type="xs:boolean" default="false"> */
@@ -431,7 +432,7 @@ fmi2_xml_real_type_props_t* fmi2_xml_parse_real_type_properties(fmi2_xml_parser_
             fmi2_xml_set_attr_double(context, elmID, fmi_attr_id_max, 0, &props->typeMax, DBL_MAX) ||
             /*  <xs:attribute name="nominal" type="xs:double"/> */
             fmi2_xml_set_attr_double(context, elmID, fmi_attr_id_nominal, 0, &props->typeNominal, 1)
-            ) return 0;
+            ) return NULL;
 	props->super.isRelativeQuantity = (relQuanBuf) ? 1:0;
 	props->super.isUnbounded = (unboundedBuf) ? 1 : 0;
     return props;

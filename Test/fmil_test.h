@@ -18,4 +18,6 @@
 
 #define TEST_OK (1)
 
+char* concat(char *s1, char *s2);
+
 #endif /* FMILIB_TEST_H */

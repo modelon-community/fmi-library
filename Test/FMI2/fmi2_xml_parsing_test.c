@@ -1,7 +1,9 @@
 #include <stdlib.h>
 #include <fmilib.h>
 #include <stdio.h>
+
 #include "config_test.h"
+#include "fmil_test.h"
 
 static const int SHOULD_NOT_LOG_EXPECTED_MSG = 0;
 static const int SHOULD_LOG_EXPECTED_MSG = 1;
@@ -9,20 +11,6 @@ static const int SHOULD_LOG_EXPECTED_MSG = 1;
 static int did_not_log_expected_msg;
 static char *expected_message = "Invalid structured ScalarVariable name";
 static char *name_check_test_directory;
-
-char *concat(char *s1, char *s2)
-{
-    size_t len1 = strlen(s1);
-    size_t len2 = strlen(s2);
-    /* +1 for the zero-terminator */
-    char *result = (char *) malloc((len1 + len2 + 1) * sizeof(char));
-    if (result == NULL) {
-        exit(CTEST_RETURN_FAIL);
-    }
-    memcpy(result, s1, len1);
-    memcpy(result + len1, s2, len2 + 1); /* +1 to copy the null-terminator */
-    return result;
-}
 
 void importlogger(jm_callbacks* c, jm_string module,
         jm_log_level_enu_t log_level, jm_string message)

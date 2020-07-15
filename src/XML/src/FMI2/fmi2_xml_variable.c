@@ -533,14 +533,13 @@ int fmi2_xml_handle_RealVariable(fmi2_xml_parser_context_t *context, const char*
 
         {
             int hasUnit = fmi2_xml_is_attr_defined(context, fmi_attr_id_unit) ||
-                    fmi2_xml_is_attr_defined(context, fmi_attr_id_displayUnit);
-            int hasMin =  fmi2_xml_is_attr_defined(context, fmi_attr_id_min);
-            int hasMax = fmi2_xml_is_attr_defined(context, fmi_attr_id_max);
-            int hasNom = fmi2_xml_is_attr_defined(context, fmi_attr_id_nominal);
+                          fmi2_xml_is_attr_defined(context, fmi_attr_id_displayUnit);
+            int hasMin  = fmi2_xml_is_attr_defined(context, fmi_attr_id_min);
+            int hasMax  = fmi2_xml_is_attr_defined(context, fmi_attr_id_max);
+            int hasNom  = fmi2_xml_is_attr_defined(context, fmi_attr_id_nominal);
             int hasQuan = fmi2_xml_is_attr_defined(context, fmi_attr_id_quantity);
             int hasRelQ = fmi2_xml_is_attr_defined(context, fmi_attr_id_relativeQuantity);
-            int hasUnb = fmi2_xml_is_attr_defined(context, fmi_attr_id_unbounded);
-
+            int hasUnb  = fmi2_xml_is_attr_defined(context, fmi_attr_id_unbounded);
 
             if(hasUnit || hasMin || hasMax || hasNom || hasQuan || hasRelQ ||hasUnb) {
                 fmi2_xml_real_type_props_t* props = 0;
@@ -557,13 +556,13 @@ int fmi2_xml_handle_RealVariable(fmi2_xml_parser_context_t *context, const char*
 
                 if(!type) return -1;
                 type->super.baseTypeStruct = declaredType;
-                if( !hasUnit)   type->displayUnit                   = props->displayUnit;
-                if( !hasMin)    type->typeMin                       = props->typeMin;
-                if( !hasMax)    type->typeMax                       = props->typeMax;
-                if( !hasNom)    type->typeNominal                   = props->typeNominal;
-                if( !hasQuan)   type->quantity                      = props->quantity;
-                if( !hasRelQ)   type->super.isRelativeQuantity      = props->super.isRelativeQuantity;
-                if( !hasUnb)    type->super.isUnbounded             = props->super.isUnbounded;
+                if(!hasUnit) type->displayUnit              = props->displayUnit;
+                if(!hasMin)  type->typeMin                  = props->typeMin;
+                if(!hasMax)  type->typeMax                  = props->typeMax;
+                if(!hasNom)  type->typeNominal              = props->typeNominal;
+                if(!hasQuan) type->quantity                 = props->quantity;
+                if(!hasRelQ) type->super.isRelativeQuantity = props->super.isRelativeQuantity;
+                if(!hasUnb)  type->super.isUnbounded        = props->super.isUnbounded;
             }
             else {
             /* this can be a typedef_t, for example if the the variable has a declaredType, but doesn't

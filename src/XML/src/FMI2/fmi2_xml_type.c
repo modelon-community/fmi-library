@@ -381,9 +381,8 @@ fmi2_xml_real_type_props_t* fmi2_xml_parse_real_type_properties(fmi2_xml_parser_
     fmi2_xml_real_type_props_t* props;
     const char* quantity = NULL;
     unsigned int relQuanBuf, unboundedBuf;
+    int hasDispUnit, hasUnit, hasQuantity;
 
-/*        jm_vector(char)* bufName = fmi_get_parse_buffer(context,1);
-    jm_vector(char)* bufDescr = fmi_get_parse_buffer(context,2); */
     jm_vector(char)* bufQuantity = fmi2_xml_reserve_parse_buffer(context,3,100);
     jm_vector(char)* bufUnit = fmi2_xml_reserve_parse_buffer(context,4,100);
     jm_vector(char)* bufDispUnit = fmi2_xml_reserve_parse_buffer(context,5,100);
@@ -391,34 +390,48 @@ fmi2_xml_real_type_props_t* fmi2_xml_parse_real_type_properties(fmi2_xml_parser_
     props = (fmi2_xml_real_type_props_t*)fmi2_xml_alloc_variable_type_props(&md->typeDefinitions, &md->typeDefinitions.defaultRealType.super, sizeof(fmi2_xml_real_type_props_t));
 
     if(!bufQuantity || !bufUnit || !bufDispUnit || !props ||
-            /* <xs:attribute name="quantity" type="xs:normalizedString"/> */
             fmi2_xml_set_attr_string(context, elmID, fmi_attr_id_quantity, 0, bufQuantity) ||
-            /* <xs:attribute name="unit" type="xs:normalizedString"/>  */
             fmi2_xml_set_attr_string(context, elmID, fmi_attr_id_unit, 0, bufUnit) ||
-            /* <xs:attribute name="displayUnit" type="xs:normalizedString">  */
             fmi2_xml_set_attr_string(context, elmID, fmi_attr_id_displayUnit, 0, bufDispUnit)
             ) {
         fmi2_xml_parse_fatal(context, "Error parsing real type properties");
         return NULL;
     }
 
-    if(jm_vector_get_size(char)(bufQuantity))
+    hasQuantity = jm_vector_get_size(char)(bufQuantity);
+    hasUnit     = jm_vector_get_size(char)(bufUnit);
+    hasDispUnit = jm_vector_get_size(char)(bufDispUnit);
+
+    if (hasQuantity)
         quantity = jm_string_set_put(&md->typeDefinitions.quantities, jm_vector_get_itemp(char)(bufQuantity, 0));
     props->quantity = quantity;
 
-    if (jm_vector_get_size(char)(bufDispUnit) && !jm_vector_get_size(char)(bufUnit)) {
+    if (hasDispUnit && !hasUnit) {
         fmi2_xml_parse_fatal(context, "Type or variable definition contained attribute for display unit '%s', but not for unit",
                 jm_vector_get_itemp(char)(bufDispUnit, 0));
         return NULL;
     }
 
-    props->displayUnit = 0;
-    if (jm_vector_get_size(char)(bufUnit)) {
-        props->displayUnit = fmi2_xml_get_parsed_unit(context, bufUnit, 1);
-        if (!props->displayUnit) {
+    /* Assign the display unit, which in turn has a reference to the unit */
+    props->displayUnit = NULL;
+    if (hasUnit) {
+        fmi2_xml_unit_t* unit = fmi2_xml_get_parsed_unit(context, bufUnit, 1);
+        if (!unit) {
             fmi2_xml_parse_fatal(context, "Type or variable referenced unit '%s' that does not exist in unit definitions",
                     jm_vector_get_itemp(char)(bufUnit, 0));
             return NULL;
+        }
+        if (hasDispUnit) {
+            fmi2_xml_display_unit_t* dispUnit =
+                    fmi2_xml_get_unit_display_unit_by_name(unit, jm_vector_get_itemp(char)(bufDispUnit, 0));
+            if (dispUnit) {
+                props->displayUnit = dispUnit;
+            } else {
+                /* spec. (2.0.1): missing display units should be ignored */
+                props->displayUnit = &unit->defaultDisplay; 
+            }
+        } else {
+            props->displayUnit = &unit->defaultDisplay;
         }
     }
 

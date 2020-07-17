@@ -74,7 +74,6 @@ fmi2_xml_model_description_t * fmi2_xml_allocate_model_description( jm_callbacks
 	jm_vector_init(jm_string)(&md->logCategoryDescriptions, 0, cb);
 
     jm_vector_init(jm_named_ptr)(&md->unitDefinitions, 0, cb);
-    jm_vector_init(jm_named_ptr)(&md->displayUnitDefinitions, 0, cb);
 
     fmi2_xml_init_type_definitions(&md->typeDefinitions, cb);
 
@@ -142,8 +141,13 @@ void fmi2_xml_clear_model_description( fmi2_xml_model_description_t* md) {
     jm_vector_foreach(jm_string)(&md->logCategoryDescriptions, (void(*)(const char*))md->callbacks->free);
     jm_vector_free_data(jm_string)(&md->logCategoryDescriptions);	
 
+    jm_vector_foreach(jm_string)(&md->logCategoryDescriptions, (void(*)(const char*))md->callbacks->free);
+
     jm_named_vector_free_data(&md->unitDefinitions);
-    jm_named_vector_free_data(&md->displayUnitDefinitions);
+
+    fmi2_xml_free_unit_definitions(fmi2_xml_get_unit_definitions(md));
+
+    jm_named_vector_free_data(&md->unitDefinitions);
 
     fmi2_xml_free_type_definitions_data(&md->typeDefinitions);
 

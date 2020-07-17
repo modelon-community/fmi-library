@@ -19,17 +19,88 @@
         <DisplayUnit name="degF" factor="1.7999999999999998" offset="-459.67"/>
         <DisplayUnit name="degC" offset="-273.15"/>
     </Unit>
+    <Unit name="C">
+        <BaseUnit K="1" offset="-273.15"/>
+        <DisplayUnit name="degF" factor="1.7999999999999998" offset="-459.67"/>
+        <DisplayUnit name="degK" offset="273.15"/>
+    </Unit>
 </UnitDefinitions>
 
 <TypeDefinitions>
-    <SimpleType name="Temperature">
+    <SimpleType name="type1">
+        <Real unit="K" displayUnit="degC"/>
+    </SimpleType>
+    <SimpleType name="type2">
+        <Real unit="K" displayUnit="degF"/>
+    </SimpleType>
+    <SimpleType name="type3">
         <Real unit="K"/>
+    </SimpleType>
+    <SimpleType name="type4">
+        <Real unit="K" displayUnit="degZ"/> <!-- displayUnit doesn't exist, and should according to FMI 2.0.1 be ignored -->
+    </SimpleType>
+    <SimpleType name="type5">
+        <Real/>
+    </SimpleType>
+
+    <!-- used as base type for overriding by variable -->
+    <SimpleType name="type6">
+        <Real unit="C" displayUnit="degK"/>
     </SimpleType>
 </TypeDefinitions>
 
 <ModelVariables>
-    <ScalarVariable name="maxRealVar" causality="parameter" variability="fixed" valueReference="1" initial="exact">
+    <ScalarVariable name="var1" causality="parameter" variability="fixed" valueReference="1" initial="exact">
         <Real unit="K" displayUnit="degC" start="0.0"/>
+    </ScalarVariable>
+    <ScalarVariable name="var2" causality="parameter" variability="fixed" valueReference="2" initial="exact">
+        <Real unit="K" displayUnit="degF" start="0.0"/>
+    </ScalarVariable>
+    <ScalarVariable name="var3" causality="parameter" variability="fixed" valueReference="3" initial="exact">
+        <Real unit="K" start="0.0"/>
+    </ScalarVariable>
+    <ScalarVariable name="var4" causality="parameter" variability="fixed" valueReference="4" initial="exact">
+        <Real unit="K" displayUnit="degZ" start="0.0"/> <!-- displayUnit doesn't exist, and should according to FMI 2.0.1 be ignored -->
+    </ScalarVariable>
+    <ScalarVariable name="var5" causality="parameter" variability="fixed" valueReference="5" initial="exact">
+        <Real start="0.0"/>
+    </ScalarVariable>
+    
+    <!-- with inheritance -->
+    <ScalarVariable name="var6"  causality="parameter" variability="fixed" valueReference="6"  initial="exact">
+        <Real declaredType="type1" start="0.0"/>
+    </ScalarVariable>
+    <ScalarVariable name="var7"  causality="parameter" variability="fixed" valueReference="7"  initial="exact">
+        <Real declaredType="type2" start="0.0"/>
+    </ScalarVariable>
+    <ScalarVariable name="var8"  causality="parameter" variability="fixed" valueReference="8"  initial="exact">
+        <Real declaredType="type3" start="0.0"/>
+    </ScalarVariable>
+    <ScalarVariable name="var9"  causality="parameter" variability="fixed" valueReference="9"  initial="exact">
+        <Real declaredType="type4" start="0.0"/>
+    </ScalarVariable>
+    <ScalarVariable name="var10" causality="parameter" variability="fixed" valueReference="10" initial="exact">
+        <Real declaredType="type5" start="0.0"/>
+    </ScalarVariable>
+    
+    <!-- override -->
+    <ScalarVariable name="var11" causality="parameter" variability="fixed" valueReference="11" initial="exact">
+        <Real declaredType="type6" unit="K" displayUnit="degC" start="0.0"/>
+    </ScalarVariable>
+    <ScalarVariable name="var12" causality="parameter" variability="fixed" valueReference="12" initial="exact">
+        <Real declaredType="type6" unit="K" displayUnit="degF" start="0.0"/>
+    </ScalarVariable>
+    <ScalarVariable name="var13" causality="parameter" variability="fixed" valueReference="13" initial="exact">
+        <!-- overriding unit should invalidate inherited display unit (since they don't match) -->
+        <Real declaredType="type6" unit="K" start="0.0"/>
+    </ScalarVariable>
+    <ScalarVariable name="var14" causality="parameter" variability="fixed" valueReference="14" initial="exact">
+        <!-- displayUnit doesn't exist, and should according to FMI 2.0.1 be ignored -->
+        <!-- overriding unit should invalidate inherited display unit (since they don't match) -->
+        <Real declaredType="type6" unit="K" displayUnit="degZ" start="0.0"/>
+    </ScalarVariable>
+    <ScalarVariable name="var15" causality="parameter" variability="fixed" valueReference="15" initial="exact">
+        <Real declaredType="type6" start="0.0"/>
     </ScalarVariable>
 </ModelVariables>
 

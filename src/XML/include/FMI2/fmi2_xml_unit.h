@@ -79,6 +79,11 @@ double fmi2_xml_get_display_unit_offset(fmi2_xml_display_unit_t*);
 
 double fmi2_xml_convert_to_display_unit(double, fmi2_xml_display_unit_t*, int isRelativeQuantity);
 double fmi2_xml_convert_from_display_unit(double, fmi2_xml_display_unit_t*, int isRelativeQuantity);
+
+void fmi2_xml_free_unit_definitions(fmi2_xml_unit_definitions_t* ud);
+int fmi2_xml_display_unit_is_placeholder(fmi2_xml_display_unit_t* displayUnit);
+fmi2_xml_display_unit_t* fmi2_xml_get_unit_display_unit_by_name(fmi2_xml_unit_t* unit, const char* name);
+
 /**
 @}
 */

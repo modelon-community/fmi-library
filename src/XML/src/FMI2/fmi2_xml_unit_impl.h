@@ -30,23 +30,23 @@ struct fmi2_xml_display_unit_t {
     double factor;
     double offset;
     fmi2_xml_unit_t* baseUnit;
-    char displayUnit[1];
+    char name[1]; /* Note: Memory overflows struct boundaries if name exists */
 };
 
 struct fmi2_xml_unit_t {
-        jm_vector(jm_voidp) displayUnits;
+        jm_vector(jm_named_ptr) displayUnits;
 		int SI_base_unit_exp[fmi2_SI_base_units_Num];
 		double factor;
 		double offset;
         fmi2_xml_display_unit_t defaultDisplay;
-        char baseUnit[1];
+        char name[1]; /* Note: Memory overflows struct boundaries if name exists */
 };
 
 struct fmi2_xml_unit_definitions_t {
     jm_vector(jm_named_ptr) definitions;
 };
 
-fmi2_xml_display_unit_t* fmi2_xml_get_parsed_unit(fmi2_xml_parser_context_t *context, jm_vector(char)* name, int sorted);
+fmi2_xml_unit_t* fmi2_xml_get_parsed_unit(fmi2_xml_parser_context_t *context, jm_vector(char)* name, int sorted);
 
 #ifdef __cplusplus
 }

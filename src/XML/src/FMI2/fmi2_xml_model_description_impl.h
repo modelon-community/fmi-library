@@ -83,7 +83,6 @@ struct fmi2_xml_model_description_t {
 	jm_vector(jm_string) vendorList;
 
     jm_vector(jm_named_ptr) unitDefinitions;
-    jm_vector(jm_named_ptr) displayUnitDefinitions;
 
     fmi2_xml_type_definitions_t typeDefinitions;
 

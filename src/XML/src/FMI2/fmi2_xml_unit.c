@@ -24,7 +24,7 @@ fmi2_xml_unit_t* fmi2_xml_get_unit(fmi2_xml_unit_definitions_t* ud, unsigned int
 }
 
 const char* fmi2_xml_get_unit_name(fmi2_xml_unit_t* u) {
-    return u->baseUnit;
+    return u->name;
 }
 
 /**
@@ -66,21 +66,20 @@ double fmi2_xml_convert_from_SI_base_unit(double SIv, fmi2_xml_unit_t* u) {
 }
 
 unsigned int fmi2_xml_get_unit_display_unit_number(fmi2_xml_unit_t* u) {
-    return (unsigned int)jm_vector_get_size(jm_voidp)(&u->displayUnits);
+    return (unsigned int)jm_vector_get_size(jm_named_ptr)(&u->displayUnits);
 }
 
 fmi2_xml_display_unit_t* fmi2_xml_get_unit_display_unit(fmi2_xml_unit_t* u, size_t index) {
     if(index >= fmi2_xml_get_unit_display_unit_number(u)) return 0;
-    return jm_vector_get_item(jm_voidp)(&u->displayUnits, index);
+    return jm_vector_get_itemp(jm_named_ptr)(&u->displayUnits, index)->ptr;
 }
-
 
 fmi2_xml_unit_t* fmi2_xml_get_base_unit(fmi2_xml_display_unit_t* du) {
     return du->baseUnit;
 }
 
 const char* fmi2_xml_get_display_unit_name(fmi2_xml_display_unit_t* du) {
-    return du->displayUnit;
+    return du->name;
 }
 
 double fmi2_xml_get_display_unit_factor(fmi2_xml_display_unit_t* du) {
@@ -116,19 +115,16 @@ int fmi2_xml_handle_UnitDefinitions(fmi2_xml_parser_context_t *context, const ch
 	}
     else {
         jm_vector_qsort(jm_named_ptr)(&(md->unitDefinitions),jm_compare_named);
-        jm_vector_qsort(jm_named_ptr)(&(md->displayUnitDefinitions),jm_compare_named);
         /* might give out a warning if(data[0] != 0) */
     }
     return 0;
 }
 
 /**
- * Returns the default display unit (which contains a reference to the unit)
- * if the unit has been parsed from UnitDefinitions.
+ * Returns the parsed unit with given name from UnitDefinitions, or NULL if not exists.
  */
-fmi2_xml_display_unit_t* fmi2_xml_get_parsed_unit(fmi2_xml_parser_context_t *context, jm_vector(char)* name,
+fmi2_xml_unit_t* fmi2_xml_get_parsed_unit(fmi2_xml_parser_context_t *context, jm_vector(char)* name,
         int sorted) {
-    fmi2_xml_unit_t* unit;
     jm_named_ptr named, *pnamed;
     fmi2_xml_model_description_t* md = context->modelDescription;
 
@@ -146,8 +142,7 @@ fmi2_xml_display_unit_t* fmi2_xml_get_parsed_unit(fmi2_xml_parser_context_t *con
         return NULL;
     }
 
-    unit = pnamed->ptr;
-    return &unit->defaultDisplay;
+    return pnamed->ptr;
 }
 
 /**
@@ -168,7 +163,7 @@ static fmi2_xml_display_unit_t* fmi2_xml_parse_unit(fmi2_xml_parser_context_t* c
     named.ptr = 0;
     pnamed = jm_vector_push_back(jm_named_ptr)(&(md->unitDefinitions), named);
     if (pnamed) {
-        *pnamed = named = jm_named_alloc_v(name, sizeof(fmi2_xml_unit_t), dummy.baseUnit - (char*)&dummy,
+        *pnamed = named = jm_named_alloc_v(name, sizeof(fmi2_xml_unit_t), dummy.name - (char*)&dummy,
                 context->callbacks);
     }
 
@@ -186,11 +181,11 @@ static fmi2_xml_display_unit_t* fmi2_xml_parse_unit(fmi2_xml_parser_context_t* c
     unit->defaultDisplay.baseUnit = unit;
     unit->defaultDisplay.offset = 0;
     unit->defaultDisplay.factor = 1.0;
-    unit->defaultDisplay.displayUnit[0] = 0;
-    jm_vector_init(jm_voidp)(&(unit->displayUnits), 0, context->callbacks);
+    unit->defaultDisplay.name[0] = '\0';
+    jm_vector_init(jm_named_ptr)(&unit->displayUnits, 0, context->callbacks);
 
     if (sorted) {
-        jm_vector_qsort_jm_named_ptr(&(md->unitDefinitions), jm_compare_named);
+        jm_vector_qsort_jm_named_ptr(&md->unitDefinitions, jm_compare_named);
     }
 
     return &unit->defaultDisplay;
@@ -231,7 +226,32 @@ int fmi2_xml_handle_BaseUnit(fmi2_xml_parser_context_t *context, const char* dat
     return 0;
 }
 
+/**
+ * Returns true if this display unit does not exist in the XML, and this object
+ * only serves as a placeholder in the implementation.
+ * NOTE: If the display unit's name is "" in the XML, this might cause issues.
+ * The spec (2.0.1) states that "" is a valid name for a Unit, but it says nothing
+ * for DisplayUnit.
+ */
+int fmi2_xml_display_unit_is_placeholder(fmi2_xml_display_unit_t* dispUnit) {
+    return dispUnit->name[0] == '\0';
+}
 
+/* Return display unit if found by name for given unit, else NULL. */
+fmi2_xml_display_unit_t* fmi2_xml_get_unit_display_unit_by_name(fmi2_xml_unit_t* unit, const char* name) {
+    jm_named_ptr* np;
+    size_t k;
+
+    /* Units are not expected to have many display units, why bsearch not used */
+    for (k = 0; k < jm_vector_get_size(jm_named_ptr)(&unit->displayUnits); k++) {
+        np = jm_vector_get_itemp(jm_named_ptr)(&unit->displayUnits, k);
+        if (!strcmp(name, np->name)) {
+            return np->ptr;
+        }
+    }
+
+    return NULL;
+}
 
 int fmi2_xml_handle_Unit(fmi2_xml_parser_context_t *context, const char* data) {
     if(!data) {
@@ -264,28 +284,33 @@ int fmi2_xml_handle_DisplayUnit(fmi2_xml_parser_context_t *context, const char* 
     if(!data) {
 			int ret;
             fmi2_xml_model_description_t* md = context->modelDescription;
-            jm_vector(char)* buf = fmi2_xml_reserve_parse_buffer(context,1,100);
+            jm_vector(char)* bufName = fmi2_xml_reserve_parse_buffer(context,1,100);
             /* this display unit belongs to the last created base unit */
             fmi2_xml_unit_t* unit = context->lastBaseUnit;
             fmi2_xml_display_unit_t *dispUnit = 0;
             fmi2_xml_display_unit_t dummyDU;
             jm_named_ptr named, *pnamed;
 
-            if(!buf) return -1;
+            if(!bufName) return -1;
             /* first read the required name attribute */
             /*  <xs:attribute name="name" type="xs:normalizedString" use="required"/> */
-            ret = fmi2_xml_set_attr_string(context, fmi2_xml_elmID_DisplayUnit, fmi_attr_id_name, 1, buf);
+            ret = fmi2_xml_set_attr_string(context, fmi2_xml_elmID_DisplayUnit, fmi_attr_id_name, 1, bufName);
             if(ret) return ret;
             /* alloc memory to the correct size and put display unit on the list for the base unit */
             named.ptr = 0;
-            pnamed = jm_vector_push_back(jm_named_ptr)(&(md->displayUnitDefinitions),named);
-            if(pnamed) *pnamed = jm_named_alloc(jm_vector_get_itemp_char(buf,0),sizeof(fmi2_xml_display_unit_t), dummyDU.displayUnit - (char*)&dummyDU,context->callbacks);
-            dispUnit = pnamed->ptr;
-            if( !pnamed || !dispUnit ||
-                !jm_vector_push_back(jm_voidp)(&unit->displayUnits, dispUnit) ) {
+            pnamed = jm_vector_push_back(jm_named_ptr)(&unit->displayUnits, named);
+            if (!pnamed) {
                 fmi2_xml_parse_fatal(context, "Could not allocate memory");
                 return -1;
             }
+            *pnamed = jm_named_alloc(jm_vector_get_itemp_char(bufName, 0), sizeof(fmi2_xml_display_unit_t),
+                    dummyDU.name - (char*)&dummyDU, context->callbacks);
+            if (!pnamed->ptr) {
+                fmi2_xml_parse_fatal(context, "Could not allocate memory");
+                return -1;
+            }
+
+            dispUnit = pnamed->ptr;
             dispUnit->baseUnit = unit;
             /* finally process the attributes */
 			ret =     
@@ -309,3 +334,12 @@ int fmi2_xml_handle_DisplayUnit(fmi2_xml_parser_context_t *context, const char* 
     return 0;
 }
 
+static void fmi2_xml_free_unit(fmi2_xml_unit_t* unit) {
+    jm_vector_foreach(jm_named_ptr)(&unit->displayUnits, free);
+    jm_vector_free_data(jm_named_ptr)(&unit->displayUnits);
+    free(unit);
+}
+
+void fmi2_xml_free_unit_definitions(fmi2_xml_unit_definitions_t* ud) {
+    jm_vector_foreach(jm_named_ptr)(&ud->definitions, fmi2_xml_free_unit);
+}

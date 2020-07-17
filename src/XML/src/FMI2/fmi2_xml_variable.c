@@ -189,7 +189,9 @@ fmi2_xml_unit_t* fmi2_xml_get_real_variable_unit(fmi2_xml_real_variable_t* v) {
 fmi2_xml_display_unit_t* fmi2_xml_get_real_variable_display_unit(fmi2_xml_real_variable_t* v) {
     fmi2_xml_variable_t* vv = (fmi2_xml_variable_t*)v;
     fmi2_xml_real_type_props_t* props = (fmi2_xml_real_type_props_t*)(fmi2_xml_find_type_struct(vv->typeBase, fmi2_xml_type_struct_enu_props));
-    if(!props || !props->displayUnit || !props->displayUnit->displayUnit[0]) return 0;
+    if (!props || !props->displayUnit || fmi2_xml_display_unit_is_placeholder(props->displayUnit)) { 
+        return 0;
+    }
     return props->displayUnit;
 }
 

@@ -147,8 +147,6 @@ void fmi2_xml_clear_model_description( fmi2_xml_model_description_t* md) {
 
     fmi2_xml_free_unit_definitions(fmi2_xml_get_unit_definitions(md));
 
-    jm_named_vector_free_data(&md->unitDefinitions);
-
     fmi2_xml_free_type_definitions_data(&md->typeDefinitions);
 
     jm_named_vector_free_data(&md->variablesByName);

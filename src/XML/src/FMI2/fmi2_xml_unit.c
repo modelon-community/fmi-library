@@ -334,12 +334,13 @@ int fmi2_xml_handle_DisplayUnit(fmi2_xml_parser_context_t *context, const char* 
     return 0;
 }
 
-static void fmi2_xml_free_unit(fmi2_xml_unit_t* unit) {
-    jm_vector_foreach(jm_named_ptr)(&unit->displayUnits, free);
-    jm_vector_free_data(jm_named_ptr)(&unit->displayUnits);
-    free(unit);
+/* Frees the unit's internal data. The unit itself is not freed. */
+static void fmi2_xml_free_unit_data_via_named_ptr(jm_named_ptr np) {
+    fmi2_xml_unit_t* unit = np.ptr;
+    jm_named_vector_free_data(&unit->displayUnits);
 }
 
 void fmi2_xml_free_unit_definitions(fmi2_xml_unit_definitions_t* ud) {
-    jm_vector_foreach(jm_named_ptr)(&ud->definitions, fmi2_xml_free_unit);
+    jm_vector_foreach(jm_named_ptr)(&ud->definitions, fmi2_xml_free_unit_data_via_named_ptr);
+    jm_named_vector_free_data(&ud->definitions);
 }

@@ -45,6 +45,7 @@ set(XML_CS_PATH ${FMU_DUMMY_FOLDER}/modelDescription_cs.xml)
 set(XML_CS_TC_PATH ${FMU_DUMMY_FOLDER}/modelDescription_cs_tc.xml)
 set(XML_MF_PATH ${FMU_DUMMY_FOLDER}/modelDescription_malformed.xml)
 set(TYPE_DEFINITIONS_MODEL_DESC_DIR ${RTTESTDIR}/FMI1/parser_test_xmls/type_definitions)
+set(VARIABLE_BAD_TYPE_VARIABILITY_MODEL_DESC_DIR ${RTTESTDIR}/FMI1/parser_test_xmls/variable_bad_type_variability)
 
 set(SHARED_LIBRARY_ME_PATH ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${CMAKE_SHARED_LIBRARY_PREFIX}fmu1_dll_me${CMAKE_SHARED_LIBRARY_SUFFIX})
 set(SHARED_LIBRARY_CS_PATH ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${CMAKE_SHARED_LIBRARY_PREFIX}fmu1_dll_cs${CMAKE_SHARED_LIBRARY_SUFFIX})
@@ -64,6 +65,9 @@ compress_fmu("${TEST_OUTPUT_FOLDER}" "${FMU_DUMMY_MF_MODEL_IDENTIFIER}" "mf" "fm
 compress_fmu("${TEST_OUTPUT_FOLDER}" "${FMU_DUMMY_ME_MODEL_IDENTIFIER}" "me" "fmu1_dll_me" "${XML_ME_PATH}" "${SHARED_LIBRARY_ME_PATH}")
 compress_fmu("${TEST_OUTPUT_FOLDER}" "${FMU_DUMMY_CS_MODEL_IDENTIFIER}" "cs" "fmu1_dll_cs" "${XML_CS_PATH}" "${SHARED_LIBRARY_CS_PATH}")
 compress_fmu("${TEST_OUTPUT_FOLDER}" "${FMU_DUMMY_CS_MODEL_IDENTIFIER}" "cs_tc" "fmu1_dll_cs" "${XML_CS_TC_PATH}" "${SHARED_LIBRARY_CS_PATH}")
+
+add_executable(fmi1_variable_bad_type_variability_test ${RTTESTDIR}/FMI1/fmi1_variable_bad_type_variability_test.c)
+target_link_libraries(fmi1_variable_bad_type_variability_test ${FMILIBFORTEST})
 
 add_executable (fmi1_import_default_experiment_test ${RTTESTDIR}/FMI1/fmi1_import_default_experiment_test.c)
 target_link_libraries (fmi1_import_default_experiment_test  ${FMILIBFORTEST}  )
@@ -89,6 +93,7 @@ to_native_c_path("${TEST_OUTPUT_FOLDER}/${FMU_DUMMY_CS_MODEL_IDENTIFIER}_cs_tc.f
 # set(FMU_TEMPFOLDER ${TEST_OUTPUT_FOLDER}/tempfolder)
 to_native_c_path(${TEST_OUTPUT_FOLDER}/tempfolder FMU_TEMPFOLDER)
 
+add_test(ctest_fmi1_variable_bad_type_variability_test fmi1_variable_bad_type_variability_test ${VARIABLE_BAD_TYPE_VARIABILITY_MODEL_DESC_DIR})
 add_test(ctest_fmi1_xml_parsing_test fmi1_import_default_experiment_test ${RTTESTDIR}/FMI1/parser_test_xmls/default_experiment/)
 add_test(ctest_fmi1_xml_parsing_test fmi1_xml_parsing_test ${RTTESTDIR}/FMI1/parser_test_xmls/)
 add_test(ctest_fmi1_type_definitions_test fmi1_type_definitions_test ${TYPE_DEFINITIONS_MODEL_DESC_DIR})
@@ -142,6 +147,7 @@ if(FMILIB_BUILD_BEFORE_TESTS)
 		ctest_fmi1_logger_test_run
 		ctest_fmi1_xml_parsing_test
         ctest_fmi1_type_definitions_test
+        ctest_fmi1_variable_bad_type_variability_test
 		PROPERTIES DEPENDS ctest_build_all)
 endif()
 

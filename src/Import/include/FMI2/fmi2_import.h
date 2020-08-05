@@ -68,7 +68,7 @@ extern "C" {
 * Error handling:
 *
 *  Many functions in the library return pointers to struct. An error is indicated by returning NULL/0-pointer.
-*  If error is returned than fmi2_import_get_last_error() functions can be used to retrieve the error message.
+*  If error is returned then fmi2_import_get_last_error() functions can be used to retrieve the error message.
 *  If logging callbacks were specified then the same information is reported via logger.
 *  Memory for the error string is allocated and deallocated in the module.
 *  Client code should not store the pointer to the string since it can become invalid.

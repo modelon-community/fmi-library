@@ -194,6 +194,40 @@ int fmi2_xml_handle_ModelStructure(fmi2_xml_parser_context_t *context, const cha
     return 0;
 }
 
+/**
+   Verifies that all ScalarVariables that have causality='output' are listed in
+   ModelStructure.Outputs.
+
+   NOTE: Verification that all ModelStructure.Outputs indices correspond to
+         output variables is handled during parsing of Unknown. (TODO)
+ */
+static void fmi2_xml_verify_outputs_idx_list_is_complete(fmi2_xml_parser_context_t* context) {
+    jm_vector(jm_voidp)* allVars = fmi2_xml_get_variables_original_order(context->modelDescription);
+    jm_vector(jm_voidp)* msOutputs = fmi2_xml_get_outputs(context->modelDescription->modelStructure);
+    jm_vector(size_t) msOutIdxs;
+    size_t i;
+
+    jm_vector_init(size_t)(&msOutIdxs, jm_vector_get_size(jm_voidp)(msOutputs), context->callbacks);
+
+    /* Build a new vector with only the Unknown indices (sorting is needed for
+       bsearch, and this would change original order otherwise) */
+    for (i = 0; i < jm_vector_get_size(jm_voidp)(msOutputs); i++) {
+        fmi2_xml_variable_t* var = (fmi2_xml_variable_t*)jm_vector_get_item(jm_voidp)(msOutputs, i);
+        jm_vector_push_back(size_t)(&msOutIdxs, var->originalIndex);
+    }
+    jm_vector_qsort(size_t)(&msOutIdxs, jm_compare_size_t);
+
+    for (i = 0; i < jm_vector_get_size(jm_voidp)(allVars); i++) {
+        fmi2_xml_variable_t* var = (fmi2_xml_variable_t*)jm_vector_get_item(jm_voidp)(allVars, i);
+        if (fmi2_xml_get_causality(var) == fmi2_causality_enu_output) {
+            size_t svIdx = var->originalIndex;
+            if (!jm_vector_bsearch(size_t)(&msOutIdxs, &svIdx, jm_compare_size_t)) {
+                fmi2_xml_parse_error(context, "Output variable with index '%u' not found in "
+                    "ModelStructure.Outputs", svIdx);
+            }
+        }
+    }
+}
 
 int fmi2_xml_handle_Outputs(fmi2_xml_parser_context_t *context, const char* data) {
     if (!data) {
@@ -201,6 +235,8 @@ int fmi2_xml_handle_Outputs(fmi2_xml_parser_context_t *context, const char* data
         /*  reset handles for the elements that are specific under Outputs */
 /*        fmi2_xml_set_element_handle(context, "Unknown", FMI2_XML_ELM_ID(OutputUnknown));*/
         fmi2_xml_set_element_handle(context, "Unknown", FMI2_XML_ELM_ID(Unknown));
+    } else {
+        fmi2_xml_verify_outputs_idx_list_is_complete(context);
     }
     return 0;
 }
@@ -447,8 +483,6 @@ int fmi2_xml_handle_Unknown(fmi2_xml_parser_context_t *context, const char* data
 
         return fmi2_xml_parse_unknown(context, fmi2_xml_elmID_Outputs, &ms->outputs, ms->outputDeps);
     }
-    else {
-    }
     return 0;
 }
 
@@ -481,8 +515,6 @@ int fmi2_xml_handle_DiscreteStateUnknown(fmi2_xml_parser_context_t *context, con
 
         return fmi2_xml_parse_unknown(context, fmi2_xml_elmID_DiscreteStates, &ms->discreteStates, ms->discreteStateDeps);
     }
-    else {
-    }
     return 0;
 }
 
@@ -492,8 +524,6 @@ int fmi2_xml_handle_InitialUnknown(fmi2_xml_parser_context_t *context, const cha
         fmi2_xml_model_structure_t* ms = md->modelStructure;
 
         return fmi2_xml_parse_unknown(context, fmi2_xml_elmID_InitialUnknowns, &ms->initialUnknowns, ms->initialUnknownDeps);
-    }
-    else {
     }
     return 0;
 }

@@ -171,7 +171,7 @@ Default definition below is jm_diff and is implemented as (int)(first-second)
 
 /**
   jm_vector_bsearch uses standard binary search (bsearch) to find elements in a sorted vector.
-  It returns the index of an item in the vector or vector's size if not found.
+  jm_vector_bsearch_index returns the index of an item in the vector or vector's size if not found.
     JM_COMPAR_OP is used for comparison.
 
   T* jm_vector_bsearch(T)(jm_vector(T)* v, T* key, jm_compare_ft f)

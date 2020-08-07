@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription fmiVersion="2.0" modelName="myModelName" guid="myGuid">
+
+<ModelExchange modelIdentifier="myModelIdentifier" />
+
+<ModelVariables>
+    <!-- idx: 1 -->
+    <ScalarVariable name="output_var1" valueReference="0" causality="output" initial="calculated">
+      <Real/>
+    </ScalarVariable>
+    <!-- idx: 2 -->
+    <ScalarVariable name="output_var2" valueReference="1" causality="output" initial="calculated">
+      <Real/>
+    </ScalarVariable>
+</ModelVariables>
+
+<ModelStructure>
+  <Outputs> <!-- invalid: index="2" is missing -->
+    <Unknown index="1"/>
+  </Outputs>
+</ModelStructure>
+</fmiModelDescription>

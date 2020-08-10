@@ -222,7 +222,11 @@ FMILIB_EXPORT int fmi2_import_get_enum_variable_max(fmi2_import_enum_variable_t*
 /** \brief Get the variable alias kind*/
 FMILIB_EXPORT fmi2_variable_alias_kind_enu_t fmi2_import_get_variable_alias_kind(fmi2_import_variable_t*);
 
-/** \brief Get the original index in xml of the variable */
+/** \brief Get the original index in xml of the variable. Note that the
+    returned index is 0-based, and that the standard specifies it as 1-based.
+    The returned index will dereference the 'original-order' list returned by
+    'fmi2_import_get_variable_list' correctly.
+*/
 FMILIB_EXPORT size_t fmi2_import_get_variable_original_order(fmi2_import_variable_t* v);
 
 /** @} */

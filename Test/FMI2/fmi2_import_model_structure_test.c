@@ -243,8 +243,15 @@ int main(int argc, char **argv)
     /* Tests that an error is raised when a ModelStructure.Outputs list
        doesn't contain a reference to all variables with causality="output".
      */
-    log_ctx = create_log_once_ctx("Output variable with index '1' not found in ModelStructure.Outputs");
+    log_ctx = create_log_once_ctx("Output variable not found in ModelStructure.Outputs (index: 1, 0-based)");
     ret |= test_parse_xml(0, argv[1], "/model_structure/invalid/outputs_missing", log_ctx, NULL);
+    free_log_once_ctx(&log_ctx);
+
+    /* Tests that an error is raised when a ModelStructure.Outputs list
+       references a variable with causality!="output".
+     */
+    log_ctx = create_log_once_ctx("ModelStructure.Outputs listed a variable that doesn't have causality='output' (index: 0, 0-based)");
+    ret |= test_parse_xml(0, argv[1], "/model_structure/invalid/output_reference", log_ctx, NULL);
     free_log_once_ctx(&log_ctx);
 
     return ret;

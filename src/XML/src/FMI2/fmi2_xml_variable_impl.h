@@ -32,7 +32,8 @@ struct fmi2_xml_variable_t {
 
     const char* description;				 /** \brief Associate description */
 
-	size_t originalIndex;					/** \brief Index in the model description */
+	size_t originalIndex;					/** \brief Index in the model description.
+                                                 NOTE: 0-based, but standard is 1-based. */
 
     /* NB: before parsing of <ModelVariables> has finished,
            derivativeOf and previous are stored as integer indices cast to pointers,

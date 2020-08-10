@@ -199,7 +199,7 @@ int fmi2_xml_handle_ModelStructure(fmi2_xml_parser_context_t *context, const cha
    ModelStructure.Outputs.
 
    NOTE: Verification that all ModelStructure.Outputs indices correspond to
-         output variables is handled during parsing of Unknown. (TODO)
+         output variables is handled during parsing of Unknown.
  */
 static void fmi2_xml_verify_outputs_idx_list_is_complete(fmi2_xml_parser_context_t* context) {
     jm_vector(jm_voidp)* allVars = fmi2_xml_get_variables_original_order(context->modelDescription);
@@ -222,8 +222,8 @@ static void fmi2_xml_verify_outputs_idx_list_is_complete(fmi2_xml_parser_context
         if (fmi2_xml_get_causality(var) == fmi2_causality_enu_output) {
             size_t svIdx = var->originalIndex;
             if (!jm_vector_bsearch(size_t)(&msOutIdxs, &svIdx, jm_compare_size_t)) {
-                fmi2_xml_parse_error(context, "Output variable with index '%u' not found in "
-                    "ModelStructure.Outputs", svIdx);
+                fmi2_xml_parse_error(context, "Output variable not found in ModelStructure.Outputs (index: %u, 0-based)",
+                        svIdx);
             }
         }
     }
@@ -441,6 +441,14 @@ int fmi2_xml_parse_dependencies(fmi2_xml_parser_context_t *context,
     return 0;
 }
 
+static void fmi2_xml_verify_unknown_output(fmi2_xml_parser_context_t *context, fmi2_xml_variable_t* var)
+{
+    if (var->causality != fmi2_causality_enu_output) {
+        fmi2_xml_parse_error(context,
+                "ModelStructure.Outputs listed a variable that doesn't have causality='output' (index: %u, 0-based)",
+                 fmi2_xml_get_variable_original_order(var));
+    }
+}
 
 int fmi2_xml_parse_unknown(fmi2_xml_parser_context_t *context,
                            fmi2_xml_elm_enu_t parentElmID,
@@ -464,6 +472,10 @@ int fmi2_xml_parse_unknown(fmi2_xml_parser_context_t *context,
         return -1;
     }
     variable = (fmi2_xml_variable_t*)jm_vector_get_item(jm_voidp)(md->variablesOrigOrder, index);
+
+    if (parentElmID == fmi2_xml_elmID_Outputs) {
+        fmi2_xml_verify_unknown_output(context, variable);
+    }
 
     if (!jm_vector_push_back(jm_voidp)(destVarList, variable)) {
         fmi2_xml_parse_fatal(context, "Could not allocate memory");

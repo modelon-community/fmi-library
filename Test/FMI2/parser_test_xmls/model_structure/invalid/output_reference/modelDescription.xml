@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription fmiVersion="2.0" modelName="myModelName" guid="myGuid">
+
+<ModelExchange modelIdentifier="myModelIdentifier" />
+
+<ModelVariables>
+    <!-- idx: 1 -->
+    <ScalarVariable name="output_var1" valueReference="0">
+      <Real/>
+    </ScalarVariable>
+</ModelVariables>
+
+<ModelStructure>
+  <Outputs>
+    <Unknown index="1"/> <!-- invalid: variable is not an output -->
+  </Outputs>
+</ModelStructure>
+</fmiModelDescription>

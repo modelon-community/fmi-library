@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<fmiModelDescription
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    fmiVersion="2.0"
+    modelName="modelName"
+    guid="d7d98edb-d924-4104-87db-227bb677fc95">
+
+  <CoSimulation modelIdentifier="modelIdentifier" />
+
+  <TypeDefinitions>
+    <SimpleType name="MyEnum">
+      <Enumeration quantity="TypeQuantity">
+        <Item name="item1" value="1"/>
+      </Enumeration>
+    </SimpleType>
+  </TypeDefinitions>
+
+  <ModelVariables>
+    <!-- non-Reals can't have variability='continuous' (default value) -->
+    <ScalarVariable name="var0" valueReference="0">
+      <Boolean/>
+    </ScalarVariable>
+    <ScalarVariable name="var1" valueReference="1">
+      <Integer/>
+    </ScalarVariable>
+    <ScalarVariable name="var2" valueReference="2">
+      <Enumeration declaredType="MyEnum"/>
+    </ScalarVariable>
+    <ScalarVariable name="var3" valueReference="3">
+      <String/>
+    </ScalarVariable>
+
+    <ScalarVariable name="var4" valueReference="4"> <!-- OK, should not give error -->
+      <Real/>
+    </ScalarVariable>
+  </ModelVariables>
+
+  <ModelStructure />
+
+</fmiModelDescription>

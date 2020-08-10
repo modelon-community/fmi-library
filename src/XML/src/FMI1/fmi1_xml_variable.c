@@ -320,6 +320,12 @@ fmi1_xml_bool_variable_t* fmi1_xml_get_variable_as_boolean(fmi1_xml_variable_t* 
     return 0;
 }
 
+static void fmi1_xml_check_variability_nonreal(fmi1_xml_parser_context_t *context, fmi1_xml_variable_t* variable) {
+    if (variable->variability == fmi1_variability_enu_continuous) {
+        fmi1_xml_parse_error(context, "Only Real variables can have variability='continuous'");
+    }
+}
+
 void fmi1_xml_free_direct_dependencies(jm_named_ptr named) {
         fmi1_xml_variable_t* v = named.ptr;
         if(v->directDependency) {
@@ -615,6 +621,8 @@ int fmi1_xml_handle_Integer(fmi1_xml_parser_context_t *context, const char* data
         return 0;
     }
 
+    fmi1_xml_check_variability_nonreal(context, variable);
+
     declaredType = fmi1_get_declared_type(context, fmi1_xml_elmID_Integer,&td->defaultIntegerType.super) ;
 
     if(!declaredType) return -1;
@@ -684,6 +692,8 @@ int fmi1_xml_handle_Boolean(fmi1_xml_parser_context_t *context, const char* data
 
     assert(!variable->typeBase);
 
+    fmi1_xml_check_variability_nonreal(context, variable);
+
     variable->typeBase = fmi1_get_declared_type(context, fmi1_xml_elmID_Boolean, &td->defaultBooleanType) ;
 
     if(!variable->typeBase) return -1;
@@ -726,6 +736,8 @@ int fmi1_xml_handle_String(fmi1_xml_parser_context_t *context, const char* data)
     }
 
     assert(!variable->typeBase);
+
+    fmi1_xml_check_variability_nonreal(context, variable);
 
     variable->typeBase = fmi1_get_declared_type(context, fmi1_xml_elmID_String,&td->defaultStringType) ;
 
@@ -781,6 +793,8 @@ int fmi1_xml_handle_Enumeration(fmi1_xml_parser_context_t *context, const char* 
     }
 
     assert(!variable->typeBase);
+
+    fmi1_xml_check_variability_nonreal(context, variable);
 
     declaredType = fmi1_get_declared_type(context, fmi1_xml_elmID_Enumeration,&td->defaultEnumType.super);
 

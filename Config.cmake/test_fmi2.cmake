@@ -48,6 +48,8 @@ set(VARIABLE_NO_TYPE_MODEL_DESC_DIR
     ${RTTESTDIR}/FMI2/parser_test_xmls/variable_no_type)
 set(VARIABLE_BAD_VARIABILITY_CAUSALITY_MODEL_DESC_DIR
     ${RTTESTDIR}/FMI2/parser_test_xmls/variable_bad_variability_causality)
+set(VARIABLE_BAD_TYPE_VARIABILITY_MODEL_DESC_DIR
+    ${RTTESTDIR}/FMI2/parser_test_xmls/variable_bad_type_variability)
 set(TYPE_DEFINITIONS_MODEL_DESC_DIR
     ${RTTESTDIR}/FMI2/parser_test_xmls/type_definitions)
 
@@ -93,6 +95,9 @@ target_link_libraries(fmi2_variable_no_type_test ${FMILIBFORTEST})
 add_executable(fmi2_variable_bad_variability_causality_test
                ${RTTESTDIR}/FMI2/fmi2_variable_bad_variability_causality_test.c)
 target_link_libraries(fmi2_variable_bad_variability_causality_test ${FMILIBFORTEST})
+add_executable(fmi2_variable_bad_type_variability_test
+               ${RTTESTDIR}/FMI2/fmi2_variable_bad_type_variability_test.c)
+target_link_libraries(fmi2_variable_bad_type_variability_test ${FMILIBFORTEST})
 add_executable(fmi2_enum_test ${RTTESTDIR}/FMI2/fmi2_enum_test.c)
 target_link_libraries(fmi2_enum_test ${FMILIBFORTEST})
 
@@ -128,6 +133,9 @@ add_test(ctest_fmi2_variable_no_type_test
 add_test(ctest_fmi2_variable_bad_variability_causality_test
          fmi2_variable_bad_variability_causality_test
          ${VARIABLE_BAD_VARIABILITY_CAUSALITY_MODEL_DESC_DIR})
+add_test(ctest_fmi2_variable_bad_type_variability_test
+         fmi2_variable_bad_type_variability_test
+         ${VARIABLE_BAD_TYPE_VARIABILITY_MODEL_DESC_DIR})
 add_test(ctest_fmi2_type_definitions_test
          fmi2_type_definitions_test
          ${TYPE_DEFINITIONS_MODEL_DESC_DIR})
@@ -149,5 +157,6 @@ if(FMILIB_BUILD_BEFORE_TESTS)
         ctest_fmi2_type_definitions_test
         ctest_fmi2_enum_test
         ctest_fmi2_variable_bad_variability_causality_test
+        ctest_fmi2_variable_bad_type_variability_test
         PROPERTIES DEPENDS ctest_build_all)
 endif()

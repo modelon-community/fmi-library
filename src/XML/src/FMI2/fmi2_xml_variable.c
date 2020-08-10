@@ -314,6 +314,12 @@ fmi2_xml_bool_variable_t* fmi2_xml_get_variable_as_boolean(fmi2_xml_variable_t* 
     return 0;
 }
 
+static void fmi2_xml_check_variability_nonreal(fmi2_xml_parser_context_t *context, fmi2_xml_variable_t* variable) {
+    if (variable->variability == fmi2_variability_enu_continuous) {
+        fmi2_xml_parse_error(context, "Only Real variables can have variability='continuous'");
+    }
+}
+
 int fmi2_xml_handle_ScalarVariable(fmi2_xml_parser_context_t *context, const char* data) {
     if(!data) {
         fmi2_xml_model_description_t* md = context->modelDescription;
@@ -632,6 +638,8 @@ int fmi2_xml_handle_IntegerVariable(fmi2_xml_parser_context_t *context, const ch
         fmi2_xml_integer_type_props_t * type = 0;
         int hasStart;
 
+        fmi2_xml_check_variability_nonreal(context, variable);
+
         declaredType = fmi2_get_declared_type(context, fmi2_xml_elmID_Integer,&td->defaultIntegerType.super) ;
 
         if(!declaredType) return -1;
@@ -699,6 +707,8 @@ int fmi2_xml_handle_BooleanVariable(fmi2_xml_parser_context_t *context, const ch
 
         assert(!variable->typeBase);
 
+        fmi2_xml_check_variability_nonreal(context, variable);
+
         variable->typeBase = fmi2_get_declared_type(context, fmi2_xml_elmID_Boolean, &td->defaultBooleanType) ;
 
         if(!variable->typeBase) return -1;
@@ -737,6 +747,8 @@ int fmi2_xml_handle_StringVariable(fmi2_xml_parser_context_t *context, const cha
         int hasStart;
 
         assert(!variable->typeBase);
+
+        fmi2_xml_check_variability_nonreal(context, variable);
 
         variable->typeBase = fmi2_get_declared_type(context, fmi2_xml_elmID_String,&td->defaultStringType) ;
 
@@ -820,6 +832,8 @@ int fmi2_xml_handle_EnumerationVariable(fmi2_xml_parser_context_t *context, cons
         int hasStart;
 
         assert(!variable->typeBase);
+
+        fmi2_xml_check_variability_nonreal(context, variable);
 
         declaredType = fmi2_get_declared_type(context, fmi2_xml_elmID_Enumeration,&td->defaultEnumType.base.super);
 

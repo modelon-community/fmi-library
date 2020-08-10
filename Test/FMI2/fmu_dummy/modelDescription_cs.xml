@@ -32,13 +32,13 @@
   <ScalarVariable name="BOUNCE_COF" valueReference="3" initial="exact" description="Bouncing coefficient">
      <Real start="0.5" />
   </ScalarVariable>
-  <ScalarVariable name="LOGGER_TEST" valueReference="0" description="The logger will print the value of this variable when it is set.">
+  <ScalarVariable name="LOGGER_TEST" valueReference="0" variability="discrete" description="The logger will print the value of this variable when it is set.">
      <String/>
   </ScalarVariable>  
-    <ScalarVariable name="LOGGER_TEST_INTEGER" valueReference="0" description="This is only used to test logger replace function #i0#">
+    <ScalarVariable name="LOGGER_TEST_INTEGER" valueReference="0" variability="discrete" description="This is only used to test logger replace function #i0#">
      <Integer/>
   </ScalarVariable>  
-    <ScalarVariable name="LOGGER_TEST_BOOLEAN" valueReference="0" description="This is only used to test logger replace function #b0#">
+    <ScalarVariable name="LOGGER_TEST_BOOLEAN" valueReference="0" variability="discrete" description="This is only used to test logger replace function #b0#">
      <Boolean/>
   </ScalarVariable>
   <ScalarVariable name="LOGGER_TEST_DERIVATIVE" valueReference="10" description="This is to test that the derivative attribute may appear on any Real variables.">

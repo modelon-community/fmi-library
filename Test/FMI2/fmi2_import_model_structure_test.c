@@ -5,7 +5,7 @@
 #include "config_test.h"
 #include "fmil_test.h"
 
-#define INVALID_TESTS_SILENT (1)
+#define INVALID_TESTS_SILENT (0)
 
 #define CHECK_ALLOC(MEM_PTR) \
     if (!MEM_PTR) { \
@@ -17,7 +17,7 @@
    General interface for checking log messages. It follows the same pattern as
    "logger" and "componentEnvironment" in the FMI API.
  */
-typedef void (*check_log_fcn)(void* context, const char* msg);
+typedef void (*check_log_fcn)(void* context, const char* module, jm_log_level_enu_t log_level, const char* msg);
 typedef struct {
     check_log_fcn check_fcn;     /* function that performs check */
     void*         check_fcn_ctx; /* context for check_fcn */
@@ -30,7 +30,7 @@ static void test_logger(jm_callbacks* cb, jm_string module, jm_log_level_enu_t l
 {
     /* Perform check */
     check_log_ctx* log_ctx = (check_log_ctx*)cb->context;
-    log_ctx->check_fcn(log_ctx, message);
+    log_ctx->check_fcn(log_ctx, module, log_level, message);
 
     /* Print log to standard output */
     if (!log_ctx->silent) {
@@ -128,10 +128,6 @@ static int test_parse_xml(int expectFailure, char* xmlTestRootDir, char* xmlDirR
 
     xmlDir = concat(xmlTestRootDir, xmlDirRel);
 
-    if (chk_log_ctx) {
-        chk_log_ctx->success = 0;
-    }
-
     xml = parse_xml(xmlDir, chk_log_ctx);
     if (xml != NULL && expectFailure) {
         printf("Expected parsing to fail, but didn't. XML dir: '%s'", xmlDir);
@@ -167,7 +163,7 @@ typedef struct {
 } check_fcn_ctx_log_once;
 
 /* Checks that a message is logged once or more. */
-static void check_fcn_log_once(void* chk_log_ctx, const char* msg)
+static void check_fcn_log_once(void* chk_log_ctx, const char* module, jm_log_level_enu_t log_level, const char* msg)
 {
     check_log_ctx* log_ctx = (check_log_ctx*)chk_log_ctx;
     check_fcn_ctx_log_once* fcn_ctx = (check_fcn_ctx_log_once*)log_ctx->check_fcn_ctx;
@@ -177,7 +173,10 @@ static void check_fcn_log_once(void* chk_log_ctx, const char* msg)
     }
 }
 
-/* Returns a pointer to a check_log_ctx, or exits unsuccessfully on failure. */
+/**
+   Returns a pointer to a check_log_ctx, or exits program unsuccessfully on
+   failure. Must be freed.
+ */
 static check_log_ctx* create_log_once_ctx(const char* expected_msg) {
     check_log_ctx* log_ctx = malloc(sizeof(check_log_ctx));
     CHECK_ALLOC(log_ctx);
@@ -202,13 +201,39 @@ static void free_log_once_ctx(check_log_ctx** chk_log_ctx) {
     *chk_log_ctx = NULL;
 }
 
-static int test_modelstructure_valid(fmi2_import_t* xml)
+/* Checks that all log entries' log levels are less than warning. */
+static void check_fcn_fail_on_warn_or_worse(void* chk_log_ctx, const char* module, jm_log_level_enu_t log_level, const char* msg)
 {
-    ASSERT_MSG(xml != NULL, "Failed to parse XML");
+    check_log_ctx* log_ctx = (check_log_ctx*)chk_log_ctx;
 
-    ASSERT_MSG(fmi2_import_get_last_error(xml) != NULL, "Found unexpected error while parsing XML");
+    if (    log_level == jm_log_level_warning ||
+            log_level == jm_log_level_error   ||
+            log_level == jm_log_level_fatal) {
+        log_ctx->success = 0;
+    }
+}
 
-    return TEST_OK;
+/**
+   Returns a pointer to a check_log_ctx that checks for warning or worse log
+   messages. Program exist unsuccessfully on failure to return pointer. Pointer
+   must be freed with respective free-method.
+ */
+static check_log_ctx* create_fail_on_warn_or_worse_ctx() {
+    check_log_ctx* log_ctx = malloc(sizeof(check_log_ctx));
+    CHECK_ALLOC(log_ctx);
+
+    log_ctx->check_fcn     = check_fcn_fail_on_warn_or_worse;
+    log_ctx->check_fcn_ctx = NULL;
+    log_ctx->silent        = INVALID_TESTS_SILENT;
+    log_ctx->success       = 1;
+    log_ctx->err_msg       = "Found log entries with too high log level";
+
+    return log_ctx;
+}
+
+static void free_fail_on_warn_or_worse_ctx(check_log_ctx** chk_log_ctx) {
+    free(*chk_log_ctx);
+    *chk_log_ctx = NULL;
 }
 
 int main(int argc, char **argv)
@@ -225,14 +250,16 @@ int main(int argc, char **argv)
     /* ================ */
     /* -- Test valid -- */
     /* ================ */
-    ret |= test_parse_xml(0, argv[1], "/model_structure/valid", NULL, NULL);
+    log_ctx = create_fail_on_warn_or_worse_ctx();
+    ret |= test_parse_xml(0, argv[1], "/model_structure/valid", log_ctx, NULL);
+    free_fail_on_warn_or_worse_ctx(&log_ctx);
 
 
     /* ================== */
     /* -- Test invalid -- */
     /* ================== */
 
-    /* Tests that an error is raised when a ModelStructure.Derivatives list
+    /* Test that an error is raised when a ModelStructure.Derivatives list
        references a variable that doesn't have the attribute 'derivative'.
      */
     log_ctx = create_log_once_ctx("The state derivative 'state_var' does not specify the state variable "
@@ -240,18 +267,27 @@ int main(int argc, char **argv)
     ret |= test_parse_xml(1, argv[1], "/model_structure/invalid/derivative_reference", log_ctx, NULL);
     free_log_once_ctx(&log_ctx);
 
-    /* Tests that an error is raised when a ModelStructure.Outputs list
+    /* Test that an error is raised when a ModelStructure.Outputs list
        doesn't contain a reference to all variables with causality="output".
      */
     log_ctx = create_log_once_ctx("Output variable not found in ModelStructure.Outputs (index: 1, 0-based)");
     ret |= test_parse_xml(0, argv[1], "/model_structure/invalid/outputs_missing", log_ctx, NULL);
     free_log_once_ctx(&log_ctx);
 
-    /* Tests that an error is raised when a ModelStructure.Outputs list
+    /* Test that an error is raised when a ModelStructure.Outputs list
        references a variable with causality!="output".
      */
-    log_ctx = create_log_once_ctx("ModelStructure.Outputs listed a variable that doesn't have causality='output' (index: 0, 0-based)");
+    log_ctx = create_log_once_ctx("ModelStructure.Outputs listed a variable that doesn't have "
+                                  "causality='output' (index: 0, 0-based)");
     ret |= test_parse_xml(0, argv[1], "/model_structure/invalid/output_reference", log_ctx, NULL);
+    free_log_once_ctx(&log_ctx);
+
+    /* Test that an error is raised when a ModelStructure.Outputs list
+       has a dependency to an invalid variable.
+     */
+    log_ctx = create_log_once_ctx("Dependency for Outputs.Unknown incorrect. Expected continuous state variable, "
+                                  "input or output. Dependency's index: '1' (0-based)");
+    ret |= test_parse_xml(0, argv[1], "/model_structure/invalid/output_deps", log_ctx, NULL);
     free_log_once_ctx(&log_ctx);
 
     return ret;

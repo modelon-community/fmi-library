@@ -172,6 +172,7 @@ int fmi2_xml_check_model_structure(fmi2_xml_model_description_t* md) {
 
 int fmi2_xml_handle_ModelStructure(fmi2_xml_parser_context_t *context, const char* data) {
     fmi2_xml_model_description_t* md = context->modelDescription;
+    fmi2_xml_model_structure_t* ms = md->modelStructure;
     if(!data) {
 		jm_log_verbose(context->callbacks, module,"Parsing XML element ModelStructure");
 		/** allocate model structure */
@@ -182,7 +183,62 @@ int fmi2_xml_handle_ModelStructure(fmi2_xml_parser_context_t *context, const cha
 		}
     }
     else {
-		/** make sure model structure information is consistent */
+		/* Make sure model structure information is consistent */
+
+        /* Check dependencies. The check is delayed until here, because it's
+           necessary to know all continuous state variables from Derivatives
+           parsing first.
+        */
+        size_t i, j;
+        size_t* startIdx   = NULL;
+        size_t* dependency = NULL;
+        char* factorKind   = NULL; /* not used */
+        jm_vector(size_t) contStateIndices;
+        size_t nContStates = jm_vector_get_size(jm_voidp)(&ms->derivatives); /* each derivative corresponds to a cont. state */
+
+        /* Build array with 0-based index of all continuous state variables */
+        jm_vector_init(size_t)(&contStateIndices, nContStates, md->callbacks);
+        for (i = 0; i < nContStates; i++) {
+            fmi2_xml_variable_t* der = (fmi2_xml_variable_t*)jm_vector_get_item(jm_voidp)(&ms->derivatives, i);
+            if (der->derivativeOf) { /* It's possible that derivativeOf pointed to an 
+                                      * illegal variable, in which case it will be NULL. */
+                if (!jm_vector_push_back(size_t)(&contStateIndices, der->derivativeOf->originalIndex)) {
+                    ms->isValidFlag = 0;
+                    fmi2_xml_parse_fatal(context, "Could not allocate memory");
+                    return -1;
+                }
+            }
+        }
+        jm_vector_qsort(size_t)(&contStateIndices, jm_compare_size_t);
+
+        /* Check all dependencies */
+        fmi2_xml_get_outputs_dependencies(ms, &startIdx, &dependency, &factorKind);
+        if (startIdx) {
+            for (i = 0; i < jm_vector_get_size(jm_voidp)(&ms->outputs); i++) {
+                for (j = startIdx[i]; j < startIdx[i + 1]; j++) {
+                    fmi2_xml_variable_t* dep = NULL;
+                    size_t idx = dependency[j];
+                    int valid = 0;
+
+                    if (idx == 0) {
+                        /* depends on all, nothing to check */
+                        continue;
+                    }
+                    idx--; /* convert to 0-based */
+
+                    dep = jm_vector_get_item(jm_voidp)(md->variablesOrigOrder, idx);
+
+                    valid |= jm_vector_bsearch(size_t)(&contStateIndices, &idx, jm_compare_size_t) != NULL;
+                    valid |= (fmi2_causality_enu_t)dep->causality == fmi2_causality_enu_independent;
+                    valid |= (fmi2_causality_enu_t)dep->causality == fmi2_causality_enu_input;
+                    if (!valid) {
+                        fmi2_xml_parse_error(context, "Dependency for Outputs.Unknown incorrect. "
+                                "Expected continuous state variable, input or output. Dependency's index: '%u' (0-based)",
+                                idx);
+                    }
+                }
+            }
+        }
 
 		if(!fmi2_xml_check_model_structure(md)) {
 			fmi2_xml_parse_fatal(context, "Model structure is not valid due to detected errors. Cannot continue.");
@@ -507,10 +563,11 @@ int fmi2_xml_handle_DerivativeUnknown(fmi2_xml_parser_context_t *context, const 
         if (status) {
             return status;
         } else {
-            fmi2_xml_real_variable_t *der = (fmi2_xml_real_variable_t*) jm_vector_get_last(jm_voidp)(&ms->derivatives);
-            if (!fmi2_xml_get_real_variable_derivative_of(der)) {
+            fmi2_xml_real_variable_t* der = (fmi2_xml_real_variable_t*) jm_vector_get_last(jm_voidp)(&ms->derivatives);
+            fmi2_xml_real_variable_t* contState = fmi2_xml_get_real_variable_derivative_of(der);
+            if (!contState) {
                 ms->isValidFlag = 0;
-                fmi2_xml_parse_error(context,
+                fmi2_xml_parse_error(context, 
                         "The state derivative '%s' does not specify the state variable that it is a derivative of.",
                         fmi2_xml_get_variable_name((fmi2_xml_variable_t *) der));
                 return -1;

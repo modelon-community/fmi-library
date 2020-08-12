@@ -81,8 +81,6 @@
     <Unknown index="2"/>
     <Unknown index="4"/>
   </Derivatives>
-  <DiscreteStates>
-  </DiscreteStates>
   <InitialUnknowns>
   </InitialUnknowns>
 </ModelStructure>

@@ -125,7 +125,6 @@ typedef enum fmi2_xml_attr_enu_t {
     EXPAND_XML_ELMNAME(ModelStructure) \
     EXPAND_XML_ELMNAME(Outputs) \
     EXPAND_XML_ELMNAME(Derivatives) \
-    EXPAND_XML_ELMNAME(DiscreteStates) \
     EXPAND_XML_ELMNAME(InitialUnknowns) \
     EXPAND_XML_ELMNAME(Unknown)
 
@@ -141,7 +140,6 @@ typedef enum fmi2_xml_attr_enu_t {
     EXPAND_XML_ELMNAME(SourceFilesCS) \
     EXPAND_XML_ELMNAME(FileCS) \
     EXPAND_XML_ELMNAME(DerivativeUnknown) \
-    EXPAND_XML_ELMNAME(DiscreteStateUnknown) \
     EXPAND_XML_ELMNAME(InitialUnknown)
 
 

@@ -31,17 +31,15 @@ fmi2_xml_model_structure_t* fmi2_xml_allocate_model_structure(jm_callbacks* cb) 
 
 	jm_vector_init(jm_voidp)(&ms->outputs,0,cb);
 	jm_vector_init(jm_voidp)(&ms->derivatives,0,cb);
-	jm_vector_init(jm_voidp)(&ms->discreteStates,0,cb);
 	jm_vector_init(jm_voidp)(&ms->initialUnknowns,0,cb);
 
 	ms->isValidFlag = 1;
 
     ms->outputDeps = fmi2_xml_allocate_dependencies(cb);
     ms->derivativeDeps = fmi2_xml_allocate_dependencies(cb);
-    ms->discreteStateDeps = fmi2_xml_allocate_dependencies(cb);
     ms->initialUnknownDeps = fmi2_xml_allocate_dependencies(cb);
 
-	if(!ms->outputDeps || !ms->derivativeDeps || !ms->discreteStateDeps || !ms->initialUnknownDeps) {
+	if(!ms->outputDeps || !ms->derivativeDeps || !ms->initialUnknownDeps) {
 		fmi2_xml_free_model_structure(ms);
 		return 0;
 	}
@@ -56,12 +54,10 @@ void fmi2_xml_free_model_structure(fmi2_xml_model_structure_t* ms) {
 
 	jm_vector_free_data(jm_voidp)(&ms->outputs);
 	jm_vector_free_data(jm_voidp)(&ms->derivatives);
-	jm_vector_free_data(jm_voidp)(&ms->discreteStates);
 	jm_vector_free_data(jm_voidp)(&ms->initialUnknowns);
 
     fmi2_xml_free_dependencies(ms->outputDeps);
     fmi2_xml_free_dependencies(ms->derivativeDeps);
-    fmi2_xml_free_dependencies(ms->discreteStateDeps);
     fmi2_xml_free_dependencies(ms->initialUnknownDeps);
 	cb->free(ms);
 }
@@ -72,10 +68,6 @@ jm_vector(jm_voidp)* fmi2_xml_get_outputs(fmi2_xml_model_structure_t* ms) {
 
 jm_vector(jm_voidp)* fmi2_xml_get_derivatives(fmi2_xml_model_structure_t* ms){
 	return &ms->derivatives;
-}
-
-jm_vector(jm_voidp)* fmi2_xml_get_discrete_states(fmi2_xml_model_structure_t* ms){
-	return &ms->discreteStates;
 }
 
 jm_vector(jm_voidp)* fmi2_xml_get_initial_unknowns(fmi2_xml_model_structure_t* ms){
@@ -108,11 +100,6 @@ void fmi2_xml_get_outputs_dependencies(fmi2_xml_model_structure_t* ms,
 void fmi2_xml_get_derivatives_dependencies(fmi2_xml_model_structure_t* ms,
                                            size_t** startIndex, size_t** dependency, char** factorKind) {
     fmi2_xml_get_dependencies(ms->derivativeDeps, startIndex, dependency, factorKind);
-}
-
-void fmi2_xml_get_discrete_states_dependencies(fmi2_xml_model_structure_t* ms,
-                                           size_t** startIndex, size_t** dependency, char** factorKind) {
-    fmi2_xml_get_dependencies(ms->discreteStateDeps, startIndex, dependency, factorKind);
 }
 
 void fmi2_xml_get_initial_unknowns_dependencies(fmi2_xml_model_structure_t* ms,
@@ -342,14 +329,6 @@ int fmi2_xml_handle_Derivatives(fmi2_xml_parser_context_t *context, const char* 
         fmi2_xml_model_structure_t* ms = md->modelStructure;
         /* count the number of continuous states as the number of <Unknown> elements under <Derivatives> */
         md->numberOfContinuousStates = jm_vector_get_size(jm_voidp)(&ms->derivatives);
-    }
-    return 0;
-}
-int fmi2_xml_handle_DiscreteStates(fmi2_xml_parser_context_t *context, const char* data) {
-    if (!data) {
-        jm_log_verbose(context->callbacks, module, "Parsing XML element DiscreteStates");
-        /*  reset handles for the elements that are specific under DiscreteStates */
-        fmi2_xml_set_element_handle(context, "Unknown", FMI2_XML_ELM_ID(DiscreteStateUnknown));
     }
     return 0;
 }
@@ -617,16 +596,6 @@ int fmi2_xml_handle_DerivativeUnknown(fmi2_xml_parser_context_t *context, const 
                 return -1;
             }
         }
-    }
-    return 0;
-}
-
-int fmi2_xml_handle_DiscreteStateUnknown(fmi2_xml_parser_context_t *context, const char* data) {
-    if(!data) {
-        fmi2_xml_model_description_t* md = context->modelDescription;
-        fmi2_xml_model_structure_t* ms = md->modelStructure;
-
-        return fmi2_xml_parse_unknown(context, fmi2_xml_elmID_DiscreteStates, &ms->discreteStates, ms->discreteStateDeps);
     }
     return 0;
 }

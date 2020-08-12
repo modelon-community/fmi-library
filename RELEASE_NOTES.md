@@ -1,8 +1,18 @@
 # FMI Library Release Notes
 
-The release notes are typically a highlighting subset of all changes made. For full history, see resolved issues and commits.
+The release notes typically highlight a subset of all changes made. For full history, see resolved issues and commits.
 
 Note that version 2.1 is the first version with release notes. Please see the commit history for older versions.
+
+## 2.3
+
+- API:
+    - `fmi2_import_get_discrete_states_list`
+        - removed since `DiscreteState` element doesn't exist in FMI 2.0
+    - `fmi2_import_get_discrete_states_dependencies`
+        - removed since `DiscreteState` element doesn't exist in FMI 2.0
+- XML verification
+    - Added more checks for ModelStructure
 
 ## 2.2
 

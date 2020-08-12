@@ -65,8 +65,6 @@ const char *fmi2_xmlAttrNames[fmi2_xml_attr_number] = {
 #define fmi2_xml_scheme_Unknown {fmi2_xml_elmID_Outputs, 0, 1}
 #define fmi2_xml_scheme_Derivatives {fmi2_xml_elmID_ModelStructure, 1, 0}
 #define fmi2_xml_scheme_DerivativeUnknown {fmi2_xml_elmID_Derivatives, 0, 1}
-#define fmi2_xml_scheme_DiscreteStates {fmi2_xml_elmID_ModelStructure, 2, 0}
-#define fmi2_xml_scheme_DiscreteStateUnknown {fmi2_xml_elmID_DiscreteStates, 0, 1}
 #define fmi2_xml_scheme_InitialUnknowns {fmi2_xml_elmID_ModelStructure, 3, 0}
 #define fmi2_xml_scheme_InitialUnknown {fmi2_xml_elmID_InitialUnknowns, 0, 1}
 

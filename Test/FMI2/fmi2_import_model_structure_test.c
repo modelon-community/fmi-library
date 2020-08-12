@@ -128,6 +128,12 @@ static int test_parse_xml(int expectFailure, char* xmlTestRootDir, char* xmlDirR
 
     xmlDir = concat(xmlTestRootDir, xmlDirRel);
 
+    if (!chk_log_ctx->silent) {
+        printf("\n");
+        printf("Running test in relative dir: %s\n", xmlDirRel);
+        printf("-----------------------------\n");
+    }
+
     xml = parse_xml(xmlDir, chk_log_ctx);
     if (xml != NULL && expectFailure) {
         printf("Expected parsing to fail, but didn't. XML dir: '%s'", xmlDir);
@@ -288,6 +294,31 @@ int main(int argc, char **argv)
     log_ctx = create_log_once_ctx("Dependency for Outputs.Unknown incorrect. Expected continuous state variable, "
                                   "input or output. Dependency's index: '1' (0-based)");
     ret |= test_parse_xml(0, argv[1], "/model_structure/invalid/output_deps", log_ctx, NULL);
+    free_log_once_ctx(&log_ctx);
+
+    /* Test that an error is raised when a ModelStructure.Derivatives list
+       has a dependency to an invalid variable.
+     */
+    log_ctx = create_log_once_ctx("Dependency for Derivatives.Unknown incorrect. Expected continuous state variable, "
+                                  "input or output. Dependency's index: '3' (0-based)");
+    ret |= test_parse_xml(0, argv[1], "/model_structure/invalid/derivative_deps", log_ctx, NULL);
+    free_log_once_ctx(&log_ctx);
+
+
+    /* Test that a fatal error is raised when a dependency contains an index to a non-existing variable. */
+
+    /* index = 0 */
+    log_ctx = create_log_once_ctx("XML element 'Unknown': item 0=0 is less than one in the list for attribute 'dependencies'");
+    ret |= test_parse_xml(1, argv[1], "/model_structure/invalid/dependency_not_exist_lt1", log_ctx, NULL);
+    free_log_once_ctx(&log_ctx);
+    /* index = -1*/
+    log_ctx = create_log_once_ctx("XML element 'Unknown': item 0=-1 is less than one in the list for attribute 'dependencies'");
+    ret |= test_parse_xml(1, argv[1], "/model_structure/invalid/dependency_not_exist_lt2", log_ctx, NULL);
+    free_log_once_ctx(&log_ctx);
+    /* index > n_vars */
+    log_ctx = create_log_once_ctx("XML element 'Unknown': item 0=2 is greater than the number of "
+                                  "ScalarVariables (1) in the list for attribute 'dependencies'");
+    ret |= test_parse_xml(1, argv[1], "/model_structure/invalid/dependency_not_exist_gt", log_ctx, NULL);
     free_log_once_ctx(&log_ctx);
 
     return ret;

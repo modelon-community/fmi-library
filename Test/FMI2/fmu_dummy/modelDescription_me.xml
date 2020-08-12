@@ -79,7 +79,7 @@
   </Outputs>
   <Derivatives>
     <Unknown index="2"/>
-    <Unknown index="4" dependencies="6" dependenciesKind="constant"/>
+    <Unknown index="4"/>
   </Derivatives>
   <DiscreteStates>
   </DiscreteStates>

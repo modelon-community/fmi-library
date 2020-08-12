@@ -276,7 +276,7 @@ int main(int argc, char **argv)
     /* Test that an error is raised when a ModelStructure.Outputs list
        doesn't contain a reference to all variables with causality="output".
      */
-    log_ctx = create_log_once_ctx("Output variable not found in ModelStructure.Outputs (index: 1, 0-based)");
+    log_ctx = create_log_once_ctx("Output variable not found in ModelStructure.Outputs (index: '2')");
     ret |= test_parse_xml(0, argv[1], "/model_structure/invalid/outputs_missing", log_ctx, NULL);
     free_log_once_ctx(&log_ctx);
 
@@ -284,7 +284,7 @@ int main(int argc, char **argv)
        references a variable with causality!="output".
      */
     log_ctx = create_log_once_ctx("ModelStructure.Outputs listed a variable that doesn't have "
-                                  "causality='output' (index: 0, 0-based)");
+                                  "causality='output' (index: '1')");
     ret |= test_parse_xml(0, argv[1], "/model_structure/invalid/output_reference", log_ctx, NULL);
     free_log_once_ctx(&log_ctx);
 
@@ -292,7 +292,7 @@ int main(int argc, char **argv)
        has a dependency to an invalid variable.
      */
     log_ctx = create_log_once_ctx("Dependency for Outputs.Unknown incorrect. Expected continuous state variable, "
-                                  "input or output. Dependency's index: '1' (0-based)");
+                                  "input or output. Dependency's index: '2'");
     ret |= test_parse_xml(0, argv[1], "/model_structure/invalid/output_deps", log_ctx, NULL);
     free_log_once_ctx(&log_ctx);
 
@@ -300,7 +300,7 @@ int main(int argc, char **argv)
        has a dependency to an invalid variable.
      */
     log_ctx = create_log_once_ctx("Dependency for Derivatives.Unknown incorrect. Expected continuous state variable, "
-                                  "input or output. Dependency's index: '3' (0-based)");
+                                  "input or output. Dependency's index: '4'");
     ret |= test_parse_xml(0, argv[1], "/model_structure/invalid/derivative_deps", log_ctx, NULL);
     free_log_once_ctx(&log_ctx);
 
@@ -308,16 +308,15 @@ int main(int argc, char **argv)
     /* Test that a fatal error is raised when a dependency contains an index to a non-existing variable. */
 
     /* index = 0 */
-    log_ctx = create_log_once_ctx("XML element 'Unknown': item 0=0 is less than one in the list for attribute 'dependencies'");
+    log_ctx = create_log_once_ctx("XML element 'Unknown': listed index < 1: dependencies[0]=0");
     ret |= test_parse_xml(1, argv[1], "/model_structure/invalid/dependency_not_exist_lt1", log_ctx, NULL);
     free_log_once_ctx(&log_ctx);
     /* index = -1*/
-    log_ctx = create_log_once_ctx("XML element 'Unknown': item 0=-1 is less than one in the list for attribute 'dependencies'");
+    log_ctx = create_log_once_ctx("XML element 'Unknown': listed index < 1: dependencies[0]=-1");
     ret |= test_parse_xml(1, argv[1], "/model_structure/invalid/dependency_not_exist_lt2", log_ctx, NULL);
     free_log_once_ctx(&log_ctx);
     /* index > n_vars */
-    log_ctx = create_log_once_ctx("XML element 'Unknown': item 0=2 is greater than the number of "
-                                  "ScalarVariables (1) in the list for attribute 'dependencies'");
+    log_ctx = create_log_once_ctx("XML element 'Unknown': listed index > number of ScalarVariables (1): dependencies[0]=2");
     ret |= test_parse_xml(1, argv[1], "/model_structure/invalid/dependency_not_exist_gt", log_ctx, NULL);
     free_log_once_ctx(&log_ctx);
 

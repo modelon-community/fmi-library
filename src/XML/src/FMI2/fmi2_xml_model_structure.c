@@ -214,8 +214,8 @@ static void fmi2_xml_check_outputs_or_derivatives_dependencies(fmi2_xml_parser_c
                 valid |= (fmi2_causality_enu_t)dep->causality == fmi2_causality_enu_input;
                 if (!valid) {
                     fmi2_xml_parse_error(context, "Dependency for %s.Unknown incorrect. "
-                            "Expected continuous state variable, input or output. Dependency's index: '%u' (0-based)",
-                            elemName, idx);
+                            "Expected continuous state variable, input or output. Dependency's index: '%u'",
+                            elemName, idx + 1); /* convert to 1-based */
                 }
             }
         }
@@ -313,8 +313,8 @@ static void fmi2_xml_verify_outputs_idx_list_is_complete(fmi2_xml_parser_context
         if (fmi2_xml_get_causality(var) == fmi2_causality_enu_output) {
             size_t svIdx = var->originalIndex;
             if (!jm_vector_bsearch(size_t)(&msOutIdxs, &svIdx, jm_compare_size_t)) {
-                fmi2_xml_parse_error(context, "Output variable not found in ModelStructure.Outputs (index: %u, 0-based)",
-                        svIdx);
+                fmi2_xml_parse_error(context, "Output variable not found in ModelStructure.Outputs (index: '%u')",
+                        svIdx + 1); /* convert to 1-based */
             }
         }
     }
@@ -402,17 +402,16 @@ int fmi2_xml_parse_dependencies(fmi2_xml_parser_context_t *context,
                 ms->isValidFlag = 0;
                 return 0;
              }
-             /* Out-of-bounds indicies cause fatal, since this has a high risk of otherwise cause segfaults later */
+             /* Out-of-bounds indices cause fatal, since this has a high risk of otherwise cause segfaults later */
              if(ind < 1) {
-                 fmi2_xml_parse_fatal(context, "XML element 'Unknown': item %d=%d is less than one in the list for attribute 'dependencies'",
+                 fmi2_xml_parse_fatal(context, "XML element 'Unknown': listed index < 1: dependencies[%d]=%d",
                      numDepInd, ind);
                 ms->isValidFlag = 0;
                 return 0;
              }
-             if(ind > numVars) {
-                 fmi2_xml_parse_fatal(context, "XML element 'Unknown': item %d=%d is greater than the number of "
-                                               "ScalarVariables (%u) in the list for attribute 'dependencies'",
-                                               numDepInd, ind, numVars);
+             if((size_t)ind > numVars) { /* typecast is safe since we know: ind >= 1 */
+                 fmi2_xml_parse_fatal(context, "XML element 'Unknown': listed index > number of ScalarVariables (%u): dependencies[%d]=%d",
+                     numVars, numDepInd, ind);
                 ms->isValidFlag = 0;
                 return 0;
              }
@@ -546,8 +545,8 @@ static void fmi2_xml_verify_unknown_output(fmi2_xml_parser_context_t *context, f
 {
     if (var->causality != fmi2_causality_enu_output) {
         fmi2_xml_parse_error(context,
-                "ModelStructure.Outputs listed a variable that doesn't have causality='output' (index: %u, 0-based)",
-                 fmi2_xml_get_variable_original_order(var));
+                "ModelStructure.Outputs listed a variable that doesn't have causality='output' (index: '%u')",
+                 fmi2_xml_get_variable_original_order(var) + 1); /* convert to 1-based */
     }
 }
 

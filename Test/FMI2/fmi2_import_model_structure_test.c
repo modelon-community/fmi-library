@@ -183,7 +183,7 @@ static void check_fcn_log_once(void* chk_log_ctx, const char* module, jm_log_lev
    Returns a pointer to a check_log_ctx, or exits program unsuccessfully on
    failure. Must be freed.
  */
-static check_log_ctx* create_log_once_ctx(const char* expected_msg) {
+static check_log_ctx* create_ctx_log_once(const char* expected_msg) {
     check_log_ctx* log_ctx = malloc(sizeof(check_log_ctx));
     CHECK_ALLOC(log_ctx);
 
@@ -201,7 +201,7 @@ static check_log_ctx* create_log_once_ctx(const char* expected_msg) {
     return log_ctx;
 }
 
-static void free_log_once_ctx(check_log_ctx** chk_log_ctx) {
+static void free_ctx_log_once(check_log_ctx** chk_log_ctx) {
     free((*chk_log_ctx)->check_fcn_ctx);
     free(*chk_log_ctx);
     *chk_log_ctx = NULL;
@@ -224,7 +224,7 @@ static void check_fcn_fail_on_warn_or_worse(void* chk_log_ctx, const char* modul
    messages. Program exist unsuccessfully on failure to return pointer. Pointer
    must be freed with respective free-method.
  */
-static check_log_ctx* create_fail_on_warn_or_worse_ctx() {
+static check_log_ctx* create_ctx_fail_on_warn_or_worse() {
     check_log_ctx* log_ctx = malloc(sizeof(check_log_ctx));
     CHECK_ALLOC(log_ctx);
 
@@ -237,7 +237,7 @@ static check_log_ctx* create_fail_on_warn_or_worse_ctx() {
     return log_ctx;
 }
 
-static void free_fail_on_warn_or_worse_ctx(check_log_ctx** chk_log_ctx) {
+static void free_ctx_fail_on_warn_or_worse(check_log_ctx** chk_log_ctx) {
     free(*chk_log_ctx);
     *chk_log_ctx = NULL;
 }
@@ -256,9 +256,9 @@ int main(int argc, char **argv)
     /* ================ */
     /* -- Test valid -- */
     /* ================ */
-    log_ctx = create_fail_on_warn_or_worse_ctx();
+    log_ctx = create_ctx_fail_on_warn_or_worse();
     ret |= test_parse_xml(0, argv[1], "/model_structure/valid", log_ctx, NULL);
-    free_fail_on_warn_or_worse_ctx(&log_ctx);
+    free_ctx_fail_on_warn_or_worse(&log_ctx);
 
 
     /* ================== */
@@ -268,57 +268,57 @@ int main(int argc, char **argv)
     /* Test that an error is raised when a ModelStructure.Derivatives list
        references a variable that doesn't have the attribute 'derivative'.
      */
-    log_ctx = create_log_once_ctx("The state derivative 'state_var' does not specify the state variable "
+    log_ctx = create_ctx_log_once("The state derivative 'state_var' does not specify the state variable "
                                   "that it is a derivative of.");
     ret |= test_parse_xml(1, argv[1], "/model_structure/invalid/derivative_reference", log_ctx, NULL);
-    free_log_once_ctx(&log_ctx);
+    free_ctx_log_once(&log_ctx);
 
     /* Test that an error is raised when a ModelStructure.Outputs list
        doesn't contain a reference to all variables with causality="output".
      */
-    log_ctx = create_log_once_ctx("Output variable not found in ModelStructure.Outputs (index: '2')");
+    log_ctx = create_ctx_log_once("Output variable not found in ModelStructure.Outputs (index: '2')");
     ret |= test_parse_xml(0, argv[1], "/model_structure/invalid/outputs_missing", log_ctx, NULL);
-    free_log_once_ctx(&log_ctx);
+    free_ctx_log_once(&log_ctx);
 
     /* Test that an error is raised when a ModelStructure.Outputs list
        references a variable with causality!="output".
      */
-    log_ctx = create_log_once_ctx("ModelStructure.Outputs listed a variable that doesn't have "
+    log_ctx = create_ctx_log_once("ModelStructure.Outputs listed a variable that doesn't have "
                                   "causality='output' (index: '1')");
     ret |= test_parse_xml(0, argv[1], "/model_structure/invalid/output_reference", log_ctx, NULL);
-    free_log_once_ctx(&log_ctx);
+    free_ctx_log_once(&log_ctx);
 
     /* Test that an error is raised when a ModelStructure.Outputs list
        has a dependency to an invalid variable.
      */
-    log_ctx = create_log_once_ctx("Dependency for Outputs.Unknown incorrect. Expected continuous state variable, "
+    log_ctx = create_ctx_log_once("Dependency for Outputs.Unknown incorrect. Expected continuous state variable, "
                                   "input or output. Dependency's index: '2'");
     ret |= test_parse_xml(0, argv[1], "/model_structure/invalid/output_deps", log_ctx, NULL);
-    free_log_once_ctx(&log_ctx);
+    free_ctx_log_once(&log_ctx);
 
     /* Test that an error is raised when a ModelStructure.Derivatives list
        has a dependency to an invalid variable.
      */
-    log_ctx = create_log_once_ctx("Dependency for Derivatives.Unknown incorrect. Expected continuous state variable, "
+    log_ctx = create_ctx_log_once("Dependency for Derivatives.Unknown incorrect. Expected continuous state variable, "
                                   "input or output. Dependency's index: '4'");
     ret |= test_parse_xml(0, argv[1], "/model_structure/invalid/derivative_deps", log_ctx, NULL);
-    free_log_once_ctx(&log_ctx);
+    free_ctx_log_once(&log_ctx);
 
 
     /* Test that a fatal error is raised when a dependency contains an index to a non-existing variable. */
 
     /* index = 0 */
-    log_ctx = create_log_once_ctx("XML element 'Unknown': listed index < 1: dependencies[0]=0");
+    log_ctx = create_ctx_log_once("XML element 'Unknown': listed index < 1: dependencies[0]=0");
     ret |= test_parse_xml(1, argv[1], "/model_structure/invalid/dependency_not_exist_lt1", log_ctx, NULL);
-    free_log_once_ctx(&log_ctx);
+    free_ctx_log_once(&log_ctx);
     /* index = -1*/
-    log_ctx = create_log_once_ctx("XML element 'Unknown': listed index < 1: dependencies[0]=-1");
+    log_ctx = create_ctx_log_once("XML element 'Unknown': listed index < 1: dependencies[0]=-1");
     ret |= test_parse_xml(1, argv[1], "/model_structure/invalid/dependency_not_exist_lt2", log_ctx, NULL);
-    free_log_once_ctx(&log_ctx);
+    free_ctx_log_once(&log_ctx);
     /* index > n_vars */
-    log_ctx = create_log_once_ctx("XML element 'Unknown': listed index > number of ScalarVariables (1): dependencies[0]=2");
+    log_ctx = create_ctx_log_once("XML element 'Unknown': listed index > number of ScalarVariables (1): dependencies[0]=2");
     ret |= test_parse_xml(1, argv[1], "/model_structure/invalid/dependency_not_exist_gt", log_ctx, NULL);
-    free_log_once_ctx(&log_ctx);
+    free_ctx_log_once(&log_ctx);
 
     return ret;
 }

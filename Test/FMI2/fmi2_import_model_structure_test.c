@@ -304,6 +304,14 @@ int main(int argc, char **argv)
     ret |= test_parse_xml(0, argv[1], "/model_structure/invalid/derivative_deps", log_ctx, NULL);
     free_ctx_log_once(&log_ctx);
 
+    /* Test that an error is raised when a ModelStructure.InitialUnknown list
+       has a dependency to an invalid variable.
+     */
+    log_ctx = create_ctx_log_once("Dependency for InitialUnknowns.Unknown incorrect. Expected input, output, or variable with "
+                                  "attribute initial='exact'. Dependency's index: '1'");
+    ret |= test_parse_xml(0, argv[1], "/model_structure/invalid/initunknown_deps", log_ctx, NULL);
+    free_ctx_log_once(&log_ctx);
+
 
     /* Test that a fatal error is raised when a dependency contains an index to a non-existing variable. */
 
@@ -311,7 +319,7 @@ int main(int argc, char **argv)
     log_ctx = create_ctx_log_once("XML element 'Unknown': listed index < 1: dependencies[0]=0");
     ret |= test_parse_xml(1, argv[1], "/model_structure/invalid/dependency_not_exist_lt1", log_ctx, NULL);
     free_ctx_log_once(&log_ctx);
-    /* index = -1*/
+    /* index = -1 */
     log_ctx = create_ctx_log_once("XML element 'Unknown': listed index < 1: dependencies[0]=-1");
     ret |= test_parse_xml(1, argv[1], "/model_structure/invalid/dependency_not_exist_lt2", log_ctx, NULL);
     free_ctx_log_once(&log_ctx);

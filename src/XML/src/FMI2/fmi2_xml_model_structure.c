@@ -158,6 +158,68 @@ int fmi2_xml_check_model_structure(fmi2_xml_model_description_t* md) {
 }
 
 
+typedef struct fmi2_xml_dependency_checker_t fmi2_xml_dependency_checker_t; /* forward declare */
+
+/**
+   Function that performs check on dependency index.
+
+   @self:
+     Pointer to the struct that contains this function.
+   @idx:
+     0-based index to check.
+ */
+typedef void (*fmi2_xml_dependency_checker_fcn_ft)(fmi2_xml_parser_context_t* context,
+                                                   struct fmi2_xml_dependency_checker_t* self,
+                                                   size_t idx);
+
+/* "class" for checking an index in the 'dependency' attribute */
+struct fmi2_xml_dependency_checker_t {
+    fmi2_xml_dependency_checker_fcn_ft fcn; /* function to perform check */
+    void* ctx;                              /* any special data needed by 'fcn' */
+    const char* elemName;                   /* parent of Unknown, e.g. Derivatives */
+};
+
+/**
+   @self:
+     @ctx:
+        Sorted jm_vector(size_t) with indices of all continuous states.
+ */
+static void fmi2_xml_check_dependency_derivative_or_output(fmi2_xml_parser_context_t* context,
+        fmi2_xml_dependency_checker_t* self, size_t idx) {
+    fmi2_xml_variable_t* dep = jm_vector_get_item(jm_voidp)(context->modelDescription->variablesOrigOrder, idx);
+    jm_vector(size_t)* contStateIndices = (jm_vector(size_t)*)self->ctx;
+
+    int valid = 0;
+    valid |= jm_vector_bsearch(size_t)(contStateIndices, &idx, jm_compare_size_t) != NULL;
+    valid |= (fmi2_causality_enu_t)dep->causality == fmi2_causality_enu_independent;
+    valid |= (fmi2_causality_enu_t)dep->causality == fmi2_causality_enu_input;
+    if (!valid) {
+        fmi2_xml_parse_error(context, "Dependency for %s.Unknown incorrect. "
+                "Expected continuous state variable, input or output. Dependency's index: '%u'",
+                self->elemName, idx + 1); /* convert to 1-based */
+    }
+}
+
+/**
+   @self:
+     @ctx:
+       Not used.
+ */
+static void fmi2_xml_check_dependency_initialunknown(fmi2_xml_parser_context_t* context, fmi2_xml_dependency_checker_t* self,
+        size_t idx) {
+    fmi2_xml_variable_t* dep = jm_vector_get_item(jm_voidp)(context->modelDescription->variablesOrigOrder, idx);
+
+    int valid = 0;
+    valid |= (fmi2_initial_enu_t)dep->initial     == fmi2_initial_enu_exact;
+    valid |= (fmi2_causality_enu_t)dep->causality == fmi2_causality_enu_independent;
+    valid |= (fmi2_causality_enu_t)dep->causality == fmi2_causality_enu_input;
+    if (!valid) {
+        fmi2_xml_parse_error(context, "Dependency for %s.Unknown incorrect. "
+                "Expected input, output, or variable with attribute initial='exact'. Dependency's index: '%u'",
+                self->elemName, idx + 1); /* convert to 1-based */
+    }
+}
+
 /** Checks that dependencies are valid for Unknown elements in Outputs or
     Derivatives elements.
 
@@ -170,41 +232,32 @@ int fmi2_xml_check_model_structure(fmi2_xml_model_description_t* md) {
     @elemName:
       Name of the element, i.e. "Outputs" or "Dependencies".
 */
-static void fmi2_xml_check_outputs_or_derivatives_dependencies(fmi2_xml_parser_context_t* context,
-        jm_vector(size_t)* contStateIndices, jm_vector(jm_voidp)* unknownList,
-        fmi2_xml_dependencies_t* deps, const char* elemName)
+static void fmi2_xml_check_unknownlist_dependencies(fmi2_xml_parser_context_t* context,
+        fmi2_xml_dependency_checker_t* depChecker, fmi2_xml_dependencies_t* deps, size_t nUnknowns)
 {
     fmi2_xml_model_description_t* md = context->modelDescription;
     size_t i, j;
     size_t* startIdx   = NULL;
     size_t* dependency = NULL;
-    char* factorKind   = NULL; /* not used */
+    char* factorKind   = NULL; /* values not used, but pointer necessary for function call */
 
     fmi2_xml_get_dependencies(deps, &startIdx, &dependency, &factorKind);
-    if (startIdx) {
-        for (i = 0; i < jm_vector_get_size(jm_voidp)(unknownList); i++) {
-            for (j = startIdx[i]; j < startIdx[i + 1]; j++) {
-                fmi2_xml_variable_t* dep = NULL;
-                size_t idx = dependency[j];
-                int valid = 0;
+    if (!startIdx) {
+        return;
+    }
 
-                if (idx == 0) {
-                    /* depends on all, nothing to check */
-                    continue;
-                }
-                idx--; /* convert to 0-based */
+    /* For each Unknown, check every index in 'dependency' attribute */
+    for (i = 0; i < nUnknowns; i++) {
+        for (j = startIdx[i]; j < startIdx[i + 1]; j++) {
+            size_t idx = dependency[j];
 
-                dep = jm_vector_get_item(jm_voidp)(md->variablesOrigOrder, idx);
-
-                valid |= jm_vector_bsearch(size_t)(contStateIndices, &idx, jm_compare_size_t) != NULL;
-                valid |= (fmi2_causality_enu_t)dep->causality == fmi2_causality_enu_independent;
-                valid |= (fmi2_causality_enu_t)dep->causality == fmi2_causality_enu_input;
-                if (!valid) {
-                    fmi2_xml_parse_error(context, "Dependency for %s.Unknown incorrect. "
-                            "Expected continuous state variable, input or output. Dependency's index: '%u'",
-                            elemName, idx + 1); /* convert to 1-based */
-                }
+            if (idx == 0) {
+                /* depends on all, nothing to check */
+                continue;
             }
+            idx--; /* convert to 0-based */
+
+            depChecker->fcn(context, depChecker, idx);
         }
     }
 }
@@ -212,6 +265,7 @@ static void fmi2_xml_check_outputs_or_derivatives_dependencies(fmi2_xml_parser_c
 static int fmi2_xml_check_modelstructure_dependencies(fmi2_xml_parser_context_t* context) {
     fmi2_xml_model_description_t* md = context->modelDescription;
     fmi2_xml_model_structure_t* ms = md->modelStructure;
+    fmi2_xml_dependency_checker_t depChecker;
     size_t i;
     jm_vector(size_t) contStateIndices;
     size_t nContStates = jm_vector_get_size(jm_voidp)(&ms->derivatives); /* each derivative corresponds to a cont. state */
@@ -231,10 +285,21 @@ static int fmi2_xml_check_modelstructure_dependencies(fmi2_xml_parser_context_t*
     }
     jm_vector_qsort(size_t)(&contStateIndices, jm_compare_size_t);
 
-    /* Check all dependencies */
-    fmi2_xml_check_outputs_or_derivatives_dependencies(context, &contStateIndices, &ms->outputs,     ms->outputDeps,     "Outputs");
-    fmi2_xml_check_outputs_or_derivatives_dependencies(context, &contStateIndices, &ms->derivatives, ms->derivativeDeps, "Derivatives");
+    /* Check dependencies: Derivatives and Outputs */
+    depChecker.fcn      = fmi2_xml_check_dependency_derivative_or_output;
+    depChecker.ctx      = &contStateIndices;
+    depChecker.elemName = "Outputs";
+    fmi2_xml_check_unknownlist_dependencies(context, &depChecker, ms->outputDeps,     jm_vector_get_size(jm_voidp)(&ms->outputs));
+    depChecker.elemName = "Derivatives";
+    fmi2_xml_check_unknownlist_dependencies(context, &depChecker, ms->derivativeDeps, jm_vector_get_size(jm_voidp)(&ms->derivatives));
 
+    /* Check dependencies: InitialUnknowns */
+    depChecker.fcn      = fmi2_xml_check_dependency_initialunknown;
+    depChecker.ctx      = NULL;
+    depChecker.elemName = "InitialUnknowns";
+    fmi2_xml_check_unknownlist_dependencies(context, &depChecker, ms->initialUnknownDeps, jm_vector_get_size(jm_voidp)(&ms->initialUnknowns));
+
+    /* Clean up */
     jm_vector_free_data(size_t)(&contStateIndices);
 
     return 0;
@@ -398,7 +463,7 @@ int fmi2_xml_parse_dependencies(fmi2_xml_parser_context_t *context,
              if(!jm_vector_push_back(size_t)(&deps->dependencyIndex, (size_t)ind)) {
                 fmi2_xml_parse_fatal(context, "Could not allocate memory");
                 return -1;
-            }
+             }
              while((*cur >= '0') && (*cur <= '9')) cur++;
              numDepInd++;
          }

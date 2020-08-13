@@ -220,17 +220,18 @@ static void fmi2_xml_check_dependency_initialunknown(fmi2_xml_parser_context_t* 
     }
 }
 
-/** Checks that dependencies are valid for Unknown elements in Outputs or
-    Derivatives elements.
+/**
+   Checks that dependencies are valid for Unknown elements in Outputs or
+   Derivatives elements.
 
-    @contStateIndices:
-      Sorted vector with 0-based indices to all continuous state variables.
-    @unknownList:
-      Either 'ms->outputs' or 'ms->derivatives'.
-    @deps:
-      Either 'ms->outputDeps' or 'ms->derivativeDeps'.
-    @elemName:
-      Name of the element, i.e. "Outputs" or "Dependencies".
+   @contStateIndices:
+     Sorted vector with 0-based indices to all continuous state variables.
+   @unknownList:
+     Either 'ms->outputs' or 'ms->derivatives'.
+   @deps:
+     Either 'ms->outputDeps' or 'ms->derivativeDeps'.
+   @elemName:
+     Name of the element, i.e. "Outputs" or "Dependencies".
 */
 static void fmi2_xml_check_unknownlist_dependencies(fmi2_xml_parser_context_t* context,
         fmi2_xml_dependency_checker_t* depChecker, fmi2_xml_dependencies_t* deps, size_t nUnknowns)

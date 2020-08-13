@@ -265,48 +265,36 @@ int main(int argc, char **argv)
     /* -- Test invalid -- */
     /* ================== */
 
-    /* Test that an error is raised when a ModelStructure.Derivatives list
-       references a variable that doesn't have the attribute 'derivative'.
-     */
+    /* 'Derivatives' dependency references a variable that doesn't have the attribute 'derivative'. */
     log_ctx = create_ctx_log_once("The state derivative 'state_var' does not specify the state variable "
                                   "that it is a derivative of.");
     ret |= test_parse_xml(1, argv[1], "/model_structure/invalid/derivative_reference", log_ctx, NULL);
     free_ctx_log_once(&log_ctx);
 
-    /* Test that an error is raised when a ModelStructure.Outputs list
-       doesn't contain a reference to all variables with causality="output".
-     */
+    /* 'Outputs' doesn't contain a reference to all variables with causality="output". */
     log_ctx = create_ctx_log_once("Output variable not found in ModelStructure.Outputs (index: '2')");
     ret |= test_parse_xml(0, argv[1], "/model_structure/invalid/outputs_missing", log_ctx, NULL);
     free_ctx_log_once(&log_ctx);
 
-    /* Test that an error is raised when a ModelStructure.Outputs list
-       references a variable with causality!="output".
-     */
+    /* 'Outputs' references a variable with causality!="output". */
     log_ctx = create_ctx_log_once("ModelStructure.Outputs listed a variable that doesn't have "
                                   "causality='output' (index: '1')");
     ret |= test_parse_xml(0, argv[1], "/model_structure/invalid/output_reference", log_ctx, NULL);
     free_ctx_log_once(&log_ctx);
 
-    /* Test that an error is raised when a ModelStructure.Outputs list
-       has a dependency to an invalid variable.
-     */
+    /* 'Outputs' has a dependency on an invalid variable. */
     log_ctx = create_ctx_log_once("Dependency for Outputs.Unknown incorrect. Expected continuous state variable, "
                                   "input or output. Dependency's index: '2'");
     ret |= test_parse_xml(0, argv[1], "/model_structure/invalid/output_deps", log_ctx, NULL);
     free_ctx_log_once(&log_ctx);
 
-    /* Test that an error is raised when a ModelStructure.Derivatives list
-       has a dependency to an invalid variable.
-     */
+    /* 'Derivatives' has a dependency on an invalid variable. */
     log_ctx = create_ctx_log_once("Dependency for Derivatives.Unknown incorrect. Expected continuous state variable, "
                                   "input or output. Dependency's index: '4'");
     ret |= test_parse_xml(0, argv[1], "/model_structure/invalid/derivative_deps", log_ctx, NULL);
     free_ctx_log_once(&log_ctx);
 
-    /* Test that an error is raised when a ModelStructure.InitialUnknown list
-       has a dependency to an invalid variable.
-     */
+    /* 'InitialUnknown' has a dependency on an invalid variable. */
     log_ctx = create_ctx_log_once("Dependency for InitialUnknowns.Unknown incorrect. Expected input, output, or variable with "
                                   "attribute initial='exact'. Dependency's index: '1'");
     ret |= test_parse_xml(0, argv[1], "/model_structure/invalid/initunknown_deps", log_ctx, NULL);

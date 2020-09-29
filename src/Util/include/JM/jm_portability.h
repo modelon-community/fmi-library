@@ -140,5 +140,31 @@ int jm_snprintf(char * str, size_t size, const char * fmt, ...);
 #define JM_VA_COPY(dest,src) dest=src
 #endif
 
+/**
+   \brief Sets the LC_NUMERIC locale for this thread only.
+  
+   \param jmloc:
+     Storage for allowing reset of thread settings. 'is_set' field needs to be
+     initialized to 0.
+   \param value:
+     Value to set for LC_NUMERIC.
+   \return:
+     0 on success.
+ */
+FMILIB_EXPORT
+int jm_mtsafe_setlocale_numeric(jm_callbacks* cb, jm_locale_t* locale, const char* value);
+
+/**
+   \brief Restores thread settings and LC_NUMERIC locale with previous call to
+   'jm_mtsafe_setlocale_numeric'.
+  
+   \param jmloc:
+     Object that contains previous settings to reset to.
+   \return:
+     0 on success.
+ */
+FMILIB_EXPORT
+int jm_mtsafe_resetlocale_numeric(jm_callbacks* cb, jm_locale_t* locale);
+
 /*@}*/
 #endif /* End of header file JM_PORTABILITY_H_ */

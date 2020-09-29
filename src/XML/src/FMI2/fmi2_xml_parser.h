@@ -216,6 +216,9 @@ struct fmi2_xml_parser_context_t {
 	char* anyToolName;
 	void* anyParent;
 	fmi2_xml_callbacks_t* anyHandle;
+
+    /* Data for restoring locale after parsing */
+    jm_locale_t jm_locale;
 };
 
 jm_vector(char) * fmi2_xml_reserve_parse_buffer(fmi2_xml_parser_context_t *context, size_t index, size_t size);

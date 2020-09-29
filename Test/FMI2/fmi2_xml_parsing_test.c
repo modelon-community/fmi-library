@@ -2,6 +2,7 @@
 #include <fmilib.h>
 #include <stdio.h>
 #include "config_test.h"
+#include <locale.h>
 
 static const int SHOULD_NOT_LOG_EXPECTED_MSG = 0;
 static const int SHOULD_LOG_EXPECTED_MSG = 1;
@@ -160,16 +161,128 @@ void test_variable_naming_conventions(void)
     pass_name_check("naming_conventions_xmls/flat/q-char-nonescaped");
 }
 
+static fmi2_import_t* parse_xml(jm_callbacks* cb, const char* xmldir) {
+    fmi_import_context_t* context;
+    fmi2_import_t* xml;
+
+    context = fmi_import_allocate_context(cb);
+
+    xml = fmi2_import_parse_xml(context, xmldir, NULL);
+    fmi_import_free_context(context);
+
+    return xml;
+}
+
+static void fail(const char* fmt, ...) {
+    va_list args;
+    va_start(args, fmt);
+    printf("Test failure: ");
+    vprintf(fmt, args);
+    printf("\n");
+    va_end(args);
+
+    exit(CTEST_RETURN_FAIL);
+}
+
+/**
+ * Tests that parsing works as expected, and that the previous locale and
+ * thread settings are reset.
+ * 
+ * Test assumes that some locales are installed on the machine. For Windows, it
+ * seems like most are installed by default.
+ */
+static void test_locale_lc_numeric() {
+    jm_locale_t jmloc;
+    jm_callbacks* cb = jm_get_default_callbacks();
+
+#ifdef WIN32
+    char* locale_bad = "Swedish_Sweden.1252"; /* Any locale that uses decimal comma instead of decimal point. */
+    /* Set so we later can check that it is restored. */
+    int thread_setting = _DISABLE_PER_THREAD_LOCALE;
+    _configthreadlocale(thread_setting);
+#else
+    char* locale_bad = "sv_SE.utf8"; /* TODO */
+#endif
+    
+    /* Set locale to something that will cause bad parsing. */
+    jmloc.is_set = 0;
+    if (jm_mtsafe_setlocale_numeric(cb, &jmloc, locale_bad)) {
+        /* If this happens, it's possible that your machine doesn't have
+         * the locale installed. For me on Windows, it seemed like I had at
+         * least Danish, French, Swedish installed by default. */
+        fail("failed to set locale");
+    }
+
+    {
+        /* Perform parsing and verify that the bad global locale did not affect
+         * the result. */
+
+        int failed = 0;
+        char* xmldir = concat(name_check_test_directory, "env/locale");
+        fmi2_import_t* xml = parse_xml(cb, xmldir);
+        free(xmldir);
+
+        if (xml == NULL) {
+            fail("failed to parse FMU");
+        }
+
+        if (fmi2_import_get_default_experiment_start(xml)     != 2.3  ||
+            fmi2_import_get_default_experiment_stop(xml)      != 3.55 ||
+            fmi2_import_get_default_experiment_tolerance(xml) != 1e-6 ||
+            fmi2_import_get_default_experiment_step(xml)      != 2e-3)
+        {
+            /* If a the decimal delimiter is a comma, sscanf will only parse
+             * until the dot. */
+            printf("Test failure: incorrect default experiment value\n");
+            failed = 1;
+        }
+
+        fmi2_import_free(xml);
+
+        if (failed) {
+            exit(CTEST_RETURN_FAIL);
+        }
+     }
+
+    /* Verify that locale is properly restored.
+     *
+     * Getting locale should be thread safe if all setting of locale is done in
+     * per_thread context.
+     */
+    if (strcmp(setlocale(LC_NUMERIC, NULL), locale_bad)) {
+        fail("unexpected locale");
+    }
+
+#ifdef WIN32
+    if (_configthreadlocale(0) != _ENABLE_PER_THREAD_LOCALE) {
+        /* Setting should be ENABLE, because it's set by jm_mtsafe_resetlocale_numeric in the test code.*/
+        fail("unexpected Windows thread setting");
+    }
+#endif
+
+    if (jm_mtsafe_resetlocale_numeric(cb, &jmloc)) {
+        fail("failed to reset locale");
+    }
+    
+#ifdef WIN32
+    if (_configthreadlocale(0) != thread_setting) {
+        /* This was set at the beginning of the test, and should now have been restored.*/
+        fail("unexpected Windows thread setting");
+    }
+#endif
+}
+
 int main(int argc, char *argv[])
 {
     if (argc == 2) {
         name_check_test_directory = argv[1];
     } else {
-        printf("Usage: %s <path to folder naming_conventions_xmls>\n", argv[0]);
+        printf("Usage: %s <path to folder 'parser_test_xmls'>\n", argv[0]);
         exit(CTEST_RETURN_FAIL);
     }
 
     test_variable_naming_conventions();
+    test_locale_lc_numeric();
 
     return 0;
 }

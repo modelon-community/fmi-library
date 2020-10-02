@@ -22,8 +22,10 @@ static int dblAlmostEq(double lhs, double rhs) {
     return fabs(lhs - rhs) < 0.0001;
 }
 
+#include <locale.h>
 static void sscanf_double(const char* str, double expected) {
     double val = 0;
+    printf("Debug: setlocale: %s\n", setlocale(LC_NUMERIC, NULL));
     if (sscanf(str, "%lf", &val) != 1) {
         fail("call failed: sscanf");
     }
@@ -40,10 +42,10 @@ static void test_parse_with_locale() {
     const char* str_comma = "2,5";
     const char* str_point = "2.5";
 
-    /* Any locale that uses decimal coma instead of decimal point. */
 #ifdef WIN32
-    char* locale_bad = "Swedish_Sweden.1252"; 
+    char* locale_bad = "French_France.1252"; /* 'sv-SE' does not exist on Jenkins nodes */
 #else
+    /* Any locale that uses decimal coma instead of decimal point. */
     char* locale_bad = "sv_SE.utf8";
 #endif
 
@@ -52,6 +54,7 @@ static void test_parse_with_locale() {
         fail("call failed: jm_mtsafe_setlocale_numeric");
     }
 
+    printf("Debug: parsing with str_comma expected\n");
     /* Check that decimal comma works */
     sscanf_double(str_comma, 2.5);
     sscanf_double(str_point, 2.0);
@@ -63,6 +66,7 @@ static void test_parse_with_locale() {
             fail("call failed: jm_mtsafe_setlocale_numeric");
         }
 
+        printf("Debug: parsing with str_point expected\n");
         /* Check that decimal point works */
         sscanf_double(str_comma, 2.0);
         sscanf_double(str_point, 2.5);
@@ -73,6 +77,7 @@ static void test_parse_with_locale() {
         jmloc2 = NULL;
     }
 
+    printf("Debug: parsing with str_comman expected (after restore)\n");
     /* Check that decimal comma works, after restoring */
     sscanf_double(str_comma, 2.5);
     sscanf_double(str_point, 2.0);

@@ -191,8 +191,6 @@ static fmi2_import_t* parse_xml(jm_callbacks* cb, const char* xmldir) {
  */
 static void test_locale_lc_numeric() {
 
-#ifdef FMILIB_TEST_LOCALE
-
     jm_callbacks* cb = jm_get_default_callbacks();
     char* loc_old = NULL;
     char* tmp = NULL;
@@ -296,8 +294,6 @@ static void test_locale_lc_numeric() {
         fail("unexpected Windows thread setting");
     }
 #endif
-
-#endif /* FMILIB_TEST_LOCALE */
 }
 
 int main(int argc, char *argv[])
@@ -310,7 +306,10 @@ int main(int argc, char *argv[])
     }
 
     test_variable_naming_conventions();
+
+    #ifdef FMILIB_TEST_LOCALE
     test_locale_lc_numeric();
+    #endif
 
     return 0;
 }

@@ -407,9 +407,6 @@ jm_locale_t* jm_mtsafe_setlocale_numeric(jm_callbacks* cb, const char* value) {
 			jm_log_error(cb, module, "'uselocale' failed to get current locale");
 			goto err1;
 		}
-		if (jmloc->locale_old == LC_GLOBAL_LOCALE) {
-			printf("global");
-		}
 
 		/* Create new locale. */
 		nloc = newlocale(LC_NUMERIC_MASK, value, (locale_t)0);
@@ -450,10 +447,6 @@ int jm_mtsafe_resetlocale_numeric(jm_callbacks* cb, jm_locale_t* jmloc) {
 		if (loc == (locale_t)0) {
 			jm_log_error(cb, module, "'uselocale' failed to get current locale.");
 			return 1;
-		}
-
-		if (jmloc->locale_old) {
-
 		}
 		uselocale(jmloc->locale_old);
 

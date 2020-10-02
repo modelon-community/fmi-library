@@ -383,6 +383,11 @@ jm_locale_t* jm_mtsafe_setlocale_numeric(jm_callbacks* cb, const char* value) {
         /* Create a copy of locale, since any further calls to setlocale (e.g.
          * from 3rd party code) will override the returned pointer. */
         tmp = setlocale(LC_NUMERIC, NULL);
+		if (!tmp) {
+            jm_log_error(cb, module, "Failed to get current locale with 'setlocale'");
+			free(jmloc);
+			return NULL;
+		}
         jmloc->locale_old = (char*)cb->malloc(strlen(tmp) + 1); /* + 1 for \0 */
         strcpy(jmloc->locale_old, tmp);
 

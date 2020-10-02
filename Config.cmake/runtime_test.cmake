@@ -163,7 +163,6 @@ if(FMILIB_BUILD_BEFORE_TESTS)
 endif()
 
 add_test(ctest_jm_locale_test jm_locale_test)
-add_test(ctest_jm_vector_test jm_vector_test)
 
 ADD_TEST(ctest_fmi_zip_unzip_test fmi_zip_unzip_test)
 ADD_TEST(ctest_fmi_zip_zip_test fmi_zip_zip_test)

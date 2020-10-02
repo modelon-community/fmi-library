@@ -29,7 +29,7 @@ static void sscanf_double(const char* str, double expected) {
     }
 
     if (!dblAlmostEq(expected, val)) {
-        fail("parsed double not equal expected");
+        fail("parsed double did not equal expected, str: %s, exp: %f, act: %f", str, expected, val);
     }
 }
 

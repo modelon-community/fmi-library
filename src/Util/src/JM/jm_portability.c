@@ -356,40 +356,83 @@ int jm_snprintf(char * str, size_t size, const char * fmt, ...) {
     return ret;
 }
 
-int jm_mtsafe_setlocale_numeric(jm_callbacks* cb, jm_locale_t* jmloc, const char* value) {
-	char* tmp;
+struct jm_locale_t {
+#ifdef WIN32
+    char* locale_old;
+    int per_thread_locale_type_old;
+#else
+    locale_t locale_old;
+#endif
+};
 
-	if (jmloc == NULL || jmloc->is_set) {
-		/* Impl. error: consecutive calls not allowed (because it makes no sense). */
-		return 1;
+jm_locale_t* jm_mtsafe_setlocale_numeric(jm_callbacks* cb, const char* value) {
+
+	jm_locale_t* jmloc = (jm_locale_t*)malloc(sizeof(jm_locale_t));
+	if (!jmloc) {
+        jm_log_error(cb, module, "failed to allocate memory");
+		return NULL;
 	}
 
 #ifdef WIN32
-    /* Save current thread settings. */
-    jmloc->per_thread_locale_type_old = _configthreadlocale(0);
+	{
+		char* tmp;
 
-	/* Create a copy of locale, since any further calls to setlocale (e.g.
-	 * from 3rd party code) will override the returned pointer. */
-    tmp = setlocale(LC_NUMERIC, NULL);
-	jmloc->locale_old = (char*)cb->malloc(strlen(tmp) + 1); /* + 1 for \0 */
-	strcpy(jmloc->locale_old, tmp);
+        /* Save current thread settings. */
+        jmloc->per_thread_locale_type_old = _configthreadlocale(0);
 
-    /* Set LC_NUMERIC for this thread. */
-    _configthreadlocale(_ENABLE_PER_THREAD_LOCALE);
-	if (setlocale(LC_NUMERIC, value) == NULL) {
-		jm_log_error(cb, module, "Failed to call 'setlocale' for LC_NUMERIC with value: '%s'", value);
-		return 1;
+        /* Create a copy of locale, since any further calls to setlocale (e.g.
+         * from 3rd party code) will override the returned pointer. */
+        tmp = setlocale(LC_NUMERIC, NULL);
+        jmloc->locale_old = (char*)cb->malloc(strlen(tmp) + 1); /* + 1 for \0 */
+        strcpy(jmloc->locale_old, tmp);
+
+        /* Set LC_NUMERIC for this thread. */
+        _configthreadlocale(_ENABLE_PER_THREAD_LOCALE);
+        if (setlocale(LC_NUMERIC, value) == NULL) {
+            jm_log_error(cb, module, "Failed to call 'setlocale' for LC_NUMERIC with value: '%s'", value);
+			free(jmloc->locale_old);
+			free(jmloc);
+			return NULL;
+        }
+
+		return jmloc;
 	}
-#else
-	/* TODO: GNU (LINUX) */
-#endif
+#else /* _GNU_SOURCE */
+	{
+		locale_t nloc = NULL;
 
-	jmloc->is_set = 1;
-	return 0;
+		/* Retrieve old locale */
+		jmloc->locale_old = uselocale((locale_t)0);
+		if (jmloc->locale_old == (locale_t)0) {
+			jm_log_error(cb, module, "'uselocale' failed to get current locale");
+			goto err1;
+		}
+		if (jmloc->locale_old == LC_GLOBAL_LOCALE) {
+			printf("global");
+		}
+
+		/* Create new locale. */
+		nloc = newlocale(LC_NUMERIC_MASK, value, (locale_t)0);
+		if (nloc == (locale_t)0) {
+			jm_log_error(cb, module, "call failed: 'newlocale'");
+			goto err1;
+		}
+
+		/* Set new locale */
+		uselocale(nloc);
+
+		return jmloc;
+
+		/* Error handling */
+err1:
+		free(jmloc);
+		return NULL;
+	}
+#endif
 }
 
 int jm_mtsafe_resetlocale_numeric(jm_callbacks* cb, jm_locale_t* jmloc) {
-	if (!jmloc->is_set) {
+	if (jmloc == NULL) {
 		return 1; /* impl. error */
 	}
 
@@ -400,9 +443,24 @@ int jm_mtsafe_resetlocale_numeric(jm_callbacks* cb, jm_locale_t* jmloc) {
 
     _configthreadlocale(jmloc->per_thread_locale_type_old);
 #else
-	/* TODO: GNU (LINUX) */
+	{
+		/* Get current locale, which is expected to have been set with a previous
+		 * call to 'jm_mtsafe_setlocale_numeric'. */
+		locale_t loc = uselocale((locale_t)0);
+		if (loc == (locale_t)0) {
+			jm_log_error(cb, module, "'uselocale' failed to get current locale.");
+			return 1;
+		}
+
+		if (jmloc->locale_old) {
+
+		}
+		uselocale(jmloc->locale_old);
+
+		freelocale(loc);
+	}
 #endif
 
-	jmloc->is_set = 0;
+	free(jmloc);
 	return 0;
 }

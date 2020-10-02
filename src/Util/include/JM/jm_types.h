@@ -64,15 +64,7 @@ FMILIB_EXPORT
 const char* jm_log_level_to_string(jm_log_level_enu_t level);
 
 /** \brief Struct for restoring LC_NUMERIC locale. */
-typedef struct {
-    int is_set;
-    char* locale_old;
-#ifdef WIN32
-    int per_thread_locale_type_old; /* Windows only */
-#else
-    locale_t loc;
-#endif
-} jm_locale_t;
+typedef struct jm_locale_t jm_locale_t;
 
 /** @} */
 #ifdef __cplusplus

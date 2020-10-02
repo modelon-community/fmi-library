@@ -141,30 +141,35 @@ int jm_snprintf(char * str, size_t size, const char * fmt, ...);
 #endif
 
 /**
-   \brief Sets the LC_NUMERIC locale for this thread only.
+   \brief Sets the LC_NUMERIC locale for this thread only. A follow up call to
+   'jm_mtsafe_resetlocale_numeric' is needed to free the returned 'jm_locale_t'
+   object.
   
    \param jmloc:
-     Storage for allowing reset of thread settings. 'is_set' field needs to be
-     initialized to 0.
    \param value:
      Value to set for LC_NUMERIC.
    \return:
-     0 on success.
+     Pointer to object for reseting thread settings (locale, and
+     _configthreadlocale on Windows). NULL on failure.
  */
-FMILIB_EXPORT
-int jm_mtsafe_setlocale_numeric(jm_callbacks* cb, jm_locale_t* locale, const char* value);
+jm_locale_t* jm_mtsafe_setlocale_numeric(jm_callbacks* cb, const char* value);
 
 /**
-   \brief Restores thread settings and LC_NUMERIC locale with previous call to
-   'jm_mtsafe_setlocale_numeric'.
+   \brief  Restores thread settings and locale.
+
+   This function is only allowed to be called when the current locale is set by 
+   'jm_mtsafe_setlocale_numeric', and the 'jmloc' argument must be what is
+   returned from that call. On Linux, the locale must in no way be modified since that
+   call.
   
    \param jmloc:
-     Object that contains previous settings to reset to.
+     Return value from previous call to 'jm_mtsafe_setlocale_numeric'. Current
+     locale must be set with that function. This call will free 'jmloc', so it's
+     not allowed to be used after.
    \return:
      0 on success.
  */
-FMILIB_EXPORT
-int jm_mtsafe_resetlocale_numeric(jm_callbacks* cb, jm_locale_t* locale);
+int jm_mtsafe_resetlocale_numeric(jm_callbacks* cb, jm_locale_t* jmloc);
 
 /*@}*/
 #endif /* End of header file JM_PORTABILITY_H_ */

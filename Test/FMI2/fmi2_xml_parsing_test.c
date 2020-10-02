@@ -11,6 +11,17 @@ static int did_not_log_expected_msg;
 static char *expected_message = "Invalid structured ScalarVariable name";
 static char *name_check_test_directory;
 
+static void fail(const char* fmt, ...) {
+    va_list args;
+    va_start(args, fmt);
+    printf("Test failure: ");
+    vprintf(fmt, args);
+    printf("\n");
+    va_end(args);
+
+    exit(CTEST_RETURN_FAIL);
+}
+
 char *concat(char *s1, char *s2)
 {
     size_t len1 = strlen(s1);
@@ -36,20 +47,19 @@ void importlogger(jm_callbacks* c, jm_string module,
 
 void test_parser(char *xml_dir, int should_not_log_expected_msg, int configuration)
 {
-    jm_callbacks *callbacks;
+    jm_callbacks cb;
     fmi_import_context_t *context;
     fmi2_import_t *fmu;
     char *full_path;
 
-    callbacks = (jm_callbacks *) malloc(sizeof(jm_callbacks));
-    callbacks->malloc = malloc;
-    callbacks->calloc = calloc;
-    callbacks->realloc = realloc;
-    callbacks->free = free;
-    callbacks->logger = importlogger;
-    callbacks->log_level = jm_log_level_all;
-    callbacks->context = 0;
-    context = fmi_import_allocate_context(callbacks);
+    cb.malloc    = malloc;
+    cb.calloc    = calloc;
+    cb.realloc   = realloc;
+    cb.free      = free;
+    cb.logger    = importlogger;
+    cb.log_level = jm_log_level_all;
+    cb.context   = NULL;
+    context = fmi_import_allocate_context(&cb);
     if (configuration != 0) {
         fmi_import_set_configuration(context, configuration);
     }
@@ -63,8 +73,7 @@ void test_parser(char *xml_dir, int should_not_log_expected_msg, int configurati
     if (fmu == NULL) {
         exit(CTEST_RETURN_FAIL);
     }
-    if (!should_not_log_expected_msg && did_not_log_expected_msg ||
-            did_not_log_expected_msg && !should_not_log_expected_msg) {
+    if (should_not_log_expected_msg != did_not_log_expected_msg) { /* XOR */
         exit(CTEST_RETURN_FAIL);
     }
 }
@@ -173,45 +182,69 @@ static fmi2_import_t* parse_xml(jm_callbacks* cb, const char* xmldir) {
     return xml;
 }
 
-static void fail(const char* fmt, ...) {
-    va_list args;
-    va_start(args, fmt);
-    printf("Test failure: ");
-    vprintf(fmt, args);
-    printf("\n");
-    va_end(args);
-
-    exit(CTEST_RETURN_FAIL);
-}
-
 /**
  * Tests that parsing works as expected, and that the previous locale and
  * thread settings are reset.
- * 
- * Test assumes that some locales are installed on the machine. For Windows, it
- * seems like most are installed by default.
+ *
+ * Test is by default disabled, because it requires the target machine to have
+ * specific language packs.
  */
 static void test_locale_lc_numeric() {
-    jm_locale_t jmloc;
-    jm_callbacks* cb = jm_get_default_callbacks();
 
+#ifdef FMILIB_TEST_LOCALE
+
+    jm_callbacks* cb = jm_get_default_callbacks();
+    char* loc_old = NULL;
+    char* tmp = NULL;
+
+    /* Any locale that uses decimal coma instead of decimal point. */
 #ifdef WIN32
-    char* locale_bad = "Swedish_Sweden.1252"; /* Any locale that uses decimal comma instead of decimal point. */
-    /* Set so we later can check that it is restored. */
+    char* locale_bad = "Swedish_Sweden.1252"; 
+#else
+    char* locale_bad = "sv_SE.utf8";
+#endif
+
+    /* Set/get thread-specific settings (and later check that they are
+     * restored). */
+#ifdef WIN32
     int thread_setting = _DISABLE_PER_THREAD_LOCALE;
     _configthreadlocale(thread_setting);
 #else
-    char* locale_bad = "sv_SE.utf8"; /* TODO */
+    /* Do nothing for Linux since I don't think it's possible to check equality
+     * of locale_t. */
 #endif
-    
-    /* Set locale to something that will cause bad parsing. */
-    jmloc.is_set = 0;
-    if (jm_mtsafe_setlocale_numeric(cb, &jmloc, locale_bad)) {
-        /* If this happens, it's possible that your machine doesn't have
-         * the locale installed. For me on Windows, it seemed like I had at
-         * least Danish, French, Swedish installed by default. */
+
+    /* NOT MT-SAFE: But it's the only way to test it for Linux. There are
+     * currently no other tests that modify the locale globally, so should be
+     * OK.
+     * Worst case we can run with the '--force-new-ctest-process' ctest flag.
+     */
+    tmp = setlocale(LC_NUMERIC, locale_bad);
+    if (!tmp) {
+        /* If this errors, it's possible that your machine doesn't have
+         * the locale installed.
+         *
+         * Windows: It seemed like I had at least Danish, French, Swedish
+         *   installed by default.
+         *
+         * Linux (Ubuntu 18): I had to install a language pack to get this.
+         */
         fail("failed to set locale");
     }
+
+    /*
+     * Value of 'tmp' returned from 'setlocale' may be changed by further calls
+     * to setlocale, and it's also possible that the returned value is not
+     * "string equal" to the argument (i.e. alias values for the same locale).
+     * To be able to later compare the restored value, we therefore must copy
+     * 'tmp'.
+     */
+    loc_old = (char*)malloc(strlen(tmp) + 1);
+    if (!loc_old) {
+        fail("failed to alloc memory");
+    }
+    strcpy(loc_old, tmp);
+    tmp = NULL;
 
     {
         /* Perform parsing and verify that the bad global locale did not affect
@@ -231,7 +264,7 @@ static void test_locale_lc_numeric() {
             fmi2_import_get_default_experiment_tolerance(xml) != 1e-6 ||
             fmi2_import_get_default_experiment_step(xml)      != 2e-3)
         {
-            /* If a the decimal delimiter is a comma, sscanf will only parse
+            /* If the decimal delimiter is comma, sscanf will only parse
              * until the dot. */
             printf("Test failure: incorrect default experiment value\n");
             failed = 1;
@@ -240,36 +273,31 @@ static void test_locale_lc_numeric() {
         fmi2_import_free(xml);
 
         if (failed) {
-            exit(CTEST_RETURN_FAIL);
+            fail("... see above printed messages");
         }
      }
 
-    /* Verify that locale is properly restored.
+    /* Cleanup and verify that locale is properly restored.
      *
-     * Getting locale should be thread safe if all setting of locale is done in
+     * Getting locale should be MT-safe if all setting of locale is done in
      * per_thread context.
      */
-    if (strcmp(setlocale(LC_NUMERIC, NULL), locale_bad)) {
+    tmp = setlocale(LC_NUMERIC, loc_old);
+    free(loc_old);
+    if (!tmp) {
+        fail("failed to restore locale");
+    } else if (strcmp(tmp, locale_bad)) {
         fail("unexpected locale");
     }
 
 #ifdef WIN32
-    if (_configthreadlocale(0) != _ENABLE_PER_THREAD_LOCALE) {
-        /* Setting should be ENABLE, because it's set by jm_mtsafe_resetlocale_numeric in the test code.*/
+    if (_configthreadlocale(0) != thread_setting) {
+        /* This was set at the beginning of the test, and should now have been restored. */
         fail("unexpected Windows thread setting");
     }
 #endif
 
-    if (jm_mtsafe_resetlocale_numeric(cb, &jmloc)) {
-        fail("failed to reset locale");
-    }
-    
-#ifdef WIN32
-    if (_configthreadlocale(0) != thread_setting) {
-        /* This was set at the beginning of the test, and should now have been restored.*/
-        fail("unexpected Windows thread setting");
-    }
-#endif
+#endif /* FMILIB_TEST_LOCALE */
 }
 
 int main(int argc, char *argv[])

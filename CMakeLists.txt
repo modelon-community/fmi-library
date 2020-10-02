@@ -62,6 +62,7 @@ option(FMILIB_LINK_TEST_TO_SHAREDLIB "Link the tests to fmilib_shared (if built)
 option(FMILIB_GENERATE_BUILD_STAMP "Generate a build time stamp and include in into the library" OFF)
 option(FMILIB_ENABLE_LOG_LEVEL_DEBUG "Enable log level 'debug'. If the option is of then the debug level is not compiled in." OFF)
 option(FMILIB_PRINT_DEBUG_MESSAGES "Enable printing of status messages from the build script. Intended for debugging." OFF)
+option(FMILIB_TEST_LOCALE          "Perform testing related to setting locales (requires certain language packs)" OFF)
 mark_as_advanced(FMILIB_PRINT_DEBUG_MESSAGES FMILIB_DEBUG_TRACE)
 
 if(NOT FMILIB_BUILD_SHARED_LIB AND NOT FMILIB_BUILD_STATIC_LIB)

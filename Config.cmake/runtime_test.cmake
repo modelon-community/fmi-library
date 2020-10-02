@@ -162,6 +162,9 @@ if(FMILIB_BUILD_BEFORE_TESTS)
 		COMMAND "${CMAKE_COMMAND}" --build ${FMILIBRARYBUILD} --config $<CONFIGURATION>)
 endif()
 
+add_test(ctest_jm_locale_test jm_locale_test)
+add_test(ctest_jm_vector_test jm_vector_test)
+
 ADD_TEST(ctest_fmi_zip_unzip_test fmi_zip_unzip_test)
 ADD_TEST(ctest_fmi_zip_zip_test fmi_zip_zip_test)
 

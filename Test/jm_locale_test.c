@@ -85,7 +85,9 @@ static void test_parse_with_locale() {
 
 int main() {
 
+    #ifdef FMILIB_LOCALE_TEST
     test_parse_with_locale();
+    #endif
 
     return CTEST_RETURN_SUCCESS;
 }

@@ -77,7 +77,7 @@ static void test_parse_with_locale() {
         jmloc2 = NULL;
     }
 
-    printf("Debug: parsing with str_comman expected (after restore)\n");
+    printf("Debug: parsing with str_comma expected (after restore)\n");
     /* Check that decimal comma works, after restoring */
     sscanf_double(str_comma, 2.5);
     sscanf_double(str_point, 2.0);

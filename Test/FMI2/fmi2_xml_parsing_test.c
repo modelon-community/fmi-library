@@ -203,19 +203,18 @@ static void test_locale_lc_numeric() {
 #endif
 
     /* Set/get thread-specific settings (and later check that they are
-     * restored). */
-#ifdef WIN32
+     * restored).
+     * Do nothing for Linux since I don't think it's possible to check equality
+     * of locale_t.
+     */
+#ifdef _MSC_VER
     int thread_setting = _DISABLE_PER_THREAD_LOCALE;
     _configthreadlocale(thread_setting);
-#else
-    /* Do nothing for Linux since I don't think it's possible to check equality
-     * of locale_t. */
 #endif
 
     /* NOT MT-SAFE: But it's the only way to test it for Linux. There are
      * currently no other tests that modify the locale globally, so should be
-     * OK.
-     * Worst case we can run with the '--force-new-ctest-process' ctest flag.
+     * OK. Also, ctest tests are by default not run in parallel.
      */
     tmp = setlocale(LC_NUMERIC, locale_bad);
     if (!tmp) {
@@ -288,7 +287,7 @@ static void test_locale_lc_numeric() {
         fail("unexpected locale");
     }
 
-#ifdef WIN32
+#ifdef _MSC_VER
     if (_configthreadlocale(0) != thread_setting) {
         /* This was set at the beginning of the test, and should now have been restored. */
         fail("unexpected Windows thread setting");

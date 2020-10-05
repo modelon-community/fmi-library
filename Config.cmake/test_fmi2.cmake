@@ -77,6 +77,14 @@ to_native_c_path("${TEST_OUTPUT_FOLDER}/${FMU2_DUMMY_CS_MODEL_IDENTIFIER}_mf.fmu
 
 add_executable (fmi2_xml_parsing_test ${RTTESTDIR}/FMI2/fmi2_xml_parsing_test.c)
 target_link_libraries (fmi2_xml_parsing_test  ${FMILIBFORTEST})
+if(FMILIB_TEST_LOCALE)
+    set(FMI2_XML_PARSING_TEST_DEFINITIONS -DFMILIB_TEST_LOCALE)
+    if(UNIX)
+        list(APPEND FMI2_XML_PARSING_TEST_DEFINITIONS -D_GNU_SOURCE)
+    endif()
+    target_compile_definitions(fmi2_xml_parsing_test PRIVATE ${FMI2_XML_PARSING_TEST_DEFINITIONS})
+endif()
+
 add_executable (fmi2_import_xml_test ${RTTESTDIR}/FMI2/fmi2_import_xml_test.cc)
 target_link_libraries (fmi2_import_xml_test  ${FMILIBFORTEST})
 add_executable (fmi2_import_me_test ${RTTESTDIR}/FMI2/fmi2_import_me_test.c)

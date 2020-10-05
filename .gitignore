@@ -4,3 +4,7 @@ testlogs-*/
 CMakeFiles/
 ThirdParty/winflexbison/
 doc/
+CMakeSettings.json
+.vs/
+out/
+enc_temp_folder/

@@ -13,16 +13,25 @@
 
 set(RTTESTDIR ${FMILIBRARYHOME}/Test)
 
+# Test: jm_vector
 add_executable (jm_vector_test ${RTTESTDIR}/jm_vector_test.c)
 target_link_libraries (jm_vector_test ${JMUTIL_LIBRARIES})
+
+# Test: jm locale
+add_executable (jm_locale_test ${RTTESTDIR}/jm_locale_test.c)
+target_link_libraries (jm_locale_test ${JMUTIL_LIBRARIES})
+if(FMILIB_TEST_LOCALE)
+    target_compile_definitions(jm_locale_test PRIVATE -DFMILIB_TEST_LOCALE)
+endif()
 
 #Create function that zipz the dummy FMUs 
 add_executable (compress_test_fmu_zip ${RTTESTDIR}/compress_test_fmu_zip.c)
 target_link_libraries (compress_test_fmu_zip ${FMIZIP_LIBRARIES})
 
 set_target_properties(
-	jm_vector_test  compress_test_fmu_zip
+	jm_vector_test jm_locale_test compress_test_fmu_zip
     PROPERTIES FOLDER "Test")
+
 #Path to the executable
 get_property(COMPRESS_EXECUTABLE TARGET compress_test_fmu_zip PROPERTY LOCATION)
 
@@ -152,6 +161,8 @@ if(FMILIB_BUILD_BEFORE_TESTS)
 		NAME ctest_build_all 
 		COMMAND "${CMAKE_COMMAND}" --build ${FMILIBRARYBUILD} --config $<CONFIGURATION>)
 endif()
+
+add_test(ctest_jm_locale_test jm_locale_test)
 
 ADD_TEST(ctest_fmi_zip_unzip_test fmi_zip_unzip_test)
 ADD_TEST(ctest_fmi_zip_zip_test fmi_zip_zip_test)

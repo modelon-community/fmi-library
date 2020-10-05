@@ -63,6 +63,9 @@ typedef enum {
 FMILIB_EXPORT
 const char* jm_log_level_to_string(jm_log_level_enu_t level);
 
+/** \brief Struct for restoring LC_NUMERIC locale. */
+typedef struct jm_locale_t jm_locale_t;
+
 /** @} */
 #ifdef __cplusplus
 }

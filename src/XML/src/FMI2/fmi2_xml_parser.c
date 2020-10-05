@@ -23,6 +23,7 @@
 
 #include "fmi2_xml_model_description_impl.h"
 #include "fmi2_xml_parser.h"
+#include "JM/jm_portability.h"
 
 static const char * module = "FMI2XML";
 
@@ -117,6 +118,10 @@ void fmi2_xml_parse_free_context(fmi2_xml_parser_context_t *context) {
     }
     jm_stack_free_data(int)(& context->elmStack );
     jm_vector_free_data(char)( &context->elmData );
+
+    if (jm_mtsafe_resetlocale_numeric(context->callbacks, context->jm_locale)) {
+        jm_log_error(context->callbacks, module, "Failed to reset locale.");
+    }
 
     context->callbacks->free(context);
 }
@@ -682,6 +687,14 @@ int fmi2_xml_parse_model_description(fmi2_xml_model_description_t* md,
 	context->useAnyHandleFlg = 0;
     context->anyParent = 0;
 	context->anyHandle = xml_callbacks;
+
+    /* Set locale such that parsing does not depend on the environment.
+     * For example, LC_NUMERIC affects what sscanf identifies as the floating
+     * point delimiter. */
+    context->jm_locale = jm_mtsafe_setlocale_numeric(context->callbacks, "C");
+    if (!context->jm_locale) {
+        jm_log_error(context->callbacks, module, "Failed to set locale. Parsing might be incorrect.");
+    }
 
     memsuite.malloc_fcn = context->callbacks->malloc;
     memsuite.realloc_fcn = context->callbacks->realloc;

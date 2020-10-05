@@ -6,6 +6,8 @@ Note that version 2.1 is the first version with release notes. Please see the co
 
 ## 2.2.1
 
+### Minor
+- Bug fix: Correctly parse doubles when locale is not using decimal point
 - Check `variability != continuous` for non-Real variables
 
 ## 2.2

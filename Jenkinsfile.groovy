@@ -7,14 +7,21 @@ def Configs = [
     'win64': [
         name: 'win64',
         os: 'windows',
-        node: 'VisualStudio2010 && OCT-SDK-1.4',
+        node: 'VisualStudio2010 && OCT-SDK-1.5',
         target_install: 'install',
         target_test: 'test'
     ],
     'win64_static_runtime': [
         name: 'win64_static_runtime',
         os: 'windows',
-        node: 'VisualStudio2010 && OCT-SDK-1.4',
+        node: 'VisualStudio2010 && OCT-SDK-1.5',
+        target_install: 'install',
+        target_test: 'test'
+    ],
+    'mingw_w64': [
+        name: 'mingw_w64',
+        os: 'windows',
+        node: 'OCT-SDK-1.5',
         target_install: 'install',
         target_test: 'test'
     ], 
@@ -34,7 +41,7 @@ def Configs = [
     ]
 ]
 
-def version = '2.0.4-SNAPSHOT'
+def version = '2.0.4-SNAPSHOT' // TODO: seems unused; remove
 
 // Loads the 'signBinaries' function
 library 'ModelonCommon@trunk'

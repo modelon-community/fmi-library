@@ -1,9 +1,22 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <stdarg.h>
 #include <math.h>
+#include <locale.h>
 
 #include "config_test.h"
+
+/* Windows:
+ * config_test.h undefines FMILIB_BUILDING_LIBRARY because it's expected that
+ * all tests will link with fmilib.dll. In this case we don't.
+ * As of writing, the FMILIB_BUILDING_LIBRARY controls whether we define the API
+ * as __declspec import or export (Windows at least). If we undef FMILIB_BUILDING_LIBRARY,
+ * it will be defined as import since we expect to link with the DLL, but since
+ * we don't in this case, linking will fail (it actually doesn't fail for MSVC
+ * for some reason, (maybe it has static linking fallback or similar?) but
+ * MinGW fails).
+ */
+#define FMILIB_BUILDING_LIBRARY
+
 #include <JM/jm_portability.h>
 
 static void fail(const char* fmt, ...) {
@@ -22,7 +35,6 @@ static int dblAlmostEq(double lhs, double rhs) {
     return fabs(lhs - rhs) < 0.0001;
 }
 
-#include <locale.h>
 static void sscanf_double(const char* str, double expected) {
     double val = 0;
     printf("Debug: setlocale: %s\n", setlocale(LC_NUMERIC, NULL));
@@ -38,14 +50,13 @@ static void sscanf_double(const char* str, double expected) {
 static void test_parse_with_locale() {
     jm_callbacks* cb = jm_get_default_callbacks();
     jm_locale_t* jmloc1 = NULL;
-    double dval = 0;
     const char* str_comma = "2,5";
     const char* str_point = "2.5";
 
+    /* Any locale that uses decimal coma instead of decimal point. */
 #ifdef WIN32
     char* locale_bad = "French_France.1252"; /* 'sv-SE' does not exist on Jenkins nodes */
 #else
-    /* Any locale that uses decimal coma instead of decimal point. */
     char* locale_bad = "sv_SE.utf8";
 #endif
 
@@ -90,9 +101,9 @@ static void test_parse_with_locale() {
 
 int main() {
 
-    #ifdef FMILIB_TEST_LOCALE
+#ifdef FMILIB_TEST_LOCALE
     test_parse_with_locale();
-    #endif
+#endif
 
     return CTEST_RETURN_SUCCESS;
 }

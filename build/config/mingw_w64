@@ -20,7 +20,7 @@ FMILIB_CMAKE_CUSTOM_FLAGS=-DCMAKE_C_FLAGS="-m64"             \
 GENERATE_DOXYGEN_DOC=0
 BUILD_WITH_STATIC_RTLIB=0
 BUILD_TESTS=1
-TEST_LOCALE=0
+TEST_LOCALE=1 # /* Tests are by default run in serial, so should be OK even though not thread-safe */
 
 # Docker
 DOCKER_IMAGE_BASE= # N/A

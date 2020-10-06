@@ -121,13 +121,26 @@ jm_status_enu_t jm_mkdir(jm_callbacks* cb, const char* dir);
 jm_status_enu_t jm_rmdir(jm_callbacks* cb, const char* dir);
 
 /**
-\brief C89 compatible implementation of C99 vsnprintf. 
+    \brief C89 compatible implementation of C99 vsnprintf.
+
+    WARNING:
+    Return value and what is written to buffer is compiler/platform dependent on
+    failure.
+    Some implementations return -1 on failure to write all chars, others a
+    number greater than allowed write size. Writing of terminating null
+    character on failure may also vary.
+    For example, compare vsnprintf documentation for MSVC 2013 and 2015.
 */
 FMILIB_EXPORT
 int jm_vsnprintf(char * str, size_t size, const char * fmt, va_list al);
 
 /**
-\brief C89 compatible implementation of C99 snprintf. 
+    \brief C89 compatible implementation of C99 snprintf.
+
+    WARNING:
+    Return value and what is written to buffer is compiler/platform dependent on
+    failure.
+    See jm_vsnprintf for more info.
 */
 FMILIB_EXPORT
 int jm_snprintf(char * str, size_t size, const char * fmt, ...);

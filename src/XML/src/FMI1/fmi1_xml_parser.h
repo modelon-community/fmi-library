@@ -177,6 +177,9 @@ struct fmi1_xml_parser_context_t {
 
 	fmi1_xml_elm_enu_t lastElmID;
 	fmi1_xml_elm_enu_t currentElmID;
+
+    /* Data for restoring locale after parsing */
+    jm_locale_t* jm_locale;
 };
 
 jm_vector(char) * fmi1_xml_reserve_parse_buffer(fmi1_xml_parser_context_t *context, size_t index, size_t size);

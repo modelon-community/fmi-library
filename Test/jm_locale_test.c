@@ -60,9 +60,9 @@ static void test_parse_with_locale() {
     char* locale_bad = "sv_SE.utf8";
 #endif
 
-    jmloc1 = jm_mtsafe_setlocale_numeric(cb, locale_bad);
+    jmloc1 = jm_setlocale_numeric(cb, locale_bad);
     if (!jmloc1) {
-        fail("call failed: jm_mtsafe_setlocale_numeric");
+        fail("call failed: jm_setlocale_numeric");
     }
 
     printf("Debug: parsing with str_comma expected\n");
@@ -72,9 +72,9 @@ static void test_parse_with_locale() {
 
     /* Check that decimal point works (nested setlocale_numeric call) */
     {
-        jm_locale_t* jmloc2 = jm_mtsafe_setlocale_numeric(cb, "C");
+        jm_locale_t* jmloc2 = jm_setlocale_numeric(cb, "C");
         if (!jmloc2) {
-            fail("call failed: jm_mtsafe_setlocale_numeric");
+            fail("call failed: jm_setlocale_numeric");
         }
 
         printf("Debug: parsing with str_point expected\n");
@@ -82,8 +82,8 @@ static void test_parse_with_locale() {
         sscanf_double(str_comma, 2.0);
         sscanf_double(str_point, 2.5);
 
-        if (jm_mtsafe_resetlocale_numeric(cb, jmloc2)) {
-            fail("call failed: jm_mtsafe_setlocale_numeric (nested)");
+        if (jm_resetlocale_numeric(cb, jmloc2)) {
+            fail("call failed: jm_setlocale_numeric (nested)");
         }
         jmloc2 = NULL;
     }
@@ -93,8 +93,8 @@ static void test_parse_with_locale() {
     sscanf_double(str_comma, 2.5);
     sscanf_double(str_point, 2.0);
 
-    if (jm_mtsafe_resetlocale_numeric(cb, jmloc1)) {
-        fail("call failed: jm_mtsafe_setlocale_numeric (nested)");
+    if (jm_resetlocale_numeric(cb, jmloc1)) {
+        fail("call failed: jm_setlocale_numeric");
     }
     jmloc1 = NULL;
 }

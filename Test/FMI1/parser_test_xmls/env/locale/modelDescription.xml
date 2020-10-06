@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription
+  fmiVersion="1.0"
+  modelName="x"
+  guid="x"
+  modelIdentifier="x"
+  numberOfContinuousStates="0"
+  numberOfEventIndicators="0">
+
+<ModelExchange
+  modelIdentifier="x" />
+
+<DefaultExperiment
+  startTime="2.3"
+  stopTime="3.55"
+  tolerance="1e-6"
+  />
+
+<ModelVariables/>
+
+</fmiModelDescription>

@@ -76,6 +76,10 @@ target_link_libraries(fmi1_type_definitions_test ${FMILIBFORTEST})
 
 add_executable (fmi1_xml_parsing_test ${RTTESTDIR}/FMI1/fmi1_xml_parsing_test.c)
 target_link_libraries (fmi1_xml_parsing_test  ${FMILIBFORTEST}  )
+if(FMILIB_TEST_LOCALE)
+    target_compile_definitions(fmi1_xml_parsing_test PRIVATE -DFMILIB_TEST_LOCALE)
+endif()
+
 add_executable (fmi_import_xml_test ${RTTESTDIR}/FMI1/fmi_import_xml_test.c)
 target_link_libraries (fmi_import_xml_test  ${FMILIBFORTEST}  )
 

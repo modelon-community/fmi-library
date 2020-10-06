@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <fmilib.h>
 #include <stdio.h>
+#include <stdarg.h>
 #include "config_test.h"
 #include <locale.h>
 
@@ -306,9 +307,9 @@ int main(int argc, char *argv[])
 
     test_variable_naming_conventions();
 
-    #ifdef FMILIB_TEST_LOCALE
+#ifdef FMILIB_TEST_LOCALE
     test_locale_lc_numeric();
-    #endif
+#endif
 
     return 0;
 }

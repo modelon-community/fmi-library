@@ -367,7 +367,7 @@ struct jm_locale_t {
 #endif
 };
 
-jm_locale_t* jm_mtsafe_setlocale_numeric(jm_callbacks* cb, const char* value) {
+jm_locale_t* jm_setlocale_numeric(jm_callbacks* cb, const char* value) {
 
 	jm_locale_t* jmloc = (jm_locale_t*)malloc(sizeof(jm_locale_t));
 	if (!jmloc) {
@@ -441,7 +441,7 @@ err1:
 #endif
 }
 
-int jm_mtsafe_resetlocale_numeric(jm_callbacks* cb, jm_locale_t* jmloc) {
+int jm_resetlocale_numeric(jm_callbacks* cb, jm_locale_t* jmloc) {
 	if (jmloc == NULL) {
 		return 1; /* impl. error */
 	}
@@ -449,7 +449,7 @@ int jm_mtsafe_resetlocale_numeric(jm_callbacks* cb, jm_locale_t* jmloc) {
 #ifdef _GNU_SOURCE
 	{
 		/* Get current locale, which is expected to have been set with a previous
-		 * call to 'jm_mtsafe_setlocale_numeric'. */
+		 * call to 'jm_setlocale_numeric'. */
 		locale_t loc = uselocale((locale_t)0);
 		if (loc == (locale_t)0) {
 			jm_log_error(cb, module, "'uselocale' failed to get current locale.");

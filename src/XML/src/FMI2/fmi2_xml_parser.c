@@ -119,7 +119,7 @@ void fmi2_xml_parse_free_context(fmi2_xml_parser_context_t *context) {
     jm_stack_free_data(int)(& context->elmStack );
     jm_vector_free_data(char)( &context->elmData );
 
-    if (jm_mtsafe_resetlocale_numeric(context->callbacks, context->jm_locale)) {
+    if (jm_resetlocale_numeric(context->callbacks, context->jm_locale)) {
         jm_log_error(context->callbacks, module, "Failed to reset locale.");
     }
 
@@ -691,7 +691,7 @@ int fmi2_xml_parse_model_description(fmi2_xml_model_description_t* md,
     /* Set locale such that parsing does not depend on the environment.
      * For example, LC_NUMERIC affects what sscanf identifies as the floating
      * point delimiter. */
-    context->jm_locale = jm_mtsafe_setlocale_numeric(context->callbacks, "C");
+    context->jm_locale = jm_setlocale_numeric(context->callbacks, "C");
     if (!context->jm_locale) {
         jm_log_error(context->callbacks, module, "Failed to set locale. Parsing might be incorrect.");
     }

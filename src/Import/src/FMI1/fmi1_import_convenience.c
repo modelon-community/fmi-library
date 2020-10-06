@@ -298,6 +298,9 @@ void  fmi1_log_forwarding_v(fmi1_component_t c, fmi1_string_t instanceName, fmi1
         va_list argscp;
         JM_VA_COPY(argscp, args);
 #endif
+		/* WARNING:
+		 * We don't handle the compiler/platform dependent case when vsnprintf
+		 * returns -1 on failure to write the full message. */
         len = jm_vsnprintf(curp, bufsize -(curp-buf), message, args);
         if(len > (bufsize -(curp-buf+1))) {
             int offset = (curp-buf);

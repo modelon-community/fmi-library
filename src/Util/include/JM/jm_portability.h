@@ -121,13 +121,26 @@ jm_status_enu_t jm_mkdir(jm_callbacks* cb, const char* dir);
 jm_status_enu_t jm_rmdir(jm_callbacks* cb, const char* dir);
 
 /**
-\brief C89 compatible implementation of C99 vsnprintf. 
+    \brief C89 compatible implementation of C99 vsnprintf.
+
+    WARNING:
+    Return value and what is written to buffer is compiler/platform dependent on
+    failure.
+    Some implementations return -1 on failure to write all chars, others a
+    number greater than allowed write size. Writing of terminating null
+    character on failure may also vary.
+    For example, compare vsnprintf documentation for MSVC 2013 and 2015.
 */
 FMILIB_EXPORT
 int jm_vsnprintf(char * str, size_t size, const char * fmt, va_list al);
 
 /**
-\brief C89 compatible implementation of C99 snprintf. 
+    \brief C89 compatible implementation of C99 snprintf.
+
+    WARNING:
+    Return value and what is written to buffer is compiler/platform dependent on
+    failure.
+    See jm_vsnprintf for more info.
 */
 FMILIB_EXPORT
 int jm_snprintf(char * str, size_t size, const char * fmt, ...);
@@ -141,8 +154,9 @@ int jm_snprintf(char * str, size_t size, const char * fmt, ...);
 #endif
 
 /**
-   \brief Sets the LC_NUMERIC locale for this thread only. A follow up call to
-   'jm_mtsafe_resetlocale_numeric' is needed to free the returned 'jm_locale_t'
+   \brief Sets the LC_NUMERIC locale. For MSVC and Linux, the locale is set for
+   the current thread only (mt-safe). A follow up call to
+   'jm_resetlocale_numeric' is needed to free the returned 'jm_locale_t'
    object.
   
    \param jmloc:
@@ -152,24 +166,24 @@ int jm_snprintf(char * str, size_t size, const char * fmt, ...);
      Pointer to object for reseting thread settings (locale, and
      _configthreadlocale on Windows). NULL on failure.
  */
-jm_locale_t* jm_mtsafe_setlocale_numeric(jm_callbacks* cb, const char* value);
+jm_locale_t* jm_setlocale_numeric(jm_callbacks* cb, const char* value);
 
 /**
    \brief  Restores thread settings and locale.
 
    This function is only allowed to be called when the current locale is set by 
-   'jm_mtsafe_setlocale_numeric', and the 'jmloc' argument must be what is
+   'jm_setlocale_numeric', and the 'jmloc' argument must be what is
    returned from that call. On Linux, the locale must in no way be modified since that
    call.
   
    \param jmloc:
-     Return value from previous call to 'jm_mtsafe_setlocale_numeric'. Current
+     Return value from previous call to 'jm_setlocale_numeric'. Current
      locale must be set with that function. This call will free 'jmloc', so it's
      not allowed to be used after.
    \return:
      0 on success.
  */
-int jm_mtsafe_resetlocale_numeric(jm_callbacks* cb, jm_locale_t* jmloc);
+int jm_resetlocale_numeric(jm_callbacks* cb, jm_locale_t* jmloc);
 
 /*@}*/
 #endif /* End of header file JM_PORTABILITY_H_ */

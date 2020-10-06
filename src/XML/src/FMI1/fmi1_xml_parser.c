@@ -107,6 +107,10 @@ void fmi1_xml_parse_free_context(fmi1_xml_parser_context_t *context) {
     jm_vector_foreach(jm_string)(&context->directDependencyStringsStore, (void(*)(jm_string))context->callbacks->free);
     jm_vector_free_data(jm_string)(&context->directDependencyStringsStore);
 
+    if (jm_resetlocale_numeric(context->callbacks, context->jm_locale)) {
+        jm_log_error(context->callbacks, module, "Failed to reset locale.");
+    }
+
     context->callbacks->free(context);
 }
 
@@ -591,6 +595,14 @@ int fmi1_xml_parse_model_description(fmi1_xml_model_description_t* md, const cha
     jm_vector_init(char)(&context->elmData, 0, context->callbacks);
     context->lastElmID = fmi1_xml_elmID_none;
     context->currentElmID = fmi1_xml_elmID_none;
+
+    /* Set locale such that parsing does not depend on the environment.
+     * For example, LC_NUMERIC affects what sscanf identifies as the floating
+     * point delimiter. */
+    context->jm_locale = jm_setlocale_numeric(context->callbacks, "C");
+    if (!context->jm_locale) {
+        jm_log_error(context->callbacks, module, "Failed to set locale. Parsing might be incorrect.");
+    }
 
     memsuite.malloc_fcn = context->callbacks->malloc;
     memsuite.realloc_fcn = context->callbacks->realloc;

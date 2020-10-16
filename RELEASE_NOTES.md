@@ -4,6 +4,10 @@ The release notes are typically a highlighting subset of all changes made. For f
 
 Note that version 2.1 is the first version with release notes. Please see the commit history for older versions.
 
+## 2.2.3
+
+- Bug fix: Fix risk of segfault during parsing of FMI1
+
 ## 2.2.2
 
 - Bug fix: Fix build issues introduced in 2.2.1 for non-MSVC/Linux

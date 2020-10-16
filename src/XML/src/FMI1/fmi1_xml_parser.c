@@ -23,6 +23,7 @@
 
 #include "fmi1_xml_model_description_impl.h"
 #include "fmi1_xml_parser.h"
+#include "JM/jm_portability.h"
 
 static const char * module = "FMI1XML";
 

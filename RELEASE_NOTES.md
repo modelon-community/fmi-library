@@ -6,7 +6,7 @@ Note that version 2.1 is the first version with release notes. Please see the co
 
 ## 2.2.3
 
-- Bug fix: Fix risk of segfault during parsing of FMI1
+- Bug fix: Fix segfault during parsing of FMI1
 
 ## 2.2.2
 

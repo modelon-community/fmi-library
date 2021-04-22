@@ -71,6 +71,12 @@ int main(int argc, char *argv[])
 
 	version = fmi_import_get_fmi_version(context, FMUPath, tmpPath);
 
+    /* Check that version can be retrieved from unzipped FMU: */
+    if (version != fmi_import_get_fmi_version(context, NULL, tmpPath)) {
+        printf("Failure: different FMI version when retrieved from unzipped FMU.\n");
+        do_exit(CTEST_RETURN_FAIL);
+    }
+
 	if(version == fmi_version_1_enu) {
 		ret = fmi1_test(context, tmpPath);
 	}

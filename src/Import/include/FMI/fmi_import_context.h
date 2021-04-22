@@ -92,12 +92,12 @@ FMILIB_EXPORT void fmi_import_free_context( fmi_import_context_t* c);
 FMILIB_EXPORT void fmi_import_set_configuration( fmi_import_context_t* c, int conf);
 
 /**
-	\brief Unzip an FMU specified by the fileName into directory dirName and parse XML to get FMI standard version.
-	@param c - library context.
-	@param fileName - an FMU file name.
-	@param dirName - a directory name where the FMU should be unpacked
+    \brief Parse XML to get FMI standard version. If 'fileName' is not NULL, the FMU will first be unpacked into the directory 'dirName'.
+    @param c - library context.
+    @param fileName - NULL or an FMU file name.
+    @param dirName - directory name of unpacked FMU if 'fileName' is NULL, else a directory name where the FMU should be unpacked.
 */
-FMILIB_EXPORT fmi_version_enu_t fmi_import_get_fmi_version( fmi_import_context_t* c, const char* fileName, const char* dirName);
+FMILIB_EXPORT fmi_version_enu_t fmi_import_get_fmi_version(fmi_import_context_t* c, const char* fileName, const char* dirName);
 
 /**
 	\brief FMU version 1.0 object

@@ -284,7 +284,7 @@ endif()
 if(FMILIB_BUILD_SHARED_LIB)
 	add_library(fmilib_shared SHARED ${FMILIB_SHARED_SRC})
 
-    if (UNIX)
+    if (UNIX AND NOT APPLE)
         target_compile_definitions(fmilib_shared PRIVATE -D_GNU_SOURCE)
     endif()
 

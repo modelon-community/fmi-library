@@ -15,8 +15,18 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <locale.h>
 #include <string.h>
+
+#include <locale.h>
+
+#if defined(_GNU_SOURCE) || defined(__APPLE__)
+#define UNIX_THREAD_LOCALE
+#endif
+
+#ifdef __APPLE__
+/* Include thread-specific locale functions for OSX. */
+#include <xlocale.h>
+#endif
 
 #include <fmilib_config.h>
 
@@ -357,7 +367,7 @@ int jm_snprintf(char * str, size_t size, const char * fmt, ...) {
 }
 
 struct jm_locale_t {
-#ifdef _GNU_SOURCE
+#ifdef UNIX_THREAD_LOCALE
     locale_t locale_old;
 #else
     char* locale_old;
@@ -375,7 +385,7 @@ jm_locale_t* jm_setlocale_numeric(jm_callbacks* cb, const char* value) {
 		return NULL;
 	}
 
-#ifdef _GNU_SOURCE
+#ifdef UNIX_THREAD_LOCALE
 	{
 		locale_t nloc = NULL;
 
@@ -446,7 +456,7 @@ int jm_resetlocale_numeric(jm_callbacks* cb, jm_locale_t* jmloc) {
 		return 1; /* impl. error */
 	}
 
-#ifdef _GNU_SOURCE
+#ifdef UNIX_THREAD_LOCALE
 	{
 		/* Get current locale, which is expected to have been set with a previous
 		 * call to 'jm_setlocale_numeric'. */

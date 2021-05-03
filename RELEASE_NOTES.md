@@ -4,6 +4,11 @@ The release notes are typically a highlighting subset of all changes made. For f
 
 Note that version 2.1 is the first version with release notes. Please see the commit history for older versions.
 
+## 2.3
+
+- Updated `fmi_import_get_fmi_version` to also work on unpacked FMUs.
+- Bug fix: Fix compilation issue on OSX related to locale.
+
 ## 2.2.3
 
 - Bug fix: Fix segfault during parsing of FMI1

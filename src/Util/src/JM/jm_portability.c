@@ -16,6 +16,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdint.h>
 
 #include <locale.h>
 
@@ -48,14 +49,24 @@ static const char * module = "JMPRT";
 
 #define JM_PORTABILITY_DLL_ERROR_MESSAGE_SIZE 1000
 
-DLL_HANDLE jm_portability_load_dll_handle(const char* dll_file_path)
+DLL_HANDLE jm_portability_load_dll_handle_advanced(const char* dll_file_path, uint32_t flags)
 {
 #ifdef WIN32
-	/* printf("Will try to load %s\n", dll_file_path); */
-	return LoadLibrary(dll_file_path);
-#else	
-	return dlopen(dll_file_path, RTLD_NOW|RTLD_LOCAL);
+    return LoadLibraryEx(dll_file_path, NULL, flags);
+#else
+    return dlopen(dll_file_path, flags);
 #endif
+}
+
+DLL_HANDLE jm_portability_load_dll_handle(const char* dll_file_path)
+{
+    uint32_t flags;
+#ifdef WIN32
+    flags = NULL;
+#else
+    flags = RTLD_NOW|RTLD_LOCAL;
+#endif
+    return jm_portability_load_dll_handle_advanced(dll_file_path, flags);
 }
 
 jm_status_enu_t jm_portability_free_dll_handle(DLL_HANDLE dll_handle)

@@ -27,6 +27,7 @@
 
 #include "../FMI/fmi_import_context_impl.h"
 #include "../src/FMI2/fmi2_capi_impl.h"
+#include "../src/FMI/fmi_util_options_impl.h"
 
 
 #ifdef __cplusplus
@@ -41,7 +42,10 @@ struct fmi2_import_t {
 	fmi2_capi_t* capi;
 	jm_vector(char) logMessageBufferCoded;
 	jm_vector(char) logMessageBufferExpanded;
+	fmi_util_options_t* options;
 };
+
+typedef fmi_util_options_t fmi_import_options_t;
 
 #ifdef __cplusplus
 }

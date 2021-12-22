@@ -49,24 +49,26 @@ static const char * module = "JMPRT";
 
 #define JM_PORTABILITY_DLL_ERROR_MESSAGE_SIZE 1000
 
-DLL_HANDLE jm_portability_load_dll_handle_advanced(const char* dll_file_path, uint32_t flags)
+jm_portability_loadlibrary_flag_t jm_portability_get_load_dll_handle_default_flag() {
+    #ifdef WIN32
+        return 0;
+    #else
+        return RTLD_NOW|RTLD_LOCAL;
+    #endif
+}
+
+DLL_HANDLE jm_portability_load_dll_handle_with_flag(const char* dll_file_path, jm_portability_loadlibrary_flag_t flag)
 {
 #ifdef WIN32
-    return LoadLibraryEx(dll_file_path, NULL, flags);
+    return LoadLibraryEx(dll_file_path, NULL, flag);
 #else
-    return dlopen(dll_file_path, flags);
+    return dlopen(dll_file_path, flag);
 #endif
 }
 
 DLL_HANDLE jm_portability_load_dll_handle(const char* dll_file_path)
 {
-    uint32_t flags;
-#ifdef WIN32
-    flags = NULL;
-#else
-    flags = RTLD_NOW|RTLD_LOCAL;
-#endif
-    return jm_portability_load_dll_handle_advanced(dll_file_path, flags);
+    return jm_portability_load_dll_handle_with_flag(dll_file_path, jm_portability_get_load_dll_handle_default_flag());
 }
 
 jm_status_enu_t jm_portability_free_dll_handle(DLL_HANDLE dll_handle)

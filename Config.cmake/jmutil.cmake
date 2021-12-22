@@ -22,14 +22,16 @@ set(JMUTILSOURCE
  JM/jm_templates_inst.c
  JM/jm_named_ptr.c
  JM/jm_portability.c
+
  FMI/fmi_version.c
  FMI/fmi_util.c
+ FMI/fmi_util_options.c
  
  FMI1/fmi1_enums.c
  FMI2/fmi2_enums.c
 )
 
-set(JMUTILHEADERS
+set(JMUTIL_PUBHEADERS
   JM/jm_callbacks.h
   JM/jm_vector.h
   JM/jm_vector_template.h
@@ -38,8 +40,10 @@ set(JMUTILHEADERS
   JM/jm_named_ptr.h
   JM/jm_string_set.h
   JM/jm_portability.h
+
   FMI/fmi_version.h
   FMI/fmi_util.h
+  FMI/fmi_util_options.h
 
   FMI1/fmi1_functions.h
   FMI1/fmi1_types.h
@@ -51,8 +55,17 @@ set(JMUTILHEADERS
   FMI2/fmi2_xml_callbacks.h
 )
 
-PREFIXLIST(JMUTILSOURCE  ${JMUTILDIR}/src/)
-PREFIXLIST(JMUTILHEADERS ${JMUTILDIR}/include/)
+set(JMUTIL_PRIVHEADERS
+  src/FMI/fmi_util_options_impl.h
+)
+
+PREFIXLIST(JMUTILSOURCE       ${JMUTILDIR}/src/)
+PREFIXLIST(JMUTIL_PRIVHEADERS ${JMUTILDIR}/)
+PREFIXLIST(JMUTIL_PUBHEADERS  ${JMUTILDIR}/include/)
+
+set(JMUTILHEADERS
+    ${JMUTIL_PUBHEADERS} ${JMUTIL_PRIVHEADERS}
+)
 
 add_library(jmutils ${FMILIBKIND} ${JMUTILSOURCE} ${JMUTILHEADERS})
 

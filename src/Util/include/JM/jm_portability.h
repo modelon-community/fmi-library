@@ -39,6 +39,29 @@
 */
 /** \addtogroup jm_portability Handling platform specific defines and functions
 @{*/
+
+/**
+ * Type for flag used when loading shared library.
+ */
+#ifdef WIN32
+typedef DWORD jm_portability_loadlibrary_flag_t;
+#else
+typedef int jm_portability_loadlibrary_flag_t;
+#endif
+
+/** \brief
+ * Returns the default flag (defined by FMI Library) for the platform.
+ */
+jm_portability_loadlibrary_flag_t jm_portability_get_load_dll_handle_default_flag();
+
+/** \brief
+ * Load a shared library into the process and return a handle.
+ * 
+ * The same flag as would be used when calling the underlying system dependent
+ * library loading function can be used.
+ */
+DLL_HANDLE jm_portability_load_dll_handle_with_flag(const char* dll_file_path, jm_portability_loadlibrary_flag_t flag);
+
 /** \brief Load a dll/so library into the process and return a handle. */
 DLL_HANDLE		jm_portability_load_dll_handle		(const char* dll_file_path);
 

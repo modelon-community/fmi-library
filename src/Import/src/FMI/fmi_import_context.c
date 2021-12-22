@@ -4,7 +4,7 @@
     This program is free software: you can redistribute it and/or modify
     it under the terms of the BSD style license.
 
-     This program is distributed in the hope that it will be useful,
+    This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     FMILIB_License.txt file for more details.

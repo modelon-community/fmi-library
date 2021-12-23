@@ -21,6 +21,8 @@
 #ifndef FMI2_IMPORT_OPTIONS_H_
 #define FMI2_IMPORT_OPTIONS_H_
 
+#include "fmilib_config.h"
+
 #include "FMI/fmi_import_context.h"
 #include "JM/jm_portability.h"
 
@@ -40,7 +42,7 @@ extern "C" {
 /**
     \brief FMI Library options object.
 */
-typedef struct fmi_import_options_t fmi_import_options_t;
+typedef struct fmi_util_options_t fmi_import_options_t;
 
 /**
     \brief Returns the fmi_import_options_t:: object.
@@ -48,6 +50,13 @@ typedef struct fmi_import_options_t fmi_import_options_t;
     \return fmi_import_options_t:: opaque object pointer
 */
 FMILIB_EXPORT fmi_import_options_t* fmi2_import_get_options(fmi2_import_t* fmu);
+
+/**
+    \brief Sets the flag for the syste
+    \param fmu - an fmu object as returned by fmi2_import_parse_xml().
+    \return fmi_import_options_t:: opaque object pointer
+*/
+FMILIB_EXPORT void fmi_import_set_option_loadlibrary_flag(fmi_import_options_t* options, jm_portability_loadlibrary_flag_t flag); /* TODO: Move this to correct file (fmi and not fmi2) */
 
 /** @} */
 

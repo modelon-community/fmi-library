@@ -30,6 +30,7 @@ fmi_import_options_t* fmi2_import_get_options(fmi2_import_t* fmu) {
     }
 }
 
+/* TODO: Move this to correct file (fmi and not fmi2) */
 void fmi_import_set_option_loadlibrary_flag(fmi_import_options_t* options, jm_portability_loadlibrary_flag_t flag) {
     options->loadlibrary_flag = flag;
 }

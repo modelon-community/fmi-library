@@ -45,8 +45,6 @@ struct fmi2_import_t {
 	fmi_util_options_t* options;
 };
 
-typedef fmi_util_options_t fmi_import_options_t;
-
 #ifdef __cplusplus
 }
 #endif

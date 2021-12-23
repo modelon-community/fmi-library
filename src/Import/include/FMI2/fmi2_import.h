@@ -35,6 +35,7 @@
 #include "fmi2_import_unit.h"
 #include "fmi2_import_variable.h"
 #include "fmi2_import_variable_list.h"
+#include "fmi2_import_options.h"
 
 #include "fmi2_import_capi.h"
 #include "fmi2_import_convenience.h"

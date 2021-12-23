@@ -116,7 +116,7 @@ void test_loadlibrary_flag(fmi2_import_t* fmu, fmi2_callback_functions_t* cbf)
     /* Expect failure because library should not get loaded */
     fmi_import_set_option_loadlibrary_flag(opts, RTLD_NOW|RTLD_NOLOAD);
     status = fmi2_import_create_dllfmu(fmu, fmi2_fmu_kind_me, cbf);
-    ASSERT_STATUS(jm_status_error, status, fmi2_import_create_dllfmu);
+    ASSERT_STATUS(jm_status_error, status, "fmi2_import_create_dllfmu");
     fmi2_import_destroy_dllfmu(fmu);
 #endif
 }

@@ -47,7 +47,6 @@ void do_exit(int code)
     exit(code);
 }
 
-#ifdef undefined
 /**
  * Tests that memory management for options is working when creating dllfmu and
  * freeing it multiple times.
@@ -87,7 +86,6 @@ void test_option_memory_management(fmi2_import_t* fmu, fmi2_callback_functions_t
 
     fmi2_import_destroy_dllfmu(fmu);
 }
-#endif
 
 /**
  * Tests that the option has an effect.
@@ -177,10 +175,8 @@ int main(int argc, char *argv[])
     callBackFunctions.freeMemory = free;
     callBackFunctions.componentEnvironment = fmu;
 
-#ifdef undefined
     /* Tests (they will exit early on failure): */
     test_option_memory_management(fmu, &callBackFunctions);
-#endif
     test_loadlibrary_flag(fmu, &callBackFunctions);
 
     /* Clean up: */

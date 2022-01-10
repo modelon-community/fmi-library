@@ -56,10 +56,17 @@ void test_option_memory_management(fmi2_import_t* fmu, fmi2_callback_functions_t
     fmi_import_options_t* opts;
     fmi_import_options_t* opts2;
     jm_status_enu_t status;
+    jm_portability_loadlibrary_flag_t flag;
+
+#ifdef WIN32
+    flag = 0;
+#else
+    flag = RTLD_NOW | RTLD_LOCAL;
+#endif
 
     /* Test get+set of option before dllfmu */
     opts = fmi2_import_get_options(fmu);
-    fmi_import_set_option_loadlibrary_flag(opts, 0);
+    fmi_import_set_option_loadlibrary_flag(opts, flag);
 
     /* Test after creating dllfmu */
     status = fmi2_import_create_dllfmu(fmu, fmi2_fmu_kind_me, cbf);
@@ -67,14 +74,14 @@ void test_option_memory_management(fmi2_import_t* fmu, fmi2_callback_functions_t
 
     opts2 = fmi2_import_get_options(fmu);
     ASSERT_EQUALS(opts, opts2, "A different options object was returned");
-    fmi_import_set_option_loadlibrary_flag(opts, 0);
+    fmi_import_set_option_loadlibrary_flag(opts, flag);
 
     /* Test with dllfmu destroyed */
     fmi2_import_destroy_dllfmu(fmu);
 
     opts2 = fmi2_import_get_options(fmu);
     ASSERT_EQUALS(opts, opts2, "A different options object was returned");
-    fmi_import_set_option_loadlibrary_flag(opts, 0);
+    fmi_import_set_option_loadlibrary_flag(opts, flag);
 
     /* Test after creating new dllfmu */
     status = fmi2_import_create_dllfmu(fmu, fmi2_fmu_kind_me, cbf);
@@ -82,7 +89,7 @@ void test_option_memory_management(fmi2_import_t* fmu, fmi2_callback_functions_t
 
     opts2 = fmi2_import_get_options(fmu);
     ASSERT_EQUALS(opts, opts2, "A different options object was returned");
-    fmi_import_set_option_loadlibrary_flag(opts, 0);
+    fmi_import_set_option_loadlibrary_flag(opts, flag);
 
     fmi2_import_destroy_dllfmu(fmu);
 }
@@ -114,7 +121,7 @@ void test_loadlibrary_flag(fmi2_import_t* fmu, fmi2_callback_functions_t* cbf)
     fmi2_import_destroy_dllfmu(fmu);
 #else
     /* Expect failure because library should not get loaded */
-    fmi_import_set_option_loadlibrary_flag(opts, RTLD_NOW|RTLD_NOLOAD);
+    fmi_import_set_option_loadlibrary_flag(opts, RTLD_NOW | RTLD_NOLOAD);
     status = fmi2_import_create_dllfmu(fmu, fmi2_fmu_kind_me, cbf);
     ASSERT_STATUS(jm_status_error, status, "fmi2_import_create_dllfmu");
     fmi2_import_destroy_dllfmu(fmu);
@@ -129,7 +136,6 @@ int main(int argc, char *argv[])
     jm_callbacks callbacks;
     fmi_import_context_t* context;
     fmi_version_enu_t version;
-    jm_status_enu_t status;
 
     fmi2_import_t* fmu;    
 
@@ -140,7 +146,6 @@ int main(int argc, char *argv[])
 
     fmuPath = argv[1];
     tmpPath = argv[2];
-
 
     callbacks.malloc = malloc;
     callbacks.calloc = calloc;
@@ -158,14 +163,14 @@ int main(int argc, char *argv[])
 
     version = fmi_import_get_fmi_version(context, fmuPath, tmpPath);
 
-    if(version != fmi_version_2_0_enu) {
+    if (version != fmi_version_2_0_enu) {
         printf("Only version 2.0 is supported by this code\n");
         do_exit(CTEST_RETURN_FAIL);
     }
 
     fmu = fmi2_import_parse_xml(context, tmpPath, 0);
 
-    if(!fmu) {
+    if (!fmu) {
         printf("Error parsing XML. Exiting.\n");
         do_exit(CTEST_RETURN_FAIL);
     }    

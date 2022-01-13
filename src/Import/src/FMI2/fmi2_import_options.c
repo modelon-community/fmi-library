@@ -19,8 +19,6 @@
 #include "fmi2_import_impl.h"
 
 
-static const char* module = "FMILIB";
-
 fmi_import_options_t* fmi2_import_get_options(fmi2_import_t* fmu) {
     if (fmu->options) {
         return fmu->options;

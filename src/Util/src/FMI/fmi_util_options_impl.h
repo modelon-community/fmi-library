@@ -22,9 +22,9 @@
 extern "C" {
 #endif
 
-typedef struct fmi_util_options_t {
+struct fmi_util_options_t {
     jm_portability_loadlibrary_flag_t loadlibrary_flag;
-} fmi_util_options_t;
+};
 
 #ifdef __cplusplus
 }

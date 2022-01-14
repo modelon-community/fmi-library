@@ -48,22 +48,21 @@ extern "C" {
  * \addtogroup fmi2_import FMI 2.0 import interface
  *  All the structures used in the interfaces are intended to
  *  be treated as opaque objects by the client code.
- @{ 
+ * @{
+ *      \addtogroup fmi2_import_init Construction, destruction and error handling
+ *      \addtogroup fmi2_import_gen General information retrieval
+ *      \addtogroup fmi2_import_capi Interface to the standard FMI 2.0 "C" API
+ *      @{
+ *           \brief Convenient functions for calling the FMI functions. This interface wraps the "C" API. 
+ *      @}
+ *      \addtogroup fmi2_import_options Functions for handling FMI Library options
+ * @}
  */
 
-/**	\addtogroup fmi2_import_init Construction, destruction and error handling
- * 	\addtogroup fmi2_import_gen General information retrieval
- *	\addtogroup fmi2_import_capi Interface to the standard FMI 2.0 "C" API
- *  \addtogroup fmi2_import_options Functions for handling FMI Library options.
-
- *  \brief Convenient functions for calling the FMI functions. This interface wraps the "C" API. 
+/**
+ * \addtogroup fmi2_import_init Construction, destruction and error handling
+ * @{
  */
- /** @} */
- /** @} */
-
-/** \addtogroup fmi2_import_init Construction, destruction and error handling
-@{
-*/
 
 /**
 * \brief Retrieve the last error message.

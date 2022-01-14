@@ -1,10 +1,17 @@
+# If you add anything to this file, then also consider adding it to .dockerignore.
+
+/.git/
+/.vs/
+
 /build-*/
-install-*/
-testlogs-*/
-CMakeFiles/
-ThirdParty/winflexbison/
-doc/
-CMakeSettings.json
-.vs/
-out/
-enc_temp_folder/
+/CMakeFiles/
+/doc/
+/install-*/
+/out/
+/testlogs-*/
+
+/CMakeSettings.json
+/CMakeCache.txt
+
+# Should not go in .dockerignore:
+/ThirdParty/winflexbison/

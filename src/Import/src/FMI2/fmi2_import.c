@@ -17,11 +17,12 @@
 #include <stdarg.h>
 
 #include <JM/jm_named_ptr.h>
+#include "JM/jm_portability.h"
+#include "FMI/fmi_util_options.h"
 #include <FMI2/fmi2_types.h>
 #include <FMI2/fmi2_functions.h>
 #include <FMI2/fmi2_enums.h>
 #include <FMI2/fmi2_capi.h>
-#include "FMI/fmi_util_options.h"
 
 #include "fmi2_import_impl.h"
 #include "fmi2_import_variable_list_impl.h"
@@ -480,4 +481,13 @@ void fmi2_import_get_initial_unknowns_dependencies(fmi2_import_t* fmu,size_t** s
     ms = fmi2_xml_get_model_structure(fmu->md);
     assert(ms);
     fmi2_xml_get_initial_unknowns_dependencies(ms, startIndex, dependency, factorKind); 
+}
+
+fmi_import_options_t* fmi2_import_get_options(fmi2_import_t* fmu) {
+    if (fmu->options) {
+        return fmu->options;
+    } else {
+        /* Options ownership has been moved to CAPI */
+        return fmu->capi->options;
+    }
 }

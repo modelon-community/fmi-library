@@ -25,6 +25,7 @@
 #include <JM/jm_callbacks.h>
 #include <FMI/fmi_import_util.h>
 #include <FMI/fmi_import_context.h>
+#include <FMI/fmi_import_options.h>
 /* #include <FMI2/fmi2_xml_model_description.h> */
 
 #include <FMI2/fmi2_types.h>
@@ -35,7 +36,6 @@
 #include "fmi2_import_unit.h"
 #include "fmi2_import_variable.h"
 #include "fmi2_import_variable_list.h"
-#include "fmi2_import_options.h"
 
 #include "fmi2_import_capi.h"
 #include "fmi2_import_convenience.h"
@@ -45,21 +45,23 @@ extern "C" {
 #endif
 
 /**
- * \addtogroup  fmi2_import FMI 2.0 import interface
+ * \addtogroup fmi2_import FMI 2.0 import interface
  *  All the structures used in the interfaces are intended to
  *  be treated as opaque objects by the client code.
  @{ 
  */
 
-/**	\addtogroup fmi2_import_init Constuction, destruction and error handling
+/**	\addtogroup fmi2_import_init Construction, destruction and error handling
  * 	\addtogroup fmi2_import_gen General information retrieval
  *	\addtogroup fmi2_import_capi Interface to the standard FMI 2.0 "C" API
- *  \brief Convenient functions for calling the FMI functions. This interface wrappes the "C" API. 
+ *  \addtogroup fmi2_import_options Functions for handling FMI Library options.
+
+ *  \brief Convenient functions for calling the FMI functions. This interface wraps the "C" API. 
  */
  /** @} */
  /** @} */
 
-/** \addtogroup fmi2_import_init Constuction, destruction and error handling
+/** \addtogroup fmi2_import_init Construction, destruction and error handling
 @{
 */
 
@@ -374,6 +376,23 @@ FMILIB_EXPORT void fmi2_import_get_discrete_states_dependencies(fmi2_import_t* f
 FMILIB_EXPORT void fmi2_import_get_initial_unknowns_dependencies(fmi2_import_t* fmu, size_t** startIndex, size_t** dependency, char** factorKind);
  
 /**@} */
+
+/**
+ * \addtogroup fmi2_import_options
+ * @{
+ */
+
+/**
+ * Returns the fmi_import_options_t:: object.
+ *
+ * \param fmu - an fmu object as returned by fmi2_import_parse_xml().
+ * \return fmi_import_options_t:: opaque object pointer
+ */
+FMILIB_EXPORT fmi_import_options_t* fmi2_import_get_options(fmi2_import_t* fmu);
+
+/**
+ * @}
+ */
 
 #ifdef __cplusplus
 }

@@ -25,6 +25,7 @@ extern "C" {
 #include <JM/jm_types.h>
 #include <JM/jm_portability.h>
 
+#include "FMI/fmi_util_options.h"
 #include <FMI1/fmi1_capi_impl.h>
 
 #define FUNCTION_NAME_LENGTH_MAX 2048			/* Maximum length of FMI function name. Used in the load DLL function. */
@@ -142,6 +143,7 @@ void fmi1_capi_destroy_dllfmu(fmi1_capi_t* fmu)
 	}
 	fmi1_capi_free_dll(fmu);
 	jm_log_debug(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Releasing allocated memory");
+	fmi_util_free_options(fmu->callbacks, fmu->options);
 	fmu->callbacks->free((void*)fmu->dllPath);
 	fmu->callbacks->free((void*)fmu->modelIdentifier);
 	fmu->callbacks->free((void*)fmu);
@@ -178,6 +180,9 @@ fmi1_capi_t* fmi1_capi_create_dllfmu(jm_callbacks* cb, const char* dllPath, cons
 	/* Set all memory alloated pointers to NULL */
 	fmu->dllPath = NULL;
 	fmu->modelIdentifier = NULL;
+
+	/* Create options */
+	fmu->options = fmi_util_allocate_options(cb);
 
 	/* Copy DLL path */
 	fmu->dllPath = (char*)cb->calloc(sizeof(char), strlen(dllPath) + 1);
@@ -220,7 +225,7 @@ jm_status_enu_t fmi1_capi_load_fcn(fmi1_capi_t* fmu)
 jm_status_enu_t fmi1_capi_load_dll(fmi1_capi_t* fmu)
 {
 	assert(fmu && fmu->dllPath);
-	fmu->dllHandle = jm_portability_load_dll_handle(fmu->dllPath); /* Load the shared library */
+	fmu->dllHandle = jm_portability_load_dll_handle_with_flag(fmu->dllPath, fmu->options->loadlibrary_flag); /* Load the shared library */
 	if (fmu->dllHandle == NULL) {
 		jm_log_fatal(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Could not load the FMU binary: %s", jm_portability_get_last_dll_error());
 		return jm_status_error;

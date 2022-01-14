@@ -20,8 +20,8 @@
 
 #include <JM/jm_types.h>
 #include <JM/jm_portability.h>
-#include "FMI/fmi_util_options.h"
 
+#include "FMI/fmi_util_options.h"
 #include <FMI2/fmi2_capi_impl.h>
 
 #define FUNCTION_NAME_LENGTH_MAX 2048			/* Maximum length of FMI function name. Used in the load DLL function. */

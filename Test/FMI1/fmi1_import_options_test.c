@@ -51,7 +51,7 @@ void do_exit(int code)
  * Tests that memory management for options is working when creating dllfmu and
  * freeing it multiple times.
  */
-void test_option_memory_management(fmi2_import_t* fmu, fmi2_callback_functions_t* cbf)
+void test_option_memory_management(fmi1_import_t* fmu, fmi1_callback_functions_t* cbf)
 {
     fmi_import_options_t* opts;
     fmi_import_options_t* opts2;
@@ -65,44 +65,44 @@ void test_option_memory_management(fmi2_import_t* fmu, fmi2_callback_functions_t
 #endif
 
     /* Test get+set of option before dllfmu */
-    opts = fmi2_import_get_options(fmu);
+    opts = fmi1_import_get_options(fmu);
     fmi_import_set_option_loadlibrary_flag(opts, flag);
 
     /* Test after creating dllfmu */
-    status = fmi2_import_create_dllfmu(fmu, fmi2_fmu_kind_me, cbf);
-    ASSERT_STATUS(jm_status_success, status, "fmi2_import_create_dllfmu");
+    status = fmi1_import_create_dllfmu(fmu, *cbf, 0);
+    ASSERT_STATUS(jm_status_success, status, "fmi1_import_create_dllfmu");
 
-    opts2 = fmi2_import_get_options(fmu);
+    opts2 = fmi1_import_get_options(fmu);
     ASSERT_EQUALS(opts, opts2, "A different options object was returned");
     fmi_import_set_option_loadlibrary_flag(opts, flag);
 
     /* Test with dllfmu destroyed */
-    fmi2_import_destroy_dllfmu(fmu);
+    fmi1_import_destroy_dllfmu(fmu);
 
-    opts2 = fmi2_import_get_options(fmu);
+    opts2 = fmi1_import_get_options(fmu);
     ASSERT_EQUALS(opts, opts2, "A different options object was returned");
     fmi_import_set_option_loadlibrary_flag(opts, flag);
 
     /* Test after creating new dllfmu */
-    status = fmi2_import_create_dllfmu(fmu, fmi2_fmu_kind_me, cbf);
-    ASSERT_STATUS(jm_status_success, status, "fmi2_import_create_dllfmu");
+    status = fmi1_import_create_dllfmu(fmu, *cbf, 0);
+    ASSERT_STATUS(jm_status_success, status, "fmi1_import_create_dllfmu");
 
-    opts2 = fmi2_import_get_options(fmu);
+    opts2 = fmi1_import_get_options(fmu);
     ASSERT_EQUALS(opts, opts2, "A different options object was returned");
     fmi_import_set_option_loadlibrary_flag(opts, flag);
 
-    fmi2_import_destroy_dllfmu(fmu);
+    fmi1_import_destroy_dllfmu(fmu);
 }
 
 /**
  * Tests that the option has an effect.
  */
-void test_loadlibrary_flag(fmi2_import_t* fmu, fmi2_callback_functions_t* cbf)
+void test_loadlibrary_flag(fmi1_import_t* fmu, fmi1_callback_functions_t* cbf)
 {
     fmi_import_options_t* opts;
     jm_status_enu_t status;
 
-    opts = fmi2_import_get_options(fmu);
+    opts = fmi1_import_get_options(fmu);
 
     /* This is a bit hard to test, so mainly trying to see that setting the
      * option has some effect */
@@ -110,34 +110,34 @@ void test_loadlibrary_flag(fmi2_import_t* fmu, fmi2_callback_functions_t* cbf)
 
     /* Expect failure because we haven't signed the dll */
     fmi_import_set_option_loadlibrary_flag(opts, LOAD_LIBRARY_REQUIRE_SIGNED_TARGET);
-    status = fmi2_import_create_dllfmu(fmu, fmi2_fmu_kind_me, cbf);
-    ASSERT_STATUS(jm_status_error, status, "fmi2_import_create_dllfmu");
-    fmi2_import_destroy_dllfmu(fmu);
+    status = fmi1_import_create_dllfmu(fmu, *cbf, 0);
+    ASSERT_STATUS(jm_status_error, status, "fmi1_import_create_dllfmu");
+    fmi1_import_destroy_dllfmu(fmu);
 
     /* Expect success because ALTERED_SEARCH_PATH should not matter in this case. */
     fmi_import_set_option_loadlibrary_flag(opts, LOAD_WITH_ALTERED_SEARCH_PATH);
-    status = fmi2_import_create_dllfmu(fmu, fmi2_fmu_kind_me, cbf);
-    ASSERT_STATUS(jm_status_success, status, "fmi2_import_create_dllfmu");
-    fmi2_import_destroy_dllfmu(fmu);
+    status = fmi1_import_create_dllfmu(fmu, *cbf, 0);
+    ASSERT_STATUS(jm_status_success, status, "fmi1_import_create_dllfmu");
+    fmi1_import_destroy_dllfmu(fmu);
 #else
     /* Expect failure because library should not get loaded */
     fmi_import_set_option_loadlibrary_flag(opts, RTLD_NOW | RTLD_NOLOAD);
-    status = fmi2_import_create_dllfmu(fmu, fmi2_fmu_kind_me, cbf);
-    ASSERT_STATUS(jm_status_error, status, "fmi2_import_create_dllfmu");
-    fmi2_import_destroy_dllfmu(fmu);
+    status = fmi1_import_create_dllfmu(fmu, *cbf, 0);
+    ASSERT_STATUS(jm_status_error, status, "fmi1_import_create_dllfmu");
+    fmi1_import_destroy_dllfmu(fmu);
 #endif
 }
 
 int main(int argc, char *argv[])
 {
-    fmi2_callback_functions_t callBackFunctions;
+    fmi1_callback_functions_t callBackFunctions;
     const char* fmuPath;
     const char* tmpPath;
     jm_callbacks callbacks;
     fmi_import_context_t* context;
     fmi_version_enu_t version;
 
-    fmi2_import_t* fmu;    
+    fmi1_import_t* fmu;    
 
     if(argc < 3) {
         printf("Usage: %s <fmu_file> <temporary_dir>\n", argv[0]);
@@ -163,29 +163,28 @@ int main(int argc, char *argv[])
 
     version = fmi_import_get_fmi_version(context, fmuPath, tmpPath);
 
-    if (version != fmi_version_2_0_enu) {
-        printf("Only version 2.0 is supported by this code\n");
+    if (version != fmi_version_1_enu) {
+        printf("Only version 1.0 is supported by this code\n");
         do_exit(CTEST_RETURN_FAIL);
     }
 
-    fmu = fmi2_import_parse_xml(context, tmpPath, NULL);
+    fmu = fmi1_import_parse_xml(context, tmpPath);
 
     if (!fmu) {
         printf("Error parsing XML. Exiting.\n");
         do_exit(CTEST_RETURN_FAIL);
     }    
 
-    callBackFunctions.logger = fmi2_log_forwarding;
+    callBackFunctions.logger = fmi1_log_forwarding;
     callBackFunctions.allocateMemory = calloc;
     callBackFunctions.freeMemory = free;
-    callBackFunctions.componentEnvironment = fmu;
 
     /* Tests (they will exit early on failure): */
     test_option_memory_management(fmu, &callBackFunctions);
     test_loadlibrary_flag(fmu, &callBackFunctions);
 
     /* Clean up: */
-    fmi2_import_free(fmu);
+    fmi1_import_free(fmu);
     fmi_import_free_context(context);
     
     printf("Everything seems to be OK since you got this far=)!\n");

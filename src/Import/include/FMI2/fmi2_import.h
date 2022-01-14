@@ -60,7 +60,7 @@ extern "C" {
  */
 
 /**
- * \addtogroup fmi2_import_init Construction, destruction and error handling
+ * \addtogroup fmi2_import_init
  * @{
  */
 

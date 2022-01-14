@@ -28,6 +28,17 @@ extern "C" {
 
 static const char * module = "FMILIB";
 
+static void fmi1_import_capi_destroy_dllfmu_and_restore_options(fmi1_import_t* fmu) {
+	if (fmu->capi->options) {
+		/* Take back ownership of Options */
+		fmu->options = fmu->capi->options;
+		fmu->capi->options = NULL;
+	}
+
+	fmi1_capi_destroy_dllfmu(fmu->capi);
+	fmu->capi = NULL;
+}
+
 /* Load and destroy functions */
 jm_status_enu_t fmi1_import_create_dllfmu(fmi1_import_t* fmu, fmi1_callback_functions_t callBackFunctions, int registerGlobally) {
 
@@ -79,6 +90,12 @@ jm_status_enu_t fmi1_import_create_dllfmu(fmi1_import_t* fmu, fmi1_callback_func
 		fmu -> capi = fmi1_capi_create_dllfmu(fmu->callbacks, dllFileName, modelIdentifier, callBackFunctions, standard);
 	}
 
+    if (fmu->capi) {
+        /* Replace the CAPI options with the import ones */
+        fmi_util_free_options(fmu->callbacks, fmu->capi->options);
+        fmu->capi->options = fmu->options;
+        fmu->options = NULL;
+    }
 
 	/* Load the DLL handle */
 	if (fmu -> capi) {
@@ -86,8 +103,7 @@ jm_status_enu_t fmi1_import_create_dllfmu(fmi1_import_t* fmu, fmi1_callback_func
 			"Loading '" FMI_PLATFORM "' binary with '%s' platform types", fmi1_get_platform() );
 
 		if(fmi1_capi_load_dll(fmu -> capi) == jm_status_error) {		
-			fmi1_capi_destroy_dllfmu(fmu -> capi);
-			fmu -> capi = NULL;
+			fmi1_import_capi_destroy_dllfmu_and_restore_options(fmu);
 		}
 	}
 
@@ -106,8 +122,7 @@ jm_status_enu_t fmi1_import_create_dllfmu(fmi1_import_t* fmu, fmi1_callback_func
 	/* Load the DLL functions */
 	if (fmi1_capi_load_fcn(fmu -> capi) == jm_status_error) {
 		fmi1_capi_free_dll(fmu -> capi);			
-		fmi1_capi_destroy_dllfmu(fmu -> capi);
-		fmu -> capi = NULL;
+		fmi1_import_capi_destroy_dllfmu_and_restore_options(fmu);
 		return jm_status_error;
 	}
 	jm_log_verbose(fmu->callbacks, module, "Successfully loaded all the interface functions"); 
@@ -148,8 +163,8 @@ void fmi1_import_destroy_dllfmu(fmi1_import_t* fmu) {
 		/* Free DLL handle */
 		fmi1_capi_free_dll(fmu -> capi);
 
-		/* Destroy the C-API struct */
-		fmi1_capi_destroy_dllfmu(fmu -> capi);
+		/* Destroy the C-API struct and restore options */
+		fmi1_import_capi_destroy_dllfmu_and_restore_options(fmu);
 
 		if(fmu->registerGlobally && fmi1_import_active_fmu) {
 			size_t index;

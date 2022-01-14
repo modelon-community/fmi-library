@@ -25,6 +25,7 @@
 #include <JM/jm_callbacks.h>
 #include <FMI/fmi_import_util.h>
 #include <FMI/fmi_import_context.h>
+#include "FMI/fmi_import_options.h"
 /* #include <FMI1/fmi1_xml_model_description.h> */
 
 #include <FMI1/fmi1_types.h>
@@ -47,21 +48,21 @@ extern "C" {
 #endif
 
 /**
- * \addtogroup  fmi1_import FMI 1.0 import interface
+ * \addtogroup fmi1_import FMI 1.0 import interface
  *  All the structures used in the interfaces are intended to
  *  be treated as opaque objects by the client code.
- @{ 
+ * @{
+ *      \addtogroup fmi1_import_init Construction, destruction and error handling
+ *      \addtogroup fmi1_import_gen General information retrieval
+ *      \addtogroup fmi1_import_capi Interface to the standard FMI 1.0 "C" API
+ *      @{
+ *           \brief Convenient functions for calling the FMI functions. This interface wraps the "C" API. 
+ *      @}
+ *      \addtogroup fmi1_import_options Functions for handling FMI Library options
+ * @}
  */
 
-/**	\addtogroup fmi1_import_init Constuction, destruction and error handling
- * 	\addtogroup fmi1_import_gen General information retrieval
- *	\addtogroup fmi1_import_capi Interface to the standard FMI 1.0 "C" API
- *  \brief Convenient functions for calling the FMI functions. This interface wrappes the "C" API. 
- */
- /** @} */
- /** @} */
-
-/** \addtogroup fmi1_import_init Constuction, destruction and error handling
+/** \addtogroup fmi1_import_init
 @{
 */
 /**
@@ -251,6 +252,24 @@ FMILIB_EXPORT fmi1_import_variable_list_t* fmi1_import_get_variable_list_alphabe
 FMILIB_EXPORT fmi1_import_variable_list_t* fmi1_import_create_var_list(fmi1_import_t* fmu,fmi1_import_variable_t* v);
 
 /**@} */
+
+/**
+ * \addtogroup fmi1_import_options
+ * @{
+ */
+
+/**
+ * Returns the fmi_import_options_t:: object.
+ *
+ * \param fmu - an fmu object as returned by fmi1_import_parse_xml().
+ * \return fmi_import_options_t:: opaque object pointer
+ */
+FMILIB_EXPORT fmi_import_options_t* fmi1_import_get_options(fmi1_import_t* fmu);
+
+/**
+ * @}
+ */
+
 
 #ifdef __cplusplus
 }

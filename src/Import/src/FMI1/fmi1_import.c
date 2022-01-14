@@ -20,6 +20,7 @@
 #include "fmi1_import_impl.h"
 #include "fmi1_import_variable_list_impl.h"
 
+#include "FMI/fmi_util_options.h"
 #include <FMI1/fmi1_types.h>
 #include <FMI1/fmi1_functions.h>
 #include <FMI1/fmi1_enums.h>
@@ -49,11 +50,21 @@ fmi1_import_t* fmi1_import_allocate(jm_callbacks* cb) {
 	jm_vector_init(char)(&fmu->logMessageBufferExpanded,0,cb);
 
 	if(!fmu->md) {
-		cb->free(fmu);
-		return 0;
+		goto err1;
+	}
+
+	fmu->options = fmi_util_allocate_options(cb);
+	if(!fmu->options) {
+		goto err2;
 	}
 
 	return fmu;
+
+err2:
+    fmi1_xml_free_model_description(fmu->md);
+err1:
+    cb->free(fmu);
+    return 0;
 }
 
 const char* fmi1_import_get_last_error(fmi1_import_t* fmu) {
@@ -121,6 +132,7 @@ void fmi1_import_free(fmi1_import_t* fmu) {
 
 	fmi1_import_destroy_dllfmu(fmu);
 	fmi1_xml_free_model_description(fmu->md);
+	fmi_util_free_options(cb, fmu->options);
 	jm_vector_free_data(char)(&fmu->logMessageBufferCoded);
 	jm_vector_free_data(char)(&fmu->logMessageBufferExpanded);
 
@@ -375,4 +387,13 @@ fmi1_import_variable_list_t* fmi1_import_get_variable_list_alphabetical_order(fm
 		jm_vector_set_item(jm_voidp)(&vl->variables, i, jm_vector_get_item(jm_named_ptr)(vars, i).ptr);
     }
     return vl;
+}
+
+fmi_import_options_t* fmi1_import_get_options(fmi1_import_t* fmu) {
+    if (fmu->options) {
+        return fmu->options;
+    } else {
+        /* Options ownership has been moved to CAPI */
+        return fmu->capi->options;
+    }
 }

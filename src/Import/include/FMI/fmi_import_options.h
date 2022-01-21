@@ -25,15 +25,21 @@ extern "C" {
 #endif
 
 /**
-    \brief FMI Library options object.
-*/
+ * \brief FMI Library options object.
+ */
 typedef struct fmi_util_options_t fmi_import_options_t;
 
 /**
-    \brief Sets the flag for the platform dependent function that loads the shared library.
-    \param fmu - an fmu object as returned by fmi2_import_parse_xml().
-    \return fmi_import_options_t:: opaque object pointer
-*/
+ * \brief Sets the flag for the platform dependent function that loads the shared library.
+ *
+ * See the platform dependent function ('dlopen' or 'LoadLibraryEx') for valid values.
+ *
+ * An example value for 'dlopen' would be RTLD_NOW|RTLD_LOCAL|RTLD_DEEPBIND, granted the
+ * system supports the 'RTLD_DEEPBIND' flag.
+ *
+ * \param fmu - an fmu object as returned by fmi2_import_parse_xml().
+ * \return fmi_import_options_t:: opaque object pointer
+ */
 FMILIB_EXPORT void fmi_import_set_option_loadlibrary_flag(fmi_import_options_t* options, jm_portability_loadlibrary_flag_t flag);
 
 

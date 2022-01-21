@@ -41,7 +41,7 @@
 @{*/
 
 /**
- * Type for flag used when loading shared library.
+ * \brief Type for flag used when loading shared library. Same as would be passed to dlopen or LoadLibraryEx.
  */
 #ifdef WIN32
 typedef DWORD jm_portability_loadlibrary_flag_t;

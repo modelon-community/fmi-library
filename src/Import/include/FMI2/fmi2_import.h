@@ -25,7 +25,7 @@
 #include <JM/jm_callbacks.h>
 #include <FMI/fmi_import_util.h>
 #include <FMI/fmi_import_context.h>
-#include <FMI/fmi_import_options.h>
+#include "FMI/fmi_import_options.h"
 /* #include <FMI2/fmi2_xml_model_description.h> */
 
 #include <FMI2/fmi2_types.h>

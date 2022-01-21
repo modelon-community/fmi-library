@@ -104,6 +104,8 @@ add_executable(fmi2_variable_bad_type_variability_test
 target_link_libraries(fmi2_variable_bad_type_variability_test ${FMILIBFORTEST})
 add_executable(fmi2_enum_test ${RTTESTDIR}/FMI2/fmi2_enum_test.c)
 target_link_libraries(fmi2_enum_test ${FMILIBFORTEST})
+add_executable (fmi2_import_options_test ${RTTESTDIR}/FMI2/fmi2_import_options_test.c)
+target_link_libraries (fmi2_import_options_test ${FMILIBFORTEST})
 
 set_target_properties(
     fmi2_xml_parsing_test
@@ -111,6 +113,7 @@ set_target_properties(
     fmi2_import_me_test fmi2_import_cs_test
     fmi2_import_variable_test
     fmi2_import_default_experiment_test
+    fmi2_import_options_test
     PROPERTIES FOLDER "Test/FMI2"
 )
 set(FAIL_NAME_CHECK 0)
@@ -125,6 +128,7 @@ add_test(ctest_fmi2_import_xml_test_mf fmi2_import_xml_test ${TEST_OUTPUT_FOLDER
 set_tests_properties(ctest_fmi2_import_xml_test_mf PROPERTIES WILL_FAIL TRUE)
 add_test(ctest_fmi2_import_test_me fmi2_import_me_test ${FMU2_ME_PATH} ${FMU_TEMPFOLDER})
 add_test(ctest_fmi2_import_test_cs fmi2_import_cs_test ${FMU2_CS_PATH} ${FMU_TEMPFOLDER})
+add_test(ctest_fmi2_import_test_options fmi2_import_options_test ${FMU2_ME_PATH} ${FMU_TEMPFOLDER})
 add_test(ctest_fmi2_import_variable_test
          fmi2_import_variable_test
          ${VARIALBE_TEST_MODEL_DESC_DIR})

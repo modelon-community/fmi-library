@@ -1,10 +1,14 @@
-install-*
-testlogs-*
-build-*
-!build.sh
-Dockerfiles/
-doc/
-Jenkinsfile.groovy
-.git*
-CMakeCache.txt
+# Files that will not be copied to the Docker image:
 
+/.git/
+/.vs/
+
+/build-*/
+/CMakeFiles/
+/doc/
+/install-*/
+/out/
+/testlogs-*/
+
+/CMakeSettings.json
+/CMakeCache.txt

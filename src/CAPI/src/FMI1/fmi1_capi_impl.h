@@ -21,12 +21,15 @@
 extern "C" {
 #endif
 
+#include "FMI/fmi_util_options.h"
 #include <FMI1/fmi1_types.h>
 #include <FMI1/fmi1_functions.h>
 #include <FMI1/fmi1_enums.h>
 #include <FMI1/fmi1_capi.h>
 #include <JM/jm_portability.h>
 #include <JM/jm_callbacks.h>
+
+#include "../src/FMI/fmi_util_options_impl.h"
 
 #define FMI_CAPI_MODULE_NAME "FMICAPI"
 
@@ -39,6 +42,7 @@ struct fmi1_capi_t {
 	fmi1_callback_functions_t callBackFunctions;
 
 	jm_callbacks* callbacks;
+	fmi_util_options_t* options;
 
 	DLL_HANDLE dllHandle;
 

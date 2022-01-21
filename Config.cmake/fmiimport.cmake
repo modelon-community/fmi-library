@@ -43,6 +43,7 @@ set(FMIIMPORT_PUBHEADERS
 	include/FMI2/fmi2_import_convenience.h
 
 	include/FMI/fmi_import_context.h
+	include/FMI/fmi_import_options.h
 	include/FMI/fmi_import_util.h
  )
 							
@@ -63,6 +64,7 @@ set(FMIIMPORTHEADERS
 
 set(FMIIMPORTSOURCE
 	src/FMI/fmi_import_context.c
+	src/FMI/fmi_import_options.c
 	src/FMI/fmi_import_util.c
 	
 	src/FMI1/fmi1_import_cosim.c

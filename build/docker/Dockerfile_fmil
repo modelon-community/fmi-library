@@ -16,6 +16,7 @@ USER user1:group1
 # Now set workdir as non-root
 WORKDIR /fmil/fmi-library
 
-# The stuff inside workdir will belong to user1:group1
+# The files inside workdir will belong to user1:group1.
+# To avoid copying files, add them to .dockerignore.
 COPY --chown=user1:group1 . .
 

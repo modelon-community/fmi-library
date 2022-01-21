@@ -4,7 +4,7 @@
     This program is free software: you can redistribute it and/or modify
     it under the terms of the BSD style license.
 
-     This program is distributed in the hope that it will be useful,
+    This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     FMILIB_License.txt file for more details.
@@ -17,6 +17,8 @@
 #include <stdarg.h>
 
 #include <JM/jm_named_ptr.h>
+#include "JM/jm_portability.h"
+#include "FMI/fmi_util_options.h"
 #include <FMI2/fmi2_types.h>
 #include <FMI2/fmi2_functions.h>
 #include <FMI2/fmi2_enums.h>
@@ -47,11 +49,21 @@ fmi2_import_t* fmi2_import_allocate(jm_callbacks* cb) {
 	jm_vector_init(char)(&fmu->logMessageBufferExpanded,0,cb);
 
 	if(!fmu->md) {
-		cb->free(fmu);
-		return 0;
+		goto err1;
+	}
+
+	fmu->options = fmi_util_allocate_options(cb);
+	if(!fmu->options) {
+		goto err2;
 	}
 
 	return fmu;
+
+err2:
+    fmi2_xml_free_model_description(fmu->md);
+err1:
+    cb->free(fmu);
+    return 0;
 }
 
 const char* fmi2_import_get_last_error(fmi2_import_t* fmu) {
@@ -119,6 +131,7 @@ void fmi2_import_free(fmi2_import_t* fmu) {
 
 	fmi2_import_destroy_dllfmu(fmu);
 	fmi2_xml_free_model_description(fmu->md);
+	fmi_util_free_options(cb, fmu->options);
 	jm_vector_free_data(char)(&fmu->logMessageBufferCoded);
 	jm_vector_free_data(char)(&fmu->logMessageBufferExpanded);
 
@@ -468,4 +481,13 @@ void fmi2_import_get_initial_unknowns_dependencies(fmi2_import_t* fmu,size_t** s
     ms = fmi2_xml_get_model_structure(fmu->md);
     assert(ms);
     fmi2_xml_get_initial_unknowns_dependencies(ms, startIndex, dependency, factorKind); 
-} 
+}
+
+fmi_import_options_t* fmi2_import_get_options(fmi2_import_t* fmu) {
+    if (fmu->options) {
+        return fmu->options;
+    } else {
+        /* Options ownership has been moved to CAPI */
+        return fmu->capi->options;
+    }
+}

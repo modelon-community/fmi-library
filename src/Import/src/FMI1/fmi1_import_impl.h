@@ -26,6 +26,7 @@
 #include <FMI1/fmi1_xml_model_description.h>
 
 #include "../FMI/fmi_import_context_impl.h"
+#include "../src/FMI/fmi_util_options_impl.h"
 #include "../src/FMI1/fmi1_capi_impl.h"
 
 
@@ -42,6 +43,7 @@ struct fmi1_import_t {
 	int registerGlobally;
 	jm_vector(char) logMessageBufferCoded;
 	jm_vector(char) logMessageBufferExpanded;
+	fmi_util_options_t* options;
 };
 
 extern jm_callbacks fmi1_import_active_fmu_store_callbacks;

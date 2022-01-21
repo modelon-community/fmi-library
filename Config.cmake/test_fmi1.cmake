@@ -69,6 +69,9 @@ compress_fmu("${TEST_OUTPUT_FOLDER}" "${FMU_DUMMY_CS_MODEL_IDENTIFIER}" "cs_tc" 
 add_executable(fmi1_variable_bad_type_variability_test ${RTTESTDIR}/FMI1/fmi1_variable_bad_type_variability_test.c)
 target_link_libraries(fmi1_variable_bad_type_variability_test ${FMILIBFORTEST})
 
+add_executable (fmi1_import_options_test ${RTTESTDIR}/FMI1/fmi1_import_options_test.c)
+target_link_libraries (fmi1_import_options_test ${FMILIBFORTEST})
+
 add_executable (fmi1_import_default_experiment_test ${RTTESTDIR}/FMI1/fmi1_import_default_experiment_test.c)
 target_link_libraries (fmi1_import_default_experiment_test  ${FMILIBFORTEST}  )
 add_executable(fmi1_type_definitions_test ${RTTESTDIR}/FMI1/fmi1_import_type_definitions_test.c)
@@ -109,6 +112,7 @@ ADD_TEST(ctest_fmi_import_xml_test_empty fmi_import_xml_test ${FMU_DUMMY_FOLDER}
 ADD_TEST(ctest_fmi_import_xml_test fmi_import_xml_test ${FMU_TEMPFOLDER})
 add_test(ctest_fmi_import_xml_test_mf fmi_import_xml_test ${TEST_OUTPUT_FOLDER}/${FMU_DUMMY_MF_MODEL_IDENTIFIER}_mf)
   set_tests_properties(ctest_fmi_import_xml_test_mf PROPERTIES WILL_FAIL TRUE)
+add_test(ctest_fmi1_import_test_options fmi1_import_options_test ${FMU_ME_PATH} ${FMU_TEMPFOLDER})
 
 ADD_TEST(ctest_fmi1_capi_cs_test fmi1_capi_cs_test)
 ADD_TEST(ctest_fmi1_capi_me_test fmi1_capi_me_test)
@@ -140,6 +144,7 @@ set_target_properties(
 	fmi1_logger_test
     fmi1_xml_parsing_test
     fmi1_import_default_experiment_test
+    fmi1_import_options_test
     PROPERTIES FOLDER "Test/FMI1")
 
 if(FMILIB_BUILD_BEFORE_TESTS)

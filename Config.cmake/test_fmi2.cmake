@@ -119,9 +119,8 @@ set_target_properties(
 set(FAIL_NAME_CHECK 0)
 set(PASS_NAME_CHECK 1)
 
-set(EXPECT_ERROR 1)
 add_test(ctest_fmi2_xml_parsing_test fmi2_xml_parsing_test ${RTTESTDIR}/FMI2/parser_test_xmls/)
-ADD_TEST(ctest_fmi2_import_xml_test_empty fmi2_import_xml_test ${FMU2_DUMMY_FOLDER} ${EXPECT_ERROR})
+ADD_TEST(ctest_fmi2_import_xml_test_empty fmi2_import_xml_test ${FMU2_DUMMY_FOLDER})
 add_test(ctest_fmi2_import_xml_test_me fmi2_import_xml_test ${TEST_OUTPUT_FOLDER}/${FMU2_DUMMY_ME_MODEL_IDENTIFIER}_me)
 add_test(ctest_fmi2_import_xml_test_cs fmi2_import_xml_test ${TEST_OUTPUT_FOLDER}/${FMU2_DUMMY_CS_MODEL_IDENTIFIER}_cs)
 add_test(ctest_fmi2_import_xml_test_mf fmi2_import_xml_test ${TEST_OUTPUT_FOLDER}/${FMU2_DUMMY_MF_MODEL_IDENTIFIER}_mf)

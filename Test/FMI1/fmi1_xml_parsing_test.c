@@ -124,14 +124,23 @@ typedef int (*fmu_test_f)(fmi1_import_t* fmu);
 void test_parsing_and_fmu(char *xml_dir, fmu_test_f fmu_test, int should_log_expected_msg)
 {
     jm_callbacks* cb = create_parse_test_callbacks();
+    int res = 0;
     
     fmi1_import_t* fmu = test_parser(cb, xml_dir, should_log_expected_msg, 0);
-    if (!fmu_test(fmu)) {
+    fmi1_import_variable_list_t* vars = fmi1_import_get_variable_list(fmu);
+
+    if (!fmu_test(vars)) {
+        res = 1;
+    }
+
+    /* cleanup */
+    free(vars);
+    fmi1_import_free(fmu);
+    destroy_parse_test_callbacks(cb);
+
+    if (res) {
         exit(CTEST_RETURN_FAIL);
     }
-    fmi1_import_free(fmu);
-
-    destroy_parse_test_callbacks(cb);
 }
 
 void test_parsing_fail_and_fmu(char *xml_dir, fmu_test_f fmu_test)
@@ -219,18 +228,13 @@ void test_variable_naming_conventions(void) {
     pass_name_check("naming_conventions_xmls/flat/q-char-nonescaped");
 }
 
-int should_have_no_vars(fmi1_import_t* fmu) {
-    fmi1_import_variable_list_t* vars;
-
-    vars = fmi1_import_get_variable_list(fmu);
+int should_have_no_vars(fmi1_import_variable_list_t* vars) {
     return fmi1_import_get_variable_list_size(vars) == 0;
 }
 
-int should_have_1_no_alias_var(fmi1_import_t* fmu) {
-    fmi1_import_variable_list_t* vars;
+int should_have_1_no_alias_var(fmi1_import_variable_list_t* vars) {
     fmi1_import_variable_t* var;
 
-    vars = fmi1_import_get_variable_list(fmu);
     if (fmi1_import_get_variable_list_size(vars) != 1) {
         return 0;
     }
@@ -239,11 +243,8 @@ int should_have_1_no_alias_var(fmi1_import_t* fmu) {
     return (fmi1_import_get_variable_alias_kind(var) == fmi1_variable_is_not_alias);
 }
 
-int should_have_size_2_alias_group(fmi1_import_t* fmu) {
-    fmi1_import_variable_list_t* vars;
+int should_have_size_2_alias_group(fmi1_import_variable_list_t* vars) {
     fmi1_import_variable_t* var;
-
-    vars = fmi1_import_get_variable_list(fmu);
 
     if (fmi1_import_get_variable_list_size(vars) != 2) {
         return 0;
@@ -258,11 +259,8 @@ int should_have_size_2_alias_group(fmi1_import_t* fmu) {
     return (fmi1_import_get_variable_alias_kind(var) == fmi1_variable_is_alias);
 }
 
-int should_have_size_2_no_alis(fmi1_import_t* fmu) {
-    fmi1_import_variable_list_t* vars;
+int should_have_size_2_no_alis(fmi1_import_variable_list_t* vars) {
     fmi1_import_variable_t* var;
-
-    vars = fmi1_import_get_variable_list(fmu);
 
     if (fmi1_import_get_variable_list_size(vars) != 2) {
         return 0;
@@ -277,11 +275,8 @@ int should_have_size_2_no_alis(fmi1_import_t* fmu) {
     return (fmi1_import_get_variable_alias_kind(var) == fmi1_variable_is_not_alias);
 }
 
-int should_have_size_3_alias_group(fmi1_import_t* fmu) {
-    fmi1_import_variable_list_t* vars;
+int should_have_size_3_alias_group(fmi1_import_variable_list_t* vars) {
     fmi1_import_variable_t* var;
-
-    vars = fmi1_import_get_variable_list(fmu);
 
     if (fmi1_import_get_variable_list_size(vars) != 3) {
         return 0;

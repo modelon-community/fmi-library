@@ -46,6 +46,7 @@ int main(int argc, char **argv)
         printf("incorrect number of variables found with invalid variability\n");
         return CTEST_RETURN_FAIL;
     }
-
+    
+    fmi1_import_free(xml);
     return CTEST_RETURN_SUCCESS;
 }

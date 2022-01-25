@@ -25,8 +25,6 @@
 
 #include <FMI2/fmi2_import.h>
 
-int expect_error;
-
 int annotation_start_handle(void *context, const char *parentName, void *parent, const char *elm, const char **attr) {
 	int i = 0;
 	printf("Annotation element %s start (tool: %s, parent:%s)\n", elm, parentName, 
@@ -60,17 +58,12 @@ fmi2_xml_callbacks_t annotation_callbacks = {
 
 void do_exit(int code)
 {
-	printf("Press 'Enter' to exit\n");
-/*	getchar(); */
 	exit(code);
 }
 
 void mylogger(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_level, jm_string message)
 {
     printf("[%s][%s] %s\n", module, jm_log_level_to_string(log_level), message);
-    if (!expect_error && log_level == jm_log_level_error) {
-        do_exit(1);
-    }
 }
 
 void print_int(int i,void* data) {
@@ -318,6 +311,7 @@ int main(int argc, char *argv[])
 	const char* tmpPath;
 	jm_callbacks callbacks;
 	fmi_import_context_t* context;
+    int res = 0;
 
 	fmi2_import_t* fmu;
 
@@ -327,7 +321,6 @@ int main(int argc, char *argv[])
 	}
 
 	tmpPath = argv[1];
-    expect_error = argc > 2;
 
 	callbacks.malloc = malloc;
     callbacks.calloc = calloc;
@@ -343,17 +336,19 @@ int main(int argc, char *argv[])
 
 	context = fmi_import_allocate_context(&callbacks);
 
+    /* time the parsing */
 	start = clock();
 	fmu = fmi2_import_parse_xml(context, tmpPath, &annotation_callbacks);
-
-	    /* Stop timer */
     stop = clock();
     t = (double) (stop-start)/CLOCKS_PER_SEC;
     printf("Parsing took %g seconds\n", t);
-	if(!fmu) {
+
+	fmi_import_free_context(context);
+
+	if (!fmu) {
 		printf("Error parsing XML, exiting\n");
-        fmi_import_free_context(context);
-		do_exit(1);
+        res = 1;
+        goto err1;
 	}
 
     printf("Model name: %s\n", fmi2_import_get_model_name(fmu));
@@ -467,7 +462,8 @@ int main(int argc, char *argv[])
 			assert(vrl[i] == fmi2_import_get_variable_vr(var));
             if(!var) {
 				printf("Something wrong with variable %u \n",(unsigned)i);
-				do_exit(1);
+                res = 1;
+                goto err2;
 			}
             else {
                 printVariableInfo(fmu, var);
@@ -556,12 +552,16 @@ int main(int argc, char *argv[])
         fmi2_import_free_variable_list(states);
 	}	
 */
-	fmi2_import_free(fmu);
-	fmi_import_free_context(context);
-	
-	printf("Everything seems to be OK since you got this far=)!\n");
 
-	do_exit(0);
-}
+err2:
+    fmi2_import_free(fmu);
+err1: /* fmu not allocated */
+    if (res) {
+        do_exit(res);
+    }
+
+    printf("Everything seems to be OK since you got this far=)!\n");
+
+    do_exit(res); }
 
 

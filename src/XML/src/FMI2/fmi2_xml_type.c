@@ -562,7 +562,11 @@ int fmi2_xml_handle_Enumeration(fmi2_xml_parser_context_t *context, const char* 
 													sizeof(fmi2_xml_enum_typedef_props_t));
 
         if(props) {
+            /* the init call will override the 'next' field which has been set when the properties were allocated,
+               so we need to restore it after initializing */
+            fmi2_xml_variable_type_base_t* nextTmp = props->base.super.next;
             fmi2_xml_init_enumeration_type_properties(props, context->callbacks);
+            props->base.super.next = nextTmp;
         }
         if(!bufQuantity || !props ||
                 /* <xs:attribute name="quantity" type="xs:normalizedString"/> */

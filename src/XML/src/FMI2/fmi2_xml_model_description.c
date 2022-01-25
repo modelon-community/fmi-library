@@ -61,6 +61,11 @@ fmi2_xml_model_description_t * fmi2_xml_allocate_model_description( jm_callbacks
     md->numberOfContinuousStates = 0;
     md->numberOfEventIndicators = 0;
 
+    /* DefaultExperiment: we must initialize '*Defined' variables since the element is optional */
+    md->defaultExperiment.startTimeDefined = 0;
+    md->defaultExperiment.stopTimeDefined  = 0;
+    md->defaultExperiment.toleranceDefined = 0;
+    md->defaultExperiment.stepSizeDefined  = 0;
     md->defaultExperiment.startTime = 0;
     md->defaultExperiment.stopTime = 1.0;
     md->defaultExperiment.tolerance = FMI2_DEFAULT_EXPERIMENT_TOLERANCE;
@@ -120,11 +125,8 @@ void fmi2_xml_clear_model_description( fmi2_xml_model_description_t* md) {
     md->numberOfEventIndicators = 0;
 
     md->defaultExperiment.startTime = 0;
-
     md->defaultExperiment.stopTime = 0;
-
     md->defaultExperiment.tolerance = 0;
-
     md->defaultExperiment.stepSize = 0;
 
     jm_vector_foreach(jm_string)(&md->sourceFilesME, (void(*)(const char*))md->callbacks->free);

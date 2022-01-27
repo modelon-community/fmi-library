@@ -8,8 +8,8 @@
 
 \mainpage FMI Library
 
-\version     2.3
-\date        3 May 2021
+\version     2.4
+\date        27 January 2022
 \section Summary
 FMI library is intended as a foundation for applications interfacing FMUs 
 (Functional Mockup Units) that follow FMI Standard. This version of the library supports FMI 1.0 and FMI 2.0.

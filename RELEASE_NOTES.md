@@ -4,6 +4,18 @@ The release notes are typically a highlighting subset of all changes made. For f
 
 Note that version 2.1 is the first version with release notes. Please see the commit history for older versions.
 
+## 2.4
+
+### Changes
+
+- Added new functions `fmi[1/2]_import_get_options` for retrieving an options object.
+- Added new function `fmi_import_set_option_loadlibrary_flag` to allow customization of platform-dependent flags passed to `dlopen`/`LoadLibraryEx` when loading the FMU binary.
+
+### Bug fixes
+
+- Fixed memory leak from parsing Enums.
+- Fixed memory leaks in tests.
+
 ## 2.3
 
 - Updated `fmi_import_get_fmi_version` to also work on unpacked FMUs.

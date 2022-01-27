@@ -560,8 +560,7 @@ err1: /* fmu not allocated */
         do_exit(res);
     }
 
-    printf("Everything seems to be OK since you got this far=)!\n");
+    printf("Everything seems to be OK since you got this far!\n");
 
-    do_exit(res); }
-
-
+    do_exit(res);
+}

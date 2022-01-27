@@ -52,7 +52,7 @@ void test_parser(char *xml_dir, int should_not_log_expected_msg, int configurati
     fmi_import_context_t *context;
     fmi2_import_t *fmu;
     char *full_path;
-    int res = 0;
+    int error = 0;
 
     cb.malloc    = malloc;
     cb.calloc    = calloc;
@@ -74,19 +74,19 @@ void test_parser(char *xml_dir, int should_not_log_expected_msg, int configurati
     free(full_path);
 
     if (fmu == NULL) {
-        res = 1;
+        error = 1;
         goto err1;
     }
-    if (should_not_log_expected_msg != did_not_log_expected_msg) { /* XOR */
-        res = 1;
+    if (should_not_log_expected_msg != did_not_log_expected_msg) {
+        error = 1;
         goto err2;
     }
 
 err2:
-    fmi2_import_free(fmu); /* this function is using callbacks, so free 'fmu' first */
+    fmi2_import_free(fmu);
 err1:
 
-    if (res) {
+    if (error) {
         exit(CTEST_RETURN_FAIL);
     }
 }

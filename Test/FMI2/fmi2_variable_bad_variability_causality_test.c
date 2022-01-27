@@ -45,5 +45,6 @@ int main(int argc, char **argv)
 
     ret = test_invalid_variability_causality(xml);
 
+    fmi2_import_free(xml);
     return ret == TEST_OK ? CTEST_RETURN_SUCCESS : CTEST_RETURN_FAIL;
 }

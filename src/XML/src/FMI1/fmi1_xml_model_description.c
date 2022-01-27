@@ -58,10 +58,12 @@ fmi1_xml_model_description_t * fmi1_xml_allocate_model_description( jm_callbacks
     md->numberOfContinuousStates = 0;
     md->numberOfEventIndicators = 0;
 
+    /* DefaultExperiment: we must initialize '*Defined' variables since the element is optional */
+    md->defaultExperiment.startTimeDefined = 0;
+    md->defaultExperiment.stopTimeDefined  = 0;
+    md->defaultExperiment.toleranceDefined = 0;
     md->defaultExperiment.startTime = 0;
-
     md->defaultExperiment.stopTime = 1.0;
-
     md->defaultExperiment.tolerance = FMI1_DEFAULT_EXPERIMENT_TOLERANCE;
 
     jm_vector_init(jm_voidp)(&md->vendorList, 0, cb);
@@ -245,7 +247,7 @@ int fmi1_xml_get_default_experiment_has_tolerance(fmi1_xml_model_description_t* 
 }
 
 #define LOG_WARN_IF_ATTR_NOT_DEFINED(ATTRIBUTE) \
-    if (!fmi1_xml_get_default_experiment_has_##ATTRIBUTE (md)) { \
+    if (!fmi1_xml_get_default_experiment_has_##ATTRIBUTE(md)) { \
         jm_log(md->callbacks, module, jm_log_level_warning, "fmi1_xml_get_default_experiment_" #ATTRIBUTE ": returning default value, since no attribute was defined in modelDescription"); \
     }
 

@@ -126,7 +126,13 @@ fmi_version_enu_t fmi_xml_get_fmi_version(fmi_xml_context_t* context, const char
 	memsuite.malloc_fcn = context->callbacks->malloc;
     memsuite.realloc_fcn = context->callbacks->realloc;
     memsuite.free_fcn = context->callbacks->free;
-    context -> parser = parser = XML_ParserCreate_MM(0, &memsuite, 0);
+
+    /* If context already has allocated a parser, then just allocate a new
+     * parser to avoid issues with internal parser states. */
+    if (context->parser != NULL) {
+        XML_ParserFree(context->parser);
+    }
+    context->parser = parser = XML_ParserCreate_MM(0, &memsuite, 0);
 
     if(! parser) {
         fmi_xml_fatal(context, "Could not initialize XML parsing library.");

@@ -47,5 +47,6 @@ int main(int argc, char **argv)
         return CTEST_RETURN_FAIL;
     }
 
+    fmi2_import_free(xml);
     return CTEST_RETURN_SUCCESS;
 }

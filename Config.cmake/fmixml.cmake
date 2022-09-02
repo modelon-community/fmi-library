@@ -228,7 +228,7 @@ debug_message(STATUS "adding fmixml")
 
 add_library(fmixml ${FMILIBKIND} ${FMIXMLSOURCE} ${FMIXMLHEADERS})
 if(MSVC)
-    target_compile_definitions(fmixml XML_STATIC)
+    target_compile_definitions(fmixml PUBLIC XML_STATIC)
 endif()
 
 target_link_libraries(fmixml ${JMUTIL_LIBRARIES} expat)

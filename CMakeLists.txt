@@ -104,11 +104,9 @@ if(MSVC)
 	
 	# Set the run-time library flag as controlled by the FMILIB_BUILD_WITH_STATIC_RTLIB option
 	if(FMILIB_BUILD_WITH_STATIC_RTLIB)
-		set(BUILD_WITH_STATIC_CRT YES)
 		set(replace_from "/MD")
 		set(replace_to "/MT")
 	else()
-		set(BUILD_WITH_STATIC_CRT NO)
 		set(replace_from "/MT")
 		set(replace_to "/MD")
 	endif(FMILIB_BUILD_WITH_STATIC_RTLIB)

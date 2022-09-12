@@ -26,10 +26,7 @@ for the library. It is recommended to use "cmake-gui" on Windows or
 "ccmake <FMIL source dir>" to configure the build. All the required third party
 libraries are included into the distribution.
 
-CMake 2.8.6 is required since this is the version used in development both on 
-Windows and Linux. The build script is KNOWN NOT TO WORK WITH CMake 2.8.3 and 
-below (due to ExternalProject interface changes). CMake 2.8.4 and 2.8.5 are not 
-tested.
+CMake 3.1.3 or later is required in order to build expat.
 
 To build from a terminal command line on Linux or Mac with default settings use:
 \code

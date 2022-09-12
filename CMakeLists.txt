@@ -10,11 +10,9 @@
 
 #    You should have received a copy of the FMILIB_License.txt file
 #    along with this program. If not, contact Modelon AB <http://www.modelon.com>.
-	
-# NOTE: CMake 2.8.6 is required since this is the version used in development.
-# The script is KNOWN NOT TO WORK WITH 2.8.3 and below (ExternalProject 
-# interface changes). CMake 2.8.4 and 2.8.5 are not tested.
-cmake_minimum_required (VERSION 2.8.6 FATAL_ERROR)
+
+# CMake 3.1.3 or later is required to build Expat.
+cmake_minimum_required (VERSION 3.1.3 FATAL_ERROR)
 
 # Prohibit in-source build
 IF("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")

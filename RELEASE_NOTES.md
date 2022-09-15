@@ -5,7 +5,7 @@ The release notes are typically a highlighting subset of all changes made. For f
 Note that version 2.1 is the first version with release notes. Please see the commit history for older versions.
 
 
-## 2.5
+## 2.4.1
 
 ### Changes
 

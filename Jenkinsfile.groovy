@@ -1,5 +1,5 @@
 // Node requirements:
-//  VisualStudio2010: C compiler
+//  VisualStudio2017: C compiler
 //  OCT-SDK-1.4: CMake, msys
 //  docker: docker
 
@@ -7,14 +7,14 @@ def Configs = [
     'win64': [
         name: 'win64',
         os: 'windows',
-        node: 'VisualStudio2010 && OCT-SDK-1.5',
+        node: 'VisualStudio2017 && OCT-SDK-1.5',
         target_install: 'install',
         target_test: 'test'
     ],
     'win64_static_runtime': [
         name: 'win64_static_runtime',
         os: 'windows',
-        node: 'VisualStudio2010 && OCT-SDK-1.5',
+        node: 'VisualStudio2017 && OCT-SDK-1.5',
         target_install: 'install',
         target_test: 'test'
     ],

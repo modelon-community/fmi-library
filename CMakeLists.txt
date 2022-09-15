@@ -10,10 +10,10 @@
 
 #    You should have received a copy of the FMILIB_License.txt file
 #    along with this program. If not, contact Modelon AB <http://www.modelon.com>.
-	
-# NOTE: CMake 2.8.6 is required since this is the version used in development.
-# The script is KNOWN NOT TO WORK WITH 2.8.3 and below (ExternalProject 
-# interface changes). CMake 2.8.4 and 2.8.5 are not tested.
+
+# CMake 3.1.3 or later is required to build Expat (as ExternalProject). However,
+# keeping 2.8.6 on the FMIL main project for now since updating causes issues
+# with CMP0026 (and more).
 cmake_minimum_required (VERSION 2.8.6 FATAL_ERROR)
 
 # Prohibit in-source build
@@ -104,11 +104,9 @@ if(MSVC)
 	
 	# Set the run-time library flag as controlled by the FMILIB_BUILD_WITH_STATIC_RTLIB option
 	if(FMILIB_BUILD_WITH_STATIC_RTLIB)
-		set(BUILD_WITH_STATIC_CRT YES)
 		set(replace_from "/MD")
 		set(replace_to "/MT")
 	else()
-		set(BUILD_WITH_STATIC_CRT NO)
 		set(replace_from "/MT")
 		set(replace_to "/MD")
 	endif(FMILIB_BUILD_WITH_STATIC_RTLIB)

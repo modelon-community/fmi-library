@@ -41,11 +41,6 @@ def Configs = [
     ]
 ]
 
-def version = '2.0.4-SNAPSHOT' // TODO: seems unused; remove
-
-// Loads the 'signBinaries' function
-library 'ModelonCommon@trunk'
-
 def tasks = [:]
 // for (conf_entry in Configs) // This doesn't work, causes SerializationError for the Map
 Configs.each { conf_entry ->
@@ -70,14 +65,6 @@ Configs.each { conf_entry ->
 
             stage("Test: ${conf.name}") {
                 test(conf, testLogDir)
-            }
-
-            stage("Sign: ${conf.name}") {
-                dir("${installDir}/lib") {
-                    // Seems like .so files are not allowed to be signed,
-                    // so just signing the .dll for now.
-                    signFiles(conf.name, "*.dll")
-                }
             }
 
             stage("Archive: ${conf.name}") {
@@ -171,39 +158,11 @@ def test(conf, testLogDir) {
     }
 }
 
-/**
- * Signs the files that match the glob expressions.
- *
- * param globExpressions:
- *      vararg of globExpressions that are evaluated from the current directory
- * param prefix:
- *      used to create a unique intermediate stash (needed for signing),
- *      and to be displayed in the signBinaries step description
- */
- def signFiles(prefix, Object... globExpressions) {
-    for (glob in globExpressions) {
-        for (file in findFiles(glob: glob)) {
-            def fname = file.toString()
-            def nameUnsigned = "${prefix}_${fname}_unsigned"
-            def nameSigned = "${prefix}_${fname}_signed"
-            stash(name: nameUnsigned, includes: file.toString())
-            signBinaries(nameUnsigned, nameSigned, "Sign binaries: ${fname} (${prefix})")
 
-            // Replace the old file with the signed one
-            deleteFile(fname)
-            unstash(nameSigned)
-        }
-    }
- }
-
- def deleteFile(filename) {
-    bat "del ${filename}"
- }
-
- def setBuildStatus(status, msg) {
-     currentBuild.result = status
-     println("Build result manually set to ${status}. Reason:\n${msg}")
- }
+def setBuildStatus(status, msg) {
+    currentBuild.result = status
+    println("Build result manually set to ${status}. Reason:\n${msg}")
+}
 
 def fixFilePermissions(os) {
     if (os == 'linux') {

@@ -478,7 +478,7 @@ int fmi2_xml_handle_ScalarVariable(fmi2_xml_parser_context_t *context, const cha
 int fmi2_xml_get_has_start(fmi2_xml_parser_context_t *context, fmi2_xml_variable_t* variable) {
     int hasStart = fmi2_xml_is_attr_defined(context, fmi_attr_id_start);
     if(!hasStart)  {
-        if (variable->initial != (char)fmi2_initial_enu_calculated) {
+        if (variable->initial != (char)fmi2_initial_enu_calculated && variable->causality != fmi2_causality_enu_independent) {
             fmi2_xml_parse_error(context,
                     "Start attribute is required for this causality, variability and initial combination");
             hasStart = 1;

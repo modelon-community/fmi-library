@@ -18,7 +18,7 @@
 #define FMI2_CAPI_H_
 
 #include <FMI2/fmi2_types.h>
-#include <FMI2/fmi2_functions.h>
+#include <FMI2/fmi2_function_types.h>
 #include <FMI2/fmi2_enums.h>
 #include <JM/jm_portability.h>
 #include <JM/jm_callbacks.h>
@@ -34,7 +34,7 @@ extern "C" {
 	*/
 
 /** \addtogroup fmi2_capi Standard FMI 2.0 "C" API
- * \brief The "C" API loads and frees the FMI functions and it is through these functions all the communication with the FMU occurs. The FMI import library wraps these functions in a more convenient way.
+ * \brief The "C" API loads and frees the FMI function_types and it is through these functions all the communication with the FMU occurs. The FMI import library wraps these functions in a more convenient way.
  *  @{
  */
 

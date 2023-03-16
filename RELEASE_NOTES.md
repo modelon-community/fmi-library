@@ -4,6 +4,12 @@ The release notes are typically a highlighting subset of all changes made. For f
 
 Note that version 2.1 is the first version with release notes. Please see the commit history for older versions.
 
+## NEXT_RELEASE
+
+### Improvements
+
+- Added work-in-progress for FMI 3. Everything related to FMI 3 should be considered experimental.
+
 
 ## 2.4.1
 

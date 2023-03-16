@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription
+  fmiVersion="2.0"
+  modelName="none"
+  variableNamingConvention="structured"
+  instantiationToken="123"
+  numberOfEventIndicators="1">
+  <CoSimulation 
+	modelIdentifier="none1" 
+	canHandleVariableCommunicationStepSize="true"
+	/>
+<ModelVariables>
+  <Int32 name="a" valueReference="0"/>
+  <Int32 name="''" valueReference="1"/>
+  <Int32 name="c" valueReference="2"/>
+</ModelVariables>
+<ModelStructure>
+</ModelStructure>
+</fmiModelDescription>
+

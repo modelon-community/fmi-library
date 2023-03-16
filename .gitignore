@@ -3,15 +3,18 @@
 /.git/
 /.vs/
 
-/build-*/
-/CMakeFiles/
-/doc/
-/install-*/
 /out/
-/testlogs-*/
 
+/CMakeFiles/
 /CMakeSettings.json
 /CMakeCache.txt
+
+/build_*/
+/install_*/
+/testlogs-*/
+/doc/
+
+/src/XML/src-gen/
 
 # Should not go in .dockerignore:
 /ThirdParty/winflexbison/

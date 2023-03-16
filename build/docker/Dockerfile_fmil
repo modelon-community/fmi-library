@@ -6,7 +6,7 @@ RUN groupadd -g 999 group1 && \
     useradd -r -u 999 -g group1 user1
 
 # Create a workdir that doesn't belong to root
-RUN mkdir -p /fmil/fmi-library && chown user1:group1 /fmil/fmi-library
+RUN mkdir -p /fmi-library && chown user1:group1 /fmi-library
 
 RUN mkdir -p /artifacts && chown user1:group1 /artifacts
 
@@ -14,9 +14,10 @@ RUN mkdir -p /artifacts && chown user1:group1 /artifacts
 USER user1:group1
 
 # Now set workdir as non-root
-WORKDIR /fmil/fmi-library
+WORKDIR /fmi-library
 
-# The files inside workdir will belong to user1:group1.
-# To avoid copying files, add them to .dockerignore.
+# The stuff inside workdir will belong to user1:group1
+# NOTE: Do not try to mount the source / build directories and build from there 
+#   instead - it's many times slower than first copying.
 COPY --chown=user1:group1 . .
 

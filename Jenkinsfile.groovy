@@ -7,21 +7,21 @@ def Configs = [
     'win64': [
         name: 'win64',
         os: 'windows',
-        node: 'VisualStudio2017 && OCT-SDK-1.5.4',
+        node: 'VisualStudio2017 && OCT-SDK-1.5.4 && dockerWindows',
         target_install: 'install',
         target_test: 'test'
     ],
     'win64_static_runtime': [
         name: 'win64_static_runtime',
         os: 'windows',
-        node: 'VisualStudio2017 && OCT-SDK-1.5.4',
+        node: 'VisualStudio2017 && OCT-SDK-1.5.4 && dockerWindows',
         target_install: 'install',
         target_test: 'test'
     ],
     'mingw_w64': [
         name: 'mingw_w64',
         os: 'windows',
-        node: 'OCT-SDK-1.5.4',
+        node: 'VisualStudio2017 && OCT-SDK-1.5.4 && dockerWindows',
         target_install: 'install',
         target_test: 'test'
     ], 
@@ -47,8 +47,8 @@ Configs.each { conf_entry ->
     def conf = conf_entry.value // bind variable before use in closure
     tasks[conf.name] = {
         node(conf.node) {
-            def testLogDir = "build-${conf.name}/Testing/Temporary"
-            def installDir = "install-${conf.name}"
+            def testLogDir = "build_${conf.name}/Testing/Temporary"
+            def installDir = "install_${conf.name}"
 
             stage("Checkout: ${conf.name}") {
                 checkout scm
@@ -92,12 +92,21 @@ tasks[conf.name] = {
         }
 
         stage("Archive: ${conf.name}") {
-            archiveArtifacts(artifacts: "install-${conf.name}/doc/html/**")
+            archiveArtifacts(artifacts: "install_${conf.name}/doc/html/**")
         }
     }
 }
 
-parallel tasks
+// Currently getting cygwin heap error when parallellizing win64 and win64_static_runtime, so not doing that for now
+def parallellTasks = [
+    'linux64': tasks.linux64,
+    'win64': tasks.win64,
+    'documentation': tasks.documentation,
+]
+parallel parallellTasks
+
+tasks.win64_static_runtime()
+
 
 def clean(conf) {
     if (conf.os == 'windows') {
@@ -131,29 +140,31 @@ def build(conf) {
 }
 
 def test(conf, testLogDir) {
-    def returnStatus
+    def res // exit code
     if (conf.os == 'windows') {
-        returnStatus = bat(returnStatus: true, script: """
+        res = bat(returnStatus: true, script: """
             call build\\setenv.bat
             make ${conf.target_test} CONFIG_FILE=build/config/${conf.name}
         """)
     } else if (conf.os == 'linux') {
-        returnStatus = sh(returnStatus: true, script: """
+        res = sh(returnStatus: true, script: """
             make ${conf.target_test} CONFIG_FILE=build/config/${conf.name}
         """)
     } else {
         error(message: "Invalid config operating system: ${conf.os}")
     }
-    if (returnStatus != 0) {
-        setBuildStatus('UNSTABLE', "Test failure. Exit code from ctest: ${returnStatus}")
+    if (res) {
+        setBuildStatus('UNSTABLE', "Test failure. Exit code from ctest: ${res}")
     }
 
     dir(testLogDir) {
         if (fileExists("LastTestsFailed.log")) {
             setBuildStatus('UNSTABLE', "Failing tests: ${testLogDir}/LastTestsFailed.log)")
         }
-        if (!fileExists("LastTest.log")) {
-            setBuildStatus('UNSTABLE', 'Test log is missing')
+        // The test log has different names if we run memcheck or not, but this file should
+        // always exist if we run tests:
+        if (!fileExists("CTestCostData.txt")) { 
+            setBuildStatus('UNSTABLE', 'File CTestCostData.txt is missing - perhaps tests were not run?')
         }
     }
 }
@@ -172,6 +183,9 @@ def fixFilePermissions(os) {
 
             # Allow copying artifacts to host
             chmod 777 .
+
+            # All the other scripts we need to run...
+            chmod a+x Test/scripts/verify_memcheck_logs.sh
         """
     }
 }

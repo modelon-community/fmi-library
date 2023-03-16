@@ -55,6 +55,7 @@ fmi_version_enu_t fmi_xml_get_fmi_version( fmi_xml_context_t*, const char* fileN
 /** ModelDescription is the entry point for the package*/
 typedef struct fmi1_xml_model_description_t fmi1_xml_model_description_t;
 typedef struct fmi2_xml_model_description_t fmi2_xml_model_description_t;
+typedef struct fmi3_xml_model_description_t fmi3_xml_model_description_t;
 
 /** \brief Parse FMI 1.0 XML file and create model description object.
 
@@ -63,12 +64,20 @@ typedef struct fmi2_xml_model_description_t fmi2_xml_model_description_t;
 */
 fmi1_xml_model_description_t* fmi1_xml_parse( fmi_xml_context_t* c, const char* fileName);
 
+
 /** \brief Parse FMI 2.0 XML file and create model description object.
 
 	Errors are reported via the ::jm_callbacks object passed to fmi_xml_allocate_context().
 	@return Model description object or NULL if parsing failed.
 */
 fmi2_xml_model_description_t* fmi2_xml_parse( fmi_xml_context_t* c, const char* fileName);
+
+/** \brief Parse FMI 3.0 XML file and create model description object.
+
+	Errors are reported via the ::jm_callbacks object passed to fmi_xml_allocate_context().
+	@return Model description object or NULL if parsing failed.
+*/
+fmi3_xml_model_description_t* fmi3_xml_parse( fmi_xml_context_t* c, const char* fileName);
 /** @} 
 */
 #ifdef __cplusplus

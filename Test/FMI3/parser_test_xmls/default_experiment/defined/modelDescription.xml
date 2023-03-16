@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription
+  fmiVersion="3.0"
+  modelName="myModelName"
+  instantiationToken="myInstantiationToken"
+  description="myDescription"
+  author="myAuthor"
+  generationTool="myGenerationTool"
+  generationDateAndTime="2002-05-30T09:00:00"
+  version="myModelVersion"
+  variableNamingConvention="structured"
+  numberOfEventIndicators="3">
+
+<ModelExchange
+  modelIdentifier="myModelIdentifier" />
+
+<DefaultExperiment
+  startTime="2.3"
+  stopTime="3.55"
+  tolerance="1e-6"
+  stepSize="2e-3"
+  />
+
+<ModelVariables/>
+<ModelStructure/>
+
+</fmiModelDescription>

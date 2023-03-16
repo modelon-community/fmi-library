@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription
+  fmiVersion="3.0"
+  modelName="test_type_definitions"
+  instantiationToken="{8c4e810f-3df3-4a00-8276-176fa3c9f9e0}"
+  description="N/A"
+  version="1.0"
+  generationDateAndTime="2011-09-23T16:57:33Z"
+  variableNamingConvention="structured">
+  <ModelExchange modelIdentifier="model_identifier"/>
+
+  <TypeDefinitions>
+
+    <!--******************************-->
+    <!--*** Non-numeric attributes ***-->
+    <!--******************************-->
+
+    <!-- test that no specified quantity defaults to null pointer -->
+    <Int64       name="td_minimal_int64"/>
+    <Int32       name="td_minimal_int32"/>
+    <Int16       name="td_minimal_int16"/>
+    <Int8        name="td_minimal_int8"/>
+    <UInt64      name="td_minimal_uint64"/>
+    <UInt32      name="td_minimal_uint32"/>
+    <UInt16      name="td_minimal_uint16"/>
+    <UInt8       name="td_minimal_uint8"/>
+    <Float64     name="td_minimal_uint16"/>
+    <Float32     name="td_minimal_uint8"/>
+    <String      name="td_minimal_string"/>
+    <Boolean     name="td_minimal_boolean"/>
+    <Enumeration name="td_minimal_enum">
+        <Item name="EnumVar0" value="0"/>
+    </Enumeration>
+
+    <!-- test that attributes in typedef are returned if not defined in variable -->
+    <Float64 name="float64_type_with_attributes" relativeQuantity="true" unbounded="false"/>
+
+
+    <!--************-->
+    <!--*** misc ***-->
+    <!--************-->
+
+    <!-- floatXX -->
+    <Float64 name="Float64.name" unit="kg.m2" min="0.0"                 quantity="typeQuantity"  relativeQuantity="false" unbounded="false"/>
+    <Float32 name="Float32_name" unit="rad/s" max="1000.0" nominal="5"  quantity="type_quantity" relativeQuantity="false" unbounded="false"/>
+
+
+    <!--*************************************-->
+    <!--*** Inheritance of min/max values ***-->
+    <!--*************************************-->
+
+    <!-- intXX -->
+    <Int64  name="typedef_basic_int64"/>
+    <Int32  name="typedef_basic_int32"/>
+    <Int16  name="typedef_basic_int16"/>
+    <Int8   name="typedef_basic_int8"/>
+    <UInt64 name="typedef_basic_uint64"/>
+    <UInt32 name="typedef_basic_uint32"/>
+    <UInt16 name="typedef_basic_uint16"/>
+    <UInt8  name="typedef_basic_uint8"/>
+
+    <!-- intXX override defaults: { min = INTXX_MIN + 1, max = INTXX_MAX - 1 } -->
+    <Int64  name="typedef_override_int64"  min="-9223372036854775807" max="9223372036854775806"/>
+    <Int32  name="typedef_override_int32"  min="-2147483647"          max="2147483646"/>
+    <Int16  name="typedef_override_int16"  min="-32767"               max="32766"/>
+    <Int8   name="typedef_override_int8"   min="-127"                 max="126"/>
+    <UInt64 name="typedef_override_uint64" min="1"                    max="18446744073709551614"/>
+    <UInt32 name="typedef_override_uint32" min="1"                    max="4294967294"/>
+    <UInt16 name="typedef_override_uint16" min="1"                    max="65534"/>
+    <UInt8  name="typedef_override_uint8"  min="1"                    max="254"/>
+
+    <!-- int32 partial override, i.e. min should be overridden, but not max -->
+    <Int32 name="typedef_partial_override_int32" min="-1" /> 
+    <UInt32 name="typedef_partial_override_uint32" min="1" /> 
+
+    <!-- verify that leading '+' is valid -->
+    <Int64  name="typedef_override_leadingplus_int64"  min="-9223372036854775807" max="+9223372036854775806"/>
+
+  </TypeDefinitions>
+
+  <DefaultExperiment startTime="0.0" stopTime="4.0" tolerance="0.000001"/>
+
+  <ModelVariables>
+
+    <!--******************************-->
+    <!--*** Non-numeric attributes ***-->
+    <!--******************************-->
+
+    <!-- test defined variable attributes -->
+    <Float64     name="float64_with_attr" valueReference="1001" quantity="velocity" unbounded="true" relativeQuantity="true"/>
+    <Int32       name="int32_with_attr"   valueReference="1002" quantity="velocity"/>
+    <Enumeration name="enum_with_attr"    valueReference="1003" quantity="velocity" declaredType="td_minimal_enum"/>
+
+    <!-- test undefined variable attributes -->
+    <Float64     name="float64_no_attr" valueReference="2001"/>
+    <Int32       name="int32_no_attr"   valueReference="2002"/>
+    <Enumeration name="enum_no_attr"    valueReference="2003" declaredType="td_minimal_enum"/>
+
+    <!-- test that attributes in typedef are returned if not defined in variable -->
+    <Float64 name="float64_with_typedef"          valueReference="3001" declaredType="float64_type_with_attributes"/>
+    <Float64 name="float64_with_typedef_override" valueReference="3002" declaredType="float64_type_with_attributes" quantity="position"/>
+
+    <!--************-->
+    <!--*** misc ***-->
+    <!--************-->
+
+    <!-- floatXX -->
+    <Float64 name="var.name1" valueReference="1073741824" description="desc" causality="parameter" variability="fixed" declaredType="Float64.name" start="3.33"/>
+    <Float32 name="var.name2" valueReference="805306369" description="desc" causality="output" declaredType="Float32_name"/>
+
+
+    <!--*************************************-->
+    <!--*** Inheritance of min/max values ***-->
+    <!--*************************************-->
+
+    <!-- intXX with defaults -->
+    <Int64 name="variable_minimal_int64"   valueReference="1001"/>
+    <Int32 name="variable_minimal_int32"   valueReference="1002"/>
+    <Int16 name="variable_minimal_int16"   valueReference="1003"/>
+    <Int8  name="variable_minimal_int8"    valueReference="1004"/>
+    <UInt64 name="variable_minimal_uint64" valueReference="1005"/>
+    <UInt32 name="variable_minimal_uint32" valueReference="1006"/>
+    <UInt16 name="variable_minimal_uint16" valueReference="1007"/>
+    <UInt8  name="variable_minimal_uint8"  valueReference="1008"/>
+
+    <!-- intXX inherit empty typedef -->
+    <Int64  name="variable_inherit_typedef_basic_int64"  valueReference="2001" declaredType="typedef_basic_int64"/>
+    <Int32  name="variable_inherit_typedef_basic_int32"  valueReference="2002" declaredType="typedef_basic_int32"/>
+    <Int16  name="variable_inherit_typedef_basic_int16"  valueReference="2003" declaredType="typedef_basic_int16"/>
+    <Int8   name="variable_inherit_typedef_basic_int8"   valueReference="2004" declaredType="typedef_basic_int8"/>
+    <UInt64 name="variable_inherit_typedef_basic_uint64" valueReference="2005" declaredType="typedef_basic_uint64"/>
+    <UInt32 name="variable_inherit_typedef_basic_uint32" valueReference="2006" declaredType="typedef_basic_uint32"/>
+    <UInt16 name="variable_inherit_typedef_basic_uint16" valueReference="2007" declaredType="typedef_basic_uint16"/>
+    <UInt8  name="variable_inherit_typedef_basic_uint8"  valueReference="2008" declaredType="typedef_basic_uint8"/>
+
+    <!-- intXX inherit typedef with values -->
+    <Int64  name="variable_inherit_typedef_override_int64"  valueReference="3001" declaredType="typedef_override_int64"/>
+    <Int32  name="variable_inherit_typedef_override_int32"  valueReference="3002" declaredType="typedef_override_int32"/>
+    <Int16  name="variable_inherit_typedef_override_int16"  valueReference="3003" declaredType="typedef_override_int16"/>
+    <Int8   name="variable_inherit_typedef_override_int8"   valueReference="3004" declaredType="typedef_override_int8"/>
+    <UInt64 name="variable_inherit_typedef_override_uint64" valueReference="3005" declaredType="typedef_override_uint64"/>
+    <UInt32 name="variable_inherit_typedef_override_uint32" valueReference="3006" declaredType="typedef_override_uint32"/>
+    <UInt16 name="variable_inherit_typedef_override_uint16" valueReference="3007" declaredType="typedef_override_uint16"/>
+    <UInt8  name="variable_inherit_typedef_override_uint8"  valueReference="3008" declaredType="typedef_override_uint8"/>
+
+    <!-- intXX with values, without inheriting, { min = INTXX_MIN + 2, max = INTXX_MAX - 2 }, delta value 2 since typedef override delta is 1 -->
+    <Int64  name="variable_override_notypedef_int64"  valueReference="4001" min="-9223372036854775806" max="9223372036854775805"/>
+    <Int32  name="variable_override_notypedef_int32"  valueReference="4002" min="-2147483646"          max="2147483645"/>
+    <Int16  name="variable_override_notypedef_int16"  valueReference="4003" min="-32766"               max="32765"/>
+    <Int8   name="variable_override_notypedef_int8"   valueReference="4004" min="-126"                 max="125"/>
+    <UInt64 name="variable_override_notypedef_uint64" valueReference="4005" min="2"                    max="18446744073709551613"/>
+    <UInt32 name="variable_override_notypedef_uint32" valueReference="4006" min="2"                    max="4294967293"/>
+    <UInt16 name="variable_override_notypedef_uint16" valueReference="4007" min="2"                    max="65533"/>
+    <UInt8  name="variable_override_notypedef_uint8"  valueReference="4008" min="2"                    max="253"/>
+
+    <!-- intXX with values, inheriting the basic typedef -->
+    <Int64  name="variable_override_basic_int64"  valueReference="5001" min="-9223372036854775806" max="9223372036854775805"  declaredType="typedef_basic_int64"/>
+    <Int32  name="variable_override_basic_int32"  valueReference="5002" min="-2147483646"          max="2147483645"           declaredType="typedef_basic_int32"/>
+    <Int16  name="variable_override_basic_int16"  valueReference="5003" min="-32766"               max="32765"                declaredType="typedef_basic_int16"/>
+    <Int8   name="variable_override_basic_int8"   valueReference="5004" min="-126"                 max="125"                  declaredType="typedef_basic_int8"/>
+    <UInt64 name="variable_override_basic_uint64" valueReference="5005" min="2"                    max="18446744073709551613" declaredType="typedef_basic_uint64"/>
+    <UInt32 name="variable_override_basic_uint32" valueReference="5006" min="2"                    max="4294967293"           declaredType="typedef_basic_uint32"/>
+    <UInt16 name="variable_override_basic_uint16" valueReference="5007" min="2"                    max="65533"                declaredType="typedef_basic_uint16"/>
+    <UInt8  name="variable_override_basic_uint8"  valueReference="5008" min="2"                    max="253"                  declaredType="typedef_basic_uint8"/>
+
+    <!-- intXX with values, inheriting the typedef with values -->
+    <Int64  name="variable_override_typedef_int64"  valueReference="6001" min="-9223372036854775806" max="9223372036854775805"  declaredType="typedef_override_int64"/>
+    <Int32  name="variable_override_typedef_int32"  valueReference="6002" min="-2147483646"          max="2147483645"           declaredType="typedef_override_int32"/>
+    <Int16  name="variable_override_typedef_int16"  valueReference="6003" min="-32766"               max="32765"                declaredType="typedef_override_int16"/>
+    <Int8   name="variable_override_typedef_int8"   valueReference="6004" min="-126"                 max="125"                  declaredType="typedef_override_int8"/>
+    <UInt64 name="variable_override_typedef_uint64" valueReference="6005" min="2"                    max="18446744073709551613" declaredType="typedef_override_uint64"/>
+    <UInt32 name="variable_override_typedef_uint32" valueReference="6006" min="2"                    max="4294967293"           declaredType="typedef_override_uint32"/>
+    <UInt16 name="variable_override_typedef_uint16" valueReference="6007" min="2"                    max="65533"                declaredType="typedef_override_uint16"/>
+    <UInt8  name="variable_override_typedef_uint8"  valueReference="6008" min="2"                    max="253"                  declaredType="typedef_override_uint8"/>
+
+    <!-- intXX with partial override, only testing Int32 to save time -->
+    <Int32  name="variable_partial_override_typedef_int32"  valueReference="7001" min="-2147483646"/> <!-- override the typedef'ed min - default max should be unaffected -->
+    <Int32  name="variable_partial_override_default_int32"  valueReference="7002" max="2147483645"/>  <!-- override the default max - typedef'ed min should be unaffected-->
+
+    <!-- intXX with start values -->
+    <Int64  name="variable_with_start_int64"  valueReference="8001" initial="exact" start="9223372036854775804"/>
+    <Int32  name="variable_with_start_int32"  valueReference="8002" initial="exact" start="2147483644"/>
+    <Int16  name="variable_with_start_int16"  valueReference="8003" initial="exact" start="32764"/>
+    <Int8   name="variable_with_start_int8"   valueReference="8004" initial="exact" start="124"/>
+    <UInt64 name="variable_with_start_uint64" valueReference="8005" initial="exact" start="18446744073709551612"/>
+    <UInt32 name="variable_with_start_uint32" valueReference="8006" initial="exact" start="4294967292"/>
+    <UInt16 name="variable_with_start_uint16" valueReference="8007" initial="exact" start="65532"/>
+    <UInt8  name="variable_with_start_uint8"  valueReference="8008" initial="exact" start="252"/>
+
+    <!-- int32 with all common attributes - the common attributes should not be dependent on the type, so just testing int32 - TODO: test NYI 3.0 attributes -->
+    <Int32 name="variable_common_attributes_int32" valueReference="9001" description="description" causality="output" variability="discrete" initial="calculated" declaredType="typedef_basic_int32" quantity="Frequency"/>
+
+  </ModelVariables>
+
+  <ModelStructure>
+  </ModelStructure>
+
+</fmiModelDescription>
+

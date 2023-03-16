@@ -16,6 +16,7 @@
 #ifndef FMI1_ENUMS_H_
 #define FMI1_ENUMS_H_
 
+#include <FMI1/fmi1_functions.h>
 #include <fmilib_config.h>
 
 #ifdef __cplusplus
@@ -80,6 +81,9 @@ typedef enum fmi1_causality_enu_t {
 
 /** \brief Convert a #fmi1_causality_enu_t constant into string  */
 FMILIB_EXPORT const char* fmi1_causality_to_string(fmi1_causality_enu_t c);
+
+/** Convert #fmi1_status_t variable to string  */
+FMILIB_EXPORT const char* fmi1_status_to_string(fmi1_status_t status);
 
 /** \brief Alias property for variables */
 typedef enum fmi1_variable_alias_kind_enu_t {

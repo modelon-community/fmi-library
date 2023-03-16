@@ -17,13 +17,17 @@ docker_image:
 
 install test documentation: docker_image
 	docker run \
-		-v "$(CURDIR):/$(ARTIFACT_DIR)" \
+		-v "/$(CURDIR):$(ARTIFACT_DIR)" \
 		$(DOCKER_IMAGE_FMIL) \
 		//bin/bash -c "build/docker/build.sh \
 			$@ $(BUILD_DIR) $(INSTALL_DIR) $(ARTIFACT_DIR) $(CONFIG)"
 
+# HINT: You can call e.g. 'cp -r -T /artifacts/src src' inside the container's
+# 	cwd to update the sources with changes made on the host.
+#   BE AWARE that the host is not necessarily synched (file timestamps) with the
+#   container, so it's necessary to do some cleaning in the build directory
+#   before building.
 docker_run_debug: docker_image
 	winpty docker run -it \
-		-v "/$(shell pwd):/$(ARTIFACT_DIR)" \
-		$(DOCKER_IMAGE_FMIL)
+		-v "/$(CURDIR):$(ARTIFACT_DIR)" $(DOCKER_IMAGE_FMIL)
 

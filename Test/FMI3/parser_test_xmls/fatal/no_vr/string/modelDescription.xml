@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription
+  fmiVersion="3.0"
+  modelName="test_type_definitions"
+  instantiationToken="{8c4e810f-3df3-4a00-8276-176fa3c9f9e0}"
+  description="N/A"
+  version="1.0"
+  generationDateAndTime="2011-09-23T16:57:33Z"
+  variableNamingConvention="structured">
+  <ModelExchange modelIdentifier="model_identifier"/>
+
+  <TypeDefinitions>
+  </TypeDefinitions>
+
+  <ModelVariables>
+    <String name="v" />
+  </ModelVariables>
+
+  <ModelStructure>
+  </ModelStructure>
+
+</fmiModelDescription>
+

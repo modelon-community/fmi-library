@@ -29,6 +29,7 @@ set(JMUTILSOURCE
  
  FMI1/fmi1_enums.c
  FMI2/fmi2_enums.c
+ FMI3/fmi3_enums.c
 )
 
 set(JMUTIL_PUBHEADERS
@@ -49,10 +50,15 @@ set(JMUTIL_PUBHEADERS
   FMI1/fmi1_types.h
   FMI1/fmi1_enums.h
 
-  FMI2/fmi2_functions.h
+  FMI2/fmi2_function_types.h
   FMI2/fmi2_types.h
   FMI2/fmi2_enums.h
   FMI2/fmi2_xml_callbacks.h
+
+  FMI3/fmi3_function_types.h
+  FMI3/fmi3_types.h
+  FMI3/fmi3_enums.h
+  FMI3/fmi3_xml_callbacks.h
 )
 
 set(JMUTIL_PRIVHEADERS

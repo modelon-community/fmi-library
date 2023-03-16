@@ -102,15 +102,6 @@ struct fmi2_xml_model_description_t {
 	fmi2_xml_model_structure_t* modelStructure;
 };
 
-void fmi2_xml_report_error(fmi2_xml_model_description_t* md, const char* module, const char* fmt, ...);
-
-void fmi2_xml_report_error_v(fmi2_xml_model_description_t* md, const char* module, const char* fmt, va_list ap);
-
-void fmi2_xml_report_warning(fmi2_xml_model_description_t* md, const char* module, const char* fmt, ...);
-
-void fmi2_xml_report_warning_v(fmi2_xml_model_description_t* md, const char* module, const char* fmt, va_list ap);
-
-
 #ifdef __cplusplus
 }
 #endif

@@ -30,7 +30,7 @@ extern "C" {
 
   For each basic type there is exactly one instance of
   fmi1_xml_variable_type_base_t with structKind=fmi1_xml_type_struct_enu_base.
-  Those instances have baseTypeStruct = NULL.
+  Those instances have nextLayer = NULL.
 
   Each type definition creates 1 or 2 instances:
   (1)  instance with structKind=fmi1_xml_type_struct_enu_typedef
@@ -53,18 +53,23 @@ typedef enum {
     fmi1_xml_type_struct_enu_start
 } fmi1_xml_type_struct_kind_enu_t;
 
-
-
 typedef struct fmi1_xml_variable_type_base_t fmi1_xml_variable_type_base_t;
+
+/*
+   This is the super type for all type related structs. The typical workflow is to check the 'structKind' field,
+   and then typecast accordingly.
+
+   The complete variable information is an aggregate of several 'structKind' structs, placed in an ordered list
+   'nextLayer'. An attempt to show the ordering is made in the 'diagrams.drawio' file.
+*/
 struct fmi1_xml_variable_type_base_t {
-    fmi1_xml_variable_type_base_t* baseTypeStruct; /* The fmi1_xml_variable_type_base structs are put on a list that provide needed info on a variable */
+    fmi1_xml_variable_type_base_t* nextLayer;   /* the next layer in the type aggregate */
+    fmi1_xml_type_struct_kind_enu_t structKind; /* the actual (sub) type */
+    fmi1_base_type_enu_t baseType;              /* the FMI base type */
+    char relativeQuantity;                      /* relativeQuantity flag (only used in fmi1_xml_real_type_props_t) */
+    char isFixed;                               /* (only used for fmi1_xml_type_struct_enu_start) */
 
-    fmi1_xml_variable_type_base_t* next;    /** dynamically allocated fmi1_xml_variable_type_base structs are put on a linked list to prevent memory leaks*/
-
-    fmi1_xml_type_struct_kind_enu_t structKind; /* one of fmi1_xml_type_contrains_kind.*/
-    char baseType;   /* one of fmi1_xml_base_type */
-    char relativeQuantity; /* only used for fmi1_xml_type_struct_enu_props (in fmi1_xml_real_type_props_t) */
-    char isFixed;   /* only used for fmi1_xml_type_struct_enu_start*/
+    fmi1_xml_variable_type_base_t* next;        /* should only be used for deallocation */
 };
 
 /* Variable type definition is general and is used for all types*/
@@ -132,7 +137,7 @@ static fmi1_xml_variable_type_base_t* fmi1_xml_find_type_struct(fmi1_xml_variabl
     fmi1_xml_variable_type_base_t* typeBase = type;
     while(typeBase) {
         if(typeBase->structKind == kind) return typeBase;
-        typeBase = typeBase->baseTypeStruct;
+        typeBase = typeBase->nextLayer;
     }
     return 0;
 }
@@ -143,7 +148,7 @@ static fmi1_xml_variable_type_base_t* fmi1_xml_find_type_props(fmi1_xml_variable
     while(typeBase) {
         if((typeBase->structKind == fmi1_xml_type_struct_enu_base)
 			|| (typeBase->structKind == fmi1_xml_type_struct_enu_props)) return typeBase;
-        typeBase = typeBase->baseTypeStruct;
+        typeBase = typeBase->nextLayer;
     }	
     return 0;
 }

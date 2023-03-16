@@ -14,23 +14,23 @@
   <TypeDefinitions>
 
     <!-- test that no specified quantity defaults to empty string -->
-    <Type name="name_real">
+    <Type name="td_minimal_real">
         <RealType/>
     </Type>
-    <Type name="name_integer">
+    <Type name="td_minimal_integer">
         <IntegerType/> 
     </Type>
-    <Type name="name_enum">
+    <Type name="td_minimal_enum">
         <EnumerationType>
             <Item name="EnumVar0"/>
         </EnumerationType>
     </Type>
 
     <!-- test that no specified quantity defaults to null pointer -->
-    <Type name="name_string">
+    <Type name="td_minimal_string">
         <StringType/>
     </Type>
-    <Type name="name_boolean">
+    <Type name="td_minimal_boolean">
         <BooleanType/>
     </Type>
 
@@ -51,7 +51,7 @@
         <Integer quantity="velocity" />
     </ScalarVariable>
     <ScalarVariable name="enum_with_attr" valueReference="1003">
-        <Enumeration quantity="velocity" declaredType="name_enum" />
+        <Enumeration quantity="velocity" declaredType="td_minimal_enum" />
     </ScalarVariable>
 
     <!-- test undefined variable attributes -->
@@ -62,7 +62,7 @@
         <Integer/>
     </ScalarVariable>
     <ScalarVariable name="enum_no_attr" valueReference="2003">
-        <Enumeration declaredType="name_enum" />
+        <Enumeration declaredType="td_minimal_enum" />
     </ScalarVariable>
 
     <!-- test that attributes in typedef are returned if not defined in variable -->

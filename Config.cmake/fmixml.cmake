@@ -23,6 +23,14 @@ if (WIN32)
     if (${FMILIB_BUILD_LEX_AND_PARSER_FILES})
         set(BISON_COMMAND ${FMILIB_THIRDPARTYLIBS}/winflexbison/win_bison.exe CACHE PATH "Command for running bison, e.g C:/win_bison.exe")
         set(FLEX_COMMAND ${FMILIB_THIRDPARTYLIBS}/winflexbison/win_flex.exe CACHE PATH "Command for running flex, e.g C:/win_flex.exe")
+
+        # Verify that flex and bison exists - they are not included by default
+        # in ThirdParty directory, and must be downloaded from some 3rd party.
+        foreach(cmd BISON_COMMAND FLEX_COMMAND)
+            if (NOT EXISTS ${${cmd}})
+                message(FATAL_ERROR "Can't find program: ${${cmd}}")
+            endif()
+        endforeach()
     else()
         #Remove variables from cache -> GUI if not used
         unset(BISON_COMMAND CACHE)
@@ -37,37 +45,49 @@ set(FMIXMLGENDIR ${FMIXMLDIR}/src-gen)
 set(USE_DEVELOPER_BUILD FALSE) #Enable/disable developer(debug) build
 if (${USE_DEVELOPER_BUILD})
 	set(BISON_FMIX_COMMAND_DEBUG -v -t)
+	set(BISON_FMI3_OUT_DEBUG ${FMIXMLGENDIR}/FMI3/fmi3_xml_variable_name_parser.output)
 	set(BISON_FMI2_OUT_DEBUG ${FMIXMLGENDIR}/FMI2/fmi2_xml_variable_name_parser.output)
 	set(BISON_FMI1_OUT_DEBUG ${FMIXMLGENDIR}/FMI1/fmi1_xml_variable_name_parser.output)
 endif()
+set(BISON_FMI3_SRC ${FMIXMLDIR}/src/FMI3/fmi3_xml_variable_name_parser.y)
 set(BISON_FMI2_SRC ${FMIXMLDIR}/src/FMI2/fmi2_xml_variable_name_parser.y)
 set(BISON_FMI1_SRC ${FMIXMLDIR}/src/FMI1/fmi1_xml_variable_name_parser.y)
+set(BISON_FMI3_OUT_HEADERS ${FMIXMLGENDIR}/FMI3/fmi3_xml_variable_name_parser.tab.h)
 set(BISON_FMI2_OUT_HEADERS ${FMIXMLGENDIR}/FMI2/fmi2_xml_variable_name_parser.tab.h)
 set(BISON_FMI1_OUT_HEADERS ${FMIXMLGENDIR}/FMI1/fmi1_xml_variable_name_parser.tab.h)
+set(BISON_FMI3_OUT_SRC ${FMIXMLGENDIR}/FMI3/fmi3_xml_variable_name_parser.tab.c)
 set(BISON_FMI2_OUT_SRC ${FMIXMLGENDIR}/FMI2/fmi2_xml_variable_name_parser.tab.c)
 set(BISON_FMI1_OUT_SRC ${FMIXMLGENDIR}/FMI1/fmi1_xml_variable_name_parser.tab.c)
+set(BISON_FMI3_OUT ${BISON_FMI3_OUT_SRC} ${BISON_FMI3_OUT_HEADERS} ${BISON_FMI3_OUT_DEBUG})
 set(BISON_FMI2_OUT ${BISON_FMI2_OUT_SRC} ${BISON_FMI2_OUT_HEADERS} ${BISON_FMI2_OUT_DEBUG})
 set(BISON_FMI1_OUT ${BISON_FMI1_OUT_SRC} ${BISON_FMI1_OUT_HEADERS} ${BISON_FMI1_OUT_DEBUG})
 if (${FMILIB_BUILD_LEX_AND_PARSER_FILES})
+	add_custom_command(OUTPUT ${BISON_FMI3_OUT} COMMAND ${BISON_COMMAND} ${BISON_FMIX_COMMAND_DEBUG} --no-lines -Dapi.prefix=yyfmi3 -d ${BISON_FMI3_SRC} DEPENDS ${BISON_FMI3_SRC} WORKING_DIRECTORY ${FMIXMLGENDIR}/FMI3)
 	add_custom_command(OUTPUT ${BISON_FMI2_OUT} COMMAND ${BISON_COMMAND} ${BISON_FMIX_COMMAND_DEBUG} --no-lines -Dapi.prefix=yyfmi2 -d ${BISON_FMI2_SRC} DEPENDS ${BISON_FMI2_SRC} WORKING_DIRECTORY ${FMIXMLGENDIR}/FMI2)
 	add_custom_command(OUTPUT ${BISON_FMI1_OUT} COMMAND ${BISON_COMMAND} ${BISON_FMIX_COMMAND_DEBUG} --no-lines -Dapi.prefix=yyfmi1 -d ${BISON_FMI1_SRC} DEPENDS ${BISON_FMI1_SRC} WORKING_DIRECTORY ${FMIXMLGENDIR}/FMI1)
 endif()
 
 #Build FLEX files
+set(FLEX_FMI3_SRC ${FMIXMLDIR}/src/FMI3/fmi3_xml_variable_name_scan.l)
 set(FLEX_FMI2_SRC ${FMIXMLDIR}/src/FMI2/fmi2_xml_variable_name_scan.l)
 set(FLEX_FMI1_SRC ${FMIXMLDIR}/src/FMI1/fmi1_xml_variable_name_scan.l)
+set(FLEX_FMI3_OUT_HEADERS ${FMIXMLGENDIR}/FMI3/fmi3_xml_variable_name_lex.h)
 set(FLEX_FMI2_OUT_HEADERS ${FMIXMLGENDIR}/FMI2/fmi2_xml_variable_name_lex.h)
 set(FLEX_FMI1_OUT_HEADERS ${FMIXMLGENDIR}/FMI1/fmi1_xml_variable_name_lex.h)
+set(FLEX_FMI3_OUT_SRC ${FMIXMLGENDIR}/FMI3/lex.yyfmi3.c)
 set(FLEX_FMI2_OUT_SRC ${FMIXMLGENDIR}/FMI2/lex.yyfmi2.c)
 set(FLEX_FMI1_OUT_SRC ${FMIXMLGENDIR}/FMI1/lex.yyfmi1.c)
+set(FLEX_FMI3_OPT_ARG --noline --header-file=${FLEX_FMI3_OUT_HEADERS} -Pyyfmi3)
 set(FLEX_FMI2_OPT_ARG --noline --header-file=${FLEX_FMI2_OUT_HEADERS} -Pyyfmi2)
 set(FLEX_FMI1_OPT_ARG --noline --header-file=${FLEX_FMI1_OUT_HEADERS} -Pyyfmi1)
 
 if (CMAKE_HOST_WIN32)
+	set(FLEX_FMI3_OPT_ARG ${FLEX_FMI3_OPT_ARG})
 	set(FLEX_FMI2_OPT_ARG ${FLEX_FMI2_OPT_ARG})
 	set(FLEX_FMI1_OPT_ARG ${FLEX_FMI1_OPT_ARG})
 endif()
 if (${FMILIB_BUILD_LEX_AND_PARSER_FILES})
+	add_custom_command(OUTPUT ${FLEX_FMI3_OUT_SRC} ${FLEX_FMI3_OUT_HEADERS} COMMAND ${FLEX_COMMAND} ${FLEX_FMI3_OPT_ARG} ${FLEX_FMI3_SRC} DEPENDS ${BISON_FMI3_OUT} ${FLEX_FMI3_SRC} WORKING_DIRECTORY ${FMIXMLGENDIR}/FMI3)
 	add_custom_command(OUTPUT ${FLEX_FMI2_OUT_SRC} ${FLEX_FMI2_OUT_HEADERS} COMMAND ${FLEX_COMMAND} ${FLEX_FMI2_OPT_ARG} ${FLEX_FMI2_SRC} DEPENDS ${BISON_FMI2_OUT} ${FLEX_FMI2_SRC} WORKING_DIRECTORY ${FMIXMLGENDIR}/FMI2)
 	add_custom_command(OUTPUT ${FLEX_FMI1_OUT_SRC} ${FLEX_FMI1_OUT_HEADERS} COMMAND ${FLEX_COMMAND} ${FLEX_FMI1_OPT_ARG} ${FLEX_FMI1_SRC} DEPENDS ${BISON_FMI1_OUT} ${FLEX_FMI1_SRC} WORKING_DIRECTORY ${FMIXMLGENDIR}/FMI1)
 endif()
@@ -77,6 +97,74 @@ if(WIN32)
 endif()
 
 #end of generate c source from Bison and Flex files
+################################################################################
+
+### Generate FMIL source code ###
+
+set(TEMPLATE_FILES
+    fmi3_xml_variable_generics
+    fmi3_xml_variable_generics_h
+    fmi3_xml_type_generics
+    fmi3_xml_type_generics_h
+)
+
+set(TMPL_SRC_DST_LIST "")   # list of tuples (src, dst) that is passed to docker
+set(TMPL_SRC_LIST "")       # list of template source files
+set(TMPL_DST_LIST "")       # list of path to files generated from templates
+
+# On Windows: create docker container that mounts cmake binary and source dir, and then
+#   performs the preprocessing.
+# On Linux: perform same as windows but without docker
+if (WIN32)
+    set(SRC_PREFIX /mnt_src)
+    set(DST_PREFIX /mnt_bin)
+else()
+    set(SRC_PREFIX ${CMAKE_SOURCE_DIR})
+    set(DST_PREFIX ${CMAKE_BINARY_DIR})
+endif()
+
+foreach(file ${TEMPLATE_FILES})
+    # set temp loop variables
+    set(SRC src/XML/templates/FMI3/${file}.c)
+    set(DST src/XML/gen/FMI3/${file}.c)
+
+    # create list of src/dst files as tuples:
+    list(APPEND TMPL_SRC_DST_LIST \"${SRC_PREFIX}/${SRC}\" \"${DST_PREFIX}/${DST}\") # used as args, so need quoting
+
+    # save paths (on windows, not docker) so we can set build dependencies:
+    list(APPEND TMPL_SRC_LIST ${CMAKE_SOURCE_DIR}/${SRC})
+    list(APPEND TMPL_DST_LIST ${CMAKE_BINARY_DIR}/${DST})
+endforeach()
+string (REPLACE ";" " " TMPL_SRC_DST_LIST_STR "${TMPL_SRC_DST_LIST}") # used as commandline arg, so sub-args need space separatation
+
+add_custom_target(
+    generate_numeric_types ALL
+    DEPENDS ${TMPL_DST_LIST} # these files exist in the binary dir
+)
+
+# specify the (platform-dependent) command for generating the DST files
+set(CODEGEN_DIR ${SRC_PREFIX}/build/preprocess)
+if (WIN32)
+    # run via docker
+    set(DOCKER_TAG_CODEGEN fmil_cmake_codegen)
+    set(CMD_CODEGEN docker build -t ${DOCKER_TAG_CODEGEN} . && docker run -v "${CMAKE_SOURCE_DIR}:${SRC_PREFIX}" -v "${CMAKE_BINARY_DIR}:${DST_PREFIX}" ${DOCKER_TAG_CODEGEN} //bin/bash -c "chmod a+x ${CODEGEN_DIR}/preprocess*.sh && ${CODEGEN_DIR}/preprocess_list.sh ${TMPL_SRC_DST_LIST_STR}")
+
+else() # linux
+    # - run directly on command line
+    # - command is wrapped in bash -c "..." because otherwise the (*) will be taken verbatim
+    set(CMD_CODEGEN bash -c "chmod a+x ${CODEGEN_DIR}/preprocess*.sh && ${CODEGEN_DIR}/preprocess_list.sh ${TMPL_SRC_DST_LIST_STR}")
+endif()
+
+add_custom_command(
+    OUTPUT ${TMPL_DST_LIST}
+    DEPENDS ${TMPL_SRC_LIST}
+    COMMAND ${CMD_CODEGEN}
+    COMMAND_EXPAND_LISTS
+    VERBATIM
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/build/preprocess
+    COMMENT "generating C code from macro templates... (command: ${CMD_CODEGEN})"
+)
+
 ################################################################################
 
 # set(DOXYFILE_EXTRA_SOURCES "${DOXYFILE_EXTRA_SOURCES} \"${FMIXMLDIR}/include\"")
@@ -114,6 +202,20 @@ set(FMIXMLHEADERS
     src/FMI2/fmi2_xml_unit_impl.h
     include/FMI2/fmi2_xml_variable.h
     src/FMI2/fmi2_xml_variable_impl.h
+
+    include/FMI3/fmi3_xml_model_description.h
+    src/FMI3/fmi3_xml_model_description_impl.h
+    include/FMI3/fmi3_xml_model_structure.h
+    src/FMI3/fmi3_xml_model_structure_impl.h
+    src/FMI3/fmi3_xml_parser.h
+    include/FMI3/fmi3_xml_type.h
+    src/FMI3/fmi3_xml_type_impl.h
+    include/FMI3/fmi3_xml_unit.h
+    src/FMI3/fmi3_xml_unit_impl.h
+    include/FMI3/fmi3_xml_variable.h
+    src/FMI3/fmi3_xml_variable_impl.h
+    include/FMI3/fmi3_xml_dimension.h
+    src/
  )
 
 set(FMIXMLSOURCE
@@ -135,6 +237,15 @@ set(FMIXMLSOURCE
     src/FMI2/fmi2_xml_unit.c
 	src/FMI2/fmi2_xml_vendor_annotations.c
 	src/FMI2/fmi2_xml_variable.c
+
+    src/FMI3/fmi3_xml_parser.c
+    src/FMI3/fmi3_xml_model_description.c
+    src/FMI3/fmi3_xml_model_structure.c
+    src/FMI3/fmi3_xml_type.c
+    src/FMI3/fmi3_xml_unit.c
+	src/FMI3/fmi3_xml_vendor_annotations.c
+	src/FMI3/fmi3_xml_variable.c
+	src/FMI3/fmi3_xml_dimension.c
 )
 
 include(ExternalProject)
@@ -213,14 +324,23 @@ endif()
 
 set(EXPAT_INCLUDE_DIRS ${CMAKE_BINARY_DIR}/ExpatEx/install/include)
 
-include_directories("${EXPAT_INCLUDE_DIRS}" "${FMILIB_THIRDPARTYLIBS}/FMI/" "${FMIXMLGENDIR}/FMI1" "${FMIXMLGENDIR}/FMI2")
+include_directories(
+    "${EXPAT_INCLUDE_DIRS}"
+    "${FMILIB_THIRDPARTYLIBS}/FMI/"
+    "${FMIXMLGENDIR}/FMI1"
+    "${FMIXMLGENDIR}/FMI2"
+    "${FMIXMLGENDIR}/FMI3"
+    ${CMAKE_BINARY_DIR}/src/XML
+)
 
 PREFIXLIST(FMIXMLSOURCE  ${FMIXMLDIR}/)
 PREFIXLIST(FMIXMLHEADERS ${FMIXMLDIR}/)
 
 list(APPEND FMIXMLSOURCE
+    ${BISON_FMI3_OUT_SRC}
     ${BISON_FMI2_OUT_SRC}
     ${BISON_FMI1_OUT_SRC}
+    ${FLEX_FMI3_OUT_SRC}
     ${FLEX_FMI2_OUT_SRC}
     ${FLEX_FMI1_OUT_SRC}
 )
@@ -231,7 +351,7 @@ add_library(fmixml ${FMILIBKIND} ${FMIXMLSOURCE} ${FMIXMLHEADERS})
 if(MSVC)
     target_compile_definitions(fmixml PUBLIC XML_STATIC)
 endif()
-
 target_link_libraries(fmixml ${JMUTIL_LIBRARIES} expat)
+add_dependencies(fmixml generate_numeric_types)
 
 endif(NOT FMIXMLDIR)

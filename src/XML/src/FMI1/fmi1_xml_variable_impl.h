@@ -28,7 +28,7 @@ extern "C" {
 
 /* General variable type is convenien to unify all the variable list operations */
 struct fmi1_xml_variable_t {
-    fmi1_xml_variable_type_base_t* typeBase;
+    fmi1_xml_variable_type_base_t* type;
 
     const char* description;
     jm_vector(jm_voidp)* directDependency;

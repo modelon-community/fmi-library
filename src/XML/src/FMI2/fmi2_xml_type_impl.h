@@ -33,7 +33,7 @@ extern "C" {
   For each basic type (Real, Integer, each Enumeration, String & Boolean)
   there is a default instance of fmi2_xml_variable_type_base_t with
   structKind=fmi2_xml_type_struct_enu_props. Those instances have
-  baseTypeStruct = NULL.
+  nextLayer = NULL.
 
   Each type definition creates 1 or 2 instances:
   (1)  instance with structKind=fmi2_xml_type_struct_enu_typedef
@@ -60,16 +60,22 @@ typedef enum {
 
 typedef struct fmi2_xml_variable_type_base_t fmi2_xml_variable_type_base_t;
 
+/*
+   This is the super type for all type related structs. The typical workflow is to check the 'structKind' field,
+   and then typecast accordingly.
+
+   The complete variable information is an aggregate of several 'structKind' structs, placed in an ordered list
+   'nextLayer'. An attempt to show the ordering is made in the 'diagrams.drawio' file.
+*/
 struct fmi2_xml_variable_type_base_t {
-    fmi2_xml_variable_type_base_t* baseTypeStruct; /* The fmi2_xml_variable_type_base structs are put on a list that provide needed info on a variable */
+    fmi2_xml_variable_type_base_t* nextLayer;   /* the next layer in the type aggregate */
+    fmi2_xml_type_struct_kind_enu_t structKind; /* the actual (sub) type */
+    fmi2_base_type_enu_t baseType;              /* the FMI base type */
+    char isRelativeQuantity;                    /* relativeQuantity flag (only used in fmi2_xml_real_type_props_t) */
+	char isUnbounded;                           /* unbounded flag        (only used in fmi2_xml_real_type_props_t) */
 
-    fmi2_xml_variable_type_base_t* next;    /** dynamically allocated fmi2_xml_variable_type_base structs are put on a linked list to prevent memory leaks*/
-
-    fmi2_xml_type_struct_kind_enu_t structKind; /* one of fmi2_xml_type_contrains_kind.*/
-    char baseType;   /* one of fmi2_xml_base_type (indicating the primitive data type) */
-    char isRelativeQuantity;   /* relativeQuantity flag set. Only used in fmi2_xml_real_type_props_t) */
-	char isUnbounded;          /* unbounded flag set only used in fmi2_xml_real_type_props_t) */
-} ;
+    fmi2_xml_variable_type_base_t* next;        /* should only be used for deallocation */
+};
 
 /*
 	Variable type definition is general and is used for all types.
@@ -77,7 +83,7 @@ struct fmi2_xml_variable_type_base_t {
 	(specific type element comes next).
 */
 struct fmi2_xml_variable_typedef_t {
-    fmi2_xml_variable_type_base_t typeBase;
+    fmi2_xml_variable_type_base_t super;
     jm_string description;
     char typeName[1];
 };
@@ -153,7 +159,7 @@ static fmi2_xml_variable_type_base_t* fmi2_xml_find_type_struct(fmi2_xml_variabl
     fmi2_xml_variable_type_base_t* typeBase = type;
     while(typeBase) {
         if(typeBase->structKind == kind) return typeBase;
-        typeBase = typeBase->baseTypeStruct;
+        typeBase = typeBase->nextLayer;
     }
     return 0;
 }
@@ -162,7 +168,7 @@ static fmi2_xml_variable_type_base_t* fmi2_xml_find_type_props(fmi2_xml_variable
     fmi2_xml_variable_type_base_t* typeBase = type;
     while(typeBase) {
         if(typeBase->structKind == fmi2_xml_type_struct_enu_props) return typeBase;
-        typeBase = typeBase->baseTypeStruct;
+        typeBase = typeBase->nextLayer;
     }
     return 0;
 }

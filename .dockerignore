@@ -1,4 +1,4 @@
-# Files that will not be copied to the Docker image:
+# Files that will not be part of COPY to docker image
 
 /.git/
 /.vs/

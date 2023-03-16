@@ -24,6 +24,7 @@
 
 extern int fmi1_test(fmi_import_context_t* context, const char* dirPath);
 extern int fmi2_test(fmi_import_context_t* context, const char* dirPath);
+extern int fmi3_test(fmi_import_context_t* context, const char* dirPath);
 
 void importlogger(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_level, jm_string message)
 {
@@ -82,6 +83,9 @@ int main(int argc, char *argv[])
 	}
 	else if(version == fmi_version_2_0_enu) {
 		ret = fmi2_test(context, tmpPath);
+	}
+	else if(version == fmi_version_3_0_enu) {
+		ret = fmi3_test(context, tmpPath);
 	}
 	else {
         fmi_import_free_context(context);

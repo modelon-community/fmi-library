@@ -23,7 +23,7 @@ extern "C" {
 
 #include "FMI/fmi_util_options.h"
 #include <FMI2/fmi2_types.h>
-#include <FMI2/fmi2_functions.h>
+#include <FMI2/fmi2_function_types.h>
 #include <FMI2/fmi2_enums.h>
 #include <FMI2/fmi2_capi.h>
 #include <JM/jm_portability.h>

@@ -8,11 +8,11 @@ include $(CONFIG_FILE)
 
 install: generate
 	cd $(BUILD_DIR) && \
-		cmake --build . --config MinSizeRel --target '$@' 
+		cmake --build . --config $(BUILD_TYPE) --target '$@'
 
 test: generate
 	cd $(BUILD_DIR) && \
-		ctest -C MinSizeRel
+		$(TEST_COMMAND)
 
 documentation: generate
 	cd $(BUILD_DIR) && \
@@ -26,9 +26,10 @@ generate:
 			-DFMILIB_BUILD_WITH_STATIC_RTLIB=$(BUILD_WITH_STATIC_RTLIB) \
 			-DFMILIB_BUILD_TESTS=$(BUILD_TESTS) \
 			-DFMILIB_TEST_LOCALE=$(TEST_LOCALE) \
+			-DCMAKE_BUILD_TYPE=$(BUILD_TYPE) \
 			$(FMILIB_CMAKE_CUSTOM_FLAGS) \
 			-G $(GENERATOR) \
 			../$(SRC_DIR)
 
 clean:
-	rm -rf -v build-* install-*
+	rm -rf -v build_* install_*

@@ -18,7 +18,8 @@
 
 static const char* fmi_versions[] = {
 	"1.0",
-	"2.0"
+	"2.0",
+    "3.0"
 };
 
 const char * fmi_version_to_string(fmi_version_enu_t v){

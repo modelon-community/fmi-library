@@ -119,7 +119,7 @@ void parser_no_log_expected_message(char *xml_dir)
     test_parser_with_cleanup(xml_dir, NO_LOG_EXPECTED_MSG, 0);
 }
 
-typedef int (*fmu_test_f)(fmi1_import_t* fmu);
+typedef int (*fmu_test_f)(fmi1_import_variable_list_t* vars);
 
 void test_parsing_and_fmu(char *xml_dir, fmu_test_f fmu_test, int should_log_expected_msg)
 {

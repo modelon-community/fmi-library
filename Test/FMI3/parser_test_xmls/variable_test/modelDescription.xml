@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription
+  fmiVersion="2.0"
+  modelName="myModelName"
+  instantiationToken="myInstantiationToken"
+  description="myDescription"
+  author="myAuthor"
+  generationTool="myGenerationTool"
+  generationDateAndTime="2002-05-30T09:00:00"
+  version="myModelVersion"
+  variableNamingConvention="structured"
+  numberOfEventIndicators="3">
+
+<ModelExchange
+  modelIdentifier="myModelIdentifier" />
+
+<UnitDefinitions>
+    <Unit name="K">
+        <BaseUnit K="1" />
+        <DisplayUnit name="degF" factor="1.7999999999999998" offset="-459.67" />
+        <DisplayUnit name="degC" offset="-273.15" />
+    </Unit>
+</UnitDefinitions>
+
+<TypeDefinitions>
+    <Enumeration name="MyEnum" quantity="TypeQuantity">
+        <Item name="item1" value="1"/>
+        <Item name="item2" value="2"/>
+        <Item name="item3" value="3"/>
+    </Enumeration>
+</TypeDefinitions>
+
+<DefaultExperiment
+  startTime="0.0"
+  stopTime="1.0"/>
+
+<ModelVariables>
+  <Float64 name="minRealVar" valueReference="0"/>
+  <Float64 name="maxRealVar" causality="parameter" variability="fixed" valueReference="1" initial="exact" description="myDescription" quantity="Temperature" unit="K" displayUnit="degC" min="3.2" max="6.5" nominal="3.5" start="5.9"/>
+  <Int32 name="minIntVar" valueReference="2"/>
+  <Int32 name="maxIntVar" causality="calculatedParameter" variability="tunable" valueReference="3" initial="approx" description="myDescription" quantity="integerQuantity" min="3" max="7" start="6"/>
+  <Enumeration name="minEnumVar" valueReference="4" variability="discrete" declaredType="MyEnum"/>
+  <Enumeration name="maxEnumVar" causality="output" variability="discrete" valueReference="5" initial="exact" description="myDescription" declaredType="MyEnum" quantity="enumerationQuantity" min="1" max="2" start="2"/>
+  <Boolean name="minBoolVar" valueReference="6"/>
+  <Boolean name="maxBoolVar" causality="output" variability="discrete" valueReference="7" initial="approx" description="myDescription" start="true"/>
+  <String name="minStringVar" valueReference="8"/>
+  <String name="maxStringVar" causality="local" variability="constant" valueReference="9" initial="exact" description="myDescription" start="stringStart"/>
+  <Float64 name="derivative"  causality="output" variability="continuous" valueReference="10" initial="approx" description="myDescription" derivative="1" start="1.0"/>
+</ModelVariables>
+
+<ModelStructure>
+  <Derivatives>
+    <Unknown index="11" />
+  </Derivatives>
+  <InitialUnknowns>
+    <Unknown index="1"/>
+    <Unknown index="3"/>
+    <Unknown index="5"/>
+    <Unknown index="7"/>
+    <Unknown index="9"/>
+    <Unknown index="11"/>
+  </InitialUnknowns>
+</ModelStructure>
+</fmiModelDescription>

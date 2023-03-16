@@ -24,6 +24,10 @@ else
     make $TARGET CONFIG_FILE=./build/config/$CONFIG
 fi
 
+# NOTE: Do not try to copy the whole build directory and re-use it later for
+#  incremental builds between docker sessions - the timestamps are not synched
+#  with the host, so the (incremental) build can't be trusted.
+
 # Copy build artifacts to host
 if [[ $TARGET == 'install' ]] || [[ $TARGET == 'documentation' ]]; then
     cp -r $INSTALL_DIR $ARTIFACT_DIR
@@ -36,8 +40,12 @@ fi
 # Copy test logs to host
 if [[ $TARGET == 'test' ]]; then
     ARTIFACT_TEST_LOG_DIR=$ARTIFACT_DIR/$TEST_LOG_DIR
-    mkdir -p $ARTIFACT_TEST_LOG_DIR || true
+
+    # clean old logs at host
     rm -rf $ARTIFACT_TEST_LOG_DIR/*
+
+    # write the new logs to host
+    mkdir -p $ARTIFACT_TEST_LOG_DIR || true
     cp $TEST_LOG_DIR/* $ARTIFACT_TEST_LOG_DIR
     chmod -R a+rwx $ARTIFACT_DIR/$BUILD_DIR
 fi

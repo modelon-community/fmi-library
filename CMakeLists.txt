@@ -20,8 +20,19 @@ cmake_minimum_required (VERSION 2.8.6 FATAL_ERROR)
 IF("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
   message(FATAL_ERROR "In-source build is not supported. Please, use an empty directory for building the project.")
 ENDIF()
+
 project (FMILibrary)
-set_property(GLOBAL PROPERTY PROPERTYPREDEFINED_TARGETS_FOLDER Global)
+
+# Verify that float parsing will work for the platform/compiler config. Ignoring CHAR_BIT for exotic platforms.
+include(CheckTypeSize)
+check_type_size("double" SIZEOF_DOUBLE BUILTIN_TYPES_ONLY LANGUAGE "C")
+if (NOT (${SIZEOF_DOUBLE} EQUAL "8" OR ${SIZEOF_DOUBLE} GREATER "8"))
+    message(FATAL_ERROR "Required size of C type 'double': at least 64 bit. Return value of sizeof(double): ${SIZEOF_DOUBLE}")
+endif()
+
+set_property(GLOBAL PROPERTY C_STANDARD                         99)
+set_property(GLOBAL PROPERTY C_STANDARD_REQUIRED                ON)
+set_property(GLOBAL PROPERTY PROPERTYPREDEFINED_TARGETS_FOLDER  Global)
 set(FMILIBRARYHOME ${FMILibrary_SOURCE_DIR})
 set(FMILIBRARYBUILD ${FMILibrary_BINARY_DIR})
 
@@ -100,6 +111,7 @@ ENDIF(NOT CMAKE_CFG_INTDIR)
 
 if(MSVC)
 	# With C89 we're forced to use non-secure functions
+	# TODO: We're now using C99, and this can be cleaned up
 	ADD_DEFINITIONS (/D _CRT_SECURE_NO_WARNINGS)
 	
 	# Set the run-time library flag as controlled by the FMILIB_BUILD_WITH_STATIC_RTLIB option
@@ -112,20 +124,23 @@ if(MSVC)
 	endif(FMILIB_BUILD_WITH_STATIC_RTLIB)
 
 	foreach(flag_var
-		CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE
-		CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO
-		CMAKE_C_FLAGS CMAKE_C_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE
-		CMAKE_C_FLAGS_MINSIZEREL CMAKE_C_FLAGS_RELWITHDEBINFO)
+            CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE
+            CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO
+            CMAKE_C_FLAGS CMAKE_C_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE
+            CMAKE_C_FLAGS_MINSIZEREL CMAKE_C_FLAGS_RELWITHDEBINFO)
+
+        # Replace flags for static/shared lib
 		if(${${flag_var}} MATCHES "${replace_from}")
 			string(REPLACE "${replace_from}" "${replace_to}" tmp "${${flag_var}}")
 			set(${flag_var} ${tmp} CACHE STRING "compiler flags" FORCE)
 		endif()
+
 	endforeach(flag_var)	
 endif(MSVC)
 
 IF(CMAKE_COMPILER_IS_GNUCC)
    SET(SAVED_C_DEFAULT_FLAGS "${CMAKE_C_FLAGS}")
-   SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c89 -pedantic -Wall -Wno-unused-function")
+   SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99 -pedantic -Wall -Wno-unused-function")
    if(NOT MSYS)
 	include(CheckCCompilerFlag)
 	CHECK_C_COMPILER_FLAG("-fvisibility=hidden" SUPPORT_VISIBILITY)
@@ -162,11 +177,14 @@ endmacro(PREFIXLIST)
 if(MSVC AND (${CMAKE_GENERATOR} MATCHES "Visual Studio 10"))
 	source_group("Source files\\FMI1" REGULAR_EXPRESSION "fmi1_.*.c") 
 	source_group("Source files\\FMI2" REGULAR_EXPRESSION "fmi2_.*.c") 
+	source_group("Source files\\FMI3" REGULAR_EXPRESSION "fmi3_.*.c") 
 	source_group("Header files\\FMI1" REGULAR_EXPRESSION "fmi1_.*.h") 
 	source_group("Header files\\FMI2" REGULAR_EXPRESSION "fmi2_.*.h") 
+	source_group("Header files\\FMI3" REGULAR_EXPRESSION "fmi3_.*.h") 
 	source_group("Private headers" REGULAR_EXPRESSION "fmi_.*impl.h") 
 	source_group("Private headers\\FMI1" REGULAR_EXPRESSION "fmi1_.*impl.h") 
 	source_group("Private headers\\FMI2" REGULAR_EXPRESSION "fmi2_.*impl.h") 
+	source_group("Private headers\\FMI3" REGULAR_EXPRESSION "fmi3_.*impl.h") 
 endif()
 
 set(FMILIBKIND STATIC)
@@ -282,6 +300,10 @@ endif()
 if(FMILIB_BUILD_SHARED_LIB)
 	add_library(fmilib_shared SHARED ${FMILIB_SHARED_SRC})
 
+    # Even if fmilib_shared is built from source files, it's still necessary that e.g.
+    # fmiimport's dependencies such as generated code is built first.
+    add_dependencies(fmilib_shared fmiimport)
+
     if (UNIX AND NOT APPLE)
         target_compile_definitions(fmilib_shared PRIVATE -D_GNU_SOURCE)
     endif()
@@ -330,10 +352,11 @@ if(FMILIB_INSTALL_SUBLIBS)
 		DESTINATION .
         FILES_MATCHING PATTERN "*.h")
 endif()
-	
+
 install(DIRECTORY 
 	${FMILIB_FMI_STANDARD_HEADERS}/FMI1
 	${FMILIB_FMI_STANDARD_HEADERS}/FMI2
+	${FMILIB_FMI_STANDARD_HEADERS}/FMI3
 	DESTINATION include
     FILES_MATCHING PATTERN "*.h")
 
@@ -345,7 +368,8 @@ function(append_file_context file_out file_in)
 	file(APPEND ${file_out} "${text}")
 	set(text "")
 endfunction()
-	
+
+
 
 if(FMILIB_GENERATE_DOXYGEN_DOC)
 
@@ -379,3 +403,13 @@ if(FMILIB_GENERATE_DOXYGEN_DOC)
  
 	include(UseDoxygen/UseDoxygen)
 endif(FMILIB_GENERATE_DOXYGEN_DOC)
+
+# Debug only: prints the final value of all the non-environment variables
+if (FMILIB_DEBUG_PRINT_VARIABLES_ONLY)
+    get_cmake_property(_variableNames VARIABLES)
+    list(SORT _variableNames)
+    foreach (_variableName ${_variableNames})
+        message(STATUS "${_variableName}=${${_variableName}}")
+    endforeach()
+endif()
+

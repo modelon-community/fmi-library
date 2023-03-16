@@ -423,7 +423,7 @@ fmi1_xml_variable_t* fmi1_xml_get_variable_by_vr(fmi1_xml_model_description_t* m
 	if(!md->variablesByVR) return 0;
 	keyType.structKind = fmi1_xml_type_struct_enu_base;
 	keyType.baseType = baseType;
-	key.typeBase = &keyType;
+	key.type = &keyType;
 	key.vr = vr;
     key.aliasKind = fmi1_variable_is_not_alias;
 

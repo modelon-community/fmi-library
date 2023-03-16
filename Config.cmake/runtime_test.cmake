@@ -116,10 +116,13 @@ function(compress_fmu OUTPUT_FOLDER_T MODEL_IDENTIFIER_T FILE_NAME_CS_ME_EXT_T T
 	
 endfunction(compress_fmu)
 
-set(FMILIBFORTEST fmilib)
+# Build the test util 'fmil_test'
+add_library(fmi_testutil STATIC ${RTTESTDIR}/fmil_test.c)
+
+set(FMILIBFORTEST fmilib fmi_testutil)
 
 if(FMILIB_BUILD_SHARED_LIB AND (FMILIB_LINK_TEST_TO_SHAREDLIB OR NOT FMILIB_BUILD_STATIC_LIB))
-	set(FMILIBFORTEST fmilib_shared)
+	set(FMILIBFORTEST fmilib_shared fmi_testutil)
 	if(CMAKE_COMPILER_IS_GNUCC)
 		set(FMILIBFORTEST ${FMILIBFORTEST})
 	endif()
@@ -136,7 +139,8 @@ target_link_libraries (fmi_zip_unzip_test ${FMIZIP_LIBRARIES})
 add_executable (fmi_import_test 
 					${RTTESTDIR}/fmi_import_test.c
 					${RTTESTDIR}/FMI1/fmi1_import_test.c
-					${RTTESTDIR}/FMI2/fmi2_import_test.c)
+					${RTTESTDIR}/FMI2/fmi2_import_test.c
+					${RTTESTDIR}/FMI3/fmi3_import_test.c)
 target_link_libraries (fmi_import_test  ${FMILIBFORTEST})
 
 set_target_properties(
@@ -169,6 +173,7 @@ ADD_TEST(ctest_fmi_zip_zip_test fmi_zip_zip_test)
 
 include(test_fmi1)
 include(test_fmi2)
+include(test_fmi3)
 
 ADD_TEST(ctest_fmi_import_test_no_xml fmi_import_test ${UNCOMPRESSED_DUMMY_FILE_PATH_SRC} ${TEST_OUTPUT_FOLDER})	
   set_tests_properties(ctest_fmi_import_test_no_xml PROPERTIES WILL_FAIL TRUE)
@@ -176,6 +181,8 @@ ADD_TEST(ctest_fmi_import_test_me_1 fmi_import_test ${FMU_ME_PATH} ${FMU_TEMPFOL
 ADD_TEST(ctest_fmi_import_test_cs_1 fmi_import_test ${FMU_CS_PATH} ${FMU_TEMPFOLDER})
 ADD_TEST(ctest_fmi_import_test_me_2 fmi_import_test ${FMU2_ME_PATH} ${FMU_TEMPFOLDER})
 ADD_TEST(ctest_fmi_import_test_cs_2 fmi_import_test ${FMU2_CS_PATH} ${FMU_TEMPFOLDER})
+ADD_TEST(ctest_fmi_import_test_me_3 fmi_import_test ${FMU3_ME_PATH} ${FMU_TEMPFOLDER})
+ADD_TEST(ctest_fmi_import_test_cs_3 fmi_import_test ${FMU3_CS_PATH} ${FMU_TEMPFOLDER})
 
 if(FMILIB_BUILD_BEFORE_TESTS)
 	SET_TESTS_PROPERTIES ( 
@@ -184,6 +191,8 @@ if(FMILIB_BUILD_BEFORE_TESTS)
 		ctest_fmi_import_test_cs_1
 		ctest_fmi_import_test_me_2
 		ctest_fmi_import_test_cs_2
+		ctest_fmi_import_test_me_3
+		ctest_fmi_import_test_cs_3
 		ctest_fmi_zip_unzip_test
 		ctest_fmi_zip_zip_test
 		PROPERTIES DEPENDS ctest_build_all)

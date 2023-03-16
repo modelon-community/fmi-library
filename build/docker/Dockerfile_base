@@ -6,4 +6,5 @@ RUN apt-get update && apt-get install -y \
     cmake \
     doxygen \
     vim \
-    language-pack-sv
+    language-pack-sv \
+    valgrind

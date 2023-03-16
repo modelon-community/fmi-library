@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription
+  fmiVersion="3.0"
+  modelName="test_type_definitions"
+  instantiationToken="{8c4e810f-3df3-4a00-8276-176fa3c9f9e0}"
+  description="N/A"
+  version="1.0"
+  generationDateAndTime="2011-09-23T16:57:33Z"
+  variableNamingConvention="structured">
+  <ModelExchange modelIdentifier="model_identifier"/>
+
+  <TypeDefinitions>
+    <!-- value boundary check -->
+    <!-- parsing breaks for element immediately on failure, so only having min or max to test both -->
+    <!-- float: incremented absolute value of least significant decimal -->
+    <Float64 name="vbc_td_min_float64"  min="-1.7976931348623159e+308" />
+    <Float64 name="vbc_td_max_float64"  max="1.7976931348623159e+308"  />
+    <Float32 name="vbc_td_min_float32"  min="-3.402823467e+38"         />
+    <Float32 name="vbc_td_max_float32"  max="3.402823467e+38"          />
+
+    <!-- intXX:
+        min: INTXX_MIN-=1
+        max: INTXX_MAX+=1
+    -->
+    <Int64  name="vbc_td_min_int64"  min="-9223372036854775809" /> 
+    <Int32  name="vbc_td_min_int32"  min="-2147483649"          />
+    <Int16  name="vbc_td_min_int16"  min="-32769"               />
+    <Int8   name="vbc_t_mind_int8"   min="-129"                 />
+
+    <Int64  name="vbc_td_max_int64"  max="9223372036854775808"  /> 
+    <Int32  name="vbc_td_max_int32"  max="2147483648"           />
+    <Int16  name="vbc_td_max_int16"  max="32768"                />
+    <Int8   name="vbc_td_max_int8"   max="128"                  />
+
+    <UInt64 name="vbc_td_min_uint64" min="-1"                   />
+    <UInt32 name="vbc_td_min_uint32" min="-1"                   />
+    <UInt16 name="vbc_td_min_uint16" min="-1"                   />
+    <UInt8  name="vbc_td_min_uint8"  min="-1"                   />
+
+    <UInt64 name="vbc_td_max_uint64" max="18446744073709551616" />
+    <UInt32 name="vbc_td_max_uint32" max="4294967296"           />
+    <UInt16 name="vbc_td_max_uint16" max="65536"                />
+    <UInt8  name="vbc_td_max_uint8"  max="256"                  />
+  </TypeDefinitions>
+
+  <ModelVariables>
+    <!-- reusing same values for variables as for types -->
+    <Float64 name="vbc_var_min_float64" valueReference="1001" min="-1.7976931348623159e+308" />
+    <Float64 name="vbc_var_max_float64" valueReference="1002" max="1.7976931348623159e+308"  />
+    <Float32 name="vbc_var_min_float32" valueReference="1003" min="-3.402823467e+38"         />
+    <Float32 name="vbc_var_max_float32" valueReference="1004" max="3.402823467e+38"          />
+
+    <Int64  name="vbc_var_min_int64"  valueReference="1005" min="-9223372036854775809" /> 
+    <Int32  name="vbc_var_min_int32"  valueReference="1006" min="-2147483649"          />
+    <Int16  name="vbc_var_min_int16"  valueReference="1007" min="-32769"               />
+    <Int8   name="vbc_var_min_int8"   valueReference="1008" min="-129"                 />
+
+    <Int64  name="vbc_var_max_int64"  valueReference="1009" max="9223372036854775808"  /> 
+    <Int32  name="vbc_var_max_int32"  valueReference="1010" max="2147483648"           />
+    <Int16  name="vbc_var_max_int16"  valueReference="1011" max="32768"                />
+    <Int8   name="vbc_var_max_int8"   valueReference="1012" max="128"                  />
+
+    <UInt64 name="vbc_var_min_uint64" valueReference="1013" min="-1"                   />
+    <UInt32 name="vbc_var_min_uint32" valueReference="1014" min="-1"                   />
+    <UInt16 name="vbc_var_min_uint16" valueReference="1015" min="-1"                   />
+    <UInt8  name="vbc_var_min_uint8"  valueReference="1016" min="-1"                   />
+
+    <UInt64 name="vbc_var_max_uint64" valueReference="1017" max="18446744073709551616" />
+    <UInt32 name="vbc_var_max_uint32" valueReference="1018" max="4294967296"           />
+    <UInt16 name="vbc_var_max_uint16" valueReference="1019" max="65536"                />
+    <UInt8  name="vbc_var_max_uint8"  valueReference="1020" max="256"                  />
+
+    <!-- leading plus must not affect boundary check -->
+    <Int64  name="vbc_var_max_leadingplus_int64"  valueReference="1009" max="+9223372036854775808"  /> 
+
+  </ModelVariables>
+
+  <ModelStructure>
+  </ModelStructure>
+
+</fmiModelDescription>
+

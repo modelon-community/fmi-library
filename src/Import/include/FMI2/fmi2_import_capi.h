@@ -26,7 +26,7 @@ extern "C" {
 /* #include <FMI2/fmi2_xml_model_description.h>*/
 
 #include <FMI2/fmi2_types.h>
-#include <FMI2/fmi2_functions.h>
+#include <FMI2/fmi2_function_types.h>
 #include <FMI2/fmi2_enums.h>
 /* #include <FMI2/fmi2_capi.h> */
 

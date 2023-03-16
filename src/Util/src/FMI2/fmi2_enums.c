@@ -15,7 +15,7 @@
 #include <assert.h>
 #include <stdio.h>
 
-#include <FMI2/fmi2_functions.h>
+#include <FMI2/fmi2_function_types.h>
 #include <FMI2/fmi2_enums.h>
 
 const char* fmi2_naming_convention_to_string(fmi2_variable_naming_convension_enu_t convention) {
@@ -112,7 +112,7 @@ const char* fmi2_initial_to_string(fmi2_initial_enu_t ini) {
     return "Undefined";
 }
 
-fmi2_initial_enu_t initialDefaultsTable[fmi2_variability_enu_unknown][fmi2_causality_enu_unknown] = {
+fmi2_initial_enu_t fmi2InitialDefaultsTable[fmi2_variability_enu_unknown][fmi2_causality_enu_unknown] = {
     /*              parameter                  calculated parameter,        input                     output                       local                        independent */
     /* constant */  {fmi2_initial_enu_unknown, fmi2_initial_enu_unknown,    fmi2_initial_enu_unknown,  fmi2_initial_enu_exact,      fmi2_initial_enu_exact,      fmi2_initial_enu_unknown},
     /* fixed   */   {fmi2_initial_enu_exact,   fmi2_initial_enu_calculated, fmi2_initial_enu_unknown,  fmi2_initial_enu_unknown,    fmi2_initial_enu_calculated, fmi2_initial_enu_unknown},
@@ -133,7 +133,7 @@ FMILIB_EXPORT fmi2_variability_enu_t fmi2_get_default_valid_variability(fmi2_cau
 FMILIB_EXPORT fmi2_initial_enu_t fmi2_get_default_initial(fmi2_variability_enu_t v, fmi2_causality_enu_t c) {
     if((unsigned)v >= (unsigned)fmi2_variability_enu_unknown) return fmi2_initial_enu_unknown;
     if((unsigned)c >= (unsigned)fmi2_causality_enu_unknown) return fmi2_initial_enu_unknown;
-    return initialDefaultsTable[v][c];
+    return fmi2InitialDefaultsTable[v][c];
 }
 
 static int valid_variability_causality[fmi2_variability_enu_unknown][fmi2_causality_enu_unknown] = {

@@ -15,7 +15,6 @@
 #include <assert.h>
 
 #include <FMI1/fmi1_functions.h>
-
 #include <FMI1/fmi1_enums.h>
 
 const char* fmi1_naming_convention_to_string(fmi1_variable_naming_convension_enu_t convention) {

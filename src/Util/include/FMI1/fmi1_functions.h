@@ -37,9 +37,6 @@ typedef enum {
 	fmi1_status_pending
 } fmi1_status_t;
 
-/** Convert #fmi1_status_t variable to string  */
-FMILIB_EXPORT const char* fmi1_status_to_string(fmi1_status_t status);
-
 /** FMI 1.0 logger function type */
 typedef void  (*fmi1_callback_logger_ft)        (fmi1_component_t c, fmi1_string_t instanceName, fmi1_status_t status, fmi1_string_t category, fmi1_string_t message, ...);
 /** FMI 1.0 allocate memory function type */

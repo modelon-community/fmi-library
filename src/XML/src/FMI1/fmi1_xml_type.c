@@ -26,7 +26,7 @@ static const char* module = "FMI1XML";
 
 fmi1_xml_display_unit_t* fmi1_xml_get_type_display_unit(fmi1_xml_real_typedef_t* t) {
     fmi1_xml_variable_typedef_t* vt = (void*)t;
-    fmi1_xml_real_type_props_t * props = (fmi1_xml_real_type_props_t*)vt->super.baseTypeStruct;
+    fmi1_xml_real_type_props_t * props = (fmi1_xml_real_type_props_t*)vt->super.nextLayer;
     fmi1_xml_display_unit_t* du = props->displayUnit;
     if(du->displayUnit) return du;
     return 0;
@@ -69,7 +69,7 @@ fmi1_xml_enumeration_typedef_t* fmi1_xml_get_type_as_enum(fmi1_xml_variable_type
 }
 
 const char* fmi1_xml_get_type_quantity(fmi1_xml_variable_typedef_t* t) {
-    fmi1_xml_variable_type_base_t* props = t->super.baseTypeStruct;
+    fmi1_xml_variable_type_base_t* props = t->super.nextLayer;
 	const char * ret;
     if(props->structKind != fmi1_xml_type_struct_enu_props) return 0;
     switch(props->baseType) {
@@ -94,25 +94,25 @@ const char* fmi1_xml_get_type_quantity(fmi1_xml_variable_typedef_t* t) {
 
 double fmi1_xml_get_real_type_min(fmi1_xml_real_typedef_t* t) {
     fmi1_xml_variable_typedef_t* vt = (void*)t;
-    fmi1_xml_real_type_props_t* props = (fmi1_xml_real_type_props_t*)(vt->super.baseTypeStruct);
+    fmi1_xml_real_type_props_t* props = (fmi1_xml_real_type_props_t*)(vt->super.nextLayer);
     return props->typeMin;
 }
 
 double fmi1_xml_get_real_type_max(fmi1_xml_real_typedef_t* t) {
     fmi1_xml_variable_typedef_t* vt = (void*)t;
-    fmi1_xml_real_type_props_t* props = (fmi1_xml_real_type_props_t*)(vt->super.baseTypeStruct);
+    fmi1_xml_real_type_props_t* props = (fmi1_xml_real_type_props_t*)(vt->super.nextLayer);
     return props->typeMax;
 }
 
 double fmi1_xml_get_real_type_nominal(fmi1_xml_real_typedef_t* t) {
     fmi1_xml_variable_typedef_t* vt = (void*)t;
-    fmi1_xml_real_type_props_t* props = (fmi1_xml_real_type_props_t*)(vt->super.baseTypeStruct);
+    fmi1_xml_real_type_props_t* props = (fmi1_xml_real_type_props_t*)(vt->super.nextLayer);
     return props->typeNominal;
 }
 
 fmi1_xml_unit_t* fmi1_xml_get_real_type_unit(fmi1_xml_real_typedef_t* t) {    
     fmi1_xml_variable_typedef_t* vt = (void*)t;
-    fmi1_xml_real_type_props_t* props = (fmi1_xml_real_type_props_t*)(vt->super.baseTypeStruct);
+    fmi1_xml_real_type_props_t* props = (fmi1_xml_real_type_props_t*)(vt->super.nextLayer);
     fmi1_xml_display_unit_t* du = props->displayUnit;
     if(du) return du->baseUnit;
     return 0;
@@ -120,50 +120,50 @@ fmi1_xml_unit_t* fmi1_xml_get_real_type_unit(fmi1_xml_real_typedef_t* t) {
 
 int fmi1_xml_get_real_type_is_relative_quantity(fmi1_xml_real_typedef_t* t) {
     fmi1_xml_variable_typedef_t* vt = (void*)t;
-    fmi1_xml_real_type_props_t* props = (fmi1_xml_real_type_props_t*)(vt->super.baseTypeStruct);
+    fmi1_xml_real_type_props_t* props = (fmi1_xml_real_type_props_t*)(vt->super.nextLayer);
     return props->super.relativeQuantity;
 }
 
 fmi1_integer_t fmi1_xml_get_integer_type_min(fmi1_xml_integer_typedef_t* t) {
     fmi1_xml_variable_typedef_t* vt = (void*)t;
-    fmi1_xml_integer_type_props_t* props = (fmi1_xml_integer_type_props_t*)(vt->super.baseTypeStruct);
+    fmi1_xml_integer_type_props_t* props = (fmi1_xml_integer_type_props_t*)(vt->super.nextLayer);
     return props->typeMin;
 }
 
 fmi1_integer_t fmi1_xml_get_integer_type_max(fmi1_xml_integer_typedef_t* t){
     fmi1_xml_variable_typedef_t* vt = (void*)t;
-    fmi1_xml_integer_type_props_t* props = (fmi1_xml_integer_type_props_t*)(vt->super.baseTypeStruct);
+    fmi1_xml_integer_type_props_t* props = (fmi1_xml_integer_type_props_t*)(vt->super.nextLayer);
     return props->typeMax;
 }
 
 int fmi1_xml_get_enum_type_min(fmi1_xml_enumeration_typedef_t* t){
     fmi1_xml_variable_typedef_t* vt = (void*)t;
-    fmi1_xml_enum_type_props_t* props = (fmi1_xml_enum_type_props_t*)(vt->super.baseTypeStruct);
+    fmi1_xml_enum_type_props_t* props = (fmi1_xml_enum_type_props_t*)(vt->super.nextLayer);
     return props->typeMin;
 }
 
 int fmi1_xml_get_enum_type_max(fmi1_xml_enumeration_typedef_t* t){
     fmi1_xml_variable_typedef_t* vt = (void*)t;
-    fmi1_xml_enum_type_props_t* props = (fmi1_xml_enum_type_props_t*)(vt->super.baseTypeStruct);
+    fmi1_xml_enum_type_props_t* props = (fmi1_xml_enum_type_props_t*)(vt->super.nextLayer);
     return props->typeMax;
 }
 
 unsigned int  fmi1_xml_get_enum_type_size(fmi1_xml_enumeration_typedef_t* t) {
     fmi1_xml_variable_typedef_t* vt = (void*)t;
-    fmi1_xml_enum_type_props_t* props = (fmi1_xml_enum_type_props_t*)(vt->super.baseTypeStruct);
+    fmi1_xml_enum_type_props_t* props = (fmi1_xml_enum_type_props_t*)(vt->super.nextLayer);
     return (unsigned int)jm_vector_get_size(jm_named_ptr)(&props->enumItems);
 }
 
 const char* fmi1_xml_get_enum_type_item_name(fmi1_xml_enumeration_typedef_t* t, unsigned int  item) {
     fmi1_xml_variable_typedef_t* vt = (fmi1_xml_variable_typedef_t*)(void*)t;
-    fmi1_xml_enum_type_props_t* props = (fmi1_xml_enum_type_props_t*)(vt->super.baseTypeStruct);
+    fmi1_xml_enum_type_props_t* props = (fmi1_xml_enum_type_props_t*)(vt->super.nextLayer);
     if((item == 0) || (item > fmi1_xml_get_enum_type_size(t) )) return  0;
     return jm_vector_get_item(jm_named_ptr)(&props->enumItems,item-1).name;
 }
 
 const char* fmi1_xml_get_enum_type_item_description(fmi1_xml_enumeration_typedef_t* t, unsigned int  item){
     fmi1_xml_variable_typedef_t* vt = (void*)t;
-    fmi1_xml_enum_type_props_t* props = (fmi1_xml_enum_type_props_t*)(vt->super.baseTypeStruct);
+    fmi1_xml_enum_type_props_t* props = (fmi1_xml_enum_type_props_t*)(vt->super.nextLayer);
     fmi1_xml_enum_type_item_t* e;
     if((item == 0) || (item > fmi1_xml_get_enum_type_size(t) )) return  0;
     e = jm_vector_get_item(jm_named_ptr)(&props->enumItems,item-1).ptr;
@@ -171,7 +171,7 @@ const char* fmi1_xml_get_enum_type_item_description(fmi1_xml_enumeration_typedef
 }
 
 void fmi1_xml_init_variable_type_base(fmi1_xml_variable_type_base_t* type, fmi1_xml_type_struct_kind_enu_t kind, fmi1_base_type_enu_t baseType) {
-    type->baseTypeStruct = 0;
+    type->nextLayer = 0;
     type->next = 0;
     type->structKind = kind;
     type->baseType = baseType;
@@ -284,7 +284,7 @@ int fmi1_xml_handle_Type(fmi1_xml_parser_context_t *context, const char* data) {
             pnamed = jm_vector_push_back(jm_named_ptr)(&td->typeDefinitions,named);
             if(pnamed) {
                 fmi1_xml_variable_typedef_t dummy;
-                *pnamed = named = jm_named_alloc_v(bufName, sizeof(fmi1_xml_variable_typedef_t), dummy.typeName - (char*)&dummy,  context->callbacks);
+                *pnamed = named = jm_named_alloc_v(bufName, sizeof(fmi1_xml_variable_typedef_t), dummy.typeName - (char*)&dummy, context->callbacks);
             }
             if(!pnamed || !named.ptr) {
                 fmi1_xml_parse_fatal(context, "Could not allocate memory");
@@ -303,7 +303,7 @@ int fmi1_xml_handle_Type(fmi1_xml_parser_context_t *context, const char* data) {
     else {
         jm_named_ptr named = jm_vector_get_last(jm_named_ptr)(&(context->modelDescription->typeDefinitions.typeDefinitions));
         fmi1_xml_variable_typedef_t* type = named.ptr;
-        if(type->super.baseTypeStruct == 0) {
+        if(type->super.nextLayer == 0) {
             fmi1_xml_parse_fatal(context, "No specific type given for type definition %s", type->typeName);
             return -1;
         }
@@ -332,7 +332,7 @@ fmi1_xml_variable_type_base_t* fmi1_xml_alloc_variable_type_props(fmi1_xml_type_
     fmi1_xml_variable_type_base_t* type = cb->malloc(typeSize);
     if(!type) return 0;
     fmi1_xml_init_variable_type_base(type,fmi1_xml_type_struct_enu_props,base->baseType);
-    type->baseTypeStruct = base;
+    type->nextLayer = base;
     type->next = td->typePropsList;
     td->typePropsList = type;
     return type;
@@ -343,7 +343,7 @@ fmi1_xml_variable_type_base_t* fmi1_xml_alloc_variable_type_start(fmi1_xml_type_
     fmi1_xml_variable_type_base_t* type = cb->malloc(typeSize);
     if(!type) return 0;
     fmi1_xml_init_variable_type_base(type,fmi1_xml_type_struct_enu_start,base->baseType);
-    type->baseTypeStruct = base;
+    type->nextLayer = base;
     type->next = td->typePropsList;
     td->typePropsList = type;
     return type;
@@ -421,7 +421,7 @@ int fmi1_xml_handle_RealType(fmi1_xml_parser_context_t *context, const char* dat
         named = jm_vector_get_last(jm_named_ptr)(&md->typeDefinitions.typeDefinitions);
         type = named.ptr;
         type->super.baseType = fmi1_base_type_real;
-        type->super.baseTypeStruct = &props->super;
+        type->super.nextLayer = &props->super;
     }
     else {
         /* don't do anything. might give out a warning if(data[0] != 0) */
@@ -474,7 +474,7 @@ int fmi1_xml_handle_IntegerType(fmi1_xml_parser_context_t *context, const char* 
         named = jm_vector_get_last(jm_named_ptr)(&md->typeDefinitions.typeDefinitions);
         type = named.ptr;
         type->super.baseType = fmi1_base_type_int;
-        type->super.baseTypeStruct = &props->super;
+        type->super.nextLayer = &props->super;
     }
     else {
         /* don't do anything. might give out a warning if(data[0] != 0) */
@@ -494,7 +494,7 @@ int fmi1_xml_handle_BooleanType(fmi1_xml_parser_context_t *context, const char* 
         named = jm_vector_get_last(jm_named_ptr)(&context->modelDescription->typeDefinitions.typeDefinitions);
         type = named.ptr;
         type->super.baseType = fmi1_base_type_bool;
-        type->super.baseTypeStruct = &md->typeDefinitions.defaultBooleanType;
+        type->super.nextLayer = &md->typeDefinitions.defaultBooleanType;
     }
     else {
         /* don't do anything. might give out a warning if(data[0] != 0) */
@@ -513,7 +513,7 @@ int fmi1_xml_handle_StringType(fmi1_xml_parser_context_t *context, const char* d
         named = jm_vector_get_last(jm_named_ptr)(&context->modelDescription->typeDefinitions.typeDefinitions);
         type = named.ptr;
         type->super.baseType = fmi1_base_type_str;
-        type->super.baseTypeStruct = &md->typeDefinitions.defaultStringType;
+        type->super.nextLayer = &md->typeDefinitions.defaultStringType;
     }
     else {
         /* don't do anything. might give out a warning if(data[0] != 0) */
@@ -558,7 +558,7 @@ int fmi1_xml_handle_EnumerationType(fmi1_xml_parser_context_t *context, const ch
         named = jm_vector_get_last(jm_named_ptr)(&context->modelDescription->typeDefinitions.typeDefinitions);
         type = named.ptr;
         type->super.baseType = fmi1_base_type_enum;
-        type->super.baseTypeStruct = &props->super;
+        type->super.nextLayer = &props->super;
     }
     else {
         /* don't do anything. might give out a warning if(data[0] != 0) */

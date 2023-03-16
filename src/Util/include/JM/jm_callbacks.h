@@ -60,9 +60,9 @@ typedef void (*jm_free_f)(jm_voidp p);
 * \brief Logger callback type.
 *
 * The logger callback is used to report errors. Note that this function is
-* by default only used in FMI standard intependent code (e.g., fmi_import_get_fmi_version()).
+* by default only used in FMI standard independent code (e.g., fmi_import_get_fmi_version()).
 * Since logging functions are different between different standard versions separate
-* logging functions are necessary for each fmi implementation.\n
+* logging functions are necessary for each FMI implementation.\n
 * Defaults are provided for each standard. 
 */
 typedef void (*jm_logger_f)(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_level, jm_string message);

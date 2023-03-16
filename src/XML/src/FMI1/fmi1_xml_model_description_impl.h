@@ -96,15 +96,6 @@ struct fmi1_xml_model_description_t {
     jm_vector(jm_string) additionalModels;
 };
 
-void fmi1_xml_report_error(fmi1_xml_model_description_t* md, const char* module, const char* fmt, ...);
-
-void fmi1_xml_report_error_v(fmi1_xml_model_description_t* md, const char* module, const char* fmt, va_list ap);
-
-void fmi1_xml_report_warning(fmi1_xml_model_description_t* md, const char* module, const char* fmt, ...);
-
-void fmi1_xml_report_warning_v(fmi1_xml_model_description_t* md, const char* module, const char* fmt, va_list ap);
-
-
 #ifdef __cplusplus
 }
 #endif

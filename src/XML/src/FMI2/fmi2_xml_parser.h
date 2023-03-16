@@ -83,7 +83,7 @@ extern "C" {
 	EXPAND_XML_ATTRNAME(canNotUseMemoryManagementFunctions) \
 	EXPAND_XML_ATTRNAME(canGetAndSetFMUstate) \
 	EXPAND_XML_ATTRNAME(canSerializeFMUstate) \
-	EXPAND_XML_ATTRNAME(providesDirectionalDerivatives) /* Beta4 spelling. TODO: remove */ \
+	EXPAND_XML_ATTRNAME(providesDirectionalDerivatives) /* used for verification: checks that this attribute does not exist */ \
 	EXPAND_XML_ATTRNAME(providesDirectionalDerivative) \
     EXPAND_XML_ATTRNAME(canInterpolateInputs) \
     EXPAND_XML_ATTRNAME(maxOutputDerivativeOrder) \

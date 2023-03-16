@@ -20,7 +20,7 @@ extern "C" {
 #include <stdio.h>
 #include <errno.h>
 #include <FMI2/fmi2_types.h>
-#include <FMI2/fmi2_functions.h>
+#include <FMI2/fmi2_function_types.h>
 #include <FMI2/fmi2_enums.h>
 #include <FMI2/fmi2_capi.h>
 #include <FMI/fmi_util.h>

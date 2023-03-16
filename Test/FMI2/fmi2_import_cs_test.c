@@ -30,19 +30,6 @@ void importlogger(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_leve
         printf("module = %s, log level = %s: %s\n", module, jm_log_level_to_string(log_level), message);
 }
 
-/* Logger function used by the FMU internally */
-
-void fmilogger(fmi2_component_t c, fmi2_string_t instanceName, fmi2_status_t status, fmi2_string_t category, fmi2_string_t message, ...)
-{
-    /* int len;
-	char msg[BUFFER]; */
-	va_list argp;	
-	va_start(argp, message);
-	/* len = jm_vsnprintf(msg, BUFFER, message, argp); */
-	fmi2_log_forwarding_v(c, instanceName, status, category, message, argp);
-	va_end(argp);
-}
-
 void do_exit(int code)
 {
 	printf("Press 'Enter' to exit\n");

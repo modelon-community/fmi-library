@@ -147,6 +147,18 @@ set_target_properties(
     fmi1_import_options_test
     PROPERTIES FOLDER "Test/FMI1")
 
+SET_TESTS_PROPERTIES ( 
+	ctest_fmi1_logger_test_check	
+	PROPERTIES DEPENDS ctest_fmi1_logger_test_run 	
+)
+
+# 'ctest_build_all' must also skip memcheck, but it needs to run before all
+# other tests, so just calling it first by name in the linux makefile wrapper
+SET_TESTS_PROPERTIES (
+	ctest_fmi1_logger_test_check
+    PROPERTIES LABELS skip_memcheck
+)
+
 if(FMILIB_BUILD_BEFORE_TESTS)
 	SET_TESTS_PROPERTIES ( 
 		ctest_fmi_import_me_test

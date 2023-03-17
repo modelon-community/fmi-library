@@ -1,0 +1,37 @@
+## This file serves as a template, feel free to copy this and make for the configuration you desire.
+CONFIG=unset
+
+## CMake
+SRC_DIR=.
+# Relative or absolute path to a directory used during building
+BUILD_DIR=unset
+# Relative or absolute path to a directory where built files should be installed
+INSTALL_DIR=unset
+
+## Arguments passed to CMake during build
+# What CMake generator to use
+GENERATOR=unset
+# Additional C flags used during build
+FMILIB_CMAKE_CUSTOM_FLAGS=-DCMAKE_C_FLAGS=unset
+
+# What type of build that is desired, for example Release or Debug
+BUILD_TYPE=unset
+# The command used when testing. Can be customized, see examples in other predefined configs for examples
+TEST_COMMAND=unset
+
+## Build options used when building FMI Library.
+# In the CMake build system they are named as below but with the prefix FMILIB_
+# Set to either 0 or 1 to disable or enable docs - requires doxygen
+GENERATE_DOXYGEN_DOC=unset
+# Set to either 0 or 1 to disable or enable static runtime libraries
+BUILD_WITH_STATIC_RTLIB=unset
+# Set to either 0 or 1 if tests should be built
+BUILD_TESTS=unset
+# Set to either 0 or 1 if LOCALE tests should be performed, requires specific language packs.
+TEST_LOCALE=unset
+
+## Docker related variables, only required if building with the predefined files in ./build/docker
+# Where the workspace should be mounted to within the container
+MOUNTED_DIR=unset
+# Name of Dockerfile to use for Docker related builds
+DOCKERFILE_NAME=unset

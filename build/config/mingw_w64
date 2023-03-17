@@ -5,25 +5,20 @@ CONFIG=mingw_w64
 
 # CMake
 SRC_DIR=.
-BUILD_DIR=build-$(CONFIG)
-INSTALL_DIR=install-$(CONFIG)
+BUILD_DIR=build_$(CONFIG)
+INSTALL_DIR=install_$(CONFIG)
 GENERATOR="MSYS Makefiles"
-
 # These flags should be the same as what OCT is using (-fPIC is removed though
 # since it's not applicable on Windows).
 FMILIB_CMAKE_CUSTOM_FLAGS=-DCMAKE_C_FLAGS="-m64"             \
                           -DCMAKE_CXX_FLAGS="-m64"           \
                           -DCMAKE_SHARED_LINKER_FLAGS="-m64" \
                           -DCMAKE_EXE_LINKER_FLAGS="-m64"
+BUILD_TYPE=Release
+TEST_COMMAND=ctest --build-config $(BUILD_TYPE)
 
 # FMILIB_...
 GENERATE_DOXYGEN_DOC=0
 BUILD_WITH_STATIC_RTLIB=0
 BUILD_TESTS=1
 TEST_LOCALE=1 # /* Tests are by default run in serial, so should be OK even though not thread-safe */
-
-# Docker
-DOCKER_IMAGE_BASE= # N/A
-DOCKER_IMAGE_FMIL= # N/A
-ARTIFACT_DIR= # N/A
-

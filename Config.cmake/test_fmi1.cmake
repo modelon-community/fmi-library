@@ -119,7 +119,7 @@ ADD_TEST(ctest_fmi1_capi_me_test fmi1_capi_me_test)
 
 ##Add logger test
 add_executable (fmi1_logger_test ${RTTESTDIR}/FMI1/fmi1_logger_test.c)
-target_link_libraries (fmi1_logger_test  ${FMILIBFORTEST}) 
+target_link_libraries (fmi1_logger_test  ${FMILIBFORTEST})
 
 set(logger_output_file "${TEST_OUTPUT_FOLDER}/fmi1_logger_test_output.txt")
 set(logger_reference_file "${RTTESTDIR}/FMI1/fmi1_logger_test_output.txt")
@@ -133,11 +133,23 @@ if(NOT CMAKE_GENERATOR STREQUAL "MSYS Makefiles")
         ctest_fmi1_logger_test_check
         PROPERTIES DEPENDS ctest_fmi1_logger_test_run
     )
+
+	# 'ctest_build_all' must also skip memcheck, but it needs to run before all
+	# other tests, so just calling it first by name in the linux makefile wrapper
+	SET_TESTS_PROPERTIES (
+		ctest_fmi1_logger_test_check
+		PROPERTIES LABELS skip_memcheck
+	)
+
+	SET_TESTS_PROPERTIES (
+		ctest_fmi1_logger_test_check
+		PROPERTIES DEPENDS ctest_fmi1_logger_test_run
+	)
 endif()
 
 set_target_properties(
-	fmi_import_me_test 
-	fmi_import_cs_test 
+	fmi_import_me_test
+	fmi_import_cs_test
 	fmi_import_xml_test
 	fmi1_capi_cs_test
 	fmi1_capi_me_test
@@ -147,22 +159,14 @@ set_target_properties(
     fmi1_import_options_test
     PROPERTIES FOLDER "Test/FMI1")
 
-SET_TESTS_PROPERTIES ( 
-	ctest_fmi1_logger_test_check	
-	PROPERTIES DEPENDS ctest_fmi1_logger_test_run 	
-)
 
-# 'ctest_build_all' must also skip memcheck, but it needs to run before all
-# other tests, so just calling it first by name in the linux makefile wrapper
-SET_TESTS_PROPERTIES (
-	ctest_fmi1_logger_test_check
-    PROPERTIES LABELS skip_memcheck
-)
+
+
 
 if(FMILIB_BUILD_BEFORE_TESTS)
-	SET_TESTS_PROPERTIES ( 
+	SET_TESTS_PROPERTIES (
 		ctest_fmi_import_me_test
-		ctest_fmi_import_cs_test 
+		ctest_fmi_import_cs_test
 		ctest_fmi_import_xml_test
 		ctest_fmi_import_xml_test_empty
 		ctest_fmi_import_xml_test_mf
@@ -175,7 +179,7 @@ if(FMILIB_BUILD_BEFORE_TESTS)
 		PROPERTIES DEPENDS ctest_build_all)
 endif()
 
-SET_TESTS_PROPERTIES ( 
-	ctest_fmi_import_xml_test	
-	PROPERTIES DEPENDS ctest_fmi_import_cs_test 	
+SET_TESTS_PROPERTIES (
+	ctest_fmi_import_xml_test
+	PROPERTIES DEPENDS ctest_fmi_import_cs_test
 )

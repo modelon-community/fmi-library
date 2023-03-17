@@ -19,7 +19,7 @@ documentation: generate
 		make doc
 
 generate:
-	mkdir $(BUILD_DIR) || true
+	mkdir -p $(BUILD_DIR)
 	cd $(BUILD_DIR) && \
 		cmake -DFMILIB_INSTALL_PREFIX=../$(INSTALL_DIR) \
 			-DFMILIB_GENERATE_DOXYGEN_DOC=$(GENERATE_DOXYGEN_DOC) \

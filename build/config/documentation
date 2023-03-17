@@ -15,11 +15,8 @@ BUILD_WITH_STATIC_RTLIB=0
 BUILD_TESTS=0
 TEST_LOCALE=0
 
-# Docker
-DOCKER_IMAGE_BASE=fmil_base:latest
-DOCKER_IMAGE_FMIL=fmil:latest
-ARTIFACT_DIR=/artifacts
+# path used in container for the mounted directories when building via docker
+MOUNTED_DIR=/mnt/fmi-library
 
-# Target: custom commands
-EXTRA_TEST_COMMAND= # N/A
-
+# Either centos or ubuntu works
+DOCKERFILE_NAME=Dockerfile_centos

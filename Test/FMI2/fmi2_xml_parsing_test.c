@@ -207,9 +207,9 @@ static void test_locale_lc_numeric() {
     char* loc_old = NULL;
     char* tmp = NULL;
 
-    /* Any locale that uses decimal coma instead of decimal point. */
+    /* Any locale that uses decimal comma instead of decimal point. */
 #ifdef WIN32
-    char* locale_bad = "Swedish_Sweden.1252"; 
+    char* locale_bad = "Swedish_Sweden.1252";
 #else
     char* locale_bad = "sv_SE.utf8";
 #endif

@@ -28,7 +28,7 @@ fmi3_import_variable_typedef_t* fmi3_import_get_typedef(fmi3_import_type_definit
 	return fmi3_xml_get_typedef(td, index);
 }
 
-const char* fmi3_import_get_type_name(fmi3_import_variable_typedef_t* t) {   
+const char* fmi3_import_get_type_name(fmi3_import_variable_typedef_t* t) {
 	return fmi3_xml_get_type_name(t);
 }
 
@@ -57,8 +57,125 @@ const char* fmi3_import_get_type_quantity(fmi3_import_variable_typedef_t* t) {
 	return fmi3_xml_get_type_quantity(t);
 }
 
-/* include generated generic functions */
-#include "gen/FMI3/fmi3_import_type_generics.c"
+fmi3_float64_t fmi3_import_get_float64_type_min(fmi3_import_float_typedef_t* t) {
+    return fmi3_xml_get_float64_type_min(t);
+}
+
+fmi3_float64_t fmi3_import_get_float64_type_max(fmi3_import_float_typedef_t* t) {
+    return fmi3_xml_get_float64_type_max(t);
+}
+
+fmi3_float64_t fmi3_import_get_float64_type_nominal(fmi3_import_float_typedef_t* t) {
+    return fmi3_xml_get_float64_type_nominal(t);
+}
+
+fmi3_import_unit_t* fmi3_import_get_float64_type_unit(fmi3_import_float_typedef_t* t) {
+    return fmi3_xml_get_float64_type_unit(t);
+}
+
+int fmi3_import_get_float64_type_is_relative_quantity(fmi3_import_float_typedef_t* t) {
+    return fmi3_xml_get_float64_type_is_relative_quantity(t);
+}
+
+int fmi3_import_get_float64_type_is_unbounded(fmi3_import_float_typedef_t* t) {
+    return fmi3_xml_get_float64_type_is_unbounded(t);
+}
+
+fmi3_import_display_unit_t* fmi3_import_get_float64_type_display_unit(fmi3_import_float_typedef_t* t) {
+    return fmi3_xml_get_float64_type_display_unit(t);
+}
+
+fmi3_float32_t fmi3_import_get_float32_type_min(fmi3_import_float_typedef_t* t) {
+    return fmi3_xml_get_float32_type_min(t);
+}
+
+fmi3_float32_t fmi3_import_get_float32_type_max(fmi3_import_float_typedef_t* t) {
+    return fmi3_xml_get_float32_type_max(t);
+}
+
+fmi3_float32_t fmi3_import_get_float32_type_nominal(fmi3_import_float_typedef_t* t) {
+    return fmi3_xml_get_float32_type_nominal(t);
+}
+
+fmi3_import_unit_t* fmi3_import_get_float32_type_unit(fmi3_import_float_typedef_t* t) {
+    return fmi3_xml_get_float32_type_unit(t);
+}
+
+int fmi3_import_get_float32_type_is_relative_quantity(fmi3_import_float_typedef_t* t) {
+    return fmi3_xml_get_float32_type_is_relative_quantity(t);
+}
+
+int fmi3_import_get_float32_type_is_unbounded(fmi3_import_float_typedef_t* t) {
+    return fmi3_xml_get_float32_type_is_unbounded(t);
+}
+
+fmi3_import_display_unit_t* fmi3_import_get_float32_type_display_unit(fmi3_import_float_typedef_t* t) {
+    return fmi3_xml_get_float32_type_display_unit(t);
+}
+
+fmi3_int64_t fmi3_import_get_int64_type_min(fmi3_import_int_typedef_t* t) {
+    return fmi3_xml_get_int64_type_min(t);
+}
+
+fmi3_int64_t fmi3_import_get_int64_type_max(fmi3_import_int_typedef_t* t) {
+    return fmi3_xml_get_int64_type_max(t);
+}
+
+fmi3_int32_t fmi3_import_get_int32_type_min(fmi3_import_int_typedef_t* t) {
+    return fmi3_xml_get_int32_type_min(t);
+}
+
+fmi3_int32_t fmi3_import_get_int32_type_max(fmi3_import_int_typedef_t* t) {
+    return fmi3_xml_get_int32_type_max(t);
+}
+
+fmi3_int16_t fmi3_import_get_int16_type_min(fmi3_import_int_typedef_t* t) {
+    return fmi3_xml_get_int16_type_min(t);
+}
+
+fmi3_int16_t fmi3_import_get_int16_type_max(fmi3_import_int_typedef_t* t) {
+    return fmi3_xml_get_int16_type_max(t);
+}
+
+fmi3_int8_t fmi3_import_get_int8_type_min(fmi3_import_int_typedef_t* t) {
+    return fmi3_xml_get_int8_type_min(t);
+}
+
+fmi3_int8_t fmi3_import_get_int8_type_max(fmi3_import_int_typedef_t* t) {
+    return fmi3_xml_get_int8_type_max(t);
+}
+
+fmi3_uint64_t fmi3_import_get_uint64_type_min(fmi3_import_int_typedef_t* t) {
+    return fmi3_xml_get_uint64_type_min(t);
+}
+
+fmi3_uint64_t fmi3_import_get_uint64_type_max(fmi3_import_int_typedef_t* t) {
+    return fmi3_xml_get_uint64_type_max(t);
+}
+
+fmi3_uint32_t fmi3_import_get_uint32_type_min(fmi3_import_int_typedef_t* t) {
+    return fmi3_xml_get_uint32_type_min(t);
+}
+
+fmi3_uint32_t fmi3_import_get_uint32_type_max(fmi3_import_int_typedef_t* t) {
+    return fmi3_xml_get_uint32_type_max(t);
+}
+
+fmi3_uint16_t fmi3_import_get_uint16_type_min(fmi3_import_int_typedef_t* t) {
+    return fmi3_xml_get_uint16_type_min(t);
+}
+
+fmi3_uint16_t fmi3_import_get_uint16_type_max(fmi3_import_int_typedef_t* t) {
+    return fmi3_xml_get_uint16_type_max(t);
+}
+
+fmi3_uint8_t fmi3_import_get_uint8_type_min(fmi3_import_int_typedef_t* t) {
+    return fmi3_xml_get_uint8_type_min(t);
+}
+
+fmi3_uint8_t fmi3_import_get_uint8_type_max(fmi3_import_int_typedef_t* t) {
+    return fmi3_xml_get_uint8_type_max(t);
+}
 
 unsigned int fmi3_import_get_enum_type_min(fmi3_import_enumeration_typedef_t* t){
 	return fmi3_xml_get_enum_type_min(t);
@@ -87,4 +204,3 @@ int fmi3_import_get_enum_type_item_value(fmi3_import_enumeration_typedef_t* t, u
 const char* fmi3_import_get_enum_type_value_name(fmi3_import_enumeration_typedef_t* t, int value) {
 	return fmi3_xml_get_enum_type_value_name(t, value);
 }
-

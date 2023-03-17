@@ -1,0 +1,14 @@
+{
+    "build": {
+        "dockerfile": "../build/docker/Dockerfile_ubuntu"
+    },
+    "workspaceFolder": "/mnt/fmi-library",
+    "workspaceMount": "source=${localWorkspaceFolder},target=/mnt/fmi-library,type=bind",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "vms-vscode.cpptools"
+            ]
+        }
+    }
+}

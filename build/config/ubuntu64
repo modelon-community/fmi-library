@@ -1,4 +1,4 @@
-CONFIG=linux64
+CONFIG=ubuntu64
 
 # CMake
 SRC_DIR=.
@@ -6,7 +6,7 @@ BUILD_DIR=build_$(CONFIG)
 INSTALL_DIR=install_$(CONFIG)
 GENERATOR="Unix Makefiles"
 FMILIB_CMAKE_CUSTOM_FLAGS=-DCMAKE_C_FLAGS= # N/A
-BUILD_TYPE=Debug # we need debug symbols, otherwise memcheck will give limited information, and we don't distribute binaries regardless
+BUILD_TYPE=Debug # We need debug symbols, otherwise memcheck will give limited information, and we don't distribute binaries regardless
 
 # The problem with running the tests with regex flags is that they have dependencies, and this way we break it, and must partially
 # specify the run order again... A better solution would be to attach the "--test-action memcheck" as a property to only some of the
@@ -27,7 +27,6 @@ BUILD_WITH_STATIC_RTLIB=0
 BUILD_TESTS=1
 TEST_LOCALE=1
 
-# Docker
-DOCKER_IMAGE_BASE=fmil_base:latest
-DOCKER_IMAGE_FMIL=fmil:latest
-ARTIFACT_DIR=/artifacts
+# Path used in container for the mounted directories when building via docker
+MOUNTED_DIR=/mnt/fmi-library
+DOCKERFILE_NAME=Dockerfile_ubuntu

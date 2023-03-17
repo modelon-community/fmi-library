@@ -1,37 +1,44 @@
 // Node requirements:
 //  VisualStudio2017: C compiler
-//  OCT-SDK-1.5.4: CMake, msys
+//  OCT-SDK-1.6.2: CMake, msys
 //  docker: docker
 
 def Configs = [
     'win64': [
         name: 'win64',
         os: 'windows',
-        node: 'VisualStudio2017 && OCT-SDK-1.5.4 && dockerWindows',
+        node: 'VisualStudio2017 && OCT-SDK-1.6.2',
         target_install: 'install',
         target_test: 'test'
     ],
     'win64_static_runtime': [
         name: 'win64_static_runtime',
         os: 'windows',
-        node: 'VisualStudio2017 && OCT-SDK-1.5.4 && dockerWindows',
+        node: 'VisualStudio2017 && OCT-SDK-1.6.2',
         target_install: 'install',
         target_test: 'test'
     ],
     'mingw_w64': [
         name: 'mingw_w64',
         os: 'windows',
-        node: 'VisualStudio2017 && OCT-SDK-1.5.4 && dockerWindows',
+        node: 'VisualStudio2017 && OCT-SDK-1.6.2',
         target_install: 'install',
         target_test: 'test'
-    ], 
-    'linux64': [
-        name: 'linux64',
+    ],
+    'centos64': [
+        name: 'centos64',
         os: 'linux',
         node: 'docker',
         target_install: '-C . -f build/docker/Makefile install',
         target_test: '-C . -f build/docker/Makefile test'
-    ], 
+    ],
+    'ubuntu64': [
+        name: 'ubuntu64',
+        os: 'linux',
+        node: 'docker',
+        target_install: '-C . -f build/docker/Makefile install',
+        target_test: '-C . -f build/docker/Makefile test'
+    ],
     'documentation': [
         name: 'documentation',
         os: 'linux',
@@ -99,7 +106,9 @@ tasks[conf.name] = {
 
 // Currently getting cygwin heap error when parallellizing win64 and win64_static_runtime, so not doing that for now
 def parallellTasks = [
-    'linux64': tasks.linux64,
+    'centos64': tasks.centos64,
+    'ubuntu64': tasks.ubuntu64,
+    'mingw_w64': tasks.mingw_w64,
     'win64': tasks.win64,
     'documentation': tasks.documentation,
 ]
@@ -163,7 +172,7 @@ def test(conf, testLogDir) {
         }
         // The test log has different names if we run memcheck or not, but this file should
         // always exist if we run tests:
-        if (!fileExists("CTestCostData.txt")) { 
+        if (!fileExists("CTestCostData.txt")) {
             setBuildStatus('UNSTABLE', 'File CTestCostData.txt is missing - perhaps tests were not run?')
         }
     }
@@ -189,4 +198,3 @@ def fixFilePermissions(os) {
         """
     }
 }
-

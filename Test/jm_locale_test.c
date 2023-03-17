@@ -43,7 +43,7 @@ static void sscanf_double(const char* str, double expected) {
     }
 
     if (!dblAlmostEq(expected, val)) {
-        fail("parsed double did not equal expected, str: %s, exp: %f, act: %f", str, expected, val);
+        fail("parsed double did not equal expected, str: %s, expected: %f, actual: %f", str, expected, val);
     }
 }
 
@@ -53,12 +53,13 @@ static void test_parse_with_locale() {
     const char* str_comma = "2,5";
     const char* str_point = "2.5";
 
-    /* Any locale that uses decimal coma instead of decimal point. */
+    /* Any locale that uses decimal comma instead of decimal point. */
 #ifdef WIN32
     char* locale_bad = "French_France.1252"; /* 'sv-SE' does not exist on Jenkins nodes */
 #else
     char* locale_bad = "sv_SE.utf8";
 #endif
+
 
     jmloc1 = jm_setlocale_numeric(cb, locale_bad);
     if (!jmloc1) {

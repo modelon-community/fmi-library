@@ -61,9 +61,36 @@ fmi3_xml_enumeration_typedef_t* fmi3_xml_get_type_as_enum(fmi3_xml_variable_type
 /* Note that NULL-pointer is always returned for strings and booleans */
 const char* fmi3_xml_get_type_quantity(fmi3_xml_variable_typedef_t*);
 
-
-/* include generated functions */
-#include "gen/FMI3/fmi3_xml_type_generics_h.c"
+int fmi3_xml_get_float64_type_is_relative_quantity(fmi3_xml_float_typedef_t*);
+int fmi3_xml_get_float64_type_is_unbounded(fmi3_xml_float_typedef_t*);
+int fmi3_xml_get_float32_type_is_relative_quantity(fmi3_xml_float_typedef_t*);
+int fmi3_xml_get_float32_type_is_unbounded(fmi3_xml_float_typedef_t*);
+fmi3_float64_t fmi3_xml_get_float64_type_min(fmi3_xml_float_typedef_t*);
+fmi3_float64_t fmi3_xml_get_float64_type_max(fmi3_xml_float_typedef_t*);
+fmi3_float64_t fmi3_xml_get_float64_type_nominal(fmi3_xml_float_typedef_t*);
+fmi3_xml_unit_t* fmi3_xml_get_float64_type_unit(fmi3_xml_float_typedef_t*);
+fmi3_xml_display_unit_t* fmi3_xml_get_float64_type_display_unit(fmi3_xml_float_typedef_t*);
+fmi3_float32_t fmi3_xml_get_float32_type_min(fmi3_xml_float_typedef_t*);
+fmi3_float32_t fmi3_xml_get_float32_type_max(fmi3_xml_float_typedef_t*);
+fmi3_float32_t fmi3_xml_get_float32_type_nominal(fmi3_xml_float_typedef_t*);
+fmi3_xml_unit_t* fmi3_xml_get_float32_type_unit(fmi3_xml_float_typedef_t*);
+fmi3_xml_display_unit_t* fmi3_xml_get_float32_type_display_unit(fmi3_xml_float_typedef_t*);
+fmi3_int64_t fmi3_xml_get_int64_type_min(fmi3_xml_int_typedef_t*);
+fmi3_int64_t fmi3_xml_get_int64_type_max(fmi3_xml_int_typedef_t*);
+fmi3_int32_t fmi3_xml_get_int32_type_min(fmi3_xml_int_typedef_t*);
+fmi3_int32_t fmi3_xml_get_int32_type_max(fmi3_xml_int_typedef_t*);
+fmi3_int16_t fmi3_xml_get_int16_type_min(fmi3_xml_int_typedef_t*);
+fmi3_int16_t fmi3_xml_get_int16_type_max(fmi3_xml_int_typedef_t*);
+fmi3_int8_t fmi3_xml_get_int8_type_min(fmi3_xml_int_typedef_t*);
+fmi3_int8_t fmi3_xml_get_int8_type_max(fmi3_xml_int_typedef_t*);
+fmi3_uint64_t fmi3_xml_get_uint64_type_min(fmi3_xml_int_typedef_t*);
+fmi3_uint64_t fmi3_xml_get_uint64_type_max(fmi3_xml_int_typedef_t*);
+fmi3_uint32_t fmi3_xml_get_uint32_type_min(fmi3_xml_int_typedef_t*);
+fmi3_uint32_t fmi3_xml_get_uint32_type_max(fmi3_xml_int_typedef_t*);
+fmi3_uint16_t fmi3_xml_get_uint16_type_min(fmi3_xml_int_typedef_t*);
+fmi3_uint16_t fmi3_xml_get_uint16_type_max(fmi3_xml_int_typedef_t*);
+fmi3_uint8_t fmi3_xml_get_uint8_type_min(fmi3_xml_int_typedef_t*);
+fmi3_uint8_t fmi3_xml_get_uint8_type_max(fmi3_xml_int_typedef_t*);
 
 int fmi3_xml_get_enum_type_min(fmi3_xml_enumeration_typedef_t*);
 int fmi3_xml_get_enum_type_max(fmi3_xml_enumeration_typedef_t*);
@@ -80,4 +107,3 @@ const char* fmi3_xml_get_enum_type_value_name(fmi3_xml_enumeration_typedef_t* t,
 }
 #endif
 #endif
-

@@ -19,76 +19,6 @@ include(fmicapi)
 
 
 ################################################################################
-# TODO: just copied this from XML for now, should be possible to create a macro
-#   or function instead
-
-### Generate FMIL source code ###
-
-set(TEMPLATE_FILES
-    fmi3_import_variable_generics
-    fmi3_import_type_generics
-    #fmi3_import_type_generics_h
-)
-
-set(TMPL_SRC_DST_LIST "")   # list of tuples (src, dst) that is passed to docker
-set(TMPL_SRC_LIST "")       # list of template source files
-set(TMPL_DST_LIST "")       # list of path to files generated from templates
-
-# On Windows: create docker container that mounts cmake binary and source dir, and then
-#   performs the preprocessing.
-# On Linux: perform same as windows but without docker
-if (WIN32)
-    set(SRC_PREFIX /mnt_src)
-    set(DST_PREFIX /mnt_bin)
-else()
-    set(SRC_PREFIX ${CMAKE_SOURCE_DIR})
-    set(DST_PREFIX ${CMAKE_BINARY_DIR})
-endif()
-
-foreach(file ${TEMPLATE_FILES})
-    # set temp loop variables
-    set(SRC src/Import/templates/FMI3/${file}.c)
-    set(DST src/Import/gen/FMI3/${file}.c)
-
-    # create list of src/dst files as tuples:
-    list(APPEND TMPL_SRC_DST_LIST \"${SRC_PREFIX}/${SRC}\" \"${DST_PREFIX}/${DST}\") # used as args, so need quoting
-
-    # save paths (on windows, not docker) so we can set build dependencies:
-    list(APPEND TMPL_SRC_LIST ${CMAKE_SOURCE_DIR}/${SRC})
-    list(APPEND TMPL_DST_LIST ${CMAKE_BINARY_DIR}/${DST})
-endforeach()
-string (REPLACE ";" " " TMPL_SRC_DST_LIST_STR "${TMPL_SRC_DST_LIST}") # used as commandline arg, so sub-args need space separatation
-
-add_custom_target(
-    generate_functions_import ALL
-    DEPENDS ${TMPL_DST_LIST} # these files exist in the binary dir
-)
-
-# specify the (platform-dependent) command for generating the DST files
-set(CODEGEN_DIR ${SRC_PREFIX}/build/preprocess)
-if (WIN32)
-    # run via docker
-    set(DOCKER_TAG_CODEGEN fmil_cmake_codegen)
-    set(CMD_CODEGEN docker build -t ${DOCKER_TAG_CODEGEN} . && docker run -v "${CMAKE_SOURCE_DIR}:${SRC_PREFIX}" -v "${CMAKE_BINARY_DIR}:${DST_PREFIX}" ${DOCKER_TAG_CODEGEN} //bin/bash -c "chmod a+x ${CODEGEN_DIR}/preprocess*.sh && ${CODEGEN_DIR}/preprocess_list.sh ${TMPL_SRC_DST_LIST_STR}")
-
-else() # linux
-    # - run directly on command line
-    # - command is wrapped in bash -c "..." because otherwise the (*) will be taken verbatim
-    set(CMD_CODEGEN bash -c "chmod a+x ${CODEGEN_DIR}/preprocess*.sh && ${CODEGEN_DIR}/preprocess_list.sh ${TMPL_SRC_DST_LIST_STR}")
-endif()
-
-add_custom_command(
-    OUTPUT ${TMPL_DST_LIST}
-    DEPENDS ${TMPL_SRC_LIST}
-    COMMAND ${CMD_CODEGEN}
-    COMMAND_EXPAND_LISTS
-    VERBATIM
-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/build/preprocess
-    COMMENT "generating C code from macro templates... (command: ${CMD_CODEGEN})"
-)
-
-################################################################################
-
 set(DOXYFILE_EXTRA_SOURCES "${DOXYFILE_EXTRA_SOURCES} \"${FMIIMPORTDIR}/include\"")
 
 include_directories(
@@ -133,7 +63,7 @@ set(FMIIMPORT_PUBHEADERS
 	include/FMI/fmi_import_options.h
 	include/FMI/fmi_import_util.h
  )
-							
+
 set(FMIIMPORT_PRIVHEADERS
 	src/FMI1/fmi1_import_impl.h
 	src/FMI1/fmi1_import_variable_list_impl.h
@@ -146,7 +76,7 @@ set(FMIIMPORT_PRIVHEADERS
 	src/FMI3/fmi3_import_variable_list_impl.h
 	src/FMI3/fmi3_import_dimension_list_impl.h
  )
- 
+
 PREFIXLIST(FMIIMPORT_PRIVHEADERS ${FMIIMPORTDIR}/)
 PREFIXLIST(FMIIMPORT_PUBHEADERS ${FMIIMPORTDIR}/)
 
@@ -158,7 +88,7 @@ set(FMIIMPORTSOURCE
 	src/FMI/fmi_import_context.c
 	src/FMI/fmi_import_options.c
 	src/FMI/fmi_import_util.c
-	
+
 	src/FMI1/fmi1_import_cosim.c
 	src/FMI1/fmi1_import_capi.c
 	src/FMI1/fmi1_import_type.c

@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2012 Modelon AB
+    Copyright (C) 2012-2023 Modelon AB
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the BSD style license.
@@ -70,8 +70,70 @@ fmi3_xml_enum_variable_t* fmi3_xml_get_variable_as_enum(fmi3_xml_variable_t*);
 fmi3_xml_string_variable_t* fmi3_xml_get_variable_as_string(fmi3_xml_variable_t*);
 fmi3_xml_bool_variable_t* fmi3_xml_get_variable_as_boolean(fmi3_xml_variable_t*);
 
- /* include generated prototypes */
-#include "gen/FMI3/fmi3_xml_variable_generics_h.c"
+fmi3_xml_float64_variable_t* fmi3_xml_get_variable_as_float64(fmi3_xml_variable_t*);
+fmi3_xml_float64_variable_t* fmi3_xml_get_float64_variable_derivative_of (fmi3_xml_float64_variable_t* v);
+fmi3_boolean_t fmi3_xml_get_float64_variable_reinit (fmi3_xml_float64_variable_t* v);
+fmi3_xml_unit_t* fmi3_xml_get_float64_variable_unit (fmi3_xml_float64_variable_t* v);
+fmi3_xml_display_unit_t* fmi3_xml_get_float64_variable_display_unit (fmi3_xml_float64_variable_t* v);
+fmi3_float64_t fmi3_xml_get_float64_variable_start (fmi3_xml_float64_variable_t* v);
+fmi3_float64_t fmi3_xml_get_float64_variable_min (fmi3_xml_float64_variable_t* v);
+fmi3_float64_t fmi3_xml_get_float64_variable_max (fmi3_xml_float64_variable_t* v);
+fmi3_float64_t fmi3_xml_get_float64_variable_nominal (fmi3_xml_float64_variable_t* v);
+fmi3_string_t fmi3_xml_get_float64_variable_quantity (fmi3_xml_float64_variable_t* v);
+fmi3_boolean_t fmi3_xml_get_float64_variable_unbounded (fmi3_xml_float64_variable_t* v);
+fmi3_boolean_t fmi3_xml_get_float64_variable_relative_quantity (fmi3_xml_float64_variable_t* v);
+fmi3_xml_float32_variable_t* fmi3_xml_get_variable_as_float32(fmi3_xml_variable_t*);
+fmi3_xml_float32_variable_t* fmi3_xml_get_float32_variable_derivative_of (fmi3_xml_float32_variable_t* v);
+fmi3_boolean_t fmi3_xml_get_float32_variable_reinit (fmi3_xml_float32_variable_t* v);
+fmi3_xml_unit_t* fmi3_xml_get_float32_variable_unit (fmi3_xml_float32_variable_t* v);
+fmi3_xml_display_unit_t* fmi3_xml_get_float32_variable_display_unit (fmi3_xml_float32_variable_t* v);
+fmi3_float32_t fmi3_xml_get_float32_variable_start (fmi3_xml_float32_variable_t* v);
+fmi3_float32_t fmi3_xml_get_float32_variable_min (fmi3_xml_float32_variable_t* v);
+fmi3_float32_t fmi3_xml_get_float32_variable_max (fmi3_xml_float32_variable_t* v);
+fmi3_float32_t fmi3_xml_get_float32_variable_nominal (fmi3_xml_float32_variable_t* v);
+fmi3_string_t fmi3_xml_get_float32_variable_quantity (fmi3_xml_float32_variable_t* v);
+fmi3_boolean_t fmi3_xml_get_float32_variable_unbounded (fmi3_xml_float32_variable_t* v);
+fmi3_boolean_t fmi3_xml_get_float32_variable_relative_quantity (fmi3_xml_float32_variable_t* v);
+fmi3_xml_int64_variable_t* fmi3_xml_get_variable_as_int64(fmi3_xml_variable_t*);
+fmi3_int64_t fmi3_xml_get_int64_variable_min (fmi3_xml_int64_variable_t* v);
+fmi3_int64_t fmi3_xml_get_int64_variable_max (fmi3_xml_int64_variable_t* v);
+fmi3_int64_t fmi3_xml_get_int64_variable_start (fmi3_xml_int64_variable_t* v);
+fmi3_string_t fmi3_xml_get_int64_variable_quantity (fmi3_xml_int64_variable_t* v);
+fmi3_xml_int32_variable_t* fmi3_xml_get_variable_as_int32(fmi3_xml_variable_t*);
+fmi3_int32_t fmi3_xml_get_int32_variable_min (fmi3_xml_int32_variable_t* v);
+fmi3_int32_t fmi3_xml_get_int32_variable_max (fmi3_xml_int32_variable_t* v);
+fmi3_int32_t fmi3_xml_get_int32_variable_start (fmi3_xml_int32_variable_t* v);
+fmi3_string_t fmi3_xml_get_int32_variable_quantity (fmi3_xml_int32_variable_t* v);
+fmi3_xml_int16_variable_t* fmi3_xml_get_variable_as_int16(fmi3_xml_variable_t*);
+fmi3_int16_t fmi3_xml_get_int16_variable_min (fmi3_xml_int16_variable_t* v);
+fmi3_int16_t fmi3_xml_get_int16_variable_max (fmi3_xml_int16_variable_t* v);
+fmi3_int16_t fmi3_xml_get_int16_variable_start (fmi3_xml_int16_variable_t* v);
+fmi3_string_t fmi3_xml_get_int16_variable_quantity (fmi3_xml_int16_variable_t* v);
+fmi3_xml_int8_variable_t* fmi3_xml_get_variable_as_int8(fmi3_xml_variable_t*);
+fmi3_int8_t fmi3_xml_get_int8_variable_min (fmi3_xml_int8_variable_t* v);
+fmi3_int8_t fmi3_xml_get_int8_variable_max (fmi3_xml_int8_variable_t* v);
+fmi3_int8_t fmi3_xml_get_int8_variable_start (fmi3_xml_int8_variable_t* v);
+fmi3_string_t fmi3_xml_get_int8_variable_quantity (fmi3_xml_int8_variable_t* v);
+fmi3_xml_uint64_variable_t* fmi3_xml_get_variable_as_uint64(fmi3_xml_variable_t*);
+fmi3_uint64_t fmi3_xml_get_uint64_variable_min (fmi3_xml_uint64_variable_t* v);
+fmi3_uint64_t fmi3_xml_get_uint64_variable_max (fmi3_xml_uint64_variable_t* v);
+fmi3_uint64_t fmi3_xml_get_uint64_variable_start (fmi3_xml_uint64_variable_t* v);
+fmi3_string_t fmi3_xml_get_uint64_variable_quantity (fmi3_xml_uint64_variable_t* v);
+fmi3_xml_uint32_variable_t* fmi3_xml_get_variable_as_uint32(fmi3_xml_variable_t*);
+fmi3_uint32_t fmi3_xml_get_uint32_variable_min (fmi3_xml_uint32_variable_t* v);
+fmi3_uint32_t fmi3_xml_get_uint32_variable_max (fmi3_xml_uint32_variable_t* v);
+fmi3_uint32_t fmi3_xml_get_uint32_variable_start (fmi3_xml_uint32_variable_t* v);
+fmi3_string_t fmi3_xml_get_uint32_variable_quantity (fmi3_xml_uint32_variable_t* v);
+fmi3_xml_uint16_variable_t* fmi3_xml_get_variable_as_uint16(fmi3_xml_variable_t*);
+fmi3_uint16_t fmi3_xml_get_uint16_variable_min (fmi3_xml_uint16_variable_t* v);
+fmi3_uint16_t fmi3_xml_get_uint16_variable_max (fmi3_xml_uint16_variable_t* v);
+fmi3_uint16_t fmi3_xml_get_uint16_variable_start (fmi3_xml_uint16_variable_t* v);
+fmi3_string_t fmi3_xml_get_uint16_variable_quantity (fmi3_xml_uint16_variable_t* v);
+fmi3_xml_uint8_variable_t* fmi3_xml_get_variable_as_uint8(fmi3_xml_variable_t*);
+fmi3_uint8_t fmi3_xml_get_uint8_variable_min (fmi3_xml_uint8_variable_t* v);
+fmi3_uint8_t fmi3_xml_get_uint8_variable_max (fmi3_xml_uint8_variable_t* v);
+fmi3_uint8_t fmi3_xml_get_uint8_variable_start (fmi3_xml_uint8_variable_t* v);
+fmi3_string_t fmi3_xml_get_uint8_variable_quantity (fmi3_xml_uint8_variable_t* v);
 
 const char* fmi3_xml_get_string_variable_start(fmi3_xml_string_variable_t* v);
 fmi3_boolean_t fmi3_xml_get_boolean_variable_start(fmi3_xml_bool_variable_t* v);

@@ -92,7 +92,7 @@ fmi1_import_t* test_parser(jm_callbacks *cb, char *xml_dir, int should_log_expec
 
 void test_parser_with_cleanup(char *xml_dir, int should_log_expected_msg, int configuration) {
     jm_callbacks* cb = create_parse_test_callbacks();
-    
+
     fmi1_import_t* fmu = test_parser(cb, xml_dir, should_log_expected_msg, configuration);
     fmi1_import_free(fmu);
     destroy_parse_test_callbacks(cb);
@@ -125,7 +125,7 @@ void test_parsing_and_fmu(char *xml_dir, fmu_test_f fmu_test, int should_log_exp
 {
     jm_callbacks* cb = create_parse_test_callbacks();
     int res = 0;
-    
+
     fmi1_import_t* fmu = test_parser(cb, xml_dir, should_log_expected_msg, 0);
     fmi1_import_variable_list_t* vars = fmi1_import_get_variable_list(fmu);
 
@@ -297,7 +297,7 @@ int should_have_size_3_alias_group(fmi1_import_variable_list_t* vars) {
 }
 
 void test_alias_set_error_handling(void) {
-    /* Test that we log errors for incorrect alias set and 
+    /* Test that we log errors for incorrect alias set and
      * that incorrect alias variables are removed or that
      * variable that should be alias variables becomes alias */
 
@@ -305,7 +305,7 @@ void test_alias_set_error_handling(void) {
     parser_log_expected_message("alias_validation/all_alias");
     expected_message = "Removing incorrect alias variable 'v2'";
     test_parsing_fail_and_fmu("alias_validation/all_alias", should_have_no_vars);
-    
+
     expected_message = "Alias set with vr=0 (type=Real) do not have a 'noAlias' variable.";
     parser_log_expected_message("alias_validation/all_alias_mixed");
     expected_message = "Removing incorrect alias variable 'v2'";
@@ -463,9 +463,9 @@ static void test_locale_lc_numeric() {
     char* loc_old = NULL;
     char* tmp = NULL;
 
-    /* Any locale that uses decimal coma instead of decimal point. */
+    /* Any locale that uses decimal comma instead of decimal point. */
 #ifdef WIN32
-    char* locale_bad = "Swedish_Sweden.1252"; 
+    char* locale_bad = "Swedish_Sweden.1252";
 #else
     char* locale_bad = "sv_SE.utf8";
 #endif

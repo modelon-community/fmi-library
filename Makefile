@@ -10,6 +10,7 @@ install: generate
 	cd $(BUILD_DIR) && \
 		cmake --build . --config $(BUILD_TYPE) --target '$@'
 
+# Note that this does not execute the test binaries that are using the test framework Catch2
 test: generate
 	cd $(BUILD_DIR) && \
 		$(TEST_COMMAND)

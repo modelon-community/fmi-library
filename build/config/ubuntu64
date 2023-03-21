@@ -16,9 +16,10 @@ BUILD_TYPE=Debug # We need debug symbols, otherwise memcheck will give limited i
 # - we then run all the tests that are expected to pass memcheck
 # - finally we run the tests that have are expected to fail memcheck, but have a dependency on one of the tests in the memcheck suite
 #   to first run
-TEST_COMMAND=ctest --build-config $(BUILD_TYPE) --tests-regex   ctest_build_all \
-          && ctest --build-config $(BUILD_TYPE) --label-exclude skip_memcheck --exclude-regex ctest_build_all --test-action memcheck \
-          && ctest --build-config $(BUILD_TYPE) --label-regex   skip_memcheck --exclude-regex ctest_build_all \
+TEST_COMMAND=ctest --build-config $(BUILD_TYPE) --tests-regex   ctest_build_all --output-on-failure \
+          && ctest --build-config $(BUILD_TYPE) --label-exclude skip_memcheck --exclude-regex ctest_build_all --test-action memcheck --output-on-failure \
+          && ctest --build-config $(BUILD_TYPE) --label-regex   skip_memcheck --exclude-regex ctest_build_all --output-on-failure \
+          && chmod +x ../Test/scripts/verify_memcheck_logs.sh \
           && ../Test/scripts/verify_memcheck_logs.sh Testing/Temporary
 
 # FMILIB_...

@@ -58,8 +58,8 @@ int fmi1_xml_handle_Capabilities(fmi1_xml_parser_context_t *context, const char*
     md->capabilities = cb->calloc(1, sizeof(fmi1_xml_capabilities_t));
     
     if (fmi1_xml_is_attr_defined(context, fmi_attr_id_canSignalEvents)) {
-        fmi1_xml_parse_error(context, "Found capability flag canSignalEvents "
-            "which have been deprecated as it fills no function");
+        fmi1_xml_parse_warning(context, "Found capability flag canSignalEvents "
+            "which has been deprecated as it fills no function");
     }
 
     return (

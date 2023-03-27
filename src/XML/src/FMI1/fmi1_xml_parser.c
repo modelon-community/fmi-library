@@ -123,18 +123,30 @@ void fmi1_xml_parse_fatal(fmi1_xml_parser_context_t *context, const char* fmt, .
     XML_StopParser(context->parser,0);
 }
 
-void fmi1_xml_parse_error(fmi1_xml_parser_context_t *context, const char* fmt, ...) {
-    va_list args;
-    va_start (args, fmt);
-	if(context->parser) {
-        jm_log_error(context->callbacks, module, "Detected on line:%u of modelDescription.xml", XML_GetCurrentLineNumber(context->parser));
-        jm_log_error_v(context->callbacks, module, fmt, args);
+static void fmi1_xml_parse_log_message(fmi1_xml_parser_context_t* context, const char* fmt,
+        jm_log_level_enu_t log_level, va_list args) {
+    if (context->parser) {
+        jm_log(context->callbacks, module, log_level,
+                "Detected on line:%u of modelDescription.xml", XML_GetCurrentLineNumber(context->parser));
+        jm_log_v(context->callbacks, module, log_level, fmt, args);
+    } else {
+        jm_log_v(context->callbacks, module, log_level, fmt, args);
     }
-	else
-		jm_log_error_v(context->callbacks, module, fmt, args);
-    va_end (args);
 }
 
+void fmi1_xml_parse_error(fmi1_xml_parser_context_t* context, const char* fmt, ...) {
+    va_list args;
+    va_start(args, fmt);
+    fmi1_xml_parse_log_message(context, fmt, jm_log_level_error, args);
+    va_end(args);
+}
+
+void fmi1_xml_parse_warning(fmi1_xml_parser_context_t* context, const char* fmt, ...) {
+    va_list args;
+    va_start(args, fmt);
+    fmi1_xml_parse_log_message(context, fmt, jm_log_level_warning, args);
+    va_end(args);
+}
 
 int fmi1_xml_is_attr_defined(fmi1_xml_parser_context_t *context, fmi1_xml_attr_enu_t attrID) {
     return ( jm_vector_get_item(jm_string)(context->attrBuffer, attrID) != 0);

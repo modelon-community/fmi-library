@@ -427,7 +427,7 @@ void test_deprecation_errors(void) {
      * modelDescriptions.
      */
 
-    expected_message = "Found capability flag canSignalEvents which have been "
+    expected_message = "Found capability flag canSignalEvents which has been "
         "deprecated as it fills no function";
     parser_log_expected_message("deprecated/canSignalEvents");
 }

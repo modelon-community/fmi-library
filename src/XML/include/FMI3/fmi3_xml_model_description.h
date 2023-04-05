@@ -36,7 +36,7 @@ extern "C" {
 /**
 \addtogroup fmi_xml
   @{
-	\addtogroup fmi3_xml
+    \addtogroup fmi3_xml
   @}
 */
 /**
@@ -95,12 +95,12 @@ typedef struct fmi3_xml_unit_definitions_t fmi3_xml_unit_definitions_t;
 /**@{ */
 typedef struct fmi3_xml_capabilities_t fmi3_xml_capabilities_t;
 /**@} */
-/**	\addtogroup fmi3_xml_gen General information retrieval*/
-/**	\addtogroup fmi3_xml_init  Constuction, destruction and error checking */
+/**    \addtogroup fmi3_xml_gen General information retrieval*/
+/**    \addtogroup fmi3_xml_init  Constuction, destruction and error checking */
 
 /** @} */
 
-/**	\addtogroup fmi3_xml_init
+/**    \addtogroup fmi3_xml_init
 @{ */
 /**
    \brief Allocate the ModelDescription structure and initialize as empty model.
@@ -123,7 +123,7 @@ fmi3_xml_model_description_t* fmi3_xml_allocate_model_description( jm_callbacks*
 
     @param md A model description object as returned by fmi3_xml_allocate_model_description.
     @param fileName A name (full path) of the XML file name with model definition.
-	@param xml_callbacks Callbacks to use for processing annotations (may be NULL).
+    @param xml_callbacks Callbacks to use for processing annotations (may be NULL).
     @param configuration Specifies how to parse the model description, 0 is
            default. Other possible configuration is FMI_XML_NAME_CHECK.
    @return 0 if parsing was successfull. Non-zero value indicates an error.
@@ -227,19 +227,19 @@ jm_vector(jm_named_ptr)* fmi3_xml_get_variables_alphabetical_order(fmi3_xml_mode
 jm_vector(jm_voidp)* fmi3_xml_get_variables_vr_order(fmi3_xml_model_description_t* md);
 
 /**
-	\brief Get variable by variable name.
-	\param md - the model description
-	\param name - variable name
-	\return variable pointer.
+    \brief Get variable by variable name.
+    \param md - the model description
+    \param name - variable name
+    \return variable pointer.
 */
 fmi3_xml_variable_t* fmi3_xml_get_variable_by_name(fmi3_xml_model_description_t* md, const char* name);
 
 /**
-	\brief Get variable by value reference.
-	\param md - the model description
-	\param baseType - basic data type
-	\param vr - value reference
-	\return variable pointer.
+    \brief Get variable by value reference.
+    \param md - the model description
+    \param baseType - basic data type
+    \param vr - value reference
+    \return variable pointer.
 */
 fmi3_xml_variable_t* fmi3_xml_get_variable_by_vr(fmi3_xml_model_description_t* md, fmi3_base_type_enu_t baseType, fmi3_value_reference_t vr);
 

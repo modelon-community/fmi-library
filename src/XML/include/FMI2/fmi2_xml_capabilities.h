@@ -21,25 +21,25 @@ extern "C" {
 #endif
 
 #include "FMI2/fmi2_xml_model_description.h"
-	/**
-		\file fmi2_xml_capabilities.h
-		Functions to retrieve capability flags.
-	*/
-	/**
-	\addtogroup fmi2_xml
-	@{
-	\addtogroup fmi2_xml_capabilities Functions to retrieve capability flags.
-	The functions accept a pointer to ::fmi2_xml_capabilities_t returned by fmi2_xml_get_capabilities().
-	They return the flags as specified by the FMI 2.0 standard. Default values are returned for model-exachange FMUs.
-	@}
-	\addtogroup fmi2_xml_capabilities
-	@{
-	*/
+    /**
+        \file fmi2_xml_capabilities.h
+        Functions to retrieve capability flags.
+    */
+    /**
+    \addtogroup fmi2_xml
+    @{
+    \addtogroup fmi2_xml_capabilities Functions to retrieve capability flags.
+    The functions accept a pointer to ::fmi2_xml_capabilities_t returned by fmi2_xml_get_capabilities().
+    They return the flags as specified by the FMI 2.0 standard. Default values are returned for model-exachange FMUs.
+    @}
+    \addtogroup fmi2_xml_capabilities
+    @{
+    */
 /** \brief Retrieve  canHandleVariableCommunicationStepSize flag. */
-	
+
 unsigned int fmi2_xml_get_capability(fmi2_xml_model_description_t* , fmi2_capabilities_enu_t id);
-	
-	
+
+
 /** 
 @}
 */

@@ -41,16 +41,16 @@ fmi2_status_t fmi2_capi_enter_continuous_time_mode(fmi2_capi_t* fmu)
 
 fmi2_status_t fmi2_capi_set_time(fmi2_capi_t* fmu, fmi2_real_t time)
 {
-	assert(fmu);
-	jm_log_debug(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Calling fmi2SetTime");
-	return fmu->fmi2SetTime(fmu->c, time);
+    assert(fmu);
+    jm_log_debug(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Calling fmi2SetTime");
+    return fmu->fmi2SetTime(fmu->c, time);
 }
 
 fmi2_status_t fmi2_capi_set_continuous_states(fmi2_capi_t* fmu, const fmi2_real_t x[], size_t nx)
 {
-	assert(fmu);
-	jm_log_debug(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Calling fmi2SetContinuousStates");
-	return fmu->fmi2SetContinuousStates(fmu->c, x, nx);
+    assert(fmu);
+    jm_log_debug(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Calling fmi2SetContinuousStates");
+    return fmu->fmi2SetContinuousStates(fmu->c, x, nx);
 }
 
 fmi2_status_t fmi2_capi_completed_integrator_step(fmi2_capi_t* fmu,
@@ -65,28 +65,28 @@ fmi2_status_t fmi2_capi_completed_integrator_step(fmi2_capi_t* fmu,
 
 fmi2_status_t fmi2_capi_get_derivatives(fmi2_capi_t* fmu, fmi2_real_t derivatives[], size_t nx)
 {
-	assert(fmu);
-	jm_log_debug(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Calling fmi2GetDerivatives");
-	return fmu->fmi2GetDerivatives(fmu->c, derivatives, nx);
+    assert(fmu);
+    jm_log_debug(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Calling fmi2GetDerivatives");
+    return fmu->fmi2GetDerivatives(fmu->c, derivatives, nx);
 }
 
 fmi2_status_t fmi2_capi_get_event_indicators(fmi2_capi_t* fmu, fmi2_real_t eventIndicators[], size_t ni)
 {
-	assert(fmu);
-	jm_log_debug(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Calling fmi2GetEventIndicators");
-	return fmu->fmi2GetEventIndicators(fmu->c, eventIndicators, ni);
+    assert(fmu);
+    jm_log_debug(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Calling fmi2GetEventIndicators");
+    return fmu->fmi2GetEventIndicators(fmu->c, eventIndicators, ni);
 }
 
 fmi2_status_t fmi2_capi_get_continuous_states(fmi2_capi_t* fmu, fmi2_real_t states[], size_t nx)
 {
-	assert(fmu);
-	jm_log_debug(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Calling fmi2GetContinuousStates");
-	return fmu->fmi2GetContinuousStates(fmu->c, states, nx);
+    assert(fmu);
+    jm_log_debug(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Calling fmi2GetContinuousStates");
+    return fmu->fmi2GetContinuousStates(fmu->c, states, nx);
 }
 
 fmi2_status_t fmi2_capi_get_nominals_of_continuous_states(fmi2_capi_t* fmu, fmi2_real_t x_nominal[], size_t nx)
 {
-	assert(fmu);
-	jm_log_debug(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Calling fmi2GetNominalsOfContinuousStates");
-	return fmu->fmi2GetNominalsOfContinuousStates(fmu->c, x_nominal, nx);
+    assert(fmu);
+    jm_log_debug(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Calling fmi2GetNominalsOfContinuousStates");
+    return fmu->fmi2GetNominalsOfContinuousStates(fmu->c, x_nominal, nx);
 }

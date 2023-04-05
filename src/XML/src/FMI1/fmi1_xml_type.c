@@ -46,7 +46,7 @@ const char* fmi1_xml_get_type_name(fmi1_xml_variable_typedef_t* t) {
 }
 
 const char* fmi1_xml_get_type_description(fmi1_xml_variable_typedef_t* t) {
-	const char * ret = t->description;
+    const char * ret = t->description;
     return (ret ? ret : "");
 }
 
@@ -70,26 +70,26 @@ fmi1_xml_enumeration_typedef_t* fmi1_xml_get_type_as_enum(fmi1_xml_variable_type
 
 const char* fmi1_xml_get_type_quantity(fmi1_xml_variable_typedef_t* t) {
     fmi1_xml_variable_type_base_t* props = t->super.nextLayer;
-	const char * ret;
+    const char * ret;
     if(props->structKind != fmi1_xml_type_struct_enu_props) return 0;
     switch(props->baseType) {
     case fmi1_base_type_real:
         ret = ((fmi1_xml_real_type_props_t*)props)->quantity;
-		break;
+        break;
     case fmi1_base_type_int:
         ret = ((fmi1_xml_integer_type_props_t*)props)->quantity;
-		break;
+        break;
     case fmi1_base_type_bool:
         return 0;
     case fmi1_base_type_str:
         return 0;
     case fmi1_base_type_enum:
         ret = ((fmi1_xml_enum_type_props_t*)props)->quantity;
-		break;
+        break;
     default:
         return 0;
     }
-	return (ret ? ret : 0);
+    return (ret ? ret : 0);
 }
 
 double fmi1_xml_get_real_type_min(fmi1_xml_real_typedef_t* t) {
@@ -244,7 +244,7 @@ void fmi1_xml_free_type_definitions_data(fmi1_xml_type_definitions_t* td) {
             cb->free(cur);
             cur = next;
         }
-		td->typePropsList = 0;
+        td->typePropsList = 0;
     }
 
     jm_named_vector_free_data(&td->typeDefinitions);
@@ -252,7 +252,7 @@ void fmi1_xml_free_type_definitions_data(fmi1_xml_type_definitions_t* td) {
 
 int fmi1_xml_handle_TypeDefinitions(fmi1_xml_parser_context_t *context, const char* data) {
     if(!data) {
-		jm_log_verbose(context->callbacks, module, "Parsing XML element TypeDefinitions");
+        jm_log_verbose(context->callbacks, module, "Parsing XML element TypeDefinitions");
     }
     else {
         fmi1_xml_type_definitions_t* defs =  &context->modelDescription->typeDefinitions;
@@ -280,7 +280,7 @@ int fmi1_xml_handle_Type(fmi1_xml_parser_context_t *context, const char* data) {
                 fmi1_xml_set_attr_string(context, fmi1_xml_elmID_Type, fmi_attr_id_description, 0, bufDescr)
                     ) return -1;
             named.ptr = 0;
-			named.name = 0;
+            named.name = 0;
             pnamed = jm_vector_push_back(jm_named_ptr)(&td->typeDefinitions,named);
             if(pnamed) {
                 fmi1_xml_variable_typedef_t dummy;
@@ -590,7 +590,7 @@ int fmi1_xml_handle_Item(fmi1_xml_parser_context_t *context, const char* data) {
                 return -1;
             descrlen = jm_vector_get_size(char)(bufDescr);
             named.ptr = 0;
-			named.name = 0;
+            named.name = 0;
             pnamed = jm_vector_push_back(jm_named_ptr)(&enumProps->enumItems, named);
 
             if(pnamed) *pnamed = named = jm_named_alloc_v(bufName,sizeof(fmi1_xml_enum_type_item_t)+descrlen+1,sizeof(fmi1_xml_enum_type_item_t)+descrlen,context->callbacks);

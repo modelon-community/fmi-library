@@ -18,9 +18,9 @@
 #include "fmi3_import_priv.h"
 
 int fmi3_import_check_has_FMU(fmi3_import_t* fmu) {
-	if(!fmu->md) {
-		jm_log_error(fmu->callbacks, "FMILIB", "No FMU is loaded");
-		return 0;
-	}
-	return 1;
+    if(!fmu->md) {
+        jm_log_error(fmu->callbacks, "FMILIB", "No FMU is loaded");
+        return 0;
+    }
+    return 1;
 }

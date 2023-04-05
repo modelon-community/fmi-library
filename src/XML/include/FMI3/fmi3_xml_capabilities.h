@@ -21,25 +21,25 @@ extern "C" {
 #endif
 
 #include "FMI3/fmi3_xml_model_description.h"
-	/**
-		\file fmi3_xml_capabilities.h
-		Functions to retrieve capability flags.
-	*/
-	/**
-	\addtogroup fmi3_xml
-	@{
-	\addtogroup fmi3_xml_capabilities Functions to retrieve capability flags.
-	The functions accept a pointer to ::fmi3_xml_capabilities_t returned by fmi3_xml_get_capabilities().
-	They return the flags as specified by the FMI 3.0 standard. Default values are returned for model-exachange FMUs.
-	@}
-	\addtogroup fmi3_xml_capabilities
-	@{
-	*/
+    /**
+        \file fmi3_xml_capabilities.h
+        Functions to retrieve capability flags.
+    */
+    /**
+    \addtogroup fmi3_xml
+    @{
+    \addtogroup fmi3_xml_capabilities Functions to retrieve capability flags.
+    The functions accept a pointer to ::fmi3_xml_capabilities_t returned by fmi3_xml_get_capabilities().
+    They return the flags as specified by the FMI 3.0 standard. Default values are returned for model-exachange FMUs.
+    @}
+    \addtogroup fmi3_xml_capabilities
+    @{
+    */
 /** \brief Retrieve  canHandleVariableCommunicationStepSize flag. */
-	
+
 unsigned int fmi3_xml_get_capability(fmi3_xml_model_description_t* , fmi3_capabilities_enu_t id);
-	
-	
+
+
 /** 
 @}
 */

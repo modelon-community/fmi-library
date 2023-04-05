@@ -18,11 +18,11 @@
 #include "fmi3_import_variable_list_impl.h"
 
 fmi3_import_variable_list_t* fmi3_import_alloc_variable_list(fmi3_import_t* fmu, size_t size) {
-	jm_callbacks* cb = fmu->callbacks;
-	fmi3_import_variable_list_t* vl = (fmi3_import_variable_list_t*)cb->malloc(sizeof(fmi3_import_variable_list_t));
+    jm_callbacks* cb = fmu->callbacks;
+    fmi3_import_variable_list_t* vl = (fmi3_import_variable_list_t*)cb->malloc(sizeof(fmi3_import_variable_list_t));
     if(!vl) return 0;
     vl->vr = 0;
-	vl->fmu = fmu;
+    vl->fmu = fmu;
     if(jm_vector_init(jm_voidp)(&vl->variables,size,cb) < size) {
         fmi3_import_free_variable_list(vl);
         return 0;
@@ -32,19 +32,19 @@ fmi3_import_variable_list_t* fmi3_import_alloc_variable_list(fmi3_import_t* fmu,
 
 void fmi3_import_free_variable_list(fmi3_import_variable_list_t* vl) {
     jm_callbacks* cb;
-	if(!vl) return;
-	cb = vl->variables.callbacks;
-	cb->free(vl->vr);
+    if(!vl) return;
+    cb = vl->variables.callbacks;
+    cb->free(vl->vr);
     jm_vector_free_data(jm_voidp)(&vl->variables);
     cb->free(vl);
 }
 
 /* Get number of variables in a list */
 size_t  fmi3_import_get_variable_list_size(fmi3_import_variable_list_t* vl) {
-	if(vl)
-		return jm_vector_get_size(jm_voidp)(&vl->variables);
-	else
-		return 0;
+    if(vl)
+        return jm_vector_get_size(jm_voidp)(&vl->variables);
+    else
+        return 0;
 }
 
 /* Make a copy */
@@ -103,25 +103,25 @@ jm_status_enu_t fmi3_import_var_list_push_back(fmi3_import_variable_list_t* list
 /* Get a pointer to the list of the value references for all the variables */
 const fmi3_value_reference_t* fmi3_import_get_value_referece_list(fmi3_import_variable_list_t* vl) {
     if(!vl->vr) {
-		jm_callbacks* cb = vl->fmu->callbacks;
+        jm_callbacks* cb = vl->fmu->callbacks;
         size_t i, nv = fmi3_import_get_variable_list_size(vl);
-		vl->vr = (fmi3_value_reference_t*)cb->malloc(nv * sizeof(fmi3_value_reference_t));
+        vl->vr = (fmi3_value_reference_t*)cb->malloc(nv * sizeof(fmi3_value_reference_t));
         if(vl->vr) {
             for(i = 0; i < nv; i++) {
-				vl->vr[i] = fmi3_xml_get_variable_vr(fmi3_import_get_variable(vl, i));
+                vl->vr[i] = fmi3_xml_get_variable_vr(fmi3_import_get_variable(vl, i));
             }
         }
-		else return 0;
+        else return 0;
     }
     return vl->vr;
 }
 
 /* Get a single variable from the list*/
 fmi3_import_variable_t* fmi3_import_get_variable(fmi3_import_variable_list_t* vl, size_t  index) {
-	if(index >= fmi3_import_get_variable_list_size(vl))
-		return 0;
-	else
-		return (fmi3_import_variable_t*)jm_vector_get_item(jm_voidp)(&vl->variables, index);
+    if(index >= fmi3_import_get_variable_list_size(vl))
+        return 0;
+    else
+        return (fmi3_import_variable_t*)jm_vector_get_item(jm_voidp)(&vl->variables, index);
 }
 
 /* Operations on variable lists. Every operation creates a new list. */
@@ -145,7 +145,7 @@ fmi3_import_variable_list_t* fmi3_import_get_sublist(fmi3_import_variable_list_t
 fmi3_import_variable_list_t* fmi3_import_filter_variables(fmi3_import_variable_list_t* vl, fmi3_import_variable_filter_function_ft filter, void* context) {
     size_t nv, i;
     fmi3_import_variable_list_t* out = fmi3_import_alloc_variable_list(vl->fmu, 0);
-	if(!out) return 0; /* out of memory */
+    if(!out) return 0; /* out of memory */
     nv = fmi3_import_get_variable_list_size(vl);
     for(i=0; i < nv;i++) {
         fmi3_import_variable_t* variable = fmi3_import_get_variable(vl, i);

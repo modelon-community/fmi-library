@@ -28,7 +28,7 @@ const char* fmi1_fmu_kind_to_string(fmi1_fmu_kind_enu_t kind) {
     case fmi1_fmu_kind_enu_me: return "ModelExchange";
     case fmi1_fmu_kind_enu_cs_standalone: return "CoSimulation_StandAlone";
     case fmi1_fmu_kind_enu_cs_tool: return "CoSimulation_Tool";
-	default: break;
+    default: break;
     }
     return "Unknown";
 }
@@ -39,7 +39,7 @@ const char* fmi1_variability_to_string(fmi1_variability_enu_t v) {
     case fmi1_variability_enu_parameter: return "parameter";
     case fmi1_variability_enu_discrete: return "discrete";
     case fmi1_variability_enu_continuous: return "continuous";
-	default: break;
+    default: break;
     }
     return "Unknown";
 }
@@ -50,28 +50,28 @@ const char* fmi1_causality_to_string(fmi1_causality_enu_t c) {
     case fmi1_causality_enu_output: return "output";
     case fmi1_causality_enu_internal: return "internal";
     case fmi1_causality_enu_none: return "none";
-	default: break;
+    default: break;
     };
     return "Unknown";
 }
 
 const char* fmi1_status_to_string(fmi1_status_t status) {
-	switch(status) {
-	case fmi1_status_ok:
-		return "OK";
-	case fmi1_status_warning:
-		return "Warning";
-	case fmi1_status_discard:
-		return "Discard";
-	case fmi1_status_error:
-		return "Error";
-	case fmi1_status_fatal:
-		return "Fatal";
-	case fmi1_status_pending:
-		return "Pending";
-	default: break;
-	}
-	return "Undefined";
+    switch(status) {
+    case fmi1_status_ok:
+        return "OK";
+    case fmi1_status_warning:
+        return "Warning";
+    case fmi1_status_discard:
+        return "Discard";
+    case fmi1_status_error:
+        return "Error";
+    case fmi1_status_fatal:
+        return "Fatal";
+    case fmi1_status_pending:
+        return "Pending";
+    default: break;
+    }
+    return "Undefined";
 }
 
 const char* fmi1_base_type_to_string(fmi1_base_type_enu_t bt) {
@@ -81,7 +81,7 @@ const char* fmi1_base_type_to_string(fmi1_base_type_enu_t bt) {
     case fmi1_base_type_bool: return "Boolean";
     case fmi1_base_type_str: return "String";
     case fmi1_base_type_enum: return "Enumeration";
-	default: break;
+    default: break;
     }
     return "Error";
 }

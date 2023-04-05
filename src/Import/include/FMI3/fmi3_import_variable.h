@@ -31,23 +31,23 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-		/**
-	\addtogroup fmi3_import
-	@{
-	\addtogroup fmi3_import_variables Functions for handling variable definitions.
-	@}
-	\addtogroup fmi3_import_variables Functions for handling variable definitions.
-	\brief All the functions in this group take a pointer to ::fmi3_import_variable_t as a parameter.
-	A variable pointer may be obtained via a \ref fmi3_import_varlist module or via functions
-	fmi3_import_get_variable_by_name() and fmi3_import_get_variable_by_vr().
-	@{
-	*/
-	/**@name Scalar variable types */
+        /**
+    \addtogroup fmi3_import
+    @{
+    \addtogroup fmi3_import_variables Functions for handling variable definitions.
+    @}
+    \addtogroup fmi3_import_variables Functions for handling variable definitions.
+    \brief All the functions in this group take a pointer to ::fmi3_import_variable_t as a parameter.
+    A variable pointer may be obtained via a \ref fmi3_import_varlist module or via functions
+    fmi3_import_get_variable_by_name() and fmi3_import_get_variable_by_vr().
+    @{
+    */
+    /**@name Scalar variable types */
 /**@{ */
 /** \brief General variable type. 
 *
 * This type is convenient to unify all the variable list operations. 
-* 	However, typed variables are needed to support specific attributes.
+*    However, typed variables are needed to support specific attributes.
 */
 typedef struct fmi3_xml_variable_t fmi3_import_variable_t;
 /** \brief  Opaque float32 variable */
@@ -84,7 +84,7 @@ typedef struct fmi3_import_variable_list_t fmi3_import_variable_list_t;
 FMILIB_EXPORT const char* fmi3_import_get_variable_name(fmi3_import_variable_t*);
 
 /** \brief Get variable description. 
-	@return Description string or empty string ("") if no description in the XML file was given.
+    @return Description string or empty string ("") if no description in the XML file was given.
 */
 FMILIB_EXPORT const char* fmi3_import_get_variable_description(fmi3_import_variable_t*);
 
@@ -92,7 +92,7 @@ FMILIB_EXPORT const char* fmi3_import_get_variable_description(fmi3_import_varia
 FMILIB_EXPORT fmi3_value_reference_t fmi3_import_get_variable_vr(fmi3_import_variable_t*);
 
 /** \brief For scalar variable gives the type definition is present
-	@return Pointer of a type #fmi3_import_variable_typedef_t object or NULL of not present.
+    @return Pointer of a type #fmi3_import_variable_typedef_t object or NULL of not present.
 */
 FMILIB_EXPORT fmi3_import_variable_typedef_t* fmi3_import_get_variable_declared_type(fmi3_import_variable_t*);
 
@@ -117,7 +117,7 @@ FMILIB_EXPORT fmi3_float32_t* fmi3_import_get_float32_variable_start_array(fmi3_
 FMILIB_EXPORT fmi3_import_dimension_list_t* fmi3_import_get_variable_dimension_list(fmi3_import_t* fmu, fmi3_import_variable_t* v);
 
 /**   \brief Check if the variable is an array.
-	@return True if array, false if scalar.
+    @return True if array, false if scalar.
 */
 FMILIB_EXPORT int fmi3_import_variable_is_array(fmi3_import_variable_t*);
 
@@ -143,95 +143,95 @@ FMILIB_EXPORT fmi3_import_variable_t* fmi3_import_get_previous(fmi3_import_varia
 
 /** \brief Get the canHandleMultipleSetPerTimeInstant flag for a variable.
 
-	@return For inputs: If false, then only one fmiSetXXX call is allowed at
+    @return For inputs: If false, then only one fmiSetXXX call is allowed at
     one super dense time instant. In other words, this input is not allowed to
     appear in an algebraic loop.
 */
 FMILIB_EXPORT fmi3_boolean_t fmi3_import_get_canHandleMultipleSetPerTimeInstant(fmi3_import_variable_t* v);
 
 /** \brief Cast general variable to a one with the specific type 
-	
-	@return Typed object or NULL if base type does not match
+
+    @return Typed object or NULL if base type does not match
 */
 FMILIB_EXPORT fmi3_import_float64_variable_t* fmi3_import_get_variable_as_float64(fmi3_import_variable_t*);
 
 /** \brief Cast general variable to a one with the specific type 
-	
-	@return Typed object or NULL if base type does not match
+
+    @return Typed object or NULL if base type does not match
 */
 FMILIB_EXPORT fmi3_import_float32_variable_t* fmi3_import_get_variable_as_float32(fmi3_import_variable_t*);
 
 /** \brief Cast general variable to a one with the specific type 
-	@return Typed object or NULL if base type does not match
+    @return Typed object or NULL if base type does not match
 */
 FMILIB_EXPORT fmi3_import_int64_variable_t* fmi3_import_get_variable_as_int64(fmi3_import_variable_t*);
 
 /** \brief Cast general variable to a one with the specific type 
-	@return Typed object or NULL if base type does not match
+    @return Typed object or NULL if base type does not match
 */
 FMILIB_EXPORT fmi3_import_int32_variable_t* fmi3_import_get_variable_as_int32(fmi3_import_variable_t*);
 
 /** \brief Cast general variable to a one with the specific type 
-	@return Typed object or NULL if base type does not match
+    @return Typed object or NULL if base type does not match
 */
 FMILIB_EXPORT fmi3_import_int16_variable_t* fmi3_import_get_variable_as_int16(fmi3_import_variable_t*);
 
 /** \brief Cast general variable to a one with the specific type 
-	@return Typed object or NULL if base type does not match
+    @return Typed object or NULL if base type does not match
 */
 FMILIB_EXPORT fmi3_import_int8_variable_t* fmi3_import_get_variable_as_int8(fmi3_import_variable_t*);
 
 /** \brief Cast general variable to a one with the specific type 
-	@return Typed object or NULL if base type does not match
+    @return Typed object or NULL if base type does not match
 */
 FMILIB_EXPORT fmi3_import_uint64_variable_t* fmi3_import_get_variable_as_uint64(fmi3_import_variable_t*);
 
 /** \brief Cast general variable to a one with the specific type 
-	@return Typed object or NULL if base type does not match
+    @return Typed object or NULL if base type does not match
 */
 FMILIB_EXPORT fmi3_import_uint32_variable_t* fmi3_import_get_variable_as_uint32(fmi3_import_variable_t*);
 
 /** \brief Cast general variable to a one with the specific type 
-	@return Typed object or NULL if base type does not match
+    @return Typed object or NULL if base type does not match
 */
 FMILIB_EXPORT fmi3_import_uint16_variable_t* fmi3_import_get_variable_as_uint16(fmi3_import_variable_t*);
 
 /** \brief Cast general variable to a one with the specific type 
-	@return Typed object or NULL if base type does not match
+    @return Typed object or NULL if base type does not match
 */
 FMILIB_EXPORT fmi3_import_uint8_variable_t* fmi3_import_get_variable_as_uint8(fmi3_import_variable_t*);
 
 /** \brief Cast general variable to a one with the specific type 
-	
-	@return Typed object or NULL if base type does not match
+
+    @return Typed object or NULL if base type does not match
 */
 FMILIB_EXPORT fmi3_import_enum_variable_t* fmi3_import_get_variable_as_enum(fmi3_import_variable_t*);
 /** \brief Cast general variable to a one with the specific type 
-	
-	@return Typed object or NULL if base type does not match
+
+    @return Typed object or NULL if base type does not match
 */
 FMILIB_EXPORT fmi3_import_string_variable_t* fmi3_import_get_variable_as_string(fmi3_import_variable_t*);
 /** \brief Cast general variable to a one with the specific type 
-	
-	@return Typed object or NULL if base type does not match
+
+    @return Typed object or NULL if base type does not match
 */
 FMILIB_EXPORT fmi3_import_bool_variable_t* fmi3_import_get_variable_as_boolean(fmi3_import_variable_t*);
 
 /** \brief Get minimal value for the variable.
 
-	@return Either the value specified in the XML file or negated FLT_MAX as defined in <float.h>
+    @return Either the value specified in the XML file or negated FLT_MAX as defined in <float.h>
 */
 FMILIB_EXPORT fmi3_float32_t fmi3_import_get_float32_variable_min(fmi3_import_float32_variable_t* v);
 
 /** \brief Get maximum value for the variable.
 
-	@return Either the value specified in the XML file or FLT_MAX as defined in <float.h>
+    @return Either the value specified in the XML file or FLT_MAX as defined in <float.h>
 */
 FMILIB_EXPORT fmi3_float32_t fmi3_import_get_float32_variable_max(fmi3_import_float32_variable_t* v);
 
 /** \brief Get nominal value for the variable.
 
-	@return The "start" attribute as specified in the XML file or variable nominal value.
+    @return The "start" attribute as specified in the XML file or variable nominal value.
 */
 FMILIB_EXPORT fmi3_float32_t fmi3_import_get_float32_variable_nominal(fmi3_import_float32_variable_t* v);
 
@@ -253,38 +253,38 @@ FMILIB_EXPORT fmi3_import_display_unit_t* fmi3_import_get_float32_variable_displ
 FMILIB_EXPORT fmi3_import_float32_variable_t* fmi3_import_get_float32_variable_derivative_of(fmi3_import_float32_variable_t* v);
 
 /** 
-	\brief Get the variable start attribute. 
+    \brief Get the variable start attribute. 
 
-	@return The "start" attribute as specified in the XML file or variable nominal value.
+    @return The "start" attribute as specified in the XML file or variable nominal value.
 */
 FMILIB_EXPORT fmi3_float32_t fmi3_import_get_float32_variable_start(fmi3_import_float32_variable_t* v);
 
 /** \brief Get the variable "relativeQuantity" attribute.
-	@return The "relativeQuantity" attribute as specified in the XML file. False if undefined.
+    @return The "relativeQuantity" attribute as specified in the XML file. False if undefined.
 */
 FMILIB_EXPORT fmi3_boolean_t fmi3_import_get_float32_variable_relative_quantity(fmi3_import_float32_variable_t* v);
 
 /** \brief Get the variable "unbounded" attribute.
-	@return The "unbounded" attribute as specified in the XML file. False if undefined.
+    @return The "unbounded" attribute as specified in the XML file. False if undefined.
 */
 FMILIB_EXPORT fmi3_boolean_t fmi3_import_get_float32_variable_unbounded(fmi3_import_float32_variable_t* v);
 
 
 /** \brief Get minimal value for the variable.
 
-	@return Either the value specified in the XML file or negated DBL_MAX as defined in <float.h>
+    @return Either the value specified in the XML file or negated DBL_MAX as defined in <float.h>
 */
 FMILIB_EXPORT fmi3_float64_t fmi3_import_get_float64_variable_min(fmi3_import_float64_variable_t* v);
 
 /** \brief Get maximum value for the variable.
 
-	@return Either the value specified in the XML file or DBL_MAX as defined in <float.h>
+    @return Either the value specified in the XML file or DBL_MAX as defined in <float.h>
 */
 FMILIB_EXPORT fmi3_float64_t fmi3_import_get_float64_variable_max(fmi3_import_float64_variable_t* v);
 
 /** \brief Get nominal value for the variable.
 
-	@return The "start" attribute as specified in the XML file or variable nominal value.
+    @return The "start" attribute as specified in the XML file or variable nominal value.
 */
 FMILIB_EXPORT fmi3_float64_t fmi3_import_get_float64_variable_nominal(fmi3_import_float64_variable_t* v);
 
@@ -292,9 +292,9 @@ FMILIB_EXPORT fmi3_float64_t fmi3_import_get_float64_variable_nominal(fmi3_impor
 FMILIB_EXPORT fmi3_string_t fmi3_import_get_float64_variable_quantity(fmi3_import_float64_variable_t* v);
 
 /** 
-	\brief Get the variable start attribute. 
+    \brief Get the variable start attribute. 
 
-	@return The "start" attribute as specified in the XML file or variable nominal value.
+    @return The "start" attribute as specified in the XML file or variable nominal value.
 */
 FMILIB_EXPORT fmi3_float64_t fmi3_import_get_float64_variable_start(fmi3_import_float64_variable_t* v);
 
@@ -313,12 +313,12 @@ FMILIB_EXPORT fmi3_import_display_unit_t* fmi3_import_get_float64_variable_displ
 FMILIB_EXPORT fmi3_import_float64_variable_t* fmi3_import_get_float64_variable_derivative_of(fmi3_import_float64_variable_t* v);
 
 /** \brief Get the variable "relativeQuantity" attribute.
-	@return The "relativeQuantity" attribute as specified in the XML file. False if undefined.
+    @return The "relativeQuantity" attribute as specified in the XML file. False if undefined.
 */
 FMILIB_EXPORT fmi3_boolean_t fmi3_import_get_float64_variable_relative_quantity(fmi3_import_float64_variable_t* v);
 
 /** \brief Get the variable "unbounded" attribute.
-	@return The "unbounded" attribute as specified in the XML file. False if undefined.
+    @return The "unbounded" attribute as specified in the XML file. False if undefined.
 */
 FMILIB_EXPORT fmi3_boolean_t fmi3_import_get_float64_variable_unbounded(fmi3_import_float64_variable_t* v);
 

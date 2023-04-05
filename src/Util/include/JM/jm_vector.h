@@ -279,19 +279,19 @@ Default definition below is jm_diff and is implemented as (int)(first-second)
 #define JM_VECTOR_MAX_MEMORY_CHUNK 1024
 
 /** Declare the struct and functions for the specified type. */
-#define jm_vector_declare_template(T)		\
+#define jm_vector_declare_template(T)        \
 typedef struct  jm_vector(T) {                \
-        jm_callbacks* callbacks; 			\
-        T  *items;     				\
-	size_t size;  				 \
-        size_t capacity; 			\
-        T preallocated[JM_VECTOR_MINIMAL_CAPACITY];			\
-} jm_vector(T);					\
+        jm_callbacks* callbacks;            \
+        T  *items;                    \
+    size_t size;                 \
+        size_t capacity;            \
+        T preallocated[JM_VECTOR_MINIMAL_CAPACITY];            \
+} jm_vector(T);                    \
  \
-extern jm_vector(T)* jm_vector_alloc(T)(size_t size,size_t capacity, jm_callbacks*);	\
+extern jm_vector(T)* jm_vector_alloc(T)(size_t size,size_t capacity, jm_callbacks*);    \
     \
 extern size_t jm_vector_copy(T)(jm_vector(T)* destination, jm_vector(T)* source); \
-static jm_vector(T)* jm_vector_clone(T)(jm_vector(T)* v) {	\
+static jm_vector(T)* jm_vector_clone(T)(jm_vector(T)* v) {    \
     jm_vector(T)* ret = jm_vector_alloc(T)(v->size, v->size, v->callbacks);\
     if(ret) jm_vector_copy(T)(ret, v) ; \
     return ret; \
@@ -299,7 +299,7 @@ static jm_vector(T)* jm_vector_clone(T)(jm_vector(T)* v) {	\
         \
 extern void jm_vector_free(T)(jm_vector(T) * a); \
     \
-extern size_t jm_vector_init(T)(jm_vector(T)* a, size_t size,jm_callbacks*);	\
+extern size_t jm_vector_init(T)(jm_vector(T)* a, size_t size,jm_callbacks*);    \
 \
 static void jm_vector_free_data(T)(jm_vector(T)* a) { \
     if(a) { \

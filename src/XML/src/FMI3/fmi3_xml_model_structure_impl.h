@@ -29,33 +29,33 @@ extern "C" {
 /** \brief Structure for keeping information about variable dependencies.
 */
 typedef struct fmi3_xml_dependencies_t {
-	int isRowMajor;	/** Information is stored in row-major format flag */
+    int isRowMajor;    /** Information is stored in row-major format flag */
 
-	/** Start index in dependency data for the corresponding row (isRowMajor=1) or column (isRowMajor = 0) */
-	jm_vector(size_t) startIndex;  
+    /** Start index in dependency data for the corresponding row (isRowMajor=1) or column (isRowMajor = 0) */
+    jm_vector(size_t) startIndex;  
 
-	/** Column indices (isRowMajor=1) or row indices (isRowMajor=0)
-		Note that indices are 1-based. 0 has a special meaning - depends on all.
-	*/
-	jm_vector(size_t) dependencyIndex;
-	jm_vector(char)   dependencyFactorKind;
+    /** Column indices (isRowMajor=1) or row indices (isRowMajor=0)
+        Note that indices are 1-based. 0 has a special meaning - depends on all.
+    */
+    jm_vector(size_t) dependencyIndex;
+    jm_vector(char)   dependencyFactorKind;
 } fmi3_xml_dependencies_t;
 
 fmi3_xml_dependencies_t* fmi3_xml_allocate_dependencies(jm_callbacks* cb);
 void fmi3_xml_free_dependencies(fmi3_xml_dependencies_t* dep);
-	
+
 struct fmi3_xml_model_structure_t {
-	jm_vector(jm_voidp) outputs;
-	jm_vector(jm_voidp) derivatives;
-	jm_vector(jm_voidp) discreteStates;
-	jm_vector(jm_voidp) initialUnknowns;
+    jm_vector(jm_voidp) outputs;
+    jm_vector(jm_voidp) derivatives;
+    jm_vector(jm_voidp) discreteStates;
+    jm_vector(jm_voidp) initialUnknowns;
 
     fmi3_xml_dependencies_t* outputDeps;
     fmi3_xml_dependencies_t* derivativeDeps;
     fmi3_xml_dependencies_t* discreteStateDeps;
     fmi3_xml_dependencies_t* initialUnknownDeps;
 
-	int isValidFlag;  /**\ brief The flag is used to signal if an error was discovered and the model structure is not usable */
+    int isValidFlag;  /**\ brief The flag is used to signal if an error was discovered and the model structure is not usable */
 };
 
 #ifdef __cplusplus

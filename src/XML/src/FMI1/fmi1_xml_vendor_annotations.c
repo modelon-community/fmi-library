@@ -49,8 +49,8 @@ const char* fmi1_xml_get_annotation_value(fmi1_xml_annotation_t* a) {
 
 int fmi1_xml_handle_VendorAnnotations(fmi1_xml_parser_context_t *context, const char* data) {
     if(!data) {
- 		jm_log_verbose(context->callbacks, module, "Parsing XML element VendorAnnotations");
-	}
+        jm_log_verbose(context->callbacks, module, "Parsing XML element VendorAnnotations");
+    }
     else {
         /* might give out a warning if(data[0] != 0) */
     }
@@ -103,7 +103,7 @@ int fmi1_xml_handle_Annotation(fmi1_xml_parser_context_t *context, const char* d
                 return -1;
             vallen = jm_vector_get_size(char)(bufValue);
             named.ptr = 0;
-			named.name = 0;
+            named.name = 0;
             pnamed = jm_vector_push_back(jm_named_ptr)(&vendor->annotations, named);
 
             if(pnamed) *pnamed = named = jm_named_alloc_v(bufName,sizeof(fmi1_xml_annotation_t)+vallen+1,sizeof(fmi1_xml_annotation_t)+vallen,context->callbacks);

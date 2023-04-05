@@ -80,27 +80,27 @@ typedef int (*fmi3_xml_q_eval_elementary_ft)(fmi3_xml_variable_t* var, fmi3_xml_
 FMI3_XML_Q_ELEMENTARY(FMI3_XML_Q_ELEMENTARY_DECLARE_EVAL)
 
 typedef enum fmi3_xml_q_term_enu_t {
-	fmi3_xml_q_term_enu_elementary,
-	fmi3_xml_q_term_enu_LP,
-	fmi3_xml_q_term_enu_RP,
-	fmi3_xml_q_term_enu_OR,
-	fmi3_xml_q_term_enu_AND,
-	fmi3_xml_q_term_enu_NOT,
-	fmi3_xml_q_term_enu_END,
-	fmi3_xml_q_term_enu_TRUE,
-	fmi3_xml_q_term_enu_FALSE
+    fmi3_xml_q_term_enu_elementary,
+    fmi3_xml_q_term_enu_LP,
+    fmi3_xml_q_term_enu_RP,
+    fmi3_xml_q_term_enu_OR,
+    fmi3_xml_q_term_enu_AND,
+    fmi3_xml_q_term_enu_NOT,
+    fmi3_xml_q_term_enu_END,
+    fmi3_xml_q_term_enu_TRUE,
+    fmi3_xml_q_term_enu_FALSE
 } fmi3_xml_q_terminal_enu_t;
 
 
 struct fmi3_xml_q_terminal_t {
-	fmi3_xml_q_terminal_enu_t kind;
+    fmi3_xml_q_terminal_enu_t kind;
 
-	fmi3_xml_elementary_enu_t specific;
+    fmi3_xml_elementary_enu_t specific;
 
-	int param_i;
-	double param_d;
-	void* param_p;
-	char* param_str;
+    int param_i;
+    double param_d;
+    void* param_p;
+    char* param_str;
 
 };
 
@@ -117,20 +117,20 @@ struct fmi3_xml_q_expression_t {
 
     fmi3_xml_q_terminal_t termFalse, termTrue;
     fmi3_xml_q_term_vt terms;
-	jm_vector(char) strbuf;
+    jm_vector(char) strbuf;
 };
 
 struct fmi3_xml_q_context_t {
     jm_vector(jm_name_ID_map_t) elementary_map;
 
-	jm_string query;
+    jm_string query;
 
-	size_t qlen;
-	int curCh;
+    size_t qlen;
+    int curCh;
 
-	jm_vector(char) buf;
+    jm_vector(char) buf;
 
-	fmi3_xml_q_expression_t expr;
+    fmi3_xml_q_expression_t expr;
 };
 
 void fmi3_xml_q_init_context(fmi3_xml_q_context_t*, jm_callbacks* cb);

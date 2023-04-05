@@ -34,12 +34,12 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 /* FMI 2.0 Common Functions */
 FMI2_Export const char* fmi2GetVersion()
 {
-	return fmi_get_version();
+    return fmi_get_version();
 }
 
 FMI2_Export fmi2Status fmi2SetDebugLogging(fmi2Component c, fmi2Boolean loggingOn, size_t n , const fmi2String cat[])
 {
-	return fmi_set_debug_logging(c, loggingOn);
+    return fmi_set_debug_logging(c, loggingOn);
 }
 
 FMI2_Export fmi2Component fmi2Instantiate(fmi2String instanceName,
@@ -53,7 +53,7 @@ FMI2_Export fmi2Component fmi2Instantiate(fmi2String instanceName,
 
 FMI2_Export void fmi2FreeInstance(fmi2Component c)
 {
-	fmi_free_instance(c);
+    fmi_free_instance(c);
 }
 
 FMI2_Export fmi2Status fmi2SetupExperiment(fmi2Component c, 
@@ -77,48 +77,48 @@ FMI2_Export fmi2Status fmi2ExitInitializationMode(fmi2Component c)
 
 FMI2_Export fmi2Status fmi2GetReal(fmi2Component c, const fmi2ValueReference vr[], size_t nvr, fmi2Real value[])
 {
-	return fmi_get_real(c, vr, nvr, value);
+    return fmi_get_real(c, vr, nvr, value);
 }
 
 FMI2_Export fmi2Status fmi2GetInteger(fmi2Component c, const fmi2ValueReference vr[], size_t nvr, fmi2Integer value[])
 {
-	return fmi_get_integer(c, vr, nvr, value);
+    return fmi_get_integer(c, vr, nvr, value);
 }
 
 FMI2_Export fmi2Status fmi2GetBoolean(fmi2Component c, const fmi2ValueReference vr[], size_t nvr, fmi2Boolean value[])
 {
-	return fmi_get_boolean(c, vr, nvr, value);
+    return fmi_get_boolean(c, vr, nvr, value);
 }
 
 FMI2_Export fmi2Status fmi2GetString(fmi2Component c, const fmi2ValueReference vr[], size_t nvr, fmi2String  value[])
 {
-	return fmi_get_string(c, vr, nvr, value);
+    return fmi_get_string(c, vr, nvr, value);
 }
 
 FMI2_Export fmi2Status fmi2SetReal(fmi2Component c, const fmi2ValueReference vr[], size_t nvr, const fmi2Real value[])
 {
-	return fmi_set_real(c, vr, nvr, value);
+    return fmi_set_real(c, vr, nvr, value);
 }
 
 FMI2_Export fmi2Status fmi2SetInteger(fmi2Component c, const fmi2ValueReference vr[], size_t nvr, const fmi2Integer value[])
 {
-	return fmi_set_integer(c, vr, nvr, value);
+    return fmi_set_integer(c, vr, nvr, value);
 }
 
 FMI2_Export fmi2Status fmi2SetBoolean(fmi2Component c, const fmi2ValueReference vr[], size_t nvr, const fmi2Boolean value[])
 {
-	return fmi_set_boolean(c, vr, nvr, value);
+    return fmi_set_boolean(c, vr, nvr, value);
 }
 
 FMI2_Export fmi2Status fmi2SetString(fmi2Component c, const fmi2ValueReference vr[], size_t nvr, const fmi2String  value[])
 {
-	return fmi_set_string(c, vr, nvr, value);
+    return fmi_set_string(c, vr, nvr, value);
 }
 
 /* FMI 2.0 ME Functions */
 FMI2_Export const char* fmi2GetTypesPlatform()
 {
-	return fmi_get_model_types_platform();
+    return fmi_get_model_types_platform();
 }
 
 FMI2_Export fmi2Status fmi2EnterEventMode(fmi2Component c)
@@ -138,12 +138,12 @@ FMI2_Export fmi2Status fmi2EnterContinuousTimeMode(fmi2Component c)
 
 FMI2_Export fmi2Status fmi2SetTime(fmi2Component c, fmi2Real fmitime)
 {
-	return fmi_set_time(c, fmitime);
+    return fmi_set_time(c, fmitime);
 }
 
 FMI2_Export fmi2Status fmi2SetContinuousStates(fmi2Component c, const fmi2Real x[], size_t nx)
 {
-	return fmi_set_continuous_states(c, x, nx);
+    return fmi_set_continuous_states(c, x, nx);
 }
 
 FMI2_Export fmi2Status fmi2CompletedIntegratorStep(fmi2Component c,
@@ -156,30 +156,30 @@ FMI2_Export fmi2Status fmi2CompletedIntegratorStep(fmi2Component c,
 
 FMI2_Export fmi2Status fmi2GetDerivatives(fmi2Component c, fmi2Real derivatives[] , size_t nx)
 {
-	return fmi_get_derivatives(c, derivatives, nx);
+    return fmi_get_derivatives(c, derivatives, nx);
 }
 
 FMI2_Export fmi2Status fmi2GetEventIndicators(fmi2Component c, fmi2Real eventIndicators[], size_t ni)
 {
-	return fmi_get_event_indicators(c, eventIndicators, ni);
+    return fmi_get_event_indicators(c, eventIndicators, ni);
 }
 
 FMI2_Export fmi2Status fmi2GetContinuousStates(fmi2Component c, fmi2Real states[], size_t nx)
 {
-	return fmi_get_continuous_states(c, states, nx);
+    return fmi_get_continuous_states(c, states, nx);
 }
 
 FMI2_Export fmi2Status fmi2GetNominalsOfContinuousStates(fmi2Component c, fmi2Real x_nominal[], size_t nx)
 {
-	return fmi_get_nominals_of_continuousstates(c, x_nominal, nx);
+    return fmi_get_nominals_of_continuousstates(c, x_nominal, nx);
 }
 
 FMI2_Export fmi2Status fmi2Terminate(fmi2Component c)
 {
-	return fmi_terminate(c);
+    return fmi_terminate(c);
 }
 
 FMI2_Export fmi2Status fmi2Reset(fmi2Component c)
 {
-	return fmi_reset(c);
+    return fmi_reset(c);
 }

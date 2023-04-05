@@ -27,9 +27,9 @@
 
 void do_exit(int code)
 {
-	printf("Press any key to exit\n");
-	/* getchar(); */
-	exit(code);
+    printf("Press any key to exit\n");
+    /* getchar(); */
+    exit(code);
 }
 
 /* Logger function */
@@ -44,30 +44,30 @@ void importlogger(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_leve
  */
 int main(int argc, char *argv[])
 {
-	jm_status_enu_t status;
-	jm_callbacks callbacks;
-	
-	const char* files_to_zip[] = {COMPRESS_DUMMY_FILE_PATH_SRC};
-	int n_files_to_zip = 1;
+    jm_status_enu_t status;
+    jm_callbacks callbacks;
 
-	callbacks.malloc = malloc;
+    const char* files_to_zip[] = {COMPRESS_DUMMY_FILE_PATH_SRC};
+    int n_files_to_zip = 1;
+
+    callbacks.malloc = malloc;
     callbacks.calloc = calloc;
     callbacks.realloc = realloc;
     callbacks.free = free;
     callbacks.logger = importlogger;
-	callbacks.log_level = jm_log_level_debug;
+    callbacks.log_level = jm_log_level_debug;
 
     callbacks.context = 0;
 
-	status = fmi_zip_zip(COMPRESS_DUMMY_FILE_PATH_DIST, n_files_to_zip, files_to_zip, &callbacks);
+    status = fmi_zip_zip(COMPRESS_DUMMY_FILE_PATH_DIST, n_files_to_zip, files_to_zip, &callbacks);
 
-	if (status == jm_status_error) {
-		printf("Failed to compress the file\n");
-		do_exit(CTEST_RETURN_FAIL);
-	} else {
-		printf("Succesfully compressed the file\n");
-		do_exit(CTEST_RETURN_SUCCESS);
-	}
+    if (status == jm_status_error) {
+        printf("Failed to compress the file\n");
+        do_exit(CTEST_RETURN_FAIL);
+    } else {
+        printf("Succesfully compressed the file\n");
+        do_exit(CTEST_RETURN_SUCCESS);
+    }
     return 0;
 }
 

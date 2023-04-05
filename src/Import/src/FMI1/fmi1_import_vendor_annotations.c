@@ -18,7 +18,7 @@
 #include "fmi1_import_impl.h"
 
 const char* fmi1_import_get_vendor_name(fmi1_import_vendor_t* v) {
-	return fmi1_xml_get_vendor_name(v);
+    return fmi1_xml_get_vendor_name(v);
 }
 
 unsigned int  fmi1_import_get_number_of_vendor_annotations(fmi1_import_vendor_t* v) {
@@ -26,13 +26,13 @@ unsigned int  fmi1_import_get_number_of_vendor_annotations(fmi1_import_vendor_t*
 }
 
 fmi1_import_annotation_t* fmi1_import_get_vendor_annotation(fmi1_import_vendor_t* v, unsigned int  index) {
-	return fmi1_xml_get_vendor_annotation(v, index);
+    return fmi1_xml_get_vendor_annotation(v, index);
 }
 
 const char* fmi1_import_get_annotation_name(fmi1_import_annotation_t* a) {
-	return fmi1_xml_get_annotation_name(a);
+    return fmi1_xml_get_annotation_name(a);
 }
 
 const char* fmi1_import_get_annotation_value(fmi1_import_annotation_t* a) {
-	return fmi1_xml_get_annotation_value(a);
+    return fmi1_xml_get_annotation_value(a);
 }

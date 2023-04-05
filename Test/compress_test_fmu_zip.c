@@ -26,42 +26,42 @@ static void importlogger(jm_callbacks* c, jm_string module, jm_log_level_enu_t l
 
 int main(int argc, char *argv[])
 {
-	jm_status_enu_t status;
-	jm_callbacks callbacks;
-	char* output_name;	
-	const char** files_to_zip;
-	int i, n_files_to_zip;
+    jm_status_enu_t status;
+    jm_callbacks callbacks;
+    char* output_name;
+    const char** files_to_zip;
+    int i, n_files_to_zip;
 
-	callbacks.malloc = malloc;
+    callbacks.malloc = malloc;
     callbacks.calloc = calloc;
     callbacks.realloc = realloc;
     callbacks.free = free;
     callbacks.logger = importlogger;
-	callbacks.log_level = jm_log_level_warning;
+    callbacks.log_level = jm_log_level_warning;
 
     callbacks.context = 0;
 
-	if (argc < 3) {
-		printf("Not enought input arguments\n");
-		return 1;
-	}
+    if (argc < 3) {
+        printf("Not enought input arguments\n");
+        return 1;
+    }
 
-	output_name = argv[1];
-	files_to_zip = (const char**)&argv[2];
-	n_files_to_zip = argc - 2;
+    output_name = argv[1];
+    files_to_zip = (const char**)&argv[2];
+    n_files_to_zip = argc - 2;
 
-	printf("Will compress following files: \n");
-	for (i = 0; i < n_files_to_zip; i++) {
-		printf( "\t%s\n", files_to_zip[i]);
-	}
-	status = fmi_zip_zip(output_name, n_files_to_zip, files_to_zip, &callbacks);
+    printf("Will compress following files: \n");
+    for (i = 0; i < n_files_to_zip; i++) {
+        printf( "\t%s\n", files_to_zip[i]);
+    }
+    status = fmi_zip_zip(output_name, n_files_to_zip, files_to_zip, &callbacks);
 
-	if (status == jm_status_error) {
-		printf("Failed to compress the file\n");
-		return 1;
-	} else {
-		printf("Succesfully compressed the file\n");
-		return 0;
-	}	
-	
+    if (status == jm_status_error) {
+        printf("Failed to compress the file\n");
+        return 1;
+    } else {
+        printf("Succesfully compressed the file\n");
+        return 0;
+    }
+
 }

@@ -29,7 +29,7 @@ fmi2_xml_display_unit_t* fmi2_xml_get_type_display_unit(fmi2_xml_real_typedef_t*
     fmi2_xml_variable_typedef_t* vt = (void*)t;
     fmi2_xml_real_type_props_t * props = (fmi2_xml_real_type_props_t*)vt->super.nextLayer;
     fmi2_xml_display_unit_t* du = props->displayUnit;
-	if(!du || (&du->baseUnit->defaultDisplay == du)) return 0;
+    if(!du || (&du->baseUnit->defaultDisplay == du)) return 0;
     return du;
 }
 
@@ -47,7 +47,7 @@ const char* fmi2_xml_get_type_name(fmi2_xml_variable_typedef_t* t) {
 }
 
 const char* fmi2_xml_get_type_description(fmi2_xml_variable_typedef_t* t) {
-	const char * ret = t->description;
+    const char * ret = t->description;
     return (ret ? ret : "");
 }
 
@@ -71,26 +71,26 @@ fmi2_xml_enumeration_typedef_t* fmi2_xml_get_type_as_enum(fmi2_xml_variable_type
 
 const char* fmi2_xml_get_type_quantity(fmi2_xml_variable_typedef_t* t) {
     fmi2_xml_variable_type_base_t* props = t->super.nextLayer;
-	const char * ret;
+    const char * ret;
     if(props->structKind != fmi2_xml_type_struct_enu_props) return 0;
     switch(props->baseType) {
     case fmi2_base_type_real:
         ret = ((fmi2_xml_real_type_props_t*)props)->quantity;
-		break;
+        break;
     case fmi2_base_type_int:
         ret = ((fmi2_xml_integer_type_props_t*)props)->quantity;
-		break;
+        break;
     case fmi2_base_type_bool:
         return 0;
     case fmi2_base_type_str:
         return 0;
     case fmi2_base_type_enum:
-		ret = ((fmi2_xml_enum_variable_props_t*)props)->quantity;
-		break;
+        ret = ((fmi2_xml_enum_variable_props_t*)props)->quantity;
+        break;
     default:
         return 0;
     }
-	return (ret ? ret : 0);
+    return (ret ? ret : 0);
 }
 
 double fmi2_xml_get_real_type_min(fmi2_xml_real_typedef_t* t) {
@@ -122,13 +122,13 @@ fmi2_xml_unit_t* fmi2_xml_get_real_type_unit(fmi2_xml_real_typedef_t* t) {
 int fmi2_xml_get_real_type_is_relative_quantity(fmi2_xml_real_typedef_t* t) {
     fmi2_xml_variable_typedef_t* vt = (void*)t;
     fmi2_xml_real_type_props_t* props = (fmi2_xml_real_type_props_t*)(vt->super.nextLayer);
-	return props->super.isRelativeQuantity;
+    return props->super.isRelativeQuantity;
 }
 
 int fmi2_xml_get_real_type_is_unbounded(fmi2_xml_real_typedef_t* t) {
     fmi2_xml_variable_typedef_t* vt = (void*)t;
     fmi2_xml_real_type_props_t* props = (fmi2_xml_real_type_props_t*)(vt->super.nextLayer);
-	return props->super.isUnbounded;
+    return props->super.isUnbounded;
 }
 
 
@@ -147,20 +147,20 @@ fmi2_integer_t fmi2_xml_get_integer_type_max(fmi2_xml_integer_typedef_t* t){
 int fmi2_xml_get_enum_type_min(fmi2_xml_enumeration_typedef_t* t){
     fmi2_xml_variable_typedef_t* vt = (void*)t;
     fmi2_xml_enum_typedef_props_t* props = (fmi2_xml_enum_typedef_props_t*)(vt->super.nextLayer);
-	fmi2_xml_enum_type_item_t* item;
-	if(jm_vector_get_size(jm_named_ptr)(&props->enumItems) == 0) return 0;
-	item = jm_vector_get_item(jm_named_ptr)(&props->enumItems, 0).ptr;
-	return item->value;
+    fmi2_xml_enum_type_item_t* item;
+    if(jm_vector_get_size(jm_named_ptr)(&props->enumItems) == 0) return 0;
+    item = jm_vector_get_item(jm_named_ptr)(&props->enumItems, 0).ptr;
+    return item->value;
 }
 
 int fmi2_xml_get_enum_type_max(fmi2_xml_enumeration_typedef_t* t){
     fmi2_xml_variable_typedef_t* vt = (void*)t;
     fmi2_xml_enum_typedef_props_t* props = (fmi2_xml_enum_typedef_props_t*)(vt->super.nextLayer);
-	jm_named_ptr* itemp = jm_vector_get_lastp(jm_named_ptr)(&props->enumItems);
-	fmi2_xml_enum_type_item_t* item;
-	if(!itemp) return 0;
-	item = itemp->ptr;
-	return item->value;
+    jm_named_ptr* itemp = jm_vector_get_lastp(jm_named_ptr)(&props->enumItems);
+    fmi2_xml_enum_type_item_t* item;
+    if(!itemp) return 0;
+    item = itemp->ptr;
+    return item->value;
 }
 
 unsigned int  fmi2_xml_get_enum_type_size(fmi2_xml_enumeration_typedef_t* t) {
@@ -179,22 +179,22 @@ const char* fmi2_xml_get_enum_type_item_name(fmi2_xml_enumeration_typedef_t* t, 
 int fmi2_xml_get_enum_type_item_value(fmi2_xml_enumeration_typedef_t* t, unsigned int  item) {
     fmi2_xml_variable_typedef_t* vt = (fmi2_xml_variable_typedef_t*)(void*)t;
     fmi2_xml_enum_typedef_props_t* props = (fmi2_xml_enum_typedef_props_t*)(vt->super.nextLayer);
-	fmi2_xml_enum_type_item_t* eitem;
+    fmi2_xml_enum_type_item_t* eitem;
     if((item == 0) || (item > fmi2_xml_get_enum_type_size(t) )) return  0;
-	eitem = jm_vector_get_item(jm_named_ptr)(&props->enumItems,item-1).ptr;
+    eitem = jm_vector_get_item(jm_named_ptr)(&props->enumItems,item-1).ptr;
     return eitem->value;
 }
 
 const char* fmi2_xml_get_enum_type_value_name(fmi2_xml_enumeration_typedef_t* t, int value) {
     fmi2_xml_variable_typedef_t* vt = (fmi2_xml_variable_typedef_t*)(void*)t;
     fmi2_xml_enum_typedef_props_t* props = (fmi2_xml_enum_typedef_props_t*)(vt->super.nextLayer);
-	fmi2_xml_enum_type_item_t keyitem;
-	jm_named_ptr* itemp, key;
-	keyitem.value = value;
-	key.ptr = &keyitem;
-	itemp = jm_vector_bsearch(jm_named_ptr)(&props->enumItems, &key, fmi1_xml_compare_enum_val);
+    fmi2_xml_enum_type_item_t keyitem;
+    jm_named_ptr* itemp, key;
+    keyitem.value = value;
+    key.ptr = &keyitem;
+    itemp = jm_vector_bsearch(jm_named_ptr)(&props->enumItems, &key, fmi1_xml_compare_enum_val);
     if(!itemp) return  0;
-	return itemp->name;
+    return itemp->name;
 }
 
 
@@ -212,8 +212,8 @@ void fmi2_xml_init_variable_type_base(fmi2_xml_variable_type_base_t* type, fmi2_
     type->next = 0;
     type->structKind = kind;
     type->baseType = baseType;
-	type->isRelativeQuantity = 0;
-	type->isUnbounded = 0;
+    type->isRelativeQuantity = 0;
+    type->isUnbounded = 0;
 }
 
 void fmi2_xml_init_real_type_properties(fmi2_xml_real_type_props_t* type) {
@@ -234,13 +234,13 @@ void fmi2_xml_init_integer_type_properties(fmi2_xml_integer_type_props_t* type) 
 
 void fmi2_xml_init_enumeration_variable_properties(fmi2_xml_enum_variable_props_t* type, jm_callbacks* cb) {
     fmi2_xml_init_variable_type_base(&type->super, fmi2_xml_type_struct_enu_props,fmi2_base_type_enum);
-	type->quantity = 0;
+    type->quantity = 0;
     type->typeMin = 0;
     type->typeMax = 0;
 }
 
 void fmi2_xml_init_enumeration_type_properties(fmi2_xml_enum_typedef_props_t* type, jm_callbacks* cb) {
-	fmi2_xml_init_enumeration_variable_properties(&type->base, cb);
+    fmi2_xml_init_enumeration_variable_properties(&type->base, cb);
     jm_vector_init(jm_named_ptr)(&type->enumItems,0,cb);
 }
 
@@ -275,16 +275,16 @@ void fmi2_xml_free_type_definitions_data(fmi2_xml_type_definitions_t* td) {
         while(cur) {
             next = cur->next;
             if(    (cur->baseType == fmi2_base_type_enum) 
-				&& (cur->structKind == fmi2_xml_type_struct_enu_props)
-				&& (cur->nextLayer == 0)
-				) {
+                && (cur->structKind == fmi2_xml_type_struct_enu_props)
+                && (cur->nextLayer == 0)
+                ) {
                 fmi2_xml_enum_typedef_props_t* props = (fmi2_xml_enum_typedef_props_t*)cur;
                 fmi2_xml_free_enumeration_type_props(props);
             }
             cb->free(cur);
             cur = next;
         }
-		td->typePropsList = 0;
+        td->typePropsList = 0;
     }
 
     jm_named_vector_free_data(&td->typeDefinitions);
@@ -292,7 +292,7 @@ void fmi2_xml_free_type_definitions_data(fmi2_xml_type_definitions_t* td) {
 
 int fmi2_xml_handle_TypeDefinitions(fmi2_xml_parser_context_t *context, const char* data) {
     if(!data) {
-		jm_log_verbose(context->callbacks, module, "Parsing XML element TypeDefinitions");
+        jm_log_verbose(context->callbacks, module, "Parsing XML element TypeDefinitions");
     }
     else {
         fmi2_xml_type_definitions_t* defs =  &context->modelDescription->typeDefinitions;
@@ -320,7 +320,7 @@ int fmi2_xml_handle_SimpleType(fmi2_xml_parser_context_t *context, const char* d
                 fmi2_xml_set_attr_string(context, fmi2_xml_elmID_SimpleType, fmi_attr_id_description, 0, bufDescr)
                     ) return -1;
             named.ptr = 0;
-			named.name = 0;
+            named.name = 0;
             pnamed = jm_vector_push_back(jm_named_ptr)(&td->typeDefinitions,named);
             if(pnamed) {
                 fmi2_xml_variable_typedef_t dummy;
@@ -423,7 +423,7 @@ fmi2_xml_real_type_props_t* fmi2_xml_parse_real_type_properties(fmi2_xml_parser_
     }
     if(    /*    <xs:attribute name="relativeQuantity" type="xs:boolean" default="false"> */
             fmi2_xml_set_attr_boolean(context, elmID, fmi_attr_id_relativeQuantity, 0, &relQuanBuf, 0) ||
-		    /*    <xs:attribute name="unbounded" type="xs:boolean" default="false"> */
+            /*    <xs:attribute name="unbounded" type="xs:boolean" default="false"> */
             fmi2_xml_set_attr_boolean(context, elmID, fmi_attr_id_unbounded, 0, &unboundedBuf, 0) ||
             /* <xs:attribute name="min" type="xs:double"/> */
             fmi2_xml_set_attr_double(context, elmID, fmi_attr_id_min, 0, &props->typeMin, -DBL_MAX) ||
@@ -432,8 +432,8 @@ fmi2_xml_real_type_props_t* fmi2_xml_parse_real_type_properties(fmi2_xml_parser_
             /*  <xs:attribute name="nominal" type="xs:double"/> */
             fmi2_xml_set_attr_double(context, elmID, fmi_attr_id_nominal, 0, &props->typeNominal, 1)
             ) return 0;
-	props->super.isRelativeQuantity = (relQuanBuf) ? 1:0;
-	props->super.isUnbounded = (unboundedBuf) ? 1 : 0;
+    props->super.isRelativeQuantity = (relQuanBuf) ? 1:0;
+    props->super.isUnbounded = (unboundedBuf) ? 1 : 0;
     return props;
 }
 
@@ -557,9 +557,9 @@ int fmi2_xml_handle_Enumeration(fmi2_xml_parser_context_t *context, const char* 
         jm_vector(char)* bufQuantity = fmi2_xml_reserve_parse_buffer(context,3,100);
 
         props = (fmi2_xml_enum_typedef_props_t*)fmi2_xml_alloc_variable_type_props(
-													&md->typeDefinitions, 
-													&md->typeDefinitions.defaultEnumType.base.super,
-													sizeof(fmi2_xml_enum_typedef_props_t));
+                                                    &md->typeDefinitions, 
+                                                    &md->typeDefinitions.defaultEnumType.base.super,
+                                                    sizeof(fmi2_xml_enum_typedef_props_t));
 
         if(props) {
             /* the init call will override the 'next' field which has been set when the properties were allocated,
@@ -583,22 +583,22 @@ int fmi2_xml_handle_Enumeration(fmi2_xml_parser_context_t *context, const char* 
         type->super.baseType = fmi2_base_type_enum;
         type->super.nextLayer = &props->base.super;
     } else {
-		/* sort enum items, check that there are no duplicates */
+        /* sort enum items, check that there are no duplicates */
         fmi2_xml_enum_type_item_t *min, *max;
-		jm_named_ptr named = jm_vector_get_last(jm_named_ptr)(&context->modelDescription->typeDefinitions.typeDefinitions);
-		fmi2_xml_variable_typedef_t* type = named.ptr;
-		fmi2_xml_enum_typedef_props_t * props = (fmi2_xml_enum_typedef_props_t *)type->super.nextLayer;
-		jm_vector(jm_named_ptr)* items = &props->enumItems;
-		size_t i, n = jm_vector_get_size(jm_named_ptr)(items);
-		jm_vector_qsort(jm_named_ptr)(items, fmi1_xml_compare_enum_val);
-		for(i = 1; i < n; i++) {
-			fmi2_xml_enum_type_item_t* a = jm_vector_get_itemp(jm_named_ptr)(items, i-1)->ptr;
-			fmi2_xml_enum_type_item_t* b = jm_vector_get_itemp(jm_named_ptr)(items, i)->ptr;
-			if(a->value == b->value) {
-				jm_log_error(context->callbacks, module, "Enum items '%s' and '%s' within enumeration '%s' have the same value %d",
-					a->itemName, b->itemName, type->typeName, a->value);
-			}
-		}
+        jm_named_ptr named = jm_vector_get_last(jm_named_ptr)(&context->modelDescription->typeDefinitions.typeDefinitions);
+        fmi2_xml_variable_typedef_t* type = named.ptr;
+        fmi2_xml_enum_typedef_props_t * props = (fmi2_xml_enum_typedef_props_t *)type->super.nextLayer;
+        jm_vector(jm_named_ptr)* items = &props->enumItems;
+        size_t i, n = jm_vector_get_size(jm_named_ptr)(items);
+        jm_vector_qsort(jm_named_ptr)(items, fmi1_xml_compare_enum_val);
+        for(i = 1; i < n; i++) {
+            fmi2_xml_enum_type_item_t* a = jm_vector_get_itemp(jm_named_ptr)(items, i-1)->ptr;
+            fmi2_xml_enum_type_item_t* b = jm_vector_get_itemp(jm_named_ptr)(items, i)->ptr;
+            if(a->value == b->value) {
+                jm_log_error(context->callbacks, module, "Enum items '%s' and '%s' within enumeration '%s' have the same value %d",
+                    a->itemName, b->itemName, type->typeName, a->value);
+            }
+        }
 
         /* Set type min/max to smallest/largest enum value. */
         min = jm_vector_get_itemp(jm_named_ptr)(items, 0)->ptr;
@@ -620,10 +620,10 @@ int fmi2_xml_handle_Item(fmi2_xml_parser_context_t *context, const char* data) {
             fmi2_xml_enum_type_item_t * item;
             jm_named_ptr named, *pnamed;
             size_t descrlen;
-			int value;
+            int value;
 
             assert((enumProps->base.super.structKind == fmi2_xml_type_struct_enu_props) 
-				&& (enumProps->base.super.baseType == fmi2_base_type_enum));
+                && (enumProps->base.super.baseType == fmi2_base_type_enum));
 
             if(!bufName || !bufDescr ||
             /*  <xs:attribute name="name" type="xs:normalizedString" use="required"/> */
@@ -631,12 +631,12 @@ int fmi2_xml_handle_Item(fmi2_xml_parser_context_t *context, const char* data) {
             /* <xs:attribute name="description" type="xs:string"/> */
                 fmi2_xml_set_attr_string(context, fmi2_xml_elmID_Item, fmi_attr_id_description, 0, bufDescr) ||
             /* <xs:attribute name="value" type="xs:int" use="required"> */
-				fmi2_xml_set_attr_int(context, fmi2_xml_elmID_Item, fmi_attr_id_value, 1, &value, 0)
+                fmi2_xml_set_attr_int(context, fmi2_xml_elmID_Item, fmi_attr_id_value, 1, &value, 0)
                     )
                 return -1;
             descrlen = jm_vector_get_size(char)(bufDescr);
             named.ptr = 0;
-			named.name = 0;
+            named.name = 0;
             pnamed = jm_vector_push_back(jm_named_ptr)(&enumProps->enumItems, named);
 
             if(pnamed) *pnamed = named = jm_named_alloc_v(bufName,sizeof(fmi2_xml_enum_type_item_t)+descrlen+1,sizeof(fmi2_xml_enum_type_item_t)+descrlen,context->callbacks);
@@ -646,7 +646,7 @@ int fmi2_xml_handle_Item(fmi2_xml_parser_context_t *context, const char* data) {
                 return -1;
             }
             item->itemName = named.name;
-			item->value = value;
+            item->value = value;
             if(descrlen)
                 memcpy(item->itemDesciption,jm_vector_get_itemp(char)(bufDescr,0), descrlen);
             item->itemDesciption[descrlen] = 0;

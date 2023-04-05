@@ -23,11 +23,11 @@ extern "C" {
 #endif
 
 /** \file jm_named_ptr.h Definition of ::jm_named_ptr and supporting functions
-	*
-	* \addtogroup jm_utils
-	* @{
-		\addtogroup jm_named_ptr
-	* @}
+    *
+    * \addtogroup jm_utils
+    * @{
+        \addtogroup jm_named_ptr
+    * @}
 */
 /** \addtogroup jm_named_ptr Named objects
  @{

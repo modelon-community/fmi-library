@@ -31,7 +31,7 @@ extern "C" {
 /**
  \addtogroup  fmi1_import
  @{
-	\defgroup  fmi1_import_varlist Handling of variable lists
+    \defgroup  fmi1_import_varlist Handling of variable lists
  @}
 */
 
@@ -46,12 +46,12 @@ extern "C" {
 FMILIB_EXPORT fmi1_import_variable_list_t* fmi1_import_alloc_variable_list(fmi1_import_t* fmu, size_t size);
 
 /**  \brief Free a variable list. Note that variable lists are allocated dynamically and must be freed when not needed any longer 
-	\param vl A variable list.
+    \param vl A variable list.
 */
 FMILIB_EXPORT void fmi1_import_free_variable_list(fmi1_import_variable_list_t* vl);
 
 /** \brief Make a copy of the list.
-	\param vl A variable list.
+    \param vl A variable list.
 */
 FMILIB_EXPORT fmi1_import_variable_list_t* fmi1_import_clone_variable_list(fmi1_import_variable_list_t* vl);
 

@@ -20,11 +20,11 @@
 #include <fmilib_config.h>
 
 #include "fmi2_types.h"
-/**	\file fmi2_function_types.h
-	Mapping for the standard FMI 2.0 functions into fmi2_ namespace.
+/**    \file fmi2_function_types.h
+    Mapping for the standard FMI 2.0 functions into fmi2_ namespace.
 
-	\addtogroup fmi2_utils
-	@{
+    \addtogroup fmi2_utils
+    @{
 */
 
 #ifdef __cplusplus
@@ -38,12 +38,12 @@ extern "C" {
 
 /** FMI 2.0 status codes */
 typedef enum {
-	fmi2_status_ok,
-	fmi2_status_warning,
-	fmi2_status_discard,
-	fmi2_status_error,
-	fmi2_status_fatal,
-	fmi2_status_pending
+    fmi2_status_ok,
+    fmi2_status_warning,
+    fmi2_status_discard,
+    fmi2_status_error,
+    fmi2_status_fatal,
+    fmi2_status_pending
 } fmi2_status_t;
 
 typedef enum {
@@ -65,11 +65,11 @@ typedef void  (*fmi2_step_finished_ft)          (fmi2_component_environment_t en
 
 /** The FMI 2.0 callbacks */
 typedef struct {
-	fmi2_callback_logger_ft         logger;
-	fmi2_callback_allocate_memory_ft allocateMemory;
-	fmi2_callback_free_memory_ft     freeMemory;
-	fmi2_step_finished_ft           stepFinished;
-	fmi2_component_environment_t    componentEnvironment;
+    fmi2_callback_logger_ft         logger;
+    fmi2_callback_allocate_memory_ft allocateMemory;
+    fmi2_callback_free_memory_ft     freeMemory;
+    fmi2_step_finished_ft           stepFinished;
+    fmi2_component_environment_t    componentEnvironment;
 } fmi2_callback_functions_t;
 
 /** Event info structure as used in FMI 2.0 ME */
@@ -184,7 +184,7 @@ Types for_functions for FMI for Co-_simulation
    typedef fmi2_status_t (*fmi2_get_boolean_status_ft)(fmi2_component_t, const fmi2_status_kind_t, fmi2_boolean_t*);
    typedef fmi2_status_t (*fmi2_get_string_status_ft) (fmi2_component_t, const fmi2_status_kind_t, fmi2_string_t* );
 
-/**	@}
+/**    @}
 */
 
 #ifdef __cplusplus

@@ -63,7 +63,7 @@ jm_vector(jm_voidp)* fmi3_xml_get_initial_unknowns(fmi3_xml_model_structure_t* m
  * @param factorKind - outputs a pointer to the factor kind data. The values can be converted to ::fmi3_dependency_factor_kind_enu_t 
  */ 
 void fmi3_xml_get_outputs_dependencies(fmi3_xml_model_structure_t* ms, size_t** startIndex, size_t** dependency, char** factorKind);
-	 	
+     
 /** \brief Get dependency information in row-compressed format. 
  * @param startIndex - outputs a pointer to an array of start indices (size of array is number of derivatives + 1).
  *                     First element is zero, last is equal to the number of elements in the dependency and factor arrays. 

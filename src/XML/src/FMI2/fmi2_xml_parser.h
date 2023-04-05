@@ -35,7 +35,7 @@ extern "C" {
     EXPAND_XML_ATTRNAME(fmiVersion) \
     EXPAND_XML_ATTRNAME(factor) \
     EXPAND_XML_ATTRNAME(offset) \
-	FMI2_SI_BASE_UNITS(EXPAND_XML_ATTRNAME) \
+    FMI2_SI_BASE_UNITS(EXPAND_XML_ATTRNAME) \
     EXPAND_XML_ATTRNAME(name) \
     EXPAND_XML_ATTRNAME(description) \
     EXPAND_XML_ATTRNAME(quantity) \
@@ -43,7 +43,7 @@ extern "C" {
     EXPAND_XML_ATTRNAME(displayUnit) \
     EXPAND_XML_ATTRNAME(relativeQuantity) \
     EXPAND_XML_ATTRNAME(unbounded) \
-	EXPAND_XML_ATTRNAME(min) \
+    EXPAND_XML_ATTRNAME(min) \
     EXPAND_XML_ATTRNAME(max) \
     EXPAND_XML_ATTRNAME(nominal) \
     EXPAND_XML_ATTRNAME(declaredType) \
@@ -78,13 +78,13 @@ extern "C" {
     EXPAND_XML_ATTRNAME(input) \
     EXPAND_XML_ATTRNAME(needsExecutionTool) \
     EXPAND_XML_ATTRNAME(canHandleVariableCommunicationStepSize) \
-	EXPAND_XML_ATTRNAME(completedIntegratorStepNotNeeded) \
-	EXPAND_XML_ATTRNAME(canBeInstantiatedOnlyOncePerProcess) \
-	EXPAND_XML_ATTRNAME(canNotUseMemoryManagementFunctions) \
-	EXPAND_XML_ATTRNAME(canGetAndSetFMUstate) \
-	EXPAND_XML_ATTRNAME(canSerializeFMUstate) \
-	EXPAND_XML_ATTRNAME(providesDirectionalDerivatives) /* used for verification: checks that this attribute does not exist */ \
-	EXPAND_XML_ATTRNAME(providesDirectionalDerivative) \
+    EXPAND_XML_ATTRNAME(completedIntegratorStepNotNeeded) \
+    EXPAND_XML_ATTRNAME(canBeInstantiatedOnlyOncePerProcess) \
+    EXPAND_XML_ATTRNAME(canNotUseMemoryManagementFunctions) \
+    EXPAND_XML_ATTRNAME(canGetAndSetFMUstate) \
+    EXPAND_XML_ATTRNAME(canSerializeFMUstate) \
+    EXPAND_XML_ATTRNAME(providesDirectionalDerivatives) /* used for verification: checks that this attribute does not exist */ \
+    EXPAND_XML_ATTRNAME(providesDirectionalDerivative) \
     EXPAND_XML_ATTRNAME(canInterpolateInputs) \
     EXPAND_XML_ATTRNAME(maxOutputDerivativeOrder) \
     EXPAND_XML_ATTRNAME(canRunAsynchronuously)
@@ -98,7 +98,7 @@ typedef enum fmi2_xml_attr_enu_t {
 /** \brief Element names used in XML */
 #define FMI2_XML_ELMLIST(EXPAND_XML_ELMNAME) \
     EXPAND_XML_ELMNAME(fmiModelDescription) \
-	EXPAND_XML_ELMNAME(ModelExchange) \
+    EXPAND_XML_ELMNAME(ModelExchange) \
     EXPAND_XML_ELMNAME(CoSimulation) \
     EXPAND_XML_ELMNAME(SourceFiles) \
     EXPAND_XML_ELMNAME(File) \
@@ -115,8 +115,8 @@ typedef enum fmi2_xml_attr_enu_t {
     EXPAND_XML_ELMNAME(ModelVariables) \
     EXPAND_XML_ELMNAME(ScalarVariable) \
     EXPAND_XML_ELMNAME(Annotations) \
-	EXPAND_XML_ELMNAME(LogCategories) \
-	EXPAND_XML_ELMNAME(Category) \
+    EXPAND_XML_ELMNAME(LogCategories) \
+    EXPAND_XML_ELMNAME(Category) \
     EXPAND_XML_ELMNAME(Real) \
     EXPAND_XML_ELMNAME(Integer) \
     EXPAND_XML_ELMNAME(Boolean) \
@@ -153,10 +153,10 @@ FMI2_XML_ELMLIST_ALT(EXPAND_ELM_HANDLE)
 #define FMI2_XML_ELM_ID(elm) fmi2_xml_elmID_##elm
 #define FMI2_XML_LIST_ELM_ID(elm) ,FMI2_XML_ELM_ID(elm)
 typedef enum fmi2_xml_elm_enu_t {
-	fmi2_xml_elmID_none = -1
+    fmi2_xml_elmID_none = -1
     FMI2_XML_ELMLIST(FMI2_XML_LIST_ELM_ID)
-	,fmi2_xml_elm_actual_number
-	FMI2_XML_ELMLIST_ALT(FMI2_XML_LIST_ELM_ID)
+    ,fmi2_xml_elm_actual_number
+    FMI2_XML_ELMLIST_ALT(FMI2_XML_LIST_ELM_ID)
     ,fmi2_xml_elm_number
 } fmi2_xml_elm_enu_t;
 
@@ -165,18 +165,18 @@ typedef int (*fmi2_xml_element_handle_ft)(fmi2_xml_parser_context_t *context, co
 typedef struct fmi2_xml_element_handle_map_t fmi2_xml_element_handle_map_t;
 
 /** Keeps information about the allowed parent element ID, index among siblings in a sequence and if
-	multiple elements of this type are allowed in a sequence.
+    multiple elements of this type are allowed in a sequence.
 */
 typedef struct {
-	fmi2_xml_elm_enu_t parentID; /* expected parent ID for an element */
-	int siblingIndex;       /* index among siblings */
-	int multipleAllowed;	/* multiple elements of this kind kan come in a sequence as siblings*/
+    fmi2_xml_elm_enu_t parentID; /* expected parent ID for an element */
+    int siblingIndex;       /* index among siblings */
+    int multipleAllowed;    /* multiple elements of this kind kan come in a sequence as siblings*/
 } fmi2_xml_scheme_info_t;
 
 struct fmi2_xml_element_handle_map_t {
     const char* elementName;
     fmi2_xml_element_handle_ft elementHandle;
-	fmi2_xml_elm_enu_t elemID;
+    fmi2_xml_elm_enu_t elemID;
 };
 
 
@@ -234,14 +234,14 @@ struct fmi2_xml_parser_context_t {
      * Incremented when an invalid element(or nested elements of invalid root
      * element) is found. Decremented when invalid element end tags are parsed.
      */
-	int skipElementCnt;
+    int skipElementCnt;
 
     /**
      * There is no guarantee that all text will be handled in one call to the
      * function implementing the XML_CharacterDataHandler, and this variable
      * saves if a warning has already been generated.
      */
-	int has_produced_data_warning;
+    int has_produced_data_warning;
 
     /**
      * Used to get parent element.
@@ -267,7 +267,7 @@ struct fmi2_xml_parser_context_t {
      * Element ID of the last processed sibling, or fmi3_xml_elmID_none if
      * no siblings have been processed.
      */
-	fmi2_xml_elm_enu_t lastElmID;
+    fmi2_xml_elm_enu_t lastElmID;
 
     /**
      * Used for error checking and scheme verification.
@@ -279,14 +279,14 @@ struct fmi2_xml_parser_context_t {
      *     on enter: self
      *     on exit: parent
      */
-	fmi2_xml_elm_enu_t currentElmID;
+    fmi2_xml_elm_enu_t currentElmID;
 
     /* Variables for handling tool-specific XML elements */
-	int anyElmCount;
-	int useAnyHandleFlg;
-	char* anyToolName;
-	void* anyParent;
-	fmi2_xml_callbacks_t* anyHandle;
+    int anyElmCount;
+    int useAnyHandleFlg;
+    char* anyToolName;
+    void* anyParent;
+    fmi2_xml_callbacks_t* anyHandle;
 
     /* Data for restoring locale after parsing */
     jm_locale_t* jm_locale;

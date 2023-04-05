@@ -25,15 +25,15 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-		
-	/**
-	\addtogroup fmi1_xml
-	@{
-	\addtogroup fmi1_xml_units Functions for handling unit definitions.
-	@}
-	\addtogroup fmi1_xml_units Functions for handling unit definitions.
-	@{
-	*/
+
+    /**
+    \addtogroup fmi1_xml
+    @{
+    \addtogroup fmi1_xml_units Functions for handling unit definitions.
+    @}
+    \addtogroup fmi1_xml_units Functions for handling unit definitions.
+    @{
+    */
 
 /** \brief Get a list of all the unit definitions */
 fmi1_xml_unit_definitions_t* fmi1_xml_get_unit_definitions(fmi1_xml_model_description_t* md);

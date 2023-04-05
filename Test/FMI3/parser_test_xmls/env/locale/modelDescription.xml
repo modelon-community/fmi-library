@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription
+  fmiVersion="3.0"
+  modelName="test_parse_locale"
+  instantiationToken="{8c4e810f-3df3-4a00-8276-176fa3c9f9e0}"
+  description="N/A"
+  version="1.0"
+  generationDateAndTime="2011-09-23T16:57:33Z"
+  variableNamingConvention="structured">
+
+<ModelExchange
+  modelIdentifier="x" />
+
+<DefaultExperiment
+  startTime="2.3"
+  stopTime="3.55"
+  tolerance="1e-6"
+  stepSize="2e-3"
+  />
+
+<ModelVariables/>
+<ModelStructure/>
+
+</fmiModelDescription>

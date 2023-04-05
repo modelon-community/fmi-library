@@ -21,6 +21,7 @@
 #include <JM/jm_vector.h>
 #include <JM/jm_stack.h>
 #include <JM/jm_named_ptr.h>
+#include <JM/jm_portability.h>
 #include <FMI3/fmi3_xml_callbacks.h>
 
 #include <FMI3/fmi3_enums.h>
@@ -319,6 +320,9 @@ struct fmi3_xml_parser_context_t {
 	char* anyToolName;
 	void* anyParent;
 	fmi3_xml_callbacks_t* anyHandle;
+
+    /* Data for restoring locale after parsing */
+    jm_locale_t* jm_locale;
 };
 
 /* Meta data about primitive types */

@@ -1,7 +1,9 @@
 #include <stdlib.h>
 #include <fmilib.h>
 #include <stdio.h>
+#include <stdarg.h>
 #include "config_test.h"
+#include <locale.h>
 
 static const int SHOULD_NOT_LOG_EXPECTED_MSG = 0;
 static const int SHOULD_LOG_EXPECTED_MSG = 1;
@@ -9,6 +11,17 @@ static const int SHOULD_LOG_EXPECTED_MSG = 1;
 static int did_not_log_expected_msg;
 static char *expected_message = "Invalid structured ScalarVariable name";
 static char *name_check_test_directory;
+
+static void fail(const char* fmt, ...) {
+    va_list args;
+    va_start(args, fmt);
+    printf("Test failure: ");
+    vprintf(fmt, args);
+    printf("\n");
+    va_end(args);
+
+    exit(CTEST_RETURN_FAIL);
+}
 
 char *concat(char *s1, char *s2)
 {
@@ -35,21 +48,20 @@ void importlogger(jm_callbacks* c, jm_string module,
 
 void test_parser(char *xml_dir, int should_not_log_expected_msg, int configuration)
 {
-    jm_callbacks *callbacks;
+    jm_callbacks cb;
     fmi_import_context_t *context;
     fmi3_import_t *fmu;
     char *full_path;
     int res = 0;
 
-    callbacks = (jm_callbacks *) malloc(sizeof(jm_callbacks));
-    callbacks->malloc = malloc;
-    callbacks->calloc = calloc;
-    callbacks->realloc = realloc;
-    callbacks->free = free;
-    callbacks->logger = importlogger;
-    callbacks->log_level = jm_log_level_all;
-    callbacks->context = 0;
-    context = fmi_import_allocate_context(callbacks);
+    cb.malloc    = malloc;
+    cb.calloc    = calloc;
+    cb.realloc   = realloc;
+    cb.free      = free;
+    cb.logger    = importlogger;
+    cb.log_level = jm_log_level_all;
+    cb.context   = NULL;
+    context = fmi_import_allocate_context(&cb);
     if (configuration != 0) {
         fmi_import_set_configuration(context, configuration);
     }
@@ -72,7 +84,6 @@ void test_parser(char *xml_dir, int should_not_log_expected_msg, int configurati
 err2:
     fmi3_import_free(fmu); /* this function is using callbacks, so free 'fmu' first */
 err1:
-    free(callbacks);
 
     if (res) {
         exit(CTEST_RETURN_FAIL);
@@ -171,16 +182,145 @@ void test_variable_naming_conventions(void)
     pass_name_check("naming_conventions_xmls/flat/q-char-nonescaped");
 }
 
+static fmi3_import_t* parse_xml(jm_callbacks* cb, const char* xmldir) {
+    fmi_import_context_t* context;
+    fmi3_import_t* xml;
+
+    context = fmi_import_allocate_context(cb);
+
+    xml = fmi3_import_parse_xml(context, xmldir, NULL);
+    fmi_import_free_context(context);
+
+    return xml;
+}
+
+/**
+ * Tests that parsing works as expected, and that the previous locale and
+ * thread settings are reset.
+ *
+ * Test is by default disabled, because it requires the target machine to have
+ * specific language packs.
+ */
+static void test_locale_lc_numeric() {
+
+    jm_callbacks* cb = jm_get_default_callbacks();
+    char* loc_old = NULL;
+    char* tmp = NULL;
+
+    /* Any locale that uses decimal comma instead of decimal point. */
+#ifdef WIN32
+    char* locale_bad = "Swedish_Sweden.1252";
+#else
+    char* locale_bad = "sv_SE.utf8";
+#endif
+
+    /* Set/get thread-specific settings (and later check that they are
+     * restored).
+     * Do nothing for Linux since I don't think it's possible to check equality
+     * of locale_t.
+     */
+#ifdef _MSC_VER
+    int thread_setting = _DISABLE_PER_THREAD_LOCALE;
+    _configthreadlocale(thread_setting);
+#endif
+
+    /* NOT MT-SAFE: But it's the only way to test it for Linux. There are
+     * currently no other tests that modify the locale globally, so should be
+     * OK. Also, ctest tests are by default not run in parallel.
+     */
+    tmp = setlocale(LC_NUMERIC, locale_bad);
+    if (!tmp) {
+        /* If this errors, it's possible that your machine doesn't have
+         * the locale installed.
+         *
+         * Windows: It seemed like I had at least Danish, French, Swedish
+         *   installed by default.
+         *
+         * Linux (Ubuntu 18): I had to install a language pack to get this.
+         */
+        fail("failed to set locale");
+    }
+
+    /*
+     * Value of 'tmp' returned from 'setlocale' may be changed by further calls
+     * to setlocale, and it's also possible that the returned value is not
+     * "string equal" to the argument (i.e. alias values for the same locale).
+     * To be able to later compare the restored value, we therefore must copy
+     * 'tmp'.
+     */
+    loc_old = (char*)malloc(strlen(tmp) + 1);
+    if (!loc_old) {
+        fail("failed to alloc memory");
+    }
+    strcpy(loc_old, tmp);
+    tmp = NULL;
+
+    {
+        /* Perform parsing and verify that the bad global locale did not affect
+         * the result. */
+
+        int failed = 0;
+        char* xmldir = concat(name_check_test_directory, "/env/locale");
+        fmi3_import_t* xml = parse_xml(cb, xmldir);
+        free(xmldir);
+
+        if (xml == NULL) {
+            fail("failed to parse FMU");
+        }
+
+        if (fmi3_import_get_default_experiment_start(xml)     != 2.3  ||
+            fmi3_import_get_default_experiment_stop(xml)      != 3.55 ||
+            fmi3_import_get_default_experiment_tolerance(xml) != 1e-6 ||
+            fmi3_import_get_default_experiment_step(xml)      != 2e-3)
+        {
+            /* If the decimal delimiter is comma, sscanf will only parse
+             * until the dot. */
+            printf("Test failure: incorrect default experiment value\n");
+            failed = 1;
+        }
+
+        fmi3_import_free(xml);
+
+        if (failed) {
+            fail("... see above printed messages");
+        }
+     }
+
+    /* Cleanup and verify that locale is properly restored.
+     *
+     * Getting locale should be MT-safe if all setting of locale is done in
+     * per_thread context.
+     */
+    tmp = setlocale(LC_NUMERIC, loc_old);
+    free(loc_old);
+    if (!tmp) {
+        fail("failed to restore locale");
+    } else if (strcmp(tmp, locale_bad)) {
+        fail("unexpected locale");
+    }
+
+#ifdef _MSC_VER
+    if (_configthreadlocale(0) != thread_setting) {
+        /* This was set at the beginning of the test, and should now have been restored. */
+        fail("unexpected Windows thread setting");
+    }
+#endif
+}
+
 int main(int argc, char *argv[])
 {
     if (argc == 2) {
         name_check_test_directory = argv[1];
     } else {
-        printf("Usage: %s <path to folder naming_conventions_xmls>\n", argv[0]);
+        printf("Usage: %s <path to folder 'parser_test_xmls'>\n", argv[0]);
         exit(CTEST_RETURN_FAIL);
     }
 
     test_variable_naming_conventions();
+
+#ifdef FMILIB_TEST_LOCALE
+    test_locale_lc_numeric();
+#endif
 
     return 0;
 }

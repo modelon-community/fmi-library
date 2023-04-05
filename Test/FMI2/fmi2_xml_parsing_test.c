@@ -260,7 +260,7 @@ static void test_locale_lc_numeric() {
          * the result. */
 
         int failed = 0;
-        char* xmldir = concat(name_check_test_directory, "env/locale");
+        char* xmldir = concat(name_check_test_directory, "/env/locale");
         fmi2_import_t* xml = parse_xml(cb, xmldir);
         free(xmldir);
 

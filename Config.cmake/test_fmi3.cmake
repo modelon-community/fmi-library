@@ -82,6 +82,9 @@ target_link_libraries (fmi3_import_xml_test  ${FMILIBFORTEST})
 # General functionality tests
 add_executable (fmi3_xml_parsing_test ${RTTESTDIR}/FMI3/fmi3_xml_parsing_test.c)
 target_link_libraries (fmi3_xml_parsing_test  ${FMILIBFORTEST})
+if(FMILIB_TEST_LOCALE)
+    target_compile_definitions(fmi3_xml_parsing_test PRIVATE -DFMILIB_TEST_LOCALE)
+endif()
 
 add_executable (fmi3_import_sim_me_test ${RTTESTDIR}/FMI3/fmi3_import_sim_me_test.c)
 target_link_libraries (fmi3_import_sim_me_test  ${FMILIBFORTEST})

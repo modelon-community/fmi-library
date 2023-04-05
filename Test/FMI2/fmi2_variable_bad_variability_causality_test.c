@@ -1,6 +1,6 @@
 #include "fmilib.h"
-#include "fmil_test.h"
 #include "config_test.h"
+#include "fmi_testutil.h"
 
 static int test_invalid_variability_causality(fmi2_import_t *xml)
 {

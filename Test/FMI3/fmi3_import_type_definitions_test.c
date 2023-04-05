@@ -3,7 +3,7 @@
 
 #include <fmilib.h>
 #include "config_test.h"
-#include "fmil_test.h"
+#include "fmi_testutil.h"
 
 #define UINTXX_MIN (0)
 

@@ -2,6 +2,7 @@
 
 /.git/
 /.vs/
+/.vscode/settings.json
 
 /out/
 

@@ -1,6 +1,6 @@
 #include "fmilib.h"
-#include "fmil_test.h"
 #include "config_test.h"
+#include "fmi_testutil.h"
 
 /* global used by logger - make sure to reset between different XML parsings */
 int g_n_logger_found_err_msg = 0;

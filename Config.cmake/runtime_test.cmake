@@ -131,8 +131,7 @@ function(compress_fmu OUTPUT_FOLDER_T MODEL_IDENTIFIER_T FILE_NAME_CS_ME_EXT_T T
 
 endfunction(compress_fmu)
 
-# Build the test util 'fmil_test'
-add_library(fmi_testutil STATIC ${RTTESTDIR}/fmil_test.c)
+add_library(fmi_testutil STATIC ${RTTESTDIR}/fmi_testutil.c)
 
 set(FMILIBFORTEST fmilib fmi_testutil)
 
@@ -210,6 +209,8 @@ if(FMILIB_BUILD_BEFORE_TESTS)
         ctest_fmi_import_test_cs_3
         ctest_fmi_zip_unzip_test
         ctest_fmi_zip_zip_test
+        ctest_jm_vector_test_cpp
+        ctest_jm_locale_test
         PROPERTIES DEPENDS ctest_build_all)
 endif()
 SET_TESTS_PROPERTIES ( ctest_fmi_import_test_no_xml PROPERTIES DEPENDS ctest_fmi_zip_unzip_test)

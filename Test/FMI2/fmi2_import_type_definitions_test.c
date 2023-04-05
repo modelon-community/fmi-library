@@ -3,7 +3,7 @@
 
 #include "fmilib.h"
 #include "config_test.h"
-#include "fmil_test.h"
+#include "fmi_testutil.h"
 
 static fmi2_import_t *parse_xml(const char *model_desc_path)
 {

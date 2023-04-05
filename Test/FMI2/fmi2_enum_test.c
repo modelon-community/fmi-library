@@ -1,6 +1,6 @@
 #include "fmilib.h"
-#include "fmil_test.h"
 #include "config_test.h"
+#include "fmi_testutil.h"
 
 int test_default_valid_variablity()
 {

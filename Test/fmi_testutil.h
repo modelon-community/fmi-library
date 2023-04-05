@@ -1,18 +1,33 @@
-#ifndef FMILIB_TEST_H
-#define FMILIB_TEST_H
+#ifndef FMILIB_TESTUTIL_H
+#define FMILIB_TESTUTIL_H
 
 #include <stdio.h>
+
+
+/**
+ *  TODO: Decide about naming convention for test utils functions.
+ */
+
+
+void fmi_testutil_build_xml_path(char* buf, size_t bufSize, const char* basePath, const char* appendPath);
 
 /**
  * This function is called before a test fails via macro, so you can put a 
  * breakpoint on it to make debugging easier
  */
-static void enter_breakpoint()
-{
-    /* you can put a breakpoint on this line */
-}
+void fmi_testutil_enter_breakpoint();
 
-/* 
+/**
+ * Immediately fails the test by exiting the program.
+ */
+void fail(const char* fmt, ...);
+
+/**
+ * Concats two strings. Caller must free the returned string.
+ */
+char* concat(char *s1, char *s2);
+
+/* *
     TODO: all variadic macros are giving warnings when compiled with GCC, because
     variadic macros were introduced in C99
 
@@ -38,7 +53,7 @@ static void enter_breakpoint()
 #define TEST_FAILED(...)                                                    \
     do {                                                                    \
         PRINT_FAILURE(__VA_ARGS__);                                         \
-        enter_breakpoint();                                                 \
+        fmi_testutil_enter_breakpoint();                                    \
         return 0;                                                           \
     } while (0)
 
@@ -61,7 +76,7 @@ static void enter_breakpoint()
     do {                                                                    \
         if (!(cond)) {                                                      \
             PRINT_FAILURE(__VA_ARGS__);                                     \
-            enter_breakpoint();                                             \
+            fmi_testutil_enter_breakpoint();                                \
             goto label;                                                     \
         }                                                                   \
     } while (0)
@@ -69,8 +84,5 @@ static void enter_breakpoint()
 #define TEST_OK (1)
 #define TEST_FAIL (0)
 
-#endif /* FMILIB_TEST_H */
 
-void fmi_testutil_build_xml_path(char* buf, size_t bufSize, const char* basePath, const char* appendPath);
-
-
+#endif /* FMILIB_TESTUTIL_H */

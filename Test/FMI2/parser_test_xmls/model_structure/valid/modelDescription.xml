@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription
+  fmiVersion="2.0"
+  modelName="myModelName"
+  guid="myGuid"
+  description="myDescription"
+  author="myAuthor"
+  generationTool="myGenerationTool"
+  generationDateAndTime="2002-05-30T09:00:00"
+  version="myModelVersion"
+  variableNamingConvention="structured"
+  numberOfEventIndicators="3">
+
+<ModelExchange
+  modelIdentifier="myModelIdentifier" />
+
+<ModelVariables>
+    <!-- idx: 1 -->
+    <ScalarVariable name="state_var" valueReference="0">
+      <Real/>
+    </ScalarVariable>
+    <!-- idx: 2 -->
+    <ScalarVariable name="der(state_var)" valueReference="1" causality="output" variability="continuous" initial="approx">
+      <Real derivative="1" start="1.0"/>
+    </ScalarVariable>
+</ModelVariables>
+
+<ModelStructure>
+  <Derivatives>
+    <Unknown index="2"/>
+  </Derivatives>
+</ModelStructure>
+</fmiModelDescription>

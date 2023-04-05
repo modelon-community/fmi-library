@@ -2,7 +2,7 @@
 
 #include <fmilib.h>
 #include "config_test.h"
-#include "fmil_test.h"
+#include "fmi_testutil.h"
 
 /**
     Try to parse, and verify that we get a fatal error.

@@ -40,6 +40,8 @@ set(XML_ME_PATH ${FMU3_DUMMY_FOLDER}/modelDescription_me.xml)
 set(XML_CS_PATH ${FMU3_DUMMY_FOLDER}/modelDescription_cs.xml)
 set(XML_MF_PATH ${FMU3_DUMMY_FOLDER}/modelDescription_malformed.xml)
 
+set(FMI3_PARSER_TEST_XMLS_DIR
+    ${RTTESTDIR}/FMI3/parser_test_xmls)
 set(VARIABLE_TEST_MODEL_DESC_DIR
     ${RTTESTDIR}/FMI3/parser_test_xmls/variable_test)
 set(DEFAULT_EXPERIMENT_MODEL_DESC_DIR
@@ -85,6 +87,9 @@ target_link_libraries (fmi3_xml_parsing_test  ${FMILIBFORTEST})
 if(FMILIB_TEST_LOCALE)
     target_compile_definitions(fmi3_xml_parsing_test PRIVATE -DFMILIB_TEST_LOCALE)
 endif()
+
+add_executable(fmi3_import_model_structure_test ${RTTESTDIR}/FMI3/fmi3_import_model_structure_test.c)
+target_link_libraries(fmi3_import_model_structure_test ${FMILIBFORTEST})
 
 add_executable (fmi3_import_sim_me_test ${RTTESTDIR}/FMI3/fmi3_import_sim_me_test.c)
 target_link_libraries (fmi3_import_sim_me_test  ${FMILIBFORTEST})
@@ -151,6 +156,9 @@ add_test(ctest_fmi3_import_sim_test_scs fmi3_import_sim_scs_test ${FMU3_CS_PATH}
 add_test(ctest_fmi3_import_variable_test
          fmi3_import_variable_test
          ${VARIABLE_TEST_MODEL_DESC_DIR})
+add_test(ctest_fmi3_import_model_structure_test
+         fmi3_import_model_structure_test
+         ${FMI3_PARSER_TEST_XMLS_DIR})
 add_test(ctest_fmi3_import_variable_types_test
          fmi3_import_variable_types_test
          ${VARIABLE_TYPES_TEST_MODEL_DESC_DIR})
@@ -187,6 +195,7 @@ if(FMILIB_BUILD_BEFORE_TESTS)
         ctest_fmi3_import_fatal_test
         ctest_fmi3_import_arrays_test
         ctest_fmi3_import_variable_test
+        ctest_fmi3_import_model_structure_test
         ctest_fmi3_import_default_experiment_test
         ctest_fmi3_enum_test
         ctest_fmi3_variable_bad_variability_causality_test

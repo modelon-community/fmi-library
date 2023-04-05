@@ -42,6 +42,8 @@ set(XML_MF_PATH ${FMU2_DUMMY_FOLDER}/modelDescription_malformed.xml)
 
 set(VARIALBE_TEST_MODEL_DESC_DIR
     ${RTTESTDIR}/FMI2/parser_test_xmls/variable_test)
+set(FMI2_PARSER_TEST_XMLS_DIR
+    ${RTTESTDIR}/FMI2/parser_test_xmls)
 set(DEFAULT_EXPERIMENT_MODEL_DESC_DIR
     ${RTTESTDIR}/FMI2/parser_test_xmls/default_experiment/) # Trailing '/' necessary (for building system independent path)
 set(VARIABLE_NO_TYPE_MODEL_DESC_DIR
@@ -89,6 +91,8 @@ add_executable (fmi2_import_cs_test ${RTTESTDIR}/FMI2/fmi2_import_cs_test.c)
 target_link_libraries (fmi2_import_cs_test  ${FMILIBFORTEST})
 add_executable(fmi2_import_variable_test ${RTTESTDIR}/FMI2/fmi2_import_variable_test.c)
 target_link_libraries(fmi2_import_variable_test ${FMILIBFORTEST})
+add_executable(fmi2_import_model_structure_test ${RTTESTDIR}/FMI2/fmi2_import_model_structure_test.c)
+target_link_libraries(fmi2_import_model_structure_test ${FMILIBFORTEST})
 add_executable(fmi2_import_default_experiment_test ${RTTESTDIR}/FMI2/fmi2_import_default_experiment_test.c)
 target_link_libraries(fmi2_import_default_experiment_test ${FMILIBFORTEST})
 add_executable(fmi2_type_definitions_test ${RTTESTDIR}/FMI2/fmi2_import_type_definitions_test.c)
@@ -131,6 +135,9 @@ add_test(ctest_fmi2_import_test_options fmi2_import_options_test ${FMU2_ME_PATH}
 add_test(ctest_fmi2_import_variable_test
          fmi2_import_variable_test
          ${VARIALBE_TEST_MODEL_DESC_DIR})
+add_test(ctest_fmi2_import_model_structure_test
+         fmi2_import_model_structure_test
+         ${FMI2_PARSER_TEST_XMLS_DIR})
 add_test(ctest_fmi2_import_default_experiment_test
          fmi2_import_default_experiment_test
          ${DEFAULT_EXPERIMENT_MODEL_DESC_DIR})
@@ -159,6 +166,7 @@ if(FMILIB_BUILD_BEFORE_TESTS)
         ctest_fmi2_import_test_me
         ctest_fmi2_import_test_cs
         ctest_fmi2_import_variable_test
+        ctest_fmi2_import_model_structure_test
         ctest_fmi2_import_default_experiment_test
         ctest_fmi2_variable_no_type_test
         ctest_fmi2_type_definitions_test

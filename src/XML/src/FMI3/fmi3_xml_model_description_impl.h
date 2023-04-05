@@ -74,6 +74,8 @@ struct fmi3_xml_model_description_t {
 
 	jm_vector(char) modelIdentifierCS;
 
+	jm_vector(char) modelIdentifierSE;
+
     jm_vector(jm_string) sourceFilesME;
     jm_vector(jm_string) sourceFilesCS;
 
@@ -107,4 +109,3 @@ struct fmi3_xml_model_description_t {
 #endif
 
 #endif
-

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2012 Modelon AB
+Copyright (C) 2012-2023 Modelon AB
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the BSD style license.
@@ -21,7 +21,7 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
     #pragma GCC visibility push(default)
 #endif
 
-/* Standard FMI 3.0 ME and CS types */
+/* Standard FMI 3.0 types */
 #include <FMI3/fmi3Functions.h>
 
 #include <fmu_dummy/fmu3_model.h>
@@ -34,119 +34,78 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 /* FMI 3.0 Common Functions */
 FMI3_Export const char* fmi3GetVersion()
 {
-	return fmi_get_version();
+    return fmi_get_version();
 }
 
 FMI3_Export fmi3Status fmi3SetDebugLogging(fmi3Instance instance, fmi3Boolean loggingOn, size_t n, const fmi3String cat[])
 {
-	return fmi_set_debug_logging(instance, loggingOn);
+    return fmi_set_debug_logging(instance, loggingOn);
 }
 
 /* Not supported for CS */
 FMI3_Export fmi3Instance fmi3InstantiateModelExchange(
         fmi3String              instanceName,
         fmi3String              instantiationToken,
-        fmi3String              resourceLocation,
+        fmi3String              resourcePath,
         fmi3Boolean             visible,
         fmi3Boolean             loggingOn,
         fmi3InstanceEnvironment instanceEnvironment,
-        fmi3CallbackLogMessage  logMessage)
+        fmi3LogMessageCallback  logMessage)
 {
     return NULL;
 }
 
-FMI3_Export fmi3Instance fmi3InstantiateBasicCoSimulation(
+FMI3_Export fmi3Instance fmi3InstantiateCoSimulation(
     fmi3String                     instanceName,
     fmi3String                     instantiationToken,
-    fmi3String                     resourceLocation,
+    fmi3String                     resourcePath,
     fmi3Boolean                    visible,
     fmi3Boolean                    loggingOn,
-    fmi3Boolean                    intermediateVariableGetRequired,
-    fmi3Boolean                    intermediateInternalVariableGetRequired,
-    fmi3Boolean                    intermediateVariableSetRequired,
+    fmi3Boolean                    eventModeUsed,
+    fmi3Boolean                    earlyReturnAllowed,
+    const fmi3ValueReference       requiredIntermediateVariables[],
+    size_t                         nRequiredIntermediateVariables,
     fmi3InstanceEnvironment        instanceEnvironment,
-    fmi3CallbackLogMessage         logMessage,
-    fmi3CallbackIntermediateUpdate intermediateUpdate)
+    fmi3LogMessageCallback         logMessage,
+    fmi3IntermediateUpdateCallback intermediateUpdate)
 {
-    return fmi_instantiate(fmu_type_bcs,
+    return fmi_instantiate(fmu_type_cs,
                            instanceName,
                            instantiationToken,
-                           resourceLocation,
+                           resourcePath,
                            visible,
                            loggingOn,
-                           intermediateVariableGetRequired,
-                           intermediateInternalVariableGetRequired,
-                           intermediateVariableSetRequired,
+                           eventModeUsed,
+                           earlyReturnAllowed,
+                           requiredIntermediateVariables,
+                           nRequiredIntermediateVariables,
                            instanceEnvironment,
                            logMessage,
                            intermediateUpdate,
-                           NULL,  /* SCS only */
-                           NULL); /* SCS only */
+                           NULL,  /* clockUpdate:      SE only */
+                           NULL,  /* lockPreemption:   SE only */
+                           NULL); /* unlockPreemption: SE only */
 }
 
-FMI3_Export fmi3Instance fmi3InstantiateHybridCoSimulation(
+/* Not supported for CS */
+FMI3_Export fmi3Instance fmi3InstantiateScheduledExecution(
     fmi3String                     instanceName,
     fmi3String                     instantiationToken,
-    fmi3String                     resourceLocation,
+    fmi3String                     resourcePath,
     fmi3Boolean                    visible,
     fmi3Boolean                    loggingOn,
-    fmi3Boolean                    intermediateVariableGetRequired,
-    fmi3Boolean                    intermediateInternalVariableGetRequired,
-    fmi3Boolean                    intermediateVariableSetRequired,
     fmi3InstanceEnvironment        instanceEnvironment,
-    fmi3CallbackLogMessage         logMessage,
-    fmi3CallbackIntermediateUpdate intermediateUpdate)
+    fmi3LogMessageCallback         logMessage,
+    fmi3ClockUpdateCallback        clockUpdate,
+    fmi3LockPreemptionCallback     lockPreemption,
+    fmi3UnlockPreemptionCallback   unlockPreemption)
 {
-    return fmi_instantiate(fmu_type_hcs,
-                           instanceName,
-                           instantiationToken,
-                           resourceLocation,
-                           visible,
-                           loggingOn,
-                           intermediateVariableGetRequired,
-                           intermediateInternalVariableGetRequired,
-                           intermediateVariableSetRequired,
-                           instanceEnvironment,
-                           logMessage,
-                           intermediateUpdate,
-                           NULL,  /* SCS only */
-                           NULL); /* SCS only */
-}
-
-FMI3_Export fmi3Instance fmi3InstantiateScheduledCoSimulation(
-    fmi3String                     instanceName,
-    fmi3String                     instantiationToken,
-    fmi3String                     resourceLocation,
-    fmi3Boolean                    visible,
-    fmi3Boolean                    loggingOn,
-    fmi3Boolean                    intermediateVariableGetRequired,
-    fmi3Boolean                    intermediateInternalVariableGetRequired,
-    fmi3Boolean                    intermediateVariableSetRequired,
-    fmi3InstanceEnvironment        instanceEnvironment,
-    fmi3CallbackLogMessage         logMessage,
-    fmi3CallbackIntermediateUpdate intermediateUpdate,
-    fmi3CallbackLockPreemption     lockPreemption,
-    fmi3CallbackUnlockPreemption   unlockPreemption)
-{
-    return fmi_instantiate(fmu_type_hcs,
-                           instanceName,
-                           instantiationToken,
-                           resourceLocation,
-                           visible,
-                           loggingOn,
-                           intermediateVariableGetRequired,
-                           intermediateInternalVariableGetRequired,
-                           intermediateVariableSetRequired,
-                           instanceEnvironment,
-                           logMessage,
-                           intermediateUpdate,
-                           lockPreemption,
-                           unlockPreemption);
+    return NULL;
 }
 
 FMI3_Export void fmi3FreeInstance(fmi3Instance instance)
 {
-	fmi_free_instance(instance);
+    fmi_free_instance(instance);
 }
 
 FMI3_Export fmi3Status fmi3EnterInitializationMode(
@@ -161,15 +120,9 @@ FMI3_Export fmi3Status fmi3EnterInitializationMode(
             startTime, stopTimeDefined, stopTimeDefined);
 }
 
-FMI3_Export fmi3Status fmi3EnterEventMode(
-        fmi3Instance    instance,
-        fmi3Boolean     inputEvent,
-        fmi3Boolean     stepEvent,
-        const fmi3Int32 rootsFound[],
-        size_t          nEventIndicators,
-        fmi3Boolean     timeEvent)
+FMI3_Export fmi3Status fmi3EnterEventMode(fmi3Instance instance)
 {
-    return fmi_enter_event_mode(instance, inputEvent, stepEvent, rootsFound, nEventIndicators, timeEvent);
+    return fmi_enter_event_mode(instance);
 }
 
 FMI3_Export fmi3Status fmi3ExitInitializationMode(fmi3Instance instance)
@@ -179,138 +132,138 @@ FMI3_Export fmi3Status fmi3ExitInitializationMode(fmi3Instance instance)
 
 FMI3_Export fmi3Status fmi3GetFloat64(fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr, fmi3Float64 value[], size_t nValues)
 {
-	return fmi_get_float64(instance, vr, nvr, value, nValues);
+    return fmi_get_float64(instance, vr, nvr, value, nValues);
 }
 
 FMI3_Export fmi3Status fmi3GetFloat32(fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr, fmi3Float32 value[], size_t nValues)
 {
-	return fmi3Error; /* NYI, need to impl. real -> floatXX parametrization first */
+    return fmi3Error; /* NYI, need to impl. real -> floatXX parametrization first */
 }
 
 FMI3_Export fmi3Status fmi3GetInt64(fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr, fmi3Int64 value[], size_t nValues)
 {
-	return fmi_get_int64(instance, vr, nvr, value, nValues);
+    return fmi_get_int64(instance, vr, nvr, value, nValues);
 }
 
 FMI3_Export fmi3Status fmi3GetInt32(fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr, fmi3Int32 value[], size_t nValues)
 {
-	return fmi_get_int32(instance, vr, nvr, value, nValues);
+    return fmi_get_int32(instance, vr, nvr, value, nValues);
 }
 
 FMI3_Export fmi3Status fmi3GetInt16(fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr, fmi3Int16 value[], size_t nValues)
 {
-	return fmi_get_int16(instance, vr, nvr, value, nValues);
+    return fmi_get_int16(instance, vr, nvr, value, nValues);
 }
 
 FMI3_Export fmi3Status fmi3GetInt8(fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr, fmi3Int8 value[], size_t nValues)
 {
-	return fmi_get_int8(instance, vr, nvr, value, nValues);
+    return fmi_get_int8(instance, vr, nvr, value, nValues);
 }
 
 FMI3_Export fmi3Status fmi3GetUInt64(fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr, fmi3UInt64 value[], size_t nValues)
 {
-	return fmi_get_uint64(instance, vr, nvr, value, nValues);
+    return fmi_get_uint64(instance, vr, nvr, value, nValues);
 }
 
 FMI3_Export fmi3Status fmi3GetUInt32(fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr, fmi3UInt32 value[], size_t nValues)
 {
-	return fmi_get_uint32(instance, vr, nvr, value, nValues);
+    return fmi_get_uint32(instance, vr, nvr, value, nValues);
 }
 
 FMI3_Export fmi3Status fmi3GetUInt16(fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr, fmi3UInt16 value[], size_t nValues)
 {
-	return fmi_get_uint16(instance, vr, nvr, value, nValues);
+    return fmi_get_uint16(instance, vr, nvr, value, nValues);
 }
 
 FMI3_Export fmi3Status fmi3GetUInt8(fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr, fmi3UInt8 value[], size_t nValues)
 {
-	return fmi_get_uint8(instance, vr, nvr, value, nValues);
+    return fmi_get_uint8(instance, vr, nvr, value, nValues);
 }
 
 FMI3_Export fmi3Status fmi3GetBoolean(fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr,
         fmi3Boolean value[], size_t nValues)
 {
-	return fmi_get_boolean(instance, vr, nvr, value, nValues);
+    return fmi_get_boolean(instance, vr, nvr, value, nValues);
 }
 
 FMI3_Export fmi3Status fmi3GetString(fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr,
         fmi3String value[], size_t nValues)
 {
-	return fmi_get_string(instance, vr, nvr, value, nValues);
+    return fmi_get_string(instance, vr, nvr, value, nValues);
 }
 
 FMI3_Export fmi3Status fmi3GetBinary(fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr,
         size_t sizes[], fmi3Binary value[], size_t nValues)
 {
-	return fmi_get_binary(instance, vr, nvr, sizes, value, nValues);
+    return fmi_get_binary(instance, vr, nvr, sizes, value, nValues);
 }
 
 FMI3_Export fmi3Status fmi3SetFloat64(fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr, const fmi3Float64 value[], size_t nValues)
 {
-	return fmi_set_float64(instance, vr, nvr, value, nValues);
+    return fmi_set_float64(instance, vr, nvr, value, nValues);
 }
 
 FMI3_Export fmi3Status fmi3SetFloat32(fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr, const fmi3Float32 value[], size_t nValues)
 {
-	return fmi3Error; /* NYI, need to impl. real -> floatXX parametrization first */
+    return fmi3Error; /* NYI, need to impl. real -> floatXX parametrization first */
 }
 
 FMI3_Export fmi3Status fmi3SetInt64(fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr, const fmi3Int64 value[], size_t nValues)
 {
-	return fmi_set_int64(instance, vr, nvr, value, nValues);
+    return fmi_set_int64(instance, vr, nvr, value, nValues);
 }
 
 FMI3_Export fmi3Status fmi3SetInt32(fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr, const fmi3Int32 value[], size_t nValues)
 {
-	return fmi_set_int32(instance, vr, nvr, value, nValues);
+    return fmi_set_int32(instance, vr, nvr, value, nValues);
 }
 
 FMI3_Export fmi3Status fmi3SetInt16(fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr, const fmi3Int16 value[], size_t nValues)
 {
-	return fmi_set_int16(instance, vr, nvr, value, nValues);
+    return fmi_set_int16(instance, vr, nvr, value, nValues);
 }
 
 FMI3_Export fmi3Status fmi3SetInt8(fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr, const fmi3Int8 value[], size_t nValues)
 {
-	return fmi_set_int8(instance, vr, nvr, value, nValues);
+    return fmi_set_int8(instance, vr, nvr, value, nValues);
 }
 
 FMI3_Export fmi3Status fmi3SetUInt64(fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr, const fmi3UInt64 value[], size_t nValues)
 {
-	return fmi_set_uint64(instance, vr, nvr, value, nValues);
+    return fmi_set_uint64(instance, vr, nvr, value, nValues);
 }
 
 FMI3_Export fmi3Status fmi3SetUInt32(fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr, const fmi3UInt32 value[], size_t nValues)
 {
-	return fmi_set_uint32(instance, vr, nvr, value, nValues);
+    return fmi_set_uint32(instance, vr, nvr, value, nValues);
 }
 
 FMI3_Export fmi3Status fmi3SetUInt16(fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr, const fmi3UInt16 value[], size_t nValues)
 {
-	return fmi_set_uint16(instance, vr, nvr, value, nValues);
+    return fmi_set_uint16(instance, vr, nvr, value, nValues);
 }
 
 FMI3_Export fmi3Status fmi3SetUInt8(fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr, const fmi3UInt8 value[], size_t nValues)
 {
-	return fmi_set_uint8(instance, vr, nvr, value, nValues);
+    return fmi_set_uint8(instance, vr, nvr, value, nValues);
 }
 
 FMI3_Export fmi3Status fmi3SetBoolean(fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr,
         const fmi3Boolean value[], size_t nValues)
 {
-	return fmi_set_boolean(instance, vr, nvr, value, nValues);
+    return fmi_set_boolean(instance, vr, nvr, value, nValues);
 }
 
 FMI3_Export fmi3Status fmi3SetString(fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr,
         const fmi3String value[], size_t nValues)
 {
-	return fmi_set_string(instance, vr, nvr, value, nValues);
+    return fmi_set_string(instance, vr, nvr, value, nValues);
 }
 
 FMI3_Export fmi3Status fmi3SetBinary(fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr,
         const size_t sizes[], const fmi3Binary value[], size_t nValues)
 {
-	return fmi_set_binary(instance, vr, nvr, sizes, value, nValues);
+    return fmi_set_binary(instance, vr, nvr, sizes, value, nValues);
 }
 
 /* Getting Variable Dependency Information */
@@ -364,7 +317,7 @@ FMI3_Export fmi3Status fmi3SerializeFMUState(fmi3Instance instance,
     return fmi_serialize_FMU_state(instance, FMUState, serializedState, size);
 }
 
-FMI3_Export fmi3Status fmi3DeSerializeFMUState(fmi3Instance instance,
+FMI3_Export fmi3Status fmi3DeserializeFMUState(fmi3Instance instance,
                                                const fmi3Byte serializedState[],
                                                size_t size,
                                                fmi3FMUState* FMUState)
@@ -383,7 +336,7 @@ FMI3_Export fmi3Status fmi3GetDirectionalDerivative(
         fmi3Float64 sensitivity[],
         size_t nSensitivity)
 {
-	return fmi_get_directional_derivative(instance, unknowns, nUnknowns, knowns, nKnowns, seed, nSeed,
+    return fmi_get_directional_derivative(instance, unknowns, nUnknowns, knowns, nKnowns, seed, nSeed,
             sensitivity, nSensitivity);
 }
 
@@ -398,18 +351,18 @@ FMI3_Export fmi3Status fmi3GetAdjointDerivative(
         fmi3Float64 sensitivity[],
         size_t nSensitivity)
 {
-	return fmi_get_adjoint_derivative(instance, unknowns, nUnknowns, knowns, nKnowns, seed, nSeed,
+    return fmi_get_adjoint_derivative(instance, unknowns, nUnknowns, knowns, nKnowns, seed, nSeed,
             sensitivity, nSensitivity);
 }
 
 FMI3_Export fmi3Status fmi3EnterConfigurationMode(fmi3Instance instance)
 {
-	return fmi_enter_configuration_mode(instance);
+    return fmi_enter_configuration_mode(instance);
 }
 
 FMI3_Export fmi3Status fmi3ExitConfigurationMode(fmi3Instance instance)
 {
-	return fmi_exit_configuration_mode(instance);
+    return fmi_exit_configuration_mode(instance);
 }
 
 /* Clock related functions */
@@ -417,75 +370,121 @@ FMI3_Export fmi3Status fmi3GetClock(
         fmi3Instance instance,
         const fmi3ValueReference valueReferences[],
         size_t nValueReferences,
-        fmi3Clock values[],
-        size_t nValues)
+        fmi3Clock values[])
 {
-	return fmi_get_clock(instance, valueReferences, nValueReferences, values, nValues);
+    return fmi_get_clock(instance, valueReferences, nValueReferences, values);
 }
 
 FMI3_Export fmi3Status fmi3SetClock(
         fmi3Instance instance,
         const fmi3ValueReference valueReferences[],
         size_t nValueReferences,
-        const fmi3Clock values[],
-        const fmi3Boolean subactive[],
-        size_t nValues)
+        const fmi3Clock values[])
 {
-	return fmi_set_clock(instance, valueReferences, nValueReferences, values, subactive, nValues);
+    return fmi_set_clock(instance, valueReferences, nValueReferences, values);
 }
 
 FMI3_Export fmi3Status fmi3GetIntervalDecimal(
         fmi3Instance instance,
         const fmi3ValueReference valueReferences[],
         size_t nValueReferences,
-        fmi3Float64 interval[],
-        size_t nValues)
+        fmi3Float64 intervals[],
+        fmi3IntervalQualifier qualifiers[])
 {
-	return fmi_get_interval_decimal(instance, valueReferences, nValueReferences, interval, nValues);
+    return fmi_get_interval_decimal(instance, valueReferences, nValueReferences, intervals, qualifiers);
+}
+
+FMI3_Export fmi3Status fmi3GetShiftDecimal(
+        fmi3Instance instance,
+        const fmi3ValueReference valueReferences[],
+        size_t nValueReferences,
+        fmi3Float64 shifts[])
+{
+    return fmi_get_shift_decimal(instance, valueReferences, nValueReferences, shifts);
+}
+
+FMI3_Export fmi3Status fmi3GetShiftFraction(
+        fmi3Instance instance,
+        const fmi3ValueReference valueReferences[],
+        size_t nValueReferences,
+        fmi3UInt64 counters[],
+        fmi3UInt64 resolutions[])
+{
+    return fmi_get_shift_fraction(instance, valueReferences, nValueReferences, counters, resolutions);
 }
 
 FMI3_Export fmi3Status fmi3GetIntervalFraction(
         fmi3Instance instance,
         const fmi3ValueReference valueReferences[],
         size_t nValueReferences,
-        fmi3UInt64 intervalCounter[],
-        fmi3UInt64 resolution[],
-        size_t nValues)
+        fmi3UInt64 counters[],
+        fmi3UInt64 resolutions[],
+        fmi3IntervalQualifier qualifiers[])
 {
-	return fmi_get_interval_fraction(instance, valueReferences, nValueReferences, intervalCounter, resolution, nValues);
+    return fmi_get_interval_fraction(
+        instance,
+        valueReferences,
+        nValueReferences,
+        counters,
+        resolutions,
+        qualifiers);
 }
 
 FMI3_Export fmi3Status fmi3SetIntervalDecimal(
         fmi3Instance instance,
         const fmi3ValueReference valueReferences[],
         size_t nValueReferences,
-        const fmi3Float64 interval[],
-        size_t nValues)
+        const fmi3Float64 intervals[])
 {
-	return fmi_set_interval_decimal(instance, valueReferences, nValueReferences, interval, nValues);
+    return fmi_set_interval_decimal(instance, valueReferences, nValueReferences, intervals);
 }
+
 
 FMI3_Export fmi3Status fmi3SetIntervalFraction(
         fmi3Instance instance,
         const fmi3ValueReference valueReferences[],
         size_t nValueReferences,
-        const fmi3UInt64 intervalCounter[],
-        const fmi3UInt64 resolution[],
-        size_t nValues)
+        const fmi3UInt64 counters[],
+        const fmi3UInt64 resolutions[])
 {
-	return fmi_set_interval_fraction(instance, valueReferences, nValueReferences, intervalCounter, resolution, nValues);
+    return fmi_set_interval_fraction(instance, valueReferences, nValueReferences, counters, resolutions);
 }
 
-FMI3_Export fmi3Status fmi3NewDiscreteStates(
+FMI3_Export fmi3Status fmi3SetShiftDecimal(
         fmi3Instance instance,
-        fmi3Boolean *newDiscreteStatesNeeded,
+        const fmi3ValueReference valueReferences[],
+        size_t nValueReferences,
+        const fmi3Float64 shifts[])
+{
+    return fmi_set_shift_decimal(instance, valueReferences, nValueReferences, shifts);
+}
+
+FMI3_Export fmi3Status fmi3SetShiftFraction(
+        fmi3Instance instance,
+        const fmi3ValueReference valueReferences[],
+        size_t nValueReferences,
+        const fmi3UInt64 counters[],
+        const fmi3UInt64 resolutions[])
+{
+    return fmi_set_shift_fraction(instance, valueReferences, nValueReferences, counters, resolutions);
+}
+
+FMI3_Export fmi3Status fmi3EvaluateDiscreteStates(
+        fmi3Instance instance)
+{
+    return fmi_evaluate_discrete_states(instance);
+}
+
+FMI3_Export fmi3Status fmi3UpdateDiscreteStates(
+        fmi3Instance instance,
+        fmi3Boolean *discreteStatesNeedUpdate,
         fmi3Boolean *terminateSimulation,
         fmi3Boolean *nominalsOfContinuousStatesChanged,
         fmi3Boolean *valuesOfContinuousStatesChanged,
         fmi3Boolean *nextEventTimeDefined,
         fmi3Float64 *nextEventTime)
 {
-	return fmi_new_discrete_states(instance, newDiscreteStatesNeeded, terminateSimulation,
+    return fmi_update_discrete_states(instance, discreteStatesNeedUpdate, terminateSimulation,
             nominalsOfContinuousStatesChanged, valuesOfContinuousStatesChanged, nextEventTimeDefined,
             nextEventTime);
 }
@@ -493,17 +492,17 @@ FMI3_Export fmi3Status fmi3NewDiscreteStates(
 /* FMI 3.0 CS Functions */
 FMI3_Export fmi3Status fmi3EnterStepMode(fmi3Instance instance)
 {
-	return fmi_enter_step_mode(instance);
+    return fmi_enter_step_mode(instance);
 }
 
 FMI3_Export fmi3Status fmi3Terminate(fmi3Instance instance)
 {
-	return fmi_terminate(instance);
+    return fmi_terminate(instance);
 }
 
 FMI3_Export fmi3Status fmi3Reset(fmi3Instance instance)
 {
-	return fmi_reset(instance);
+    return fmi_reset(instance);
 }
 
 FMI3_Export fmi3Status fmi3GetOutputDerivatives(fmi3Instance instance,
@@ -513,25 +512,18 @@ FMI3_Export fmi3Status fmi3GetOutputDerivatives(fmi3Instance instance,
                                                 fmi3Float64 values[],
                                                 size_t nValues)
 {
-	return fmi_get_output_derivatives(instance, valueReferences, nValueReferences, orders, values, nValues);
+    return fmi_get_output_derivatives(instance, valueReferences, nValueReferences, orders, values, nValues);
 }
 
 FMI3_Export fmi3Status fmi3DoStep(fmi3Instance instance,
                                   fmi3Float64 currentCommunicationPoint,
                                   fmi3Float64 communicationStepSize,
                                   fmi3Boolean noSetFMUStatePriorToCurrentPoint,
+                                  fmi3Boolean* eventHandlingNeeded,
                                   fmi3Boolean* terminate,
                                   fmi3Boolean* earlyReturn,
                                   fmi3Float64* lastSuccessfulTime)
 {
-	return fmi_do_step(instance, currentCommunicationPoint, communicationStepSize, noSetFMUStatePriorToCurrentPoint,
+    return fmi_do_step(instance, currentCommunicationPoint, communicationStepSize, noSetFMUStatePriorToCurrentPoint,
             terminate, earlyReturn, lastSuccessfulTime);
-}
-
-FMI3_Export fmi3Status fmi3ActivateModelPartition(fmi3Instance instance,
-                                                  fmi3ValueReference clockReference,
-                                                  size_t clockElementIndex,
-                                                  fmi3Float64 activationTime)
-{
-    return fmi_activate_model_partition(instance, clockReference, clockElementIndex, activationTime);
 }

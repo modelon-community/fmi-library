@@ -49,13 +49,13 @@ extern "C" {
  * \addtogroup  fmi3_import FMI 3.0 import interface
  *  All the structures used in the interfaces are intended to
  *  be treated as opaque objects by the client code.
- @{ 
+ @{
  */
 
 /**	\addtogroup fmi3_import_init Constuction, destruction and error handling
  * 	\addtogroup fmi3_import_gen General information retrieval
  *	\addtogroup fmi3_import_capi Interface to the standard FMI 3.0 "C" API
- *  \brief Convenient functions for calling the FMI functions. This interface wrappes the "C" API. 
+ *  \brief Convenient functions for calling the FMI functions. This interface wrappes the "C" API.
  */
  /** @} */
  /** @} */
@@ -82,7 +82,7 @@ FMILIB_EXPORT const char* fmi3_import_get_last_error(fmi3_import_t* fmu);
 /**
 \brief Clear the error message.
 * @param fmu An FMU object as returned by fmi3_import_parse_xml().
-* @return 0 if further processing is possible. If it returns 1 then the 
+* @return 0 if further processing is possible. If it returns 1 then the
 *	error was not recoverable. The \p fmu object should then be freed and recreated.
 */
 FMILIB_EXPORT int fmi3_import_clear_last_error(fmi3_import_t* fmu);
@@ -95,12 +95,12 @@ FMILIB_EXPORT void fmi3_import_free(fmi3_import_t* fmu);
 /** @}
 \addtogroup fmi3_import_gen
  * \brief Functions for retrieving general model information. Memory for the strings is allocated and deallocated in the module.
- *   All the functions take an FMU object as returned by fmi3_import_parse_xml() as a parameter. 
+ *   All the functions take an FMU object as returned by fmi3_import_parse_xml() as a parameter.
  *   The information is retrieved from the XML file.
  * @{
 */
-/** 
-\brief Get model name. 
+/**
+\brief Get model name.
 @param fmu An fmu object as returned by fmi3_import_parse_xml().
 */
 FMILIB_EXPORT const char* fmi3_import_get_model_name(fmi3_import_t* fmu);
@@ -108,44 +108,51 @@ FMILIB_EXPORT const char* fmi3_import_get_model_name(fmi3_import_t* fmu);
 /** \brief Retrieve capability flags by ID. */
 FMILIB_EXPORT unsigned int fmi3_import_get_capability(fmi3_import_t* , fmi3_capabilities_enu_t id);
 
-/** 
-\brief Get model identifier for ModelExchange. 
+/**
+\brief Get model identifier for ModelExchange.
 @param fmu An fmu object as returned by fmi3_import_parse_xml().
 */
 FMILIB_EXPORT const char* fmi3_import_get_model_identifier_ME(fmi3_import_t* fmu);
 
-/** 
-\brief Get model identifier for CoSimulation. 
+/**
+\brief Get model identifier for CoSimulation.
 @param fmu An fmu object as returned by fmi3_import_parse_xml().
 */
 FMILIB_EXPORT const char* fmi3_import_get_model_identifier_CS(fmi3_import_t* fmu);
 
-/** 
-\brief Get FMU instantiationToken. 
+/**
+\brief Get model identifier for ScheduledExecution.
+@param fmu An fmu object as returned by fmi3_import_parse_xml().
+*/
+FMILIB_EXPORT const char* fmi3_import_get_model_identifier_SE(fmi3_import_t* fmu);
+
+
+/**
+\brief Get FMU instantiationToken.
 @param fmu An fmu object as returned by fmi3_import_parse_xml().
 */
 FMILIB_EXPORT const char* fmi3_import_get_instantiation_token(fmi3_import_t* fmu);
 
-/** 
+/**
 \brief Get FMU description.
 @param fmu An fmu object as returned by fmi3_import_parse_xml().
 */
 FMILIB_EXPORT const char* fmi3_import_get_description(fmi3_import_t* fmu);
 
-/** 
-\brief Get FMU author. 
+/**
+\brief Get FMU author.
 @param fmu An fmu object as returned by fmi3_import_parse_xml().
 */
 FMILIB_EXPORT const char* fmi3_import_get_author(fmi3_import_t* fmu);
 
-/** 
-\brief Get FMU copyright information. 
+/**
+\brief Get FMU copyright information.
 @param fmu An fmu object as returned by fmi3_import_parse_xml().
 */
 FMILIB_EXPORT const char* fmi3_import_get_copyright(fmi3_import_t* fmu);
 
-/** 
-\brief Get FMU license information. 
+/**
+\brief Get FMU license information.
 @param fmu An fmu object as returned by fmi3_import_parse_xml().
 */
 FMILIB_EXPORT const char* fmi3_import_get_license(fmi3_import_t* fmu);
@@ -155,22 +162,22 @@ FMILIB_EXPORT const char* fmi3_import_get_license(fmi3_import_t* fmu);
 */
 FMILIB_EXPORT const char* fmi3_import_get_model_version(fmi3_import_t* fmu);
 
-/** \brief Get FMI standard version (always 3.0). 
+/** \brief Get FMI standard version (always 3.0).
 @param fmu An fmu object as returned by fmi3_import_parse_xml().
 */
 FMILIB_EXPORT const char* fmi3_import_get_model_standard_version(fmi3_import_t* fmu);
 
-/** \brief Get FMU generation tool. 
+/** \brief Get FMU generation tool.
 @param fmu An fmu object as returned by fmi3_import_parse_xml().
 */
 FMILIB_EXPORT const char* fmi3_import_get_generation_tool(fmi3_import_t* fmu);
 
-/** \brief Get FMU generation date and time. 
+/** \brief Get FMU generation date and time.
 @param fmu An fmu object as returned by fmi3_import_parse_xml().
 */
 FMILIB_EXPORT const char* fmi3_import_get_generation_date_and_time(fmi3_import_t* fmu);
 
-/** \brief Get variable naming convention used. 
+/** \brief Get variable naming convention used.
 @param fmu An fmu object as returned by fmi3_import_parse_xml().
 */
 FMILIB_EXPORT fmi3_variable_naming_convension_enu_t fmi3_import_get_naming_convention(fmi3_import_t* fmu);
@@ -233,7 +240,7 @@ FMILIB_EXPORT fmi3_import_variable_list_t* fmi3_import_get_variable_aliases(fmi3
 
 /** \brief Get the list of all the variables in the model.
 * @param fmu An FMU object as returned by fmi3_import_parse_xml().
-* @param sortOrder Specifies the order of the variables in the list: 
+* @param sortOrder Specifies the order of the variables in the list:
 		0 - original order as found in the XML file; 1 - sorted alfabetically by variable name; 2 sorted by types/value references.
 * @return a variable list with all the variables in the model.
 *
@@ -242,7 +249,7 @@ FMILIB_EXPORT fmi3_import_variable_list_t* fmi3_import_get_variable_aliases(fmi3
 FMILIB_EXPORT fmi3_import_variable_list_t* fmi3_import_get_variable_list(fmi3_import_t* fmu, int sortOrder);
 
 /** \brief Create a variable list with a single variable.
-  
+
 \param fmu An FMU object that this variable list will reference.
 \param v A variable.
 */
@@ -324,50 +331,50 @@ FMILIB_EXPORT fmi3_import_variable_list_t* fmi3_import_get_discrete_states_list(
 */
 FMILIB_EXPORT fmi3_import_variable_list_t* fmi3_import_get_initial_unknowns_list(fmi3_import_t* fmu);
 
-/** \brief Get dependency information in row-compressed format. 
- * @param fmu An FMU object as returned by fmi3_import_parse_xml(). 
+/** \brief Get dependency information in row-compressed format.
+ * @param fmu An FMU object as returned by fmi3_import_parse_xml().
  * @param startIndex - outputs a pointer to an array of start indices (size of array is number of outputs + 1).
- *                     First element is zero, last is equal to the number of elements in the dependency and factor arrays. 
- *                     NULL pointer is returned if no dependency information was provided in the XML. 
- * @param dependency - outputs a pointer to the dependency index data. Indices are 1-based. Index equals to zero  
- *                     means "depends on all" (no information in the XML). 
- * @param factorKind - outputs a pointer to the factor kind data. The values can be converted to ::fmi3_dependency_factor_kind_enu_t 
- */ 
+ *                     First element is zero, last is equal to the number of elements in the dependency and factor arrays.
+ *                     NULL pointer is returned if no dependency information was provided in the XML.
+ * @param dependency - outputs a pointer to the dependency index data. Indices are 1-based. Index equals to zero
+ *                     means "depends on all" (no information in the XML).
+ * @param factorKind - outputs a pointer to the factor kind data. The values can be converted to ::fmi3_dependency_factor_kind_enu_t
+ */
 FMILIB_EXPORT void fmi3_import_get_outputs_dependencies(fmi3_import_t* fmu, size_t** startIndex, size_t** dependency, char** factorKind);
- 
-/** \brief Get dependency information in row-compressed format. 
- * @param fmu An FMU object as returned by fmi3_import_parse_xml(). 
+
+/** \brief Get dependency information in row-compressed format.
+ * @param fmu An FMU object as returned by fmi3_import_parse_xml().
  * @param startIndex - outputs a pointer to an array of start indices (size of array is number of derivatives + 1).
- *                     First element is zero, last is equal to the number of elements in the dependency and factor arrays. 
- *                     NULL pointer is returned if no dependency information was provided in the XML. 
- * @param dependency - outputs a pointer to the dependency index data. Indices are 1-based. Index equals to zero  
- *                     means "depends on all" (no information in the XML). 
- * @param factorKind - outputs a pointer to the factor kind data. The values can be converted to ::fmi3_dependency_factor_kind_enu_t 
- */ 
+ *                     First element is zero, last is equal to the number of elements in the dependency and factor arrays.
+ *                     NULL pointer is returned if no dependency information was provided in the XML.
+ * @param dependency - outputs a pointer to the dependency index data. Indices are 1-based. Index equals to zero
+ *                     means "depends on all" (no information in the XML).
+ * @param factorKind - outputs a pointer to the factor kind data. The values can be converted to ::fmi3_dependency_factor_kind_enu_t
+ */
 FMILIB_EXPORT void fmi3_import_get_derivatives_dependencies(fmi3_import_t* fmu, size_t** startIndex, size_t** dependency, char** factorKind);
 
-/** \brief Get dependency information in row-compressed format. 
- * @param fmu An FMU object as returned by fmi3_import_parse_xml(). 
+/** \brief Get dependency information in row-compressed format.
+ * @param fmu An FMU object as returned by fmi3_import_parse_xml().
  * @param startIndex - outputs a pointer to an array of start indices (size of array is number of discrete states + 1).
- *                     First element is zero, last is equal to the number of elements in the dependency and factor arrays. 
- *                     NULL pointer is returned if no dependency information was provided in the XML. 
- * @param dependency - outputs a pointer to the dependency index data. Indices are 1-based. Index equals to zero  
- *                     means "depends on all" (no information in the XML). 
- * @param factorKind - outputs a pointer to the factor kind data. The values can be converted to ::fmi3_dependency_factor_kind_enu_t 
- */ 
+ *                     First element is zero, last is equal to the number of elements in the dependency and factor arrays.
+ *                     NULL pointer is returned if no dependency information was provided in the XML.
+ * @param dependency - outputs a pointer to the dependency index data. Indices are 1-based. Index equals to zero
+ *                     means "depends on all" (no information in the XML).
+ * @param factorKind - outputs a pointer to the factor kind data. The values can be converted to ::fmi3_dependency_factor_kind_enu_t
+ */
 FMILIB_EXPORT void fmi3_import_get_discrete_states_dependencies(fmi3_import_t* fmu, size_t** startIndex, size_t** dependency, char** factorKind);
- 
-/** \brief Get dependency information in row-compressed format. 
- * @param fmu An FMU object as returned by fmi3_import_parse_xml(). 
+
+/** \brief Get dependency information in row-compressed format.
+ * @param fmu An FMU object as returned by fmi3_import_parse_xml().
  * @param startIndex - outputs a pointer to an array of start indices (size of array is number of initial unknowns + 1).
- *                     First element is zero, last is equal to the number of elements in the dependency and factor arrays. 
- *                     NULL pointer is returned if no dependency information was provided in the XML. 
- * @param dependency - outputs a pointer to the dependency index data. Indices are 1-based. Index equals to zero  
- *                     means "depends on all" (no information in the XML). 
- * @param factorKind - outputs a pointer to the factor kind data. The values can be converted to ::fmi3_dependency_factor_kind_enu_t 
- */ 
+ *                     First element is zero, last is equal to the number of elements in the dependency and factor arrays.
+ *                     NULL pointer is returned if no dependency information was provided in the XML.
+ * @param dependency - outputs a pointer to the dependency index data. Indices are 1-based. Index equals to zero
+ *                     means "depends on all" (no information in the XML).
+ * @param factorKind - outputs a pointer to the factor kind data. The values can be converted to ::fmi3_dependency_factor_kind_enu_t
+ */
 FMILIB_EXPORT void fmi3_import_get_initial_unknowns_dependencies(fmi3_import_t* fmu, size_t** startIndex, size_t** dependency, char** factorKind);
- 
+
 /**@} */
 
 #ifdef __cplusplus

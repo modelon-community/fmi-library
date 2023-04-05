@@ -30,14 +30,14 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 /* BouncingBall model with redundant values */
 /* ValueReferences for the variables and parameters in the model */
 /* States */
-#define VAR_R_HIGHT				0
-#define VAR_R_HIGHT_SPEED		1
+#define VAR_R_HEIGHT				0
+#define VAR_R_HEIGHT_SPEED		1
 /* Real */
 #define VAR_R_GRATIVY			2
 #define VAR_R_BOUNCE_CONF		3
 
 /* Event indicators */
-#define EVENT_HIGHT				0
+#define EVENT_HEIGHT				0
 
 /* Event indicators */
 #define VAR_S_LOGGER_TEST		0
@@ -57,7 +57,7 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 #define N_OUTPUT_REAL_MAX_ORDER	2 /* CS only */
 
 
-#define FMI_VERSION			"2.0"
+#define FMI_VERSION			"3.0"
 
 #define FMI_INSTANTIATION_TOKEN			"123"
 

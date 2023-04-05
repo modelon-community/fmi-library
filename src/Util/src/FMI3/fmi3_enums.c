@@ -28,9 +28,8 @@ const char* fmi3_fmu_kind_to_string(fmi3_fmu_kind_enu_t kind) {
     switch (kind) {
     case fmi3_fmu_kind_unknown: return "Unknown";
     case fmi3_fmu_kind_me:      return "ModelExchange";
-    case fmi3_fmu_kind_bcs:     return "Basic CoSimulation";
-    case fmi3_fmu_kind_hcs:     return "Hybrid CoSimulation";
-    case fmi3_fmu_kind_scs:     return "Scheduled CoSimulation";
+    case fmi3_fmu_kind_cs:     return "CoSimulation";
+    case fmi3_fmu_kind_se:     return "Scheduled Execution";
     default: break;
     }
     return "Multi-Type";

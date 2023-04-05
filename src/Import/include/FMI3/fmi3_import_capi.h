@@ -40,7 +40,7 @@ Wrapper functions for the FMI 3.0 functions
  * @{
  */
 
-/**	\addtogroup fmi3_import_capi_const_destroy FMI 3.0 Constructor and Destructor	
+/**	\addtogroup fmi3_import_capi_const_destroy FMI 3.0 Constructor and Destructor
  * \brief Functions for instantiating and freeing the container of the struct that is responsible for the FMI functions.
  *
  *	Before any of the FMI functions may be called, the construction function must instantiate a fmi_import_t module.
@@ -49,7 +49,7 @@ Wrapper functions for the FMI 3.0 functions
  *
  * 	\addtogroup fmi3_import_capi_me FMI 3.0 (ME) Model Exchange functions
  * \brief List of Model Exchange wrapper functions. Common functions are not listed.
- *	\addtogroup fmi3_import_capi_cs FMI 3.0 (CS) Co-Simulation functions 
+ *	\addtogroup fmi3_import_capi_cs FMI 3.0 (CS) Co-Simulation functions
  * \brief List of Co-Simulation wrapper functions. Common functions are not listed.
  *	\addtogroup fmi3_import_capi_common FMI 3.0 (ME & CS) Common functions
  * \brief List of wrapper functions that are in common for both Model Exchange and Co-Simulation.
@@ -63,9 +63,9 @@ Wrapper functions for the FMI 3.0 functions
 /**
  * \brief Create a C-API struct. The C-API struct is a placeholder for the FMI DLL functions.
  *
- * This function may only be called once if it returned succesfully. fmi3_import_destroy_dllfmu 
- * must be called before this function can be called again. 
- * 
+ * This function may only be called once if it returned succesfully. fmi3_import_destroy_dllfmu
+ * must be called before this function can be called again.
+ *
  * @param fmu A model description object returned by fmi3_import_parse_xml().
  * @param fmuKind Specifies if ModelExchange or CoSimulation binary should be loaded.
  * @param instanceEnvironment The instance environment that is used during callbacks. If NULL, and 'logMessage' is also
@@ -74,18 +74,18 @@ Wrapper functions for the FMI 3.0 functions
           NULL, then fmi3_log_forwarding is utitlized to provide logging.
  * @return Error status. If the function returns with an error, it is not allowed to call any of the other C-API functions.
  */
-FMILIB_EXPORT jm_status_enu_t fmi3_import_create_dllfmu(fmi3_import_t* fmu, fmi3_fmu_kind_enu_t fmuKind, const fmi3_instance_environment_t instanceEnvironment, const fmi3_callback_log_message_ft logMessage);
+FMILIB_EXPORT jm_status_enu_t fmi3_import_create_dllfmu(fmi3_import_t* fmu, fmi3_fmu_kind_enu_t fmuKind, const fmi3_instance_environment_t instanceEnvironment, const fmi3_log_message_callback_ft logMessage);
 
 /** \brief Free a C-API struct. All memory allocated since the struct was created is freed.
- * 
+ *
  * @param fmu A model description object returned from fmi3_import_parse_xml().
  */
 FMILIB_EXPORT void fmi3_import_destroy_dllfmu(fmi3_import_t* fmu);
 
 /**
  * \brief Set CAPI debug mode flag. Setting to non-zero prevents DLL unloading in fmi3_import_destroy_dllfmu
- *  while all the memory is deallocated. This is to support valgrind debugging. 
- * 
+ *  while all the memory is deallocated. This is to support valgrind debugging.
+ *
  * @param fmu C-API struct that has succesfully loaded the FMI function.
  * @param mode The debug mode to set.
  */
@@ -98,16 +98,16 @@ FMILIB_EXPORT void fmi3_import_set_debug_mode(fmi3_import_t* fmu, int mode);
  */
 
 /**
- * \brief Wrapper for the FMI function fmiGetVersion() 
- * 
+ * \brief Wrapper for the FMI function fmiGetVersion()
+ *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
  * @return FMI version.
  */
 FMILIB_EXPORT const char* fmi3_import_get_version(fmi3_import_t* fmu);
 
 /**
- * \brief Wrapper for the FMI function fmiSetDebugLogging(...) 
- * 
+ * \brief Wrapper for the FMI function fmiSetDebugLogging(...)
+ *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
  * @param loggingOn Enable or disable the debug logger.
  * @param nCategories Number of categories to log.
@@ -117,123 +117,111 @@ FMILIB_EXPORT const char* fmi3_import_get_version(fmi3_import_t* fmu);
 FMILIB_EXPORT fmi3_status_t fmi3_import_set_debug_logging(fmi3_import_t* fmu, fmi3_boolean_t loggingOn, size_t nCategories, fmi3_string_t categories[]);
 
 /**
- * \brief Wrapper for the FMI function fmi3InstantiateModelExchange(...) 
+ * \brief Wrapper for the FMI function fmi3InstantiateModelExchange(...)
  *
  * Arguments 'instanceEnvironment' and 'logMessage' are reused from #fmi3_import_create_dllfmu.
  * Argument 'loggingOn' is reused from #fmi3_import_parse_xml().
- * 
+ *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see
  *   fmi3_import_create_dllfmu().
  * @param instanceName The name of the instance.
- * @param resourceLocation Access path URI to the FMU archive resources. If this is NULL pointer the FMU will get the
+ * @param resourcePath Absolute path URI to the FMU archive resources. If this is NULL pointer the FMU will get the
  *   path to the unzipped location.
  * @param visible Indicates whether or not the simulator application window shoule be visible.
+ * @param loggingOn Enable or disable the debug logger.
+ * @param instanceEnvironment The instance environment that is used during callbacks.
+ * @param logMessage The logging function the FMU will use.
  * @return Error status. Returnes jm_status_error if FMI function returned NULL, otherwise jm_status_success.
  */
 FMILIB_EXPORT jm_status_enu_t fmi3_import_instantiate_model_exchange(
         fmi3_import_t* fmu,
         fmi3_string_t  instanceName,
-        fmi3_string_t  resourceLocation,
-        fmi3_boolean_t visible);
+        fmi3_string_t  resourcePath,
+        fmi3_boolean_t visible,
+        fmi3_boolean_t loggingOn,
+        fmi3_instance_environment_t instanceEnvironment,
+        fmi3_log_message_callback_ft logMessage);
 
 /**
- * \brief Wrapper for the FMI function fmi3InstantiateBasicCoSimulation(...) 
+ * \brief Wrapper for the FMI function fmi3InstantiateCoSimulation(...)
  *
  * Arguments 'instanceEnvironment' and 'logMessage' are reused from #fmi3_import_create_dllfmu.
  * Argument 'loggingOn' is reused from #fmi3_import_parse_xml().
- * 
+ *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see
  *   fmi3_import_create_dllfmu().
  * @param instanceName The name of the instance.
- * @param resourceLocation Access path URI to the FMU archive resources. If this is NULL pointer the FMU will get the
+ * @param resourcePath Absolute path URI to the FMU archive resources. If this is NULL pointer the FMU will get the
  *   path to the unzipped location.
  * @param visible Indicates whether or not the simulator application window shoule be visible.
- * @param intermediateVariableGetRequired         TODO: (not yet described in standard)
- * @param intermediateInternalVariableGetRequired TODO: (not yet described in standard)  
- * @param intermediateVariableSetRequired         TODO: (not yet described in standard)
+ * @param loggingOn Enable or disable the debug logger.
+ * @param eventModeUsed Indicates whether or not 'Event Mode' is supported.
+ * @param earlyReturnAllowed Indicates whether early return is allowed.
+ * @param requiredIntermediateVariables Array of value references of all input/output variables
+ *        that the simulation algorithm intends to set/get during intermediate updates.
+ * @param nRequiredIntermediateVariables Specifies the number of entries in array
+ *        'requiredIntermediateVariables'.
+ * @param instanceEnvironment The instance environment that is used during callbacks.
+ * @param logMessage The logging function the FMU will use.
  * @param intermediateUpdate Callback for performing intermediate updates.
  * @return Error status. Returnes jm_status_error if FMI function returned NULL, otherwise jm_status_success.
  */
-FMILIB_EXPORT jm_status_enu_t fmi3_import_instantiate_basic_co_simulation(
+FMILIB_EXPORT jm_status_enu_t fmi3_import_instantiate_co_simulation(
         fmi3_import_t*                       fmu,
         fmi3_string_t                        instanceName,
-        fmi3_string_t                        resourceLocation,
+        fmi3_string_t                        resourcePath,
         fmi3_boolean_t                       visible,
-        fmi3_boolean_t                       intermediateVariableGetRequired,
-        fmi3_boolean_t                       intermediateInternalVariableGetRequired,
-        fmi3_boolean_t                       intermediateVariableSetRequired,
-        fmi3_callback_intermediate_update_ft intermediateUpdate);
+        fmi3_boolean_t                       loggingOn,
+        fmi3_boolean_t                       eventModeUsed,
+        fmi3_boolean_t                       earlyReturnAllowed,
+        const fmi3_value_reference_t         requiredIntermediateVariables,
+        size_t                               nRequiredIntermediateVariables,
+        fmi3_instance_environment_t          instanceEnvironment,
+        fmi3_log_message_callback_ft         logMessage,
+        fmi3_intermediate_update_callback_ft intermediateUpdate);
 
 /**
- * \brief Wrapper for the FMI function fmi3InstantiateHybridCoSimulation(...) 
+ * \brief Wrapper for the FMI function fmi3InstantiateScheduledExecution(...)
  *
  * Arguments 'instanceEnvironment' and 'logMessage' are reused from #fmi3_import_create_dllfmu.
  * Argument 'loggingOn' is reused from #fmi3_import_parse_xml().
- * 
- * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see
- *   fmi3_import_create_dllfmu().
- * @param instanceName The name of the instance.
- * @param resourceLocation Access path URI to the FMU archive resources. If this is NULL pointer the FMU will get the
- *   path to the unzipped location.
- * @param visible Indicates whether or not the simulator application window shoule be visible.
- * @param intermediateVariableGetRequired         TODO: (not yet described in standard)
- * @param intermediateInternalVariableGetRequired TODO: (not yet described in standard)  
- * @param intermediateVariableSetRequired         TODO: (not yet described in standard)
- * @param intermediateUpdate Callback for performing intermediate updates.
- * @return Error status. Returnes jm_status_error if FMI function returned NULL, otherwise jm_status_success.
- */
-FMILIB_EXPORT jm_status_enu_t fmi3_import_instantiate_hybrid_co_simulation(
-        fmi3_import_t*                       fmu,
-        fmi3_string_t                        instanceName,
-        fmi3_string_t                        resourceLocation,
-        fmi3_boolean_t                       visible,
-        fmi3_boolean_t                       intermediateVariableGetRequired,
-        fmi3_boolean_t                       intermediateInternalVariableGetRequired,
-        fmi3_boolean_t                       intermediateVariableSetRequired,
-        fmi3_callback_intermediate_update_ft intermediateUpdate);
-
-/**
- * \brief Wrapper for the FMI function fmi3InstantiateScheduledCoSimulation(...) 
  *
- * Arguments 'instanceEnvironment' and 'logMessage' are reused from #fmi3_import_create_dllfmu.
- * Argument 'loggingOn' is reused from #fmi3_import_parse_xml().
- * 
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see
  *   fmi3_import_create_dllfmu().
  * @param instanceName The name of the instance.
- * @param resourceLocation Access path URI to the FMU archive resources. If this is NULL pointer the FMU will get the
+ * @param resourcePath Absolute path URI to the FMU archive resources. If this is NULL pointer the FMU will get the
  *   path to the unzipped location.
  * @param visible Indicates whether or not the simulator application window shoule be visible.
- * @param intermediateVariableGetRequired         TODO: (not yet described in standard)
- * @param intermediateInternalVariableGetRequired TODO: (not yet described in standard)  
- * @param intermediateVariableSetRequired         TODO: (not yet described in standard)
- * @param intermediateUpdate Callback for performing intermediate updates.
+ * @param loggingOn Enable or disable the debug logger.
+ * @param instanceEnvironment The instance environment that is used during callbacks.
+ * @param logMessage The logging function the FMU will use.
+ * @param clockUpdate Callback for clock update.
  * @param lockPreemption Callback for locking preemption.
  * @param unlockPreemption Callback for unlocking preemption.
  * @return Error status. Returnes jm_status_error if FMI function returned NULL, otherwise jm_status_success.
  */
-FMILIB_EXPORT jm_status_enu_t fmi3_import_instantiate_scheduled_co_simulation(
+FMILIB_EXPORT jm_status_enu_t fmi3_import_instantiate_scheduled_execution(
         fmi3_import_t*                       fmu,
         fmi3_string_t                        instanceName,
-        fmi3_string_t                        resourceLocation,
+        fmi3_string_t                        resourcePath,
         fmi3_boolean_t                       visible,
-        fmi3_boolean_t                       intermediateVariableGetRequired,
-        fmi3_boolean_t                       intermediateInternalVariableGetRequired,
-        fmi3_boolean_t                       intermediateVariableSetRequired,
-        fmi3_callback_intermediate_update_ft intermediateUpdate,
-        fmi3_callback_lock_preemption_ft     lockPreemption,
-        fmi3_callback_unlock_preemption_ft   unlockPreemption);
+        fmi3_boolean_t                       loggingOn,
+        fmi3_instance_environment_t          instanceEnvironment,
+        fmi3_log_message_callback_ft         logMessage,
+        fmi3_clock_update_callback_ft        clockUpdate,
+        fmi3_lock_preemption_callback_ft     lockPreemption,
+        fmi3_unlock_preemption_callback_ft   unlockPreemption);
 
 /**
- * \brief Wrapper for the FMI function fmiFreeInstance(...) 
- * 
+ * \brief Wrapper for the FMI function fmiFreeInstance(...)
+ *
  * @param fmu An fmu description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
  */
 FMILIB_EXPORT void fmi3_import_free_instance(fmi3_import_t* fmu);
 
 /**
  * \brief Calls the FMI function fmiEnterInitializationMode(...)
- * 
+ *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
  * @param tolerance_defined True if the @p tolerance argument is to be used
  * @param tolerance Solvers internal to the FMU should use this tolerance or finer, if @p tolerance_defined is true
@@ -252,46 +240,31 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_enter_initialization_mode(
 
 /**
  * \brief Calls the FMI function fmiExitInitializationMode(...)
- * 
+ *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
  * @return FMI status.
  */
 FMILIB_EXPORT fmi3_status_t fmi3_import_exit_initialization_mode(fmi3_import_t* fmu);
 
 /**
- * \brief Calls the FMI function fmiEnterEventMode(...) 
- * 
+ * \brief Calls the FMI function fmiEnterEventMode(...)
+ *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
- * @param inputEvent True if an input event occurred.
- * @param stepEvent  True if a step event occured.
- * @param rootsFound Array of length 'nEventIndicators' that describes the status and direction of the event
- *   indicators(z).
- *   z_i == 0: no root found
- *   z_i == +1: z_i increasing
- *   z_i == -1: z_i decreasing
- * @param nEventIndicators Number of event indicators, or 0 if info can't be provided.
- * @param timeEvent True if time event occurred.
  * @return FMI status.
  */
-FMILIB_EXPORT fmi3_status_t fmi3_import_enter_event_mode(
-        fmi3_import_t*     fmu,
-        fmi3_boolean_t     inputEvent,
-        fmi3_boolean_t     stepEvent,
-        const fmi3_int32_t rootsFound[],
-        size_t             nEventIndicators,
-        fmi3_boolean_t     timeEvent);
+FMILIB_EXPORT fmi3_status_t fmi3_import_enter_event_mode(fmi3_import_t* fmu);
 
 /**
- * \brief Wrapper for the FMI function fmiTerminate(...) 
- * 
+ * \brief Wrapper for the FMI function fmiTerminate(...)
+ *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
  * @return FMI status.
  */
 FMILIB_EXPORT fmi3_status_t fmi3_import_terminate(fmi3_import_t* fmu);
 
 /**
- * \brief Wrapper for the FMI function fmiReset(...) 
- * 
+ * \brief Wrapper for the FMI function fmiReset(...)
+ *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
  * @return FMI status.
  */
@@ -299,8 +272,8 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_reset(fmi3_import_t* fmu);
 
 
 /**
- * \brief Wrapper for the FMI function fmiSetFloat64(...) 
- * 
+ * \brief Wrapper for the FMI function fmiSetFloat64(...)
+ *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
  * @param vr Array of value references.
  * @param nvr Number of array elements.
@@ -311,8 +284,8 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_reset(fmi3_import_t* fmu);
 FMILIB_EXPORT fmi3_status_t fmi3_import_set_float64(fmi3_import_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, const fmi3_float64_t value[], size_t nValues);
 
 /**
- * \brief Wrapper for the FMI function fmiSetFloat32(...) 
- * 
+ * \brief Wrapper for the FMI function fmiSetFloat32(...)
+ *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
  * @param vr Array of value references.
  * @param nvr Number of array elements.
@@ -323,8 +296,8 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_set_float64(fmi3_import_t* fmu, const fm
 FMILIB_EXPORT fmi3_status_t fmi3_import_set_float32(fmi3_import_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, const fmi3_float32_t value[], size_t nValues);
 
 /**
- * \brief Wrapper for the FMI function fmiSetInt64(...) 
- * 
+ * \brief Wrapper for the FMI function fmiSetInt64(...)
+ *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
  * @param vr Array of value references.
  * @param nvr Number of array elements.
@@ -335,8 +308,8 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_set_float32(fmi3_import_t* fmu, const fm
 FMILIB_EXPORT fmi3_status_t fmi3_import_set_int64(fmi3_import_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, const fmi3_int64_t value[], size_t nValues);
 
 /**
- * \brief Wrapper for the FMI function fmiSetInt32(...) 
- * 
+ * \brief Wrapper for the FMI function fmiSetInt32(...)
+ *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
  * @param vr Array of value references.
  * @param nvr Number of array elements.
@@ -347,8 +320,8 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_set_int64(fmi3_import_t* fmu, const fmi3
 FMILIB_EXPORT fmi3_status_t fmi3_import_set_int32(fmi3_import_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, const fmi3_int32_t value[], size_t nValues);
 
 /**
- * \brief Wrapper for the FMI function fmiSetInt16(...) 
- * 
+ * \brief Wrapper for the FMI function fmiSetInt16(...)
+ *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
  * @param vr Array of value references.
  * @param nvr Number of array elements.
@@ -359,8 +332,8 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_set_int32(fmi3_import_t* fmu, const fmi3
 FMILIB_EXPORT fmi3_status_t fmi3_import_set_int16(fmi3_import_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, const fmi3_int16_t value[], size_t nValues);
 
 /**
- * \brief Wrapper for the FMI function fmiSetInt8(...) 
- * 
+ * \brief Wrapper for the FMI function fmiSetInt8(...)
+ *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
  * @param vr Array of value references.
  * @param nvr Number of array elements.
@@ -371,8 +344,8 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_set_int16(fmi3_import_t* fmu, const fmi3
 FMILIB_EXPORT fmi3_status_t fmi3_import_set_int8(fmi3_import_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, const fmi3_int8_t value[], size_t nValues);
 
 /**
- * \brief Wrapper for the FMI function fmiSetUInt64(...) 
- * 
+ * \brief Wrapper for the FMI function fmiSetUInt64(...)
+ *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
  * @param vr Array of value references.
  * @param nvr Number of array elements.
@@ -383,8 +356,8 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_set_int8(fmi3_import_t* fmu, const fmi3_
 FMILIB_EXPORT fmi3_status_t fmi3_import_set_uint64(fmi3_import_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, const fmi3_uint64_t value[], size_t nValues);
 
 /**
- * \brief Wrapper for the FMI function fmiSetUInt32(...) 
- * 
+ * \brief Wrapper for the FMI function fmiSetUInt32(...)
+ *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
  * @param vr Array of value references.
  * @param nvr Number of array elements.
@@ -395,8 +368,8 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_set_uint64(fmi3_import_t* fmu, const fmi
 FMILIB_EXPORT fmi3_status_t fmi3_import_set_uint32(fmi3_import_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, const fmi3_uint32_t value[], size_t nValues);
 
 /**
- * \brief Wrapper for the FMI function fmiSetUInt16(...) 
- * 
+ * \brief Wrapper for the FMI function fmiSetUInt16(...)
+ *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
  * @param vr Array of value references.
  * @param nvr Number of array elements.
@@ -407,8 +380,8 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_set_uint32(fmi3_import_t* fmu, const fmi
 FMILIB_EXPORT fmi3_status_t fmi3_import_set_uint16(fmi3_import_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, const fmi3_uint16_t value[], size_t nValues);
 
 /**
- * \brief Wrapper for the FMI function fmiSetUInt8(...) 
- * 
+ * \brief Wrapper for the FMI function fmiSetUInt8(...)
+ *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
  * @param vr Array of value references.
  * @param nvr Number of array elements.
@@ -419,8 +392,8 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_set_uint16(fmi3_import_t* fmu, const fmi
 FMILIB_EXPORT fmi3_status_t fmi3_import_set_uint8(fmi3_import_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, const fmi3_uint8_t value[], size_t nValues);
 
 /**
- * \brief Wrapper for the FMI function fmiSetBoolean(...) 
- * 
+ * \brief Wrapper for the FMI function fmiSetBoolean(...)
+ *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
  * @param vr Array of value references.
  * @param nvr Number of array elements.
@@ -432,8 +405,8 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_set_boolean(fmi3_import_t* fmu, const fm
         const fmi3_boolean_t value[], size_t nValues);
 
 /**
- * \brief Wrapper for the FMI function fmiSetString(...) 
- * 
+ * \brief Wrapper for the FMI function fmiSetString(...)
+ *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
  * @param vr Array of value references.
  * @param nvr Number of array elements.
@@ -445,8 +418,8 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_set_string(fmi3_import_t* fmu, const fmi
         const fmi3_string_t value[], size_t nValues);
 
 /**
- * \brief Wrapper for the FMI function fmiSetBinary(...) 
- * 
+ * \brief Wrapper for the FMI function fmiSetBinary(...)
+ *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
  * @param vr Array of value references.
  * @param nvr Number of array elements.
@@ -459,8 +432,8 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_set_binary(fmi3_import_t* fmu, const fmi
         const size_t sizes[], const fmi3_binary_t value[], size_t nValues);
 
 /**
- * \brief Calls the FMI function fmiGetFloat64(...) 
- * 
+ * \brief Calls the FMI function fmiGetFloat64(...)
+ *
  * @param fmu C-API struct that has succesfully loaded the FMI function.
  * @param vr Array of value references.
  * @param nvr Number of array elements.
@@ -471,8 +444,8 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_set_binary(fmi3_import_t* fmu, const fmi
 FMILIB_EXPORT fmi3_status_t fmi3_import_get_float64(fmi3_import_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, fmi3_float64_t value[], size_t nValues);
 
 /**
- * \brief Calls the FMI function fmiGetFloat32(...) 
- * 
+ * \brief Calls the FMI function fmiGetFloat32(...)
+ *
  * @param fmu C-API struct that has succesfully loaded the FMI function.
  * @param vr Array of value references.
  * @param nvr Number of array elements.
@@ -484,8 +457,8 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_get_float32(fmi3_import_t* fmu, const fm
 
 
 /**
- * \brief Wrapper for the FMI function fmiGetInt64(...) 
- * 
+ * \brief Wrapper for the FMI function fmiGetInt64(...)
+ *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
  * @param vr Array of value references.
  * @param nvr Number of array elements.
@@ -496,8 +469,8 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_get_float32(fmi3_import_t* fmu, const fm
 FMILIB_EXPORT fmi3_status_t fmi3_import_get_int64(fmi3_import_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, fmi3_int64_t value[], size_t nValues);
 
 /**
- * \brief Wrapper for the FMI function fmiGetInt32(...) 
- * 
+ * \brief Wrapper for the FMI function fmiGetInt32(...)
+ *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
  * @param vr Array of value references.
  * @param nvr Number of array elements.
@@ -508,8 +481,8 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_get_int64(fmi3_import_t* fmu, const fmi3
 FMILIB_EXPORT fmi3_status_t fmi3_import_get_int32(fmi3_import_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, fmi3_int32_t value[], size_t nValues);
 
 /**
- * \brief Wrapper for the FMI function fmiGetInt16(...) 
- * 
+ * \brief Wrapper for the FMI function fmiGetInt16(...)
+ *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
  * @param vr Array of value references.
  * @param nvr Number of array elements.
@@ -520,8 +493,8 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_get_int32(fmi3_import_t* fmu, const fmi3
 FMILIB_EXPORT fmi3_status_t fmi3_import_get_int16(fmi3_import_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, fmi3_int16_t value[], size_t nValues);
 
 /**
- * \brief Wrapper for the FMI function fmiGetInt8(...) 
- * 
+ * \brief Wrapper for the FMI function fmiGetInt8(...)
+ *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
  * @param vr Array of value references.
  * @param nvr Number of array elements.
@@ -532,8 +505,8 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_get_int16(fmi3_import_t* fmu, const fmi3
 FMILIB_EXPORT fmi3_status_t fmi3_import_get_int8(fmi3_import_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, fmi3_int8_t value[], size_t nValues);
 
 /**
- * \brief Wrapper for the FMI function fmiGetUInt64(...) 
- * 
+ * \brief Wrapper for the FMI function fmiGetUInt64(...)
+ *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
  * @param vr Array of value references.
  * @param nvr Number of array elements.
@@ -544,8 +517,8 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_get_int8(fmi3_import_t* fmu, const fmi3_
 FMILIB_EXPORT fmi3_status_t fmi3_import_get_uint64(fmi3_import_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, fmi3_uint64_t value[], size_t nValues);
 
 /**
- * \brief Wrapper for the FMI function fmiGetUInt32(...) 
- * 
+ * \brief Wrapper for the FMI function fmiGetUInt32(...)
+ *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
  * @param vr Array of value references.
  * @param nvr Number of array elements.
@@ -556,8 +529,8 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_get_uint64(fmi3_import_t* fmu, const fmi
 FMILIB_EXPORT fmi3_status_t fmi3_import_get_uint32(fmi3_import_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, fmi3_uint32_t value[], size_t nValues);
 
 /**
- * \brief Wrapper for the FMI function fmiGetUInt16(...) 
- * 
+ * \brief Wrapper for the FMI function fmiGetUInt16(...)
+ *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
  * @param vr Array of value references.
  * @param nvr Number of array elements.
@@ -568,8 +541,8 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_get_uint32(fmi3_import_t* fmu, const fmi
 FMILIB_EXPORT fmi3_status_t fmi3_import_get_uint16(fmi3_import_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, fmi3_uint16_t value[], size_t nValues);
 
 /**
- * \brief Wrapper for the FMI function fmiGetUInt8(...) 
- * 
+ * \brief Wrapper for the FMI function fmiGetUInt8(...)
+ *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
  * @param vr Array of value references.
  * @param nvr Number of array elements.
@@ -580,8 +553,8 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_get_uint16(fmi3_import_t* fmu, const fmi
 FMILIB_EXPORT fmi3_status_t fmi3_import_get_uint8(fmi3_import_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, fmi3_uint8_t value[], size_t nValues);
 
 /**
- * \brief Wrapper for the FMI function fmiGetBoolean(...) 
- * 
+ * \brief Wrapper for the FMI function fmiGetBoolean(...)
+ *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
  * @param vr Array of value references.
  * @param nvr Number of array elements.
@@ -593,8 +566,8 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_get_boolean(fmi3_import_t* fmu, const fm
         fmi3_boolean_t value[], size_t nValues);
 
 /**
- * \brief Wrapper for the FMI function fmiGetString(...) 
- * 
+ * \brief Wrapper for the FMI function fmiGetString(...)
+ *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
  * @param vr Array of value references.
  * @param nvr Number of array elements.
@@ -606,8 +579,8 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_get_string(fmi3_import_t* fmu, const fmi
         fmi3_string_t value[], size_t nValues);
 
 /**
- * \brief Wrapper for the FMI function fmiGetBinary(...) 
- * 
+ * \brief Wrapper for the FMI function fmiGetBinary(...)
+ *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
  * @param vr Array of value references.
  * @param nvr Number of array elements.
@@ -658,8 +631,8 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_get_variable_dependencies(
 
 
 /**
- * \brief Wrapper for the FMI function fmiGetFMUState(...) 
- * 
+ * \brief Wrapper for the FMI function fmiGetFMUState(...)
+ *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
  * @param s The state object to be set by the FMU
  * @return FMI status.
@@ -667,8 +640,8 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_get_variable_dependencies(
 FMILIB_EXPORT fmi3_status_t fmi3_import_get_fmu_state(fmi3_import_t* fmu, fmi3_FMU_state_t* s);
 
 /**
- * \brief Wrapper for the FMI function fmiSetFMUState(...) 
- * 
+ * \brief Wrapper for the FMI function fmiSetFMUState(...)
+ *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
  * @param s The FMU state object
  * @return FMI status.
@@ -676,8 +649,8 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_get_fmu_state(fmi3_import_t* fmu, fmi3_F
 FMILIB_EXPORT fmi3_status_t fmi3_import_set_fmu_state(fmi3_import_t* fmu, fmi3_FMU_state_t s);
 
 /**
- * \brief Wrapper for the FMI function fmiFreeFMUState(...) 
- * 
+ * \brief Wrapper for the FMI function fmiFreeFMUState(...)
+ *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
  * @param s The FMU state object
  * @return FMI status.
@@ -685,8 +658,8 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_set_fmu_state(fmi3_import_t* fmu, fmi3_F
 FMILIB_EXPORT fmi3_status_t fmi3_import_free_fmu_state(fmi3_import_t* fmu, fmi3_FMU_state_t* s);
 
 /**
- * \brief Wrapper for the FMI function fmiSerializedFMUStateSize(...) 
- * 
+ * \brief Wrapper for the FMI function fmiSerializedFMUStateSize(...)
+ *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
  * @param s The FMU state object
  * @param sz The size of the serialized state in bytes
@@ -695,8 +668,8 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_free_fmu_state(fmi3_import_t* fmu, fmi3_
 FMILIB_EXPORT fmi3_status_t fmi3_import_serialized_fmu_state_size(fmi3_import_t* fmu, fmi3_FMU_state_t s, size_t* sz);
 
 /**
- * \brief Wrapper for the FMI function fmiSerializeFMUState(...) 
- * 
+ * \brief Wrapper for the FMI function fmiSerializeFMUState(...)
+ *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
  * @param s The FMU state object
  * @param data The buffer that will receive serialized FMU state
@@ -706,8 +679,8 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_serialized_fmu_state_size(fmi3_import_t*
 FMILIB_EXPORT fmi3_status_t fmi3_import_serialize_fmu_state(fmi3_import_t* fmu, fmi3_FMU_state_t s, fmi3_byte_t data[], size_t sz);
 
 /**
- * \brief Wrapper for the FMI function fmiSerializeFMUState(...) 
- * 
+ * \brief Wrapper for the FMI function fmiSerializeFMUState(...)
+ *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
  * @param data The buffer that contains serialized FMU state
  * @param sz The size of the data buffer
@@ -717,8 +690,8 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_serialize_fmu_state(fmi3_import_t* fmu, 
 FMILIB_EXPORT fmi3_status_t fmi3_import_de_serialize_fmu_state(fmi3_import_t* fmu, const fmi3_byte_t data[], size_t sz, fmi3_FMU_state_t* s);
 
 /**
- * \brief Wrapper for the FMI function fmiGetDirectionalDerivative(...) 
- * 
+ * \brief Wrapper for the FMI function fmiGetDirectionalDerivative(...)
+ *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
  * @param unknowns Value references for the derivatives/outputs to be processed
  * @param nUnknowns Size of 'nUnknowns'.
@@ -742,8 +715,8 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_get_directional_derivative(
         size_t nSensitivity);
 
 /**
- * \brief Wrapper for the FMI function fmiGetAdjointDerivative(...) 
- * 
+ * \brief Wrapper for the FMI function fmiGetAdjointDerivative(...)
+ *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
  * @param unknowns Value references for the derivatives/outputs to be processed
  * @param nUnknowns Size of 'nUnknowns'.
@@ -767,16 +740,16 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_get_adjoint_derivative(
         size_t nSensitivity);
 
 /**
- * \brief Wrapper for the FMI function fmiEnterConfigurationMode(...) 
- * 
+ * \brief Wrapper for the FMI function fmiEnterConfigurationMode(...)
+ *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
  * @return FMI status.
  */
 FMILIB_EXPORT fmi3_status_t fmi3_import_enter_configuration_mode(fmi3_import_t* fmu);
 
 /**
- * \brief Wrapper for the FMI function fmiExitConfigurationMode(...) 
- * 
+ * \brief Wrapper for the FMI function fmiExitConfigurationMode(...)
+ *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
  * @return FMI status.
  */
@@ -785,119 +758,117 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_exit_configuration_mode(fmi3_import_t* f
 /* Clock related functions */
 
 /**
- * \brief Wrapper for the FMI function fmiGetClock(...) 
- * 
+ * \brief Wrapper for the FMI function fmiGetClock(...)
+ *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
  * @param valueReferences Array of value references to clock variables.
  * @param nValueReferences Number of elements in 'valueReferences' array.
  * @param values Output argument containing the values.
- * @param nValues Number of elements in 'values'.
  * @return FMI status.
  */
 FMILIB_EXPORT fmi3_status_t fmi3_import_get_clock(
         fmi3_import_t* fmu,
         const fmi3_value_reference_t valueReferences[],
         size_t nValueReferences,
-        fmi3_clock_t values[],
-        size_t nValues);
+        fmi3_clock_t values[]);
 
 /**
- * \brief Wrapper for the FMI function fmiSetClock(...) 
- * 
+ * \brief Wrapper for the FMI function fmiSetClock(...)
+ *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
  * @param valueReferences Array of value references to clock variables.
  * @param nValueReferences Number of elements in 'valueReferences' array.
  * @param values Output argument containing the values.
- * @param subactive TODO
- * @param nValues Number of elements in 'values' and 'subactive'.
  * @return FMI status.
  */
 FMILIB_EXPORT fmi3_status_t fmi3_import_set_clock(
         fmi3_import_t* fmu,
         const fmi3_value_reference_t valueReferences[],
         size_t nValueReferences,
-        const fmi3_clock_t values[],
-        const fmi3_boolean_t subactive[],
-        size_t nValues);
+        const fmi3_clock_t values[]);
 
 /**
- * \brief Wrapper for the FMI function fmiGetIntervalDecimal(...) 
- * 
+ * \brief Wrapper for the FMI function fmiGetIntervalDecimal(...)
+ *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
  * @param valueReferences Array of value references to clock variables.
  * @param nValueReferences Number of elements in 'valueReferences' array.
- * @param interval TODO
- * @param nValues Number of elements in 'interval'.
+ * @param intervals Array of size nValueReferences to retrieve the Clock intervals.
+ * @param qualifiers Array of size nValueReferences to retrieve the Clock qualifiers.
  * @return FMI status.
  */
 FMILIB_EXPORT fmi3_status_t fmi3_import_get_interval_decimal(
         fmi3_import_t* fmu,
         const fmi3_value_reference_t valueReferences[],
         size_t nValueReferences,
-        fmi3_float64_t interval[],
-        size_t nValues);
+        fmi3_float64_t intervals[],
+        fmi3_interval_qualifier_t qualifiers[]);
 
 /**
- * \brief Wrapper for the FMI function fmiGetIntervalFraction(...) 
- * 
+ * \brief Wrapper for the FMI function fmiGetIntervalFraction(...)
+ *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
  * @param valueReferences Array of value references to clock variables.
  * @param nValueReferences Number of elements in 'valueReferences' array.
- * @param intervalCounter TODO
- * @param resolution TODO
- * @param nValues Number of elements in 'intervalCounter' and 'resolution'.
+ * @param counters Array of size nValueReferences to retrieve the Clock intervals as fraction counters.
+ * @param resolutions Array of size nValueReferences to retrieve the Clock intervals as fraction resolutions.
+ * @param qualifiers Array of size nValueReferences to retrieve the Clock qualifiers.
  * @return FMI status.
  */
 FMILIB_EXPORT fmi3_status_t fmi3_import_get_interval_fraction(
         fmi3_import_t* fmu,
         const fmi3_value_reference_t valueReferences[],
         size_t nValueReferences,
-        fmi3_uint64_t intervalCounter[],
-        fmi3_uint64_t resolution[],
-        size_t nValues);
+        fmi3_uint64_t counters[],
+        fmi3_uint64_t resolutions[],
+        fmi3_interval_qualifier_t qualifiers[]);
 
 /**
- * \brief Wrapper for the FMI function fmiSetIntervalDecimal(...) 
- * 
+ * \brief Wrapper for the FMI function fmiSetIntervalDecimal(...)
+ *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
  * @param valueReferences Array of value references to clock variables.
  * @param nValueReferences Number of elements in 'valueReferences' array.
- * @param interval TODO
- * @param nValues Number of elements in 'interval'.
+  * @param intervals Array of size nValueReferences holding the Clock intervals to be set.
  * @return FMI status.
  */
 FMILIB_EXPORT fmi3_status_t fmi3_import_set_interval_decimal(
         fmi3_import_t* fmu,
         const fmi3_value_reference_t valueReferences[],
         size_t nValueReferences,
-        const fmi3_float64_t interval[],
-        size_t nValues);
+        const fmi3_float64_t intervals[]);
 
 /**
- * \brief Wrapper for the FMI function fmiGetIntervalFraction(...) 
- * 
+ * \brief Wrapper for the FMI function fmiGetIntervalFraction(...)
+ *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
  * @param valueReferences Array of value references to clock variables.
  * @param nValueReferences Number of elements in 'valueReferences' array.
- * @param intervalCounter TODO
- * @param resolution TODO
- * @param nValues Number of elements in 'intervalCounter' and 'resolution'.
+ * @param nValueReferences Number of elements in 'valueReferences' array.
+ * @param counters Array of size nValueReferences that holds the Clock counters to be set.
+ * @param resolutions Array of size nValueReferences that holds the Clock resolutions to be set.
  * @return FMI status.
  */
 FMILIB_EXPORT fmi3_status_t fmi3_import_set_interval_fraction(
         fmi3_import_t* fmu,
         const fmi3_value_reference_t valueReferences[],
         size_t nValueReferences,
-        const fmi3_uint64_t intervalCounter[],
-        const fmi3_uint64_t resolution[],
-        size_t nValues);
+        const fmi3_uint64_t counters[],
+        const fmi3_uint64_t resolutions[]);
 
 
 /**
- * \brief Wrapper for the FMI function fmiNewDiscreteStates(...) 
- * 
+ * \brief Wrapper for the FMI function fmiEvaluateDiscreteStates(...)
+ *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
- * @param newDiscreteStatesNeeded Return arg: if the FMU needs new discrete states.
+*/
+FMILIB_EXPORT fmi3_status_t fmi3_import_evaluate_discrete_states(fmi3_import_t* fmu);
+
+/**
+ * \brief Wrapper for the FMI function fmiUpdateDiscreteStates(...)
+ *
+ * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
+ * @param discreteStatesNeedUpdate Return arg: if the FMU needs to update the discrete states.
  * @param terminateSimulation Return arg: if the FMU wants to terminate the simulation.
  * @param nominalsOfContinuousStatesChanged Return arg: if the nominals of continuous states changed.
  * @param valuesOfContinuousStatesChanged Return arg: if the values of continuous states changed.
@@ -905,9 +876,9 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_set_interval_fraction(
  * @param nextEventTime Return arg: time for next time event.
  * @return FMI status.
  */
-FMILIB_EXPORT fmi3_status_t fmi3_import_new_discrete_states(
+FMILIB_EXPORT fmi3_status_t fmi3_import_update_discrete_states(
         fmi3_import_t*  fmu,
-        fmi3_boolean_t *newDiscreteStatesNeeded,
+        fmi3_boolean_t *discreteStatesNeedUpdate,
         fmi3_boolean_t *terminateSimulation,
         fmi3_boolean_t *nominalsOfContinuousStatesChanged,
         fmi3_boolean_t *valuesOfContinuousStatesChanged,
@@ -922,16 +893,16 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_new_discrete_states(
  */
 
 /**
- * \brief Calls the FMI function fmiEnterContinuousTimeMode(...) 
- * 
+ * \brief Calls the FMI function fmiEnterContinuousTimeMode(...)
+ *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
  * @return FMI status.
  */
 FMILIB_EXPORT fmi3_status_t fmi3_import_enter_continuous_time_mode(fmi3_import_t* fmu);
 
 /**
- * \brief Wrapper for the FMI function fmiSetTime(...) 
- * 
+ * \brief Wrapper for the FMI function fmiSetTime(...)
+ *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
  * @param time Set the current time.
  * @return FMI status.
@@ -939,8 +910,8 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_enter_continuous_time_mode(fmi3_import_t
 FMILIB_EXPORT fmi3_status_t fmi3_import_set_time(fmi3_import_t* fmu, fmi3_float64_t time);
 
 /**
- * \brief Wrapper for the FMI function fmiSetContinuousStates(...) 
- * 
+ * \brief Wrapper for the FMI function fmiSetContinuousStates(...)
+ *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
  * @param x Array of state values.
  * @param nx Number of states.
@@ -949,8 +920,8 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_set_time(fmi3_import_t* fmu, fmi3_float6
 FMILIB_EXPORT fmi3_status_t fmi3_import_set_continuous_states(fmi3_import_t* fmu, const fmi3_float64_t x[], size_t nx);
 
 /**
- * \brief Wrapper for the FMI function fmiCompletedIntegratorStep(...) 
- * 
+ * \brief Wrapper for the FMI function fmiCompletedIntegratorStep(...)
+ *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
  * @param noSetFMUStatePriorToCurrentPoint True if fmiSetFMUState will no
           longer be called for time instants prior to current time in this
@@ -964,8 +935,8 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_completed_integrator_step(fmi3_import_t*
     fmi3_boolean_t* enterEventMode, fmi3_boolean_t* terminateSimulation);
 
 /**
- * \brief Wrapper for the FMI function fmiGetDerivatives(...) 
- * 
+ * \brief Wrapper for the FMI function fmiGetDerivatives(...)
+ *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
  * @param derivatives (Output) Array of the derivatives.
  * @param nx Number of derivatives.
@@ -974,8 +945,8 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_completed_integrator_step(fmi3_import_t*
 FMILIB_EXPORT fmi3_status_t fmi3_import_get_derivatives(fmi3_import_t* fmu, fmi3_float64_t derivatives[], size_t nx);
 
 /**
- * \brief Wrapper for the FMI function fmiGetEventIndicators(...) 
- * 
+ * \brief Wrapper for the FMI function fmiGetEventIndicators(...)
+ *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
  * @param eventIndicators (Output) The event indicators.
  * @param ni Number of event indicators.
@@ -984,8 +955,8 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_get_derivatives(fmi3_import_t* fmu, fmi3
 FMILIB_EXPORT fmi3_status_t fmi3_import_get_event_indicators(fmi3_import_t* fmu, fmi3_float64_t eventIndicators[], size_t ni);
 
 /**
- * \brief Wrapper for the FMI function fmiGetContinuousStates(...) 
- * 
+ * \brief Wrapper for the FMI function fmiGetContinuousStates(...)
+ *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
  * @param x (Output) Array of state values.
  * @param nx Number of states.
@@ -994,8 +965,8 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_get_event_indicators(fmi3_import_t* fmu,
 FMILIB_EXPORT fmi3_status_t fmi3_import_get_continuous_states(fmi3_import_t* fmu, fmi3_float64_t x[], size_t nx);
 
 /**
- * \brief Wrapper for the FMI function fmiGetNominalsOfContinuousStates(...) 
- * 
+ * \brief Wrapper for the FMI function fmiGetNominalsOfContinuousStates(...)
+ *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
  * @param nominals (Output) The nominal values.
  * @param nx Number of nominal values.
@@ -1005,8 +976,8 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_get_nominals_of_continuous_states(fmi3_i
 
 
 /**
- * \brief Wrapper for the FMI function fmi3GetNumberOfEventIndicators(...) 
- * 
+ * \brief Wrapper for the FMI function fmi3GetNumberOfEventIndicators(...)
+ *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
  * @param nz (Output arg) Number of event indicators.
  * @return FMI status.
@@ -1017,7 +988,7 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_get_number_of_event_indicators(fmi3_impo
  * \brief Wrapper for the FMI function fmi3GetNumberOfContinuousStates(...)
  * if the FMU has been instantiated. Before instantiation the XML is instead
  * examined. The returned value is expected to be the same.
- * 
+ *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
  * @param nx (Output arg) Number of continuous states.
  * @return FMI status.
@@ -1032,16 +1003,16 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_get_number_of_continuous_states(fmi3_imp
  */
 
 /**
- * \brief Wrapper for the FMI function fmiEnterStepMode(...) 
- * 
+ * \brief Wrapper for the FMI function fmiEnterStepMode(...)
+ *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
  * @return FMI status.
  */
 FMILIB_EXPORT fmi3_status_t fmi3_import_enter_step_mode(fmi3_import_t* fmu);
 
 /**
- * \brief Wrapper for the FMI function fmiGetOutputDerivatives(...) 
- * 
+ * \brief Wrapper for the FMI function fmiGetOutputDerivatives(...)
+ *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
  * @param valueReferences Array of value references.
  * @param nValueReferences Number of array elements.
@@ -1059,13 +1030,14 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_get_output_derivatives(
         size_t nValues);
 
 /**
- * \brief Wrapper for the FMI function fmiDoStep(...) 
- * 
+ * \brief Wrapper for the FMI function fmiDoStep(...)
+ *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
  * @param currentCommunicationPoint Current communication point of the master.
  * @param communicationStepSize Communication step size.
  * @param noSetFMUStatePriorToCurrentPoint Indicates that the master will not cal SetFMUState to a time prior to
  *        currentCommunicationPoint.
+ * @param eventHandlingNeeded Indicates that an event was encountered by the FMU at lastSuccessfulTime.
  * @param terminate (Output arg) If the FMU requests the simulation to be terminated (since the FMU reached end of
  *        simulation time - not due to internal error).
  * @param earlyReturn (Output arg) If the FMU returns early.
@@ -1077,24 +1049,22 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_do_step(
         fmi3_float64_t currentCommunicationPoint,
         fmi3_float64_t communicationStepSize,
         fmi3_boolean_t noSetFMUStatePriorToCurrentPoint,
+        fmi3_boolean_t* eventHandlingNeeded,
         fmi3_boolean_t* terminate,
         fmi3_boolean_t* earlyReturn,
         fmi3_float64_t* lastSuccessfulTime);
 
 /**
- * \brief Wrapper for the FMI function fmiActivateModelPartition(...) 
- * 
+ * \brief Wrapper for the FMI function fmiActivateModelPartition(...)
+ *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
  * @param clockReference Value reference of an inputClock that will be activated.
- * @param clockElementIndex 1-based index if referenced clock is an array (0 means all elements). Must be 0 if
- *        referenced clock is a scalar.
  * @param activationTime Simulation (virtual) time of the clock tick.
  * @return FMI status.
  */
 FMILIB_EXPORT fmi3_status_t fmi3_import_activate_model_partition(
         fmi3_import_t* fmu,
         fmi3_value_reference_t clockReference,
-        size_t clockElementIndex,
         fmi3_float64_t activationTime);
 
 /**@} */

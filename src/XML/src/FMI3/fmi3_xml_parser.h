@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2012 Modelon AB
+    Copyright (C) 2012-2023 Modelon AB
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the BSD style license.
@@ -101,6 +101,7 @@ typedef enum fmi3_xml_attr_enu_t {
     EXPAND_XML_ELMNAME(fmiModelDescription) \
 	EXPAND_XML_ELMNAME(ModelExchange) \
     EXPAND_XML_ELMNAME(CoSimulation) \
+    EXPAND_XML_ELMNAME(ScheduledExecution) \
     EXPAND_XML_ELMNAME(SourceFiles) \
     EXPAND_XML_ELMNAME(File) \
     EXPAND_XML_ELMNAME(UnitDefinitions) \
@@ -386,4 +387,3 @@ int fmi3_xml_are_same_type(fmi3_xml_elm_enu_t id1, fmi3_xml_elm_enu_t id2);
 #endif
 
 #endif /* FMI3_XML_XMLPARSER_H */
-

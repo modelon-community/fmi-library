@@ -41,8 +41,8 @@ extern "C" {
 	*  is already available via other lower level functions.
 
 	@{
-	*/	
-/** 
+	*/
+/**
 \brief Collection of counters providing model information.
 	*/
 typedef struct {
@@ -71,41 +71,41 @@ typedef struct {
 	unsigned int num_independent;
 
 	/** \brief  Number of float64 variables*/
-	unsigned int num_float64_vars; 
+	unsigned int num_float64_vars;
 	/** \brief  Number of float32 variables*/
-	unsigned int num_float32_vars; 
+	unsigned int num_float32_vars;
 
 	/** \brief  Number of int64 variables*/
-	unsigned int num_int64_vars; 
+	unsigned int num_int64_vars;
 	/** \brief  Number of int32 variables*/
-	unsigned int num_int32_vars; 
+	unsigned int num_int32_vars;
 	/** \brief  Number of int16 variables*/
-	unsigned int num_int16_vars; 
+	unsigned int num_int16_vars;
 	/** \brief  Number of int8 variables*/
-	unsigned int num_int8_vars; 
+	unsigned int num_int8_vars;
 	/** \brief  Number of int64 variables*/
-	unsigned int num_uint64_vars; 
+	unsigned int num_uint64_vars;
 	/** \brief  Number of uint32 variables*/
-	unsigned int num_uint32_vars; 
+	unsigned int num_uint32_vars;
 	/** \brief  Number of uint16 variables*/
-	unsigned int num_uint16_vars; 
+	unsigned int num_uint16_vars;
 	/** \brief  Number of uint8 variables*/
-	unsigned int num_uint8_vars; 
+	unsigned int num_uint8_vars;
 
 	/** \brief  Number of enumeration variables*/
-	unsigned int num_enum_vars; 
+	unsigned int num_enum_vars;
 	/** \brief  Number of boolean variables*/
-	unsigned int num_bool_vars; 
+	unsigned int num_bool_vars;
 	/** \brief  Number of string variables*/
-	unsigned int num_string_vars; 
+	unsigned int num_string_vars;
 } fmi3_import_model_counts_t;
 
-/** 
+/**
 \brief Struct for initializing #fmi3_logger.
  */
 typedef struct {
 	const fmi3_instance_environment_t instanceEnvironment;
-	const fmi3_callback_log_message_ft logMessage;
+	const fmi3_log_message_callback_ft logMessage;
 } fmi3_logger_context_t;
 
 /**
@@ -113,7 +113,7 @@ typedef struct {
 	\param fmu - An fmu object as returned by fmi3_import_parse_xml().
 	\param counts - a pointer to a preallocated struct.
 */
-FMILIB_EXPORT 
+FMILIB_EXPORT
 void fmi3_import_collect_model_counts(fmi3_import_t* fmu, fmi3_import_model_counts_t* counts);
 
 /**
@@ -121,10 +121,10 @@ void fmi3_import_collect_model_counts(fmi3_import_t* fmu, fmi3_import_model_coun
   and replacing '##' with a single #.
    \param fmu - An fmu object as returned by fmi3_import_parse_xml().
    \param msgIn - Log message as produced by an FMU.
-   \param msgOut - Output message buffer. 
+   \param msgOut - Output message buffer.
    \param maxMsgSize - maximum message size
    */
-FMILIB_EXPORT 
+FMILIB_EXPORT
 void fmi3_import_expand_variable_references(fmi3_import_t* fmu, const char* msgIn, char* msgOut, size_t maxMsgSize);
 
 /**
@@ -145,15 +145,15 @@ void fmi3_callback_free_memory_default(fmi3_instance_environment_t instEnv, void
 
 /**
 	\brief An implementation of FMI 3.0 logger that forwards the messages to logger function inside ::jm_callbacks structure.
-	
+
 	The function is using a global array of active FMUs to find out which FMU is sending the log messege. It then
 	forwards the message to the logger connected to the particular ::fmi3_import_t struct. The function is called by the FMU.
-	The FMU must be loaded with non-zero registerGlobally parameter of fmi3_import_create_dllfmu() in order to work. 
+	The FMU must be loaded with non-zero registerGlobally parameter of fmi3_import_create_dllfmu() in order to work.
 	If no matching ::fmi3_import_t struct is found on the global list then jm_get_default_callbacks() is used to get the default logger.
 	Note that this function is not thread safe due to the use of the global list.
 */
-FMILIB_EXPORT 
-void  fmi3_log_forwarding(fmi3_instance_environment_t inst, fmi3_string_t instanceName, fmi3_status_t status, fmi3_string_t category, fmi3_string_t message);
+FMILIB_EXPORT
+void  fmi3_log_forwarding(fmi3_instance_environment_t inst, fmi3_status_t status, fmi3_string_t category, fmi3_string_t message);
 
 /** \brief  Default FMI 3.0 logger may be used when instantiating FMUs */
 FMILIB_EXPORT

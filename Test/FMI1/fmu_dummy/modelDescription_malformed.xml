@@ -16,13 +16,13 @@
   </TypeDefinitions>
 
 <ModelVariables>
-  <ScalarVariable name="HIGHT" valueReference="0" description="Hight of the ball">
+  <ScalarVariable name="HEIGHT" valueReference="0" description="Height of the ball">
      <RealType/> <Real start="1.0" fixed="true"/> <Integer/>
   </ScalarVariable>
-  <ScalarVariable name="HIGHT_SPEED" valueReference="1" description="Speed of the ball">
+  <ScalarVariable name="HEIGHT_SPEED" valueReference="1" description="Speed of the ball">
      <Real start="4.0" fixed="true"/>
   </ScalarVariable>
-  <ScalarVariable name="HIGHT_SPEED_ALIAS" valueReference="1" description="Speed of the ball">
+  <ScalarVariable name="HEIGHT_SPEED_ALIAS" valueReference="1" description="Speed of the ball">
      <Real start="4.0" fixed="true"/> <DirectDependency><Name>xxx</Name> </DirectDependency>
   </ScalarVariable>
   <ScalarVariable name="GRAVITY" valueReference="2" description="Gravity constant">
@@ -49,4 +49,3 @@
      <Boolean/>
   </ScalarVariable>
 </ModelVariables>
-

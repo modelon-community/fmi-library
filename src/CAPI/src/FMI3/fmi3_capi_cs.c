@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2012 Modelon AB
+    Copyright (C) 2012-2023 Modelon AB
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the BSD style license.
@@ -13,7 +13,7 @@
     along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 */
 
-#ifdef __cplusplus 
+#ifdef __cplusplus
 extern "C" {
 #endif
 
@@ -22,7 +22,7 @@ extern "C" {
 
 fmi3_status_t fmi3_capi_enter_step_mode(fmi3_capi_t* fmu)
 {
-	return fmu->fmi3EnterStepMode(fmu->inst);
+        return fmu->fmi3EnterStepMode(fmu->inst);
 }
 
 fmi3_status_t fmi3_capi_get_output_derivatives(
@@ -33,7 +33,7 @@ fmi3_status_t fmi3_capi_get_output_derivatives(
         fmi3_float64_t values[],
         size_t nValues)
 {
-	return fmu->fmi3GetOutputDerivatives(fmu->inst, valueReferences, nValueReferences, orders, values, nValues);
+        return fmu->fmi3GetOutputDerivatives(fmu->inst, valueReferences, nValueReferences, orders, values, nValues);
 }
 
 fmi3_status_t fmi3_capi_do_step(
@@ -41,21 +41,13 @@ fmi3_status_t fmi3_capi_do_step(
         fmi3_float64_t currentCommunicationPoint,
         fmi3_float64_t communicationStepSize,
         fmi3_boolean_t noSetFMUStatePriorToCurrentPoint,
+        fmi3_boolean_t* eventHandlingNeeded,
         fmi3_boolean_t* terminate,
         fmi3_boolean_t* earlyReturn,
         fmi3_float64_t* lastSuccessfulTime)
 {
-	return fmu->fmi3DoStep(fmu->inst, currentCommunicationPoint, communicationStepSize,
-            noSetFMUStatePriorToCurrentPoint, terminate, earlyReturn, lastSuccessfulTime);
-}
-
-fmi3_status_t fmi3_capi_activate_model_partition(
-        fmi3_capi_t* fmu,
-        fmi3_value_reference_t clockReference,
-        size_t clockElementIndex,
-        fmi3_float64_t activationTime)
-{
-    return fmu->fmi3ActivateModelPartition(fmu->inst, clockReference, clockElementIndex, activationTime);
+        return fmu->fmi3DoStep(fmu->inst, currentCommunicationPoint, communicationStepSize,
+            noSetFMUStatePriorToCurrentPoint, eventHandlingNeeded, terminate, earlyReturn, lastSuccessfulTime);
 }
 
 #ifdef __cplusplus

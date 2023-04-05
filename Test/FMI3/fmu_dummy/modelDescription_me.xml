@@ -17,19 +17,19 @@
   </VendorAnnotations>
 <ModelVariables>
   <!--  1 -->
-  <Float64 name="HIGHT" valueReference="0" initial="exact" causality="output" description="Hight of the ball" start="1.0" reinit="true" />
+  <Float64 name="HEIGHT" valueReference="0" initial="exact" causality="output" description="Height of the ball" start="1.0" reinit="true" />
   <!--  2 -->
-  <Float64 name="HIGHT_SPEED" valueReference="1" initial="exact" description="Speed of the ball" start="4.0" derivative="1" reinit="true">
+  <Float64 name="HEIGHT_SPEED" valueReference="1" initial="exact" description="Speed of the ball" start="4.0" derivative="1" reinit="true">
     <Annotations>
       <Tool name ="JModelica">
-        <JModelica name="HIGHT_SPEED variable annotations">Test data</JModelica>
+        <JModelica name="HEIGHT_SPEED variable annotations">Test data</JModelica>
       </Tool>
     </Annotations>
-  </Float64> 
+  </Float64>
   <!--  3 -->
-  <Float64 name="HIGHT_SPEED alias" valueReference="1" description="Speed of the ball"/>
+  <Float64 name="HEIGHT_SPEED alias" valueReference="1" description="Speed of the ball"/>
   <!--  4 -->
-  <Float64 name="HIGHT_ACC" valueReference="4" description="Acceleration of the ball" derivative="2" />
+  <Float64 name="HEIGHT_ACC" valueReference="4" description="Acceleration of the ball" derivative="2" />
   <!--  5 -->
   <Float64 name="A variable" valueReference="100" initial="exact" description="Speed of the ball" start="4.0" />
   <!--  6 -->
@@ -68,4 +68,3 @@
   </InitialUnknowns>
 </ModelStructure>
 </fmiModelDescription>
-

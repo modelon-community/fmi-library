@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2012 Modelon AB
+    Copyright (C) 2012-2023 Modelon AB
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the BSD style license.
@@ -49,7 +49,7 @@ const char *fmi3_xmlAttrNames[fmi3_xml_attr_number] = {
     FMI3_XML_ATTRLIST(ATTR_STR)
 };
 
-/* 
+/*
     Define XML schema structure. Used to build the 'fmi3_xml_scheme_info_t' type.
 
     @sib_idx:
@@ -63,6 +63,7 @@ const char *fmi3_xmlAttrNames[fmi3_xml_attr_number] = {
 #define fmi3_xml_scheme_SourceFiles          {fmi3_xml_elmID_none,       fmi3_xml_elmID_ModelExchange,       0,       0}
 #define fmi3_xml_scheme_File                 {fmi3_xml_elmID_none,       fmi3_xml_elmID_SourceFiles,         0,       1}
 #define fmi3_xml_scheme_CoSimulation         {fmi3_xml_elmID_none,       fmi3_xml_elmID_fmiModelDescription, 1,       0}
+#define fmi3_xml_scheme_ScheduledExecution   {fmi3_xml_elmID_none,       fmi3_xml_elmID_fmiModelDescription, 1,       0}
 #define fmi3_xml_scheme_SourceFilesCS        {fmi3_xml_elmID_none,       fmi3_xml_elmID_CoSimulation,        0,       0}
 #define fmi3_xml_scheme_FileCS               {fmi3_xml_elmID_none,       fmi3_xml_elmID_SourceFilesCS,       0,       1}
 #define fmi3_xml_scheme_UnitDefinitions      {fmi3_xml_elmID_none,       fmi3_xml_elmID_fmiModelDescription, 2,       0}
@@ -293,9 +294,9 @@ int fmi3_xml_is_attr_defined(fmi3_xml_parser_context_t *context, fmi3_xml_attr_e
     return (fmi3_xml_peek_attr_str(context, attrID) != 0);
 }
 
-/** 
+/**
  * Read value from parse buffer "as is". Also resets the buffer's entry.
- *    valp (return arg): points to attribute value 
+ *    valp (return arg): points to attribute value
  */
 int fmi3_xml_get_attr_str(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, int required, const char** valp) {
 
@@ -455,7 +456,7 @@ static int fmi3_xml_str_to_intXX(fmi3_xml_parser_context_t *context, int require
     */
 
     char* formatter = primType->isSigned ? "%lld" : "%llu";
-    
+
     int useDefault = 0;           /* variable is used in downcast macro (should not be done for default) */
     fmi3_int_buf_t valueBuf;      /* buffer large enough for storing value from sscanf */
     void* value = NULL;           /* points to the buffer that holds the value: default or read */
@@ -501,7 +502,7 @@ static int fmi3_xml_str_to_intXX(fmi3_xml_parser_context_t *context, int require
         }
     }
 
-    /* boundary check by downcast won't work if size of fmi3_int_buf_t is 64 bit, so we need extra check */ 
+    /* boundary check by downcast won't work if size of fmi3_int_buf_t is 64 bit, so we need extra check */
     if (primType->bitness == fmi3_bitness_64 && !useDefault) {
         status |= fmi3_xml_value_boundary_check_strcmp(strVal, formatter, &valueBuf);
     }
@@ -548,7 +549,7 @@ int fmi3_xml_set_attr_intXX(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu
 */
 static int fmi3_xml_str_to_floatXX(fmi3_xml_parser_context_t *context, int required, void* field, void* defaultVal,
         jm_string strVal, const fmi3_xml_primitive_type_t* primType) {
-    /* 
+    /*
         Using same approach as for reading intXX, but there is one difference:
             - float, double and 'long double' minimum sizes are not explicitly
               specified
@@ -600,7 +601,7 @@ static int fmi3_xml_str_to_floatXX(fmi3_xml_parser_context_t *context, int requi
 /**
     Reads a fixed-width float.
     Side effects: This will clear the attribute from the parser buffer.
- 
+
     field: where the float value will be stored (return arg)
     defaultVal: pointer to default value that will be used if attribute wasn't defined
  */
@@ -641,11 +642,11 @@ gen_fmi3_xml_set_attr_TYPEXX(uint32,  intXX)
 
 /**
  * Parses a string to an array of float64 values
- * 
+ *
  * str: the string containing the float64 values, they must be separated by exactly one <space> character, must not be NULL
  * arrPtr: pointer to the array where the values will be stored. Memory is dynamically allocated for this array, and must be freed by caller
  * nArr: the number of values in 'arrPtr'
- * 
+ *
  * LIMITATION:
  * some expressions that are not a valid target type will be incorrectly formatted (this only happen with invalid XMLs)
  * If schema verification is done before parsing, this limitation won't surface
@@ -705,7 +706,7 @@ static int fmi3_xml_str_to_array_floatXX(fmi3_xml_parser_context_t* context, con
             }
 
             /* update where to write next value */
-            writeAddr = (char*)writeAddr + primType->size; 
+            writeAddr = (char*)writeAddr + primType->size;
 
             /* get next token */
             token = strtok(NULL, delim); /* strtok maintains internal buffer - pass NULL as first arg to continue with previous string */
@@ -854,7 +855,7 @@ void fmi3_xml_set_element_handle(fmi3_xml_parser_context_t *context, const char*
     fmi3_xml_element_handle_map_t* currentElMap;
 	keyEl.elementName = elm;
     currentElMap = jm_vector_bsearch(fmi3_xml_element_handle_map_t)(context->elmMap, &keyEl, fmi3_xml_compare_elmName);
-	
+
 	currentElMap->elementHandle = fmi3_element_handle_map[id].elementHandle;;
 	currentElMap->elemID = id;
 }
@@ -903,7 +904,7 @@ static void XMLCALL fmi3_parse_element_start(void *c, const char *elm, const cha
 		fmi3_xml_callbacks_t* anyH = context->anyHandle;
 		context->anyElmCount++;
 		if(anyH && anyH->startHandle) {
-            int ret = anyH->startHandle(anyH->context, context->anyToolName, context->anyParent, elm, attr);            
+            int ret = anyH->startHandle(anyH->context, context->anyToolName, context->anyParent, elm, attr);
 			if(ret != 0) {
 				fmi3_xml_parse_fatal(context, "User element handle returned non-zero error code %d", ret);
 			}
@@ -917,7 +918,7 @@ static void XMLCALL fmi3_parse_element_start(void *c, const char *elm, const cha
 			XML_GetCurrentLineNumber(context->parser), elm);
 		return;
 	}
-	
+
 	keyEl.elementName = elm;
 	/* find the element handle by name */
     currentElMap = jm_vector_bsearch(fmi3_xml_element_handle_map_t)(context->elmMap, &keyEl, fmi3_xml_compare_elmName);
@@ -942,7 +943,7 @@ static void XMLCALL fmi3_parse_element_start(void *c, const char *elm, const cha
 		fmi3_xml_elm_enu_t siblingID =  context->lastElmID;
 
 		if (!fmi3_xml_is_valid_parent(currentID, parentID)) {
-				jm_log_error(context->callbacks, module, 
+				jm_log_error(context->callbacks, module,
 					"[Line:%u] XML element '%s' cannot be placed inside '%s', skipping",
 					XML_GetCurrentLineNumber(context->parser), elm, fmi3_element_handle_map[parentID].elementName);
 				context->skipElementCnt = 1;
@@ -951,7 +952,7 @@ static void XMLCALL fmi3_parse_element_start(void *c, const char *elm, const cha
 		if (siblingID != fmi3_xml_elmID_none) {
             if (fmi3_xml_are_same_type(currentID, siblingID)) {
 				if (!(fmi3_xml_scheme_info[currentID].multipleAllowed && fmi3_xml_scheme_info[siblingID].multipleAllowed)) {
-					jm_log_error(context->callbacks, module, 
+					jm_log_error(context->callbacks, module,
 						"[Line:%u] Multiple instances of XML element '%s' are not allowed, skipping",
 						XML_GetCurrentLineNumber(context->parser), elm);
 					context->skipElementCnt = 1;
@@ -962,7 +963,7 @@ static void XMLCALL fmi3_parse_element_start(void *c, const char *elm, const cha
 				int curSiblingIndex = fmi3_xml_scheme_info[currentID].siblingIndex;
 
                 if (lastSiblingIndex >= curSiblingIndex) {
-					jm_log_error(context->callbacks, module, 
+					jm_log_error(context->callbacks, module,
 						"[Line:%u] XML element '%s' cannot be placed after element '%s', skipping",
 						XML_GetCurrentLineNumber(context->parser), elm, fmi3_element_handle_map[siblingID].elementName);
 					context->skipElementCnt = 1;
@@ -1010,7 +1011,7 @@ static void XMLCALL fmi3_parse_element_start(void *c, const char *elm, const cha
 				(strcmp("providesPartialDerivativesOf_OutputFunction_wrt_States", attr[i]) == 0) ||
 				(strcmp("providesPartialDerivativesOf_OutputFunction_wrt_Inputs", attr[i]) == 0)
 				) {
-					jm_log_warning(context->callbacks, module, 
+					jm_log_warning(context->callbacks, module,
 						"FMI API function fmiGetPartialDerivatives is removed from the specification. Attribute %s will be ignored.", attr[i]);
 			}
 			else {
@@ -1028,7 +1029,7 @@ static void XMLCALL fmi3_parse_element_start(void *c, const char *elm, const cha
     /* handle the element */
 	if ( currentElMap->elementHandle(context, 0) ) {
 		/* try to skip and continue anyway */
-        if(!context->skipElementCnt) context->skipElementCnt = 1; 
+        if(!context->skipElementCnt) context->skipElementCnt = 1;
     }
 	if (context->skipElementCnt) return;
     /* check that the element handler has processed all the attributes */
@@ -1080,7 +1081,7 @@ static void XMLCALL fmi3_parse_element_end(void* c, const char *elm) {
 
     if(currentID != context -> currentElmID) {
         /* missmatch error */
-        fmi3_xml_parse_fatal(context, "Element end '%s' does not match element start '%s' in XML", elm, 
+        fmi3_xml_parse_fatal(context, "Element end '%s' does not match element start '%s' in XML", elm,
 			fmi3_element_handle_map[context -> currentElmID].elementName);
         return;
     }
@@ -1254,7 +1255,7 @@ int fmi3_xml_parse_model_description(fmi3_xml_model_description_t* md,
              fclose(file);
 		     fmi3_xml_parse_free_context(context);
              return -1; /* failure */
-        }        
+        }
     }
     fclose(file);
     /* done later XML_ParserFree(parser);*/

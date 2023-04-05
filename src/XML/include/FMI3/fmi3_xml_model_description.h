@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2012 Modelon AB
+    Copyright (C) 2012-2023 Modelon AB
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the BSD style license.
@@ -170,7 +170,7 @@ void fmi3_xml_free_model_description(fmi3_xml_model_description_t* md);
 /** @} */
 /** \addtogroup fmi3_xml_gen
  * \brief Functions for retrieving general model information. Memory for the strings is allocated and deallocated in the module.
- *   All the functions take a model description object as returned by fmi3_xml_allocate_model_description() as a parameter. 
+ *   All the functions take a model description object as returned by fmi3_xml_allocate_model_description() as a parameter.
  *   The information is retrieved from the XML file.
  * @{
 */
@@ -179,6 +179,8 @@ const char* fmi3_xml_get_model_name(fmi3_xml_model_description_t* md);
 const char* fmi3_xml_get_model_identifier_ME(fmi3_xml_model_description_t* md);
 
 const char* fmi3_xml_get_model_identifier_CS(fmi3_xml_model_description_t* md);
+
+const char* fmi3_xml_get_model_identifier_SE(fmi3_xml_model_description_t* md);
 
 const char* fmi3_xml_get_instantiation_token(fmi3_xml_model_description_t* md);
 

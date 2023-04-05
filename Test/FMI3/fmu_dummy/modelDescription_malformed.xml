@@ -12,10 +12,10 @@
   </TypeDefinitions>
 
 <ModelVariables>
-  <Float64 name="HIGHT" valueReference="0" initial="exact" causality="output" description="Hight of the ball" start="1.0"/>
-  <Float64 name="HIGHT_SPEED" valueReference="1" initial="exact" description="Speed of the ball" start="4.0"/>
-  <Float64 name="HIGHT_SPEED alias" valueReference="1" description="Speed of the ball"/>
-  <Float64 name="HIGHT_ACC" valueReference="4" description="Speed of the ball"/>
+  <Float64 name="HEIGHT" valueReference="0" initial="exact" causality="output" description="Height of the ball" start="1.0"/>
+  <Float64 name="HEIGHT_SPEED" valueReference="1" initial="exact" description="Speed of the ball" start="4.0"/>
+  <Float64 name="HEIGHT_SPEED alias" valueReference="1" description="Speed of the ball"/>
+  <Float64 name="HEIGHT_ACC" valueReference="4" description="Speed of the ball"/>
   <Float64 name="A variable" valueReference="100" initial="exact" description="Speed of the ball" start="4.0"/>
   <Float64 name="A bad alias" valueReference="100" initial="exact" description="Speed of the ball" start="4.0"/>
   <Float64 name="GRAVITY" valueReference="2" description="Gravity constant" initial="exact" start="-9.81"/>

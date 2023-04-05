@@ -15,16 +15,16 @@
   </TypeDefinitions>
 
 <ModelVariables>
-  <ScalarVariable name="HIGHT" valueReference="0" initial="exact" causality="output" description="Hight of the ball">
+  <ScalarVariable name="HEIGHT" valueReference="0" initial="exact" causality="output" description="Height of the ball">
     <Real start="1.0" />
   </ScalarVariable>
-  <ScalarVariable name="HIGHT_SPEED" valueReference="1" initial="exact" description="Speed of the ball">
+  <ScalarVariable name="HEIGHT_SPEED" valueReference="1" initial="exact" description="Speed of the ball">
      <Real start="4.0" />
 	 </ScalarVariable>
-  <ScalarVariable name="HIGHT_SPEED alias" valueReference="1" description="Speed of the ball">
+  <ScalarVariable name="HEIGHT_SPEED alias" valueReference="1" description="Speed of the ball">
      <Real />
 	 </ScalarVariable>
-  <ScalarVariable name="HIGHT_ACC" valueReference="4" description="Speed of the ball">
+  <ScalarVariable name="HEIGHT_ACC" valueReference="4" description="Speed of the ball">
      <Real />
   </ScalarVariable>
   <ScalarVariable name="A variable" valueReference="100" initial="exact" description="Speed of the ball">

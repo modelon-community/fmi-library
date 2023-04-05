@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2012 Modelon AB
+    Copyright (C) 2012-2023 Modelon AB
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the BSD style license.
@@ -37,7 +37,7 @@
 
 int annotation_start_handle(void *context, const char *parentName, void *parent, const char *elm, const char **attr) {
 	int i = 0;
-	printf("Annotation element %s start (tool: %s, parent:%s)\n", elm, parentName, 
+	printf("Annotation element %s start (tool: %s, parent:%s)\n", elm, parentName,
 		parent?fmi3_import_get_variable_name((fmi3_import_variable_t*)parent):"model");
 	while(attr[i]) {
 		printf("Attribute %s = %s\n", attr[i], attr[i+1]);
@@ -116,8 +116,8 @@ void printTypeInfo(fmi3_import_variable_typedef_t* vt) {
         if(u) {
 			char buf[1000];
 			fmi3_SI_base_unit_exp_to_string(fmi3_import_get_SI_unit_exponents(u), 1000, buf);
-            printf("Unit: %s, base unit %s, factor %g, offset %g\n", 
-				fmi3_import_get_unit_name(u), 
+            printf("Unit: %s, base unit %s, factor %g, offset %g\n",
+				fmi3_import_get_unit_name(u),
 				buf,
 				fmi3_import_get_SI_unit_factor(u),
 				fmi3_import_get_SI_unit_offset(u));
@@ -160,8 +160,8 @@ void printTypeInfo(fmi3_import_variable_typedef_t* vt) {
 				const char* str = fmi3_import_get_enum_type_value_name(et, val);
 				const char* itnm = fmi3_import_get_enum_type_item_name(et, i);
 				assert(strcmp(itnm, str)==0);
-                printf("[%d] %s=%d (%s) \n", i, 
-					itnm, 
+                printf("[%d] %s=%d (%s) \n", i,
+					itnm,
 					val,
 					fmi3_import_get_enum_type_item_description(et, i));
 			}
@@ -192,11 +192,11 @@ void testVariableSearch(fmi3_import_t* fmu,
 			printf("Searching by vr failed for variable '%s'\n", a_name);
 			do_exit(1);
 		}
-		else if(fmi3_import_get_variable_base_type(v) != fmi3_import_get_variable_base_type(found)) {			
+		else if(fmi3_import_get_variable_base_type(v) != fmi3_import_get_variable_base_type(found)) {
 			printf("Searching %s found var %s", a_name, fmi3_import_get_variable_name(found));
 			do_exit(1);
 		}
-		else if(fmi3_import_get_variable_vr(v) != fmi3_import_get_variable_vr(found)) {			
+		else if(fmi3_import_get_variable_vr(v) != fmi3_import_get_variable_vr(found)) {
 			printf("Searching %s found var %s", a_name, fmi3_import_get_variable_name(found));
 			do_exit(1);
 		}
@@ -280,8 +280,8 @@ void printCapabilitiesInfo(fmi3_import_t* fmu) {
 	size_t i;
 
 	for( i = 0; i < fmi3_capabilities_Num; ++i) {
-		printf("%s = %u\n", 
-			fmi3_capability_to_string((fmi3_capabilities_enu_t)i), 
+		printf("%s = %u\n",
+			fmi3_capability_to_string((fmi3_capabilities_enu_t)i),
 			fmi3_import_get_capability(fmu, (fmi3_capabilities_enu_t)i));
 	}
 }
@@ -309,7 +309,7 @@ void printDependenciesInfo(	fmi3_import_t* fmu, fmi3_import_variable_list_t* row
 		else {
 			printf("\t%s depends on:\n",fmi3_import_get_variable_name(fmi3_import_get_variable(rows, i)));
 			for(j = start[i]; j < start[i+1]; j++) {
-				printf("\t\t%s (factor kind: %s)\n",fmi3_import_get_variable_name(fmi3_import_get_variable(cols, dep[j]-1)), 
+				printf("\t\t%s (factor kind: %s)\n",fmi3_import_get_variable_name(fmi3_import_get_variable(cols, dep[j]-1)),
 					fmi3_dependency_factor_kind_to_string((fmi3_dependency_factor_kind_enu_t)factor[j]));
 			}
 		}
@@ -376,11 +376,12 @@ int main(int argc, char *argv[])
     printf("Version: %s\n", fmi3_import_get_model_version(fmu));
     printf("Naming : %s\n", fmi3_naming_convention_to_string(fmi3_import_get_naming_convention(fmu)));
 
-    if(fmi3_import_get_fmu_kind(fmu) != fmi3_fmu_kind_bcs)
-	    printf("Model identifier ME: %s\n", fmi3_import_get_model_identifier_ME(fmu));
-    /* TODO: handle HCS, SCS */
-    if(fmi3_import_get_fmu_kind(fmu) != fmi3_fmu_kind_me)
-	    printf("Model identifier CS: %s\n", fmi3_import_get_model_identifier_CS(fmu));
+    if(fmi3_import_get_fmu_kind(fmu) == fmi3_fmu_kind_me)
+        printf("Model identifier ME: %s\n", fmi3_import_get_model_identifier_ME(fmu));
+    if(fmi3_import_get_fmu_kind(fmu) == fmi3_fmu_kind_cs)
+        printf("Model identifier CS: %s\n", fmi3_import_get_model_identifier_CS(fmu));
+    if(fmi3_import_get_fmu_kind(fmu) == fmi3_fmu_kind_se)
+        printf("Model identifier SE: %s\n", fmi3_import_get_model_identifier_SE(fmu));
     printCapabilitiesInfo(fmu);
 
     fmi3_import_get_number_of_continuous_states(fmu, &n_states);
@@ -433,8 +434,8 @@ int main(int argc, char *argv[])
                     break;
                 }
 				fmi3_SI_base_unit_exp_to_string(fmi3_import_get_SI_unit_exponents(u), 1000, buf);
-                printf("Unit [%d] is %s, base unit %s, factor %g, offset %g, it has %d display units\n", 
-					i, fmi3_import_get_unit_name(u), 
+                printf("Unit [%d] is %s, base unit %s, factor %g, offset %g, it has %d display units\n",
+					i, fmi3_import_get_unit_name(u),
 					buf,
 					fmi3_import_get_SI_unit_factor(u),
 					fmi3_import_get_SI_unit_offset(u),
@@ -471,7 +472,7 @@ int main(int argc, char *argv[])
 
 
         assert(vl);
-		
+
         nv = fmi3_import_get_variable_list_size(vl);
         printf("There are %u variables in total \n",(unsigned)nv);
         for(i = 0; i < nv; i++) {
@@ -486,7 +487,7 @@ int main(int argc, char *argv[])
                 printVariableInfo(fmu, var);
 /*				size_t stateIndex = fmi3_import_get_state_index(var);
 				if(stateIndex) {
-					printf("This variable is a state. Its derivative: %s\n", 
+					printf("This variable is a state. Its derivative: %s\n",
 						fmi3_import_get_variable_name(fmi3_import_get_variable(ders, stateIndex-1)));
 				} */
 				testVariableSearch(fmu, var);
@@ -498,23 +499,23 @@ int main(int argc, char *argv[])
 /*	{
 		fmi3_import_variable_list_t* vl = fmi3_import_get_inputs_list( fmu);
         size_t i, n = 0;
-		if(vl) 
+		if(vl)
 			n = fmi3_import_get_variable_list_size(vl);
         if(n>0) {
             printf("Listing inputs: \n");
-            for(i = 0;i<n;i++) 
+            for(i = 0;i<n;i++)
                 printf("\t%s\n",fmi3_import_get_variable_name(fmi3_import_get_variable(vl, i)));
         }
 		else {
             printf("There are no inputs\n");
 		}
         fmi3_import_free_variable_list(vl);
-	}	
+	}
 	{
 		fmi3_import_variable_list_t* states = fmi3_import_get_states_list( fmu);
 		fmi3_import_variable_list_t* inputs = fmi3_import_get_inputs_list( fmu);
         size_t n = 0;
-		if(states) 
+		if(states)
 			n = fmi3_import_get_variable_list_size(states);
         if(n>0) {
 			size_t *start, *dep;
@@ -537,13 +538,13 @@ int main(int argc, char *argv[])
 		}
         fmi3_import_free_variable_list(inputs);
         fmi3_import_free_variable_list(states);
-	}	
+	}
 	{
 		fmi3_import_variable_list_t* states = fmi3_import_get_states_list( fmu);
 		fmi3_import_variable_list_t* inputs = fmi3_import_get_inputs_list( fmu);
 		fmi3_import_variable_list_t* outputs = fmi3_import_get_outputs_list( fmu);
         size_t n = 0;
-		if(outputs) 
+		if(outputs)
 			n = fmi3_import_get_variable_list_size(outputs);
         if(n>0) {
 			size_t *start, *dep;
@@ -567,7 +568,7 @@ int main(int argc, char *argv[])
         fmi3_import_free_variable_list(outputs);
         fmi3_import_free_variable_list(inputs);
         fmi3_import_free_variable_list(states);
-	}	
+	}
 */
 
 err2:
@@ -576,10 +577,8 @@ err1: /* fmu not allocated */
     if (res) {
         do_exit(res);
     }
-	
+
 	printf("Everything seems to be OK since you got this far=)!\n");
 
 	do_exit(res);
 }
-
-

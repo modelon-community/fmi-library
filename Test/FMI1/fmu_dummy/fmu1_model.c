@@ -22,14 +22,14 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 /* Model calculation functions */
 static int calc_initialize(component_ptr_t comp)
 {
-	comp->states[VAR_R_HIGHT]		= 1.0;
-	comp->states[VAR_R_HIGHT_SPEED] = 4;
+	comp->states[VAR_R_HEIGHT]		= 1.0;
+	comp->states[VAR_R_HEIGHT_SPEED] = 4;
 	comp->reals	[VAR_R_GRATIVY]		= -9.81;
 	comp->reals	[VAR_R_BOUNCE_CONF]	= 0.5;
 	if(comp->loggingOn) {
 		comp->functions.logger(comp, comp->instanceName, fmiOK, "INFO", "###### Initializing component ######");
-		comp->functions.logger(comp, comp->instanceName, fmiOK, "INFO", "Init #r%d#=%g", VAR_R_HIGHT, comp->states[VAR_R_HIGHT]);
-		comp->functions.logger(comp, comp->instanceName, fmiOK, "INFO", "Init #r%d#=%g",VAR_R_HIGHT_SPEED, comp->states[VAR_R_HIGHT_SPEED]);
+		comp->functions.logger(comp, comp->instanceName, fmiOK, "INFO", "Init #r%d#=%g", VAR_R_HEIGHT, comp->states[VAR_R_HEIGHT]);
+		comp->functions.logger(comp, comp->instanceName, fmiOK, "INFO", "Init #r%d#=%g",VAR_R_HEIGHT_SPEED, comp->states[VAR_R_HEIGHT_SPEED]);
 		comp->functions.logger(comp, comp->instanceName, fmiOK, "INFO", "Init #r%d#=%g",VAR_R_GRATIVY, comp->reals	[VAR_R_GRATIVY]);
 		comp->functions.logger(comp, comp->instanceName, fmiOK, "INFO", "Init #r%d#=%g",VAR_R_BOUNCE_CONF, comp->reals	[VAR_R_BOUNCE_CONF]);
 		comp->functions.logger(comp, comp->instanceName, fmiOK, "ERROR", "Bad reference: #r-1#");
@@ -42,23 +42,23 @@ static int calc_initialize(component_ptr_t comp)
 
 static int calc_get_derivatives(component_ptr_t comp)
 {
-	comp->states_der[VAR_R_HIGHT]		= comp->states[VAR_R_HIGHT_SPEED];
-	comp->states_der[VAR_R_HIGHT_SPEED] = comp->reals[VAR_R_GRATIVY];
+	comp->states_der[VAR_R_HEIGHT]		= comp->states[VAR_R_HEIGHT_SPEED];
+	comp->states_der[VAR_R_HEIGHT_SPEED] = comp->reals[VAR_R_GRATIVY];
 	return 0;
 }
 
 static int calc_get_event_indicators(component_ptr_t comp)
-{	
+{
 	fmiReal event_tol = 1e-16;
-	comp->event_indicators[EVENT_HIGHT]		= comp->states[VAR_R_HIGHT] + (comp->states[VAR_R_HIGHT] >= 0 ? event_tol : -event_tol);
+	comp->event_indicators[EVENT_HEIGHT]		= comp->states[VAR_R_HEIGHT] + (comp->states[VAR_R_HEIGHT] >= 0 ? event_tol : -event_tol);
 	return 0;
 }
 
 static int calc_event_update(component_ptr_t comp)
-{	
-	if (comp->states[VAR_R_HIGHT] < 0) {
-		comp->states[VAR_R_HIGHT_SPEED] = - comp->reals[VAR_R_BOUNCE_CONF] * comp->states[VAR_R_HIGHT_SPEED];
-		comp->states[VAR_R_HIGHT] = 0;
+{
+	if (comp->states[VAR_R_HEIGHT] < 0) {
+		comp->states[VAR_R_HEIGHT_SPEED] = - comp->reals[VAR_R_BOUNCE_CONF] * comp->states[VAR_R_HEIGHT_SPEED];
+		comp->states[VAR_R_HEIGHT] = 0;
 
 		comp->eventInfo.iterationConverged			= fmiTrue;
 		comp->eventInfo.stateValueReferencesChanged = fmiFalse;
@@ -101,10 +101,10 @@ fmiStatus fmi_get_real(fmiComponent c, const fmiValueReference vr[], size_t nvr,
 			fmiValueReference cvr = vr[k];
 			if (cvr < N_STATES) {
 				value[k] = comp->states[cvr];
-			} 
+			}
 			else {
 				value[k] = comp->reals[cvr];
-			}	
+			}
 		}
 		return fmiOK;
 	}
@@ -162,11 +162,11 @@ fmiStatus fmi_set_real(fmiComponent c, const fmiValueReference vr[], size_t nvr,
 		for (k = 0; k < nvr; k++) {
 			fmiValueReference cvr = vr[k];
 			if (cvr < N_STATES) {
-				comp->states[cvr] = value[k]; 
-			} 
+				comp->states[cvr] = value[k];
+			}
 			else {
-				comp->reals[cvr] = value[k]; 
-			}			
+				comp->reals[cvr] = value[k];
+			}
 		}
 		return fmiOK;
 	}
@@ -180,7 +180,7 @@ fmiStatus fmi_set_integer(fmiComponent c, const fmiValueReference vr[], size_t n
 	} else {
 		size_t k;
 		for (k = 0; k < nvr; k++) {
-			comp->integers[vr[k]] = value[k]; 
+			comp->integers[vr[k]] = value[k];
 		}
 		return fmiOK;
 	}
@@ -194,7 +194,7 @@ fmiStatus fmi_set_boolean(fmiComponent c, const fmiValueReference vr[], size_t n
 	} else {
 		size_t k;
 		for (k = 0; k < nvr; k++) {
-			comp->booleans[vr[k]] = value[k]; 
+			comp->booleans[vr[k]] = value[k];
 		}
 		return fmiOK;
 	}
@@ -207,7 +207,7 @@ fmiStatus fmi_set_string(fmiComponent c, const fmiValueReference vr[], size_t nv
 		return fmiFatal;
 	} else {
 		size_t k;
-		for (k = 0; k < nvr; k++) {			
+		for (k = 0; k < nvr; k++) {
 			size_t len;
 			fmiString s_dist;
 			fmiString s_src = value[k];
@@ -216,7 +216,7 @@ fmiStatus fmi_set_string(fmiComponent c, const fmiValueReference vr[], size_t nv
 			s_dist = comp->functions.allocateMemory(len, sizeof(char));
 			if (s_dist == NULL) {
 				return fmiFatal;
-			}			
+			}
 			strcpy((char*)s_dist, (char*)s_src);
 			if(comp->strings[vr[k]]) {
 				comp->functions.freeMemory((void*)comp->strings[vr[k]]);
@@ -261,7 +261,7 @@ fmiComponent fmi_instantiate_model(fmiString instanceName, fmiString GUID, fmiCa
 		return NULL;
 	} else if (strcmp(GUID, FMI_GUID) != 0) {
 		return NULL;
-	} else {	
+	} else {
 		sprintf(comp->instanceName, "%s", instanceName);
 		sprintf(comp->GUID, "%s",GUID);
 		comp->functions		= functions;
@@ -362,7 +362,7 @@ fmiStatus fmi_initialize(fmiComponent c, fmiBoolean toleranceControlled, fmiReal
 
 		comp->toleranceControlled = toleranceControlled;
 		comp->relativeTolerance = relativeTolerance;
-		
+
 		calc_initialize(comp);
 
 		*eventInfo = comp->eventInfo;
@@ -486,7 +486,7 @@ fmiComponent fmi_instantiate_slave(fmiString instanceName, fmiString fmuGUID, fm
 		return NULL;
 	} else if (strcmp(fmuGUID, FMI_GUID) != 0) {
 		return NULL;
-	} else {	
+	} else {
 		sprintf(comp->fmuLocation, "%s",fmuLocation);
 		sprintf(comp->mimeType, "%s",mimeType);
 		comp->timeout		= timeout;
@@ -572,7 +572,7 @@ fmiStatus fmi_do_step(fmiComponent c, fmiReal currentCommunicationPoint, fmiReal
 		fmiReal tstart = currentCommunicationPoint;
 		fmiReal tcur;
 		fmiReal tend = currentCommunicationPoint + communicationStepSize;
-		fmiReal hcur; 
+		fmiReal hcur;
 		fmiReal hdef = 0.01;	/* Default time step length */
 		fmiReal z_cur[N_EVENT_INDICATORS];
 		fmiReal z_pre[N_EVENT_INDICATORS];
@@ -581,7 +581,7 @@ fmiStatus fmi_do_step(fmiComponent c, fmiReal currentCommunicationPoint, fmiReal
 		fmiEventInfo eventInfo;
 		fmiBoolean callEventUpdate;
 		fmiBoolean intermediateResults = fmiFalse;
-		fmiStatus fmistatus;	
+		fmiStatus fmistatus;
 		size_t k;
 		size_t counter = 0;
 
@@ -628,11 +628,11 @@ fmiStatus fmi_do_step(fmiComponent c, fmiReal currentCommunicationPoint, fmiReal
 				hcur = hdef;
 			}
 
-			{ 
+			{
 				double t_full = tcur + hcur;
 				if(t_full > tend) {
 					hcur = (tend - tcur);
-					tcur = tend;				
+					tcur = tend;
 				}
 				else
 					tcur = t_full;
@@ -641,7 +641,7 @@ fmiStatus fmi_do_step(fmiComponent c, fmiReal currentCommunicationPoint, fmiReal
 			/* Integrate a step */
 			fmistatus = fmi_get_derivatives(comp, states_der, N_STATES);
 			for (k = 0; k < N_STATES; k++) {
-				states[k] = states[k] + hcur*states_der[k];	
+				states[k] = states[k] + hcur*states_der[k];
 				/* if (k == 0) printf("states[%u] = %f states_der[k] = %f hcur =%f\n", k, states[k], states_der[k], hcur); */
 			}
 

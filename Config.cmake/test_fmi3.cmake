@@ -1,4 +1,4 @@
-#    Copyright (C) 2012 Modelon AB
+#    Copyright (C) 2012-2023 Modelon AB
 
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the BSD style license.
@@ -17,6 +17,7 @@ include_directories(${RTTESTDIR}/FMI3)
 #Defines for the test FMUs
 set(FMU3_DUMMY_ME_MODEL_IDENTIFIER BouncingBall3) #This must be the same as in the xml-file
 set(FMU3_DUMMY_CS_MODEL_IDENTIFIER BouncingBall3) #This must be the same as in the xml-file
+set(FMU3_DUMMY_SE_MODEL_IDENTIFIER BouncingBall3) #This must be the same as in the xml-file
 set(FMU3_DUMMY_MF_MODEL_IDENTIFIER BouncingBall3_malformed) #This must be the same as in the xml-file
 
 set(FMU3_DUMMY_FOLDER ${RTTESTDIR}/FMI3/fmu_dummy)
@@ -28,6 +29,9 @@ set(FMU3_DUMMY_ME_SOURCE
 set(FMU3_DUMMY_CS_SOURCE
     ${FMU3_DUMMY_FOLDER}/fmu3_model_cs.c
 )
+set(FMU3_DUMMY_SE_SOURCE
+    ${FMU3_DUMMY_FOLDER}/fmu3_model_se.c
+)
 set(FMU3_DUMMY_HEADERS
     ${FMU3_DUMMY_FOLDER}/fmu3_model.h
     ${FMU3_DUMMY_FOLDER}/fmu3_model_defines.h
@@ -35,9 +39,11 @@ set(FMU3_DUMMY_HEADERS
 
 add_library(fmu3_dll_me SHARED ${FMU3_DUMMY_ME_SOURCE} ${FMU3_DUMMY_HEADERS})
 add_library(fmu3_dll_cs SHARED ${FMU3_DUMMY_CS_SOURCE} ${FMU3_DUMMY_HEADERS})
+add_library(fmu3_dll_se SHARED ${FMU3_DUMMY_SE_SOURCE} ${FMU3_DUMMY_HEADERS})
 
 set(XML_ME_PATH ${FMU3_DUMMY_FOLDER}/modelDescription_me.xml)
 set(XML_CS_PATH ${FMU3_DUMMY_FOLDER}/modelDescription_cs.xml)
+set(XML_SE_PATH ${FMU3_DUMMY_FOLDER}/modelDescription_se.xml)
 set(XML_MF_PATH ${FMU3_DUMMY_FOLDER}/modelDescription_malformed.xml)
 
 set(FMI3_PARSER_TEST_XMLS_DIR
@@ -57,24 +63,30 @@ set(ARRAYS_MODEL_DESC_DIR
 
 set(SHARED_LIBRARY_ME_PATH ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${CMAKE_SHARED_LIBRARY_PREFIX}fmu3_dll_me${CMAKE_SHARED_LIBRARY_SUFFIX})
 set(SHARED_LIBRARY_CS_PATH ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${CMAKE_SHARED_LIBRARY_PREFIX}fmu3_dll_cs${CMAKE_SHARED_LIBRARY_SUFFIX})
+set(SHARED_LIBRARY_SE_PATH ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${CMAKE_SHARED_LIBRARY_PREFIX}fmu3_dll_se${CMAKE_SHARED_LIBRARY_SUFFIX})
 
-#Create FMU 3.0 ME/CS Model and generate library path
+#Create FMU 3.0 ME/CS/SE Model and generate library path
 
 to_native_c_path("\"${SHARED_LIBRARY_ME_PATH}\"" DLL_OUTPUT_PATH_ME_DEFINE)
 to_native_c_path("\"${SHARED_LIBRARY_CS_PATH}\"" DLL_OUTPUT_PATH_CS_DEFINE)
+to_native_c_path("\"${SHARED_LIBRARY_SE_PATH}\"" DLL_OUTPUT_PATH_SE_DEFINE)
 
 to_native_c_path("\"${CMAKE_CURRENT_BINARY_DIR}/\" CMAKE_INTDIR \"/${CMAKE_SHARED_LIBRARY_PREFIX}fmu3_dll_me${CMAKE_SHARED_LIBRARY_SUFFIX}\""
                  fmu3_DLL_ME_PATH)
 to_native_c_path("\"${CMAKE_CURRENT_BINARY_DIR}/\" CMAKE_INTDIR \"/${CMAKE_SHARED_LIBRARY_PREFIX}fmu3_dll_cs${CMAKE_SHARED_LIBRARY_SUFFIX}\""
                  fmu3_DLL_CS_PATH)
+to_native_c_path("\"${CMAKE_CURRENT_BINARY_DIR}/\" CMAKE_INTDIR \"/${CMAKE_SHARED_LIBRARY_PREFIX}fmu3_dll_se${CMAKE_SHARED_LIBRARY_SUFFIX}\""
+                 fmu3_DLL_SE_PATH)
 
 #function(compress_fmu OUTPUT_FOLDER MODEL_IDENTIFIER FILE_NAME_CS_ME_EXT TARGET_NAME XML_PATH SHARED_LIBRARY_PATH)
 compress_fmu("${TEST_OUTPUT_FOLDER}" "${FMU3_DUMMY_ME_MODEL_IDENTIFIER}" "me" "fmu3_dll_me" "${XML_ME_PATH}" "${SHARED_LIBRARY_ME_PATH}")
 compress_fmu("${TEST_OUTPUT_FOLDER}" "${FMU3_DUMMY_CS_MODEL_IDENTIFIER}" "cs" "fmu3_dll_cs" "${XML_CS_PATH}" "${SHARED_LIBRARY_CS_PATH}")
+compress_fmu("${TEST_OUTPUT_FOLDER}" "${FMU3_DUMMY_SE_MODEL_IDENTIFIER}" "se" "fmu3_dll_se" "${XML_SE_PATH}" "${SHARED_LIBRARY_SE_PATH}")
 compress_fmu("${TEST_OUTPUT_FOLDER}" "${FMU3_DUMMY_MF_MODEL_IDENTIFIER}" "mf" "fmu3_dll_cs" "${XML_MF_PATH}" "${SHARED_LIBRARY_CS_PATH}")
 
 to_native_c_path("${TEST_OUTPUT_FOLDER}/${FMU3_DUMMY_ME_MODEL_IDENTIFIER}_me.fmu" FMU3_ME_PATH)
 to_native_c_path("${TEST_OUTPUT_FOLDER}/${FMU3_DUMMY_CS_MODEL_IDENTIFIER}_cs.fmu" FMU3_CS_PATH)
+to_native_c_path("${TEST_OUTPUT_FOLDER}/${FMU3_DUMMY_SE_MODEL_IDENTIFIER}_se.fmu" FMU3_SE_PATH)
 to_native_c_path("${TEST_OUTPUT_FOLDER}/${FMU3_DUMMY_CS_MODEL_IDENTIFIER}_mf.fmu" FMU3_MF_PATH)
 
 # Test that it works for C++ applications
@@ -94,14 +106,12 @@ target_link_libraries(fmi3_import_model_structure_test ${FMILIBFORTEST})
 add_executable (fmi3_import_sim_me_test ${RTTESTDIR}/FMI3/fmi3_import_sim_me_test.c)
 target_link_libraries (fmi3_import_sim_me_test  ${FMILIBFORTEST})
 
-add_executable (fmi3_import_sim_bcs_test ${RTTESTDIR}/FMI3/fmi3_import_sim_bcs_test.c)
-target_link_libraries (fmi3_import_sim_bcs_test ${FMILIBFORTEST})
+add_executable (fmi3_import_sim_cs_test ${RTTESTDIR}/FMI3/fmi3_import_sim_cs_test.c)
+target_link_libraries (fmi3_import_sim_cs_test ${FMILIBFORTEST})
 
-add_executable (fmi3_import_sim_hcs_test ${RTTESTDIR}/FMI3/fmi3_import_sim_hcs_test.c)
-target_link_libraries (fmi3_import_sim_hcs_test ${FMILIBFORTEST})
-
-add_executable (fmi3_import_sim_scs_test ${RTTESTDIR}/FMI3/fmi3_import_sim_scs_test.c)
-target_link_libraries (fmi3_import_sim_scs_test ${FMILIBFORTEST})
+# TODO, fix lines below when renamed test
+add_executable (fmi3_import_sim_se_test ${RTTESTDIR}/FMI3/fmi3_import_sim_se_test.c)
+target_link_libraries (fmi3_import_sim_se_test ${FMILIBFORTEST})
 
 add_executable(fmi3_import_variable_test ${RTTESTDIR}/FMI3/fmi3_import_variable_test.c)
 target_link_libraries(fmi3_import_variable_test ${FMILIBFORTEST})
@@ -132,9 +142,8 @@ set_target_properties(
     fmi3_xml_parsing_test
     fmi3_import_xml_test
     fmi3_import_sim_me_test
-    fmi3_import_sim_bcs_test
-    fmi3_import_sim_hcs_test
-    fmi3_import_sim_scs_test
+    fmi3_import_sim_cs_test
+    fmi3_import_sim_se_test
     fmi3_import_variable_test
     fmi3_import_variable_types_test
     fmi3_import_default_experiment_test
@@ -150,9 +159,8 @@ add_test(ctest_fmi3_import_xml_test_cs fmi3_import_xml_test ${TEST_OUTPUT_FOLDER
 add_test(ctest_fmi3_import_xml_test_mf fmi3_import_xml_test ${TEST_OUTPUT_FOLDER}/${FMU3_DUMMY_MF_MODEL_IDENTIFIER}_mf)
 set_tests_properties(ctest_fmi3_import_xml_test_mf PROPERTIES WILL_FAIL TRUE)
 add_test(ctest_fmi3_import_sim_test_me  fmi3_import_sim_me_test  ${FMU3_ME_PATH} ${FMU_TEMPFOLDER})
-add_test(ctest_fmi3_import_sim_test_bcs fmi3_import_sim_bcs_test ${FMU3_CS_PATH} ${FMU_TEMPFOLDER})
-add_test(ctest_fmi3_import_sim_test_hcs fmi3_import_sim_hcs_test ${FMU3_CS_PATH} ${FMU_TEMPFOLDER})
-add_test(ctest_fmi3_import_sim_test_scs fmi3_import_sim_scs_test ${FMU3_CS_PATH} ${FMU_TEMPFOLDER})
+add_test(ctest_fmi3_import_sim_test_bcs fmi3_import_sim_cs_test ${FMU3_CS_PATH} ${FMU_TEMPFOLDER})
+add_test(ctest_fmi3_import_sim_test_se fmi3_import_sim_se_test ${FMU3_SE_PATH} ${FMU_TEMPFOLDER}) # TODO update when renamed
 add_test(ctest_fmi3_import_variable_test
          fmi3_import_variable_test
          ${VARIABLE_TEST_MODEL_DESC_DIR})
@@ -189,8 +197,7 @@ if(FMILIB_BUILD_BEFORE_TESTS)
         ctest_fmi3_import_xml_test_empty
         ctest_fmi3_import_sim_test_me
         ctest_fmi3_import_sim_test_bcs
-        ctest_fmi3_import_sim_test_hcs
-        ctest_fmi3_import_sim_test_scs
+        ctest_fmi3_import_sim_test_se
         ctest_fmi3_import_type_definitions_test
         ctest_fmi3_import_fatal_test
         ctest_fmi3_import_arrays_test

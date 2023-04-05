@@ -12,10 +12,6 @@ static int test_xml_parse_fatal(const char* xmlPath) {
     jm_callbacks* cb = jm_get_default_callbacks();
     fmi_import_context_t* ctx;
 
-    /* update these if you change xml: */
-    int nBadTds = 20;
-    int nBadVars = 20;
-
     ctx = fmi_import_allocate_context(cb);
     if (ctx == NULL) {
         return TEST_FAIL;
@@ -61,4 +57,3 @@ int main(int argc, char **argv)
     }
     return ret == 0 ? CTEST_RETURN_FAIL : CTEST_RETURN_SUCCESS;
 }
-

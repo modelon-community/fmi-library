@@ -9,7 +9,8 @@
             "extensions": [
                 "vms-vscode.cpptools",
                 "ms-vscode.cmake-tools",
-                "ms-vscode.makefile-tools"
+                "ms-vscode.makefile-tools",
+                "ms-vscode.cpptools-extension-pack"
             ]
         }
     }

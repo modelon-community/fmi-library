@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2012-2023 Modelon AB
+Copyright (C) 2023 Modelon AB
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the BSD style license.
@@ -20,16 +20,14 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 #if __GNUC__ >= 4
     #pragma GCC visibility push(default)
 #endif
-/* Standard FMI 3.0 */
-#include <FMI3/fmi3PlatformTypes.h>
+
+/* Standard FMI 3.0 ME, CS and SE types */
 #include <FMI3/fmi3Functions.h>
 
 #include <fmu_dummy/fmu3_model.h>
 #include "config_test.h"
-
 #include "fmu3_model.c"
 
-/* #define MODEL_IDENTIFIER FMU_DUMMY_ME_MODEL_IDENTIFIER*/
 
 /* FMI 3.0 Common Functions */
 FMI3_Export const char* fmi3GetVersion()
@@ -37,11 +35,12 @@ FMI3_Export const char* fmi3GetVersion()
     return fmi_get_version();
 }
 
-FMI3_Export fmi3Status fmi3SetDebugLogging(fmi3Instance instance, fmi3Boolean loggingOn, size_t n , const fmi3String cat[])
+FMI3_Export fmi3Status fmi3SetDebugLogging(fmi3Instance instance, fmi3Boolean loggingOn, size_t n, const fmi3String cat[])
 {
     return fmi_set_debug_logging(instance, loggingOn);
 }
 
+/* Not supported for SE */
 FMI3_Export fmi3Instance fmi3InstantiateModelExchange(
         fmi3String              instanceName,
         fmi3String              instantiationToken,
@@ -51,25 +50,10 @@ FMI3_Export fmi3Instance fmi3InstantiateModelExchange(
         fmi3InstanceEnvironment instanceEnvironment,
         fmi3LogMessageCallback  logMessage)
 {
-    return fmi_instantiate(fmu_type_me,
-                           instanceName,
-                           instantiationToken,
-                           resourcePath,
-                           visible,
-                           loggingOn,
-                           fmi3False, /* eventModeUsed:                  CS only */
-                           fmi3False, /* earlyReturnAllowed:             CS only */
-                           fmi3False, /* requiredIntermediateVariables:  CS only */
-                           0,         /* nRequiredIntermediateVariables: CS only */
-                           instanceEnvironment,
-                           logMessage,
-                           NULL,      /* intermediateUpdate:             CS only */
-                           NULL,      /* clockUpdate:                    SE only */
-                           NULL,      /* lockPreemption:                 SE only */
-                           NULL);     /* unlockPreemption:               SE only */
+    return NULL;
 }
 
-/* Not supported for ME */
+/* Not supported for SE */
 FMI3_Export fmi3Instance fmi3InstantiateCoSimulation(
     fmi3String                     instanceName,
     fmi3String                     instantiationToken,
@@ -87,7 +71,6 @@ FMI3_Export fmi3Instance fmi3InstantiateCoSimulation(
     return NULL;
 }
 
-/* Not supported for ME */
 FMI3_Export fmi3Instance fmi3InstantiateScheduledExecution(
     fmi3String                     instanceName,
     fmi3String                     instantiationToken,
@@ -100,7 +83,22 @@ FMI3_Export fmi3Instance fmi3InstantiateScheduledExecution(
     fmi3LockPreemptionCallback     lockPreemption,
     fmi3UnlockPreemptionCallback   unlockPreemption)
 {
-    return NULL;
+    return fmi_instantiate(fmu_type_se,
+                           instanceName,
+                           instantiationToken,
+                           resourcePath,
+                           visible,
+                           loggingOn,
+                           fmi3False,      /* eventModeUsed:                  CS only */
+                           fmi3False,      /* earlyReturnAllowed:             CS only */
+                           fmi3False,      /* requiredIntermediateVariables:  CS only */
+                           0,              /* nRequiredIntermediateVariables: CS only */
+                           instanceEnvironment,
+                           logMessage,
+                           NULL,           /* intermediateUpdate:             CS only */
+                           clockUpdate,
+                           lockPreemption,
+                           unlockPreemption);
 }
 
 FMI3_Export void fmi3FreeInstance(fmi3Instance instance)
@@ -120,14 +118,14 @@ FMI3_Export fmi3Status fmi3EnterInitializationMode(
             startTime, stopTimeDefined, stopTimeDefined);
 }
 
-FMI3_Export fmi3Status fmi3ExitInitializationMode(fmi3Instance instance)
-{
-    return fmi_exit_initialization_mode(instance);
-}
-
 FMI3_Export fmi3Status fmi3EnterEventMode(fmi3Instance instance)
 {
     return fmi_enter_event_mode(instance);
+}
+
+FMI3_Export fmi3Status fmi3ExitInitializationMode(fmi3Instance instance)
+{
+    return fmi_exit_initialization_mode(instance);
 }
 
 FMI3_Export fmi3Status fmi3GetFloat64(fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr, fmi3Float64 value[], size_t nValues)
@@ -394,7 +392,6 @@ FMI3_Export fmi3Status fmi3GetIntervalDecimal(
     return fmi_get_interval_decimal(instance, valueReferences, nValueReferences, intervals, qualifiers);
 }
 
-
 FMI3_Export fmi3Status fmi3GetShiftDecimal(
         fmi3Instance instance,
         const fmi3ValueReference valueReferences[],
@@ -439,6 +436,7 @@ FMI3_Export fmi3Status fmi3SetIntervalDecimal(
 {
     return fmi_set_interval_decimal(instance, valueReferences, nValueReferences, intervals);
 }
+
 
 FMI3_Export fmi3Status fmi3SetIntervalFraction(
         fmi3Instance instance,
@@ -488,59 +486,6 @@ FMI3_Export fmi3Status fmi3UpdateDiscreteStates(
             nominalsOfContinuousStatesChanged, valuesOfContinuousStatesChanged, nextEventTimeDefined,
             nextEventTime);
 }
-/* FMI 3.0 ME Functions */
-FMI3_Export fmi3Status fmi3EnterContinuousTimeMode(fmi3Instance instance)
-{
-    return fmi_enter_continuous_time_mode(instance);
-}
-
-FMI3_Export fmi3Status fmi3SetTime(fmi3Instance instance, fmi3Float64 fmitime)
-{
-    return fmi_set_time(instance, fmitime);
-}
-
-FMI3_Export fmi3Status fmi3SetContinuousStates(fmi3Instance instance, const fmi3Float64 x[], size_t nx)
-{
-    return fmi_set_continuous_states(instance, x, nx);
-}
-
-FMI3_Export fmi3Status fmi3CompletedIntegratorStep(fmi3Instance instance,
-    fmi3Boolean noSetFMUStatePriorToCurrentPoint,
-    fmi3Boolean* enterEventMode, fmi3Boolean* terminateSimulation)
-{
-    return fmi_completed_integrator_step(instance, noSetFMUStatePriorToCurrentPoint,
-                                         enterEventMode, terminateSimulation);
-}
-
-FMI3_Export fmi3Status fmi3GetContinuousStateDerivatives(fmi3Instance instance, fmi3Float64 derivatives[] , size_t nx)
-{
-    return fmi_get_derivatives(instance, derivatives, nx);
-}
-
-FMI3_Export fmi3Status fmi3GetEventIndicators(fmi3Instance instance, fmi3Float64 eventIndicators[], size_t ni)
-{
-    return fmi_get_event_indicators(instance, eventIndicators, ni);
-}
-
-FMI3_Export fmi3Status fmi3GetContinuousStates(fmi3Instance instance, fmi3Float64 x[], size_t nx)
-{
-    return fmi_get_continuous_states(instance, x, nx);
-}
-
-FMI3_Export fmi3Status fmi3GetNominalsOfContinuousStates(fmi3Instance instance, fmi3Float64 nominals[], size_t nx)
-{
-    return fmi_get_nominals_of_continuous_states(instance, nominals, nx);
-}
-
-FMI3_Export fmi3Status fmi3GetNumberOfEventIndicators(fmi3Instance instance, size_t* nz)
-{
-    return fmi_get_number_of_event_indicators(instance, nz);
-}
-
-FMI3_Export fmi3Status fmi3GetNumberOfContinuousStates(fmi3Instance instance, size_t* nx)
-{
-    return fmi_get_number_of_continuous_states(instance, nx);
-}
 
 FMI3_Export fmi3Status fmi3Terminate(fmi3Instance instance)
 {
@@ -550,4 +495,21 @@ FMI3_Export fmi3Status fmi3Terminate(fmi3Instance instance)
 FMI3_Export fmi3Status fmi3Reset(fmi3Instance instance)
 {
     return fmi_reset(instance);
+}
+
+FMI3_Export fmi3Status fmi3GetOutputDerivatives(fmi3Instance instance,
+                                                const fmi3ValueReference valueReferences[],
+                                                size_t nValueReferences,
+                                                const fmi3Int32 orders[],
+                                                fmi3Float64 values[],
+                                                size_t nValues)
+{
+    return fmi_get_output_derivatives(instance, valueReferences, nValueReferences, orders, values, nValues);
+}
+
+FMI3_Export fmi3Status fmi3ActivateModelPartition(fmi3Instance instance,
+                                                  fmi3ValueReference clockReference,
+                                                  fmi3Float64 activationTime)
+{
+    return fmi_activate_model_partition(instance, clockReference, activationTime);
 }

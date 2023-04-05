@@ -13,40 +13,21 @@
     along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 */
 
-
-
-/** \file fmi3_import_impl.h
-*/
-
-#ifndef FMI3_IMPORT_IMPL_H_
-#define FMI3_IMPORT_IMPL_H_
-
-
-#include "FMI3/fmi3_import.h"
-#include "FMI3/fmi3_xml_model_description.h"
-
-#include "../FMI/fmi_import_context_impl.h"
-#include "../src/FMI3/fmi3_capi_impl.h"
-
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/*
- * 'capi' contains references to the FMU's loaded CAPI functions. Is NULL if never loaded or terminated.
- */
-struct fmi3_import_t {
-	char* dirPath;
-	char* resourcePath;
-	jm_callbacks* callbacks;
-	fmi3_xml_model_description_t* md;
-	fmi3_capi_t* capi;
-	jm_vector(char) logMessageBufferCoded;
-	jm_vector(char) logMessageBufferExpanded;
-};
+#include <FMI3/fmi3_capi.h>
+#include <FMI3/fmi3_capi_impl.h>
+
+fmi3_status_t fmi3_capi_activate_model_partition(
+        fmi3_capi_t* fmu,
+        fmi3_value_reference_t clockReference,
+        fmi3_float64_t activationTime)
+{
+    return fmu->fmi3ActivateModelPartition(fmu->inst, clockReference, activationTime);
+}
 
 #ifdef __cplusplus
 }
-#endif
 #endif

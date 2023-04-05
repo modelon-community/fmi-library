@@ -25,12 +25,12 @@
 
 typedef struct fmi3_capi_t fmi3_capi_t;
 
-#ifdef __cplusplus 
+#ifdef __cplusplus
 extern "C" {
 #endif
 
 /** \file fmi3_capi.h
-	\brief Public interfaces for the FMI CAPI library. 
+	\brief Public interfaces for the FMI CAPI library.
 	*/
 
 /** \addtogroup fmi3_capi Standard FMI 3.0 "C" API
@@ -42,10 +42,12 @@ extern "C" {
  *		\brief Utility functions used to load and free the FMI functions.
  *	\addtogroup fmi3_capi_me FMI 3.0 (ME) Model Exchange functions
  *		\brief List of Model Exchange wrapper functions. Common functions are not listed.
- *	\addtogroup fmi3_capi_cs FMI 3.0 (CS) Co-Simulation functions 
+ *	\addtogroup fmi3_capi_cs FMI 3.0 (CS) Co-Simulation functions
  *		\brief List of Co-Simulation wrapper functions. Common functions are not listed.
- *	\addtogroup fmi3_capi_common FMI 3.0 (ME & CS) Common functions
- *		\brief List of wrapper functions that are in common for both Model Exchange and Co-Simulation.
+ *	\addtogroup fmi3_capi_se FMI 3.0 (CS) Scheduled-Execution functions
+ *		\brief List of Scheduled-Execution wrapper functions. Common functions are not listed.
+ *	\addtogroup fmi3_capi_common FMI 3.0 Common functions
+ *		\brief List of wrapper functions that are in common for Model Exchange, Co-Simulation and Scheduled-Execution.
  */
 
 
@@ -55,14 +57,14 @@ extern "C" {
 
 /**
  * \brief Free a C-API struct. All memory allocated since the struct was created is freed.
- * 
+ *
  * @param fmu A model description object returned by fmi3_import_allocate.
  */
 void fmi3_capi_destroy_dllfmu(fmi3_capi_t* fmu);
 
 /**
  * \brief Create a C-API struct. The C-API struct is a placeholder for the FMI DLL functions.
- * 
+ *
  * @param callbacks ::jm_callbacks used to construct library objects.
  * @param dllPath Full path to the FMU shared library.
  * @param modelIdentifier The model indentifier.
@@ -72,12 +74,12 @@ void fmi3_capi_destroy_dllfmu(fmi3_capi_t* fmu);
  * @return Error status. If the function returns with an error, it is not allowed to call any of the other C-API functions.
  */
 fmi3_capi_t* fmi3_capi_create_dllfmu(jm_callbacks* callbacks, const char* dllPath, const char* modelIdentifier,
-        fmi3_instance_environment_t instanceEnvironment, fmi3_callback_log_message_ft logMessage,
+        fmi3_instance_environment_t instanceEnvironment, fmi3_log_message_callback_ft logMessage,
         fmi3_fmu_kind_enu_t standard);
 
 /**
  * \brief Loads the FMI functions from the shared library. The shared library must be loaded before this function can be called, see fmi3_import_create_dllfmu.
- * 
+ *
  * @param fmu A model description object returned by fmi3_import_allocate.
  * @param capabilities An array of capability flags according to fmi3_capabilities_enu_t order.
  * @return Error status. If the function returns with an error, no other C-API functions than fmi3_import_free_dll and fmi3_import_destroy_dllfmu are allowed to be called.
@@ -85,25 +87,25 @@ fmi3_capi_t* fmi3_capi_create_dllfmu(jm_callbacks* callbacks, const char* dllPat
 jm_status_enu_t fmi3_capi_load_fcn(fmi3_capi_t* fmu, unsigned int capabilities[]);
 
 /**
- * \brief Loads the FMU´s shared library. The shared library functions are not loaded in this call, see fmi3_import_create_dllfmu.
- * 
+ * \brief Loads the FMUs shared library. The shared library functions are not loaded in this call, see fmi3_import_create_dllfmu.
+ *
  * @param fmu A model description object returned by fmi3_import_allocate.
  * @return Error status. If the function returns with an error, no other C-API functions than fmi3_import_destroy_dllfmu are allowed to be called.
  */
 jm_status_enu_t fmi3_capi_load_dll(fmi3_capi_t* fmu);
 
 /**
- * \brief Frees the handle to the FMU´s shared library. After this function returnes, no other C-API functions than fmi3_import_destroy_dllfmu and fmi3_import_create_dllfmu are allowed to be called.
- * 
- * @param fmu A model description object returned by fmi3_import_allocate that has loaded the FMU´s shared library, see fmi3_import_create_dllfmu.
+ * \brief Frees the handle to the FMUs shared library. After this function returnes, no other C-API functions than fmi3_import_destroy_dllfmu and fmi3_import_create_dllfmu are allowed to be called.
+ *
+ * @param fmu A model description object returned by fmi3_import_allocate that has loaded the FMUs shared library, see fmi3_import_create_dllfmu.
  * @return Error status.
  */
 jm_status_enu_t fmi3_capi_free_dll(fmi3_capi_t* fmu);
 
 /**
  * \brief Set CAPI debug mode flag. Setting to non-zero prevents DLL unloading in fmi1_capi_free_dll
- *  while all the memory is deallocated. This is to support valgrind debugging. 
- * 
+ *  while all the memory is deallocated. This is to support valgrind debugging.
+ *
  * @param fmu C-API struct that has succesfully loaded the FMI function.
  * @param mode The debug mode to set.
  */
@@ -111,13 +113,13 @@ void fmi3_capi_set_debug_mode(fmi3_capi_t* fmu, int mode);
 
 /**
  * \brief Get CAPI debug mode flag that was set with fmi1_capi_set_debug_mode()
- * 
+ *
  * @param fmu C-API struct that has succesfully loaded the FMI function. */
 int fmi3_capi_get_debug_mode(fmi3_capi_t* fmu);
 
 /**
  * \brief Get the FMU kind loaded by the CAPI
- * 
+ *
  * @param fmu C-API struct that has succesfully loaded the FMI function. */
 fmi3_fmu_kind_enu_t fmi3_capi_get_fmu_kind(fmi3_capi_t* fmu);
 
@@ -129,16 +131,16 @@ fmi3_fmu_kind_enu_t fmi3_capi_get_fmu_kind(fmi3_capi_t* fmu);
  */
 
 /**
- * \brief Calls the FMI function fmiGetVersion() 
- * 
+ * \brief Calls the FMI function fmiGetVersion()
+ *
  * @param fmu C-API struct that has succesfully loaded the FMI function.
  * @return FMI version.
  */
 const char* fmi3_capi_get_version(fmi3_capi_t* fmu);
 
 /**
- * \brief Calls the FMI function fmiSetDebugLogging(...) 
- * 
+ * \brief Calls the FMI function fmiSetDebugLogging(...)
+ *
  * @param fmu C-API struct that has succesfully loaded the FMI function.
  * @param loggingOn Enable or disable the debug logger.
  * @param nCategories Number of categories to log.
@@ -150,126 +152,107 @@ fmi3_status_t fmi3_capi_set_debug_logging(fmi3_capi_t* fmu, fmi3_boolean_t loggi
 
 /**
  * \brief Calls the FMI function fmi3InstantiateModelExchange(...)
- * 
+ *
  * Arguments 'instanceEnvironment' and 'logMessage' are reused from #fmi3_capi_create_dllfmu.
  *
  * @param fmu C-API struct that has succesfully loaded the FMI function.
  * @param instanceName The name of the instance.
  * @param instantiationToken The instantiation token.
- * @param resourceLocation Access path to the FMU archive resources.
+ * @param resourcePath Absolute path to the FMU archive resources.
  * @param visible Indicates whether or not the simulator application window shoule be visible.
  * @param loggingOn Enable or disable the debug logger.
+ * @param instanceEnvironment The instance environment that is used during callbacks.
+ * @param logMessage The logging function the FMU will use.
  * @return An instance of a model, or NULL if call failed.
  */
 fmi3_instance_t fmi3_capi_instantiate_model_exchange(fmi3_capi_t*   fmu,
                                                      fmi3_string_t  instanceName,
                                                      fmi3_string_t  instantiationToken,
-                                                     fmi3_string_t  resourceLocation,
+                                                     fmi3_string_t  resourcePath,
                                                      fmi3_boolean_t visible,
-                                                     fmi3_boolean_t loggingOn);
+                                                     fmi3_boolean_t loggingOn,
+                                                     fmi3_instance_environment_t instanceEnvironment,
+                                                     fmi3_log_message_callback_ft logMessage);
 
 
 /**
- * \brief Calls the FMI function fmi3InstantiateBasicCoSimulation(...)
+ * \brief Calls the FMI function fmi3InstantiateCoSimulation(...)
  *
  * Arguments 'instanceEnvironment' and 'logMessage' are reused from #fmi3_capi_create_dllfmu.
  *
  * @param fmu C-API struct that has succesfully loaded the FMI function.
  * @param instanceName The name of the instance.
  * @param instantiationToken The instantiation token.
- * @param resourceLocation Access path to the FMU archive resources.
+ * @param resourcePath Absolute path to the FMU archive resources.
  * @param visible Indicates whether or not the simulator application window shoule be visible.
  * @param loggingOn Enable or disable the debug logger.
- * @param intermediateVariableGetRequired         TODO: (not yet described in standard)
- * @param intermediateInternalVariableGetRequired TODO: (not yet described in standard)  
- * @param intermediateVariableSetRequired         TODO: (not yet described in standard)
+ * @param eventModeUsed Indicates whether or not 'Event Mode' is supported.
+ * @param earlyReturnAllowed Indicates whether early return is allowed.
+ * @param requiredIntermediateVariables Array of value references of all input/output variables
+ *        that the simulation algorithm intends to set/get during intermediate updates.
+ * @param nRequiredIntermediateVariables Specifies the number of entries in array
+ *        'requiredIntermediateVariables'.
+ * @param instanceEnvironment The instance environment that is used during callbacks.
+ * @param logMessage The logging function the FMU will use.
  * @param intermediateUpdate Callback for performing intermediate updates.
  * @return An instance of a model, or NULL if call failed.
  */
-fmi3_instance_t fmi3_capi_instantiate_basic_co_simulation(
+fmi3_instance_t fmi3_capi_instantiate_co_simulation(
         fmi3_capi_t*                         fmu,
         fmi3_string_t                        instanceName,
         fmi3_string_t                        instantiationToken,
-        fmi3_string_t                        resourceLocation,
+        fmi3_string_t                        resourcePath,
         fmi3_boolean_t                       visible,
         fmi3_boolean_t                       loggingOn,
-        fmi3_boolean_t                       intermediateVariableGetRequired,
-        fmi3_boolean_t                       intermediateInternalVariableGetRequired,
-        fmi3_boolean_t                       intermediateVariableSetRequired,
-        fmi3_callback_intermediate_update_ft intermediateUpdate);
+        fmi3_boolean_t                       eventModeUsed,
+        fmi3_boolean_t                       earlyReturnAllowed,
+        const fmi3_value_reference_t         requiredIntermediateVariables,
+        size_t                               nRequiredIntermediateVariables,
+        fmi3_instance_environment_t          instanceEnvironment,
+        fmi3_log_message_callback_ft         logMessage,
+        fmi3_intermediate_update_callback_ft intermediateUpdate);
 
 /**
- * \brief Calls the FMI function fmi3InstantiateHybridCoSimulation(...)
+ * \brief Calls the FMI function fmi3InstantiateScheduledExecution(...)
  *
  * Arguments 'instanceEnvironment' and 'logMessage' are reused from #fmi3_capi_create_dllfmu.
  *
  * @param fmu C-API struct that has succesfully loaded the FMI function.
  * @param instanceName The name of the instance.
  * @param instantiationToken The instantiation token.
- * @param resourceLocation Access path to the FMU archive resources.
+ * @param resourcePath Absolute path to the FMU archive resources.
  * @param visible Indicates whether or not the simulator application window shoule be visible.
  * @param loggingOn Enable or disable the debug logger.
- * @param intermediateVariableGetRequired         TODO: (not yet described in standard)
- * @param intermediateInternalVariableGetRequired TODO: (not yet described in standard)  
- * @param intermediateVariableSetRequired         TODO: (not yet described in standard)
- * @param intermediateUpdate Callback for performing intermediate updates.
- * @return An instance of a model, or NULL if call failed.
- */
-fmi3_instance_t fmi3_capi_instantiate_hybrid_co_simulation(
-        fmi3_capi_t*                         fmu,
-        fmi3_string_t                        instanceName,
-        fmi3_string_t                        instantiationToken,
-        fmi3_string_t                        resourceLocation,
-        fmi3_boolean_t                       visible,
-        fmi3_boolean_t                       loggingOn,
-        fmi3_boolean_t                       intermediateVariableGetRequired,
-        fmi3_boolean_t                       intermediateInternalVariableGetRequired,
-        fmi3_boolean_t                       intermediateVariableSetRequired,
-        fmi3_callback_intermediate_update_ft intermediateUpdate);
-
-/**
- * \brief Calls the FMI function fmi3InstantiateScheduledCoSimulation(...)
- *
- * Arguments 'instanceEnvironment' and 'logMessage' are reused from #fmi3_capi_create_dllfmu.
- *
- * @param fmu C-API struct that has succesfully loaded the FMI function.
- * @param instanceName The name of the instance.
- * @param instantiationToken The instantiation token.
- * @param resourceLocation Access path to the FMU archive resources.
- * @param visible Indicates whether or not the simulator application window shoule be visible.
- * @param loggingOn Enable or disable the debug logger.
- * @param intermediateVariableGetRequired         TODO: (not yet described in standard)
- * @param intermediateInternalVariableGetRequired TODO: (not yet described in standard)  
- * @param intermediateVariableSetRequired         TODO: (not yet described in standard)
- * @param intermediateUpdate Callback for performing intermediate updates.
+ * @param instanceEnvironment The instance environment that is used during callbacks.
+ * @param logMessage The logging function the FMU will use.
+ * @param clockUpdate Callback for clock update.
  * @param lockPreemption Callback for locking preemption.
  * @param unlockPreemption Callback for unlocking preemption.
  * @return An instance of a model, or NULL if call failed.
  */
-fmi3_instance_t fmi3_capi_instantiate_scheduled_co_simulation(
+fmi3_instance_t fmi3_capi_instantiate_scheduled_execution(
         fmi3_capi_t*                         fmu,
         fmi3_string_t                        instanceName,
         fmi3_string_t                        instantiationToken,
-        fmi3_string_t                        resourceLocation,
+        fmi3_string_t                        resourcePath,
         fmi3_boolean_t                       visible,
         fmi3_boolean_t                       loggingOn,
-        fmi3_boolean_t                       intermediateVariableGetRequired,
-        fmi3_boolean_t                       intermediateInternalVariableGetRequired,
-        fmi3_boolean_t                       intermediateVariableSetRequired,
-        fmi3_callback_intermediate_update_ft intermediateUpdate,
-        fmi3_callback_lock_preemption_ft     lockPreemption,
-        fmi3_callback_unlock_preemption_ft   unlockPreemption);
+        fmi3_instance_environment_t          instanceEnvironment,
+        fmi3_log_message_callback_ft         logMessage,
+        fmi3_clock_update_callback_ft        clockUpdate,
+        fmi3_lock_preemption_callback_ft     lockPreemption,
+        fmi3_unlock_preemption_callback_ft   unlockPreemption);
 
 /**
- * \brief Calls the FMI function fmiFreeInstance(...) 
- * 
+ * \brief Calls the FMI function fmiFreeInstance(...)
+ *
  * @param fmu C-API struct that has succesfully loaded the FMI function.
  */
 void fmi3_capi_free_instance(fmi3_capi_t* fmu);
 
 /**
  * \brief Calls the FMI function fmiEnterInitializationMode(...)
- * 
+ *
  * @param fmu C-API struct that has succesfully loaded the FMI function.
  * @param toleranceDefined True if the @p tolerance argument is to be used
  * @param tolerance Solvers internal to the FMU should use this tolerance or finer, if @p toleranceDefined is true
@@ -287,45 +270,31 @@ fmi3_status_t fmi3_capi_enter_initialization_mode(fmi3_capi_t* fmu,
 
 /**
  * \brief Calls the FMI function fmiExitInitializationMode(...)
- * 
+ *
  * @param fmu C-API struct that has succesfully loaded the FMI function.
  * @return FMI status.
  */
 fmi3_status_t fmi3_capi_exit_initialization_mode(fmi3_capi_t* fmu);
 
 /**
- * \brief Calls the FMI function fmiEnterEventMode(...) 
- * 
+ * \brief Calls the FMI function fmiEnterEventMode(...)
+ *
  * @param fmu C-API struct that has succesfully loaded the FMI function.
- * @param inputEvent True if an input event occurred.
- * @param stepEvent  True if a step event occured.
- * @param rootsFound Array of length 'nEventIndicators' that describes the status and direction of the event
- *   indicators(z).
- *   z_i == 0: no root found
- *   z_i == +1: z_i increasing
- *   z_i == -1: z_i decreasing
- * @param nEventIndicators Number of event indicators, or 0 if info can't be provided.
- * @param timeEvent True if time event occurred.
  * @return FMI status.
  */
-fmi3_status_t fmi3_capi_enter_event_mode(fmi3_capi_t*       fmu,
-                                         fmi3_boolean_t     inputEvent,
-                                         fmi3_boolean_t     stepEvent,
-                                         const fmi3_int32_t rootsFound[],
-                                         size_t             nEventIndicators,
-                                         fmi3_boolean_t     timeEvent);
+fmi3_status_t fmi3_capi_enter_event_mode(fmi3_capi_t* fmu);
 
 /**
  * \brief Calls the FMI function fmiTerminate(...)
- * 
+ *
  * @param fmu C-API struct that has succesfully loaded the FMI function.
  * @return FMI status.
  */
 fmi3_status_t fmi3_capi_terminate(fmi3_capi_t* fmu);
 
 /**
- * \brief Calls the FMI function fmiReset(...) 
- * 
+ * \brief Calls the FMI function fmiReset(...)
+ *
  * @param fmu C-API struct that has succesfully loaded the FMI function.
  * @return FMI status.
  */
@@ -333,8 +302,8 @@ fmi3_status_t fmi3_capi_reset(fmi3_capi_t* fmu);
 
 
 /**
- * \brief Calls the FMI function fmiSetFloat64(...) 
- * 
+ * \brief Calls the FMI function fmiSetFloat64(...)
+ *
  * @param fmu C-API struct that has succesfully loaded the FMI function.
  * @param vr Array of value references.
  * @param nvr Number of array elements.
@@ -346,8 +315,8 @@ fmi3_status_t fmi3_capi_reset(fmi3_capi_t* fmu);
 fmi3_status_t fmi3_capi_set_float64(fmi3_capi_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, const fmi3_float64_t value[], size_t nValues);
 
 /**
- * \brief Calls the FMI function fmiSetFloat32(...) 
- * 
+ * \brief Calls the FMI function fmiSetFloat32(...)
+ *
  * @param fmu C-API struct that has succesfully loaded the FMI function.
  * @param vr Array of value references.
  * @param nvr Number of array elements.
@@ -371,8 +340,8 @@ fmi3_status_t fmi3_capi_set_uint16(fmi3_capi_t* fmu, const fmi3_value_reference_
 fmi3_status_t fmi3_capi_set_uint8( fmi3_capi_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, const fmi3_uint8_t  value[], size_t nValues);
 
 /**
- * \brief Calls the FMI function fmiSetBoolean(...) 
- * 
+ * \brief Calls the FMI function fmiSetBoolean(...)
+ *
  * @param fmu C-API struct that has succesfully loaded the FMI function.
  * @param vr Array of value references.
  * @param nvr Number of array elements.
@@ -384,8 +353,8 @@ fmi3_status_t fmi3_capi_set_boolean(fmi3_capi_t* fmu, const fmi3_value_reference
         const fmi3_boolean_t value[], size_t nValues);
 
 /**
- * \brief Calls the FMI function fmiSetString(...) 
- * 
+ * \brief Calls the FMI function fmiSetString(...)
+ *
  * @param fmu C-API struct that has succesfully loaded the FMI function.
  * @param vr Array of value references.
  * @param nvr Number of array elements.
@@ -397,8 +366,8 @@ fmi3_status_t fmi3_capi_set_string(fmi3_capi_t* fmu, const fmi3_value_reference_
         const fmi3_string_t value[], size_t nValues);
 
 /**
- * \brief Calls the FMI function fmiSetBinary(...) 
- * 
+ * \brief Calls the FMI function fmiSetBinary(...)
+ *
  * @param fmu C-API struct that has succesfully loaded the FMI function.
  * @param vr Array of value references.
  * @param nvr Number of array elements.
@@ -411,8 +380,8 @@ fmi3_status_t fmi3_capi_set_binary(fmi3_capi_t* fmu, const fmi3_value_reference_
         const size_t sizes[], const fmi3_binary_t values[], size_t nValues);
 
 /**
- * \brief Calls the FMI function fmiGetFloat64(...) 
- * 
+ * \brief Calls the FMI function fmiGetFloat64(...)
+ *
  * @param fmu C-API struct that has succesfully loaded the FMI function.
  * @param vr Array of value references.
  * @param nvr Number of array elements.
@@ -423,8 +392,8 @@ fmi3_status_t fmi3_capi_set_binary(fmi3_capi_t* fmu, const fmi3_value_reference_
 fmi3_status_t fmi3_capi_get_float64(fmi3_capi_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, fmi3_float64_t value[], size_t nValues);
 
 /**
- * \brief Calls the FMI function fmiGetFloat32(...) 
- * 
+ * \brief Calls the FMI function fmiGetFloat32(...)
+ *
  * @param fmu C-API struct that has succesfully loaded the FMI function.
  * @param vr Array of value references.
  * @param nvr Number of array elements.
@@ -447,8 +416,8 @@ fmi3_status_t fmi3_capi_get_uint16(fmi3_capi_t* fmu, const fmi3_value_reference_
 fmi3_status_t fmi3_capi_get_uint8( fmi3_capi_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, fmi3_uint8_t  value[], size_t nValues);
 
 /**
- * \brief Calls the FMI function fmiGetBoolean(...) 
- * 
+ * \brief Calls the FMI function fmiGetBoolean(...)
+ *
  * @param fmu C-API struct that has succesfully loaded the FMI function.
  * @param vr Array of value references.
  * @param nvr Number of array elements.
@@ -460,8 +429,8 @@ fmi3_status_t fmi3_capi_get_boolean(fmi3_capi_t* fmu, const fmi3_value_reference
         size_t nValues);
 
 /**
- * \brief Calls the FMI function fmiGetString(...) 
- * 
+ * \brief Calls the FMI function fmiGetString(...)
+ *
  * @param fmu C-API struct that has succesfully loaded the FMI function.
  * @param vr Array of value references.
  * @param nvr Number of array elements.
@@ -473,8 +442,8 @@ fmi3_status_t fmi3_capi_get_string(fmi3_capi_t* fmu, const fmi3_value_reference_
         size_t nValues);
 
 /**
- * \brief Calls the FMI function fmiGetBinary(...) 
- * 
+ * \brief Calls the FMI function fmiGetBinary(...)
+ *
  * @param fmu C-API struct that has succesfully loaded the FMI function.
  * @param vr Array of value references.
  * @param nvr Number of array elements.
@@ -510,8 +479,8 @@ fmi3_status_t fmi3_capi_de_serialize_fmu_state   (fmi3_capi_t* fmu, const fmi3_b
 /* Getting partial derivatives */
 
 /**
- * \brief Calls the FMI function fmiGetDirectionalDerivative(...) 
- * 
+ * \brief Calls the FMI function fmiGetDirectionalDerivative(...)
+ *
  * @param fmu C-API struct that has succesfully loaded the FMI function.
  * @param unknowns Value references for the derivatives/outputs to be processed
  * @param nUnknowns Size of 'nUnknowns'.
@@ -535,8 +504,8 @@ fmi3_status_t fmi3_capi_get_directional_derivative(
         size_t nSensitivity);
 
 /**
- * \brief Calls the FMI function fmiGetAdjointalDerivative(...) 
- * 
+ * \brief Calls the FMI function fmiGetAdjointalDerivative(...)
+ *
  * @param fmu C-API struct that has succesfully loaded the FMI function.
  * @param unknowns Value references for the derivatives/outputs to be processed.
  * @param nUnknowns Size of 'nUnknowns'.
@@ -562,16 +531,16 @@ fmi3_status_t fmi3_capi_get_adjoint_derivative(
 /* Entering and exiting the Configuration or Reconfiguration Mode */
 
 /**
- * \brief Calls the FMI function fmiEnterConfigurationMode(...) 
- * 
+ * \brief Calls the FMI function fmiEnterConfigurationMode(...)
+ *
  * @param fmu C-API struct that has succesfully loaded the FMI function.
  * @return FMI status.
  */
 fmi3_status_t fmi3_capi_enter_configuration_mode(fmi3_capi_t* fmu);
 
 /**
- * \brief Calls the FMI function fmiExitConfigurationMode(...) 
- * 
+ * \brief Calls the FMI function fmiExitConfigurationMode(...)
+ *
  * @param fmu C-API struct that has succesfully loaded the FMI function.
  * @return FMI status.
  */
@@ -580,118 +549,117 @@ fmi3_status_t fmi3_capi_exit_configuration_mode(fmi3_capi_t* fmu);
 /* Clock related functions */
 
 /**
- * \brief Calls the FMI function fmiGetClock(...) 
- * 
+ * \brief Calls the FMI function fmiGetClock(...)
+ *
  * @param fmu C-API struct that has succesfully loaded the FMI function.
  * @param valueReferences Array of value references to clock variables.
  * @param nValueReferences Number of elements in 'valueReferences' array.
  * @param values Output argument containing the values.
- * @param nValues Number of elements in 'values'.
  * @return FMI status.
  */
 fmi3_status_t fmi3_capi_get_clock(
         fmi3_capi_t* fmu,
         const fmi3_value_reference_t valueReferences[],
         size_t nValueReferences,
-        fmi3_clock_t values[],
-        size_t nValues);
+        fmi3_clock_t values[]);
 
 /**
- * \brief Calls the FMI function fmiSetClock(...) 
- * 
+ * \brief Calls the FMI function fmiSetClock(...)
+ *
  * @param fmu C-API struct that has succesfully loaded the FMI function.
  * @param valueReferences Array of value references to clock variables.
  * @param nValueReferences Number of elements in 'valueReferences' array.
  * @param values Output argument containing the values.
- * @param subactive TODO
- * @param nValues Number of elements in 'values' and 'subactive'.
  * @return FMI status.
  */
 fmi3_status_t fmi3_capi_set_clock(
         fmi3_capi_t* fmu,
         const fmi3_value_reference_t valueReferences[],
         size_t nValueReferences,
-        const fmi3_clock_t values[],
-        const fmi3_boolean_t subactive[],
-        size_t nValues);
+        const fmi3_clock_t values[]);
 
 /**
- * \brief Calls the FMI function fmiGetIntervalDecimal(...) 
- * 
+ * \brief Calls the FMI function fmiGetIntervalDecimal(...)
+ *
  * @param fmu C-API struct that has succesfully loaded the FMI function.
  * @param valueReferences Array of value references to clock variables.
  * @param nValueReferences Number of elements in 'valueReferences' array.
- * @param interval TODO
- * @param nValues Number of elements in 'interval'.
+ * @param intervals Array of size nValueReferences to retrieve the Clock intervals.
+ * @param qualifiers Array of size nValueReferences to retrieve the Clock qualifiers.
  * @return FMI status.
  */
 fmi3_status_t fmi3_capi_get_interval_decimal(
         fmi3_capi_t* fmu,
         const fmi3_value_reference_t valueReferences[],
         size_t nValueReferences,
-        fmi3_float64_t interval[],
-        size_t nValues);
+        fmi3_float64_t intervals[],
+        fmi3_interval_qualifier_t qualifiers[]);
 
 /**
- * \brief Calls the FMI function fmiGetIntervalFraction(...) 
- * 
+ * \brief Calls the FMI function fmiGetIntervalFraction(...)
+ *
  * @param fmu C-API struct that has succesfully loaded the FMI function.
  * @param valueReferences Array of value references to clock variables.
  * @param nValueReferences Number of elements in 'valueReferences' array.
- * @param intervalCounter TODO
- * @param resolution TODO
- * @param nValues Number of elements in 'intervalCounter' and 'resolution'.
+ * @param counters Array of size nValueReferences to retrieve the Clock intervals as fraction counters.
+ * @param resolutions Array of size nValueReferences to retrieve the Clock intervals as fraction resolutions.
+ * @param qualifiers Array of size nValueReferences to retrieve the Clock qualifiers.
  * @return FMI status.
  */
 fmi3_status_t fmi3_capi_get_interval_fraction(
         fmi3_capi_t* fmu,
         const fmi3_value_reference_t valueReferences[],
         size_t nValueReferences,
-        fmi3_uint64_t intervalCounter[],
-        fmi3_uint64_t resolution[],
-        size_t nValues);
+        fmi3_uint64_t counters[],
+        fmi3_uint64_t resolutions[],
+        fmi3_interval_qualifier_t qualifiers[]);
 
 /**
- * \brief Calls the FMI function fmiSetIntervalDecimal(...) 
- * 
+ * \brief Calls the FMI function fmiSetIntervalDecimal(...)
+ *
  * @param fmu C-API struct that has succesfully loaded the FMI function.
  * @param valueReferences Array of value references to clock variables.
  * @param nValueReferences Number of elements in 'valueReferences' array.
- * @param interval TODO
- * @param nValues Number of elements in 'interval'.
+ * @param intervals Array of size nValueReferences holding the Clock intervals to be set.
  * @return FMI status.
  */
 fmi3_status_t fmi3_capi_set_interval_decimal(
         fmi3_capi_t* fmu,
         const fmi3_value_reference_t valueReferences[],
         size_t nValueReferences,
-        const fmi3_float64_t interval[],
-        size_t nValues);
+        const fmi3_float64_t intervals[]);
 
 /**
- * \brief Calls the FMI function fmiGetIntervalFraction(...) 
- * 
+ * \brief Calls the FMI function fmiGetIntervalFraction(...)
+ *
  * @param fmu C-API struct that has succesfully loaded the FMI function.
  * @param valueReferences Array of value references to clock variables.
  * @param nValueReferences Number of elements in 'valueReferences' array.
- * @param intervalCounter TODO
- * @param resolution TODO
- * @param nValues Number of elements in 'intervalCounter' and 'resolution'.
+ * @param counters Array of size nValueReferences that holds the Clock counters to be set.
+ * @param resolutions Array of size nValueReferences that holds the Clock resolutions to be set.
  * @return FMI status.
  */
 fmi3_status_t fmi3_capi_set_interval_fraction(
         fmi3_capi_t* fmu,
         const fmi3_value_reference_t valueReferences[],
         size_t nValueReferences,
-        const fmi3_uint64_t intervalCounter[],
-        const fmi3_uint64_t resolution[],
-        size_t nValues);
+        const fmi3_uint64_t counters[],
+        const fmi3_uint64_t resolutions[]);
 
 /**
- * \brief Calls the FMI function fmiNewDiscreteStates(...) 
- * 
+ * \brief Calls the FMI function fmiEvaluateDiscreteStates(...)
+ *
  * @param fmu C-API struct that has succesfully loaded the FMI function.
- * @param newDiscreteStatesNeeded Return arg: if the FMU needs new discrete states.
+ * @return FMI status.
+ */
+fmi3_status_t fmi3_capi_evaluate_discrete_states(
+        fmi3_capi_t*    fmu);
+
+/**
+ * \brief Calls the FMI function fmiUpdateDiscreteStates(...)
+ *
+ * @param fmu C-API struct that has succesfully loaded the FMI function.
+ * @param discreteStatesNeedUpdate Return arg: if the FMU needs to update the discrete states.
  * @param terminateSimulation Return arg: if the FMU wants to terminate the simulation.
  * @param nominalsOfContinuousStatesChanged Return arg: if the nominals of continuous states changed.
  * @param valuesOfContinuousStatesChanged Return arg: if the values of continuous states changed.
@@ -699,9 +667,9 @@ fmi3_status_t fmi3_capi_set_interval_fraction(
  * @param nextEventTime Return arg: time for next time event.
  * @return FMI status.
  */
-fmi3_status_t fmi3_capi_new_discrete_states(
+fmi3_status_t fmi3_capi_update_discrete_states(
         fmi3_capi_t*    fmu,
-        fmi3_boolean_t *newDiscreteStatesNeeded,
+        fmi3_boolean_t *discreteStatesNeedUpdate,
         fmi3_boolean_t *terminateSimulation,
         fmi3_boolean_t *nominalsOfContinuousStatesChanged,
         fmi3_boolean_t *valuesOfContinuousStatesChanged,
@@ -715,8 +683,8 @@ fmi3_status_t fmi3_capi_new_discrete_states(
  */
 
 /**
- * \brief Calls the FMI function fmiEnterContinuousTimeMode(...) 
- * 
+ * \brief Calls the FMI function fmiEnterContinuousTimeMode(...)
+ *
  * @param fmu C-API struct that has succesfully loaded the FMI function.
  * @return FMI status.
  */
@@ -724,8 +692,8 @@ fmi3_status_t fmi3_capi_enter_continuous_time_mode(fmi3_capi_t* fmu);
 
 
 /**
- * \brief Calls the FMI function fmiSetTime(...) 
- * 
+ * \brief Calls the FMI function fmiSetTime(...)
+ *
  * @param fmu C-API struct that has succesfully loaded the FMI function.
  * @param time Set the current time.
  * @return FMI status.
@@ -733,8 +701,8 @@ fmi3_status_t fmi3_capi_enter_continuous_time_mode(fmi3_capi_t* fmu);
 fmi3_status_t fmi3_capi_set_time(fmi3_capi_t* fmu, fmi3_float64_t time);
 
 /**
- * \brief Calls the FMI function fmiSetContinuousStates(...) 
- * 
+ * \brief Calls the FMI function fmiSetContinuousStates(...)
+ *
  * @param fmu C-API struct that has succesfully loaded the FMI function.
  * @param x Array of state values.
  * @param nx Number of states.
@@ -743,8 +711,8 @@ fmi3_status_t fmi3_capi_set_time(fmi3_capi_t* fmu, fmi3_float64_t time);
 fmi3_status_t fmi3_capi_set_continuous_states(fmi3_capi_t* fmu, const fmi3_float64_t x[], size_t nx);
 
 /**
- * \brief Calls the FMI function fmiCompletedIntegratorStep(...) 
- * 
+ * \brief Calls the FMI function fmiCompletedIntegratorStep(...)
+ *
  * @param fmu C-API struct that has succesfully loaded the FMI function.
  * @param noSetFMUStatePriorToCurrentPoint True if fmiSetFMUState will no
           longer be called for time instants prior to current time in this
@@ -758,8 +726,8 @@ fmi3_status_t fmi3_capi_completed_integrator_step(fmi3_capi_t* fmu,
     fmi3_boolean_t* enterEventMode, fmi3_boolean_t* terminateSimulation);
 
 /**
- * \brief Calls the FMI function fmiGetDerivatives(...) 
- * 
+ * \brief Calls the FMI function fmiGetDerivatives(...)
+ *
  * @param fmu C-API struct that has succesfully loaded the FMI function.
  * @param derivatives (Output) Array of the derivatives.
  * @param nx Number of derivatives.
@@ -768,8 +736,8 @@ fmi3_status_t fmi3_capi_completed_integrator_step(fmi3_capi_t* fmu,
 fmi3_status_t fmi3_capi_get_derivatives(fmi3_capi_t* fmu, fmi3_float64_t derivatives[], size_t nx);
 
 /**
- * \brief Calls the FMI function fmiGetEventIndicators(...) 
- * 
+ * \brief Calls the FMI function fmiGetEventIndicators(...)
+ *
  * @param fmu C-API struct that has succesfully loaded the FMI function.
  * @param eventIndicators (Output) The event indicators.
  * @param ni Number of event indicators.
@@ -778,8 +746,8 @@ fmi3_status_t fmi3_capi_get_derivatives(fmi3_capi_t* fmu, fmi3_float64_t derivat
 fmi3_status_t fmi3_capi_get_event_indicators(fmi3_capi_t* fmu, fmi3_float64_t eventIndicators[], size_t ni);
 
 /**
- * \brief Calls the FMI function fmiGetContinuousStates(...) 
- * 
+ * \brief Calls the FMI function fmiGetContinuousStates(...)
+ *
  * @param fmu C-API struct that has succesfully loaded the FMI function.
  * @param x (Output) Array of state values.
  * @param nx Number of states.
@@ -788,8 +756,8 @@ fmi3_status_t fmi3_capi_get_event_indicators(fmi3_capi_t* fmu, fmi3_float64_t ev
 fmi3_status_t fmi3_capi_get_continuous_states(fmi3_capi_t* fmu, fmi3_float64_t x[], size_t nx);
 
 /**
- * \brief Calls the FMI function fmiGetNominalsOfContinuousStates(...) 
- * 
+ * \brief Calls the FMI function fmiGetNominalsOfContinuousStates(...)
+ *
  * @param fmu C-API struct that has succesfully loaded the FMI function.
  * @param nominals (Output) The nominal values.
  * @param nx Number of nominal values.
@@ -798,8 +766,8 @@ fmi3_status_t fmi3_capi_get_continuous_states(fmi3_capi_t* fmu, fmi3_float64_t x
 fmi3_status_t fmi3_capi_get_nominals_of_continuous_states(fmi3_capi_t* fmu, fmi3_float64_t nominals[], size_t nx);
 
 /**
- * \brief Calls the FMI function fmi3GetNumberOfEventIndicators(...) 
- * 
+ * \brief Calls the FMI function fmi3GetNumberOfEventIndicators(...)
+ *
  * @param fmu C-API struct that has succesfully loaded the FMI function.
  * @param nz (Output arg) Number of event indicators.
  * @return FMI status.
@@ -807,8 +775,8 @@ fmi3_status_t fmi3_capi_get_nominals_of_continuous_states(fmi3_capi_t* fmu, fmi3
 fmi3_status_t fmi3_capi_get_number_of_event_indicators(fmi3_capi_t* fmu, size_t* nz);
 
 /**
- * \brief Calls the FMI function fmi3GetNumberOfContinuousStates(...) 
- * 
+ * \brief Calls the FMI function fmi3GetNumberOfContinuousStates(...)
+ *
  * @param fmu C-API struct that has succesfully loaded the FMI function.
  * @param nx (Output arg) Number of continuous states.
  * @return FMI status.
@@ -822,16 +790,16 @@ fmi3_status_t fmi3_capi_get_number_of_continuous_states(fmi3_capi_t* fmu, size_t
  */
 
 /**
- * \brief Calls the FMI function fmiEnterStepMode(...) 
- * 
+ * \brief Calls the FMI function fmiEnterStepMode(...)
+ *
  * @param fmu C-API struct that has succesfully load the FMI function.
  * @return FMI status.
  */
 fmi3_status_t fmi3_capi_enter_step_mode(fmi3_capi_t* fmu);
 
 /**
- * \brief Calls the FMI function fmiGetOutputDerivatives(...) 
- * 
+ * \brief Calls the FMI function fmiGetOutputDerivatives(...)
+ *
  * @param fmu C-API struct that has succesfully load the FMI function.
  * @param valueReferences Array of value references.
  * @param nValueReferences Number of array elements.
@@ -849,13 +817,14 @@ fmi3_status_t fmi3_capi_get_output_derivatives(
         size_t nValues);
 
 /**
- * \brief Calls the FMI function fmiDoStep(...) 
- * 
+ * \brief Calls the FMI function fmiDoStep(...)
+ *
  * @param fmu C-API struct that has succesfully loaded the FMI function.
  * @param currentCommunicationPoint Current communication point of the master.
  * @param communicationStepSize Communication step size.
  * @param noSetFMUStatePriorToCurrentPoint Indicates that the master will not cal SetFMUState to a time prior to
  *        currentCommunicationPoint.
+ * @param eventHandlingNeeded Indicates that an event was encountered by the FMU at lastSuccessfulTime.
  * @param terminate (Output arg) If the FMU requests the simulation to be terminated (since the FMU reached end of
  *        simulation time - not due to internal error).
  * @param earlyReturn (Output arg) If the FMU returns early.
@@ -867,30 +836,28 @@ fmi3_status_t fmi3_capi_do_step(
         fmi3_float64_t currentCommunicationPoint,
         fmi3_float64_t communicationStepSize,
         fmi3_boolean_t noSetFMUStatePriorToCurrentPoint,
+        fmi3_boolean_t* eventHandlingNeeded,
         fmi3_boolean_t* terminate,
         fmi3_boolean_t* earlyReturn,
         fmi3_float64_t* lastSuccessfulTime);
 
 /**
- * \brief Calls the FMI function fmiActivateModelPartition(...) 
- * 
+ * \brief Calls the FMI function fmiActivateModelPartition(...)
+ *
  * @param fmu C-API struct that has succesfully loaded the FMI function.
  * @param clockReference Value reference of an inputClock that will be activated.
- * @param clockElementIndex 1-based index if referenced clock is an array (0 means all elements). Must be 0 if
- *        referenced clock is a scalar.
  * @param activationTime Simulation (virtual) time of the clock tick.
  * @return FMI status.
  */
 fmi3_status_t fmi3_capi_activate_model_partition(
         fmi3_capi_t* fmu,
         fmi3_value_reference_t clockReference,
-        size_t clockElementIndex,
         fmi3_float64_t activationTime);
 
 /** @}*/
 /** @}*/
 
-#ifdef __cplusplus 
+#ifdef __cplusplus
 }
 #endif
 

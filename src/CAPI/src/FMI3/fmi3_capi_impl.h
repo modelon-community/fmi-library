@@ -17,7 +17,7 @@
 #ifndef FMI3_CAPI_IMPL_H_
 #define FMI3_CAPI_IMPL_H_
 
-#ifdef __cplusplus 
+#ifdef __cplusplus
 extern "C" {
 #endif
 
@@ -30,120 +30,124 @@ extern "C" {
 
 #define FMI_CAPI_MODULE_NAME "FMICAPI"
 
-/** 
- * \brief C-API struct used as a placeholder for the FMI functions and shared library handler. 
+/**
+ * \brief C-API struct used as a placeholder for the FMI functions and shared library handler.
  */
 struct fmi3_capi_t {
-	const char* dllPath;
-	const char* modelIdentifier;
+    const char* dllPath;
+    const char* modelIdentifier;
 
-	jm_callbacks* callbacks;
+    jm_callbacks* callbacks;
 
-	DLL_HANDLE dllHandle;
+    DLL_HANDLE dllHandle;
 
-	fmi3_fmu_kind_enu_t standard;
+    fmi3_fmu_kind_enu_t standard;
 
-	fmi3_instance_t					inst;
+    fmi3_instance_t                    inst;
 
-	int debugMode;
+    int debugMode;
 
     /* Callbacks and callback environment */
     fmi3_instance_environment_t  instanceEnvironment;
-    fmi3_callback_log_message_ft logMessage;
+    fmi3_log_message_callback_ft logMessage;
 
-	/* FMI common */
-	fmi3_get_version_ft					fmi3GetVersion;
-	fmi3_set_debug_logging_ft			fmi3SetDebugLogging;
+    /* FMI common */
+    fmi3_get_version_ft                    fmi3GetVersion;
+    fmi3_set_debug_logging_ft              fmi3SetDebugLogging;
 
-    fmi3_instantiate_model_exchange_ft          fmi3InstantiateModelExchange;
-    fmi3_instantiate_basic_co_simulation_ft     fmi3InstantiateBasicCoSimulation;
-    fmi3_instantiate_hybrid_co_simulation_ft    fmi3InstantiateHybridCoSimulation;
-    fmi3_instantiate_scheduled_co_simulation_ft fmi3InstantiateScheduledCoSimulation;
-    fmi3_free_instance_ft			            fmi3FreeInstance;    
+    fmi3_instantiate_model_exchange_ft           fmi3InstantiateModelExchange;
+    fmi3_instantiate_co_simulation_ft            fmi3InstantiateCoSimulation;
+    fmi3_instantiate_scheduled_execution_ft      fmi3InstantiateScheduledExecution;
+    fmi3_free_instance_ft                        fmi3FreeInstance;
 
-    fmi3_enter_initialization_mode_ft 			fmi3EnterInitializationMode;
-    fmi3_exit_initialization_mode_ft 			fmi3ExitInitializationMode;
-    fmi3_enter_event_mode_ft		            fmi3EnterEventMode;
+    fmi3_enter_initialization_mode_ft             fmi3EnterInitializationMode;
+    fmi3_exit_initialization_mode_ft              fmi3ExitInitializationMode;
+    fmi3_enter_event_mode_ft                      fmi3EnterEventMode;
 
-    fmi3_terminate_ft					fmi3Terminate;
-    fmi3_reset_ft					fmi3Reset;
+    fmi3_terminate_ft                    fmi3Terminate;
+    fmi3_reset_ft                        fmi3Reset;
 
-    fmi3_set_float64_ft					fmi3SetFloat64;
-    fmi3_set_float32_ft					fmi3SetFloat32;
-    fmi3_set_int64_ft					fmi3SetInt64;
-    fmi3_set_int32_ft					fmi3SetInt32;
-    fmi3_set_int16_ft					fmi3SetInt16;
-    fmi3_set_int8_ft					fmi3SetInt8;
-    fmi3_set_uint64_ft					fmi3SetUInt64;
-    fmi3_set_uint32_ft					fmi3SetUInt32;
-    fmi3_set_uint16_ft					fmi3SetUInt16;
-    fmi3_set_uint8_ft					fmi3SetUInt8;
-    fmi3_set_boolean_ft					fmi3SetBoolean;
-    fmi3_set_string_ft					fmi3SetString;
-    fmi3_set_binary_ft					fmi3SetBinary;
-	fmi3_get_float64_ft					fmi3GetFloat64;
-    fmi3_get_float32_ft					fmi3GetFloat32;
-    fmi3_get_int64_ft					fmi3GetInt64;
-    fmi3_get_int32_ft					fmi3GetInt32;
-    fmi3_get_int16_ft					fmi3GetInt16;
-    fmi3_get_int8_ft					fmi3GetInt8;
-    fmi3_get_uint64_ft					fmi3GetUInt64;
-    fmi3_get_uint32_ft					fmi3GetUInt32;
-    fmi3_get_uint16_ft					fmi3GetUInt16;
-    fmi3_get_uint8_ft					fmi3GetUInt8;
-    fmi3_get_boolean_ft					fmi3GetBoolean;
-    fmi3_get_string_ft					fmi3GetString;
-    fmi3_get_binary_ft					fmi3GetBinary;
+    fmi3_set_float64_ft                  fmi3SetFloat64;
+    fmi3_set_float32_ft                  fmi3SetFloat32;
+    fmi3_set_int64_ft                    fmi3SetInt64;
+    fmi3_set_int32_ft                    fmi3SetInt32;
+    fmi3_set_int16_ft                    fmi3SetInt16;
+    fmi3_set_int8_ft                     fmi3SetInt8;
+    fmi3_set_uint64_ft                   fmi3SetUInt64;
+    fmi3_set_uint32_ft                   fmi3SetUInt32;
+    fmi3_set_uint16_ft                   fmi3SetUInt16;
+    fmi3_set_uint8_ft                    fmi3SetUInt8;
+    fmi3_set_boolean_ft                  fmi3SetBoolean;
+    fmi3_set_string_ft                   fmi3SetString;
+    fmi3_set_binary_ft                   fmi3SetBinary;
+    fmi3_get_float64_ft                  fmi3GetFloat64;
+    fmi3_get_float32_ft                  fmi3GetFloat32;
+    fmi3_get_int64_ft                    fmi3GetInt64;
+    fmi3_get_int32_ft                    fmi3GetInt32;
+    fmi3_get_int16_ft                    fmi3GetInt16;
+    fmi3_get_int8_ft                     fmi3GetInt8;
+    fmi3_get_uint64_ft                   fmi3GetUInt64;
+    fmi3_get_uint32_ft                   fmi3GetUInt32;
+    fmi3_get_uint16_ft                   fmi3GetUInt16;
+    fmi3_get_uint8_ft                    fmi3GetUInt8;
+    fmi3_get_boolean_ft                  fmi3GetBoolean;
+    fmi3_get_string_ft                   fmi3GetString;
+    fmi3_get_binary_ft                   fmi3GetBinary;
 
     fmi3_get_number_of_variable_dependencies_ft fmi3GetNumberOfVariableDependencies;
     fmi3_get_variable_dependencies_ft           fmi3GetVariableDependencies;
 
-	fmi3_get_fmu_state_ft				fmi3GetFMUState;
-	fmi3_set_fmu_state_ft				fmi3SetFMUState;
-	fmi3_free_fmu_state_ft				fmi3FreeFMUState;
-	
-	fmi3_serialized_fmu_state_size_ft	fmi3SerializedFMUStateSize;
-	fmi3_serialize_fmu_state_ft			fmi3SerializeFMUState;
-    fmi3_de_serialize_fmu_state_ft		fmi3DeSerializeFMUState;
+    fmi3_get_fmu_state_ft                fmi3GetFMUState;
+    fmi3_set_fmu_state_ft                fmi3SetFMUState;
+    fmi3_free_fmu_state_ft               fmi3FreeFMUState;
+
+    fmi3_serialized_fmu_state_size_ft     fmi3SerializedFMUStateSize;
+    fmi3_serialize_fmu_state_ft           fmi3SerializeFMUState;
+    fmi3_de_serialize_fmu_state_ft        fmi3DeserializeFMUState;
 
     /* Getting partial derivatives */
-	fmi3_get_directional_derivative_ft		fmi3GetDirectionalDerivative;
-	fmi3_get_adjoint_derivative_ft			fmi3GetAdjointDerivative;
+    fmi3_get_directional_derivative_ft        fmi3GetDirectionalDerivative;
+    fmi3_get_adjoint_derivative_ft            fmi3GetAdjointDerivative;
 
     /* Entering and exiting the Configuration or Reconfiguration Mode */
     fmi3_enter_configuration_mode_ft fmi3EnterConfigurationMode;
     fmi3_exit_configuration_mode_ft  fmi3ExitConfigurationMode;
 
     /* Clock related functions */
-    fmi3_get_clock_ft             fmi3GetClock;
-    fmi3_set_clock_ft             fmi3SetClock;
-    fmi3_get_interval_decimal_ft  fmi3GetIntervalDecimal;
-    fmi3_get_interval_fraction_ft fmi3GetIntervalFraction;
-    fmi3_set_interval_decimal_ft  fmi3SetIntervalDecimal;
-    fmi3_set_interval_fraction_ft fmi3SetIntervalFraction;
-    fmi3_new_discrete_states_ft   fmi3NewDiscreteStates;
+    fmi3_get_clock_ft                   fmi3GetClock;
+    fmi3_set_clock_ft                   fmi3SetClock;
+    fmi3_get_interval_decimal_ft        fmi3GetIntervalDecimal;
+    fmi3_get_shift_decimal_ft           fmi3GetShiftDecimal;
+    fmi3_get_shift_fraction_ft          fmi3GetShiftFraction;
+    fmi3_get_interval_fraction_ft       fmi3GetIntervalFraction;
+    fmi3_set_interval_decimal_ft        fmi3SetIntervalDecimal;
+    fmi3_set_interval_fraction_ft       fmi3SetIntervalFraction;
+    fmi3_set_shift_decimal_ft           fmi3SetShiftDecimal;
+    fmi3_set_shift_fraction_ft          fmi3SetShiftFraction;
+    fmi3_evaluate_discrete_states_ft    fmi3EvaluateDiscreteStates;
+    fmi3_update_discrete_states_ft      fmi3UpdateDiscreteStates;
 
-	/* FMI ME */
-    fmi3_enter_continuous_time_mode_ft	fmi3EnterContinuousTimeMode;
-    fmi3_completed_integrator_step_ft	fmi3CompletedIntegratorStep;
+    /* FMI ME */
+    fmi3_enter_continuous_time_mode_ft    fmi3EnterContinuousTimeMode;
+    fmi3_completed_integrator_step_ft    fmi3CompletedIntegratorStep;
 
     fmi3_set_time_ft                          fmi3SetTime;
     fmi3_set_continuous_states_ft             fmi3SetContinuousStates;
-    fmi3_get_derivatives_ft                   fmi3GetDerivatives;
+    fmi3_get_derivatives_ft                   fmi3GetContinuousStateDerivatives;
     fmi3_get_event_indicators_ft              fmi3GetEventIndicators;
     fmi3_get_continuous_states_ft             fmi3GetContinuousStates;
     fmi3_get_nominals_of_continuous_states_ft fmi3GetNominalsOfContinuousStates;
     fmi3_get_number_of_event_indicators_ft    fmi3GetNumberOfEventIndicators;
     fmi3_get_number_of_continuous_states_ft   fmi3GetNumberOfContinuousStates;
 
-	/* FMI CS */
+    /* FMI CS */
     fmi3_enter_step_mode_ft             fmi3EnterStepMode;
-    fmi3_get_output_derivatives_ft	    fmi3GetOutputDerivatives;
-    fmi3_do_step_ft						fmi3DoStep;
+    fmi3_get_output_derivatives_ft        fmi3GetOutputDerivatives;
+    fmi3_do_step_ft                        fmi3DoStep;
     fmi3_activate_model_partition_ft    fmi3ActivateModelPartition;
 };
 
-#ifdef __cplusplus 
+#ifdef __cplusplus
 }
 #endif
 

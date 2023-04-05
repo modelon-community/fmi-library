@@ -47,19 +47,18 @@ typedef enum fmi3_variable_naming_convension_enu_t
 FMILIB_EXPORT const char* fmi3_naming_convention_to_string(fmi3_variable_naming_convension_enu_t convention);
 
 /** \brief FMU 3.0 kinds. Enum types are specified as bit fields.
-     A multi-kind FMU, for example ME + BCS is defined as:
-     'int fmu_kind_me_bcs = fmi3_fmu_kind_me | fmi3_fmu_kind_bcs'
+     A multi-kind FMU, for example ME + CS is defined as:
+     'int fmu_kind_me_cs = fmi3_fmu_kind_me | fmi3_fmu_kind_cs'
      The same technique can be used to check if a retrieved fmu_kind has a
      specific kind:
-     'int has_bcs = fmi3_fmu_kind_bcs & my_retrieved_fmu_kind'
+     'int has_cs = fmi3_fmu_kind_cs & my_retrieved_fmu_kind'
  */
 typedef enum fmi3_fmu_kind_enu_t
 {
         fmi3_fmu_kind_unknown   = 1 << 0,
         fmi3_fmu_kind_me        = 1 << 1,
-        fmi3_fmu_kind_bcs       = 1 << 2,
-        fmi3_fmu_kind_hcs       = 1 << 3,
-        fmi3_fmu_kind_scs       = 1 << 4
+        fmi3_fmu_kind_cs       = 1 << 2,
+        fmi3_fmu_kind_se       = 1 << 3
 } fmi3_fmu_kind_enu_t;
 
 /** \brief Convert a #fmi3_fmu_kind_enu_t constant into string  */
@@ -192,12 +191,26 @@ FMILIB_EXPORT const char* fmi3_base_type_to_string(fmi3_base_type_enu_t bt);
     H(canSerializeFMUstate) \
     H(providesDirectionalDerivatives)
 
-/** \brief Capability flags for ModelExchange and CoSimulation */
+#define FMI3_SE_CAPABILITIES(H) \
+    H(needsExecutionTool) \
+    H(canHandleVariableCommunicationStepSize) \
+    H(canInterpolateInputs) \
+    H(maxOutputDerivativeOrder) \
+    H(canRunAsynchronuously) \
+    H(canBeInstantiatedOnlyOncePerProcess) \
+    H(canNotUseMemoryManagementFunctions) \
+    H(canGetAndSetFMUstate) \
+    H(canSerializeFMUstate) \
+    H(providesDirectionalDerivatives)
+
+/** \brief Capability flags for ModelExchange, CoSimulation and ScheduledExecution */
 typedef enum fmi3_capabilities_enu_t {
 #define FMI3_EXPAND_ME_CAPABILITIES_ENU(c) fmi3_me_ ## c,
 #define FMI3_EXPAND_CS_CAPABILITIES_ENU(c) fmi3_cs_ ## c,
+#define FMI3_EXPAND_SE_CAPABILITIES_ENU(c) fmi3_se_ ## c,
     FMI3_ME_CAPABILITIES(FMI3_EXPAND_ME_CAPABILITIES_ENU)
     FMI3_CS_CAPABILITIES(FMI3_EXPAND_CS_CAPABILITIES_ENU)
+    FMI3_SE_CAPABILITIES(FMI3_EXPAND_SE_CAPABILITIES_ENU)
     fmi3_capabilities_Num
 } fmi3_capabilities_enu_t;
 

@@ -22,14 +22,14 @@ along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 /* Model calculation functions */
 static int calc_initialize(component_ptr_t comp)
 {
-	comp->states[VAR_R_HIGHT]		= 1.0;
-	comp->states[VAR_R_HIGHT_SPEED] = 4;
+	comp->states[VAR_R_HEIGHT]		= 1.0;
+	comp->states[VAR_R_HEIGHT_SPEED] = 4;
 	comp->reals	[VAR_R_GRATIVY]		= -9.81;
 	comp->reals	[VAR_R_BOUNCE_CONF]	= 0.5;
 	if(comp->loggingOn) {
 		comp->functions->logger(comp->functions->componentEnvironment, comp->instanceName, fmi2OK, "INFO", "###### Initializing component ######");
-		comp->functions->logger(comp->functions->componentEnvironment, comp->instanceName, fmi2OK, "INFO", "Init #r%d#=%g", VAR_R_HIGHT, comp->states[VAR_R_HIGHT]);
-		comp->functions->logger(comp->functions->componentEnvironment, comp->instanceName, fmi2OK, "INFO", "Init #r%d#=%g",VAR_R_HIGHT_SPEED, comp->states[VAR_R_HIGHT_SPEED]);
+		comp->functions->logger(comp->functions->componentEnvironment, comp->instanceName, fmi2OK, "INFO", "Init #r%d#=%g", VAR_R_HEIGHT, comp->states[VAR_R_HEIGHT]);
+		comp->functions->logger(comp->functions->componentEnvironment, comp->instanceName, fmi2OK, "INFO", "Init #r%d#=%g",VAR_R_HEIGHT_SPEED, comp->states[VAR_R_HEIGHT_SPEED]);
 		comp->functions->logger(comp->functions->componentEnvironment, comp->instanceName, fmi2OK, "INFO", "Init #r%d#=%g",VAR_R_GRATIVY, comp->reals	[VAR_R_GRATIVY]);
 		comp->functions->logger(comp->functions->componentEnvironment, comp->instanceName, fmi2OK, "INFO", "Init #r%d#=%g",VAR_R_BOUNCE_CONF, comp->reals	[VAR_R_BOUNCE_CONF]);
 /*		comp->functions->logger(comp->functions->componentEnvironment, comp->instanceName, fmi2OK, "ERROR", "Bad reference: #r-1#");
@@ -42,28 +42,28 @@ static int calc_initialize(component_ptr_t comp)
 
 static int calc_get_derivatives(component_ptr_t comp)
 {
-	comp->states_der[VAR_R_HIGHT]		= comp->states[VAR_R_HIGHT_SPEED];
-	comp->states_der[VAR_R_HIGHT_SPEED] = comp->reals[VAR_R_GRATIVY];
+	comp->states_der[VAR_R_HEIGHT]		= comp->states[VAR_R_HEIGHT_SPEED];
+	comp->states_der[VAR_R_HEIGHT_SPEED] = comp->reals[VAR_R_GRATIVY];
 	return 0;
 }
 
 static int calc_get_event_indicators(component_ptr_t comp)
-{	
+{
 	fmi2Real event_tol = 1e-16;
-	comp->event_indicators[EVENT_HIGHT]		= comp->states[VAR_R_HIGHT] + (comp->states[VAR_R_HIGHT] >= 0 ? event_tol : -event_tol);
+	comp->event_indicators[EVENT_HEIGHT]		= comp->states[VAR_R_HEIGHT] + (comp->states[VAR_R_HEIGHT] >= 0 ? event_tol : -event_tol);
 	return 0;
 }
 
 static int calc_event_update(component_ptr_t comp)
-{	
+{
     comp->eventInfo.newDiscreteStatesNeeded           = fmi2False;
     comp->eventInfo.terminateSimulation               = fmi2False;
     comp->eventInfo.nominalsOfContinuousStatesChanged = fmi2False;
     comp->eventInfo.nextEventTimeDefined              = fmi2False;
     comp->eventInfo.nextEventTime                     = -0.0;
-	if ((comp->states[VAR_R_HIGHT] < 0) && (comp->states[VAR_R_HIGHT_SPEED] < 0)) {
-		comp->states[VAR_R_HIGHT_SPEED] = - comp->reals[VAR_R_BOUNCE_CONF] * comp->states[VAR_R_HIGHT_SPEED];
-		comp->states[VAR_R_HIGHT] = 0;
+	if ((comp->states[VAR_R_HEIGHT] < 0) && (comp->states[VAR_R_HEIGHT_SPEED] < 0)) {
+		comp->states[VAR_R_HEIGHT_SPEED] = - comp->reals[VAR_R_BOUNCE_CONF] * comp->states[VAR_R_HEIGHT_SPEED];
+		comp->states[VAR_R_HEIGHT] = 0;
 
         comp->eventInfo.valuesOfContinuousStatesChanged = fmi2True;
 		return 0;
@@ -102,14 +102,14 @@ fmi2Status fmi_get_real(fmi2Component c, const fmi2ValueReference vr[], size_t n
 			fmi2ValueReference cvr = vr[k];
 			if (cvr < N_STATES) {
 				value[k] = comp->states[cvr];
-			} 
+			}
 			else if(cvr == 4) {
 				calc_get_derivatives(comp);
 				value[k] = comp->states_der[1];
 			}
 			else {
 				value[k] = comp->reals[cvr];
-			}	
+			}
 		}
 		return fmi2OK;
 	}
@@ -167,15 +167,15 @@ fmi2Status fmi_set_real(fmi2Component c, const fmi2ValueReference vr[], size_t n
 		for (k = 0; k < nvr; k++) {
 			fmi2ValueReference cvr = vr[k];
 			if (cvr < N_STATES) {
-				comp->states[cvr] = value[k]; 
-			} 
+				comp->states[cvr] = value[k];
+			}
 			else if(cvr == 4) {
 				comp->functions->logger(c, comp->instanceName,fmi2Warning, "WARNING", "Cannot set acceleration value (calculated)");
 				return fmi2Error;
 			}
 			else {
-				comp->reals[cvr] = value[k]; 
-			}			
+				comp->reals[cvr] = value[k];
+			}
 		}
 		return fmi2OK;
 	}
@@ -189,7 +189,7 @@ fmi2Status fmi_set_integer(fmi2Component c, const fmi2ValueReference vr[], size_
 	} else {
 		size_t k;
 		for (k = 0; k < nvr; k++) {
-			comp->integers[vr[k]] = value[k]; 
+			comp->integers[vr[k]] = value[k];
 		}
 		return fmi2OK;
 	}
@@ -203,7 +203,7 @@ fmi2Status fmi_set_boolean(fmi2Component c, const fmi2ValueReference vr[], size_
 	} else {
 		size_t k;
 		for (k = 0; k < nvr; k++) {
-			comp->booleans[vr[k]] = value[k]; 
+			comp->booleans[vr[k]] = value[k];
 		}
 		return fmi2OK;
 	}
@@ -216,7 +216,7 @@ fmi2Status fmi_set_string(fmi2Component c, const fmi2ValueReference vr[], size_t
 		return fmi2Fatal;
 	} else {
 		size_t k;
-		for (k = 0; k < nvr; k++) {			
+		for (k = 0; k < nvr; k++) {
 			size_t len;
 			fmi2String s_dist;
 			fmi2String s_src = value[k];
@@ -225,7 +225,7 @@ fmi2Status fmi_set_string(fmi2Component c, const fmi2ValueReference vr[], size_t
 			s_dist = comp->functions->allocateMemory(len, sizeof(char));
 			if (s_dist == NULL) {
 				return fmi2Fatal;
-			}			
+			}
 			strcpy((char*)s_dist, (char*)s_src);
 			if(comp->strings[vr[k]]) {
 				comp->functions->freeMemory((void*)comp->strings[vr[k]]);
@@ -270,12 +270,12 @@ fmi2Component fmi_instantiate(fmi2String instanceName, fmi2Type fmuType,
 		return NULL;
 	} else if (strcmp(fmuGUID, FMI_GUID) != 0) {
 		return NULL;
-	} else {	
+	} else {
 		sprintf(comp->instanceName, "%s", instanceName);
 		sprintf(comp->GUID, "%s",fmuGUID);
 		comp->functions		= functions;
 		/*comp->functions->allocateMemory = functions->allocateMemory;*/
-		
+
 		comp->loggingOn		= loggingOn;
 
 		/* Set default values */
@@ -302,7 +302,7 @@ fmi2Component fmi_instantiate(fmi2String instanceName, fmi2Type fmuType,
 				comp->output_real[k][p] = MAGIC_TEST_VALUE;
 			}
 		}
-	
+
 		sprintf(comp->fmuLocation, "%s",fmuLocation);
 		comp->visible		= visible;
 		return comp;
@@ -544,7 +544,7 @@ fmi2Status fmi_do_step(fmi2Component c, fmi2Real currentCommunicationPoint, fmi2
 		fmi2Real tstart = currentCommunicationPoint;
 		fmi2Real tcur;
 		fmi2Real tend = currentCommunicationPoint + communicationStepSize;
-		fmi2Real hcur; 
+		fmi2Real hcur;
 		fmi2Real hdef = 0.01;	/* Default time step length */
 		fmi2Real z_cur[N_EVENT_INDICATORS];
 		fmi2Real z_pre[N_EVENT_INDICATORS];
@@ -553,7 +553,7 @@ fmi2Status fmi_do_step(fmi2Component c, fmi2Real currentCommunicationPoint, fmi2
 		fmi2EventInfo eventInfo;
 		fmi2Boolean callEventUpdate;
 		fmi2Boolean terminateSimulation;
-		fmi2Status fmi2Status;	
+		fmi2Status fmi2Status;
 		size_t k;
 		size_t counter = 0;
 
@@ -601,11 +601,11 @@ fmi2Status fmi_do_step(fmi2Component c, fmi2Real currentCommunicationPoint, fmi2
 				hcur = hdef;
 			}
 
-			{ 
+			{
 				double t_full = tcur + hcur;
 				if(t_full > tend) {
 					hcur = (tend - tcur);
-					tcur = tend;				
+					tcur = tend;
 				}
 				else
 					tcur = t_full;
@@ -614,7 +614,7 @@ fmi2Status fmi_do_step(fmi2Component c, fmi2Real currentCommunicationPoint, fmi2
 			/* Integrate a step */
 			fmi2Status = fmi_get_derivatives(comp, states_der, N_STATES);
 			for (k = 0; k < N_STATES; k++) {
-				states[k] = states[k] + hcur*states_der[k];	
+				states[k] = states[k] + hcur*states_der[k];
 				/* if (k == 0) printf("states[%u] = %f states_der[k] = %f hcur =%f\n", k, states[k], states_der[k], hcur); */
 			}
 
@@ -623,7 +623,7 @@ fmi2Status fmi_do_step(fmi2Component c, fmi2Real currentCommunicationPoint, fmi2
 			/* Step is complete */
 			fmi2Status = fmi_completed_integrator_step(comp, fmi2True,
                             &callEventUpdate, &terminateSimulation);
-            
+
             if(fmi2Status != fmi2OK) break;
 
 		}

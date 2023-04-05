@@ -29,7 +29,7 @@ void logger(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_level, jm_
 	char buf[10000];
 	const char* loadingstr = "Loading '";
 	/* need to replace platform specific message with a standard one */
-	if( (log_level == jm_log_level_info) && 
+	if( (log_level == jm_log_level_info) &&
 		(strcmp(module, "FMILIB") == 0) &&
 		(strncmp(message, "Loading '", strlen(loadingstr)) == 0)
 		)
@@ -47,11 +47,11 @@ void do_exit(int code)
 	/* getchar();*/
 	exit(code);
 }
-	   
+
 int test_logger(fmi1_import_t* fmu)
-{	
-	fmi1_status_t fmistatus; 
-	jm_status_enu_t jmstatus;	
+{
+	fmi1_status_t fmistatus;
+	jm_status_enu_t jmstatus;
 
 	jmstatus = fmi1_import_instantiate_model(fmu, "LoggerTesting");
 	if (jmstatus == jm_status_error) {
@@ -66,8 +66,8 @@ int test_logger(fmi1_import_t* fmu)
 		size_t k;
 		const char* str[] = {
 			"###### Reals ######",
-			"OK HIGHT = #r0#", /* HIGHT */
-			"OK HIGHT_SPEED = #r1#", /* HIGHT_SPEED */
+			"OK HEIGHT = #r0#", /* HEIGHT */
+			"OK HEIGHT_SPEED = #r1#", /* HEIGHT_SPEED */
 			"OK GRAVITY = #r2#", /* GRAVITY */
 			"OK BOUNCE_COF = #r3#", /* BOUNCE_COF */
 			"Bad reference #r0",
@@ -75,13 +75,13 @@ int test_logger(fmi1_import_t* fmu)
 			"Bad reference #r-1",
 			"Bad reference #r100#",
 			"###### Integers ######",
-			"OK LOGGER_TEST_INTEGER = #i0#", /* LOGGER_TEST_INTEGER */			
+			"OK LOGGER_TEST_INTEGER = #i0#", /* LOGGER_TEST_INTEGER */
 			"Bad reference #i0",
 			"Bad reference #i-0",
 			"Bad reference #i-1",
 			"Bad reference #i100#",
 			"###### Booleans ######",
-			"OK LOGGER_TEST_BOOLEAN = #b0#", /* LOGGER_TEST_BOOLEAN */	
+			"OK LOGGER_TEST_BOOLEAN = #b0#", /* LOGGER_TEST_BOOLEAN */
 			"Bad reference #b0",
 			"Bad reference #b-0",
 			"Bad reference #b-1",
@@ -94,7 +94,7 @@ int test_logger(fmi1_import_t* fmu)
 			"Bad reference #s100#"
 		};
 
-		n = sizeof(str)/sizeof(*str);	
+		n = sizeof(str)/sizeof(*str);
 		vr = calloc(n, sizeof(fmi1_value_reference_t));
 		for (k = 0; k < n; k++) {
 			vr[k] = VAR_S_LOGGER_TEST;
@@ -103,7 +103,7 @@ int test_logger(fmi1_import_t* fmu)
 		fmistatus = fmi1_import_set_string(fmu, vr, n, str);
         if(fmistatus != fmi1_status_ok) {
             abort();
-        }		
+        }
 
 		{ /* Print a really big message */
 
@@ -118,12 +118,12 @@ int test_logger(fmi1_import_t* fmu)
 			{
 				fmi1_value_reference_t vr = VAR_S_LOGGER_TEST;
 				int k;
-				char repmsg[] = "#r0# "; /* HIGHT */
+				char repmsg[] = "#r0# "; /* HEIGHT */
 				for (k = 0; k < sizeof(longmessage)/sizeof(*longmessage) - 1; k++) {
-					longmessage[k] = repmsg[k%(sizeof(repmsg)/sizeof(*repmsg) - 1)];					
+					longmessage[k] = repmsg[k%(sizeof(repmsg)/sizeof(*repmsg) - 1)];
 				}
 				longmessage[k] = '\0';
-				
+
 				fmistatus = fmi1_import_set_string(fmu, &vr, 1, str);
 				if(fmistatus != fmi1_status_ok) {
 					abort();
@@ -149,7 +149,7 @@ int main(int argc, char *argv[])
 	fmi_version_enu_t version;
 	jm_status_enu_t status;
 	int register_active_fmu;
-	fmi1_import_t* fmu;	
+	fmi1_import_t* fmu;
 	char* outfile;
 
 	if(argc < 4) {
@@ -198,7 +198,7 @@ int main(int argc, char *argv[])
 	if(!fmu) {
 		printf("Error parsing XML, exiting\n");
 		do_exit(CTEST_RETURN_FAIL);
-	}	
+	}
 
 	register_active_fmu = 1; /* Must be used to use our logger. (jm standard prints to strerr which does not generate out put test file)  */
 	status = fmi1_import_create_dllfmu(fmu, callBackFunctions, register_active_fmu);
@@ -206,7 +206,7 @@ int main(int argc, char *argv[])
 		printf("Could not create the DLL loading mechanism(C-API test).\n");
 		do_exit(CTEST_RETURN_FAIL);
 	}
-	
+
 	test_logger(fmu);
 
 	fmi1_import_destroy_dllfmu(fmu);
@@ -216,5 +216,3 @@ int main(int argc, char *argv[])
 	fclose(logFile);
 	return 0;
 }
-
-

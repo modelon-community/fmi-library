@@ -28,9 +28,9 @@ void do_exit(int code)
 	/* getchar(); */
 	exit(code);
 }
-	   
+
 int test_simulate_me(fmi1_import_t* fmu)
-{	
+{
 	fmi1_status_t fmistatus;
 	jm_status_enu_t jmstatus;
 	fmi1_real_t tstart = 0.0;
@@ -82,7 +82,7 @@ int test_simulate_me(fmi1_import_t* fmu)
 	fmistatus = fmi1_import_get_event_indicators(fmu, event_indicators_prev, n_event_indicators);
 
 	fmistatus = fmi1_import_set_debug_logging(fmu, fmi1_false);
-	printf("fmi1_import_set_debug_logging:  %s\n", fmi1_status_to_string(fmistatus));	
+	printf("fmi1_import_set_debug_logging:  %s\n", fmi1_status_to_string(fmistatus));
 	fmi1_import_set_debug_logging(fmu, fmi1_true);
 
 	tcur = tstart;
@@ -126,20 +126,20 @@ int test_simulate_me(fmi1_import_t* fmu)
 		if(tcur > tend - hcur/1e16) {
 			tcur -= hcur;
 			hcur = (tend - tcur);
-			tcur = tend;				
+			tcur = tend;
 		}
 		/* Integrate a step */
 		fmistatus = fmi1_import_get_derivatives(fmu, states_der, n_states);
 		for (k = 0; k < n_states; k++) {
-			states[k] = states[k] + hcur*states_der[k];	
-			if (k == 0) printf("Ball hight state[%u] = %f\n", (unsigned)k, states[k]);
+			states[k] = states[k] + hcur*states_der[k];
+			if (k == 0) printf("Ball HEIGHT state[%u] = %f\n", (unsigned)k, states[k]);
 		}
 
 		/* Set states */
 		fmistatus = fmi1_import_set_continuous_states(fmu, states, n_states);
 		/* Step is complete */
 		fmistatus = fmi1_import_completed_integrator_step(fmu, &callEventUpdate);
-	}	
+	}
 
 	/* Validate result */
 	for (k = 0; k < n_states; k++) {
@@ -150,7 +150,7 @@ int test_simulate_me(fmi1_import_t* fmu)
 			do_exit(CTEST_RETURN_FAIL);
 		}
 	}
-	
+
 
 	fmistatus = fmi1_import_terminate(fmu);
 
@@ -182,7 +182,7 @@ fmul_t load(int argc, char *argv[])
 	jm_status_enu_t status;
 	static int isunzipped;
 
-	fmi1_import_t* fmu;	
+	fmi1_import_t* fmu;
 
 	if(argc < 3) {
 		printf("Usage: %s <fmu_file> <temporary_dir>\n", argv[0]);
@@ -212,7 +212,7 @@ fmul_t load(int argc, char *argv[])
 
 
 	context = fmi_import_allocate_context(callbacks);
-	
+
 	if (isunzipped == 0) { /* Unzip the FMU only once. Overwriting the dll/so file may cause a segfault. */
 		version = fmi_import_get_fmi_version(context, FMUPath, tmpPath);
 		if(version != fmi_version_1_enu) {
@@ -227,14 +227,14 @@ fmul_t load(int argc, char *argv[])
 	if(!fmu) {
 		printf("Error parsing XML, exiting\n");
 		do_exit(CTEST_RETURN_FAIL);
-	}	
+	}
 
 	status = fmi1_import_create_dllfmu(fmu, callBackFunctions, 1);
 	if (status == jm_status_error) {
 		printf("Could not create the DLL loading mechanism(C-API test).\n");
 		do_exit(CTEST_RETURN_FAIL);
 	}
-	
+
 	test_simulate_me(fmu);
 
 	printf("Everything seems to be OK since you got this far=)!\n");
@@ -255,14 +255,14 @@ void destroy(fmul_t* fmus) {
 	free(fmus->callbacks);
 	memset(fmus, 0, sizeof(fmul_t));
 }
- 
+
 /* Load and simulate 150 FMUs. Destroy and free all memory last. Usefull testing speciall for the registerGlobally functionality. */
 #define NUMBER_OF_TESTS 150
 int main(int argc, char *argv[])
 {
 	fmul_t fmul[NUMBER_OF_TESTS];
 	int k;
-	
+
 	for (k=0;k<NUMBER_OF_TESTS;k++) {
 		fmul[k] = load(argc, argv);
 	}

@@ -44,24 +44,24 @@ set(FMILIB_FMI_STANDARD_HEADERS  ${FMILIB_THIRDPARTYLIBS}/FMI/default CACHE PATH
 option (FMILIB_DEFAULT_BUILD_TYPE_RELEASE "Default build-type used for Makefile generation is 'Release'. Can be overwritten by CMAKE_BUILD_TYPE command line switch." ON)
 
 if(MSVC)
-	option (FMILIB_BUILD_WITH_STATIC_RTLIB "Use static run-time libraries (/MT or /MTd linker flags)" OFF)
+    option (FMILIB_BUILD_WITH_STATIC_RTLIB "Use static run-time libraries (/MT or /MTd linker flags)" OFF)
 endif()
 
-option(FMILIB_BUILD_STATIC_LIB	 "Build the library as static." ON)
-option(FMILIB_BUILD_SHARED_LIB	 "Build the library as shared (dll/so/dylib)." ON)
-option(FMILIB_INSTALL_SUBLIBS	 "Install sub-libraries (fmicapi. fmixml, jmutil, fmiimport, fmizip)" OFF)
+option(FMILIB_BUILD_STATIC_LIB     "Build the library as static." ON)
+option(FMILIB_BUILD_SHARED_LIB     "Build the library as shared (dll/so/dylib)." ON)
+option(FMILIB_INSTALL_SUBLIBS     "Install sub-libraries (fmicapi. fmixml, jmutil, fmiimport, fmizip)" OFF)
 
 
 IF(NOT (WIN32 OR CYGWIN OR APPLE))
 # On LINUX position independent code (-fPIC) must be used on all files to be linked into .so
 # On other systems this is not needed (either is default or relocation is done)
-	if(NOT FMILIB_BUILD_SHARED_LIB)
-		option(FMILIB_BUILD_FOR_SHARED_LIBS  "The static library 'fmilib' can be linked into shared libraries. Mostly needed on Linux." ON)
-	else()
-		set(FMILIB_BUILD_FOR_SHARED_LIBS ON CACHE INTERNAL "The static library 'fmilib' can be linked into shared libraries. Mostly needed on Linux." FORCE)
-	endif()
+    if(NOT FMILIB_BUILD_SHARED_LIB)
+        option(FMILIB_BUILD_FOR_SHARED_LIBS  "The static library 'fmilib' can be linked into shared libraries. Mostly needed on Linux." ON)
+    else()
+        set(FMILIB_BUILD_FOR_SHARED_LIBS ON CACHE INTERNAL "The static library 'fmilib' can be linked into shared libraries. Mostly needed on Linux." FORCE)
+    endif()
 else()
-	set(FMILIB_BUILD_FOR_SHARED_LIBS OFF CACHE INTERNAL "The static library 'fmilib' can be linked into shared libraries. Mostly needed on Linux." FORCE)
+    set(FMILIB_BUILD_FOR_SHARED_LIBS OFF CACHE INTERNAL "The static library 'fmilib' can be linked into shared libraries. Mostly needed on Linux." FORCE)
 endif()
 
 option (FMILIB_GENERATE_DOXYGEN_DOC "Generate doxygen doc target" ON)
@@ -77,32 +77,32 @@ option(FMILIB_TEST_LOCALE          "Perform testing related to setting locales (
 mark_as_advanced(FMILIB_PRINT_DEBUG_MESSAGES FMILIB_DEBUG_TRACE)
 
 if(NOT FMILIB_BUILD_SHARED_LIB AND NOT FMILIB_BUILD_STATIC_LIB)
-	message(FATAL_ERROR "Either shared or static library build must be chosen")
+    message(FATAL_ERROR "Either shared or static library build must be chosen")
 endif()
 
 if(FMILIB_BUILD_STATIC_LIB AND NOT FMILIB_BUILD_SHARED_LIB)
-	set(FMILIB_STATIC_LIB_ONLY ON)
+    set(FMILIB_STATIC_LIB_ONLY ON)
 else()
-	set(FMILIB_STATIC_LIB_ONLY OFF)
+    set(FMILIB_STATIC_LIB_ONLY OFF)
 endif()
 
 if(FMILIB_DEFAULT_BUILD_TYPE_RELEASE)
-	set (FMILIB_DEFAULT_BUILD_TYPE "Release")
+    set (FMILIB_DEFAULT_BUILD_TYPE "Release")
 else()
-	set (FMILIB_DEFAULT_BUILD_TYPE "Debug")
+    set (FMILIB_DEFAULT_BUILD_TYPE "Debug")
 endif()
 
 IF(NOT CMAKE_BUILD_TYPE)
-	SET(CMAKE_BUILD_TYPE ${FMILIB_DEFAULT_BUILD_TYPE})
+    SET(CMAKE_BUILD_TYPE ${FMILIB_DEFAULT_BUILD_TYPE})
 ENDIF(NOT CMAKE_BUILD_TYPE)
 
 SET(CMAKE_INSTALL_PREFIX ${FMILIB_INSTALL_PREFIX} CACHE INTERNAL "Prefix prepended to install directories" FORCE)
 
 # debug_message is used to trace the build script
 function(debug_message)
-	if(FMILIB_PRINT_DEBUG_MESSAGES)
-		message(STATUS "${ARGV}")
-	endif()
+    if(FMILIB_PRINT_DEBUG_MESSAGES)
+        message(STATUS "${ARGV}")
+    endif()
 endfunction()
 
 IF(NOT CMAKE_CFG_INTDIR)
@@ -110,64 +110,64 @@ IF(NOT CMAKE_CFG_INTDIR)
 ENDIF(NOT CMAKE_CFG_INTDIR)
 
 if(MSVC)
-	# With C89 we're forced to use non-secure functions
-	# TODO: We're now using C99, and this can be cleaned up
-	ADD_DEFINITIONS (/D _CRT_SECURE_NO_WARNINGS)
-	
-	# Set the run-time library flag as controlled by the FMILIB_BUILD_WITH_STATIC_RTLIB option
-	if(FMILIB_BUILD_WITH_STATIC_RTLIB)
-		set(replace_from "/MD")
-		set(replace_to "/MT")
-	else()
-		set(replace_from "/MT")
-		set(replace_to "/MD")
-	endif(FMILIB_BUILD_WITH_STATIC_RTLIB)
+    # With C89 we're forced to use non-secure functions
+    # TODO: We're now using C99, and this can be cleaned up
+    ADD_DEFINITIONS (/D _CRT_SECURE_NO_WARNINGS)
 
-	foreach(flag_var
+    # Set the run-time library flag as controlled by the FMILIB_BUILD_WITH_STATIC_RTLIB option
+    if(FMILIB_BUILD_WITH_STATIC_RTLIB)
+        set(replace_from "/MD")
+        set(replace_to "/MT")
+    else()
+        set(replace_from "/MT")
+        set(replace_to "/MD")
+    endif(FMILIB_BUILD_WITH_STATIC_RTLIB)
+
+    foreach(flag_var
             CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE
             CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO
             CMAKE_C_FLAGS CMAKE_C_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE
             CMAKE_C_FLAGS_MINSIZEREL CMAKE_C_FLAGS_RELWITHDEBINFO)
 
         # Replace flags for static/shared lib
-		if(${${flag_var}} MATCHES "${replace_from}")
-			string(REPLACE "${replace_from}" "${replace_to}" tmp "${${flag_var}}")
-			set(${flag_var} ${tmp} CACHE STRING "compiler flags" FORCE)
-		endif()
+        if(${${flag_var}} MATCHES "${replace_from}")
+            string(REPLACE "${replace_from}" "${replace_to}" tmp "${${flag_var}}")
+            set(${flag_var} ${tmp} CACHE STRING "compiler flags" FORCE)
+        endif()
 
-	endforeach(flag_var)	
+    endforeach(flag_var)
 endif(MSVC)
 
 IF(CMAKE_COMPILER_IS_GNUCC)
    SET(SAVED_C_DEFAULT_FLAGS "${CMAKE_C_FLAGS}")
    SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99 -pedantic -Wall -Wno-unused-function")
    if(NOT MSYS)
-	include(CheckCCompilerFlag)
-	CHECK_C_COMPILER_FLAG("-fvisibility=hidden" SUPPORT_VISIBILITY)
-	if(SUPPORT_VISIBILITY)
-		SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fvisibility=hidden")
-	endif()
+    include(CheckCCompilerFlag)
+    CHECK_C_COMPILER_FLAG("-fvisibility=hidden" SUPPORT_VISIBILITY)
+    if(SUPPORT_VISIBILITY)
+        SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fvisibility=hidden")
+    endif()
   endif()
 ENDIF(CMAKE_COMPILER_IS_GNUCC)
 
 # The config files will end up in the binary dir
 include_directories("${FMILibrary_BINARY_DIR}")
 
-if(FMILIB_BUILD_FOR_SHARED_LIBS) 
-	SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${CMAKE_SHARED_LIBRARY_C_FLAGS}")
-	SET(WITH_PIC ON) # this is used in MERGE_LIBRARIES below
+if(FMILIB_BUILD_FOR_SHARED_LIBS)
+    SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${CMAKE_SHARED_LIBRARY_C_FLAGS}")
+    SET(WITH_PIC ON) # this is used in MERGE_LIBRARIES below
 endif()
 
 # prefix each element of list by ${prefix}element
 macro(PREFIXLIST list_name prefix)
 # create empty list - necessary?
-	SET(${list_name}_TMP)
+    SET(${list_name}_TMP)
 
     # prefix and suffix elements
     foreach(l IN LISTS ${list_name})
       list(APPEND ${list_name}_TMP ${prefix}${l}${suffix} )
     endforeach()
-	
+
     # replace list by tmp list
     SET(${list_name} ${${list_name}_TMP})
     UNSET(${list_name}_TMP)
@@ -175,21 +175,21 @@ endmacro(PREFIXLIST)
 
 # For MSVC define source groups. Does not work for MSVC 8. MSVC 9 not tested.
 if(MSVC AND (${CMAKE_GENERATOR} MATCHES "Visual Studio 10"))
-	source_group("Source files\\FMI1" REGULAR_EXPRESSION "fmi1_.*.c") 
-	source_group("Source files\\FMI2" REGULAR_EXPRESSION "fmi2_.*.c") 
-	source_group("Source files\\FMI3" REGULAR_EXPRESSION "fmi3_.*.c") 
-	source_group("Header files\\FMI1" REGULAR_EXPRESSION "fmi1_.*.h") 
-	source_group("Header files\\FMI2" REGULAR_EXPRESSION "fmi2_.*.h") 
-	source_group("Header files\\FMI3" REGULAR_EXPRESSION "fmi3_.*.h") 
-	source_group("Private headers" REGULAR_EXPRESSION "fmi_.*impl.h") 
-	source_group("Private headers\\FMI1" REGULAR_EXPRESSION "fmi1_.*impl.h") 
-	source_group("Private headers\\FMI2" REGULAR_EXPRESSION "fmi2_.*impl.h") 
-	source_group("Private headers\\FMI3" REGULAR_EXPRESSION "fmi3_.*impl.h") 
+    source_group("Source files\\FMI1" REGULAR_EXPRESSION "fmi1_.*.c")
+    source_group("Source files\\FMI2" REGULAR_EXPRESSION "fmi2_.*.c")
+    source_group("Source files\\FMI3" REGULAR_EXPRESSION "fmi3_.*.c")
+    source_group("Header files\\FMI1" REGULAR_EXPRESSION "fmi1_.*.h")
+    source_group("Header files\\FMI2" REGULAR_EXPRESSION "fmi2_.*.h")
+    source_group("Header files\\FMI3" REGULAR_EXPRESSION "fmi3_.*.h")
+    source_group("Private headers" REGULAR_EXPRESSION "fmi_.*impl.h")
+    source_group("Private headers\\FMI1" REGULAR_EXPRESSION "fmi1_.*impl.h")
+    source_group("Private headers\\FMI2" REGULAR_EXPRESSION "fmi2_.*impl.h")
+    source_group("Private headers\\FMI3" REGULAR_EXPRESSION "fmi3_.*impl.h")
 endif()
 
 set(FMILIBKIND STATIC)
 if(NOT FMILIB_STATIC_LIB_ONLY)
-	add_definitions(-DFMILIB_BUILDING_LIBRARY)
+    add_definitions(-DFMILIB_BUILDING_LIBRARY)
 endif()
 
 include(CheckSymbolExists)
@@ -228,9 +228,9 @@ include(fmiimport)
 
 #Cmake variables set in config files.
 if(WIN32)
-	set(FMI_FILE_SEP "\\\\")
+    set(FMI_FILE_SEP "\\\\")
 else(WIN32)
-	set(FMI_FILE_SEP "/")
+    set(FMI_FILE_SEP "/")
 endif(WIN32)
 
 set(FMILIB_FMI_PLATFORM_DOC "FMI platform defines the subdirectory within FMU where binary is located")
@@ -238,67 +238,67 @@ set(FMILIB_FMI_PLATFORM ”unknown” CACHE STRING ${FMILIB_FMI_PLATFORM_DOC})
 if(FMILIB_FMI_PLATFORM MATCHES ”unknown”)
     include(fmiplatform)
     fmi_platform(FMI_PLATFORM)
-	set(FMILIB_FMI_PLATFORM ${FMI_PLATFORM} CACHE STRING ${FMILIB_FMI_PLATFORM_DOC} FORCE)
+    set(FMILIB_FMI_PLATFORM ${FMI_PLATFORM} CACHE STRING ${FMILIB_FMI_PLATFORM_DOC} FORCE)
 else()
-	set(FMI_PLATFORM ${FMILIB_FMI_PLATFORM})
+    set(FMI_PLATFORM ${FMILIB_FMI_PLATFORM})
 endif()
 
 configure_file (
   "${FMILibrary_SOURCE_DIR}/Config.cmake/config_fmilib.h.cmake"
   "${FMILibrary_BINARY_DIR}/fmilib_config.h"
-  ) 
+  )
 
 set(FMILIB_SHARED_SUBLIBS ${FMIXML_LIBRARIES} ${FMIZIP_LIBRARIES} ${FMICAPI_LIBRARIES} expat minizip zlib c99snprintf)
 set(FMILIB_SUBLIBS ${FMIIMPORT_LIBRARIES} ${JMUTIL_LIBRARIES} ${FMILIB_SHARED_SUBLIBS})
 set(FMILIB_SHARED_SRC ${FMIIMPORTSOURCE} ${JMUTILSOURCE} ${FMIIMPORTHEADERS})
 
 if(FMILIB_GENERATE_BUILD_STAMP)
-	debug_message("FMILIB_SUBLIBS= ${FMILIB_SUBLIBS}")
+    debug_message("FMILIB_SUBLIBS= ${FMILIB_SUBLIBS}")
     add_custom_command(
-		OUTPUT ${FMILibrary_BINARY_DIR}/config_fmilib.c
-		COMMAND	"${CMAKE_COMMAND}" 
-			-D FMILIBRARYHOME="${FMILIBRARYHOME}" -D FMILIBRARYBUILD="${FMILIBRARYBUILD}"
-			-P ${FMILIBRARYHOME}/Config.cmake/config_stamp.cmake
-		COMMAND ${CMAKE_COMMAND}  -E touch ${FMILibrary_BINARY_DIR}/config_fmilib.c
-		DEPENDS ${FMILIB_SUBLIBS}
-	)
-	add_library(fmilib_timestamp STATIC ${FMILibrary_BINARY_DIR}/config_fmilib.c "${FMILibrary_BINARY_DIR}/fmilib_config.h")
-#	add_dependencies(fmilib_timestamp ${FMILIB_SUBLIBS} expat minizip zlib ${FMILIBRARYHOME}/Config.cmake/config_stamp.cmake)
-	
-	set(FMILIB_SUBLIBS ${FMILIB_SUBLIBS} fmilib_timestamp)
-	set(FMILIB_SHARED_SRC ${FMILIB_SHARED_SRC} ${FMILibrary_BINARY_DIR}/config_fmilib.c)
+        OUTPUT ${FMILibrary_BINARY_DIR}/config_fmilib.c
+        COMMAND    "${CMAKE_COMMAND}"
+            -D FMILIBRARYHOME="${FMILIBRARYHOME}" -D FMILIBRARYBUILD="${FMILIBRARYBUILD}"
+            -P ${FMILIBRARYHOME}/Config.cmake/config_stamp.cmake
+        COMMAND ${CMAKE_COMMAND}  -E touch ${FMILibrary_BINARY_DIR}/config_fmilib.c
+        DEPENDS ${FMILIB_SUBLIBS}
+    )
+    add_library(fmilib_timestamp STATIC ${FMILibrary_BINARY_DIR}/config_fmilib.c "${FMILibrary_BINARY_DIR}/fmilib_config.h")
+#    add_dependencies(fmilib_timestamp ${FMILIB_SUBLIBS} expat minizip zlib ${FMILIBRARYHOME}/Config.cmake/config_stamp.cmake)
+
+    set(FMILIB_SUBLIBS ${FMILIB_SUBLIBS} fmilib_timestamp)
+    set(FMILIB_SHARED_SRC ${FMILIB_SHARED_SRC} ${FMILibrary_BINARY_DIR}/config_fmilib.c)
 endif()
 
 set_target_properties(
-	${FMILIB_SUBLIBS}
+    ${FMILIB_SUBLIBS}
     PROPERTIES FOLDER "Sublibs")
-	
+
 if(FMILIB_INSTALL_SUBLIBS)
-	set(FMILIB_TARGETS fmiimport jmutils fmizip fmixml fmicapi)
+    set(FMILIB_TARGETS fmiimport jmutils fmizip fmixml fmicapi)
 endif()
-	
+
 if(FMILIB_BUILD_STATIC_LIB)
-	include(mergestaticlibs)
-	if(WIN32)
-		merge_static_libs(fmilib ${FMILIB_SUBLIBS})
+    include(mergestaticlibs)
+    if(WIN32)
+        merge_static_libs(fmilib ${FMILIB_SUBLIBS})
         target_link_libraries(fmilib Shlwapi)
         foreach(CONFIG_TYPE ${CMAKE_CONFIGURATION_TYPES})
-			set(flags "")
-			string(TOUPPER "STATIC_LIBRARY_FLAGS_${CONFIG_TYPE}" PROPNAME)
-			get_target_property(flags fmilib ${PROPNAME})
-			set_target_properties(fmilib PROPERTIES ${PROPNAME} "${flags} Shlwapi.lib")
-		endforeach()
-	else()
-		merge_static_libs(fmilib ${FMILIB_SUBLIBS} )
-	endif(WIN32)
-	if(UNIX) 
-		target_link_libraries(fmilib dl)
-	endif(UNIX)
-	set(FMILIB_TARGETS ${FMILIB_TARGETS} fmilib)
+            set(flags "")
+            string(TOUPPER "STATIC_LIBRARY_FLAGS_${CONFIG_TYPE}" PROPNAME)
+            get_target_property(flags fmilib ${PROPNAME})
+            set_target_properties(fmilib PROPERTIES ${PROPNAME} "${flags} Shlwapi.lib")
+        endforeach()
+    else()
+        merge_static_libs(fmilib ${FMILIB_SUBLIBS} )
+    endif(WIN32)
+    if(UNIX)
+        target_link_libraries(fmilib dl)
+    endif(UNIX)
+    set(FMILIB_TARGETS ${FMILIB_TARGETS} fmilib)
 endif()
 
 if(FMILIB_BUILD_SHARED_LIB)
-	add_library(fmilib_shared SHARED ${FMILIB_SHARED_SRC})
+    add_library(fmilib_shared SHARED ${FMILIB_SHARED_SRC})
 
     # Even if fmilib_shared is built from source files, it's still necessary that e.g.
     # fmiimport's dependencies such as generated code is built first.
@@ -308,100 +308,100 @@ if(FMILIB_BUILD_SHARED_LIB)
         target_compile_definitions(fmilib_shared PRIVATE -D_GNU_SOURCE)
     endif()
 
-	target_link_libraries(fmilib_shared ${FMILIB_SHARED_SUBLIBS})
-	set(FMILIB_TARGETS ${FMILIB_TARGETS} fmilib_shared)
+    target_link_libraries(fmilib_shared ${FMILIB_SHARED_SUBLIBS})
+    set(FMILIB_TARGETS ${FMILIB_TARGETS} fmilib_shared)
 endif()
 
 if(FMILIB_BUILD_TESTS)
-	include(runtime_test)
-	configure_file (
-		"${FMILibrary_SOURCE_DIR}/Config.cmake/config_test.h.cmake"
-		"${FMILibrary_BINARY_DIR}/config_test.h"
-	)
+    include(runtime_test)
+    configure_file (
+        "${FMILibrary_SOURCE_DIR}/Config.cmake/config_test.h.cmake"
+        "${FMILibrary_BINARY_DIR}/config_test.h"
+    )
 endif()
 
 file(COPY "${FMILIBRARYHOME}/Config.cmake/fmilib.h" DESTINATION "${FMILibrary_BINARY_DIR}")
 
 install(TARGETS ${FMILIB_TARGETS}
-	ARCHIVE DESTINATION lib
-	LIBRARY DESTINATION lib
-	RUNTIME DESTINATION lib
+    ARCHIVE DESTINATION lib
+    LIBRARY DESTINATION lib
+    RUNTIME DESTINATION lib
 )
-install(FILES 
-			"${FMILIBRARYHOME}/FMILIB_Readme.txt"
-			"${FMILIBRARYHOME}/FMILIB_License.txt"
-			"${FMILIBRARYHOME}/FMILIB_Acknowledgements.txt"
-		DESTINATION doc)
-		
-install(FILES 
-			"${FMILibrary_BINARY_DIR}/fmilib_config.h" 
-			"${FMILibrary_BINARY_DIR}/fmilib.h" 
-		DESTINATION include)
+install(FILES
+            "${FMILIBRARYHOME}/FMILIB_Readme.txt"
+            "${FMILIBRARYHOME}/FMILIB_License.txt"
+            "${FMILIBRARYHOME}/FMILIB_Acknowledgements.txt"
+        DESTINATION doc)
 
-install(DIRECTORY 
-	${FMIIMPORTDIR}/include 
-	${JMUTILDIR}/include
-	DESTINATION .
+install(FILES
+            "${FMILibrary_BINARY_DIR}/fmilib_config.h"
+            "${FMILibrary_BINARY_DIR}/fmilib.h"
+        DESTINATION include)
+
+install(DIRECTORY
+    ${FMIIMPORTDIR}/include
+    ${JMUTILDIR}/include
+    DESTINATION .
     FILES_MATCHING PATTERN "*.h")
 
 if(FMILIB_INSTALL_SUBLIBS)
-	install(DIRECTORY 
-		${FMICAPIDIR}/include 	
-		${FMIXMLDIR}/include 
-		${FMIZIPDIR}/include
-		DESTINATION .
+    install(DIRECTORY
+        ${FMICAPIDIR}/include
+        ${FMIXMLDIR}/include
+        ${FMIZIPDIR}/include
+        DESTINATION .
         FILES_MATCHING PATTERN "*.h")
 endif()
 
-install(DIRECTORY 
-	${FMILIB_FMI_STANDARD_HEADERS}/FMI1
-	${FMILIB_FMI_STANDARD_HEADERS}/FMI2
-	${FMILIB_FMI_STANDARD_HEADERS}/FMI3
-	DESTINATION include
+install(DIRECTORY
+    ${FMILIB_FMI_STANDARD_HEADERS}/FMI1
+    ${FMILIB_FMI_STANDARD_HEADERS}/FMI2
+    ${FMILIB_FMI_STANDARD_HEADERS}/FMI3
+    DESTINATION include
     FILES_MATCHING PATTERN "*.h")
 
 function(append_file_context file_out file_in)
-	#file(APPEND filename "message to write"... )
-	#file(READ filename variable [LIMIT numBytes] [OFFSET offset] [HEX])
-	file(READ "${file_in}" text)
-	string(REGEX REPLACE "%.*%" " " text "${text}")	
-	file(APPEND ${file_out} "${text}")
-	set(text "")
+    #file(APPEND filename "message to write"... )
+    #file(READ filename variable [LIMIT numBytes] [OFFSET offset] [HEX])
+    file(READ "${file_in}" text)
+    string(REGEX REPLACE "%.*%" " " text "${text}")
+    file(APPEND ${file_out} "${text}")
+    set(text "")
 endfunction()
 
 
 
 if(FMILIB_GENERATE_DOXYGEN_DOC)
 
-	file(MAKE_DIRECTORY "${FMILIB_INSTALL_PREFIX}/doc")
+    file(MAKE_DIRECTORY "${FMILIB_INSTALL_PREFIX}/doc")
 
-	set(DOXYFILE_IN ${FMILIBRARYHOME}/Config.cmake/fmilib_doxydoc.conf CACHE INTERNAL "Doxygen config file")
-	set(DOXYFILE_IMAGE_DIR "${FMILIBRARYHOME}/images" CACHE INTERNAL "Doxygen images" FORCE)
+    set(DOXYFILE_IN ${FMILIBRARYHOME}/Config.cmake/fmilib_doxydoc.conf CACHE INTERNAL "Doxygen config file")
+    set(DOXYFILE_IMAGE_DIR "${FMILIBRARYHOME}/images" CACHE INTERNAL "Doxygen images" FORCE)
 
-	file(MAKE_DIRECTORY ${FMILIBRARYBUILD}/doc)
-	
-	file(COPY 
-		"${FMILIBRARYHOME}/Config.cmake/fmilib.h"
-		"${FMILibrary_BINARY_DIR}/fmilib_config.h"
-		DESTINATION ${FMILIBRARYBUILD}/doc)
+    file(MAKE_DIRECTORY ${FMILIBRARYBUILD}/doc)
 
-	set(fmilib_mainpage_h "${FMILIBRARYBUILD}/doc/fmilib_mainpage.h")
-	file(WRITE ${fmilib_mainpage_h} "/** @file fmilib_mainpage.h \n @brief Autogenerated file with documentation. \n ")
-	append_file_context(${fmilib_mainpage_h} "${FMILIBRARYHOME}/FMILIB_Readme.txt" )
-	append_file_context(${fmilib_mainpage_h} "${FMILIBRARYHOME}/FMILIB_License.txt" )
-	append_file_context(${fmilib_mainpage_h} "${FMILIBRARYHOME}/FMILIB_Acknowledgements.txt" )
-	file(APPEND ${fmilib_mainpage_h} "*/")
+    file(COPY
+        "${FMILIBRARYHOME}/Config.cmake/fmilib.h"
+        "${FMILibrary_BINARY_DIR}/fmilib_config.h"
+        DESTINATION ${FMILIBRARYBUILD}/doc)
 
-	set(DOXYFILE_SOURCE_DIR "${FMILIBRARYBUILD}/doc" CACHE INTERNAL "Doxygen default source dir" FORCE)
-	set(DOXYFILE_EXTRA_SOURCES "${DOXYFILE_EXTRA_SOURCES} \"${FMILIBRARYHOME}/Test\"")
+    set(fmilib_mainpage_h "${FMILIBRARYBUILD}/doc/fmilib_mainpage.h")
+    file(WRITE ${fmilib_mainpage_h} "/** @file fmilib_mainpage.h \n @brief Autogenerated file with documentation. \n ")
+    append_file_context(${fmilib_mainpage_h} "${FMILIBRARYHOME}/FMILIB_Readme.txt" )
+    append_file_context(${fmilib_mainpage_h} "${FMILIBRARYHOME}/FMILIB_License.txt" )
+    append_file_context(${fmilib_mainpage_h} "${FMILIBRARYHOME}/FMILIB_Acknowledgements.txt" )
+    file(APPEND ${fmilib_mainpage_h} "*/")
 
-	set(DOXYFILE_OUTPUT_DIR "${FMILIB_INSTALL_PREFIX}/doc")
+    set(DOXYFILE_SOURCE_DIR "${FMILIBRARYBUILD}/doc" CACHE INTERNAL "Doxygen default source dir" FORCE)
+    set(DOXYFILE_EXTRA_SOURCES "${DOXYFILE_EXTRA_SOURCES} \"${FMILIBRARYHOME}/Test\"")
 
-	set(DOXYFILE_STRIP_FROM_PATH "${FMILIBRARYHOME}")
+    set(DOXYFILE_OUTPUT_DIR "${FMILIB_INSTALL_PREFIX}/doc")
 
-	SET(CMAKE_MODULE_PATH ${FMILIB_THIRDPARTYLIBS}/CMakeModules)
- 
-	include(UseDoxygen/UseDoxygen)
+    set(DOXYFILE_STRIP_FROM_PATH "${FMILIBRARYHOME}")
+
+    SET(CMAKE_MODULE_PATH ${FMILIB_THIRDPARTYLIBS}/CMakeModules)
+
+    include(UseDoxygen/UseDoxygen)
 endif(FMILIB_GENERATE_DOXYGEN_DOC)
 
 # Debug only: prints the final value of all the non-environment variables
@@ -412,4 +412,3 @@ if (FMILIB_DEBUG_PRINT_VARIABLES_ONLY)
         message(STATUS "${_variableName}=${${_variableName}}")
     endforeach()
 endif()
-

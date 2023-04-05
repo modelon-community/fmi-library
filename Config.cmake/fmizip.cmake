@@ -13,16 +13,16 @@
 
 if(NOT FMIZIPDIR)
     set(FMIZIPDIR ${FMILIBRARYHOME}/src/ZIP)
-	
+
     include(jmutil)
-	
-	# set(DOXYFILE_EXTRA_SOURCES "${DOXYFILE_EXTRA_SOURCES} \"${FMIZIPDIR}/include\"")
+
+    # set(DOXYFILE_EXTRA_SOURCES "${DOXYFILE_EXTRA_SOURCES} \"${FMIZIPDIR}/include\"")
 
     set(FMIZIP_LIBRARIES fmizip)
-	
+
     add_subdirectory(Config.cmake/Minizip)
-	
-	include_directories("${FMIZIPDIR}/include" "${FMILIB_THIRDPARTYLIBS}/Minizip/minizip" "${FMILIB_THIRDPARTYLIBS}/FMI" "${FMILIB_THIRDPARTYLIBS}/Zlib/zlib-1.2.6" "${FMILibrary_BINARY_DIR}/zlib")
+
+    include_directories("${FMIZIPDIR}/include" "${FMILIB_THIRDPARTYLIBS}/Minizip/minizip" "${FMILIB_THIRDPARTYLIBS}/FMI" "${FMILIB_THIRDPARTYLIBS}/Zlib/zlib-1.2.6" "${FMILibrary_BINARY_DIR}/zlib")
 
 set(FMIZIPSOURCE
   ${FMIZIPDIR}/src/fmi_zip_unzip.c

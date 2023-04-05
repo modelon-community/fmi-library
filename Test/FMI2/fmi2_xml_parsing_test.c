@@ -7,29 +7,27 @@
 #include "config_test.h"
 #include "fmi_testutil.h"
 
-static const int SHOULD_NOT_LOG_EXPECTED_MSG = 0;
-static const int SHOULD_LOG_EXPECTED_MSG = 1;
+static char *EXPECTED_MESSAGE = "Invalid structured ScalarVariable name";
 
-static int did_not_log_expected_msg;
-static char *expected_message = "Invalid structured ScalarVariable name";
-static char *name_check_test_directory;
+static int g_has_logged_expected_msg;
+static char *g_name_check_test_directory;
 
 void importlogger(jm_callbacks* c, jm_string module,
         jm_log_level_enu_t log_level, jm_string message)
 {
     printf("module = %s, log level = %d: %s\n", module, log_level, message);
-    if (!strncmp(expected_message, message, strlen(expected_message))) {
-        did_not_log_expected_msg = 0;
+    if (!strncmp(EXPECTED_MESSAGE, message, strlen(EXPECTED_MESSAGE))) {
+        g_has_logged_expected_msg = 1;
     }
 }
 
-void test_parser(char *xml_dir, int should_not_log_expected_msg, int configuration)
+void test_parser(char *xml_dir, int should_log_expected_msg, int configuration)
 {
     jm_callbacks cb;
     fmi_import_context_t *context;
     fmi2_import_t *fmu;
     char *full_path;
-    int res = 0;
+    int res = 1;
 
     cb.malloc    = malloc;
     cb.calloc    = calloc;
@@ -43,9 +41,9 @@ void test_parser(char *xml_dir, int should_not_log_expected_msg, int configurati
         fmi_import_set_configuration(context, configuration);
     }
 
-    did_not_log_expected_msg = 1;
+    g_has_logged_expected_msg = 0;
 
-    full_path = concat(name_check_test_directory, xml_dir);
+    full_path = concat(g_name_check_test_directory, xml_dir);
     fmu = fmi2_import_parse_xml(context, full_path, NULL);
     fmi_import_free_context(context);
     free(full_path);
@@ -53,10 +51,10 @@ void test_parser(char *xml_dir, int should_not_log_expected_msg, int configurati
     if (fmu == NULL) {
         goto err1;
     }
-    if (!should_not_log_expected_msg && did_not_log_expected_msg ||
-            did_not_log_expected_msg && !should_not_log_expected_msg) {
+    if (should_log_expected_msg != g_has_logged_expected_msg) {
         goto err2;
     }
+    res = 0;
 
 err2:
     fmi2_import_free(fmu); /* this function is using callbacks, so free 'fmu' first */
@@ -69,18 +67,13 @@ err1:
 
 void fail_name_check(char *xml_dir)
 {
-    test_parser(xml_dir, SHOULD_NOT_LOG_EXPECTED_MSG, FMI_IMPORT_NAME_CHECK);
-    test_parser(xml_dir, SHOULD_LOG_EXPECTED_MSG, 0);
+    test_parser(xml_dir, 1, FMI_IMPORT_NAME_CHECK);
+    test_parser(xml_dir, 0, 0);
 }
 
 void pass_name_check(char *xml_dir)
 {
-    test_parser(xml_dir, SHOULD_LOG_EXPECTED_MSG, FMI_IMPORT_NAME_CHECK);
-}
-
-void parser_log_expected_message(char *xml_dir)
-{
-    test_parser(xml_dir, SHOULD_NOT_LOG_EXPECTED_MSG, 0);
+    test_parser(xml_dir, 0, FMI_IMPORT_NAME_CHECK);
 }
 
 void test_variable_naming_conventions(void)
@@ -150,7 +143,7 @@ void test_variable_naming_conventions(void)
 
     /* list of variables */
     fail_name_check("naming_conventions_xmls/list/aemptyc");
-    expected_message = "Two variables with the same name";
+    EXPECTED_MESSAGE = "Two variables with the same name";
     pass_name_check("naming_conventions_xmls/list/cba");
     fail_name_check("naming_conventions_xmls/list/acad");
 
@@ -237,7 +230,7 @@ static void test_locale_lc_numeric() {
          * the result. */
 
         int failed = 0;
-        char* xmldir = concat(name_check_test_directory, "/env/locale");
+        char* xmldir = concat(g_name_check_test_directory, "/env/locale");
         fmi2_import_t* xml = parse_xml(cb, xmldir);
         free(xmldir);
 
@@ -287,7 +280,7 @@ static void test_locale_lc_numeric() {
 int main(int argc, char *argv[])
 {
     if (argc == 2) {
-        name_check_test_directory = argv[1];
+        g_name_check_test_directory = argv[1];
     } else {
         printf("Usage: %s <path to folder 'parser_test_xmls'>\n", argv[0]);
         exit(CTEST_RETURN_FAIL);

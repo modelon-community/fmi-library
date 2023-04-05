@@ -30,24 +30,24 @@ extern "C" {
 #endif
 
 /** \file fmi3_capi.h
-	\brief Public interfaces for the FMI CAPI library.
-	*/
+    \brief Public interfaces for the FMI CAPI library.
+    */
 
 /** \addtogroup fmi3_capi Standard FMI 3.0 "C" API
  * \brief The "C" API loads and frees the FMI functions and it is through these functions all the communication with the FMU occurs. The FMI import library wraps these functions in a more convenient way.
  *  @{
  */
 
-/**	\addtogroup fmi3_capi_const_destroy FMI 3.0 Utility functions
- *		\brief Utility functions used to load and free the FMI functions.
- *	\addtogroup fmi3_capi_me FMI 3.0 (ME) Model Exchange functions
- *		\brief List of Model Exchange wrapper functions. Common functions are not listed.
- *	\addtogroup fmi3_capi_cs FMI 3.0 (CS) Co-Simulation functions
- *		\brief List of Co-Simulation wrapper functions. Common functions are not listed.
- *	\addtogroup fmi3_capi_se FMI 3.0 (CS) Scheduled-Execution functions
- *		\brief List of Scheduled-Execution wrapper functions. Common functions are not listed.
- *	\addtogroup fmi3_capi_common FMI 3.0 Common functions
- *		\brief List of wrapper functions that are in common for Model Exchange, Co-Simulation and Scheduled-Execution.
+/**    \addtogroup fmi3_capi_const_destroy FMI 3.0 Utility functions
+ *        \brief Utility functions used to load and free the FMI functions.
+ *    \addtogroup fmi3_capi_me FMI 3.0 (ME) Model Exchange functions
+ *        \brief List of Model Exchange wrapper functions. Common functions are not listed.
+ *    \addtogroup fmi3_capi_cs FMI 3.0 (CS) Co-Simulation functions
+ *        \brief List of Co-Simulation wrapper functions. Common functions are not listed.
+ *    \addtogroup fmi3_capi_se FMI 3.0 (CS) Scheduled-Execution functions
+ *        \brief List of Scheduled-Execution wrapper functions. Common functions are not listed.
+ *    \addtogroup fmi3_capi_common FMI 3.0 Common functions
+ *        \brief List of wrapper functions that are in common for Model Exchange, Co-Simulation and Scheduled-Execution.
  */
 
 

@@ -147,9 +147,9 @@ static fmi1_xml_variable_type_base_t* fmi1_xml_find_type_props(fmi1_xml_variable
     fmi1_xml_variable_type_base_t* typeBase = type;
     while(typeBase) {
         if((typeBase->structKind == fmi1_xml_type_struct_enu_base)
-			|| (typeBase->structKind == fmi1_xml_type_struct_enu_props)) return typeBase;
+            || (typeBase->structKind == fmi1_xml_type_struct_enu_props)) return typeBase;
         typeBase = typeBase->nextLayer;
-    }	
+    }
     return 0;
 }
 

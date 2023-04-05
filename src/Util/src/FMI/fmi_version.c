@@ -17,15 +17,15 @@
 #include <FMI/fmi_version.h>
 
 static const char* fmi_versions[] = {
-	"1.0",
-	"2.0",
+    "1.0",
+    "2.0",
     "3.0"
 };
 
 const char * fmi_version_to_string(fmi_version_enu_t v){
-	if( (v <= fmi_version_unknown_enu) || (v > fmi_version_unsupported_enu - 1)) {
-		return "unknown";
-	}
-	return fmi_versions[v - 1];
+    if( (v <= fmi_version_unknown_enu) || (v > fmi_version_unsupported_enu - 1)) {
+        return "unknown";
+    }
+    return fmi_versions[v - 1];
 }
 

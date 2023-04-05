@@ -28,7 +28,7 @@ extern "C" {
 
  \addtogroup fmi_zip Interface to zlib
  \brief Interface to Zlib library <http://www.zlib.net/> and Minizip <http://www.winimage.com/zLibDll/minizip.html>
-	to support zip and unzip of FMU modules.
+    to support zip and unzip of FMU modules.
  @{
 */
 

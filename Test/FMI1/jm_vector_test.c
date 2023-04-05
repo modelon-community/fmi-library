@@ -21,11 +21,11 @@ int compar_int(int* a, int* b) {
 int return_code = CTEST_RETURN_SUCCESS;
 
 void log_error(const char* fmt, ...) {
-	va_list args;
+    va_list args;
     va_start (args, fmt);
     vprintf(fmt, args);
     va_end (args);
-	return_code = CTEST_RETURN_FAIL;
+    return_code = CTEST_RETURN_FAIL;
 }
 
 #define TESTVAL 49
@@ -44,19 +44,19 @@ int main() {
     jm_vector_set_item(int)(v, 2, TESTVAL);
     for( i = 0; i < 32; i++) {
         int x = i+TESTVAL;
-		int top;
+        int top;
         jm_vector_push_back(int)(v,x);
         jm_stack_push(double)(s,x);
-		top = (int)jm_stack_top(double)(s);
+        top = (int)jm_stack_top(double)(s);
         printf("pushed item %d=%d (stack top %g), vector size: %d, capacity: %d\n", i, x, jm_stack_top(double)(s), jm_vector_get_size(int)(v), jm_vector_reserve(int)(v,0));
-		if(top != x) log_error("Stack top does not match the pushed value \n");
-		if(jm_vector_get_size(int)(v) != VINIT_SIZE+i+1) log_error("Vector size %d is not as expected %d\n", jm_vector_get_size(int)(v), VINIT_SIZE+i+1);
+        if(top != x) log_error("Stack top does not match the pushed value \n");
+        if(jm_vector_get_size(int)(v) != VINIT_SIZE+i+1) log_error("Vector size %d is not as expected %d\n", jm_vector_get_size(int)(v), VINIT_SIZE+i+1);
     }
-	{
-		size_t index = jm_vector_find_index(int)(v, &k,jm_compare_int);
-		k = TESTVAL;
-		if( index != 2) log_error("Index of '%d' should be '2' but got %d\n", TESTVAL, k );
-	}
+    {
+        size_t index = jm_vector_find_index(int)(v, &k,jm_compare_int);
+        k = TESTVAL;
+        if( index != 2) log_error("Index of '%d' should be '2' but got %d\n", TESTVAL, k );
+    }
     for( i = 0; i < 22; i++) {
         jm_stack_pop(double)(s);
     }

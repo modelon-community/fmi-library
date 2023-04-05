@@ -30,95 +30,95 @@ include_directories(
 set(FMIIMPORT_LIBRARIES fmiimport)
 
 set(FMIIMPORT_PUBHEADERS
-	include/FMI1/fmi1_import.h
-	include/FMI1/fmi1_import_capi.h
-	include/FMI1/fmi1_import_capabilities.h
-	include/FMI1/fmi1_import_cosim.h
-	include/FMI1/fmi1_import_type.h
-	include/FMI1/fmi1_import_unit.h
-	include/FMI1/fmi1_import_variable.h
-	include/FMI1/fmi1_import_variable_list.h
-	include/FMI1/fmi1_import_vendor_annotations.h
-	include/FMI1/fmi1_import_convenience.h
+    include/FMI1/fmi1_import.h
+    include/FMI1/fmi1_import_capi.h
+    include/FMI1/fmi1_import_capabilities.h
+    include/FMI1/fmi1_import_cosim.h
+    include/FMI1/fmi1_import_type.h
+    include/FMI1/fmi1_import_unit.h
+    include/FMI1/fmi1_import_variable.h
+    include/FMI1/fmi1_import_variable_list.h
+    include/FMI1/fmi1_import_vendor_annotations.h
+    include/FMI1/fmi1_import_convenience.h
 
-	include/FMI2/fmi2_import.h
-	include/FMI2/fmi2_import_capi.h
-	include/FMI2/fmi2_import_type.h
-	include/FMI2/fmi2_import_unit.h
-	include/FMI2/fmi2_import_variable.h
-	include/FMI2/fmi2_import_variable_list.h
-	include/FMI2/fmi2_import_convenience.h
+    include/FMI2/fmi2_import.h
+    include/FMI2/fmi2_import_capi.h
+    include/FMI2/fmi2_import_type.h
+    include/FMI2/fmi2_import_unit.h
+    include/FMI2/fmi2_import_variable.h
+    include/FMI2/fmi2_import_variable_list.h
+    include/FMI2/fmi2_import_convenience.h
 
-	include/FMI3/fmi3_import.h
-	include/FMI3/fmi3_import_capi.h
-	include/FMI3/fmi3_import_type.h
-	include/FMI3/fmi3_import_unit.h
-	include/FMI3/fmi3_import_variable.h
-	include/FMI3/fmi3_import_variable_list.h
-	include/FMI3/fmi3_import_dimension.h
-	include/FMI3/fmi3_import_dimension_list.h
-	include/FMI3/fmi3_import_convenience.h
+    include/FMI3/fmi3_import.h
+    include/FMI3/fmi3_import_capi.h
+    include/FMI3/fmi3_import_type.h
+    include/FMI3/fmi3_import_unit.h
+    include/FMI3/fmi3_import_variable.h
+    include/FMI3/fmi3_import_variable_list.h
+    include/FMI3/fmi3_import_dimension.h
+    include/FMI3/fmi3_import_dimension_list.h
+    include/FMI3/fmi3_import_convenience.h
 
-	include/FMI/fmi_import_context.h
-	include/FMI/fmi_import_options.h
-	include/FMI/fmi_import_util.h
+    include/FMI/fmi_import_context.h
+    include/FMI/fmi_import_options.h
+    include/FMI/fmi_import_util.h
  )
 
 set(FMIIMPORT_PRIVHEADERS
-	src/FMI1/fmi1_import_impl.h
-	src/FMI1/fmi1_import_variable_list_impl.h
+    src/FMI1/fmi1_import_impl.h
+    src/FMI1/fmi1_import_variable_list_impl.h
 
-	src/FMI2/fmi2_import_impl.h
-	src/FMI2/fmi2_import_variable_list_impl.h
+    src/FMI2/fmi2_import_impl.h
+    src/FMI2/fmi2_import_variable_list_impl.h
 
-	src/FMI3/fmi3_import_impl.h
-	src/FMI3/fmi3_import_priv.h
-	src/FMI3/fmi3_import_variable_list_impl.h
-	src/FMI3/fmi3_import_dimension_list_impl.h
+    src/FMI3/fmi3_import_impl.h
+    src/FMI3/fmi3_import_priv.h
+    src/FMI3/fmi3_import_variable_list_impl.h
+    src/FMI3/fmi3_import_dimension_list_impl.h
  )
 
 PREFIXLIST(FMIIMPORT_PRIVHEADERS ${FMIIMPORTDIR}/)
 PREFIXLIST(FMIIMPORT_PUBHEADERS ${FMIIMPORTDIR}/)
 
 set(FMIIMPORTHEADERS
-	${FMIIMPORT_PUBHEADERS} ${FMIIMPORT_PRIVHEADERS}
+    ${FMIIMPORT_PUBHEADERS} ${FMIIMPORT_PRIVHEADERS}
  )
 
 set(FMIIMPORTSOURCE
-	src/FMI/fmi_import_context.c
-	src/FMI/fmi_import_options.c
-	src/FMI/fmi_import_util.c
+    src/FMI/fmi_import_context.c
+    src/FMI/fmi_import_options.c
+    src/FMI/fmi_import_util.c
 
-	src/FMI1/fmi1_import_cosim.c
-	src/FMI1/fmi1_import_capi.c
-	src/FMI1/fmi1_import_type.c
-	src/FMI1/fmi1_import_unit.c
-	src/FMI1/fmi1_import_variable.c
-	src/FMI1/fmi1_import_variable_list.c
-	src/FMI1/fmi1_import_vendor_annotations.c
-	src/FMI1/fmi1_import.c
-	src/FMI1/fmi1_import_capabilities.c
-	src/FMI1/fmi1_import_convenience.c
+    src/FMI1/fmi1_import_cosim.c
+    src/FMI1/fmi1_import_capi.c
+    src/FMI1/fmi1_import_type.c
+    src/FMI1/fmi1_import_unit.c
+    src/FMI1/fmi1_import_variable.c
+    src/FMI1/fmi1_import_variable_list.c
+    src/FMI1/fmi1_import_vendor_annotations.c
+    src/FMI1/fmi1_import.c
+    src/FMI1/fmi1_import_capabilities.c
+    src/FMI1/fmi1_import_convenience.c
 
-	src/FMI2/fmi2_import_capi.c
-	src/FMI2/fmi2_import_type.c
-	src/FMI2/fmi2_import_unit.c
-	src/FMI2/fmi2_import_variable.c
-	src/FMI2/fmi2_import_variable_list.c
-	src/FMI2/fmi2_import.c
-	src/FMI2/fmi2_import_convenience.c
+    src/FMI2/fmi2_import_capi.c
+    src/FMI2/fmi2_import_type.c
+    src/FMI2/fmi2_import_unit.c
+    src/FMI2/fmi2_import_variable.c
+    src/FMI2/fmi2_import_variable_list.c
+    src/FMI2/fmi2_import.c
+    src/FMI2/fmi2_import_convenience.c
 
-	src/FMI3/fmi3_import_capi.c
-	src/FMI3/fmi3_import_type.c
-	src/FMI3/fmi3_import_unit.c
-	src/FMI3/fmi3_import_variable.c
-	src/FMI3/fmi3_import_variable_list.c
-	src/FMI3/fmi3_import_dimension.c
-	src/FMI3/fmi3_import_dimension_list.c
-	src/FMI3/fmi3_import.c
-	src/FMI3/fmi3_import_priv.c
-	src/FMI3/fmi3_import_convenience.c
-	)
+    src/FMI3/fmi3_import_capi.c
+    src/FMI3/fmi3_import_type.c
+    src/FMI3/fmi3_import_unit.c
+    src/FMI3/fmi3_import_variable.c
+    src/FMI3/fmi3_import_variable_list.c
+    src/FMI3/fmi3_import_dimension.c
+    src/FMI3/fmi3_import_dimension_list.c
+    src/FMI3/fmi3_import.c
+    src/FMI3/fmi3_import_priv.c
+    src/FMI3/fmi3_import_convenience.c
+    )
 
 PREFIXLIST(FMIIMPORTSOURCE  ${FMIIMPORTDIR}/)
 
@@ -130,8 +130,8 @@ add_dependencies(fmiimport generate_functions_import)
 #add_library(fmiimport_shared SHARED ${FMIIMPORTSOURCE} ${FMIIMPORTHEADERS} )
 #target_link_libraries(fmiimport_shared fmiimport ${JMUTIL_LIBRARIES} ${FMIXML_LIBRARIES} ${FMIZIP_LIBRARIES} ${FMICAPI_LIBRARIES})
 #install(TARGETS fmiimport_shared
-#	ARCHIVE DESTINATION lib
-#	LIBRARY DESTINATION lib
-#	RUNTIME DESTINATION lib
+#    ARCHIVE DESTINATION lib
+#    LIBRARY DESTINATION lib
+#    RUNTIME DESTINATION lib
 #)
 endif(NOT FMIIMPORTDIR)

@@ -34,12 +34,12 @@ set(FMICAPISOURCE
     src/FMI3/fmi3_capi.c
 )
 set(FMICAPIHEADERS
-	include/FMI1/fmi1_capi.h
-	src/FMI1/fmi1_capi_impl.h
-	include/FMI2/fmi2_capi.h
-	src/FMI2/fmi2_capi_impl.h
-	include/FMI3/fmi3_capi.h
-	src/FMI3/fmi3_capi_impl.h
+    include/FMI1/fmi1_capi.h
+    src/FMI1/fmi1_capi_impl.h
+    include/FMI2/fmi2_capi.h
+    src/FMI2/fmi2_capi_impl.h
+    include/FMI3/fmi3_capi.h
+    src/FMI3/fmi3_capi_impl.h
 )
 
 include_directories(${FMILIB_FMI_STANDARD_HEADERS})

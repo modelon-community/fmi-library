@@ -72,9 +72,9 @@ struct fmi3_xml_model_description_t {
 
     jm_vector(char) modelIdentifierME;
 
-	jm_vector(char) modelIdentifierCS;
+    jm_vector(char) modelIdentifierCS;
 
-	jm_vector(char) modelIdentifierSE;
+    jm_vector(char) modelIdentifierSE;
 
     jm_vector(jm_string) sourceFilesME;
     jm_vector(jm_string) sourceFilesCS;
@@ -82,7 +82,7 @@ struct fmi3_xml_model_description_t {
     jm_vector(jm_string) logCategories;
     jm_vector(jm_string) logCategoryDescriptions;
 
-	jm_vector(jm_string) vendorList;
+    jm_vector(jm_string) vendorList;
 
     jm_vector(jm_named_ptr) unitDefinitions;
     jm_vector(jm_named_ptr) displayUnitDefinitions;
@@ -91,17 +91,17 @@ struct fmi3_xml_model_description_t {
 
     jm_string_set descriptions;
 
-	jm_vector(jm_named_ptr) variablesByName;
+    jm_vector(jm_named_ptr) variablesByName;
 
     jm_vector(jm_voidp)* variablesOrigOrder;
 
-	jm_vector(jm_voidp)* variablesByVR;
+    jm_vector(jm_voidp)* variablesByVR;
 
     fmi3_fmu_kind_enu_t fmuKind;
 
     unsigned int capabilities[fmi3_capabilities_Num];
 
-	fmi3_xml_model_structure_t* modelStructure;
+    fmi3_xml_model_structure_t* modelStructure;
 };
 
 #ifdef __cplusplus

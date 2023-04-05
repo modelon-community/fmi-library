@@ -34,16 +34,16 @@
 extern "C" {
 #endif
 
-struct fmi1_import_t {	
-	char* dirPath;
-	char* location;
-	jm_callbacks* callbacks;
-	fmi1_xml_model_description_t* md;
-	fmi1_capi_t* capi;
-	int registerGlobally;
-	jm_vector(char) logMessageBufferCoded;
-	jm_vector(char) logMessageBufferExpanded;
-	fmi_util_options_t* options;
+struct fmi1_import_t {    
+    char* dirPath;
+    char* location;
+    jm_callbacks* callbacks;
+    fmi1_xml_model_description_t* md;
+    fmi1_capi_t* capi;
+    int registerGlobally;
+    jm_vector(char) logMessageBufferCoded;
+    jm_vector(char) logMessageBufferExpanded;
+    fmi_util_options_t* options;
 };
 
 extern jm_callbacks fmi1_import_active_fmu_store_callbacks;

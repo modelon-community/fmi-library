@@ -83,7 +83,7 @@ FMILIB_EXPORT const char* fmi2_import_get_last_error(fmi2_import_t* fmu);
 \brief Clear the error message.
 * @param fmu An FMU object as returned by fmi2_import_parse_xml().
 * @return 0 if further processing is possible. If it returns 1 then the 
-*	error was not recoverable. The \p fmu object should then be freed and recreated.
+*    error was not recoverable. The \p fmu object should then be freed and recreated.
 */
 FMILIB_EXPORT int fmi2_import_clear_last_error(fmi2_import_t* fmu);
 
@@ -240,7 +240,7 @@ FMILIB_EXPORT fmi2_import_variable_list_t* fmi2_import_get_variable_aliases(fmi2
 /** \brief Get the list of all the variables in the model.
 * @param fmu An FMU object as returned by fmi2_import_parse_xml().
 * @param sortOrder Specifies the order of the variables in the list: 
-		0 - original order as found in the XML file; 1 - sorted alfabetically by variable name; 2 sorted by types/value references.
+        0 - original order as found in the XML file; 1 - sorted alfabetically by variable name; 2 sorted by types/value references.
 * @return a variable list with all the variables in the model.
 *
 * Note that variable lists are allocated dynamically and must be freed when not needed any longer.
@@ -282,19 +282,19 @@ FMILIB_EXPORT size_t fmi2_import_get_source_files_cs_num(fmi2_import_t* fmu);
 FMILIB_EXPORT const char* fmi2_import_get_source_file_cs(fmi2_import_t* fmu, size_t index);
 
 /**
-	\brief Get variable by variable name.
-	\param fmu - An fmu object as returned by fmi2_import_parse_xml().
-	\param name - variable name
-	\return variable pointer.
+    \brief Get variable by variable name.
+    \param fmu - An fmu object as returned by fmi2_import_parse_xml().
+    \param name - variable name
+    \return variable pointer.
 */
 FMILIB_EXPORT fmi2_import_variable_t* fmi2_import_get_variable_by_name(fmi2_import_t* fmu, const char* name);
 
 /**
-	\brief Get variable by value reference.
-	\param fmu - An fmu object as returned by fmi2_import_parse_xml().
-	\param baseType - basic data type
-	\param vr - value reference
-	\return variable pointer.
+    \brief Get variable by value reference.
+    \param fmu - An fmu object as returned by fmi2_import_parse_xml().
+    \param baseType - basic data type
+    \param vr - value reference
+    \return variable pointer.
 */
 FMILIB_EXPORT fmi2_import_variable_t* fmi2_import_get_variable_by_vr(fmi2_import_t* fmu, fmi2_base_type_enu_t baseType, fmi2_value_reference_t vr);
 

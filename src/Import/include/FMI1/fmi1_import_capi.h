@@ -40,18 +40,18 @@ Wrapper functions for the FMI 1.0 functions
  * @{
  */
 
-/**	\addtogroup fmi1_import_capi_const_destroy FMI 1.0 Constructor and Destructor	
+/**    \addtogroup fmi1_import_capi_const_destroy FMI 1.0 Constructor and Destructor    
  * \brief Functions for instantiating and freeing the container of the struct that is responsible for the FMI functions.
  *
- *	Before any of the FMI functions may be called, the construction function must instantiate a fmi_import_t module.
- *	After the fmi_import_t module has been succesfully instantiated, all the FMI functions can be called. To unload
- *	the FMI functions, the destroy functions shall be called.
+ *    Before any of the FMI functions may be called, the construction function must instantiate a fmi_import_t module.
+ *    After the fmi_import_t module has been succesfully instantiated, all the FMI functions can be called. To unload
+ *    the FMI functions, the destroy functions shall be called.
  *
- * 	\addtogroup fmi1_import_capi_me FMI 1.0 (ME) Model Exchange functions
+ *    \addtogroup fmi1_import_capi_me FMI 1.0 (ME) Model Exchange functions
  * \brief List of Model Exchange wrapper functions. Common functions are not listed.
- *	\addtogroup fmi1_import_capi_cs FMI 1.0 (CS) Co-Simulation functions 
+ *    \addtogroup fmi1_import_capi_cs FMI 1.0 (CS) Co-Simulation functions 
  * \brief List of Co-Simulation wrapper functions. Common functions are not listed.
- *	\addtogroup fmi1_import_capi_common FMI 1.0 (ME & CS) Common functions
+ *    \addtogroup fmi1_import_capi_common FMI 1.0 (ME & CS) Common functions
  * \brief List of wrapper functions that are in common for both Model Exchange and Co-Simulation.
  */
 
@@ -367,7 +367,7 @@ FMILIB_EXPORT const char* fmi1_import_get_types_platform(fmi1_import_t* fmu);
  * @return Error status. Returnes jm_status_error if fmiInstantiateSlave returned NULL, otherwise jm_status_success.
  */
 FMILIB_EXPORT jm_status_enu_t fmi1_import_instantiate_slave(fmi1_import_t* fmu, fmi1_string_t instanceName, fmi1_string_t fmuLocation, fmi1_string_t mimeType,
-																 fmi1_real_t timeout, fmi1_boolean_t visible, fmi1_boolean_t interactive);
+                                                                 fmi1_real_t timeout, fmi1_boolean_t visible, fmi1_boolean_t interactive);
 
 /**
  * \brief Wrapper for the FMI function fmiInitializeSlave(...) 
@@ -409,7 +409,7 @@ FMILIB_EXPORT void fmi1_import_free_slave_instance(fmi1_import_t* fmu);
  * @param fmu A model description object returned by fmi1_import_parse_xml() that has loaded the FMI functions, see fmi1_import_create_dllfmu().
  * @param vr Array of value references.
  * @param nvr Number of array elements.
- * @param order	Array of derivative orders.
+ * @param order    Array of derivative orders.
  * @param value Array of variable values.
  * @return FMI status.
  */
@@ -421,7 +421,7 @@ FMILIB_EXPORT fmi1_status_t fmi1_import_set_real_input_derivatives(fmi1_import_t
  * @param fmu A model description object returned by fmi1_import_parse_xml() that has loaded the FMI functions, see fmi1_import_create_dllfmu().
  * @param vr Array of value references.
  * @param nvr Number of array elements.
- * @param order	Array of derivative orders.
+ * @param order    Array of derivative orders.
  * @param value (Output) Array of variable values.
  * @return FMI status.
  */

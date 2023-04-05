@@ -29,12 +29,12 @@ size_t fmi1_import_get_number_of_additional_models(fmi1_import_t* fmu) {
 }
 
 const char* fmi1_import_get_additional_model_name(fmi1_import_t* fmu, size_t index) {
-	return fmi1_xml_get_additional_model_name(fmu->md, index);
+    return fmi1_xml_get_additional_model_name(fmu->md, index);
 }
 
 
 const char* fmi1_import_get_entry_point(fmi1_import_t* fmu) {
-	return fmi1_xml_get_entry_point(fmu->md);
+    return fmi1_xml_get_entry_point(fmu->md);
 }
 
 const char* fmi1_import_get_mime_type(fmi1_import_t* fmu){

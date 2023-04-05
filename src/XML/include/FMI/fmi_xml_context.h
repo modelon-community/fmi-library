@@ -39,8 +39,8 @@ extern "C" {
 typedef struct fmi_xml_context_t fmi_xml_context_t;
 
 /** \brief Allocate library context 
-	@param callbacks - the callbacks to be used for memory allocation and logging. Can be NULL if default callbacks are to be used.
-	@return A pointer to the newly allocated ::fmi_xml_context_t or NULL if memory allocation failed.
+    @param callbacks - the callbacks to be used for memory allocation and logging. Can be NULL if default callbacks are to be used.
+    @return A pointer to the newly allocated ::fmi_xml_context_t or NULL if memory allocation failed.
 */
 fmi_xml_context_t* fmi_xml_allocate_context( jm_callbacks* callbacks);
 
@@ -59,23 +59,23 @@ typedef struct fmi3_xml_model_description_t fmi3_xml_model_description_t;
 
 /** \brief Parse FMI 1.0 XML file and create model description object.
 
-	Errors are reported via the ::jm_callbacks object passed to fmi_xml_allocate_context().
-	@return Model description object or NULL if parsing failed.
+    Errors are reported via the ::jm_callbacks object passed to fmi_xml_allocate_context().
+    @return Model description object or NULL if parsing failed.
 */
 fmi1_xml_model_description_t* fmi1_xml_parse( fmi_xml_context_t* c, const char* fileName);
 
 
 /** \brief Parse FMI 2.0 XML file and create model description object.
 
-	Errors are reported via the ::jm_callbacks object passed to fmi_xml_allocate_context().
-	@return Model description object or NULL if parsing failed.
+    Errors are reported via the ::jm_callbacks object passed to fmi_xml_allocate_context().
+    @return Model description object or NULL if parsing failed.
 */
 fmi2_xml_model_description_t* fmi2_xml_parse( fmi_xml_context_t* c, const char* fileName);
 
 /** \brief Parse FMI 3.0 XML file and create model description object.
 
-	Errors are reported via the ::jm_callbacks object passed to fmi_xml_allocate_context().
-	@return Model description object or NULL if parsing failed.
+    Errors are reported via the ::jm_callbacks object passed to fmi_xml_allocate_context().
+    @return Model description object or NULL if parsing failed.
 */
 fmi3_xml_model_description_t* fmi3_xml_parse( fmi_xml_context_t* c, const char* fileName);
 /** @} 

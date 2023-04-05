@@ -25,7 +25,7 @@ extern "C" {
 #endif
 
 struct fmi3_import_variable_list_t {
-	fmi3_import_t* fmu;
+    fmi3_import_t* fmu;
     jm_vector(jm_voidp) variables;
     fmi3_value_reference_t* vr;
 };

@@ -61,7 +61,7 @@ const char *fmi1_xmlAttrNames[] = {
 #define fmi1_xml_scheme_Implementation {fmi1_xml_elmID_fmiModelDescription, 5, 0}
 #define fmi1_xml_scheme_CoSimulation_StandAlone {fmi1_xml_elmID_Implementation, 0, 0}
 /* NOTE: Capabilities need special handling since it can appear both under
-	CoSimulation_StandAlone and CoSimulation_Tool
+    CoSimulation_StandAlone and CoSimulation_Tool
 */
 #define fmi1_xml_scheme_Capabilities {fmi1_xml_elmID_CoSimulation_StandAlone, 0, 0}
 #define fmi1_xml_scheme_CoSimulation_Tool {fmi1_xml_elmID_Implementation, 0, 0}
@@ -118,7 +118,7 @@ void fmi1_xml_parse_free_context(fmi1_xml_parser_context_t *context) {
 void fmi1_xml_parse_fatal(fmi1_xml_parser_context_t *context, const char* fmt, ...) {
     va_list args;
     va_start (args, fmt);
-	jm_log_fatal_v(context->callbacks, module, fmt, args);
+    jm_log_fatal_v(context->callbacks, module, fmt, args);
     va_end (args);
     XML_StopParser(context->parser,0);
 }
@@ -378,67 +378,67 @@ static void XMLCALL fmi1_parse_element_start(void *c, const char *elm, const cha
     fmi1_xml_element_handle_map_t keyEl;
     fmi1_xml_element_handle_map_t* currentElMap;
     jm_named_ptr* currentMap;
-	fmi1_xml_elm_enu_t currentID;
+    fmi1_xml_elm_enu_t currentID;
     int i;
     fmi1_xml_parser_context_t *context = c;
 
-	if(context->skipElementCnt) {
-		context->skipElementCnt++;
+    if(context->skipElementCnt) {
+        context->skipElementCnt++;
         jm_log_warning(context->callbacks, module, "[Line:%u] Skipping nested XML element '%s'",
-			XML_GetCurrentLineNumber(context->parser), elm);
-		return;
-	}
+            XML_GetCurrentLineNumber(context->parser), elm);
+        return;
+    }
 
-	keyEl.elementName = elm;
-	/* find the element handle by name */
+    keyEl.elementName = elm;
+    /* find the element handle by name */
     currentElMap = jm_vector_bsearch(fmi1_xml_element_handle_map_t)(context->elmMap, &keyEl, fmi1_xml_compare_elmName);
     if(!currentElMap) {
         /* not found error*/
         jm_log_error(context->callbacks, module, "[Line:%u] Unknown element '%s' in XML, skipping",
-			XML_GetCurrentLineNumber(context->parser), elm);
-		context->skipElementCnt = 1;
+            XML_GetCurrentLineNumber(context->parser), elm);
+        context->skipElementCnt = 1;
         return;
     }
 
     currentID = currentElMap->elemID;
-	/* Check that parent-child & siblings are fine */
-	{
-		fmi1_xml_elm_enu_t parentID = context->currentElmID;
-		fmi1_xml_elm_enu_t siblingID =  context->lastElmID;
+    /* Check that parent-child & siblings are fine */
+    {
+        fmi1_xml_elm_enu_t parentID = context->currentElmID;
+        fmi1_xml_elm_enu_t siblingID =  context->lastElmID;
 
-		if((fmi1_xml_scheme_info[currentID].parentID != parentID) &&
-			((currentID != fmi1_xml_elmID_Capabilities) || (parentID != fmi1_xml_elmID_CoSimulation_Tool))) {
-				jm_log_error(context->callbacks, module,
-					"[Line:%u] XML element '%s' cannot be placed inside '%s', skipping",
-					XML_GetCurrentLineNumber(context->parser), elm, fmi1_element_handle_map[parentID].elementName);
-				context->skipElementCnt = 1;
-				return;
-		}
-		if(siblingID != fmi1_xml_elmID_none) {
-			if(siblingID == currentID) {
-				if(!fmi1_xml_scheme_info[currentID].multipleAllowed) {
-					jm_log_error(context->callbacks, module,
-						"[Line:%u] Multiple instances of XML element '%s' are not allowed, skipping",
-						XML_GetCurrentLineNumber(context->parser), elm);
-					context->skipElementCnt = 1;
-					return;
-				}
-			}
-			else {
-				int lastSiblingIndex = fmi1_xml_scheme_info[siblingID].siblingIndex;
-				int curSiblingIndex = fmi1_xml_scheme_info[currentID].siblingIndex;
+        if((fmi1_xml_scheme_info[currentID].parentID != parentID) &&
+            ((currentID != fmi1_xml_elmID_Capabilities) || (parentID != fmi1_xml_elmID_CoSimulation_Tool))) {
+                jm_log_error(context->callbacks, module,
+                    "[Line:%u] XML element '%s' cannot be placed inside '%s', skipping",
+                    XML_GetCurrentLineNumber(context->parser), elm, fmi1_element_handle_map[parentID].elementName);
+                context->skipElementCnt = 1;
+                return;
+        }
+        if(siblingID != fmi1_xml_elmID_none) {
+            if(siblingID == currentID) {
+                if(!fmi1_xml_scheme_info[currentID].multipleAllowed) {
+                    jm_log_error(context->callbacks, module,
+                        "[Line:%u] Multiple instances of XML element '%s' are not allowed, skipping",
+                        XML_GetCurrentLineNumber(context->parser), elm);
+                    context->skipElementCnt = 1;
+                    return;
+                }
+            }
+            else {
+                int lastSiblingIndex = fmi1_xml_scheme_info[siblingID].siblingIndex;
+                int curSiblingIndex = fmi1_xml_scheme_info[currentID].siblingIndex;
 
-				if(lastSiblingIndex >= curSiblingIndex) {
-					jm_log_error(context->callbacks, module,
-						"[Line:%u] XML element '%s' cannot be placed after element '%s', skipping",
-						XML_GetCurrentLineNumber(context->parser), elm, fmi1_element_handle_map[siblingID].elementName);
-					context->skipElementCnt = 1;
-					return;
-				}
-			}
-		}
-		context->lastElmID = fmi1_xml_elmID_none;
-	}
+                if(lastSiblingIndex >= curSiblingIndex) {
+                    jm_log_error(context->callbacks, module,
+                        "[Line:%u] XML element '%s' cannot be placed after element '%s', skipping",
+                        XML_GetCurrentLineNumber(context->parser), elm, fmi1_element_handle_map[siblingID].elementName);
+                    context->skipElementCnt = 1;
+                    return;
+                }
+            }
+        }
+        context->lastElmID = fmi1_xml_elmID_none;
+    }
 
     /* process the attributes  */
     i = 0;
@@ -448,9 +448,9 @@ static void XMLCALL fmi1_parse_element_start(void *c, const char *elm, const cha
         currentMap = jm_vector_bsearch(jm_named_ptr)(context->attrMap, &key, jm_compare_named);
         if(!currentMap) {
             /* not found error*/
-			jm_log_error(context->callbacks, module, "Unknown attribute '%s' in XML", attr[i]);
+            jm_log_error(context->callbacks, module, "Unknown attribute '%s' in XML", attr[i]);
         }
-		else  {
+        else  {
             /* save attr value (still as string) for further handling  */
             const char** mapItem = (const char**)currentMap->ptr;
             *mapItem = attr[i+1];
@@ -459,10 +459,10 @@ static void XMLCALL fmi1_parse_element_start(void *c, const char *elm, const cha
     }
 
     /* handle the element */
-	if( currentElMap->elementHandle(context, 0) ) {
+    if( currentElMap->elementHandle(context, 0) ) {
         return;
     }
-	if(context->skipElementCnt) return;
+    if(context->skipElementCnt) return;
     /* check that the element handle had process all the attributes */
     for(i = 0; i < fmi1_xml_attr_number; i++) {
         if(jm_vector_get_item(jm_string)(context->attrBuffer, i)) {
@@ -481,13 +481,13 @@ static void XMLCALL fmi1_parse_element_end(void* c, const char *elm) {
 
     fmi1_xml_element_handle_map_t keyEl;
     fmi1_xml_element_handle_map_t* currentElMap;
-	fmi1_xml_elm_enu_t currentID;
+    fmi1_xml_elm_enu_t currentID;
     fmi1_xml_parser_context_t *context = c;
 
-	if(context->skipElementCnt) {
-		context->skipElementCnt--;
-		return;
-	}
+    if(context->skipElementCnt) {
+        context->skipElementCnt--;
+        return;
+    }
 
     keyEl.elementName = elm;
     currentElMap = jm_vector_bsearch(fmi1_xml_element_handle_map_t)(context->elmMap, &keyEl, fmi1_xml_compare_elmName);
@@ -501,13 +501,13 @@ static void XMLCALL fmi1_parse_element_end(void* c, const char *elm) {
     if(currentID != context -> currentElmID) {
         /* missmatch error*/
         fmi1_xml_parse_fatal(context, "Element end '%s' does not match element start '%s' in XML", elm,
-			fmi1_element_handle_map[context -> currentElmID].elementName);
+            fmi1_element_handle_map[context -> currentElmID].elementName);
         return;
     }
 
     jm_vector_push_back(char)(&context->elmData, 0);
 
-	if( currentElMap->elementHandle(context, jm_vector_get_itemp(char)(&context->elmData, 0) )) {
+    if( currentElMap->elementHandle(context, jm_vector_get_itemp(char)(&context->elmData, 0) )) {
         return;
     }
     jm_vector_resize(char)(&context->elmData, 0);
@@ -603,7 +603,7 @@ int fmi1_xml_parse_model_description(fmi1_xml_model_description_t* md, const cha
     jm_vector_init(jm_voidp)(&context->directDependencyBuf, 0, context->callbacks);
     jm_vector_init(jm_string)(&context->directDependencyStringsStore, 0, context->callbacks);
     context->skipOneVariableFlag = 0;
-	context->skipElementCnt = 0;
+    context->skipElementCnt = 0;
     jm_stack_init(int)(&context->elmStack,  context->callbacks);
     jm_vector_init(char)(&context->elmData, 0, context->callbacks);
     context->lastElmID = fmi1_xml_elmID_none;
@@ -647,7 +647,7 @@ int fmi1_xml_parse_model_description(fmi1_xml_model_description_t* md, const cha
         if(ferror(file)) {
             fmi1_xml_parse_fatal(context, "Error reading from file %s", filename);
             fclose(file);
-	        fmi1_xml_parse_free_context(context);
+            fmi1_xml_parse_free_context(context);
             return -1;
         }
         if (!XML_Parse(parser, text, n, feof(file))) {
@@ -655,7 +655,7 @@ int fmi1_xml_parse_model_description(fmi1_xml_model_description_t* md, const cha
                          (int)XML_GetCurrentLineNumber(parser),
                          XML_ErrorString(XML_GetErrorCode(parser)));
              fclose(file);
-		     fmi1_xml_parse_free_context(context);
+             fmi1_xml_parse_free_context(context);
              return -1; /* failure */
         }
     }

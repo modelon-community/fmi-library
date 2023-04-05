@@ -122,7 +122,7 @@ FMI1_XML_ELMLIST(EXPAND_ELM_HANDLE)
 
 #define FMI1_XML_ELM_ID(elm) ,fmi1_xml_elmID_##elm
 typedef enum fmi1_xml_elm_enu_t {
-	fmi1_xml_elmID_none = -1
+    fmi1_xml_elmID_none = -1
     FMI1_XML_ELMLIST(FMI1_XML_ELM_ID)
     ,fmi1_xml_elm_number
 } fmi1_xml_elm_enu_t;
@@ -132,15 +132,15 @@ typedef int (*fmi1_xml_element_handle_ft)(fmi1_xml_parser_context_t *context, co
 typedef struct fmi1_xml_element_handle_map_t fmi1_xml_element_handle_map_t;
 
 typedef struct {
-	fmi1_xml_elm_enu_t parentID;
-	int siblingIndex;
-	int multipleAllowed;
+    fmi1_xml_elm_enu_t parentID;
+    int siblingIndex;
+    int multipleAllowed;
 } fmi1_xml_scheme_info_t;
 
 struct fmi1_xml_element_handle_map_t {
     const char* elementName;
     fmi1_xml_element_handle_ft elementHandle;
-	fmi1_xml_elm_enu_t elemID;
+    fmi1_xml_elm_enu_t elemID;
 };
 
 
@@ -170,13 +170,13 @@ struct fmi1_xml_parser_context_t {
     jm_vector(jm_string) directDependencyStringsStore;
 
     int skipOneVariableFlag;
-	int skipElementCnt;
+    int skipElementCnt;
 
     jm_stack(int) elmStack;
     jm_vector(char) elmData;
 
-	fmi1_xml_elm_enu_t lastElmID;
-	fmi1_xml_elm_enu_t currentElmID;
+    fmi1_xml_elm_enu_t lastElmID;
+    fmi1_xml_elm_enu_t currentElmID;
 
     /* Data for restoring locale after parsing */
     jm_locale_t* jm_locale;

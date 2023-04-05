@@ -56,9 +56,9 @@ to_native_c_path("\"${SHARED_LIBRARY_ME_PATH}\"" DLL_OUTPUT_PATH_ME_DEFINE)
 to_native_c_path("\"${SHARED_LIBRARY_CS_PATH}\"" DLL_OUTPUT_PATH_CS_DEFINE)
 
 to_native_c_path("\"${CMAKE_CURRENT_BINARY_DIR}/\" CMAKE_INTDIR \"/${CMAKE_SHARED_LIBRARY_PREFIX}fmu1_dll_me${CMAKE_SHARED_LIBRARY_SUFFIX}\""
-				FMU1_DLL_ME_PATH)
+                FMU1_DLL_ME_PATH)
 to_native_c_path("\"${CMAKE_CURRENT_BINARY_DIR}/\" CMAKE_INTDIR \"/${CMAKE_SHARED_LIBRARY_PREFIX}fmu1_dll_cs${CMAKE_SHARED_LIBRARY_SUFFIX}\""
-				FMU1_DLL_CS_PATH)
+                FMU1_DLL_CS_PATH)
 
 #function(compress_fmu OUTPUT_FOLDER MODEL_IDENTIFIER FILE_NAME_CS_ME_EXT TARGET_NAME XML_PATH SHARED_LIBRARY_PATH)
 compress_fmu("${TEST_OUTPUT_FOLDER}" "${FMU_DUMMY_MF_MODEL_IDENTIFIER}" "mf" "fmu1_dll_me" "${XML_MF_PATH}" "${SHARED_LIBRARY_ME_PATH}")
@@ -134,26 +134,26 @@ if(NOT CMAKE_GENERATOR STREQUAL "MSYS Makefiles")
         PROPERTIES DEPENDS ctest_fmi1_logger_test_run
     )
 
-	# 'ctest_build_all' must also skip memcheck, but it needs to run before all
-	# other tests, so just calling it first by name in the linux makefile wrapper
-	SET_TESTS_PROPERTIES (
-		ctest_fmi1_logger_test_check
-		PROPERTIES LABELS skip_memcheck
-	)
+    # 'ctest_build_all' must also skip memcheck, but it needs to run before all
+    # other tests, so just calling it first by name in the linux makefile wrapper
+    SET_TESTS_PROPERTIES (
+        ctest_fmi1_logger_test_check
+        PROPERTIES LABELS skip_memcheck
+    )
 
-	SET_TESTS_PROPERTIES (
-		ctest_fmi1_logger_test_check
-		PROPERTIES DEPENDS ctest_fmi1_logger_test_run
-	)
+    SET_TESTS_PROPERTIES (
+        ctest_fmi1_logger_test_check
+        PROPERTIES DEPENDS ctest_fmi1_logger_test_run
+    )
 endif()
 
 set_target_properties(
-	fmi_import_me_test
-	fmi_import_cs_test
-	fmi_import_xml_test
-	fmi1_capi_cs_test
-	fmi1_capi_me_test
-	fmi1_logger_test
+    fmi_import_me_test
+    fmi_import_cs_test
+    fmi_import_xml_test
+    fmi1_capi_cs_test
+    fmi1_capi_me_test
+    fmi1_logger_test
     fmi1_xml_parsing_test
     fmi1_import_default_experiment_test
     fmi1_import_options_test
@@ -164,22 +164,22 @@ set_target_properties(
 
 
 if(FMILIB_BUILD_BEFORE_TESTS)
-	SET_TESTS_PROPERTIES (
-		ctest_fmi_import_me_test
-		ctest_fmi_import_cs_test
-		ctest_fmi_import_xml_test
-		ctest_fmi_import_xml_test_empty
-		ctest_fmi_import_xml_test_mf
-		ctest_fmi1_capi_cs_test
-		ctest_fmi1_capi_me_test
-		ctest_fmi1_logger_test_run
-		ctest_fmi1_xml_parsing_test
+    SET_TESTS_PROPERTIES (
+        ctest_fmi_import_me_test
+        ctest_fmi_import_cs_test
+        ctest_fmi_import_xml_test
+        ctest_fmi_import_xml_test_empty
+        ctest_fmi_import_xml_test_mf
+        ctest_fmi1_capi_cs_test
+        ctest_fmi1_capi_me_test
+        ctest_fmi1_logger_test_run
+        ctest_fmi1_xml_parsing_test
         ctest_fmi1_type_definitions_test
         ctest_fmi1_variable_bad_type_variability_test
-		PROPERTIES DEPENDS ctest_build_all)
+        PROPERTIES DEPENDS ctest_build_all)
 endif()
 
 SET_TESTS_PROPERTIES (
-	ctest_fmi_import_xml_test
-	PROPERTIES DEPENDS ctest_fmi_import_cs_test
+    ctest_fmi_import_xml_test
+    PROPERTIES DEPENDS ctest_fmi_import_cs_test
 )

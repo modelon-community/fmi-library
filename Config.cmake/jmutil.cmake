@@ -15,7 +15,7 @@ if(NOT JMUTILDIR)
     set(JMUTILDIR ${FMILIBRARYHOME}/src/Util/)
     set(JMUTIL_LIBRARIES jmutils)
     include_directories ("${JMUTILDIR}/include" "${FMILIB_FMI_STANDARD_HEADERS}")
-	set(DOXYFILE_EXTRA_SOURCES "${DOXYFILE_EXTRA_SOURCES} \"${JMUTILDIR}/include\"")
+    set(DOXYFILE_EXTRA_SOURCES "${DOXYFILE_EXTRA_SOURCES} \"${JMUTILDIR}/include\"")
 
 set(JMUTILSOURCE
  JM/jm_callbacks.c
@@ -86,10 +86,10 @@ if(UNIX AND NOT APPLE)
 endif()
 
 if(UNIX)
-	target_link_libraries(jmutils dl)
+    target_link_libraries(jmutils dl)
 endif(UNIX)
 if(WIN32)
-	target_link_libraries(jmutils Shlwapi)
+    target_link_libraries(jmutils Shlwapi)
 endif(WIN32)
 
 endif(NOT JMUTILDIR)

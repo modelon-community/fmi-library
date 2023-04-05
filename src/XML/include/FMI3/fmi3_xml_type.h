@@ -28,14 +28,14 @@
 extern "C" {
 #endif
 
-	/**
-	\addtogroup fmi3_xml
-	@{
-	\addtogroup fmi3_xml_types Support for processing variable types
-	@}
-	\addtogroup fmi3_xml_types Support for processing variable types
-	@{
-	*/
+    /**
+    \addtogroup fmi3_xml
+    @{
+    \addtogroup fmi3_xml_types Support for processing variable types
+    @}
+    \addtogroup fmi3_xml_types Support for processing variable types
+    @{
+    */
 
 fmi3_xml_type_definitions_t* fmi3_xml_get_type_definitions(fmi3_xml_model_description_t* md);
 

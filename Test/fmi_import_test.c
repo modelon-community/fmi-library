@@ -33,44 +33,44 @@ void importlogger(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_leve
 
 void do_exit(int code)
 {
-	printf("Press 'Enter' to exit\n");
-	/* getchar(); */
-	exit(code);
+    printf("Press 'Enter' to exit\n");
+    /* getchar(); */
+    exit(code);
 }
-	   
+       
 int main(int argc, char *argv[])
 {
-	const char* FMUPath;
-	const char* tmpPath;
-	jm_callbacks callbacks;
-	fmi_import_context_t* context;
-	fmi_version_enu_t version;
-	int ret;
+    const char* FMUPath;
+    const char* tmpPath;
+    jm_callbacks callbacks;
+    fmi_import_context_t* context;
+    fmi_version_enu_t version;
+    int ret;
 
-	if(argc < 3) {
-		printf("Usage: %s <fmu_file> <temporary_dir>\n", argv[0]);
-		do_exit(CTEST_RETURN_FAIL);
-	}
+    if(argc < 3) {
+        printf("Usage: %s <fmu_file> <temporary_dir>\n", argv[0]);
+        do_exit(CTEST_RETURN_FAIL);
+    }
 
-	FMUPath = argv[1];
-	tmpPath = argv[2];
+    FMUPath = argv[1];
+    tmpPath = argv[2];
 
 
-	callbacks.malloc = malloc;
+    callbacks.malloc = malloc;
     callbacks.calloc = calloc;
     callbacks.realloc = realloc;
     callbacks.free = free;
     callbacks.logger = importlogger;
-	callbacks.log_level = jm_log_level_all;
+    callbacks.log_level = jm_log_level_all;
     callbacks.context = 0;
 
 #ifdef FMILIB_GENERATE_BUILD_STAMP
-	printf("Library build stamp:\n%s\n", fmilib_get_build_stamp());
+    printf("Library build stamp:\n%s\n", fmilib_get_build_stamp());
 #endif
 
-	context = fmi_import_allocate_context(&callbacks);
+    context = fmi_import_allocate_context(&callbacks);
 
-	version = fmi_import_get_fmi_version(context, FMUPath, tmpPath);
+    version = fmi_import_get_fmi_version(context, FMUPath, tmpPath);
 
     /* Check that version can be retrieved from unzipped FMU: */
     if (version != fmi_import_get_fmi_version(context, NULL, tmpPath)) {
@@ -78,29 +78,29 @@ int main(int argc, char *argv[])
         do_exit(CTEST_RETURN_FAIL);
     }
 
-	if(version == fmi_version_1_enu) {
-		ret = fmi1_test(context, tmpPath);
-	}
-	else if(version == fmi_version_2_0_enu) {
-		ret = fmi2_test(context, tmpPath);
-	}
-	else if(version == fmi_version_3_0_enu) {
-		ret = fmi3_test(context, tmpPath);
-	}
-	else {
+    if(version == fmi_version_1_enu) {
+        ret = fmi1_test(context, tmpPath);
+    }
+    else if(version == fmi_version_2_0_enu) {
+        ret = fmi2_test(context, tmpPath);
+    }
+    else if(version == fmi_version_3_0_enu) {
+        ret = fmi3_test(context, tmpPath);
+    }
+    else {
         fmi_import_free_context(context);
-		printf("Only versions 1.0 and 2.0 are supported so far\n");
-		do_exit(CTEST_RETURN_FAIL);
-	}
+        printf("Only versions 1.0 and 2.0 are supported so far\n");
+        do_exit(CTEST_RETURN_FAIL);
+    }
 
-	fmi_import_free_context(context);
-	
-	if(ret == CTEST_RETURN_SUCCESS)
-		printf("Everything seems to be OK since you got this far=)!\n");
+    fmi_import_free_context(context);
+    
+    if(ret == CTEST_RETURN_SUCCESS)
+        printf("Everything seems to be OK since you got this far=)!\n");
 
-	do_exit(ret);
+    do_exit(ret);
 
-	return 0;
+    return 0;
 }
 
 

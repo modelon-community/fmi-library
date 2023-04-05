@@ -27,9 +27,9 @@
 
 void do_exit(int code)
 {
-	printf("Press any key to exit\n");
-	/* getchar(); */
-	exit(code);
+    printf("Press any key to exit\n");
+    /* getchar(); */
+    exit(code);
 }
 
 /* Logger function */
@@ -44,26 +44,26 @@ void importlogger(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_leve
  */
 int main(int argc, char *argv[])
 {
-	jm_callbacks callbacks;
-	jm_status_enu_t status;	
+    jm_callbacks callbacks;
+    jm_status_enu_t status;    
 
-	callbacks.malloc = malloc;
+    callbacks.malloc = malloc;
     callbacks.calloc = calloc;
     callbacks.realloc = realloc;
     callbacks.free = free;
     callbacks.logger = importlogger;
-	callbacks.log_level = jm_log_level_debug;
+    callbacks.log_level = jm_log_level_debug;
     callbacks.context = 0;
 
-	status = fmi_zip_unzip(UNCOMPRESSED_DUMMY_FILE_PATH_SRC, UNCOMPRESSED_DUMMY_FOLDER_PATH_DIST, &callbacks);
+    status = fmi_zip_unzip(UNCOMPRESSED_DUMMY_FILE_PATH_SRC, UNCOMPRESSED_DUMMY_FOLDER_PATH_DIST, &callbacks);
 
-	if (status == jm_status_error) {
-		printf("Failed to uncompress the file\n");
-		do_exit(CTEST_RETURN_FAIL);
-	} else {
-		printf("Succesfully uncompressed the file\n");
-		do_exit(CTEST_RETURN_SUCCESS);
-	}
+    if (status == jm_status_error) {
+        printf("Failed to uncompress the file\n");
+        do_exit(CTEST_RETURN_FAIL);
+    } else {
+        printf("Succesfully uncompressed the file\n");
+        do_exit(CTEST_RETURN_SUCCESS);
+    }
 }
 
 

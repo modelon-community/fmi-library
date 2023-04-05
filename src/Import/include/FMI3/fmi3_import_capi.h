@@ -40,18 +40,18 @@ Wrapper functions for the FMI 3.0 functions
  * @{
  */
 
-/**	\addtogroup fmi3_import_capi_const_destroy FMI 3.0 Constructor and Destructor
+/**    \addtogroup fmi3_import_capi_const_destroy FMI 3.0 Constructor and Destructor
  * \brief Functions for instantiating and freeing the container of the struct that is responsible for the FMI functions.
  *
- *	Before any of the FMI functions may be called, the construction function must instantiate a fmi_import_t module.
- *	After the fmi_import_t module has been succesfully instantiated, all the FMI functions can be called. To unload
- *	the FMI functions, the destroy functions shall be called.
+ *    Before any of the FMI functions may be called, the construction function must instantiate a fmi_import_t module.
+ *    After the fmi_import_t module has been succesfully instantiated, all the FMI functions can be called. To unload
+ *    the FMI functions, the destroy functions shall be called.
  *
- * 	\addtogroup fmi3_import_capi_me FMI 3.0 (ME) Model Exchange functions
+ *    \addtogroup fmi3_import_capi_me FMI 3.0 (ME) Model Exchange functions
  * \brief List of Model Exchange wrapper functions. Common functions are not listed.
- *	\addtogroup fmi3_import_capi_cs FMI 3.0 (CS) Co-Simulation functions
+ *    \addtogroup fmi3_import_capi_cs FMI 3.0 (CS) Co-Simulation functions
  * \brief List of Co-Simulation wrapper functions. Common functions are not listed.
- *	\addtogroup fmi3_import_capi_common FMI 3.0 (ME & CS) Common functions
+ *    \addtogroup fmi3_import_capi_common FMI 3.0 (ME & CS) Common functions
  * \brief List of wrapper functions that are in common for both Model Exchange and Co-Simulation.
  */
 

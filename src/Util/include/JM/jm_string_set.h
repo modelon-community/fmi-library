@@ -25,19 +25,19 @@
 extern "C" {
 #endif
 /** \file jm_string_set.h Definition of ::jm_string_set and supporting functions
-	*
-	* \addtogroup jm_utils
-	* @{
-	*    \addtogroup jm_string_set_group
-	* @}
-	*/
+    *
+    * \addtogroup jm_utils
+    * @{
+    *    \addtogroup jm_string_set_group
+    * @}
+    */
 
-	/** \addtogroup jm_string_set_group A set of strings
-	 @{
-	*/
+    /** \addtogroup jm_string_set_group A set of strings
+     @{
+    */
 
 /** 
-	\brief Set of string is based on a vector	
+    \brief Set of string is based on a vector
 
 */
 typedef struct jm_vector_jm_string jm_string_set; /* equivalent to "typedef jm_vector(jm_string) jm_string_set" which Doxygen does not understand */
@@ -113,7 +113,7 @@ static jm_string jm_string_set_put(jm_string_set* s, jm_string str) {
 }
 
 /** @}
-	*/
+    */
 
 #ifdef __cplusplus
 }

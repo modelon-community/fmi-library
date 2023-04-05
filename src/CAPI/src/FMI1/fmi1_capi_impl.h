@@ -37,65 +37,65 @@ extern "C" {
  * \brief C-API struct used as a placeholder for the FMI funktions and shared library handler. 
  */
 struct fmi1_capi_t {
-	const char* dllPath;
-	const char* modelIdentifier;
-	fmi1_callback_functions_t callBackFunctions;
+    const char* dllPath;
+    const char* modelIdentifier;
+    fmi1_callback_functions_t callBackFunctions;
 
-	jm_callbacks* callbacks;
-	fmi_util_options_t* options;
+    jm_callbacks* callbacks;
+    fmi_util_options_t* options;
 
-	DLL_HANDLE dllHandle;
+    DLL_HANDLE dllHandle;
 
-	fmi1_fmu_kind_enu_t standard;
+    fmi1_fmu_kind_enu_t standard;
 
-	fmi1_component_t					c;
+    fmi1_component_t                    c;
 
-	int debugMode;
+    int debugMode;
 
-	/* FMI common */
-	fmi1_get_version_ft					fmiGetVersion;
-	fmi1_set_debug_logging_ft			fmiSetDebugLogging;
-    fmi1_set_real_ft					fmiSetReal;
-    fmi1_set_integer_ft					fmiSetInteger;
-    fmi1_set_boolean_ft					fmiSetBoolean;
-    fmi1_set_string_ft					fmiSetString;
-	fmi1_get_real_ft					fmiGetReal;
-    fmi1_get_integer_ft					fmiGetInteger;
-    fmi1_get_boolean_ft					fmiGetBoolean;
-    fmi1_get_string_ft					fmiGetString;
+    /* FMI common */
+    fmi1_get_version_ft                    fmiGetVersion;
+    fmi1_set_debug_logging_ft            fmiSetDebugLogging;
+    fmi1_set_real_ft                    fmiSetReal;
+    fmi1_set_integer_ft                    fmiSetInteger;
+    fmi1_set_boolean_ft                    fmiSetBoolean;
+    fmi1_set_string_ft                    fmiSetString;
+    fmi1_get_real_ft                    fmiGetReal;
+    fmi1_get_integer_ft                    fmiGetInteger;
+    fmi1_get_boolean_ft                    fmiGetBoolean;
+    fmi1_get_string_ft                    fmiGetString;
 
-	/* FMI ME */
-    fmi1_get_model_typesPlatform_ft		fmiGetModelTypesPlatform;    
-    fmi1_instantiate_model_ft			fmiInstantiateModel;
-    fmi1_free_model_instance_ft			fmiFreeModelInstance;    
-    fmi1_set_time_ft					fmiSetTime;
-    fmi1_set_continuous_states_ft		fmiSetContinuousStates;
-    fmi1_completed_integrator_step_ft	fmiCompletedIntegratorStep;
-    fmi1_initialize_ft			 		fmiInitialize;
-    fmi1_get_derivatives_ft				fmiGetDerivatives;
-    fmi1_get_event_indicators_ft		fmiGetEventIndicators;
-    fmi1_event_update_ft				fmiEventUpdate;
-    fmi1_get_continuous_states_ft		fmiGetContinuousStates;
+    /* FMI ME */
+    fmi1_get_model_typesPlatform_ft        fmiGetModelTypesPlatform;    
+    fmi1_instantiate_model_ft            fmiInstantiateModel;
+    fmi1_free_model_instance_ft            fmiFreeModelInstance;    
+    fmi1_set_time_ft                    fmiSetTime;
+    fmi1_set_continuous_states_ft        fmiSetContinuousStates;
+    fmi1_completed_integrator_step_ft    fmiCompletedIntegratorStep;
+    fmi1_initialize_ft                    fmiInitialize;
+    fmi1_get_derivatives_ft                fmiGetDerivatives;
+    fmi1_get_event_indicators_ft        fmiGetEventIndicators;
+    fmi1_event_update_ft                fmiEventUpdate;
+    fmi1_get_continuous_states_ft        fmiGetContinuousStates;
     fmi1_get_nominal_continuousStates_ft fmiGetNominalContinuousStates;
-    fmi1_get_state_valueReferences_ft	fmiGetStateValueReferences;
-    fmi1_terminate_ft					fmiTerminate;
+    fmi1_get_state_valueReferences_ft    fmiGetStateValueReferences;
+    fmi1_terminate_ft                    fmiTerminate;
 
-	/* FMI CS */
-	fmi1_get_types_platform_ft			fmiGetTypesPlatform;   
-    fmi1_instantiate_slave_ft			fmiInstantiateSlave;
-    fmi1_initialize_slave_ft			fmiInitializeSlave;
-    fmi1_terminate_slave_ft				fmiTerminateSlave;
-    fmi1_reset_slave_ft					fmiResetSlave;
-    fmi1_free_slave_instance_ft			fmiFreeSlaveInstance;
-    fmi1_set_real_inputDerivatives_ft	fmiSetRealInputDerivatives;
-    fmi1_get_real_outputDerivatives_ft	fmiGetRealOutputDerivatives;
-    fmi1_do_step_ft						fmiDoStep;
-    fmi1_cancel_step_ft					fmiCancelStep;
-    fmi1_get_status_ft					fmiGetStatus;
-    fmi1_get_real_status_ft				fmiGetRealStatus;
-    fmi1_get_integer_status_ft			fmiGetIntegerStatus;
-    fmi1_get_boolean_status_ft			fmiGetBooleanStatus;
-    fmi1_get_string_status_ft			fmiGetStringStatus;
+    /* FMI CS */
+    fmi1_get_types_platform_ft            fmiGetTypesPlatform;   
+    fmi1_instantiate_slave_ft            fmiInstantiateSlave;
+    fmi1_initialize_slave_ft            fmiInitializeSlave;
+    fmi1_terminate_slave_ft                fmiTerminateSlave;
+    fmi1_reset_slave_ft                    fmiResetSlave;
+    fmi1_free_slave_instance_ft            fmiFreeSlaveInstance;
+    fmi1_set_real_inputDerivatives_ft    fmiSetRealInputDerivatives;
+    fmi1_get_real_outputDerivatives_ft    fmiGetRealOutputDerivatives;
+    fmi1_do_step_ft                        fmiDoStep;
+    fmi1_cancel_step_ft                    fmiCancelStep;
+    fmi1_get_status_ft                    fmiGetStatus;
+    fmi1_get_real_status_ft                fmiGetRealStatus;
+    fmi1_get_integer_status_ft            fmiGetIntegerStatus;
+    fmi1_get_boolean_status_ft            fmiGetBooleanStatus;
+    fmi1_get_string_status_ft            fmiGetStringStatus;
 
 };
 

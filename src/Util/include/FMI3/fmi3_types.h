@@ -16,17 +16,17 @@
 #ifndef FMI3_TYPES_H_
 #define FMI3_TYPES_H_
 /** \file fmi3_types.h
-	Transformation of the standard FMI type names into fmi3_ prefixed.
+    Transformation of the standard FMI type names into fmi3_ prefixed.
 */
 /**
-	\addtogroup jm_utils
-	@{
-		\addtogroup fmi3_utils
-	@}
+    \addtogroup jm_utils
+    @{
+        \addtogroup fmi3_utils
+    @}
 */
 
-/**	\addtogroup fmi3_utils Functions and types supporting FMI 3.0 processing.
-	@{
+/**    \addtogroup fmi3_utils Functions and types supporting FMI 3.0 processing.
+    @{
 */
 /** \name Renaming of typedefs 
 @{*/
@@ -61,8 +61,8 @@
 
 /** FMI boolean constants.*/
 typedef enum {
-	fmi3_true  = fmi3True,
-	fmi3_false = fmi3False
+    fmi3_true  = fmi3True,
+    fmi3_false = fmi3False
 } fmi3_boolean_enu_t;
 
 #undef fmi3True
@@ -70,15 +70,15 @@ typedef enum {
 
 /** FMI clock constants. */
 typedef enum {
-	fmi3_clock_active   = fmi3ClockActive,
-	fmi3_clock_inactive = fmi3ClockInactive
+    fmi3_clock_active   = fmi3ClockActive,
+    fmi3_clock_inactive = fmi3ClockInactive
 } fmi3_clock_enu_t;
 
 #undef fmi3ClockActive
 #undef fmi3ClockInActive
 
-/**	
-	@}
+/**
+    @}
 */
 
 #undef fmi3Instance

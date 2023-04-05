@@ -93,7 +93,7 @@ FMILIB_EXPORT const char* fmi1_import_get_last_error(fmi1_import_t* fmu);
 \brief Clear the error message.
 * @param fmu An FMU object as returned by fmi1_import_parse_xml().
 * @return 0 if further processing is possible. If it returns 1 then the 
-*	error was not recoverable. The \p fmu object should then be freed and recreated.
+*    error was not recoverable. The \p fmu object should then be freed and recreated.
 */
 FMILIB_EXPORT int fmi1_import_clear_last_error(fmi1_import_t* fmu);
 
@@ -201,8 +201,8 @@ FMILIB_EXPORT double fmi1_import_get_default_experiment_tolerance(fmi1_import_t*
 FMILIB_EXPORT fmi1_fmu_kind_enu_t fmi1_import_get_fmu_kind(fmi1_import_t* fmu);
 
 /** \brief Get the structure with capability flags.
-	@return A pointer to the fmi1_import_capabilities_t allocated within the library. 
-			Note that for model exchange FMUs the values of all the flags are always default.
+    @return A pointer to the fmi1_import_capabilities_t allocated within the library. 
+            Note that for model exchange FMUs the values of all the flags are always default.
 */
 FMILIB_EXPORT fmi1_import_capabilities_t* fmi1_import_get_capabilities(fmi1_import_t* fmu);
 
@@ -213,9 +213,9 @@ FMILIB_EXPORT fmi1_import_type_definitions_t* fmi1_import_get_type_definitions(f
 FMILIB_EXPORT fmi1_import_unit_definitions_t* fmi1_import_get_unit_definitions(fmi1_import_t* fmu);
 
 /** 
-	\brief Get the direct dependency information
+    \brief Get the direct dependency information
 
-	@return A variable list is returned for variables with causality Output. Null pointer for others. */
+    @return A variable list is returned for variables with causality Output. Null pointer for others. */
 FMILIB_EXPORT fmi1_import_variable_list_t* fmi1_import_get_direct_dependency(fmi1_import_t* fmu, fmi1_import_variable_t*);
 
 /** \brief Get the variable with the same value reference that is not an alias*/

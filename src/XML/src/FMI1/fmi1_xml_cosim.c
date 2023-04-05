@@ -52,7 +52,7 @@ int fmi1_xml_get_manual_start(fmi1_xml_model_description_t* md){
 int fmi1_xml_handle_Implementation(fmi1_xml_parser_context_t *context, const char* data) {
     fmi1_xml_model_description_t* md = context->modelDescription;
     if(!data) {
-		jm_log_info(context->callbacks, module, "Processing implementation element (co-simulation FMU detected)");
+        jm_log_info(context->callbacks, module, "Processing implementation element (co-simulation FMU detected)");
 
         md->fmuKind = fmi1_fmu_kind_enu_unknown; /* Explicitly set the "unknown" FMU kind here, in order to 
                                                   * detect if the required CoSimulation_StandAlone and 

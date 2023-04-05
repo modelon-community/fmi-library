@@ -33,9 +33,9 @@ void mylogger(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_level, j
 
 void do_exit(int code)
 {
-	printf("Press 'Enter' to exit\n");
-/*	getchar(); */
-	exit(code);
+    printf("Press 'Enter' to exit\n");
+/*    getchar(); */
+    exit(code);
 }
 
 void print_int(int i,void* data) {
@@ -108,10 +108,10 @@ void printTypeInfo(fmi1_import_variable_typedef_t* vt) {
         printf("Min %d, max %d\n", min, max);
         {
             size_t ni;
-			unsigned i;
+            unsigned i;
             ni = fmi1_import_get_enum_type_size(et);
-			i = (unsigned)(ni);
-			assert( i == ni);
+            i = (unsigned)(ni);
+            assert( i == ni);
             printf("There are %u items \n",(unsigned)ni);
             for(i = 0; i < ni; i++) {
                 printf("[%u] %s (%s) \n", (unsigned)i+1, fmi1_import_get_enum_type_item_name(et, i), fmi1_import_get_enum_type_item_description(et, i));
@@ -126,33 +126,33 @@ void printTypeInfo(fmi1_import_variable_typedef_t* vt) {
 }
 
 void testVariableSearch(fmi1_import_t* fmu,
-	fmi1_import_variable_t* v) {
+    fmi1_import_variable_t* v) {
 
-		const char * a_name = fmi1_import_get_variable_name(v);
-		fmi1_import_variable_t* found = fmi1_import_get_variable_by_name(fmu, a_name);
-		if(found != v) {
-			printf("Searching by name %s found var %s\n", a_name, found?fmi1_import_get_variable_name(found):"nothing");
-			do_exit(1);
-		}
-		else {
-			printf("Searching by name worked fine\n");
-		}
-		found = fmi1_import_get_variable_by_vr(fmu, fmi1_import_get_variable_base_type(v),fmi1_import_get_variable_vr(v));
-		if(!found) {
-			printf("Searching by vr failed for variable '%s'\n", a_name);
-			do_exit(1);
-		}
-		else if(fmi1_import_get_variable_base_type(v) != fmi1_import_get_variable_base_type(found)) {			
-			printf("Searching %s found var %s", a_name, fmi1_import_get_variable_name(found));
-			do_exit(1);
-		}
-		else if(fmi1_import_get_variable_vr(v) != fmi1_import_get_variable_vr(found)) {			
-			printf("Searching %s found var %s", a_name, fmi1_import_get_variable_name(found));
-			do_exit(1);
-		}
-		else {
-			printf("Searching by vr worked fine\n");
-		}
+        const char * a_name = fmi1_import_get_variable_name(v);
+        fmi1_import_variable_t* found = fmi1_import_get_variable_by_name(fmu, a_name);
+        if(found != v) {
+            printf("Searching by name %s found var %s\n", a_name, found?fmi1_import_get_variable_name(found):"nothing");
+            do_exit(1);
+        }
+        else {
+            printf("Searching by name worked fine\n");
+        }
+        found = fmi1_import_get_variable_by_vr(fmu, fmi1_import_get_variable_base_type(v),fmi1_import_get_variable_vr(v));
+        if(!found) {
+            printf("Searching by vr failed for variable '%s'\n", a_name);
+            do_exit(1);
+        }
+        else if(fmi1_import_get_variable_base_type(v) != fmi1_import_get_variable_base_type(found)) {            
+            printf("Searching %s found var %s", a_name, fmi1_import_get_variable_name(found));
+            do_exit(1);
+        }
+        else if(fmi1_import_get_variable_vr(v) != fmi1_import_get_variable_vr(found)) {            
+            printf("Searching %s found var %s", a_name, fmi1_import_get_variable_name(found));
+            do_exit(1);
+        }
+        else {
+            printf("Searching by vr worked fine\n");
+        }
 }
 
 void printVariableInfo(fmi1_import_t* fmu,
@@ -214,8 +214,8 @@ void printVariableInfo(fmi1_import_t* fmu,
     {
         fmi1_import_variable_list_t* vl = fmi1_import_get_variable_aliases(fmu, v);
         size_t n = fmi1_import_get_variable_list_size(vl);
-		unsigned i = (unsigned)n;
-		assert( n == i);
+        unsigned i = (unsigned)n;
+        assert( n == i);
         if(n>1) {
             printf("Listing aliases: \n");
             for(i = 0;i<n;i++)
@@ -223,21 +223,21 @@ void printVariableInfo(fmi1_import_t* fmu,
         }
         fmi1_import_free_variable_list(vl);
     }
-	{
-		fmi1_import_variable_list_t* vl = fmi1_import_get_direct_dependency( fmu, v);
+    {
+        fmi1_import_variable_list_t* vl = fmi1_import_get_direct_dependency( fmu, v);
         size_t n = 0;
-		unsigned i;
-		if(vl) 
-			n = fmi1_import_get_variable_list_size(vl);
-		i = (unsigned)n;
-		assert( n == i);		
+        unsigned i;
+        if(vl) 
+            n = fmi1_import_get_variable_list_size(vl);
+        i = (unsigned)n;
+        assert( n == i);        
         if(vl) {
             printf("Listing direct dependencies: \n");
             for(i = 0;i<n;i++)
                 printf("\t%s\n",fmi1_import_get_variable_name(fmi1_import_get_variable(vl, i)));
         }
         fmi1_import_free_variable_list(vl);
-	}
+    }
 }
 
 void printCapabilitiesInfo(fmi1_import_capabilities_t* capabilities) {
@@ -257,43 +257,43 @@ int main(int argc, char *argv[])
 {
     clock_t start, stop;
     double t = 0.0;
-	const char* tmpPath;
-	jm_callbacks callbacks;
-	fmi_import_context_t* context;
+    const char* tmpPath;
+    jm_callbacks callbacks;
+    fmi_import_context_t* context;
 
-	fmi1_import_t* fmu;
+    fmi1_import_t* fmu;
 
-	if(argc < 2) {
-		printf("Usage: %s <path to a dir with modelDescription.xml>\n", argv[0]);
-		do_exit(1);
-	}
+    if(argc < 2) {
+        printf("Usage: %s <path to a dir with modelDescription.xml>\n", argv[0]);
+        do_exit(1);
+    }
 
-	tmpPath = argv[1];
+    tmpPath = argv[1];
 
-	callbacks.malloc = malloc;
+    callbacks.malloc = malloc;
     callbacks.calloc = calloc;
     callbacks.realloc = realloc;
     callbacks.free = free;
     callbacks.logger = mylogger;
     callbacks.context = 0;
-	callbacks.log_level = jm_log_level_debug;
+    callbacks.log_level = jm_log_level_debug;
 
 #ifdef FMILIB_GENERATE_BUILD_STAMP
-	printf("Library build stamp:\n%s\n", fmilib_get_build_stamp());
+    printf("Library build stamp:\n%s\n", fmilib_get_build_stamp());
 #endif
 
-	context = fmi_import_allocate_context(&callbacks);
+    context = fmi_import_allocate_context(&callbacks);
 
-	start = clock();
-	fmu = fmi1_import_parse_xml(context, tmpPath);
+    start = clock();
+    fmu = fmi1_import_parse_xml(context, tmpPath);
 
-	if(!fmu) {
-		printf("Error parsing XML, exiting\n");
+    if(!fmu) {
+        printf("Error parsing XML, exiting\n");
         fmi_import_free_context(context);       
-		do_exit(1);
-	}
+        do_exit(1);
+    }
 
-	    /* Stop timer */
+        /* Stop timer */
     stop = clock();
     t = (double) (stop-start)/CLOCKS_PER_SEC;
 
@@ -323,9 +323,9 @@ int main(int argc, char *argv[])
     {
         fmi1_import_vendor_list_t* vl = fmi1_import_get_vendor_list(fmu);
         size_t nv = fmi1_import_get_number_of_vendors(vl);
-		unsigned i;
-		i = (unsigned)nv;
-		assert( nv == i);		
+        unsigned i;
+        i = (unsigned)nv;
+        assert( nv == i);        
         printf("There are %u tool annotation records \n", (unsigned)nv);
         for( i = 0; i < nv; i++) {
             fmi1_import_vendor_t* vendor = fmi1_import_get_vendor(vl, i);
@@ -388,34 +388,34 @@ int main(int argc, char *argv[])
     }
     {
         size_t nv;
-		unsigned i;
+        unsigned i;
         fmi1_import_variable_list_t* vl = fmi1_import_get_variable_list(fmu);
 
         assert(vl);
         nv = fmi1_import_get_variable_list_size(vl);
-		i = (unsigned)nv;
-		assert(i == nv);
-		printf("There are %u variables in total \n",(unsigned)nv);
+        i = (unsigned)nv;
+        assert(i == nv);
+        printf("There are %u variables in total \n",(unsigned)nv);
         for(i = 0; i < nv; i++) {
             fmi1_import_variable_t* var = fmi1_import_get_variable(vl, i);
             if(!var) {
-				printf("Something wrong with variable %d \n",i);
-				do_exit(1);
-			}
+                printf("Something wrong with variable %d \n",i);
+                do_exit(1);
+            }
             else {
                 printVariableInfo(fmu, var);
-				testVariableSearch(fmu, var);
-			}
+                testVariableSearch(fmu, var);
+            }
         }
         fmi1_import_free_variable_list(vl);
     }
 
-	fmi1_import_free(fmu);
-	fmi_import_free_context(context);
-	
-	printf("Everything seems to be OK since you got this far=)!\n");
+    fmi1_import_free(fmu);
+    fmi_import_free_context(context);
+    
+    printf("Everything seems to be OK since you got this far=)!\n");
 
-	do_exit(0);
+    do_exit(0);
 }
 
 

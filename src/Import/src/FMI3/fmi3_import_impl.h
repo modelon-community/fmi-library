@@ -37,13 +37,13 @@ extern "C" {
  * 'capi' contains references to the FMU's loaded CAPI functions. Is NULL if never loaded or terminated.
  */
 struct fmi3_import_t {
-	char* dirPath;
-	char* resourcePath;
-	jm_callbacks* callbacks;
-	fmi3_xml_model_description_t* md;
-	fmi3_capi_t* capi;
-	jm_vector(char) logMessageBufferCoded;
-	jm_vector(char) logMessageBufferExpanded;
+    char* dirPath;
+    char* resourcePath;
+    jm_callbacks* callbacks;
+    fmi3_xml_model_description_t* md;
+    fmi3_capi_t* capi;
+    jm_vector(char) logMessageBufferCoded;
+    jm_vector(char) logMessageBufferExpanded;
 };
 
 #ifdef __cplusplus

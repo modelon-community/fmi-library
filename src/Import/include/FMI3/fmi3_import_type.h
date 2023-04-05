@@ -29,11 +29,11 @@ extern "C" {
 #endif
 
 /**
-	\addtogroup fmi3_import
-	@{
-	\addtogroup fmi3_import_typedef Support for processing variable types
-	@}
-	\addtogroup fmi3_import_typedef Support for processing variable types
+    \addtogroup fmi3_import
+    @{
+    \addtogroup fmi3_import_typedef Support for processing variable types
+    @}
+    \addtogroup fmi3_import_typedef Support for processing variable types
   @{
 */
 /**@name   Type definitions supporting structures*/
@@ -54,10 +54,10 @@ typedef struct fmi3_xml_type_definitions_t fmi3_import_type_definitions_t;
 FMILIB_EXPORT unsigned int fmi3_import_get_type_definition_number(fmi3_import_type_definitions_t* td);
 
 /** \brief Get a type definition specified by the index. Parameter 'index' does not reflect the index in the XML, but the
-		index in an internal list of type definitions.
-	@param td the type definition list object
-	@param index the index of type definition. Must be less than the number returned by #fmi3_import_get_type_definition_number
-	@return A type definition object or NULL if index is out of range.
+        index in an internal list of type definitions.
+    @param td the type definition list object
+    @param index the index of type definition. Must be less than the number returned by #fmi3_import_get_type_definition_number
+    @return A type definition object or NULL if index is out of range.
 */
 FMILIB_EXPORT fmi3_import_variable_typedef_t* fmi3_import_get_typedef(fmi3_import_type_definitions_t* td, unsigned int index);
 
@@ -75,36 +75,36 @@ FMILIB_EXPORT fmi3_base_type_enu_t fmi3_import_get_base_type(fmi3_import_variabl
 /* Boolean and String has no extra attributes -> not needed*/
 
 /** \brief Cast the general type definition object to an object with a specific base type 
-	@return Pointer to the specific type object or NULL if base type does not match.
+    @return Pointer to the specific type object or NULL if base type does not match.
 */
 FMILIB_EXPORT fmi3_import_float_typedef_t* fmi3_import_get_type_as_float(fmi3_import_variable_typedef_t*);
 
 /** \brief Cast the general type definition object to an object with a specific base type 
-	@return Pointer to the specific type object or NULL if base type does not match.
+    @return Pointer to the specific type object or NULL if base type does not match.
 */
 FMILIB_EXPORT fmi3_import_int_typedef_t* fmi3_import_get_type_as_int(fmi3_import_variable_typedef_t*);
 
 /** \brief Cast the general type definition object to an object with a specific base type 
-	@return Pointer to the specific type object or NULL if base type does not match.
+    @return Pointer to the specific type object or NULL if base type does not match.
 */
 FMILIB_EXPORT fmi3_import_enumeration_typedef_t* fmi3_import_get_type_as_enum(fmi3_import_variable_typedef_t*);
 
 /** \brief Get the quantity associated with the type definition.
 
-	@return The quantity, or NULL-pointer if quantity is not defined (NULL-pointer is always returned for strings and
-	  booleans).
+    @return The quantity, or NULL-pointer if quantity is not defined (NULL-pointer is always returned for strings and
+      booleans).
 */
 FMILIB_EXPORT const char* fmi3_import_get_type_quantity(fmi3_import_variable_typedef_t*);
 
 /** \brief Get minimal value for the type.
 
-	@return Either the value specified in the XML file or negated DBL_MAX as defined in <float.h>
+    @return Either the value specified in the XML file or negated DBL_MAX as defined in <float.h>
 */
 FMILIB_EXPORT fmi3_float64_t fmi3_import_get_float64_type_min(fmi3_import_float_typedef_t*);
 
 /** \brief Get maximum value for the type
 
-	@return Either the value specified in the XML file or DBL_MAX as defined in <float.h>
+    @return Either the value specified in the XML file or DBL_MAX as defined in <float.h>
 */
 FMILIB_EXPORT fmi3_float64_t fmi3_import_get_float64_type_max(fmi3_import_float_typedef_t*);
 
@@ -121,20 +121,20 @@ FMILIB_EXPORT int fmi3_import_get_float64_type_is_relative_quantity(fmi3_import_
 FMILIB_EXPORT int fmi3_import_get_float64_type_is_unbounded(fmi3_import_float_typedef_t*);
 
 /**
-	\brief Get display unit associated with a type definition.
-	@return Display unit object of NULL if none was given.
+    \brief Get display unit associated with a type definition.
+    @return Display unit object of NULL if none was given.
 */
 FMILIB_EXPORT fmi3_import_display_unit_t* fmi3_import_get_float64_type_display_unit(fmi3_import_float_typedef_t*);
 
 /** \brief Get minimal value for the type.
 
-	@return Either the value specified in the XML file or negated FLT_MAX as defined in <float.h>
+    @return Either the value specified in the XML file or negated FLT_MAX as defined in <float.h>
 */
 FMILIB_EXPORT fmi3_float32_t fmi3_import_get_float32_type_min(fmi3_import_float_typedef_t*);
 
 /** \brief Get maximum value for the type
 
-	@return Either the value specified in the XML file or FLT_MAX as defined in <float.h>
+    @return Either the value specified in the XML file or FLT_MAX as defined in <float.h>
 */
 FMILIB_EXPORT fmi3_float32_t fmi3_import_get_float32_type_max(fmi3_import_float_typedef_t*);
 
@@ -151,100 +151,100 @@ FMILIB_EXPORT int fmi3_import_get_float32_type_is_relative_quantity(fmi3_import_
 FMILIB_EXPORT int fmi3_import_get_float32_type_is_unbounded(fmi3_import_float_typedef_t*);
 
 /**
-	\brief Get display unit associated with a type definition.
-	@return Display unit object of NULL if none was given.
+    \brief Get display unit associated with a type definition.
+    @return Display unit object of NULL if none was given.
 */
 FMILIB_EXPORT fmi3_import_display_unit_t* fmi3_import_get_float32_type_display_unit(fmi3_import_float_typedef_t*);
 
 /** \brief Get maximum value for the type
-	@return Either the value specified in the XML file or INT64_MAX as defined in <limits.h>
+    @return Either the value specified in the XML file or INT64_MAX as defined in <limits.h>
 */
 FMILIB_EXPORT fmi3_int64_t fmi3_import_get_int64_type_max(fmi3_import_int_typedef_t*);
 
 /** \brief Get minimal value for the type.
-	@return Either the value specified in the XML file or INT64_MIN as defined in <limits.h>
+    @return Either the value specified in the XML file or INT64_MIN as defined in <limits.h>
 */
 FMILIB_EXPORT fmi3_int64_t fmi3_import_get_int64_type_min(fmi3_import_int_typedef_t*);
 
 /** \brief Get maximum value for the type
-	@return Either the value specified in the XML file or INT32_MAX as defined in <limits.h>
+    @return Either the value specified in the XML file or INT32_MAX as defined in <limits.h>
 */
 FMILIB_EXPORT fmi3_int32_t fmi3_import_get_int32_type_max(fmi3_import_int_typedef_t*);
 
 /** \brief Get minimal value for the type.
-	@return Either the value specified in the XML file or INT32_MIN as defined in <limits.h>
+    @return Either the value specified in the XML file or INT32_MIN as defined in <limits.h>
 */
 FMILIB_EXPORT fmi3_int32_t fmi3_import_get_int32_type_min(fmi3_import_int_typedef_t*);
 
 /** \brief Get maximum value for the type
-	@return Either the value specified in the XML file or INT16_MAX as defined in <limits.h>
+    @return Either the value specified in the XML file or INT16_MAX as defined in <limits.h>
 */
 FMILIB_EXPORT fmi3_int16_t fmi3_import_get_int16_type_max(fmi3_import_int_typedef_t*);
 
 /** \brief Get minimal value for the type.
-	@return Either the value specified in the XML file or INT16_MIN as defined in <limits.h>
+    @return Either the value specified in the XML file or INT16_MIN as defined in <limits.h>
 */
 FMILIB_EXPORT fmi3_int16_t fmi3_import_get_int16_type_min(fmi3_import_int_typedef_t*);
 
 /** \brief Get maximum value for the type
-	@return Either the value specified in the XML file or INT8_MAX as defined in <limits.h>
+    @return Either the value specified in the XML file or INT8_MAX as defined in <limits.h>
 */
 FMILIB_EXPORT fmi3_int8_t fmi3_import_get_int8_type_max(fmi3_import_int_typedef_t*);
 
 /** \brief Get minimal value for the type.
-	@return Either the value specified in the XML file or INT8_MIN as defined in <limits.h>
+    @return Either the value specified in the XML file or INT8_MIN as defined in <limits.h>
 */
 FMILIB_EXPORT fmi3_int8_t fmi3_import_get_int8_type_min(fmi3_import_int_typedef_t*);
 
 /** \brief Get maximum value for the type
-	@return Either the value specified in the XML file or UINT64_MAX as defined in <limits.h>
+    @return Either the value specified in the XML file or UINT64_MAX as defined in <limits.h>
 */
 FMILIB_EXPORT fmi3_uint64_t fmi3_import_get_uint64_type_max(fmi3_import_int_typedef_t*);
 
 /** \brief Get minimal value for the type.
-	@return Either the value specified in the XML file or 0
+    @return Either the value specified in the XML file or 0
 */
 FMILIB_EXPORT fmi3_uint64_t fmi3_import_get_uint64_type_min(fmi3_import_int_typedef_t*);
 
 /** \brief Get maximum value for the type
-	@return Either the value specified in the XML file or UINT32_MAX as defined in <limits.h>
+    @return Either the value specified in the XML file or UINT32_MAX as defined in <limits.h>
 */
 FMILIB_EXPORT fmi3_uint32_t fmi3_import_get_uint32_type_max(fmi3_import_int_typedef_t*);
 
 /** \brief Get minimal value for the type.
-	@return Either the value specified in the XML file or 0
+    @return Either the value specified in the XML file or 0
 */
 FMILIB_EXPORT fmi3_uint32_t fmi3_import_get_uint32_type_min(fmi3_import_int_typedef_t*);
 
 /** \brief Get maximum value for the type
-	@return Either the value specified in the XML file or UINT16_MAX as defined in <limits.h>
+    @return Either the value specified in the XML file or UINT16_MAX as defined in <limits.h>
 */
 FMILIB_EXPORT fmi3_uint16_t fmi3_import_get_uint16_type_max(fmi3_import_int_typedef_t*);
 
 /** \brief Get minimal value for the type.
-	@return Either the value specified in the XML file or 0
+    @return Either the value specified in the XML file or 0
 */
 FMILIB_EXPORT fmi3_uint16_t fmi3_import_get_uint16_type_min(fmi3_import_int_typedef_t*);
 
 /** \brief Get maximum value for the type
-	@return Either the value specified in the XML file or UINT8_MAX as defined in <limits.h>
+    @return Either the value specified in the XML file or UINT8_MAX as defined in <limits.h>
 */
 FMILIB_EXPORT fmi3_uint8_t fmi3_import_get_uint8_type_max(fmi3_import_int_typedef_t*);
 
 /** \brief Get minimal value for the type.
-	@return Either the value specified in the XML file or 0
+    @return Either the value specified in the XML file or 0
 */
 FMILIB_EXPORT fmi3_uint8_t fmi3_import_get_uint8_type_min(fmi3_import_int_typedef_t*);
 
 /** \brief Get minimal value for the type.
-	
-	@return Either the value specified in the XML file or 0
+
+    @return Either the value specified in the XML file or 0
 */
 FMILIB_EXPORT unsigned int fmi3_import_get_enum_type_min(fmi3_import_enumeration_typedef_t*);
 
 /** \brief Get maximum value for the type.
-	
-	@return Either the value specified in the XML file or INT_MAX as defined in <limits.h>
+
+    @return Either the value specified in the XML file or INT_MAX as defined in <limits.h>
 */
 FMILIB_EXPORT unsigned int fmi3_import_get_enum_type_max(fmi3_import_enumeration_typedef_t*);
 

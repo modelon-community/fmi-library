@@ -6,12 +6,12 @@ set(BUILD_SHARED_LIBS OFF)
 set(SKIP_INSTALL_HEADERS ON)
 set(SKIP_INSTALL_FILES ON)
 if(NOT FMILIB_INSTALL_SUBLIBS)
-	set(SKIP_INSTALL_LIBRARIES ON)
+  set(SKIP_INSTALL_LIBRARIES ON)
 endif()
 add_subdirectory("${FMILIB_THIRDPARTYLIBS}/Zlib/zlib-1.2.6" "${FMILibrary_BINARY_DIR}/zlib")
 
 if(CMAKE_CL_64)
-	set_target_properties(zlib PROPERTIES STATIC_LIBRARY_FLAGS "/machine:x64")
+  set_target_properties(zlib PROPERTIES STATIC_LIBRARY_FLAGS "/machine:x64")
 endif()
 
 if(CMAKE_HOST_APPLE)
@@ -46,7 +46,7 @@ endif(WIN32)
 
 set(HEADERS
   ${FMILIB_THIRDPARTYLIBS}/Minizip/minizip/crypt.h
-  ${FMILIB_THIRDPARTYLIBS}/Minizip/minizip/ioapi.h  
+  ${FMILIB_THIRDPARTYLIBS}/Minizip/minizip/ioapi.h
   ${FMILIB_THIRDPARTYLIBS}/Minizip/minizip/miniunz.h
   #${FMILIB_THIRDPARTYLIBS}/Minizip/minizip/mztools.h
   ${FMILIB_THIRDPARTYLIBS}/Minizip/minizip/unzip.h
@@ -61,9 +61,8 @@ add_library(minizip ${SOURCE} ${HEADERS})
 target_link_libraries(minizip zlib)
 
 if(FMILIB_INSTALL_SUBLIBS)
-	install(TARGETS minizip
+  install(TARGETS minizip
         ARCHIVE DESTINATION lib
-        LIBRARY DESTINATION lib 
-	)
+        LIBRARY DESTINATION lib
+  )
 endif()
-

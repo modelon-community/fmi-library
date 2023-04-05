@@ -72,15 +72,15 @@ struct fmi2_xml_variable_type_base_t {
     fmi2_xml_type_struct_kind_enu_t structKind; /* the actual (sub) type */
     fmi2_base_type_enu_t baseType;              /* the FMI base type */
     char isRelativeQuantity;                    /* relativeQuantity flag (only used in fmi2_xml_real_type_props_t) */
-	char isUnbounded;                           /* unbounded flag        (only used in fmi2_xml_real_type_props_t) */
+    char isUnbounded;                           /* unbounded flag        (only used in fmi2_xml_real_type_props_t) */
 
     fmi2_xml_variable_type_base_t* next;        /* should only be used for deallocation */
 };
 
 /*
-	Variable type definition is general and is used for all types.
-	This is done to enable easy handling of SimpleType XML element
-	(specific type element comes next).
+    Variable type definition is general and is used for all types.
+    This is done to enable easy handling of SimpleType XML element
+    (specific type element comes next).
 */
 struct fmi2_xml_variable_typedef_t {
     fmi2_xml_variable_type_base_t super;
@@ -113,16 +113,16 @@ typedef fmi2_xml_variable_type_base_t fmi2_xml_bool_type_props_t;
 
 typedef struct fmi2_xml_enum_type_item_t {
     jm_string itemName;
-	int value;
+    int value;
     char itemDesciption[1];
 } fmi2_xml_enum_type_item_t;
 
 static int fmi1_xml_compare_enum_val (const void* first, const void* second) {
-	const jm_named_ptr* a = first;
-	const jm_named_ptr* b = second;
-	fmi2_xml_enum_type_item_t* ai = a->ptr;
-	fmi2_xml_enum_type_item_t* bi = b->ptr;
-	return (ai->value - bi->value);
+    const jm_named_ptr* a = first;
+    const jm_named_ptr* b = second;
+    fmi2_xml_enum_type_item_t* ai = a->ptr;
+    fmi2_xml_enum_type_item_t* bi = b->ptr;
+    return (ai->value - bi->value);
 }
 
 typedef struct fmi2_xml_enum_variable_props_t {
@@ -135,7 +135,7 @@ typedef struct fmi2_xml_enum_variable_props_t {
 } fmi2_xml_enum_variable_props_t;
 
 typedef struct fmi2_xml_enum_typedef_props_t {
-	fmi2_xml_enum_variable_props_t base;
+    fmi2_xml_enum_variable_props_t base;
     jm_vector(jm_named_ptr) enumItems;
 } fmi2_xml_enum_typedef_props_t;
 

@@ -52,9 +52,9 @@ extern "C" {
  @{
  */
 
-/**	\addtogroup fmi3_import_init Constuction, destruction and error handling
- * 	\addtogroup fmi3_import_gen General information retrieval
- *	\addtogroup fmi3_import_capi Interface to the standard FMI 3.0 "C" API
+/**    \addtogroup fmi3_import_init Constuction, destruction and error handling
+ *    \addtogroup fmi3_import_gen General information retrieval
+ *    \addtogroup fmi3_import_capi Interface to the standard FMI 3.0 "C" API
  *  \brief Convenient functions for calling the FMI functions. This interface wrappes the "C" API.
  */
  /** @} */
@@ -83,7 +83,7 @@ FMILIB_EXPORT const char* fmi3_import_get_last_error(fmi3_import_t* fmu);
 \brief Clear the error message.
 * @param fmu An FMU object as returned by fmi3_import_parse_xml().
 * @return 0 if further processing is possible. If it returns 1 then the
-*	error was not recoverable. The \p fmu object should then be freed and recreated.
+*    error was not recoverable. The \p fmu object should then be freed and recreated.
 */
 FMILIB_EXPORT int fmi3_import_clear_last_error(fmi3_import_t* fmu);
 
@@ -241,7 +241,7 @@ FMILIB_EXPORT fmi3_import_variable_list_t* fmi3_import_get_variable_aliases(fmi3
 /** \brief Get the list of all the variables in the model.
 * @param fmu An FMU object as returned by fmi3_import_parse_xml().
 * @param sortOrder Specifies the order of the variables in the list:
-		0 - original order as found in the XML file; 1 - sorted alfabetically by variable name; 2 sorted by types/value references.
+        0 - original order as found in the XML file; 1 - sorted alfabetically by variable name; 2 sorted by types/value references.
 * @return a variable list with all the variables in the model.
 *
 * Note that variable lists are allocated dynamically and must be freed when not needed any longer.
@@ -283,19 +283,19 @@ FMILIB_EXPORT size_t fmi3_import_get_source_files_cs_num(fmi3_import_t* fmu);
 FMILIB_EXPORT const char* fmi3_import_get_source_file_cs(fmi3_import_t* fmu, size_t index);
 
 /**
-	\brief Get variable by variable name.
-	\param fmu - An fmu object as returned by fmi3_import_parse_xml().
-	\param name - variable name
-	\return variable pointer.
+    \brief Get variable by variable name.
+    \param fmu - An fmu object as returned by fmi3_import_parse_xml().
+    \param name - variable name
+    \return variable pointer.
 */
 FMILIB_EXPORT fmi3_import_variable_t* fmi3_import_get_variable_by_name(fmi3_import_t* fmu, const char* name);
 
 /**
-	\brief Get variable by value reference.
-	\param fmu - An fmu object as returned by fmi3_import_parse_xml().
-	\param baseType - basic data type
-	\param vr - value reference
-	\return variable pointer.
+    \brief Get variable by value reference.
+    \param fmu - An fmu object as returned by fmi3_import_parse_xml().
+    \param baseType - basic data type
+    \param vr - value reference
+    \return variable pointer.
 */
 FMILIB_EXPORT fmi3_import_variable_t* fmi3_import_get_variable_by_vr(fmi3_import_t* fmu, fmi3_base_type_enu_t baseType, fmi3_value_reference_t vr);
 

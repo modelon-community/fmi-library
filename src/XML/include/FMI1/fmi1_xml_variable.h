@@ -29,14 +29,14 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-		/**
-	\addtogroup fmi1_xml
-	@{
-	\addtogroup fmi1_xml_variables Functions for handling variable definitions.
-	@}
-	\addtogroup fmi1_xml_variables Functions for handling variable definitions.
-	@{
-	*/
+        /**
+    \addtogroup fmi1_xml
+    @{
+    \addtogroup fmi1_xml_variables Functions for handling variable definitions.
+    @}
+    \addtogroup fmi1_xml_variables Functions for handling variable definitions.
+    @{
+    */
 const char* fmi1_xml_get_variable_name(fmi1_xml_variable_t*);
 const char* fmi1_xml_get_variable_description(fmi1_xml_variable_t*);
 

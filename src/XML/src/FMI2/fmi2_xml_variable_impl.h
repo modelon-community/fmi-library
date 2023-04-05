@@ -30,9 +30,9 @@ extern "C" {
 struct fmi2_xml_variable_t {
     fmi2_xml_variable_type_base_t* type; /** \brief Type information of the variable */
 
-    const char* description;				 /** \brief Associate description */
+    const char* description;                 /** \brief Associate description */
 
-	size_t originalIndex;					/** \brief Index in the model description */
+    size_t originalIndex;                    /** \brief Index in the model description */
 
     /* NB: before parsing of <ModelVariables> has finished,
            derivativeOf and previous are stored as integer indices cast to pointers,
@@ -40,7 +40,7 @@ struct fmi2_xml_variable_t {
     fmi2_xml_variable_t *derivativeOf;      /** \brief Only for continuous Real variables. If non-NULL, the variable that this is the derivative of. */
     fmi2_xml_variable_t *previous;          /** \brief If non-NULL, the variable that holds the value of this variable at the previous super-dense time instant. */
 
-    fmi2_value_reference_t vr;				/** \brief Value reference */
+    fmi2_value_reference_t vr;                /** \brief Value reference */
     char aliasKind;
     char initial;
     char variability;
@@ -56,8 +56,8 @@ static int fmi2_xml_compare_vr (const void* first, const void* second) {
     fmi2_xml_variable_t* b = *(fmi2_xml_variable_t**)second;
     fmi2_base_type_enu_t at = fmi2_xml_get_variable_base_type(a);
     fmi2_base_type_enu_t bt = fmi2_xml_get_variable_base_type(b);
-	if(at == fmi2_base_type_enum) at = fmi2_base_type_int;
-	if(bt == fmi2_base_type_enum) bt = fmi2_base_type_int;
+    if(at == fmi2_base_type_enum) at = fmi2_base_type_int;
+    if(bt == fmi2_base_type_enum) bt = fmi2_base_type_int;
     if(at!=bt) return at - bt;
     if(a->vr < b->vr) return -1;
     if(a->vr > b->vr) return 1;

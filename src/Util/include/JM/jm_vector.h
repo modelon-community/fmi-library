@@ -278,76 +278,85 @@ Default definition below is jm_diff and is implemented as (int)(first-second)
 /** maximum memory chunk (in items) to be allocated in push_back. */
 #define JM_VECTOR_MAX_MEMORY_CHUNK 1024
 
-/** Declare the struct and functions for the specified type. */
-#define jm_vector_declare_template(T)        \
-typedef struct  jm_vector(T) {                \
-        jm_callbacks* callbacks;            \
-        T  *items;                    \
-    size_t size;                 \
-        size_t capacity;            \
-        T preallocated[JM_VECTOR_MINIMAL_CAPACITY];            \
-} jm_vector(T);                    \
- \
+/**
+ * Declare the struct and functions for the specified type, but without adding any typedef.
+ * This is useful when the specified type (i.e. without 'struct' keyword) needs to exist in
+ * public interfaces as an opaque pointer.
+ */
+#define jm_vector_declare_template_no_typedef(T)                                        \
+struct jm_vector(T) {                                                                   \
+        jm_callbacks* callbacks;                                                        \
+        T  *items;                                                                      \
+    size_t size;                                                                        \
+        size_t capacity;                                                                \
+        T preallocated[JM_VECTOR_MINIMAL_CAPACITY];                                     \
+};                                                                                      \
+                                                                                        \
 extern jm_vector(T)* jm_vector_alloc(T)(size_t size,size_t capacity, jm_callbacks*);    \
-    \
-extern size_t jm_vector_copy(T)(jm_vector(T)* destination, jm_vector(T)* source); \
-static jm_vector(T)* jm_vector_clone(T)(jm_vector(T)* v) {    \
-    jm_vector(T)* ret = jm_vector_alloc(T)(v->size, v->size, v->callbacks);\
-    if(ret) jm_vector_copy(T)(ret, v) ; \
-    return ret; \
-}\
-        \
-extern void jm_vector_free(T)(jm_vector(T) * a); \
-    \
-extern size_t jm_vector_init(T)(jm_vector(T)* a, size_t size,jm_callbacks*);    \
-\
-static void jm_vector_free_data(T)(jm_vector(T)* a) { \
-    if(a) { \
-        if(a->items != a->preallocated) { \
-          a->callbacks->free((void*)(a->items)); \
-          a->items = a->preallocated; \
-          a->capacity=JM_VECTOR_MINIMAL_CAPACITY;\
-        } \
-        a->size=0; \
-    } \
-} \
-   \
-static size_t jm_vector_get_size(T)(jm_vector(T)* a) { return a->size; } \
-\
-static T jm_vector_get_item(T)(jm_vector(T)* a, size_t index) { \
-           assert(index < a->size); \
-           return a->items[index]; \
-}\
-static T* jm_vector_get_itemp(T)(jm_vector(T)* a, size_t index) { \
-           assert(index < a->size); \
-           return (a->items+index); \
-}\
- static T jm_vector_get_last(T)(jm_vector(T)* a) { \
-        assert(a->size); \
-        return (a->items[a->size-1]); \
-} \
-static T* jm_vector_get_lastp(T)(jm_vector(T)* a) { \
-    if(a->size) return (a->items+(a->size-1)); \
-    else return 0; \
-} \
- static void jm_vector_set_item(T)(jm_vector(T)* a, size_t index, T item) {\
-    *(jm_vector_get_itemp(T)(a, index)) = item; \
-} \
-extern size_t jm_vector_resize(T)(jm_vector(T)* a, size_t size); \
-extern size_t jm_vector_reserve(T)(jm_vector(T)* a, size_t capacity); \
-extern size_t jm_vector_append(T)(jm_vector(T)* destination, jm_vector(T)* source); \
-extern T* jm_vector_insert(T)(jm_vector(T)* a, size_t index, T item);\
-extern T* jm_vector_push_back(T)(jm_vector(T)* a, T item);\
-extern T* jm_vector_resize1(T)(jm_vector(T)* a);\
-extern void jm_vector_remove_item(T)(jm_vector(T)* v, size_t index); \
-extern size_t jm_vector_find_index(T)(jm_vector(T)* a,  T *itemp, jm_compare_ft f); \
-extern T* jm_vector_find(T)(jm_vector(T)* a,  T *itemp, jm_compare_ft f); \
-extern void jm_vector_qsort(T)(jm_vector(T)* v, jm_compare_ft f); \
-extern size_t jm_vector_bsearch_index(T)(jm_vector(T)* v, T* key, jm_compare_ft f); \
-extern T* jm_vector_bsearch(T)(jm_vector(T)* v, T* key, jm_compare_ft f); \
-extern void jm_vector_foreach(T)(jm_vector(T)* a, void (*f)(T)); \
-extern void jm_vector_foreach_c(T)(jm_vector(T)* a, void (*f)(T, void*), void * data); \
+                                                                                        \
+extern size_t jm_vector_copy(T)(jm_vector(T)* destination, jm_vector(T)* source);       \
+static jm_vector(T)* jm_vector_clone(T)(jm_vector(T)* v) {                              \
+    jm_vector(T)* ret = jm_vector_alloc(T)(v->size, v->size, v->callbacks);             \
+    if(ret) jm_vector_copy(T)(ret, v) ;                                                 \
+    return ret;                                                                         \
+}                                                                                       \
+                                                                                        \
+extern void jm_vector_free(T)(jm_vector(T) * a);                                        \
+                                                                                        \
+extern size_t jm_vector_init(T)(jm_vector(T)* a, size_t size,jm_callbacks*);            \
+                                                                                        \
+static void jm_vector_free_data(T)(jm_vector(T)* a) {                                   \
+    if(a) {                                                                             \
+        if(a->items != a->preallocated) {                                               \
+          a->callbacks->free((void*)(a->items));                                        \
+          a->items = a->preallocated;                                                   \
+          a->capacity=JM_VECTOR_MINIMAL_CAPACITY;                                       \
+        }                                                                               \
+        a->size=0;                                                                      \
+    }                                                                                   \
+}                                                                                       \
+                                                                                        \
+static size_t jm_vector_get_size(T)(jm_vector(T)* a) { return a->size; }                \
+                                                                                        \
+static T jm_vector_get_item(T)(jm_vector(T)* a, size_t index) {                         \
+           assert(index < a->size);                                                     \
+           return a->items[index];                                                      \
+}                                                                                       \
+static T* jm_vector_get_itemp(T)(jm_vector(T)* a, size_t index) {                       \
+           assert(index < a->size);                                                     \
+           return (a->items+index);                                                     \
+}                                                                                       \
+static T jm_vector_get_last(T)(jm_vector(T)* a) {                                       \
+        assert(a->size);                                                                \
+        return (a->items[a->size-1]);                                                   \
+}                                                                                       \
+static T* jm_vector_get_lastp(T)(jm_vector(T)* a) {                                     \
+    if(a->size) return (a->items+(a->size-1));                                          \
+    else return 0;                                                                      \
+}                                                                                       \
+static void jm_vector_set_item(T)(jm_vector(T)* a, size_t index, T item) {              \
+    *(jm_vector_get_itemp(T)(a, index)) = item;                                         \
+}                                                                                       \
+extern size_t jm_vector_resize(T)(jm_vector(T)* a, size_t size);                        \
+extern size_t jm_vector_reserve(T)(jm_vector(T)* a, size_t capacity);                   \
+extern size_t jm_vector_append(T)(jm_vector(T)* destination, jm_vector(T)* source);     \
+extern T* jm_vector_insert(T)(jm_vector(T)* a, size_t index, T item);                   \
+extern T* jm_vector_push_back(T)(jm_vector(T)* a, T item);                              \
+extern T* jm_vector_resize1(T)(jm_vector(T)* a);                                        \
+extern void jm_vector_remove_item(T)(jm_vector(T)* v, size_t index);                    \
+extern size_t jm_vector_find_index(T)(jm_vector(T)* a,  T *itemp, jm_compare_ft f);     \
+extern T* jm_vector_find(T)(jm_vector(T)* a,  T *itemp, jm_compare_ft f);               \
+extern void jm_vector_qsort(T)(jm_vector(T)* v, jm_compare_ft f);                       \
+extern size_t jm_vector_bsearch_index(T)(jm_vector(T)* v, T* key, jm_compare_ft f);     \
+extern T* jm_vector_bsearch(T)(jm_vector(T)* v, T* key, jm_compare_ft f);               \
+extern void jm_vector_foreach(T)(jm_vector(T)* a, void (*f)(T));                        \
+extern void jm_vector_foreach_c(T)(jm_vector(T)* a, void (*f)(T, void*), void * data);  \
 extern void jm_vector_zero(T)(jm_vector(T)* a);    
+
+/** Declare the struct and functions for the specified type. */
+#define jm_vector_declare_template(T)    \
+typedef struct jm_vector(T) jm_vector(T);       \
+jm_vector_declare_template_no_typedef(T)
 
 jm_vector_declare_template(char)
 static jm_string jm_vector_char2string(jm_vector(char)* v) {

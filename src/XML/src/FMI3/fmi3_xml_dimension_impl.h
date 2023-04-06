@@ -30,7 +30,7 @@ struct fmi3_xml_dimension_t {
 };
 
 /* declare fmi3_xml_dimension_t vector functions */
-jm_vector_declare_template(fmi3_xml_dimension_t)
+jm_vector_declare_template_no_typedef(fmi3_xml_dimension_t)
 
 #ifdef __cplusplus
 }

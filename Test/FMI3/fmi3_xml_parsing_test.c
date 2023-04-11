@@ -7,7 +7,7 @@
 #include "config_test.h"
 #include "fmi_testutil.h"
 
-static char *EXPECTED_MESSAGE = "Invalid structured ScalarVariable name";
+static char *g_expected_message = "Invalid structured ScalarVariable name";
 
 static int g_has_logged_expected_msg;
 static char *g_name_check_test_directory;
@@ -17,7 +17,7 @@ void importlogger(jm_callbacks* c, jm_string module,
         jm_log_level_enu_t log_level, jm_string message)
 {
     printf("module = %s, log level = %d: %s\n", module, log_level, message);
-    if (!strncmp(EXPECTED_MESSAGE, message, strlen(EXPECTED_MESSAGE))) {
+    if (!strncmp(g_expected_message, message, strlen(g_expected_message))) {
         g_has_logged_expected_msg = 1;
     }
 }
@@ -144,7 +144,7 @@ void test_variable_naming_conventions(void)
 
     /* list of variables */
     fail_name_check("naming_conventions_xmls/list/aemptyc");
-    EXPECTED_MESSAGE = "Two variables with the same name";
+    g_expected_message = "Two variables with the same name";
     pass_name_check("naming_conventions_xmls/list/cba");
     fail_name_check("naming_conventions_xmls/list/acad");
 

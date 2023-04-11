@@ -7,10 +7,10 @@
 #include "config_test.h"
 #include "fmi_testutil.h"
 
-static char *g_expected_message = "Invalid structured ScalarVariable name";
 
 static int g_has_logged_expected_msg;
 static char *g_name_check_test_directory;
+static char *g_expected_message = "Invalid structured ScalarVariable name";
 
 void importlogger(jm_callbacks* c, jm_string module,
         jm_log_level_enu_t log_level, jm_string message)

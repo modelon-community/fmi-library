@@ -9,10 +9,10 @@
 
 static const int NO_LOG_EXPECTED_MSG = 0;
 static const int DO_LOG_EXPECTED_MSG = 1;
-static char *g_expected_message = "Invalid structured ScalarVariable name";
 
 static int did_log_expected_msg;
 static char *g_name_check_test_directory;
+static char *g_expected_message = "Invalid structured ScalarVariable name";
 
 void importlogger(jm_callbacks* c, jm_string module,
         jm_log_level_enu_t log_level, jm_string message)

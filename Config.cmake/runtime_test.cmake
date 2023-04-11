@@ -1,13 +1,13 @@
 #    Copyright (C) 2012-2023 Modelon AB
-
+#
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the BSD style license.
-
-# #    This program is distributed in the hope that it will be useful,
+#
+#    This program is distributed in the hope that it will be useful,
 #    but WITHOUT ANY WARRANTY; without even the implied warranty of
 #    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #    FMILIB_License.txt file for more details.
-
+#
 #    You should have received a copy of the FMILIB_License.txt file
 #    along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 
@@ -33,15 +33,15 @@ target_link_libraries(jm_vector_test_cpp Catch ${JMUTIL_LIBRARIES})
 add_test(ctest_jm_vector_test_cpp jm_vector_test_cpp)
 
 # Test: jm locale
-add_executable (jm_locale_test ${RTTESTDIR}/jm_locale_test.c)
-target_link_libraries (jm_locale_test ${JMUTIL_LIBRARIES})
+add_executable(jm_locale_test ${RTTESTDIR}/jm_locale_test.c)
+target_link_libraries(jm_locale_test ${JMUTIL_LIBRARIES})
 if(FMILIB_TEST_LOCALE)
     target_compile_definitions(jm_locale_test PRIVATE -DFMILIB_TEST_LOCALE)
 endif()
 
-#Create function that zipz the dummy FMUs
-add_executable (compress_test_fmu_zip ${RTTESTDIR}/compress_test_fmu_zip.c)
-target_link_libraries (compress_test_fmu_zip ${FMIZIP_LIBRARIES})
+#Create function that zips the dummy FMUs
+add_executable(compress_test_fmu_zip ${RTTESTDIR}/compress_test_fmu_zip.c)
+target_link_libraries(compress_test_fmu_zip ${FMIZIP_LIBRARIES})
 
 set_target_properties(
     jm_vector_test jm_vector_test_cpp jm_locale_test compress_test_fmu_zip
@@ -69,7 +69,7 @@ if(MSVC)
 endif()
 
 function(to_native_c_path path native_c_path)
-    if (WIN32)
+    if(WIN32)
         STRING(REPLACE "/" "\\\\" tmp "${path}")
     else()
         set(tmp "${path}")
@@ -87,14 +87,14 @@ set(COMPRESS_DUMMY_FILE_PATH_DIST "${TEST_OUTPUT_FOLDER}/successfully_compressed
 file(COPY "${COMPRESS_DUMMY_FILE_PATH_SRC}" DESTINATION "${COMPRESS_DUMMY_FOLDER_PATH_DIST}")
 
 #Create paths for the config_test.h
-if (WIN32)
+if(WIN32)
     set(DLL_OUTPUT_PATH "${TEST_OUTPUT_FOLDER}")
 
-    STRING(REPLACE "/" "\\\\" UNCOMPRESSED_DUMMY_FILE_PATH_SRC "${UNCOMPRESSED_DUMMY_FILE_PATH_SRC}")
-    STRING(REPLACE "/" "\\\\" UNCOMPRESSED_DUMMY_FILE_PATH_DIST "${UNCOMPRESSED_DUMMY_FILE_PATH_DIST}")
-    STRING(REPLACE "/" "\\\\" UNCOMPRESSED_DUMMY_FOLDER_PATH_DIST "${UNCOMPRESSED_DUMMY_FOLDER_PATH_DIST}")
-    STRING(REPLACE "/" "\\\\" COMPRESS_DUMMY_FILE_PATH_SRC "${COMPRESS_DUMMY_FILE_PATH_SRC}")
-    STRING(REPLACE "/" "\\\\" COMPRESS_DUMMY_FILE_PATH_DIST "${COMPRESS_DUMMY_FILE_PATH_DIST}")
+    string(REPLACE "/" "\\\\" UNCOMPRESSED_DUMMY_FILE_PATH_SRC "${UNCOMPRESSED_DUMMY_FILE_PATH_SRC}")
+    string(REPLACE "/" "\\\\" UNCOMPRESSED_DUMMY_FILE_PATH_DIST "${UNCOMPRESSED_DUMMY_FILE_PATH_DIST}")
+    string(REPLACE "/" "\\\\" UNCOMPRESSED_DUMMY_FOLDER_PATH_DIST "${UNCOMPRESSED_DUMMY_FOLDER_PATH_DIST}")
+    string(REPLACE "/" "\\\\" COMPRESS_DUMMY_FILE_PATH_SRC "${COMPRESS_DUMMY_FILE_PATH_SRC}")
+    string(REPLACE "/" "\\\\" COMPRESS_DUMMY_FILE_PATH_DIST "${COMPRESS_DUMMY_FILE_PATH_DIST}")
 endif(WIN32)
 
 #Move files and compress them to an FMU
@@ -110,7 +110,7 @@ function(compress_fmu OUTPUT_FOLDER_T MODEL_IDENTIFIER_T FILE_NAME_CS_ME_EXT_T T
     file(TO_NATIVE_PATH binaries/${FMI_PLATFORM}/${MODEL_IDENTIFIER_T}${CMAKE_SHARED_LIBRARY_SUFFIX} FMU_OUTPUT_SHARED_LIBRARY_PATH_OUT_T)
 
     #Move files to the FMU directories and compress
-    ADD_CUSTOM_COMMAND(
+    add_custom_command(
        OUTPUT ${OUTPUT_FOLDER_T}/${MODEL_IDENTIFIER_T}_${FILE_NAME_CS_ME_EXT_T}.fmu
        DEPENDS "${XML_PATH_T}" ${TARGET_NAME_T} compress_test_fmu_zip
        COMMAND "${CMAKE_COMMAND}" -E remove -f "${OUTPUT_FOLDER_T}/${MODEL_IDENTIFIER_T}_${FILE_NAME_CS_ME_EXT_T}.fmu"
@@ -123,10 +123,10 @@ function(compress_fmu OUTPUT_FOLDER_T MODEL_IDENTIFIER_T FILE_NAME_CS_ME_EXT_T T
     get_target_property(DLL_SOURCES ${TARGET_NAME_T} SOURCES)
 
     set(tname ${MODEL_IDENTIFIER_T}_${FILE_NAME_CS_ME_EXT_T}_FMU)
-    add_custom_target( ${tname} ALL
+    add_custom_target(${tname} ALL
         DEPENDS ${OUTPUT_FOLDER_T}/${MODEL_IDENTIFIER_T}_${FILE_NAME_CS_ME_EXT_T}.fmu
         SOURCES "${XML_PATH_T}" ${DLL_SOURCES})
-    set_target_properties( ${tname} ${TARGET_NAME_T}
+    set_target_properties(${tname} ${TARGET_NAME_T}
                         PROPERTIES FOLDER "TestFMUs")
 
 endfunction(compress_fmu)
@@ -144,13 +144,13 @@ endif()
 
 message(STATUS "Tests will be linked with ${FMILIBFORTEST}"  )
 
-add_executable (fmi_zip_zip_test ${RTTESTDIR}/FMI1/fmi_zip_zip_test.c )
+add_executable(fmi_zip_zip_test ${RTTESTDIR}/FMI1/fmi_zip_zip_test.c )
 target_link_libraries (fmi_zip_zip_test ${FMIZIP_LIBRARIES})
 
-add_executable (fmi_zip_unzip_test ${RTTESTDIR}/FMI1/fmi_zip_unzip_test.c )
-target_link_libraries (fmi_zip_unzip_test ${FMIZIP_LIBRARIES})
+add_executable(fmi_zip_unzip_test ${RTTESTDIR}/FMI1/fmi_zip_unzip_test.c )
+target_link_libraries(fmi_zip_unzip_test ${FMIZIP_LIBRARIES})
 
-add_executable (fmi_import_test
+add_executable(fmi_import_test
                     ${RTTESTDIR}/fmi_import_test.c
                     ${RTTESTDIR}/FMI1/fmi1_import_test.c
                     ${RTTESTDIR}/FMI2/fmi2_import_test.c
@@ -182,24 +182,24 @@ endif()
 
 add_test(ctest_jm_locale_test jm_locale_test)
 
-ADD_TEST(ctest_fmi_zip_unzip_test fmi_zip_unzip_test)
-ADD_TEST(ctest_fmi_zip_zip_test fmi_zip_zip_test)
+add_test(ctest_fmi_zip_unzip_test fmi_zip_unzip_test)
+add_test(ctest_fmi_zip_zip_test fmi_zip_zip_test)
 
 include(test_fmi1)
 include(test_fmi2)
 include(test_fmi3)
 
-ADD_TEST(ctest_fmi_import_test_no_xml fmi_import_test ${UNCOMPRESSED_DUMMY_FILE_PATH_SRC} ${TEST_OUTPUT_FOLDER})
+add_test(ctest_fmi_import_test_no_xml fmi_import_test ${UNCOMPRESSED_DUMMY_FILE_PATH_SRC} ${TEST_OUTPUT_FOLDER})
   set_tests_properties(ctest_fmi_import_test_no_xml PROPERTIES WILL_FAIL TRUE)
-ADD_TEST(ctest_fmi_import_test_me_1 fmi_import_test ${FMU_ME_PATH} ${FMU_TEMPFOLDER})
-ADD_TEST(ctest_fmi_import_test_cs_1 fmi_import_test ${FMU_CS_PATH} ${FMU_TEMPFOLDER})
-ADD_TEST(ctest_fmi_import_test_me_2 fmi_import_test ${FMU2_ME_PATH} ${FMU_TEMPFOLDER})
-ADD_TEST(ctest_fmi_import_test_cs_2 fmi_import_test ${FMU2_CS_PATH} ${FMU_TEMPFOLDER})
-ADD_TEST(ctest_fmi_import_test_me_3 fmi_import_test ${FMU3_ME_PATH} ${FMU_TEMPFOLDER})
-ADD_TEST(ctest_fmi_import_test_cs_3 fmi_import_test ${FMU3_CS_PATH} ${FMU_TEMPFOLDER})
+add_test(ctest_fmi_import_test_me_1 fmi_import_test ${FMU_ME_PATH} ${FMU_TEMPFOLDER})
+add_test(ctest_fmi_import_test_cs_1 fmi_import_test ${FMU_CS_PATH} ${FMU_TEMPFOLDER})
+add_test(ctest_fmi_import_test_me_2 fmi_import_test ${FMU2_ME_PATH} ${FMU_TEMPFOLDER})
+add_test(ctest_fmi_import_test_cs_2 fmi_import_test ${FMU2_CS_PATH} ${FMU_TEMPFOLDER})
+add_test(ctest_fmi_import_test_me_3 fmi_import_test ${FMU3_ME_PATH} ${FMU_TEMPFOLDER})
+add_test(ctest_fmi_import_test_cs_3 fmi_import_test ${FMU3_CS_PATH} ${FMU_TEMPFOLDER})
 
 if(FMILIB_BUILD_BEFORE_TESTS)
-    SET_TESTS_PROPERTIES (
+    set_tests_properties(
         ctest_fmi_import_test_no_xml
         ctest_fmi_import_test_me_1
         ctest_fmi_import_test_cs_1
@@ -213,4 +213,4 @@ if(FMILIB_BUILD_BEFORE_TESTS)
         ctest_jm_locale_test
         PROPERTIES DEPENDS ctest_build_all)
 endif()
-SET_TESTS_PROPERTIES ( ctest_fmi_import_test_no_xml PROPERTIES DEPENDS ctest_fmi_zip_unzip_test)
+set_tests_properties(ctest_fmi_import_test_no_xml PROPERTIES DEPENDS ctest_fmi_zip_unzip_test)

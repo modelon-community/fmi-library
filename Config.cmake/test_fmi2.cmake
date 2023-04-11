@@ -77,18 +77,18 @@ to_native_c_path("${TEST_OUTPUT_FOLDER}/${FMU2_DUMMY_ME_MODEL_IDENTIFIER}_me.fmu
 to_native_c_path("${TEST_OUTPUT_FOLDER}/${FMU2_DUMMY_CS_MODEL_IDENTIFIER}_cs.fmu" FMU2_CS_PATH)
 to_native_c_path("${TEST_OUTPUT_FOLDER}/${FMU2_DUMMY_CS_MODEL_IDENTIFIER}_mf.fmu" FMU2_MF_PATH)
 
-add_executable (fmi2_xml_parsing_test ${RTTESTDIR}/FMI2/fmi2_xml_parsing_test.c)
-target_link_libraries (fmi2_xml_parsing_test  ${FMILIBFORTEST})
+add_executable(fmi2_xml_parsing_test ${RTTESTDIR}/FMI2/fmi2_xml_parsing_test.c)
+target_link_libraries(fmi2_xml_parsing_test  ${FMILIBFORTEST})
 if(FMILIB_TEST_LOCALE)
     target_compile_definitions(fmi2_xml_parsing_test PRIVATE -DFMILIB_TEST_LOCALE)
 endif()
 
-add_executable (fmi2_import_xml_test ${RTTESTDIR}/FMI2/fmi2_import_xml_test.cc)
-target_link_libraries (fmi2_import_xml_test  ${FMILIBFORTEST})
-add_executable (fmi2_import_me_test ${RTTESTDIR}/FMI2/fmi2_import_me_test.c)
-target_link_libraries (fmi2_import_me_test  ${FMILIBFORTEST})
-add_executable (fmi2_import_cs_test ${RTTESTDIR}/FMI2/fmi2_import_cs_test.c)
-target_link_libraries (fmi2_import_cs_test  ${FMILIBFORTEST})
+add_executable(fmi2_import_xml_test ${RTTESTDIR}/FMI2/fmi2_import_xml_test.cc)
+target_link_libraries(fmi2_import_xml_test ${FMILIBFORTEST})
+add_executable(fmi2_import_me_test ${RTTESTDIR}/FMI2/fmi2_import_me_test.c)
+target_link_libraries(fmi2_import_me_test ${FMILIBFORTEST})
+add_executable(fmi2_import_cs_test ${RTTESTDIR}/FMI2/fmi2_import_cs_test.c)
+target_link_libraries(fmi2_import_cs_test ${FMILIBFORTEST})
 add_executable(fmi2_import_variable_test ${RTTESTDIR}/FMI2/fmi2_import_variable_test.c)
 target_link_libraries(fmi2_import_variable_test ${FMILIBFORTEST})
 add_executable(fmi2_import_model_structure_test ${RTTESTDIR}/FMI2/fmi2_import_model_structure_test.c)
@@ -108,7 +108,7 @@ add_executable(fmi2_variable_bad_type_variability_test
 target_link_libraries(fmi2_variable_bad_type_variability_test ${FMILIBFORTEST})
 add_executable(fmi2_enum_test ${RTTESTDIR}/FMI2/fmi2_enum_test.c)
 target_link_libraries(fmi2_enum_test ${FMILIBFORTEST})
-add_executable (fmi2_import_options_test ${RTTESTDIR}/FMI2/fmi2_import_options_test.c)
+add_executable(fmi2_import_options_test ${RTTESTDIR}/FMI2/fmi2_import_options_test.c)
 target_link_libraries (fmi2_import_options_test ${FMILIBFORTEST})
 
 set_target_properties(
@@ -124,7 +124,7 @@ set(FAIL_NAME_CHECK 0)
 set(PASS_NAME_CHECK 1)
 
 add_test(ctest_fmi2_xml_parsing_test fmi2_xml_parsing_test ${RTTESTDIR}/FMI2/parser_test_xmls/)
-ADD_TEST(ctest_fmi2_import_xml_test_empty fmi2_import_xml_test ${FMU2_DUMMY_FOLDER})
+add_test(ctest_fmi2_import_xml_test_empty fmi2_import_xml_test ${FMU2_DUMMY_FOLDER})
 add_test(ctest_fmi2_import_xml_test_me fmi2_import_xml_test ${TEST_OUTPUT_FOLDER}/${FMU2_DUMMY_ME_MODEL_IDENTIFIER}_me)
 add_test(ctest_fmi2_import_xml_test_cs fmi2_import_xml_test ${TEST_OUTPUT_FOLDER}/${FMU2_DUMMY_CS_MODEL_IDENTIFIER}_cs)
 add_test(ctest_fmi2_import_xml_test_mf fmi2_import_xml_test ${TEST_OUTPUT_FOLDER}/${FMU2_DUMMY_MF_MODEL_IDENTIFIER}_mf)
@@ -157,7 +157,7 @@ add_test(ctest_fmi2_enum_test
          fmi2_enum_test)
 
 if(FMILIB_BUILD_BEFORE_TESTS)
-    SET_TESTS_PROPERTIES (
+    set_tests_properties(
         ctest_fmi2_xml_parsing_test
         ctest_fmi2_import_xml_test_me
         ctest_fmi2_import_xml_test_cs

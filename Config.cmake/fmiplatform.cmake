@@ -14,7 +14,7 @@
 # fmi_platform(platform) sets platform to one of the by FMI defined platforms
 # win32, win64, linux32, linux64, darwin32 or darwin64 depending on cmake
 # generator
-function(fmi_platform platform )
+function(fmi_platform platform)
     if(CMAKE_HOST_WIN32) #Set to true when the host system is Windows and on cygwin.
         if(CMAKE_SIZEOF_VOID_P EQUAL 4)
             set(${platform} win32 PARENT_SCOPE)

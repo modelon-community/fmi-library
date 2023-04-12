@@ -13,11 +13,11 @@
 
 include_directories(${RTTESTDIR}/FMI1)
 
-add_executable (fmi1_capi_cs_test ${RTTESTDIR}/FMI1/fmi1_capi_cs_test.c )
-target_link_libraries (fmi1_capi_cs_test  ${FMICAPI_LIBRARIES})
+add_executable(fmi1_capi_cs_test ${RTTESTDIR}/FMI1/fmi1_capi_cs_test.c)
+target_link_libraries(fmi1_capi_cs_test ${FMICAPI_LIBRARIES})
 
-add_executable (fmi1_capi_me_test ${RTTESTDIR}/FMI1/fmi1_capi_me_test.c )
-target_link_libraries (fmi1_capi_me_test  ${FMICAPI_LIBRARIES})
+add_executable (fmi1_capi_me_test ${RTTESTDIR}/FMI1/fmi1_capi_me_test.c)
+target_link_libraries (fmi1_capi_me_test ${FMICAPI_LIBRARIES})
 
 #Defines for the test FMUs
 set(FMU_DUMMY_ME_MODEL_IDENTIFIER BouncingBall) #This must be the same as in the xml-file
@@ -26,12 +26,8 @@ set(FMU_DUMMY_MF_MODEL_IDENTIFIER BouncingBall_malformed) #This must be the same
 
 set(FMU_DUMMY_FOLDER ${RTTESTDIR}/FMI1/fmu_dummy)
 
-set(FMU_DUMMY_ME_SOURCE
-  ${FMU_DUMMY_FOLDER}/fmu1_model_me.c
-)
-set(FMU_DUMMY_CS_SOURCE
-  ${FMU_DUMMY_FOLDER}/fmu1_model_cs.c
-)
+set(FMU_DUMMY_ME_SOURCE ${FMU_DUMMY_FOLDER}/fmu1_model_me.c)
+set(FMU_DUMMY_CS_SOURCE ${FMU_DUMMY_FOLDER}/fmu1_model_cs.c)
 set(FMU_DUMMY_HEADERS
   ${FMU_DUMMY_FOLDER}/fmu1_model.h
   ${FMU_DUMMY_FOLDER}/fmu1_model_defines.h
@@ -69,27 +65,27 @@ compress_fmu("${TEST_OUTPUT_FOLDER}" "${FMU_DUMMY_CS_MODEL_IDENTIFIER}" "cs_tc" 
 add_executable(fmi1_variable_bad_type_variability_test ${RTTESTDIR}/FMI1/fmi1_variable_bad_type_variability_test.c)
 target_link_libraries(fmi1_variable_bad_type_variability_test ${FMILIBFORTEST})
 
-add_executable (fmi1_import_options_test ${RTTESTDIR}/FMI1/fmi1_import_options_test.c)
-target_link_libraries (fmi1_import_options_test ${FMILIBFORTEST})
+add_executable(fmi1_import_options_test ${RTTESTDIR}/FMI1/fmi1_import_options_test.c)
+target_link_libraries(fmi1_import_options_test ${FMILIBFORTEST})
 
-add_executable (fmi1_import_default_experiment_test ${RTTESTDIR}/FMI1/fmi1_import_default_experiment_test.c)
-target_link_libraries (fmi1_import_default_experiment_test  ${FMILIBFORTEST}  )
+add_executable(fmi1_import_default_experiment_test ${RTTESTDIR}/FMI1/fmi1_import_default_experiment_test.c)
+target_link_libraries(fmi1_import_default_experiment_test ${FMILIBFORTEST})
 add_executable(fmi1_type_definitions_test ${RTTESTDIR}/FMI1/fmi1_import_type_definitions_test.c)
 target_link_libraries(fmi1_type_definitions_test ${FMILIBFORTEST})
 
-add_executable (fmi1_xml_parsing_test ${RTTESTDIR}/FMI1/fmi1_xml_parsing_test.c)
-target_link_libraries (fmi1_xml_parsing_test  ${FMILIBFORTEST}  )
+add_executable(fmi1_xml_parsing_test ${RTTESTDIR}/FMI1/fmi1_xml_parsing_test.c)
+target_link_libraries(fmi1_xml_parsing_test ${FMILIBFORTEST}  )
 if(FMILIB_TEST_LOCALE)
     target_compile_definitions(fmi1_xml_parsing_test PRIVATE -DFMILIB_TEST_LOCALE)
 endif()
 
-add_executable (fmi_import_xml_test ${RTTESTDIR}/FMI1/fmi_import_xml_test.c)
-target_link_libraries (fmi_import_xml_test  ${FMILIBFORTEST}  )
+add_executable(fmi_import_xml_test ${RTTESTDIR}/FMI1/fmi_import_xml_test.c)
+target_link_libraries(fmi_import_xml_test ${FMILIBFORTEST})
 
-add_executable (fmi_import_me_test ${RTTESTDIR}/FMI1/fmi_import_me_test.c)
-target_link_libraries (fmi_import_me_test  ${FMILIBFORTEST})
-add_executable (fmi_import_cs_test ${RTTESTDIR}/FMI1/fmi_import_cs_test.c)
-target_link_libraries (fmi_import_cs_test  ${FMILIBFORTEST})
+add_executable(fmi_import_me_test ${RTTESTDIR}/FMI1/fmi_import_me_test.c)
+target_link_libraries(fmi_import_me_test ${FMILIBFORTEST})
+add_executable(fmi_import_cs_test ${RTTESTDIR}/FMI1/fmi_import_cs_test.c)
+target_link_libraries(fmi_import_cs_test ${FMILIBFORTEST})
 
 to_native_c_path("${TEST_OUTPUT_FOLDER}/${FMU_DUMMY_ME_MODEL_IDENTIFIER}_me.fmu" FMU_ME_PATH)
 
@@ -104,18 +100,18 @@ add_test(ctest_fmi1_variable_bad_type_variability_test fmi1_variable_bad_type_va
 add_test(ctest_fmi1_xml_parsing_test fmi1_import_default_experiment_test ${RTTESTDIR}/FMI1/parser_test_xmls/default_experiment/)
 add_test(ctest_fmi1_xml_parsing_test fmi1_xml_parsing_test ${RTTESTDIR}/FMI1/parser_test_xmls/)
 add_test(ctest_fmi1_type_definitions_test fmi1_type_definitions_test ${TYPE_DEFINITIONS_MODEL_DESC_DIR})
-ADD_TEST(ctest_fmi_import_me_test fmi_import_me_test ${FMU_ME_PATH} ${FMU_TEMPFOLDER})
-ADD_TEST(ctest_fmi_import_cs_test fmi_import_cs_test ${FMU_CS_PATH} ${FMU_TEMPFOLDER} "modelDescription_cs.xml")
-ADD_TEST(ctest_fmi_import_cs_tc_test fmi_import_cs_test ${FMU_CS_TC_PATH} ${FMU_TEMPFOLDER} "modelDescription_cs_tc.xml")
+add_test(ctest_fmi_import_me_test fmi_import_me_test ${FMU_ME_PATH} ${FMU_TEMPFOLDER})
+add_test(ctest_fmi_import_cs_test fmi_import_cs_test ${FMU_CS_PATH} ${FMU_TEMPFOLDER} "modelDescription_cs.xml")
+add_test(ctest_fmi_import_cs_tc_test fmi_import_cs_test ${FMU_CS_TC_PATH} ${FMU_TEMPFOLDER} "modelDescription_cs_tc.xml")
 # the next test relies on the output from the previous one.
-ADD_TEST(ctest_fmi_import_xml_test_empty fmi_import_xml_test ${FMU_DUMMY_FOLDER})
-ADD_TEST(ctest_fmi_import_xml_test fmi_import_xml_test ${FMU_TEMPFOLDER})
+add_test(ctest_fmi_import_xml_test_empty fmi_import_xml_test ${FMU_DUMMY_FOLDER})
+add_test(ctest_fmi_import_xml_test fmi_import_xml_test ${FMU_TEMPFOLDER})
 add_test(ctest_fmi_import_xml_test_mf fmi_import_xml_test ${TEST_OUTPUT_FOLDER}/${FMU_DUMMY_MF_MODEL_IDENTIFIER}_mf)
   set_tests_properties(ctest_fmi_import_xml_test_mf PROPERTIES WILL_FAIL TRUE)
 add_test(ctest_fmi1_import_test_options fmi1_import_options_test ${FMU_ME_PATH} ${FMU_TEMPFOLDER})
 
-ADD_TEST(ctest_fmi1_capi_cs_test fmi1_capi_cs_test)
-ADD_TEST(ctest_fmi1_capi_me_test fmi1_capi_me_test)
+add_test(ctest_fmi1_capi_cs_test fmi1_capi_cs_test)
+add_test(ctest_fmi1_capi_me_test fmi1_capi_me_test)
 
 ##Add logger test
 add_executable (fmi1_logger_test ${RTTESTDIR}/FMI1/fmi1_logger_test.c)
@@ -129,19 +125,19 @@ add_test(ctest_fmi1_logger_test_run fmi1_logger_test ${FMU_ME_PATH} ${FMU_TEMPFO
 if(NOT CMAKE_GENERATOR STREQUAL "MSYS Makefiles")
     # Skip test for MinGW, since we know it won't pass due to issues with long log messages and vsnprintf.
     add_test(ctest_fmi1_logger_test_check ${CMAKE_COMMAND} -E compare_files ${logger_output_file}  ${logger_reference_file})
-    SET_TESTS_PROPERTIES (
+    set_tests_properties(
         ctest_fmi1_logger_test_check
         PROPERTIES DEPENDS ctest_fmi1_logger_test_run
     )
 
     # 'ctest_build_all' must also skip memcheck, but it needs to run before all
     # other tests, so just calling it first by name in the linux makefile wrapper
-    SET_TESTS_PROPERTIES (
+    set_tests_properties(
         ctest_fmi1_logger_test_check
         PROPERTIES LABELS skip_memcheck
     )
 
-    SET_TESTS_PROPERTIES (
+    set_tests_properties(
         ctest_fmi1_logger_test_check
         PROPERTIES DEPENDS ctest_fmi1_logger_test_run
     )
@@ -160,11 +156,8 @@ set_target_properties(
     PROPERTIES FOLDER "Test/FMI1")
 
 
-
-
-
 if(FMILIB_BUILD_BEFORE_TESTS)
-    SET_TESTS_PROPERTIES (
+    set_tests_properties(
         ctest_fmi_import_me_test
         ctest_fmi_import_cs_test
         ctest_fmi_import_xml_test
@@ -179,7 +172,7 @@ if(FMILIB_BUILD_BEFORE_TESTS)
         PROPERTIES DEPENDS ctest_build_all)
 endif()
 
-SET_TESTS_PROPERTIES (
+set_tests_properties(
     ctest_fmi_import_xml_test
     PROPERTIES DEPENDS ctest_fmi_import_cs_test
 )

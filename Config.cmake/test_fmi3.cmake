@@ -189,7 +189,7 @@ add_test(ctest_fmi3_enum_test
          fmi3_enum_test)
 
 if(FMILIB_BUILD_BEFORE_TESTS)
-    SET_TESTS_PROPERTIES (
+    set_tests_properties(
         ctest_fmi3_xml_parsing_test
         ctest_fmi3_import_xml_test_me
         ctest_fmi3_import_xml_test_cs

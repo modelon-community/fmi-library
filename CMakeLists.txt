@@ -17,11 +17,11 @@
 cmake_minimum_required (VERSION 2.8.6 FATAL_ERROR)
 
 # Prohibit in-source build
-IF("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
+if("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
   message(FATAL_ERROR "In-source build is not supported. Please, use an empty directory for building the project.")
-ENDIF()
+endif()
 
-project (FMILibrary)
+project(FMILibrary)
 
 # Avoid warnings in mergestaticlibs.cmake. TODO: Fix the warnings.
 cmake_policy(SET CMP0026 OLD)
@@ -29,7 +29,7 @@ cmake_policy(SET CMP0026 OLD)
 # Verify that float parsing will work for the platform/compiler config. Ignoring CHAR_BIT for exotic platforms.
 include(CheckTypeSize)
 check_type_size("double" SIZEOF_DOUBLE BUILTIN_TYPES_ONLY LANGUAGE "C")
-if (NOT (${SIZEOF_DOUBLE} EQUAL "8" OR ${SIZEOF_DOUBLE} GREATER "8"))
+if(NOT (${SIZEOF_DOUBLE} EQUAL "8" OR ${SIZEOF_DOUBLE} GREATER "8"))
     message(FATAL_ERROR "Required size of C type 'double': at least 64 bit. Return value of sizeof(double): ${SIZEOF_DOUBLE}")
 endif()
 
@@ -40,11 +40,11 @@ set(FMILIBRARYHOME ${FMILibrary_SOURCE_DIR})
 set(FMILIBRARYBUILD ${FMILibrary_BINARY_DIR})
 
 # User configuration options and parameters
-SET(FMILIB_INSTALL_PREFIX ${FMILibrary_BINARY_DIR}/../install CACHE PATH "Prefix prepended to install directories")
+set(FMILIB_INSTALL_PREFIX ${FMILibrary_BINARY_DIR}/../install CACHE PATH "Prefix prepended to install directories")
 set(FMILIB_THIRDPARTYLIBS  ${FMILibrary_SOURCE_DIR}/ThirdParty CACHE PATH "Path to the ThirdParty library dir" )
 set(FMILIB_FMI_STANDARD_HEADERS  ${FMILIB_THIRDPARTYLIBS}/FMI/default CACHE PATH "Path to the FMI standard headers dir" )
 
-option (FMILIB_DEFAULT_BUILD_TYPE_RELEASE "Default build-type used for Makefile generation is 'Release'. Can be overwritten by CMAKE_BUILD_TYPE command line switch." ON)
+option(FMILIB_DEFAULT_BUILD_TYPE_RELEASE "Default build-type used for Makefile generation is 'Release'. Can be overwritten by CMAKE_BUILD_TYPE command line switch." ON)
 
 if(MSVC)
     option (FMILIB_BUILD_WITH_STATIC_RTLIB "Use static run-time libraries (/MT or /MTd linker flags)" OFF)
@@ -55,7 +55,7 @@ option(FMILIB_BUILD_SHARED_LIB     "Build the library as shared (dll/so/dylib)."
 option(FMILIB_INSTALL_SUBLIBS     "Install sub-libraries (fmicapi. fmixml, jmutil, fmiimport, fmizip)" OFF)
 
 
-IF(NOT (WIN32 OR CYGWIN OR APPLE))
+if(NOT (WIN32 OR CYGWIN OR APPLE))
 # On LINUX position independent code (-fPIC) must be used on all files to be linked into .so
 # On other systems this is not needed (either is default or relocation is done)
     if(NOT FMILIB_BUILD_SHARED_LIB)
@@ -67,10 +67,10 @@ else()
     set(FMILIB_BUILD_FOR_SHARED_LIBS OFF CACHE INTERNAL "The static library 'fmilib' can be linked into shared libraries. Mostly needed on Linux." FORCE)
 endif()
 
-option (FMILIB_GENERATE_DOXYGEN_DOC "Generate doxygen doc target" ON)
+option(FMILIB_GENERATE_DOXYGEN_DOC "Generate doxygen doc target" ON)
 
-option (FMILIB_BUILD_TESTS "Build tests" ON)
-option (FMILIB_BUILD_BEFORE_TESTS "Force build before testing" ON)
+option(FMILIB_BUILD_TESTS "Build tests" ON)
+option(FMILIB_BUILD_BEFORE_TESTS "Force build before testing" ON)
 option(FMILIB_LINK_TEST_TO_SHAREDLIB "Link the tests to fmilib_shared (if built) instead of fmilib" ON)
 
 option(FMILIB_GENERATE_BUILD_STAMP "Generate a build time stamp and include in into the library" OFF)
@@ -95,11 +95,11 @@ else()
     set (FMILIB_DEFAULT_BUILD_TYPE "Debug")
 endif()
 
-IF(NOT CMAKE_BUILD_TYPE)
+if(NOT CMAKE_BUILD_TYPE)
     SET(CMAKE_BUILD_TYPE ${FMILIB_DEFAULT_BUILD_TYPE})
-ENDIF(NOT CMAKE_BUILD_TYPE)
+endif()
 
-SET(CMAKE_INSTALL_PREFIX ${FMILIB_INSTALL_PREFIX} CACHE INTERNAL "Prefix prepended to install directories" FORCE)
+set(CMAKE_INSTALL_PREFIX ${FMILIB_INSTALL_PREFIX} CACHE INTERNAL "Prefix prepended to install directories" FORCE)
 
 # debug_message is used to trace the build script
 function(debug_message)
@@ -108,14 +108,14 @@ function(debug_message)
     endif()
 endfunction()
 
-IF(NOT CMAKE_CFG_INTDIR)
- SET(CMAKE_CFG_INTDIR ${FMILIB_DEFAULT_BUILD_TYPE})
-ENDIF(NOT CMAKE_CFG_INTDIR)
+if(NOT CMAKE_CFG_INTDIR)
+    set(CMAKE_CFG_INTDIR ${FMILIB_DEFAULT_BUILD_TYPE})
+endif()
 
 if(MSVC)
     # With C89 we're forced to use non-secure functions
     # TODO: We're now using C99, and this can be cleaned up
-    ADD_DEFINITIONS (/D _CRT_SECURE_NO_WARNINGS)
+    add_definitions(/D _CRT_SECURE_NO_WARNINGS)
 
     # Set the run-time library flag as controlled by the FMILIB_BUILD_WITH_STATIC_RTLIB option
     if(FMILIB_BUILD_WITH_STATIC_RTLIB)
@@ -138,43 +138,43 @@ if(MSVC)
             set(${flag_var} ${tmp} CACHE STRING "compiler flags" FORCE)
         endif()
 
-    endforeach(flag_var)
-endif(MSVC)
+    endforeach()
+endif()
 
-IF(CMAKE_COMPILER_IS_GNUCC)
-   SET(SAVED_C_DEFAULT_FLAGS "${CMAKE_C_FLAGS}")
-   SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99 -pedantic -Wall -Wno-unused-function")
-   if(NOT MSYS)
-    include(CheckCCompilerFlag)
-    CHECK_C_COMPILER_FLAG("-fvisibility=hidden" SUPPORT_VISIBILITY)
-    if(SUPPORT_VISIBILITY)
-        SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fvisibility=hidden")
+if(CMAKE_COMPILER_IS_GNUCC)
+    set(SAVED_C_DEFAULT_FLAGS "${CMAKE_C_FLAGS}")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99 -pedantic -Wall -Wno-unused-function")
+    if(NOT MSYS)
+        include(CheckCCompilerFlag)
+        CHECK_C_COMPILER_FLAG("-fvisibility=hidden" SUPPORT_VISIBILITY)
+        if(SUPPORT_VISIBILITY)
+            set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fvisibility=hidden")
+        endif()
     endif()
-  endif()
-ENDIF(CMAKE_COMPILER_IS_GNUCC)
+endif()
 
 # The config files will end up in the binary dir
 include_directories("${FMILibrary_BINARY_DIR}")
 
 if(FMILIB_BUILD_FOR_SHARED_LIBS)
-    SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${CMAKE_SHARED_LIBRARY_C_FLAGS}")
-    SET(WITH_PIC ON) # this is used in MERGE_LIBRARIES below
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${CMAKE_SHARED_LIBRARY_C_FLAGS}")
+    set(WITH_PIC ON) # this is used in MERGE_LIBRARIES below
 endif()
 
 # prefix each element of list by ${prefix}element
 macro(PREFIXLIST list_name prefix)
 # create empty list - necessary?
-    SET(${list_name}_TMP)
+    set(${list_name}_TMP)
 
     # prefix and suffix elements
     foreach(l IN LISTS ${list_name})
-      list(APPEND ${list_name}_TMP ${prefix}${l}${suffix} )
+        list(APPEND ${list_name}_TMP ${prefix}${l}${suffix} )
     endforeach()
 
     # replace list by tmp list
-    SET(${list_name} ${${list_name}_TMP})
-    UNSET(${list_name}_TMP)
-endmacro(PREFIXLIST)
+    set(${list_name} ${${list_name}_TMP})
+    unset(${list_name}_TMP)
+endmacro()
 
 # For MSVC define source groups. Does not work for MSVC 8. MSVC 9 not tested.
 if(MSVC AND (${CMAKE_GENERATOR} MATCHES "Visual Studio 10"))
@@ -203,25 +203,25 @@ CHECK_SYMBOL_EXISTS(__va_copy stdarg.h HAVE___VA_COPY)
 CHECK_SYMBOL_EXISTS(vsnprintf stdio.h HAVE_VSNPRINTF_SYM)
 CHECK_FUNCTION_EXISTS(vsnprintf HAVE_VSNPRINTF_FCN)
 
-MACRO(FMIL_EVAL_CONDITION var_to_store_cond_eval)
-   IF(${ARGN})
-     SET(${var_to_store_cond_eval} 1)
-   ELSE(${ARGN})
-     SET(${var_to_store_cond_eval} 0)
-   ENDIF(${ARGN})
-ENDMACRO(FMIL_EVAL_CONDITION)
+macro(FMIL_EVAL_CONDITION var_to_store_cond_eval)
+    if(${ARGN})
+        set(${var_to_store_cond_eval} 1)
+    else()
+        set(${var_to_store_cond_eval} 0)
+    endif()
+endmacro()
 
 FMIL_EVAL_CONDITION(HAVE_VSNPRINTF HAVE_VSNPRINTF_SYM OR HAVE_VSNPRINTF_FCN)
 
 # MSVC < 19.0 (Visual Studio 2015) have a non-standard vsnprintf
 # implementation. Use the one provided by c99snprintf instead
-if (MSVC AND (MSVC_VERSION LESS 1900))
+if(MSVC AND (MSVC_VERSION LESS 1900))
     set(HAVE_VSNPRINTF FALSE)
 endif()
 
 add_subdirectory(ThirdParty/c99_snprintf)
 
-SET(CMAKE_MODULE_PATH ${FMILIBRARYHOME}/Config.cmake)
+set(CMAKE_MODULE_PATH ${FMILIBRARYHOME}/Config.cmake)
 
 include(jmutil)
 include(fmixml)
@@ -247,9 +247,9 @@ else()
 endif()
 
 configure_file (
-  "${FMILibrary_SOURCE_DIR}/Config.cmake/config_fmilib.h.cmake"
-  "${FMILibrary_BINARY_DIR}/fmilib_config.h"
-  )
+    "${FMILibrary_SOURCE_DIR}/Config.cmake/config_fmilib.h.cmake"
+    "${FMILibrary_BINARY_DIR}/fmilib_config.h"
+)
 
 set(FMILIB_SHARED_SUBLIBS ${FMIXML_LIBRARIES} ${FMIZIP_LIBRARIES} ${FMICAPI_LIBRARIES} expat minizip zlib c99snprintf)
 set(FMILIB_SUBLIBS ${FMIIMPORT_LIBRARIES} ${JMUTIL_LIBRARIES} ${FMILIB_SHARED_SUBLIBS})
@@ -274,7 +274,8 @@ endif()
 
 set_target_properties(
     ${FMILIB_SUBLIBS}
-    PROPERTIES FOLDER "Sublibs")
+    PROPERTIES FOLDER "Sublibs"
+)
 
 if(FMILIB_INSTALL_SUBLIBS)
     set(FMILIB_TARGETS fmiimport jmutils fmizip fmixml fmicapi)
@@ -293,10 +294,10 @@ if(FMILIB_BUILD_STATIC_LIB)
         endforeach()
     else()
         merge_static_libs(fmilib ${FMILIB_SUBLIBS} )
-    endif(WIN32)
+    endif()
     if(UNIX)
         target_link_libraries(fmilib dl)
-    endif(UNIX)
+    endif()
     set(FMILIB_TARGETS ${FMILIB_TARGETS} fmilib)
 endif()
 
@@ -307,7 +308,7 @@ if(FMILIB_BUILD_SHARED_LIB)
     # fmiimport's dependencies such as generated code is built first.
     add_dependencies(fmilib_shared fmiimport)
 
-    if (UNIX AND NOT APPLE)
+    if(UNIX AND NOT APPLE)
         target_compile_definitions(fmilib_shared PRIVATE -D_GNU_SOURCE)
     endif()
 
@@ -331,15 +332,15 @@ install(TARGETS ${FMILIB_TARGETS}
     RUNTIME DESTINATION lib
 )
 install(FILES
-            "${FMILIBRARYHOME}/FMILIB_Readme.txt"
-            "${FMILIBRARYHOME}/FMILIB_License.txt"
-            "${FMILIBRARYHOME}/FMILIB_Acknowledgements.txt"
-        DESTINATION doc)
+    "${FMILIBRARYHOME}/FMILIB_Readme.txt"
+    "${FMILIBRARYHOME}/FMILIB_License.txt"
+    "${FMILIBRARYHOME}/FMILIB_Acknowledgements.txt"
+    DESTINATION doc)
 
 install(FILES
-            "${FMILibrary_BINARY_DIR}/fmilib_config.h"
-            "${FMILibrary_BINARY_DIR}/fmilib.h"
-        DESTINATION include)
+    "${FMILibrary_BINARY_DIR}/fmilib_config.h"
+    "${FMILibrary_BINARY_DIR}/fmilib.h"
+    DESTINATION include)
 
 install(DIRECTORY
     ${FMIIMPORTDIR}/include
@@ -402,13 +403,13 @@ if(FMILIB_GENERATE_DOXYGEN_DOC)
 
     set(DOXYFILE_STRIP_FROM_PATH "${FMILIBRARYHOME}")
 
-    SET(CMAKE_MODULE_PATH ${FMILIB_THIRDPARTYLIBS}/CMakeModules)
+    set(CMAKE_MODULE_PATH ${FMILIB_THIRDPARTYLIBS}/CMakeModules)
 
     include(UseDoxygen/UseDoxygen)
 endif(FMILIB_GENERATE_DOXYGEN_DOC)
 
 # Debug only: prints the final value of all the non-environment variables
-if (FMILIB_DEBUG_PRINT_VARIABLES_ONLY)
+if(FMILIB_DEBUG_PRINT_VARIABLES_ONLY)
     get_cmake_property(_variableNames VARIABLES)
     list(SORT _variableNames)
     foreach (_variableName ${_variableNames})

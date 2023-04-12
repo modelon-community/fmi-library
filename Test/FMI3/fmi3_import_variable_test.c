@@ -1,14 +1,14 @@
 #include <stdio.h>
 
-#include <fmilib.h>
+#include "fmilib.h"
 #include "config_test.h"
 #include "fmi_testutil.h"
 
-static fmi3_import_t *parse_xml(const char *model_desc_path)
+static fmi3_import_t* parse_xml(const char* model_desc_path)
 {
-    jm_callbacks *cb = jm_get_default_callbacks();
-    fmi_import_context_t *ctx = fmi_import_allocate_context(cb);
-    fmi3_import_t *xml;
+    jm_callbacks* cb = jm_get_default_callbacks();
+    fmi_import_context_t* ctx = fmi_import_allocate_context(cb);
+    fmi3_import_t* xml;
 
     if (ctx == NULL) {
         return NULL;
@@ -21,12 +21,12 @@ static fmi3_import_t *parse_xml(const char *model_desc_path)
 }
 
 /* Parse enum variable with minimal specified information. Tests defauts. */
-static int enum_minimal_test(fmi3_import_t *xml)
+static int enum_minimal_test(fmi3_import_t* xml)
 {
-    fmi3_import_variable_t *v = fmi3_import_get_variable_by_name(xml, "minEnumVar");
-    fmi3_import_enum_variable_t *ev;
-    fmi3_import_variable_typedef_t *t;
-    fmi3_import_enumeration_typedef_t *et;
+    fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "minEnumVar");
+    fmi3_import_enum_variable_t* ev;
+    fmi3_import_variable_typedef_t* t;
+    fmi3_import_enumeration_typedef_t* et;
 
     ASSERT_MSG(v != NULL, "Could not find variable to test");
     ASSERT_MSG(fmi3_import_get_variable_vr(v) == 4, "Bad vr");
@@ -63,12 +63,12 @@ static int enum_minimal_test(fmi3_import_t *xml)
 }
 
 /* Parse enum variable with all information specified */
-static int enum_maximal_test(fmi3_import_t *xml)
+static int enum_maximal_test(fmi3_import_t* xml)
 {
-    fmi3_import_variable_t *v = fmi3_import_get_variable_by_name(xml, "maxEnumVar");
-    fmi3_import_enum_variable_t *ev;
-    fmi3_import_variable_typedef_t *t;
-    fmi3_import_enumeration_typedef_t *et;
+    fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "maxEnumVar");
+    fmi3_import_enum_variable_t* ev;
+    fmi3_import_variable_typedef_t* t;
+    fmi3_import_enumeration_typedef_t* et;
     ASSERT_MSG(v != NULL, "Could not find variable to test");
     ASSERT_MSG(fmi3_import_get_variable_vr(v) == 5, "Bad vr");
     ASSERT_MSG(strcmp(fmi3_import_get_variable_description(v), "myDescription") == 0,
@@ -104,9 +104,9 @@ static int enum_maximal_test(fmi3_import_t *xml)
     return TEST_OK;
 }
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
-    fmi3_import_t *xml;
+    fmi3_import_t* xml;
     int ret = 1;
     if (argc != 2) {
         printf("Usage: %s <path to allBaseTypes modelDescription>\n", argv[0]);

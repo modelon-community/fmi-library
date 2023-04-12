@@ -7,19 +7,6 @@
 #define CATCH_CONFIG_MAIN
 #include "catch.hpp"
 
-static fmi3_import_t* parse_xml(const char* model_desc_path) {
-    jm_callbacks* cb = jm_get_default_callbacks();
-    fmi_import_context_t* ctx = fmi_import_allocate_context(cb);
-    REQUIRE(ctx != NULL);
-
-    fmi3_import_t* xml;
-    xml = fmi3_import_parse_xml(ctx, model_desc_path, NULL);
-    REQUIRE(xml != NULL);
-
-    fmi_import_free_context(ctx);
-
-    return xml;
-}
 
 /* Parse enum variable with minimal specified information. Tests defaults. */
 static int enum_minimal_test(fmi3_import_t* xml) {
@@ -92,7 +79,7 @@ static int enum_maximal_test(fmi3_import_t* xml) {
 TEST_CASE("Variable parsing", "[xml_variables]") {
     const char* xmldir = FMI3_TEST_XML_DIR "/variable_test";
 
-    fmi3_import_t* xml = parse_xml(xmldir);
+    fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
     REQUIRE(xml != NULL);
     
     SECTION("enum minimal test") {

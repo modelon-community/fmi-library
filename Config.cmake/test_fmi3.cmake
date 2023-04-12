@@ -11,10 +11,7 @@
 #    You should have received a copy of the FMILIB_License.txt file
 #    along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 
-
-
-include_directories(${RTTESTDIR}/FMI3)
-
+include_directories(${FMIL_TEST_DIR}/FMI3)
 
 #Defines for the test FMUs
 set(FMU3_DUMMY_ME_MODEL_IDENTIFIER BouncingBall3) #This must be the same as in the xml-file
@@ -22,7 +19,7 @@ set(FMU3_DUMMY_CS_MODEL_IDENTIFIER BouncingBall3) #This must be the same as in t
 set(FMU3_DUMMY_SE_MODEL_IDENTIFIER BouncingBall3) #This must be the same as in the xml-file
 set(FMU3_DUMMY_MF_MODEL_IDENTIFIER BouncingBall3_malformed) #This must be the same as in the xml-file
 
-set(FMU3_DUMMY_FOLDER ${RTTESTDIR}/FMI3/fmu_dummy)
+set(FMU3_DUMMY_FOLDER ${FMIL_TEST_DIR}/FMI3/fmu_dummy)
 to_native_c_path(${TEST_OUTPUT_FOLDER}/tempfolder/FMI3 FMU3_TEMPFOLDER)
 
 set(FMU3_DUMMY_ME_SOURCE
@@ -48,8 +45,7 @@ set(XML_CS_PATH ${FMU3_DUMMY_FOLDER}/modelDescription_cs.xml)
 set(XML_SE_PATH ${FMU3_DUMMY_FOLDER}/modelDescription_se.xml)
 set(XML_MF_PATH ${FMU3_DUMMY_FOLDER}/modelDescription_malformed.xml)
 
-set(FMI3_TEST_XML_DIR ${RTTESTDIR}/FMI3/parser_test_xmls)
-set(VARIABLE_TEST_MODEL_DESC_DIR                      ${FMI3_TEST_XML_DIR}/variable_test)
+set(FMI3_TEST_XML_DIR ${FMIL_TEST_DIR}/FMI3/parser_test_xmls)
 set(DEFAULT_EXPERIMENT_MODEL_DESC_DIR                 ${FMI3_TEST_XML_DIR}/default_experiment/) # Trailing '/' necessary (for building system independent path)
 set(VARIABLE_BAD_VARIABILITY_CAUSALITY_MODEL_DESC_DIR ${FMI3_TEST_XML_DIR}/variable_bad_variability_causality)
 set(VARIABLE_TYPES_TEST_MODEL_DESC_DIR                ${FMI3_TEST_XML_DIR}/variable_types/float)
@@ -86,53 +82,52 @@ to_native_c_path("${TEST_OUTPUT_FOLDER}/Temporary" FMU_TEMPORARY_TEST_DIR)
 
 
 # Test that it works for C++ applications
-add_executable (fmi3_import_xml_test ${RTTESTDIR}/FMI3/fmi3_import_xml_test.cc)
+add_executable (fmi3_import_xml_test ${FMIL_TEST_DIR}/FMI3/fmi3_import_xml_test.cc)
 target_link_libraries (fmi3_import_xml_test  ${FMILIBFORTEST})
 
 # General functionality tests
-add_executable (fmi3_xml_parsing_test ${RTTESTDIR}/FMI3/fmi3_xml_parsing_test.c)
+add_executable (fmi3_xml_parsing_test ${FMIL_TEST_DIR}/FMI3/fmi3_xml_parsing_test.c)
 target_link_libraries (fmi3_xml_parsing_test  ${FMILIBFORTEST})
 if(FMILIB_TEST_LOCALE)
     target_compile_definitions(fmi3_xml_parsing_test PRIVATE -DFMILIB_TEST_LOCALE)
 endif()
 
-add_executable(fmi3_import_model_structure_test ${RTTESTDIR}/FMI3/fmi3_import_model_structure_test.c)
+add_executable(fmi3_import_model_structure_test ${FMIL_TEST_DIR}/FMI3/fmi3_import_model_structure_test.c)
 target_link_libraries(fmi3_import_model_structure_test ${FMILIBFORTEST})
 
-add_executable (fmi3_import_sim_me_test ${RTTESTDIR}/FMI3/fmi3_import_sim_me_test.c)
-target_link_libraries (fmi3_import_sim_me_test  ${FMILIBFORTEST})
+add_executable(fmi3_import_sim_me_test ${FMIL_TEST_DIR}/FMI3/fmi3_import_sim_me_test.c)
+target_link_libraries(fmi3_import_sim_me_test  ${FMILIBFORTEST})
 
-add_executable (fmi3_import_sim_cs_test ${RTTESTDIR}/FMI3/fmi3_import_sim_cs_test.c)
-target_link_libraries (fmi3_import_sim_cs_test ${FMILIBFORTEST})
+add_executable(fmi3_import_sim_cs_test ${FMIL_TEST_DIR}/FMI3/fmi3_import_sim_cs_test.c)
+target_link_libraries(fmi3_import_sim_cs_test ${FMILIBFORTEST})
 
-add_executable (fmi3_import_sim_se_test ${RTTESTDIR}/FMI3/fmi3_import_sim_se_test.c)
-target_link_libraries (fmi3_import_sim_se_test ${FMILIBFORTEST})
+add_executable(fmi3_import_sim_se_test ${FMIL_TEST_DIR}/FMI3/fmi3_import_sim_se_test.c)
+target_link_libraries(fmi3_import_sim_se_test ${FMILIBFORTEST})
 
-add_executable(fmi3_import_variable_test ${RTTESTDIR}/FMI3/fmi3_import_variable_test.cpp)
-set_source_files_properties(${RTTESTDIR}/FMI3/fmi3_import_variable_test.cpp PROPERTIES LANGUAGE CXX)
-target_include_directories(fmi3_import_variable_test PUBLIC "${FMILIB_THIRDPARTYLIBS}/Catch2/single_include/catch2/")
+add_executable(fmi3_import_variable_test ${FMIL_TEST_DIR}/FMI3/fmi3_import_variable_test.cpp)
+set_source_files_properties(${FMIL_TEST_DIR}/FMI3/fmi3_import_variable_test.cpp PROPERTIES LANGUAGE CXX)
 target_link_libraries(fmi3_import_variable_test Catch ${FMILIBFORTEST})
 
-add_executable(fmi3_import_type_definitions_test ${RTTESTDIR}/FMI3/fmi3_import_type_definitions_test.c)
+add_executable(fmi3_import_type_definitions_test ${FMIL_TEST_DIR}/FMI3/fmi3_import_type_definitions_test.c)
 target_link_libraries(fmi3_import_type_definitions_test ${FMILIBFORTEST})
 
-add_executable(fmi3_import_fatal_test ${RTTESTDIR}/FMI3/fmi3_import_fatal_test.c)
+add_executable(fmi3_import_fatal_test ${FMIL_TEST_DIR}/FMI3/fmi3_import_fatal_test.c)
 target_link_libraries(fmi3_import_fatal_test ${FMILIBFORTEST})
 
-add_executable(fmi3_import_arrays_test ${RTTESTDIR}/FMI3/fmi3_import_arrays_test.c)
+add_executable(fmi3_import_arrays_test ${FMIL_TEST_DIR}/FMI3/fmi3_import_arrays_test.c)
 target_link_libraries(fmi3_import_arrays_test ${FMILIBFORTEST})
 
-add_executable(fmi3_import_variable_types_test ${RTTESTDIR}/FMI3/fmi3_import_variable_types_test.c)
+add_executable(fmi3_import_variable_types_test ${FMIL_TEST_DIR}/FMI3/fmi3_import_variable_types_test.c)
 target_link_libraries(fmi3_import_variable_types_test ${FMILIBFORTEST})
 
-add_executable(fmi3_import_default_experiment_test ${RTTESTDIR}/FMI3/fmi3_import_default_experiment_test.c)
+add_executable(fmi3_import_default_experiment_test ${FMIL_TEST_DIR}/FMI3/fmi3_import_default_experiment_test.c)
 target_link_libraries(fmi3_import_default_experiment_test ${FMILIBFORTEST})
 
 add_executable(fmi3_variable_bad_variability_causality_test
-               ${RTTESTDIR}/FMI3/fmi3_variable_bad_variability_causality_test.c)
+               ${FMIL_TEST_DIR}/FMI3/fmi3_variable_bad_variability_causality_test.c)
 target_link_libraries(fmi3_variable_bad_variability_causality_test ${FMILIBFORTEST})
 
-add_executable(fmi3_enum_test ${RTTESTDIR}/FMI3/fmi3_enum_test.c)
+add_executable(fmi3_enum_test ${FMIL_TEST_DIR}/FMI3/fmi3_enum_test.c)
 target_link_libraries(fmi3_enum_test ${FMILIBFORTEST})
 
 set_target_properties(
@@ -149,7 +144,7 @@ set_target_properties(
 set(FAIL_NAME_CHECK 0)
 set(PASS_NAME_CHECK 1)
 
-add_test(ctest_fmi3_xml_parsing_test fmi3_xml_parsing_test ${RTTESTDIR}/FMI3/parser_test_xmls/)
+add_test(ctest_fmi3_xml_parsing_test fmi3_xml_parsing_test ${FMIL_TEST_DIR}/FMI3/parser_test_xmls/)
 add_test(ctest_fmi3_import_xml_test_empty fmi3_import_xml_test ${FMU3_DUMMY_FOLDER})
 add_test(ctest_fmi3_import_xml_test_me fmi3_import_xml_test ${TEST_OUTPUT_FOLDER}/${FMU3_DUMMY_ME_MODEL_IDENTIFIER}_me)
 add_test(ctest_fmi3_import_xml_test_cs fmi3_import_xml_test ${TEST_OUTPUT_FOLDER}/${FMU3_DUMMY_CS_MODEL_IDENTIFIER}_cs)

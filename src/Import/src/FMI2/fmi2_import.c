@@ -38,7 +38,9 @@ fmi2_import_t* fmi2_import_allocate(jm_callbacks* cb) {
 
     if(!fmu || (jm_vector_init(char)(&fmu->logMessageBufferCoded,JM_MAX_ERROR_MESSAGE_SIZE,cb) < JM_MAX_ERROR_MESSAGE_SIZE)) {
         jm_log_fatal(cb, module, "Could not allocate memory");
-        if(fmu) cb->free(fmu);
+        if(fmu) {
+            cb->free(fmu);
+        }
         return 0;
     }
     fmu->dirPath = 0;

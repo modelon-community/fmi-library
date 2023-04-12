@@ -1077,7 +1077,7 @@ int fmi3_xml_handle_FloatXXVariable(fmi3_xml_parser_context_t* context, const ch
         /* TODO: handle this cleanly: */
         /* just read the attribute, so we don't get any warning from it being unused in the buffer... it is saved as startAttr in the variable */
         {
-            char* tmp; /* unused */
+            const char* tmp; /* unused */
             fmi3_xml_get_attr_str(context, fmi3_xml_elmID_Float64, fmi_attr_id_start, 0, &tmp);
         }
     } else { /* end of tag */
@@ -1341,8 +1341,8 @@ fmi3_xml_enum_variable_props_t * fmi3_xml_parse_enum_properties(fmi3_xml_parser_
 
     props->quantity = (quantity == 0) ? declaredType->quantity : quantity;
 
-    if (    fmi3_xml_set_attr_int32(context, elmID, fmi_attr_id_min, 0, &props->typeMin, &declaredType->typeMin) ||
-            fmi3_xml_set_attr_int32(context, elmID, fmi_attr_id_max, 0, &props->typeMax, &declaredType->typeMax)) {
+    if (    fmi3_xml_set_attr_int32(context, elmID, fmi_attr_id_min, 0, &props->typeMin, declaredType->typeMin) ||
+            fmi3_xml_set_attr_int32(context, elmID, fmi_attr_id_max, 0, &props->typeMax, declaredType->typeMax)) {
         return 0;
     }
 

@@ -19,8 +19,6 @@
 
 #include "FMI3/fmi3_xml_variable.h"
 
-static const char* module = "FMI3XML";
-
 /* define fmi3_xml_dimension_t vector functions */
 #define JM_TEMPLATE_INSTANCE_TYPE fmi3_xml_dimension_t
 #include "JM/jm_vector_template.h"

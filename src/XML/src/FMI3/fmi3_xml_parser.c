@@ -424,7 +424,7 @@ static void fmi3_xml_parse_error_attr(fmi3_xml_parser_context_t *context, fmi3_x
 /**
     Checks that [u]int64 value was correctly parsed to its numeric value.
 */
-fmi3_xml_value_boundary_check_strcmp(jm_string strVal, const char* formatter, fmi3_int_buf_t* valueBuf) {
+static int fmi3_xml_value_boundary_check_strcmp(jm_string strVal, const char* formatter, fmi3_int_buf_t* valueBuf) {
     char wbBuf[100];                                    /* write-back buffer for comparing numeric [u]int64 value with original string */
     size_t wbBufSz = sizeof(wbBuf) / sizeof(char);
     int idx_start = strncmp(strVal, "+", 1) ? 0 : 1;    /* xs:long may contain leading '+' - skip it during comparison */
@@ -861,7 +861,7 @@ void fmi3_xml_set_element_handle(fmi3_xml_parser_context_t *context, const char*
 }
 
 /**
-/* Returns true if parent element's type or super type (recursively) matches
+ * Returns true if parent element's type or super type (recursively) matches
  * the expected type.
  */
 int fmi3_xml_is_valid_parent(fmi3_xml_elm_enu_t child_id, fmi3_xml_elm_enu_t parent_id) {
@@ -885,7 +885,7 @@ int fmi3_xml_get_super_type_rec(fmi3_xml_elm_enu_t id) {
 }
 
 /**
-/* Returns true if the top-level super types are the same.
+ * Returns true if the top-level super types are the same.
  */
 int fmi3_xml_are_same_type(fmi3_xml_elm_enu_t id1, fmi3_xml_elm_enu_t id2) {
     return fmi3_xml_get_super_type_rec(id1) == fmi3_xml_get_super_type_rec(id2);

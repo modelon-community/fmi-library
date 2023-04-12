@@ -227,8 +227,6 @@ ExternalProject_Add_Step(
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/ExpatEx
 )
 
-add_dependencies(expatex ${CMAKE_BINARY_DIR}/CMakeCache.txt ${FMILIBRARYHOME}/CMakeLists.txt)
-
 
 if(MSVC)
     # Expat uses special naming with MSVC, which is mirrored here.
@@ -284,6 +282,5 @@ if(MSVC)
     target_compile_definitions(fmixml PUBLIC XML_STATIC)
 endif()
 target_link_libraries(fmixml ${JMUTIL_LIBRARIES} expat)
-add_dependencies(fmixml generate_numeric_types)
 
 endif(NOT FMIXMLDIR)

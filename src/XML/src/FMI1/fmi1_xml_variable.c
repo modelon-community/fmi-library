@@ -863,8 +863,6 @@ void fmi1_xml_eliminate_bad_alias(fmi1_xml_parser_context_t *context, jm_vector(
     size_t n, index;
 
     fmi1_xml_variable_t* v = (fmi1_xml_variable_t*)jm_vector_get_item(jm_voidp)(varByVR, indexVR);
-    fmi1_value_reference_t vr = v->vr;
-    fmi1_base_type_enu_t vt = fmi1_xml_get_variable_base_type(v);
     jm_named_ptr key;
 
     n = jm_vector_get_size(jm_voidp)(varByVR);

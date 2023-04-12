@@ -11,14 +11,14 @@ static const int NO_LOG_EXPECTED_MSG = 0;
 static const int DO_LOG_EXPECTED_MSG = 1;
 
 static int did_log_expected_msg;
-static char *expected_message = "Invalid structured ScalarVariable name";
-static char *name_check_test_directory;
+static char *g_name_check_test_directory;
+static char *g_expected_message = "Invalid structured ScalarVariable name";
 
 void importlogger(jm_callbacks* c, jm_string module,
         jm_log_level_enu_t log_level, jm_string message)
 {
     printf("module = %s, log level = %d: %s\n", module, log_level, message);
-    if (!strncmp(expected_message, message, strlen(expected_message))) {
+    if (!strncmp(g_expected_message, message, strlen(g_expected_message))) {
         did_log_expected_msg = 1;
     }
 }
@@ -53,7 +53,7 @@ fmi1_import_t* test_parser(jm_callbacks *cb, char *xml_dir, int should_log_expec
     }
 
     did_log_expected_msg = 0;
-    full_path = concat(name_check_test_directory, xml_dir);
+    full_path = concat(g_name_check_test_directory, xml_dir);
     fmu = fmi1_import_parse_xml((fmi_import_context_t *)cb->context, full_path);
 
     free(full_path);
@@ -196,7 +196,7 @@ void test_variable_naming_conventions(void) {
 
     /* list of variables */
     fail_name_check("naming_conventions_xmls/list/aemptyc");
-    expected_message = "Two variables with the same name";
+    g_expected_message = "Two variables with the same name";
     pass_name_check("naming_conventions_xmls/list/cba");
     fail_name_check("naming_conventions_xmls/list/acad");
 
@@ -278,120 +278,120 @@ void test_alias_set_error_handling(void) {
      * that incorrect alias variables are removed or that
      * variable that should be alias variables becomes alias */
 
-    expected_message = "Alias set with vr=0 (type=Real) do not have a 'noAlias' variable.";
+    g_expected_message = "Alias set with vr=0 (type=Real) do not have a 'noAlias' variable.";
     parser_log_expected_message("alias_validation/all_alias");
-    expected_message = "Removing incorrect alias variable 'v2'";
+    g_expected_message = "Removing incorrect alias variable 'v2'";
     test_parsing_fail_and_fmu("alias_validation/all_alias", should_have_no_vars);
 
-    expected_message = "Alias set with vr=0 (type=Real) do not have a 'noAlias' variable.";
+    g_expected_message = "Alias set with vr=0 (type=Real) do not have a 'noAlias' variable.";
     parser_log_expected_message("alias_validation/all_alias_mixed");
-    expected_message = "Removing incorrect alias variable 'v2'";
+    g_expected_message = "Removing incorrect alias variable 'v2'";
     test_parsing_fail_and_fmu("alias_validation/all_alias_mixed", should_have_no_vars);
 
-    expected_message = "Alias set with vr=0 (type=Real) do not have a 'noAlias' variable.";
+    g_expected_message = "Alias set with vr=0 (type=Real) do not have a 'noAlias' variable.";
     parser_log_expected_message("alias_validation/all_negated_alias");
-    expected_message = "Removing incorrect alias variable 'v2'";
+    g_expected_message = "Removing incorrect alias variable 'v2'";
     test_parsing_fail_and_fmu("alias_validation/all_negated_alias", should_have_no_vars);
 
-    expected_message = "Variables v1 and v2 reference the same vr 0. Marking 'v2' as alias.";
+    g_expected_message = "Variables v1 and v2 reference the same vr 0. Marking 'v2' as alias.";
     test_parsing_fail_and_fmu("alias_validation/all_no_alias", should_have_size_2_alias_group);
 
-    expected_message = "Variables v1 and v2 reference the same vr 0. Marking 'v2' as alias.";
+    g_expected_message = "Variables v1 and v2 reference the same vr 0. Marking 'v2' as alias.";
     test_parsing_pass_and_fmu("alias_validation/small_valid_alias_set", should_have_size_2_alias_group);
 
-    expected_message = "Variables v1 and v2 reference the same vr 0. Marking 'v2' as alias.";
+    g_expected_message = "Variables v1 and v2 reference the same vr 0. Marking 'v2' as alias.";
     test_parsing_pass_and_fmu("alias_validation/medium_valid_alias_set", should_have_size_3_alias_group);
 
-    expected_message = "Alias set with vr=0 (type=Real) do not have a 'noAlias' variable.";
+    g_expected_message = "Alias set with vr=0 (type=Real) do not have a 'noAlias' variable.";
     parser_log_expected_message("alias_validation/all_alias_two_sets");
-    expected_message = "Alias set with vr=1 (type=Real) do not have a 'noAlias' variable.";
+    g_expected_message = "Alias set with vr=1 (type=Real) do not have a 'noAlias' variable.";
     test_parsing_fail_and_fmu("alias_validation/all_alias_two_sets", should_have_no_vars);
 
-    expected_message = "Variables v1 and v2 reference the same vr 0. Marking 'v2' as alias.";
+    g_expected_message = "Variables v1 and v2 reference the same vr 0. Marking 'v2' as alias.";
     test_parsing_pass_and_fmu("alias_validation/all_no_alias_two_sets", should_have_size_2_no_alis);
 
-    expected_message = "Inconsistent start values in alias set";
+    g_expected_message = "Inconsistent start values in alias set";
     parser_no_log_expected_message("alias_validation/consistent_real_start_values");
 
-    expected_message = "Inconsistent start values in alias set";
+    g_expected_message = "Inconsistent start values in alias set";
     parser_no_log_expected_message("alias_validation/consistent_int_start_values");
 
-    expected_message = "Inconsistent start values in alias set";
+    g_expected_message = "Inconsistent start values in alias set";
     parser_no_log_expected_message("alias_validation/consistent_enum_start_values");
 
-    expected_message = "Inconsistent start values in alias set";
+    g_expected_message = "Inconsistent start values in alias set";
     parser_no_log_expected_message("alias_validation/consistent_bool_start_values");
 
-    expected_message = "Inconsistent start values in alias set";
+    g_expected_message = "Inconsistent start values in alias set";
     parser_no_log_expected_message("alias_validation/consistent_str_start_values");
 
-    expected_message = "Inconsistent start values in alias set, "
+    g_expected_message = "Inconsistent start values in alias set, "
         "start value '1.0"; /* Cannot check more of message due to potential roundings */
     test_parsing_fail_and_fmu("alias_validation/inconsistent_real_start_values",
         should_have_1_no_alias_var);
 
-    expected_message = "Inconsistent start values in alias set, "
+    g_expected_message = "Inconsistent start values in alias set, "
         "start value '1' of 'v1' does not match "
         "start value '3' of 'v2'.";
     test_parsing_fail_and_fmu("alias_validation/inconsistent_int_start_values",
         should_have_1_no_alias_var);
 
-    expected_message = "Inconsistent start values in alias set, "
+    g_expected_message = "Inconsistent start values in alias set, "
         "start value '1' of 'v1' does not match "
         "start value '2' of 'v2'.";
     test_parsing_fail_and_fmu("alias_validation/inconsistent_enum_start_values",
         should_have_1_no_alias_var);
 
-    expected_message = "Inconsistent start values in alias set, "
+    g_expected_message = "Inconsistent start values in alias set, "
         "start value 'true' of 'v1' does not match "
         "start value 'false' of 'v2'.";
     test_parsing_fail_and_fmu("alias_validation/inconsistent_bool_start_values",
         should_have_1_no_alias_var);
 
-    expected_message = "Inconsistent start values in alias set, "
+    g_expected_message = "Inconsistent start values in alias set, "
         "start value 'a' of 'v1' does not match "
         "start value 'b' of 'v2'.";
     test_parsing_fail_and_fmu("alias_validation/inconsistent_str_start_values",
         should_have_1_no_alias_var);
 
-    expected_message = "Inconsistent start values in alias set, "
+    g_expected_message = "Inconsistent start values in alias set, "
         "start value '1.0"; /* Cannot check more of message due to potential roundings */
     test_parsing_fail_and_fmu("alias_validation/inconsistent_neg_real_start_values",
         should_have_1_no_alias_var);
 
-    expected_message = "Inconsistent start values in alias set, "
+    g_expected_message = "Inconsistent start values in alias set, "
         "start value '1' of 'v1' does not match "
         "start value '1' of 'v2'(negated alias).";
     test_parsing_fail_and_fmu("alias_validation/inconsistent_neg_int_start_values",
         should_have_1_no_alias_var);
 
-    expected_message = "Inconsistent start values in alias set, "
+    g_expected_message = "Inconsistent start values in alias set, "
         "start value '1' of 'v1' does not match "
         "start value '1' of 'v2'(negated alias).";
     test_parsing_fail_and_fmu("alias_validation/inconsistent_neg_enum_start_values",
         should_have_1_no_alias_var);
 
-    expected_message = "Inconsistent start values in alias set, "
+    g_expected_message = "Inconsistent start values in alias set, "
         "start value 'true' of 'v1' does not match "
         "start value 'true' of 'v2'(negated alias).";
     test_parsing_fail_and_fmu("alias_validation/inconsistent_neg_bool_start_values",
         should_have_1_no_alias_var);
 
-    expected_message = "Inconsistent start values in alias set, "
+    g_expected_message = "Inconsistent start values in alias set, "
         "start value 'a' of 'v1' does not match "
         "start value 'a' of 'v2'(negated alias).";
     test_parsing_fail_and_fmu("alias_validation/inconsistent_neg_str_start_values",
         should_have_1_no_alias_var);
 
-    expected_message = "Inconsistent start values in alias set";
+    g_expected_message = "Inconsistent start values in alias set";
     parser_no_log_expected_message("alias_validation/consistent_real_start_values2");
 
-    expected_message = "Inconsistent start values in alias set, "
+    g_expected_message = "Inconsistent start values in alias set, "
         "start value '1' of 'v2' does not match "
         "start value '3' of 'v3'.";
     parser_log_expected_message("alias_validation/inconsistent_int_start_values2");
 
-    expected_message = "Inconsistent start values in alias set";
+    g_expected_message = "Inconsistent start values in alias set";
     test_parsing_pass_and_fmu("alias_validation/consistent_real_zero_start_values", should_have_size_2_alias_group);
 }
 
@@ -404,14 +404,14 @@ void test_deprecation_errors(void) {
      * modelDescriptions.
      */
 
-    expected_message = "Found capability flag canSignalEvents which has been "
+    g_expected_message = "Found capability flag canSignalEvents which has been "
         "deprecated as it fills no function";
     parser_log_expected_message("deprecated/canSignalEvents");
 }
 
 void test_variable_no_type(void)
 {
-    expected_message = "No variable type element for variable v. Assuming Real.";
+    g_expected_message = "No variable type element for variable v. Assuming Real.";
     parser_log_expected_message("incorrect/variable_no_type");
 }
 
@@ -493,7 +493,7 @@ static void test_locale_lc_numeric() {
          * the result. */
 
         int failed = 0;
-        char* xmldir = concat(name_check_test_directory, "/env/locale");
+        char* xmldir = concat(g_name_check_test_directory, "/env/locale");
         fmi1_import_t* xml = parse_xml(cb, xmldir);
         free(xmldir);
 
@@ -542,7 +542,7 @@ static void test_locale_lc_numeric() {
 int main(int argc, char *argv[])
 {
     if (argc == 2) {
-        name_check_test_directory = argv[1];
+        g_name_check_test_directory = argv[1];
     } else {
         printf("Usage: %s <path to folder 'parser_test_xmls'>\n", argv[0]);
         exit(CTEST_RETURN_FAIL);

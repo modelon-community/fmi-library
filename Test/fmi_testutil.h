@@ -85,6 +85,9 @@ char* concat(char *s1, char *s2);
         }                                                                   \
     } while (0)
 
+/**
+ * TODO: Align with CTEST_RETURN_SUCCESS etc. Do not use for new code until OK is 0 and FAIL is non-zero.
+ */
 #define TEST_OK (1)
 #define TEST_FAIL (0)
 

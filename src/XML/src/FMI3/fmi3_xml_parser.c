@@ -117,6 +117,7 @@ const char *fmi3_xmlAttrNames[fmi3_xml_attr_number] = {
 #define fmi3_xml_scheme_BooleanVariable      {fmi3_xml_elmID_Variable,   fmi3_xml_elmID_ModelVariables,      0,       1}
 #define fmi3_xml_scheme_StringVariable       {fmi3_xml_elmID_Variable,   fmi3_xml_elmID_ModelVariables,      0,       1}
 #define fmi3_xml_scheme_EnumerationVariable  {fmi3_xml_elmID_Variable,   fmi3_xml_elmID_ModelVariables,      0,       1}
+#define fmi3_xml_scheme_BinaryVariable       {fmi3_xml_elmID_Variable,   fmi3_xml_elmID_ModelVariables,      0,       1}
 #define fmi3_xml_scheme_Dimension            {fmi3_xml_elmID_none,       fmi3_xml_elmID_Variable,            0,       1}
 
 #define fmi3_xml_scheme_Annotations          {fmi3_xml_elmID_none,       fmi3_xml_elmID_Variable,            1,       0}
@@ -379,7 +380,7 @@ int fmi3_xml_set_attr_enum(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_
 
 int fmi3_xml_set_attr_boolean(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, int required, unsigned int* field, unsigned int defaultVal) {
     jm_name_ID_map_t fmi_boolean_i_dMap[] = {{"true", 1},{"false", 0}, {"1", 1},{"0", 0}, {0,0}};
-    return fmi3_xml_set_attr_enum(context,elmID, attrID,required, field, defaultVal, fmi_boolean_i_dMap);
+    return fmi3_xml_set_attr_enum(context, elmID, attrID, required, field, defaultVal, fmi_boolean_i_dMap);
 }
 
 static void fmi3_xml_parse_error_attr(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID,

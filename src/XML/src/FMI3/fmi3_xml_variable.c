@@ -686,13 +686,132 @@ void fmi3_xml_variable_free_internals(jm_callbacks* callbacks, fmi3_xml_variable
     }
 }
 
-int fmi3_xml_handle_Variable(fmi3_xml_parser_context_t *context, const char* data) {
-    int at_start_tag = !data;
+/**
+ * Processes the attributes 'causality', 'variability' and 'initial'.
+ * 
+ * The attributes are error checked. On success, the parsed variable is updated with them.
+ */
+static int fmi3_xml_variable_process_attr_causality_variability_initial(fmi3_xml_parser_context_t* context,
+        fmi3_xml_variable_t* variable, fmi3_xml_elm_enu_t elm_id)
+{
+    jm_name_ID_map_t causalityConventionMap[] = {
+            {"local",               fmi3_causality_enu_local},
+            {"input",               fmi3_causality_enu_input},
+            {"output",              fmi3_causality_enu_output},
+            {"parameter",           fmi3_causality_enu_parameter},
+            {"calculatedParameter", fmi3_causality_enu_calculated_parameter},
+            {"independent",         fmi3_causality_enu_independent},
+            {NULL,                  0} /* Equivalent to fmi3_causality_enu_parameter. Is this correct? */
+    };
+    jm_name_ID_map_t variabilityConventionMap[] = {
+            {"continuous", fmi3_variability_enu_continuous},
+            {"constant",   fmi3_variability_enu_constant},
+            {"fixed",      fmi3_variability_enu_fixed},
+            {"tunable",    fmi3_variability_enu_tunable},
+            {"discrete",   fmi3_variability_enu_discrete},
+            {NULL,         0}
+    };
+    jm_name_ID_map_t initialConventionMap[] = {
+            {"approx",     fmi3_initial_enu_approx},
+            {"calculated", fmi3_initial_enu_calculated},
+            {"exact",      fmi3_initial_enu_exact},
+            {NULL,         0}
+    };
+    unsigned int causality, variability, initial;
+    fmi3_initial_enu_t defaultInitial;
+
+    if (fmi3_xml_set_attr_enum(context, elm_id, fmi_attr_id_causality, 0, &causality,
+            fmi3_causality_enu_local, causalityConventionMap))
+    {
+        causality = fmi3_causality_enu_local;
+    }
+    variable->causality = causality;
+
+    if (fmi3_xml_set_attr_enum(context, elm_id, fmi_attr_id_variability, 0, &variability,
+            fmi3_variability_enu_continuous, variabilityConventionMap))
+    {
+        variability = fmi3_variability_enu_continuous;
+    }
+
+    if (!fmi3_is_valid_variability_causality(variability, causality)) {
+        fmi3_variability_enu_t bad_variability = variability;
+        variability = fmi3_get_default_valid_variability(causality);
+        fmi3_xml_parse_error(context,
+                "Invalid combination of variability %s and causality %s for"
+                " variable '%s'. Setting variability to '%s'",
+                fmi3_variability_to_string(bad_variability),
+                fmi3_causality_to_string(causality),
+                variable->name,
+                fmi3_variability_to_string(variability));
+    }
+    variable->variability = variability;
+
+    defaultInitial = fmi3_get_default_initial(variability, causality);
+    if (fmi3_xml_set_attr_enum(context, elm_id, fmi_attr_id_initial, 0, &initial,
+            defaultInitial,initialConventionMap))
+    {
+        initial = defaultInitial;
+    }
+    defaultInitial = fmi3_get_valid_initial(variability, causality, initial);
+    if (defaultInitial != initial) {
+        fmi3_xml_parse_error(context,
+                "Initial '%s' is not allowed for variability '%s' and "
+                "causality '%s'. Setting initial to '%s' for variable '%s'",
+                fmi3_initial_to_string(initial),
+                fmi3_variability_to_string(variability),
+                fmi3_causality_to_string(causality),
+                fmi3_initial_to_string(defaultInitial),
+                variable->name);
+        initial = defaultInitial;
+    }
+    variable->initial = initial;
+    
+    return 0;
+}
+
+static int fmi3_xml_variable_process_attr_previous(fmi3_xml_parser_context_t* context,
+        fmi3_xml_variable_t* variable, fmi3_xml_elm_enu_t elm_id)
+{
+    unsigned int previous;
+    if (fmi3_xml_set_attr_uint32(context, elm_id, fmi_attr_id_previous, 0 /* required */,
+            &previous, 0 /* defaultVal */)) {
+        return -1;   
+    }
+    /* Store the index as a pointer since we cannot access the variables list yet (we are constructing it). */
+    variable->previous = (void*)((char *)NULL + previous);
+    return 0;
+}
+
+static int fmi3_xml_variable_process_attr_multipleset(fmi3_xml_parser_context_t* context,
+        fmi3_xml_variable_t* variable, fmi3_xml_elm_enu_t elm_id)
+{
+    unsigned int multipleSet;
+    if (fmi3_xml_set_attr_boolean(context, elm_id, fmi_attr_id_canHandleMultipleSetPerTimeInstant,
+            0 /* required */, &multipleSet, 1 /* defaultVal */)) {
+        return -1;
+    }
+    variable->canHandleMultipleSetPerTimeInstant = (char)multipleSet;
+
+    if (variable->variability != fmi3_causality_enu_input && !multipleSet) {
+        fmi3_xml_parse_error(context, "Only variables with causality='input' can have canHandleMultipleSetPerTimeInstant=false");
+        return -1;
+    }
+    return 0;
+}
+
+/**
+ * Common handler for Variables.
+ * 
+ * Creates a new variable and adds it to the parsed context. Common attributes
+ * are processed and error checked.
+ */
+int fmi3_xml_handle_Variable(fmi3_xml_parser_context_t* context, const char* data) {
+    int atStartTag = !data;
 
      /* The real ID of the variable, such as 'Float64Variable' */
-    fmi3_xml_elm_enu_t elm_id = at_start_tag ? context->currentElemIdStartTag : context->currentElmID;
+    fmi3_xml_elm_enu_t elm_id = atStartTag ? context->currentElemIdStartTag : context->currentElmID;
 
-    if (at_start_tag) {
+    if (atStartTag) {
         fmi3_xml_model_description_t* md = context->modelDescription;
         fmi3_xml_variable_t* variable;
         fmi3_xml_variable_t dummyV;
@@ -746,7 +865,7 @@ int fmi3_xml_handle_Variable(fmi3_xml_parser_context_t *context, const char* dat
         /* Initialize rest of Variable */
         variable->vr = vr;
         variable->description = description;
-        /* default values */
+        /* Default values */
         variable->type = 0;
         variable->originalIndex = jm_vector_get_size(jm_named_ptr)(&md->variablesByName) - 1;
         variable->derivativeOf = 0;
@@ -757,96 +876,11 @@ int fmi3_xml_handle_Variable(fmi3_xml_parser_context_t *context, const char* dat
         jm_vector_init(fmi3_xml_dimension_t)(&variable->dimensionsVector, 0, context->callbacks);
 
         /* Save start value for processing after reading all Dimensions */
-        /* variable->startAttr = fmi3_xml_peek_attr_str(context, fmi_attr_id_start);*/
         variable->startAttr = fmi3_xml_peek_attr_str(context, fmi_attr_id_start);
 
-        /* TODO: convert to function */
-        {
-            jm_name_ID_map_t causalityConventionMap[] = {
-                {"local",fmi3_causality_enu_local},
-                {"input",fmi3_causality_enu_input},
-                {"output",fmi3_causality_enu_output},
-                {"parameter",fmi3_causality_enu_parameter},
-                {"calculatedParameter",fmi3_causality_enu_calculated_parameter},
-                {"independent",fmi3_causality_enu_independent},
-                {0,0}
-            };
-            jm_name_ID_map_t variabilityConventionMap[] = {
-                {"continuous",fmi3_variability_enu_continuous},
-                {"constant", fmi3_variability_enu_constant},
-                {"fixed", fmi3_variability_enu_fixed},
-                {"tunable", fmi3_variability_enu_tunable},
-                {"discrete", fmi3_variability_enu_discrete},
-                {0,0}
-            };
-            jm_name_ID_map_t initialConventionMap[] = {
-                {"approx",fmi3_initial_enu_approx},
-                {"calculated",fmi3_initial_enu_calculated},
-                {"exact",fmi3_initial_enu_exact},
-                {0,0}
-            };
-            unsigned int causality, variability, initial;
-            fmi3_initial_enu_t defaultInitial;
-            /* <xs:attribute name="causality" default="local"> */
-            if (fmi3_xml_set_attr_enum(context, elm_id, fmi_attr_id_causality, 0, &causality, fmi3_causality_enu_local, causalityConventionMap))
-                causality = fmi3_causality_enu_local;
-            variable->causality = causality;
-            /*  <xs:attribute name="variability" default="continuous"> */
-            if(fmi3_xml_set_attr_enum(context, elm_id, fmi_attr_id_variability,0,&variability,fmi3_variability_enu_continuous,variabilityConventionMap))
-                variability = fmi3_variability_enu_continuous;
-
-            if (!fmi3_is_valid_variability_causality(variability, causality)) {
-                fmi3_variability_enu_t bad_variability = variability;
-                variability = fmi3_get_default_valid_variability(causality);
-                fmi3_xml_parse_error(context,
-                    "Invalid combination of variability %s and causality %s for"
-                    " variable '%s'. Setting variability to '%s'",
-                    fmi3_variability_to_string(bad_variability),
-                    fmi3_causality_to_string(causality),
-                    variable->name,
-                    fmi3_variability_to_string(variability));
-            }
-            variable->variability = variability;
-
-            defaultInitial = fmi3_get_default_initial(variability, causality);
-
-            /* <xs:attribute name="initial"> */
-            if(fmi3_xml_set_attr_enum(context, elm_id, fmi_attr_id_initial,0,&initial,defaultInitial,initialConventionMap))
-                initial = defaultInitial;
-            defaultInitial = fmi3_get_valid_initial(variability, causality, initial);
-            if(defaultInitial != initial) {
-                fmi3_xml_parse_error(context,
-                    "Initial '%s' is not allowed for variability '%s' and "
-                    "causality '%s'. Setting initial to '%s' for variable '%s'",
-                    fmi3_initial_to_string(initial),
-                    fmi3_variability_to_string(variability),
-                    fmi3_causality_to_string(causality),
-                    fmi3_initial_to_string(defaultInitial),
-                    variable->name);
-                initial = defaultInitial;
-            }
-            variable->initial = initial;
-        }
-        /* TODO: convert to function */
-        {
-            unsigned int previous, multipleSet;
-            if (
-            /*   <xs:attribute name="previous" type="xs:unsignedInt"> */
-                /* TODO: I can't find any reference to this in the specification, 1.0, 2.0 or 3.0 -- is it some layered feature or can it just be removed? */
-                fmi3_xml_set_attr_uint32(context, elm_id, fmi_attr_id_previous, 0, &previous, 0) ||
-            /*   <xs:attribute name="canHandleMultipleSetPerTimeInstant" type="xs:boolean"> */
-                fmi3_xml_set_attr_boolean(context, elm_id, fmi_attr_id_canHandleMultipleSetPerTimeInstant, 0, &multipleSet, 1)
-            ) return -1;
-
-                /* Store the index as a pointer since we cannot access the variables list yet (we are constructing it). */
-            variable->previous = (void*)((char *)NULL + previous);
-            variable->canHandleMultipleSetPerTimeInstant = (char)multipleSet;
-
-            if (variable->variability != fmi3_causality_enu_input && !multipleSet) {
-                fmi3_xml_parse_error(context, "Only variables with causality='input' can have canHandleMultipleSetPerTimeInstant=false");
-                return -1;
-            }
-        }
+        if (fmi3_xml_variable_process_attr_causality_variability_initial(context, variable, elm_id)) return -1;
+        if (fmi3_xml_variable_process_attr_previous(context, variable, elm_id))    return -1;
+        if (fmi3_xml_variable_process_attr_multipleset(context, variable, elm_id)) return -1;
     }
     else { /* end of xml tag */
         if (context->skipOneVariableFlag) {
@@ -1414,6 +1448,77 @@ int fmi3_xml_handle_EnumerationVariable(fmi3_xml_parser_context_t *context, cons
         }
     }
     else {
+        /* don't do anything. might give out a warning if(data[0] != 0) */
+        return 0;
+    }
+    return 0;
+}
+
+int fmi3_xml_handle_BinaryVariable(fmi3_xml_parser_context_t* context, const char* data) {
+    int atStartTag = !data;
+    int res;
+
+    if (context->skipOneVariableFlag) return 0;
+
+    res = fmi3_xml_handle_Variable(context, data);
+    if (res) return res;
+
+    if (atStartTag) {
+        fmi3_xml_model_description_t* md = context->modelDescription;
+        fmi3_xml_type_definitions_t* td = &md->typeDefinitions;
+        fmi3_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
+        fmi3_xml_variable_type_base_t * declaredType = 0;
+        fmi3_xml_enum_variable_props_t * type = 0;
+        int hasStart;
+
+        assert(!variable->type);
+
+        declaredType = fmi3_get_declared_type(context, fmi3_xml_elmID_Enumeration,&td->defaultEnumType.base.super);
+
+        if (!declaredType) return -1;
+
+        if (
+                fmi3_xml_is_attr_defined(context,fmi_attr_id_min) ||
+                fmi3_xml_is_attr_defined(context,fmi_attr_id_max) ||
+                fmi3_xml_is_attr_defined(context,fmi_attr_id_quantity)
+                ) {
+            fmi3_xml_enum_variable_props_t* dtProps = 0; /* declaredType properties */
+
+            if (declaredType->structKind != fmi3_xml_type_struct_enu_typedef) {
+                dtProps = (fmi3_xml_enum_variable_props_t*)declaredType;
+            } else {
+                dtProps = (fmi3_xml_enum_variable_props_t*)declaredType->nextLayer;
+            }
+            assert(dtProps->super.structKind == fmi3_xml_type_struct_enu_props);
+            fmi3_xml_reserve_parse_buffer(context, 1, 0);
+            fmi3_xml_reserve_parse_buffer(context, 2, 0);
+            type = fmi3_xml_parse_enum_properties(context, dtProps);
+            if (!type) {
+                variable->type = &((fmi3_xml_enum_variable_props_t*)declaredType)->super; /* fallback to default */
+                return -1;
+            }
+            type->super.nextLayer = declaredType;
+        } else {
+            type = (fmi3_xml_enum_variable_props_t*)declaredType;
+        }
+
+        variable->type = &type->super;
+
+        hasStart = fmi3_xml_get_has_start(context, variable);
+        if (hasStart) {
+            fmi3_xml_variable_start_int_t* start = (fmi3_xml_variable_start_int_t*)fmi3_xml_alloc_variable_type_start(td, &type->super, sizeof(fmi3_xml_variable_start_int_t));
+            if (!start) {
+                fmi3_xml_parse_fatal(context, "Could not allocate memory");
+                return -1;
+            }
+            if (fmi3_xml_set_attr_int32(context, fmi3_xml_elmID_Enumeration, fmi_attr_id_start, 0, &start->start.scalar32s, 0)) {
+                start->start.scalar32s = type->typeMin;
+            }
+            variable->type = &start->super;
+        } else {
+            fmi3_log_error_if_start_required(context, variable);
+        }
+    } else {
         /* don't do anything. might give out a warning if(data[0] != 0) */
         return 0;
     }

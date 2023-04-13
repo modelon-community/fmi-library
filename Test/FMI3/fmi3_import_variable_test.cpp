@@ -9,14 +9,14 @@
 
 
 /* Parse enum variable with minimal specified information. Tests defaults. */
-static int enum_minimal_test(fmi3_import_t* xml) {
-    fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "minEnumVar");
+static int test_enum_default_attrs(fmi3_import_t* xml) {
+    fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "defaultsEnumVar");
     fmi3_import_enum_variable_t* ev;
     fmi3_import_variable_typedef_t* t;
     fmi3_import_enumeration_typedef_t* et;
 
     REQUIRE(v != NULL);
-    REQUIRE(fmi3_import_get_variable_vr(v) == 4);
+    REQUIRE(fmi3_import_get_variable_vr(v) == 1);
     REQUIRE(fmi3_import_get_variable_description(v) == NULL); /* Default description is empty */
     REQUIRE(fmi3_import_get_causality(v) == fmi3_causality_enu_local);
     REQUIRE(fmi3_import_get_variability(v) == fmi3_variability_enu_discrete);
@@ -43,14 +43,14 @@ static int enum_minimal_test(fmi3_import_t* xml) {
 }
 
 /* Parse enum variable with all information specified */
-static int enum_maximal_test(fmi3_import_t* xml) {
-    fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "maxEnumVar");
+static int test_enum_all_attrs(fmi3_import_t* xml) {
+    fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "allAttrsEnumVar");
     fmi3_import_enum_variable_t* ev;
     fmi3_import_variable_typedef_t* t;
     fmi3_import_enumeration_typedef_t* et;
 
     REQUIRE(v != NULL);
-    REQUIRE(fmi3_import_get_variable_vr(v) == 5);
+    REQUIRE(fmi3_import_get_variable_vr(v) == 2);
     REQUIRE(strcmp(fmi3_import_get_variable_description(v), "myDescription") == 0);
     REQUIRE(fmi3_import_get_causality(v) == fmi3_causality_enu_output);
     REQUIRE(fmi3_import_get_variability(v) == fmi3_variability_enu_discrete);
@@ -82,11 +82,11 @@ TEST_CASE("Variable parsing", "[xml_variables]") {
     fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
     REQUIRE(xml != NULL);
     
-    SECTION("enum minimal test") {
-        REQUIRE(enum_minimal_test(xml) == 0);
+    SECTION("parse default enum attributes") {
+        test_enum_default_attrs(xml);
     }
-    SECTION("enum maximal test") {
-        REQUIRE(enum_maximal_test(xml) == 0);
+    SECTION("parse all enum attributes") {
+        test_enum_all_attrs(xml);
     }
 
     fmi3_import_free(xml);

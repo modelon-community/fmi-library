@@ -160,6 +160,54 @@ TEST_CASE( "Test CAPI methods using a Model Exchange FMU", test_file_name)
         REQUIRE( values[2] == values_from_get[2] );
         REQUIRE( values[3] == values_from_get[3] );
     }
+
+    SECTION( "Test instantiate and set values on int64 array" ) {
+        size_t n_value_references = 1;
+        /* This value reference does not matter because the Dummy FMU
+            implementation for set/get int64 uses a fixed dummy array.
+        */
+        const fmi3_value_reference_t value_references[n_value_references] = {1};
+        size_t n_int_values = 2;
+        const fmi3_int64_t int64_values[n_int_values] = {-9223372036854775800, 9223372036854775800};
+        jm_status_enu_t status = fmi3_import_create_dllfmu(fmu, fmi3_fmu_kind_me, &inst_env, fmi3_dummy_log_callback);
+        REQUIRE( status == 0 );
+        fmi3_string_t instanceName = "Test ME model instance";
+        fmi3_string_t fmuInstantiationToken;
+        fmi3_string_t resourcePath = "";
+        fmi3_boolean_t visible = fmi3_false;
+        fmi3_boolean_t loggingOn = fmi3_false;
+        dummy_fmi3_instance_environment_t instance_env = {};
+        jm_status_enu_t instantiate_status = fmi3_import_instantiate_model_exchange(
+            fmu,
+            instanceName,
+            resourcePath,
+            visible,
+            loggingOn,
+            ((fmi3_instance_environment_t)&instance_env),
+            (fmi3_log_message_callback_ft)dummy_log_message_callback
+        );
+        REQUIRE( instantiate_status == jm_status_success );
+        fmi3_status_t status_from_int_set = fmi3_import_set_int64(
+            fmu,
+            value_references,
+            n_value_references,
+            int64_values,
+            n_int_values
+        );
+        REQUIRE( status_from_int_set == fmi3_status_ok );
+
+        fmi3_int64_t values_from_int_get[2] = {0, 0};
+        fmi3_status_t status_from_int_get = fmi3_import_get_int64(
+            fmu,
+            value_references,
+            n_value_references,
+            values_from_int_get,
+            n_int_values
+        );
+        REQUIRE( status_from_int_get == fmi3_status_ok );
+        REQUIRE( int64_values[0] == values_from_int_get[0] );
+        REQUIRE( int64_values[1] == values_from_int_get[1] );
+    }
     clean_up(fmu, context, inst_env);
 }
 
@@ -263,6 +311,63 @@ TEST_CASE( "Test CAPI methods using a Co-Simulation FMU", test_file_name)
         REQUIRE( values[2] == values_from_get[2] );
         REQUIRE( values[3] == values_from_get[3] );
     }
+
+    SECTION( "Test instantiate and set values on int64 array" ) {
+        size_t n_value_references = 1;
+        /* This value reference does not matter because the Dummy FMU
+            implementation for set/get int64 uses a fixed dummy array.
+        */
+        const fmi3_value_reference_t value_references[n_value_references] = {1};
+        size_t n_int_values = 2;
+        const fmi3_int64_t int64_values[n_int_values] = {-9223372036854775801, 9223372036854775801};
+        jm_status_enu_t status = fmi3_import_create_dllfmu(fmu, fmi3_fmu_kind_cs, &inst_env, fmi3_dummy_log_callback);
+        REQUIRE( status == 0 );
+        fmi3_string_t instanceName = "Test CS model instance";
+        fmi3_string_t fmuInstantiationToken;
+        fmi3_string_t resourcePath = "";
+        fmi3_boolean_t visible = fmi3_false;
+        fmi3_boolean_t loggingOn = fmi3_false;
+        fmi3_boolean_t eventModeUsed = fmi3_false;
+        fmi3_boolean_t earlyReturnAllowed = fmi3_false;
+        const fmi3_value_reference_t requiredIntermediateVariables[] = {NULL};
+        size_t nRequiredIntermediateVariables = 0;
+        jm_status_enu_t instantiate_status = fmi3_import_instantiate_co_simulation(
+            fmu,
+            instanceName,
+            resourcePath,
+            visible,
+            loggingOn,
+            eventModeUsed,
+            earlyReturnAllowed,
+            requiredIntermediateVariables,
+            nRequiredIntermediateVariables,
+            NULL,
+            NULL,
+            NULL
+        );
+        REQUIRE( instantiate_status == jm_status_success );
+        fmi3_status_t status_from_int_set = fmi3_import_set_int64(
+            fmu,
+            value_references,
+            n_value_references,
+            int64_values,
+            n_int_values
+        );
+        REQUIRE( status_from_int_set == fmi3_status_ok );
+
+        fmi3_int64_t values_from_int_get[2] = {0, 0};
+
+        fmi3_status_t status_from_int_get = fmi3_import_get_int64(
+            fmu,
+            value_references,
+            n_value_references,
+            values_from_int_get,
+            n_int_values
+        );
+        REQUIRE( status_from_int_get == fmi3_status_ok );
+        REQUIRE( int64_values[0] == values_from_int_get[0] );
+        REQUIRE( int64_values[1] == values_from_int_get[1] );
+    }
     clean_up(fmu, context, inst_env);
 
 }
@@ -363,6 +468,57 @@ TEST_CASE( "Test CAPI methods using a Scheduled-Execution FMU", test_file_name)
         REQUIRE( values[1] == values_from_get[1] );
         REQUIRE( values[2] == values_from_get[2] );
         REQUIRE( values[3] == values_from_get[3] );
+    }
+
+    SECTION( "Test instantiate and set values on int64 array" ) {
+        size_t n_value_references = 1;
+        /* This value reference does not matter because the Dummy FMU
+            implementation for set/get int64 uses a fixed dummy array.
+        */
+        const fmi3_value_reference_t value_references[n_value_references] = {1};
+        size_t n_int_values = 2;
+        const fmi3_int64_t int64_values[n_int_values] = {-9223372036854775802, 9223372036854775802};
+        jm_status_enu_t status = fmi3_import_create_dllfmu(fmu, fmi3_fmu_kind_se, &inst_env, fmi3_dummy_log_callback);
+        REQUIRE( status == 0 );
+        fmi3_string_t instanceName = "Test SE model instance";
+        fmi3_string_t fmuInstantiationToken;
+        fmi3_string_t resourcePath = "";
+        fmi3_boolean_t visible = fmi3_false;
+        fmi3_boolean_t loggingOn = fmi3_false;
+        dummy_fmi3_instance_environment_t instance_env = {};
+        jm_status_enu_t instantiate_status = fmi3_import_instantiate_scheduled_execution(
+                fmu,
+                instanceName,
+                resourcePath,
+                visible,
+                loggingOn,
+                ((fmi3_instance_environment_t)&instance_env),
+                (fmi3_log_message_callback_ft)dummy_log_message_callback,
+                (fmi3_clock_update_callback_ft)dummy_clock_update_callback,
+                (fmi3_lock_preemption_callback_ft)dummy_lock_preemption_callback,
+                (fmi3_unlock_preemption_callback_ft)dummy_unlock_preemption_callback
+        );
+        REQUIRE( instantiate_status == jm_status_success );
+        fmi3_status_t status_from_int_set = fmi3_import_set_int64(
+            fmu,
+            value_references,
+            n_value_references,
+            int64_values,
+            n_int_values
+        );
+        REQUIRE( status_from_int_set == fmi3_status_ok );
+
+        fmi3_int64_t values_from_int_get[2] = {0, 0};
+        fmi3_status_t status_from_int_get = fmi3_import_get_int64(
+            fmu,
+            value_references,
+            n_value_references,
+            values_from_int_get,
+            n_int_values
+        );
+        REQUIRE( status_from_int_get == fmi3_status_ok );
+        REQUIRE( int64_values[0] == values_from_int_get[0] );
+        REQUIRE( int64_values[1] == values_from_int_get[1] );
     }
     clean_up(fmu, context, inst_env);
 }

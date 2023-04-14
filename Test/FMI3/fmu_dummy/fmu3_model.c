@@ -161,7 +161,19 @@ fmi3Status fmi_get_float64(fmi3Instance instance, const fmi3ValueReference value
 }
 /* these functions are not used, but need to be implemented according to standard */
 fmi3Status fmi_get_float32(fmi3Instance instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, fmi3Float32 values[], size_t nValues) { return fmi3Fatal; }
-fmi3Status fmi_get_int64(  fmi3Instance instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, fmi3Int64 values[],   size_t nValues) { return fmi3Fatal; }
+
+fmi3Status fmi_get_int64(fmi3Instance instance, const fmi3ValueReference valueReferences[],
+    size_t nValueReferences, fmi3Int64 values[],   size_t nValues) {
+    instance_ptr_t inst = instance;
+    if (inst == NULL) {
+        return fmi3Fatal;
+    }
+    for (int i = 0; i < 2; i++) {
+        values[i] = inst->dummy_array2[i];
+    }
+    return fmi3OK;
+}
+
 /* fmi_get_int32 has a real implementation */
 fmi3Status fmi_get_int16(  fmi3Instance instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, fmi3Int16 values[],   size_t nValues) { return fmi3Fatal; }
 fmi3Status fmi_get_int8(   fmi3Instance instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, fmi3Int8 values[],    size_t nValues) { return fmi3Fatal; }
@@ -279,7 +291,17 @@ fmi3Status fmi_set_float64(fmi3Instance instance, const fmi3ValueReference value
 }
 
 /* these functions are not used, but need to be implemented according to standard */
-fmi3Status fmi_set_int64( fmi3Instance instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, const fmi3Int64 values[],  size_t nValues) { return fmi3Fatal; }
+fmi3Status fmi_set_int64(fmi3Instance instance, const fmi3ValueReference valueReferences[],
+    size_t nValueReferences, const fmi3Int64 values[],  size_t nValues) {
+    instance_ptr_t inst = instance;
+    if (inst == NULL) {
+        return fmi3Fatal;
+    }
+    for (int i = 0; i < 2; i++) {
+        inst->dummy_array2[i] = values[i];
+    }
+    return fmi3OK;
+}
 /* fmi_set_int32 has a real implementation */
 fmi3Status fmi_set_int16( fmi3Instance instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, const fmi3Int16 values[],  size_t nValues) { return fmi3Fatal; }
 fmi3Status fmi_set_int8(  fmi3Instance instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, const fmi3Int8 values[],   size_t nValues) { return fmi3Fatal; }

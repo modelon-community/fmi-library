@@ -18,7 +18,7 @@
   <Float64 name="A variable" valueReference="100" initial="exact" description="Speed of the ball" start="4.0"/>
   <Float64 name="GRAVITY" valueReference="2" description="Gravity constant" initial="exact" start="-9.81"/>
   <Float64 name="BOUNCE_COF" valueReference="3" initial="exact" description="Bouncing coefficient" start="0.5"/>
-  <String name="LOGGER_TEST" valueReference="0" description="The logger will print the value of this variable when it is set."/>
+  <String name="LOGGER_TEST" valueReference="0" description="The logger will print the values of this variable when it is set."/>
   <Int32 name="LOGGER_TEST_INTEGER" valueReference="0" description="This is only used to test logger replace function #i0#"/>
   <Boolean name="LOGGER_TEST_BOOLEAN" valueReference="0" description="This is only used to test logger replace function #b0#"/>
   <Float64 name="LOGGER_TEST_DERIVATIVE" valueReference="10" description="This is to test that the derivative attribute may appear on any Float64 variables."/>

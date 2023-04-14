@@ -13,6 +13,18 @@
 
 set(RTTESTDIR ${FMILIBRARYHOME}/Test)
 
+add_library(fmi_testutil STATIC ${RTTESTDIR}/fmi_testutil.c)
+set(FMILIBFORTEST fmilib fmi_testutil)
+if(FMILIB_BUILD_SHARED_LIB AND (FMILIB_LINK_TEST_TO_SHAREDLIB OR NOT FMILIB_BUILD_STATIC_LIB))
+    set(FMILIBFORTEST fmilib_shared fmi_testutil)
+    if(CMAKE_COMPILER_IS_GNUCC)
+        set(FMILIBFORTEST ${FMILIBFORTEST})
+    endif()
+endif()
+message(STATUS "Tests will be linked with ${FMILIBFORTEST}"  )
+
+set(CATCH2_INCLUDE_DIR "${FMILIB_THIRDPARTYLIBS}/Catch2/single_include/catch2/")
+
 # Test: jm_vector
 add_executable(jm_vector_test ${RTTESTDIR}/jm_vector_test.c)
 target_link_libraries(jm_vector_test ${JMUTIL_LIBRARIES})
@@ -22,15 +34,30 @@ set(CMAKE_CXX_STANDARD 11) # Required by Catch2
 add_library(Catch INTERFACE)
 target_include_directories(Catch
     INTERFACE
-    "${FMILIB_THIRDPARTYLIBS}/Catch2/single_include/catch2/")
+    ${CATCH2_INCLUDE_DIR})
 add_executable(jm_vector_test_cpp
     ${RTTESTDIR}/jm_vector_test.cpp)
 set_source_files_properties(${RTTESTDIR}/jm_vector_test.cpp PROPERTIES LANGUAGE CXX)
 target_include_directories(jm_vector_test_cpp
     PUBLIC
-    "${FMILIB_THIRDPARTYLIBS}/Catch2/single_include/catch2/")
-target_link_libraries(jm_vector_test_cpp Catch ${JMUTIL_LIBRARIES})
+    ${CATCH2_INCLUDE_DIR})
+target_link_libraries(jm_vector_test_cpp
+    Catch
+    ${JMUTIL_LIBRARIES})
 add_test(ctest_jm_vector_test_cpp jm_vector_test_cpp)
+
+# Test: fmi3_basic_capi_test C++ with Catch2
+add_executable(fmi3_basic_capi_test_cpp
+    ${RTTESTDIR}/FMI3/fmi3_basic_capi_test.cpp)
+target_include_directories(fmi3_basic_capi_test_cpp
+    PUBLIC
+    ${CATCH2_INCLUDE_DIR}
+    ${FMIIMPORTDIR}/src)
+target_link_libraries(fmi3_basic_capi_test_cpp
+    Catch
+    ${FMILIBFORTEST}
+    ${JMUTIL_LIBRARIES})
+add_test(ctest_fmi3_basic_capi_test_cpp fmi3_basic_capi_test_cpp)
 
 # Test: jm locale
 add_executable(jm_locale_test ${RTTESTDIR}/jm_locale_test.c)
@@ -44,7 +71,11 @@ add_executable(compress_test_fmu_zip ${RTTESTDIR}/compress_test_fmu_zip.c)
 target_link_libraries(compress_test_fmu_zip ${FMIZIP_LIBRARIES})
 
 set_target_properties(
-    jm_vector_test jm_vector_test_cpp jm_locale_test compress_test_fmu_zip
+    jm_vector_test
+    jm_vector_test_cpp
+    fmi3_basic_capi_test_cpp
+    jm_locale_test
+    compress_test_fmu_zip
     PROPERTIES FOLDER "Test")
 
 #Path to the executable
@@ -210,6 +241,7 @@ if(FMILIB_BUILD_BEFORE_TESTS)
         ctest_fmi_zip_unzip_test
         ctest_fmi_zip_zip_test
         ctest_jm_vector_test_cpp
+        ctest_fmi3_basic_capi_test_cpp
         ctest_jm_locale_test
         PROPERTIES DEPENDS ctest_build_all)
 endif()

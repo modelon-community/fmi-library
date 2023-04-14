@@ -110,35 +110,44 @@ fmi3Status fmi_set_debug_logging(fmi3Instance instance, fmi3Boolean loggingOn)
     } else {
         inst->loggingOn = loggingOn;
         return fmi3OK;
-    }
-}
+    }}
 
-fmi3Status fmi_get_float64(fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr, fmi3Float64 value[], size_t nValues)
+fmi3Status fmi_get_float64(fmi3Instance instance, const fmi3ValueReference valueReferences[],
+    size_t nValueReferences, fmi3Float64 values[], size_t nValues)
 {
     instance_ptr_t inst = instance;
     if (inst == NULL) {
         return fmi3Fatal;
     } else {
-        size_t k;
-        size_t m = 0; /* index in value, considering that arrays will require many indices */
-        for (k = 0; k < nvr; k++) {
-            fmi3ValueReference cvr = vr[k];
-            if (cvr < N_STATES) {
-                value[m] = inst->states[cvr];
+        int k;
+        int m = 0; /* index in values, considering that arrays will require many indices */
+        for (k = 0; k < nValueReferences; k++) {
+            fmi3ValueReference currentValueReference = valueReferences[k];
+            if (currentValueReference < N_STATES) {
+                values[m] = inst->states[currentValueReference];
             }
-            else if(cvr == 4) {
+            else if(currentValueReference == 4) {
                 calc_get_derivatives(inst);
-                value[m] = inst->states_der[1];
+                values[m] = inst->states_der[1];
             }
-            else if (cvr == 12) { /* special case: array */
+            else if (currentValueReference == 12) { /* special case: array */
                 calc_get_derivatives(inst);
-                value[m++] = inst->states[0];
-                value[m++] = inst->states_der[0];
-                value[m++] = inst->states[1];
-                value[m++] = inst->states_der[1];
+                values[m++] = inst->states[0];
+                values[m++] = inst->states_der[0];
+                values[m++] = inst->states[1];
+                values[m++] = inst->states_der[1];
+            }
+            else if (currentValueReference == 1234567) {
+                /* Obviously values reference -1 does not exist but this enables
+                    easy testing of get/set.
+                 */
+                for(int i = 0; i < 4; i++) {
+                    values[i] = inst->dummy_array[i];
+                    m++;
+                }
             }
             else {
-                value[m] = inst->reals[cvr];
+                values[m] = inst->reals[currentValueReference];
             }
             m++;
         }
@@ -151,17 +160,17 @@ fmi3Status fmi_get_float64(fmi3Instance instance, const fmi3ValueReference vr[],
     }
 }
 /* these functions are not used, but need to be implemented according to standard */
-fmi3Status fmi_get_float32(fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr, fmi3Float32 value[], size_t nValues) { return fmi3Fatal; }
-fmi3Status fmi_get_int64(  fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr, fmi3Int64 value[],   size_t nValues) { return fmi3Fatal; }
+fmi3Status fmi_get_float32(fmi3Instance instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, fmi3Float32 values[], size_t nValues) { return fmi3Fatal; }
+fmi3Status fmi_get_int64(  fmi3Instance instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, fmi3Int64 values[],   size_t nValues) { return fmi3Fatal; }
 /* fmi_get_int32 has a real implementation */
-fmi3Status fmi_get_int16(  fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr, fmi3Int16 value[],   size_t nValues) { return fmi3Fatal; }
-fmi3Status fmi_get_int8(   fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr, fmi3Int8 value[],    size_t nValues) { return fmi3Fatal; }
-fmi3Status fmi_get_uint64( fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr, fmi3UInt64 value[],  size_t nValues) { return fmi3Fatal; }
-fmi3Status fmi_get_uint32( fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr, fmi3UInt32 value[],  size_t nValues) { return fmi3Fatal; }
-fmi3Status fmi_get_uint16( fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr, fmi3UInt16 value[],  size_t nValues) { return fmi3Fatal; }
-fmi3Status fmi_get_uint8(  fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr, fmi3UInt8 value[],   size_t nValues) { return fmi3Fatal; }
+fmi3Status fmi_get_int16(  fmi3Instance instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, fmi3Int16 values[],   size_t nValues) { return fmi3Fatal; }
+fmi3Status fmi_get_int8(   fmi3Instance instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, fmi3Int8 values[],    size_t nValues) { return fmi3Fatal; }
+fmi3Status fmi_get_uint64( fmi3Instance instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, fmi3UInt64 values[],  size_t nValues) { return fmi3Fatal; }
+fmi3Status fmi_get_uint32( fmi3Instance instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, fmi3UInt32 values[],  size_t nValues) { return fmi3Fatal; }
+fmi3Status fmi_get_uint16( fmi3Instance instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, fmi3UInt16 values[],  size_t nValues) { return fmi3Fatal; }
+fmi3Status fmi_get_uint8(  fmi3Instance instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, fmi3UInt8 values[],   size_t nValues) { return fmi3Fatal; }
 
-fmi3Status fmi_get_int32(fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr, fmi3Int32 value[], size_t nValues)
+fmi3Status fmi_get_int32(fmi3Instance instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, fmi3Int32 values[], size_t nValues)
 {
     instance_ptr_t inst = instance;
     size_t k;
@@ -170,13 +179,13 @@ fmi3Status fmi_get_int32(fmi3Instance instance, const fmi3ValueReference vr[], s
         return fmi3Fatal;
     }
 
-    for (k = 0; k < nvr; k++) {
-        value[k] = inst->integers[vr[k]];
+    for (k = 0; k < nValueReferences; k++) {
+        values[k] = inst->integers[valueReferences[k]];
     }
     return fmi3OK;
 }
 
-fmi3Status fmi_get_boolean(fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr, fmi3Boolean value[],
+fmi3Status fmi_get_boolean(fmi3Instance instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, fmi3Boolean values[],
         size_t nValues)
 {
     instance_ptr_t inst = instance;
@@ -186,13 +195,13 @@ fmi3Status fmi_get_boolean(fmi3Instance instance, const fmi3ValueReference vr[],
         return fmi3Fatal;
     }
 
-    for (k = 0; k < nvr; k++) {
-        value[k] = inst->booleans[vr[k]];
+    for (k = 0; k < nValueReferences; k++) {
+        values[k] = inst->booleans[valueReferences[k]];
     }
     return fmi3OK;
 }
 
-fmi3Status fmi_get_string(fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr, fmi3String value[], size_t nValues)
+fmi3Status fmi_get_string(fmi3Instance instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, fmi3String values[], size_t nValues)
 {
     instance_ptr_t inst = instance;
     size_t k;
@@ -201,14 +210,14 @@ fmi3Status fmi_get_string(fmi3Instance instance, const fmi3ValueReference vr[], 
         return fmi3Fatal;
     }
 
-    for (k = 0; k < nvr; k++) {
-        value[k] = inst->strings[vr[k]];
+    for (k = 0; k < nValueReferences; k++) {
+        values[k] = inst->strings[valueReferences[k]];
     }
     return fmi3OK;
 }
 
-fmi3Status fmi_get_binary(fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr, size_t sizes[],
-        fmi3Binary value[], size_t nValues)
+fmi3Status fmi_get_binary(fmi3Instance instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, size_t sizes[],
+        fmi3Binary values[], size_t nValues)
 {
     instance_ptr_t inst = instance;
     size_t k;
@@ -217,36 +226,52 @@ fmi3Status fmi_get_binary(fmi3Instance instance, const fmi3ValueReference vr[], 
         return fmi3Fatal;
     }
 
-    for (k = 0; k < nvr; k++) {
-        value[k] = inst->binaries[vr[k]];
+    for (k = 0; k < nValueReferences; k++) {
+        values[k] = inst->binaries[valueReferences[k]];
         sizes[k] = inst->binaries_sz[k];
     }
     return fmi3OK;
 }
 
-/* TODO: nValues is just used for verification, i.e. to check that sum(lenght(vr[i])) == nValues;
- * currently it seems it's not decided whether this parameter will remain, so not implementing anything
- * for now
- * https://github.com/modelica/fmi-standard/issues/512
+/* TODO: nValues is just used for verification, i.e. to check that sum(lenght(valueReferences[i])) == nValues;
+ *
  */
-fmi3Status fmi_set_float64(fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr, const fmi3Float64 value[], size_t nValues)
+fmi3Status fmi_set_float64(fmi3Instance instance, const fmi3ValueReference valueReferences[],
+    size_t nValueReferences, const fmi3Float64 values[], size_t nValues)
 {
     instance_ptr_t inst = instance;
     if (inst == NULL) {
         return fmi3Fatal;
     } else {
+        //if (sizeof(valueReferences)/sizeof(valueReferences[0]) != nValueReferences) {
+        //    inst->cb.logMessage(instance, fmi3Fatal, "FATAL", "Mismatch in length between array of values references and nValues");
+        //    return fmi3Fatal;
+        //}
         size_t k;
-        for (k = 0; k < nvr; k++) {
-            fmi3ValueReference cvr = vr[k];
-            if (cvr < N_STATES) {
-                inst->states[cvr] = value[k];
+        for (k = 0; k < nValueReferences; k++) {
+            fmi3ValueReference currentValueReference = valueReferences[k];
+            if (currentValueReference < N_STATES) {
+                inst->states[currentValueReference] = values[k];
             }
-            else if(cvr == 4) {
-                inst->cb.logMessage(instance, fmi3Warning, "WARNING", "Cannot set acceleration value (calculated)");
+            else if(currentValueReference == 4) {
+                inst->cb.logMessage(instance, fmi3Warning, "WARNING", "Cannot set acceleration values (calculated)");
                 return fmi3Error;
             }
+            else if(currentValueReference == 12) {
+                // For the dummy FMU we are testing an array of 4 elements.
+                //memcpy(&inst->reals[currentValueReference], &values[k], 4 * sizeof(values[0]));
+                for(int i = 0; i < 4; i++) {
+                    inst->reals[currentValueReference + i] = values[i];
+                }
+            }
+            else if (currentValueReference == 1234567) {
+                /* Obviously values reference -1 does not exist but this enables
+                    easy testing of get/set.
+                 */
+                for(int i = 0; i < 4; i++) { inst->dummy_array[i] = values[i]; }
+            }
             else {
-                inst->reals[cvr] = value[k];
+                inst->reals[currentValueReference] = values[k];
             }
         }
         return fmi3OK;
@@ -254,16 +279,16 @@ fmi3Status fmi_set_float64(fmi3Instance instance, const fmi3ValueReference vr[],
 }
 
 /* these functions are not used, but need to be implemented according to standard */
-fmi3Status fmi_set_int64( fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr, const fmi3Int64 value[],  size_t nValues) { return fmi3Fatal; }
+fmi3Status fmi_set_int64( fmi3Instance instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, const fmi3Int64 values[],  size_t nValues) { return fmi3Fatal; }
 /* fmi_set_int32 has a real implementation */
-fmi3Status fmi_set_int16( fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr, const fmi3Int16 value[],  size_t nValues) { return fmi3Fatal; }
-fmi3Status fmi_set_int8(  fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr, const fmi3Int8 value[],   size_t nValues) { return fmi3Fatal; }
-fmi3Status fmi_set_uint64(fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr, const fmi3UInt64 value[], size_t nValues) { return fmi3Fatal; }
-fmi3Status fmi_set_uint32(fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr, const fmi3UInt32 value[], size_t nValues) { return fmi3Fatal; }
-fmi3Status fmi_set_uint16(fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr, const fmi3UInt16 value[], size_t nValues) { return fmi3Fatal; }
-fmi3Status fmi_set_uint8( fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr, const fmi3UInt8 value[],  size_t nValues) { return fmi3Fatal; }
+fmi3Status fmi_set_int16( fmi3Instance instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, const fmi3Int16 values[],  size_t nValues) { return fmi3Fatal; }
+fmi3Status fmi_set_int8(  fmi3Instance instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, const fmi3Int8 values[],   size_t nValues) { return fmi3Fatal; }
+fmi3Status fmi_set_uint64(fmi3Instance instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, const fmi3UInt64 values[], size_t nValues) { return fmi3Fatal; }
+fmi3Status fmi_set_uint32(fmi3Instance instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, const fmi3UInt32 values[], size_t nValues) { return fmi3Fatal; }
+fmi3Status fmi_set_uint16(fmi3Instance instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, const fmi3UInt16 values[], size_t nValues) { return fmi3Fatal; }
+fmi3Status fmi_set_uint8( fmi3Instance instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, const fmi3UInt8 values[],  size_t nValues) { return fmi3Fatal; }
 
-fmi3Status fmi_set_int32(fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr, const fmi3Int32 value[], size_t nValues)
+fmi3Status fmi_set_int32(fmi3Instance instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, const fmi3Int32 values[], size_t nValues)
 {
     instance_ptr_t inst = instance;
     size_t k;
@@ -272,13 +297,13 @@ fmi3Status fmi_set_int32(fmi3Instance instance, const fmi3ValueReference vr[], s
         return fmi3Fatal;
     }
 
-    for (k = 0; k < nvr; k++) {
-        inst->integers[vr[k]] = value[k];
+    for (k = 0; k < nValueReferences; k++) {
+        inst->integers[valueReferences[k]] = values[k];
     }
     return fmi3OK;
 }
 
-fmi3Status fmi_set_boolean(fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr, const fmi3Boolean value[],
+fmi3Status fmi_set_boolean(fmi3Instance instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, const fmi3Boolean values[],
         size_t nValues)
 {
     instance_ptr_t inst = instance;
@@ -288,13 +313,13 @@ fmi3Status fmi_set_boolean(fmi3Instance instance, const fmi3ValueReference vr[],
         return fmi3Fatal;
     }
 
-    for (k = 0; k < nvr; k++) {
-        inst->booleans[vr[k]] = value[k];
+    for (k = 0; k < nValueReferences; k++) {
+        inst->booleans[valueReferences[k]] = values[k];
     }
     return fmi3OK;
 }
 
-fmi3Status fmi_set_string(fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr, const fmi3String value[],
+fmi3Status fmi_set_string(fmi3Instance instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, const fmi3String values[],
         size_t nValues)
 {
     instance_ptr_t inst = instance;
@@ -304,10 +329,10 @@ fmi3Status fmi_set_string(fmi3Instance instance, const fmi3ValueReference vr[], 
         return fmi3Fatal;
     }
 
-    for (k = 0; k < nvr; k++) {
+    for (k = 0; k < nValueReferences; k++) {
         size_t len;
         fmi3String s_dist;
-        fmi3String s_src = value[k];
+        fmi3String s_src = values[k];
 
         len = strlen((char*)s_src) + 1;
         s_dist = malloc(len * sizeof(char));
@@ -315,18 +340,18 @@ fmi3Status fmi_set_string(fmi3Instance instance, const fmi3ValueReference vr[], 
             return fmi3Fatal;
         }
         strcpy((char*)s_dist, (char*)s_src);
-        if (inst->strings[vr[k]]) {
-            free((void*)inst->strings[vr[k]]);
+        if (inst->strings[valueReferences[k]]) {
+            free((void*)inst->strings[valueReferences[k]]);
         }
-        inst->strings[vr[k]] = s_dist;
+        inst->strings[valueReferences[k]] = s_dist;
     }
 
     /******* Logger test *******/
     if (inst->loggingOn == fmi3True) {
-        for (k = 0; k < nvr; k++) {
-            fmi3ValueReference cvr = vr[k];
-            if (cvr == VAR_S_LOGGER_TEST) {
-                inst->cb.logMessage(inst->cb.instanceEnvironment, fmi3Fatal, "INFO", value[k]);
+        for (k = 0; k < nValueReferences; k++) {
+            fmi3ValueReference currentValueReference = valueReferences[k];
+            if (currentValueReference == VAR_S_LOGGER_TEST) {
+                inst->cb.logMessage(inst->cb.instanceEnvironment, fmi3Fatal, "INFO", values[k]);
             }
         }
     }
@@ -334,8 +359,8 @@ fmi3Status fmi_set_string(fmi3Instance instance, const fmi3ValueReference vr[], 
     return fmi3OK;
 }
 
-fmi3Status fmi_set_binary(fmi3Instance instance, const fmi3ValueReference vrs[], size_t nvr, const size_t sizes[],
-        const fmi3Binary values[], size_t nValues)
+fmi3Status fmi_set_binary(fmi3Instance instance, const fmi3ValueReference valueReferences[],
+        size_t nValueReferences, const size_t valueSizes[], const fmi3Binary values[], size_t nValues)
 {
     instance_ptr_t inst = instance;
     size_t k;
@@ -344,23 +369,23 @@ fmi3Status fmi_set_binary(fmi3Instance instance, const fmi3ValueReference vrs[],
         return fmi3Fatal;
     }
 
-    for (k = 0; k < nvr; k++) {
-        fmi3ValueReference vr = vrs[k];
+    for (k = 0; k < nValueReferences; k++) {
+        fmi3ValueReference valueReference = valueReferences[k];
 
         /* realloc */
-        if (inst->binaries[vr]) {
-            free((void*)inst->binaries[vr]);
+        if (inst->binaries[valueReference]) {
+            free((void*)inst->binaries[valueReference]);
         }
-        inst->binaries[vr] = malloc(sizes[k]);
-        if (!inst->binaries[vr]) {
+        inst->binaries[valueReference] = malloc(valueSizes[k]);
+        if (!inst->binaries[valueReference]) {
             return fmi3Fatal;
         }
 
         /* save size */
-        inst->binaries_sz[k] = sizes[k];
+        inst->binaries_sz[k] = valueSizes[k];
 
-        /* set value */
-        memcpy(inst->binaries[k], values[k], sizes[k]);
+        /* set values */
+        memcpy(inst->binaries[k], values[k], valueSizes[k]);
     }
 
     return fmi3OK;

@@ -18,7 +18,7 @@
 #include <stdarg.h>
 
 #include "config_test.h"
-#include <fmilib.h>
+#include "fmilib.h"
 
 #define BUFFER 1000
 
@@ -158,7 +158,6 @@ int test_simulate_me(fmi3_import_t* fmu)
     fmi3_boolean_t toleranceControlled = fmi3_true;
     fmi3_float64_t relativeTolerance = 0.001;
     test_event_info_t eventInfo;
-    fmi3_boolean_t input_event = fmi3_false; /* appears to be HCS only */
     fmi3_boolean_t step_event = fmi3_false;
     fmi3_boolean_t time_event = fmi3_false;
     size_t k;

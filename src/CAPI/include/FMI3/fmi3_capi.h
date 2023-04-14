@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2012 Modelon AB
+    Copyright (C) 2012-2023 Modelon AB
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the BSD style license.
@@ -103,8 +103,10 @@ jm_status_enu_t fmi3_capi_load_dll(fmi3_capi_t* fmu);
 jm_status_enu_t fmi3_capi_free_dll(fmi3_capi_t* fmu);
 
 /**
- * \brief Set CAPI debug mode flag. Setting to non-zero prevents DLL unloading in fmi1_capi_free_dll
- *  while all the memory is deallocated. This is to support valgrind debugging.
+ * \brief Set CAPI debug mode flag. Setting this to a non-zero value will prevent the DLL from
+ * unloading when fmi3_capi_free_dll is invoked. This is to support valgrind debugging.
+ * Use with caution since this can cause memory leaks if debug mode is not set to 0
+ * before deallocating all the resources.
  *
  * @param fmu C-API struct that has succesfully loaded the FMI function.
  * @param mode The debug mode to set.
@@ -112,7 +114,7 @@ jm_status_enu_t fmi3_capi_free_dll(fmi3_capi_t* fmu);
 void fmi3_capi_set_debug_mode(fmi3_capi_t* fmu, int mode);
 
 /**
- * \brief Get CAPI debug mode flag that was set with fmi1_capi_set_debug_mode()
+ * \brief Get CAPI debug mode flag that was set with fmi3_capi_set_debug_mode()
  *
  * @param fmu C-API struct that has succesfully loaded the FMI function. */
 int fmi3_capi_get_debug_mode(fmi3_capi_t* fmu);

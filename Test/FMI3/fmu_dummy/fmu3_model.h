@@ -56,6 +56,7 @@ typedef struct {
     fmi3Float64                    states_der        [N_STATES];
     fmi3Float64                    event_indicators  [N_EVENT_INDICATORS];
     fmi3Float64                    reals             [N_REAL];
+    fmi3Float64                    dummy_array       [N_REAL]; /* array used to test get/set float 64 */
     fmi3Int32                      integers          [N_INTEGER];
     fmi3Boolean                    booleans          [N_BOOLEAN];
     fmi3String                     strings           [N_STRING];
@@ -155,184 +156,184 @@ fmi3Status fmi_reset(                   fmi3Instance instance);
 
 fmi3Status        fmi_get_float64(
                                                     fmi3Instance instance,
-                                                    const fmi3ValueReference vr[],
-                                                    size_t nvr, fmi3Float64 value[],
+                                                    const fmi3ValueReference valueReferences[],
+                                                    size_t nValueReferences, fmi3Float64 values[],
                                                     size_t nValues);
 
 fmi3Status        fmi_get_float32(
                                                     fmi3Instance instance,
-                                                    const fmi3ValueReference vr[],
-                                                    size_t nvr, fmi3Float32 value[],
+                                                    const fmi3ValueReference valueReferences[],
+                                                    size_t nValueReferences, fmi3Float32 values[],
                                                     size_t nValues);
 
 fmi3Status        fmi_get_int64(
                                                     fmi3Instance instance,
-                                                    const fmi3ValueReference vr[],
-                                                    size_t nvr,
-                                                    fmi3Int64 value[],
+                                                    const fmi3ValueReference valueReferences[],
+                                                    size_t nValueReferences,
+                                                    fmi3Int64 values[],
                                                     size_t nValues);
 
 fmi3Status        fmi_get_int32(
                                                     fmi3Instance instance,
-                                                    const fmi3ValueReference vr[],
-                                                    size_t nvr,
-                                                    fmi3Int32 value[],
+                                                    const fmi3ValueReference valueReferences[],
+                                                    size_t nValueReferences,
+                                                    fmi3Int32 values[],
                                                     size_t nValues);
 
 fmi3Status        fmi_get_int16(
                                                     fmi3Instance instance,
-                                                    const fmi3ValueReference vr[],
-                                                    size_t nvr,
-                                                    fmi3Int16 value[],
+                                                    const fmi3ValueReference valueReferences[],
+                                                    size_t nValueReferences,
+                                                    fmi3Int16 values[],
                                                     size_t nValues);
 
 fmi3Status        fmi_get_int8(
                                                     fmi3Instance instance,
-                                                    const fmi3ValueReference vr[],
-                                                    size_t nvr,
-                                                    fmi3Int8 value[],
+                                                    const fmi3ValueReference valueReferences[],
+                                                    size_t nValueReferences,
+                                                    fmi3Int8 values[],
                                                     size_t nValues);
 
 fmi3Status        fmi_get_uint64(
                                                     fmi3Instance instance,
-                                                    const fmi3ValueReference vr[],
-                                                    size_t nvr,
-                                                    fmi3UInt64 value[],
+                                                    const fmi3ValueReference valueReferences[],
+                                                    size_t nValueReferences,
+                                                    fmi3UInt64 values[],
                                                     size_t nValues);
 
 fmi3Status        fmi_get_uint32(
                                                     fmi3Instance instance,
-                                                    const fmi3ValueReference vr[],
-                                                    size_t nvr,
-                                                    fmi3UInt32 value[],
+                                                    const fmi3ValueReference valueReferences[],
+                                                    size_t nValueReferences,
+                                                    fmi3UInt32 values[],
                                                     size_t nValues);
 
 fmi3Status        fmi_get_uint16(
                                                     fmi3Instance instance,
-                                                    const fmi3ValueReference vr[],
-                                                    size_t nvr,
-                                                    fmi3UInt16 value[],
+                                                    const fmi3ValueReference valueReferences[],
+                                                    size_t nValueReferences,
+                                                    fmi3UInt16 values[],
                                                     size_t nValues);
 
 fmi3Status        fmi_get_uint8(
                                                     fmi3Instance instance,
-                                                    const fmi3ValueReference vr[],
-                                                    size_t nvr,
-                                                    fmi3UInt8 value[],
+                                                    const fmi3ValueReference valueReferences[],
+                                                    size_t nValueReferences,
+                                                    fmi3UInt8 values[],
                                                     size_t nValues);
 
 fmi3Status        fmi_get_boolean(
                                                     fmi3Instance instance,
-                                                    const fmi3ValueReference vr[],
-                                                    size_t nvr,
-                                                    fmi3Boolean value[],
+                                                    const fmi3ValueReference valueReferences[],
+                                                    size_t nValueReferences,
+                                                    fmi3Boolean values[],
                                                     size_t nValues);
 
 fmi3Status        fmi_get_string(
                                                     fmi3Instance instance,
-                                                    const fmi3ValueReference vr[],
-                                                    size_t nvr,
-                                                    fmi3String value[],
+                                                    const fmi3ValueReference valueReferences[],
+                                                    size_t nValueReferences,
+                                                    fmi3String values[],
                                                     size_t nValues);
 
 fmi3Status        fmi_get_binary(
                                                     fmi3Instance instance,
-                                                    const fmi3ValueReference vr[],
-                                                    size_t nvr,
-                                                    size_t sizes[],
-                                                    fmi3Binary value[],
+                                                    const fmi3ValueReference valueReferences[],
+                                                    size_t nValueReferences,
+                                                    size_t valueSizes[],
+                                                    fmi3Binary values[],
                                                     size_t nValues);
 
 fmi3Status        fmi_set_float64(
                                                     fmi3Instance instance,
-                                                    const fmi3ValueReference vr[],
-                                                    size_t nvr,
-                                                    const fmi3Float64 value[],
+                                                    const fmi3ValueReference valueReferences[],
+                                                    size_t nValueReferences,
+                                                    const fmi3Float64 values[],
                                                     size_t nValues);
 
 fmi3Status        fmi_set_float32(
                                                     fmi3Instance instance,
-                                                    const fmi3ValueReference vr[],
-                                                    size_t nvr,
-                                                    const fmi3Float32 value[],
+                                                    const fmi3ValueReference valueReferences[],
+                                                    size_t nValueReferences,
+                                                    const fmi3Float32 values[],
                                                     size_t nValues);
 
 fmi3Status        fmi_set_int64(
                                                     fmi3Instance instance,
-                                                    const fmi3ValueReference vr[],
-                                                    size_t nvr,
-                                                    const fmi3Int64 value[],
+                                                    const fmi3ValueReference valueReferences[],
+                                                    size_t nValueReferences,
+                                                    const fmi3Int64 values[],
                                                     size_t nValues);
 
 fmi3Status        fmi_set_int32(
                                                     fmi3Instance instance,
-                                                    const fmi3ValueReference vr[],
-                                                    size_t nvr,
-                                                    const fmi3Int32 value[],
+                                                    const fmi3ValueReference valueReferences[],
+                                                    size_t nValueReferences,
+                                                    const fmi3Int32 values[],
                                                     size_t nValues);
 
 fmi3Status        fmi_set_int16(
                                                     fmi3Instance instance,
-                                                    const fmi3ValueReference vr[],
-                                                    size_t nvr,
-                                                    const fmi3Int16 value[],
+                                                    const fmi3ValueReference valueReferences[],
+                                                    size_t nValueReferences,
+                                                    const fmi3Int16 values[],
                                                     size_t nValues);
 
 fmi3Status        fmi_set_int8(
                                                     fmi3Instance instance,
-                                                    const fmi3ValueReference vr[],
-                                                    size_t nvr,
-                                                    const fmi3Int8 value[],
+                                                    const fmi3ValueReference valueReferences[],
+                                                    size_t nValueReferences,
+                                                    const fmi3Int8 values[],
                                                     size_t nValues);
 
 fmi3Status        fmi_set_uint64(
                                                     fmi3Instance instance,
-                                                    const fmi3ValueReference vr[],
-                                                    size_t nvr,
-                                                    const fmi3UInt64 value[],
+                                                    const fmi3ValueReference valueReferences[],
+                                                    size_t nValueReferences,
+                                                    const fmi3UInt64 values[],
                                                     size_t nValues);
 
 fmi3Status        fmi_set_uint32(
                                                     fmi3Instance instance,
-                                                    const fmi3ValueReference vr[],
-                                                    size_t nvr,
-                                                    const fmi3UInt32 value[],
+                                                    const fmi3ValueReference valueReferences[],
+                                                    size_t nValueReferences,
+                                                    const fmi3UInt32 values[],
                                                     size_t nValues);
 
 fmi3Status        fmi_set_uint16(
                                                     fmi3Instance instance,
-                                                    const fmi3ValueReference vr[],
-                                                    size_t nvr,
-                                                    const fmi3UInt16 value[],
+                                                    const fmi3ValueReference valueReferences[],
+                                                    size_t nValueReferences,
+                                                    const fmi3UInt16 values[],
                                                     size_t nValues);
 
 fmi3Status        fmi_set_uint8(
                                                     fmi3Instance instance,
-                                                    const fmi3ValueReference vr[],
-                                                    size_t nvr,
-                                                    const fmi3UInt8 value[],
+                                                    const fmi3ValueReference valueReferences[],
+                                                    size_t nValueReferences,
+                                                    const fmi3UInt8 values[],
                                                     size_t nValues);
 
 fmi3Status        fmi_set_boolean(
                                                     fmi3Instance instance,
-                                                    const fmi3ValueReference vr[],
-                                                    size_t nvr,
-                                                    const fmi3Boolean value[],
+                                                    const fmi3ValueReference valueReferences[],
+                                                    size_t nValueReferences,
+                                                    const fmi3Boolean values[],
                                                     size_t nValues);
 
 fmi3Status        fmi_set_string(
                                                     fmi3Instance instance,
-                                                    const fmi3ValueReference vr[],
-                                                    size_t nvr,
-                                                    const fmi3String value[],
+                                                    const fmi3ValueReference valueReferences[],
+                                                    size_t nValueReferences,
+                                                    const fmi3String values[],
                                                     size_t nValues);
 
 fmi3Status        fmi_set_binary(
                                                     fmi3Instance instance,
-                                                    const fmi3ValueReference vr[],
-                                                    size_t nvr,
-                                                    const size_t sizes[],
-                                                    const fmi3Binary value[],
+                                                    const fmi3ValueReference valueReferences[],
+                                                    size_t nValueReferences,
+                                                    const size_t valueSizes[],
+                                                    const fmi3Binary values[],
                                                     size_t nValues);
 
 /* Getting Variable Dependency Information */

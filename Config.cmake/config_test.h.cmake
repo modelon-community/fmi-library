@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2012 Modelon AB
+    Copyright (C) 2012-2023 Modelon AB
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the BSD style license.
@@ -16,8 +16,15 @@
 #ifndef CONFIG_TEST_H
 #define CONFIG_TEST_H
 /* PATHs to test files */
-#define FMU1_DLL_ME_PATH @FMU1_DLL_ME_PATH@ 
+#define FMU1_DLL_ME_PATH @FMU1_DLL_ME_PATH@
 #define FMU1_DLL_CS_PATH @FMU1_DLL_CS_PATH@
+/* PATHs to test FMUs for FMI 3.0 */
+#define FMU3_ME_PATH "@FMU3_ME_PATH@"
+#define FMU3_CS_PATH "@FMU3_CS_PATH@"
+#define FMU3_SE_PATH "@FMU3_SE_PATH@"
+/* PATHs to temporary test directory */
+#define FMU_TEMPORARY_TEST_DIR "@FMU_TEMPORARY_TEST_DIR@"
+
 #define COMPRESS_DUMMY_FILE_PATH_SRC "@COMPRESS_DUMMY_FILE_PATH_SRC@"
 #define COMPRESS_DUMMY_FILE_PATH_DIST "@COMPRESS_DUMMY_FILE_PATH_DIST@"
 #define UNCOMPRESSED_DUMMY_FILE_PATH_SRC "@UNCOMPRESSED_DUMMY_FILE_PATH_SRC@"
@@ -35,5 +42,3 @@
 #endif
 
 #endif
-
-

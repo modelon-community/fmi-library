@@ -187,14 +187,6 @@ fmi1_xml_integer_type_props_t *fmi1_xml_parse_integer_type_properties(fmi1_xml_p
 
 extern int fmi1_check_last_elem_is_specific_type(fmi1_xml_parser_context_t *context);
 
-extern jm_named_ptr fmi1_xml_variable_type_alloc(fmi1_xml_parser_context_t* context, jm_vector(char)* name, jm_vector(char)* description, size_t size);
-
-extern void* fmi1_xml_variable_type_create(fmi1_xml_parser_context_t* context, size_t size, jm_vector(jm_named_ptr)* typeList );
-
-extern fmi1_xml_real_typedef_t* fmi1_xml_variable_type_create_real(fmi1_xml_parser_context_t* context, fmi1_xml_elm_enu_t elmID, jm_vector(jm_named_ptr)* typeList );
-
-extern fmi1_xml_integer_typedef_t* fmi1_xml_variable_type_create_integer(fmi1_xml_parser_context_t* context, fmi1_xml_elm_enu_t elmID, jm_vector(jm_named_ptr)* typeList );
-
 fmi1_xml_variable_type_base_t* fmi1_get_declared_type(fmi1_xml_parser_context_t *context, fmi1_xml_elm_enu_t elmID, fmi1_xml_variable_type_base_t* defaultType);
 
 #ifdef __cplusplus

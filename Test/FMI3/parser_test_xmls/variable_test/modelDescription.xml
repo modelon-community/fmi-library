@@ -31,8 +31,9 @@
 </TypeDefinitions>
 
 <ModelVariables>
-  <Enumeration name="defaultsEnumVar" valueReference="1" variability="discrete" declaredType="MyEnum"/>
+  <Enumeration name="defaultEnumVar"  valueReference="1" declaredType="MyEnum"/>
   <Enumeration name="allAttrsEnumVar" valueReference="2" variability="discrete" declaredType="MyEnum" causality="output" initial="exact" description="myDescription" quantity="enumerationQuantity" min="1" max="2" start="2"/>
+  <Binary name="defaultBinaryVar" valueReference="3"/>
 </ModelVariables>
 
 <ModelStructure>

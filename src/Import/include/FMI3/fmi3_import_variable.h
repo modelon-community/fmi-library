@@ -76,6 +76,10 @@ typedef struct fmi3_xml_string_variable_t fmi3_import_string_variable_t;
 typedef struct fmi3_xml_enum_variable_t fmi3_import_enum_variable_t;
 /** \brief Opaque boolean variable */
 typedef struct fmi3_xml_bool_variable_t fmi3_import_bool_variable_t;
+/** \brief Opaque binary variable */
+typedef struct fmi3_xml_binary_variable_t fmi3_import_binary_variable_t;
+/** \brief Opaque clock variable */
+typedef struct fmi3_xml_clock_variable_t fmi3_import_clock_variable_t;
 /** \brief List of variables */
 typedef struct fmi3_import_variable_list_t fmi3_import_variable_list_t;
 /**@} */
@@ -216,6 +220,16 @@ FMILIB_EXPORT fmi3_import_string_variable_t* fmi3_import_get_variable_as_string(
     @return Typed object or NULL if base type does not match
 */
 FMILIB_EXPORT fmi3_import_bool_variable_t* fmi3_import_get_variable_as_boolean(fmi3_import_variable_t*);
+/** \brief Cast general variable to a one with the specific type 
+
+    @return Typed object or NULL if base type does not match
+*/
+FMILIB_EXPORT fmi3_import_binary_variable_t* fmi3_import_get_variable_as_binary(fmi3_import_variable_t*);
+/** \brief Cast general variable to a one with the specific type 
+
+    @return Typed object or NULL if base type does not match
+*/
+FMILIB_EXPORT fmi3_import_clock_variable_t* fmi3_import_get_variable_as_clock(fmi3_import_variable_t*);
 
 /** \brief Get minimal value for the variable.
 
@@ -327,6 +341,10 @@ FMILIB_EXPORT const char* fmi3_import_get_string_variable_start(fmi3_import_stri
 
 /** \brief Get start value for the variable */
 FMILIB_EXPORT fmi3_boolean_t fmi3_import_get_boolean_variable_start(fmi3_import_bool_variable_t* v);
+/** \brief Get start value for the variable */
+FMILIB_EXPORT fmi3_binary_t fmi3_import_get_binary_variable_start(fmi3_import_binary_variable_t* v);
+/** \brief Get start value for the variable */
+FMILIB_EXPORT fmi3_clock_t fmi3_import_get_clock_variable_start(fmi3_import_clock_variable_t* v);
 
 /** \brief Get "quantity" attribute if defined, else NULL-pointer. */
 FMILIB_EXPORT fmi3_string_t fmi3_import_get_int64_variable_quantity(fmi3_import_int64_variable_t * v);
@@ -396,7 +414,6 @@ FMILIB_EXPORT fmi3_uint16_t fmi3_import_get_uint16_variable_start(fmi3_import_ui
 /** \brief Get start value for the variable */
 FMILIB_EXPORT fmi3_uint8_t fmi3_import_get_uint8_variable_start(fmi3_import_uint8_variable_t* v);
 
-
 /** \brief Get "quantity" attribute if defined, else NULL-pointer. */
 FMILIB_EXPORT fmi3_string_t fmi3_import_get_enum_variable_quantity(fmi3_import_enum_variable_t * v);
 /** \brief Get start value for the variable*/
@@ -412,8 +429,6 @@ FMILIB_EXPORT fmi3_variable_alias_kind_enu_t fmi3_import_get_variable_alias_kind
 /** \brief Get the original index in xml of the variable */
 FMILIB_EXPORT size_t fmi3_import_get_variable_original_order(fmi3_import_variable_t* v);
 
-
-/* Dimensions */
 
 
 /** @} */

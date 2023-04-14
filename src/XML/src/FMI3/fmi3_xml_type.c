@@ -486,8 +486,10 @@ void fmi3_xml_init_type_definitions(fmi3_xml_type_definitions_t* td, jm_callback
     fmi3_xml_init_uint16_type_properties(&td->defaultUInt16Type);
     fmi3_xml_init_uint8_type_properties(&td->defaultUInt8Type);
 
-    fmi3_xml_init_variable_type_base(&td->defaultBooleanType, fmi3_xml_type_struct_enu_props,fmi3_base_type_bool);
-    fmi3_xml_init_variable_type_base(&td->defaultStringType, fmi3_xml_type_struct_enu_props,fmi3_base_type_str);
+    fmi3_xml_init_variable_type_base(&td->defaultBooleanType, fmi3_xml_type_struct_enu_props, fmi3_base_type_bool);
+    fmi3_xml_init_variable_type_base(&td->defaultBinaryType,  fmi3_xml_type_struct_enu_props, fmi3_base_type_binary);
+    fmi3_xml_init_variable_type_base(&td->defaultClockType,   fmi3_xml_type_struct_enu_props, fmi3_base_type_clock);
+    fmi3_xml_init_variable_type_base(&td->defaultStringType,  fmi3_xml_type_struct_enu_props, fmi3_base_type_str);
 
     td->typePropsList = 0;
 }
@@ -613,7 +615,7 @@ fmi3_xml_variable_type_base_t* fmi3_xml_alloc_variable_type_start(fmi3_xml_type_
 
     fmi3_xml_variable_type_base_t* start = cb->malloc(typeSize);
     if (!start) return 0;
-    fmi3_xml_init_variable_type_base(start, fmi3_xml_type_struct_enu_start,base->baseType);
+    fmi3_xml_init_variable_type_base(start, fmi3_xml_type_struct_enu_start, base->baseType);
     start->nextLayer = base;
 
     /* Push to top of typePropsList */
@@ -769,38 +771,38 @@ int fmi3_xml_handle_IntXX(fmi3_xml_parser_context_t *context, const char* data, 
 }
 
 int fmi3_xml_handle_Int64(fmi3_xml_parser_context_t* context, const char* data) {
-    return fmi3_xml_handle_IntXX(context, data, fmi3_xml_elmID_Int64,  &context->modelDescription->typeDefinitions.defaultInt64Type, &PRIMITIVE_TYPES.int64);
+    return fmi3_xml_handle_IntXX(context, data, fmi3_xml_elmID_Int64, &context->modelDescription->typeDefinitions.defaultInt64Type, &PRIMITIVE_TYPES.int64);
 }
 
 int fmi3_xml_handle_Int32(fmi3_xml_parser_context_t* context, const char* data) {
-    return fmi3_xml_handle_IntXX(context, data, fmi3_xml_elmID_Int32,  &context->modelDescription->typeDefinitions.defaultInt32Type, &PRIMITIVE_TYPES.int32);
+    return fmi3_xml_handle_IntXX(context, data, fmi3_xml_elmID_Int32, &context->modelDescription->typeDefinitions.defaultInt32Type, &PRIMITIVE_TYPES.int32);
 }
 
 int fmi3_xml_handle_Int16(fmi3_xml_parser_context_t* context, const char* data) {
-    return fmi3_xml_handle_IntXX(context, data, fmi3_xml_elmID_Int16,  &context->modelDescription->typeDefinitions.defaultInt16Type, &PRIMITIVE_TYPES.int16);
+    return fmi3_xml_handle_IntXX(context, data, fmi3_xml_elmID_Int16, &context->modelDescription->typeDefinitions.defaultInt16Type, &PRIMITIVE_TYPES.int16);
 }
 
 int fmi3_xml_handle_Int8(fmi3_xml_parser_context_t* context, const char* data) {
-    return fmi3_xml_handle_IntXX(context, data, fmi3_xml_elmID_Int8,  &context->modelDescription->typeDefinitions.defaultInt8Type, &PRIMITIVE_TYPES.int8);
+    return fmi3_xml_handle_IntXX(context, data, fmi3_xml_elmID_Int8, &context->modelDescription->typeDefinitions.defaultInt8Type, &PRIMITIVE_TYPES.int8);
 }
 
 int fmi3_xml_handle_UInt64(fmi3_xml_parser_context_t* context, const char* data) {
-    return fmi3_xml_handle_IntXX(context, data, fmi3_xml_elmID_UInt64,  &context->modelDescription->typeDefinitions.defaultUInt64Type, &PRIMITIVE_TYPES.uint64);
+    return fmi3_xml_handle_IntXX(context, data, fmi3_xml_elmID_UInt64, &context->modelDescription->typeDefinitions.defaultUInt64Type, &PRIMITIVE_TYPES.uint64);
 }
 
 int fmi3_xml_handle_UInt32(fmi3_xml_parser_context_t* context, const char* data) {
-    return fmi3_xml_handle_IntXX(context, data, fmi3_xml_elmID_UInt32,  &context->modelDescription->typeDefinitions.defaultUInt32Type, &PRIMITIVE_TYPES.uint32);
+    return fmi3_xml_handle_IntXX(context, data, fmi3_xml_elmID_UInt32, &context->modelDescription->typeDefinitions.defaultUInt32Type, &PRIMITIVE_TYPES.uint32);
 }
 
 int fmi3_xml_handle_UInt16(fmi3_xml_parser_context_t* context, const char* data) {
-    return fmi3_xml_handle_IntXX(context, data, fmi3_xml_elmID_UInt16,  &context->modelDescription->typeDefinitions.defaultUInt16Type, &PRIMITIVE_TYPES.uint16);
+    return fmi3_xml_handle_IntXX(context, data, fmi3_xml_elmID_UInt16, &context->modelDescription->typeDefinitions.defaultUInt16Type, &PRIMITIVE_TYPES.uint16);
 }
 
 int fmi3_xml_handle_UInt8(fmi3_xml_parser_context_t* context, const char* data) {
-    return fmi3_xml_handle_IntXX(context, data, fmi3_xml_elmID_UInt8,  &context->modelDescription->typeDefinitions.defaultUInt8Type, &PRIMITIVE_TYPES.uint8);
+    return fmi3_xml_handle_IntXX(context, data, fmi3_xml_elmID_UInt8, &context->modelDescription->typeDefinitions.defaultUInt8Type, &PRIMITIVE_TYPES.uint8);
 }
 
-int fmi3_xml_handle_Boolean(fmi3_xml_parser_context_t *context, const char* data) {
+int fmi3_xml_handle_Boolean(fmi3_xml_parser_context_t* context, const char* data) {
 
     int res = fmi3_xml_handle_SimpleType(context, data);
     if (res)
@@ -823,7 +825,17 @@ int fmi3_xml_handle_Boolean(fmi3_xml_parser_context_t *context, const char* data
     return 0;
 }
 
-int fmi3_xml_handle_String(fmi3_xml_parser_context_t *context, const char* data) {
+int fmi3_xml_handle_Binary(fmi3_xml_parser_context_t* context, const char* data) {
+    // TODO
+    assert(0);
+}
+
+int fmi3_xml_handle_Clock(fmi3_xml_parser_context_t* context, const char* data) {
+    // TODO
+    assert(0);
+}
+
+int fmi3_xml_handle_String(fmi3_xml_parser_context_t* context, const char* data) {
 
     int res = fmi3_xml_handle_SimpleType(context, data);
     if (res)
@@ -846,7 +858,15 @@ int fmi3_xml_handle_String(fmi3_xml_parser_context_t *context, const char* data)
     return 0;
 }
 
-int fmi3_xml_handle_Enumeration(fmi3_xml_parser_context_t *context, const char* data) {
+static int fmi3_xml_compare_enum_val(const void* first, const void* second) {
+    const jm_named_ptr* a = first;
+    const jm_named_ptr* b = second;
+    fmi3_xml_enum_type_item_t* ai = a->ptr;
+    fmi3_xml_enum_type_item_t* bi = b->ptr;
+    return (ai->value - bi->value);
+}
+
+int fmi3_xml_handle_Enumeration(fmi3_xml_parser_context_t* context, const char* data) {
 
     int res = fmi3_xml_handle_SimpleType(context, data);
     if (res)
@@ -894,7 +914,7 @@ int fmi3_xml_handle_Enumeration(fmi3_xml_parser_context_t *context, const char* 
         fmi3_xml_enum_typedef_props_t * props = (fmi3_xml_enum_typedef_props_t *)type->super.nextLayer;
         jm_vector(jm_named_ptr)* items = &props->enumItems;
         size_t i, n = jm_vector_get_size(jm_named_ptr)(items);
-        jm_vector_qsort(jm_named_ptr)(items, fmi1_xml_compare_enum_val);
+        jm_vector_qsort(jm_named_ptr)(items, fmi3_xml_compare_enum_val);
         for(i = 1; i < n; i++) {
             fmi3_xml_enum_type_item_t* a = jm_vector_get_itemp(jm_named_ptr)(items, i-1)->ptr;
             fmi3_xml_enum_type_item_t* b = jm_vector_get_itemp(jm_named_ptr)(items, i)->ptr;
@@ -913,45 +933,43 @@ int fmi3_xml_handle_Enumeration(fmi3_xml_parser_context_t *context, const char* 
     return 0;
 }
 
-int fmi3_xml_handle_Item(fmi3_xml_parser_context_t *context, const char* data) {
+int fmi3_xml_handle_Item(fmi3_xml_parser_context_t* context, const char* data) {
     if(!data) {
-        {
-            fmi3_xml_model_description_t* md = context->modelDescription;
-            jm_vector(char)* bufName = fmi3_xml_reserve_parse_buffer(context,1,100);
-            jm_vector(char)* bufDescr = fmi3_xml_reserve_parse_buffer(context,2,100);
-            /* this enum item belongs to the last created enum = head of typePropsList */
-            fmi3_xml_enum_typedef_props_t * enumProps = (fmi3_xml_enum_typedef_props_t*)md->typeDefinitions.typePropsList;
-            fmi3_xml_enum_type_item_t * item;
-            jm_named_ptr named, *pnamed;
-            size_t descrlen;
-            fmi3_int32_t value;
+        fmi3_xml_model_description_t* md = context->modelDescription;
+        jm_vector(char)* bufName = fmi3_xml_reserve_parse_buffer(context,1,100);
+        jm_vector(char)* bufDescr = fmi3_xml_reserve_parse_buffer(context,2,100);
+        /* this enum item belongs to the last created enum = head of typePropsList */
+        fmi3_xml_enum_typedef_props_t * enumProps = (fmi3_xml_enum_typedef_props_t*)md->typeDefinitions.typePropsList;
+        fmi3_xml_enum_type_item_t * item;
+        jm_named_ptr named, *pnamed;
+        size_t descrlen;
+        fmi3_int32_t value;
 
-            assert((enumProps->base.super.structKind == fmi3_xml_type_struct_enu_props)
-                && (enumProps->base.super.baseType == fmi3_base_type_enum));
+        assert((enumProps->base.super.structKind == fmi3_xml_type_struct_enu_props)
+            && (enumProps->base.super.baseType == fmi3_base_type_enum));
 
-            if (!bufName || !bufDescr ||
-                    fmi3_xml_set_attr_string(context, fmi3_xml_elmID_Item, fmi_attr_id_name, 1, bufName) ||
-                    fmi3_xml_set_attr_string(context, fmi3_xml_elmID_Item, fmi_attr_id_description, 0, bufDescr) ||
-                    fmi3_xml_set_attr_int32( context, fmi3_xml_elmID_Item, fmi_attr_id_value, 1, &value, 0)) {
-                return -1;
-            }
-            descrlen = jm_vector_get_size(char)(bufDescr);
-            named.ptr = 0;
-            named.name = 0;
-            pnamed = jm_vector_push_back(jm_named_ptr)(&enumProps->enumItems, named);
-
-            if(pnamed) *pnamed = named = jm_named_alloc_v(bufName,sizeof(fmi3_xml_enum_type_item_t)+descrlen+1,sizeof(fmi3_xml_enum_type_item_t)+descrlen,context->callbacks);
-            item = named.ptr;
-            if( !pnamed || !item ) {
-                fmi3_xml_parse_fatal(context, "Could not allocate memory");
-                return -1;
-            }
-            item->itemName = named.name;
-            item->value = value;
-            if(descrlen)
-                memcpy(item->itemDesciption,jm_vector_get_itemp(char)(bufDescr,0), descrlen);
-            item->itemDesciption[descrlen] = 0;
+        if (!bufName || !bufDescr ||
+                fmi3_xml_set_attr_string(context, fmi3_xml_elmID_Item, fmi_attr_id_name, 1, bufName) ||
+                fmi3_xml_set_attr_string(context, fmi3_xml_elmID_Item, fmi_attr_id_description, 0, bufDescr) ||
+                fmi3_xml_set_attr_int32( context, fmi3_xml_elmID_Item, fmi_attr_id_value, 1, &value, 0)) {
+            return -1;
         }
+        descrlen = jm_vector_get_size(char)(bufDescr);
+        named.ptr = 0;
+        named.name = 0;
+        pnamed = jm_vector_push_back(jm_named_ptr)(&enumProps->enumItems, named);
+
+        if(pnamed) *pnamed = named = jm_named_alloc_v(bufName,sizeof(fmi3_xml_enum_type_item_t)+descrlen+1,sizeof(fmi3_xml_enum_type_item_t)+descrlen,context->callbacks);
+        item = named.ptr;
+        if( !pnamed || !item ) {
+            fmi3_xml_parse_fatal(context, "Could not allocate memory");
+            return -1;
+        }
+        item->itemName = named.name;
+        item->value = value;
+        if(descrlen)
+            memcpy(item->itemDesciption,jm_vector_get_itemp(char)(bufDescr,0), descrlen);
+        item->itemDesciption[descrlen] = 0;
     }
     else {
         /* don't do anything. might give out a warning if(data[0] != 0) */
@@ -960,7 +978,7 @@ int fmi3_xml_handle_Item(fmi3_xml_parser_context_t *context, const char* data) {
     return 0;
 }
 
-fmi3_xml_variable_type_base_t* fmi3_get_declared_type(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_variable_type_base_t* defaultType) {
+fmi3_xml_variable_type_base_t* fmi3_get_declared_type(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID, fmi3_xml_variable_type_base_t* defaultType) {
     jm_named_ptr key, *found;
     jm_vector(char)* bufDeclaredType = fmi3_xml_reserve_parse_buffer(context, 1, 100);
 

@@ -27,11 +27,11 @@
 extern "C" {
 #endif
 
-/* General variable type is convenien to unify all the variable list operations */
+/* General variable type is convenient to unify all the variable list operations */
 struct fmi3_xml_variable_t {
-    fmi3_xml_variable_type_base_t* type; /** \brief Type information of the variable */
+    fmi3_xml_variable_type_base_t* type;     /** \brief Type information of the variable, and start values, and maybe more. */
 
-    const char* description;                 /** \brief Associate description */
+    const char* description;                 /** \brief Associated description */
 
     size_t originalIndex;                    /** \brief Index in the model description */
 
@@ -65,7 +65,7 @@ struct fmi3_xml_variable_t {
     char name[1];
 };
 
-static int fmi3_xml_compare_vr (const void* first, const void* second) {
+static int fmi3_xml_compare_vr(const void* first, const void* second) {
     fmi3_xml_variable_t* a = *(fmi3_xml_variable_t**)first;
     fmi3_xml_variable_t* b = *(fmi3_xml_variable_t**)second;
     fmi3_base_type_enu_t at = fmi3_xml_get_variable_base_type(a);

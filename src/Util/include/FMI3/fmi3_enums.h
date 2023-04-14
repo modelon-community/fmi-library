@@ -157,6 +157,8 @@ typedef enum fmi3_base_type_enu_t
     fmi3_base_type_uint16,
     fmi3_base_type_uint8,
     fmi3_base_type_bool,
+    fmi3_base_type_binary,
+    fmi3_base_type_clock,
     fmi3_base_type_str,
     fmi3_base_type_enum
 } fmi3_base_type_enu_t;

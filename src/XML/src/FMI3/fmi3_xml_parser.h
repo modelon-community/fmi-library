@@ -130,6 +130,8 @@ typedef enum fmi3_xml_attr_enu_t {
     EXPAND_XML_ELMNAME(UInt16) \
     EXPAND_XML_ELMNAME(UInt8) \
     EXPAND_XML_ELMNAME(Boolean) \
+    EXPAND_XML_ELMNAME(Binary) \
+    EXPAND_XML_ELMNAME(Clock) \
     EXPAND_XML_ELMNAME(String) \
     EXPAND_XML_ELMNAME(Enumeration) \
     EXPAND_XML_ELMNAME(ModelStructure) \
@@ -153,6 +155,8 @@ typedef enum fmi3_xml_attr_enu_t {
     EXPAND_XML_ELMNAME(UInt16Variable) \
     EXPAND_XML_ELMNAME(UInt8Variable) \
     EXPAND_XML_ELMNAME(BooleanVariable) \
+    EXPAND_XML_ELMNAME(BinaryVariable) \
+    EXPAND_XML_ELMNAME(ClockVariable) \
     EXPAND_XML_ELMNAME(StringVariable) \
     EXPAND_XML_ELMNAME(EnumerationVariable)  \
     EXPAND_XML_ELMNAME(VariableTool) \

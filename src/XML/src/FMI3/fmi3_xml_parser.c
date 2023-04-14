@@ -83,6 +83,8 @@ const char *fmi3_xmlAttrNames[fmi3_xml_attr_number] = {
 #define fmi3_xml_scheme_UInt16               {fmi3_xml_elmID_SimpleType, fmi3_xml_elmID_TypeDefinitions,     0,       1}
 #define fmi3_xml_scheme_UInt8                {fmi3_xml_elmID_SimpleType, fmi3_xml_elmID_TypeDefinitions,     0,       1}
 #define fmi3_xml_scheme_Boolean              {fmi3_xml_elmID_SimpleType, fmi3_xml_elmID_TypeDefinitions,     0,       1}
+#define fmi3_xml_scheme_Binary               {fmi3_xml_elmID_SimpleType, fmi3_xml_elmID_TypeDefinitions,     0,       1}
+#define fmi3_xml_scheme_Clock                {fmi3_xml_elmID_SimpleType, fmi3_xml_elmID_TypeDefinitions,     0,       1}
 #define fmi3_xml_scheme_String               {fmi3_xml_elmID_SimpleType, fmi3_xml_elmID_TypeDefinitions,     0,       1}
 #define fmi3_xml_scheme_Enumeration          {fmi3_xml_elmID_SimpleType, fmi3_xml_elmID_TypeDefinitions,     0,       1}
 #define fmi3_xml_scheme_Item                 {fmi3_xml_elmID_none,       fmi3_xml_elmID_Enumeration,         0,       1}
@@ -115,9 +117,10 @@ const char *fmi3_xmlAttrNames[fmi3_xml_attr_number] = {
 #define fmi3_xml_scheme_UInt16Variable       {fmi3_xml_elmID_Variable,   fmi3_xml_elmID_ModelVariables,      0,       1}
 #define fmi3_xml_scheme_UInt8Variable        {fmi3_xml_elmID_Variable,   fmi3_xml_elmID_ModelVariables,      0,       1}
 #define fmi3_xml_scheme_BooleanVariable      {fmi3_xml_elmID_Variable,   fmi3_xml_elmID_ModelVariables,      0,       1}
+#define fmi3_xml_scheme_BinaryVariable       {fmi3_xml_elmID_Variable,   fmi3_xml_elmID_ModelVariables,      0,       1}
+#define fmi3_xml_scheme_ClockVariable        {fmi3_xml_elmID_Variable,   fmi3_xml_elmID_ModelVariables,      0,       1}
 #define fmi3_xml_scheme_StringVariable       {fmi3_xml_elmID_Variable,   fmi3_xml_elmID_ModelVariables,      0,       1}
 #define fmi3_xml_scheme_EnumerationVariable  {fmi3_xml_elmID_Variable,   fmi3_xml_elmID_ModelVariables,      0,       1}
-#define fmi3_xml_scheme_BinaryVariable       {fmi3_xml_elmID_Variable,   fmi3_xml_elmID_ModelVariables,      0,       1}
 #define fmi3_xml_scheme_Dimension            {fmi3_xml_elmID_none,       fmi3_xml_elmID_Variable,            0,       1}
 
 #define fmi3_xml_scheme_Annotations          {fmi3_xml_elmID_none,       fmi3_xml_elmID_Variable,            1,       0}
@@ -299,8 +302,9 @@ int fmi3_xml_is_attr_defined(fmi3_xml_parser_context_t *context, fmi3_xml_attr_e
  * Read value from parse buffer "as is". Also resets the buffer's entry.
  *    valp (return arg): points to attribute value
  */
-int fmi3_xml_get_attr_str(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, int required, const char** valp) {
-
+int fmi3_xml_get_attr_str(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID,
+        int required, const char** valp)
+{
     /* Read and clear attribute */
     jm_string value = fmi3_xml_peek_attr_str(context, attrID);
     jm_vector_set_item(jm_string)(context->attrBuffer, attrID, 0);
@@ -320,7 +324,9 @@ int fmi3_xml_get_attr_str(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t
  * Reads the attribute from attribute buffer as jm_vector(char). This will clear the attribute from the buffer.
  *   field (return arg): contains value after function call
  */
-int fmi3_xml_set_attr_string(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, int required, jm_vector(char)* field) {
+int fmi3_xml_set_attr_string(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID,
+        int required, jm_vector(char)* field)
+{
     int ret;
     jm_string val;
     size_t len;
@@ -354,7 +360,9 @@ int fmi3_xml_set_attr_string(fmi3_xml_parser_context_t *context, fmi3_xml_elm_en
     return 0;
 }
 
-int fmi3_xml_set_attr_enum(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, int required, unsigned int* field, unsigned int defaultVal, jm_name_ID_map_t* nameMap) {
+int fmi3_xml_set_attr_enum(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID,
+        int required, unsigned int* field, unsigned int defaultVal, jm_name_ID_map_t* nameMap)
+{
     int ret, i;
     jm_string elmName, attrName, strVal;
 
@@ -378,7 +386,9 @@ int fmi3_xml_set_attr_enum(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_
     return 0;
 }
 
-int fmi3_xml_set_attr_boolean(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, int required, unsigned int* field, unsigned int defaultVal) {
+int fmi3_xml_set_attr_boolean(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID,
+        int required, unsigned int* field, unsigned int defaultVal)
+{
     jm_name_ID_map_t fmi_boolean_i_dMap[] = {{"true", 1},{"false", 0}, {"1", 1},{"0", 0}, {0,0}};
     return fmi3_xml_set_attr_enum(context, elmID, attrID, required, field, defaultVal, fmi_boolean_i_dMap);
 }
@@ -892,7 +902,14 @@ int fmi3_xml_are_same_type(fmi3_xml_elm_enu_t id1, fmi3_xml_elm_enu_t id2) {
     return fmi3_xml_get_super_type_rec(id1) == fmi3_xml_get_super_type_rec(id2);
 }
 
-
+/**
+ * Expat callback which is called after reading an element and its attributes.
+ *
+ * Performs:
+ *  - Common management of the parser context
+ *  - Error checking
+ *  - Delegatation to the handler for the read element
+ */
 static void XMLCALL fmi3_parse_element_start(void *c, const char *elm, const char **attr) {
     fmi3_xml_element_handle_map_t keyEl;
     fmi3_xml_element_handle_map_t* currentElMap;
@@ -1047,8 +1064,15 @@ static void XMLCALL fmi3_parse_element_start(void *c, const char *elm, const cha
     context -> currentElmID = currentID;
 }
 
+/**
+ * Expat callback which is called at the end of every read element.
+ *
+ * Performs:
+ *  - Common management of the parser context
+ *  - Error checking
+ *  - Delegatation to the handler for the read element
+ */
 static void XMLCALL fmi3_parse_element_end(void* c, const char *elm) {
-
     fmi3_xml_element_handle_map_t keyEl;
     fmi3_xml_element_handle_map_t* currentElMap;
     fmi3_xml_elm_enu_t currentID;

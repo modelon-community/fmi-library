@@ -63,10 +63,10 @@ typedef struct fmi3_xml_type_definitions_t fmi3_xml_type_definitions_t;
 
 /**\name Scalar Variable types */
 /** @{ */
-/**General variable type is convenient to unify all the variable list operations */
+/** General variable type is convenient to unify all the variable list operations */
 typedef struct fmi3_xml_variable_t fmi3_xml_variable_t;
 
-/**Typed variables are needed to support specific attributes */
+/** Typed variables are needed to support specific attributes */
 typedef struct fmi3_xml_float_variable_t   fmi3_xml_float_variable_t;
 typedef struct fmi3_xml_float64_variable_t fmi3_xml_float64_variable_t;
 typedef struct fmi3_xml_float32_variable_t fmi3_xml_float32_variable_t;
@@ -82,6 +82,8 @@ typedef struct fmi3_xml_uint8_variable_t   fmi3_xml_uint8_variable_t;
 typedef struct fmi3_xml_string_variable_t  fmi3_xml_string_variable_t;
 typedef struct fmi3_xml_enum_variable_t    fmi3_xml_enum_variable_t;
 typedef struct fmi3_xml_bool_variable_t    fmi3_xml_bool_variable_t;
+typedef struct fmi3_xml_binary_variable_t  fmi3_xml_binary_variable_t;
+typedef struct fmi3_xml_clock_variable_t   fmi3_xml_clock_variable_t;
 /** @} */
 
 /**\name Structures encapsulating unit information */

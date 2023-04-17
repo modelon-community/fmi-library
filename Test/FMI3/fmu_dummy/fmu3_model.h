@@ -51,25 +51,25 @@ typedef enum {
  */
 typedef struct {
     /*************** FMI ME 3.0 ****************/
-    fmi3Float64                    states            [N_STATES];
-    fmi3Float64                    states_nom        [N_STATES];
-    fmi3Float64                    states_der        [N_STATES];
-    fmi3Float64                    event_indicators  [N_EVENT_INDICATORS];
-    fmi3Float64                    reals             [N_REAL];
-    fmi3Float64                    dummy_array       [N_REAL]; /* array used to test get/set float 64 */
-    fmi3Int64                      dummy_int64_array      [2]; /* array used to test get/set int 64 */
-    fmi3Int32                      integers          [N_INTEGER];
-    fmi3Boolean                    booleans          [N_BOOLEAN];
-    fmi3String                     strings           [N_STRING];
-    char*                          binaries          [N_BINARY]; /* not using fmi3Binary because it's const,
-                                                           which gives warnings with memcpy */
+    fmi3Float64                    states              [N_STATES];
+    fmi3Float64                    states_nom          [N_STATES];
+    fmi3Float64                    states_der          [N_STATES];
+    fmi3Float64                    event_indicators    [N_EVENT_INDICATORS];
+    fmi3Float64                    reals               [N_REAL];
+    fmi3Float64                    dummy_float64_array [N_REAL];   /* array used to test get/set float 64 */
+    fmi3Int64                      dummy_int64_array   [2];        /* array used to test get/set int 64 */
+    fmi3Int32                      integers            [N_INTEGER];
+    fmi3Boolean                    booleans            [N_BOOLEAN];
+    fmi3String                     strings             [N_STRING];
+    char*                          binaries            [N_BINARY]; /* not using fmi3Binary because it's const,
+                                                                      which gives warnings with memcpy */
 
-    size_t                         binaries_sz            [N_BINARY];
+    size_t                         binaries_sz         [N_BINARY];
 
     /* fmiInstantiateModel */
     fmi3Boolean                    loggingOn;
-    char                           instanceName    [BUFFER];
-    char                           instantiationToken            [BUFFER];
+    char                           instanceName        [BUFFER];
+    char                           instantiationToken  [BUFFER];
 
     /* fmiSetTime */
     fmi3Float64                    fmitime;

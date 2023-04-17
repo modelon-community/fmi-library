@@ -15,6 +15,7 @@
 
 #include <string.h>
 #include <stdio.h>
+#include <inttypes.h>
 
 #include <JM/jm_vector.h>
 
@@ -157,7 +158,7 @@ fmi3_initial_enu_t fmi3_xml_get_initial(fmi3_xml_variable_t* v) {
 }
 
 fmi3_xml_variable_t* fmi3_xml_get_previous(fmi3_xml_variable_t* v) {
-    return v->previous;
+    return v->previous.variable;
 }
 
 fmi3_boolean_t fmi3_xml_get_canHandleMultipleSetPerTimeInstant(fmi3_xml_variable_t* v) {
@@ -884,13 +885,17 @@ static int fmi3_xml_variable_process_attr_causality_variability_initial(fmi3_xml
 static int fmi3_xml_variable_process_attr_previous(fmi3_xml_parser_context_t* context,
         fmi3_xml_variable_t* variable, fmi3_xml_elm_enu_t elm_id)
 {
-    unsigned int previous;
-    if (fmi3_xml_set_attr_uint32(context, elm_id, fmi_attr_id_previous, 0 /* required */,
-            &previous, 0 /* defaultVal */)) {
-        return -1;   
+    uint32_t previous;
+    if (!fmi3_xml_is_attr_defined(context, fmi_attr_id_previous)) {
+        return 0;
     }
-    /* Store the index as a pointer since we cannot access the variables list yet (we are constructing it). */
-    variable->previous = (void*)((char *)NULL + previous);
+    else if (fmi3_xml_set_attr_uint32(context, elm_id, fmi_attr_id_previous, 0 /* required */,
+            &previous, 0 /* defaultVal */)) {
+        return -1;
+    }
+    /* Store the VR since we cannot access the variable until after parsing all variables. */
+    variable->previous.vr = previous;
+    variable->hasPrevious = true;
     return 0;
 }
 
@@ -977,7 +982,8 @@ int fmi3_xml_handle_Variable(fmi3_xml_parser_context_t* context, const char* dat
         variable->type = 0;
         variable->originalIndex = jm_vector_get_size(jm_named_ptr)(&md->variablesByName) - 1;
         variable->derivativeOf = 0;
-        variable->previous = 0;
+        variable->previous.variable = NULL;  // Could correspond to a valid vr, why we need the 'hasPrevious' as well.
+        variable->hasPrevious = false;
         variable->aliasKind = fmi3_variable_is_not_alias;
         variable->reinit = 0;
         variable->canHandleMultipleSetPerTimeInstant = 1;
@@ -1710,6 +1716,22 @@ int fmi3_xml_handle_ModelVariables(fmi3_xml_parser_context_t *context, const cha
             }
         }
 
+        /* sort the variables by names */
+        jm_vector_qsort(jm_named_ptr)(&md->variablesByName,jm_compare_named);
+
+        /* create VR index */
+        md->status = fmi3_xml_model_description_enu_ok;
+        {
+            size_t size = jm_vector_get_size(jm_named_ptr)(&md->variablesByName);
+            md->variablesByVR = jm_vector_alloc(jm_voidp)(size,size,md->callbacks);
+            if(md->variablesByVR) {
+                size_t i;
+                for(i= 0; i < size; ++i) {
+                    jm_vector_set_item(jm_voidp)(md->variablesByVR, i, jm_vector_get_item(jm_named_ptr)(&md->variablesByName,i).ptr);
+                }
+            }
+        }
+
         /* look up actual pointers for the derivativeOf and previous fields in variablesOrigOrder */
         {
             size_t size = jm_vector_get_size(jm_voidp)(md->variablesOrigOrder);
@@ -1724,40 +1746,25 @@ int fmi3_xml_handle_ModelVariables(fmi3_xml_parser_context_t *context, const cha
                     index--;
                     /* Ok to just check upper bound since index is unsigned. */
                     if (index >= size) {
-                        fmi3_xml_parse_error(context, "The 'derivative' attribute must have a value between 1 and the number of model variables.");
+                        fmi3_xml_parse_error(context, "The 'derivative' attribute must have a value "
+                                                      "between 1 and the number of model variables.");
                         /* todo: free allocated memory? */
                         return -1;
                     }
                     variable->derivativeOf = (fmi3_xml_variable_t*)jm_vector_get_item(jm_voidp)(md->variablesOrigOrder, index);
                 }
-                if (variable->previous) {
-                    /* retrieve index that was stored as a pointer */
-                    size_t index = (char*)variable->previous - (char *)NULL;
-                    /* Convert from one- to zero-based indexing */
-                    index--;
-                    /* Ok to just check upper bound since index is unsigned. */
-                    if (index >= size) {
-                        fmi3_xml_parse_error(context, "The 'previous' attribute must have a value between 1 and the number of model variables.");
+                if (variable->hasPrevious) {
+                    // Resolve VR to variable.
+                    
+                    fmi3_value_reference_t vr = variable->previous.vr;
+                    variable->previous.variable =
+                            fmi3_xml_get_variable_by_vr(md, variable->type->baseType, vr);
+                    if (!variable->previous.variable) {
+                        fmi3_xml_parse_error(context, "The valueReference in previous=\"%" PRIu32 "\" "
+                                                      "did not resolve to any variable.", vr);
                         /* todo: free allocated memory? */
                         return -1;
                     }
-                    variable->previous = (fmi3_xml_variable_t*)jm_vector_get_item(jm_voidp)(md->variablesOrigOrder, index);
-                }
-            }
-        }
-
-        /* sort the variables by names */
-        jm_vector_qsort(jm_named_ptr)(&md->variablesByName,jm_compare_named);
-
-        /* create VR index */
-        md->status = fmi3_xml_model_description_enu_ok;
-        {
-            size_t size = jm_vector_get_size(jm_named_ptr)(&md->variablesByName);
-            md->variablesByVR = jm_vector_alloc(jm_voidp)(size,size,md->callbacks);
-            if(md->variablesByVR) {
-                size_t i;
-                for(i= 0; i < size; ++i) {
-                    jm_vector_set_item(jm_voidp)(md->variablesByVR, i, jm_vector_get_item(jm_named_ptr)(&md->variablesByName,i).ptr);
                 }
             }
         }

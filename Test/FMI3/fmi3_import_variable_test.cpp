@@ -83,7 +83,6 @@ static int test_binary_default_attrs(fmi3_import_t* xml) {
     fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "defaultBinaryVar");
     fmi3_import_binary_variable_t* bv;
     fmi3_import_variable_typedef_t* t;
-    fmi3_import_enumeration_typedef_t* et;
 
     REQUIRE(v != nullptr);
     REQUIRE(fmi3_import_get_variable_vr(v) == 3);
@@ -97,7 +96,36 @@ static int test_binary_default_attrs(fmi3_import_t* xml) {
     REQUIRE(bv != nullptr);
 
     t = fmi3_import_get_variable_declared_type(v);
-    REQUIRE(t == nullptr);  // Doesn't have any declared type
+    REQUIRE(t == nullptr);  // No declared type
+
+    return 0;
+}
+
+/**
+ * Tests parsing a Binary variable with all attributes set
+ */
+static int test_binary_all_attrs(fmi3_import_t* xml) {
+    fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "allAttrsBinaryVar");
+    fmi3_import_binary_variable_t* bv;
+    fmi3_import_variable_t* preBv;
+    fmi3_import_variable_typedef_t* t;
+
+    REQUIRE(v != nullptr);
+    REQUIRE(fmi3_import_get_variable_vr(v) == 4);
+    REQUIRE(fmi3_import_get_causality(v) == fmi3_causality_enu_output);
+    REQUIRE(fmi3_import_get_variability(v) == fmi3_variability_enu_discrete);
+    REQUIRE(fmi3_import_get_initial(v) == fmi3_initial_enu_exact);
+    REQUIRE(strcmp(fmi3_import_get_variable_description(v), "myDesc") == 0);
+    REQUIRE(fmi3_import_get_canHandleMultipleSetPerTimeInstant(v) == true);
+    preBv = fmi3_import_get_previous(v);
+    REQUIRE(preBv != nullptr);
+    REQUIRE(fmi3_import_get_variable_vr(preBv) == 4001);
+
+    bv = fmi3_import_get_variable_as_binary(v);
+    REQUIRE(bv != nullptr);
+
+    t = fmi3_import_get_variable_declared_type(v);
+    REQUIRE(t == nullptr);  // No declared type
 
     return 0;
 }
@@ -117,6 +145,9 @@ TEST_CASE("Variable parsing", "[xml_variables]") {
 
     SECTION("Binary: parse default attributes") {
         test_binary_default_attrs(xml);
+    }
+    SECTION("Binary: parse all attributes") {
+        test_binary_all_attrs(xml);
     }
 
     fmi3_import_free(xml);

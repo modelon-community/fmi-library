@@ -55,8 +55,7 @@ target_include_directories(fmi3_basic_capi_test
     ${FMIIMPORTDIR}/src)
 target_link_libraries(fmi3_basic_capi_test
     Catch
-    ${FMILIBFORTEST}
-    ${JMUTIL_LIBRARIES})
+    ${FMILIBFORTEST})
 add_test(ctest_fmi3_basic_capi_test_cpp fmi3_basic_capi_test)
 
 # Test: jm locale

@@ -199,7 +199,7 @@ TEST_CASE("Test CAPI methods using a Co-Simulation FMU", test_file_name)
     fmi3_boolean_t loggingOn = fmi3_false;
     fmi3_boolean_t eventModeUsed = fmi3_false;
     fmi3_boolean_t earlyReturnAllowed = fmi3_false;
-    const fmi3_value_reference_t requiredIntermediateVariables[] = {NULL};
+    const fmi3_value_reference_t requiredIntermediateVariables[] = {};
     size_t nRequiredIntermediateVariables = 0;
     jm_status_enu_t instantiate_status = fmi3_import_instantiate_co_simulation(
         fmu,

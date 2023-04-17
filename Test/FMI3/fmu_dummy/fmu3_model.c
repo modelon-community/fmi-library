@@ -138,9 +138,9 @@ fmi3Status fmi_get_float64(fmi3Instance instance, const fmi3ValueReference value
                 values[m++] = inst->states_der[1];
             }
             else if (currentValueReference == 1234567) {
-                /* This value reference '1234567' not exist but this enables
-                    easy testing of get/set.
-                 */
+                /*  Special unit test case for setting/getting array variables.
+                    Not meaningful for the BouncingBall simulation.
+                */
                 for (int i = 0; i < 4; i++) {
                     values[i] = inst->dummy_array[i];
                     m++;
@@ -276,9 +276,9 @@ fmi3Status fmi_set_float64(fmi3Instance instance, const fmi3ValueReference value
                 }
             }
             else if (currentValueReference == 1234567) {
-                /* This value reference '1234567' not exist but this enables
-                    easy testing of get/set.
-                 */
+                /*  Special unit test case for setting/getting array variables.
+                    Not meaningful for the BouncingBall simulation.
+                */
                 for(int i = 0; i < 4; i++) { inst->dummy_array[i] = values[i]; }
             }
             else {

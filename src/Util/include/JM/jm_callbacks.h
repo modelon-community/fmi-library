@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2012 Modelon AB
+    Copyright (C) 2012-2023 Modelon AB
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the BSD style license.
@@ -37,9 +37,9 @@ extern "C" {
 typedef struct jm_callbacks jm_callbacks;
 
 /** \name Memory management callbacks
-* jm_malloc_f, jm_realloc_f, jm_calloc_f, jm_free_f function 
+* jm_malloc_f, jm_realloc_f, jm_calloc_f, jm_free_f function
 * types correspond to the standard C memory management functions
-* @{ 
+* @{
 */
 /** \brief Allocation function type. */
 typedef jm_voidp (*jm_malloc_f)(size_t size);
@@ -55,15 +55,16 @@ typedef void (*jm_free_f)(jm_voidp p);
 /** @}
 */
 
+
 /**
-*  
+*
 * \brief Logger callback type.
 *
 * The logger callback is used to report errors. Note that this function is
 * by default only used in FMI standard independent code (e.g., fmi_import_get_fmi_version()).
 * Since logging functions are different between different standard versions separate
 * logging functions are necessary for each FMI implementation.\n
-* Defaults are provided for each standard. 
+* Defaults are provided for each standard.
 */
 typedef void (*jm_logger_f)(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_level, jm_string message);
 
@@ -73,21 +74,21 @@ typedef void (*jm_logger_f)(jm_callbacks* c, jm_string module, jm_log_level_enu_
 /** \brief The callbacks struct is sent to all the modules in the library */
 struct jm_callbacks {
     /** \brief Allocate non-initialized memory */
-    jm_malloc_f malloc; 
+    jm_malloc_f malloc;
     /** \brief Allocate zero initialized memory */
-    jm_calloc_f calloc; 
+    jm_calloc_f calloc;
     /** \brief Re-allocate memory */
-    jm_realloc_f realloc; 
+    jm_realloc_f realloc;
     /** \brief Free-allocated memory */
-    jm_free_f free;        
+    jm_free_f free;
     /** \brief Logging callback */
     jm_logger_f logger;
     /** \brief Logging level */
-    jm_log_level_enu_t log_level; 
+    jm_log_level_enu_t log_level;
     /** \brief Arbitrary context pointer passed to the logger function  */
     jm_voidp context;
     /** \brief The buffer used along with jm_get_last_error() */
-    char errMessageBuffer[JM_MAX_ERROR_MESSAGE_SIZE]; 
+    char errMessageBuffer[JM_MAX_ERROR_MESSAGE_SIZE];
 };
 
 /**
@@ -187,6 +188,11 @@ void jm_log_verbose_v(jm_callbacks* cb, const char* module, const char* fmt, va_
 */
 FMILIB_EXPORT
 void jm_log_verbose(jm_callbacks* cb, const char* module, const char* fmt, ...);
+
+/** \brief Convert log level into a string */
+FMILIB_EXPORT
+const char* jm_log_level_to_string(jm_log_level_enu_t level);
+
 
 #ifdef FMILIB_ENABLE_LOG_LEVEL_DEBUG
 /** \brief Send a debug message to the logger function. See jm_log() for details.

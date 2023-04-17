@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2012 Modelon AB
+    Copyright (C) 2012-2023 Modelon AB
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the BSD style license.
@@ -24,8 +24,8 @@ extern "C" {
     @file jm_types.h Types used in the Utils module.
 
     */
-/** 
-\defgroup jm_utils Utilities 
+/**
+\defgroup jm_utils Utilities
 \addtogroup jm_utils
   * @{
 */
@@ -58,10 +58,6 @@ typedef enum {
     jm_log_level_debug, /** \brief Debug messages. Only enabled if library is configured with FMILIB_ENABLE_LOG_LEVEL_DEBUG */
     jm_log_level_all /** \brief  Must be last in this enum. */
 } jm_log_level_enu_t;
-
-/** \brief Convert log level into a string */
-FMILIB_EXPORT
-const char* jm_log_level_to_string(jm_log_level_enu_t level);
 
 /** \brief Struct for restoring LC_NUMERIC locale. */
 typedef struct jm_locale_t jm_locale_t;

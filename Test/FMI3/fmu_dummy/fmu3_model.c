@@ -113,7 +113,7 @@ fmi3Status fmi_set_debug_logging(fmi3Instance instance, fmi3Boolean loggingOn)
     }}
 
 fmi3Status fmi_get_float64(fmi3Instance instance, const fmi3ValueReference valueReferences[],
-    size_t nValueReferences, fmi3Float64 values[], size_t nValues)
+        size_t nValueReferences, fmi3Float64 values[], size_t nValues)
 {
     instance_ptr_t inst = instance;
     if (inst == NULL) {
@@ -141,7 +141,7 @@ fmi3Status fmi_get_float64(fmi3Instance instance, const fmi3ValueReference value
                 /* Obviously values reference -1 does not exist but this enables
                     easy testing of get/set.
                  */
-                for(int i = 0; i < 4; i++) {
+                for (int i = 0; i < 4; i++) {
                     values[i] = inst->dummy_array[i];
                     m++;
                 }
@@ -169,7 +169,7 @@ fmi3Status fmi_get_int64(fmi3Instance instance, const fmi3ValueReference valueRe
         return fmi3Fatal;
     }
     for (int i = 0; i < 2; i++) {
-        values[i] = inst->dummy_array2[i];
+        values[i] = inst->dummy_int64_array[i];
     }
     return fmi3OK;
 }

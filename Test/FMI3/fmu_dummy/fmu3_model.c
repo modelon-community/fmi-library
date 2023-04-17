@@ -138,7 +138,7 @@ fmi3Status fmi_get_float64(fmi3Instance instance, const fmi3ValueReference value
                 values[m++] = inst->states_der[1];
             }
             else if (currentValueReference == 1234567) {
-                /* Obviously values reference -1 does not exist but this enables
+                /* This value reference '1234567' not exist but this enables
                     easy testing of get/set.
                  */
                 for (int i = 0; i < 4; i++) {
@@ -276,7 +276,7 @@ fmi3Status fmi_set_float64(fmi3Instance instance, const fmi3ValueReference value
                 }
             }
             else if (currentValueReference == 1234567) {
-                /* Obviously values reference -1 does not exist but this enables
+                /* This value reference '1234567' not exist but this enables
                     easy testing of get/set.
                  */
                 for(int i = 0; i < 4; i++) { inst->dummy_array[i] = values[i]; }

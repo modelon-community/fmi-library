@@ -57,7 +57,7 @@ typedef struct {
     fmi3Float64                    event_indicators  [N_EVENT_INDICATORS];
     fmi3Float64                    reals             [N_REAL];
     fmi3Float64                    dummy_array       [N_REAL]; /* array used to test get/set float 64 */
-    fmi3Int64                      dummy_array2      [2]; /* array used to test get/set int 64 */
+    fmi3Int64                      dummy_int64_array      [2]; /* array used to test get/set int 64 */
     fmi3Int32                      integers          [N_INTEGER];
     fmi3Boolean                    booleans          [N_BOOLEAN];
     fmi3String                     strings           [N_STRING];

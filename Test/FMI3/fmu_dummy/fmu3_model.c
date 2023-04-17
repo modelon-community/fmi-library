@@ -297,7 +297,7 @@ fmi3Status fmi_set_int64(fmi3Instance instance, const fmi3ValueReference valueRe
         return fmi3Fatal;
     }
     for (int i = 0; i < 2; i++) {
-        inst->dummy_array2[i] = values[i];
+        inst->dummy_int64_array[i] = values[i];
     }
     return fmi3OK;
 }

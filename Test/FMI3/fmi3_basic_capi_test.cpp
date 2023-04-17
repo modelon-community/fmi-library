@@ -61,7 +61,7 @@ void importlogger(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_leve
 static const char test_file_name[] = "[fmi3_basic_capi_test.cpp]";
 
 /* Function used only to deallocate resources that were allocated during the testing.  */
-void clean_up(fmi3_import_t* fmu, fmi_import_context_t* context, fmi3_inst_env_t inst_env) {
+static void clean_up(fmi3_import_t* fmu, fmi_import_context_t* context, fmi3_inst_env_t inst_env) {
     fmi3_import_free_instance(fmu);
     fmi3_import_free(fmu);
     fmi_import_free_context(context);

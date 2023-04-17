@@ -355,7 +355,7 @@ const char* fmi3_xml_get_enum_type_value_name(fmi3_xml_enumeration_typedef_t* t,
     jm_named_ptr* itemp, key;
     keyitem.value = value;
     key.ptr = &keyitem;
-    itemp = jm_vector_bsearch(jm_named_ptr)(&props->enumItems, &key, fmi1_xml_compare_enum_val);
+    itemp = jm_vector_bsearch(jm_named_ptr)(&props->enumItems, &key, fmi3_xml_compare_enum_val);
     if(!itemp) return  0;
     return itemp->name;
 }

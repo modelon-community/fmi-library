@@ -307,6 +307,14 @@ fmi3_uint8_t fmi3_xml_get_uint8_type_max(fmi3_xml_int_typedef_t* t) {
     return props->typeMax.scalar8u;
 }
 
+static int fmi3_xml_compare_enum_val(const void* first, const void* second) {
+    const jm_named_ptr* a = first;
+    const jm_named_ptr* b = second;
+    fmi3_xml_enum_type_item_t* ai = a->ptr;
+    fmi3_xml_enum_type_item_t* bi = b->ptr;
+    return (ai->value - bi->value);
+}
+
 int fmi3_xml_get_enum_type_min(fmi3_xml_enumeration_typedef_t* t){
     fmi3_xml_variable_typedef_t* vt = (void*)t;
     fmi3_xml_enum_typedef_props_t* props = (fmi3_xml_enum_typedef_props_t*)(vt->super.nextLayer);
@@ -326,7 +334,7 @@ int fmi3_xml_get_enum_type_max(fmi3_xml_enumeration_typedef_t* t){
     return item->value;
 }
 
-unsigned int  fmi3_xml_get_enum_type_size(fmi3_xml_enumeration_typedef_t* t) {
+unsigned int fmi3_xml_get_enum_type_size(fmi3_xml_enumeration_typedef_t* t) {
     fmi3_xml_variable_typedef_t* vt = (void*)t;
     fmi3_xml_enum_typedef_props_t* props = (fmi3_xml_enum_typedef_props_t*)(vt->super.nextLayer);
     return (unsigned int)jm_vector_get_size(jm_named_ptr)(&props->enumItems);
@@ -856,14 +864,6 @@ int fmi3_xml_handle_String(fmi3_xml_parser_context_t* context, const char* data)
         return 0;
     }
     return 0;
-}
-
-static int fmi3_xml_compare_enum_val(const void* first, const void* second) {
-    const jm_named_ptr* a = first;
-    const jm_named_ptr* b = second;
-    fmi3_xml_enum_type_item_t* ai = a->ptr;
-    fmi3_xml_enum_type_item_t* bi = b->ptr;
-    return (ai->value - bi->value);
 }
 
 int fmi3_xml_handle_Enumeration(fmi3_xml_parser_context_t* context, const char* data) {

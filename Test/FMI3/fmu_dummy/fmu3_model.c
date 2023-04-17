@@ -271,7 +271,6 @@ fmi3Status fmi_set_float64(fmi3Instance instance, const fmi3ValueReference value
             }
             else if(currentValueReference == 12) {
                 // For the dummy FMU we are testing an array of 4 elements.
-                //memcpy(&inst->reals[currentValueReference], &values[k], 4 * sizeof(values[0]));
                 for(int i = 0; i < 4; i++) {
                     inst->reals[currentValueReference + i] = values[i];
                 }

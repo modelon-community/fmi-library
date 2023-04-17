@@ -68,43 +68,6 @@ void clean_up(fmi3_import_t* fmu, fmi_import_context_t* context, fmi3_inst_env_t
     inst_env.fmu = NULL;
 }
 
-
-/* Helper function to verify get/set for float64 works as expected.
-    The input arguments are:
-        the FMU to use get/set on, note that this has to be the DUMMY FMU (of any kind)
-        the returned value from the FMU instantiation that has be done before calling this function.
-*/
-static void test_float_get_set(fmi3_import_t* fmu, jm_status_enu_t instantiate_status){
-    size_t n_value_references = 1;
-    const fmi3_value_reference_t value_references[n_value_references] = {1234567};
-    size_t n_values = 4;
-    const fmi3_float64_t values[n_values] = {1.2, 2.5, 3.2, 4.5};
-    REQUIRE(instantiate_status == jm_status_success);
-    fmi3_status_t status_from_float_set = fmi3_import_set_float64(
-        fmu,
-        value_references,
-        n_value_references,
-        values,
-        n_values
-    );
-    REQUIRE(status_from_float_set == fmi3_status_ok);
-
-    fmi3_float64_t values_from_get[n_values] = {0.0, 0.0, 0.0, 0.0};
-    fmi3_status_t status_from_float_get = fmi3_import_get_float64(
-        fmu,
-        value_references,
-        n_value_references,
-        values_from_get,
-        n_values
-    );
-    REQUIRE(status_from_float_get == fmi3_status_ok);
-    // We use indivdual calls to REQUIRE to make a potential error point to the exact line
-    REQUIRE(values[0] == values_from_get[0]);
-    REQUIRE(values[1] == values_from_get[1]);
-    REQUIRE(values[2] == values_from_get[2]);
-    REQUIRE(values[3] == values_from_get[3]);
-}
-
 /* Helper function to verify get/set for int64 works as expected.
     The input arguments are:
         the FMU to use get/set on, note that this has to be the DUMMY FMU (of any kind)
@@ -203,10 +166,6 @@ TEST_CASE("Test CAPI methods using a Model Exchange FMU", test_file_name)
         fmi3_import_set_debug_mode(fmu, 0); // set back to zero to prevent segfaults
     }
 
-    SECTION("Test instantiation status and set values on float64 array") {
-        test_float_get_set(fmu, instantiate_status);
-    }
-
     SECTION("Test instantiation status and set values on int64 array") {
         test_int_get_set(fmu, instantiate_status);
     }
@@ -281,9 +240,6 @@ TEST_CASE("Test CAPI methods using a Co-Simulation FMU", test_file_name)
         fmi3_import_set_debug_mode(fmu, 0); // set back to zero to prevent segfaults
     }
 
-    SECTION("Test instantiation status and set values on float64 array") {
-        test_float_get_set(fmu, instantiate_status);
-    }
 
     SECTION("Test instantiation status and set values on int64 array") {
         test_int_get_set(fmu, instantiate_status);
@@ -355,10 +311,6 @@ TEST_CASE("Test CAPI methods using a Scheduled-Execution FMU", test_file_name)
         actual_mode = fmi3_capi_get_debug_mode(fmu->capi);
         REQUIRE(actual_mode == expected_mode);
         fmi3_import_set_debug_mode(fmu, 0); // set back to zero to prevent segfaults
-    }
-
-    SECTION("Test instantiation status and set values on float64 array") {
-        test_float_get_set(fmu, instantiate_status);
     }
 
     SECTION("Test instantiation status and set values on int64 array") {

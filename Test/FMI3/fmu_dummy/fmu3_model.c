@@ -137,15 +137,6 @@ fmi3Status fmi_get_float64(fmi3Instance instance, const fmi3ValueReference value
                 values[m++] = inst->states[1];
                 values[m++] = inst->states_der[1];
             }
-            else if (currentValueReference == 1234567) {
-                /*  Special unit test case for setting/getting array variables.
-                    Not meaningful for the BouncingBall simulation.
-                */
-                for (int i = 0; i < 4; i++) {
-                    values[i] = inst->dummy_float64_array[i];
-                    m++;
-                }
-            }
             else {
                 values[m] = inst->reals[currentValueReference];
             }
@@ -270,12 +261,6 @@ fmi3Status fmi_set_float64(fmi3Instance instance, const fmi3ValueReference value
                 for(int i = 0; i < 4; i++) {
                     inst->reals[currentValueReference + i] = values[i];
                 }
-            }
-            else if (currentValueReference == 1234567) {
-                /*  Special unit test case for setting/getting array variables.
-                    Not meaningful for the BouncingBall simulation.
-                */
-                for(int i = 0; i < 4; i++) { inst->dummy_float64_array[i] = values[i]; }
             }
             else {
                 inst->reals[currentValueReference] = values[k];

@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <fmiModelDescription
   fmiVersion="3.0"
-  modelName="Empty" 
+  modelName="Empty"
   instantiationToken="{B003C6D1-D687-49A9-8A5A-4A513EA0ED1C}"
   description=""
   generationTool=""
   generationDateAndTime="2019-05-13T15:40:41"
-  variableNamingConvention="structured" 
+  variableNamingConvention="structured"
   numberOfEventIndicators="0"
   author="">
   <ModelExchange
@@ -18,6 +18,11 @@
     tolerance="1e-005"
     stepSize="5e-3"
   />
-  <ModelVariables></ModelVariables>
+  <ModelVariables>
+    <Int64 name="dummy_int64_array" valueReference="12345" causality="output" description="Array used to test int64 get/set" start="0 1">
+      <Dimension start="2"/>
+      <Dimension start="1"/>
+    </Int64>
+  </ModelVariables>
   <ModelStructure></ModelStructure>
 </fmiModelDescription>

@@ -255,10 +255,6 @@ fmi3Status fmi_set_float64(fmi3Instance instance, const fmi3ValueReference value
     if (inst == NULL) {
         return fmi3Fatal;
     } else {
-        //if (sizeof(valueReferences)/sizeof(valueReferences[0]) != nValueReferences) {
-        //    inst->cb.logMessage(instance, fmi3Fatal, "FATAL", "Mismatch in length between array of values references and nValues");
-        //    return fmi3Fatal;
-        //}
         size_t k;
         for (k = 0; k < nValueReferences; k++) {
             fmi3ValueReference currentValueReference = valueReferences[k];

@@ -27,6 +27,10 @@
     <Dimension start="2"/>
     <Dimension start="2"/>
   </Float64>
+  <Int64 name="dummy_int64_array" valueReference="16" causality="output" description="Array used to test int64 get/set">
+    <Dimension start="2"/>
+    <Dimension start="1"/>
+  </Int64>
 </ModelVariables>
 <ModelStructure>
 </ModelStructure>

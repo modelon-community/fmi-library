@@ -827,8 +827,9 @@ static int fmi3_xml_variable_process_attr_causality_variability_initial(fmi3_xml
     };
     fmi3_causality_enu_t causality;
     fmi3_variability_enu_t variability, defaultVariability;
-    fmi3_initial_enu_t initial, defaultInitial;
+    fmi3_initial_enu_t initial, defaultInitial, validInitial;
 
+    // Causality:
     if (fmi3_xml_set_attr_enum(context, elm_id, fmi_attr_id_causality, 0, &causality,
             fmi3_causality_enu_local, causalityConventionMap))
     {
@@ -836,13 +837,13 @@ static int fmi3_xml_variable_process_attr_causality_variability_initial(fmi3_xml
     }
     variable->causality = causality;
 
+    // Variability:
     defaultVariability = fmi3_xml_variable_get_default_variability(elm_id, causality);
     if (fmi3_xml_set_attr_enum(context, elm_id, fmi_attr_id_variability, 0, &variability,
             defaultVariability, variabilityConventionMap))
     {
         variability = fmi3_variability_enu_continuous;
     }
-
     if (!fmi3_is_valid_variability_causality(variability, causality)) {
         fmi3_variability_enu_t bad_variability = variability;
         variability = fmi3_get_default_valid_variability(causality);
@@ -856,23 +857,24 @@ static int fmi3_xml_variable_process_attr_causality_variability_initial(fmi3_xml
     }
     variable->variability = variability;
 
+    // Initial:
     defaultInitial = fmi3_get_default_initial(variability, causality);
     if (fmi3_xml_set_attr_enum(context, elm_id, fmi_attr_id_initial, 0, &initial,
             defaultInitial,initialConventionMap))
     {
         initial = defaultInitial;
     }
-    defaultInitial = fmi3_get_valid_initial(variability, causality, initial);
-    if (defaultInitial != initial) {
+    validInitial = fmi3_get_valid_initial(variability, causality, initial);
+    if (validInitial != initial) {
         fmi3_xml_parse_error(context,
                 "Initial '%s' is not allowed for variability '%s' and "
                 "causality '%s'. Setting initial to '%s' for variable '%s'",
                 fmi3_initial_to_string(initial),
                 fmi3_variability_to_string(variability),
                 fmi3_causality_to_string(causality),
-                fmi3_initial_to_string(defaultInitial),
+                fmi3_initial_to_string(validInitial),
                 variable->name);
-        initial = defaultInitial;
+        initial = validInitial;
     }
     variable->initial = initial;
     
@@ -902,7 +904,7 @@ static int fmi3_xml_variable_process_attr_multipleset(fmi3_xml_parser_context_t*
     }
     variable->canHandleMultipleSetPerTimeInstant = (char)multipleSet;
 
-    if (variable->variability != fmi3_causality_enu_input && !multipleSet) {
+    if (variable->causality != fmi3_causality_enu_input && !multipleSet) {
         fmi3_xml_parse_error(context, "Only variables with causality='input' can have canHandleMultipleSetPerTimeInstant=false");
         return -1;
     }

@@ -450,7 +450,7 @@ int fmi2_xml_handle_ScalarVariable(fmi2_xml_parser_context_t *context, const cha
             variable->previous = (void*)((char *)NULL + previous);
             variable->canHandleMultipleSetPerTimeInstant = (char)multipleSet;
 
-            if (variable->variability != fmi2_causality_enu_input && !multipleSet) {
+            if (variable->causality != fmi2_causality_enu_input && !multipleSet) {
                 fmi2_xml_parse_error(context, "Only variables with causality='input' can have canHandleMultipleSetPerTimeInstant=false");
                 return -1;
             }

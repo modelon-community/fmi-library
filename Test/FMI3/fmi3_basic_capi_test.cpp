@@ -85,6 +85,25 @@ TEST_CASE("Test CAPI methods using a Model Exchange FMU", test_file_name)
     fmi3_import_t* fmu = fmi3_import_parse_xml(context, FMU_TEMPORARY_TEST_DIR, 0);
     inst_env.fmu = fmu;
 
+    /* Create C-API struct and instantiate FMU, necessary for some test cases that follows. */
+    jm_status_enu_t status = fmi3_import_create_dllfmu(fmu, fmi3_fmu_kind_me, &inst_env, fmi3_dummy_log_callback);
+    REQUIRE(status == 0);
+    fmi3_string_t instanceName = "Test ME model instance";
+    fmi3_string_t fmuInstantiationToken;
+    fmi3_string_t resourcePath = "";
+    fmi3_boolean_t visible = fmi3_false;
+    fmi3_boolean_t loggingOn = fmi3_false;
+    dummy_fmi3_instance_environment_t instance_env = {};
+    jm_status_enu_t instantiate_status = fmi3_import_instantiate_model_exchange(
+        fmu,
+        instanceName,
+        resourcePath,
+        visible,
+        loggingOn,
+        ((fmi3_instance_environment_t)&instance_env),
+        (fmi3_log_message_callback_ft)dummy_log_message_callback
+    );
+
     SECTION("Verifying returned result from fmi_import_get_fmi_version") {
         REQUIRE(version == fmi_version_3_0_enu);
     }
@@ -103,9 +122,6 @@ TEST_CASE("Test CAPI methods using a Model Exchange FMU", test_file_name)
     SECTION("Verify debug mode can be set") {
         int expected_mode = 1;
         int actual_mode = -1; // value will be overriden
-        // it is required to setup the C-API struct before invoking set/get debug mode
-        jm_status_enu_t status = fmi3_import_create_dllfmu(fmu, fmi3_fmu_kind_me, &inst_env, fmi3_dummy_log_callback);
-        REQUIRE(status == 0);
 
         fmi3_import_set_debug_mode(fmu, expected_mode);
         actual_mode = fmi3_capi_get_debug_mode(fmu->capi);
@@ -113,28 +129,11 @@ TEST_CASE("Test CAPI methods using a Model Exchange FMU", test_file_name)
         fmi3_import_set_debug_mode(fmu, 0); // set back to zero to prevent segfaults
     }
 
-    SECTION("Test instantiate and set values on float64 array") {
+    SECTION("Test instantiation was OK and set values on float64 array") {
         size_t n_value_references = 1;
         const fmi3_value_reference_t value_references[n_value_references] = {1234567};
         size_t n_values = 4;
         const fmi3_float64_t values[n_values] = {1.2, 2.5, 3.2, 4.5};
-        jm_status_enu_t status = fmi3_import_create_dllfmu(fmu, fmi3_fmu_kind_me, &inst_env, fmi3_dummy_log_callback);
-        REQUIRE(status == 0);
-        fmi3_string_t instanceName = "Test ME model instance";
-        fmi3_string_t fmuInstantiationToken;
-        fmi3_string_t resourcePath = "";
-        fmi3_boolean_t visible = fmi3_false;
-        fmi3_boolean_t loggingOn = fmi3_false;
-        dummy_fmi3_instance_environment_t instance_env = {};
-        jm_status_enu_t instantiate_status = fmi3_import_instantiate_model_exchange(
-            fmu,
-            instanceName,
-            resourcePath,
-            visible,
-            loggingOn,
-            ((fmi3_instance_environment_t)&instance_env),
-            (fmi3_log_message_callback_ft)dummy_log_message_callback
-        );
         REQUIRE(instantiate_status == jm_status_success);
         fmi3_status_t status_from_float_set = fmi3_import_set_float64(
             fmu,
@@ -161,7 +160,7 @@ TEST_CASE("Test CAPI methods using a Model Exchange FMU", test_file_name)
         REQUIRE(values[3] == values_from_get[3]);
     }
 
-    SECTION("Test instantiate and set values on int64 array") {
+    SECTION("Test instantiation was OK and set values on int64 array") {
         size_t n_value_references = 1;
         /* This value reference does not matter because the Dummy FMU
             implementation for set/get int64 uses a fixed dummy array.
@@ -169,23 +168,6 @@ TEST_CASE("Test CAPI methods using a Model Exchange FMU", test_file_name)
         const fmi3_value_reference_t value_references[n_value_references] = {1};
         size_t n_int_values = 2;
         const fmi3_int64_t int64_values[n_int_values] = {-9223372036854775800, 9223372036854775800};
-        jm_status_enu_t status = fmi3_import_create_dllfmu(fmu, fmi3_fmu_kind_me, &inst_env, fmi3_dummy_log_callback);
-        REQUIRE(status == 0);
-        fmi3_string_t instanceName = "Test ME model instance";
-        fmi3_string_t fmuInstantiationToken;
-        fmi3_string_t resourcePath = "";
-        fmi3_boolean_t visible = fmi3_false;
-        fmi3_boolean_t loggingOn = fmi3_false;
-        dummy_fmi3_instance_environment_t instance_env = {};
-        jm_status_enu_t instantiate_status = fmi3_import_instantiate_model_exchange(
-            fmu,
-            instanceName,
-            resourcePath,
-            visible,
-            loggingOn,
-            ((fmi3_instance_environment_t)&instance_env),
-            (fmi3_log_message_callback_ft)dummy_log_message_callback
-        );
         REQUIRE(instantiate_status == jm_status_success);
         fmi3_status_t status_from_int_set = fmi3_import_set_int64(
             fmu,
@@ -228,6 +210,32 @@ TEST_CASE("Test CAPI methods using a Co-Simulation FMU", test_file_name)
     fmi3_import_t* fmu = fmi3_import_parse_xml(context, FMU_TEMPORARY_TEST_DIR, 0);
     inst_env.fmu = fmu;
 
+    jm_status_enu_t status = fmi3_import_create_dllfmu(fmu, fmi3_fmu_kind_cs, &inst_env, fmi3_dummy_log_callback);
+    REQUIRE(status == 0);
+    fmi3_string_t instanceName = "Test CS model instance";
+    fmi3_string_t fmuInstantiationToken;
+    fmi3_string_t resourcePath = "";
+    fmi3_boolean_t visible = fmi3_false;
+    fmi3_boolean_t loggingOn = fmi3_false;
+    fmi3_boolean_t eventModeUsed = fmi3_false;
+    fmi3_boolean_t earlyReturnAllowed = fmi3_false;
+    const fmi3_value_reference_t requiredIntermediateVariables[] = {NULL};
+    size_t nRequiredIntermediateVariables = 0;
+    jm_status_enu_t instantiate_status = fmi3_import_instantiate_co_simulation(
+        fmu,
+        instanceName,
+        resourcePath,
+        visible,
+        loggingOn,
+        eventModeUsed,
+        earlyReturnAllowed,
+        requiredIntermediateVariables,
+        nRequiredIntermediateVariables,
+        NULL,
+        NULL,
+        NULL
+    );
+
     SECTION("Verifying returned result from fmi_import_get_fmi_version") {
         REQUIRE(version == fmi_version_3_0_enu);
     }
@@ -246,9 +254,6 @@ TEST_CASE("Test CAPI methods using a Co-Simulation FMU", test_file_name)
     SECTION("Verify debug mode can be set") {
         int expected_mode = 1;
         int actual_mode = -1; // value will be overriden
-        // it is required to setup the C-API struct before invoking set/get debug mode
-        jm_status_enu_t status = fmi3_import_create_dllfmu(fmu, fmi3_fmu_kind_cs, &inst_env, fmi3_dummy_log_callback);
-        REQUIRE(status == 0);
 
         fmi3_import_set_debug_mode(fmu, expected_mode);
         actual_mode = fmi3_capi_get_debug_mode(fmu->capi);
@@ -261,31 +266,7 @@ TEST_CASE("Test CAPI methods using a Co-Simulation FMU", test_file_name)
         const fmi3_value_reference_t value_references[n_value_references] = {1234567};
         size_t n_values = 4;
         const fmi3_float64_t values[n_values] = {1.2, 2.5, 3.2, 4.5};
-        jm_status_enu_t status = fmi3_import_create_dllfmu(fmu, fmi3_fmu_kind_cs, &inst_env, fmi3_dummy_log_callback);
-        REQUIRE(status == 0);
-        fmi3_string_t instanceName = "Test CS model instance";
-        fmi3_string_t fmuInstantiationToken;
-        fmi3_string_t resourcePath = "";
-        fmi3_boolean_t visible = fmi3_false;
-        fmi3_boolean_t loggingOn = fmi3_false;
-        fmi3_boolean_t eventModeUsed = fmi3_false;
-        fmi3_boolean_t earlyReturnAllowed = fmi3_false;
-        const fmi3_value_reference_t requiredIntermediateVariables[] = {NULL};
-        size_t nRequiredIntermediateVariables = 0;
-        jm_status_enu_t instantiate_status = fmi3_import_instantiate_co_simulation(
-            fmu,
-            instanceName,
-            resourcePath,
-            visible,
-            loggingOn,
-            eventModeUsed,
-            earlyReturnAllowed,
-            requiredIntermediateVariables,
-            nRequiredIntermediateVariables,
-            NULL,
-            NULL,
-            NULL
-        );
+
         REQUIRE(instantiate_status == jm_status_success);
         fmi3_status_t status_from_float_set = fmi3_import_set_float64(
             fmu,
@@ -320,31 +301,7 @@ TEST_CASE("Test CAPI methods using a Co-Simulation FMU", test_file_name)
         const fmi3_value_reference_t value_references[n_value_references] = {1};
         size_t n_int_values = 2;
         const fmi3_int64_t int64_values[n_int_values] = {-9223372036854775801, 9223372036854775801};
-        jm_status_enu_t status = fmi3_import_create_dllfmu(fmu, fmi3_fmu_kind_cs, &inst_env, fmi3_dummy_log_callback);
-        REQUIRE(status == 0);
-        fmi3_string_t instanceName = "Test CS model instance";
-        fmi3_string_t fmuInstantiationToken;
-        fmi3_string_t resourcePath = "";
-        fmi3_boolean_t visible = fmi3_false;
-        fmi3_boolean_t loggingOn = fmi3_false;
-        fmi3_boolean_t eventModeUsed = fmi3_false;
-        fmi3_boolean_t earlyReturnAllowed = fmi3_false;
-        const fmi3_value_reference_t requiredIntermediateVariables[] = {NULL};
-        size_t nRequiredIntermediateVariables = 0;
-        jm_status_enu_t instantiate_status = fmi3_import_instantiate_co_simulation(
-            fmu,
-            instanceName,
-            resourcePath,
-            visible,
-            loggingOn,
-            eventModeUsed,
-            earlyReturnAllowed,
-            requiredIntermediateVariables,
-            nRequiredIntermediateVariables,
-            NULL,
-            NULL,
-            NULL
-        );
+
         REQUIRE(instantiate_status == jm_status_success);
         fmi3_status_t status_from_int_set = fmi3_import_set_int64(
             fmu,
@@ -389,6 +346,27 @@ TEST_CASE("Test CAPI methods using a Scheduled-Execution FMU", test_file_name)
     fmi3_import_t* fmu = fmi3_import_parse_xml(context, FMU_TEMPORARY_TEST_DIR, 0);
     inst_env.fmu = fmu;
 
+    jm_status_enu_t status = fmi3_import_create_dllfmu(fmu, fmi3_fmu_kind_se, &inst_env, fmi3_dummy_log_callback);
+    REQUIRE(status == 0);
+    fmi3_string_t instanceName = "Test SE model instance";
+    fmi3_string_t fmuInstantiationToken;
+    fmi3_string_t resourcePath = "";
+    fmi3_boolean_t visible = fmi3_false;
+    fmi3_boolean_t loggingOn = fmi3_false;
+    dummy_fmi3_instance_environment_t instance_env = {};
+    jm_status_enu_t instantiate_status = fmi3_import_instantiate_scheduled_execution(
+            fmu,
+            instanceName,
+            resourcePath,
+            visible,
+            loggingOn,
+            ((fmi3_instance_environment_t)&instance_env),
+            (fmi3_log_message_callback_ft)dummy_log_message_callback,
+            (fmi3_clock_update_callback_ft)dummy_clock_update_callback,
+            (fmi3_lock_preemption_callback_ft)dummy_lock_preemption_callback,
+            (fmi3_unlock_preemption_callback_ft)dummy_unlock_preemption_callback
+    );
+
     SECTION("Verifying returned result from fmi_import_get_fmi_version") {
         REQUIRE(version == fmi_version_3_0_enu);
     }
@@ -409,9 +387,6 @@ TEST_CASE("Test CAPI methods using a Scheduled-Execution FMU", test_file_name)
     SECTION("Verify debug mode can be set") {
         int expected_mode = 1;
         int actual_mode = -1; // value will be overriden
-        // it is required to setup the C-API struct before invoking set/get debug mode
-        jm_status_enu_t status = fmi3_import_create_dllfmu(fmu, fmi3_fmu_kind_se, &inst_env, fmi3_dummy_log_callback);
-        REQUIRE(status == 0);
 
         fmi3_import_set_debug_mode(fmu, expected_mode);
         actual_mode = fmi3_capi_get_debug_mode(fmu->capi);
@@ -424,26 +399,7 @@ TEST_CASE("Test CAPI methods using a Scheduled-Execution FMU", test_file_name)
         const fmi3_value_reference_t value_references[n_value_references] = {1234567};
         size_t n_values = 4;
         const fmi3_float64_t values[n_values] = {1.2, 2.5, 3.2, 4.5};
-        jm_status_enu_t status = fmi3_import_create_dllfmu(fmu, fmi3_fmu_kind_se, &inst_env, fmi3_dummy_log_callback);
-        REQUIRE(status == 0);
-        fmi3_string_t instanceName = "Test SE model instance";
-        fmi3_string_t fmuInstantiationToken;
-        fmi3_string_t resourcePath = "";
-        fmi3_boolean_t visible = fmi3_false;
-        fmi3_boolean_t loggingOn = fmi3_false;
-        dummy_fmi3_instance_environment_t instance_env = {};
-        jm_status_enu_t instantiate_status = fmi3_import_instantiate_scheduled_execution(
-                fmu,
-                instanceName,
-                resourcePath,
-                visible,
-                loggingOn,
-                ((fmi3_instance_environment_t)&instance_env),
-                (fmi3_log_message_callback_ft)dummy_log_message_callback,
-                (fmi3_clock_update_callback_ft)dummy_clock_update_callback,
-                (fmi3_lock_preemption_callback_ft)dummy_lock_preemption_callback,
-                (fmi3_unlock_preemption_callback_ft)dummy_unlock_preemption_callback
-        );
+
         REQUIRE(instantiate_status == jm_status_success);
         fmi3_status_t status_from_float_set = fmi3_import_set_float64(
             fmu,
@@ -478,26 +434,7 @@ TEST_CASE("Test CAPI methods using a Scheduled-Execution FMU", test_file_name)
         const fmi3_value_reference_t value_references[n_value_references] = {1};
         size_t n_int_values = 2;
         const fmi3_int64_t int64_values[n_int_values] = {-9223372036854775802, 9223372036854775802};
-        jm_status_enu_t status = fmi3_import_create_dllfmu(fmu, fmi3_fmu_kind_se, &inst_env, fmi3_dummy_log_callback);
-        REQUIRE(status == 0);
-        fmi3_string_t instanceName = "Test SE model instance";
-        fmi3_string_t fmuInstantiationToken;
-        fmi3_string_t resourcePath = "";
-        fmi3_boolean_t visible = fmi3_false;
-        fmi3_boolean_t loggingOn = fmi3_false;
-        dummy_fmi3_instance_environment_t instance_env = {};
-        jm_status_enu_t instantiate_status = fmi3_import_instantiate_scheduled_execution(
-                fmu,
-                instanceName,
-                resourcePath,
-                visible,
-                loggingOn,
-                ((fmi3_instance_environment_t)&instance_env),
-                (fmi3_log_message_callback_ft)dummy_log_message_callback,
-                (fmi3_clock_update_callback_ft)dummy_clock_update_callback,
-                (fmi3_lock_preemption_callback_ft)dummy_lock_preemption_callback,
-                (fmi3_unlock_preemption_callback_ft)dummy_unlock_preemption_callback
-        );
+
         REQUIRE(instantiate_status == jm_status_success);
         fmi3_status_t status_from_int_set = fmi3_import_set_int64(
             fmu,

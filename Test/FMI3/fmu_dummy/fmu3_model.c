@@ -285,7 +285,6 @@ fmi3Status fmi_set_float64(fmi3Instance instance, const fmi3ValueReference value
     }
 }
 
-/* these functions are not used, but need to be implemented according to standard */
 fmi3Status fmi_set_int64(fmi3Instance instance, const fmi3ValueReference valueReferences[],
     size_t nValueReferences, const fmi3Int64 values[],  size_t nValues) {
     instance_ptr_t inst = instance;
@@ -298,6 +297,7 @@ fmi3Status fmi_set_int64(fmi3Instance instance, const fmi3ValueReference valueRe
     return fmi3OK;
 }
 /* fmi_set_int32 has a real implementation */
+/* these functions beloware not used, but need to be implemented according to standard */
 fmi3Status fmi_set_int16( fmi3Instance instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, const fmi3Int16 values[],  size_t nValues) { return fmi3Fatal; }
 fmi3Status fmi_set_int8(  fmi3Instance instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, const fmi3Int8 values[],   size_t nValues) { return fmi3Fatal; }
 fmi3Status fmi_set_uint64(fmi3Instance instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, const fmi3UInt64 values[], size_t nValues) { return fmi3Fatal; }

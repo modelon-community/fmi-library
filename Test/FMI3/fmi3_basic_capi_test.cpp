@@ -78,9 +78,10 @@ static void test_int_get_set(fmi3_import_t* fmu, jm_status_enu_t instantiate_sta
         /* This value reference does not matter because the Dummy FMU
             implementation for set/get int64 uses a fixed dummy array.
         */
-        const fmi3_value_reference_t value_references[n_value_references] = {1};
         size_t n_int_values = 2;
-        const fmi3_int64_t int64_values[n_int_values] = {-9223372036854775802, 9223372036854775802};
+        /* Sizes in arrays below are explicitly hard-coded to confine to older gcc standards */
+        const fmi3_value_reference_t value_references[1] = {1};
+        const fmi3_int64_t int64_values[2] = {-9223372036854775802, 9223372036854775802};
 
         REQUIRE(instantiate_status == jm_status_success);
         fmi3_status_t status_from_int_set = fmi3_import_set_int64(

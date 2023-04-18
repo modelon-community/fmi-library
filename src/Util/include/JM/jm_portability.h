@@ -28,6 +28,12 @@
 #endif
 
 #include "jm_types.h"
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** \file jm_portability.h
     Handling platform specific defines and functions.
 */
@@ -56,7 +62,7 @@ jm_portability_loadlibrary_flag_t jm_portability_get_load_dll_handle_default_fla
 
 /** \brief
  * Load a shared library into the process and return a handle.
- * 
+ *
  * The same flag as would be used when calling the underlying system dependent
  * library loading function can be used.
  */
@@ -72,7 +78,7 @@ jm_status_enu_t jm_portability_free_dll_handle        (DLL_HANDLE dll_handle);
 #ifdef WIN32
 #define jm_dll_function_ptr FARPROC
 #else
-typedef void* jm_dll_function_ptr; 
+typedef void* jm_dll_function_ptr;
 #endif
 
 /** \brief Find a function in the Dll and return a function pointer */
@@ -103,33 +109,33 @@ const char* jm_get_system_temp_dir();
 char *jm_mkdtemp(jm_callbacks *cb, char *tmplt);
 
 
-/** 
+/**
     \brief Get absolute path to an existing directory
     \param cb - callbacks for memory allocation and logging. Default callbacks are used if this parameter is NULL.
     \param dir - path to a directory (relative or absolute).
     \param outPath - buffer for storing the directory
     \param len - of the buffer (if size is larger than FILENAME_MAX + 1 then the path will always fit in)
-    \return Pointer to outPath on success, 0 - on error in which case a message is send to the logger.    
+    \return Pointer to outPath on success, 0 - on error in which case a message is send to the logger.
 */
 char* jm_get_dir_abspath(jm_callbacks* cb, const char* dir, char* outPath, size_t len);
 
-/** 
+/**
     \brief Create a unique temporary directory
     \param cb - callbacks for memory allocation and logging. Default callbacks are used if this parameter is NULL.
     \param systemTempDir - directory where the temp dir should be located both absolute and relative path are accepted.
                 System-wide directory is used if this parameter is NULL.
     \param tempPrefix - File name template prefix used when creating temporaty directories. "jm" is used if this is NULL.
     \return A pointer to the temporary directory name (absolute path, no terminating '/'). Caller is responsible for freeing the memory.
-        The function returns NULL if there were errors in which case a message is send to the logger.    
+        The function returns NULL if there were errors in which case a message is send to the logger.
 */
 char* jm_mk_temp_dir(jm_callbacks* cb, const char* systemTempDir, const char* tempPrefix);
 
-/** 
+/**
     \brief Create a file:// URL from absolute path
     \param cb - callbacks for memory allocation and logging. Default callbacks are used if this parameter is NULL.
     \param absPath - absolute path to be converted into the URL
     \return A pointer to the URL. Caller is responsible for freeing the memory.
-        The function returns NULL if there were errors in which case a message is send to the logger.    
+        The function returns NULL if there were errors in which case a message is send to the logger.
 */
 char* jm_create_URL_from_abs_path(jm_callbacks* cb, const char* absPath);
 
@@ -181,7 +187,7 @@ int jm_snprintf(char * str, size_t size, const char * fmt, ...);
    the current thread only (mt-safe). A follow up call to
    'jm_resetlocale_numeric' is needed to free the returned 'jm_locale_t'
    object.
-  
+
    \param jmloc:
    \param value:
      Value to set for LC_NUMERIC.
@@ -194,11 +200,11 @@ jm_locale_t* jm_setlocale_numeric(jm_callbacks* cb, const char* value);
 /**
    \brief  Restores thread settings and locale.
 
-   This function is only allowed to be called when the current locale is set by 
+   This function is only allowed to be called when the current locale is set by
    'jm_setlocale_numeric', and the 'jmloc' argument must be what is
    returned from that call. On Linux, the locale must in no way be modified since that
    call.
-  
+
    \param jmloc:
      Return value from previous call to 'jm_setlocale_numeric'. Current
      locale must be set with that function. This call will free 'jmloc', so it's
@@ -207,6 +213,11 @@ jm_locale_t* jm_setlocale_numeric(jm_callbacks* cb, const char* value);
      0 on success.
  */
 int jm_resetlocale_numeric(jm_callbacks* cb, jm_locale_t* jmloc);
+
+#ifdef __cplusplus
+}
+#endif
+
 
 /*@}*/
 #endif /* End of header file JM_PORTABILITY_H_ */

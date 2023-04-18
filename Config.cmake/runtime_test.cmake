@@ -161,17 +161,6 @@ function(compress_fmu OUTPUT_FOLDER_T MODEL_IDENTIFIER_T FILE_NAME_CS_ME_EXT_T T
 
 endfunction(compress_fmu)
 
-set(FMILIBFORTEST fmilib fmi_testutil)
-
-if(FMILIB_BUILD_SHARED_LIB AND (FMILIB_LINK_TEST_TO_SHAREDLIB OR NOT FMILIB_BUILD_STATIC_LIB))
-    set(FMILIBFORTEST fmilib_shared fmi_testutil)
-    if(CMAKE_COMPILER_IS_GNUCC)
-        set(FMILIBFORTEST ${FMILIBFORTEST})
-    endif()
-endif()
-
-message(STATUS "Tests will be linked with ${FMILIBFORTEST}"  )
-
 add_executable(fmi_zip_zip_test ${RTTESTDIR}/FMI1/fmi_zip_zip_test.c )
 target_link_libraries (fmi_zip_zip_test ${FMIZIP_LIBRARIES})
 

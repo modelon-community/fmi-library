@@ -21,7 +21,7 @@ if(FMILIB_BUILD_SHARED_LIB AND (FMILIB_LINK_TEST_TO_SHAREDLIB OR NOT FMILIB_BUIL
         set(FMILIBFORTEST ${FMILIBFORTEST})
     endif()
 endif()
-message(STATUS "Tests will be linked with ${FMILIBFORTEST}"  )
+message(STATUS "Tests will be linked with ${FMILIBFORTEST}")
 
 set(CATCH2_INCLUDE_DIR "${FMILIB_THIRDPARTYLIBS}/Catch2/single_include/catch2/")
 

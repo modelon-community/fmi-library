@@ -26,9 +26,8 @@
 /* Logger function used by the FMU internally */
 static void fmi3logger(fmi3_instance_environment_t env, fmi3_string_t instanceName, fmi3_status_t status, fmi3_string_t category, fmi3_string_t message)
 {
-    int len;
     char msg[BUFFER];
-    len = jm_snprintf(msg, BUFFER, message);
+    jm_snprintf(msg, BUFFER, message);
     printf("fmiStatus = %s;  %s (%s): %s\n", fmi3_status_to_string(status), instanceName, category, msg);
 }
 

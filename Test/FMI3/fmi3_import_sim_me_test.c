@@ -54,22 +54,6 @@ void do_event_iteration(fmi3_import_t *fmu, test_event_info_t* eventInfo)
     }
 }
 
-int test_parsed_all_varialbes(fmi3_import_t* fmu)
-{ /* Test that all variables where parsed */
-    fmi3_import_model_counts_t  mc;
-    unsigned int                n_total;
-
-    fmi3_import_collect_model_counts(fmu, &mc);
-    n_total = mc.num_constants
-            + mc.num_fixed
-            + mc.num_tunable
-            + mc.num_discrete
-            + mc.num_continuous
-            + mc.num_independent;
-
-    return 0;
-}
-
 /* All ME common + ME specific functions must always exist, this function tests
  * what is not already being called in the simulation test function. */
 void test_capi_wrappers_me(fmi3_import_t* fmu)
@@ -384,8 +368,6 @@ int main(int argc, char *argv[])
         printf("Could not create the DLL loading mechanism(C-API test).\n");
         do_exit(CTEST_RETURN_FAIL);
     }
-
-    test_parsed_all_varialbes(fmu);
 
     test_capi_wrappers_me(fmu);
     test_simulate_me(fmu);

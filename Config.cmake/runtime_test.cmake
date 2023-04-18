@@ -54,11 +54,9 @@ target_include_directories(fmi3_basic_capi_test
     ${CATCH2_INCLUDE_DIR}
     ${FMIIMPORTDIR}/src)
 target_link_libraries(fmi3_basic_capi_test
+    PUBLIC
     Catch
-    ${FMILIBFORTEST}
-    # Sublibs to test internal data:
-    ${FMICAPI_LIBRARIES}
-    ${JMUTIL_LIBRARIES})
+    ${FMILIBFORTEST})
 add_test(ctest_fmi3_basic_capi_test_cpp fmi3_basic_capi_test)
 
 # Test: jm locale

@@ -20,9 +20,6 @@
 #include "catch.hpp"
 #include "config_test.h"
 #include "fmilib.h"
-#include "FMI3/fmi3_import_priv.h"
-#include "FMI3/fmi3_capi.h"
-#include "FMI3/fmi3PlatformTypes.h"
 
 typedef struct {
     fmi3_import_t* fmu; /* fmi3_log_forwarding is based on the fmu instance */
@@ -156,16 +153,6 @@ TEST_CASE("Test CAPI methods using a Model Exchange FMU", test_file_name)
         REQUIRE(strcmp(fmi3_import_get_version(fmu), "3.0") == 0);
     }
 
-    SECTION("Verify debug mode can be set") {
-        int expected_mode = 1;
-        int actual_mode = -1; // value will be overriden
-
-        fmi3_import_set_debug_mode(fmu, expected_mode);
-        actual_mode = fmi3_capi_get_debug_mode(fmu->capi);
-        REQUIRE(actual_mode == expected_mode);
-        fmi3_import_set_debug_mode(fmu, 0); // set back to zero to prevent segfaults
-    }
-
     SECTION("Test instantiation status and set values on int64 array") {
         test_int_get_set(fmu, instantiate_status);
     }
@@ -229,17 +216,6 @@ TEST_CASE("Test CAPI methods using a Co-Simulation FMU", test_file_name)
         REQUIRE(strcmp(fmi3_import_get_version(fmu), "3.0") == 0);
     }
 
-    SECTION("Verify debug mode can be set") {
-        int expected_mode = 1;
-        int actual_mode = -1; // value will be overriden
-
-        fmi3_import_set_debug_mode(fmu, expected_mode);
-        actual_mode = fmi3_capi_get_debug_mode(fmu->capi);
-        REQUIRE(actual_mode == expected_mode);
-        fmi3_import_set_debug_mode(fmu, 0); // set back to zero to prevent segfaults
-    }
-
-
     SECTION("Test instantiation status and set values on int64 array") {
         test_int_get_set(fmu, instantiate_status);
     }
@@ -299,16 +275,6 @@ TEST_CASE("Test CAPI methods using a Scheduled-Execution FMU", test_file_name)
         jm_status_enu_t status = fmi3_import_create_dllfmu(fmu, fmi3_fmu_kind_se, &inst_env, fmi3_dummy_log_callback);
         REQUIRE(status == 0);
         REQUIRE(strcmp(fmi3_import_get_version(fmu), "3.0") == 0);
-    }
-
-    SECTION("Verify debug mode can be set") {
-        int expected_mode = 1;
-        int actual_mode = -1; // value will be overriden
-
-        fmi3_import_set_debug_mode(fmu, expected_mode);
-        actual_mode = fmi3_capi_get_debug_mode(fmu->capi);
-        REQUIRE(actual_mode == expected_mode);
-        fmi3_import_set_debug_mode(fmu, 0); // set back to zero to prevent segfaults
     }
 
     SECTION("Test instantiation status and set values on int64 array") {

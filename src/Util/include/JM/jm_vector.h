@@ -51,7 +51,7 @@ extern "C" {
 * \name  Vector handling functions.
 *
 * \brief Allocates a vector on heap with the specified size and specified number of preallocated items (can be larger than size).
-
+*
 *  extern jm_vector(T)* jm_vector_alloc(T)(size_t size, size_t capacity, jm_callbacks*c );
 *  Note that there is no need to call jm_vector_init for a vector allocated with this function.
 *  @param  size - initial size of the vector, can be 0
@@ -286,23 +286,16 @@ Default definition below is jm_diff and is implemented as (int)(first-second)
 #define jm_vector_declare_template_no_typedef(T)                                        \
 struct jm_vector(T) {                                                                   \
         jm_callbacks* callbacks;                                                        \
-        T  *items;                                                                      \
-    size_t size;                                                                        \
+        T* items;                                                                       \
+        size_t size;                                                                    \
         size_t capacity;                                                                \
         T preallocated[JM_VECTOR_MINIMAL_CAPACITY];                                     \
 };                                                                                      \
                                                                                         \
 extern jm_vector(T)* jm_vector_alloc(T)(size_t size,size_t capacity, jm_callbacks*);    \
-                                                                                        \
 extern size_t jm_vector_copy(T)(jm_vector(T)* destination, jm_vector(T)* source);       \
-static jm_vector(T)* jm_vector_clone(T)(jm_vector(T)* v) {                              \
-    jm_vector(T)* ret = jm_vector_alloc(T)(v->size, v->size, v->callbacks);             \
-    if(ret) jm_vector_copy(T)(ret, v) ;                                                 \
-    return ret;                                                                         \
-}                                                                                       \
-                                                                                        \
+extern jm_vector(T)* jm_vector_clone(T)(jm_vector(T)* v);                               \
 extern void jm_vector_free(T)(jm_vector(T) * a);                                        \
-                                                                                        \
 extern size_t jm_vector_init(T)(jm_vector(T)* a, size_t size,jm_callbacks*);            \
                                                                                         \
 static void jm_vector_free_data(T)(jm_vector(T)* a) {                                   \
@@ -334,9 +327,7 @@ static T* jm_vector_get_lastp(T)(jm_vector(T)* a) {                             
     if(a->size) return (a->items+(a->size-1));                                          \
     else return 0;                                                                      \
 }                                                                                       \
-static void jm_vector_set_item(T)(jm_vector(T)* a, size_t index, T item) {              \
-    *(jm_vector_get_itemp(T)(a, index)) = item;                                         \
-}                                                                                       \
+extern void jm_vector_set_item(T)(jm_vector(T)* a, size_t index, T item);               \
 extern size_t jm_vector_resize(T)(jm_vector(T)* a, size_t size);                        \
 extern size_t jm_vector_reserve(T)(jm_vector(T)* a, size_t capacity);                   \
 extern size_t jm_vector_append(T)(jm_vector(T)* destination, jm_vector(T)* source);     \
@@ -354,8 +345,8 @@ extern void jm_vector_foreach_c(T)(jm_vector(T)* a, void (*f)(T, void*), void * 
 extern void jm_vector_zero(T)(jm_vector(T)* a);    
 
 /** Declare the struct and functions for the specified type. */
-#define jm_vector_declare_template(T)    \
-typedef struct jm_vector(T) jm_vector(T);       \
+#define jm_vector_declare_template(T)     \
+typedef struct jm_vector(T) jm_vector(T); \
 jm_vector_declare_template_no_typedef(T)
 
 jm_vector_declare_template(char)

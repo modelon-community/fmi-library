@@ -251,8 +251,10 @@ configure_file (
     "${FMILibrary_BINARY_DIR}/fmilib_config.h"
 )
 
-set(FMILIB_SHARED_SUBLIBS ${JMUTIL_LIBRARIES} ${FMIXML_LIBRARIES} ${FMIZIP_LIBRARIES} ${FMICAPI_LIBRARIES} expat minizip zlib c99snprintf)
-set(FMILIB_SUBLIBS ${FMIIMPORT_LIBRARIES} ${FMILIB_SHARED_SUBLIBS})
+set(FMILIB_SHARED_SUBLIBS ${FMIXML_LIBRARIES} ${FMIZIP_LIBRARIES} ${FMICAPI_LIBRARIES} expat minizip zlib c99snprintf)
+set(FMILIB_SUBLIBS ${FMIIMPORT_LIBRARIES} ${JMUTIL_LIBRARIES} ${FMILIB_SHARED_SUBLIBS})
+# XXX: Unclear why we create intermediate sublibs instead of just giving everything as source.
+# Probably also wouldn't get problems with using PRIVATE/PUBLIC on linking sublibs then.
 set(FMILIB_SHARED_SRC ${FMIIMPORTSOURCE} ${FMIIMPORTHEADERS})
 
 if(FMILIB_GENERATE_BUILD_STAMP)
@@ -312,6 +314,7 @@ if(FMILIB_BUILD_SHARED_LIB)
         target_compile_definitions(fmilib_shared PRIVATE -D_GNU_SOURCE)
     endif()
 
+    target_link_libraries(fmilib_shared PUBLIC ${JMUTIL_LIBRARIES})
     target_link_libraries(fmilib_shared PRIVATE ${FMILIB_SHARED_SUBLIBS})
     set(FMILIB_TARGETS ${FMILIB_TARGETS} fmilib_shared)
 endif()

@@ -254,8 +254,8 @@ configure_file (
 set(FMILIB_SHARED_SUBLIBS ${FMIXML_LIBRARIES} ${FMIZIP_LIBRARIES} ${FMICAPI_LIBRARIES} expat minizip zlib c99snprintf)
 set(FMILIB_SUBLIBS ${FMIIMPORT_LIBRARIES} ${JMUTIL_LIBRARIES} ${FMILIB_SHARED_SUBLIBS})
 # XXX: Unclear why we create intermediate sublibs instead of just giving everything as source.
-# Probably also wouldn't get problems with using PRIVATE/PUBLIC on linking sublibs then.
-set(FMILIB_SHARED_SRC ${FMIIMPORTSOURCE} ${FMIIMPORTHEADERS})
+# Probably also wouldn't get problems with using PRIVATE/PUBLIC on linking sublibs on Windows.
+set(FMILIB_SHARED_SRC ${FMIIMPORTSOURCE} ${FMIIMPORTHEADERS} ${JMUTILSOURCE} ${JMUTIL_PUBHEADERS})
 
 if(FMILIB_GENERATE_BUILD_STAMP)
     debug_message("FMILIB_SUBLIBS= ${FMILIB_SUBLIBS}")
@@ -314,7 +314,9 @@ if(FMILIB_BUILD_SHARED_LIB)
         target_compile_definitions(fmilib_shared PRIVATE -D_GNU_SOURCE)
     endif()
 
-    target_link_libraries(fmilib_shared PUBLIC ${JMUTIL_LIBRARIES})
+    # Must be PRIVATE or will cause both fmilib_shared and the sublibs to be linked
+    # with anything that links with fmilib_shared (i.e. tests). This otherwise causes
+    # link errors on Windows.
     target_link_libraries(fmilib_shared PRIVATE ${FMILIB_SHARED_SUBLIBS})
     set(FMILIB_TARGETS ${FMILIB_TARGETS} fmilib_shared)
 endif()

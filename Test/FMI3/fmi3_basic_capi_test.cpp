@@ -127,7 +127,6 @@ TEST_CASE("Test CAPI methods using a Model Exchange FMU", test_file_name)
     jm_status_enu_t status = fmi3_import_create_dllfmu(fmu, fmi3_fmu_kind_me, &inst_env, fmi3_dummy_log_callback);
     REQUIRE(status == 0);
     fmi3_string_t instanceName = "Test ME model instance";
-    fmi3_string_t fmuInstantiationToken;
     fmi3_string_t resourcePath = "";
     fmi3_boolean_t visible = fmi3_false;
     fmi3_boolean_t loggingOn = fmi3_false;
@@ -193,7 +192,6 @@ TEST_CASE("Test CAPI methods using a Co-Simulation FMU", test_file_name)
     jm_status_enu_t status = fmi3_import_create_dllfmu(fmu, fmi3_fmu_kind_cs, &inst_env, fmi3_dummy_log_callback);
     REQUIRE(status == 0);
     fmi3_string_t instanceName = "Test CS model instance";
-    fmi3_string_t fmuInstantiationToken;
     fmi3_string_t resourcePath = "";
     fmi3_boolean_t visible = fmi3_false;
     fmi3_boolean_t loggingOn = fmi3_false;
@@ -269,7 +267,6 @@ TEST_CASE("Test CAPI methods using a Scheduled-Execution FMU", test_file_name)
     jm_status_enu_t status = fmi3_import_create_dllfmu(fmu, fmi3_fmu_kind_se, &inst_env, fmi3_dummy_log_callback);
     REQUIRE(status == 0);
     fmi3_string_t instanceName = "Test SE model instance";
-    fmi3_string_t fmuInstantiationToken;
     fmi3_string_t resourcePath = "";
     fmi3_boolean_t visible = fmi3_false;
     fmi3_boolean_t loggingOn = fmi3_false;

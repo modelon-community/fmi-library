@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2012 Modelon AB
+    Copyright (C) 2012-2023 Modelon AB
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the BSD style license.
@@ -22,7 +22,7 @@
 #include "JM/jm_callbacks.h"
 #include "JM/jm_portability.h"
 
-static const char* jm_log_level_str[] = 
+static const char* jm_log_level_str[] =
 {
     "NOTHING",
     "FATAL",
@@ -98,7 +98,7 @@ void jm_set_default_callbacks(jm_callbacks* c) {
         jm_default_callbacks = jm_standard_callbacks_ptr;
 }
 
-jm_callbacks* jm_get_default_callbacks() { 
+jm_callbacks* jm_get_default_callbacks() {
     if(!jm_default_callbacks) {
         if(!jm_standard_callbacks_ptr) {
             jm_standard_callbacks.calloc = calloc;
@@ -114,5 +114,5 @@ jm_callbacks* jm_get_default_callbacks() {
         }
         jm_default_callbacks = jm_standard_callbacks_ptr;
     }
-    return jm_default_callbacks; 
+    return jm_default_callbacks;
 }

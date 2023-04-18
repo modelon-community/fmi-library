@@ -24,9 +24,9 @@ char* fmi_construct_dll_dir_name(jm_callbacks* callbacks, const char* fmu_unzipp
 
     assert( fmu_unzipped_path && callbacks);
 
-    len = 
+    len =
         strlen(fmu_unzipped_path) + strlen(FMI_FILE_SEP)
-        + strlen(FMI_BINARIES) + strlen(FMI_FILE_SEP) 
+        + strlen(FMI_BINARIES) + strlen(FMI_FILE_SEP)
         + strlen(FMI_PLATFORM) + strlen(FMI_FILE_SEP) + 1;
 
     dir_path = (char*)callbacks->malloc(len);
@@ -44,9 +44,9 @@ char* fmi_construct_dll_file_name(jm_callbacks* callbacks, const char* dll_dir_n
     char* fname;
     size_t len;
     assert(callbacks && model_identifier);
-    len = 
+    len =
         strlen(dll_dir_name) +
-        strlen(model_identifier) 
+        strlen(model_identifier)
         + strlen(FMI_DLL_EXT) + 1;
     fname = (char*)callbacks->malloc(len);
     if (fname == NULL) {

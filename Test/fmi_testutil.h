@@ -4,6 +4,10 @@
 #include <stdio.h>
 
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  *  TODO: Decide about naming convention for test utils functions.
  */
@@ -12,7 +16,7 @@
 void fmi_testutil_build_xml_path(char* buf, size_t bufSize, const char* basePath, const char* appendPath);
 
 /**
- * This function is called before a test fails via macro, so you can put a 
+ * This function is called before a test fails via macro, so you can put a
  * breakpoint on it to make debugging easier
  */
 void fmi_testutil_enter_breakpoint();
@@ -57,8 +61,8 @@ char* concat(char *s1, char *s2);
         return 0;                                                           \
     } while (0)
 
-/** 
- * Fails the test if 'cond' is not true. Use varargs argument for error 
+/**
+ * Fails the test if 'cond' is not true. Use varargs argument for error
  * message formatting.
  */
 #define ASSERT_MSG(cond, ...)                                               \
@@ -68,7 +72,7 @@ char* concat(char *s1, char *s2);
         }                                                                   \
     } while (0)
 
-/** 
+/**
  * Prints error and then 'goto' specified label if 'cond' is not true. Use
  * varargs argument for error message formatting.
  */
@@ -84,5 +88,8 @@ char* concat(char *s1, char *s2);
 #define TEST_OK (1)
 #define TEST_FAIL (0)
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* FMILIB_TESTUTIL_H */

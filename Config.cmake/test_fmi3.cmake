@@ -11,6 +11,8 @@
 #    You should have received a copy of the FMILIB_License.txt file
 #    along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 
+
+
 include_directories(${RTTESTDIR}/FMI3)
 
 
@@ -88,6 +90,8 @@ to_native_c_path("${TEST_OUTPUT_FOLDER}/${FMU3_DUMMY_ME_MODEL_IDENTIFIER}_me.fmu
 to_native_c_path("${TEST_OUTPUT_FOLDER}/${FMU3_DUMMY_CS_MODEL_IDENTIFIER}_cs.fmu" FMU3_CS_PATH)
 to_native_c_path("${TEST_OUTPUT_FOLDER}/${FMU3_DUMMY_SE_MODEL_IDENTIFIER}_se.fmu" FMU3_SE_PATH)
 to_native_c_path("${TEST_OUTPUT_FOLDER}/${FMU3_DUMMY_CS_MODEL_IDENTIFIER}_mf.fmu" FMU3_MF_PATH)
+to_native_c_path("${TEST_OUTPUT_FOLDER}/Temporary" FMU_TEMPORARY_TEST_DIR)
+
 
 # Test that it works for C++ applications
 add_executable (fmi3_import_xml_test ${RTTESTDIR}/FMI3/fmi3_import_xml_test.cc)
@@ -109,7 +113,6 @@ target_link_libraries (fmi3_import_sim_me_test  ${FMILIBFORTEST})
 add_executable (fmi3_import_sim_cs_test ${RTTESTDIR}/FMI3/fmi3_import_sim_cs_test.c)
 target_link_libraries (fmi3_import_sim_cs_test ${FMILIBFORTEST})
 
-# TODO, fix lines below when renamed test
 add_executable (fmi3_import_sim_se_test ${RTTESTDIR}/FMI3/fmi3_import_sim_se_test.c)
 target_link_libraries (fmi3_import_sim_se_test ${FMILIBFORTEST})
 

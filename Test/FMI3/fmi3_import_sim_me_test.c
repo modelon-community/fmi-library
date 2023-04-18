@@ -18,7 +18,7 @@
 #include <stdarg.h>
 
 #include "config_test.h"
-#include <fmilib.h>
+#include "fmilib.h"
 
 #define BUFFER 1000
 
@@ -52,28 +52,6 @@ void do_event_iteration(fmi3_import_t *fmu, test_event_info_t* eventInfo)
                 &eventInfo->nextEventTimeDefined,
                 &eventInfo->nextEventTime);
     }
-}
-
-int test_parsed_all_varialbes(fmi3_import_t* fmu)
-{ /* Test that all variables where parsed */
-    fmi3_import_model_counts_t  mc;
-    unsigned int                n_total;
-
-    fmi3_import_collect_model_counts(fmu, &mc);
-    n_total = mc.num_constants
-            + mc.num_fixed
-            + mc.num_tunable
-            + mc.num_discrete
-            + mc.num_continuous
-            + mc.num_independent;
-
-
-    if (n_total != 13) {
-        printf("error: failed to parse all variables\n");
-        do_exit(CTEST_RETURN_FAIL);
-    }
-
-    return 0;
 }
 
 /* All ME common + ME specific functions must always exist, this function tests
@@ -158,7 +136,6 @@ int test_simulate_me(fmi3_import_t* fmu)
     fmi3_boolean_t toleranceControlled = fmi3_true;
     fmi3_float64_t relativeTolerance = 0.001;
     test_event_info_t eventInfo;
-    fmi3_boolean_t input_event = fmi3_false; /* appears to be HCS only */
     fmi3_boolean_t step_event = fmi3_false;
     fmi3_boolean_t time_event = fmi3_false;
     size_t k;
@@ -391,8 +368,6 @@ int main(int argc, char *argv[])
         printf("Could not create the DLL loading mechanism(C-API test).\n");
         do_exit(CTEST_RETURN_FAIL);
     }
-
-    test_parsed_all_varialbes(fmu);
 
     test_capi_wrappers_me(fmu);
     test_simulate_me(fmu);

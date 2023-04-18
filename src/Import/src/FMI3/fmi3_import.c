@@ -61,7 +61,8 @@ const char* fmi3_import_get_last_error(fmi3_import_t* fmu) {
     return jm_get_last_error(fmu->callbacks);
 }
 
-fmi3_import_t* fmi3_import_parse_xml( fmi_import_context_t* context, const char* dirPath, fmi3_xml_callbacks_t* xml_callbacks) {
+fmi3_import_t* fmi3_import_parse_xml(
+        fmi_import_context_t* context, const char* dirPath, fmi3_xml_callbacks_t* xml_callbacks) {
     char* xmlPath;
     char absPath[FILENAME_MAX + 2];
     fmi3_import_t* fmu = 0;
@@ -87,7 +88,7 @@ fmi3_import_t* fmi3_import_parse_xml( fmi_import_context_t* context, const char*
     }
     fmu->dirPath = context->callbacks->malloc(strlen(dirPath) + 1);
     if (!fmu->dirPath ||  !fmu->resourcePath) {
-        jm_log_fatal( context->callbacks, "FMILIB", "Could not allocated memory");
+        jm_log_fatal( context->callbacks, "FMILIB", "Could not allocate memory");
         fmi3_import_free(fmu);
         context->callbacks->free(xmlPath);
         return 0;

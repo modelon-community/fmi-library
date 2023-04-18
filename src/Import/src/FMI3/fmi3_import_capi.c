@@ -220,7 +220,7 @@ jm_status_enu_t fmi3_import_instantiate_co_simulation(
         fmi3_boolean_t                       loggingOn,
         fmi3_boolean_t                       eventModeUsed,
         fmi3_boolean_t                       earlyReturnAllowed,
-        const fmi3_value_reference_t         requiredIntermediateVariables,
+        const fmi3_value_reference_t         requiredIntermediateVariables[],
         size_t                               nRequiredIntermediateVariables,
         fmi3_instance_environment_t          instanceEnvironment,
         fmi3_log_message_callback_ft         logMessage,
@@ -327,123 +327,146 @@ fmi3_status_t fmi3_import_reset(fmi3_import_t* fmu) {
 }
 
 
-fmi3_status_t fmi3_import_set_float64(fmi3_import_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, const fmi3_float64_t value[], size_t nValues) {
-    return fmi3_capi_set_float64(fmu->capi, vr, nvr, value, nValues);
+fmi3_status_t fmi3_import_set_float64(fmi3_import_t* fmu, const fmi3_value_reference_t valueReferences[],
+        size_t nValueReferences, const fmi3_float64_t values[], size_t nValues) {
+    return fmi3_capi_set_float64(fmu->capi, valueReferences, nValueReferences, values, nValues);
 }
 
-fmi3_status_t fmi3_import_set_float32(fmi3_import_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, const fmi3_float32_t value[], size_t nValues) {
-    return fmi3_capi_set_float32(fmu->capi, vr, nvr, value, nValues);
+fmi3_status_t fmi3_import_set_float32(fmi3_import_t* fmu, const fmi3_value_reference_t valueReferences[],
+        size_t nValueReferences, const fmi3_float32_t values[], size_t nValues) {
+    return fmi3_capi_set_float32(fmu->capi, valueReferences, nValueReferences, values, nValues);
 }
 
-fmi3_status_t fmi3_import_set_int64(fmi3_import_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, const fmi3_int64_t value[], size_t nValues) {
-    return fmi3_capi_set_int64(fmu->capi, vr, nvr, value, nValues);
+fmi3_status_t fmi3_import_set_int64(fmi3_import_t* fmu, const fmi3_value_reference_t valueReferences[],
+        size_t nValueReferences, const fmi3_int64_t values[], size_t nValues) {
+    return fmi3_capi_set_int64(fmu->capi, valueReferences, nValueReferences, values, nValues);
 }
 
-fmi3_status_t fmi3_import_set_int32(fmi3_import_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, const fmi3_int32_t value[], size_t nValues) {
-    return fmi3_capi_set_int32(fmu->capi, vr, nvr, value, nValues);
+fmi3_status_t fmi3_import_set_int32(fmi3_import_t* fmu, const fmi3_value_reference_t valueReferences[],
+        size_t nValueReferences, const fmi3_int32_t values[], size_t nValues) {
+    return fmi3_capi_set_int32(fmu->capi, valueReferences, nValueReferences, values, nValues);
 }
 
-fmi3_status_t fmi3_import_set_int16(fmi3_import_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, const fmi3_int16_t value[], size_t nValues) {
-    return fmi3_capi_set_int16(fmu->capi, vr, nvr, value, nValues);
+fmi3_status_t fmi3_import_set_int16(fmi3_import_t* fmu, const fmi3_value_reference_t valueReferences[],
+        size_t nValueReferences, const fmi3_int16_t values[], size_t nValues) {
+    return fmi3_capi_set_int16(fmu->capi, valueReferences, nValueReferences, values, nValues);
 }
 
-fmi3_status_t fmi3_import_set_int8(fmi3_import_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, const fmi3_int8_t value[], size_t nValues) {
-    return fmi3_capi_set_int8(fmu->capi, vr, nvr, value, nValues);
+fmi3_status_t fmi3_import_set_int8(fmi3_import_t* fmu, const fmi3_value_reference_t valueReferences[],
+        size_t nValueReferences, const fmi3_int8_t values[], size_t nValues) {
+    return fmi3_capi_set_int8(fmu->capi, valueReferences, nValueReferences, values, nValues);
 }
 
-fmi3_status_t fmi3_import_set_uint64(fmi3_import_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, const fmi3_uint64_t value[], size_t nValues) {
-    return fmi3_capi_set_uint64(fmu->capi, vr, nvr, value, nValues);
+fmi3_status_t fmi3_import_set_uint64(fmi3_import_t* fmu, const fmi3_value_reference_t valueReferences[],
+        size_t nValueReferences, const fmi3_uint64_t values[], size_t nValues) {
+    return fmi3_capi_set_uint64(fmu->capi, valueReferences, nValueReferences, values, nValues);
 }
 
-fmi3_status_t fmi3_import_set_uint32(fmi3_import_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, const fmi3_uint32_t value[], size_t nValues) {
-    return fmi3_capi_set_uint32(fmu->capi, vr, nvr, value, nValues);
+fmi3_status_t fmi3_import_set_uint32(fmi3_import_t* fmu, const fmi3_value_reference_t valueReferences[],
+        size_t nValueReferences, const fmi3_uint32_t values[], size_t nValues) {
+    return fmi3_capi_set_uint32(fmu->capi, valueReferences, nValueReferences, values, nValues);
 }
 
-fmi3_status_t fmi3_import_set_uint16(fmi3_import_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, const fmi3_uint16_t value[], size_t nValues) {
-    return fmi3_capi_set_uint16(fmu->capi, vr, nvr, value, nValues);
+fmi3_status_t fmi3_import_set_uint16(fmi3_import_t* fmu, const fmi3_value_reference_t valueReferences[],
+        size_t nValueReferences, const fmi3_uint16_t values[], size_t nValues) {
+    return fmi3_capi_set_uint16(fmu->capi, valueReferences, nValueReferences, values, nValues);
 }
 
-fmi3_status_t fmi3_import_set_uint8(fmi3_import_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, const fmi3_uint8_t value[], size_t nValues) {
-    return fmi3_capi_set_uint8(fmu->capi, vr, nvr, value, nValues);
+fmi3_status_t fmi3_import_set_uint8(fmi3_import_t* fmu, const fmi3_value_reference_t valueReferences[],
+        size_t nValueReferences, const fmi3_uint8_t values[], size_t nValues) {
+    return fmi3_capi_set_uint8(fmu->capi, valueReferences, nValueReferences, values, nValues);
 }
 
-fmi3_status_t fmi3_import_set_boolean(fmi3_import_t* fmu, const fmi3_value_reference_t vr[], size_t nvr,
-        const fmi3_boolean_t value[], size_t nValues) {
-    return fmi3_capi_set_boolean(fmu->capi, vr, nvr, value, nValues);
+fmi3_status_t fmi3_import_set_boolean(fmi3_import_t* fmu, const fmi3_value_reference_t valueReferences[],
+        size_t nValueReferences,
+        const fmi3_boolean_t values[], size_t nValues) {
+    return fmi3_capi_set_boolean(fmu->capi, valueReferences, nValueReferences, values, nValues);
 }
 
-fmi3_status_t fmi3_import_set_string(fmi3_import_t* fmu, const fmi3_value_reference_t vr[], size_t nvr,
-        const fmi3_string_t value[], size_t nValues) {
-    return fmi3_capi_set_string(fmu->capi, vr, nvr, value, nValues);
+fmi3_status_t fmi3_import_set_string(fmi3_import_t* fmu, const fmi3_value_reference_t valueReferences[],
+        size_t nValueReferences,
+        const fmi3_string_t values[], size_t nValues) {
+    return fmi3_capi_set_string(fmu->capi, valueReferences, nValueReferences, values, nValues);
 }
 
-fmi3_status_t fmi3_import_set_binary(fmi3_import_t* fmu, const fmi3_value_reference_t vr[], size_t nvr,
-        const size_t sizes[], const fmi3_binary_t value[], size_t nValues) {
-    return fmi3_capi_set_binary(fmu->capi, vr, nvr, sizes, value, nValues);
+fmi3_status_t fmi3_import_set_binary(fmi3_import_t* fmu, const fmi3_value_reference_t valueReferences[],
+        size_t nValueReferences,
+        const size_t sizes[], const fmi3_binary_t values[], size_t nValues) {
+    return fmi3_capi_set_binary(fmu->capi, valueReferences, nValueReferences, sizes, values, nValues);
 }
 
-fmi3_status_t fmi3_import_get_float64(fmi3_import_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, fmi3_float64_t value[], size_t nValues) {
-    return fmi3_capi_get_float64(fmu->capi, vr, nvr, value, nValues);
+fmi3_status_t fmi3_import_get_float64(fmi3_import_t* fmu, const fmi3_value_reference_t valueReferences[],
+        size_t nValueReferences, fmi3_float64_t values[], size_t nValues) {
+    return fmi3_capi_get_float64(fmu->capi, valueReferences, nValueReferences, values, nValues);
 }
 
-fmi3_status_t fmi3_import_get_float32(fmi3_import_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, fmi3_float32_t value[], size_t nValues) {
-    return fmi3_capi_get_float32(fmu->capi, vr, nvr, value, nValues);
+fmi3_status_t fmi3_import_get_float32(fmi3_import_t* fmu, const fmi3_value_reference_t valueReferences[],
+        size_t nValueReferences, fmi3_float32_t values[], size_t nValues) {
+    return fmi3_capi_get_float32(fmu->capi, valueReferences, nValueReferences, values, nValues);
 }
 
-fmi3_status_t fmi3_import_get_int64(fmi3_import_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, fmi3_int64_t value[], size_t nValues) {
-    return fmi3_capi_get_int64(fmu->capi, vr, nvr, value, nValues);
+fmi3_status_t fmi3_import_get_int64(fmi3_import_t* fmu, const fmi3_value_reference_t valueReferences[],
+        size_t nValueReferences, fmi3_int64_t values[], size_t nValues) {
+    return fmi3_capi_get_int64(fmu->capi, valueReferences, nValueReferences, values, nValues);
 }
 
-fmi3_status_t fmi3_import_get_int32(fmi3_import_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, fmi3_int32_t value[], size_t nValues) {
-    return fmi3_capi_get_int32(fmu->capi, vr, nvr, value, nValues);
+fmi3_status_t fmi3_import_get_int32(fmi3_import_t* fmu, const fmi3_value_reference_t valueReferences[],
+        size_t nValueReferences, fmi3_int32_t values[], size_t nValues) {
+    return fmi3_capi_get_int32(fmu->capi, valueReferences, nValueReferences, values, nValues);
 }
 
-fmi3_status_t fmi3_import_get_int16(fmi3_import_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, fmi3_int16_t value[], size_t nValues) {
-    return fmi3_capi_get_int16(fmu->capi, vr, nvr, value, nValues);
+fmi3_status_t fmi3_import_get_int16(fmi3_import_t* fmu, const fmi3_value_reference_t valueReferences[],
+        size_t nValueReferences, fmi3_int16_t values[], size_t nValues) {
+    return fmi3_capi_get_int16(fmu->capi, valueReferences, nValueReferences, values, nValues);
 }
 
-fmi3_status_t fmi3_import_get_int8(fmi3_import_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, fmi3_int8_t value[], size_t nValues) {
-    return fmi3_capi_get_int8(fmu->capi, vr, nvr, value, nValues);
+fmi3_status_t fmi3_import_get_int8(fmi3_import_t* fmu, const fmi3_value_reference_t valueReferences[],
+        size_t nValueReferences, fmi3_int8_t values[], size_t nValues) {
+    return fmi3_capi_get_int8(fmu->capi, valueReferences, nValueReferences, values, nValues);
 }
 
-fmi3_status_t fmi3_import_get_uint64(fmi3_import_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, fmi3_uint64_t value[], size_t nValues) {
-    return fmi3_capi_get_uint64(fmu->capi, vr, nvr, value, nValues);
+fmi3_status_t fmi3_import_get_uint64(fmi3_import_t* fmu, const fmi3_value_reference_t valueReferences[],
+        size_t nValueReferences, fmi3_uint64_t values[], size_t nValues) {
+    return fmi3_capi_get_uint64(fmu->capi, valueReferences, nValueReferences, values, nValues);
 }
 
-fmi3_status_t fmi3_import_get_uint32(fmi3_import_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, fmi3_uint32_t value[], size_t nValues) {
-    return fmi3_capi_get_uint32(fmu->capi, vr, nvr, value, nValues);
+fmi3_status_t fmi3_import_get_uint32(fmi3_import_t* fmu, const fmi3_value_reference_t valueReferences[],
+        size_t nValueReferences, fmi3_uint32_t values[], size_t nValues) {
+    return fmi3_capi_get_uint32(fmu->capi, valueReferences, nValueReferences, values, nValues);
 }
 
-fmi3_status_t fmi3_import_get_uint16(fmi3_import_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, fmi3_uint16_t value[], size_t nValues) {
-    return fmi3_capi_get_uint16(fmu->capi, vr, nvr, value, nValues);
+fmi3_status_t fmi3_import_get_uint16(fmi3_import_t* fmu, const fmi3_value_reference_t valueReferences[],
+        size_t nValueReferences, fmi3_uint16_t values[], size_t nValues) {
+    return fmi3_capi_get_uint16(fmu->capi, valueReferences, nValueReferences, values, nValues);
 }
 
-fmi3_status_t fmi3_import_get_uint8(fmi3_import_t* fmu, const fmi3_value_reference_t vr[], size_t nvr, fmi3_uint8_t value[], size_t nValues) {
-    return fmi3_capi_get_uint8(fmu->capi, vr, nvr, value, nValues);
+fmi3_status_t fmi3_import_get_uint8(fmi3_import_t* fmu, const fmi3_value_reference_t valueReferences[],
+        size_t nValueReferences, fmi3_uint8_t values[], size_t nValues) {
+    return fmi3_capi_get_uint8(fmu->capi, valueReferences, nValueReferences, values, nValues);
 }
 
-fmi3_status_t fmi3_import_get_boolean(fmi3_import_t* fmu, const fmi3_value_reference_t vr[], size_t nvr,
-        fmi3_boolean_t value[], size_t nValues) {
-    return fmi3_capi_get_boolean(fmu->capi, vr, nvr, value, nValues);
+fmi3_status_t fmi3_import_get_boolean(fmi3_import_t* fmu, const fmi3_value_reference_t valueReferences[],
+        size_t nValueReferences, fmi3_boolean_t values[], size_t nValues) {
+    return fmi3_capi_get_boolean(fmu->capi, valueReferences, nValueReferences, values, nValues);
 }
 
-fmi3_status_t fmi3_import_get_string(fmi3_import_t* fmu, const fmi3_value_reference_t vr[], size_t nvr,
-        fmi3_string_t value[], size_t nValues) {
-    return fmi3_capi_get_string(fmu->capi, vr, nvr, value, nValues);
+fmi3_status_t fmi3_import_get_string(fmi3_import_t* fmu, const fmi3_value_reference_t valueReferences[],
+        size_t nValueReferences, fmi3_string_t values[], size_t nValues) {
+    return fmi3_capi_get_string(fmu->capi, valueReferences, nValueReferences, values, nValues);
 }
 
-fmi3_status_t fmi3_import_get_binary(fmi3_import_t* fmu, const fmi3_value_reference_t vr[], size_t nvr,
-        size_t sizes[], fmi3_binary_t value[], size_t nValues) {
-    return fmi3_capi_get_binary(fmu->capi, vr, nvr, sizes, value, nValues);
+fmi3_status_t fmi3_import_get_binary(fmi3_import_t* fmu, const fmi3_value_reference_t valueReferences[],
+        size_t nValueReferences, size_t sizes[], fmi3_binary_t values[], size_t nValues) {
+    return fmi3_capi_get_binary(fmu->capi, valueReferences, nValueReferences, sizes, values, nValues);
 }
 
 /* Getting Variable Dependency Information */
 fmi3_status_t fmi3_import_get_number_of_variable_dependencies(
         fmi3_import_t*         fmu,
-        fmi3_value_reference_t vr,
+        fmi3_value_reference_t valueReferences,
         size_t*                nDeps)
 {
-    return fmi3_capi_get_number_of_variable_dependencies(fmu->capi, vr, nDeps);
+    return fmi3_capi_get_number_of_variable_dependencies(fmu->capi, valueReferences, nDeps);
 }
 
 fmi3_status_t fmi3_import_get_variable_dependencies(
@@ -638,7 +661,7 @@ fmi3_status_t fmi3_import_get_number_of_event_indicators(fmi3_import_t* fmu, siz
 {
     if (!fmi3_import_check_has_FMU(fmu)) return fmi3_status_error;
 
-    /* Since this CAPI is redundant, the value can be taken from XML if the FMU is not yet instantiated */
+    /* Since this CAPI is redundant, the values can be taken from XML if the FMU is not yet instantiated */
     if (!fmu->capi || !fmu->capi->inst) {
         *nz = fmi3_xml_get_number_of_event_indicators(fmu->md);
         return fmi3_status_ok;
@@ -651,7 +674,7 @@ fmi3_status_t fmi3_import_get_number_of_continuous_states(fmi3_import_t* fmu, si
 {
     if (!fmi3_import_check_has_FMU(fmu)) return fmi3_status_error;
 
-    /* Since this CAPI is redundant, the value can be taken from XML if the FMU is not yet instantiated */
+    /* Since this CAPI is redundant, the values can be taken from XML if the FMU is not yet instantiated */
     if (!fmu->capi || !fmu->capi->inst) {
         *nx = fmi3_xml_get_number_of_continuous_states(fmu->md);
         return fmi3_status_ok;

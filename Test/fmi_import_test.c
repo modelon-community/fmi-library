@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2012 Modelon AB
+    Copyright (C) 2012-2023 Modelon AB
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the BSD style license.
@@ -37,7 +37,7 @@ void do_exit(int code)
     /* getchar(); */
     exit(code);
 }
-       
+
 int main(int argc, char *argv[])
 {
     const char* FMUPath;
@@ -89,12 +89,12 @@ int main(int argc, char *argv[])
     }
     else {
         fmi_import_free_context(context);
-        printf("Only versions 1.0 and 2.0 are supported so far\n");
+        printf("Only versions 1.0, 2.0 and 3.0 are supported so far\n");
         do_exit(CTEST_RETURN_FAIL);
     }
 
     fmi_import_free_context(context);
-    
+
     if(ret == CTEST_RETURN_SUCCESS)
         printf("Everything seems to be OK since you got this far=)!\n");
 
@@ -102,5 +102,3 @@ int main(int argc, char *argv[])
 
     return 0;
 }
-
-

@@ -128,140 +128,140 @@ FMI3_Export fmi3Status fmi3ExitInitializationMode(fmi3Instance instance)
     return fmi_exit_initialization_mode(instance);
 }
 
-FMI3_Export fmi3Status fmi3GetFloat64(fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr, fmi3Float64 value[], size_t nValues)
+FMI3_Export fmi3Status fmi3GetFloat64(fmi3Instance instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, fmi3Float64 values[], size_t nValues)
 {
-    return fmi_get_float64(instance, vr, nvr, value, nValues);
+    return fmi_get_float64(instance, valueReferences, nValueReferences, values, nValues);
 }
 
-FMI3_Export fmi3Status fmi3GetFloat32(fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr, fmi3Float32 value[], size_t nValues)
+FMI3_Export fmi3Status fmi3GetFloat32(fmi3Instance instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, fmi3Float32 values[], size_t nValues)
 {
     return fmi3Error; /* NYI, need to impl. real -> floatXX parametrization first */
 }
 
-FMI3_Export fmi3Status fmi3GetInt64(fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr, fmi3Int64 value[], size_t nValues)
+FMI3_Export fmi3Status fmi3GetInt64(fmi3Instance instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, fmi3Int64 values[], size_t nValues)
 {
-    return fmi_get_int64(instance, vr, nvr, value, nValues);
+    return fmi_get_int64(instance, valueReferences, nValueReferences, values, nValues);
 }
 
-FMI3_Export fmi3Status fmi3GetInt32(fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr, fmi3Int32 value[], size_t nValues)
+FMI3_Export fmi3Status fmi3GetInt32(fmi3Instance instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, fmi3Int32 values[], size_t nValues)
 {
-    return fmi_get_int32(instance, vr, nvr, value, nValues);
+    return fmi_get_int32(instance, valueReferences, nValueReferences, values, nValues);
 }
 
-FMI3_Export fmi3Status fmi3GetInt16(fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr, fmi3Int16 value[], size_t nValues)
+FMI3_Export fmi3Status fmi3GetInt16(fmi3Instance instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, fmi3Int16 values[], size_t nValues)
 {
-    return fmi_get_int16(instance, vr, nvr, value, nValues);
+    return fmi_get_int16(instance, valueReferences, nValueReferences, values, nValues);
 }
 
-FMI3_Export fmi3Status fmi3GetInt8(fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr, fmi3Int8 value[], size_t nValues)
+FMI3_Export fmi3Status fmi3GetInt8(fmi3Instance instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, fmi3Int8 values[], size_t nValues)
 {
-    return fmi_get_int8(instance, vr, nvr, value, nValues);
+    return fmi_get_int8(instance, valueReferences, nValueReferences, values, nValues);
 }
 
-FMI3_Export fmi3Status fmi3GetUInt64(fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr, fmi3UInt64 value[], size_t nValues)
+FMI3_Export fmi3Status fmi3GetUInt64(fmi3Instance instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, fmi3UInt64 values[], size_t nValues)
 {
-    return fmi_get_uint64(instance, vr, nvr, value, nValues);
+    return fmi_get_uint64(instance, valueReferences, nValueReferences, values, nValues);
 }
 
-FMI3_Export fmi3Status fmi3GetUInt32(fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr, fmi3UInt32 value[], size_t nValues)
+FMI3_Export fmi3Status fmi3GetUInt32(fmi3Instance instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, fmi3UInt32 values[], size_t nValues)
 {
-    return fmi_get_uint32(instance, vr, nvr, value, nValues);
+    return fmi_get_uint32(instance, valueReferences, nValueReferences, values, nValues);
 }
 
-FMI3_Export fmi3Status fmi3GetUInt16(fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr, fmi3UInt16 value[], size_t nValues)
+FMI3_Export fmi3Status fmi3GetUInt16(fmi3Instance instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, fmi3UInt16 values[], size_t nValues)
 {
-    return fmi_get_uint16(instance, vr, nvr, value, nValues);
+    return fmi_get_uint16(instance, valueReferences, nValueReferences, values, nValues);
 }
 
-FMI3_Export fmi3Status fmi3GetUInt8(fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr, fmi3UInt8 value[], size_t nValues)
+FMI3_Export fmi3Status fmi3GetUInt8(fmi3Instance instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, fmi3UInt8 values[], size_t nValues)
 {
-    return fmi_get_uint8(instance, vr, nvr, value, nValues);
+    return fmi_get_uint8(instance, valueReferences, nValueReferences, values, nValues);
 }
 
-FMI3_Export fmi3Status fmi3GetBoolean(fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr,
-        fmi3Boolean value[], size_t nValues)
+FMI3_Export fmi3Status fmi3GetBoolean(fmi3Instance instance, const fmi3ValueReference valueReferences[], size_t nValueReferences,
+        fmi3Boolean values[], size_t nValues)
 {
-    return fmi_get_boolean(instance, vr, nvr, value, nValues);
+    return fmi_get_boolean(instance, valueReferences, nValueReferences, values, nValues);
 }
 
-FMI3_Export fmi3Status fmi3GetString(fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr,
-        fmi3String value[], size_t nValues)
+FMI3_Export fmi3Status fmi3GetString(fmi3Instance instance, const fmi3ValueReference valueReferences[], size_t nValueReferences,
+        fmi3String values[], size_t nValues)
 {
-    return fmi_get_string(instance, vr, nvr, value, nValues);
+    return fmi_get_string(instance, valueReferences, nValueReferences, values, nValues);
 }
 
-FMI3_Export fmi3Status fmi3GetBinary(fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr,
-        size_t sizes[], fmi3Binary value[], size_t nValues)
+FMI3_Export fmi3Status fmi3GetBinary(fmi3Instance instance, const fmi3ValueReference valueReferences[], size_t nValueReferences,
+        size_t sizes[], fmi3Binary values[], size_t nValues)
 {
-    return fmi_get_binary(instance, vr, nvr, sizes, value, nValues);
+    return fmi_get_binary(instance, valueReferences, nValueReferences, sizes, values, nValues);
 }
 
-FMI3_Export fmi3Status fmi3SetFloat64(fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr, const fmi3Float64 value[], size_t nValues)
+FMI3_Export fmi3Status fmi3SetFloat64(fmi3Instance instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, const fmi3Float64 values[], size_t nValues)
 {
-    return fmi_set_float64(instance, vr, nvr, value, nValues);
+    return fmi_set_float64(instance, valueReferences, nValueReferences, values, nValues);
 }
 
-FMI3_Export fmi3Status fmi3SetFloat32(fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr, const fmi3Float32 value[], size_t nValues)
+FMI3_Export fmi3Status fmi3SetFloat32(fmi3Instance instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, const fmi3Float32 values[], size_t nValues)
 {
     return fmi3Error; /* NYI, need to impl. real -> floatXX parametrization first */
 }
 
-FMI3_Export fmi3Status fmi3SetInt64(fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr, const fmi3Int64 value[], size_t nValues)
+FMI3_Export fmi3Status fmi3SetInt64(fmi3Instance instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, const fmi3Int64 values[], size_t nValues)
 {
-    return fmi_set_int64(instance, vr, nvr, value, nValues);
+    return fmi_set_int64(instance, valueReferences, nValueReferences, values, nValues);
 }
 
-FMI3_Export fmi3Status fmi3SetInt32(fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr, const fmi3Int32 value[], size_t nValues)
+FMI3_Export fmi3Status fmi3SetInt32(fmi3Instance instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, const fmi3Int32 values[], size_t nValues)
 {
-    return fmi_set_int32(instance, vr, nvr, value, nValues);
+    return fmi_set_int32(instance, valueReferences, nValueReferences, values, nValues);
 }
 
-FMI3_Export fmi3Status fmi3SetInt16(fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr, const fmi3Int16 value[], size_t nValues)
+FMI3_Export fmi3Status fmi3SetInt16(fmi3Instance instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, const fmi3Int16 values[], size_t nValues)
 {
-    return fmi_set_int16(instance, vr, nvr, value, nValues);
+    return fmi_set_int16(instance, valueReferences, nValueReferences, values, nValues);
 }
 
-FMI3_Export fmi3Status fmi3SetInt8(fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr, const fmi3Int8 value[], size_t nValues)
+FMI3_Export fmi3Status fmi3SetInt8(fmi3Instance instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, const fmi3Int8 values[], size_t nValues)
 {
-    return fmi_set_int8(instance, vr, nvr, value, nValues);
+    return fmi_set_int8(instance, valueReferences, nValueReferences, values, nValues);
 }
 
-FMI3_Export fmi3Status fmi3SetUInt64(fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr, const fmi3UInt64 value[], size_t nValues)
+FMI3_Export fmi3Status fmi3SetUInt64(fmi3Instance instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, const fmi3UInt64 values[], size_t nValues)
 {
-    return fmi_set_uint64(instance, vr, nvr, value, nValues);
+    return fmi_set_uint64(instance, valueReferences, nValueReferences, values, nValues);
 }
 
-FMI3_Export fmi3Status fmi3SetUInt32(fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr, const fmi3UInt32 value[], size_t nValues)
+FMI3_Export fmi3Status fmi3SetUInt32(fmi3Instance instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, const fmi3UInt32 values[], size_t nValues)
 {
-    return fmi_set_uint32(instance, vr, nvr, value, nValues);
+    return fmi_set_uint32(instance, valueReferences, nValueReferences, values, nValues);
 }
 
-FMI3_Export fmi3Status fmi3SetUInt16(fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr, const fmi3UInt16 value[], size_t nValues)
+FMI3_Export fmi3Status fmi3SetUInt16(fmi3Instance instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, const fmi3UInt16 values[], size_t nValues)
 {
-    return fmi_set_uint16(instance, vr, nvr, value, nValues);
+    return fmi_set_uint16(instance, valueReferences, nValueReferences, values, nValues);
 }
 
-FMI3_Export fmi3Status fmi3SetUInt8(fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr, const fmi3UInt8 value[], size_t nValues)
+FMI3_Export fmi3Status fmi3SetUInt8(fmi3Instance instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, const fmi3UInt8 values[], size_t nValues)
 {
-    return fmi_set_uint8(instance, vr, nvr, value, nValues);
+    return fmi_set_uint8(instance, valueReferences, nValueReferences, values, nValues);
 }
 
-FMI3_Export fmi3Status fmi3SetBoolean(fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr,
-        const fmi3Boolean value[], size_t nValues)
+FMI3_Export fmi3Status fmi3SetBoolean(fmi3Instance instance, const fmi3ValueReference valueReferences[], size_t nValueReferences,
+        const fmi3Boolean values[], size_t nValues)
 {
-    return fmi_set_boolean(instance, vr, nvr, value, nValues);
+    return fmi_set_boolean(instance, valueReferences, nValueReferences, values, nValues);
 }
 
-FMI3_Export fmi3Status fmi3SetString(fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr,
-        const fmi3String value[], size_t nValues)
+FMI3_Export fmi3Status fmi3SetString(fmi3Instance instance, const fmi3ValueReference valueReferences[], size_t nValueReferences,
+        const fmi3String values[], size_t nValues)
 {
-    return fmi_set_string(instance, vr, nvr, value, nValues);
+    return fmi_set_string(instance, valueReferences, nValueReferences, values, nValues);
 }
 
-FMI3_Export fmi3Status fmi3SetBinary(fmi3Instance instance, const fmi3ValueReference vr[], size_t nvr,
-        const size_t sizes[], const fmi3Binary value[], size_t nValues)
+FMI3_Export fmi3Status fmi3SetBinary(fmi3Instance instance, const fmi3ValueReference valueReferences[], size_t nValueReferences,
+        const size_t sizes[], const fmi3Binary values[], size_t nValues)
 {
-    return fmi_set_binary(instance, vr, nvr, sizes, value, nValues);
+    return fmi_set_binary(instance, valueReferences, nValueReferences, sizes, values, nValues);
 }
 
 /* Getting Variable Dependency Information */

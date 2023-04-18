@@ -28,15 +28,6 @@ libraries are included into the distribution.
 
 CMake 3.1.3 or later is required in order to build expat.
 
-Docker is needed on Windows since it's used to generate C functions.
-
-The following tools (usually comes with the distribution) are needed on Linux, and
-need to be available on the system path. They are used to generate C functions:
-- bash
-- sed
-- cpp
-- ex (Vim Ex mode)
-
 To build from a terminal command line on Linux or Mac with default settings use:
 \code
 	mkdir build-fmil; cd build-fmil

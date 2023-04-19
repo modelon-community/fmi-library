@@ -119,7 +119,7 @@ typedef fmi3_instance_t (*fmi3_instantiate_co_simulation_ft)(
     fmi3_boolean_t                       loggingOn,
     fmi3_boolean_t                       eventModeUsed,
     fmi3_boolean_t                       earlyReturnAllowed,
-    const fmi3_value_reference_t         requiredIntermediateVariables,
+    const fmi3_value_reference_t         requiredIntermediateVariables[],
     size_t                               nRequiredIntermediateVariables,
     fmi3_instance_environment_t          instanceEnvironment,
     fmi3_log_message_callback_ft         logMessage,

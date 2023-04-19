@@ -1514,7 +1514,7 @@ int fmi3_xml_handle_StringVariable(fmi3_xml_parser_context_t *context, const cha
     if (context->skipOneVariableFlag) return 0;
     if (fmi3_xml_handle_Variable(context, data)) return -1;
 
-    if(!data) {
+    if (!data) {
         fmi3_xml_model_description_t* md = context->modelDescription;
         fmi3_xml_type_definitions_t* td = &md->typeDefinitions;
         fmi3_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
@@ -1522,27 +1522,26 @@ int fmi3_xml_handle_StringVariable(fmi3_xml_parser_context_t *context, const cha
 
         assert(!variable->type);
 
-        variable->type = fmi3_get_declared_type(context, fmi3_xml_elmID_String,&td->defaultStringType) ;
+        variable->type = fmi3_get_declared_type(context, fmi3_xml_elmID_String, &td->defaultStringType) ;
         if(!variable->type) return -1;
 
         hasStart = fmi3_xml_get_has_start(context, variable);
-        if(hasStart) {
-            jm_vector(char)* bufStartStr = fmi3_xml_reserve_parse_buffer(context,1, 100);
+        if (hasStart) {
+            jm_vector(char)* bufStartStr = fmi3_xml_reserve_parse_buffer(context, 1, 100);
             size_t strlen;
             fmi3_xml_string_variable_start_t* start;
-            if(fmi3_xml_set_attr_string(context, fmi3_xml_elmID_String, fmi_attr_id_start, 0, bufStartStr)) return -1;
+            if (fmi3_xml_set_attr_string(context, fmi3_xml_elmID_String, fmi_attr_id_start, 0, bufStartStr)) return -1;
             strlen = jm_vector_get_size_char(bufStartStr);
 
             start = (fmi3_xml_string_variable_start_t*)fmi3_xml_alloc_variable_type_start(td, variable->type, sizeof(fmi3_xml_string_variable_start_t) + strlen);
-
-            if(!start) {
+            if (!start) {
                 fmi3_xml_parse_fatal(context, "Could not allocate memory");
                 return -1;
             }
-            if (strlen != 0) { /* No need to memcpy empty strings (gives assetion error) */
+            if (strlen != 0) { /* Don't memcpy empty strings (gives assertion error) */
                 memcpy(start->start, jm_vector_get_itemp_char(bufStartStr,0), strlen);
             }
-            start->start[strlen] = 0;
+            start->start[strlen] = 0;  // Null-terminate the string.
             variable->type = &start->super;
         } else {
             fmi3_log_error_if_start_required(context, variable);
@@ -1551,6 +1550,17 @@ int fmi3_xml_handle_StringVariable(fmi3_xml_parser_context_t *context, const cha
     else {
         /* don't do anything. might give out a warning if(data[0] != 0) */
         return 0;
+    }
+    return 0;
+}
+
+int fmi3_xml_handle_BinaryStart(fmi3_xml_parser_context_t* context, const char* data) {
+    if (!data) {
+        fmi3_xml_model_description_t* md = context->modelDescription;
+        fmi3_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
+
+    } else {
+        // Do nothing
     }
     return 0;
 }

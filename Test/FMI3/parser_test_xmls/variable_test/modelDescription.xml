@@ -55,7 +55,6 @@
   <Clock name="clocks999_1" valueReference="999001"/>
   <Clock name="clocks999_2" valueReference="999002"/>
   <Clock name="clocks999_3" valueReference="999003"/>
-
 </ModelVariables>
 
 <ModelStructure/>

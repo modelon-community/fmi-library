@@ -240,19 +240,40 @@ struct fmi3_xml_parser_context_t {
     jm_callbacks* callbacks;
 
     XML_Parser parser;
+    
+    /**
+     * Actual type: jm_vector of jm_vector(char).
+     *
+     * Purpose seems to be to reduce the cost of converting char* to jm_vector(char)
+     * by using an object pool. Typically for attributes.
+     *
+     * It's possible that it was also used as a way to keep strings from one element
+     * handler to another, but that's not how it should be used moving forward.
+     *
+     * TODO: Rename to charvecPool?
+     */
     jm_vector(jm_voidp) parseBuffer;
 
     /**
      * Used for writing to attrBuffer. Uses lookup by attribute name instead
      * of attribute ID. The .ptr field points to attrBuffer[id(attr_name)].
-     * Currently ONLY used for writing.
+     * Currently used ONLY for writing.
+     * 
+     * TODO: Rename to attrMapByName?
      */
     jm_vector(jm_named_ptr)* attrMap;
 
     /**
-     * Allows reading of parsed attr value. Reading the value consumes it.
-     * Finishing the parsing of an element also consumes it.
-     * Writing the value is done through field 'attrMap'.
+     * Vector with a slot for every attribute for every element to allow constant lookup:
+     *     attrBuffer[<attr_id>] = <attr_value>
+     * 
+     * Is populated with all parsed attributes for the current element before that element
+     * handler is invoked.
+     * 
+     * Typically attributes values are cleared when they are read, such that at the end of
+     * parsing an element all attributes should be cleared.
+     *
+     * TODO: Rename to attrMapById?
      */
     jm_vector(jm_string)* attrBuffer;
 

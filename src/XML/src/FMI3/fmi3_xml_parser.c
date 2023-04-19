@@ -822,11 +822,10 @@ int fmi3_xml_set_attr_array(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu
     return 0;
 }
 
-int fmi3_xml_alloc_parse_buffer(fmi3_xml_parser_context_t *context, size_t items) {
-
+int fmi3_xml_alloc_parse_buffer(fmi3_xml_parser_context_t* context, size_t items) {
     jm_vector(jm_voidp)* parseBuffer = &context->parseBuffer;
 
-    if(jm_vector_init(jm_voidp)(parseBuffer,items,context->callbacks) < items) {
+    if (jm_vector_init(jm_voidp)(parseBuffer,items,context->callbacks) < items) {
         fmi3_xml_parse_fatal(context, "Could not allocate buffer for parsing XML");
         return -1;
     }
@@ -838,27 +837,31 @@ void fmi3_xml_free_parse_buffer(fmi3_xml_parser_context_t *context) {
     size_t i;
     jm_vector(jm_voidp)* parseBuffer = &context->parseBuffer;
 
-    for(i=0; i < jm_vector_get_size(jm_voidp)(parseBuffer); i++) {
-        jm_vector(char) * item = jm_vector_get_item(jm_voidp)(parseBuffer,i);
-        if(item) jm_vector_free(char)(item);
+    for (i=0; i < jm_vector_get_size(jm_voidp)(parseBuffer); i++) {
+        jm_vector(char)* item = jm_vector_get_item(jm_voidp)(parseBuffer,i);
+        if (item) {
+            jm_vector_free(char)(item);
+        }
     }
     jm_vector_free_data(jm_voidp)(parseBuffer);
 }
 
-jm_vector(char) * fmi3_xml_reserve_parse_buffer(fmi3_xml_parser_context_t *context, size_t index, size_t size) {
-
+/**
+ * Take parseBuffer[index], and set its size.
+ */
+jm_vector(char)* fmi3_xml_reserve_parse_buffer(fmi3_xml_parser_context_t* context, size_t index, size_t size) {
     jm_vector(jm_voidp)* parseBuffer = &context->parseBuffer;
-    jm_vector(char) * item = jm_vector_get_item(jm_voidp)(parseBuffer,index);
-    if(!item) {
-        item = jm_vector_alloc(char)(size,size,context->callbacks);
-        jm_vector_set_item(jm_voidp)(parseBuffer,index,item);
-        if(!item) {
+    jm_vector(char)*  item = jm_vector_get_item(jm_voidp)(parseBuffer, index);
+    if (!item) {
+        item = jm_vector_alloc(char)(size, size, context->callbacks);
+        jm_vector_set_item(jm_voidp)(parseBuffer, index, item);
+        if (!item) {
             fmi3_xml_parse_fatal(context, "Could not allocate a buffer for parsing XML");
             return 0;
         }
     }
     else {
-        if(jm_vector_resize(char)(item, size) < size ) {
+        if (jm_vector_resize(char)(item, size) < size ) {
             fmi3_xml_parse_fatal(context, "Could not allocate a buffer for parsing XML");
             return 0;
         }
@@ -866,12 +869,13 @@ jm_vector(char) * fmi3_xml_reserve_parse_buffer(fmi3_xml_parser_context_t *conte
     return item;
 }
 
-jm_vector(char) * fmi3_xml_get_parse_buffer(fmi3_xml_parser_context_t *context, size_t index) {
+// XXX: Seems unused - remove? I think it was intended to serve as a way to access
+// attributes from a previous handler, but I'm not certain why we would like to do
+// that. Typically there's a way to access previously parsed elements.
+jm_vector(char)* fmi3_xml_get_parse_buffer(fmi3_xml_parser_context_t* context, size_t index) {
     jm_vector(jm_voidp)* parseBuffer = &context->parseBuffer;
-    return jm_vector_get_item(jm_voidp)(parseBuffer,index);
+    return jm_vector_get_item(jm_voidp)(parseBuffer, index);
 }
-
-
 
 int fmi3_create_attr_map(fmi3_xml_parser_context_t* context) {
     int i;
@@ -967,6 +971,10 @@ int fmi3_xml_are_same_type(fmi3_xml_elm_enu_t id1, fmi3_xml_elm_enu_t id2) {
  *  - Common management of the parser context
  *  - Error checking
  *  - Delegatation to the handler for the read element
+ *
+ * @param c    The parser context.
+ * @param elm  The element name.
+ * @param attr The attributes, given as: name=attr[i], value=attr[i+1].
  */
 static void XMLCALL fmi3_parse_element_start(void *c, const char *elm, const char **attr) {
     fmi3_xml_element_handle_map_t keyEl;

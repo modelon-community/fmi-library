@@ -179,6 +179,12 @@ jm_status_enu_t fmi3_xml_get_variable_clocks(fmi3_xml_model_description_t* md, f
 {
     fmi3_value_reference_t clockVr;
     fmi3_xml_variable_t* clockVar;
+
+    if (!v->clocks) {
+        // The variable has no clock attribute. Don't add anything to the list.
+        return jm_status_success;
+    }
+
     size_t nClocks = jm_vector_get_size(fmi3_value_reference_t)(v->clocks);
     for (size_t i = 0; i < nClocks; i++) {
         clockVr = jm_vector_get_item(fmi3_value_reference_t)(v->clocks, i);

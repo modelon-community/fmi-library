@@ -1494,7 +1494,7 @@ int fmi3_xml_handle_ClockVariable(fmi3_xml_parser_context_t* context, const char
 
         assert(!variable->type);
 
-        variable->type = fmi3_get_declared_type(context, fmi3_xml_elmID_Binary, &td->defaultBinaryType);
+        variable->type = fmi3_get_declared_type(context, fmi3_xml_elmID_Clock, &td->defaultClockType);
         if (!variable->type) return -1;
     }
     else {
@@ -1740,28 +1740,32 @@ int fmi3_xml_handle_ModelVariables(fmi3_xml_parser_context_t *context, const cha
         {
             size_t size = jm_vector_get_size(jm_named_ptr)(&md->variablesByName);
             md->variablesOrigOrder = jm_vector_alloc(jm_voidp)(size,size,md->callbacks);
-            if(md->variablesOrigOrder) {
-                size_t i;
-                for(i= 0; i < size; ++i) {
-                    jm_vector_set_item(jm_voidp)(md->variablesOrigOrder, i, jm_vector_get_item(jm_named_ptr)(&md->variablesByName,i).ptr);
-                }
+            if (!md->variablesOrigOrder) {
+                fmi3_xml_parse_fatal(context, "Could not allocate memory");
+                return -1;
+            }
+            size_t i;
+            for(i= 0; i < size; ++i) {
+                jm_vector_set_item(jm_voidp)(md->variablesOrigOrder, i, jm_vector_get_item(jm_named_ptr)(&md->variablesByName,i).ptr);
             }
         }
 
         /* sort the variables by names */
-        jm_vector_qsort(jm_named_ptr)(&md->variablesByName,jm_compare_named);
+        jm_vector_qsort(jm_named_ptr)(&md->variablesByName, jm_compare_named);
 
         /* create VR index */
         md->status = fmi3_xml_model_description_enu_ok;
         {
             size_t size = jm_vector_get_size(jm_named_ptr)(&md->variablesByName);
-            md->variablesByVR = jm_vector_alloc(jm_voidp)(size,size,md->callbacks);
-            if(md->variablesByVR) {
-                size_t i;
-                for(i= 0; i < size; ++i) {
-                    jm_vector_set_item(jm_voidp)(md->variablesByVR, i, jm_vector_get_item(jm_named_ptr)(&md->variablesByName,i).ptr);
-                }
+            md->variablesByVR = jm_vector_alloc(jm_voidp)(size, size, md->callbacks);
+            if (!md->variablesByVR) {
+                fmi3_xml_parse_fatal(context, "Could not allocate memory");
+                return -1;
             }
+            for (size_t i = 0; i < size; ++i) {
+                jm_vector_set_item(jm_voidp)(md->variablesByVR, i, jm_vector_get_item(jm_named_ptr)(&md->variablesByName, i).ptr);
+            }
+            jm_vector_qsort(jm_voidp)(md->variablesByVR, fmi3_xml_compare_vr_and_original_index);
         }
 
         /* look up actual pointers for the derivativeOf and previous fields in variablesOrigOrder */
@@ -1802,13 +1806,7 @@ int fmi3_xml_handle_ModelVariables(fmi3_xml_parser_context_t *context, const cha
         }
 
         md->status = fmi3_xml_model_description_enu_empty;
-        if(!md->variablesByVR || !md->variablesOrigOrder) {
-            fmi3_xml_parse_fatal(context, "Could not allocate memory");
-            return -1;
-        }
         varByVR = md->variablesByVR;
-        jm_vector_qsort(jm_voidp)(varByVR, fmi3_xml_compare_vr_and_original_index);
-
         numvar = jm_vector_get_size(jm_voidp)(varByVR);
 
         if(numvar > 1){

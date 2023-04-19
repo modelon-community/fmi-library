@@ -127,13 +127,12 @@ static int test_binary_all_attrs(fmi3_import_t* xml) {
     REQUIRE(fmi3_import_get_variable_vr(preBv) == 4001);
 
 
-// TODO: Doesn't work until clocks are part of variableByVR
-//    clockVars = fmi3_import_get_variable_clocks(xml, v);
-//    REQUIRE(fmi3_import_get_variable_list_size(clockVars) == 1);
-//    clockVar0 = fmi3_import_get_variable(clockVars, 0);
-//    REQUIRE(clockVar0 != nullptr);
-//    REQUIRE(fmi3_import_get_variable_vr(clockVar0) == 4002);
-//    fmi3_import_free_variable_list(clockVars);
+    clockVars = fmi3_import_get_variable_clocks(xml, v);
+    REQUIRE(fmi3_import_get_variable_list_size(clockVars) == 1);
+    clockVar0 = fmi3_import_get_variable(clockVars, 0);
+    REQUIRE(clockVar0 != nullptr);
+    REQUIRE(fmi3_import_get_variable_vr(clockVar0) == 4002);
+    fmi3_import_free_variable_list(clockVars);
 
     bv = fmi3_import_get_variable_as_binary(v);
     REQUIRE(bv != nullptr);

@@ -14,7 +14,7 @@
 */
 
 /** \file fmi3_xml_model_structure.h
-*  \brief Public interface to the FMI XML C-library. Handling of vendor annotations.
+*  \brief Public interface to the FMI XML C-library. Handling of ModelStructure.
 */
 
 #ifndef FMI3_XML_MODELSTRUCTURE_H_

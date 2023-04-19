@@ -9,11 +9,6 @@
 extern "C" {
 #endif
 
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /**
  *  TODO: Decide about naming convention for test utils functions.
  */
@@ -98,10 +93,6 @@ char* concat(char *s1, char *s2);
  */
 #define TEST_OK (1)
 #define TEST_FAIL (0)
-
-#ifdef __cplusplus
-}
-#endif
 
 #ifdef __cplusplus
 }

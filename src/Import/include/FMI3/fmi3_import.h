@@ -235,6 +235,7 @@ FMILIB_EXPORT fmi3_import_variable_t* fmi3_import_get_variable_alias_base(fmi3_i
     Get the list of all the variables aliased to the given one (including the base one).
 
     Note that the list is ordered: base variable, aliases, negated aliases.
+    Note that the caller is responsible for deallocating this list.
 */
 FMILIB_EXPORT fmi3_import_variable_list_t* fmi3_import_get_variable_aliases(fmi3_import_t* fmu,fmi3_import_variable_t*);
 

@@ -65,6 +65,7 @@ fmi3_initial_enu_t fmi3_xml_get_initial(fmi3_xml_variable_t*);
 
 fmi3_xml_variable_t* fmi3_xml_get_previous(fmi3_xml_variable_t* v);
 fmi3_boolean_t fmi3_xml_get_canHandleMultipleSetPerTimeInstant(fmi3_xml_variable_t* v);
+jm_status_enu_t fmi3_xml_get_variable_clocks(fmi3_xml_model_description_t* md, fmi3_xml_variable_t* v, jm_vector(jm_voidp)* list);
 
 fmi3_xml_enum_variable_t* fmi3_xml_get_variable_as_enum(fmi3_xml_variable_t*);
 fmi3_xml_string_variable_t* fmi3_xml_get_variable_as_string(fmi3_xml_variable_t*);
@@ -167,7 +168,6 @@ void fmi3_xml_variable_free_internals(jm_callbacks* callbacks, fmi3_xml_variable
     The list is ordered: base variable, aliases, negated aliases.
 */
 jm_status_enu_t fmi3_xml_get_variable_aliases(fmi3_xml_model_description_t* md, fmi3_xml_variable_t*, jm_vector(jm_voidp)*);
-/* fmi3_xml_variable_list_t* fmi3_xml_get_variable_aliases(fmi3_xml_model_description_t* md,fmi3_xml_variable_t*); */
 
 /**
 @}

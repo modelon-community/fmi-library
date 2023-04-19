@@ -28,6 +28,13 @@
 
 static const char* module = "FMI3XML";
 
+
+/* Define fmi3_value_reference_t vector functions */
+#define JM_TEMPLATE_INSTANCE_TYPE fmi3_value_reference_t
+#include "JM/jm_vector_template.h"
+#undef JM_TEMPLATE_INSTANCE_TYPE
+
+
 struct fmi3_xml_variable_default_values {
     fmi3_float32_t float32;
     fmi3_float64_t float64;
@@ -86,7 +93,9 @@ fmi3_xml_variable_t* fmi3_xml_get_variable_alias_base(fmi3_xml_model_description
     Return the list of all the variables aliased to the given one (including the base one.
     The list is ordered: base variable, aliases.
 */
-jm_status_enu_t fmi3_xml_get_variable_aliases(fmi3_xml_model_description_t* md,fmi3_xml_variable_t* v, jm_vector(jm_voidp)* list) {
+jm_status_enu_t fmi3_xml_get_variable_aliases(fmi3_xml_model_description_t* md, fmi3_xml_variable_t* v,
+        jm_vector(jm_voidp)* list)
+{
     fmi3_xml_variable_t key, *cur;
     fmi3_value_reference_t vr = fmi3_xml_get_variable_vr(v);
     size_t baseIndex, i, num = jm_vector_get_size(jm_voidp)(md->variablesByVR);
@@ -163,6 +172,23 @@ fmi3_xml_variable_t* fmi3_xml_get_previous(fmi3_xml_variable_t* v) {
 
 fmi3_boolean_t fmi3_xml_get_canHandleMultipleSetPerTimeInstant(fmi3_xml_variable_t* v) {
     return (fmi3_boolean_t)v->canHandleMultipleSetPerTimeInstant;
+}
+
+jm_status_enu_t fmi3_xml_get_variable_clocks(fmi3_xml_model_description_t* md, fmi3_xml_variable_t* v,
+        jm_vector(jm_voidp)* list)
+{
+    fmi3_value_reference_t clockVr;
+    fmi3_xml_variable_t* clockVar;
+    size_t nClocks = jm_vector_get_size(fmi3_value_reference_t)(v->clocks);
+    for (size_t i = 0; i < nClocks; i++) {
+        clockVr = jm_vector_get_item(fmi3_value_reference_t)(v->clocks, i);
+        clockVar = fmi3_xml_get_variable_by_vr(md, fmi3_base_type_clock, clockVr);
+        if (!jm_vector_push_back(jm_voidp)(list, clockVar)) {
+            jm_log_fatal(md->callbacks, module, "Could not allocate memory");
+            return jm_status_error;
+        }
+    }
+    return jm_status_success;
 }
 
 static fmi3_xml_float_type_props_t* fmi3_xml_get_type_props_float(fmi3_xml_float_variable_t* v) {
@@ -916,6 +942,26 @@ static int fmi3_xml_variable_process_attr_multipleset(fmi3_xml_parser_context_t*
     return 0;
 }
 
+static int fmi3_xml_variable_process_attr_clocks(fmi3_xml_parser_context_t* context,
+        fmi3_xml_variable_t* variable, fmi3_xml_elm_enu_t elm_id)
+{
+    // Attribute is optional. Avoid allocating vector unless necessary.
+    if (fmi3_xml_peek_attr_str(context, fmi_attr_id_clocks) == NULL) {
+        return 0;
+    }
+
+    variable->clocks = jm_vector_alloc(fmi3_value_reference_t)(0, 0, context->callbacks);
+    if (!variable->clocks) {
+        fmi3_xml_parse_fatal(context, "Could not allocate memory");
+        return -1;
+    }
+
+    if (fmi3_xml_parse_attr_valueref_list(context, elm_id, fmi_attr_id_clocks, 0 /* required */, variable->clocks)) {
+        return -1;
+    }
+    return 0;
+}
+
 /**
  * Common handler for Variables.
  * 
@@ -984,6 +1030,7 @@ int fmi3_xml_handle_Variable(fmi3_xml_parser_context_t* context, const char* dat
         variable->derivativeOf = 0;
         variable->previous.variable = NULL;  // Could correspond to a valid vr, why we need the 'hasPrevious' as well.
         variable->hasPrevious = false;
+        variable->clocks = NULL;
         variable->aliasKind = fmi3_variable_is_not_alias;
         variable->reinit = 0;
         variable->canHandleMultipleSetPerTimeInstant = 1;
@@ -995,6 +1042,7 @@ int fmi3_xml_handle_Variable(fmi3_xml_parser_context_t* context, const char* dat
         if (fmi3_xml_variable_process_attr_causality_variability_initial(context, variable, elm_id)) return -1;
         if (fmi3_xml_variable_process_attr_previous(context, variable, elm_id))    return -1;
         if (fmi3_xml_variable_process_attr_multipleset(context, variable, elm_id)) return -1;
+        if (fmi3_xml_variable_process_attr_clocks(context, variable, elm_id)) return -1;
     }
     else { /* end of xml tag */
         if (context->skipOneVariableFlag) {
@@ -1385,7 +1433,6 @@ int fmi3_xml_handle_BooleanVariable(fmi3_xml_parser_context_t *context, const ch
         assert(!variable->type);
 
         variable->type = fmi3_get_declared_type(context, fmi3_xml_elmID_Boolean, &td->defaultBooleanType) ;
-
         if(!variable->type) return -1;
 
         hasStart = fmi3_xml_get_has_start(context, variable);
@@ -1415,7 +1462,6 @@ int fmi3_xml_handle_BooleanVariable(fmi3_xml_parser_context_t *context, const ch
     return 0;
 }
 
-// TODO: WIP: A lot of copied code
 int fmi3_xml_handle_BinaryVariable(fmi3_xml_parser_context_t* context, const char* data) {
     if (context->skipOneVariableFlag) return 0;
     if (fmi3_xml_handle_Variable(context, data)) return -1;
@@ -1424,51 +1470,38 @@ int fmi3_xml_handle_BinaryVariable(fmi3_xml_parser_context_t* context, const cha
         fmi3_xml_model_description_t* md = context->modelDescription;
         fmi3_xml_type_definitions_t* td = &md->typeDefinitions;
         fmi3_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
-        int hasStart;
 
         assert(!variable->type);
 
         variable->type = fmi3_get_declared_type(context, fmi3_xml_elmID_Binary, &td->defaultBinaryType);
-
         if (!variable->type) return -1;
-
-        hasStart = fmi3_xml_get_has_start(context, variable);
-        if (hasStart) {
-            jm_vector(char)* bufStartStr = fmi3_xml_reserve_parse_buffer(context,1, 100);
-            size_t strlen;
-            fmi3_xml_string_variable_start_t * start;
-            if(
-                 /*   <xs:attribute name="start" type="xs:string"/> */
-                    fmi3_xml_set_attr_string(context, fmi3_xml_elmID_String, fmi_attr_id_start, 0, bufStartStr)
-                )
-                    return -1;
-            strlen = jm_vector_get_size_char(bufStartStr);
-
-            start = (fmi3_xml_string_variable_start_t*)fmi3_xml_alloc_variable_type_start(td, variable->type, sizeof(fmi3_xml_string_variable_start_t) + strlen);
-
-            if(!start) {
-                fmi3_xml_parse_fatal(context, "Could not allocate memory");
-                return -1;
-            }
-            if (strlen != 0) { /* No need to memcpy empty strings (gives assetion error) */
-                memcpy(start->start, jm_vector_get_itemp_char(bufStartStr,0), strlen);
-            }
-            start->start[strlen] = 0;
-            variable->type = &start->super;
-        } else {
-            fmi3_log_error_if_start_required(context, variable);
-        }
     }
     else {
-        /* don't do anything. might give out a warning if(data[0] != 0) */
+        // TODO: Handle start
         return 0;
     }
     return 0;
 }
 
 int fmi3_xml_handle_ClockVariable(fmi3_xml_parser_context_t* context, const char* data) {
-    // TODO
-    assert(0);
+    if (context->skipOneVariableFlag) return 0;
+    if (fmi3_xml_handle_Variable(context, data)) return -1;
+
+    if (!data) {
+        fmi3_xml_model_description_t* md = context->modelDescription;
+        fmi3_xml_type_definitions_t* td = &md->typeDefinitions;
+        fmi3_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
+
+        assert(!variable->type);
+
+        variable->type = fmi3_get_declared_type(context, fmi3_xml_elmID_Binary, &td->defaultBinaryType);
+        if (!variable->type) return -1;
+    }
+    else {
+        // TODO: Handle start
+        return 0;
+    }
+    return 0;
 }
 
 int fmi3_xml_handle_StringVariable(fmi3_xml_parser_context_t *context, const char* data) {
@@ -1484,7 +1517,6 @@ int fmi3_xml_handle_StringVariable(fmi3_xml_parser_context_t *context, const cha
         assert(!variable->type);
 
         variable->type = fmi3_get_declared_type(context, fmi3_xml_elmID_String,&td->defaultStringType) ;
-
         if(!variable->type) return -1;
 
         hasStart = fmi3_xml_get_has_start(context, variable);

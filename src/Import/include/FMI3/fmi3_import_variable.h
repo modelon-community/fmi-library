@@ -153,6 +153,14 @@ FMILIB_EXPORT fmi3_import_variable_t* fmi3_import_get_previous(fmi3_import_varia
 */
 FMILIB_EXPORT fmi3_boolean_t fmi3_import_get_canHandleMultipleSetPerTimeInstant(fmi3_import_variable_t* v);
 
+
+/** \brief Get a list of variables referenced in the 'clock' attribute.
+ *  Note that the caller is responsible for deallocating the list.
+ *
+ *  @return The array of value references.
+ */
+FMILIB_EXPORT fmi3_import_variable_list_t* fmi3_import_get_variable_clocks(fmi3_import_t* fmu, fmi3_import_variable_t* v);
+
 /** \brief Cast general variable to a one with the specific type 
 
     @return Typed object or NULL if base type does not match

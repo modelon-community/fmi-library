@@ -109,6 +109,10 @@ static int test_binary_all_attrs(fmi3_import_t* xml) {
     fmi3_import_binary_variable_t* bv;
     fmi3_import_variable_t* preBv;
     fmi3_import_variable_typedef_t* t;
+    fmi3_value_reference_t* vrs;
+    size_t nClocks;
+    fmi3_import_variable_list_t* clockVars;
+    fmi3_import_variable_t* clockVar0;
 
     REQUIRE(v != nullptr);
     REQUIRE(fmi3_import_get_variable_vr(v) == 4);
@@ -116,10 +120,20 @@ static int test_binary_all_attrs(fmi3_import_t* xml) {
     REQUIRE(fmi3_import_get_variability(v) == fmi3_variability_enu_discrete);
     REQUIRE(fmi3_import_get_initial(v) == fmi3_initial_enu_exact);
     REQUIRE(strcmp(fmi3_import_get_variable_description(v), "myDesc") == 0);
-    REQUIRE(fmi3_import_get_canHandleMultipleSetPerTimeInstant(v) == true);
+    REQUIRE(fmi3_import_get_canHandleMultipleSetPerTimeInstant(v) == true); /* default */
+
     preBv = fmi3_import_get_previous(v);
     REQUIRE(preBv != nullptr);
     REQUIRE(fmi3_import_get_variable_vr(preBv) == 4001);
+
+
+// TODO: Doesn't work until clocks are part of variableByVR
+//    clockVars = fmi3_import_get_variable_clocks(xml, v);
+//    REQUIRE(fmi3_import_get_variable_list_size(clockVars) == 1);
+//    clockVar0 = fmi3_import_get_variable(clockVars, 0);
+//    REQUIRE(clockVar0 != nullptr);
+//    REQUIRE(fmi3_import_get_variable_vr(clockVar0) == 4002);
+//    fmi3_import_free_variable_list(clockVars);
 
     bv = fmi3_import_get_variable_as_binary(v);
     REQUIRE(bv != nullptr);

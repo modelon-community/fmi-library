@@ -393,6 +393,64 @@ int fmi3_xml_set_attr_boolean(fmi3_xml_parser_context_t *context, fmi3_xml_elm_e
     return fmi3_xml_set_attr_enum(context, elmID, attrID, required, field, defaultVal, fmi_boolean_i_dMap);
 }
 
+/**
+ * Parses the given attribute as a jm_vector of value references for the element
+ * that is currently being handled.
+ * 
+ * The attributes are dynamically allocated in 'vrs', which the caller is responsible
+ * for deallocating.
+ * 
+ * This also clears the attribute from its parser buffer.
+ */
+int fmi3_xml_parse_attr_valueref_list(
+        fmi3_xml_parser_context_t* context,
+        fmi3_xml_elm_enu_t elmID,
+        fmi3_xml_attr_enu_t attrID,
+        int required,
+        jm_vector(fmi3_value_reference_t)* vrs)
+{
+    const char* attr;
+    if (fmi3_xml_get_attr_str(context, elmID, attrID, required, &attr)) {
+        return -1;
+    }
+
+    if (!attr) {
+        vrs = NULL;
+        return 0;  // Attribute was not required, or the get_attr call would've failed.
+    }
+
+    const char* cur = attr;
+    fmi3_value_reference_t vr;
+    while (*cur) {
+        char ch = *cur;
+
+        while ((ch == ' ') || (ch == '\t') || (ch == '\n') || (ch == '\r')) {
+            ch = *(++cur);
+            if (!ch) break;
+        }
+        if (!ch) break;
+
+        if (sscanf(cur, "%" SCNu32, &vr) != 1) {
+            // TODO: Improve error
+            fmi3_xml_parse_error(context, "Failed to parse attribute: %s", attr);
+            return -1;
+        }
+        // NOTE:
+        // Can't error check here that variable exists, because this function
+        // might be called before ModelVariables finished parsing.
+
+        if (!jm_vector_push_back(fmi3_value_reference_t)(vrs, vr)) {
+            fmi3_xml_parse_fatal(context, "Could not allocate memory");
+            return -1;
+        }
+
+        while ((*cur >= '0') && (*cur <= '9')) {
+            cur++;
+        }
+    }
+    return 0;
+}
+
 static void fmi3_xml_parse_error_attr(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID,
         fmi3_xml_attr_enu_t attrID, const char* strVal) {
     jm_string elmName = fmi3_element_handle_map[elmID].elementName;

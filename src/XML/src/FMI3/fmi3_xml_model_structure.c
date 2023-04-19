@@ -235,7 +235,6 @@ int fmi3_xml_handle_InitialUnknowns(fmi3_xml_parser_context_t *context, const ch
     return 0;
 }
 
-
 /**
  * Parse the dependencies of an Unknown element
  */
@@ -262,34 +261,34 @@ int fmi3_xml_parse_dependencies(fmi3_xml_parser_context_t *context,
         return 0;
     }
     if(listInd) {
-         const char* cur = listInd;
-         int ind;
-         while(*cur) {
-             char ch = *cur;
-             while((ch ==' ') || (ch == '\t') || (ch =='\n') || (ch == '\r')) {
-                 cur++; ch = *cur;
-                 if(!ch) break;
-             }
-             if(!ch) break;
-             if(sscanf(cur, "%d", &ind) != 1) {
-                 fmi3_xml_parse_error(context, "XML element 'Unknown': could not parse item %d in the list for attribute 'dependencies'",
-                     numDepInd);
-                ms->isValidFlag = 0;
-                return 0;
-             }
-             if(ind < 1) {
-                 fmi3_xml_parse_error(context, "XML element 'Unknown': item %d=%d is less than one in the list for attribute 'dependencies'",
-                     numDepInd, ind);
-                ms->isValidFlag = 0;
-                return 0;
-             }
-             if(!jm_vector_push_back(size_t)(&deps->dependencyIndex, (size_t)ind)) {
-                fmi3_xml_parse_fatal(context, "Could not allocate memory");
-                return -1;
+        const char* cur = listInd;
+        int ind;
+        while(*cur) {
+            char ch = *cur;
+            while((ch ==' ') || (ch == '\t') || (ch =='\n') || (ch == '\r')) {
+                cur++; ch = *cur;
+                if(!ch) break;
             }
-             while((*cur >= '0') && (*cur <= '9')) cur++;
-             numDepInd++;
-         }
+            if(!ch) break;
+            if(sscanf(cur, "%d", &ind) != 1) {
+                fmi3_xml_parse_error(context, "XML element 'Unknown': could not parse item %d in the list for attribute 'dependencies'",
+                    numDepInd);
+               ms->isValidFlag = 0;
+               return 0;
+            }
+            if(ind < 1) {
+                fmi3_xml_parse_error(context, "XML element 'Unknown': item %d=%d is less than one in the list for attribute 'dependencies'",
+                    numDepInd, ind);
+               ms->isValidFlag = 0;
+               return 0;
+            }
+            if(!jm_vector_push_back(size_t)(&deps->dependencyIndex, (size_t)ind)) {
+               fmi3_xml_parse_fatal(context, "Could not allocate memory");
+               return -1;
+            }
+            while((*cur >= '0') && (*cur <= '9')) cur++;
+            numDepInd++;
+        }
     }
 
     /*

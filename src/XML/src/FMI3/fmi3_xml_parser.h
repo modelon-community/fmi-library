@@ -31,6 +31,9 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+    
+
+jm_vector_declare_template(fmi3_value_reference_t)
 
 #define FMI3_XML_ATTRLIST(EXPAND_XML_ATTRNAME) \
     EXPAND_XML_ATTRNAME(fmiVersion) \
@@ -61,6 +64,7 @@ extern "C" {
     EXPAND_XML_ATTRNAME(causality) \
     EXPAND_XML_ATTRNAME(initial) \
     EXPAND_XML_ATTRNAME(previous) \
+    EXPAND_XML_ATTRNAME(clocks) \
     EXPAND_XML_ATTRNAME(canHandleMultipleSetPerTimeInstant) \
     EXPAND_XML_ATTRNAME(index) \
     EXPAND_XML_ATTRNAME(dependencies) \
@@ -373,6 +377,8 @@ int fmi3_xml_set_attr_uint64 (fmi3_xml_parser_context_t* context, fmi3_xml_elm_e
 int fmi3_xml_set_attr_uint32 (fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, int required, fmi3_uint32_t*   field, fmi3_uint32_t  defaultVal);
 int fmi3_xml_set_attr_floatXX(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, int required, void*            field, void*          defaultVal, const fmi3_xml_primitive_type_t* primType);
 int fmi3_xml_set_attr_float64(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, int required, fmi3_float64_t*  field, fmi3_float64_t defaultVal);
+
+int fmi3_xml_parse_attr_valueref_list(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, int required, jm_vector(fmi3_value_reference_t)* vrs);
 
 int fmi3_xml_is_attr_defined( fmi3_xml_parser_context_t *context, fmi3_xml_attr_enu_t attrID);
 jm_string fmi3_xml_peek_attr_str(fmi3_xml_parser_context_t* context, fmi3_xml_attr_enu_t attrID);

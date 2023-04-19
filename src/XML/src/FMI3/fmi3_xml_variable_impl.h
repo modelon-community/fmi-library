@@ -61,6 +61,9 @@ struct fmi3_xml_variable_t {
     char reinit; /** \brief Only for continuous FloatXX variables */
     char canHandleMultipleSetPerTimeInstant;
 
+    jm_vector(fmi3_value_reference_t)* clocks;   /* Vrs in the clock attribute. NULL if attribute doesn't exist. */
+
+    // TODO: Convert to pointer to save memory - most variables are not arrays
     /* array fields */
     jm_vector(fmi3_xml_dimension_t) dimensionsVector; /* stores the dimensions and their attributes */
     /*

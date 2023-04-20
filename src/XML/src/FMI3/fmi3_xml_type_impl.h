@@ -106,7 +106,8 @@ typedef enum {
      *      - TypeDefinition  (always)
      *      - Variable        (if type attribute)
      * 
-     * The next node for a _props on a TypeDefinition is always the default type.
+     * The next node for a _props on a TypeDefinition (i.e. for _typedef or _typedef._props) is always
+     * the default type.
      * 
      * The next node for a _props on a Variable is either the default type or the TypeDefinition,
      * depending on whether there was a declaredType.

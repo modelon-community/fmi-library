@@ -1357,13 +1357,11 @@ int fmi3_xml_handle_IntXXVariable(fmi3_xml_parser_context_t* context, const char
         if( hasMin || hasMax || hasQuan) {
             fmi3_xml_int_type_props_t* dtProps = 0; /* declaredType properties */
 
-            if(declaredType->structKind != fmi3_xml_type_struct_enu_typedef)
-                dtProps = (fmi3_xml_int_type_props_t*)declaredType;
-            else
+            if (declaredType->structKind == fmi3_xml_type_struct_enu_typedef)
                 dtProps = (fmi3_xml_int_type_props_t*)(declaredType->nextLayer);
+            else
+                dtProps = (fmi3_xml_int_type_props_t*)declaredType;
             assert(dtProps->super.structKind == fmi3_xml_type_struct_enu_props);
-            fmi3_xml_reserve_parse_buffer(context, 1, 0);
-            fmi3_xml_reserve_parse_buffer(context, 2, 0);
             type = fmi3_xml_parse_intXX_type_properties(context, elmID, defaultType, primType);
             if (!type) {
                 variable->type = &((fmi3_xml_int_type_props_t*)declaredType)->super; /* fallback to default */
@@ -1652,7 +1650,7 @@ fmi3_xml_enum_variable_props_t* fmi3_xml_parse_enum_properties(fmi3_xml_parser_c
 
     jm_vector(char)* bufQuantity = fmi3_xml_reserve_parse_buffer(context,3,100);
 
-    props = (fmi3_xml_enum_variable_props_t*)fmi3_xml_alloc_variable_type_props(&md->typeDefinitions,
+    props = (fmi3_xml_enum_variable_props_t*)fmi3_xml_alloc_variable_or_typedef_props(&md->typeDefinitions,
            &md->typeDefinitions.defaultEnumType.base.super, sizeof(fmi3_xml_enum_variable_props_t));
 
     if (!bufQuantity || !props || fmi3_xml_set_attr_string(context, elmID, fmi_attr_id_quantity, 0, bufQuantity))
@@ -1699,10 +1697,10 @@ int fmi3_xml_handle_EnumerationVariable(fmi3_xml_parser_context_t *context, cons
                 ) {
             fmi3_xml_enum_variable_props_t* dtProps = 0; /* declaredType properties */
 
-            if(declaredType->structKind != fmi3_xml_type_struct_enu_typedef)
-                dtProps = (fmi3_xml_enum_variable_props_t*)declaredType;
-            else
+            if (declaredType->structKind == fmi3_xml_type_struct_enu_typedef)
                 dtProps = (fmi3_xml_enum_variable_props_t*)declaredType->nextLayer;
+            else
+                dtProps = (fmi3_xml_enum_variable_props_t*)declaredType;
             assert(dtProps->super.structKind == fmi3_xml_type_struct_enu_props);
             fmi3_xml_reserve_parse_buffer(context, 1, 0);
             fmi3_xml_reserve_parse_buffer(context, 2, 0);

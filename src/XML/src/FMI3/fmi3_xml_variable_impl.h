@@ -38,7 +38,7 @@ typedef union fmi3_xml_valueref_or_variable_union_t {
 
 /* General variable type is convenient to unify all the variable list operations */
 struct fmi3_xml_variable_t {
-    fmi3_xml_variable_type_base_t* type;     /** \brief Type information of the variable, and start values, and maybe more. */
+    fmi3_xml_variable_type_base_t* type;     /** \brief Contains type-specific attributes. */
 
     const char* description;                 /** \brief Associated description */
 

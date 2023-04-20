@@ -606,7 +606,9 @@ int fmi3_xml_handle_SimpleType(fmi3_xml_parser_context_t *context, const char* d
     return 0;
 }
 
-fmi3_xml_variable_type_base_t* fmi3_xml_alloc_variable_type_props(fmi3_xml_type_definitions_t* td, fmi3_xml_variable_type_base_t* base, size_t typeSize) {
+fmi3_xml_variable_type_base_t* fmi3_xml_alloc_variable_or_typedef_props(fmi3_xml_type_definitions_t* td,
+        fmi3_xml_variable_type_base_t* base, size_t typeSize)
+{
     jm_callbacks* cb = td->typeDefinitions.callbacks;
     fmi3_xml_variable_type_base_t* type = cb->malloc(typeSize);
     if (!type) return 0;
@@ -657,7 +659,9 @@ fmi3_xml_float_type_props_t* fmi3_xml_parse_float_type_properties(fmi3_xml_parse
     jm_vector(char)* bufUnit = fmi3_xml_reserve_parse_buffer(context, 4, 100);
     jm_vector(char)* bufDispUnit = fmi3_xml_reserve_parse_buffer(context, 5, 100);
 
-    props = (fmi3_xml_float_type_props_t*)fmi3_xml_alloc_variable_type_props(&md->typeDefinitions, &defaultType->super, sizeof(fmi3_xml_float_type_props_t));
+    // XXX: Here we put in the defaultType, which means that the next node after props
+    // will be the default type. But is that really used anywhere?
+    props = (fmi3_xml_float_type_props_t*)fmi3_xml_alloc_variable_or_typedef_props(&md->typeDefinitions, &defaultType->super, sizeof(fmi3_xml_float_type_props_t));
 
     if (!bufQuantity || !bufUnit || !bufDispUnit || !props ||
             fmi3_xml_set_attr_string(context, elmID, fmi_attr_id_quantity, 0, bufQuantity) || /* <xs:attribute name="quantity" type="xs:normalizedString"/> */
@@ -744,7 +748,7 @@ fmi3_xml_int_type_props_t * fmi3_xml_parse_intXX_type_properties(fmi3_xml_parser
     jm_vector(char)* bufQuantity = fmi3_xml_reserve_parse_buffer(context, 3, 100);
     if (!bufQuantity) return 0;
 
-    props = (fmi3_xml_int_type_props_t*)fmi3_xml_alloc_variable_type_props(td, &defaultType->super, sizeof(fmi3_xml_int_type_props_t));
+    props = (fmi3_xml_int_type_props_t*)fmi3_xml_alloc_variable_or_typedef_props(td, &defaultType->super, sizeof(fmi3_xml_int_type_props_t));
     if (!props) return 0;
 
     if (fmi3_xml_set_attr_string(context, elmID, fmi_attr_id_quantity, 0, bufQuantity))
@@ -892,7 +896,7 @@ int fmi3_xml_handle_Enumeration(fmi3_xml_parser_context_t* context, const char* 
         const char * quantity = 0;
         jm_vector(char)* bufQuantity = fmi3_xml_reserve_parse_buffer(context,3,100);
 
-        props = (fmi3_xml_enum_typedef_props_t*)fmi3_xml_alloc_variable_type_props(
+        props = (fmi3_xml_enum_typedef_props_t*)fmi3_xml_alloc_variable_or_typedef_props(
                                                     &md->typeDefinitions,
                                                     &md->typeDefinitions.defaultEnumType.base.super,
                                                     sizeof(fmi3_xml_enum_typedef_props_t));

@@ -350,7 +350,7 @@ FMILIB_EXPORT const char* fmi3_import_get_string_variable_start(fmi3_import_stri
 /** \brief Get start value for the variable */
 FMILIB_EXPORT fmi3_boolean_t fmi3_import_get_boolean_variable_start(fmi3_import_bool_variable_t* v);
 /** \brief Get start value for the variable */
-FMILIB_EXPORT fmi3_binary_t fmi3_import_get_binary_variable_start(fmi3_import_binary_variable_t* v);
+FMILIB_EXPORT fmi3_binary_t fmi3_import_get_binary_variable_start(fmi3_import_binary_variable_t* v, size_t* nValues);
 /** \brief Get start value for the variable */
 FMILIB_EXPORT fmi3_clock_t fmi3_import_get_clock_variable_start(fmi3_import_clock_variable_t* v);
 

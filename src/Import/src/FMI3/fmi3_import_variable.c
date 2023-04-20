@@ -433,8 +433,8 @@ fmi3_import_binary_variable_t* fmi3_import_get_variable_as_binary(fmi3_import_va
     return fmi3_xml_get_variable_as_binary(v);
 }
 
-fmi3_binary_t fmi3_import_get_binary_variable_start(fmi3_import_binary_variable_t* v){
-    return fmi3_xml_get_binary_variable_start(v);
+fmi3_binary_t fmi3_import_get_binary_variable_start(fmi3_import_binary_variable_t* v, size_t* nValues){
+    return fmi3_xml_get_binary_variable_start(v, nValues);
 }
 
 // -----------------------------------------------------------------------------

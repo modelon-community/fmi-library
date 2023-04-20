@@ -151,7 +151,7 @@ int fmi3_xml_variable_is_array(fmi3_xml_variable_t* v) {
 }
 
 int fmi3_xml_get_variable_has_start(fmi3_xml_variable_t* v) {
-    return (v->type->structKind == fmi3_xml_type_struct_enu_start); /* TODO: the typeBaseStruct chain is ordered, update UML-like docs with the different possible variations (and commit the docs) */
+    return (v->type->structKind == fmi3_xml_type_struct_enu_start);
 }
 
 fmi3_variability_enu_t fmi3_xml_get_variability(fmi3_xml_variable_t* v) {
@@ -740,11 +740,12 @@ fmi3_xml_binary_variable_t* fmi3_xml_get_variable_as_binary(fmi3_xml_variable_t*
     return 0;
 }
 
-fmi3_binary_t fmi3_xml_get_binary_variable_start(fmi3_xml_binary_variable_t* v) {
+fmi3_binary_t fmi3_xml_get_binary_variable_start(fmi3_xml_binary_variable_t* v, size_t* nValues) {
     fmi3_xml_variable_t* vv = (fmi3_xml_variable_t*)v;
     if (fmi3_xml_get_variable_has_start(vv)) {
         fmi3_xml_binary_variable_start_t* start = (fmi3_xml_binary_variable_start_t*)(vv->type);
-        return start->start; /* TODO: mismatch with return value? */
+        *nValues = start->nStart;
+        return start->start;
     }
     return 0;
 }
@@ -1473,6 +1474,8 @@ int fmi3_xml_handle_BinaryVariable(fmi3_xml_parser_context_t* context, const cha
     if (fmi3_xml_handle_Variable(context, data)) return -1;
 
     if (!data) {
+        fmi3_xml_set_element_handle(context, "Start", FMI3_XML_ELM_ID(BinaryVariableStart));
+
         fmi3_xml_model_description_t* md = context->modelDescription;
         fmi3_xml_type_definitions_t* td = &md->typeDefinitions;
         fmi3_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
@@ -1481,10 +1484,6 @@ int fmi3_xml_handle_BinaryVariable(fmi3_xml_parser_context_t* context, const cha
 
         variable->type = fmi3_get_declared_type(context, fmi3_xml_elmID_Binary, &td->defaultBinaryType);
         if (!variable->type) return -1;
-    }
-    else {
-        // TODO: Handle start
-        return 0;
     }
     return 0;
 }
@@ -1502,10 +1501,8 @@ int fmi3_xml_handle_ClockVariable(fmi3_xml_parser_context_t* context, const char
 
         variable->type = fmi3_get_declared_type(context, fmi3_xml_elmID_Clock, &td->defaultClockType);
         if (!variable->type) return -1;
-    }
-    else {
-        // TODO: Handle start
-        return 0;
+        
+        // TODO: Give warning if start attribute? It's now in child element Start.
     }
     return 0;
 }
@@ -1554,13 +1551,86 @@ int fmi3_xml_handle_StringVariable(fmi3_xml_parser_context_t *context, const cha
     return 0;
 }
 
-int fmi3_xml_handle_BinaryStart(fmi3_xml_parser_context_t* context, const char* data) {
+/**
+ * Placeholder handler to initialize the framework.
+ * 
+ * One of the Variable type-specific handlers should always be used.
+*/
+int fmi3_xml_handle_Start(fmi3_xml_parser_context_t* context, const char* data) {
+    assert(0);
+    return 0;
+}
+
+/**
+ * Scans a hexstring to a bytearray.
+ *
+ * @param hexstr The input string to scan.
+ * @param bytearr (Output arg.) A buffer which must be able to fit the scanned bytes.
+*/
+static int fmi3_xml_hexstring_to_bytearray(fmi3_xml_parser_context_t* context, const char* hexstr, uint8_t* bytearr) {
+    size_t len = strlen(hexstr);
+    if (len % 2 != 0) {
+        // Note: 2 hexadecimal characters represent 1 byte.
+        fmi3_xml_parse_error(context, "Hexadecimal string is not of even length: %s", hexstr);
+        // TODO: Or just warning and pad with trailing '0'?
+        return -1;
+    }
+
+    const char* pos = hexstr;
+    size_t nByte = len / 2;
+    for (size_t i = 0; i < nByte; i++) {
+        for (size_t j = 0; j <= 1; j++) {
+            char ch = pos[j];
+            if (!((ch >= '0' && ch <= '9') || (ch >= 'a' && ch <= 'f') || (ch >= 'A' && ch <= 'F'))) {
+                fmi3_xml_parse_error(context, "String is not hexadecimal: %s", hexstr);
+                return -1;
+            }
+        }
+        if (!sscanf(pos, "%2hhx", &bytearr[i])) {
+            fmi3_xml_parse_error(context, "Failure when scanning hexadecimal string: %s", hexstr);
+            return -1;
+        }
+        pos += 2;
+    }
+    return 0;
+}
+
+int fmi3_xml_handle_BinaryVariableStart(fmi3_xml_parser_context_t* context, const char* data) {
     if (!data) {
         fmi3_xml_model_description_t* md = context->modelDescription;
+        fmi3_xml_type_definitions_t* td = &md->typeDefinitions;
         fmi3_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
 
-    } else {
-        // Do nothing
+        jm_vector(char)* bufStartStr = fmi3_xml_reserve_parse_buffer(context, 1, 100);
+        if (fmi3_xml_set_attr_string(context, fmi3_xml_elmID_BinaryVariableStart, fmi_attr_id_value, 0, bufStartStr)) {
+            return -1;
+        }
+
+        // Add a start object to the top of the variable's type list:
+        fmi3_xml_binary_variable_start_t* startObj;
+        size_t len = jm_vector_get_size(char)(bufStartStr);
+        if (len == 0) {
+            fmi3_xml_parse_error(context, "Empty value attribute in Start element");
+            return -1;
+        }
+        if (len % 2 != 0) {
+            // 2 hexadecimal chars per byte. This is also checked in the conversion, but if this happens
+            // and we want to handle it, then we must allocate extra size to take into account padding of
+            // the final char.
+            return -1;
+        }
+        size_t arrSize = len / 2;  
+        size_t totSize = sizeof(fmi3_xml_binary_variable_start_t) + arrSize;
+        startObj = (fmi3_xml_binary_variable_start_t*)fmi3_xml_alloc_variable_type_start(td, variable->type, totSize);
+        if (!startObj) {
+            fmi3_xml_parse_fatal(context, "Could not allocate memory");
+            return -1;
+        }
+        startObj->nStart = arrSize;
+        if (fmi3_xml_hexstring_to_bytearray(context, jm_vector_get_itemp(char)(bufStartStr, 0), startObj->start)) {
+            return -1;
+        }
+        variable->type = &startObj->super;
     }
     return 0;
 }

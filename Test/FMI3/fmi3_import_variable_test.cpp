@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdint.h>
 
 #include "fmilib.h"
 #include "config_test.h"
@@ -10,7 +11,7 @@
 
 /* Parse enum variable with minimal specified information. Tests defaults. */
 static void test_enum_default_attrs(fmi3_import_t* xml) {
-    fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "defaultEnumVar");
+    fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "enumDefault");
     fmi3_import_enum_variable_t* ev;
     fmi3_import_variable_typedef_t* t;
     fmi3_import_enumeration_typedef_t* et;
@@ -42,7 +43,7 @@ static void test_enum_default_attrs(fmi3_import_t* xml) {
 
 /* Parse enum variable with all information specified */
 static void test_enum_all_attrs(fmi3_import_t* xml) {
-    fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "allAttrsEnumVar");
+    fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "enumAllAttr");
     fmi3_import_enum_variable_t* ev;
     fmi3_import_variable_typedef_t* t;
     fmi3_import_enumeration_typedef_t* et;
@@ -76,7 +77,7 @@ static void test_enum_all_attrs(fmi3_import_t* xml) {
  * Tests parsing a Binary variable with default attributes.
  */
 static void test_binary_default_attrs(fmi3_import_t* xml) {
-    fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "defaultBinaryVar");
+    fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "binaryDefault");
     fmi3_import_binary_variable_t* bv;
     fmi3_import_variable_typedef_t* t;
     fmi3_import_variable_list_t* clockVars;
@@ -103,7 +104,7 @@ static void test_binary_default_attrs(fmi3_import_t* xml) {
  * Tests parsing a Binary variable with all attributes set
  */
 static void test_binary_all_attrs(fmi3_import_t* xml) {
-    fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "allAttrsBinaryVar");
+    fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "binaryAllAttr");
     fmi3_import_binary_variable_t* bv;
     fmi3_import_variable_t* preBv;
     fmi3_import_variable_typedef_t* t;
@@ -134,6 +135,34 @@ static void test_binary_all_attrs(fmi3_import_t* xml) {
 
     t = fmi3_import_get_variable_declared_type(v);
     REQUIRE(t == nullptr);  // No declared type
+}
+
+/**
+ * Test parsing a Binary with a Start element.
+ */
+static void test_binary_start_value(fmi3_import_t* xml) {
+    fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "binaryStart");
+    fmi3_import_binary_variable_t* bv;
+    fmi3_import_variable_t* preBv;
+    fmi3_import_variable_typedef_t* t;
+    fmi3_import_variable_list_t* clockVars;
+    fmi3_import_variable_t* cv;
+
+    REQUIRE(v != nullptr);
+    bv = fmi3_import_get_variable_as_binary(v);
+    REQUIRE(bv != nullptr);
+    
+    size_t nValues;
+    fmi3_binary_t bytes = fmi3_import_get_binary_variable_start(bv, &nValues);
+    REQUIRE(nValues == 8);
+    REQUIRE(bytes[0] == 0x00U);
+    REQUIRE(bytes[1] == 0x11U);
+    REQUIRE(bytes[2] == 0xBBU);
+    REQUIRE(bytes[3] == 0xffU);
+    REQUIRE(bytes[4] == 0x02U);
+    REQUIRE(bytes[5] == 0x9eU);
+    REQUIRE(bytes[6] == 0xE4U);
+    REQUIRE(bytes[7] == 0xCdU);
 }
 
 /**
@@ -174,6 +203,9 @@ TEST_CASE("Variable parsing", "[xml_variables]") {
     }
     SECTION("Binary: parse all attributes") {
         test_binary_all_attrs(xml);
+    }
+    SECTION("Binary: parse Start element and value") {
+        test_binary_start_value(xml);
     }
 
     SECTION("ClockAttr: multiple values") {

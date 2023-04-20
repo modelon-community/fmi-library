@@ -186,7 +186,8 @@ typedef struct fmi3_xml_string_variable_start_t {
 
 typedef struct fmi3_xml_binary_variable_start_t {
     fmi3_xml_variable_type_base_t super;
-    fmi3_uint8_t start[1]; /* XXX: Why array instead of ptr? */
+    size_t nStart;
+    fmi3_uint8_t start[1]; /* NOTE: Can be longer than 1. Memory can be allocated outside of struct boundary. */
 } fmi3_xml_binary_variable_start_t;
 
 typedef struct fmi3_xml_clock_variable_start_t {

@@ -617,8 +617,20 @@ fmi3_xml_variable_type_base_t* fmi3_xml_alloc_variable_type_props(fmi3_xml_type_
     return type;
 }
 
-/* Adds a new type_base_start layer over the type_base_XX given in arg 'base' */
-fmi3_xml_variable_type_base_t* fmi3_xml_alloc_variable_type_start(fmi3_xml_type_definitions_t* td, fmi3_xml_variable_type_base_t* base, size_t typeSize) {
+/**
+ * Adds a new start object on top of the list-node given in parameter 'base'.
+ * 
+ * Generic for all struct kinds (float, int, ...), i.e. the caller needs to typecast to the
+ * correct type and make sure that enough memory is given via parameter 'typeSize'.
+ *
+ * @param td
+ * @param base The current top of the type_base_t list. The new top will be the new start_t object.
+ * @param typeSize The total size of memory for the start_t object. Typically the size of the start_t struct
+ *                 plus memory for the actual start value, if the value is variable-size.
+ */
+fmi3_xml_variable_type_base_t* fmi3_xml_alloc_variable_type_start(fmi3_xml_type_definitions_t* td,
+        fmi3_xml_variable_type_base_t* base, size_t typeSize)
+{
     jm_callbacks* cb = td->typeDefinitions.callbacks;
 
     fmi3_xml_variable_type_base_t* start = cb->malloc(typeSize);

@@ -143,7 +143,8 @@ typedef enum fmi3_xml_attr_enu_t {
     EXPAND_XML_ELMNAME(Derivatives) \
     EXPAND_XML_ELMNAME(DiscreteStates) \
     EXPAND_XML_ELMNAME(InitialUnknowns) \
-    EXPAND_XML_ELMNAME(Unknown)
+    EXPAND_XML_ELMNAME(Unknown) \
+    EXPAND_XML_ELMNAME(Start)
 
 
 /** \brief Element that can be placed under different parents get alternative names from the info struct */
@@ -162,7 +163,8 @@ typedef enum fmi3_xml_attr_enu_t {
     EXPAND_XML_ELMNAME(BinaryVariable) \
     EXPAND_XML_ELMNAME(ClockVariable) \
     EXPAND_XML_ELMNAME(StringVariable) \
-    EXPAND_XML_ELMNAME(EnumerationVariable)  \
+    EXPAND_XML_ELMNAME(EnumerationVariable) \
+    EXPAND_XML_ELMNAME(BinaryVariableStart) \
     EXPAND_XML_ELMNAME(VariableTool) \
     EXPAND_XML_ELMNAME(SourceFilesCS) \
     EXPAND_XML_ELMNAME(FileCS) \

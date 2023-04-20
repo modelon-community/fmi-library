@@ -32,22 +32,25 @@
 
 <ModelVariables>
   <!-- Enum variables -->
-  <Enumeration name="defaultEnumVar"  valueReference="1" declaredType="MyEnum"/>
-  <Enumeration name="allAttrsEnumVar" valueReference="2" variability="discrete"
+  <Enumeration name="enumDefault"  valueReference="1" declaredType="MyEnum"/>
+  <Enumeration name="enumAllAttr" valueReference="2" variability="discrete"
                declaredType="MyEnum" causality="output" initial="exact"
                description="myDescription" quantity="enumerationQuantity"
                min="1" max="2" start="2"/>
 
   <!-- Binary variables -->
-  <Binary name="defaultBinaryVar" valueReference="3"/>
-  <Binary name="allAttrsBinaryVar" valueReference="4" variability="discrete"
+  <Binary name="binaryDefault" valueReference="3"/>
+  <Binary name="binaryAllAttr" valueReference="4" variability="discrete"
           causality="output" initial="exact" description="myDesc"
           previous="4001" clocks="4002" start="0"/>
-    <!-- TODO: Start value="0aE0f30"/ -->
-  <!-- /Binary -->
   <!-- Variables referenced in attributes: -->
   <Binary name="preBinary" valueReference="4001"/>
   <Clock name="clocks4" valueReference="4002"/>
+
+  <!-- Binary Start element -->
+  <Binary name="binaryStart" valueReference="5">
+    <Start value="0011BBff029eE4Cd"/>
+  </Binary>
   
 
   <!-- Clock attribute: Multiple clock value refs -->

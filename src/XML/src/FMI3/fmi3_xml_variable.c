@@ -740,11 +740,19 @@ fmi3_xml_binary_variable_t* fmi3_xml_get_variable_as_binary(fmi3_xml_variable_t*
     return 0;
 }
 
-fmi3_binary_t fmi3_xml_get_binary_variable_start(fmi3_xml_binary_variable_t* v, size_t* nValues) {
+size_t fmi3_xml_get_binary_variable_start_length(fmi3_xml_binary_variable_t* v) {
     fmi3_xml_variable_t* vv = (fmi3_xml_variable_t*)v;
     if (fmi3_xml_get_variable_has_start(vv)) {
         fmi3_xml_binary_variable_start_t* start = (fmi3_xml_binary_variable_start_t*)(vv->type);
-        *nValues = start->nStart;
+        return start->nStart;
+    }
+    return 0;
+}
+
+fmi3_binary_t fmi3_xml_get_binary_variable_start(fmi3_xml_binary_variable_t* v) {
+    fmi3_xml_variable_t* vv = (fmi3_xml_variable_t*)v;
+    if (fmi3_xml_get_variable_has_start(vv)) {
+        fmi3_xml_binary_variable_start_t* start = (fmi3_xml_binary_variable_start_t*)(vv->type);
         return start->start;
     }
     return 0;

@@ -152,9 +152,9 @@ static void test_binary_start_value(fmi3_import_t* xml) {
     bv = fmi3_import_get_variable_as_binary(v);
     REQUIRE(bv != nullptr);
     
-    size_t nValues;
-    fmi3_binary_t bytes = fmi3_import_get_binary_variable_start(bv, &nValues);
-    REQUIRE(nValues == 8);
+    size_t nBytes       = fmi3_import_get_binary_variable_start_length(bv);
+    fmi3_binary_t bytes = fmi3_import_get_binary_variable_start(bv);
+    REQUIRE(nBytes == 8);
     REQUIRE(bytes[0] == 0x00U);
     REQUIRE(bytes[1] == 0x11U);
     REQUIRE(bytes[2] == 0xBBU);

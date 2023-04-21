@@ -130,6 +130,18 @@ target_link_libraries(fmi3_variable_bad_variability_causality_test ${FMILIBFORTE
 add_executable(fmi3_enum_test ${FMIL_TEST_DIR}/FMI3/fmi3_enum_test.c)
 target_link_libraries(fmi3_enum_test ${FMILIBFORTEST})
 
+# Test: fmi3_capi_basic_test
+add_executable(fmi3_capi_basic_test
+    ${FMIL_TEST_DIR}/FMI3/fmi3_capi_basic_test.cpp)
+target_include_directories(fmi3_capi_basic_test
+    PUBLIC
+    ${FMIIMPORTDIR}/src)
+target_link_libraries(fmi3_capi_basic_test
+    PUBLIC
+    Catch
+    ${FMILIBFORTEST})
+add_test(ctest_fmi3_capi_basic_test fmi3_capi_basic_test)
+
 set_target_properties(
     fmi3_xml_parsing_test
     fmi3_import_xml_test
@@ -196,5 +208,6 @@ if(FMILIB_BUILD_BEFORE_TESTS)
         ctest_fmi3_import_default_experiment_test
         ctest_fmi3_enum_test
         ctest_fmi3_variable_bad_variability_causality_test
+        ctest_fmi3_capi_basic_test
         PROPERTIES DEPENDS ctest_build_all)
 endif()

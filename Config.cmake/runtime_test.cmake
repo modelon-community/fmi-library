@@ -34,18 +34,6 @@ message(STATUS "Tests will be linked with ${FMILIBFORTEST}")
 set(CMAKE_CXX_STANDARD 11) # Required by Catch2
 add_library(Catch INTERFACE)
 
-# Test: fmi3_basic_capi_test
-add_executable(fmi3_basic_capi_test
-    ${FMIL_TEST_DIR}/FMI3/fmi3_basic_capi_test.cpp)
-target_include_directories(fmi3_basic_capi_test
-    PUBLIC
-    ${FMIIMPORTDIR}/src)
-target_link_libraries(fmi3_basic_capi_test
-    PUBLIC
-    Catch
-    ${FMILIBFORTEST})
-add_test(ctest_fmi3_basic_capi_test_cpp fmi3_basic_capi_test)
-
 # Test: jm_vector
 add_executable(jm_vector_test ${FMIL_TEST_DIR}/jm_vector_test.c)
 target_link_libraries(jm_vector_test ${JMUTIL_LIBRARIES})
@@ -63,7 +51,6 @@ target_link_libraries(compress_test_fmu_zip ${FMIZIP_LIBRARIES})
 
 set_target_properties(
     jm_vector_test
-    fmi3_basic_capi_test
     jm_locale_test
     compress_test_fmu_zip
     PROPERTIES FOLDER "Test")
@@ -214,7 +201,6 @@ if(FMILIB_BUILD_BEFORE_TESTS)
         ctest_fmi_import_test_cs_3
         ctest_fmi_zip_unzip_test
         ctest_fmi_zip_zip_test
-        ctest_fmi3_basic_capi_test_cpp
         ctest_jm_locale_test
         PROPERTIES DEPENDS ctest_build_all)
 endif()

@@ -349,8 +349,6 @@ FMILIB_EXPORT const char* fmi3_import_get_string_variable_start(fmi3_import_stri
 
 /** \brief Get start value for the variable */
 FMILIB_EXPORT fmi3_boolean_t fmi3_import_get_boolean_variable_start(fmi3_import_bool_variable_t* v);
-/** \brief Get start value for the variable */
-FMILIB_EXPORT fmi3_clock_t fmi3_import_get_clock_variable_start(fmi3_import_clock_variable_t* v);
 
 /** \brief Get "quantity" attribute if defined, else NULL-pointer. */
 FMILIB_EXPORT fmi3_string_t fmi3_import_get_int64_variable_quantity(fmi3_import_int64_variable_t * v);
@@ -438,6 +436,24 @@ FMILIB_EXPORT fmi3_string_t fmi3_import_get_binary_variable_mime_type(fmi3_impor
 /** \brief Get maxSize for the variable */
 FMILIB_EXPORT size_t fmi3_import_get_binary_variable_max_size(fmi3_import_binary_variable_t* v);
 
+/** \brief Get canBeDeactivated for the variable */
+FMILIB_EXPORT fmi3_boolean_t fmi3_import_get_clock_variable_can_be_deactivated(fmi3_import_clock_variable_t* v);
+/** \brief Get priority for the variable */
+FMILIB_EXPORT fmi3_uint32_t fmi3_import_get_clock_variable_priority(fmi3_import_clock_variable_t* v);
+/** \brief Get intervalVariability for the variable */
+FMILIB_EXPORT fmi3_interval_variability_enu_t fmi3_import_get_clock_variable_interval_variability(fmi3_import_clock_variable_t* v);
+/** \brief Get intervalDecimal for the variable */
+FMILIB_EXPORT fmi3_float32_t fmi3_import_get_clock_variable_interval_decimal(fmi3_import_clock_variable_t* v);
+/** \brief Get shiftDecimal for the variable */
+FMILIB_EXPORT fmi3_float32_t fmi3_import_get_clock_variable_shift_decimal(fmi3_import_clock_variable_t* v);
+/** \brief Get supportsFraction for the variable */
+FMILIB_EXPORT fmi3_boolean_t fmi3_import_get_clock_variable_supports_fraction(fmi3_import_clock_variable_t* v);
+/** \brief Get resolution for the variable */
+FMILIB_EXPORT fmi3_uint64_t fmi3_import_get_clock_variable_resolution(fmi3_import_clock_variable_t* v);
+/** \brief Get intervalCounter for the variable */
+FMILIB_EXPORT fmi3_uint64_t fmi3_import_get_clock_variable_interval_counter(fmi3_import_clock_variable_t* v);
+/** \brief Get shiftCounter for the variable */
+FMILIB_EXPORT fmi3_uint64_t fmi3_import_get_clock_variable_shift_counter(fmi3_import_clock_variable_t* v);
 
 /** \brief Get the variable alias kind*/
 FMILIB_EXPORT fmi3_variable_alias_kind_enu_t fmi3_import_get_variable_alias_kind(fmi3_import_variable_t*);

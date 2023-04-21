@@ -207,6 +207,45 @@ static void test_clock_attr_multi_value(fmi3_import_t* xml) {
     fmi3_import_free_variable_list(clockVars);
 }
 
+/**
+ * Tests parsing a Clock variable with default attributes.
+ */
+static void test_clock_default_attrs(fmi3_import_t* xml) {
+    fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "clockDefault");
+    fmi3_import_clock_variable_t* cv;
+    fmi3_import_variable_typedef_t* t;
+    fmi3_import_variable_list_t* clockVars;
+
+    REQUIRE(v != nullptr);
+    REQUIRE(fmi3_import_get_variable_description(v) == nullptr);
+    REQUIRE(fmi3_import_get_causality(v) == fmi3_causality_enu_local);
+    REQUIRE(fmi3_import_get_variability(v) == fmi3_variability_enu_discrete);
+    REQUIRE(fmi3_import_get_initial(v) == fmi3_initial_enu_calculated);  // Depends on causality and variability
+
+    clockVars = fmi3_import_get_variable_clocks(xml, v);
+    REQUIRE(fmi3_import_get_variable_list_size(clockVars) == 0);
+    fmi3_import_free_variable_list(clockVars);
+
+    cv = fmi3_import_get_variable_as_clock(v);
+    REQUIRE(cv != nullptr);
+
+    // Type specific attributes:
+     REQUIRE(fmi3_import_get_clock_variable_can_be_deactivated(cv)   == false);
+     REQUIRE(fmi3_import_get_clock_variable_priority(cv)             == 0);
+//     REQUIRE(fmi3_import_get_clock_variable_interval_variability(cv) == fmi3_interval_variability_constant);  // In XML
+     REQUIRE(fmi3_import_get_clock_variable_interval_decimal(cv)     == 0.0);
+     REQUIRE(fmi3_import_get_clock_variable_shift_decimal(cv)        == 0.0);
+     REQUIRE(fmi3_import_get_clock_variable_supports_fraction(cv)    == false);
+     REQUIRE(fmi3_import_get_clock_variable_resolution(cv)           == 0);
+     REQUIRE(fmi3_import_get_clock_variable_interval_counter(cv)     == 0);
+     REQUIRE(fmi3_import_get_clock_variable_shift_counter(cv)        == 0);
+     
+     // TODO: Test interval_variability not set.
+
+    t = fmi3_import_get_variable_declared_type(v);
+    REQUIRE(t == nullptr);  // No declared type
+}
+
 TEST_CASE("Variable parsing", "[xml_variables]") {
     const char* xmldir = FMI3_TEST_XML_DIR "/variable_test";
 
@@ -232,6 +271,11 @@ TEST_CASE("Variable parsing", "[xml_variables]") {
     SECTION("Binary: parse Start element and value") {
         test_binary_start_value(xml);
     }
+
+    SECTION("Clock: parse default attributes") {
+        test_clock_default_attrs(xml);
+    }
+    
 
     SECTION("ClockAttr: multiple values") {
         test_clock_attr_multi_value(xml);

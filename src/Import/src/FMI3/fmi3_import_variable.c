@@ -457,9 +457,42 @@ fmi3_import_clock_variable_t* fmi3_import_get_variable_as_clock(fmi3_import_vari
     return fmi3_xml_get_variable_as_clock(v);
 }
 
-fmi3_clock_t fmi3_import_get_clock_variable_start(fmi3_import_clock_variable_t* v){
-    return fmi3_xml_get_clock_variable_start(v);
+fmi3_boolean_t fmi3_import_get_clock_variable_can_be_deactivated(fmi3_import_clock_variable_t* v) {
+    return fmi3_xml_get_clock_variable_can_be_deactivated(v);
 }
+
+fmi3_uint32_t fmi3_import_get_clock_variable_priority(fmi3_import_clock_variable_t* v) {
+    return fmi3_xml_get_clock_variable_priority(v);
+}
+
+fmi3_interval_variability_enu_t fmi3_import_get_clock_variable_interval_variability(fmi3_import_clock_variable_t* v) {
+    return fmi3_xml_get_clock_variable_interval_variability(v);
+} 
+
+fmi3_float32_t fmi3_import_get_clock_variable_interval_decimal(fmi3_import_clock_variable_t* v) {
+    return fmi3_xml_get_clock_variable_interval_decimal(v);
+}
+
+fmi3_float32_t fmi3_import_get_clock_variable_shift_decimal(fmi3_import_clock_variable_t* v) {
+    return fmi3_xml_get_clock_variable_shift_decimal(v);
+}
+
+fmi3_boolean_t fmi3_import_get_clock_variable_supports_fraction(fmi3_import_clock_variable_t* v) {
+    return fmi3_xml_get_clock_variable_supports_fraction(v);
+}
+
+fmi3_uint64_t fmi3_import_get_clock_variable_resolution(fmi3_import_clock_variable_t* v) {
+    return fmi3_xml_get_clock_variable_resolution(v);
+}
+
+fmi3_uint64_t fmi3_import_get_clock_variable_interval_counter(fmi3_import_clock_variable_t* v) {
+    return fmi3_xml_get_clock_variable_interval_counter(v);
+}
+
+fmi3_uint64_t fmi3_import_get_clock_variable_shift_counter(fmi3_import_clock_variable_t* v) {
+    return fmi3_xml_get_clock_variable_shift_counter(v);
+}
+
 
 // -----------------------------------------------------------------------------
 // Enum

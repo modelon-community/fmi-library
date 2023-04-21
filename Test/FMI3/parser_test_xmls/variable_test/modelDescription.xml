@@ -51,6 +51,9 @@
   <Binary name="binaryStart" valueReference="5">
     <Start value="0011BBff029eE4Cd"/>
   </Binary>
+
+  <!-- Clock variables -->
+  <Clock name="clockDefault" valueReference="6" intervalVariability="constant"/>
   
 
   <!-- Binary with empty mimeType-->

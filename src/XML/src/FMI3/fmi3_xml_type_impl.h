@@ -209,9 +209,22 @@ typedef struct fmi3_xml_binary_type_props_t {
     size_t maxSize;
 } fmi3_xml_binary_type_props_t;
 
+typedef struct fmi3_xml_clock_type_props_t {
+    fmi3_xml_variable_type_base_t super;
+
+    fmi3_boolean_t canBeDeactivated;
+    fmi3_boolean_t supportsFraction;
+    fmi3_boolean_t resolution;
+    fmi3_interval_variability_enu_t intervalVariability;
+    fmi3_uint32_t  priority;
+    fmi3_uint64_t  intervalCounter;
+    fmi3_uint64_t  shiftCounter;
+    fmi3_float32_t intervalDecimal;
+    fmi3_float32_t shiftDecimal;
+} fmi3_xml_clock_type_props_t;
+
 typedef fmi3_xml_variable_type_base_t fmi3_xml_string_type_props_t;
 typedef fmi3_xml_variable_type_base_t fmi3_xml_bool_type_props_t;
-typedef fmi3_xml_variable_type_base_t fmi3_xml_clock_type_props_t;
 
 // ----------------------------------------------------------------------------
 // Start
@@ -237,11 +250,6 @@ typedef struct fmi3_xml_binary_variable_start_t {
     size_t nStart;
     fmi3_uint8_t start[1]; /* NOTE: Can be longer than 1. Memory can be allocated outside of struct boundary. */
 } fmi3_xml_binary_variable_start_t;
-
-typedef struct fmi3_xml_clock_variable_start_t {
-    fmi3_xml_variable_type_base_t super;
-    fmi3_clock_t start;
-} fmi3_xml_clock_variable_start_t;
 
 // ----------------------------------------------------------------------------
 

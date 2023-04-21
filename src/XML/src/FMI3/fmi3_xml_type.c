@@ -467,6 +467,19 @@ void fmi3_xml_init_binary_type_properties(fmi3_xml_binary_type_props_t* type) {
     type->maxSize = 0;
 }
 
+void fmi3_xml_init_clock_type_properties(fmi3_xml_clock_type_props_t* type) {
+    fmi3_xml_init_variable_type_base(&type->super, fmi3_xml_type_struct_enu_props, fmi3_base_type_clock);
+    type->canBeDeactivated      = false;
+    type->supportsFraction      = false;
+    type->resolution            = 0;
+    type->priority              = 0;
+    type->intervalVariability   = fmi3_interval_variability_unknown;
+    type->intervalCounter       = 0;
+    type->shiftCounter          = 0;
+    type->intervalDecimal       = 0.0;
+    type->shiftDecimal          = 0.0;
+}
+
 void fmi3_xml_init_enumeration_variable_properties(fmi3_xml_enum_variable_props_t* type, jm_callbacks* cb) {
     fmi3_xml_init_variable_type_base(&type->super, fmi3_xml_type_struct_enu_props, fmi3_base_type_enum);
     type->quantity = 0;
@@ -501,9 +514,9 @@ void fmi3_xml_init_type_definitions(fmi3_xml_type_definitions_t* td, jm_callback
     fmi3_xml_init_uint16_type_properties(&td->defaultUInt16Type);
     fmi3_xml_init_uint8_type_properties(&td->defaultUInt8Type);
     fmi3_xml_init_binary_type_properties(&td->defaultBinaryType);
+    fmi3_xml_init_clock_type_properties(&td->defaultClockType);
 
     fmi3_xml_init_variable_type_base(&td->defaultBooleanType, fmi3_xml_type_struct_enu_props, fmi3_base_type_bool);
-    fmi3_xml_init_variable_type_base(&td->defaultClockType,   fmi3_xml_type_struct_enu_props, fmi3_base_type_clock);
     fmi3_xml_init_variable_type_base(&td->defaultStringType,  fmi3_xml_type_struct_enu_props, fmi3_base_type_str);
 
     td->typePropsList = 0;

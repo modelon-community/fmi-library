@@ -781,13 +781,58 @@ fmi3_xml_clock_variable_t* fmi3_xml_get_variable_as_clock(fmi3_xml_variable_t* v
     return NULL;
 }
 
-fmi3_clock_t fmi3_xml_get_clock_variable_start(fmi3_xml_clock_variable_t* v) {
+fmi3_boolean_t fmi3_xml_get_clock_variable_can_be_deactivated(fmi3_xml_clock_variable_t* v) {
     fmi3_xml_variable_t* vv = (fmi3_xml_variable_t*)v;
-    if (fmi3_xml_get_variable_has_start(vv)) {
-        fmi3_xml_clock_variable_start_t* start = (fmi3_xml_clock_variable_start_t*)(vv->type);
-        return start->start;
-    }
-    return 0;
+    fmi3_xml_clock_type_props_t* props = (fmi3_xml_clock_type_props_t*)fmi3_xml_find_type_props(vv->type);
+    return props->canBeDeactivated;
+}
+
+fmi3_uint32_t fmi3_xml_get_clock_variable_priority(fmi3_xml_clock_variable_t* v) {
+    fmi3_xml_variable_t* vv = (fmi3_xml_variable_t*)v;
+    fmi3_xml_clock_type_props_t* props = (fmi3_xml_clock_type_props_t*)fmi3_xml_find_type_props(vv->type);
+    return props->priority;
+}
+
+fmi3_interval_variability_enu_t fmi3_xml_get_clock_variable_interval_variability(fmi3_xml_clock_variable_t* v) {
+    fmi3_xml_variable_t* vv = (fmi3_xml_variable_t*)v;
+    fmi3_xml_clock_type_props_t* props = (fmi3_xml_clock_type_props_t*)fmi3_xml_find_type_props(vv->type);
+    return props->intervalVariability;
+}
+
+fmi3_float32_t fmi3_xml_get_clock_variable_interval_decimal(fmi3_xml_clock_variable_t* v) {
+    fmi3_xml_variable_t* vv = (fmi3_xml_variable_t*)v;
+    fmi3_xml_clock_type_props_t* props = (fmi3_xml_clock_type_props_t*)fmi3_xml_find_type_props(vv->type);
+    return props->intervalDecimal;
+}
+
+fmi3_float32_t fmi3_xml_get_clock_variable_shift_decimal(fmi3_xml_clock_variable_t* v) {
+    fmi3_xml_variable_t* vv = (fmi3_xml_variable_t*)v;
+    fmi3_xml_clock_type_props_t* props = (fmi3_xml_clock_type_props_t*)fmi3_xml_find_type_props(vv->type);
+    return props->shiftDecimal;
+}
+
+fmi3_boolean_t fmi3_xml_get_clock_variable_supports_fraction(fmi3_xml_clock_variable_t* v) {
+    fmi3_xml_variable_t* vv = (fmi3_xml_variable_t*)v;
+    fmi3_xml_clock_type_props_t* props = (fmi3_xml_clock_type_props_t*)fmi3_xml_find_type_props(vv->type);
+    return props->supportsFraction;
+}
+
+fmi3_uint64_t fmi3_xml_get_clock_variable_resolution(fmi3_xml_clock_variable_t* v) {
+    fmi3_xml_variable_t* vv = (fmi3_xml_variable_t*)v;
+    fmi3_xml_clock_type_props_t* props = (fmi3_xml_clock_type_props_t*)fmi3_xml_find_type_props(vv->type);
+    return props->resolution;
+}
+
+fmi3_uint64_t fmi3_xml_get_clock_variable_interval_counter(fmi3_xml_clock_variable_t* v) {
+    fmi3_xml_variable_t* vv = (fmi3_xml_variable_t*)v;
+    fmi3_xml_clock_type_props_t* props = (fmi3_xml_clock_type_props_t*)fmi3_xml_find_type_props(vv->type);
+    return props->intervalCounter;
+}
+
+fmi3_uint64_t fmi3_xml_get_clock_variable_shift_counter(fmi3_xml_clock_variable_t* v) {
+    fmi3_xml_variable_t* vv = (fmi3_xml_variable_t*)v;
+    fmi3_xml_clock_type_props_t* props = (fmi3_xml_clock_type_props_t*)fmi3_xml_find_type_props(vv->type);
+    return props->shiftCounter;
 }
 
 // -----------------------------------------------------------------------------
@@ -1564,11 +1609,8 @@ int fmi3_xml_handle_ClockVariable(fmi3_xml_parser_context_t* context, const char
         fmi3_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
 
         assert(!variable->type);
-
-        variable->type = fmi3_parse_declared_type_attr(context, fmi3_xml_elmID_Clock, &td->defaultClockType);
+        variable->type = fmi3_parse_declared_type_attr(context, fmi3_xml_elmID_Clock, &td->defaultClockType.super);
         if (!variable->type) return -1;
-        
-        // TODO: Give warning if start attribute? It's now in child element Start.
     }
     return 0;
 }

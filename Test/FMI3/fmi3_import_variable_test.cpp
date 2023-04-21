@@ -232,7 +232,7 @@ static void test_clock_default_attrs(fmi3_import_t* xml) {
     // Type specific attributes:
      REQUIRE(fmi3_import_get_clock_variable_can_be_deactivated(cv)   == false);
      REQUIRE(fmi3_import_get_clock_variable_priority(cv)             == 0);
-//     REQUIRE(fmi3_import_get_clock_variable_interval_variability(cv) == fmi3_interval_variability_constant);  // In XML
+     REQUIRE(fmi3_import_get_clock_variable_interval_variability(cv) == fmi3_interval_variability_constant);
      REQUIRE(fmi3_import_get_clock_variable_interval_decimal(cv)     == 0.0);
      REQUIRE(fmi3_import_get_clock_variable_shift_decimal(cv)        == 0.0);
      REQUIRE(fmi3_import_get_clock_variable_supports_fraction(cv)    == false);
@@ -244,6 +244,29 @@ static void test_clock_default_attrs(fmi3_import_t* xml) {
 
     t = fmi3_import_get_variable_declared_type(v);
     REQUIRE(t == nullptr);  // No declared type
+}
+
+/**
+ * Tests parsing a Clock variable with default attributes.
+ */
+static void test_clock_default_attrs(fmi3_import_t* xml) {
+    fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "clockDefault");
+    fmi3_import_clock_variable_t* cv;
+
+    REQUIRE(v != nullptr);
+    cv = fmi3_import_get_variable_as_clock(v);
+    REQUIRE(cv != nullptr);
+
+    // Type specific attributes:
+     REQUIRE(fmi3_import_get_clock_variable_can_be_deactivated(cv)   == true);
+     REQUIRE(fmi3_import_get_clock_variable_priority(cv)             == 1);
+     REQUIRE(fmi3_import_get_clock_variable_interval_variability(cv) == fmi3_interval_variability_countdown);
+     REQUIRE(fmi3_import_get_clock_variable_interval_decimal(cv)     == 2.0);
+     REQUIRE(fmi3_import_get_clock_variable_shift_decimal(cv)        == 3.0);
+     REQUIRE(fmi3_import_get_clock_variable_supports_fraction(cv)    == true);
+     REQUIRE(fmi3_import_get_clock_variable_resolution(cv)           == 3);
+     REQUIRE(fmi3_import_get_clock_variable_interval_counter(cv)     == 4);
+     REQUIRE(fmi3_import_get_clock_variable_shift_counter(cv)        == 5);
 }
 
 TEST_CASE("Variable parsing", "[xml_variables]") {

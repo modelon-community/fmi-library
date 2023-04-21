@@ -54,7 +54,17 @@
 
   <!-- Clock variables -->
   <Clock name="clockDefault" valueReference="6" intervalVariability="constant"/>
-  
+  <Clock name="clockAllAttrs" valueReference="6" intervalVariability="constant"
+         canBeDeactivated="true" priority="1" intervalVariability="countdown"
+         intervalDecimal="2.0" shiftDecimal="3.0" supportsFraction="true"
+         resolution="4" intervalCounter="5" shiftCounter="6"/>
+
+
+  <!-- ==================================================================================
+    Other tests on attributes:
+    (Trying to create a separation with value refs, but probably not worth the effort.)
+  =================================================================================== -->
+
 
   <!-- Binary with empty mimeType-->
   <Binary name="binaryEmptyMimeType" valueReference="998" mimeType=""/>

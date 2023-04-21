@@ -349,10 +349,6 @@ FMILIB_EXPORT const char* fmi3_import_get_string_variable_start(fmi3_import_stri
 
 /** \brief Get start value for the variable */
 FMILIB_EXPORT fmi3_boolean_t fmi3_import_get_boolean_variable_start(fmi3_import_bool_variable_t* v);
-/** \brief Get the length of the binary variable's start value (which is an array). */
-FMILIB_EXPORT size_t fmi3_import_get_binary_variable_start_length(fmi3_import_binary_variable_t* v);
-/** \brief Get start value for the variable */
-FMILIB_EXPORT fmi3_binary_t fmi3_import_get_binary_variable_start(fmi3_import_binary_variable_t* v);
 /** \brief Get start value for the variable */
 FMILIB_EXPORT fmi3_clock_t fmi3_import_get_clock_variable_start(fmi3_import_clock_variable_t* v);
 
@@ -432,6 +428,16 @@ FMILIB_EXPORT int fmi3_import_get_enum_variable_start(fmi3_import_enum_variable_
 FMILIB_EXPORT int fmi3_import_get_enum_variable_min(fmi3_import_enum_variable_t* v);
 /** \brief Get max value for the variable */
 FMILIB_EXPORT int fmi3_import_get_enum_variable_max(fmi3_import_enum_variable_t* v);
+
+/** \brief Get the length of the binary variable's start value (which is an array). */
+FMILIB_EXPORT size_t fmi3_import_get_binary_variable_start_length(fmi3_import_binary_variable_t* v);
+/** \brief Get start value for the variable */
+FMILIB_EXPORT fmi3_binary_t fmi3_import_get_binary_variable_start(fmi3_import_binary_variable_t* v);
+/** \brief Get mimeType for the variable */
+FMILIB_EXPORT fmi3_string_t fmi3_import_get_binary_variable_mime_type(fmi3_import_binary_variable_t* v);
+/** \brief Get maxSize for the variable */
+FMILIB_EXPORT size_t fmi3_import_get_binary_variable_max_size(fmi3_import_binary_variable_t* v);
+
 
 /** \brief Get the variable alias kind*/
 FMILIB_EXPORT fmi3_variable_alias_kind_enu_t fmi3_import_get_variable_alias_kind(fmi3_import_variable_t*);

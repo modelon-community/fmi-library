@@ -461,8 +461,14 @@ void fmi3_xml_init_uint8_type_properties(fmi3_xml_int_type_props_t* type) {
     type->typeMax.scalar8u = UINT8_MAX;
 }
 
+void fmi3_xml_init_binary_type_properties(fmi3_xml_binary_type_props_t* type) {
+    fmi3_xml_init_variable_type_base(&type->super, fmi3_xml_type_struct_enu_props, fmi3_base_type_binary);
+    type->mimeType = "application/octet-stream";
+    type->maxSize = 0;
+}
+
 void fmi3_xml_init_enumeration_variable_properties(fmi3_xml_enum_variable_props_t* type, jm_callbacks* cb) {
-    fmi3_xml_init_variable_type_base(&type->super, fmi3_xml_type_struct_enu_props,fmi3_base_type_enum);
+    fmi3_xml_init_variable_type_base(&type->super, fmi3_xml_type_struct_enu_props, fmi3_base_type_enum);
     type->quantity = 0;
     type->typeMin = 0;
     type->typeMax = 0;
@@ -481,6 +487,7 @@ void fmi3_xml_init_type_definitions(fmi3_xml_type_definitions_t* td, jm_callback
     jm_vector_init(jm_named_ptr)(&td->typeDefinitions,0,cb);
 
     jm_vector_init(jm_string)(&td->quantities, 0, cb);
+    jm_vector_init(jm_string)(&td->mimeTypes, 0, cb);
 
     fmi3_xml_init_float64_type_properties(&td->defaultFloat64Type);
     fmi3_xml_init_float32_type_properties(&td->defaultFloat32Type);
@@ -493,9 +500,9 @@ void fmi3_xml_init_type_definitions(fmi3_xml_type_definitions_t* td, jm_callback
     fmi3_xml_init_uint32_type_properties(&td->defaultUInt32Type);
     fmi3_xml_init_uint16_type_properties(&td->defaultUInt16Type);
     fmi3_xml_init_uint8_type_properties(&td->defaultUInt8Type);
+    fmi3_xml_init_binary_type_properties(&td->defaultBinaryType);
 
     fmi3_xml_init_variable_type_base(&td->defaultBooleanType, fmi3_xml_type_struct_enu_props, fmi3_base_type_bool);
-    fmi3_xml_init_variable_type_base(&td->defaultBinaryType,  fmi3_xml_type_struct_enu_props, fmi3_base_type_binary);
     fmi3_xml_init_variable_type_base(&td->defaultClockType,   fmi3_xml_type_struct_enu_props, fmi3_base_type_clock);
     fmi3_xml_init_variable_type_base(&td->defaultStringType,  fmi3_xml_type_struct_enu_props, fmi3_base_type_str);
 
@@ -507,6 +514,9 @@ void fmi3_xml_free_type_definitions_data(fmi3_xml_type_definitions_t* td) {
 
     jm_vector_foreach(jm_string)(&td->quantities,(void(*)(const char*))cb->free);
     jm_vector_free_data(jm_string)(&td->quantities);
+
+    jm_vector_foreach(jm_string)(&td->mimeTypes,(void(*)(const char*))cb->free);
+    jm_vector_free_data(jm_string)(&td->mimeTypes);
 
     {
         fmi3_xml_variable_type_base_t* next;
@@ -606,12 +616,19 @@ int fmi3_xml_handle_SimpleType(fmi3_xml_parser_context_t *context, const char* d
     return 0;
 }
 
+/**
+ * Adds a new _props object (containing either variable or type attributes) on top of the list-node
+ * given in parameter 'base'.
+ *
+ * Generic for all struct kinds (float, int, ...), i.e. the caller needs to typecast to the
+ * correct type and make sure that enough memory is given via parameter 'typeSize'.
+ */
 fmi3_xml_variable_type_base_t* fmi3_xml_alloc_variable_or_typedef_props(fmi3_xml_type_definitions_t* td,
         fmi3_xml_variable_type_base_t* base, size_t typeSize)
 {
     jm_callbacks* cb = td->typeDefinitions.callbacks;
     fmi3_xml_variable_type_base_t* type = cb->malloc(typeSize);
-    if (!type) return 0;
+    if (!type) return NULL;
     fmi3_xml_init_variable_type_base(type, fmi3_xml_type_struct_enu_props, base->baseType);
     type->nextLayer = base;
     type->next = td->typePropsList;
@@ -660,7 +677,8 @@ fmi3_xml_float_type_props_t* fmi3_xml_parse_float_type_properties(fmi3_xml_parse
     jm_vector(char)* bufDispUnit = fmi3_xml_reserve_parse_buffer(context, 5, 100);
 
     // XXX: Here we put in the defaultType, which means that the next node after props
-    // will be the default type. But is that really used anywhere?
+    // will be the default type. For variable parsing we instead later remap to the
+    // declared type. Isn't that what we should use as parameter in the first place?
     props = (fmi3_xml_float_type_props_t*)fmi3_xml_alloc_variable_or_typedef_props(&md->typeDefinitions, &defaultType->super, sizeof(fmi3_xml_float_type_props_t));
 
     if (!bufQuantity || !bufUnit || !bufDispUnit || !props ||
@@ -994,11 +1012,17 @@ int fmi3_xml_handle_Item(fmi3_xml_parser_context_t* context, const char* data) {
     return 0;
 }
 
-fmi3_xml_variable_type_base_t* fmi3_get_declared_type(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID, fmi3_xml_variable_type_base_t* defaultType) {
+/**
+ * Parses the declaredType attribute for a variable. Returns a _typedef if a declaredType was specified
+ * and could be found, otherwise the _props for the default type.
+ */
+fmi3_xml_variable_type_base_t* fmi3_parse_declared_type_attr(fmi3_xml_parser_context_t* context,
+        fmi3_xml_elm_enu_t elmID, fmi3_xml_variable_type_base_t* defaultType)
+{
     jm_named_ptr key, *found;
     jm_vector(char)* bufDeclaredType = fmi3_xml_reserve_parse_buffer(context, 1, 100);
 
-    fmi3_xml_set_attr_string(context, elmID, fmi_attr_id_declaredType, 0, bufDeclaredType); /* <xs:attribute name="declaredType" type="xs:normalizedString"> */
+    fmi3_xml_set_attr_string(context, elmID, fmi_attr_id_declaredType, 0, bufDeclaredType);
     if ( !jm_vector_get_size(char)(bufDeclaredType) )
         return defaultType;
 

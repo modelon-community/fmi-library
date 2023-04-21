@@ -42,7 +42,7 @@
   <Binary name="binaryDefault" valueReference="3"/>
   <Binary name="binaryAllAttr" valueReference="4" variability="discrete"
           causality="output" initial="exact" description="myDesc"
-          previous="4001" clocks="4002" start="0"/>
+          previous="4001" clocks="4002" mimeType="myMimeType" maxSize="444"/>
   <!-- Variables referenced in attributes: -->
   <Binary name="preBinary" valueReference="4001"/>
   <Clock name="clocks4" valueReference="4002"/>
@@ -52,6 +52,9 @@
     <Start value="0011BBff029eE4Cd"/>
   </Binary>
   
+
+  <!-- Binary with empty mimeType-->
+  <Binary name="binaryEmptyMimeType" valueReference="998" mimeType=""/>
 
   <!-- Clock attribute: Multiple clock value refs -->
   <Binary name="hasMultipleClocks" valueReference="999" clocks="999001 999002 999003"/>

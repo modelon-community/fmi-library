@@ -591,16 +591,48 @@ static int fmi3_xml_str_to_intXX(fmi3_xml_parser_context_t *context, int require
 }
 
 /**
-    Reads a fixed-width [unsigned] integer.
-    Side effects: This will clear the attribute from the parser buffer
+ * Reads an attribute to size_t.
+ * This will also clear the attribute from the attrBuffer.
+ *
+ * @param field: where the float value will be stored (return arg)
+ * @param defaultVal: pointer to default value that will be used if attribute wasn't defined -
+ *                    needs be of same type as 'primType'
+*/
+int fmi3_xml_set_attr_sizet(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID,
+        int required, size_t* field, size_t* defaultVal)
+{
+    const fmi3_xml_primitive_type_t* primType;
+    if (sizeof(size_t) == sizeof(uint64_t)) {
+        primType = &PRIMITIVE_TYPES.uint64;
+    }
+    else if (sizeof(size_t) == sizeof(uint32_t)) {
+        primType = &PRIMITIVE_TYPES.uint32;
+    }
+    else if (sizeof(size_t) == sizeof(uint16_t)) {
+        primType = &PRIMITIVE_TYPES.uint16;
+    }
+    else if (sizeof(size_t) == sizeof(uint8_t)) {
+        primType = &PRIMITIVE_TYPES.uint8;
+    }
+    else {
+        fmi3_xml_parse_error(context, "Didn't find suitable size for parsing size_t.");
+        return -1;
+    }
+    
+    return fmi3_xml_set_attr_intXX(context, elmID, attrID, required, field, defaultVal, primType);
+}
 
-    field: where the float value will be stored (return arg)
-    defaultVal: pointer to default value that will be used if attribute wasn't defined -
-                needs be of same type as 'primType'
+/**
+ * Reads a fixed-width [unsigned] integer.
+ * This will also clear the attribute from the attrBuffer
+ *
+ * @param field: where the float value will be stored (return arg)
+ * @param defaultVal: pointer to default value that will be used if attribute wasn't defined -
+ *                    needs be of same type as 'primType'
 */
 int fmi3_xml_set_attr_intXX(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID,
-        int required, void* field, void* defaultVal, const fmi3_xml_primitive_type_t* primType) {
-
+        int required, void* field, void* defaultVal, const fmi3_xml_primitive_type_t* primType)
+{
     int ret;
     jm_string strVal;
 

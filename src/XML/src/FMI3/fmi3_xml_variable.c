@@ -755,7 +755,21 @@ fmi3_binary_t fmi3_xml_get_binary_variable_start(fmi3_xml_binary_variable_t* v) 
         fmi3_xml_binary_variable_start_t* start = (fmi3_xml_binary_variable_start_t*)(vv->type);
         return start->start;
     }
-    return 0;
+    return NULL;
+}
+
+fmi3_string_t fmi3_xml_get_binary_variable_mime_type(fmi3_xml_binary_variable_t* v) {
+    fmi3_xml_variable_t* vv = (fmi3_xml_variable_t*)v;
+    fmi3_xml_binary_type_props_t* props = (fmi3_xml_binary_type_props_t*)fmi3_xml_find_type_props(vv->type);
+    if (!props) return NULL;
+    return (fmi3_string_t)props->mimeType;
+}
+
+size_t fmi3_xml_get_binary_variable_max_size(fmi3_xml_binary_variable_t* v) {
+    fmi3_xml_variable_t* vv = (fmi3_xml_variable_t*)v;
+    fmi3_xml_binary_type_props_t* props = (fmi3_xml_binary_type_props_t*)fmi3_xml_find_type_props(vv->type);
+    if (!props) return 0;
+    return props->maxSize;
 }
 
 // -----------------------------------------------------------------------------
@@ -764,7 +778,7 @@ fmi3_binary_t fmi3_xml_get_binary_variable_start(fmi3_xml_binary_variable_t* v) 
 
 fmi3_xml_clock_variable_t* fmi3_xml_get_variable_as_clock(fmi3_xml_variable_t* v) {
     if (fmi3_xml_get_variable_base_type(v) == fmi3_base_type_clock) return (void*)v;
-    return 0;
+    return NULL;
 }
 
 fmi3_clock_t fmi3_xml_get_clock_variable_start(fmi3_xml_clock_variable_t* v) {
@@ -1217,7 +1231,7 @@ int fmi3_xml_handle_FloatXXVariable(fmi3_xml_parser_context_t* context, const ch
         assert(!variable->type);
 
         /* Get declared type: either a default or user defined */
-        declaredType = fmi3_get_declared_type(context, elmID, &defaultType->super);
+        declaredType = fmi3_parse_declared_type_attr(context, elmID, &defaultType->super);
         if (!declaredType) return -1;
 
         /* Set type properties */
@@ -1347,7 +1361,7 @@ int fmi3_xml_handle_IntXXVariable(fmi3_xml_parser_context_t* context, const char
         fmi3_xml_int_type_props_t * type = 0;
         int hasStart;
 
-        declaredType = fmi3_get_declared_type(context, elmID, &defaultType->super) ;
+        declaredType = fmi3_parse_declared_type_attr(context, elmID, &defaultType->super) ;
 
         if(!declaredType) return -1;
         {
@@ -1445,7 +1459,7 @@ int fmi3_xml_handle_BooleanVariable(fmi3_xml_parser_context_t *context, const ch
 
         assert(!variable->type);
 
-        variable->type = fmi3_get_declared_type(context, fmi3_xml_elmID_Boolean, &td->defaultBooleanType) ;
+        variable->type = fmi3_parse_declared_type_attr(context, fmi3_xml_elmID_Boolean, &td->defaultBooleanType) ;
         if(!variable->type) return -1;
 
         hasStart = fmi3_xml_get_has_start(context, variable);
@@ -1480,16 +1494,62 @@ int fmi3_xml_handle_BinaryVariable(fmi3_xml_parser_context_t* context, const cha
     if (fmi3_xml_handle_Variable(context, data)) return -1;
 
     if (!data) {
-        fmi3_xml_set_element_handle(context, "Start", FMI3_XML_ELM_ID(BinaryVariableStart));
+        fmi3_xml_set_element_handle(context, "Start", fmi3_xml_elmID_BinaryVariableStart);
+        fmi3_xml_elm_enu_t elmID = fmi3_xml_elmID_Binary;  // The ID corresponding to the actual parsed element name
 
         fmi3_xml_model_description_t* md = context->modelDescription;
         fmi3_xml_type_definitions_t* td = &md->typeDefinitions;
         fmi3_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
 
-        assert(!variable->type);
+        fmi3_xml_binary_type_props_t* vProps;  // Variable props
+        fmi3_xml_variable_type_base_t* declaredType = fmi3_parse_declared_type_attr(context, elmID,
+                &td->defaultBinaryType.super);
+        int hasMimeType = fmi3_xml_is_attr_defined(context, fmi_attr_id_mimeType);
+        int hasMaxSize  = fmi3_xml_is_attr_defined(context, fmi_attr_id_maxSize);
+        if (hasMimeType || hasMaxSize) {
+            // Find the TypeDefinition or default type properties:
+            fmi3_xml_binary_type_props_t* dtProps;
+            // Get declared type properties:
+            if (declaredType->structKind == fmi3_xml_type_struct_enu_typedef) {
+                dtProps = (fmi3_xml_binary_type_props_t*)(declaredType->nextLayer);  // TypeDef
+            } else {
+                dtProps = (fmi3_xml_binary_type_props_t*)declaredType;  // default
+            }
+            assert(dtProps->super.structKind == fmi3_xml_type_struct_enu_props);
 
-        variable->type = fmi3_get_declared_type(context, fmi3_xml_elmID_Binary, &td->defaultBinaryType);
-        if (!variable->type) return -1;
+            // Create variable properties:
+            vProps = (fmi3_xml_binary_type_props_t*)fmi3_xml_alloc_variable_or_typedef_props(td, declaredType,
+                    sizeof(fmi3_xml_binary_type_props_t));
+            if (!vProps) return -1;
+
+            // maxSize:
+            if (fmi3_xml_set_attr_sizet(context, elmID, fmi_attr_id_maxSize, 0, &vProps->maxSize, &dtProps->maxSize)) {
+                return -1;
+            }
+            
+            // mimeType:
+            if (hasMimeType) {
+                jm_vector(char)* mimeType = fmi3_xml_reserve_parse_buffer(context, 3, 100);
+                if (!mimeType) return -1;
+                if (fmi3_xml_set_attr_string(context, fmi3_xml_elmID_BinaryVariable, fmi_attr_id_mimeType, 0, mimeType)) {
+                    return -1;
+                }
+                if (jm_vector_get_size(char)(mimeType) == 0) {
+                    // XXX: Doesn't seem like we proprely store the empty string? Will trigger assertion
+                    // failures later, and 'quantity' is handled the same way.
+                    vProps->mimeType = NULL;
+                } else {
+                    vProps->mimeType = jm_string_set_put(&td->mimeTypes, jm_vector_get_itemp(char)(mimeType, 0));
+                }
+            } else {
+                vProps->mimeType = NULL;
+            }
+        }
+        else {
+            vProps = (fmi3_xml_binary_type_props_t*)declaredType;
+        }
+        assert(!variable->type);
+        variable->type = &vProps->super;
     }
     return 0;
 }
@@ -1505,7 +1565,7 @@ int fmi3_xml_handle_ClockVariable(fmi3_xml_parser_context_t* context, const char
 
         assert(!variable->type);
 
-        variable->type = fmi3_get_declared_type(context, fmi3_xml_elmID_Clock, &td->defaultClockType);
+        variable->type = fmi3_parse_declared_type_attr(context, fmi3_xml_elmID_Clock, &td->defaultClockType);
         if (!variable->type) return -1;
         
         // TODO: Give warning if start attribute? It's now in child element Start.
@@ -1525,7 +1585,7 @@ int fmi3_xml_handle_StringVariable(fmi3_xml_parser_context_t *context, const cha
 
         assert(!variable->type);
 
-        variable->type = fmi3_get_declared_type(context, fmi3_xml_elmID_String, &td->defaultStringType) ;
+        variable->type = fmi3_parse_declared_type_attr(context, fmi3_xml_elmID_String, &td->defaultStringType) ;
         if(!variable->type) return -1;
 
         hasStart = fmi3_xml_get_has_start(context, variable);
@@ -1686,7 +1746,7 @@ int fmi3_xml_handle_EnumerationVariable(fmi3_xml_parser_context_t *context, cons
 
         assert(!variable->type);
 
-        declaredType = fmi3_get_declared_type(context, fmi3_xml_elmID_Enumeration,&td->defaultEnumType.base.super);
+        declaredType = fmi3_parse_declared_type_attr(context, fmi3_xml_elmID_Enumeration,&td->defaultEnumType.base.super);
 
         if(!declaredType) return -1;
 

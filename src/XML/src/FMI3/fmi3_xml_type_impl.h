@@ -111,11 +111,12 @@ typedef enum {
      * 
      * The next node for a _props on a Variable is either the default type or the TypeDefinition,
      * depending on whether there was a declaredType.
+     * So to find if a variable has TypeDefinition, you iterate through the nodes and if there is
+     * a _typedef, then the answer is yes.
      * 
      * XXX:
-     * However, why is it even necessary to keep references to the "fallbacks" if we copy the
-     * fallback values? The implementation of fmi3_xml_find_type_props seems to support
-     * this theory.
+     * It seems the only reason to keep references the "fallbacks" is to find the declared type.
+     * And to eventually create diff-sets, but currently we just copy.
      */
     fmi3_xml_type_struct_enu_props,
     
@@ -201,9 +202,15 @@ typedef struct fmi3_xml_enum_typedef_props_t {
     jm_vector(jm_named_ptr) enumItems;
 } fmi3_xml_enum_typedef_props_t;
 
+typedef struct fmi3_xml_binary_type_props_t {
+    fmi3_xml_variable_type_base_t super;
+
+    jm_string mimeType;
+    size_t maxSize;
+} fmi3_xml_binary_type_props_t;
+
 typedef fmi3_xml_variable_type_base_t fmi3_xml_string_type_props_t;
 typedef fmi3_xml_variable_type_base_t fmi3_xml_bool_type_props_t;
-typedef fmi3_xml_variable_type_base_t fmi3_xml_binary_type_props_t;
 typedef fmi3_xml_variable_type_base_t fmi3_xml_clock_type_props_t;
 
 // ----------------------------------------------------------------------------
@@ -266,7 +273,8 @@ static fmi3_xml_variable_type_base_t* fmi3_xml_find_type_props(fmi3_xml_variable
 struct fmi3_xml_type_definitions_t {
     jm_vector(jm_named_ptr) typeDefinitions;
 
-    jm_string_set quantities;
+    jm_string_set quantities; /* Storage for 'quantity' attribute for Variables and TypeDefinitions. */
+    jm_string_set mimeTypes;  /* Storage for 'mimeType' attribute for Variables and TypeDefinitions. */
 
     /* intended purpose seems to be as memory deallocation ptr, but also used in fmi3_xml_handle_Item (TODO: see if can be changed to single purpose) */
     fmi3_xml_variable_type_base_t* typePropsList;
@@ -304,7 +312,7 @@ fmi3_xml_float_type_props_t* fmi3_xml_parse_float_type_properties(fmi3_xml_parse
 
 fmi3_xml_int_type_props_t* fmi3_xml_parse_intXX_type_properties(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID, fmi3_xml_int_type_props_t* defaultType, const fmi3_xml_primitive_type_t* primType);
 
-fmi3_xml_variable_type_base_t* fmi3_get_declared_type(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_variable_type_base_t* defaultType);
+fmi3_xml_variable_type_base_t* fmi3_parse_declared_type_attr(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_variable_type_base_t* defaultType);
 
 #ifdef __cplusplus
 }

@@ -95,6 +95,10 @@ static void test_binary_default_attrs(fmi3_import_t* xml) {
 
     bv = fmi3_import_get_variable_as_binary(v);
     REQUIRE(bv != nullptr);
+    REQUIRE(fmi3_import_get_binary_variable_start_length(bv) == 0);
+    REQUIRE(fmi3_import_get_binary_variable_start(bv) == nullptr);
+    REQUIRE(fmi3_import_get_binary_variable_max_size(bv) == 0);
+    REQUIRE(strcmp(fmi3_import_get_binary_variable_mime_type(bv), "application/octet-stream") == 0);
 
     t = fmi3_import_get_variable_declared_type(v);
     REQUIRE(t == nullptr);  // No declared type
@@ -132,9 +136,27 @@ static void test_binary_all_attrs(fmi3_import_t* xml) {
 
     bv = fmi3_import_get_variable_as_binary(v);
     REQUIRE(bv != nullptr);
+    REQUIRE(fmi3_import_get_binary_variable_max_size(bv) == 444);
+    REQUIRE(strcmp(fmi3_import_get_binary_variable_mime_type(bv), "myMimeType") == 0);
 
     t = fmi3_import_get_variable_declared_type(v);
     REQUIRE(t == nullptr);  // No declared type
+}
+
+/**
+ * Tests parsing an empty mimeType attribute.
+ */
+static void test_binary_empty_mimeType(fmi3_import_t* xml) {
+    fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "binaryEmptyMimeType");
+    fmi3_import_binary_variable_t* bv;
+
+    REQUIRE(v != nullptr);
+
+    bv = fmi3_import_get_variable_as_binary(v);
+    REQUIRE(bv != nullptr);
+
+    // TODO: Expected is to equal the empty string. Probably same for 'quantity'.
+    REQUIRE(fmi3_import_get_binary_variable_mime_type(bv) == NULL);  
 }
 
 /**
@@ -203,6 +225,9 @@ TEST_CASE("Variable parsing", "[xml_variables]") {
     }
     SECTION("Binary: parse all attributes") {
         test_binary_all_attrs(xml);
+    }
+    SECTION("Binary: empty mimeType attribute") {
+        test_binary_empty_mimeType(xml);
     }
     SECTION("Binary: parse Start element and value") {
         test_binary_start_value(xml);

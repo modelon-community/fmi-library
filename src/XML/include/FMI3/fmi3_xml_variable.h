@@ -149,9 +149,12 @@ fmi3_string_t fmi3_xml_get_uint8_variable_quantity (fmi3_xml_uint8_variable_t* v
 
 const char* fmi3_xml_get_string_variable_start(fmi3_xml_string_variable_t* v);
 fmi3_boolean_t fmi3_xml_get_boolean_variable_start(fmi3_xml_bool_variable_t* v);
+fmi3_clock_t fmi3_xml_get_clock_variable_start(fmi3_xml_clock_variable_t* v);
+
 size_t fmi3_xml_get_binary_variable_start_length(fmi3_xml_binary_variable_t* v);
 fmi3_binary_t fmi3_xml_get_binary_variable_start(fmi3_xml_binary_variable_t* v);
-fmi3_clock_t fmi3_xml_get_clock_variable_start(fmi3_xml_clock_variable_t* v);
+fmi3_string_t fmi3_xml_get_binary_variable_mime_type(fmi3_xml_binary_variable_t* v);
+size_t fmi3_xml_get_binary_variable_max_size(fmi3_xml_binary_variable_t* v);
 
 fmi3_string_t fmi3_xml_get_enum_variable_quantity(fmi3_xml_enum_variable_t* v);
 int fmi3_xml_get_enum_variable_start(fmi3_xml_enum_variable_t* v);

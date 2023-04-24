@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2012 Modelon AB
+    Copyright (C) 2012-2023 Modelon AB
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the BSD style license.
@@ -17,6 +17,27 @@
 
 #include <FMI3/fmi3_function_types.h>
 #include <FMI3/fmi3_enums.h>
+
+int fmi3_base_type_enu_is_int(fmi3_base_type_enu_t enums) {
+    switch (enums) {
+        case fmi3_base_type_bool:    return 0;
+        case fmi3_base_type_str:     return 0;
+        case fmi3_base_type_enum:    return 0;
+        case fmi3_base_type_float64: return 0;
+        case fmi3_base_type_float32: return 0;
+        default: return 1;
+    }
+    return 0;
+}
+
+int fmi3_base_type_enu_is_float(fmi3_base_type_enu_t enums) {
+    switch (enums) {
+        case fmi3_base_type_float64: return 1;
+        case fmi3_base_type_float32: return 1;
+        default: return 0;
+    }
+    return 0;
+}
 
 const char* fmi3_naming_convention_to_string(fmi3_variable_naming_convension_enu_t convention) {
     if(convention == fmi3_naming_enu_flat) return "flat";

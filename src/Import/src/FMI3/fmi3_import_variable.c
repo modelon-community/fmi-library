@@ -229,6 +229,10 @@ fmi3_int64_t fmi3_import_get_int64_variable_start(fmi3_import_int64_variable_t* 
     return fmi3_xml_get_int64_variable_start(v);
 }
 
+fmi3_int64_t* fmi3_import_get_int64_variable_start_array(fmi3_import_int64_variable_t* v) {
+    return fmi3_xml_get_int64_variable_start_array(v);
+}
+
 fmi3_string_t fmi3_import_get_int64_variable_quantity(fmi3_import_int64_variable_t* v) {
     return fmi3_xml_get_int64_variable_quantity(v);
 }

@@ -50,8 +50,6 @@ fmi3_value_reference_t fmi3_xml_get_variable_vr(fmi3_xml_variable_t*);
 fmi3_xml_variable_typedef_t* fmi3_xml_get_variable_declared_type(fmi3_xml_variable_t*);
 fmi3_base_type_enu_t fmi3_xml_get_variable_base_type(fmi3_xml_variable_t*);
 
-fmi3_float64_t* fmi3_xml_get_float64_variable_start_array(fmi3_xml_float64_variable_t* v);
-fmi3_float32_t* fmi3_xml_get_float32_variable_start_array(fmi3_xml_float32_variable_t* v);
 
 jm_vector(fmi3_xml_dimension_t)* fmi3_xml_get_variable_dimension_vector(fmi3_xml_variable_t* v);
 
@@ -74,6 +72,7 @@ fmi3_boolean_t fmi3_xml_get_float64_variable_reinit (fmi3_xml_float64_variable_t
 fmi3_xml_unit_t* fmi3_xml_get_float64_variable_unit (fmi3_xml_float64_variable_t* v);
 fmi3_xml_display_unit_t* fmi3_xml_get_float64_variable_display_unit (fmi3_xml_float64_variable_t* v);
 fmi3_float64_t fmi3_xml_get_float64_variable_start (fmi3_xml_float64_variable_t* v);
+fmi3_float64_t* fmi3_xml_get_float64_variable_start_array(fmi3_xml_float64_variable_t* v);
 fmi3_float64_t fmi3_xml_get_float64_variable_min (fmi3_xml_float64_variable_t* v);
 fmi3_float64_t fmi3_xml_get_float64_variable_max (fmi3_xml_float64_variable_t* v);
 fmi3_float64_t fmi3_xml_get_float64_variable_nominal (fmi3_xml_float64_variable_t* v);
@@ -87,6 +86,7 @@ fmi3_boolean_t fmi3_xml_get_float32_variable_reinit (fmi3_xml_float32_variable_t
 fmi3_xml_unit_t* fmi3_xml_get_float32_variable_unit (fmi3_xml_float32_variable_t* v);
 fmi3_xml_display_unit_t* fmi3_xml_get_float32_variable_display_unit (fmi3_xml_float32_variable_t* v);
 fmi3_float32_t fmi3_xml_get_float32_variable_start (fmi3_xml_float32_variable_t* v);
+fmi3_float32_t* fmi3_xml_get_float32_variable_start_array(fmi3_xml_float32_variable_t* v);
 fmi3_float32_t fmi3_xml_get_float32_variable_min (fmi3_xml_float32_variable_t* v);
 fmi3_float32_t fmi3_xml_get_float32_variable_max (fmi3_xml_float32_variable_t* v);
 fmi3_float32_t fmi3_xml_get_float32_variable_nominal (fmi3_xml_float32_variable_t* v);
@@ -98,6 +98,7 @@ fmi3_xml_int64_variable_t* fmi3_xml_get_variable_as_int64(fmi3_xml_variable_t*);
 fmi3_int64_t fmi3_xml_get_int64_variable_min (fmi3_xml_int64_variable_t* v);
 fmi3_int64_t fmi3_xml_get_int64_variable_max (fmi3_xml_int64_variable_t* v);
 fmi3_int64_t fmi3_xml_get_int64_variable_start (fmi3_xml_int64_variable_t* v);
+fmi3_int64_t* fmi3_xml_get_int64_variable_start_array(fmi3_xml_int64_variable_t* v);
 fmi3_string_t fmi3_xml_get_int64_variable_quantity (fmi3_xml_int64_variable_t* v);
 
 fmi3_xml_int32_variable_t* fmi3_xml_get_variable_as_int32(fmi3_xml_variable_t*);

@@ -391,7 +391,6 @@ int fmi3_xml_set_attr_enum(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_
     return 0;
 }
 
-// Deprecated. Use fmi3_xml_set_attr_bool for FMI3. TODO: Remove all uses.
 int fmi3_xml_set_attr_boolean(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID,
         int required, unsigned int* field, unsigned int defaultVal)
 {
@@ -399,6 +398,7 @@ int fmi3_xml_set_attr_boolean(fmi3_xml_parser_context_t *context, fmi3_xml_elm_e
     return fmi3_xml_set_attr_enum(context, elmID, attrID, required, field, defaultVal, fmi_boolean_i_dMap);
 }
 
+// TODO: For FMI3, do we want to use bool in the getters for boolean attributes, or keep using unsigned int?
 int fmi3_xml_set_attr_bool(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID,
         int required, bool* field, bool defaultVal)
 {
@@ -413,9 +413,9 @@ int fmi3_xml_set_attr_bool(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_
         return 0;
     }
     
-    if (strcmp(strVal, "true") == 0) {
+    if (strcmp(strVal, "true") == 0 || strcmp(strVal, "1") == 0) {
         *field = true;
-    } else if (strcmp(strVal, "false") == 0) {
+    } else if (strcmp(strVal, "false") == 0 || strcmp(strVal, "0") == 0) {
         *field = false;
     } else {
         jm_string elmName = fmi3_element_handle_map[elmID].elementName;

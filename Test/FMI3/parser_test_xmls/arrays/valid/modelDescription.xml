@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<!-- 
+<!--
     this file is partial/full copy of the example in the github repo:
         fmi-standard\docs\examples\variable_types.xml
 -->
@@ -74,12 +74,22 @@
       <Dimension start="2"/>
     </Float32>
 
+    <Int64 name="dummy_int64_array" valueReference="109" causality="input" description="Array used to test int64 get/set" start="54 23 11 5123">
+      <Dimension start="2"/>
+      <Dimension start="2"/>
+    </Int64>
+
+    <Int64 name="dummy_int64_array2" valueReference="110" causality="input" description="Array used to test the largest and smalles value of int64" start="9223372036854775807 9223372036854775806 9223372036854775805 -9223372036854775808 0 -9223372036854775807">
+      <Dimension start="3"/>
+      <Dimension start="2"/>
+    </Int64>
+
     <!-- variables used as dimension specifiers -->
     <UInt32 name="uint32_1" valueReference="201" initial="exact" variability="constant" start="3" />
     <UInt32 name="uint32_2" valueReference="202" initial="exact" variability="constant" start="2" />
 
   </ModelVariables>
-  
+
   <ModelStructure/>
 
 </fmiModelDescription>

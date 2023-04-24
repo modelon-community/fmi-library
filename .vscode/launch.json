@@ -23,7 +23,7 @@
         },
         {
             // Based on CMake Tools template: https://vector-of-bool.github.io/docs/vscode-cmake-tools/debugging.html
-            "name": "(msvs maybe) Launch",
+            "name": "(msvs) Launch",
             "type": "cppvsdbg",
             "request": "launch",
             "program": "${command:cmake.launchTargetPath}",
@@ -38,14 +38,6 @@
 //                },
             ],
             // "externalConsole": true,  // Doesn't work for WSL devcontainer.
-            "MIMode": "gdb",
-            "setupCommands": [
-                {
-                    "description": "Enable pretty-printing for gdb",
-                    "text": "-enable-pretty-printing",
-                    "ignoreFailures": true
-                }
-            ]
         }
     ]
 }

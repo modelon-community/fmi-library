@@ -428,7 +428,7 @@ FMILIB_EXPORT int fmi3_import_get_enum_variable_min(fmi3_import_enum_variable_t*
 FMILIB_EXPORT int fmi3_import_get_enum_variable_max(fmi3_import_enum_variable_t* v);
 
 /** \brief Get the length of the binary variable's start value (which is an array). */
-FMILIB_EXPORT size_t fmi3_import_get_binary_variable_start_length(fmi3_import_binary_variable_t* v);
+FMILIB_EXPORT size_t fmi3_import_get_binary_variable_start_size(fmi3_import_binary_variable_t* v);
 /** \brief Get start value for the variable */
 FMILIB_EXPORT fmi3_binary_t fmi3_import_get_binary_variable_start(fmi3_import_binary_variable_t* v);
 /** \brief Get mimeType for the variable */

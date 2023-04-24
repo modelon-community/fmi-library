@@ -95,7 +95,7 @@ static void test_binary_default_attrs(fmi3_import_t* xml) {
 
     bv = fmi3_import_get_variable_as_binary(v);
     REQUIRE(bv != nullptr);
-    REQUIRE(fmi3_import_get_binary_variable_start_length(bv) == 0);
+    REQUIRE(fmi3_import_get_binary_variable_start_size(bv) == 0);
     REQUIRE(fmi3_import_get_binary_variable_start(bv) == nullptr);
     REQUIRE(fmi3_import_get_binary_variable_max_size(bv) == 0);
     REQUIRE(strcmp(fmi3_import_get_binary_variable_mime_type(bv), "application/octet-stream") == 0);
@@ -174,7 +174,7 @@ static void test_binary_start_value(fmi3_import_t* xml) {
     bv = fmi3_import_get_variable_as_binary(v);
     REQUIRE(bv != nullptr);
     
-    size_t nBytes       = fmi3_import_get_binary_variable_start_length(bv);
+    size_t nBytes       = fmi3_import_get_binary_variable_start_size(bv);
     fmi3_binary_t bytes = fmi3_import_get_binary_variable_start(bv);
     REQUIRE(nBytes == 8);
     REQUIRE(bytes[0] == 0x00U);

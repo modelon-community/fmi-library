@@ -662,6 +662,7 @@ int fmi3_xml_set_attr_sizet(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu
     return fmi3_xml_set_attr_intXX(context, elmID, attrID, required, field, defaultVal, primType);
 }
 
+<<<<<<< HEAD
 /**
  * Reads a fixed-width [unsigned] integer.
  * This will also clear the attribute from the attrBuffer
@@ -669,6 +670,11 @@ int fmi3_xml_set_attr_sizet(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu
  * @param field: where the value will be stored (return arg)
  * @param defaultVal: pointer to default value that will be used if attribute wasn't defined -
  *                    needs be of same type as 'primType'
+=======
+    field: where the integer value will be stored (return arg)
+    defaultVal: pointer to default value that will be used if attribute wasn't defined -
+                needs be of same type as 'primType'
+>>>>>>> 3832d22 (Added support for parsing int64 arrays)
 */
 int fmi3_xml_set_attr_intXX(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID,
         int required, void* field, void* defaultVal, const fmi3_xml_primitive_type_t* primType)
@@ -679,7 +685,7 @@ int fmi3_xml_set_attr_intXX(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu
     ret = fmi3_xml_get_attr_str(context, elmID, attrID, required, &strVal); /* checks for (!strVal && required) condition */
     if (ret) return ret;
 
-    /* convert to float and write value to field */
+    /* convert to integer and write value to field */
     ret = fmi3_xml_str_to_intXX(context, required, field, defaultVal, strVal, primType);
     if (ret) {
         fmi3_xml_parse_attr_error(context, elmID, attrID, strVal);
@@ -788,6 +794,86 @@ gen_fmi3_xml_set_attr_TYPEXX(uint32,  intXX)
     } while (0);
 
 /**
+ * Parses a string to an array of int values
+*/
+static int fmi3_xml_str_to_array_intXX(
+        fmi3_xml_parser_context_t* context, const char* str, void** arrPtr,
+        size_t* nArr, const fmi3_xml_primitive_type_t* primType) {
+    char* strCopy;
+    char* delim = " ";
+    size_t nVals = fmi3_xml_string_char_count(str, delim[0]) + 1;
+    void* vals;
+    char* token;
+    void* writeAddr;
+    int res = 0;
+
+    assert(str);
+
+    /* create a copy that it's OK that strtok mutates */
+    strCopy = context->callbacks->malloc(strlen(str) + 1); /* plus one for null character */
+    if (!strCopy) {
+        JM_LOG_ERROR_NO_MEM();
+        res = -1;
+        goto err1;
+    }
+    strncpy(strCopy, str, strlen(str) + 1);
+
+    /* allocate memory for the start values */
+    vals = context->callbacks->malloc(nVals * primType->size); /* freed in fmi3_xml_clear_model_description */
+    if (!vals) {
+        JM_LOG_ERROR_NO_MEM();
+        res = -1;
+        goto err2;
+    }
+
+    /* write start value(s) to correct type */
+    if (nVals == 1) { /* scalar */
+        if (fmi3_xml_str_to_intXX(context, 1, vals, NULL, str, primType)) {
+            jm_log_error(context->callbacks, module, "Unable to parse to %s: %s", primType->name, str);
+            res = -1;
+            goto err2;
+        }
+    } else { /* array */
+
+        /* get the first token */
+        token = strtok(strCopy, delim);
+
+        /* walk through other tokens */
+        writeAddr = vals;
+        while (token != NULL) {
+
+            /* write attribute as int */
+
+            if (fmi3_xml_str_to_intXX(context, 1, writeAddr, NULL, token, primType)) {
+                jm_log_error(context->callbacks, module, "Unable to parse to %s: %s", primType->name, token);
+                res = -1;
+                goto err2;
+            }
+
+            /* update where to write next value */
+            writeAddr = (char*)writeAddr + primType->size;
+
+            /* get next token */
+            token = strtok(NULL, delim); /* strtok maintains internal buffer - pass NULL as first arg to continue with previous string */
+        }
+    }
+
+    /* assign return arguments */
+    *arrPtr = vals;
+    *nArr = nVals;
+    goto clean;
+
+    /* clean up */
+err2:
+    context->callbacks->free(vals);
+err1:
+clean:
+    context->callbacks->free(strCopy);
+    strCopy = NULL;
+
+    return res;
+}
+/**
  * Parses a string to an array of float64 values
  *
  * str: the string containing the float64 values, they must be separated by exactly one <space> character, must not be NULL
@@ -890,11 +976,22 @@ int fmi3_xml_set_attr_array(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu
     }
 
     /* write all attributes to array of correct type */
+<<<<<<< HEAD
     if (fmi3_xml_str_to_array_floatXX(context, str, arrPtr, arrSize, primType)) {
         fmi3_xml_parse_attr_error(context, elmID, attrID, str);
+=======
+    if (fmi3_base_type_enu_is_float(primType->baseType) && fmi3_xml_str_to_array_floatXX(context, str, arrPtr, arrSize, primType)) {
+        jm_string elmName = fmi3_element_handle_map[elmID].elementName;
+        jm_string attrName = fmi3_xmlAttrNames[attrID];
+        fmi3_xml_parse_error(context, "XML element '%s': could not parse value for float attribute '%s'='%s'", elmName, attrName, str);
+>>>>>>> 3832d22 (Added support for parsing int64 arrays)
+        return -1;
+    } else if (fmi3_base_type_enu_is_int(primType->baseType) && fmi3_xml_str_to_array_intXX(context, str, arrPtr, arrSize, primType)) {
+        jm_string elmName = fmi3_element_handle_map[elmID].elementName;
+        jm_string attrName = fmi3_xmlAttrNames[attrID];
+        fmi3_xml_parse_error(context, "XML element '%s': could not parse value for int attribute '%s'='%s'", elmName, attrName, str);
         return -1;
     }
-
     return 0;
 }
 

@@ -156,7 +156,7 @@ static void test_binary_empty_mimeType(fmi3_import_t* xml) {
     REQUIRE(bv != nullptr);
 
     // BUG: Expected is to equal the empty string. Probably same for 'quantity'.
-    REQUIRE(fmi3_import_get_binary_variable_mime_type(bv) == NULL);  
+    REQUIRE(fmi3_import_get_binary_variable_mime_type(bv) == nullptr);
 }
 
 /**

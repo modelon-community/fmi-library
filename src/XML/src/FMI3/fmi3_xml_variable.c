@@ -926,9 +926,11 @@ static int fmi3_xml_variable_process_attr_causality_variability_initial(fmi3_xml
             {"exact",      fmi3_initial_enu_exact},
             {NULL,         0}
     };
-    fmi3_causality_enu_t causality;
-    fmi3_variability_enu_t variability, defaultVariability;
-    fmi3_initial_enu_t initial, defaultInitial, validInitial;
+
+    // Using unsigned int to avoid warnings when calling fmi3_xml_set_attr_enum
+    unsigned int causality;
+    unsigned int variability, defaultVariability;
+    unsigned int initial, defaultInitial, validInitial;
 
     // Causality:
     if (fmi3_xml_set_attr_enum(context, elm_id, fmi_attr_id_causality, 0, &causality,

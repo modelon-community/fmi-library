@@ -16,6 +16,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <float.h>
+#include <inttypes.h>
 
 #if defined (_MSC_VER) && _MSC_VER >= 1600
 /* Make sure that lexer uses compiler specific integer sizes */

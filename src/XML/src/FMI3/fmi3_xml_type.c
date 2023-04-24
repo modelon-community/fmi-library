@@ -883,11 +883,13 @@ int fmi3_xml_handle_Boolean(fmi3_xml_parser_context_t* context, const char* data
 int fmi3_xml_handle_Binary(fmi3_xml_parser_context_t* context, const char* data) {
     // TODO
     assert(0);
+    return -1;
 }
 
 int fmi3_xml_handle_Clock(fmi3_xml_parser_context_t* context, const char* data) {
     // TODO
     assert(0);
+    return -1;
 }
 
 int fmi3_xml_handle_String(fmi3_xml_parser_context_t* context, const char* data) {

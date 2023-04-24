@@ -65,9 +65,18 @@ jm_vector_declare_template(fmi3_value_reference_t)
     EXPAND_XML_ATTRNAME(initial) \
     EXPAND_XML_ATTRNAME(previous) \
     EXPAND_XML_ATTRNAME(clocks) \
+    EXPAND_XML_ATTRNAME(canHandleMultipleSetPerTimeInstant) \
     EXPAND_XML_ATTRNAME(mimeType) \
     EXPAND_XML_ATTRNAME(maxSize) \
-    EXPAND_XML_ATTRNAME(canHandleMultipleSetPerTimeInstant) \
+    EXPAND_XML_ATTRNAME(intervalVariability) \
+    EXPAND_XML_ATTRNAME(canBeDeactivated) \
+    EXPAND_XML_ATTRNAME(priority) \
+    EXPAND_XML_ATTRNAME(intervalDecimal) \
+    EXPAND_XML_ATTRNAME(shiftDecimal) \
+    EXPAND_XML_ATTRNAME(supportsFraction) \
+    EXPAND_XML_ATTRNAME(resolution) \
+    EXPAND_XML_ATTRNAME(intervalCounter) \
+    EXPAND_XML_ATTRNAME(shiftCounter) \
     EXPAND_XML_ATTRNAME(index) \
     EXPAND_XML_ATTRNAME(dependencies) \
     EXPAND_XML_ATTRNAME(dependenciesKind) \
@@ -398,6 +407,7 @@ void fmi3_xml_parse_error(fmi3_xml_parser_context_t *context, const char* fmt, .
 /* XXX: Let's rename all these to fmi3_xml_parse_attr_as_<type> */
 int fmi3_xml_set_attr_string (fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, int required, jm_vector(char)* field);
 int fmi3_xml_set_attr_enum   (fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, int required, unsigned int*    field, unsigned int   defaultVal, jm_name_ID_map_t* nameMap);
+int fmi3_xml_set_attr_bool   (fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, int required, bool*            field, bool           defaultVal);
 int fmi3_xml_set_attr_boolean(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, int required, unsigned int*    field, unsigned int   defaultVal);
 int fmi3_xml_set_attr_intXX  (fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, int required, void*            field, void*          defaultVal, const fmi3_xml_primitive_type_t* primType);
 int fmi3_xml_set_attr_int32  (fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, int required, fmi3_int32_t*    field, fmi3_int32_t   defaultVal);
@@ -405,6 +415,7 @@ int fmi3_xml_set_attr_uint64 (fmi3_xml_parser_context_t* context, fmi3_xml_elm_e
 int fmi3_xml_set_attr_uint32 (fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, int required, fmi3_uint32_t*   field, fmi3_uint32_t  defaultVal);
 int fmi3_xml_set_attr_floatXX(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, int required, void*            field, void*          defaultVal, const fmi3_xml_primitive_type_t* primType);
 int fmi3_xml_set_attr_float64(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, int required, fmi3_float64_t*  field, fmi3_float64_t defaultVal);
+int fmi3_xml_set_attr_float32(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, int required, fmi3_float32_t*  field, fmi3_float32_t defaultVal);
 int fmi3_xml_set_attr_sizet  (fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, int required, size_t*          field, size_t*        defaultVal);
 
 int fmi3_xml_parse_attr_valueref_list(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, int required, jm_vector(fmi3_value_reference_t)* vrs);

@@ -230,27 +230,27 @@ static void test_clock_default_attrs(fmi3_import_t* xml) {
     REQUIRE(cv != nullptr);
 
     // Type specific attributes:
-     REQUIRE(fmi3_import_get_clock_variable_can_be_deactivated(cv)   == false);
-     REQUIRE(fmi3_import_get_clock_variable_priority(cv)             == 0);
-     REQUIRE(fmi3_import_get_clock_variable_interval_variability(cv) == fmi3_interval_variability_constant);
-     REQUIRE(fmi3_import_get_clock_variable_interval_decimal(cv)     == 0.0);
-     REQUIRE(fmi3_import_get_clock_variable_shift_decimal(cv)        == 0.0);
-     REQUIRE(fmi3_import_get_clock_variable_supports_fraction(cv)    == false);
-     REQUIRE(fmi3_import_get_clock_variable_resolution(cv)           == 0);
-     REQUIRE(fmi3_import_get_clock_variable_interval_counter(cv)     == 0);
-     REQUIRE(fmi3_import_get_clock_variable_shift_counter(cv)        == 0);
-     
-     // TODO: Test interval_variability not set.
+    REQUIRE(fmi3_import_get_clock_variable_can_be_deactivated(cv)   == false);
+    REQUIRE(fmi3_import_get_clock_variable_priority(cv)             == 0);
+    REQUIRE(fmi3_import_get_clock_variable_interval_variability(cv) == fmi3_interval_variability_constant);
+    REQUIRE(fmi3_import_get_clock_variable_interval_decimal(cv)     == 0.0);
+    REQUIRE(fmi3_import_get_clock_variable_shift_decimal(cv)        == 0.0);
+    REQUIRE(fmi3_import_get_clock_variable_supports_fraction(cv)    == false);
+    REQUIRE(fmi3_import_get_clock_variable_resolution(cv)           == 0);
+    REQUIRE(fmi3_import_get_clock_variable_interval_counter(cv)     == 0);
+    REQUIRE(fmi3_import_get_clock_variable_shift_counter(cv)        == 0);
+    
+    // TODO: Test interval_variability not set.
 
     t = fmi3_import_get_variable_declared_type(v);
     REQUIRE(t == nullptr);  // No declared type
 }
 
 /**
- * Tests parsing a Clock variable with default attributes.
+ * Tests parsing a Clock variable with all type-specific attributes.
  */
-static void test_clock_default_attrs(fmi3_import_t* xml) {
-    fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "clockDefault");
+static void test_clock_all_attrs(fmi3_import_t* xml) {
+    fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "clockAllAttrs");
     fmi3_import_clock_variable_t* cv;
 
     REQUIRE(v != nullptr);
@@ -258,15 +258,15 @@ static void test_clock_default_attrs(fmi3_import_t* xml) {
     REQUIRE(cv != nullptr);
 
     // Type specific attributes:
-     REQUIRE(fmi3_import_get_clock_variable_can_be_deactivated(cv)   == true);
-     REQUIRE(fmi3_import_get_clock_variable_priority(cv)             == 1);
-     REQUIRE(fmi3_import_get_clock_variable_interval_variability(cv) == fmi3_interval_variability_countdown);
-     REQUIRE(fmi3_import_get_clock_variable_interval_decimal(cv)     == 2.0);
-     REQUIRE(fmi3_import_get_clock_variable_shift_decimal(cv)        == 3.0);
-     REQUIRE(fmi3_import_get_clock_variable_supports_fraction(cv)    == true);
-     REQUIRE(fmi3_import_get_clock_variable_resolution(cv)           == 3);
-     REQUIRE(fmi3_import_get_clock_variable_interval_counter(cv)     == 4);
-     REQUIRE(fmi3_import_get_clock_variable_shift_counter(cv)        == 5);
+    REQUIRE(fmi3_import_get_clock_variable_can_be_deactivated(cv)   == true);
+    REQUIRE(fmi3_import_get_clock_variable_priority(cv)             == 1);
+    REQUIRE(fmi3_import_get_clock_variable_interval_variability(cv) == fmi3_interval_variability_countdown);
+    REQUIRE(fmi3_import_get_clock_variable_interval_decimal(cv)     == 2.0);
+    REQUIRE(fmi3_import_get_clock_variable_shift_decimal(cv)        == 3.0);
+    REQUIRE(fmi3_import_get_clock_variable_supports_fraction(cv)    == true);
+    REQUIRE(fmi3_import_get_clock_variable_resolution(cv)           == 4);
+    REQUIRE(fmi3_import_get_clock_variable_interval_counter(cv)     == 5);
+    REQUIRE(fmi3_import_get_clock_variable_shift_counter(cv)        == 6);
 }
 
 TEST_CASE("Variable parsing", "[xml_variables]") {
@@ -298,7 +298,9 @@ TEST_CASE("Variable parsing", "[xml_variables]") {
     SECTION("Clock: parse default attributes") {
         test_clock_default_attrs(xml);
     }
-    
+    SECTION("Clock: parse all type-specific attributes") {
+        test_clock_all_attrs(xml);
+    }
 
     SECTION("ClockAttr: multiple values") {
         test_clock_attr_multi_value(xml);

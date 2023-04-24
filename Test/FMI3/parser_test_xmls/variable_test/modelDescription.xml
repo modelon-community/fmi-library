@@ -45,7 +45,7 @@
           previous="4001" clocks="4002" mimeType="myMimeType" maxSize="444"/>
   <!-- Variables referenced in attributes: -->
   <Binary name="preBinary" valueReference="4001"/>
-  <Clock name="clocks4" valueReference="4002"/>
+  <Clock name="clocks4" valueReference="4002" intervalVariability="constant"/>
 
   <!-- Binary Start element -->
   <Binary name="binaryStart" valueReference="5">
@@ -54,10 +54,10 @@
 
   <!-- Clock variables -->
   <Clock name="clockDefault" valueReference="6" intervalVariability="constant"/>
-  <Clock name="clockAllAttrs" valueReference="6" intervalVariability="constant"
-         canBeDeactivated="true" priority="1" intervalVariability="countdown"
-         intervalDecimal="2.0" shiftDecimal="3.0" supportsFraction="true"
-         resolution="4" intervalCounter="5" shiftCounter="6"/>
+  <Clock name="clockAllAttrs" valueReference="7" intervalVariability="countdown"
+         canBeDeactivated="true" priority="1" intervalDecimal="2.0"
+         shiftDecimal="3.0" supportsFraction="true" resolution="4"
+         intervalCounter="5" shiftCounter="6"/>
 
 
   <!-- ==================================================================================
@@ -71,9 +71,9 @@
 
   <!-- Clock attribute: Multiple clock value refs -->
   <Binary name="hasMultipleClocks" valueReference="999" clocks="999001 999002 999003"/>
-  <Clock name="clocks999_1" valueReference="999001"/>
-  <Clock name="clocks999_2" valueReference="999002"/>
-  <Clock name="clocks999_3" valueReference="999003"/>
+  <Clock name="clocks999_1" valueReference="999001" intervalVariability="constant"/>
+  <Clock name="clocks999_2" valueReference="999002" intervalVariability="constant"/>
+  <Clock name="clocks999_3" valueReference="999003" intervalVariability="constant"/>
 </ModelVariables>
 
 <ModelStructure/>

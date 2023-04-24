@@ -391,11 +391,40 @@ int fmi3_xml_set_attr_enum(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_
     return 0;
 }
 
+// Deprecated. Use fmi3_xml_set_attr_bool for FMI3. TODO: Remove all uses.
 int fmi3_xml_set_attr_boolean(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID,
         int required, unsigned int* field, unsigned int defaultVal)
 {
     jm_name_ID_map_t fmi_boolean_i_dMap[] = {{"true", 1},{"false", 0}, {"1", 1},{"0", 0}, {0,0}};
     return fmi3_xml_set_attr_enum(context, elmID, attrID, required, field, defaultVal, fmi_boolean_i_dMap);
+}
+
+int fmi3_xml_set_attr_bool(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID,
+        int required, bool* field, bool defaultVal)
+{
+    jm_string strVal;
+
+    if (fmi3_xml_get_attr_str(context, elmID, attrID, required, &strVal)) {
+        return -1;
+    }
+
+    if (!strVal && !required) {
+        *field = defaultVal;
+        return 0;
+    }
+    
+    if (strcmp(strVal, "true") == 0) {
+        *field = true;
+    } else if (strcmp(strVal, "false") == 0) {
+        *field = false;
+    } else {
+        jm_string elmName = fmi3_element_handle_map[elmID].elementName;
+        jm_string attrName = fmi3_xmlAttrNames[attrID];
+        fmi3_xml_parse_error(context, "XML element '%s': could not parse value for boolean attribute '%s'='%s'",
+                elmName, attrName, strVal);
+        return -1;
+    }
+    return 0;
 }
 
 /**
@@ -735,6 +764,7 @@ int fmi3_xml_set_attr_floatXX(fmi3_xml_parser_context_t *context, fmi3_xml_elm_e
             int required, fmi3_##TYPE##_t* field, fmi3_##TYPE##_t defaultVal) {                                            \
         return fmi3_xml_set_attr_##TYPEXX(context, elmID, attrID, required, field, &defaultVal, &PRIMITIVE_TYPES.TYPE);    \
     }
+gen_fmi3_xml_set_attr_TYPEXX(float32, floatXX)
 gen_fmi3_xml_set_attr_TYPEXX(float64, floatXX)
 gen_fmi3_xml_set_attr_TYPEXX(int32,   intXX)
 gen_fmi3_xml_set_attr_TYPEXX(uint64,  intXX)

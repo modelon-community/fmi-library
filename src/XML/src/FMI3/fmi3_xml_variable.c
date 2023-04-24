@@ -1604,13 +1604,94 @@ int fmi3_xml_handle_ClockVariable(fmi3_xml_parser_context_t* context, const char
     if (fmi3_xml_handle_Variable(context, data)) return -1;
 
     if (!data) {
+        fmi3_xml_elm_enu_t elmID = fmi3_xml_elmID_Clock;  // The ID corresponding to the actual parsed element name
         fmi3_xml_model_description_t* md = context->modelDescription;
         fmi3_xml_type_definitions_t* td = &md->typeDefinitions;
         fmi3_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
 
+        // NOTE:
+        // For other Variables we typically check if any type-specific attributes have been
+        // set, and then we create a new vProps, else we fallback to the TypeDef. Not doing that
+        // for Clocks, because different from other Variables, they have an additional required
+        // attribute 'intervalVariability'. That means we always have more data than what is in
+        // the TypeDef. There are other solutions, but this felt like the least complex for now.
+
         assert(!variable->type);
-        variable->type = fmi3_parse_declared_type_attr(context, fmi3_xml_elmID_Clock, &td->defaultClockType.super);
-        if (!variable->type) return -1;
+        fmi3_xml_variable_type_base_t* declaredType = fmi3_parse_declared_type_attr(context, elmID,
+                &td->defaultClockType.super);
+
+        // Find the TypeDefinition or default type properties:
+        fmi3_xml_clock_type_props_t* dtProps;
+        // Get declared type properties:
+        if (declaredType->structKind == fmi3_xml_type_struct_enu_typedef) {
+            dtProps = (fmi3_xml_clock_type_props_t*)(declaredType->nextLayer);  // TypeDef
+        } else {
+            dtProps = (fmi3_xml_clock_type_props_t*)declaredType;  // default
+        }
+        assert(dtProps->super.structKind == fmi3_xml_type_struct_enu_props);
+
+        // Create variable properties:
+        fmi3_xml_clock_type_props_t* vProps = (fmi3_xml_clock_type_props_t*)fmi3_xml_alloc_variable_or_typedef_props(
+                td, declaredType, sizeof(fmi3_xml_clock_type_props_t));
+        if (!vProps) return -1;
+        
+        jm_name_ID_map_t intervalVariabilityMap[] = {
+                {"constant",   fmi3_interval_variability_constant},
+                {"fixed",      fmi3_interval_variability_fixed},
+                {"tunable",    fmi3_interval_variability_tunable},
+                {"changing",   fmi3_interval_variability_changing},
+                {"countdown",  fmi3_interval_variability_countdown},
+                {"triggered",  fmi3_interval_variability_triggered},
+                {NULL,         0}
+        };
+        if (fmi3_xml_set_attr_enum(context, elmID, fmi_attr_id_intervalVariability, 1 /*required*/,
+                &vProps->intervalVariability, dtProps->intervalVariability, intervalVariabilityMap))
+        {
+            return -1;
+        }
+        if (fmi3_xml_set_attr_bool(context, elmID, fmi_attr_id_canBeDeactivated, 0 /*required*/,
+                &vProps->canBeDeactivated, dtProps->canBeDeactivated))
+        {
+            return -1;
+        }
+        if (fmi3_xml_set_attr_bool(context, elmID, fmi_attr_id_supportsFraction, 0 /*required*/,
+                &vProps->supportsFraction, dtProps->supportsFraction))
+        {
+            return -1;
+        }
+        if (fmi3_xml_set_attr_uint32(context, elmID, fmi_attr_id_priority, 0 /*required*/,
+                &vProps->priority, dtProps->priority))
+        {
+            return -1;
+        }
+        if (fmi3_xml_set_attr_uint64(context, elmID, fmi_attr_id_resolution, 0 /*required*/,
+                &vProps->resolution, dtProps->resolution))
+        {
+            return -1;
+        }
+        if (fmi3_xml_set_attr_uint64(context, elmID, fmi_attr_id_intervalCounter, 0 /*required*/,
+                &vProps->intervalCounter, dtProps->intervalCounter))
+        {
+            return -1;
+        }
+        if (fmi3_xml_set_attr_uint64(context, elmID, fmi_attr_id_shiftCounter, 0 /*required*/,
+                &vProps->shiftCounter, dtProps->shiftCounter))
+        {
+            return -1;
+        }
+        if (fmi3_xml_set_attr_float32(context, elmID, fmi_attr_id_intervalDecimal, 0 /*required*/,
+                &vProps->intervalDecimal, dtProps->intervalDecimal))
+        {
+            return -1;
+        }
+        if (fmi3_xml_set_attr_float32(context, elmID, fmi_attr_id_shiftDecimal, 0 /*required*/,
+                &vProps->shiftDecimal, dtProps->shiftDecimal))
+        {
+            return -1;
+        }
+        
+        variable->type = &vProps->super;
+        
     }
     return 0;
 }

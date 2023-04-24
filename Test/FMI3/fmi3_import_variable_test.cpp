@@ -308,3 +308,10 @@ TEST_CASE("Variable parsing", "[xml_variables]") {
 
     fmi3_import_free(xml);
 }
+
+TEST_CASE("Invalid Clock variable - no intervalVariability attr", "[xml_variables]") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/variable_test/invalid/intervalVariability1";
+
+    fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
+    REQUIRE(xml == nullptr);
+}

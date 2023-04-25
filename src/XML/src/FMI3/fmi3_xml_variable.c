@@ -1499,11 +1499,9 @@ int fmi3_xml_handle_IntXXVariable(fmi3_xml_parser_context_t* context, const char
         if (hasStart) {
             jm_string startAttr = variable->startAttr;
 
-            fmi3_xml_variable_start_int_t* start = \
-                    (fmi3_xml_variable_start_int_t*)fmi3_xml_alloc_variable_type_start(
-                        td,
-                        variable->type,
-                        sizeof(fmi3_xml_variable_start_int_t));
+            fmi3_xml_variable_start_int_t* start;
+            start = (fmi3_xml_variable_start_int_t*)fmi3_xml_alloc_variable_type_start(
+                    td, variable->type, sizeof(fmi3_xml_variable_start_int_t));
             if (!start) {
                 fmi3_xml_parse_fatal(context, "Could not allocate memory for an integer start array");
                 return -1;

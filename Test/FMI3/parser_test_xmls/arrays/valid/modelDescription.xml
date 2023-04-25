@@ -79,7 +79,7 @@
       <Dimension start="2"/>
     </Int64>
 
-    <Int64 name="dummy_int64_array2" valueReference="110" causality="input" description="Array used to test the largest and smalles value of int64" start="9223372036854775807 9223372036854775806 9223372036854775805 -9223372036854775808 0 -9223372036854775807">
+    <Int64 name="dummy_int64_array2" valueReference="110" causality="input" description="Array used to test the largest and smalles value of int64" start="9223372036854775807 9223372036854775806 9223372036854775805 -9223372036854775805 0 -9223372036854775807">
       <Dimension start="3"/>
       <Dimension start="2"/>
     </Int64>

@@ -1449,10 +1449,7 @@ int fmi3_xml_handle_IntXXVariable(fmi3_xml_parser_context_t* context, const char
 
     if(!data) {
         fmi3_xml_variable_type_base_t* declaredType = fmi3_get_declared_type(
-            context,
-            elmID,
-            &defaultType->super
-        );
+                context, elmID, &defaultType->super);
 
         if(!declaredType) return -1;
         {

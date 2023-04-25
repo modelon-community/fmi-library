@@ -126,24 +126,28 @@ fmi3_xml_uint64_variable_t* fmi3_xml_get_variable_as_uint64(fmi3_xml_variable_t*
 fmi3_uint64_t fmi3_xml_get_uint64_variable_min (fmi3_xml_uint64_variable_t* v);
 fmi3_uint64_t fmi3_xml_get_uint64_variable_max (fmi3_xml_uint64_variable_t* v);
 fmi3_uint64_t fmi3_xml_get_uint64_variable_start (fmi3_xml_uint64_variable_t* v);
+fmi3_uint64_t* fmi3_xml_get_uint64_variable_start_array(fmi3_xml_uint64_variable_t* v);
 fmi3_string_t fmi3_xml_get_uint64_variable_quantity (fmi3_xml_uint64_variable_t* v);
 
 fmi3_xml_uint32_variable_t* fmi3_xml_get_variable_as_uint32(fmi3_xml_variable_t*);
 fmi3_uint32_t fmi3_xml_get_uint32_variable_min (fmi3_xml_uint32_variable_t* v);
 fmi3_uint32_t fmi3_xml_get_uint32_variable_max (fmi3_xml_uint32_variable_t* v);
 fmi3_uint32_t fmi3_xml_get_uint32_variable_start (fmi3_xml_uint32_variable_t* v);
+fmi3_uint32_t* fmi3_xml_get_uint32_variable_start_array(fmi3_xml_uint32_variable_t* v);
 fmi3_string_t fmi3_xml_get_uint32_variable_quantity (fmi3_xml_uint32_variable_t* v);
 
 fmi3_xml_uint16_variable_t* fmi3_xml_get_variable_as_uint16(fmi3_xml_variable_t*);
 fmi3_uint16_t fmi3_xml_get_uint16_variable_min (fmi3_xml_uint16_variable_t* v);
 fmi3_uint16_t fmi3_xml_get_uint16_variable_max (fmi3_xml_uint16_variable_t* v);
 fmi3_uint16_t fmi3_xml_get_uint16_variable_start (fmi3_xml_uint16_variable_t* v);
+fmi3_uint16_t* fmi3_xml_get_uint16_variable_start_array(fmi3_xml_uint16_variable_t* v);
 fmi3_string_t fmi3_xml_get_uint16_variable_quantity (fmi3_xml_uint16_variable_t* v);
 
 fmi3_xml_uint8_variable_t* fmi3_xml_get_variable_as_uint8(fmi3_xml_variable_t*);
 fmi3_uint8_t fmi3_xml_get_uint8_variable_min (fmi3_xml_uint8_variable_t* v);
 fmi3_uint8_t fmi3_xml_get_uint8_variable_max (fmi3_xml_uint8_variable_t* v);
 fmi3_uint8_t fmi3_xml_get_uint8_variable_start (fmi3_xml_uint8_variable_t* v);
+fmi3_uint8_t* fmi3_xml_get_uint8_variable_start_array(fmi3_xml_uint8_variable_t* v);
 fmi3_string_t fmi3_xml_get_uint8_variable_quantity (fmi3_xml_uint8_variable_t* v);
 
 fmi3_xml_string_variable_t* fmi3_xml_get_variable_as_string(fmi3_xml_variable_t*);

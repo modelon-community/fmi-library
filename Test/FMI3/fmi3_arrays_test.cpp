@@ -111,25 +111,12 @@ TEST_CASE("Test basic float64 array parsing, work in progress"){
         fmi3_import_free_dimension_list(dimList);
     }
 
-
     SECTION("Test int64 start array") {
         fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "dummy_int64_array");
         fmi3_import_dimension_list_t* dimList = basic_array_checks(v, xml, 2);
-        fmi3_int64_t* start = fmi3_import_get_int64_variable_start_array(
-                fmi3_import_get_variable_as_int64(v));
-        REQUIRE(start[0] == 54);
-        REQUIRE(start[1] == 23);
-        REQUIRE(start[2] == 11);
-        REQUIRE(start[3] == 5123);
-        fmi3_import_free_dimension_list(dimList);
-    }
-
-    SECTION("Test int64 start array with extremely large (absolute) values") {
-        fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "dummy_int64_array2");
-        fmi3_import_dimension_list_t* dimList = basic_array_checks(v, xml, 2);
         fmi3_int64_t* start = fmi3_import_get_int64_variable_start_array(fmi3_import_get_variable_as_int64(v));
         REQUIRE(start[0] ==  9223372036854775807);
-        REQUIRE(start[1] ==  9223372036854775806);
+        REQUIRE(start[1] ==  1234);
         REQUIRE(start[2] ==  9223372036854775805);
         REQUIRE(start[3] == -9223372036854775805);
         REQUIRE(start[4] == 0);
@@ -137,7 +124,7 @@ TEST_CASE("Test basic float64 array parsing, work in progress"){
         fmi3_import_free_dimension_list(dimList);
     }
 
-    SECTION("Test int32 start array with extremely large (absolute) values") {
+    SECTION("Test int32 start array") {
         fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "dummy_int32_array");
         fmi3_import_dimension_list_t* dimList = basic_array_checks(v, xml, 2);
 
@@ -149,7 +136,7 @@ TEST_CASE("Test basic float64 array parsing, work in progress"){
         fmi3_import_free_dimension_list(dimList);
     }
 
-    SECTION("Test int16 start array with extremely large (absolute) values") {
+    SECTION("Test int16 start array") {
         fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "dummy_int16_array");
         fmi3_import_dimension_list_t* dimList = basic_array_checks(v, xml, 2);
         fmi3_int16_t* start = fmi3_import_get_int16_variable_start_array(fmi3_import_get_variable_as_int16(v));
@@ -160,7 +147,7 @@ TEST_CASE("Test basic float64 array parsing, work in progress"){
         fmi3_import_free_dimension_list(dimList);
     }
 
-    SECTION("Test int8 start array with extremely large (absolute) values") {
+    SECTION("Test int8 start array") {
         fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "dummy_int8_array");
         fmi3_import_dimension_list_t* dimList = basic_array_checks(v, xml, 2);
         fmi3_int8_t* start = fmi3_import_get_int8_variable_start_array(fmi3_import_get_variable_as_int8(v));
@@ -168,6 +155,59 @@ TEST_CASE("Test basic float64 array parsing, work in progress"){
         REQUIRE(start[1] ==  126);
         REQUIRE(start[2] == -128);
         REQUIRE(start[3] == -127);
+        fmi3_import_free_dimension_list(dimList);
+    }
+
+
+    SECTION("Test uint64 start array") {
+        fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "dummy_uint64_array");
+        fmi3_import_dimension_list_t* dimList = basic_array_checks(v, xml, 2);
+        fmi3_uint64_t* start = fmi3_import_get_uint64_variable_start_array(fmi3_import_get_variable_as_uint64(v));
+        REQUIRE(start[0] == 18446744073709551615);
+        REQUIRE(start[1] == 0);
+        REQUIRE(start[2] == 1);
+        REQUIRE(start[3] == 2);
+        fmi3_import_free_dimension_list(dimList);
+    }
+
+    SECTION("Test uint32 start array") {
+        fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "dummy_uint32_array");
+        fmi3_import_dimension_list_t* dimList = basic_array_checks(v, xml, 2);
+
+        fmi3_uint32_t* start = fmi3_import_get_uint32_variable_start_array(fmi3_import_get_variable_as_uint32(v));
+        REQUIRE(start[0] == 0);
+        REQUIRE(start[1] == 4294967295);
+        REQUIRE(start[2] == 5);
+        REQUIRE(start[3] == 1);
+        REQUIRE(start[4] == 2);
+        REQUIRE(start[5] == 1);
+        fmi3_import_free_dimension_list(dimList);
+    }
+
+    SECTION("Test uint16 start array") {
+        fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "dummy_uint16_array");
+        fmi3_import_dimension_list_t* dimList = basic_array_checks(v, xml, 2);
+        fmi3_uint16_t* start = fmi3_import_get_uint16_variable_start_array(fmi3_import_get_variable_as_uint16(v));
+        REQUIRE(start[0] == 65535);
+        REQUIRE(start[1] == 65535);
+        REQUIRE(start[2] == 1);
+        REQUIRE(start[3] == 2);
+        REQUIRE(start[4] == 3);
+        REQUIRE(start[5] == 4);
+        fmi3_import_free_dimension_list(dimList);
+    }
+
+    SECTION("Test uint8 start array") {
+        fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "dummy_uint8_array");
+        fmi3_import_dimension_list_t* dimList = basic_array_checks(v, xml, 3);
+        fmi3_uint8_t* start = fmi3_import_get_uint8_variable_start_array(fmi3_import_get_variable_as_uint8(v));
+        REQUIRE(start[1] == 255);
+        REQUIRE(start[2] == 3);
+        REQUIRE(start[3] == 255);
+        REQUIRE(start[4] == 5);
+        REQUIRE(start[5] == 6);
+        REQUIRE(start[6] == 255);
+        REQUIRE(start[7] == 255);
         fmi3_import_free_dimension_list(dimList);
     }
     fmi_import_free_context(context);

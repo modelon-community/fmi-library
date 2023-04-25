@@ -611,6 +611,11 @@ fmi3_uint64_t fmi3_xml_get_uint64_variable_start(fmi3_xml_uint64_variable_t* v) 
     return fmi3_xml_get_int_variable_start((fmi3_xml_int_variable_t*)v, &start) ? 0 : start.scalar64u;
 }
 
+fmi3_uint64_t* fmi3_xml_get_uint64_variable_start_array(fmi3_xml_uint64_variable_t* v) {
+    fmi3_int_union_t start;
+    return fmi3_xml_get_int_variable_start((fmi3_xml_int_variable_t*)v, &start) ? 0 : start.array64s;
+}
+
 fmi3_string_t fmi3_xml_get_uint64_variable_quantity(fmi3_xml_uint64_variable_t* v) {
     fmi3_xml_variable_t* vv = (fmi3_xml_variable_t*)v;
     fmi3_xml_int_type_props_t* props =
@@ -640,6 +645,11 @@ fmi3_uint32_t fmi3_xml_get_uint32_variable_max(fmi3_xml_uint32_variable_t* v) {
 fmi3_uint32_t fmi3_xml_get_uint32_variable_start(fmi3_xml_uint32_variable_t* v) {
     fmi3_int_union_t start;
     return fmi3_xml_get_int_variable_start((fmi3_xml_int_variable_t*)v, &start) ? 0 : start.scalar32u;
+}
+
+fmi3_uint32_t* fmi3_xml_get_uint32_variable_start_array(fmi3_xml_uint32_variable_t* v) {
+    fmi3_int_union_t start;
+    return fmi3_xml_get_int_variable_start((fmi3_xml_int_variable_t*)v, &start) ? 0 : start.array32s;
 }
 
 fmi3_string_t fmi3_xml_get_uint32_variable_quantity(fmi3_xml_uint32_variable_t* v) {
@@ -673,6 +683,11 @@ fmi3_uint16_t fmi3_xml_get_uint16_variable_start(fmi3_xml_uint16_variable_t* v) 
     return fmi3_xml_get_int_variable_start((fmi3_xml_int_variable_t*)v, &start) ? 0 : start.scalar16u;
 }
 
+fmi3_uint16_t* fmi3_xml_get_uint16_variable_start_array(fmi3_xml_uint16_variable_t* v) {
+    fmi3_int_union_t start;
+    return fmi3_xml_get_int_variable_start((fmi3_xml_int_variable_t*)v, &start) ? 0 : start.array16s;
+}
+
 fmi3_string_t fmi3_xml_get_uint16_variable_quantity(fmi3_xml_uint16_variable_t* v) {
     fmi3_xml_variable_t* vv = (fmi3_xml_variable_t*)v;
     fmi3_xml_int_type_props_t* props =
@@ -702,6 +717,11 @@ fmi3_uint8_t fmi3_xml_get_uint8_variable_max(fmi3_xml_uint8_variable_t* v) {
 fmi3_uint8_t fmi3_xml_get_uint8_variable_start(fmi3_xml_uint8_variable_t* v) {
     fmi3_int_union_t start;
     return fmi3_xml_get_int_variable_start((fmi3_xml_int_variable_t*)v, &start) ? 0 : start.scalar8u;
+}
+
+fmi3_uint8_t* fmi3_xml_get_uint8_variable_start_array(fmi3_xml_uint8_variable_t* v) {
+    fmi3_int_union_t start;
+    return fmi3_xml_get_int_variable_start((fmi3_xml_int_variable_t*)v, &start) ? 0 : start.array8s;
 }
 
 fmi3_string_t fmi3_xml_get_uint8_variable_quantity(fmi3_xml_uint8_variable_t* v) {
@@ -904,18 +924,18 @@ static void* fmi3_xml_get_variable_start_array(fmi3_xml_variable_t* v) {
     case fmi3_base_type_float64: /* fallthrough */
     case fmi3_base_type_float32:
         return fmi3_xml_get_float_variable_start((fmi3_xml_float_variable_t*)v).ptr;
+    case fmi3_base_type_uint64:   /* fallthrough */
     case fmi3_base_type_int64:
         return fmi3_xml_get_int_variable_start((fmi3_xml_int_variable_t*)v, &start) ? NULL : start.array64s;
+    case fmi3_base_type_uint32:   /* fallthrough */
     case fmi3_base_type_int32:
         return fmi3_xml_get_int_variable_start((fmi3_xml_int_variable_t*)v, &start) ? NULL : start.array32s;
+    case fmi3_base_type_uint16:   /* fallthrough */
     case fmi3_base_type_int16:
         return fmi3_xml_get_int_variable_start((fmi3_xml_int_variable_t*)v, &start) ? NULL : start.array16s;
+    case fmi3_base_type_uint8:    /* fallthrough */
     case fmi3_base_type_int8:
         return fmi3_xml_get_int_variable_start((fmi3_xml_int_variable_t*)v, &start) ? NULL : start.array8s;
-    case fmi3_base_type_uint64:   /* fallthrough */
-    case fmi3_base_type_uint32:   /* fallthrough */
-    case fmi3_base_type_uint16:   /* fallthrough */
-    case fmi3_base_type_uint8:    /* fallthrough */
     case fmi3_base_type_bool:     /* fallthrough */
     case fmi3_base_type_str:      /* fallthrough */
     case fmi3_base_type_enum:     /* fallthrough */

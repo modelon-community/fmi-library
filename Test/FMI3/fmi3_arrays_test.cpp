@@ -75,7 +75,7 @@ TEST_CASE("Test basic float64 array parsing, work in progress"){
     char xmlPath[1000];
     size_t sizeXmlPath = sizeof(xmlPath) / sizeof(char);
 
-    fmi_testutil_build_xml_path(xmlPath, sizeXmlPath, ARRAY_TEST_MODEL_DESCRIPTION_DIR, "/valid");
+    fmi_testutil_build_xml_path(xmlPath, sizeXmlPath, ARRAY_TEST_MODEL_DESCRIPTION_DIR, "/arrays/valid");
     fmi3_import_t *xml = parse_xml(xmlPath);
 
     fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "array4_64");
@@ -118,7 +118,7 @@ TEST_CASE("Test retrieve start values of an int64 array with small values"){
     char xmlPath[1000];
     size_t sizeXmlPath = sizeof(xmlPath) / sizeof(char);
 
-    fmi_testutil_build_xml_path(xmlPath, sizeXmlPath, ARRAY_TEST_MODEL_DESCRIPTION_DIR, "/valid");
+    fmi_testutil_build_xml_path(xmlPath, sizeXmlPath, ARRAY_TEST_MODEL_DESCRIPTION_DIR, "/arrays/valid");
     fmi3_import_t *xml = parse_xml(xmlPath);
 
     fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "dummy_int64_array");
@@ -162,7 +162,7 @@ TEST_CASE("Test retrieve start values of an int64 array with values as large/sma
     char xmlPath[1000];
     size_t sizeXmlPath = sizeof(xmlPath) / sizeof(char);
 
-    fmi_testutil_build_xml_path(xmlPath, sizeXmlPath, ARRAY_TEST_MODEL_DESCRIPTION_DIR, "/valid");
+    fmi_testutil_build_xml_path(xmlPath, sizeXmlPath, ARRAY_TEST_MODEL_DESCRIPTION_DIR, "/arrays/valid");
     fmi3_import_t *xml = parse_xml(xmlPath);
 
     fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "dummy_int64_array2");

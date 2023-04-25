@@ -276,7 +276,7 @@ typedef enum fmi3_dependencies_kind_enu_t
     \param enums The object of type fmi3_base_type_enu_t to check.
     \return Returns 1 for any of the signed/unsigned integer types, otherwise 0.
 */
-FMILIB_EXPORT int fmi3_base_type_enu_is_int(fmi3_base_type_enu_t enums);
+int fmi3_base_type_enu_is_int(fmi3_base_type_enu_t enums);
 
 /** \brief Test if the input argument of type fmi3_base_type_enu_t* is representing float32 or float64..
     \param enums The object of type fmi3_base_type_enu_t to check.

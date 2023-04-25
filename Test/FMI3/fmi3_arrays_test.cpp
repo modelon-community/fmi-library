@@ -113,10 +113,10 @@ TEST_CASE("Test basic float64 array parsing, work in progress"){
         REQUIRE(nDims == 2);
 
         fmi3_int64_t* start = fmi3_import_get_int64_variable_start_array(fmi3_import_get_variable_as_int64(v));
-        REQUIRE(start[0] ==  54);
-        REQUIRE(start[1] ==  23);
-        REQUIRE(start[2] ==  11);
-        REQUIRE(start[3] ==  5123);
+        REQUIRE(start[0] == 54);
+        REQUIRE(start[1] == 23);
+        REQUIRE(start[2] == 11);
+        REQUIRE(start[3] == 5123);
         fmi3_import_free_dimension_list(dimList);
     }
 

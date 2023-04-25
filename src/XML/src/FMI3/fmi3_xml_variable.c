@@ -1353,7 +1353,6 @@ int fmi3_xml_handle_FloatXXVariable(fmi3_xml_parser_context_t* context, const ch
     md = context->modelDescription;
     variable = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
     td = &md->typeDefinitions;
-    type = 0;
 
     if (!data) { /* start of tag */
         fmi3_xml_variable_type_base_t* declaredType = 0;

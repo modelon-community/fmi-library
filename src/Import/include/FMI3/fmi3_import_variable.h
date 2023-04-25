@@ -139,6 +139,32 @@ FMILIB_EXPORT fmi3_int16_t* fmi3_import_get_int16_variable_start_array(fmi3_impo
 */
 FMILIB_EXPORT fmi3_int8_t* fmi3_import_get_int8_variable_start_array(fmi3_import_int8_variable_t* v);
 
+
+/** \brief Get the start values of an array variable
+    @return Pointer to array with start values. Total length of array is given by product of the dimensions given by
+        #fmi3_import_get_variable_dimensions. FMI Library handles memory for the array.
+*/
+FMILIB_EXPORT fmi3_uint64_t* fmi3_import_get_uint64_variable_start_array(fmi3_import_uint64_variable_t* v);
+
+/** \brief Get the start values of an array variable
+    @return Pointer to array with start values. Total length of array is given by product of the dimensions given by
+        #fmi3_import_get_variable_dimensions. FMI Library handles memory for the array.
+*/
+FMILIB_EXPORT fmi3_uint32_t* fmi3_import_get_uint32_variable_start_array(fmi3_import_uint32_variable_t* v);
+
+/** \brief Get the start values of an array variable
+    @return Pointer to array with start values. Total length of array is given by product of the dimensions given by
+        #fmi3_import_get_variable_dimensions. FMI Library handles memory for the array.
+*/
+FMILIB_EXPORT fmi3_uint16_t* fmi3_import_get_uint16_variable_start_array(fmi3_import_uint16_variable_t* v);
+
+/** \brief Get the start values of an array variable
+    @return Pointer to array with start values. Total length of array is given by product of the dimensions given by
+        #fmi3_import_get_variable_dimensions. FMI Library handles memory for the array.
+*/
+FMILIB_EXPORT fmi3_uint8_t* fmi3_import_get_uint8_variable_start_array(fmi3_import_uint8_variable_t* v);
+
+
 /** \brief Get a list of the variable's array dimensions. Note that this list must be freed with #fmi3_import_free_dimension_list.
     @return Dynamically allocated list of array dimensions.
 */

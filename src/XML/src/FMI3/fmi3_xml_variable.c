@@ -17,6 +17,7 @@
 #include <stdio.h>
 #include <inttypes.h>
 
+#include <stdbool.h>
 #include <JM/jm_vector.h>
 
 #include "fmi3_xml_parser.h"
@@ -56,29 +57,29 @@ static struct fmi3_xml_variable_default_values VARIABLE_DEFAULT_VALUES = \
 static void* fmi3_xml_get_type_default_value(fmi3_base_type_enu_t baseType) {
     switch (baseType) {
         case fmi3_base_type_float64:
-            return &VARIABLE_DEFAULT_VALUES.float64;
+            return (void*)0;
         case fmi3_base_type_float32:
-            return &VARIABLE_DEFAULT_VALUES.float32;
+            return (void*)0;
         case fmi3_base_type_int64:
-            return &VARIABLE_DEFAULT_VALUES.int64;
+            return (void*)0;
         case fmi3_base_type_int32:
-            return &VARIABLE_DEFAULT_VALUES.int32;
+            return (void*)0;
         case fmi3_base_type_int16:
-            return &VARIABLE_DEFAULT_VALUES.int16;
+            return (void*)0;
         case fmi3_base_type_int8:
-            return &VARIABLE_DEFAULT_VALUES.int8;
+            return (void*)0;
         case fmi3_base_type_uint64:
-            return &VARIABLE_DEFAULT_VALUES.uint64;
+            return (void*)0;
         case fmi3_base_type_uint32:
-            return &VARIABLE_DEFAULT_VALUES.uint32;
+            return (void*)0;
         case fmi3_base_type_uint16:
-            return &VARIABLE_DEFAULT_VALUES.uint16;
+            return (void*)0;
         case fmi3_base_type_uint8:
-            return &VARIABLE_DEFAULT_VALUES.uint8;
+            return (void*)0;
         case fmi3_base_type_bool:
-            return &VARIABLE_DEFAULT_VALUES.boolean;
+            return (void*)false;
         case fmi3_base_type_str:
-            return &VARIABLE_DEFAULT_VALUES.string;
+            return (void*)"";
         default:
             assert(0);
             return NULL;
@@ -1341,7 +1342,6 @@ int fmi3_xml_handle_FloatXXVariable(fmi3_xml_parser_context_t* context, const ch
     fmi3_xml_variable_t* variable;
     fmi3_xml_type_definitions_t* td;
     fmi3_xml_float_type_props_t* type;
-    fmi3_bitness_enu_t bitness = primType->bitness;
     int res;
 
     if (context->skipOneVariableFlag) return 0;

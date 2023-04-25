@@ -257,6 +257,10 @@ fmi3_int32_t fmi3_import_get_int32_variable_start(fmi3_import_int32_variable_t* 
     return fmi3_xml_get_int32_variable_start(v);
 }
 
+fmi3_int32_t* fmi3_import_get_int32_variable_start_array(fmi3_import_int32_variable_t* v) {
+    return fmi3_xml_get_int32_variable_start_array(v);
+}
+
 fmi3_string_t fmi3_import_get_int32_variable_quantity(fmi3_import_int32_variable_t* v) {
     return fmi3_xml_get_int32_variable_quantity(v);
 }
@@ -281,6 +285,10 @@ fmi3_int16_t fmi3_import_get_int16_variable_start(fmi3_import_int16_variable_t* 
     return fmi3_xml_get_int16_variable_start(v);
 }
 
+fmi3_int16_t* fmi3_import_get_int16_variable_start_array(fmi3_import_int16_variable_t* v) {
+    return fmi3_xml_get_int16_variable_start_array(v);
+}
+
 fmi3_string_t fmi3_import_get_int16_variable_quantity(fmi3_import_int16_variable_t* v) {
     return fmi3_xml_get_int16_variable_quantity(v);
 }
@@ -303,6 +311,10 @@ fmi3_int8_t fmi3_import_get_int8_variable_max(fmi3_import_int8_variable_t* v) {
 
 fmi3_int8_t fmi3_import_get_int8_variable_start(fmi3_import_int8_variable_t* v) {
     return fmi3_xml_get_int8_variable_start(v);
+}
+
+fmi3_int8_t* fmi3_import_get_int8_variable_start_array(fmi3_import_int8_variable_t* v) {
+    return fmi3_xml_get_int8_variable_start_array(v);
 }
 
 fmi3_string_t fmi3_import_get_int8_variable_quantity(fmi3_import_int8_variable_t* v) {

@@ -58,6 +58,27 @@ static fmi3_import_t *parse_xml(const char *model_desc_path)
     return xml;
 }
 
+/*
+* This function verifies that input argument 'v' has a start value, that it is an array and
+* and that we retrieve the correct number of dimensions..
+*   Input parameters:
+*       v: The array variable to test
+*       xml: The xml object (as returned from fmi3_import_parse_xml).
+*       nDimsExpected: The expected number of dimensions for the array variable 'v'.
+*/
+static fmi3_import_dimension_list_t* basic_array_checks(fmi3_import_variable_t* v, fmi3_import_t* xml,
+        size_t nDimsExpected) {
+    int has_start = fmi3_import_get_variable_has_start(v);
+    REQUIRE(has_start == 1);
+    int is_array = fmi3_import_variable_is_array(v);
+    REQUIRE(is_array == 1);
+
+    fmi3_import_dimension_list_t* dimList = fmi3_import_get_variable_dimension_list(xml, v); /* allocates memory */
+    size_t nDims = fmi3_import_get_dimension_list_size(dimList);
+    REQUIRE(nDims == nDimsExpected);
+    return dimList; /* has to be freed by the caller. */
+}
+
 
 TEST_CASE("Test basic float64 array parsing, work in progress"){
     jm_callbacks cb;
@@ -80,16 +101,7 @@ TEST_CASE("Test basic float64 array parsing, work in progress"){
 
     SECTION("Test float64 array") {
         fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "array4_64");
-
-        int has_start = fmi3_import_get_variable_has_start(v);
-        REQUIRE(has_start == 1);
-        int is_array = fmi3_import_variable_is_array(v);
-        REQUIRE(is_array == 1);
-
-        fmi3_import_dimension_list_t* dimList = fmi3_import_get_variable_dimension_list(xml, v); /* allocates memory */
-        size_t nDims = fmi3_import_get_dimension_list_size(dimList);
-        REQUIRE(nDims == 3);
-
+        fmi3_import_dimension_list_t* dimList = basic_array_checks(v, xml, 3);
         fmi3_float64_t* start = fmi3_import_get_float64_variable_start_array(
                 fmi3_import_get_variable_as_float64(v));
         double eps = 0.0000001;
@@ -102,17 +114,9 @@ TEST_CASE("Test basic float64 array parsing, work in progress"){
 
     SECTION("Test int64 start array") {
         fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "dummy_int64_array");
-
-        int has_start = fmi3_import_get_variable_has_start(v);
-        REQUIRE(has_start == 1);
-        int is_array = fmi3_import_variable_is_array(v);
-        REQUIRE(is_array == 1);
-
-        fmi3_import_dimension_list_t* dimList = fmi3_import_get_variable_dimension_list(xml, v); /* allocates memory */
-        size_t nDims = fmi3_import_get_dimension_list_size(dimList);
-        REQUIRE(nDims == 2);
-
-        fmi3_int64_t* start = fmi3_import_get_int64_variable_start_array(fmi3_import_get_variable_as_int64(v));
+        fmi3_import_dimension_list_t* dimList = basic_array_checks(v, xml, 2);
+        fmi3_int64_t* start = fmi3_import_get_int64_variable_start_array(
+                fmi3_import_get_variable_as_int64(v));
         REQUIRE(start[0] == 54);
         REQUIRE(start[1] == 23);
         REQUIRE(start[2] == 11);
@@ -122,16 +126,7 @@ TEST_CASE("Test basic float64 array parsing, work in progress"){
 
     SECTION("Test int64 start array with extremely large (absolute) values") {
         fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "dummy_int64_array2");
-
-        int has_start = fmi3_import_get_variable_has_start(v);
-        REQUIRE(has_start == 1);
-        int is_array = fmi3_import_variable_is_array(v);
-        REQUIRE(is_array == 1);
-
-        fmi3_import_dimension_list_t* dimList = fmi3_import_get_variable_dimension_list(xml, v); /* allocates memory */
-        size_t nDims = fmi3_import_get_dimension_list_size(dimList);
-        REQUIRE(nDims == 2);
-
+        fmi3_import_dimension_list_t* dimList = basic_array_checks(v, xml, 2);
         fmi3_int64_t* start = fmi3_import_get_int64_variable_start_array(fmi3_import_get_variable_as_int64(v));
         REQUIRE(start[0] ==  9223372036854775807);
         REQUIRE(start[1] ==  9223372036854775806);
@@ -139,6 +134,40 @@ TEST_CASE("Test basic float64 array parsing, work in progress"){
         REQUIRE(start[3] == -9223372036854775805);
         REQUIRE(start[4] == 0);
         REQUIRE(start[5] == -9223372036854775807);
+        fmi3_import_free_dimension_list(dimList);
+    }
+
+    SECTION("Test int32 start array with extremely large (absolute) values") {
+        fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "dummy_int32_array");
+        fmi3_import_dimension_list_t* dimList = basic_array_checks(v, xml, 2);
+
+        fmi3_int32_t* start = fmi3_import_get_int32_variable_start_array(fmi3_import_get_variable_as_int32(v));
+        REQUIRE(start[0] ==  2147483647);
+        REQUIRE(start[1] ==  2147483646);
+        REQUIRE(start[2] == -2147483648);
+        REQUIRE(start[3] == -2147483647);
+        fmi3_import_free_dimension_list(dimList);
+    }
+
+    SECTION("Test int16 start array with extremely large (absolute) values") {
+        fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "dummy_int16_array");
+        fmi3_import_dimension_list_t* dimList = basic_array_checks(v, xml, 2);
+        fmi3_int16_t* start = fmi3_import_get_int16_variable_start_array(fmi3_import_get_variable_as_int16(v));
+        REQUIRE(start[0] ==  32767);
+        REQUIRE(start[1] ==  32766);
+        REQUIRE(start[2] == -32768);
+        REQUIRE(start[3] == -32767);
+        fmi3_import_free_dimension_list(dimList);
+    }
+
+    SECTION("Test int8 start array with extremely large (absolute) values") {
+        fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "dummy_int8_array");
+        fmi3_import_dimension_list_t* dimList = basic_array_checks(v, xml, 2);
+        fmi3_int8_t* start = fmi3_import_get_int8_variable_start_array(fmi3_import_get_variable_as_int8(v));
+        REQUIRE(start[0] ==  127);
+        REQUIRE(start[1] ==  126);
+        REQUIRE(start[2] == -128);
+        REQUIRE(start[3] == -127);
         fmi3_import_free_dimension_list(dimList);
     }
     fmi_import_free_context(context);

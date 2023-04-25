@@ -83,6 +83,18 @@
       <Dimension start="3"/>
       <Dimension start="2"/>
     </Int64>
+    <Int32 name="dummy_int32_array" valueReference="111" causality="input" description="Array used to test the largest and smalles value of int32" start="2147483647 2147483646 -2147483648 -2147483647">
+      <Dimension start="2"/>
+      <Dimension start="2"/>
+    </Int32>
+    <Int16 name="dummy_int16_array" valueReference="112" causality="input" description="Array used to test the largest and smalles value of int16" start="32767 32766 -32768 -32767">
+      <Dimension start="2"/>
+      <Dimension start="2"/>
+    </Int16>
+    <Int8 name="dummy_int8_array" valueReference="113" causality="input" description="Array used to test the largest and smalles value of int8" start="127 126 -128 -127">
+      <Dimension start="2"/>
+      <Dimension start="2"/>
+    </Int8>
 
     <!-- variables used as dimension specifiers -->
     <UInt32 name="uint32_1" valueReference="201" initial="exact" variability="constant" start="3" />

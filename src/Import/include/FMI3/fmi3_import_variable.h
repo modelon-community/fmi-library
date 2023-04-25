@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2012 Modelon AB
+    Copyright (C) 2012-2023 Modelon AB
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the BSD style license.
@@ -121,6 +121,23 @@ FMILIB_EXPORT fmi3_float32_t* fmi3_import_get_float32_variable_start_array(fmi3_
 */
 FMILIB_EXPORT fmi3_int64_t* fmi3_import_get_int64_variable_start_array(fmi3_import_int64_variable_t* v);
 
+/** \brief Get the start values of an array variable
+    @return Pointer to array with start values. Total length of array is given by product of the dimensions given by
+        #fmi3_import_get_variable_dimensions. FMI Library handles memory for the array.
+*/
+FMILIB_EXPORT fmi3_int32_t* fmi3_import_get_int32_variable_start_array(fmi3_import_int32_variable_t* v);
+
+/** \brief Get the start values of an array variable
+    @return Pointer to array with start values. Total length of array is given by product of the dimensions given by
+        #fmi3_import_get_variable_dimensions. FMI Library handles memory for the array.
+*/
+FMILIB_EXPORT fmi3_int16_t* fmi3_import_get_int16_variable_start_array(fmi3_import_int16_variable_t* v);
+
+/** \brief Get the start values of an array variable
+    @return Pointer to array with start values. Total length of array is given by product of the dimensions given by
+        #fmi3_import_get_variable_dimensions. FMI Library handles memory for the array.
+*/
+FMILIB_EXPORT fmi3_int8_t* fmi3_import_get_int8_variable_start_array(fmi3_import_int8_variable_t* v);
 
 /** \brief Get a list of the variable's array dimensions. Note that this list must be freed with #fmi3_import_free_dimension_list.
     @return Dynamically allocated list of array dimensions.

@@ -104,18 +104,21 @@ fmi3_xml_int32_variable_t* fmi3_xml_get_variable_as_int32(fmi3_xml_variable_t*);
 fmi3_int32_t fmi3_xml_get_int32_variable_min (fmi3_xml_int32_variable_t* v);
 fmi3_int32_t fmi3_xml_get_int32_variable_max (fmi3_xml_int32_variable_t* v);
 fmi3_int32_t fmi3_xml_get_int32_variable_start (fmi3_xml_int32_variable_t* v);
+fmi3_int32_t* fmi3_xml_get_int32_variable_start_array(fmi3_xml_int32_variable_t* v);
 fmi3_string_t fmi3_xml_get_int32_variable_quantity (fmi3_xml_int32_variable_t* v);
 
 fmi3_xml_int16_variable_t* fmi3_xml_get_variable_as_int16(fmi3_xml_variable_t*);
 fmi3_int16_t fmi3_xml_get_int16_variable_min (fmi3_xml_int16_variable_t* v);
 fmi3_int16_t fmi3_xml_get_int16_variable_max (fmi3_xml_int16_variable_t* v);
 fmi3_int16_t fmi3_xml_get_int16_variable_start (fmi3_xml_int16_variable_t* v);
+fmi3_int16_t* fmi3_xml_get_int16_variable_start_array(fmi3_xml_int16_variable_t* v);
 fmi3_string_t fmi3_xml_get_int16_variable_quantity (fmi3_xml_int16_variable_t* v);
 
 fmi3_xml_int8_variable_t* fmi3_xml_get_variable_as_int8(fmi3_xml_variable_t*);
 fmi3_int8_t fmi3_xml_get_int8_variable_min (fmi3_xml_int8_variable_t* v);
 fmi3_int8_t fmi3_xml_get_int8_variable_max (fmi3_xml_int8_variable_t* v);
 fmi3_int8_t fmi3_xml_get_int8_variable_start (fmi3_xml_int8_variable_t* v);
+fmi3_int8_t* fmi3_xml_get_int8_variable_start_array(fmi3_xml_int8_variable_t* v);
 fmi3_string_t fmi3_xml_get_int8_variable_quantity (fmi3_xml_int8_variable_t* v);
 
 fmi3_xml_uint64_variable_t* fmi3_xml_get_variable_as_uint64(fmi3_xml_variable_t*);

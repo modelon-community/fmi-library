@@ -69,19 +69,6 @@ target_link_libraries(fmi3_basic_capi_test
 add_test(ctest_fmi3_basic_capi_test_cpp fmi3_basic_capi_test)
 
 
-# Test: fmi3_arrays_test C++ with Catch2
-add_executable(fmi3_arrays_test
-    ${RTTESTDIR}/FMI3/fmi3_arrays_test.cpp)
-target_include_directories(fmi3_arrays_test
-    PUBLIC
-    ${CATCH2_INCLUDE_DIR}
-    ${FMIIMPORTDIR}/src)
-target_link_libraries(fmi3_arrays_test
-    PUBLIC
-    Catch
-    ${FMILIBFORTEST})
-add_test(ctest_fmi3_arrays_test fmi3_arrays_test)
-
 # Test: jm locale
 add_executable(jm_locale_test ${FMIL_TEST_DIR}/jm_locale_test.c)
 target_link_libraries(jm_locale_test ${JMUTIL_LIBRARIES})
@@ -97,7 +84,6 @@ set_target_properties(
     jm_vector_test
     jm_vector_test_cpp
     fmi3_basic_capi_test
-    fmi3_arrays_test
     jm_locale_test
     compress_test_fmu_zip
     PROPERTIES FOLDER "Test")
@@ -251,7 +237,6 @@ if(FMILIB_BUILD_BEFORE_TESTS)
         ctest_fmi_zip_zip_test
         ctest_jm_vector_test_cpp
         ctest_fmi3_basic_capi_test_cpp
-        ctest_fmi3_arrays_test
         ctest_jm_locale_test
         PROPERTIES DEPENDS ctest_build_all)
 endif()

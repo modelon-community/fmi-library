@@ -272,7 +272,7 @@ typedef enum fmi3_dependencies_kind_enu_t
     fmi3_dependencies_kind_num
 } fmi3_dependencies_kind_enu_t;
 
-/** \brief Test if the input argument of type fmi3_base_type_enu_t* is representing [u]int8/32/64.
+/** \brief Test if the input argument of type fmi3_base_type_enu_t is representing [u]int8/32/64.
     \param enums The object of type fmi3_base_type_enu_t to check.
     \return Returns 1 for any of the signed/unsigned integer types, otherwise 0.
 */

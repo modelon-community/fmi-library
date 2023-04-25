@@ -1503,8 +1503,7 @@ int fmi3_xml_handle_IntXXVariable(fmi3_xml_parser_context_t* context, const char
             }
             if (fmi3_xml_variable_is_array(variable)) {
                 size_t nArr; /* TODO: do something with this, e.g. dimension size verification */
-                if (fmi3_xml_set_attr_array(
-                        context, elmID, fmi_attr_id_start, 0,
+                if (fmi3_xml_set_attr_array(context, elmID, fmi_attr_id_start, 0,
                         (void**)&start->start, &nArr, startAttr, primType)) {
                     return -1;
                 }

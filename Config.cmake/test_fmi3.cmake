@@ -93,6 +93,20 @@ if(FMILIB_TEST_LOCALE)
 endif()
 
 add_executable(fmi3_import_model_structure_test ${FMIL_TEST_DIR}/FMI3/fmi3_import_model_structure_test.c)
+
+# Test: fmi3_arrays_test C++ with Catch2
+add_executable(fmi3_arrays_test
+    ${RTTESTDIR}/FMI3/fmi3_arrays_test.cpp)
+target_include_directories(fmi3_arrays_test
+    PUBLIC
+    ${CATCH2_INCLUDE_DIR}
+    ${FMIIMPORTDIR}/src)
+target_link_libraries(fmi3_arrays_test
+    PUBLIC
+    Catch
+    ${FMILIBFORTEST})
+add_test(ctest_fmi3_arrays_test fmi3_arrays_test)
+
 target_link_libraries(fmi3_import_model_structure_test ${FMILIBFORTEST})
 
 add_executable(fmi3_import_sim_me_test ${FMIL_TEST_DIR}/FMI3/fmi3_import_sim_me_test.c)
@@ -151,6 +165,7 @@ set_target_properties(
     fmi3_import_variable_test
     fmi3_import_variable_types_test
     fmi3_import_default_experiment_test
+    fmi3_arrays_test
     PROPERTIES FOLDER "Test/FMI3"
 )
 set(FAIL_NAME_CHECK 0)
@@ -209,5 +224,6 @@ if(FMILIB_BUILD_BEFORE_TESTS)
         ctest_fmi3_enum_test
         ctest_fmi3_variable_bad_variability_causality_test
         ctest_fmi3_capi_basic_test
+        ctest_fmi3_arrays_test
         PROPERTIES DEPENDS ctest_build_all)
 endif()

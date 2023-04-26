@@ -59,6 +59,9 @@ FMILIB_EXPORT fmi1_import_variable_list_t* fmi1_import_clone_variable_list(fmi1_
 FMILIB_EXPORT size_t  fmi1_import_get_variable_list_size(fmi1_import_variable_list_t* vl);
 
 /** \brief  Get a pointer to the list of the value references for all the variables */
+FMILIB_EXPORT const fmi1_value_reference_t* fmi1_import_get_value_reference_list(fmi1_import_variable_list_t* vl);
+
+/** \brief  Deprecated. Use fmi1_import_get_value_reference_list instead. */
 FMILIB_EXPORT const fmi1_value_reference_t* fmi1_import_get_value_referece_list(fmi1_import_variable_list_t* vl);
 
 /** \brief Get a single variable from the list*/

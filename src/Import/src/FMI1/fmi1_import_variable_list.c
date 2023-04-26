@@ -123,6 +123,11 @@ const fmi1_value_reference_t* fmi1_import_get_value_referece_list(fmi1_import_va
     return vl->vr;
 }
 
+/* Deprecated. (Has typo in name.) */
+const fmi1_value_reference_t* fmi1_import_get_value_referece_list(fmi1_import_variable_list_t* vl) {
+    return fmi1_import_get_value_reference_list(vl);
+}
+
 /* Get a single variable from the list*/
 fmi1_import_variable_t* fmi1_import_get_variable(fmi1_import_variable_list_t* vl, unsigned int  index) {
     if(index >= fmi1_import_get_variable_list_size(vl))

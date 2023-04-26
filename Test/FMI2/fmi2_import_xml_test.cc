@@ -450,7 +450,7 @@ int main(int argc, char *argv[])
         size_t nv, i;
         fmi2_import_variable_list_t* vl = fmi2_import_get_variable_list(fmu, 0);
 /*		fmi2_import_variable_list_t* ders = fmi2_import_get_derivatives_list( fmu); */
-		const fmi2_value_reference_t* vrl = fmi2_import_get_value_referece_list(vl);
+		const fmi2_value_reference_t* vrl = fmi2_import_get_value_reference_list(vl);
 
 
         assert(vl);

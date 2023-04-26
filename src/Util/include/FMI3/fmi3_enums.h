@@ -282,7 +282,7 @@ int fmi3_base_type_enu_is_int(fmi3_base_type_enu_t enums);
     \param enums The object of type fmi3_base_type_enu_t to check.
     \return Returns 1 for float32 and float64, otherwise 0.
 */
-FMILIB_EXPORT int fmi3_base_type_enu_is_float(fmi3_base_type_enu_t enums);
+int fmi3_base_type_enu_is_float(fmi3_base_type_enu_t enums);
 
 /** \brief Bitness for types such as Float32/Float64 */
 typedef enum fmi3_bitness_enu_t {

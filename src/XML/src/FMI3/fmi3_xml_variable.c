@@ -28,6 +28,23 @@
 #include "fmi3_xml_variable_impl.h"
 
 static const char* module = "FMI3XML";
+struct fmi3_xml_variable_default_values {
+    fmi3_float32_t float32;
+    fmi3_float64_t float64;
+    fmi3_uint8_t uint8;
+    fmi3_uint16_t uint16;
+    fmi3_uint32_t uint32;
+    fmi3_uint64_t uint64;
+    fmi3_int8_t int8;
+    fmi3_int16_t int16;
+    fmi3_int32_t int32;
+    fmi3_int64_t int64;
+    fmi3_boolean_t boolean;
+    fmi3_string_t string;
+};
+
+static struct fmi3_xml_variable_default_values VARIABLE_DEFAULT_VALUES =
+       { 0.0, 0.0, 0, 0, 0, 0, 0, 0, 0, 0, false, "" };
 
 
 /* Define fmi3_value_reference_t vector functions */
@@ -57,33 +74,51 @@ static struct fmi3_xml_variable_default_values VARIABLE_DEFAULT_VALUES = \
 static void* fmi3_xml_get_type_default_value(fmi3_base_type_enu_t baseType) {
     switch (baseType) {
         case fmi3_base_type_float64:
-            return (void*)0;
+            return &VARIABLE_DEFAULT_VALUES.float64;
         case fmi3_base_type_float32:
-            return (void*)0;
+            return &VARIABLE_DEFAULT_VALUES.float32;
         case fmi3_base_type_int64:
-            return (void*)0;
+            return &VARIABLE_DEFAULT_VALUES.int64;
         case fmi3_base_type_int32:
-            return (void*)0;
+            return &VARIABLE_DEFAULT_VALUES.int32;
         case fmi3_base_type_int16:
-            return (void*)0;
+            return &VARIABLE_DEFAULT_VALUES.int16;
         case fmi3_base_type_int8:
-            return (void*)0;
+            return &VARIABLE_DEFAULT_VALUES.int8;
         case fmi3_base_type_uint64:
-            return (void*)0;
+            return &VARIABLE_DEFAULT_VALUES.uint64;
         case fmi3_base_type_uint32:
-            return (void*)0;
+            return &VARIABLE_DEFAULT_VALUES.uint32;
         case fmi3_base_type_uint16:
-            return (void*)0;
+            return &VARIABLE_DEFAULT_VALUES.uint16;
         case fmi3_base_type_uint8:
-            return (void*)0;
+            return &VARIABLE_DEFAULT_VALUES.uint8;
         case fmi3_base_type_bool:
-            return (void*)false;
+            return &VARIABLE_DEFAULT_VALUES.boolean;
         case fmi3_base_type_str:
-            return (void*)"";
+            return &VARIABLE_DEFAULT_VALUES.string;
         default:
             assert(0);
             return NULL;
     }
+}
+
+/**
+ *  Start values of int variables that do not have a start value(s).
+ */
+static fmi3_int_union_t   s_intNoStartValue = { .array64s = 0 };
+/**
+ *  Start values of float variables that do not have a start value(s).
+ */
+static fmi3_float_union_t s_floatNoStartValue = { .array64s = 0 };
+
+static fmi3_int_union_t fmi3_xml_get_int_variable_start(fmi3_xml_int_variable_t* v){
+    fmi3_xml_variable_t* vv = (fmi3_xml_variable_t*)v;
+    if(fmi3_xml_get_variable_has_start(vv)) {
+        fmi3_xml_variable_start_int_t* start = (fmi3_xml_variable_start_int_t*)(vv->type);
+        return start->start;
+    }
+    return s_intNoStartValue;
 }
 
 const char* fmi3_xml_get_variable_name(fmi3_xml_variable_t* v) {
@@ -263,7 +298,7 @@ static fmi3_float_union_t fmi3_xml_get_float_variable_start(fmi3_xml_float_varia
         fmi3_xml_float_variable_start_t* start = (fmi3_xml_float_variable_start_t*)(vv->type);
         return start->start;
     }
-    return fmi3_xml_get_float_variable_nominal(v); /* TODO: this is not valid for arrays - .arrayXX will always be null - why do we even want to return 'nominal'? */
+    return s_floatNoStartValue;
 }
 
 static fmi3_xml_int_type_props_t* fmi3_xml_get_type_props_int(fmi3_xml_int_variable_t* v) {
@@ -296,6 +331,7 @@ static int fmi3_xml_get_int_variable_start(fmi3_xml_int_variable_t* v, fmi3_int_
     return 1;
 }
 
+/* private helper for macros */
 static fmi3_xml_float_type_props_t* fmi3_xml_find_type_struct_float_props(fmi3_xml_variable_t* v) {
     return (fmi3_xml_float_type_props_t*)(fmi3_xml_find_type_struct(v->type, fmi3_xml_type_struct_enu_props));
 }
@@ -463,13 +499,11 @@ fmi3_int64_t fmi3_xml_get_int64_variable_max(fmi3_xml_int64_variable_t* v) {
 }
 
 fmi3_int64_t fmi3_xml_get_int64_variable_start(fmi3_xml_int64_variable_t* v) {
-    fmi3_int_union_t start;
-    return fmi3_xml_get_int_variable_start((fmi3_xml_int_variable_t*)v, &start) ? 0 : start.scalar64s;
+    return fmi3_xml_get_int_variable_start((fmi3_xml_int_variable_t*)v).scalar64s;
 }
 
 fmi3_int64_t* fmi3_xml_get_int64_variable_start_array(fmi3_xml_int64_variable_t* v) {
-    fmi3_int_union_t start;
-    return fmi3_xml_get_int_variable_start((fmi3_xml_int_variable_t*)v, &start) ? 0 : start.array64s;
+    return fmi3_xml_get_int_variable_start((fmi3_xml_int_variable_t*)v).array64s;
 }
 
 fmi3_string_t fmi3_xml_get_int64_variable_quantity(fmi3_xml_int64_variable_t* v) {
@@ -499,13 +533,11 @@ fmi3_int32_t fmi3_xml_get_int32_variable_max(fmi3_xml_int32_variable_t* v) {
 }
 
 fmi3_int32_t fmi3_xml_get_int32_variable_start(fmi3_xml_int32_variable_t* v) {
-    fmi3_int_union_t start;
-    return fmi3_xml_get_int_variable_start((fmi3_xml_int_variable_t*)v, &start) ? 0 : start.scalar32s;
+    return fmi3_xml_get_int_variable_start((fmi3_xml_int_variable_t*)v).scalar32s;
 }
 
 fmi3_int32_t* fmi3_xml_get_int32_variable_start_array(fmi3_xml_int32_variable_t* v) {
-    fmi3_int_union_t start;
-    return fmi3_xml_get_int_variable_start((fmi3_xml_int_variable_t*)v, &start) ? 0 : start.array32s;
+    return fmi3_xml_get_int_variable_start((fmi3_xml_int_variable_t*)v).array32s;
 }
 
 fmi3_string_t fmi3_xml_get_int32_variable_quantity(fmi3_xml_int32_variable_t* v) {
@@ -535,13 +567,11 @@ fmi3_int16_t fmi3_xml_get_int16_variable_max(fmi3_xml_int16_variable_t* v) {
 }
 
 fmi3_int16_t fmi3_xml_get_int16_variable_start(fmi3_xml_int16_variable_t* v) {
-    fmi3_int_union_t start;
-    return fmi3_xml_get_int_variable_start((fmi3_xml_int_variable_t*)v, &start) ? 0 : start.scalar16s;
+    return fmi3_xml_get_int_variable_start((fmi3_xml_int_variable_t*)v).scalar16s;
 }
 
 fmi3_int16_t* fmi3_xml_get_int16_variable_start_array(fmi3_xml_int16_variable_t* v) {
-    fmi3_int_union_t start;
-    return fmi3_xml_get_int_variable_start((fmi3_xml_int_variable_t*)v, &start) ? 0 : start.array16s;
+    return fmi3_xml_get_int_variable_start((fmi3_xml_int_variable_t*)v).array16s;
 }
 
 fmi3_string_t fmi3_xml_get_int16_variable_quantity(fmi3_xml_int16_variable_t* v) {
@@ -571,13 +601,11 @@ fmi3_int8_t fmi3_xml_get_int8_variable_max(fmi3_xml_int8_variable_t* v) {
 }
 
 fmi3_int8_t fmi3_xml_get_int8_variable_start(fmi3_xml_int8_variable_t* v) {
-    fmi3_int_union_t start;
-    return fmi3_xml_get_int_variable_start((fmi3_xml_int_variable_t*)v, &start) ? 0 : start.scalar8s;
+    return fmi3_xml_get_int_variable_start((fmi3_xml_int_variable_t*)v).scalar8s;
 }
 
 fmi3_int8_t* fmi3_xml_get_int8_variable_start_array(fmi3_xml_int8_variable_t* v) {
-    fmi3_int_union_t start;
-    return fmi3_xml_get_int_variable_start((fmi3_xml_int_variable_t*)v, &start) ? 0 : start.array8s;
+    return fmi3_xml_get_int_variable_start((fmi3_xml_int_variable_t*)v).array8s;
 }
 
 fmi3_string_t fmi3_xml_get_int8_variable_quantity(fmi3_xml_int8_variable_t* v) {
@@ -607,13 +635,11 @@ fmi3_uint64_t fmi3_xml_get_uint64_variable_max(fmi3_xml_uint64_variable_t* v) {
 }
 
 fmi3_uint64_t fmi3_xml_get_uint64_variable_start(fmi3_xml_uint64_variable_t* v) {
-    fmi3_int_union_t start;
-    return fmi3_xml_get_int_variable_start((fmi3_xml_int_variable_t*)v, &start) ? 0 : start.scalar64u;
+    return fmi3_xml_get_int_variable_start((fmi3_xml_int_variable_t*)v).scalar64u;
 }
 
 fmi3_uint64_t* fmi3_xml_get_uint64_variable_start_array(fmi3_xml_uint64_variable_t* v) {
-    fmi3_int_union_t start;
-    return fmi3_xml_get_int_variable_start((fmi3_xml_int_variable_t*)v, &start) ? 0 : start.array64s;
+    return fmi3_xml_get_int_variable_start((fmi3_xml_int_variable_t*)v).array64u;
 }
 
 fmi3_string_t fmi3_xml_get_uint64_variable_quantity(fmi3_xml_uint64_variable_t* v) {
@@ -643,13 +669,11 @@ fmi3_uint32_t fmi3_xml_get_uint32_variable_max(fmi3_xml_uint32_variable_t* v) {
 }
 
 fmi3_uint32_t fmi3_xml_get_uint32_variable_start(fmi3_xml_uint32_variable_t* v) {
-    fmi3_int_union_t start;
-    return fmi3_xml_get_int_variable_start((fmi3_xml_int_variable_t*)v, &start) ? 0 : start.scalar32u;
+    return fmi3_xml_get_int_variable_start((fmi3_xml_int_variable_t*)v).scalar32u;
 }
 
 fmi3_uint32_t* fmi3_xml_get_uint32_variable_start_array(fmi3_xml_uint32_variable_t* v) {
-    fmi3_int_union_t start;
-    return fmi3_xml_get_int_variable_start((fmi3_xml_int_variable_t*)v, &start) ? 0 : start.array32s;
+    return fmi3_xml_get_int_variable_start((fmi3_xml_int_variable_t*)v).array32u;
 }
 
 fmi3_string_t fmi3_xml_get_uint32_variable_quantity(fmi3_xml_uint32_variable_t* v) {
@@ -679,13 +703,11 @@ fmi3_uint16_t fmi3_xml_get_uint16_variable_max(fmi3_xml_uint16_variable_t* v) {
 }
 
 fmi3_uint16_t fmi3_xml_get_uint16_variable_start(fmi3_xml_uint16_variable_t* v) {
-    fmi3_int_union_t start;
-    return fmi3_xml_get_int_variable_start((fmi3_xml_int_variable_t*)v, &start) ? 0 : start.scalar16u;
+    return fmi3_xml_get_int_variable_start((fmi3_xml_int_variable_t*)v).scalar16u;
 }
 
 fmi3_uint16_t* fmi3_xml_get_uint16_variable_start_array(fmi3_xml_uint16_variable_t* v) {
-    fmi3_int_union_t start;
-    return fmi3_xml_get_int_variable_start((fmi3_xml_int_variable_t*)v, &start) ? 0 : start.array16s;
+    return fmi3_xml_get_int_variable_start((fmi3_xml_int_variable_t*)v).array16u;
 }
 
 fmi3_string_t fmi3_xml_get_uint16_variable_quantity(fmi3_xml_uint16_variable_t* v) {
@@ -715,13 +737,11 @@ fmi3_uint8_t fmi3_xml_get_uint8_variable_max(fmi3_xml_uint8_variable_t* v) {
 }
 
 fmi3_uint8_t fmi3_xml_get_uint8_variable_start(fmi3_xml_uint8_variable_t* v) {
-    fmi3_int_union_t start;
-    return fmi3_xml_get_int_variable_start((fmi3_xml_int_variable_t*)v, &start) ? 0 : start.scalar8u;
+    return fmi3_xml_get_int_variable_start((fmi3_xml_int_variable_t*)v).scalar8u;
 }
 
 fmi3_uint8_t* fmi3_xml_get_uint8_variable_start_array(fmi3_xml_uint8_variable_t* v) {
-    fmi3_int_union_t start;
-    return fmi3_xml_get_int_variable_start((fmi3_xml_int_variable_t*)v, &start) ? 0 : start.array8s;
+    return fmi3_xml_get_int_variable_start((fmi3_xml_int_variable_t*)v).array8u;
 }
 
 fmi3_string_t fmi3_xml_get_uint8_variable_quantity(fmi3_xml_uint8_variable_t* v) {
@@ -918,24 +938,26 @@ fmi3_uint64_t fmi3_xml_get_clock_variable_shift_counter(fmi3_xml_clock_variable_
  */
 static void* fmi3_xml_get_variable_start_array(fmi3_xml_variable_t* v) {
     assert(fmi3_xml_variable_is_array(v));
-    fmi3_int_union_t start;
-
     switch (fmi3_xml_get_variable_base_type(v)) {
     case fmi3_base_type_float64: /* fallthrough */
     case fmi3_base_type_float32:
         return fmi3_xml_get_float_variable_start((fmi3_xml_float_variable_t*)v).ptr;
-    case fmi3_base_type_uint64:   /* fallthrough */
+    case fmi3_base_type_uint64:
+        return fmi3_xml_get_int_variable_start((fmi3_xml_int_variable_t*)v).array64u;
     case fmi3_base_type_int64:
-        return fmi3_xml_get_int_variable_start((fmi3_xml_int_variable_t*)v, &start) ? NULL : start.array64s;
-    case fmi3_base_type_uint32:   /* fallthrough */
+        return fmi3_xml_get_int_variable_start((fmi3_xml_int_variable_t*)v).array64s;
+    case fmi3_base_type_uint32:
+        return fmi3_xml_get_int_variable_start((fmi3_xml_int_variable_t*)v).array32u;
     case fmi3_base_type_int32:
-        return fmi3_xml_get_int_variable_start((fmi3_xml_int_variable_t*)v, &start) ? NULL : start.array32s;
-    case fmi3_base_type_uint16:   /* fallthrough */
+        return fmi3_xml_get_int_variable_start((fmi3_xml_int_variable_t*)v).array32s;
+    case fmi3_base_type_uint16:
+        return fmi3_xml_get_int_variable_start((fmi3_xml_int_variable_t*)v).array16u;
     case fmi3_base_type_int16:
-        return fmi3_xml_get_int_variable_start((fmi3_xml_int_variable_t*)v, &start) ? NULL : start.array16s;
-    case fmi3_base_type_uint8:    /* fallthrough */
+        return fmi3_xml_get_int_variable_start((fmi3_xml_int_variable_t*)v).array16s;
+    case fmi3_base_type_uint8:
+        return fmi3_xml_get_int_variable_start((fmi3_xml_int_variable_t*)v).array8u;
     case fmi3_base_type_int8:
-        return fmi3_xml_get_int_variable_start((fmi3_xml_int_variable_t*)v, &start) ? NULL : start.array8s;
+        return fmi3_xml_get_int_variable_start((fmi3_xml_int_variable_t*)v).array8s;
     case fmi3_base_type_bool:     /* fallthrough */
     case fmi3_base_type_str:      /* fallthrough */
     case fmi3_base_type_enum:     /* fallthrough */
@@ -1563,7 +1585,7 @@ int fmi3_xml_handle_IntXXVariable(fmi3_xml_parser_context_t* context, const char
             start = (fmi3_xml_variable_start_int_t*)fmi3_xml_alloc_variable_type_start(
                     td, variable->type, sizeof(fmi3_xml_variable_start_int_t));
             if (!start) {
-                fmi3_xml_parse_fatal(context, "Could not allocate memory for an integer start array");
+                fmi3_xml_parse_fatal(context, "Could not allocate memory");
                 return -1;
             }
             if (fmi3_xml_variable_is_array(variable)) {

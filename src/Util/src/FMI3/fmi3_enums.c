@@ -18,8 +18,8 @@
 #include <FMI3/fmi3_function_types.h>
 #include <FMI3/fmi3_enums.h>
 
-int fmi3_base_type_enu_is_int(fmi3_base_type_enu_t enums) {
-    switch (enums) {
+int fmi3_base_type_enu_is_int(fmi3_base_type_enu_t baseType) {
+    switch (baseType) {
         case fmi3_base_type_int64:    return 1;
         case fmi3_base_type_int32:    return 1;
         case fmi3_base_type_int16:    return 1;

@@ -824,17 +824,14 @@ static int fmi3_xml_str_to_array(
     /* Check first that the current function has implemented support for the type passed to this function.
     *   Otherwise we will have errors further down where check if the parsing of scalars/arrays is OK.
     */
-    if (!(fmi3_base_type_enu_is_int(primType->baseType) ||
-          fmi3_base_type_enu_is_float(primType->baseType))) {
-        assert(0);
-    }
+    assert((fmi3_base_type_enu_is_int(primType->baseType) || fmi3_base_type_enu_is_float(primType->baseType)));
 
     /* Create a copy that it's OK that strtok mutates */
     strCopy = context->callbacks->malloc(strlen(str) + 1); /* plus one for null character */
     if (!strCopy) {
         JM_LOG_ERROR_NO_MEM();
         res = -1;
-        goto strCopy_malloc_error;
+        goto err1;
     }
     strncpy(strCopy, str, strlen(str) + 1);
 
@@ -848,12 +845,16 @@ static int fmi3_xml_str_to_array(
 
     /* Write start value(s) to correct type */
     if (nVals == 1) { /* scalar */
-        if ((fmi3_base_type_enu_is_int(primType->baseType) &&
-                fmi3_xml_str_to_intXX(context, 1, vals, NULL, str, primType))
-                ||
-            (fmi3_base_type_enu_is_float(primType->baseType) &&
-                fmi3_xml_str_to_floatXX(context, 1, vals, NULL, str, primType))) {
-            goto str_to_scalar_error;
+        if (fmi3_base_type_enu_is_int(primType->baseType)) {
+            if (fmi3_xml_str_to_intXX(context, 1, vals, NULL, str, primType)) {
+                jm_log_error(context->callbacks, module, "Unable to parse to %s: %s", primType->name, str);
+                goto err2;
+            }
+        } else if (fmi3_base_type_enu_is_float(primType->baseType)) {
+            if (fmi3_xml_str_to_floatXX(context, 1, vals, NULL, str, primType)) {
+                jm_log_error(context->callbacks, module, "Unable to parse to %s: %s", primType->name, str);
+                goto err2;
+            }
         }
     } else { /* array */
 
@@ -866,12 +867,16 @@ static int fmi3_xml_str_to_array(
 
             /* Write attribute as int */
 
-            if ((fmi3_base_type_enu_is_int(primType->baseType) &&
-                    fmi3_xml_str_to_intXX(context, 1, writeAddr, NULL, token, primType))
-                    ||
-                (fmi3_base_type_enu_is_float(primType->baseType) &&
-                    fmi3_xml_str_to_floatXX(context, 1, writeAddr, NULL, token, primType))) {
-                goto str_to_array_error;
+            if (fmi3_base_type_enu_is_int(primType->baseType)) {
+                if (fmi3_xml_str_to_intXX(context, 1, writeAddr, NULL, token, primType)) {
+                    jm_log_error(context->callbacks, module, "Unable to parse to %s: %s", primType->name, token);
+                    goto err2;
+                }
+            } else if (fmi3_base_type_enu_is_float(primType->baseType)) {
+                if (fmi3_xml_str_to_floatXX(context, 1, writeAddr, NULL, token, primType)) {
+                    jm_log_error(context->callbacks, module, "Unable to parse to %s: %s", primType->name, token);
+                    goto err2;
+                }
             }
 
             /* Update where to write next value */
@@ -886,16 +891,11 @@ static int fmi3_xml_str_to_array(
     *arrPtr = vals;
     *nArr = nVals;
     goto clean;
-str_to_array_error:
-    jm_log_error(context->callbacks, module, "Unable to parse to %s: %s", primType->name, token);
-str_to_scalar_error:
-    jm_log_error(context->callbacks, module, "Unable to parse to %s: %s", primType->name, str);
-    goto err2;
     /* clean up */
 err2:
     res = -1;
     context->callbacks->free(vals);
-strCopy_malloc_error:
+err1:
 clean:
     context->callbacks->free(strCopy);
     strCopy = NULL;
@@ -922,18 +922,8 @@ int fmi3_xml_set_attr_array(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu
             fmi3_xml_str_to_array_floatXX(context, str, arrPtr, arrSize, primType)) {
         jm_string elmName = fmi3_element_handle_map[elmID].elementName;
         jm_string attrName = fmi3_xmlAttrNames[attrID];
-        char* type_as_str = "";
-        if (fmi3_base_type_enu_is_float(primType->baseType)) {
-            type_as_str = "float";
-        } else if(fmi3_base_type_enu_is_int(primType->baseType)) {
-            type_as_str = "int";
-        }
         fmi3_xml_parse_error(context, "XML element '%s': could not parse value for %s attribute '%s'='%s'",
-            elmName,
-            type_as_str,
-            attrName,
-            str
-        );
+            elmName, primType->name, attrName, str);
         return -1;
     }
     return 0;

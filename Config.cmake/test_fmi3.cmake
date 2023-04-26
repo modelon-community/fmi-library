@@ -104,10 +104,6 @@ target_link_libraries(fmi3_import_sim_cs_test ${FMILIBFORTEST})
 add_executable(fmi3_import_sim_se_test ${FMIL_TEST_DIR}/FMI3/fmi3_import_sim_se_test.c)
 target_link_libraries(fmi3_import_sim_se_test ${FMILIBFORTEST})
 
-add_executable(fmi3_import_variable_test ${FMIL_TEST_DIR}/FMI3/fmi3_import_variable_test.cpp)
-set_source_files_properties(${FMIL_TEST_DIR}/FMI3/fmi3_import_variable_test.cpp PROPERTIES LANGUAGE CXX)
-target_link_libraries(fmi3_import_variable_test Catch ${FMILIBFORTEST})
-
 add_executable(fmi3_import_type_definitions_test ${FMIL_TEST_DIR}/FMI3/fmi3_import_type_definitions_test.c)
 target_link_libraries(fmi3_import_type_definitions_test ${FMILIBFORTEST})
 
@@ -130,31 +126,21 @@ target_link_libraries(fmi3_variable_bad_variability_causality_test ${FMILIBFORTE
 add_executable(fmi3_enum_test ${FMIL_TEST_DIR}/FMI3/fmi3_enum_test.c)
 target_link_libraries(fmi3_enum_test ${FMILIBFORTEST})
 
-# Test: fmi3_capi_basic_test
-add_executable(fmi3_capi_basic_test
-    ${FMIL_TEST_DIR}/FMI3/fmi3_capi_basic_test.cpp)
-target_include_directories(fmi3_capi_basic_test
-    PUBLIC
-    ${FMIIMPORTDIR}/src)
-target_link_libraries(fmi3_capi_basic_test
-    PUBLIC
-    Catch
-    ${FMILIBFORTEST})
-add_test(ctest_fmi3_capi_basic_test fmi3_capi_basic_test)
-
 set_target_properties(
     fmi3_xml_parsing_test
     fmi3_import_xml_test
     fmi3_import_sim_me_test
     fmi3_import_sim_cs_test
     fmi3_import_sim_se_test
-    fmi3_import_variable_test
     fmi3_import_variable_types_test
     fmi3_import_default_experiment_test
     PROPERTIES FOLDER "Test/FMI3"
 )
 set(FAIL_NAME_CHECK 0)
 set(PASS_NAME_CHECK 1)
+
+add_catch2_test(fmi3_capi_basic_test      FMI3)
+add_catch2_test(fmi3_import_variable_test FMI3)
 
 add_test(ctest_fmi3_xml_parsing_test fmi3_xml_parsing_test ${FMIL_TEST_DIR}/FMI3/parser_test_xmls/)
 add_test(ctest_fmi3_import_xml_test_empty fmi3_import_xml_test ${FMU3_DUMMY_FOLDER})
@@ -165,7 +151,6 @@ set_tests_properties(ctest_fmi3_import_xml_test_mf PROPERTIES WILL_FAIL TRUE)
 add_test(ctest_fmi3_import_sim_test_me  fmi3_import_sim_me_test  ${FMU3_ME_PATH} ${FMU_TEMPFOLDER})
 add_test(ctest_fmi3_import_sim_test_bcs fmi3_import_sim_cs_test ${FMU3_CS_PATH} ${FMU_TEMPFOLDER})
 add_test(ctest_fmi3_import_sim_test_se fmi3_import_sim_se_test ${FMU3_SE_PATH} ${FMU_TEMPFOLDER}) # TODO update when renamed
-add_test(ctest_fmi3_import_variable_test fmi3_import_variable_test)
 add_test(ctest_fmi3_import_model_structure_test
          fmi3_import_model_structure_test
          ${FMI3_TEST_XML_DIR})
@@ -208,6 +193,5 @@ if(FMILIB_BUILD_BEFORE_TESTS)
         ctest_fmi3_import_default_experiment_test
         ctest_fmi3_enum_test
         ctest_fmi3_variable_bad_variability_causality_test
-        ctest_fmi3_capi_basic_test
         PROPERTIES DEPENDS ctest_build_all)
 endif()

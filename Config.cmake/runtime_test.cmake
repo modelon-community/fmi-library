@@ -177,6 +177,22 @@ add_test(ctest_jm_locale_test jm_locale_test)
 add_test(ctest_fmi_zip_unzip_test fmi_zip_unzip_test)
 add_test(ctest_fmi_zip_zip_test fmi_zip_zip_test)
 
+
+# Creates a Catch2 test.
+#
+# @TEST_NAME: Name of the test file, without any suffix.
+# @TEST_DIR:  The basename of parent directory of the test file.
+function(add_catch2_test TEST_NAME TEST_DIR)
+    add_executable(${TEST_NAME} ${FMIL_TEST_DIR}/${TEST_DIR}/${TEST_NAME}.cpp)
+    set_source_files_properties(${FMIL_TEST_DIR}/${TEST_DIR}/${TEST_NAME}.cpp PROPERTIES LANGUAGE CXX)
+    target_link_libraries(${TEST_NAME} Catch ${FMILIBFORTEST})
+    add_test(ctest_${TEST_NAME} ${TEST_NAME})
+    set_target_properties(${TEST_NAME} PROPERTIES FOLDER "Test/${TEST_DIR}")
+    if(FMILIB_BUILD_BEFORE_TESTS)
+        set_tests_properties(ctest_${TEST_NAME} PROPERTIES DEPENDS ctest_build_all)
+    endif()
+endfunction()
+
 include(test_fmi1)
 include(test_fmi2)
 include(test_fmi3)

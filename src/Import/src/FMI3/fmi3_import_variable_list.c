@@ -101,7 +101,7 @@ jm_status_enu_t fmi3_import_var_list_push_back(fmi3_import_variable_list_t* list
 }
 
 /* Get a pointer to the list of the value references for all the variables */
-const fmi3_value_reference_t* fmi3_import_get_value_referece_list(fmi3_import_variable_list_t* vl) {
+const fmi3_value_reference_t* fmi3_import_get_value_reference_list(fmi3_import_variable_list_t* vl) {
     if(!vl->vr) {
         jm_callbacks* cb = vl->fmu->callbacks;
         size_t i, nv = fmi3_import_get_variable_list_size(vl);

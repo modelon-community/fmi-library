@@ -188,7 +188,7 @@ jm_status_enu_t fmi3_xml_get_variable_clocks(fmi3_xml_model_description_t* md, f
     size_t nClocks = jm_vector_get_size(fmi3_value_reference_t)(v->clocks);
     for (size_t i = 0; i < nClocks; i++) {
         clockVr = jm_vector_get_item(fmi3_value_reference_t)(v->clocks, i);
-        clockVar = fmi3_xml_get_variable_by_vr(md, fmi3_base_type_clock, clockVr);
+        clockVar = fmi3_xml_get_variable_by_vr(md, clockVr);
         if (!jm_vector_push_back(jm_voidp)(list, clockVar)) {
             jm_log_fatal(md->callbacks, module, "Could not allocate memory");
             return jm_status_error;
@@ -2086,8 +2086,7 @@ int fmi3_xml_handle_ModelVariables(fmi3_xml_parser_context_t *context, const cha
                     // Resolve VR to variable.
                     
                     fmi3_value_reference_t vr = variable->previous.vr;
-                    variable->previous.variable =
-                            fmi3_xml_get_variable_by_vr(md, variable->type->baseType, vr);
+                    variable->previous.variable = fmi3_xml_get_variable_by_vr(md, vr);
                     if (!variable->previous.variable) {
                         fmi3_xml_parse_error(context, "The valueReference in previous=\"%" PRIu32 "\" "
                                                       "did not resolve to any variable.", vr);

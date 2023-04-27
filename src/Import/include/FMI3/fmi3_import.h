@@ -294,11 +294,10 @@ FMILIB_EXPORT fmi3_import_variable_t* fmi3_import_get_variable_by_name(fmi3_impo
 /**
     \brief Get variable by value reference.
     \param fmu - An fmu object as returned by fmi3_import_parse_xml().
-    \param baseType - basic data type
     \param vr - value reference
     \return variable pointer.
 */
-FMILIB_EXPORT fmi3_import_variable_t* fmi3_import_get_variable_by_vr(fmi3_import_t* fmu, fmi3_base_type_enu_t baseType, fmi3_value_reference_t vr);
+FMILIB_EXPORT fmi3_import_variable_t* fmi3_import_get_variable_by_vr(fmi3_import_t* fmu, fmi3_value_reference_t vr);
 
 /** \brief Get the list of all the output variables in the model.
 * @param fmu An FMU object as returned by fmi3_import_parse_xml().

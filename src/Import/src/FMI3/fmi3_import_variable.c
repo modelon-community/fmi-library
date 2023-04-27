@@ -29,8 +29,8 @@ fmi3_import_variable_t* fmi3_import_get_variable_by_name(fmi3_import_t* fmu, con
     return fmi3_xml_get_variable_by_name(fmu->md, name);
 }
 
-fmi3_import_variable_t* fmi3_import_get_variable_by_vr(fmi3_import_t* fmu, fmi3_base_type_enu_t baseType, fmi3_value_reference_t vr) {
-    return fmi3_xml_get_variable_by_vr(fmu->md, baseType, vr);
+fmi3_import_variable_t* fmi3_import_get_variable_by_vr(fmi3_import_t* fmu, fmi3_value_reference_t vr) {
+    return fmi3_xml_get_variable_by_vr(fmu->md, vr);
 }
 
 const char* fmi3_import_get_variable_name(fmi3_import_variable_t* v) {

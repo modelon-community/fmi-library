@@ -229,7 +229,7 @@ static void fmi3_import_expand_variable_references_impl(fmi3_import_t* fmu, cons
                 return;
             }
             vr = bufVR;
-            var = fmi3_xml_get_variable_by_vr(md,baseType,vr);
+            var = fmi3_xml_get_variable_by_vr(md, vr);
             if(!var) {
                 jm_log(callbacks,"LOGGER", jm_log_level_warning, "Could not find variable referenced in log message here: '%s'", jm_vector_get_itemp(char)(msgOut,0));
                                 jm_vector_resize(char)(msgOut, msgLen);

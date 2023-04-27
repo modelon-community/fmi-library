@@ -83,11 +83,6 @@ struct fmi3_xml_variable_t {
 static int fmi3_xml_compare_vr(const void* first, const void* second) {
     fmi3_xml_variable_t* a = *(fmi3_xml_variable_t**)first;
     fmi3_xml_variable_t* b = *(fmi3_xml_variable_t**)second;
-    fmi3_base_type_enu_t at = fmi3_xml_get_variable_base_type(a);
-    fmi3_base_type_enu_t bt = fmi3_xml_get_variable_base_type(b);
-    if(at == fmi3_base_type_enum) at = fmi3_base_type_int32;
-    if(bt == fmi3_base_type_enum) bt = fmi3_base_type_int32;
-    if(at!=bt) return at - bt;
     if(a->vr < b->vr) return -1;
     if(a->vr > b->vr) return 1;
     return ((int)a->aliasKind - (int)b->aliasKind);

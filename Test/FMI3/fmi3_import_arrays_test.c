@@ -59,7 +59,8 @@ static int get_dimensions_start_sizes(fmi3_import_t* fmu, jm_callbacks* cb, fmi3
         fmi3_import_dimension_t* d = fmi3_import_get_dimension_list_item(dimList, i);
 
         if (fmi3_import_get_dimension_has_vr(d)) {
-            fmi3_import_uint32_variable_t* var = (fmi3_import_uint32_variable_t*)fmi3_import_get_variable_by_vr(fmu, fmi3_base_type_uint32, fmi3_import_get_dimension_vr(d));
+            fmi3_value_reference_t dimVr = fmi3_import_get_dimension_vr(d);
+            fmi3_import_uint32_variable_t* var = (fmi3_import_uint32_variable_t*)fmi3_import_get_variable_by_vr(fmu, dimVr);
             ASSERT_MSG(var != NULL, "variable that specifies dimension length was not found");
             *((*dimSizes) + i) = fmi3_import_get_uint32_variable_start(var);
         } else { /* has start */
@@ -413,8 +414,9 @@ static int test_array8_32_can_find_index_and_vr_of_dimensions(fmi3_import_t* xml
                 and that requires us to first find the total size of the array (i.e. product of dimension runtime sizes)
             */
             /* if (get_from_xml) { */
+            fmi3_value_reference_t dimVr = fmi3_import_get_dimension_vr(dim);
             sizeTot *= fmi3_import_get_uint32_variable_start(
-                (fmi3_import_uint32_variable_t*)fmi3_import_get_variable_by_vr(xml, fmi3_base_type_uint32, fmi3_import_get_dimension_vr(dim)));
+                    (fmi3_import_uint32_variable_t*)fmi3_import_get_variable_by_vr(xml, dimVr));
             /* } else {  // runtime
                 TODO: sizeTot *= fmi3_import_get_integer(...);
             */

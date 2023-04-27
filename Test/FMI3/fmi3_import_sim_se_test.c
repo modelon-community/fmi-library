@@ -39,7 +39,7 @@ void importlogger(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_leve
 }
 
 void dummy_log_message_callback(
-    fmi3_instance_environment_t* env,
+    fmi3_instance_environment_t env,
     fmi3_status_t status,
     fmi3_string_t category,
     fmi3_string_t message)

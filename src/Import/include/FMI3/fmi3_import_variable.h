@@ -400,6 +400,12 @@ FMILIB_EXPORT const char* fmi3_import_get_string_variable_start(fmi3_import_stri
 /** \brief Get start value for the variable */
 FMILIB_EXPORT fmi3_boolean_t fmi3_import_get_boolean_variable_start(fmi3_import_bool_variable_t* v);
 
+/** \brief Get the start values of an array variable
+    @return Pointer to array with start values. Total length of array is given by product of the dimensions given by
+        #fmi3_import_get_variable_dimensions. FMI Library handles memory for the array.
+*/
+FMILIB_EXPORT fmi3_boolean_t* fmi3_import_get_boolean_variable_start_array(fmi3_import_bool_variable_t* v);
+
 /** \brief Get "quantity" attribute if defined, else NULL-pointer. */
 FMILIB_EXPORT fmi3_string_t fmi3_import_get_int64_variable_quantity(fmi3_import_int64_variable_t * v);
 /** \brief Get "quantity" attribute if defined, else NULL-pointer. */

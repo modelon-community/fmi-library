@@ -31,7 +31,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-    
+
 
 jm_vector_declare_template(fmi3_value_reference_t)
 
@@ -103,7 +103,7 @@ jm_vector_declare_template(fmi3_value_reference_t)
     EXPAND_XML_ATTRNAME(canInterpolateInputs) \
     EXPAND_XML_ATTRNAME(maxOutputDerivativeOrder) \
     EXPAND_XML_ATTRNAME(canRunAsynchronuously)
-    
+
 
 #define FMI3_XML_ATTR_ID(attr) fmi_attr_id_##attr,
 typedef enum fmi3_xml_attr_enu_t {
@@ -249,7 +249,7 @@ struct fmi3_xml_parser_context_t {
     jm_callbacks* callbacks;
 
     XML_Parser parser;
-    
+
     /**
      * Actual type: jm_vector of jm_vector(char).
      *
@@ -267,7 +267,7 @@ struct fmi3_xml_parser_context_t {
      * Used for writing to attrBuffer. Uses lookup by attribute name instead
      * of attribute ID. The .ptr field points to attrBuffer[id(attr_name)].
      * Currently used ONLY for writing.
-     * 
+     *
      * TODO: Rename to attrMapByName?
      */
     jm_vector(jm_named_ptr)* attrMap;
@@ -275,10 +275,10 @@ struct fmi3_xml_parser_context_t {
     /**
      * Vector with a slot for every attribute for every element to allow constant lookup:
      *     attrBuffer[<attr_id>] = <attr_value>
-     * 
+     *
      * Is populated with all parsed attributes for the current element before that element
      * handler is invoked.
-     * 
+     *
      * Typically attributes values are cleared when they are read, such that at the end of
      * parsing an element all attributes should be cleared.
      * 
@@ -397,6 +397,7 @@ typedef struct fmi3_xml_primitive_types_t {
     fmi3_xml_primitive_type_t uint16;
     fmi3_xml_primitive_type_t uint8;
     fmi3_xml_primitive_type_t sizet;
+    fmi3_xml_primitive_type_t boolean;
 } fmi3_xml_primitive_types_t;
 
 extern const fmi3_xml_primitive_types_t PRIMITIVE_TYPES;

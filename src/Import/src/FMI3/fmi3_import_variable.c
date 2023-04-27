@@ -457,6 +457,9 @@ fmi3_boolean_t fmi3_import_get_boolean_variable_start(fmi3_import_bool_variable_
     return fmi3_xml_get_boolean_variable_start(v);
 }
 
+fmi3_boolean_t* fmi3_import_get_boolean_variable_start_array(fmi3_import_bool_variable_t* v){
+    return fmi3_xml_get_boolean_variable_start_array(v);
+}
 // -----------------------------------------------------------------------------
 // Binary
 // -----------------------------------------------------------------------------

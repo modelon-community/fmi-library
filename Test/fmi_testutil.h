@@ -26,7 +26,7 @@ void fmi_testutil_build_xml_path(char* buf, size_t bufSize, const char* basePath
 void fmi_testutil_enter_breakpoint();
 
 /**
- * Parses the modelDescription.xml which is located in 'xmldir'. Expects successful parsing.
+ * Parses the modelDescription.xml which is located in 'xmldir'.
  * The returned pointer must be freed with 'fmi3_import_free'.
  */
 fmi3_import_t* fmi3_testutil_parse_xml(const char* xmldir);

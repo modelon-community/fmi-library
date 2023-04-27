@@ -404,6 +404,11 @@ void fmi3_xml_free_parse_buffer(fmi3_xml_parser_context_t *context);
 void fmi3_xml_parse_fatal(fmi3_xml_parser_context_t *context, const char* fmt, ...);
 void fmi3_xml_parse_error(fmi3_xml_parser_context_t *context, const char* fmt, ...);
 
+/**
+ * Raises generic parse error for given attribute.
+ */
+void fmi3_xml_parse_attr_error(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, const char* attrStr);
+
 /* XXX: Let's rename all these to fmi3_xml_parse_attr_as_<type> */
 int fmi3_xml_set_attr_string (fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, int required, jm_vector(char)* field);
 int fmi3_xml_set_attr_enum   (fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, int required, unsigned int*    field, unsigned int   defaultVal, jm_name_ID_map_t* nameMap);

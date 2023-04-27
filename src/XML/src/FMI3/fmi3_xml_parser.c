@@ -282,6 +282,17 @@ void fmi3_xml_parse_error(fmi3_xml_parser_context_t *context, const char* fmt, .
     va_end (args);
 }
 
+/**
+ * Raises generic parse error for given attribute.
+ */
+void fmi3_xml_parse_attr_error(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID,
+        const char* attrStr) {
+    jm_string elmName = fmi3_element_handle_map[elmID].elementName;
+    jm_string attrName = fmi3_xmlAttrNames[attrID];
+    fmi3_xml_parse_error(context, "XML element '%s': failed to parse attribute %s='%s'",
+            elmName, attrName, attrStr);
+}
+
 static size_t fmi3_xml_string_char_count(const char* str, char ch) {
     size_t n = 0;
     size_t i;
@@ -370,22 +381,19 @@ int fmi3_xml_set_attr_enum(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_
         int required, unsigned int* field, unsigned int defaultVal, jm_name_ID_map_t* nameMap)
 {
     int ret, i;
-    jm_string elmName, attrName, strVal;
+    jm_string strVal;
 
-    ret = fmi3_xml_get_attr_str(context, elmID, attrID,required,&strVal);
+    ret = fmi3_xml_get_attr_str(context, elmID, attrID, required, &strVal);
     if(ret) return ret;
     if(!strVal && !required) {
         *field = defaultVal;
         return 0;
     }
 
-    elmName = fmi3_element_handle_map[elmID].elementName;
-    attrName = fmi3_xmlAttrNames[attrID];
-
     i = 0;
     while(nameMap[i].name && strcmp(nameMap[i].name, strVal)) i++;
     if(!nameMap[i].name) {
-        fmi3_xml_parse_error(context, "XML element '%s': could not parse value for enumeration attribute '%s'='%s'", elmName, attrName, strVal);
+        fmi3_xml_parse_attr_error(context, elmID, attrID, strVal);
         return -1;
     }
     *field = nameMap[i].ID;
@@ -466,8 +474,7 @@ int fmi3_xml_parse_attr_valueref_list(
         if (!ch) break;
 
         if (sscanf(cur, "%" SCNu32, &vr) != 1) {
-            // TODO: Improve error
-            fmi3_xml_parse_error(context, "Failed to parse attribute: %s", attr);
+            fmi3_xml_parse_attr_error(context, elmID, attrID, attr);
             return -1;
         }
         // NOTE:
@@ -484,13 +491,6 @@ int fmi3_xml_parse_attr_valueref_list(
         }
     }
     return 0;
-}
-
-static void fmi3_xml_parse_error_attr(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID,
-        fmi3_xml_attr_enu_t attrID, const char* strVal) {
-    jm_string elmName = fmi3_element_handle_map[elmID].elementName;
-    jm_string attrName = fmi3_xmlAttrNames[attrID];
-    fmi3_xml_parse_error(context, "XML element '%s': could not parse value for attribute '%s'='%s'", elmName, attrName, strVal);
 }
 
 /* - It's the value that must be downcast, and to to get it we must first cast the RHS pointer.
@@ -624,7 +624,7 @@ static int fmi3_xml_str_to_intXX(fmi3_xml_parser_context_t *context, int require
  * Reads an attribute to size_t.
  * This will also clear the attribute from the attrBuffer.
  *
- * @param field: where the float value will be stored (return arg)
+ * @param field: where the value will be stored (return arg)
  * @param defaultVal: pointer to default value that will be used if attribute wasn't defined -
  *                    needs be of same type as 'primType'
 */
@@ -656,7 +656,7 @@ int fmi3_xml_set_attr_sizet(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu
  * Reads a fixed-width [unsigned] integer.
  * This will also clear the attribute from the attrBuffer
  *
- * @param field: where the float value will be stored (return arg)
+ * @param field: where the value will be stored (return arg)
  * @param defaultVal: pointer to default value that will be used if attribute wasn't defined -
  *                    needs be of same type as 'primType'
 */
@@ -672,7 +672,7 @@ int fmi3_xml_set_attr_intXX(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu
     /* convert to float and write value to field */
     ret = fmi3_xml_str_to_intXX(context, required, field, defaultVal, strVal, primType);
     if (ret) {
-        fmi3_xml_parse_error_attr(context, elmID, attrID, strVal);
+        fmi3_xml_parse_attr_error(context, elmID, attrID, strVal);
     }
 
     return ret;
@@ -753,7 +753,7 @@ int fmi3_xml_set_attr_floatXX(fmi3_xml_parser_context_t *context, fmi3_xml_elm_e
     /* convert to float and write value to field */
     ret = fmi3_xml_str_to_floatXX(context, required, field, defaultVal, strVal, primType);
     if (ret) {
-        fmi3_xml_parse_error_attr(context, elmID, attrID, strVal);
+        fmi3_xml_parse_attr_error(context, elmID, attrID, strVal);
     }
 
     return ret;
@@ -881,9 +881,6 @@ int fmi3_xml_set_attr_array(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu
 
     /* write all attributes to array of correct type */
     if (fmi3_xml_str_to_array_floatXX(context, str, arrPtr, arrSize, primType)) {
-        jm_string elmName = fmi3_element_handle_map[elmID].elementName;
-        jm_string attrName = fmi3_xmlAttrNames[attrID];
-        fmi3_xml_parse_error(context, "XML element '%s': could not parse value for float attribute '%s'='%s'", elmName, attrName, str);
         return -1;
     }
 

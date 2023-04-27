@@ -1418,10 +1418,11 @@ int fmi3_xml_handle_IntXXVariable(fmi3_xml_parser_context_t* context, const char
         if( hasMin || hasMax || hasQuan) {
             fmi3_xml_int_type_props_t* dtProps = 0; /* declaredType properties */
 
-            if (declaredType->structKind == fmi3_xml_type_struct_enu_typedef)
+            if (declaredType->structKind == fmi3_xml_type_struct_enu_typedef) {
                 dtProps = (fmi3_xml_int_type_props_t*)(declaredType->nextLayer);
-            else
+            } else {
                 dtProps = (fmi3_xml_int_type_props_t*)declaredType;
+            }
             assert(dtProps->super.structKind == fmi3_xml_type_struct_enu_props);
             type = fmi3_xml_parse_intXX_type_properties(context, elmID, defaultType, primType);
             if (!type) {

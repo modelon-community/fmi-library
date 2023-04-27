@@ -54,79 +54,58 @@ typedef union fmi3_int_union_t {
     fmi3_uint8_t    scalar8u;
 } fmi3_int_union_t;
 
-// XXX: This is very hard to understand. The documentation below seems to be out-of-date.
-// Some of the enums don't even exist. We should untangle and simplify it or at least
-// update the documentation.
-// A first attempt has been made in the documentation for the struct kinds.
-
-/** \defgroup Type definitions supporting structures
+/**
+ * A specifier telling what kind of struct this actually is.
  *
- *  The type structures are designed to save memory and
- *  to enable handling of diff-sets in the future.
- *  For each basic type (FloatXX, IntXX, each Enumeration, String, Boolean, Clock & Binary)
- *  there is a default instance of fmi3_xml_variable_type_base_t with
- *  structKind=fmi3_xml_type_struct_enu_props. Those instances have
- *  nextLayer = NULL.
+ * ========================================
+ * === fmi3_xml_type_struct_enu_typedef ===
+ * ========================================
  *
- *  Each type definition creates 1 or 2 instances:
- *  (1)  instance with structKind=fmi3_xml_type_struct_enu_typedef
- *    that gives the name & description of the type. baseType is a
- *    pointer to either  fmi3_xml_type_struct_enu_base or fmi3_xml_type_struct_enu_props
- *  (2)  optionally, an instance with the structKind=fmi3_xml_type_contrain_properties
- *    providing information on min/max/quantity/etc. baseType is a pointer
- *    to the default properties struct.
+ * A TypeDefinition. The next node is always a _props specific to the primitive type for
+ * this TypeDefinition. The default types (i.e. if a variable doesn't have any declaredType)
+ * are not represented by any _typedef - only by _props.
  *
- *   Each variable definition may create none, 1 or 2 instances:
- *    (1) fmi3_xml_type_struct_enu_start providing the start value
- *    (2) structKind=fmi3_xml_type_struct_enu_props  providing information on min/max/quantity/etc.
- *    baseType is a pointer to either fmi3_xml_type_struct_enu_base or fmi3_xml_type_struct_enu_typedef.
+ * ======================================
+ * === fmi3_xml_type_struct_enu_props ===
+ * ======================================
  *
- *   For Enums there are two different property structs since type definition
- *   gives the list of items and variables give min and max.
+ * Attributes specific to the primitive type. Each TypeDefinition has one, and every default
+ * type is also represented by a _props.
+ * 
+ * Every Variable that defines a primitive-type-specific attribute also has a variable-specific
+ * _props, for which the attribute values have been copied from it's TypeDefinition (or default
+ * type properties) if the value was not specified.
+ * 
+ * So to conclude there are three cases that cause this struct:
+ *      - Default type    (always)
+ *      - TypeDefinition  (always)
+ *      - Variable        (if type attribute)
+ * 
+ * The next node for a _props on a TypeDefinition (i.e. for _typedef or _typedef._props) is always
+ * the default type.
+ * 
+ * The next node for a _props on a Variable is either the default type or the TypeDefinition,
+ * depending on whether there was a declaredType.
+ * So to find if a variable has TypeDefinition, you iterate through the nodes and if there is
+ * a _typedef, then the answer is yes.
+ * 
+ * XXX:
+ * It seems the only reason to keep references the "fallbacks" is to find the declared type.
+ * And to eventually create diff-sets, but currently we just copy.
+ *
+ * ======================================
+ * === fmi3_xml_type_struct_enu_start ===
+ * ======================================
+ *
+ * Keeps the start attribute for a Variable. Is only used if the Variable defines a
+ * start value.
+ * 
+ * The next node is the _props.
  */
-
 typedef enum {
-    /**
-     * A TypeDefinition. The next node is always a _props specific to the primitive type for
-     * this TypeDefinition. The default types (i.e. if a variable doesn't have any declaredType)
-     * are not represented by any _typedef - only by _props.
-     */
-    fmi3_xml_type_struct_enu_typedef, 
-
-    /**
-     * Attributes specific to the primitive type. Each TypeDefinition has one, and every default
-     * type is also represented by a _props.
-     * 
-     * Every Variable that defines a primitive-type-specific attribute also has a variable-specific
-     * _props, for which the attribute values have been copied from it's TypeDefinition (or default
-     * type properties) if the value was not specified.
-     * 
-     * So to conclude there are three cases that cause this struct:
-     *      - Default type    (always)
-     *      - TypeDefinition  (always)
-     *      - Variable        (if type attribute)
-     * 
-     * The next node for a _props on a TypeDefinition (i.e. for _typedef or _typedef._props) is always
-     * the default type.
-     * 
-     * The next node for a _props on a Variable is either the default type or the TypeDefinition,
-     * depending on whether there was a declaredType.
-     * So to find if a variable has TypeDefinition, you iterate through the nodes and if there is
-     * a _typedef, then the answer is yes.
-     * 
-     * XXX:
-     * It seems the only reason to keep references the "fallbacks" is to find the declared type.
-     * And to eventually create diff-sets, but currently we just copy.
-     */
-    fmi3_xml_type_struct_enu_props,
-    
-    /**
-     * Keeps the start attribute for a Variable. Is only used if the Variable defines a
-     * start value.
-     * 
-     * The next node is the _props.
-     */
-    fmi3_xml_type_struct_enu_start
+    fmi3_xml_type_struct_enu_typedef, // Base object for a user-defined TypeDefinition
+    fmi3_xml_type_struct_enu_props,   // Type-specific attributes for TypeDefiniton or Variable
+    fmi3_xml_type_struct_enu_start    // Type-specific start value
 } fmi3_xml_type_struct_kind_enu_t;
 
 /**

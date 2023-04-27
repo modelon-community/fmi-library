@@ -14,7 +14,6 @@
 set(FMIL_TEST_DIR ${FMILIBRARYHOME}/Test)
 set(CATCH_INCLUDE_DIR ${FMILIB_THIRDPARTYLIBS}/Catch2/single_include/catch2)
 set(TEST_OUTPUT_FOLDER ${CMAKE_CURRENT_BINARY_DIR}/Testing)
-set(CATCH_INCLUDE_DIR "${FMILIB_THIRDPARTYLIBS}/Catch2/single_include/catch2/")
 
 include_directories(
     ${FMIL_TEST_DIR}

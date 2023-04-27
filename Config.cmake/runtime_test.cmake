@@ -82,26 +82,6 @@ function(to_native_c_path path native_c_path)
     set (${native_c_path} ${tmp} PARENT_SCOPE)
 endfunction()
 
-set(UNCOMPRESSED_DUMMY_FILE_PATH_SRC "${FMIL_TEST_DIR}/try_to_uncompress_this_file.zip")
-set(UNCOMPRESSED_DUMMY_FOLDER_PATH_DIST "${TEST_OUTPUT_FOLDER}")
-file(COPY "${UNCOMPRESSED_DUMMY_FILE_PATH_SRC}" DESTINATION "${UNCOMPRESSED_DUMMY_FOLDER_PATH_DIST}")
-
-set(COMPRESS_DUMMY_FILE_PATH_SRC "${FMIL_TEST_DIR}/try_to_compress_this_file.xml")
-set(COMPRESS_DUMMY_FOLDER_PATH_DIST "${TEST_OUTPUT_FOLDER}")
-set(COMPRESS_DUMMY_FILE_PATH_DIST "${TEST_OUTPUT_FOLDER}/successfully_compressed_this_file.zip")
-file(COPY "${COMPRESS_DUMMY_FILE_PATH_SRC}" DESTINATION "${COMPRESS_DUMMY_FOLDER_PATH_DIST}")
-
-#Create paths for the config_test.h
-if(WIN32)
-    set(DLL_OUTPUT_PATH "${TEST_OUTPUT_FOLDER}")
-
-    string(REPLACE "/" "\\\\" UNCOMPRESSED_DUMMY_FILE_PATH_SRC "${UNCOMPRESSED_DUMMY_FILE_PATH_SRC}")
-    string(REPLACE "/" "\\\\" UNCOMPRESSED_DUMMY_FILE_PATH_DIST "${UNCOMPRESSED_DUMMY_FILE_PATH_DIST}")
-    string(REPLACE "/" "\\\\" UNCOMPRESSED_DUMMY_FOLDER_PATH_DIST "${UNCOMPRESSED_DUMMY_FOLDER_PATH_DIST}")
-    string(REPLACE "/" "\\\\" COMPRESS_DUMMY_FILE_PATH_SRC "${COMPRESS_DUMMY_FILE_PATH_SRC}")
-    string(REPLACE "/" "\\\\" COMPRESS_DUMMY_FILE_PATH_DIST "${COMPRESS_DUMMY_FILE_PATH_DIST}")
-endif(WIN32)
-
 #Move files and compress them to an FMU
 function(compress_fmu OUTPUT_FOLDER_T MODEL_IDENTIFIER_T FILE_NAME_CS_ME_EXT_T TARGET_NAME_T XML_PATH_T SHARED_LIBRARY_PATH_T)
     set(FMU_OUTPUT_FOLDER_T ${OUTPUT_FOLDER_T}/${MODEL_IDENTIFIER_T}_${FILE_NAME_CS_ME_EXT_T})
@@ -136,10 +116,10 @@ function(compress_fmu OUTPUT_FOLDER_T MODEL_IDENTIFIER_T FILE_NAME_CS_ME_EXT_T T
 
 endfunction(compress_fmu)
 
-add_executable(fmi_zip_zip_test ${FMIL_TEST_DIR}/FMI1/fmi_zip_zip_test.c )
+add_executable(fmi_zip_zip_test ${FMIL_TEST_DIR}/fmi_zip_zip_test.c )
 target_link_libraries (fmi_zip_zip_test ${FMIZIP_LIBRARIES})
 
-add_executable(fmi_zip_unzip_test ${FMIL_TEST_DIR}/FMI1/fmi_zip_unzip_test.c )
+add_executable(fmi_zip_unzip_test ${FMIL_TEST_DIR}/fmi_zip_unzip_test.c )
 target_link_libraries(fmi_zip_unzip_test ${FMIZIP_LIBRARIES})
 
 add_executable(fmi_import_test
@@ -161,10 +141,9 @@ include(CTest)
 set(CTEST_RETURN_SUCCESS 0)
 set(CTEST_RETURN_FAIL 1)
 
-# set(FMU_TEMPFOLDER ${TEST_OUTPUT_FOLDER}/tempfolder)
 to_native_c_path(${TEST_OUTPUT_FOLDER}/tempfolder FMU_TEMPFOLDER)
 
-file(MAKE_DIRECTORY ${TEST_OUTPUT_FOLDER}/tempfolder)
+file(MAKE_DIRECTORY ${FMU_TEMPFOLDER})
 
 if(FMILIB_BUILD_BEFORE_TESTS)
     add_test(
@@ -197,7 +176,7 @@ include(test_fmi1)
 include(test_fmi2)
 include(test_fmi3)
 
-add_test(ctest_fmi_import_test_no_xml fmi_import_test ${UNCOMPRESSED_DUMMY_FILE_PATH_SRC} ${TEST_OUTPUT_FOLDER})
+add_test(ctest_fmi_import_test_no_xml fmi_import_test ${UNCOMPRESSED_DUMMY_FILE_PATH_SRC} ${FMU_TEMPFOLDER})
   set_tests_properties(ctest_fmi_import_test_no_xml PROPERTIES WILL_FAIL TRUE)
 add_test(ctest_fmi_import_test_me_1 fmi_import_test ${FMU_ME_PATH} ${FMU_TEMPFOLDER})
 add_test(ctest_fmi_import_test_cs_1 fmi_import_test ${FMU_CS_PATH} ${FMU_TEMPFOLDER})

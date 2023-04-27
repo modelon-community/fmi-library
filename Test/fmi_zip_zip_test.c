@@ -46,8 +46,9 @@ int main(int argc, char *argv[])
 {
     jm_status_enu_t status;
     jm_callbacks callbacks;
-    
-    const char* files_to_zip[] = {COMPRESS_DUMMY_FILE_PATH_SRC};
+
+    const char* files_to_zip[] = { FMIL_TEST_DIR "/try_to_compress_this_file.xml" };
+    const char* zip_dest = TEST_OUTPUT_FOLDER "/successfully_compressed_this_file.zip";
     int n_files_to_zip = 1;
 
     callbacks.malloc = malloc;
@@ -59,7 +60,7 @@ int main(int argc, char *argv[])
 
     callbacks.context = 0;
 
-    status = fmi_zip_zip(COMPRESS_DUMMY_FILE_PATH_DIST, n_files_to_zip, files_to_zip, &callbacks);
+    status = fmi_zip_zip(zip_dest, n_files_to_zip, files_to_zip, &callbacks);
 
     if (status == jm_status_error) {
         printf("Failed to compress the file\n");
@@ -68,6 +69,5 @@ int main(int argc, char *argv[])
         printf("Succesfully compressed the file\n");
         do_exit(CTEST_RETURN_SUCCESS);
     }
+    return 0;
 }
-
-

@@ -816,9 +816,18 @@ fmi3_xml_bool_variable_t* fmi3_xml_get_variable_as_boolean(fmi3_xml_variable_t* 
 
 fmi3_boolean_t fmi3_xml_get_boolean_variable_start(fmi3_xml_bool_variable_t* v) {
     fmi3_xml_variable_t* vv = (fmi3_xml_variable_t*)v;
-    if (fmi3_xml_get_variable_has_start(vv)) {
-        fmi3_xml_int_variable_start_t* start = (fmi3_xml_int_variable_start_t*)(vv->type);
-        return start->start.scalar32s; /* schema: xs:boolean - 'Integer' type was used before IntXX, so just keeping that now */
+    if(fmi3_xml_get_variable_has_start(vv)) {
+        fmi3_xml_variable_start_int_t* start = (fmi3_xml_variable_start_int_t*)(vv->type);
+        return (fmi3_boolean_t)start->start.scalar8u;
+    }
+    return 0;
+}
+
+fmi3_boolean_t* fmi3_xml_get_boolean_variable_start_array(fmi3_xml_bool_variable_t* v) {
+    fmi3_xml_variable_t* vv = (fmi3_xml_variable_t*)v;
+    if(fmi3_xml_get_variable_has_start(vv)) {
+        fmi3_xml_variable_start_int_t* start = (fmi3_xml_variable_start_int_t*)(vv->type);
+        return (fmi3_boolean_t*)start->start.array8u;
     }
     return 0;
 }
@@ -955,6 +964,7 @@ static void* fmi3_xml_get_variable_start_array(fmi3_xml_variable_t* v) {
     case fmi3_base_type_int8:
         return fmi3_xml_get_int_variable_start((fmi3_xml_int_variable_t*)v).array8s;
     case fmi3_base_type_bool:     /* fallthrough */
+        return fmi3_xml_get_boolean_variable_start_array((fmi3_xml_bool_variable_t*)v);
     case fmi3_base_type_str:      /* fallthrough */
     case fmi3_base_type_enum:     /* fallthrough */
         assert(0); /* TODO: NYI */
@@ -1502,7 +1512,6 @@ int fmi3_xml_handle_IntXXVariable(fmi3_xml_parser_context_t* context, const char
     md = context->modelDescription;
     td = &md->typeDefinitions;
     variable = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
-    type = 0;
 
     if(!data) {
         fmi3_xml_variable_type_base_t* declaredType = fmi3_get_declared_type(
@@ -1610,39 +1619,56 @@ int fmi3_xml_handle_BooleanVariable(fmi3_xml_parser_context_t *context, const ch
     res = fmi3_xml_handle_Variable(context, data);
     if (res) return res;
 
+    fmi3_xml_model_description_t* md = context->modelDescription;
+    fmi3_xml_type_definitions_t* td = &md->typeDefinitions;
+    fmi3_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
+    int hasStart;
     if(!data) {
-        fmi3_xml_model_description_t* md = context->modelDescription;
-        fmi3_xml_type_definitions_t* td = &md->typeDefinitions;
-        fmi3_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
-        int hasStart;
 
         assert(!variable->type);
 
         variable->type = fmi3_parse_declared_type_attr(context, fmi3_xml_elmID_Boolean, &td->defaultBooleanType) ;
         if(!variable->type) return -1;
 
-        hasStart = fmi3_xml_get_has_start(context, variable);
+        /* TODO: handle this better
+         * For now we just read the attribute, so we don't get any warning/error from it being unused in the buffer.
+         * It is saved as startAttr in the variable.
+         */
+        {
+            const char* tmp; /* unused */
+            fmi3_xml_get_attr_str(context, fmi3_xml_elmID_Boolean, fmi_attr_id_start, 0, &tmp);
+        }
+    } else {
+        /* We must wait until after parsing dimensions, because we can't otherwise know
+         * if it's a 1x1 array or a scalar variable just by reading the start value. */
+        hasStart = variable->startAttr != NULL;
         if(hasStart) {
-            fmi3_xml_int_variable_start_t * start = (fmi3_xml_int_variable_start_t*)fmi3_xml_alloc_variable_type_start(td, variable->type, sizeof(fmi3_xml_int_variable_start_t));
-            if(!start) {
+            jm_string startAttr = variable->startAttr;
+            fmi3_xml_variable_start_int_t* start = (fmi3_xml_variable_start_int_t*)fmi3_xml_alloc_variable_type_start(
+                    td, variable->type, sizeof(fmi3_xml_variable_start_int_t));
+            if (!start) {
                 fmi3_xml_parse_fatal(context, "Could not allocate memory");
                 return -1;
             }
-            /* TODO: something feels very wrong with the casting here - especially considering
-               that it's later treating it as an enum, which also expects it to be unsigned (should be
-               signed, right?), and it's accessed as a signed (in get_start)
-               - just leaving it as it were for now... */
-            if (fmi3_xml_set_attr_boolean(context, fmi3_xml_elmID_Boolean, fmi_attr_id_start, 0,
-                    (unsigned int*)&start->start.scalar32s, 0)) {
-                return -1;
+            if (fmi3_xml_variable_is_array(variable)) {
+                size_t nArr;
+                if (fmi3_xml_set_attr_array(context, fmi3_xml_elmID_Boolean, fmi_attr_id_start,
+                        0, (void**)&start->start, &nArr, startAttr, &PRIMITIVE_TYPES.boolean)) {
+                    return -1;
+                }
+            } else {
+                /* restore the attribute buffer before it's used in set_attr_boolean */
+                jm_vector_set_item(jm_string)(context->attrBuffer, fmi_attr_id_start, startAttr);
+
+                if (fmi3_xml_set_attr_boolean(context, fmi3_xml_elmID_Boolean, fmi_attr_id_start, 0,
+                        (unsigned int*)&start->start.scalar32s, 0)) {
+                    return -1;
+                }
             }
             variable->type = &start->super;
         } else {
             fmi3_log_error_if_start_required(context, variable);
         }
-    }
-    else {
-        /* don't do anything. might give out a warning if(data[0] != 0) */
         return 0;
     }
     return 0;

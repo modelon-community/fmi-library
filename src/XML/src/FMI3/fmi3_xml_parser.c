@@ -228,6 +228,13 @@ const fmi3_xml_primitive_types_t PRIMITIVE_TYPES = {
         fmi3_bitness_8,
         0,
         fmi3_base_type_uint8,
+    },
+    {
+        "Boolean",
+        sizeof(bool),
+        0, /* N/A */
+        0,
+        fmi3_base_type_bool,
     }
 };
 
@@ -402,11 +409,11 @@ int fmi3_xml_set_attr_enum(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_
     return 0;
 }
 
-int fmi3_xml_set_attr_boolean(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID,
-        int required, unsigned int* field, unsigned int defaultVal)
+int fmi3_xml_set_attr_boolean(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID,
+        fmi3_xml_attr_enu_t attrID, int required, unsigned int* field, unsigned int defaultVal)
 {
-    jm_name_ID_map_t fmi_boolean_i_dMap[] = {{"true", 1},{"false", 0}, {"1", 1},{"0", 0}, {0,0}};
-    return fmi3_xml_set_attr_enum(context, elmID, attrID, required, field, defaultVal, fmi_boolean_i_dMap);
+    jm_name_ID_map_t fmi_boolean_i_dMap[] = {{"true", 1}, {"false", 0}, {"1", 1}, {"0", 0}, {0, 0}};
+    return fmi3_xml_set_attr_enum(context,elmID, attrID,required, field, defaultVal, fmi_boolean_i_dMap);
 }
 
 // TODO: For FMI3, do we want to use bool in the getters for boolean attributes, or keep using unsigned int?
@@ -547,6 +554,30 @@ static int fmi3_xml_value_boundary_check_strcmp(jm_string strVal, const char* fo
     return strcmp(strVal + idx_start, wbBuf) == 0 ? 0 : 1;
 }
 
+/* Convert str values of "false", "true", "0" and "1" to their corresponding boolean value
+   Values are read from input argument 'strVal' and the covnerted value put in 'field'.
+   Returns:
+     0: OK
+    -1: parsing failed
+*/
+static int fmi3_xml_str_to_bool(fmi3_xml_parser_context_t *context, int required, void* field, void* defaultVal,
+        jm_string strVal, const fmi3_xml_primitive_type_t* primType) {
+    /* Should we do something with the values 'required' and 'defaultVal' or can we simply remove them? */
+    int status = -1;
+    if ((strncmp(strVal, "false", 5) == 0) || (strncmp(strVal, "0", 1) == 0)) {
+        status = 0;
+        *(bool*)field = false;
+    } else if ((strncmp(strVal, "true", 4) == 0) || (strncmp(strVal, "1", 1) == 0)) {
+        status = 0;
+        *(bool*)field = true;
+    }
+    return status;
+}
+
+/* return values:
+     0: OK
+    -1: parsing failed
+*/
 static int fmi3_xml_str_to_intXX(fmi3_xml_parser_context_t* context, int required, void* field, void* defaultVal,
         jm_string strVal, const fmi3_xml_primitive_type_t* primType) {
 
@@ -656,7 +687,6 @@ int fmi3_xml_set_attr_sizet(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu
     return fmi3_xml_set_attr_intXX(context, elmID, attrID, required, field, defaultVal, primType);
 }
 
-<<<<<<< HEAD
 /**
  * Reads a fixed-width [unsigned] integer.
  * This will also clear the attribute from the attrBuffer
@@ -664,11 +694,6 @@ int fmi3_xml_set_attr_sizet(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu
  * @param field: where the value will be stored (return arg)
  * @param defaultVal: pointer to default value that will be used if attribute wasn't defined -
  *                    needs be of same type as 'primType'
-=======
-    field: where the integer value will be stored (return arg)
-    defaultVal: pointer to default value that will be used if attribute wasn't defined -
-                needs be of same type as 'primType'
->>>>>>> 3832d22 (Added support for parsing int64 arrays)
 */
 int fmi3_xml_set_attr_intXX(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID,
         int required, void* field, void* defaultVal, const fmi3_xml_primitive_type_t* primType)
@@ -818,7 +843,9 @@ static int fmi3_xml_str_to_array(
     /* Check first that the current function has implemented support for the type passed to this function.
     *   Otherwise we will have errors further down where check if the parsing of scalars/arrays is OK.
     */
-    assert((fmi3_base_type_enu_is_int(primType->baseType) || fmi3_base_type_enu_is_float(primType->baseType)));
+    assert((fmi3_base_type_enu_is_int(primType->baseType)
+            || fmi3_base_type_enu_is_float(primType->baseType)
+            || fmi3_base_type_enu_is_bool(primType->baseType)));
 
     /* Create a copy that it's OK that strtok mutates */
     strCopy = context->callbacks->malloc(strlen(str) + 1); /* plus one for null character */
@@ -849,6 +876,11 @@ static int fmi3_xml_str_to_array(
                 jm_log_error(context->callbacks, module, "Unable to parse to %s: %s", primType->name, str);
                 goto err2;
             }
+        } else if (fmi3_base_type_enu_is_bool(primType->baseType)) {
+            if (fmi3_xml_str_to_bool(context, 1, vals, NULL, str, primType)) {
+                jm_log_error(context->callbacks, module, "Unable to parse to %s: %s", primType->name, str);
+                goto err2;
+            }
         }
     } else { /* array */
 
@@ -868,6 +900,11 @@ static int fmi3_xml_str_to_array(
                 }
             } else if (fmi3_base_type_enu_is_float(primType->baseType)) {
                 if (fmi3_xml_str_to_floatXX(context, 1, writeAddr, NULL, token, primType)) {
+                    jm_log_error(context->callbacks, module, "Unable to parse to %s: %s", primType->name, token);
+                    goto err2;
+                }
+            } else if (fmi3_base_type_enu_is_bool(primType->baseType)) {
+                if (fmi3_xml_str_to_bool(context, 1, writeAddr, NULL, token, primType)) {
                     jm_log_error(context->callbacks, module, "Unable to parse to %s: %s", primType->name, token);
                     goto err2;
                 }
@@ -898,7 +935,7 @@ clean:
 }
 
 /**
- * Get attribute as float array. This will clear the attribute from the parser buffer.
+ * Get attribute as an array. This will clear the attribute from the parser buffer.
  *  arrPtr (return arg): where the array will be stored
  *  arrSize (return arg): size of 'arrPtr'
  */

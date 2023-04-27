@@ -80,7 +80,7 @@ static fmi3_import_dimension_list_t* basic_array_checks(fmi3_import_variable_t* 
 }
 
 
-TEST_CASE("Test basic float64 array parsing, work in progress"){
+TEST_CASE("Test array parsing and verify retrieved start values are as expected"){
     jm_callbacks cb;
     fmi_import_context_t *context;
 
@@ -98,7 +98,16 @@ TEST_CASE("Test basic float64 array parsing, work in progress"){
 
     fmi_testutil_build_xml_path(xmlPath, sizeXmlPath, ARRAY_TEST_MODEL_DESCRIPTION_DIR, "/arrays/valid");
     fmi3_import_t *xml = parse_xml(xmlPath);
-
+    SECTION("Test boolean start array") {
+        fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "bool_array");
+        fmi3_import_dimension_list_t* dimList = basic_array_checks(v, xml, 2);
+        fmi3_boolean_t* start = fmi3_import_get_boolean_variable_start_array(fmi3_import_get_variable_as_boolean(v));
+        REQUIRE(start[0] == false);
+        REQUIRE(start[1] == true);
+        REQUIRE(start[2] == true);
+        REQUIRE(start[3] == false);
+        fmi3_import_free_dimension_list(dimList);
+    }
     SECTION("Test float64 array") {
         fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "array4_64");
         fmi3_import_dimension_list_t* dimList = basic_array_checks(v, xml, 3);
@@ -124,6 +133,20 @@ TEST_CASE("Test basic float64 array parsing, work in progress"){
         fmi3_import_free_dimension_list(dimList);
     }
 
+
+    /* TODO - this test does not work yet
+    SECTION("Test int64 start array with 10k variables") {
+        fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "int64_array_10k");
+        fmi3_import_dimension_list_t* dimList = basic_array_checks(v, xml, 2);
+        fmi3_int64_t* start = fmi3_import_get_int64_variable_start_array(fmi3_import_get_variable_as_int64(v));
+        int expected_value = 0;
+        for (int i = 1; i <= 100; i++) {
+            expected_value = (i%5 == 0) ? -i : i;
+            REQUIRE(start[i-1] == expected_value);
+        }
+        fmi3_import_free_dimension_list(dimList);
+    }
+    */
     SECTION("Test int32 start array") {
         fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "int32_array");
         fmi3_import_dimension_list_t* dimList = basic_array_checks(v, xml, 2);

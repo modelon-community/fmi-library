@@ -77,7 +77,6 @@ jm_vector_declare_template(fmi3_value_reference_t)
     EXPAND_XML_ATTRNAME(resolution) \
     EXPAND_XML_ATTRNAME(intervalCounter) \
     EXPAND_XML_ATTRNAME(shiftCounter) \
-    EXPAND_XML_ATTRNAME(index) \
     EXPAND_XML_ATTRNAME(dependencies) \
     EXPAND_XML_ATTRNAME(dependenciesKind) \
     EXPAND_XML_ATTRNAME(modelName) \

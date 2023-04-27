@@ -47,10 +47,9 @@ struct fmi3_xml_variable_t {
     /* NB: before parsing of <ModelVariables> has finished,
            derivativeOf and previous are stored as integer indices cast to pointers,
            until they can be looked up */
-    fmi3_xml_variable_t* derivativeOf;      /** \brief Only for continuous FloatXX variables. If non-NULL, the variable that this is the derivative of. */
-
-    // TODO: derivativeOf should be treated same as previous:
-    fmi3_xml_valueref_or_variable_union_t previous;  /** \brief The variable referenced in the previous attribute. */
+    fmi3_xml_valueref_or_variable_union_t derivativeOf; /** \brief Only for continuous FloatXX variables. The variable that this is the derivative of. */
+    bool hasDerivativeOf;
+    fmi3_xml_valueref_or_variable_union_t previous;      /** \brief The variable referenced in the previous attribute. */
     bool hasPrevious;
 
     fmi3_value_reference_t vr;                /** \brief Value reference */

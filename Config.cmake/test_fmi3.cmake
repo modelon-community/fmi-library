@@ -144,14 +144,17 @@ add_catch2_test(fmi3_import_variable_test    FMI3)
 add_catch2_test(fmi3_import_convenience_test FMI3)
 
 add_test(ctest_fmi3_xml_parsing_test fmi3_xml_parsing_test ${FMIL_TEST_DIR}/FMI3/parser_test_xmls/)
+
 add_test(ctest_fmi3_import_xml_test_empty fmi3_import_xml_test ${FMU3_DUMMY_FOLDER})
 add_test(ctest_fmi3_import_xml_test_me fmi3_import_xml_test ${TEST_OUTPUT_FOLDER}/${FMU3_DUMMY_ME_MODEL_IDENTIFIER}_me)
 add_test(ctest_fmi3_import_xml_test_cs fmi3_import_xml_test ${TEST_OUTPUT_FOLDER}/${FMU3_DUMMY_CS_MODEL_IDENTIFIER}_cs)
 add_test(ctest_fmi3_import_xml_test_mf fmi3_import_xml_test ${TEST_OUTPUT_FOLDER}/${FMU3_DUMMY_MF_MODEL_IDENTIFIER}_mf)
 set_tests_properties(ctest_fmi3_import_xml_test_mf PROPERTIES WILL_FAIL TRUE)
-add_test(ctest_fmi3_import_sim_test_me  fmi3_import_sim_me_test  ${FMU3_ME_PATH} ${FMU_TEMPFOLDER})
+
+add_test(ctest_fmi3_import_sim_test_me  fmi3_import_sim_me_test ${FMU3_ME_PATH} ${FMU_TEMPFOLDER})
 add_test(ctest_fmi3_import_sim_test_bcs fmi3_import_sim_cs_test ${FMU3_CS_PATH} ${FMU_TEMPFOLDER})
-add_test(ctest_fmi3_import_sim_test_se fmi3_import_sim_se_test ${FMU3_SE_PATH} ${FMU_TEMPFOLDER}) # TODO update when renamed
+add_test(ctest_fmi3_import_sim_test_se  fmi3_import_sim_se_test ${FMU3_SE_PATH} ${FMU_TEMPFOLDER})
+
 add_test(ctest_fmi3_import_model_structure_test
          fmi3_import_model_structure_test
          ${FMI3_TEST_XML_DIR})

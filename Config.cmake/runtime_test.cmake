@@ -82,9 +82,22 @@ function(to_native_c_path path native_c_path)
     set (${native_c_path} ${tmp} PARENT_SCOPE)
 endfunction()
 
-#Move files and compress them to an FMU
+# Compresses files to an FMU.
+#
+# FIXME:
+# This function also creates an uncompressed FMU directory which some tests
+# (fmiXX_import_xml_test_XX) point at just for testing an XML. They should
+# be fixed to point at XML_PATH_T.
+#
+# @OUTPUT_FOLDER_T:        The directory which the FMU will be placed in. (The uncompressed directory is also created here.)
+# @MODEL_IDENTIFIER_T:     The model identifier of the FMU. Will be used as stem for the FMU name.
+# @FILE_NAME_CS_ME_EXT_T:  A suffix added to the stem of the FMU base name.
+# @TARGET_NAME_T:          The target for building the shared library.
+# @XML_PATH_T:             The path to the modelDescription that will be zipped.
+# @SHARED_LIBRARY_PATH_T:  The path to the shared library produced by TARGET_NAME_T.
 function(compress_fmu OUTPUT_FOLDER_T MODEL_IDENTIFIER_T FILE_NAME_CS_ME_EXT_T TARGET_NAME_T XML_PATH_T SHARED_LIBRARY_PATH_T)
-    set(FMU_OUTPUT_FOLDER_T ${OUTPUT_FOLDER_T}/${MODEL_IDENTIFIER_T}_${FILE_NAME_CS_ME_EXT_T})
+    set(FMU_FILE_NAME_T ${MODEL_IDENTIFIER_T}_${FILE_NAME_CS_ME_EXT_T})
+    set(FMU_OUTPUT_FOLDER_T ${OUTPUT_FOLDER_T}/${FMU_FILE_NAME_T})
     set(FMU_OUTPUT_SHARED_LIBRARY_PATH_T ${FMU_OUTPUT_FOLDER_T}/binaries/${FMI_PLATFORM}/${MODEL_IDENTIFIER_T}${CMAKE_SHARED_LIBRARY_SUFFIX})
 
     #Must create the FMU directory in a separate command..
@@ -94,22 +107,22 @@ function(compress_fmu OUTPUT_FOLDER_T MODEL_IDENTIFIER_T FILE_NAME_CS_ME_EXT_T T
 
     file(TO_NATIVE_PATH binaries/${FMI_PLATFORM}/${MODEL_IDENTIFIER_T}${CMAKE_SHARED_LIBRARY_SUFFIX} FMU_OUTPUT_SHARED_LIBRARY_PATH_OUT_T)
 
-    #Move files to the FMU directories and compress
+    #Move files to the FMU directories and compress  # TODO: Why not compress to correct location right away?
     add_custom_command(
-       OUTPUT ${OUTPUT_FOLDER_T}/${MODEL_IDENTIFIER_T}_${FILE_NAME_CS_ME_EXT_T}.fmu
-       DEPENDS "${XML_PATH_T}" ${TARGET_NAME_T} compress_test_fmu_zip
-       COMMAND "${CMAKE_COMMAND}" -E remove -f "${OUTPUT_FOLDER_T}/${MODEL_IDENTIFIER_T}_${FILE_NAME_CS_ME_EXT_T}.fmu"
-       COMMAND "${CMAKE_COMMAND}" -E copy "${XML_PATH_T}" "${FMU_OUTPUT_FOLDER_T}/modelDescription.xml"
-       COMMAND "${CMAKE_COMMAND}" -E copy "${SHARED_LIBRARY_PATH_T}" "${FMU_OUTPUT_SHARED_LIBRARY_PATH_T}"
-       COMMAND "${COMPRESS_EXECUTABLE}" "${MODEL_IDENTIFIER_T}.fmu" "modelDescription.xml" "${FMU_OUTPUT_SHARED_LIBRARY_PATH_OUT_T}" WORKING_DIRECTORY "${FMU_OUTPUT_FOLDER_T}"
-       COMMAND "${CMAKE_COMMAND}" -E copy "${FMU_OUTPUT_FOLDER_T}/${MODEL_IDENTIFIER_T}.fmu" "${OUTPUT_FOLDER_T}/${MODEL_IDENTIFIER_T}_${FILE_NAME_CS_ME_EXT_T}.fmu"
+        OUTPUT ${OUTPUT_FOLDER_T}/${FMU_FILE_NAME_T}.fmu
+        DEPENDS "${XML_PATH_T}" ${TARGET_NAME_T} compress_test_fmu_zip
+        COMMAND "${CMAKE_COMMAND}" -E remove -f "${OUTPUT_FOLDER_T}/${FMU_FILE_NAME_T}.fmu"
+        COMMAND "${CMAKE_COMMAND}" -E copy "${XML_PATH_T}" "${FMU_OUTPUT_FOLDER_T}/modelDescription.xml"
+        COMMAND "${CMAKE_COMMAND}" -E copy "${SHARED_LIBRARY_PATH_T}" "${FMU_OUTPUT_SHARED_LIBRARY_PATH_T}"
+        COMMAND "${COMPRESS_EXECUTABLE}" "${MODEL_IDENTIFIER_T}.fmu" "modelDescription.xml" "${FMU_OUTPUT_SHARED_LIBRARY_PATH_OUT_T}" WORKING_DIRECTORY "${FMU_OUTPUT_FOLDER_T}"
+        COMMAND "${CMAKE_COMMAND}" -E copy "${FMU_OUTPUT_FOLDER_T}/${MODEL_IDENTIFIER_T}.fmu" "${OUTPUT_FOLDER_T}/${FMU_FILE_NAME_T}.fmu"
     )
 
     get_target_property(DLL_SOURCES ${TARGET_NAME_T} SOURCES)
 
-    set(tname ${MODEL_IDENTIFIER_T}_${FILE_NAME_CS_ME_EXT_T}_FMU)
+    set(tname ${FMU_FILE_NAME_T}_FMU)
     add_custom_target(${tname} ALL
-        DEPENDS ${OUTPUT_FOLDER_T}/${MODEL_IDENTIFIER_T}_${FILE_NAME_CS_ME_EXT_T}.fmu
+        DEPENDS ${OUTPUT_FOLDER_T}/${FMU_FILE_NAME_T}.fmu
         SOURCES "${XML_PATH_T}" ${DLL_SOURCES})
     set_target_properties(${tname} ${TARGET_NAME_T}
                         PROPERTIES FOLDER "TestFMUs")

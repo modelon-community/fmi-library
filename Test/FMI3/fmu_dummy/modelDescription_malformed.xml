@@ -14,19 +14,24 @@
 <ModelVariables>
   <Float64 name="HEIGHT" valueReference="0" initial="exact" causality="output" description="Height of the ball" start="1.0"/>
   <Float64 name="HEIGHT_SPEED" valueReference="1" initial="exact" description="Speed of the ball" start="4.0"/>
+<!-- TODO: Fix alias
   <Float64 name="HEIGHT_SPEED alias" valueReference="1" description="Speed of the ball"/>
-  <Float64 name="HEIGHT_ACC" valueReference="4" description="Speed of the ball"/>
+-->
+  <Float64 name="HEIGHT_ACC" valueReference="2" description="Speed of the ball"/>
   <Float64 name="A variable" valueReference="100" initial="exact" description="Speed of the ball" start="4.0"/>
+
+<!-- TODO: No longer makes sense in FMI3
   <Float64 name="A bad alias" valueReference="100" initial="exact" description="Speed of the ball" start="4.0"/>
-  <Float64 name="GRAVITY" valueReference="2" description="Gravity constant" initial="exact" start="-9.81"/>
-  <Float64 name="BOUNCE_COF" valueReference="3" description="Bouncing coefficient" start="0.5"/>
-  <Float64 name="BAD_INPUT" valueReference="4" causality="input" description="Input without start values, the logger should warn about this"/>
-  <String name="LOGGER_TEST" valueReference="0" description="The logger will print the values of this variable when it is set."/>
-  <Int32 name="LOGGER_TEST_INTEGER" valueReference="0" description="This is only used to test logger replace function #i0#"/>
-  <Boolean name="LOGGER_TEST_BOOLEAN" valueReference="0" description="This is only used to test logger replace function #b0#"/>
+-->
+  <Float64 name="GRAVITY" valueReference="3" description="Gravity constant" initial="exact" start="-9.81"/>
+  <Float64 name="BOUNCE_COF" valueReference="4" description="Bouncing coefficient" start="0.5"/>
+  <Float64 name="BAD_INPUT" valueReference="5" causality="input" description="Input without start values, the logger should warn about this"/>
+  <String name="LOGGER_TEST" valueReference="6" description="The logger will print the values of this variable when it is set."/>
+  <Int32 name="LOGGER_TEST_INTEGER" valueReference="7" description="This is only used to test logger replace function #i0#"/>
+  <Boolean name="LOGGER_TEST_BOOLEAN" valueReference="8" description="This is only used to test logger replace function #b0#"/>
 </ModelVariables>
 <ModelVariables>
-  <Boolean name="LOGGER_TEST_BOOLEAN" valueReference="0" description="This is only used to test logger replace function #b0#"/>
+  <Boolean name="LOGGER_TEST_BOOLEAN" valueReference="9" description="This is only used to test logger replace function #b0#"/>
 </ModelVariables>
 <ModelStructure>
 </ModelStructure>

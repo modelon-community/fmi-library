@@ -219,11 +219,6 @@ typedef struct fmi3_xml_int_variable_start_t {
     fmi3_int_union_t start;
 } fmi3_xml_int_variable_start_t;
 
-typedef struct fmi3_xml_variable_start_boolean_t {
-    fmi3_xml_variable_type_base_t super;
-    fmi3_int_union_t start;
-} fmi3_xml_variable_start_boolean_t;
-
 typedef struct fmi3_xml_variable_start_string_t {
     fmi3_xml_variable_type_base_t super;
     char start[1];

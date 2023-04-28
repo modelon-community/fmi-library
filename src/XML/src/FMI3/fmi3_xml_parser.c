@@ -891,6 +891,7 @@ int fmi3_xml_set_attr_array(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu
 
     /* write all attributes to array of correct type */
     if (fmi3_xml_str_to_array_floatXX(context, str, arrPtr, arrSize, primType)) {
+        fmi3_xml_parse_attr_error(context, elmID, attrID, str);
         return -1;
     }
 

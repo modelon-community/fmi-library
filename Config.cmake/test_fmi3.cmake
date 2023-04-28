@@ -94,9 +94,10 @@ endif()
 
 add_executable(fmi3_import_model_structure_test ${FMIL_TEST_DIR}/FMI3/fmi3_import_model_structure_test.c)
 
+add_library(Catch INTERFACE)
 # Test: fmi3_arrays_test C++ with Catch2
 add_executable(fmi3_arrays_test
-    ${RTTESTDIR}/FMI3/fmi3_arrays_test.cpp)
+    ${FMIL_TEST_DIR}/FMI3/fmi3_arrays_test.cpp)
 target_include_directories(fmi3_arrays_test
     PUBLIC
     ${CATCH2_INCLUDE_DIR}

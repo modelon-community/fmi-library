@@ -31,43 +31,9 @@ else()
 endif()
 message(STATUS "Tests will be linked with ${FMILIBFORTEST}")
 
-set(CMAKE_CXX_STANDARD 11) # Required by Catch2
-add_library(Catch INTERFACE)
-
 # Test: jm_vector
 add_executable(jm_vector_test ${FMIL_TEST_DIR}/jm_vector_test.c)
 target_link_libraries(jm_vector_test ${JMUTIL_LIBRARIES})
-
-# Test: jm_vector C++ with Catch2
-set(CMAKE_CXX_STANDARD 11) # Required by Catch2
-add_library(Catch INTERFACE)
-target_include_directories(Catch
-    INTERFACE
-    ${CATCH2_INCLUDE_DIR})
-add_executable(jm_vector_test_cpp
-    ${RTTESTDIR}/jm_vector_test.cpp)
-set_source_files_properties(${RTTESTDIR}/jm_vector_test.cpp PROPERTIES LANGUAGE CXX)
-target_include_directories(jm_vector_test_cpp
-    PUBLIC
-    ${CATCH2_INCLUDE_DIR})
-target_link_libraries(jm_vector_test_cpp
-    Catch
-    ${JMUTIL_LIBRARIES})
-add_test(ctest_jm_vector_test_cpp jm_vector_test_cpp)
-
-# Test: fmi3_basic_capi_test C++ with Catch2
-add_executable(fmi3_basic_capi_test
-    ${RTTESTDIR}/FMI3/fmi3_basic_capi_test.cpp)
-target_include_directories(fmi3_basic_capi_test
-    PUBLIC
-    ${CATCH2_INCLUDE_DIR}
-    ${FMIIMPORTDIR}/src)
-target_link_libraries(fmi3_basic_capi_test
-    PUBLIC
-    Catch
-    ${FMILIBFORTEST})
-add_test(ctest_fmi3_basic_capi_test_cpp fmi3_basic_capi_test)
-
 
 # Test: jm locale
 add_executable(jm_locale_test ${FMIL_TEST_DIR}/jm_locale_test.c)
@@ -82,8 +48,6 @@ target_link_libraries(compress_test_fmu_zip ${FMIZIP_LIBRARIES})
 
 set_target_properties(
     jm_vector_test
-    jm_vector_test_cpp
-    fmi3_basic_capi_test
     jm_locale_test
     compress_test_fmu_zip
     PROPERTIES FOLDER "Test")
@@ -117,7 +81,7 @@ endfunction()
 
 set(UNCOMPRESSED_DUMMY_FILE_PATH_SRC "${FMIL_TEST_DIR}/try_to_uncompress_this_file.zip")
 set(UNCOMPRESSED_DUMMY_FOLDER_PATH_DIST "${TEST_OUTPUT_FOLDER}")
-set(ARRAY_TEST_MODEL_DESCRIPTION_DIR "${RTTESTDIR}/FMI3/parser_test_xmls")
+set(ARRAY_TEST_MODEL_DESCRIPTION_DIR "${FMIL_TEST_DIR}/FMI3/parser_test_xmls")
 file(COPY "${UNCOMPRESSED_DUMMY_FILE_PATH_SRC}" DESTINATION "${UNCOMPRESSED_DUMMY_FOLDER_PATH_DIST}")
 
 set(COMPRESS_DUMMY_FILE_PATH_SRC "${FMIL_TEST_DIR}/try_to_compress_this_file.xml")
@@ -235,8 +199,6 @@ if(FMILIB_BUILD_BEFORE_TESTS)
         ctest_fmi_import_test_cs_3
         ctest_fmi_zip_unzip_test
         ctest_fmi_zip_zip_test
-        ctest_jm_vector_test_cpp
-        ctest_fmi3_basic_capi_test_cpp
         ctest_jm_locale_test
         PROPERTIES DEPENDS ctest_build_all)
 endif()

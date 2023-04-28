@@ -554,32 +554,27 @@ static int fmi3_xml_value_boundary_check_strcmp(jm_string strVal, const char* fo
     return strcmp(strVal + idx_start, wbBuf) == 0 ? 0 : 1;
 }
 
-/*
-     0: OK
-    -1: parsing failed
-*/
 static int fmi3_xml_str_to_bool(fmi3_xml_parser_context_t *context, int required, bool* field, bool* defaultVal,
         jm_string strVal) {
-    int status = -1;
-
-    if (!strVal && !required) {
-        field = defaultVal;
-        return status;
+    if (!strVal) {
+        if (required) {
+            return -1;  // Call should already have failed by now
+        } else {
+            *field = defaultVal;
+            return 0;
+        }
     }
+
     if ((strncmp(strVal, "false", 5) == 0) || (strncmp(strVal, "0", 1) == 0)) {
-        status = 0;
         *field = false;
     } else if ((strncmp(strVal, "true", 4) == 0) || (strncmp(strVal, "1", 1) == 0)) {
-        status = 0;
         *field = true;
+    } else {
+        return -1;
     }
-    return status;
+    return 0;
 }
 
-/* return values:
-     0: OK
-    -1: parsing failed
-*/
 static int fmi3_xml_str_to_intXX(fmi3_xml_parser_context_t* context, int required, void* field, void* defaultVal,
         jm_string strVal, const fmi3_xml_primitive_type_t* primType) {
 
@@ -715,11 +710,6 @@ int fmi3_xml_set_attr_intXX(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu
     return ret;
 }
 
-
-/* return values:
-     0: OK
-    -1: parsing failed
-*/
 static int fmi3_xml_str_to_floatXX(fmi3_xml_parser_context_t *context, int required, void* field, void* defaultVal,
         jm_string strVal, const fmi3_xml_primitive_type_t* primType) {
     /*

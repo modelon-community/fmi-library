@@ -71,24 +71,24 @@ typedef union fmi3_int_union_t {
  *
  * Attributes specific to the primitive type. Each TypeDefinition has one, and every default
  * type is also represented by a _props.
- * 
+ *
  * Every Variable that defines a type-specific attribute also has a variable-specific
  * _props. Optional attributes that are not present on the Variable get their value copied
  * copied from it's TypeDefinition (or default type).
- * 
+ *
  * So to conclude there are three cases that cause this struct:
  *      - Default type    (always)
  *      - TypeDefinition  (always)
  *      - Variable        (if has type attribute)
- * 
+ *
  * The next node for a _props on a TypeDefinition (i.e. _typedef._props) is always
  * the default type. XXX: But it seems to never be used, since we don't have diff-sets.
- * 
+ *
  * The next node for a _props on a Variable is its declaredType TypeDefinition (or the
  * default type).
  * This is also how a Variable is connected to it's declaredType. I.e. to find it, one
  * needs to iterate the nodes until a _typedef is found.
- * 
+ *
  * XXX:
  * It seems the only reason to keep references to the "fallback" _props is to find the declared type.
  * And to eventually create diff-sets, but currently we just copy.
@@ -99,9 +99,9 @@ typedef union fmi3_int_union_t {
  *
  * Keeps the start attribute for a Variable. Is only used if the Variable defines a
  * start value.
- * 
+ *
  * The next node is the _props.
- * 
+ *
  * -----------------------------------------------------------------------------
  *
  * Examples of how the structure will be for some variables:
@@ -238,7 +238,12 @@ typedef struct fmi3_xml_int_variable_start_t {
     fmi3_int_union_t start;
 } fmi3_xml_int_variable_start_t;
 
-typedef struct fmi3_xml_string_variable_start_t {
+typedef struct fmi3_xml_variable_start_boolean_t {
+    fmi3_xml_variable_type_base_t super;
+    fmi3_int_union_t start;
+} fmi3_xml_variable_start_boolean_t;
+
+typedef struct fmi3_xml_variable_start_string_t {
     fmi3_xml_variable_type_base_t super;
     char start[1];
 } fmi3_xml_string_variable_start_t;
@@ -287,10 +292,10 @@ struct fmi3_xml_type_definitions_t {
     /**
      * List that owns all allocated _props_t and _start_t objects, both for typedefs
      * and variables.
-     * 
+     *
      * The head points to the last allocated object, and needs to be updated when
      * new objects are added.
-     * 
+     *
      * XXX: We should rename it to reflect that it contains _start_t as well.
      */
     fmi3_xml_variable_type_base_t* typePropsList;

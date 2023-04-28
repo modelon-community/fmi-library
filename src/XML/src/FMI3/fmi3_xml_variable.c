@@ -948,6 +948,10 @@ void fmi3_xml_variable_free_internals(jm_callbacks* callbacks, fmi3_xml_variable
         jm_vector_free(fmi3_value_reference_t)(var->clocks);
         var->clocks = NULL;        
     }
+    if (var->clocks) {
+        callbacks->free(var->clocks);
+        var->clocks = NULL;
+    }
 }
 
 /**

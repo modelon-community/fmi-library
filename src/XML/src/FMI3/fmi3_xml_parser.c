@@ -381,9 +381,9 @@ int fmi3_xml_set_attr_string(fmi3_xml_parser_context_t *context, fmi3_xml_elm_en
     return 0;
 }
 
-int fmi3_xml_set_attr_enum(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID,
-        int required, unsigned int* field, unsigned int defaultVal, jm_name_ID_map_t* nameMap)
-{
+int fmi3_xml_set_attr_enum(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID,
+        fmi3_xml_attr_enu_t attrID, int required, unsigned int* field, unsigned int defaultVal,
+        jm_name_ID_map_t* nameMap) {
     int i;
     jm_string strVal;
 
@@ -932,8 +932,7 @@ int fmi3_xml_set_attr_array(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu
     }
 
     /* write all attributes to array of correct type */
-    if (fmi3_base_type_enu_is_float(primType->baseType) &&
-            fmi3_xml_str_to_array_floatXX(context, str, arrPtr, arrSize, primType)) {
+    if (fmi3_xml_str_to_array(context, str, arrPtr, arrSize, primType)) {
         jm_string elmName = fmi3_element_handle_map[elmID].elementName;
         jm_string attrName = fmi3_xmlAttrNames[attrID];
         fmi3_xml_parse_error(context, "XML element '%s': could not parse value for %s attribute '%s'='%s'",

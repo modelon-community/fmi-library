@@ -94,7 +94,7 @@ endif()
 
 # Test: fmi3_arrays_test C++ with Catch2
 add_executable(fmi3_arrays_test
-    ${RTTESTDIR}/FMI3/fmi3_arrays_test.cpp)
+    ${FMIL_TEST_DIR}/FMI3/fmi3_arrays_test.cpp)
 target_include_directories(fmi3_arrays_test
     PUBLIC
     ${CATCH2_INCLUDE_DIR}

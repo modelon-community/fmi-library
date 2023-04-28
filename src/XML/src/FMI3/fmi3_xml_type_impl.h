@@ -71,24 +71,24 @@ typedef union fmi3_int_union_t {
  *
  * Attributes specific to the primitive type. Each TypeDefinition has one, and every default
  * type is also represented by a _props.
- * 
+ *
  * Every Variable that defines a primitive-type-specific attribute also has a variable-specific
  * _props, for which the attribute values have been copied from it's TypeDefinition (or default
  * type properties) if the value was not specified.
- * 
+ *
  * So to conclude there are three cases that cause this struct:
  *      - Default type    (always)
  *      - TypeDefinition  (always)
  *      - Variable        (if type attribute)
- * 
+ *
  * The next node for a _props on a TypeDefinition (i.e. for _typedef or _typedef._props) is always
  * the default type.
- * 
+ *
  * The next node for a _props on a Variable is either the default type or the TypeDefinition,
  * depending on whether there was a declaredType.
  * So to find if a variable has TypeDefinition, you iterate through the nodes and if there is
  * a _typedef, then the answer is yes.
- * 
+ *
  * XXX:
  * It seems the only reason to keep references the "fallbacks" is to find the declared type.
  * And to eventually create diff-sets, but currently we just copy.
@@ -99,7 +99,7 @@ typedef union fmi3_int_union_t {
  *
  * Keeps the start attribute for a Variable. Is only used if the Variable defines a
  * start value.
- * 
+ *
  * The next node is the _props.
  */
 typedef enum {
@@ -219,7 +219,12 @@ typedef struct fmi3_xml_int_variable_start_t {
     fmi3_int_union_t start;
 } fmi3_xml_int_variable_start_t;
 
-typedef struct fmi3_xml_string_variable_start_t {
+typedef struct fmi3_xml_variable_start_boolean_t {
+    fmi3_xml_variable_type_base_t super;
+    fmi3_int_union_t start;
+} fmi3_xml_variable_start_boolean_t;
+
+typedef struct fmi3_xml_variable_start_string_t {
     fmi3_xml_variable_type_base_t super;
     char start[1];
 } fmi3_xml_string_variable_start_t;

@@ -133,8 +133,7 @@ TEST_CASE("Test array parsing and verify retrieved start values are as expected"
         fmi3_import_free_dimension_list(dimList);
     }
 
-
-    /* TODO - this test does not work yet
+    /*
     SECTION("Test int64 start array with 10k variables") {
         fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "int64_array_10k");
         fmi3_import_dimension_list_t* dimList = basic_array_checks(v, xml, 2);
@@ -147,6 +146,7 @@ TEST_CASE("Test array parsing and verify retrieved start values are as expected"
         fmi3_import_free_dimension_list(dimList);
     }
     */
+
     SECTION("Test int32 start array") {
         fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "int32_array");
         fmi3_import_dimension_list_t* dimList = basic_array_checks(v, xml, 2);

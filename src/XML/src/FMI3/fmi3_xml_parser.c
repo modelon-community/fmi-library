@@ -554,22 +554,24 @@ static int fmi3_xml_value_boundary_check_strcmp(jm_string strVal, const char* fo
     return strcmp(strVal + idx_start, wbBuf) == 0 ? 0 : 1;
 }
 
-/* Convert str values of "false", "true", "0" and "1" to their corresponding boolean value
-   Values are read from input argument 'strVal' and the covnerted value put in 'field'.
-   Returns:
+/*
      0: OK
     -1: parsing failed
 */
-static int fmi3_xml_str_to_bool(fmi3_xml_parser_context_t *context, int required, void* field, void* defaultVal,
-        jm_string strVal, const fmi3_xml_primitive_type_t* primType) {
-    /* Should we do something with the values 'required' and 'defaultVal' or can we simply remove them? */
+static int fmi3_xml_str_to_bool(fmi3_xml_parser_context_t *context, int required, bool* field, bool* defaultVal,
+        jm_string strVal) {
     int status = -1;
+
+    if (!strVal && !required) {
+        field = defaultVal;
+        return status;
+    }
     if ((strncmp(strVal, "false", 5) == 0) || (strncmp(strVal, "0", 1) == 0)) {
         status = 0;
-        *(bool*)field = false;
+        *field = false;
     } else if ((strncmp(strVal, "true", 4) == 0) || (strncmp(strVal, "1", 1) == 0)) {
         status = 0;
-        *(bool*)field = true;
+        *field = true;
     }
     return status;
 }
@@ -812,11 +814,33 @@ gen_fmi3_xml_set_attr_TYPEXX(uint32,  intXX)
         jm_log_error(context->callbacks, module, "Unable to allocate memory. File: %s, Line: %d", __FILE__, __LINE__);      \
     } while (0);
 
+static int fmi3_xml_str_to_primitive(fmi3_xml_parser_context_t *context,
+        int required, void* field, void* defaultVal, jm_string strVal,
+        const fmi3_xml_primitive_type_t* primType) {
+    if (fmi3_base_type_enu_is_int(primType->baseType)) {
+        if (fmi3_xml_str_to_intXX(context, required, field, defaultVal, strVal, primType)) {
+            jm_log_error(context->callbacks, module, "Unable to parse to %s: %s", primType->name, strVal);
+            return -1;
+        }
+    } else if (fmi3_base_type_enu_is_float(primType->baseType)) {
+        if (fmi3_xml_str_to_floatXX(context, required, field, defaultVal, strVal, primType)) {
+            jm_log_error(context->callbacks, module, "Unable to parse to %s: %s", primType->name, strVal);
+            return -1;
+        }
+    } else if (fmi3_base_type_enu_is_bool(primType->baseType)) {
+        if (fmi3_xml_str_to_bool(context, required, field, defaultVal, strVal)) {
+            jm_log_error(context->callbacks, module, "Unable to parse to %s: %s", primType->name, strVal);
+            return -1;
+        }
+    }
+    return 0;
+}
+
 /**
  * Parses a string to an array of values. Currently supports int and float.
  * An assert will fail if primType is of any non-supported type.
  *
- * str:     The string containing the values, they must be separated by exactly one <space> character and must not be NULL.
+ * str:     The string containing the values, they must be separated by blank spaces and/or newlines and must not be NULL.
  * arrPtr:  A pointer to the array where the values will be stored.
  *          Memory is dynamically allocated for this array, and must be freed by caller
  * nArr:    The number of values in 'arrPtr'
@@ -863,24 +887,10 @@ static int fmi3_xml_str_to_array(
         res = -1;
         goto err2;
     }
-
     /* Write start value(s) to correct type */
     if (nVals == 1) { /* scalar */
-        if (fmi3_base_type_enu_is_int(primType->baseType)) {
-            if (fmi3_xml_str_to_intXX(context, 1, vals, NULL, str, primType)) {
-                jm_log_error(context->callbacks, module, "Unable to parse to %s: %s", primType->name, str);
-                goto err2;
-            }
-        } else if (fmi3_base_type_enu_is_float(primType->baseType)) {
-            if (fmi3_xml_str_to_floatXX(context, 1, vals, NULL, str, primType)) {
-                jm_log_error(context->callbacks, module, "Unable to parse to %s: %s", primType->name, str);
-                goto err2;
-            }
-        } else if (fmi3_base_type_enu_is_bool(primType->baseType)) {
-            if (fmi3_xml_str_to_bool(context, 1, vals, NULL, str, primType)) {
-                jm_log_error(context->callbacks, module, "Unable to parse to %s: %s", primType->name, str);
-                goto err2;
-            }
+        if (fmi3_xml_str_to_primitive(context, 1, vals, NULL, str, primType)) {
+            goto err2;
         }
     } else { /* array */
 
@@ -890,24 +900,8 @@ static int fmi3_xml_str_to_array(
         /* Walk through other tokens */
         writeAddr = vals;
         while (token != NULL) {
-
-            /* Write attribute as int */
-
-            if (fmi3_base_type_enu_is_int(primType->baseType)) {
-                if (fmi3_xml_str_to_intXX(context, 1, writeAddr, NULL, token, primType)) {
-                    jm_log_error(context->callbacks, module, "Unable to parse to %s: %s", primType->name, token);
-                    goto err2;
-                }
-            } else if (fmi3_base_type_enu_is_float(primType->baseType)) {
-                if (fmi3_xml_str_to_floatXX(context, 1, writeAddr, NULL, token, primType)) {
-                    jm_log_error(context->callbacks, module, "Unable to parse to %s: %s", primType->name, token);
-                    goto err2;
-                }
-            } else if (fmi3_base_type_enu_is_bool(primType->baseType)) {
-                if (fmi3_xml_str_to_bool(context, 1, writeAddr, NULL, token, primType)) {
-                    jm_log_error(context->callbacks, module, "Unable to parse to %s: %s", primType->name, token);
-                    goto err2;
-                }
+            if (fmi3_xml_str_to_primitive(context, 1, writeAddr, NULL, token, primType)) {
+                goto err2;
             }
 
             /* Update where to write next value */

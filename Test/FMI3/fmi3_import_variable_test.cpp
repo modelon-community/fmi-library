@@ -315,3 +315,23 @@ TEST_CASE("Invalid Clock variable - no intervalVariability attr", "[xml_variable
     fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
     REQUIRE(xml == nullptr);
 }
+
+TEST_CASE("Invalid Binary variable - non-hexadecimal char first in byte tuple", "[xml_variables]") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/variable_test/invalid/binaryStart1";
+
+    fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
+    REQUIRE(xml != nullptr);
+
+    const char* errMsg = fmi3_import_get_last_error(xml);
+    REQUIRE(strcmp(errMsg, "String is not hexadecimal: gf") == 0);
+}
+
+TEST_CASE("Invalid Binary variable - non-hexadecimal char second in byte tuple", "[xml_variables]") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/variable_test/invalid/binaryStart2";
+
+    fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
+    REQUIRE(xml != nullptr);
+
+    const char* errMsg = fmi3_import_get_last_error(xml);
+    REQUIRE(strcmp(errMsg, "String is not hexadecimal: FG") == 0);
+}

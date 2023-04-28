@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <fmiModelDescription
   fmiVersion="3.0"
-  modelName="myModelName"
-  instantiationToken="myInstantiationToken"
-  description="myDescription"
-  author="myAuthor"
-  generationTool="myGenerationTool"
+  modelName=""
+  instantiationToken=""
+  description=""
+  author=""
+  generationTool=""
   generationDateAndTime="2002-05-30T09:00:00"
-  version="myModelVersion"
+  version=""
   variableNamingConvention="structured"
   numberOfEventIndicators="3">
 
@@ -16,8 +16,10 @@
 <TypeDefinitions/>
 
 <ModelVariables>
-  <!-- Missing required attribute: intervalVariability -->
-  <Clock name="clockDefault" valueReference="1"/>
+  <!-- Non-hexadecimal character in first position of byte tuple -->
+  <Binary name="binaryVar" valueReference="1">
+    <Start value="gf"/>
+  </Binary>
 </ModelVariables>
 
 <ModelStructure/>

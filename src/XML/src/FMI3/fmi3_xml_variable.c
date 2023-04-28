@@ -1771,6 +1771,15 @@ static int fmi3_xml_hexstring_to_bytearray(fmi3_xml_parser_context_t* context, c
     const char* pos = hexstr;
     size_t nByte = len / 2;
     for (size_t i = 0; i < nByte; i++) {
+        // Since sscanf only returns how many arguments it succeeds to assign, we can't know how many
+        // chars it actually read.
+        // Example input: "FG". Here sscanf will only read the F, since the G is not valid, but it will
+        // return 1 because it did manage to scan the F. There is also only a format specifier that
+        // specifies the maximum number of chars to read, not minimum. Since we increment position
+        // with 2 each time, we therefore would just ignore the invalid G. Note that we would get a
+        // failure if the input was instead "GF".
+        // 
+        // So while it's enough to check the second character, we may as well check all for consistency.
         for (size_t j = 0; j <= 1; j++) {
             char ch = pos[j];
             if (!((ch >= '0' && ch <= '9') || (ch >= 'a' && ch <= 'f') || (ch >= 'A' && ch <= 'F'))) {
@@ -1778,6 +1787,7 @@ static int fmi3_xml_hexstring_to_bytearray(fmi3_xml_parser_context_t* context, c
                 return -1;
             }
         }
+
         if (!sscanf(pos, "%2hhx", &bytearr[i])) {
             fmi3_xml_parse_error(context, "Failure when scanning hexadecimal string: %s", hexstr);
             return -1;

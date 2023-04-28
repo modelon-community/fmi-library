@@ -383,11 +383,17 @@ int fmi3_xml_set_attr_enum(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_
     int ret, i;
     jm_string strVal;
 
-    ret = fmi3_xml_get_attr_str(context, elmID, attrID, required, &strVal);
-    if(ret) return ret;
-    if(!strVal && !required) {
-        *field = defaultVal;
-        return 0;
+    if (fmi3_xml_get_attr_str(context, elmID, attrID, required, &strVal)) {
+        return -1;
+    }
+
+    if (!strVal) {
+        if (required) {
+            return -1;  // Call should already have failed by now
+        } else {
+            *field = defaultVal;
+            return 0;
+        }
     }
 
     i = 0;
@@ -417,9 +423,13 @@ int fmi3_xml_set_attr_bool(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_
         return -1;
     }
 
-    if (!strVal && !required) {
-        *field = defaultVal;
-        return 0;
+    if (!strVal) {
+        if (required) {
+            return -1;  // Call should already have failed by now
+        } else {
+            *field = defaultVal;
+            return 0;
+        }
     }
     
     if (strcmp(strVal, "true") == 0 || strcmp(strVal, "1") == 0) {

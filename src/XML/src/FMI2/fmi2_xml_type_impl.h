@@ -117,14 +117,6 @@ typedef struct fmi2_xml_enum_type_item_t {
     char itemDesciption[1];
 } fmi2_xml_enum_type_item_t;
 
-static int fmi1_xml_compare_enum_val (const void* first, const void* second) {
-    const jm_named_ptr* a = first;
-    const jm_named_ptr* b = second;
-    fmi2_xml_enum_type_item_t* ai = a->ptr;
-    fmi2_xml_enum_type_item_t* bi = b->ptr;
-    return (ai->value - bi->value);
-}
-
 typedef struct fmi2_xml_enum_variable_props_t {
     fmi2_xml_variable_type_base_t super;
 
@@ -206,14 +198,6 @@ fmi2_xml_real_type_props_t* fmi2_xml_parse_real_type_properties(fmi2_xml_parser_
 fmi2_xml_integer_type_props_t *fmi2_xml_parse_integer_type_properties(fmi2_xml_parser_context_t* context, fmi2_xml_elm_enu_t elmID);
 
 extern int fmi2_check_last_elem_is_specific_type(fmi2_xml_parser_context_t *context);
-
-extern jm_named_ptr fmi2_xml_variable_type_alloc(fmi2_xml_parser_context_t* context, jm_vector(char)* name, jm_vector(char)* description, size_t size);
-
-extern void* fmi2_xml_variable_type_create(fmi2_xml_parser_context_t* context, size_t size, jm_vector(jm_named_ptr)* typeList );
-
-extern fmi2_xml_real_typedef_t* fmi2_xml_variable_type_create_real(fmi2_xml_parser_context_t* context, fmi2_xml_elm_enu_t elmID, jm_vector(jm_named_ptr)* typeList );
-
-extern fmi2_xml_integer_typedef_t* fmi2_xml_variable_type_create_integer(fmi2_xml_parser_context_t* context, fmi2_xml_elm_enu_t elmID, jm_vector(jm_named_ptr)* typeList );
 
 fmi2_xml_variable_type_base_t* fmi2_get_declared_type(fmi2_xml_parser_context_t *context, fmi2_xml_elm_enu_t elmID, fmi2_xml_variable_type_base_t* defaultType);
 

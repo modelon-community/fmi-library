@@ -97,7 +97,6 @@ static int test_quantity_default(fmi3_import_t* xml)
     unsigned int n_tds;
     unsigned int i; /* td_idx */
     const char* tname;
-    const char* str_empty = "";
     int nBaseTypes = 13; /* intXX: 8, floatXX: 2, string, boolean, enum */
     int nTdsTested = 0;
     char* tdPrefix = "td_minimal_";

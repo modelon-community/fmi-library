@@ -153,6 +153,14 @@ int fmi2_xml_get_enum_type_min(fmi2_xml_enumeration_typedef_t* t){
     return item->value;
 }
 
+static int fmi2_xml_compare_enum_val(const void* first, const void* second) {
+    const jm_named_ptr* a = first;
+    const jm_named_ptr* b = second;
+    fmi2_xml_enum_type_item_t* ai = a->ptr;
+    fmi2_xml_enum_type_item_t* bi = b->ptr;
+    return (ai->value - bi->value);
+}
+
 int fmi2_xml_get_enum_type_max(fmi2_xml_enumeration_typedef_t* t){
     fmi2_xml_variable_typedef_t* vt = (void*)t;
     fmi2_xml_enum_typedef_props_t* props = (fmi2_xml_enum_typedef_props_t*)(vt->super.nextLayer);
@@ -192,7 +200,7 @@ const char* fmi2_xml_get_enum_type_value_name(fmi2_xml_enumeration_typedef_t* t,
     jm_named_ptr* itemp, key;
     keyitem.value = value;
     key.ptr = &keyitem;
-    itemp = jm_vector_bsearch(jm_named_ptr)(&props->enumItems, &key, fmi1_xml_compare_enum_val);
+    itemp = jm_vector_bsearch(jm_named_ptr)(&props->enumItems, &key, fmi2_xml_compare_enum_val);
     if(!itemp) return  0;
     return itemp->name;
 }
@@ -590,7 +598,7 @@ int fmi2_xml_handle_Enumeration(fmi2_xml_parser_context_t *context, const char* 
         fmi2_xml_enum_typedef_props_t * props = (fmi2_xml_enum_typedef_props_t *)type->super.nextLayer;
         jm_vector(jm_named_ptr)* items = &props->enumItems;
         size_t i, n = jm_vector_get_size(jm_named_ptr)(items);
-        jm_vector_qsort(jm_named_ptr)(items, fmi1_xml_compare_enum_val);
+        jm_vector_qsort(jm_named_ptr)(items, fmi2_xml_compare_enum_val);
         for(i = 1; i < n; i++) {
             fmi2_xml_enum_type_item_t* a = jm_vector_get_itemp(jm_named_ptr)(items, i-1)->ptr;
             fmi2_xml_enum_type_item_t* b = jm_vector_get_itemp(jm_named_ptr)(items, i)->ptr;

@@ -20,6 +20,20 @@ void fmi_testutil_enter_breakpoint()
     /* You can put a breakpoint on this line to break on test failure. */
 }
 
+fmi3_import_t* fmi3_testutil_parse_xml(const char* xmldir) {
+    jm_callbacks* cb = jm_get_default_callbacks();
+    fmi_import_context_t* ctx = fmi_import_allocate_context(cb);
+    ASSERT_MSG(ctx != NULL, "Context was NULL");
+
+    fmi3_import_t* xml;
+    xml = fmi3_import_parse_xml(ctx, xmldir, NULL);
+    ASSERT_MSG(xml != NULL, "Failed to parse XML");
+
+    fmi_import_free_context(ctx);
+
+    return xml;
+}
+
 void fail(const char* fmt, ...) {
     va_list args;
     va_start(args, fmt);

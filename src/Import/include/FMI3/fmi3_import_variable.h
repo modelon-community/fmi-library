@@ -76,6 +76,10 @@ typedef struct fmi3_xml_string_variable_t fmi3_import_string_variable_t;
 typedef struct fmi3_xml_enum_variable_t fmi3_import_enum_variable_t;
 /** \brief Opaque boolean variable */
 typedef struct fmi3_xml_bool_variable_t fmi3_import_bool_variable_t;
+/** \brief Opaque binary variable */
+typedef struct fmi3_xml_binary_variable_t fmi3_import_binary_variable_t;
+/** \brief Opaque clock variable */
+typedef struct fmi3_xml_clock_variable_t fmi3_import_clock_variable_t;
 /** \brief List of variables */
 typedef struct fmi3_import_variable_list_t fmi3_import_variable_list_t;
 /**@} */
@@ -149,6 +153,14 @@ FMILIB_EXPORT fmi3_import_variable_t* fmi3_import_get_previous(fmi3_import_varia
 */
 FMILIB_EXPORT fmi3_boolean_t fmi3_import_get_canHandleMultipleSetPerTimeInstant(fmi3_import_variable_t* v);
 
+
+/** \brief Get a list of variables referenced in the 'clock' attribute.
+ *  Note that the caller is responsible for deallocating the list.
+ *
+ *  @return The array of value references.
+ */
+FMILIB_EXPORT fmi3_import_variable_list_t* fmi3_import_get_variable_clocks(fmi3_import_t* fmu, fmi3_import_variable_t* v);
+
 /** \brief Cast general variable to a one with the specific type 
 
     @return Typed object or NULL if base type does not match
@@ -216,6 +228,16 @@ FMILIB_EXPORT fmi3_import_string_variable_t* fmi3_import_get_variable_as_string(
     @return Typed object or NULL if base type does not match
 */
 FMILIB_EXPORT fmi3_import_bool_variable_t* fmi3_import_get_variable_as_boolean(fmi3_import_variable_t*);
+/** \brief Cast general variable to a one with the specific type 
+
+    @return Typed object or NULL if base type does not match
+*/
+FMILIB_EXPORT fmi3_import_binary_variable_t* fmi3_import_get_variable_as_binary(fmi3_import_variable_t*);
+/** \brief Cast general variable to a one with the specific type 
+
+    @return Typed object or NULL if base type does not match
+*/
+FMILIB_EXPORT fmi3_import_clock_variable_t* fmi3_import_get_variable_as_clock(fmi3_import_variable_t*);
 
 /** \brief Get minimal value for the variable.
 
@@ -396,7 +418,6 @@ FMILIB_EXPORT fmi3_uint16_t fmi3_import_get_uint16_variable_start(fmi3_import_ui
 /** \brief Get start value for the variable */
 FMILIB_EXPORT fmi3_uint8_t fmi3_import_get_uint8_variable_start(fmi3_import_uint8_variable_t* v);
 
-
 /** \brief Get "quantity" attribute if defined, else NULL-pointer. */
 FMILIB_EXPORT fmi3_string_t fmi3_import_get_enum_variable_quantity(fmi3_import_enum_variable_t * v);
 /** \brief Get start value for the variable*/
@@ -406,14 +427,40 @@ FMILIB_EXPORT int fmi3_import_get_enum_variable_min(fmi3_import_enum_variable_t*
 /** \brief Get max value for the variable */
 FMILIB_EXPORT int fmi3_import_get_enum_variable_max(fmi3_import_enum_variable_t* v);
 
+/** \brief Get the length of the binary variable's start value (which is an array). */
+FMILIB_EXPORT size_t fmi3_import_get_binary_variable_start_size(fmi3_import_binary_variable_t* v);
+/** \brief Get start value for the variable */
+FMILIB_EXPORT fmi3_binary_t fmi3_import_get_binary_variable_start(fmi3_import_binary_variable_t* v);
+/** \brief Get mimeType for the variable */
+FMILIB_EXPORT fmi3_string_t fmi3_import_get_binary_variable_mime_type(fmi3_import_binary_variable_t* v);
+/** \brief Get maxSize for the variable */
+FMILIB_EXPORT size_t fmi3_import_get_binary_variable_max_size(fmi3_import_binary_variable_t* v);
+
+/** \brief Get canBeDeactivated for the variable */
+FMILIB_EXPORT fmi3_boolean_t fmi3_import_get_clock_variable_can_be_deactivated(fmi3_import_clock_variable_t* v);
+/** \brief Get priority for the variable */
+FMILIB_EXPORT fmi3_uint32_t fmi3_import_get_clock_variable_priority(fmi3_import_clock_variable_t* v);
+/** \brief Get intervalVariability for the variable */
+FMILIB_EXPORT fmi3_interval_variability_enu_t fmi3_import_get_clock_variable_interval_variability(fmi3_import_clock_variable_t* v);
+/** \brief Get intervalDecimal for the variable */
+FMILIB_EXPORT fmi3_float32_t fmi3_import_get_clock_variable_interval_decimal(fmi3_import_clock_variable_t* v);
+/** \brief Get shiftDecimal for the variable */
+FMILIB_EXPORT fmi3_float32_t fmi3_import_get_clock_variable_shift_decimal(fmi3_import_clock_variable_t* v);
+/** \brief Get supportsFraction for the variable */
+FMILIB_EXPORT fmi3_boolean_t fmi3_import_get_clock_variable_supports_fraction(fmi3_import_clock_variable_t* v);
+/** \brief Get resolution for the variable */
+FMILIB_EXPORT fmi3_uint64_t fmi3_import_get_clock_variable_resolution(fmi3_import_clock_variable_t* v);
+/** \brief Get intervalCounter for the variable */
+FMILIB_EXPORT fmi3_uint64_t fmi3_import_get_clock_variable_interval_counter(fmi3_import_clock_variable_t* v);
+/** \brief Get shiftCounter for the variable */
+FMILIB_EXPORT fmi3_uint64_t fmi3_import_get_clock_variable_shift_counter(fmi3_import_clock_variable_t* v);
+
 /** \brief Get the variable alias kind*/
 FMILIB_EXPORT fmi3_variable_alias_kind_enu_t fmi3_import_get_variable_alias_kind(fmi3_import_variable_t*);
 
 /** \brief Get the original index in xml of the variable */
 FMILIB_EXPORT size_t fmi3_import_get_variable_original_order(fmi3_import_variable_t* v);
 
-
-/* Dimensions */
 
 
 /** @} */

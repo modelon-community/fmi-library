@@ -157,6 +157,8 @@ typedef enum fmi3_base_type_enu_t
     fmi3_base_type_uint16,
     fmi3_base_type_uint8,
     fmi3_base_type_bool,
+    fmi3_base_type_binary,
+    fmi3_base_type_clock,
     fmi3_base_type_str,
     fmi3_base_type_enum
 } fmi3_base_type_enu_t;
@@ -166,6 +168,17 @@ typedef enum fmi3_base_type_enu_t
     \return Corresponding base type name.
     */
 FMILIB_EXPORT const char* fmi3_base_type_to_string(fmi3_base_type_enu_t bt);
+
+/** \brief Base types used in type definitions */
+typedef enum fmi3_interval_variability_enu_t {
+    fmi3_interval_variability_unknown = 0,
+    fmi3_interval_variability_constant,
+    fmi3_interval_variability_fixed,
+    fmi3_interval_variability_tunable,
+    fmi3_interval_variability_changing,
+    fmi3_interval_variability_countdown,
+    fmi3_interval_variability_triggered
+} fmi3_interval_variability_enu_t;
 
 /** \brief List of capability flags for ModelExchange */
 #define FMI3_ME_CAPABILITIES(H) \

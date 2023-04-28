@@ -27,19 +27,31 @@
 extern "C" {
 #endif
 
-/* General variable type is convenien to unify all the variable list operations */
-struct fmi3_xml_variable_t {
-    fmi3_xml_variable_type_base_t* type; /** \brief Type information of the variable */
+/**
+ * Holds the VR until all Variables have been parsed. Then the variable
+ * can be looked up.
+ */    
+typedef union fmi3_xml_valueref_or_variable_union_t {
+    fmi3_value_reference_t vr;
+    fmi3_xml_variable_t* variable;
+} fmi3_xml_valueref_or_variable_union_t;
 
-    const char* description;                 /** \brief Associate description */
+/* General variable type is convenient to unify all the variable list operations */
+struct fmi3_xml_variable_t {
+    fmi3_xml_variable_type_base_t* type;     /** \brief Contains type-specific attributes. */
+
+    const char* description;                 /** \brief Associated description */
 
     size_t originalIndex;                    /** \brief Index in the model description */
 
     /* NB: before parsing of <ModelVariables> has finished,
            derivativeOf and previous are stored as integer indices cast to pointers,
            until they can be looked up */
-    fmi3_xml_variable_t *derivativeOf;      /** \brief Only for continuous FloatXX variables. If non-NULL, the variable that this is the derivative of. */
-    fmi3_xml_variable_t *previous;          /** \brief If non-NULL, the variable that holds the value of this variable at the previous super-dense time instant. */
+    fmi3_xml_variable_t* derivativeOf;      /** \brief Only for continuous FloatXX variables. If non-NULL, the variable that this is the derivative of. */
+
+    // TODO: derivativeOf should be treated same as previous:
+    fmi3_xml_valueref_or_variable_union_t previous;  /** \brief The variable referenced in the previous attribute. */
+    bool hasPrevious;
 
     fmi3_value_reference_t vr;                /** \brief Value reference */
     char aliasKind;
@@ -49,6 +61,9 @@ struct fmi3_xml_variable_t {
     char reinit; /** \brief Only for continuous FloatXX variables */
     char canHandleMultipleSetPerTimeInstant;
 
+    jm_vector(fmi3_value_reference_t)* clocks;   /* Vrs in the clock attribute. NULL if attribute doesn't exist. */
+
+    // TODO: Convert to pointer to save memory - most variables are not arrays
     /* array fields */
     jm_vector(fmi3_xml_dimension_t) dimensionsVector; /* stores the dimensions and their attributes */
     /*
@@ -65,7 +80,7 @@ struct fmi3_xml_variable_t {
     char name[1];
 };
 
-static int fmi3_xml_compare_vr (const void* first, const void* second) {
+static int fmi3_xml_compare_vr(const void* first, const void* second) {
     fmi3_xml_variable_t* a = *(fmi3_xml_variable_t**)first;
     fmi3_xml_variable_t* b = *(fmi3_xml_variable_t**)second;
     fmi3_base_type_enu_t at = fmi3_xml_get_variable_base_type(a);

@@ -81,7 +81,7 @@ int main(int argc, char **argv)
         return CTEST_RETURN_FAIL;
     }
 
-    printf("Running fmi1_import_variable_test\n");
+    printf("Running fmi1_import_default_experiment_test\n");
 
     /* test 1 */
     xml = parse_xml(strcat(strncpy(path_buf, argv[1], PATH_BUF_SIZE), "defined"));

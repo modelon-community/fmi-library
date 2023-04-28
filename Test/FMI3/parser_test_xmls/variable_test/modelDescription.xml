@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <fmiModelDescription
-  fmiVersion="2.0"
+  fmiVersion="3.0"
   modelName="myModelName"
   instantiationToken="myInstantiationToken"
   description="myDescription"
@@ -30,35 +30,52 @@
     </Enumeration>
 </TypeDefinitions>
 
-<DefaultExperiment
-  startTime="0.0"
-  stopTime="1.0"/>
-
 <ModelVariables>
-  <Float64 name="minRealVar" valueReference="0"/>
-  <Float64 name="maxRealVar" causality="parameter" variability="fixed" valueReference="1" initial="exact" description="myDescription" quantity="Temperature" unit="K" displayUnit="degC" min="3.2" max="6.5" nominal="3.5" start="5.9"/>
-  <Int32 name="minIntVar" valueReference="2"/>
-  <Int32 name="maxIntVar" causality="calculatedParameter" variability="tunable" valueReference="3" initial="approx" description="myDescription" quantity="integerQuantity" min="3" max="7" start="6"/>
-  <Enumeration name="minEnumVar" valueReference="4" variability="discrete" declaredType="MyEnum"/>
-  <Enumeration name="maxEnumVar" causality="output" variability="discrete" valueReference="5" initial="exact" description="myDescription" declaredType="MyEnum" quantity="enumerationQuantity" min="1" max="2" start="2"/>
-  <Boolean name="minBoolVar" valueReference="6"/>
-  <Boolean name="maxBoolVar" causality="output" variability="discrete" valueReference="7" initial="approx" description="myDescription" start="true"/>
-  <String name="minStringVar" valueReference="8"/>
-  <String name="maxStringVar" causality="local" variability="constant" valueReference="9" initial="exact" description="myDescription" start="stringStart"/>
-  <Float64 name="derivative"  causality="output" variability="continuous" valueReference="10" initial="approx" description="myDescription" derivative="1" start="1.0"/>
+  <!-- Enum variables -->
+  <Enumeration name="enumDefault"  valueReference="1" declaredType="MyEnum"/>
+  <Enumeration name="enumAllAttr" valueReference="2" variability="discrete"
+               declaredType="MyEnum" causality="output" initial="exact"
+               description="myDescription" quantity="enumerationQuantity"
+               min="1" max="2" start="2"/>
+
+  <!-- Binary variables -->
+  <Binary name="binaryDefault" valueReference="3"/>
+  <Binary name="binaryAllAttr" valueReference="4" variability="discrete"
+          causality="output" initial="exact" description="myDesc"
+          previous="4001" clocks="4002" mimeType="myMimeType" maxSize="444"/>
+  <!-- Variables referenced in attributes: -->
+  <Binary name="preBinary" valueReference="4001"/>
+  <Clock name="clocks4" valueReference="4002" intervalVariability="constant"/>
+
+  <!-- Binary Start element -->
+  <Binary name="binaryStart" valueReference="5">
+    <Start value="0011BBff029eE4Cd"/>
+  </Binary>
+
+  <!-- Clock variables -->
+  <Clock name="clockDefault" valueReference="6" intervalVariability="constant"/>
+  <Clock name="clockAllAttrs" valueReference="7" intervalVariability="countdown"
+         canBeDeactivated="true" priority="1" intervalDecimal="2.0"
+         shiftDecimal="3.0" supportsFraction="true" resolution="4"
+         intervalCounter="5" shiftCounter="6"/>
+
+
+  <!-- ==================================================================================
+    Other tests on attributes:
+    (Trying to create a separation with value refs, but probably not worth the effort.)
+  =================================================================================== -->
+
+
+  <!-- Binary with empty mimeType-->
+  <Binary name="binaryEmptyMimeType" valueReference="998" mimeType=""/>
+
+  <!-- Clock attribute: Multiple clock value refs -->
+  <Binary name="hasMultipleClocks" valueReference="999" clocks="999001 999002 999003"/>
+  <Clock name="clocks999_1" valueReference="999001" intervalVariability="constant"/>
+  <Clock name="clocks999_2" valueReference="999002" intervalVariability="constant"/>
+  <Clock name="clocks999_3" valueReference="999003" intervalVariability="constant"/>
 </ModelVariables>
 
-<ModelStructure>
-  <Derivatives>
-    <Unknown index="11" />
-  </Derivatives>
-  <InitialUnknowns>
-    <Unknown index="1"/>
-    <Unknown index="3"/>
-    <Unknown index="5"/>
-    <Unknown index="7"/>
-    <Unknown index="9"/>
-    <Unknown index="11"/>
-  </InitialUnknowns>
-</ModelStructure>
+<ModelStructure/>
+
 </fmiModelDescription>

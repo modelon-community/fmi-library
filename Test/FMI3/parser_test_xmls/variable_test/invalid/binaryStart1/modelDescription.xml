@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription
+  fmiVersion="3.0"
+  modelName=""
+  instantiationToken=""
+  description=""
+  author=""
+  generationTool=""
+  generationDateAndTime="2002-05-30T09:00:00"
+  version=""
+  variableNamingConvention="structured"
+  numberOfEventIndicators="3">
+
+<ModelExchange modelIdentifier="myModelIdentifier"/>
+<UnitDefinitions/>
+<TypeDefinitions/>
+
+<ModelVariables>
+  <!-- Non-hexadecimal character in first position of byte tuple -->
+  <Binary name="binaryVar" valueReference="1">
+    <Start value="gf"/>
+  </Binary>
+</ModelVariables>
+
+<ModelStructure/>
+
+</fmiModelDescription>

@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 
+#include "fmilib.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -13,6 +14,9 @@ extern "C" {
  */
 
 
+/**
+ * TODO: Remove this function. Instead of using this function, build the path from defines in config_test.h.
+ */
 void fmi_testutil_build_xml_path(char* buf, size_t bufSize, const char* basePath, const char* appendPath);
 
 /**
@@ -20,6 +24,12 @@ void fmi_testutil_build_xml_path(char* buf, size_t bufSize, const char* basePath
  * breakpoint on it to make debugging easier
  */
 void fmi_testutil_enter_breakpoint();
+
+/**
+ * Parses the modelDescription.xml which is located in 'xmldir'.
+ * The returned pointer must be freed with 'fmi3_import_free'.
+ */
+fmi3_import_t* fmi3_testutil_parse_xml(const char* xmldir);
 
 /**
  * Immediately fails the test by exiting the program.
@@ -30,13 +40,6 @@ void fail(const char* fmt, ...);
  * Concats two strings. Caller must free the returned string.
  */
 char* concat(char *s1, char *s2);
-
-/* *
-    TODO: all variadic macros are giving warnings when compiled with GCC, because
-    variadic macros were introduced in C99
-
-    - should I add some flag that suppress warning, or should I remove the vararg?
- */
 
 #ifdef _MSC_VER /* Visual Studio */
 #define PRINT_FAILURE(...)                                                  \
@@ -85,6 +88,9 @@ char* concat(char *s1, char *s2);
         }                                                                   \
     } while (0)
 
+/**
+ * TODO: Align with CTEST_RETURN_SUCCESS etc. Do not use for new code until OK is 0 and FAIL is non-zero.
+ */
 #define TEST_OK (1)
 #define TEST_FAIL (0)
 

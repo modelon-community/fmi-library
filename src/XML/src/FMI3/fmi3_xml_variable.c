@@ -103,22 +103,14 @@ static void* fmi3_xml_get_type_default_value(fmi3_base_type_enu_t baseType) {
     }
 }
 
-/**
- *  Start values of int variables that do not have a start value(s).
- */
-static fmi3_int_union_t   s_intNoStartValue = { .array64s = 0 };
-/**
- *  Start values of float variables that do not have a start value(s).
- */
-static fmi3_float_union_t s_floatNoStartValue = { .array64s = 0 };
-
 static fmi3_int_union_t fmi3_xml_get_int_variable_start(fmi3_xml_int_variable_t* v){
     fmi3_xml_variable_t* vv = (fmi3_xml_variable_t*)v;
     if(fmi3_xml_get_variable_has_start(vv)) {
         fmi3_xml_variable_start_int_t* start = (fmi3_xml_variable_start_int_t*)(vv->type);
         return start->start;
     }
-    return s_intNoStartValue;
+    fmi3_int_union_t def = { .array64s = 0 };
+    return def;
 }
 
 const char* fmi3_xml_get_variable_name(fmi3_xml_variable_t* v) {
@@ -298,7 +290,8 @@ static fmi3_float_union_t fmi3_xml_get_float_variable_start(fmi3_xml_float_varia
         fmi3_xml_float_variable_start_t* start = (fmi3_xml_float_variable_start_t*)(vv->type);
         return start->start;
     }
-    return s_floatNoStartValue;
+    fmi3_float_union_t def = { .array64s = 0 };
+    return def;
 }
 
 static fmi3_xml_int_type_props_t* fmi3_xml_get_type_props_int(fmi3_xml_int_variable_t* v) {

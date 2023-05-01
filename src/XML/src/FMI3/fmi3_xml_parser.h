@@ -397,6 +397,7 @@ typedef struct fmi3_xml_primitive_types_t {
     fmi3_xml_primitive_type_t uint16;
     fmi3_xml_primitive_type_t uint8;
     fmi3_xml_primitive_type_t boolean;
+    fmi3_xml_primitive_type_t enumeration;
 } fmi3_xml_primitive_types_t;
 
 extern const fmi3_xml_primitive_types_t PRIMITIVE_TYPES;

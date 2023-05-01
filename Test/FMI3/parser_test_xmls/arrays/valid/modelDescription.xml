@@ -7,6 +7,18 @@
 
   <CoSimulation modelIdentifier="VariableTypes"/>
 
+  <TypeDefinitions>
+      <Enumeration name="TestEnum">
+        <Item name="item1" value="1"/>
+        <Item name="item2" value="2"/>
+        <Item name="item3" value="3"/>
+      </Enumeration>
+      <Enumeration name="TestEnum2">
+        <Item name="item1" value="55"/>
+        <Item name="item2" value="-57"/>
+      </Enumeration>
+  </TypeDefinitions>
+
   <ModelVariables>
     <!-- float64 -->
     <Float64 name="array1_64" valueReference="1" initial="exact" start="1.0">
@@ -158,6 +170,19 @@
       <Dimension start="10"/>
     </Int64>
     -->
+    <Enumeration name="enum_array" valueReference="118" causality="input" variability="discrete"
+      declaredType="TestEnum"
+      description="Array used to test enum arrays."
+      start="3 1 2 3 1 2 2">
+      <Dimension start="7"/>
+    </Enumeration>
+
+    <Enumeration name="enum_array2" valueReference="119" causality="input" variability="discrete"
+      declaredType="TestEnum"
+      description="Array used to test enum arrays, this tests only 1 value and a negative."
+      start="-57">
+      <Dimension start="1"/>
+    </Enumeration>
 
     <!-- variables used as dimension specifiers -->
     <UInt32 name="uint32_1" valueReference="201" initial="exact" variability="constant" start="3" />

@@ -2049,6 +2049,9 @@ int fmi3_xml_handle_EnumerationVariable(fmi3_xml_parser_context_t *context, cons
                     return -1;
                 }
             } else {
+                /* restore the attribute buffer before it's used in set_attr_int */
+                jm_vector_set_item(jm_string)(context->attrBuffer, fmi_attr_id_start, startAttr);
+
                 if (fmi3_xml_set_attr_int32(context, fmi3_xml_elmID_Enumeration,
                         fmi_attr_id_start, 0, &start->start.scalar32s, 0)) {
                     start->start.scalar32s = type->typeMin;

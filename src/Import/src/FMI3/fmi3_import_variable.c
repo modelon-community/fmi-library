@@ -545,6 +545,10 @@ int fmi3_import_get_enum_variable_start(fmi3_import_enum_variable_t* v) {
     return fmi3_xml_get_enum_variable_start(v);
 }
 
+int* fmi3_import_get_enum_variable_start_array(fmi3_import_enum_variable_t* v) {
+    return fmi3_xml_get_enum_variable_start_array(v);
+}
+
 int fmi3_import_get_enum_variable_min(fmi3_import_enum_variable_t* v) {
     return fmi3_xml_get_enum_variable_min(v);
 }

@@ -238,6 +238,13 @@ const fmi3_xml_primitive_types_t PRIMITIVE_TYPES = {
         0, /* N/A */
         0,
         fmi3_base_type_bool,
+    },
+    {
+        "Enumeration",
+        sizeof(fmi3_int32_t),
+        fmi3_bitness_32, /* TODO: Perhaps this should be 64bit in FMI3??? */
+        1,
+        fmi3_base_type_enum,
     }
 };
 
@@ -809,7 +816,7 @@ gen_fmi3_xml_set_attr_TYPEXX(uint32,  intXX)
 static int fmi3_xml_str_to_primitive(fmi3_xml_parser_context_t *context,
         int required, void* field, void* defaultVal, jm_string strVal,
         const fmi3_xml_primitive_type_t* primType) {
-    if (fmi3_base_type_enu_is_int(primType->baseType)) {
+    if (fmi3_base_type_enu_is_int(primType->baseType) || fmi3_base_type_enu_is_enum(primType->baseType)) {
         if (fmi3_xml_str_to_intXX(context, required, field, defaultVal, strVal, primType)) {
             jm_log_error(context->callbacks, module, "Unable to parse to %s: %s", primType->name, strVal);
             return -1;
@@ -861,6 +868,7 @@ static int fmi3_xml_str_to_array(
     */
     assert((fmi3_base_type_enu_is_int(primType->baseType)
             || fmi3_base_type_enu_is_float(primType->baseType)
+            || fmi3_base_type_enu_is_enum(primType->baseType)
             || fmi3_base_type_enu_is_bool(primType->baseType)));
 
     /* Create a copy that it's OK that strtok mutates */

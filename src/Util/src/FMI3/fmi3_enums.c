@@ -51,6 +51,14 @@ int fmi3_base_type_enu_is_float(fmi3_base_type_enu_t baseType) {
     return 0;
 }
 
+int fmi3_base_type_enu_is_enum(fmi3_base_type_enu_t baseType) {
+    switch (baseType) {
+        case fmi3_base_type_enum: return 1;
+        default: return 0;
+    }
+    return 0;
+}
+
 const char* fmi3_naming_convention_to_string(fmi3_variable_naming_convension_enu_t convention) {
     if(convention == fmi3_naming_enu_flat) return "flat";
     if(convention == fmi3_naming_enu_structured) return "structured";

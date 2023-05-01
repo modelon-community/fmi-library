@@ -233,6 +233,28 @@ TEST_CASE("Test array parsing and verify retrieved start values are as expected"
         REQUIRE(start[7] == 255);
         fmi3_import_free_dimension_list(dimList);
     }
+
+    SECTION("Test enum start array") {
+        fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "enum_array");
+        fmi3_import_dimension_list_t* dimList = basic_array_checks(v, xml, 1);
+        int* start = fmi3_import_get_enum_variable_start_array(fmi3_import_get_variable_as_enum(v));
+        REQUIRE(start[0] == 3);
+        REQUIRE(start[1] == 1);
+        REQUIRE(start[2] == 2);
+        REQUIRE(start[3] == 3);
+        REQUIRE(start[4] == 1);
+        REQUIRE(start[5] == 2);
+        REQUIRE(start[6] == 2);
+        fmi3_import_free_dimension_list(dimList);
+    }
+
+    SECTION("Test enum start array with only one (negative) value") {
+        fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "enum_array2");
+        fmi3_import_dimension_list_t* dimList = basic_array_checks(v, xml, 1);
+        int* start = fmi3_import_get_enum_variable_start_array(fmi3_import_get_variable_as_enum(v));
+        REQUIRE(start[0] == -57);
+        fmi3_import_free_dimension_list(dimList);
+    }
     fmi_import_free_context(context);
     fmi3_import_free(xml);
 }

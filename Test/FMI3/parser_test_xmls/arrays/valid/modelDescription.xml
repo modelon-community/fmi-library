@@ -178,7 +178,7 @@
     </Enumeration>
 
     <Enumeration name="enum_array2" valueReference="119" causality="input" variability="discrete"
-      declaredType="TestEnum"
+      declaredType="TestEnum2"
       description="Array used to test enum arrays, this tests only 1 value and a negative."
       start="-57">
       <Dimension start="1"/>

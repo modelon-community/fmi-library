@@ -397,6 +397,13 @@ FMILIB_EXPORT fmi3_boolean_t fmi3_import_get_float64_variable_unbounded(fmi3_imp
 /** \brief Get start value for the variable */
 FMILIB_EXPORT const char* fmi3_import_get_string_variable_start(fmi3_import_string_variable_t* v);
 
+/** \brief Get start values for the array variable */
+FMILIB_EXPORT const char* fmi3_import_get_string_variable_start_array(fmi3_import_string_variable_t* v);
+
+/** \brief Get the length of the start values of a string array variable */
+FMILIB_EXPORT size_t* fmi3_import_get_string_variable_start_array_length(fmi3_import_string_variable_t* v);
+
+
 /** \brief Get start value for the variable */
 FMILIB_EXPORT fmi3_boolean_t fmi3_import_get_boolean_variable_start(fmi3_import_bool_variable_t* v);
 

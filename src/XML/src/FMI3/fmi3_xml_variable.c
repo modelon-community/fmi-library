@@ -778,7 +778,19 @@ const char* fmi3_xml_get_string_variable_start(fmi3_xml_string_variable_t* v){
         fmi3_xml_string_variable_start_t* start = (fmi3_xml_string_variable_start_t*)(vv->type);
         return start->start;
     }
-    return 0;
+    return "";
+}
+
+const char* fmi3_xml_get_string_variable_start_array(fmi3_xml_string_variable_t* v){
+    return fmi3_xml_get_string_variable_start(v);
+}
+
+size_t* fmi3_xml_get_string_variable_start_array_length(fmi3_xml_string_variable_t* v){
+    fmi3_xml_variable_t* vv = (fmi3_xml_variable_t*)v;
+    if(fmi3_xml_get_variable_has_start(vv)) {
+        return vv->startArrayLength;
+    }
+    return NULL;
 }
 
 // -----------------------------------------------------------------------------
@@ -1846,19 +1858,32 @@ int fmi3_xml_handle_ClockVariable(fmi3_xml_parser_context_t* context, const char
 int fmi3_xml_handle_StringVariable(fmi3_xml_parser_context_t *context, const char* data) {
     if (context->skipOneVariableFlag) return 0;
     if (fmi3_xml_handle_Variable(context, data)) return -1;
+    fmi3_xml_model_description_t* md = context->modelDescription;
+    fmi3_xml_type_definitions_t* td = &md->typeDefinitions;
+    fmi3_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
+    int hasStart;
 
     if (!data) {
-        fmi3_xml_model_description_t* md = context->modelDescription;
-        fmi3_xml_type_definitions_t* td = &md->typeDefinitions;
-        fmi3_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
-        int hasStart;
 
         assert(!variable->type);
 
         variable->type = fmi3_parse_declared_type_attr(context, fmi3_xml_elmID_String, &td->defaultStringType) ;
         if(!variable->type) return -1;
+        /* TODO handle this buffer clean-up in a better way */
+        {
+            const char* tmp; /* unused */
+            fmi3_xml_get_attr_str(context, fmi3_xml_elmID_String, fmi_attr_id_start, 0, &tmp);
+        }
+    }
+    else {
+        /* set start value */
 
-        hasStart = fmi3_xml_get_has_start(context, variable);
+        /* We must wait until after parsing dimensions, because we can't otherwise know
+         * if it's a 1x1 array or a scalar variable just by reading the start value. */
+        int hasStart = variable->startAttr != NULL;
+        if (hasStart) {
+            printf("I am here now!\n");
+        }
         if (hasStart) {
             jm_vector(char)* bufStartStr = fmi3_xml_reserve_parse_buffer(context, 1, 100);
             size_t strlen;
@@ -1880,9 +1905,40 @@ int fmi3_xml_handle_StringVariable(fmi3_xml_parser_context_t *context, const cha
             fmi3_log_error_if_start_required(context, variable);
         }
     }
-    else {
-        /* don't do anything. might give out a warning if(data[0] != 0) */
-        return 0;
+    return 0;
+}
+
+/**
+ * TODO
+*/
+int fmi3_xml_handle_StringVariableStart(fmi3_xml_parser_context_t* context, const char* data) {
+    if (context->skipOneVariableFlag) return 0;
+    fmi3_xml_model_description_t* md = context->modelDescription;
+    fmi3_xml_type_definitions_t* td = &md->typeDefinitions;
+    fmi3_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
+    jm_named_ptr key;
+    jm_named_ptr* attrMapping;
+    key.name = "value";
+    attrMapping = jm_vector_bsearch(jm_named_ptr)(context->attrMap, &key, jm_compare_named);
+    const char** mapItem = (const char**)attrMapping->ptr;
+    //const char** mapItem = (const char**)attrMapping->ptr;
+    /*
+    * Do we want to set vector->startAttr and copy each new start value to it over and over? I,e,
+    * if variable->startAttr not set
+    *   allocate memory for startAttr to correspond to length of *mapItem[0]
+    *   strcpy(variable->startAttr, *mapItem[0])
+    * else if variable->startAttr is set
+    *   allocate new memory for startAttr that is the length of the previous and the new string *mapItem[0]
+    *   strcpy(...)
+    *   increment some internal member of the variable struct to keep track of the one one
+    */
+    //int count;
+    //for (count = 0; mapItem[0][count] != '\0'; ++count);
+    //assert(0);
+    if (!data) {
+        printf("No data");
+    } else {
+        printf("there is data");
     }
     return 0;
 }

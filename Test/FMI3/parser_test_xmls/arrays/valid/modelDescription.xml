@@ -184,6 +184,13 @@
       <Dimension start="1"/>
     </Enumeration>
 
+  <String name="string_array" valueReference="120" causality="input" description="Testing string arrays">
+    <Dimension start="3"/>
+      <Start value="The first string," />
+      <Start value="and the second string!" />
+      <Start value="And finally the third string." />
+  </String>
+
     <!-- variables used as dimension specifiers -->
     <UInt32 name="uint32_1" valueReference="201" initial="exact" variability="constant" start="3" />
     <UInt32 name="uint32_2" valueReference="202" initial="exact" variability="constant" start="2" />

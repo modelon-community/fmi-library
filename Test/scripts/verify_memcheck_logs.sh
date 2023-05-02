@@ -32,7 +32,7 @@ logdir="$1"
 memcheck_logs="$(find "$logdir" -not -empty -name "MemoryChecker.*.log")"
 
 if [[ -n "$memcheck_logs" ]]; then
-    err "memcheck gave warnings on tests: $memcheck_logs"
+    err "memcheck problems: $memcheck_logs"
     exit 1
 fi
 

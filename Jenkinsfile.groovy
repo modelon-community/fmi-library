@@ -59,7 +59,6 @@ Configs.each { conf_entry ->
 
             stage("Checkout: ${conf.name}") {
                 checkout scm
-                fixFilePermissions(conf.os)
             }
 
             stage("Clean artifacts: ${conf.name}") {
@@ -87,7 +86,6 @@ tasks[conf.name] = {
 
         stage("Checkout: ${conf.name}") {
             checkout scm
-            fixFilePermissions(conf.os)
         }
 
         stage("Clean artifacts: ${conf.name}") {
@@ -163,7 +161,7 @@ def test(conf, testLogDir) {
         error(message: "Invalid config operating system: ${conf.os}")
     }
     if (res) {
-        setBuildStatus('UNSTABLE', "Test failure. Exit code from ctest: ${res}")
+        setBuildStatus('UNSTABLE', "Test failure. Exit code: ${res}")
     }
 
     dir(testLogDir) {
@@ -182,19 +180,4 @@ def test(conf, testLogDir) {
 def setBuildStatus(status, msg) {
     currentBuild.result = status
     println("Build result manually set to ${status}. Reason:\n${msg}")
-}
-
-def fixFilePermissions(os) {
-    if (os == 'linux') {
-        sh """
-            # Allow internal docker script to run
-            chmod a+x build/docker/build.sh
-
-            # Allow copying artifacts to host
-            chmod 777 .
-
-            # All the other scripts we need to run...
-            chmod a+x Test/scripts/verify_memcheck_logs.sh
-        """
-    }
 }

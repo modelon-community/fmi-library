@@ -51,7 +51,7 @@ char* concat(char *s1, char *s2);
 #else /* __FUNCTION__ magic variable won't be available */
 #define PRINT_FAILURE(...)                                                  \
     do {                                                                    \
-        printf("  test FAILED at line %d: ", __LINE__);                     \
+        printf("  Assertion FAILED at line %d: ", __LINE__);                \
         printf(__VA_ARGS__);                                                \
         printf("\n");                                                       \
     } while (0)

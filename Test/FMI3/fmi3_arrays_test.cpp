@@ -19,6 +19,7 @@
 #define CATCH_CONFIG_MAIN
 #include "catch.hpp"
 #include "config_test.h"
+#include "fmi_testutil.h"
 #include "fmilib.h"
 
 typedef struct {
@@ -36,10 +37,12 @@ void importlogger(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_leve
 static const char test_file_name[] = "[fmi3_arrays.cpp]";
 
 
+/*
 void fmi_testutil_build_xml_path(char* buf, size_t bufSize, const char* basePath, const char* appendPath) {
     strncpy(buf, basePath,   bufSize);
     strncat(buf, appendPath, bufSize);
 }
+*/
 
 
 static fmi3_import_t *parse_xml(const char *model_desc_path)
@@ -80,6 +83,7 @@ static fmi3_import_dimension_list_t* basic_array_checks(fmi3_import_variable_t* 
 }
 
 
+/*
 TEST_CASE("Test array parsing and verify retrieved start values are as expected"){
     jm_callbacks cb;
     fmi_import_context_t *context;
@@ -132,20 +136,6 @@ TEST_CASE("Test array parsing and verify retrieved start values are as expected"
         REQUIRE(start[5] == -9223372036854775807);
         fmi3_import_free_dimension_list(dimList);
     }
-
-    /*
-    SECTION("Test int64 start array with 10k variables") {
-        fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "int64_array_10k");
-        fmi3_import_dimension_list_t* dimList = basic_array_checks(v, xml, 2);
-        fmi3_int64_t* start = fmi3_import_get_int64_variable_start_array(fmi3_import_get_variable_as_int64(v));
-        int expected_value = 0;
-        for (int i = 1; i <= 100; i++) {
-            expected_value = (i%5 == 0) ? -i : i;
-            REQUIRE(start[i-1] == expected_value);
-        }
-        fmi3_import_free_dimension_list(dimList);
-    }
-    */
 
     SECTION("Test int32 start array") {
         fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "int32_array");
@@ -256,5 +246,28 @@ TEST_CASE("Test array parsing and verify retrieved start values are as expected"
         fmi3_import_free_dimension_list(dimList);
     }
     fmi_import_free_context(context);
+    fmi3_import_free(xml);
+}
+*/
+
+
+
+TEST_CASE("Test int64 start array with 100 variables") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/arrays/valid/big1";
+    fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
+    REQUIRE(xml != nullptr);
+
+    fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "int64_array_100");
+    REQUIRE(v != nullptr);
+
+    fmi3_import_dimension_list_t* dimList = basic_array_checks(v, xml, 2);
+    fmi3_int64_t* start = fmi3_import_get_int64_variable_start_array(fmi3_import_get_variable_as_int64(v));
+    int expected_value = 0;
+    for (int i = 1; i <= 100; i++) {
+        expected_value = (i%5 == 0) ? -i : i;
+        REQUIRE(start[i-1] == expected_value);
+    }
+    fmi3_import_free_dimension_list(dimList);
+
     fmi3_import_free(xml);
 }

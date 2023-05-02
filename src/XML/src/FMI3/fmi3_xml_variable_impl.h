@@ -73,9 +73,6 @@ struct fmi3_xml_variable_t {
      */
     unsigned int* dimensionsArray; /* TODO: this var can probably be removed now, since API was restructured (reduced) */
 
-    /* temp fields during parsing*/
-    jm_string startAttr;
-
     /* 'name' field must be last, because its memory is allocated with jm_named_alloc[_v] */
     char name[1];
 };

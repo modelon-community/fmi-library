@@ -255,6 +255,16 @@ TEST_CASE("Test array parsing and verify retrieved start values are as expected"
         REQUIRE(start[0] == -57);
         fmi3_import_free_dimension_list(dimList);
     }
+
+
+    SECTION("Test string start array") {
+        fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "string_array");
+        fmi3_import_dimension_list_t* dimList = basic_array_checks(v, xml, 1);
+        size_t* start_l = fmi3_import_get_string_variable_start_array_length(fmi3_import_get_variable_as_string(v));
+        const char* start = fmi3_import_get_string_variable_start_array(fmi3_import_get_variable_as_string(v));
+        REQUIRE(start[0] == 1) /* TODO */;
+        fmi3_import_free_dimension_list(dimList);
+    }
     fmi_import_free_context(context);
     fmi3_import_free(xml);
 }

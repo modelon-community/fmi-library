@@ -161,7 +161,7 @@ def test(conf, testLogDir) {
         error(message: "Invalid config operating system: ${conf.os}")
     }
     if (res) {
-        setBuildStatus('UNSTABLE', "Test failure. Exit code from ctest: ${res}")
+        setBuildStatus('UNSTABLE', "Test failure. Exit code: ${res}")
     }
 
     dir(testLogDir) {

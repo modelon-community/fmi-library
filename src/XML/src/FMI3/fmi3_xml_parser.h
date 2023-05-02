@@ -340,6 +340,12 @@ struct fmi3_xml_parser_context_t {
     jm_vector(char) elmData;
 
     /**
+     * Contains a Variable's start attribute. Purpose is to allow it to be
+     * processed in the Variable's end-handler.
+     */
+    jm_vector(char) variableStartAttr;
+
+    /**
      * Element ID of the last processed sibling, or fmi3_xml_elmID_none if
      * no siblings have been processed.
      */

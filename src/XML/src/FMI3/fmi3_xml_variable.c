@@ -1173,7 +1173,7 @@ int fmi3_xml_handle_Variable(fmi3_xml_parser_context_t* context, const char* dat
 
         /* Return early if undefined variable */
         if (context->skipOneVariableFlag) {
-            jm_log_error(context->callbacks,module, "Ignoring variable with undefined vr '%s'", jm_vector_get_itemp(char)(bufName,0));
+            jm_log_error(context->callbacks, module, "Ignoring variable with undefined vr '%s'", jm_vector_get_itemp(char)(bufName,0));
             return 0;
         }
 
@@ -1215,8 +1215,9 @@ int fmi3_xml_handle_Variable(fmi3_xml_parser_context_t* context, const char* dat
         jm_vector_init(fmi3_xml_dimension_t)(&variable->dimensionsVector, 0, context->callbacks);
 
         /* Save start value for processing after reading all Dimensions */
-        variable->startAttr = fmi3_xml_peek_attr_str(context, fmi_attr_id_start);
+        if (fmi3_xml_set_attr_string(context, elm_id, fmi_attr_id_start, 0, &context->variableStartAttr)) return -1;
 
+        /* Process common attributes */
         if (fmi3_xml_variable_process_attr_causality_variability_initial(context, variable, elm_id)) return -1;
         if (fmi3_xml_variable_process_attr_previous(context, variable, elm_id))    return -1;
         if (fmi3_xml_variable_process_attr_multipleset(context, variable, elm_id)) return -1;
@@ -1226,7 +1227,7 @@ int fmi3_xml_handle_Variable(fmi3_xml_parser_context_t* context, const char* dat
         if (context->skipOneVariableFlag) {
             context->skipOneVariableFlag = 0;
         } else {
-            /* check that the type for the variable is set */
+            /* Check that the type for the variable is set */
             fmi3_xml_model_description_t* md = context->modelDescription;
             fmi3_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
             if(!variable->type) {
@@ -1443,20 +1444,14 @@ int fmi3_xml_handle_FloatXXVariable(fmi3_xml_parser_context_t* context, const ch
                 return -1;
             }
         }
-        /* TODO: handle this cleanly: */
-        /* just read the attribute, so we don't get any warning from it being unused in the buffer... it is saved as startAttr in the variable */
-        {
-            const char* tmp; /* unused */
-            fmi3_xml_get_attr_str(context, fmi3_xml_elmID_Float64, fmi_attr_id_start, 0, &tmp);
-        }
     } else { /* end of tag */
         /* set start value */
 
         /* We must wait until after parsing dimensions, because we can't otherwise know
          * if it's a 1x1 array or a scalar variable just by reading the start value. */
-        int hasStart = variable->startAttr != NULL;
+        int hasStart = jm_vector_get_size(char)(&context->variableStartAttr);
         if (hasStart) {
-            jm_string startAttr = variable->startAttr;
+            jm_string startAttr = jm_vector_get_itemp(char)(&context->variableStartAttr, 0);
 
             fmi3_xml_float_variable_start_t* start = (fmi3_xml_float_variable_start_t*)fmi3_xml_alloc_variable_type_start(td, variable->type, sizeof(fmi3_xml_float_variable_start_t));
             if (!start) {
@@ -1469,6 +1464,10 @@ int fmi3_xml_handle_FloatXXVariable(fmi3_xml_parser_context_t* context, const ch
                     return -1;
                 }
             } else { /* is scalar */
+                // TODO:
+                // We should not restore the attribute buffer, but instead just read it directly
+                // from the string.
+
                 /* restore the attribute buffer before it's used in set_attr_float */
                 jm_vector_set_item(jm_string)(context->attrBuffer, fmi_attr_id_start, startAttr);
 
@@ -1539,20 +1538,15 @@ int fmi3_xml_handle_IntXXVariable(fmi3_xml_parser_context_t* context, const char
             type = (fmi3_xml_int_type_props_t*)declaredType;
         }
         variable->type = &type->super;
-        /* TODO handle this buffer clean-up in a better way */
-        {
-            const char* tmp; /* unused */
-            fmi3_xml_get_attr_str(context, fmi3_xml_elmID_Int64, fmi_attr_id_start, 0, &tmp);
-        }
     }
     else {
         /* set start value */
 
         /* We must wait until after parsing dimensions, because we can't otherwise know
          * if it's a 1x1 array or a scalar variable just by reading the start value. */
-        int hasStart = variable->startAttr != NULL;
+        int hasStart = jm_vector_get_size(char)(&context->variableStartAttr);
         if (hasStart) {
-            jm_string startAttr = variable->startAttr;
+            jm_string startAttr = jm_vector_get_itemp(char)(&context->variableStartAttr, 0);
 
             fmi3_xml_int_variable_start_t* start;
             start = (fmi3_xml_int_variable_start_t*)fmi3_xml_alloc_variable_type_start(
@@ -1616,7 +1610,6 @@ int fmi3_xml_handle_BooleanVariable(fmi3_xml_parser_context_t *context, const ch
     fmi3_xml_model_description_t* md = context->modelDescription;
     fmi3_xml_type_definitions_t* td = &md->typeDefinitions;
     fmi3_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
-    int hasStart;
     if(!data) {
 
         assert(!variable->type);
@@ -1624,20 +1617,12 @@ int fmi3_xml_handle_BooleanVariable(fmi3_xml_parser_context_t *context, const ch
         variable->type = fmi3_parse_declared_type_attr(context, fmi3_xml_elmID_Boolean, &td->defaultBooleanType) ;
         if(!variable->type) return -1;
 
-        /* TODO: handle this better
-         * For now we just read the attribute, so we don't get any warning/error from it being unused in the buffer.
-         * It is saved as startAttr in the variable.
-         */
-        {
-            const char* tmp; /* unused */
-            fmi3_xml_get_attr_str(context, fmi3_xml_elmID_Boolean, fmi_attr_id_start, 0, &tmp);
-        }
     } else {
         /* We must wait until after parsing dimensions, because we can't otherwise know
          * if it's a 1x1 array or a scalar variable just by reading the start value. */
-        hasStart = variable->startAttr != NULL;
-        if(hasStart) {
-            jm_string startAttr = variable->startAttr;
+        int hasStart = jm_vector_get_size(char)(&context->variableStartAttr);
+        if (hasStart) {
+            jm_string startAttr = jm_vector_get_itemp(char)(&context->variableStartAttr, 0);
             fmi3_xml_int_variable_start_t* start = (fmi3_xml_int_variable_start_t*)fmi3_xml_alloc_variable_type_start(
                     td, variable->type, sizeof(fmi3_xml_int_variable_start_t));
             if (!start) {
@@ -2051,7 +2036,6 @@ int fmi3_xml_handle_EnumerationVariable(fmi3_xml_parser_context_t *context, cons
     fmi3_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
     fmi3_xml_variable_type_base_t * declaredType = 0;
     fmi3_xml_enum_variable_props_t * type = 0;
-    int hasStart;
 
     if(!data) {
 
@@ -2087,16 +2071,11 @@ int fmi3_xml_handle_EnumerationVariable(fmi3_xml_parser_context_t *context, cons
             type = (fmi3_xml_enum_variable_props_t*)declaredType;
         }
         variable->type = &type->super;
-        /* TODO handle this buffer clean-up in a better way */
-        {
-            const char* tmp; /* unused */
-            fmi3_xml_get_attr_str(context, fmi3_xml_elmID_Enumeration, fmi_attr_id_start, 0, &tmp);
-        }
     }
     else {
-        hasStart = variable->startAttr != NULL;
+        int hasStart = jm_vector_get_size(char)(&context->variableStartAttr);
         if (hasStart) {
-            jm_string startAttr = variable->startAttr;
+            jm_string startAttr = jm_vector_get_itemp(char)(&context->variableStartAttr, 0);
             fmi3_xml_int_variable_start_t* start = (fmi3_xml_int_variable_start_t*)fmi3_xml_alloc_variable_type_start(
                     td, variable->type, sizeof(fmi3_xml_int_variable_start_t));
             if (!start) {

@@ -324,6 +324,8 @@ TEST_CASE("Invalid Binary variable - non-hexadecimal char first in byte tuple", 
 
     const char* errMsg = fmi3_import_get_last_error(xml);
     REQUIRE(strcmp(errMsg, "String is not hexadecimal: gf") == 0);
+
+    fmi3_import_free(xml);
 }
 
 TEST_CASE("Invalid Binary variable - non-hexadecimal char second in byte tuple", "[xml_variables]") {
@@ -334,4 +336,6 @@ TEST_CASE("Invalid Binary variable - non-hexadecimal char second in byte tuple",
 
     const char* errMsg = fmi3_import_get_last_error(xml);
     REQUIRE(strcmp(errMsg, "String is not hexadecimal: FG") == 0);
+
+    fmi3_import_free(xml);
 }

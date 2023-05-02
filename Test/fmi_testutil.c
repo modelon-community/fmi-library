@@ -23,13 +23,18 @@ void fmi_testutil_enter_breakpoint()
 fmi3_import_t* fmi3_testutil_parse_xml(const char* xmldir) {
     jm_callbacks* cb = jm_get_default_callbacks();
     fmi_import_context_t* ctx = fmi_import_allocate_context(cb);
-    ASSERT_MSG(ctx != NULL, "Context was NULL");
+    if (!ctx) {
+        printf("testutil: Context was NULL\n");
+        return NULL;
+    }
 
     fmi3_import_t* xml;
     xml = fmi3_import_parse_xml(ctx, xmldir, NULL);
-    ASSERT_MSG(xml != NULL, "Failed to parse XML");
-
     fmi_import_free_context(ctx);
+    if (!xml) {
+        printf("testutil: Failed to parse XML\n");
+        return NULL;
+    }
 
     return xml;
 }

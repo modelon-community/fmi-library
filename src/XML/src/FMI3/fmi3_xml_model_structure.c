@@ -31,18 +31,18 @@ fmi3_xml_model_structure_t* fmi3_xml_allocate_model_structure(jm_callbacks* cb) 
     if(!ms) return 0;
 
     jm_vector_init(jm_voidp)(&ms->outputs,0,cb);
-    jm_vector_init(jm_voidp)(&ms->derivatives,0,cb);
+    jm_vector_init(jm_voidp)(&ms->continuosStateDerivatives,0,cb);
     jm_vector_init(jm_voidp)(&ms->discreteStates,0,cb);
     jm_vector_init(jm_voidp)(&ms->initialUnknowns,0,cb);
 
     ms->isValidFlag = 1;
 
     ms->outputDeps = fmi3_xml_allocate_dependencies(cb);
-    ms->derivativeDeps = fmi3_xml_allocate_dependencies(cb);
+    ms->continuousStateDerivativeDeps = fmi3_xml_allocate_dependencies(cb);
     ms->discreteStateDeps = fmi3_xml_allocate_dependencies(cb);
     ms->initialUnknownDeps = fmi3_xml_allocate_dependencies(cb);
 
-    if(!ms->outputDeps || !ms->derivativeDeps || !ms->discreteStateDeps || !ms->initialUnknownDeps) {
+    if(!ms->outputDeps || !ms->continuousStateDerivativeDeps || !ms->discreteStateDeps || !ms->initialUnknownDeps) {
         fmi3_xml_free_model_structure(ms);
         return 0;
     }
@@ -56,12 +56,12 @@ void fmi3_xml_free_model_structure(fmi3_xml_model_structure_t* ms) {
     cb = ms->outputs.callbacks;
 
     jm_vector_free_data(jm_voidp)(&ms->outputs);
-    jm_vector_free_data(jm_voidp)(&ms->derivatives);
+    jm_vector_free_data(jm_voidp)(&ms->continuosStateDerivatives);
     jm_vector_free_data(jm_voidp)(&ms->discreteStates);
     jm_vector_free_data(jm_voidp)(&ms->initialUnknowns);
 
     fmi3_xml_free_dependencies(ms->outputDeps);
-    fmi3_xml_free_dependencies(ms->derivativeDeps);
+    fmi3_xml_free_dependencies(ms->continuousStateDerivativeDeps);
     fmi3_xml_free_dependencies(ms->discreteStateDeps);
     fmi3_xml_free_dependencies(ms->initialUnknownDeps);
     cb->free(ms);
@@ -71,8 +71,8 @@ jm_vector(jm_voidp)* fmi3_xml_get_outputs(fmi3_xml_model_structure_t* ms) {
     return &ms->outputs;
 }
 
-jm_vector(jm_voidp)* fmi3_xml_get_derivatives(fmi3_xml_model_structure_t* ms){
-    return &ms->derivatives;
+jm_vector(jm_voidp)* fmi3_xml_get_continuous_state_derivatives(fmi3_xml_model_structure_t* ms){
+    return &ms->continuosStateDerivatives;
 }
 
 jm_vector(jm_voidp)* fmi3_xml_get_discrete_states(fmi3_xml_model_structure_t* ms){
@@ -106,9 +106,9 @@ void fmi3_xml_get_outputs_dependencies(fmi3_xml_model_structure_t* ms,
     fmi3_xml_get_dependencies(ms->outputDeps, startIndex, dependency, factorKind);
 }
 
-void fmi3_xml_get_derivatives_dependencies(fmi3_xml_model_structure_t* ms,
+void fmi3_xml_get_continuous_state_derivatives_dependencies(fmi3_xml_model_structure_t* ms,
                                            size_t** startIndex, size_t** dependency, char** factorKind) {
-    fmi3_xml_get_dependencies(ms->derivativeDeps, startIndex, dependency, factorKind);
+    fmi3_xml_get_dependencies(ms->continuousStateDerivativeDeps, startIndex, dependency, factorKind);
 }
 
 void fmi3_xml_get_discrete_states_dependencies(fmi3_xml_model_structure_t* ms,
@@ -205,17 +205,21 @@ int fmi3_xml_handle_Outputs(fmi3_xml_parser_context_t *context, const char* data
     }
     return 0;
 }
-int fmi3_xml_handle_Derivatives(fmi3_xml_parser_context_t *context, const char* data) {
+int fmi3_xml_handle_ContinuousStateDerivatives(fmi3_xml_parser_context_t *context, const char* data) {
     if (!data) {
-        jm_log_verbose(context->callbacks, module, "Parsing XML element Derivatives");
-        /*  reset handles for the elements that are specific under Derivatives */
+        jm_log_verbose(context->callbacks, module, "Parsing XML element ContinuousStateDerivatives");
+        /*  reset handles for the elements that are specific under ContinuosStateDerivatives */
+        // possible TODO?
         fmi3_xml_set_element_handle(context, "Unknown", FMI3_XML_ELM_ID(DerivativeUnknown));
     }
     else {
         fmi3_xml_model_description_t* md = context->modelDescription;
         fmi3_xml_model_structure_t* ms = md->modelStructure;
-        /* count the number of continuous states as the number of <Unknown> elements under <Derivatives> */
-        md->numberOfContinuousStates = jm_vector_get_size(jm_voidp)(&ms->derivatives);
+        // TODO
+        /* count the number of continuous states as the number of <Unknown> elements under <ContinuousStateDerivatives> */
+        // TODO: Possible rename?
+        // TODO: md part also needs renaming?
+        md->numberOfContinuousStates = jm_vector_get_size(jm_voidp)(&ms->continuosStateDerivatives);
     }
     return 0;
 }
@@ -470,8 +474,8 @@ int fmi3_xml_handle_DerivativeUnknown(fmi3_xml_parser_context_t *context, const 
 
         /* validate return values */
 
-        /* derivatives can be any of floatXX */
-        derXX = (fmi3_xml_variable_t*)jm_vector_get_last(jm_voidp)(&ms->derivatives);
+        /* continuosStateDerivatives can be any of floatXX */
+        derXX = (fmi3_xml_variable_t*)jm_vector_get_last(jm_voidp)(&ms->continuosStateDerivatives);
         if (derXX->type->baseType == fmi3_base_type_float64) {
             fmi3_xml_float64_variable_t* der = (fmi3_xml_float64_variable_t*)derXX;
             validDeriv = fmi3_xml_get_float64_variable_derivative_of(der) != NULL;
@@ -483,7 +487,7 @@ int fmi3_xml_handle_DerivativeUnknown(fmi3_xml_parser_context_t *context, const 
         if (!validDeriv) {
             ms->isValidFlag = 0;
             fmi3_xml_parse_error(context,
-                    "The state derivative '%s' does not specify the state variable that it is a derivative of.",
+                    "The continuous state derivative '%s' does not specify the state variable that it is a derivative of.",
                     fmi3_xml_get_variable_name(derXX));
             return -1;
         }

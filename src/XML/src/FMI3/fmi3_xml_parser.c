@@ -267,8 +267,9 @@ void fmi3_xml_parse_free_context(fmi3_xml_parser_context_t *context) {
         jm_vector_free(jm_string)(context->attrBuffer);
         context->attrBuffer = 0;
     }
-    jm_stack_free_data(int)(& context->elmStack );
-    jm_vector_free_data(char)( &context->elmData );
+    jm_stack_free_data(int)(&context->elmStack);
+    jm_vector_free_data(char)(&context->elmData);
+    jm_vector_free_data(char)(&context->variableStartAttr);
 
     if (jm_resetlocale_numeric(context->callbacks, context->jm_locale)) {
         jm_log_error(context->callbacks, module, "Failed to reset locale.");
@@ -928,9 +929,16 @@ clean:
 }
 
 /**
+ * 
  * Get attribute as an array. This will clear the attribute from the parser buffer.
- *  arrPtr (return arg): where the array will be stored
- *  arrSize (return arg): size of 'arrPtr'
+ * 
+ * TODO:
+ * 1. This should not be a _set_attr_ function because it doesn't use the attrBuffer.
+ *    ... this function should probably not even exist.
+ * 
+ *
+ * @param arrPtr (return arg): where the array will be stored
+ * @param arrSize (return arg): size of 'arrPtr'
  */
 int fmi3_xml_set_attr_array(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID,
         int required, void** arrPtr, size_t* arrSize, jm_string str, const fmi3_xml_primitive_type_t* primType) {
@@ -1420,7 +1428,8 @@ int fmi3_xml_parse_model_description(fmi3_xml_model_description_t* md,
     context->skipOneVariableFlag = 0;
     context->skipElementCnt = 0;
     jm_stack_init(int)(&context->elmStack,  context->callbacks);
-    jm_vector_init(char)(&context->elmData, 0, context->callbacks);
+    jm_vector_init(char)(&context->elmData,           0, context->callbacks);
+    jm_vector_init(char)(&context->variableStartAttr, 0, context->callbacks);
     context->lastElmID = fmi3_xml_elmID_none;
     context->currentElmID = fmi3_xml_elmID_none;
     context->anyElmCount = 0;

@@ -30,7 +30,7 @@ extern "C" {
 /**
  * Holds the VR until all Variables have been parsed. Then the variable
  * can be looked up.
- */    
+ */
 typedef union fmi3_xml_valueref_or_variable_union_t {
     fmi3_value_reference_t vr;
     fmi3_xml_variable_t* variable;
@@ -72,6 +72,11 @@ struct fmi3_xml_variable_t {
      * and this is a convenient place to store it.
      */
     unsigned int* dimensionsArray; /* TODO: this var can probably be removed now, since API was restructured (reduced) */
+
+    /* Array where each member represenths the length of each start value, only used for variables
+    * of type 'string' or 'binary'.
+    */
+    size_t* startArrayLength;
 
     /* temp fields during parsing*/
     jm_string startAttr;

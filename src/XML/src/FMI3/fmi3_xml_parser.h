@@ -177,6 +177,7 @@ typedef enum fmi3_xml_attr_enu_t {
     EXPAND_XML_ELMNAME(StringVariable) \
     EXPAND_XML_ELMNAME(EnumerationVariable) \
     EXPAND_XML_ELMNAME(BinaryVariableStart) \
+    EXPAND_XML_ELMNAME(StringVariableStart) \
     EXPAND_XML_ELMNAME(VariableTool) \
     EXPAND_XML_ELMNAME(SourceFilesCS) \
     EXPAND_XML_ELMNAME(FileCS) \

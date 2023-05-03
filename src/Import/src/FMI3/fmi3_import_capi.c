@@ -88,7 +88,7 @@ jm_status_enu_t fmi3_import_create_dllfmu(fmi3_import_t* fmu, fmi3_fmu_kind_enu_
     if(!instanceEnvironment && !logMessage) {
         /* Use default callbacks */
         instanceEnvironmentFinal = fmu;
-        logMessageFinal    = fmi3_log_forwarding;
+        logMessageFinal = fmi3_log_forwarding;
     }
 
     if(jm_portability_set_current_working_directory(dllDirPath) != jm_status_success) {
@@ -195,6 +195,13 @@ jm_status_enu_t fmi3_import_instantiate_model_exchange(fmi3_import_t* fmu,
     fmi3_instance_t c;
     if (!resourcePath)
         resourcePath = fmu->resourcePath;
+    
+    fmu->instanceName = fmu->callbacks->malloc(strlen(instanceName)+1);
+    if (!fmu->instanceName) {
+        jm_log_fatal(fmu->callbacks, module, "Could not allocate memory");
+        return fmi3_status_fatal;
+    }
+    strcpy(fmu->instanceName, instanceName);
 
     c = fmi3_capi_instantiate_model_exchange(
             fmu->capi,
@@ -230,6 +237,13 @@ jm_status_enu_t fmi3_import_instantiate_co_simulation(
     fmi3_instance_t c;
     if (!resourcePath)
         resourcePath = fmu->resourcePath;
+
+    fmu->instanceName = fmu->callbacks->malloc(strlen(instanceName)+1);
+    if (!fmu->instanceName) {
+        jm_log_fatal(fmu->callbacks, module, "Could not allocate memory");
+        return fmi3_status_fatal;
+    }
+    strcpy(fmu->instanceName, instanceName);
 
     c = fmi3_capi_instantiate_co_simulation(
            fmu->capi,
@@ -269,6 +283,13 @@ jm_status_enu_t fmi3_import_instantiate_scheduled_execution(
     if (!resourcePath)
         resourcePath = fmu->resourcePath;
 
+    fmu->instanceName = fmu->callbacks->malloc(strlen(instanceName)+1);
+    if (!fmu->instanceName) {
+        jm_log_fatal(fmu->callbacks, module, "Could not allocate memory");
+        return fmi3_status_fatal;
+    }
+    strcpy(fmu->instanceName, instanceName);
+
     c = fmi3_capi_instantiate_scheduled_execution(
            fmu->capi,
            instanceName,
@@ -289,7 +310,11 @@ jm_status_enu_t fmi3_import_instantiate_scheduled_execution(
 }
 
 void fmi3_import_free_instance(fmi3_import_t* fmu) {
-    if (fmu != NULL) {
+    if (fmu) {
+        if (fmu->instanceName) {
+            fmu->callbacks->free(fmu->instanceName);
+            fmu->instanceName = NULL;
+        }
         fmi3_capi_free_instance(fmu->capi);
     }
 }

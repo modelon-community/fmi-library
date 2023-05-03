@@ -21,18 +21,6 @@
 #include "config_test.h"
 #include "fmilib.h"
 
-typedef struct {
-    fmi3_import_t* fmu; /* fmi3_log_forwarding is based on the fmu instance */
-} fmi3_inst_env_t;
-
-
-/* The following dummy types/functions are used only for testing in order to be able
-    invoke the necessary functions, for example FMU instantiation.
-*/
-void fmi3_dummy_log_callback(fmi3_instance_environment_t instEnv, fmi3_status_t status,
-        fmi3_string_t category, fmi3_string_t message) {
-    fmi3_log_forwarding(((fmi3_inst_env_t*)instEnv)->fmu, status, category, message);
-}
 void dummy_log_message_callback(
     fmi3_instance_environment_t* env,
     fmi3_status_t status,
@@ -58,11 +46,10 @@ void importlogger(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_leve
 static const char test_file_name[] = "[fmi3_basic_capi_test.cpp]";
 
 /* Function used only to deallocate resources that were allocated during the testing.  */
-void clean_up(fmi3_import_t* fmu, fmi_import_context_t* context, fmi3_inst_env_t inst_env) {
+void clean_up(fmi3_import_t* fmu, fmi_import_context_t* context) {
     fmi3_import_free_instance(fmu);
     fmi3_import_free(fmu);
     fmi_import_free_context(context);
-    inst_env.fmu = NULL;
 }
 
 /* Helper function to verify get/set for int64 works as expected.
@@ -107,7 +94,6 @@ TEST_CASE("Test CAPI methods using a Model Exchange FMU", test_file_name)
 {
     jm_callbacks callbacks;
     fmi_import_context_t* context;
-    fmi3_inst_env_t inst_env;
     callbacks.malloc = malloc;
     callbacks.calloc = calloc;
     callbacks.realloc = realloc;
@@ -118,10 +104,9 @@ TEST_CASE("Test CAPI methods using a Model Exchange FMU", test_file_name)
     context = fmi_import_allocate_context(&callbacks);
     fmi_version_enu_t version = fmi_import_get_fmi_version(context, FMU3_ME_PATH, FMU_TEMPORARY_TEST_DIR);
     fmi3_import_t* fmu = fmi3_import_parse_xml(context, FMU_TEMPORARY_TEST_DIR, 0);
-    inst_env.fmu = fmu;
 
     /* Create C-API struct and instantiate FMU, necessary for some test cases that follows. */
-    jm_status_enu_t status = fmi3_import_create_dllfmu(fmu, fmi3_fmu_kind_me, &inst_env, fmi3_dummy_log_callback);
+    jm_status_enu_t status = fmi3_import_create_dllfmu(fmu, fmi3_fmu_kind_me, nullptr, nullptr);
     REQUIRE(status == 0);
     fmi3_string_t instanceName = "Test ME model instance";
     fmi3_string_t resourcePath = "";
@@ -148,7 +133,7 @@ TEST_CASE("Test CAPI methods using a Model Exchange FMU", test_file_name)
     }
 
     SECTION("Verifying FMU version returns '3.0'") {
-        jm_status_enu_t status = fmi3_import_create_dllfmu(fmu, fmi3_fmu_kind_me, &inst_env, fmi3_dummy_log_callback);
+        jm_status_enu_t status = fmi3_import_create_dllfmu(fmu, fmi3_fmu_kind_me, nullptr, nullptr);
         REQUIRE(status == 0);
         REQUIRE(strcmp(fmi3_import_get_version(fmu), "3.0") == 0);
     }
@@ -156,14 +141,13 @@ TEST_CASE("Test CAPI methods using a Model Exchange FMU", test_file_name)
     SECTION("Test instantiation status and set values on int64 array") {
         test_int_get_set(fmu, instantiate_status);
     }
-    clean_up(fmu, context, inst_env);
+    clean_up(fmu, context);
 }
 
 TEST_CASE("Test CAPI methods using a Co-Simulation FMU", test_file_name)
 {
     jm_callbacks callbacks;
     fmi_import_context_t* context;
-    fmi3_inst_env_t inst_env;
     callbacks.malloc = malloc;
     callbacks.calloc = calloc;
     callbacks.realloc = realloc;
@@ -174,9 +158,8 @@ TEST_CASE("Test CAPI methods using a Co-Simulation FMU", test_file_name)
     context = fmi_import_allocate_context(&callbacks);
     fmi_version_enu_t version = fmi_import_get_fmi_version(context, FMU3_CS_PATH, FMU_TEMPORARY_TEST_DIR);
     fmi3_import_t* fmu = fmi3_import_parse_xml(context, FMU_TEMPORARY_TEST_DIR, 0);
-    inst_env.fmu = fmu;
 
-    jm_status_enu_t status = fmi3_import_create_dllfmu(fmu, fmi3_fmu_kind_cs, &inst_env, fmi3_dummy_log_callback);
+    jm_status_enu_t status = fmi3_import_create_dllfmu(fmu, fmi3_fmu_kind_cs, nullptr, nullptr);
     REQUIRE(status == 0);
     fmi3_string_t instanceName = "Test CS model instance";
     fmi3_string_t resourcePath = "";
@@ -211,7 +194,7 @@ TEST_CASE("Test CAPI methods using a Co-Simulation FMU", test_file_name)
     }
 
     SECTION("Verifying FMU version returns '3.0'") {
-        jm_status_enu_t status = fmi3_import_create_dllfmu(fmu, fmi3_fmu_kind_cs, &inst_env, fmi3_dummy_log_callback);
+        jm_status_enu_t status = fmi3_import_create_dllfmu(fmu, fmi3_fmu_kind_cs, nullptr, nullptr);
         REQUIRE(status == 0);
         REQUIRE(strcmp(fmi3_import_get_version(fmu), "3.0") == 0);
     }
@@ -219,15 +202,13 @@ TEST_CASE("Test CAPI methods using a Co-Simulation FMU", test_file_name)
     SECTION("Test instantiation status and set values on int64 array") {
         test_int_get_set(fmu, instantiate_status);
     }
-    clean_up(fmu, context, inst_env);
-
+    clean_up(fmu, context);
 }
 
 TEST_CASE("Test CAPI methods using a Scheduled-Execution FMU", test_file_name)
 {
     jm_callbacks callbacks;
     fmi_import_context_t* context;
-    fmi3_inst_env_t inst_env;
     callbacks.malloc = malloc;
     callbacks.calloc = calloc;
     callbacks.realloc = realloc;
@@ -238,9 +219,8 @@ TEST_CASE("Test CAPI methods using a Scheduled-Execution FMU", test_file_name)
     context = fmi_import_allocate_context(&callbacks);
     fmi_version_enu_t version = fmi_import_get_fmi_version(context, FMU3_SE_PATH, FMU_TEMPORARY_TEST_DIR);
     fmi3_import_t* fmu = fmi3_import_parse_xml(context, FMU_TEMPORARY_TEST_DIR, 0);
-    inst_env.fmu = fmu;
 
-    jm_status_enu_t status = fmi3_import_create_dllfmu(fmu, fmi3_fmu_kind_se, &inst_env, fmi3_dummy_log_callback);
+    jm_status_enu_t status = fmi3_import_create_dllfmu(fmu, fmi3_fmu_kind_se, nullptr, nullptr);
     REQUIRE(status == 0);
     fmi3_string_t instanceName = "Test SE model instance";
     fmi3_string_t resourcePath = "";
@@ -270,9 +250,7 @@ TEST_CASE("Test CAPI methods using a Scheduled-Execution FMU", test_file_name)
     }
 
     SECTION("Verifying FMU version returns '3.0'") {
-        fmi3_inst_env_t inst_env;
-        inst_env.fmu = fmu;
-        jm_status_enu_t status = fmi3_import_create_dllfmu(fmu, fmi3_fmu_kind_se, &inst_env, fmi3_dummy_log_callback);
+        jm_status_enu_t status = fmi3_import_create_dllfmu(fmu, fmi3_fmu_kind_se, nullptr, nullptr);
         REQUIRE(status == 0);
         REQUIRE(strcmp(fmi3_import_get_version(fmu), "3.0") == 0);
     }
@@ -280,5 +258,5 @@ TEST_CASE("Test CAPI methods using a Scheduled-Execution FMU", test_file_name)
     SECTION("Test instantiation status and set values on int64 array") {
         test_int_get_set(fmu, instantiate_status);
     }
-    clean_up(fmu, context, inst_env);
+    clean_up(fmu, context);
 }

@@ -39,6 +39,7 @@ extern "C" {
 struct fmi3_import_t {
     char* dirPath;
     char* resourcePath;
+    char* instanceName;
     jm_callbacks* callbacks;
     fmi3_xml_model_description_t* md;
     fmi3_capi_t* capi;

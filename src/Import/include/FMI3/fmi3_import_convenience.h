@@ -117,13 +117,14 @@ FMILIB_EXPORT
 void fmi3_import_collect_model_counts(fmi3_import_t* fmu, fmi3_import_model_counts_t* counts);
 
 /**
-  \brief Transform msgIn into msgOut by expanding variable references of the form #\<Type\>\<VR\># into variable names
-  and replacing '##' with a single #.
+   \brief Transform msgIn into msgOut by expanding variable references of the form #\<Type\>\<VR\># into variable names
+   and replacing '##' with a single #.
+
    \param fmu - An fmu object as returned by fmi3_import_parse_xml().
    \param msgIn - Log message as produced by an FMU.
    \param msgOut - Output message buffer.
    \param maxMsgSize - maximum message size
-   */
+ */
 FMILIB_EXPORT
 void fmi3_import_expand_variable_references(fmi3_import_t* fmu, const char* msgIn, char* msgOut, size_t maxMsgSize);
 
@@ -144,16 +145,12 @@ FMILIB_EXPORT
 void fmi3_callback_free_memory_default(fmi3_instance_environment_t instEnv, void* obj);
 
 /**
-    \brief An implementation of FMI 3.0 logger that forwards the messages to logger function inside ::jm_callbacks structure.
-
-    The function is using a global array of active FMUs to find out which FMU is sending the log messege. It then
-    forwards the message to the logger connected to the particular ::fmi3_import_t struct. The function is called by the FMU.
-    The FMU must be loaded with non-zero registerGlobally parameter of fmi3_import_create_dllfmu() in order to work.
-    If no matching ::fmi3_import_t struct is found on the global list then jm_get_default_callbacks() is used to get the default logger.
-    Note that this function is not thread safe due to the use of the global list.
-*/
+ * \brief An implementation of FMI 3.0 logger that forwards the messages to the
+ * logger function in the ::jm_callbacks structure of the FMU (argument 'inst').
+ * Value reference name expansion is also performed before forwarding.
+ */
 FMILIB_EXPORT
-void  fmi3_log_forwarding(fmi3_instance_environment_t inst, fmi3_status_t status, fmi3_string_t category, fmi3_string_t message);
+void fmi3_log_forwarding(fmi3_instance_environment_t inst, fmi3_status_t status, fmi3_string_t category, fmi3_string_t message);
 
 /** \brief  Default FMI 3.0 logger may be used when instantiating FMUs */
 FMILIB_EXPORT

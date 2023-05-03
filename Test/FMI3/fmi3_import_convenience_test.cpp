@@ -77,11 +77,16 @@ TEST_CASE("Variable name expansion") {
     require_name_expansion(xml, "#x", "#x");
     require_name_expansion(xml, "#x#", "#x#");
     require_name_expansion(xml, "#", "#");
+    require_name_expansion(xml, "#99#", "#99#");  // Referenced variable doesn't exist
     
     // Different types:
     require_name_expansion(xml, "#0#", "vInt32");
     require_name_expansion(xml, "#1#", "vFloat64");
     require_name_expansion(xml, "#2#", "vFloat32");
+
+    // Expanded twice:
+    require_name_expansion(xml, "#0# #1#", "vInt32 vFloat64");
+    require_name_expansion(xml, "#0##1#", "vInt32vFloat64");
 
     // Same name:
     require_name_expansion(xml, "#3#", "sameName");
@@ -90,4 +95,16 @@ TEST_CASE("Variable name expansion") {
     // Special characters:
     require_name_expansion(xml, "$^/\\", "$^/\\");
     require_name_expansion(xml, "#5#", " Special chars: $^/\\ ");
+
+    fmi3_import_free(xml);
+}
+
+TEST_CASE("Variable name expansion via logger") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/convenience/valid/nameExpansion";
+
+    fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
+    REQUIRE(xml != nullptr);
+
+
+    fmi3_import_free(xml);
 }

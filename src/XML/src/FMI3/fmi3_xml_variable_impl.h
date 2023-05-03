@@ -73,11 +73,6 @@ struct fmi3_xml_variable_t {
      */
     unsigned int* dimensionsArray; /* TODO: this var can probably be removed now, since API was restructured (reduced) */
 
-    /* Array where each member represenths the length of each start value, only used for variables
-    * of type 'string' or 'binary'.
-    */
-    size_t* startArrayLength;
-
     /* temp fields during parsing*/
     jm_string startAttr;
 

@@ -83,7 +83,7 @@ static fmi3_import_dimension_list_t* basic_array_checks(fmi3_import_variable_t* 
 }
 
 
-/*
+
 TEST_CASE("Test array parsing and verify retrieved start values are as expected"){
     jm_callbacks cb;
     fmi_import_context_t *context;
@@ -251,16 +251,45 @@ TEST_CASE("Test array parsing and verify retrieved start values are as expected"
         fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "string_array");
         fmi3_import_dimension_list_t* dimList = basic_array_checks(v, xml, 1);
         size_t* start_l = fmi3_import_get_string_variable_start_array_length(fmi3_import_get_variable_as_string(v));
-        const char* start = fmi3_import_get_string_variable_start_array(fmi3_import_get_variable_as_string(v));
-        REQUIRE(start[0] == 1) /* TODO */;
+        fmi3_string_t* start = fmi3_import_get_string_variable_start_array(fmi3_import_get_variable_as_string(v));
+        REQUIRE(start[0][0]   == 'T');
+        REQUIRE(start[0][1]   == 'h');
+        REQUIRE(start[0][2]   == 'e');
+        REQUIRE(start[0][3]   == ' ');
+        REQUIRE(start[0][4]   == 'f');
+        REQUIRE(start[0][5]   == 'i');
+        REQUIRE(start[0][6]   == 'r');
+        REQUIRE(start[0][7]   == 's');
+        REQUIRE(start[0][8]   == 't');
+        REQUIRE(start[0][9]   == ' ');
+        REQUIRE(start[0][10]   == 's');
+        REQUIRE(start[0][11]  == 't');
+        REQUIRE(start[0][12]  == 'r');
+        REQUIRE(start[0][13]  == 'i');
+        REQUIRE(start[0][14]  == 'n');
+        REQUIRE(start[0][15]  == 'g');
+        REQUIRE(start[0][16]  == ',');
+        start++;
+        REQUIRE(start[0][0]   == 'a');
+        REQUIRE(start[0][1]   == 'n');
+        REQUIRE(start[0][2]   == 'd');
+        /* Skip straight to the last start value directly */
+        start++;
+        REQUIRE(start[0][0]   == 'a');
+        REQUIRE(start[0][1]   == 'b');
+        REQUIRE(start[0][2]   == 'c');
+        REQUIRE(start[0][3]   == 'd');
+        REQUIRE(start[0][4]   == '.');
         fmi3_import_free_dimension_list(dimList);
+    }
+        SECTION("Test string start no array") {
+        fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "string_array2");
+        fmi3_string_t* start = fmi3_import_get_string_variable_start(fmi3_import_get_variable_as_string(v));
+        REQUIRE(start[0][0]   == 'T');
     }
     fmi_import_free_context(context);
     fmi3_import_free(xml);
 }
-*/
-
-
 
 TEST_CASE("Test int64 start array with 100 variables") {
     const char* xmldir = FMI3_TEST_XML_DIR "/arrays/valid/big1";

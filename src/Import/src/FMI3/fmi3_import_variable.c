@@ -441,12 +441,12 @@ fmi3_import_string_variable_t* fmi3_import_get_variable_as_string(fmi3_import_va
     return fmi3_xml_get_variable_as_string(v);
 }
 
-const char* fmi3_import_get_string_variable_start(fmi3_import_string_variable_t* v) {
+fmi3_string_t* fmi3_import_get_string_variable_start(fmi3_import_string_variable_t* v) {
     return fmi3_xml_get_string_variable_start(v);
 }
 
-const char* fmi3_import_get_string_variable_start_array(fmi3_import_string_variable_t* v) {
-    return fmi3_xml_get_string_variable_start(v);
+fmi3_string_t* fmi3_import_get_string_variable_start_array(fmi3_import_string_variable_t* v) {
+    return fmi3_xml_get_string_variable_start_array(v);
 }
 
 size_t* fmi3_import_get_string_variable_start_array_length(fmi3_import_string_variable_t* v) {

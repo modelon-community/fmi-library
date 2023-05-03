@@ -151,8 +151,8 @@ fmi3_uint8_t* fmi3_xml_get_uint8_variable_start_array(fmi3_xml_uint8_variable_t*
 fmi3_string_t fmi3_xml_get_uint8_variable_quantity (fmi3_xml_uint8_variable_t* v);
 
 fmi3_xml_string_variable_t* fmi3_xml_get_variable_as_string(fmi3_xml_variable_t*);
-const char* fmi3_xml_get_string_variable_start(fmi3_xml_string_variable_t* v);
-const char* fmi3_xml_get_string_variable_start_array(fmi3_xml_string_variable_t* v);
+fmi3_string_t* fmi3_xml_get_string_variable_start(fmi3_xml_string_variable_t* v);
+fmi3_string_t* fmi3_xml_get_string_variable_start_array(fmi3_xml_string_variable_t* v);
 size_t* fmi3_xml_get_string_variable_start_array_length(fmi3_xml_string_variable_t* v);
 
 fmi3_xml_bool_variable_t* fmi3_xml_get_variable_as_boolean(fmi3_xml_variable_t*);

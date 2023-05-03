@@ -929,13 +929,13 @@ clean:
 }
 
 /**
- * 
+ *
  * Get attribute as an array. This will clear the attribute from the parser buffer.
- * 
+ *
  * TODO:
  * 1. This should not be a _set_attr_ function because it doesn't use the attrBuffer.
  *    ... this function should probably not even exist.
- * 
+ *
  *
  * @param arrPtr (return arg): where the array will be stored
  * @param arrSize (return arg): size of 'arrPtr'
@@ -1430,6 +1430,8 @@ int fmi3_xml_parse_model_description(fmi3_xml_model_description_t* md,
     jm_stack_init(int)(&context->elmStack,  context->callbacks);
     jm_vector_init(char)(&context->elmData,           0, context->callbacks);
     jm_vector_init(char)(&context->variableStartAttr, 0, context->callbacks);
+    jm_vector_init(jm_voidp)(&context->variableStartValues, 0, context->callbacks);
+
     context->lastElmID = fmi3_xml_elmID_none;
     context->currentElmID = fmi3_xml_elmID_none;
     context->anyElmCount = 0;

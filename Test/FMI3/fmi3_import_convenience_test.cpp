@@ -86,4 +86,8 @@ TEST_CASE("Variable name expansion") {
     // Same name:
     require_name_expansion(xml, "#3#", "sameName");
     require_name_expansion(xml, "#4#", "sameName");
+
+    // Special characters:
+    require_name_expansion(xml, "$^/\\", "$^/\\");
+    require_name_expansion(xml, "#5#", " Special chars: $^/\\ ");
 }

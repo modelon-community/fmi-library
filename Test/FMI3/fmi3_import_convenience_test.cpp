@@ -36,7 +36,7 @@ static void test_get_variable_by_vr(fmi3_import_t* xml) {
     }
 }
 
-TEST_CASE("Variable parsing", "[xml_variables]") {
+TEST_CASE("Variable parsing") {
     const char* xmldir = FMI3_TEST_XML_DIR "/convenience/valid";
 
     fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
@@ -50,4 +50,40 @@ TEST_CASE("Variable parsing", "[xml_variables]") {
     // fmi3_import_get_variable_list   
 
     fmi3_import_free(xml);
+}
+
+static void require_name_expansion(fmi3_import_t* xml, const char* msgIn, const char* msgExp) {
+    #define BUFF_SZ 100
+    char buff[BUFF_SZ];
+
+    fmi3_import_expand_variable_references(xml, msgIn, buff, BUFF_SZ);
+    REQUIRE(strcmp(msgExp, buff) == 0);
+}
+
+TEST_CASE("Variable name expansion") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/convenience/valid/nameExpansion";
+
+    fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
+    REQUIRE(xml != nullptr);
+
+    // No escape chars:
+    require_name_expansion(xml, "xyz", "xyz");
+    require_name_expansion(xml, "", "");
+
+    // Escaping the escape char:
+    require_name_expansion(xml, "##", "#");
+    
+    // Some cases that should give warnings (for now only tests that output is not modified):
+    require_name_expansion(xml, "#x", "#x");
+    require_name_expansion(xml, "#x#", "#x#");
+    require_name_expansion(xml, "#", "#");
+    
+    // Different types:
+    require_name_expansion(xml, "#0#", "vInt32");
+    require_name_expansion(xml, "#1#", "vFloat64");
+    require_name_expansion(xml, "#2#", "vFloat32");
+
+    // Same name:
+    require_name_expansion(xml, "#3#", "sameName");
+    require_name_expansion(xml, "#4#", "sameName");
 }

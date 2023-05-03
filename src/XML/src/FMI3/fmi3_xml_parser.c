@@ -1179,7 +1179,7 @@ static void XMLCALL fmi3_parse_element_start(void *c, const char *elm, const cha
                 jm_log_error(context->callbacks, module, "Unknown attribute '%s=%s' in XML", attr[i], attr[i+1]);
             }
         } else  {
-            /* save attr value (still as string) for further handling  */
+            /* Save attr (still as string pointing to internal expat memory) for further handling  */
             const char** mapItem = (const char**)attrMapping->ptr;
             *mapItem = attr[i+1];
         }

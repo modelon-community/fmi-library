@@ -285,6 +285,10 @@ struct fmi3_xml_parser_context_t {
      * 
      * Typically attributes values are cleared when they are read, such that at the end of
      * parsing an element all attributes should be cleared.
+     * 
+     * NOTE:
+     * The pointers point to expat's internal memory. It's not allowed to save references
+     * to this memory between element handle calls.
      *
      * TODO: Rename to attrMapById?
      */

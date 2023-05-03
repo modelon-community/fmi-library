@@ -150,13 +150,13 @@ typedef enum fmi3_xml_attr_enu_t {
     EXPAND_XML_ELMNAME(String) \
     EXPAND_XML_ELMNAME(Enumeration) \
     EXPAND_XML_ELMNAME(ModelStructure) \
-    EXPAND_XML_ELMNAME(Outputs) \
-    EXPAND_XML_ELMNAME(Derivatives) \
-    EXPAND_XML_ELMNAME(DiscreteStates) \
-    EXPAND_XML_ELMNAME(InitialUnknowns) \
     EXPAND_XML_ELMNAME(Unknown) \
+    EXPAND_XML_ELMNAME(Output) \
+    EXPAND_XML_ELMNAME(ContinuousStateDerivative) \
+    EXPAND_XML_ELMNAME(ClockedState) \
+    EXPAND_XML_ELMNAME(InitialUnknown) \
+    EXPAND_XML_ELMNAME(EventIndicator) \
     EXPAND_XML_ELMNAME(Start)
-
 
 /** \brief Element that can be placed under different parents get alternative names from the info struct */
 #define FMI3_XML_ELMLIST_ALT(EXPAND_XML_ELMNAME) \
@@ -178,10 +178,7 @@ typedef enum fmi3_xml_attr_enu_t {
     EXPAND_XML_ELMNAME(BinaryVariableStart) \
     EXPAND_XML_ELMNAME(VariableTool) \
     EXPAND_XML_ELMNAME(SourceFilesCS) \
-    EXPAND_XML_ELMNAME(FileCS) \
-    EXPAND_XML_ELMNAME(DerivativeUnknown) \
-    EXPAND_XML_ELMNAME(DiscreteStateUnknown) \
-    EXPAND_XML_ELMNAME(InitialUnknown)
+    EXPAND_XML_ELMNAME(FileCS)
 
 /** \brief Abstract elements that are only used in the scheme verification */
 #define FMI3_XML_ELMLIST_ABSTRACT(EXPAND_XML_ELMNAME) \

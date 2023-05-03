@@ -10,10 +10,11 @@
 <ModelVariables>
     <Float64 name="state_var" valueReference="0"/>
     <Float64 name="der(state_var)" valueReference="1" causality="output" variability="continuous" initial="approx" derivative="1" start="1.0"/>
+    <Float64 name="output_var" valueReference="2"/>
 </ModelVariables>
 
 <ModelStructure>
-  <ContinuousStateDerivative valueReference="0"/> <!-- Invalid: referenced variable is not a derivative  -->
-  <ContinuousStateDerivative valueReference="1"/>
+  <ContinuousStateDerivative index="2"/>
+  <Output index="3"> <!-- Invalid: ModelStructure requires an ordered list; all 'Output' must be before 'ContinuousStateDerivative' -->
 </ModelStructure>
 </fmiModelDescription>

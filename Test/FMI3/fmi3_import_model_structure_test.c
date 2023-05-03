@@ -92,7 +92,19 @@ clean1:
 static void logger_invalid_state_derivative_reference(jm_callbacks* cb, jm_string module,
         jm_log_level_enu_t log_level, jm_string message)
 {
-    char* expMsg = "The state derivative 'state_var' does not specify the state variable that it is a derivative of.";
+    char* expMsg = "The continuous state derivative 'state_var' does not specify the state variable that it is a derivative of.";
+    if (!strncmp(expMsg, message, strlen(expMsg))) {
+        g_logger_found_err_msg = 1;
+    }
+
+    jm_default_logger(cb, module, log_level, message);
+}
+
+/* Tests that an error is raised when a ModelStructure list is incorrectly ordered. */
+static void logger_incorrect_order(jm_callbacks* cb, jm_string module,
+        jm_log_level_enu_t log_level, jm_string message)
+{
+    char* expMsg = "Model structure is not valid due to detected errors. Cannot continue.";
     if (!strncmp(expMsg, message, strlen(expMsg))) {
         g_logger_found_err_msg = 1;
     }
@@ -113,11 +125,6 @@ int main(int argc, char **argv)
 {
     int ret = 0;
 
-    if (argc != 2) {
-        printf("Usage: %s <path_to_'model_structure'_dir>\n", argv[0]);
-        return CTEST_RETURN_FAIL;
-    }
-
     printf("Running fmi3_import_model_structure_test\n");
 
     /* test valid */
@@ -126,6 +133,8 @@ int main(int argc, char **argv)
     /* test invalid */
     ret |= test_parse_xml(1, argv[1], "/model_structure/invalid/derivative_reference",
             logger_invalid_state_derivative_reference, NULL);
+    ret |= test_parse_xml(1, argv[1], "/model_structure/invalid/incorrect_order",
+            logger_incorrect_order, NULL);
 
     return ret;
 }

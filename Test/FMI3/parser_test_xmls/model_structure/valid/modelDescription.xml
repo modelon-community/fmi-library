@@ -13,8 +13,6 @@
 </ModelVariables>
 
 <ModelStructure>
-  <Derivatives>
-    <Unknown valueReference="1"/>
-  </Derivatives>
+  <ContinuousStateDerivative valueReference="1"/>
 </ModelStructure>
 </fmiModelDescription>

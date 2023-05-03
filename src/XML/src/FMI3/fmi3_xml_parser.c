@@ -116,6 +116,8 @@ const char *fmi3_xmlAttrNames[fmi3_xml_attr_number] = {
 #define fmi3_xml_scheme_UInt16Variable                      {fmi3_xml_elmID_Variable,   fmi3_xml_elmID_ModelVariables,             0,       1}
 #define fmi3_xml_scheme_UInt8Variable                       {fmi3_xml_elmID_Variable,   fmi3_xml_elmID_ModelVariables,             0,       1}
 #define fmi3_xml_scheme_BooleanVariable                     {fmi3_xml_elmID_Variable,   fmi3_xml_elmID_ModelVariables,             0,       1}
+#define fmi3_xml_scheme_BinaryVariable       {fmi3_xml_elmID_Variable,   fmi3_xml_elmID_ModelVariables,      0,       1}
+#define fmi3_xml_scheme_ClockVariable        {fmi3_xml_elmID_Variable,   fmi3_xml_elmID_ModelVariables,      0,       1}
 #define fmi3_xml_scheme_StringVariable                      {fmi3_xml_elmID_Variable,   fmi3_xml_elmID_ModelVariables,             0,       1}
 #define fmi3_xml_scheme_EnumerationVariable                 {fmi3_xml_elmID_Variable,   fmi3_xml_elmID_ModelVariables,             0,       1}
 #define fmi3_xml_scheme_Dimension                           {fmi3_xml_elmID_none,       fmi3_xml_elmID_Variable,                   0,       1}

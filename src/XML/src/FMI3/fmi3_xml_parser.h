@@ -306,6 +306,13 @@ struct fmi3_xml_parser_context_t {
     jm_vector(fmi3_xml_element_handle_map_t)* elmMap;
 
     fmi3_xml_unit_t* lastBaseUnit;
+    
+    /**
+     * If there's an issue with the variable element, this flag says that its
+     * children should be skipped.
+     *
+     * XXX: Seems to only be set FMI 1.
+     */
     int skipOneVariableFlag;
 
     /**

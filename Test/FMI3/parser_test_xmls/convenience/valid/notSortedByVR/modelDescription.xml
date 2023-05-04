@@ -2,8 +2,6 @@
 <fmiModelDescription fmiVersion="3.0" modelName="" instantiationToken="">
 
 <ModelExchange modelIdentifier="myModelIdentifier" />
-<UnitDefinitions/>
-<TypeDefinitions/>
 
 <ModelVariables>
   <Float64 name="v7" valueReference="7"/>

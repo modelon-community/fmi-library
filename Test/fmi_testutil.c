@@ -76,6 +76,7 @@ fmi3_testutil_import_t* fmi3_testutil_parse_xml_with_log(const char* xmldir) {
     testfmu->cb.logger    = fmi3_testutil_log_and_save;
     testfmu->cb.log_level = jm_log_level_info;
     testfmu->cb.context   = &testfmu->log;
+    jm_vector_init(jm_voidp)(&testfmu->log, 0, 0);
 
     fmi_import_context_t* ctx = fmi_import_allocate_context(&testfmu->cb);
     ASSERT_MSG(ctx != NULL, "Context was NULL");
@@ -87,7 +88,6 @@ fmi3_testutil_import_t* fmi3_testutil_parse_xml_with_log(const char* xmldir) {
     fmi_import_free_context(ctx);
 
     testfmu->fmu = xml;
-    jm_vector_init(jm_voidp)(&testfmu->log, 0, 0);
 
     return testfmu;
 }
@@ -101,8 +101,11 @@ void fmi3_testutil_import_free(fmi3_testutil_import_t* testfmu) {
         cb->free(jm_vector_get_item(jm_voidp)(&testfmu->log, i));
     }
     jm_vector_free_data(jm_voidp)(&testfmu->log);
-
-    fmi3_import_free(testfmu->fmu);
+    
+    // Free the fmi3_import_t:
+    if (testfmu->fmu) {
+        fmi3_import_free(testfmu->fmu);
+    }
     
     free(testfmu);  // Allocated without cb, so also freeing without.
 }

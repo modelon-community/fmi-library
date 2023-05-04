@@ -318,7 +318,11 @@ void fmi3_log_forwarding(fmi3_instance_environment_t inst, fmi3_status_t status,
     
     // Set instanceName
     if (fmu) {
-        instanceName = fmu->instanceName;
+        if (fmu->instanceName) {
+            instanceName = fmu->instanceName;
+        } else {
+            instanceName = "<fmu-instance-name>";  // Called before instantiation. Should only happen in testing.
+        }
     } else {
         // XXX: Doesn't make sense to not have an FMU... So using arbitrary value:
         instanceName = "<module>";

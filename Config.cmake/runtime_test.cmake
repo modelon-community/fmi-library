@@ -21,6 +21,7 @@ include_directories(
 )
 
 add_library(fmi_testutil STATIC ${FMIL_TEST_DIR}/fmi_testutil.c)
+target_link_libraries(fmi_testutil PRIVATE ${JMUTIL_LIBRARIES})  # Uses jm_vector
 set(FMILIBFORTEST fmilib fmi_testutil)
 if(FMILIB_BUILD_SHARED_LIB AND (FMILIB_LINK_TEST_TO_SHAREDLIB OR NOT FMILIB_BUILD_STATIC_LIB))
     set(FMILIBFORTEST fmilib_shared fmi_testutil)

@@ -107,6 +107,7 @@ TEST_CASE("Variable name expansion via logger") {
 
     fmi3_log_forwarding(tfmu->fmu, fmi3_status_ok, "Test", "Variable name: #1#");
     REQUIRE(fmi3_testutil_log_contains(tfmu, "Variable name: vFloat64") == true);
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Variable name: vFloat32") == false);  // Also test testutil_log_contains
 
     fmi3_testutil_import_free(tfmu);
 }

@@ -16,7 +16,7 @@ extern "C" {
 typedef struct fmi3_testutil_import_t {
     fmi3_import_t* fmu;
     jm_vector(jm_voidp) log;  // All logged messages
-    char errMessageBuffer[JM_MAX_ERROR_MESSAGE_SIZE];
+    jm_callbacks cb;          // Holds the test-logger and its context
 } fmi3_testutil_import_t;
 
 /**

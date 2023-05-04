@@ -7,7 +7,7 @@
 #include "config_test.h"
 #include "fmi_testutil.h"
 
-#include "jm_vector.h"
+#include "JM/jm_vector.h"
 
 void fmi_testutil_build_xml_path(char* buf, size_t bufSize, const char* basePath, const char* appendPath) {
     strncpy(buf, basePath,   bufSize);
@@ -64,24 +64,20 @@ static void fmi3_testutil_log_and_save(jm_callbacks* cb, jm_string module, jm_lo
 }
 
 fmi3_testutil_import_t* fmi3_testutil_parse_xml_with_log(const char* xmldir) {
-
     fmi3_testutil_import_t* testfmu = malloc(sizeof(fmi3_testutil_import_t));
     if (!testfmu) {
         printf("Test failure: Could not allocate memory");
         return NULL;
     }
+    testfmu->cb.calloc    = calloc;
+    testfmu->cb.malloc    = malloc;
+    testfmu->cb.realloc   = realloc;
+    testfmu->cb.free      = free;
+    testfmu->cb.logger    = fmi3_testutil_log_and_save;
+    testfmu->cb.log_level = jm_log_level_info;
+    testfmu->cb.context   = &testfmu->log;
 
-    jm_callbacks cb = {
-        .calloc    = calloc,
-        .malloc    = malloc,
-        .realloc   = realloc,
-        .free      = free,
-        .logger    = fmi3_testutil_log_and_save,
-        .log_level = jm_log_level_info,
-        .context   = &testfmu->log
-    };
-
-    fmi_import_context_t* ctx = fmi_import_allocate_context(&cb);
+    fmi_import_context_t* ctx = fmi_import_allocate_context(&testfmu->cb);
     ASSERT_MSG(ctx != NULL, "Context was NULL");
 
     fmi3_import_t* xml;

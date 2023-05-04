@@ -471,7 +471,7 @@ int main(int argc, char *argv[])
     {
         size_t nv, i;
         fmi3_import_variable_list_t* vl = fmi3_import_get_variable_list(fmu, 0);
-/*		fmi3_import_variable_list_t* ders = fmi3_import_get_derivatives_list( fmu); */
+/*		fmi3_import_variable_list_t* ders = fmi3_import_get_continuous_state_derivatives_list( fmu); */
 		const fmi3_value_reference_t* vrl = fmi3_import_get_value_reference_list(vl);
 
 

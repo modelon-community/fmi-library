@@ -307,13 +307,13 @@ FMILIB_EXPORT fmi3_import_variable_t* fmi3_import_get_variable_by_vr(fmi3_import
 */
 FMILIB_EXPORT fmi3_import_variable_list_t* fmi3_import_get_outputs_list(fmi3_import_t* fmu);
 
-/** \brief Get the list of all the derivative variables in the model.
+/** \brief Get the list of all the continuous state derivative variables in the model.
 * @param fmu An FMU object as returned by fmi3_import_parse_xml().
 * @return a variable list with all the continuous state derivatives in the model.
 *
 * Note that variable lists are allocated dynamically and must be freed when not needed any longer.
 */
-FMILIB_EXPORT fmi3_import_variable_list_t* fmi3_import_get_derivatives_list(fmi3_import_t* fmu);
+FMILIB_EXPORT fmi3_import_variable_list_t* fmi3_import_get_continuous_state_derivatives_list(fmi3_import_t* fmu);
 
 /** \brief Get the list of all the discrete state variables in the model.
 * @param fmu An FMU object as returned by fmi3_import_parse_xml().

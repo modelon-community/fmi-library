@@ -304,7 +304,7 @@ fmi3_import_variable_list_t* fmi3_import_vector_to_varlist(fmi3_import_t* fmu, j
 }
 
 /* Get the list of all the variables in the model */
-/* 0 - original order as found in the XML file; 1 - sorted alfabetically by variable name; 2 sorted by types/value references. */
+/* 0 - original order as found in the XML file; 1 - sorted alfabetically by variable name; 2 sorted by value references. */
 fmi3_import_variable_list_t* fmi3_import_get_variable_list(fmi3_import_t* fmu, int sortOrder) {
     if(!fmi3_import_check_has_FMU(fmu)) return 0;
     switch(sortOrder) {

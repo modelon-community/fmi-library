@@ -17,7 +17,7 @@ static void test_get_variable_by_vr(fmi3_import_t* xml) {
     size_t nVar = 8;
 
     // For testing one more property of the variables.
-    fmi3_base_type_enu_t baseTypes[nVar] = {
+    fmi3_base_type_enu_t baseTypes[] = {
         fmi3_base_type_int32,
         fmi3_base_type_float64,
         fmi3_base_type_float64,

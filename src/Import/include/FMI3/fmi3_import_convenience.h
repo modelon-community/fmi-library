@@ -145,9 +145,20 @@ FMILIB_EXPORT
 void fmi3_callback_free_memory_default(fmi3_instance_environment_t instEnv, void* obj);
 
 /**
- * \brief An implementation of FMI 3.0 logger that forwards the messages to the
- * logger function in the ::jm_callbacks structure of the FMU (argument 'inst').
+ * \brief An implementation of the FMI 3.0 logger that forwards the messages to the
+ * logger function in the 'inst' object.
+ * 
+ * The 'inst' object is expected to be to a parsed FMU object object of type 'fmi3_import_t'.
+ * 
+ * The underlying logger function which is forwarded to is the same as the one in the
+ * jm_callbacks argument passed to the call to 'fmi_import_allocate_context'.
+ *
  * Value reference name expansion is also performed before forwarding.
+ *
+ * @param inst     An 'fmi3_import_t' object retrieved from 'fmi3_import_parse_xml'.
+ * @param status   The status.
+ * @param category The category.
+ * @param message  The message.
  */
 FMILIB_EXPORT
 void fmi3_log_forwarding(fmi3_instance_environment_t inst, fmi3_status_t status, fmi3_string_t category, fmi3_string_t message);

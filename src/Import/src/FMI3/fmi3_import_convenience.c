@@ -324,7 +324,7 @@ void fmi3_log_forwarding(fmi3_instance_environment_t inst, fmi3_status_t status,
         instanceName = "<module>";
     }
     
-    // Forward the call to the FMU logger:
+    // Forward the call to the logger used during FMU parsing:
     if (cb->logger) {
         cb->logger(cb, instanceName, logLevel, msg);
     }

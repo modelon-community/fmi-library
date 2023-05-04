@@ -102,9 +102,11 @@ TEST_CASE("Variable name expansion") {
 TEST_CASE("Variable name expansion via logger") {
     const char* xmldir = FMI3_TEST_XML_DIR "/convenience/valid/nameExpansion";
 
-    fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
-    REQUIRE(xml != nullptr);
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    REQUIRE(tfmu != nullptr);
 
+    fmi3_log_forwarding(tfmu->fmu, fmi3_status_ok, "Test", "Variable name: #1#");
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Variable name: vFloat64") == true);
 
-    fmi3_import_free(xml);
+    fmi3_testutil_import_free(tfmu);
 }

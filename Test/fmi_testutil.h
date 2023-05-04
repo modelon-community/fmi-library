@@ -13,6 +13,11 @@ extern "C" {
  *  TODO: Decide about naming convention for test utils functions.
  */
 
+typedef struct fmi3_testutil_import_t {
+    fmi3_import_t* fmu;
+    jm_vector(jm_voidp) log;  // All logged messages
+    char errMessageBuffer[JM_MAX_ERROR_MESSAGE_SIZE];
+} fmi3_testutil_import_t;
 
 /**
  * TODO: Remove this function. Instead of using this function, build the path from defines in config_test.h.
@@ -30,6 +35,21 @@ void fmi_testutil_enter_breakpoint();
  * The returned pointer must be freed with 'fmi3_import_free'.
  */
 fmi3_import_t* fmi3_testutil_parse_xml(const char* xmldir);
+
+/**
+ * Parse an XML and save the log.
+ */
+fmi3_testutil_import_t* fmi3_testutil_parse_xml_with_log(const char* xmldir);
+
+/**
+ * Free the object.
+ */
+void fmi3_testutil_import_free(fmi3_testutil_import_t* testfmu);
+
+/**
+ * Returns true if any logged message constains the given message substring.
+ */
+bool fmi3_testutil_log_contains(fmi3_testutil_import_t* testfmu, const char* msgSubstr);
 
 /**
  * Immediately fails the test by exiting the program.

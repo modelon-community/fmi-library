@@ -10,9 +10,13 @@
 <ModelVariables>
     <Float64 name="state_var" valueReference="0"/>
     <Float64 name="der(state_var)" valueReference="1" causality="output" variability="continuous" initial="approx" derivative="1" start="1.0"/>
+    <Float64 name="output_var" valueReference="2" causality="output"/>
+    <Float64 name="init_unknown_var" valueReference="3"/>
 </ModelVariables>
 
 <ModelStructure>
+  <Output valueReference="2"/>
   <ContinuousStateDerivative valueReference="1"/>
+  <InitialUnknown valueReference="3"/>
 </ModelStructure>
 </fmiModelDescription>

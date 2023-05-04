@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription
+  fmiVersion="3.0"
+  modelName="myModelName"
+  instantiationToken="myInstToken">
+
+<ModelExchange
+  modelIdentifier="myModelIdentifier" />
+
+<ModelVariables>
+    <Float64 name="output_var" valueReference="0" causality="independent"/>
+</ModelVariables>
+
+<ModelStructure>
+  <Output index="1"/> <!-- all outputs have have causality="output" -->
+</ModelStructure>
+</fmiModelDescription>

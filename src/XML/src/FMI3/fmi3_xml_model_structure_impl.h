@@ -47,7 +47,7 @@ void fmi3_xml_free_dependencies(fmi3_xml_dependencies_t* dep);
 struct fmi3_xml_model_structure_t {
     jm_vector(jm_voidp) outputs;
     jm_vector(jm_voidp) continuousStateDerivatives;
-    jm_vector(jm_voidp) discreteStates; // TODO: remove?
+    jm_vector(jm_voidp) discreteStates;
     jm_vector(jm_voidp) initialUnknowns;
 
     fmi3_xml_dependencies_t* outputDeps;

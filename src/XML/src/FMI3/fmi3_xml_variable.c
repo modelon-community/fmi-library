@@ -2085,9 +2085,9 @@ int fmi3_xml_handle_ModelVariables(fmi3_xml_parser_context_t *context, const cha
                     fmi3_xml_variable_t* v1 = jm_vector_get_item(jm_voidp)(md->variablesByVR, i);
                     fmi3_xml_variable_t* v2 = jm_vector_get_item(jm_voidp)(md->variablesByVR, i+1);
                     if (v1->vr == v2->vr) {
-                        fmi3_xml_parse_error(context, "The following variables have the same value reference: %s, %s",
+                        fmi3_xml_parse_fatal(context, "The following variables have the same value reference: %s, %s",
                                 v1->name, v2->name);
-                        // Usually we return -1 on error, but should be fine to continue.
+                        return -1;
                     }
                 }
             }

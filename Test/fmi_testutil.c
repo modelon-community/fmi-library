@@ -77,16 +77,21 @@ fmi3_testutil_import_t* fmi3_testutil_parse_xml_with_log(const char* xmldir) {
     testfmu->cb.log_level = jm_log_level_info;
     testfmu->cb.context   = &testfmu->log;
     jm_vector_init(jm_voidp)(&testfmu->log, 0, 0);
+    testfmu->fmu = NULL;
 
     fmi_import_context_t* ctx = fmi_import_allocate_context(&testfmu->cb);
-    ASSERT_MSG(ctx != NULL, "Context was NULL");
+    if (!ctx) {
+        printf("testutil: Context was NULL\n");
+        return testfmu;
+    }
 
     fmi3_import_t* xml;
     xml = fmi3_import_parse_xml(ctx, xmldir, NULL);
-    ASSERT_MSG(xml != NULL, "Failed to parse XML");
-
     fmi_import_free_context(ctx);
-
+    if (!xml) {
+        printf("testutil: Failed to parse XML\n");
+        return testfmu;
+    }
     testfmu->fmu = xml;
 
     return testfmu;

@@ -2080,13 +2080,15 @@ int fmi3_xml_handle_ModelVariables(fmi3_xml_parser_context_t *context, const cha
             }
             jm_vector_qsort(jm_voidp)(md->variablesByVR, fmi3_xml_compare_vr_and_original_index);
 
-            for (size_t i = 0; i < size-1; ++i) {
-                fmi3_xml_variable_t* v1 = jm_vector_get_item(jm_voidp)(md->variablesByVR, i);
-                fmi3_xml_variable_t* v2 = jm_vector_get_item(jm_voidp)(md->variablesByVR, i+1);
-                if (v1->vr == v2->vr) {
-                    fmi3_xml_parse_error(context, "The following variables have the same value reference: %s, %s",
-                            v1->name, v2->name);
-                    // Usually we return -1 on error, but should be fine to continue.
+            if (size > 0) {  // size=0 would cause integer overflow in the loop condition
+                for (size_t i = 0; i < size-1; ++i) {
+                    fmi3_xml_variable_t* v1 = jm_vector_get_item(jm_voidp)(md->variablesByVR, i);
+                    fmi3_xml_variable_t* v2 = jm_vector_get_item(jm_voidp)(md->variablesByVR, i+1);
+                    if (v1->vr == v2->vr) {
+                        fmi3_xml_parse_error(context, "The following variables have the same value reference: %s, %s",
+                                v1->name, v2->name);
+                        // Usually we return -1 on error, but should be fine to continue.
+                    }
                 }
             }
         }

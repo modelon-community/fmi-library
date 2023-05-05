@@ -76,21 +76,11 @@ static int test_default_experiment_mixed(fmi3_import_t *xml)
 
 int main(int argc, char **argv)
 {
-#define PATH_BUF_SIZE 1000
-    char path_buf[PATH_BUF_SIZE]; /* buffer for path to md */
     fmi3_import_t *xml;
     int ret = 1;
-    if (argc != 2) {
-        printf("Usage: %s <path to dir that contains 'defined' and 'undefined' "
-                "parent dirs of modelDescription files (including trailing file separator "
-                "(slash or backslash))>\n", argv[0]);
-        return CTEST_RETURN_FAIL;
-    }
-
-    printf("Running fmi3_import_default_experiment_test\n");
 
     /* test 1 */
-    xml = parse_xml(strcat(strncpy(path_buf, argv[1], PATH_BUF_SIZE), "defined"));
+    xml = parse_xml(FMI3_TEST_XML_DIR "/default_experiment/defined");
     if (xml == NULL) {
         return CTEST_RETURN_FAIL;
     }
@@ -98,7 +88,7 @@ int main(int argc, char **argv)
     fmi3_import_free(xml);
 
     /* test 2 */
-    xml = parse_xml(strcat(strncpy(path_buf, argv[1], PATH_BUF_SIZE), "undefined"));
+    xml = parse_xml(FMI3_TEST_XML_DIR "/default_experiment/undefined");
     if (xml == NULL) {
         return CTEST_RETURN_FAIL;
     }
@@ -106,7 +96,7 @@ int main(int argc, char **argv)
     fmi3_import_free(xml);
 
     /* test 3 */
-    xml = parse_xml(strcat(strncpy(path_buf, argv[1], PATH_BUF_SIZE), "mixed"));
+    xml = parse_xml(FMI3_TEST_XML_DIR "/default_experiment/mixed");
     if (xml == NULL) {
         return CTEST_RETURN_FAIL;
     }
@@ -114,5 +104,4 @@ int main(int argc, char **argv)
     fmi3_import_free(xml);
 
     return ret == 0 ? CTEST_RETURN_FAIL : CTEST_RETURN_SUCCESS;
-#undef PATH_BUF_SIZE
 }

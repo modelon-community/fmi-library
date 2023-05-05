@@ -7,6 +7,6 @@
 </ModelVariables>
 
 <ModelStructure>
-  <Output index="1"/> <!-- all outputs have have causality="output" -->
+  <Output valueReference="0"/> <!-- all outputs have to have causality="output" -->
 </ModelStructure>
 </fmiModelDescription>

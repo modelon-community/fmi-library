@@ -9,7 +9,7 @@
 </ModelVariables>
 
 <ModelStructure>
-  <ContinuousStateDerivative index="2"/>
-  <Output index="3"> <!-- Invalid: ModelStructure requires an ordered list; all 'Output' must be before 'ContinuousStateDerivative' -->
+  <ContinuousStateDerivative valueReference="1"/>
+  <Output valueReference="2"> <!-- Invalid: ModelStructure requires an ordered list; all 'Output' must be before 'ContinuousStateDerivative' -->
 </ModelStructure>
 </fmiModelDescription>

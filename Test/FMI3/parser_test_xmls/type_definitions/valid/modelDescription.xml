@@ -82,24 +82,6 @@
 
   <ModelVariables>
 
-    <!--******************************-->
-    <!--*** Non-numeric attributes ***-->
-    <!--******************************-->
-
-    <!-- test defined variable attributes -->
-    <Float64     name="float64_with_attr" valueReference="1001" quantity="velocity" unbounded="true" relativeQuantity="true"/>
-    <Int32       name="int32_with_attr"   valueReference="1002" quantity="velocity"/>
-    <Enumeration name="enum_with_attr"    valueReference="1003" quantity="velocity" declaredType="td_minimal_enum"/>
-
-    <!-- test undefined variable attributes -->
-    <Float64     name="float64_no_attr" valueReference="2001"/>
-    <Int32       name="int32_no_attr"   valueReference="2002"/>
-    <Enumeration name="enum_no_attr"    valueReference="2003" declaredType="td_minimal_enum"/>
-
-    <!-- test that attributes in typedef are returned if not defined in variable -->
-    <Float64 name="float64_with_typedef"          valueReference="3001" declaredType="float64_type_with_attributes"/>
-    <Float64 name="float64_with_typedef_override" valueReference="3002" declaredType="float64_type_with_attributes" quantity="position"/>
-
     <!--************-->
     <!--*** misc ***-->
     <!--************-->
@@ -189,6 +171,25 @@
 
     <!-- int32 with all common attributes - the common attributes should not be dependent on the type, so just testing int32 - TODO: test NYI 3.0 attributes -->
     <Int32 name="variable_common_attributes_int32" valueReference="9001" description="description" causality="output" variability="discrete" initial="calculated" declaredType="typedef_basic_int32" quantity="Frequency"/>
+
+
+    <!--******************************-->
+    <!--*** Non-numeric attributes ***-->
+    <!--******************************-->
+
+    <!-- test defined variable attributes -->
+    <Float64     name="float64_with_attr" valueReference="10001" quantity="velocity" unbounded="true" relativeQuantity="true"/>
+    <Int32       name="int32_with_attr"   valueReference="10002" quantity="velocity"/>
+    <Enumeration name="enum_with_attr"    valueReference="10003" quantity="velocity" declaredType="td_minimal_enum"/>
+
+    <!-- test undefined variable attributes -->
+    <Float64     name="float64_no_attr" valueReference="11001"/>
+    <Int32       name="int32_no_attr"   valueReference="11002"/>
+    <Enumeration name="enum_no_attr"    valueReference="11003" declaredType="td_minimal_enum"/>
+
+    <!-- test that attributes in typedef are returned if not defined in variable -->
+    <Float64 name="float64_with_typedef"          valueReference="12001" declaredType="float64_type_with_attributes"/>
+    <Float64 name="float64_with_typedef_override" valueReference="12002" declaredType="float64_type_with_attributes" quantity="position"/>
 
   </ModelVariables>
 

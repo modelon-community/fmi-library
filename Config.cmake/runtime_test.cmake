@@ -21,6 +21,7 @@ include_directories(
 )
 
 add_library(fmi_testutil STATIC ${FMIL_TEST_DIR}/fmi_testutil.c)
+target_link_libraries(fmi_testutil PRIVATE ${JMUTIL_LIBRARIES})  # Uses jm_vector
 set(FMILIBFORTEST fmilib fmi_testutil)
 if(FMILIB_BUILD_SHARED_LIB AND (FMILIB_LINK_TEST_TO_SHAREDLIB OR NOT FMILIB_BUILD_STATIC_LIB))
     set(FMILIBFORTEST fmilib_shared fmi_testutil)
@@ -82,29 +83,22 @@ function(to_native_c_path path native_c_path)
     set (${native_c_path} ${tmp} PARENT_SCOPE)
 endfunction()
 
-set(UNCOMPRESSED_DUMMY_FILE_PATH_SRC "${FMIL_TEST_DIR}/try_to_uncompress_this_file.zip")
-set(UNCOMPRESSED_DUMMY_FOLDER_PATH_DIST "${TEST_OUTPUT_FOLDER}")
-file(COPY "${UNCOMPRESSED_DUMMY_FILE_PATH_SRC}" DESTINATION "${UNCOMPRESSED_DUMMY_FOLDER_PATH_DIST}")
-
-set(COMPRESS_DUMMY_FILE_PATH_SRC "${FMIL_TEST_DIR}/try_to_compress_this_file.xml")
-set(COMPRESS_DUMMY_FOLDER_PATH_DIST "${TEST_OUTPUT_FOLDER}")
-set(COMPRESS_DUMMY_FILE_PATH_DIST "${TEST_OUTPUT_FOLDER}/successfully_compressed_this_file.zip")
-file(COPY "${COMPRESS_DUMMY_FILE_PATH_SRC}" DESTINATION "${COMPRESS_DUMMY_FOLDER_PATH_DIST}")
-
-#Create paths for the config_test.h
-if(WIN32)
-    set(DLL_OUTPUT_PATH "${TEST_OUTPUT_FOLDER}")
-
-    string(REPLACE "/" "\\\\" UNCOMPRESSED_DUMMY_FILE_PATH_SRC "${UNCOMPRESSED_DUMMY_FILE_PATH_SRC}")
-    string(REPLACE "/" "\\\\" UNCOMPRESSED_DUMMY_FILE_PATH_DIST "${UNCOMPRESSED_DUMMY_FILE_PATH_DIST}")
-    string(REPLACE "/" "\\\\" UNCOMPRESSED_DUMMY_FOLDER_PATH_DIST "${UNCOMPRESSED_DUMMY_FOLDER_PATH_DIST}")
-    string(REPLACE "/" "\\\\" COMPRESS_DUMMY_FILE_PATH_SRC "${COMPRESS_DUMMY_FILE_PATH_SRC}")
-    string(REPLACE "/" "\\\\" COMPRESS_DUMMY_FILE_PATH_DIST "${COMPRESS_DUMMY_FILE_PATH_DIST}")
-endif(WIN32)
-
-#Move files and compress them to an FMU
+# Compresses files to an FMU.
+#
+# FIXME:
+# This function also creates an uncompressed FMU directory which some tests
+# (fmiXX_import_xml_test_XX) point at just for testing an XML. They should
+# be fixed to point at XML_PATH_T.
+#
+# @OUTPUT_FOLDER_T:        The directory which the FMU will be placed in. (The uncompressed directory is also created here.)
+# @MODEL_IDENTIFIER_T:     The model identifier of the FMU. Will be used as stem for the FMU name.
+# @FILE_NAME_CS_ME_EXT_T:  A suffix added to the stem of the FMU base name.
+# @TARGET_NAME_T:          The target for building the shared library.
+# @XML_PATH_T:             The path to the modelDescription that will be zipped.
+# @SHARED_LIBRARY_PATH_T:  The path to the shared library produced by TARGET_NAME_T.
 function(compress_fmu OUTPUT_FOLDER_T MODEL_IDENTIFIER_T FILE_NAME_CS_ME_EXT_T TARGET_NAME_T XML_PATH_T SHARED_LIBRARY_PATH_T)
-    set(FMU_OUTPUT_FOLDER_T ${OUTPUT_FOLDER_T}/${MODEL_IDENTIFIER_T}_${FILE_NAME_CS_ME_EXT_T})
+    set(FMU_FILE_NAME_T ${MODEL_IDENTIFIER_T}_${FILE_NAME_CS_ME_EXT_T})
+    set(FMU_OUTPUT_FOLDER_T ${OUTPUT_FOLDER_T}/${FMU_FILE_NAME_T})
     set(FMU_OUTPUT_SHARED_LIBRARY_PATH_T ${FMU_OUTPUT_FOLDER_T}/binaries/${FMI_PLATFORM}/${MODEL_IDENTIFIER_T}${CMAKE_SHARED_LIBRARY_SUFFIX})
 
     #Must create the FMU directory in a separate command..
@@ -114,32 +108,32 @@ function(compress_fmu OUTPUT_FOLDER_T MODEL_IDENTIFIER_T FILE_NAME_CS_ME_EXT_T T
 
     file(TO_NATIVE_PATH binaries/${FMI_PLATFORM}/${MODEL_IDENTIFIER_T}${CMAKE_SHARED_LIBRARY_SUFFIX} FMU_OUTPUT_SHARED_LIBRARY_PATH_OUT_T)
 
-    #Move files to the FMU directories and compress
+    #Move files to the FMU directories and compress  # TODO: Why not compress to correct location right away?
     add_custom_command(
-       OUTPUT ${OUTPUT_FOLDER_T}/${MODEL_IDENTIFIER_T}_${FILE_NAME_CS_ME_EXT_T}.fmu
-       DEPENDS "${XML_PATH_T}" ${TARGET_NAME_T} compress_test_fmu_zip
-       COMMAND "${CMAKE_COMMAND}" -E remove -f "${OUTPUT_FOLDER_T}/${MODEL_IDENTIFIER_T}_${FILE_NAME_CS_ME_EXT_T}.fmu"
-       COMMAND "${CMAKE_COMMAND}" -E copy "${XML_PATH_T}" "${FMU_OUTPUT_FOLDER_T}/modelDescription.xml"
-       COMMAND "${CMAKE_COMMAND}" -E copy "${SHARED_LIBRARY_PATH_T}" "${FMU_OUTPUT_SHARED_LIBRARY_PATH_T}"
-       COMMAND "${COMPRESS_EXECUTABLE}" "${MODEL_IDENTIFIER_T}.fmu" "modelDescription.xml" "${FMU_OUTPUT_SHARED_LIBRARY_PATH_OUT_T}" WORKING_DIRECTORY "${FMU_OUTPUT_FOLDER_T}"
-       COMMAND "${CMAKE_COMMAND}" -E copy "${FMU_OUTPUT_FOLDER_T}/${MODEL_IDENTIFIER_T}.fmu" "${OUTPUT_FOLDER_T}/${MODEL_IDENTIFIER_T}_${FILE_NAME_CS_ME_EXT_T}.fmu"
+        OUTPUT ${OUTPUT_FOLDER_T}/${FMU_FILE_NAME_T}.fmu
+        DEPENDS "${XML_PATH_T}" ${TARGET_NAME_T} compress_test_fmu_zip
+        COMMAND "${CMAKE_COMMAND}" -E remove -f "${OUTPUT_FOLDER_T}/${FMU_FILE_NAME_T}.fmu"
+        COMMAND "${CMAKE_COMMAND}" -E copy "${XML_PATH_T}" "${FMU_OUTPUT_FOLDER_T}/modelDescription.xml"
+        COMMAND "${CMAKE_COMMAND}" -E copy "${SHARED_LIBRARY_PATH_T}" "${FMU_OUTPUT_SHARED_LIBRARY_PATH_T}"
+        COMMAND "${COMPRESS_EXECUTABLE}" "${MODEL_IDENTIFIER_T}.fmu" "modelDescription.xml" "${FMU_OUTPUT_SHARED_LIBRARY_PATH_OUT_T}" WORKING_DIRECTORY "${FMU_OUTPUT_FOLDER_T}"
+        COMMAND "${CMAKE_COMMAND}" -E copy "${FMU_OUTPUT_FOLDER_T}/${MODEL_IDENTIFIER_T}.fmu" "${OUTPUT_FOLDER_T}/${FMU_FILE_NAME_T}.fmu"
     )
 
     get_target_property(DLL_SOURCES ${TARGET_NAME_T} SOURCES)
 
-    set(tname ${MODEL_IDENTIFIER_T}_${FILE_NAME_CS_ME_EXT_T}_FMU)
+    set(tname ${FMU_FILE_NAME_T}_FMU)
     add_custom_target(${tname} ALL
-        DEPENDS ${OUTPUT_FOLDER_T}/${MODEL_IDENTIFIER_T}_${FILE_NAME_CS_ME_EXT_T}.fmu
+        DEPENDS ${OUTPUT_FOLDER_T}/${FMU_FILE_NAME_T}.fmu
         SOURCES "${XML_PATH_T}" ${DLL_SOURCES})
     set_target_properties(${tname} ${TARGET_NAME_T}
                         PROPERTIES FOLDER "TestFMUs")
 
 endfunction(compress_fmu)
 
-add_executable(fmi_zip_zip_test ${FMIL_TEST_DIR}/FMI1/fmi_zip_zip_test.c )
+add_executable(fmi_zip_zip_test ${FMIL_TEST_DIR}/fmi_zip_zip_test.c )
 target_link_libraries (fmi_zip_zip_test ${FMIZIP_LIBRARIES})
 
-add_executable(fmi_zip_unzip_test ${FMIL_TEST_DIR}/FMI1/fmi_zip_unzip_test.c )
+add_executable(fmi_zip_unzip_test ${FMIL_TEST_DIR}/fmi_zip_unzip_test.c )
 target_link_libraries(fmi_zip_unzip_test ${FMIZIP_LIBRARIES})
 
 add_executable(fmi_import_test
@@ -161,10 +155,9 @@ include(CTest)
 set(CTEST_RETURN_SUCCESS 0)
 set(CTEST_RETURN_FAIL 1)
 
-# set(FMU_TEMPFOLDER ${TEST_OUTPUT_FOLDER}/tempfolder)
 to_native_c_path(${TEST_OUTPUT_FOLDER}/tempfolder FMU_TEMPFOLDER)
 
-file(MAKE_DIRECTORY ${TEST_OUTPUT_FOLDER}/tempfolder)
+file(MAKE_DIRECTORY ${FMU_TEMPFOLDER})
 
 if(FMILIB_BUILD_BEFORE_TESTS)
     add_test(
@@ -177,11 +170,27 @@ add_test(ctest_jm_locale_test jm_locale_test)
 add_test(ctest_fmi_zip_unzip_test fmi_zip_unzip_test)
 add_test(ctest_fmi_zip_zip_test fmi_zip_zip_test)
 
+
+# Creates a Catch2 test.
+#
+# @TEST_NAME: Name of the test file, without any suffix.
+# @TEST_DIR:  The basename of parent directory of the test file.
+function(add_catch2_test TEST_NAME TEST_DIR)
+    add_executable(${TEST_NAME} ${FMIL_TEST_DIR}/${TEST_DIR}/${TEST_NAME}.cpp)
+    set_source_files_properties(${FMIL_TEST_DIR}/${TEST_DIR}/${TEST_NAME}.cpp PROPERTIES LANGUAGE CXX)
+    target_link_libraries(${TEST_NAME} Catch ${FMILIBFORTEST})
+    add_test(ctest_${TEST_NAME} ${TEST_NAME})
+    set_target_properties(${TEST_NAME} PROPERTIES FOLDER "Test/${TEST_DIR}")
+    if(FMILIB_BUILD_BEFORE_TESTS)
+        set_tests_properties(ctest_${TEST_NAME} PROPERTIES DEPENDS ctest_build_all)
+    endif()
+endfunction()
+
 include(test_fmi1)
 include(test_fmi2)
 include(test_fmi3)
 
-add_test(ctest_fmi_import_test_no_xml fmi_import_test ${UNCOMPRESSED_DUMMY_FILE_PATH_SRC} ${TEST_OUTPUT_FOLDER})
+add_test(ctest_fmi_import_test_no_xml fmi_import_test ${UNCOMPRESSED_DUMMY_FILE_PATH_SRC} ${FMU_TEMPFOLDER})
   set_tests_properties(ctest_fmi_import_test_no_xml PROPERTIES WILL_FAIL TRUE)
 add_test(ctest_fmi_import_test_me_1 fmi_import_test ${FMU_ME_PATH} ${FMU_TEMPFOLDER})
 add_test(ctest_fmi_import_test_cs_1 fmi_import_test ${FMU_CS_PATH} ${FMU_TEMPFOLDER})

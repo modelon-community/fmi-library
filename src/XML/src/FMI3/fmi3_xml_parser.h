@@ -77,7 +77,6 @@ jm_vector_declare_template(fmi3_value_reference_t)
     EXPAND_XML_ATTRNAME(resolution) \
     EXPAND_XML_ATTRNAME(intervalCounter) \
     EXPAND_XML_ATTRNAME(shiftCounter) \
-    EXPAND_XML_ATTRNAME(index) \
     EXPAND_XML_ATTRNAME(dependencies) \
     EXPAND_XML_ATTRNAME(dependenciesKind) \
     EXPAND_XML_ATTRNAME(modelName) \
@@ -286,6 +285,10 @@ struct fmi3_xml_parser_context_t {
      * 
      * Typically attributes values are cleared when they are read, such that at the end of
      * parsing an element all attributes should be cleared.
+     * 
+     * NOTE:
+     * The pointers point to expat's internal memory. It's not allowed to save references
+     * to this memory between element handle calls.
      *
      * TODO: Rename to attrMapById?
      */
@@ -303,6 +306,13 @@ struct fmi3_xml_parser_context_t {
     jm_vector(fmi3_xml_element_handle_map_t)* elmMap;
 
     fmi3_xml_unit_t* lastBaseUnit;
+    
+    /**
+     * If there's an issue with the variable element, this flag says that its
+     * children should be skipped.
+     *
+     * XXX: Seems to only be set FMI 1.
+     */
     int skipOneVariableFlag;
 
     /**

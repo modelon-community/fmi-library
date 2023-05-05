@@ -18,6 +18,7 @@
 */
 #include <string.h>
 #include <stdio.h>
+#include <inttypes.h>
 
 #include "fmi3_xml_parser.h"
 #include "fmi3_xml_model_structure_impl.h"
@@ -421,21 +422,17 @@ int fmi3_xml_parse_unknown(fmi3_xml_parser_context_t *context,
     fmi3_xml_model_description_t* md = context->modelDescription;
     fmi3_xml_model_structure_t* ms = md->modelStructure;
 
-    unsigned int index;
+    fmi3_value_reference_t vr;
     fmi3_xml_variable_t* variable;
 
-    /* <xs:attribute name="index" type="xs:unsignedInt" use="required"> */
-    if (fmi3_xml_set_attr_uint32(context, fmi3_xml_elmID_Unknown, fmi_attr_id_index, 1, &index, 0)) return -1;
-    index--; /* Convert from one- to zero-based indexing */
+    if (fmi3_xml_set_attr_uint32(context, fmi3_xml_elmID_Unknown, fmi_attr_id_valueReference, 1, &vr, 0)) return -1;
 
-    /* Ok to just check upper bound since index is unsigned. */
-    if (index >= jm_vector_get_size(jm_voidp)(md->variablesOrigOrder)) {
-        fmi3_xml_parse_error(context, "The index attribute must have a value between 1 and the number of model variables.");
+    variable = fmi3_xml_get_variable_by_vr(md, vr);
+    if (!variable) {
+        fmi3_xml_parse_error(context, "Failed to find variable for valueReference=%" PRId32 ".");
         ms->isValidFlag = 0;
         return -1;
     }
-    variable = (fmi3_xml_variable_t*)jm_vector_get_item(jm_voidp)(md->variablesOrigOrder, index);
-
     if (!jm_vector_push_back(jm_voidp)(destVarList, variable)) {
         fmi3_xml_parse_fatal(context, "Could not allocate memory");
         ms->isValidFlag = 0;
@@ -467,21 +464,20 @@ int fmi3_xml_handle_DerivativeUnknown(fmi3_xml_parser_context_t *context, const 
         int validDeriv; /* valid derivative found */
 
         /* perform the parsing */
-        int status = fmi3_xml_parse_unknown(context, fmi3_xml_elmID_Derivatives, &ms->derivatives, ms->derivativeDeps);
-        if (status)
-            return status;
-
+        if (fmi3_xml_parse_unknown(context, fmi3_xml_elmID_Derivatives, &ms->derivatives, ms->derivativeDeps)) {
+            return -1;
+        }
 
         /* validate return values */
 
         /* derivatives can be any of floatXX */
         derXX = (fmi3_xml_variable_t*)jm_vector_get_last(jm_voidp)(&ms->derivatives);
         if (derXX->type->baseType == fmi3_base_type_float64) {
-            fmi3_xml_float64_variable_t* der = (fmi3_xml_float64_variable_t*)jm_vector_get_last(jm_voidp)(&ms->derivatives);
+            fmi3_xml_float64_variable_t* der = (fmi3_xml_float64_variable_t*)derXX;
             validDeriv = fmi3_xml_get_float64_variable_derivative_of(der) != NULL;
         }
         else { /* float32 */
-            fmi3_xml_float32_variable_t* der = (fmi3_xml_float32_variable_t*)jm_vector_get_last(jm_voidp)(&ms->derivatives);
+            fmi3_xml_float32_variable_t* der = (fmi3_xml_float32_variable_t*)derXX;
             validDeriv = fmi3_xml_get_float32_variable_derivative_of(der) != NULL;
         }
         if (!validDeriv) {

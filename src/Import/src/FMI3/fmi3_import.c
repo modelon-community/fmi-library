@@ -40,18 +40,19 @@ fmi3_import_t* fmi3_import_allocate(jm_callbacks* cb) {
         if(fmu) {
             cb->free(fmu);
         }
-        return 0;
+        return NULL;
     }
-    fmu->dirPath = 0;
-    fmu->resourcePath = 0;
+    fmu->dirPath = NULL;
+    fmu->resourcePath = NULL;
+    fmu->instanceName = NULL;
     fmu->callbacks = cb;
-    fmu->capi = 0;
+    fmu->capi = NULL;
     fmu->md = fmi3_xml_allocate_model_description(cb);
     jm_vector_init(char)(&fmu->logMessageBufferExpanded,0,cb);
 
     if(!fmu->md) {
         cb->free(fmu);
-        return 0;
+        return NULL;
     }
 
     return fmu;
@@ -303,7 +304,7 @@ fmi3_import_variable_list_t* fmi3_import_vector_to_varlist(fmi3_import_t* fmu, j
 }
 
 /* Get the list of all the variables in the model */
-/* 0 - original order as found in the XML file; 1 - sorted alfabetically by variable name; 2 sorted by types/value references. */
+/* 0 - original order as found in the XML file; 1 - sorted alfabetically by variable name; 2 sorted by value references. */
 fmi3_import_variable_list_t* fmi3_import_get_variable_list(fmi3_import_t* fmu, int sortOrder) {
     if(!fmi3_import_check_has_FMU(fmu)) return 0;
     switch(sortOrder) {

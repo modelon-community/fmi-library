@@ -873,24 +873,12 @@ err1:
     return res;
 }
 
-static void build_xml_path(char* buf, size_t bufSize, const char* basePath, const char* appendPath) {
-    strncpy(buf, basePath,   bufSize);
-    strncat(buf, appendPath, bufSize);
-}
-
 int main(int argc, char **argv)
 {
-    char xmlPath[1000];
-    size_t sizeXmlPath = sizeof(xmlPath) / sizeof(char);
     fmi3_import_t *xml;
     int ret = 1;
-
-    if (argc != 2) {
-        printf("Usage: %s <Test/FMI3/parser_test_xmls path>\n", argv[0]);
-        return CTEST_RETURN_FAIL;
-    }
-
-    build_xml_path(xmlPath, sizeXmlPath, argv[1], "/type_definitions/valid");
+    const char* xmlPath                   = FMI3_TEST_XML_DIR "/type_definitions/valid";
+    const char* xmlPathValueBoundaryCheck = FMI3_TEST_XML_DIR "/type_definitions/value_boundary_check";
 
     printf("Running fmi3_import_variable_types_test\n");
 
@@ -1051,10 +1039,7 @@ int main(int argc, char **argv)
 
     printf("\nThe next tests are expected to fail...\n");
     printf("---------------------------------------------------------------------------\n");
-    {
-        build_xml_path(xmlPath, sizeXmlPath, argv[1], "/type_definitions/value_boundary_check/");
-        ret &= test_value_boundary_check(xmlPath);
-    }
+    ret &= test_value_boundary_check(xmlPathValueBoundaryCheck);
     printf("---------------------------------------------------------------------------\n");
 
     return ret == 0 ? CTEST_RETURN_FAIL : CTEST_RETURN_SUCCESS;

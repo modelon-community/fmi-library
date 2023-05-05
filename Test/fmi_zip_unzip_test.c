@@ -45,7 +45,9 @@ void importlogger(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_leve
 int main(int argc, char *argv[])
 {
     jm_callbacks callbacks;
-    jm_status_enu_t status;    
+    jm_status_enu_t status;
+    const char* zipPath   = FMIL_TEST_DIR "/try_to_uncompress_this_file.zip";
+    const char* unzipPath = TEST_OUTPUT_FOLDER;
 
     callbacks.malloc = malloc;
     callbacks.calloc = calloc;
@@ -55,7 +57,7 @@ int main(int argc, char *argv[])
     callbacks.log_level = jm_log_level_debug;
     callbacks.context = 0;
 
-    status = fmi_zip_unzip(UNCOMPRESSED_DUMMY_FILE_PATH_SRC, UNCOMPRESSED_DUMMY_FOLDER_PATH_DIST, &callbacks);
+    status = fmi_zip_unzip(zipPath, unzipPath, &callbacks);
 
     if (status == jm_status_error) {
         printf("Failed to uncompress the file\n");
@@ -64,6 +66,5 @@ int main(int argc, char *argv[])
         printf("Succesfully uncompressed the file\n");
         do_exit(CTEST_RETURN_SUCCESS);
     }
+    return 0;
 }
-
-

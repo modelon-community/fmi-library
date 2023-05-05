@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription fmiVersion="3.0" modelName="" instantiationToken="">
+<ModelExchange modelIdentifier="myModelIdentifier" />
+
+<ModelVariables>
+  <!-- Variables with same VR -->
+  <Int32 name="v1" valueReference="1"/>
+  <Int32 name="v2" valueReference="2"/>
+  <Int32 name="v3" valueReference="1"/>
+</ModelVariables>
+
+<ModelStructure/>
+</fmiModelDescription>

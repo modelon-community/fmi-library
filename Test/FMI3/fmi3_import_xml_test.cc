@@ -179,7 +179,9 @@ void testVariableSearch(fmi3_import_t* fmu,
 	fmi3_import_variable_t* v) {
 
 		const char * a_name = fmi3_import_get_variable_name(v);
-		fmi3_import_variable_t* found = fmi3_import_get_variable_by_name(fmu, a_name);
+		fmi3_import_variable_t* found;
+        
+        found = fmi3_import_get_variable_by_name(fmu, a_name);
 		if(found != v) {
 			printf("Searching by name %s found var %s\n", a_name, found?fmi3_import_get_variable_name(found):"nothing");
 			do_exit(1);
@@ -187,7 +189,8 @@ void testVariableSearch(fmi3_import_t* fmu,
 		else {
 			printf("Searching by name worked fine\n");
 		}
-		found = fmi3_import_get_variable_by_vr(fmu, fmi3_import_get_variable_base_type(v),fmi3_import_get_variable_vr(v));
+
+		found = fmi3_import_get_variable_by_vr(fmu, fmi3_import_get_variable_vr(v));
 		if(!found) {
 			printf("Searching by vr failed for variable '%s'\n", a_name);
 			do_exit(1);
@@ -335,6 +338,7 @@ int main(int argc, char *argv[])
 	}
 
 	tmpPath = argv[1];
+    printf("Testing XML in directory: %s\n", tmpPath);
 
 	callbacks.malloc = malloc;
     callbacks.calloc = calloc;
@@ -468,7 +472,7 @@ int main(int argc, char *argv[])
         size_t nv, i;
         fmi3_import_variable_list_t* vl = fmi3_import_get_variable_list(fmu, 0);
 /*		fmi3_import_variable_list_t* ders = fmi3_import_get_derivatives_list( fmu); */
-		const fmi3_value_reference_t* vrl = fmi3_import_get_value_referece_list(vl);
+		const fmi3_value_reference_t* vrl = fmi3_import_get_value_reference_list(vl);
 
 
         assert(vl);

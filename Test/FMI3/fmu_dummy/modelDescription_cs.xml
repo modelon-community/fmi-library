@@ -6,24 +6,28 @@
   description="A bouncing ball model"
   instantiationToken="123"
   numberOfEventIndicators="1">
-  <CoSimulation
+<CoSimulation
 	modelIdentifier="BouncingBall3"
 	canHandleVariableCommunicationStepSize="true"
 	/>
 <ModelVariables>
   <Float64 name="HEIGHT" valueReference="0" initial="exact" causality="output" description="Height of the ball" start="1.0"/>
   <Float64 name="HEIGHT_SPEED" valueReference="1" initial="exact" description="Velocity of the ball" start="4.0"/>
-  <Float64 name="HEIGHT_SPEED alias" valueReference="1" description="Velocity of the ball"/>
-  <Float64 name="HEIGHT_ACC" valueReference="4" description="Acceleration of the ball"/>
+  <!-- TODO: Uncomment when we have parsing of Alias elements
+      Float64 name="HEIGHT_SPEED alias" valueReference="1" description="Velocity of the ball"/
+  -->
+  <Float64 name="HEIGHT_ACC" valueReference="2" description="Acceleration of the ball"/>
   <Float64 name="A variable" valueReference="100" initial="exact" description="Speed of the ball" start="4.0"/>
-  <Float64 name="GRAVITY" valueReference="2" description="Gravity constant" initial="exact" start="-9.81"/>
-  <Float64 name="BOUNCE_COF" valueReference="3" initial="exact" description="Bouncing coefficient" start="0.5"/>
-  <String name="LOGGER_TEST" valueReference="0" description="The logger will print the values of this variable when it is set."/>
-  <Int32 name="LOGGER_TEST_INTEGER" valueReference="0" description="This is only used to test logger replace function #i0#"/>
-  <Boolean name="LOGGER_TEST_BOOLEAN" valueReference="0" description="This is only used to test logger replace function #b0#"/>
+  <Float64 name="GRAVITY" valueReference="3" description="Gravity constant" initial="exact" start="-9.81"/>
+  <Float64 name="BOUNCE_COF" valueReference="4" initial="exact" description="Bouncing coefficient" start="0.5"/>
+  <String name="LOGGER_TEST" valueReference="5" description="The logger will print the values of this variable when it is set."/>
+  <Int32 name="LOGGER_TEST_INTEGER" valueReference="6" description="This is only used to test logger replace function #i0#"/>
+  <Boolean name="LOGGER_TEST_BOOLEAN" valueReference="7" description="This is only used to test logger replace function #b0#"/>
   <Float64 name="LOGGER_TEST_DERIVATIVE" valueReference="10" description="This is to test that the derivative attribute may appear on any Float64 variables."/>
-  <Float64 name="LOGGER_TEST_DERIVATIVE_DER" valueReference="11" variability="fixed" description="This is to test that the derivative attribute may appear on any Float64 variables." derivative="12"/>
-  <Float64 name="array_of_states" valueReference="12" causality="output" description="Variable testing of arrays. Outputs states and state derivatives: {{h, h'}, {v, v'}} (where h' = v)" start="1.0 4.0 4.0 -9.81">
+  <Float64 name="LOGGER_TEST_DERIVATIVE_DER" valueReference="11" variability="fixed" description="This is to test that the derivative attribute may appear on any Float64 variables." derivative="10"/>
+  <Float64 name="array_of_states" valueReference="12" causality="output"
+           description="Variable testing of arrays. Outputs states and state derivatives: {{h, h'}, {v, v'}} (where h' = v)"
+           start="1.0 4.0 4.0 -9.81">
     <Dimension start="2"/>
     <Dimension start="2"/>
   </Float64>

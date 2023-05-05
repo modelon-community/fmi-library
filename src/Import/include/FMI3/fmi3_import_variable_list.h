@@ -59,7 +59,7 @@ FMILIB_EXPORT fmi3_import_variable_list_t* fmi3_import_clone_variable_list(fmi3_
 FMILIB_EXPORT size_t  fmi3_import_get_variable_list_size(fmi3_import_variable_list_t* vl);
 
 /** \brief  Get a pointer to the list of the value references for all the variables */
-FMILIB_EXPORT const fmi3_value_reference_t* fmi3_import_get_value_referece_list(fmi3_import_variable_list_t* vl);
+FMILIB_EXPORT const fmi3_value_reference_t* fmi3_import_get_value_reference_list(fmi3_import_variable_list_t* vl);
 
 /** \brief Get a single variable from the list*/
 FMILIB_EXPORT fmi3_import_variable_t* fmi3_import_get_variable(fmi3_import_variable_list_t* vl, size_t  index);

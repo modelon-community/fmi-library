@@ -3,8 +3,11 @@
 #include <stdarg.h>
 #include <string.h>
 
+#include "fmilib.h"
 #include "config_test.h"
 #include "fmi_testutil.h"
+
+#include "JM/jm_vector.h"
 
 void fmi_testutil_build_xml_path(char* buf, size_t bufSize, const char* basePath, const char* appendPath) {
     strncpy(buf, basePath,   bufSize);
@@ -37,6 +40,90 @@ fmi3_import_t* fmi3_testutil_parse_xml(const char* xmldir) {
     }
 
     return xml;
+}
+
+static void fmi3_testutil_log_and_save(jm_callbacks* cb, jm_string module, jm_log_level_enu_t log_level,
+        jm_string message)
+{
+    // Write log to stderr:
+    jm_default_logger(cb, module, log_level, message);
+    
+    // And also save it:
+    const char* logLevelStr = jm_log_level_to_string(log_level);
+    size_t msgLen = strlen(logLevelStr) + strlen(module) + strlen(message) + 20;  // Some extra for '[', spaces etc
+
+    char* msg = cb->malloc(msgLen);  
+    if (!msg) {
+        printf("Test failure: Could not allocate memory");
+        return;
+    }
+
+    jm_snprintf(msg, msgLen, "[%s][%s] %s\n", logLevelStr, module, message);
+    jm_vector(jm_voidp)* log = cb->context;
+    jm_vector_push_back(jm_voidp)(log, msg);
+}
+
+fmi3_testutil_import_t* fmi3_testutil_parse_xml_with_log(const char* xmldir) {
+    fmi3_testutil_import_t* testfmu = malloc(sizeof(fmi3_testutil_import_t));
+    if (!testfmu) {
+        printf("Test failure: Could not allocate memory");
+        return NULL;
+    }
+    testfmu->cb.calloc    = calloc;
+    testfmu->cb.malloc    = malloc;
+    testfmu->cb.realloc   = realloc;
+    testfmu->cb.free      = free;
+    testfmu->cb.logger    = fmi3_testutil_log_and_save;
+    testfmu->cb.log_level = jm_log_level_info;
+    testfmu->cb.context   = &testfmu->log;
+    jm_vector_init(jm_voidp)(&testfmu->log, 0, 0);
+    testfmu->fmu = NULL;
+
+    fmi_import_context_t* ctx = fmi_import_allocate_context(&testfmu->cb);
+    if (!ctx) {
+        printf("testutil: Context was NULL\n");
+        return testfmu;
+    }
+
+    fmi3_import_t* xml;
+    xml = fmi3_import_parse_xml(ctx, xmldir, NULL);
+    fmi_import_free_context(ctx);
+    if (!xml) {
+        printf("testutil: Failed to parse XML\n");
+        return testfmu;
+    }
+    testfmu->fmu = xml;
+
+    return testfmu;
+}
+
+void fmi3_testutil_import_free(fmi3_testutil_import_t* testfmu) {
+    jm_callbacks* cb = jm_get_default_callbacks();
+
+    // Free testfmu->log
+    size_t n = jm_vector_get_size(jm_voidp)(&testfmu->log);
+    for (size_t i = 0; i < n; i++) {
+        cb->free(jm_vector_get_item(jm_voidp)(&testfmu->log, i));
+    }
+    jm_vector_free_data(jm_voidp)(&testfmu->log);
+    
+    // Free the fmi3_import_t:
+    if (testfmu->fmu) {
+        fmi3_import_free(testfmu->fmu);
+    }
+    
+    free(testfmu);  // Allocated without cb, so also freeing without.
+}
+
+bool fmi3_testutil_log_contains(fmi3_testutil_import_t* testfmu, const char* msgSubstr) {
+    size_t n = jm_vector_get_size(jm_voidp)(&testfmu->log);
+    for (size_t i = 0; i < n; i++) {
+        const char* logMsg = (const char*)jm_vector_get_item(jm_voidp)(&testfmu->log, i);
+        if (strstr(logMsg, msgSubstr)) {
+            return true;
+        }
+    }
+    return false;
 }
 
 void fail(const char* fmt, ...) {

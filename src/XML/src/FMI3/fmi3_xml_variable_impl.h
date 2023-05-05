@@ -47,10 +47,9 @@ struct fmi3_xml_variable_t {
     /* NB: before parsing of <ModelVariables> has finished,
            derivativeOf and previous are stored as integer indices cast to pointers,
            until they can be looked up */
-    fmi3_xml_variable_t* derivativeOf;      /** \brief Only for continuous FloatXX variables. If non-NULL, the variable that this is the derivative of. */
-
-    // TODO: derivativeOf should be treated same as previous:
-    fmi3_xml_valueref_or_variable_union_t previous;  /** \brief The variable referenced in the previous attribute. */
+    fmi3_xml_valueref_or_variable_union_t derivativeOf; /** \brief Only for continuous FloatXX variables. The variable that this is the derivative of. */
+    bool hasDerivativeOf;
+    fmi3_xml_valueref_or_variable_union_t previous;      /** \brief The variable referenced in the previous attribute. */
     bool hasPrevious;
 
     fmi3_value_reference_t vr;                /** \brief Value reference */
@@ -83,11 +82,6 @@ struct fmi3_xml_variable_t {
 static int fmi3_xml_compare_vr(const void* first, const void* second) {
     fmi3_xml_variable_t* a = *(fmi3_xml_variable_t**)first;
     fmi3_xml_variable_t* b = *(fmi3_xml_variable_t**)second;
-    fmi3_base_type_enu_t at = fmi3_xml_get_variable_base_type(a);
-    fmi3_base_type_enu_t bt = fmi3_xml_get_variable_base_type(b);
-    if(at == fmi3_base_type_enum) at = fmi3_base_type_int32;
-    if(bt == fmi3_base_type_enum) bt = fmi3_base_type_int32;
-    if(at!=bt) return at - bt;
     if(a->vr < b->vr) return -1;
     if(a->vr > b->vr) return 1;
     return ((int)a->aliasKind - (int)b->aliasKind);

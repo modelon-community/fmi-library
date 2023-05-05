@@ -819,21 +819,17 @@ fmi3_xml_variable_t* fmi3_xml_get_variable_by_name(fmi3_xml_model_description_t*
 }
 
 
-fmi3_xml_variable_t* fmi3_xml_get_variable_by_vr(fmi3_xml_model_description_t* md, fmi3_base_type_enu_t baseType, fmi3_value_reference_t vr) {
+fmi3_xml_variable_t* fmi3_xml_get_variable_by_vr(fmi3_xml_model_description_t* md, fmi3_value_reference_t vr) {
     fmi3_xml_variable_t key;
     fmi3_xml_variable_t *pkey = &key;
-    fmi3_xml_variable_type_base_t keyType;
-    fmi3_xml_variable_t *v = 0;
-    void ** found;
-    if(!md->variablesByVR) return 0;
-    keyType.structKind = fmi3_xml_type_struct_enu_props;
-    keyType.baseType = baseType;
-    key.type = &keyType;
+    void** found;
+
+    if (!md->variablesByVR) return NULL;
+
+    // TODO: When variablesByVR no longer contains alias variables, then just return by index.
     key.vr = vr;
     key.aliasKind = fmi3_variable_is_not_alias;
-
     found = jm_vector_bsearch(jm_voidp)(md->variablesByVR, (void**)&pkey, fmi3_xml_compare_vr);
-    if(!found) return 0;
-    v = (fmi3_xml_variable_t*)(*found);
-    return v;
+    if (!found) return NULL;
+    return (fmi3_xml_variable_t*)(*found);
 }

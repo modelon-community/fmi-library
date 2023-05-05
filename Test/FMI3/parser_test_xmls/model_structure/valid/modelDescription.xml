@@ -14,7 +14,7 @@
 
 <ModelStructure>
   <Derivatives>
-    <Unknown index="2"/>
+    <Unknown valueReference="1"/>
   </Derivatives>
 </ModelStructure>
 </fmiModelDescription>

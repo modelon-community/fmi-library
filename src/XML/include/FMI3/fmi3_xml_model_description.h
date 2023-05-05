@@ -239,11 +239,10 @@ fmi3_xml_variable_t* fmi3_xml_get_variable_by_name(fmi3_xml_model_description_t*
 /**
     \brief Get variable by value reference.
     \param md - the model description
-    \param baseType - basic data type
     \param vr - value reference
     \return variable pointer.
 */
-fmi3_xml_variable_t* fmi3_xml_get_variable_by_vr(fmi3_xml_model_description_t* md, fmi3_base_type_enu_t baseType, fmi3_value_reference_t vr);
+fmi3_xml_variable_t* fmi3_xml_get_variable_by_vr(fmi3_xml_model_description_t* md, fmi3_value_reference_t vr);
 
 /** \brief Get the number of vendors that had annotations in the XML*/
 size_t fmi3_xml_get_vendors_num(fmi3_xml_model_description_t* md);

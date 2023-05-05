@@ -14,8 +14,8 @@
 
 <ModelStructure>
   <Derivatives>
-    <Unknown index="1"/> <!-- Invalid: referenced variable is not a derivative  -->
-    <Unknown index="2"/>
+    <Unknown valueReference="0"/> <!-- Invalid: referenced variable is not a derivative  -->
+    <Unknown valueReference="1"/>
   </Derivatives>
 </ModelStructure>
 </fmiModelDescription>

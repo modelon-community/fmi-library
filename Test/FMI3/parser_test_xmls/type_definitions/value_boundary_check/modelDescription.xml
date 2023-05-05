@@ -71,7 +71,7 @@
     <UInt8  name="vbc_var_max_uint8"  valueReference="1020" max="256"                  />
 
     <!-- leading plus must not affect boundary check -->
-    <Int64  name="vbc_var_max_leadingplus_int64"  valueReference="1009" max="+9223372036854775808"  /> 
+    <Int64  name="vbc_var_max_leadingplus_int64"  valueReference="1021" max="+9223372036854775808"  /> 
 
   </ModelVariables>
 

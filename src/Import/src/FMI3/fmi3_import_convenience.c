@@ -123,133 +123,111 @@ void fmi3_import_collect_model_counts(fmi3_import_t* fmu, fmi3_import_model_coun
     return;
 }
 
-/* Transform msgIn into msgOut by expanding variable references of the form #<Type><VR># into variable names
-  and replacing '##' with a single # */
+/**
+ * Transforms msgIn into msgOut by expanding variable references of the form #<VR># into variable names
+ * and by replacing '##' with a single '#'.
+ */ 
 static void fmi3_import_expand_variable_references_impl(fmi3_import_t* fmu, const char* msgIn){
     jm_vector(char)* msgOut = &fmu->logMessageBufferExpanded;
     fmi3_xml_model_description_t* md = fmu->md;
     jm_callbacks* callbacks = fmu->callbacks;
-    char curCh;
-    const char* firstRef;
-    size_t i; /* next char index after curCh in msgIn*/
+    char curCh, nextCh;
+    size_t i;  // Index of curCh in msgIn
     size_t msgLen = strlen(msgIn)+1; /* original message length including terminating 0 */
 
-    if(jm_vector_reserve(char)(msgOut, msgLen + 100) < msgLen + 100) {
+    if (jm_vector_reserve(char)(msgOut, msgLen + 100) < msgLen + 100) {
         jm_log(fmu->callbacks,"LOGGER", jm_log_level_warning, "Could not allocate memory for the log message");
         jm_vector_resize(char)(msgOut, 6);
-        memcpy(jm_vector_get_itemp(char)(msgOut,0),"ERROR",6); /* at least 16 chars are always there */
+        memcpy(jm_vector_get_itemp(char)(msgOut, 0), "ERROR", 6); /* at least 16 chars are always there */
         return;
     }
 
-    /* check if there are any refs at all and copy the head of the string without references */
-    firstRef = strchr(msgIn, '#');
-    if(firstRef) {
-        i = firstRef - msgIn;
-        jm_vector_resize(char)(msgOut, i);
-        if(i) {
-            memcpy(jm_vector_get_itemp(char)(msgOut, 0), msgIn, i);
+    const char* firstHash = strchr(msgIn, '#');
+    if (firstHash) {
+        // The string contains at least one '#'. Copy everything before it to msgOut:
+        size_t nLeading = firstHash - msgIn;
+        jm_vector_resize(char)(msgOut, nLeading);
+        if (nLeading != 0) {
+            memcpy(jm_vector_get_itemp(char)(msgOut, 0), msgIn, nLeading);
         }
-        curCh = msgIn[i++];
+        i = nLeading;
     }
     else {
+        // The string contains no references. Just copy msgIn to msgOut.
         jm_vector_resize(char)(msgOut, msgLen);
         memcpy(jm_vector_get_itemp(char)(msgOut, 0), msgIn, msgLen);
         return;
     }
-    do {
-        if (curCh!='#') {
-            jm_vector_push_back(char)(msgOut, curCh); /* copy in to out */
+    curCh = msgIn[i];
+    while (curCh) {
+        nextCh = msgIn[i+1];
+        if (curCh != '#') {
+            jm_vector_push_back(char)(msgOut, curCh);  // Copy in to out
         }
-        else if(msgIn[i] == '#') {
+        else if (nextCh == '#') {
             jm_vector_push_back(char)(msgOut, '#');
-            i++; /* skip the second # */
+            i++;  // Skip the second #
         }
         else {
             unsigned int bufVR;
             fmi3_value_reference_t vr;
-            char typeChar = msgIn[i++];
             size_t pastePos = jm_vector_get_size(char)(msgOut);
 
-            /*
-                TODO: remove everything associated with baseType, in this func because vrs will
-                be globally unique: https://github.com/modelica/fmi-standard/issues/522
-                - This function's doc. must also be changed
-                - Removing real for now, and not adding anything for floatXX
-            */
-            fmi3_base_type_enu_t baseType;
-
-            size_t num_digits;
+            size_t nDigits = 0;
             fmi3_xml_variable_t* var;
             const char* name;
             size_t nameLen;
-            switch(typeChar) {
-                case 'b':
-                    baseType = fmi3_base_type_bool;
-                    break;
-                case 's':
-                    baseType = fmi3_base_type_str;
-                    break;
-                default:
-                    jm_vector_push_back(char)(msgOut, 0);
-                    jm_log(callbacks,"LOGGER", jm_log_level_warning,
-                        "Expected type specification character 'r', 'i', 'b' or 's' in log message here: '%s'"
-                        " (NOTE: vr expansion NYI for 3.0)",
-                    jm_vector_get_itemp(char)(msgOut,0));
-                    jm_vector_resize(char)(msgOut, msgLen);
-                    memcpy(jm_vector_get_itemp(char)(msgOut,0),msgIn,msgLen);
-                    return;
-            }
-            curCh = msgIn[i++];
-            while( isdigit(curCh) ) {
+
+            curCh = msgIn[++i];
+            while (isdigit(curCh)) {
                 jm_vector_push_back(char)(msgOut, curCh);
-                curCh = msgIn[i++];
+                curCh = msgIn[++i];
+                nDigits++;
             }
-            num_digits = jm_vector_get_size(char)(msgOut) - pastePos;
             jm_vector_push_back(char)(msgOut, 0);
-            if(num_digits == 0) {
-                jm_log(callbacks,"LOGGER", jm_log_level_warning, "Expected value reference in log message here: '%s'", jm_vector_get_itemp(char)(msgOut,0));
-                                jm_vector_resize(char)(msgOut, msgLen);
+            if (nDigits == 0) {
+                jm_log(callbacks,"LOGGER", jm_log_level_warning, "Expected value reference in log message here: '%s'",
+                        jm_vector_get_itemp(char)(msgOut,0));
                 jm_vector_resize(char)(msgOut, msgLen);
                 memcpy(jm_vector_get_itemp(char)(msgOut,0),msgIn,msgLen);
                 return;
             }
-            else if(curCh != '#') {
-                jm_log(callbacks,"LOGGER", jm_log_level_warning, "Expected terminating '#' in log message here: '%s'", jm_vector_get_itemp(char)(msgOut,0));
-                                jm_vector_resize(char)(msgOut, msgLen);
+            else if (curCh != '#') {
+                jm_log(callbacks,"LOGGER", jm_log_level_warning, "Expected terminating '#' in log message here: '%s'",
+                        jm_vector_get_itemp(char)(msgOut,0));
                 jm_vector_resize(char)(msgOut, msgLen);
                 memcpy(jm_vector_get_itemp(char)(msgOut,0),msgIn,msgLen);
                 return;
             }
 
-            if(sscanf(jm_vector_get_itemp(char)(msgOut, pastePos), "%u",&bufVR) != 1) {
-                jm_log(callbacks,"LOGGER", jm_log_level_warning, "Could not decode value reference in log message here: '%s'", jm_vector_get_itemp(char)(msgOut,0));
-                                jm_vector_resize(char)(msgOut, msgLen);
+            if (sscanf(jm_vector_get_itemp(char)(msgOut, pastePos), "%u",&bufVR) != 1) {
+                jm_log(callbacks,"LOGGER", jm_log_level_warning, "Could not decode value reference in log message here: '%s'",
+                        jm_vector_get_itemp(char)(msgOut,0));
                 jm_vector_resize(char)(msgOut, msgLen);
                 memcpy(jm_vector_get_itemp(char)(msgOut,0),msgIn,msgLen);
                 return;
             }
             vr = bufVR;
-            var = fmi3_xml_get_variable_by_vr(md,baseType,vr);
-            if(!var) {
-                jm_log(callbacks,"LOGGER", jm_log_level_warning, "Could not find variable referenced in log message here: '%s'", jm_vector_get_itemp(char)(msgOut,0));
-                                jm_vector_resize(char)(msgOut, msgLen);
+            var = fmi3_xml_get_variable_by_vr(md, vr);
+            if (!var) {
+                jm_log(callbacks,"LOGGER", jm_log_level_warning, "Could not find variable referenced in log message here: '%s'",
+                        jm_vector_get_itemp(char)(msgOut,0));
                 jm_vector_resize(char)(msgOut, msgLen);
                 memcpy(jm_vector_get_itemp(char)(msgOut,0),msgIn,msgLen);
                 return;
             }
             name = fmi3_xml_get_variable_name(var);
             nameLen = strlen(name);
-            if(jm_vector_resize(char)(msgOut, pastePos + nameLen) != pastePos + nameLen) {
+            if (jm_vector_resize(char)(msgOut, pastePos + nameLen) != pastePos + nameLen) {
                 jm_log(callbacks,"LOGGER", jm_log_level_warning, "Could not allocate memory for the log message");
-                                jm_vector_resize(char)(msgOut, msgLen);
                 jm_vector_resize(char)(msgOut, msgLen);
                 memcpy(jm_vector_get_itemp(char)(msgOut,0),msgIn,msgLen);
                 return;
-            };
+            }
             memcpy(jm_vector_get_itemp(char)(msgOut, pastePos), name, nameLen);
         }
-        curCh = msgIn[i++];
-    } while (curCh);
+        curCh = msgIn[++i];
+    }
     jm_vector_push_back(char)(msgOut, 0);
 }
 
@@ -274,17 +252,21 @@ void fmi3_log_forwarding(fmi3_instance_environment_t inst, fmi3_status_t status,
     fmi3_import_t* fmu = (fmi3_import_t*)inst;
     jm_callbacks* cb;
     jm_log_level_enu_t logLevel;
+    const char* instanceName;
 
-    if(fmu) {
-         cb = fmu->callbacks;
-         buf = jm_vector_get_itemp(char)(&fmu->logMessageBufferCoded,0);
-    }
-    else  {
+    if (fmu) {
+        cb = fmu->callbacks;
+        buf = jm_vector_get_itemp(char)(&fmu->logMessageBufferCoded, 0);
+    } else {
+        // XXX: Why do even accept that fmu==NULL? What's the point of forwarding
+        // the logging to the FMU in that case? Also, it's not documented in the
+        // function's interface.
         cb = jm_get_default_callbacks();
         buf = buffer;
     }
-    logLevel = cb->log_level;
-    switch(status) {
+
+    // Convert status to logLevel:
+    switch (status) {
         case fmi3_status_discard:
         case fmi3_status_ok:
             logLevel = jm_log_level_info;
@@ -299,29 +281,32 @@ void fmi3_log_forwarding(fmi3_instance_environment_t inst, fmi3_status_t status,
         default:
             logLevel = jm_log_level_fatal;
     }
-
-    if(logLevel > cb->log_level) return;
+    if (logLevel > cb->log_level) return;
 
     curp = buf;
     *curp = 0;
 
-    if(category) {
+    // Add category:
+    if (category) {
         curp += jm_snprintf(curp, 100, "[%s]", category);
     }
+    
+    // Add status:
     statusStr = fmi3_status_to_string(status);
     curp += jm_snprintf(curp, 200, "[FMU status:%s] ", statusStr);
 
-    if(fmu) {
+    // Add message:
+    if (fmu) {
         int bufsize = jm_vector_get_size(char)(&fmu->logMessageBufferCoded);
         int len;
         len = jm_snprintf(curp, bufsize -(curp-buf), message);
-        if(len > (bufsize -(curp-buf+1))) {
+        if (len > (bufsize -(curp-buf+1))) {
             int offset = (curp-buf);
             len = jm_vector_resize(char)(&fmu->logMessageBufferCoded, len + offset + 1) - offset;
-            buf = jm_vector_get_itemp(char)(&fmu->logMessageBufferCoded,0);
+            buf = jm_vector_get_itemp(char)(&fmu->logMessageBufferCoded, 0);
             curp = buf + offset;
         }
-        fmi3_import_expand_variable_references(fmu, buf, cb->errMessageBuffer,JM_MAX_ERROR_MESSAGE_SIZE);
+        fmi3_import_expand_variable_references(fmu, buf, cb->errMessageBuffer, JM_MAX_ERROR_MESSAGE_SIZE);
         msg = jm_vector_get_itemp(char)(&fmu->logMessageBufferExpanded,0);
     }
     else {
@@ -330,10 +315,23 @@ void fmi3_log_forwarding(fmi3_instance_environment_t inst, fmi3_status_t status,
         cb->errMessageBuffer[JM_MAX_ERROR_MESSAGE_SIZE - 1] = '\0';
         msg = cb->errMessageBuffer;
     }
-    if(cb->logger) {
-        cb->logger(cb, "TODO", logLevel, msg);
+    
+    // Set instanceName
+    if (fmu) {
+        if (fmu->instanceName) {
+            instanceName = fmu->instanceName;
+        } else {
+            instanceName = "<fmu-instance-name>";  // Called before instantiation. Should only happen in testing.
+        }
+    } else {
+        // XXX: Doesn't make sense to not have an FMU... So using arbitrary value:
+        instanceName = "<module>";
     }
-
+    
+    // Forward the call to the logger used during FMU parsing:
+    if (cb->logger) {
+        cb->logger(cb, instanceName, logLevel, msg);
+    }
 }
 
 void fmi3_default_callback_logger(fmi3_instance_environment_t c, fmi3_string_t instanceName, fmi3_status_t status, fmi3_string_t category, fmi3_string_t message) {

@@ -106,7 +106,7 @@ jm_status_enu_t fmi1_import_var_list_push_back(fmi1_import_variable_list_t* list
 }
 
 /* Get a pointer to the list of the value references for all the variables */
-const fmi1_value_reference_t* fmi1_import_get_value_referece_list(fmi1_import_variable_list_t* vl) {
+const fmi1_value_reference_t* fmi1_import_get_value_reference_list(fmi1_import_variable_list_t* vl) {
     if(!vl->vr) {
         jm_callbacks* cb = vl->fmu->callbacks;
         size_t nv = fmi1_import_get_variable_list_size(vl);
@@ -121,6 +121,11 @@ const fmi1_value_reference_t* fmi1_import_get_value_referece_list(fmi1_import_va
         else return 0;
     }
     return vl->vr;
+}
+
+/* Deprecated. (Has typo in name.) */
+const fmi1_value_reference_t* fmi1_import_get_value_referece_list(fmi1_import_variable_list_t* vl) {
+    return fmi1_import_get_value_reference_list(vl);
 }
 
 /* Get a single variable from the list*/

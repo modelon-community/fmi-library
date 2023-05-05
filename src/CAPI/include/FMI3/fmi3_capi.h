@@ -735,7 +735,7 @@ fmi3_status_t fmi3_capi_completed_integrator_step(fmi3_capi_t* fmu,
  * @param nx Number of continuous state derivatives.
  * @return FMI status.
  */
-fmi3_status_t fmi3_capi_get_continuous_state_derivatives(fmi3_capi_t* fmu, fmi3_float64_t continuousStateDerivatives[], size_t nx);
+fmi3_status_t fmi3_capi_get_continuous_state_derivatives(fmi3_capi_t* fmu, fmi3_float64_t derivatives[], size_t nx);
 
 /**
  * \brief Calls the FMI function fmiGetEventIndicators(...)

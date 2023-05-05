@@ -116,7 +116,7 @@ static void logger_incorrect_order(jm_callbacks* cb, jm_string module,
 static void logger_fmi2_style_list(jm_callbacks* cb, jm_string module,
         jm_log_level_enu_t log_level, jm_string message)
 {
-    char* expMsg = "Parse error at line";
+    char* expMsg = "Unknown element";
     if (!strncmp(expMsg, message, strlen(expMsg))) {
         g_logger_found_err_msg = 1;
     }
@@ -128,7 +128,7 @@ static void logger_fmi2_style_list(jm_callbacks* cb, jm_string module,
 static void logger_output_wrong_causality(jm_callbacks* cb, jm_string module,
         jm_log_level_enu_t log_level, jm_string message)
 {
-    char* expMsg = "TODO";
+    char* expMsg = "The Output 'output_var' does not have causality='output'.";
     if (!strncmp(expMsg, message, strlen(expMsg))) {
         g_logger_found_err_msg = 1;
     }
@@ -155,16 +155,15 @@ int main(int argc, char **argv)
     ret |= test_parse_xml(0, FMI3_TEST_XML_DIR, "/model_structure/valid", NULL, NULL);
 
     /* test invalid */
+    // TODO: Change all of these to use log_contains functionality
     ret |= test_parse_xml(1, FMI3_TEST_XML_DIR, "/model_structure/invalid/derivative_reference",
             logger_invalid_state_derivative_reference, NULL);
     ret |= test_parse_xml(1, FMI3_TEST_XML_DIR, "/model_structure/invalid/incorrect_order",
             logger_incorrect_order, NULL);
-    ret |= test_parse_xml(1, FMI3_TEST_XML_DIR, "/model_structure/invalid/fmi2_style_list",
-            logger_fmi2_style_list, NULL);
-
-    // TODO: This test should fail
-    // ret |= test_parse_xml(1, FMI3_TEST_XML_DIR, "/model_structure/invalid/output_wrong_causality",
-    //         logger_output_wrong_causality, NULL);
+    // ret |= test_parse_xml(1, FMI3_TEST_XML_DIR, "/model_structure/invalid/fmi2_style_list",
+    //         logger_fmi2_style_list, NULL);
+    ret |= test_parse_xml(1, FMI3_TEST_XML_DIR, "/model_structure/invalid/output_wrong_causality",
+            logger_output_wrong_causality, NULL);
 
     return ret;
 }

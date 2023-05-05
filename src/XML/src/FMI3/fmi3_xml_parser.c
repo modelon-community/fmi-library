@@ -97,12 +97,11 @@ const char *fmi3_xmlAttrNames[fmi3_xml_attr_number] = {
 #define fmi3_xml_scheme_ModelVariables            {fmi3_xml_elmID_none,       fmi3_xml_elmID_fmiModelDescription,  7,       0}
 
 #define fmi3_xml_scheme_ModelStructure            {fmi3_xml_elmID_none,       fmi3_xml_elmID_fmiModelDescription,  8,       0}
-#define fmi3_xml_scheme_Unknown                   {fmi3_xml_elmID_none,       fmi3_xml_elmID_ModelStructure,       0,       0}
-#define fmi3_xml_scheme_Output                    {fmi3_xml_elmID_Unknown,    fmi3_xml_elmID_ModelStructure,       0,       1}
-#define fmi3_xml_scheme_ContinuousStateDerivative {fmi3_xml_elmID_Unknown,    fmi3_xml_elmID_ModelStructure,       1,       1}
-#define fmi3_xml_scheme_ClockedState              {fmi3_xml_elmID_Unknown,    fmi3_xml_elmID_ModelStructure,       2,       1}
-#define fmi3_xml_scheme_InitialUnknown            {fmi3_xml_elmID_Unknown,    fmi3_xml_elmID_ModelStructure,       3,       1}
-#define fmi3_xml_scheme_EventIndicator            {fmi3_xml_elmID_Unknown,    fmi3_xml_elmID_ModelStructure,       4,       1}
+#define fmi3_xml_scheme_Output                    {fmi3_xml_elmID_none,       fmi3_xml_elmID_ModelStructure,       0,       1}
+#define fmi3_xml_scheme_ContinuousStateDerivative {fmi3_xml_elmID_none,       fmi3_xml_elmID_ModelStructure,       1,       1}
+#define fmi3_xml_scheme_ClockedState              {fmi3_xml_elmID_none,       fmi3_xml_elmID_ModelStructure,       2,       1}
+#define fmi3_xml_scheme_InitialUnknown            {fmi3_xml_elmID_none,       fmi3_xml_elmID_ModelStructure,       3,       1}
+#define fmi3_xml_scheme_EventIndicator            {fmi3_xml_elmID_none,       fmi3_xml_elmID_ModelStructure,       4,       1}
 
 #define fmi3_xml_scheme_Variable                  {fmi3_xml_elmID_none,       fmi3_xml_elmID_ModelVariables,       0,       1}
 #define fmi3_xml_scheme_Float64Variable           {fmi3_xml_elmID_Variable,   fmi3_xml_elmID_ModelVariables,       0,       1}

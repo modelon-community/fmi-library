@@ -32,17 +32,15 @@ fmi3_xml_model_structure_t* fmi3_xml_allocate_model_structure(jm_callbacks* cb) 
 
     jm_vector_init(jm_voidp)(&ms->outputs,0,cb);
     jm_vector_init(jm_voidp)(&ms->continuousStateDerivatives,0,cb);
-    jm_vector_init(jm_voidp)(&ms->discreteStates,0,cb);
     jm_vector_init(jm_voidp)(&ms->initialUnknowns,0,cb);
 
     ms->isValidFlag = 1;
 
     ms->outputDeps = fmi3_xml_allocate_dependencies(cb);
     ms->continuousStateDerivativeDeps = fmi3_xml_allocate_dependencies(cb);
-    ms->discreteStateDeps = fmi3_xml_allocate_dependencies(cb);
     ms->initialUnknownDeps = fmi3_xml_allocate_dependencies(cb);
 
-    if(!ms->outputDeps || !ms->continuousStateDerivativeDeps || !ms->discreteStateDeps || !ms->initialUnknownDeps) {
+    if(!ms->outputDeps || !ms->continuousStateDerivativeDeps || !ms->initialUnknownDeps) {
         fmi3_xml_free_model_structure(ms);
         return 0;
     }
@@ -57,12 +55,10 @@ void fmi3_xml_free_model_structure(fmi3_xml_model_structure_t* ms) {
 
     jm_vector_free_data(jm_voidp)(&ms->outputs);
     jm_vector_free_data(jm_voidp)(&ms->continuousStateDerivatives);
-    jm_vector_free_data(jm_voidp)(&ms->discreteStates);
     jm_vector_free_data(jm_voidp)(&ms->initialUnknowns);
 
     fmi3_xml_free_dependencies(ms->outputDeps);
     fmi3_xml_free_dependencies(ms->continuousStateDerivativeDeps);
-    fmi3_xml_free_dependencies(ms->discreteStateDeps);
     fmi3_xml_free_dependencies(ms->initialUnknownDeps);
     cb->free(ms);
 }
@@ -73,10 +69,6 @@ jm_vector(jm_voidp)* fmi3_xml_get_outputs(fmi3_xml_model_structure_t* ms) {
 
 jm_vector(jm_voidp)* fmi3_xml_get_continuous_state_derivatives(fmi3_xml_model_structure_t* ms){
     return &ms->continuousStateDerivatives;
-}
-
-jm_vector(jm_voidp)* fmi3_xml_get_discrete_states(fmi3_xml_model_structure_t* ms){
-    return &ms->discreteStates;
 }
 
 jm_vector(jm_voidp)* fmi3_xml_get_initial_unknowns(fmi3_xml_model_structure_t* ms){
@@ -109,11 +101,6 @@ void fmi3_xml_get_outputs_dependencies(fmi3_xml_model_structure_t* ms,
 void fmi3_xml_get_continuous_state_derivatives_dependencies(fmi3_xml_model_structure_t* ms,
                                            size_t** startIndex, size_t** dependency, char** factorKind) {
     fmi3_xml_get_dependencies(ms->continuousStateDerivativeDeps, startIndex, dependency, factorKind);
-}
-
-void fmi3_xml_get_discrete_states_dependencies(fmi3_xml_model_structure_t* ms,
-                                           size_t** startIndex, size_t** dependency, char** factorKind) {
-    fmi3_xml_get_dependencies(ms->discreteStateDeps, startIndex, dependency, factorKind);
 }
 
 void fmi3_xml_get_initial_unknowns_dependencies(fmi3_xml_model_structure_t* ms,
@@ -185,7 +172,7 @@ int fmi3_xml_handle_ModelStructure(fmi3_xml_parser_context_t *context, const cha
     else {
         /** make sure model structure information is consistent */
 
-        // TODO: Check that all ModelVariables with causality="output" are part of Outputs
+        // TODO: Check that all ModelVariables with causality="output" are Outputs
 
         if(!fmi3_xml_check_model_structure(md)) {
             fmi3_xml_parse_fatal(context, "Model structure is not valid due to detected errors. Cannot continue.");
@@ -198,7 +185,7 @@ int fmi3_xml_handle_ModelStructure(fmi3_xml_parser_context_t *context, const cha
 }
 
 /**
- * Parse the dependencies of an Unknown element
+ * Parse the dependencies of an element in ModelStructure
  */
 int fmi3_xml_parse_dependencies(fmi3_xml_parser_context_t *context,
                                 fmi3_xml_elm_enu_t elmID,
@@ -218,7 +205,7 @@ int fmi3_xml_parse_dependencies(fmi3_xml_parser_context_t *context,
                 <xs:list itemType="xs:unsignedInt"/>
             </xs:simpleType>
         </xs:attribute> */
-    if(fmi3_xml_get_attr_str(context, fmi3_xml_elmID_Unknown, fmi_attr_id_dependencies, 0, &listInd)) {
+    if(fmi3_xml_get_attr_str(context, elmID, fmi_attr_id_dependencies, 0, &listInd)) {
         ms->isValidFlag = 0;
         return 0;
     }
@@ -233,12 +220,14 @@ int fmi3_xml_parse_dependencies(fmi3_xml_parser_context_t *context,
             }
             if(!ch) break;
             if(sscanf(cur, "%d", &ind) != 1) {
+                // TODO: Rework this error; list actual type
                 fmi3_xml_parse_error(context, "XML element 'Unknown': could not parse item %d in the list for attribute 'dependencies'",
                     numDepInd);
                ms->isValidFlag = 0;
                return 0;
             }
             if(ind < 1) {
+                // TODO: Rework this error; list actual type
                 fmi3_xml_parse_error(context, "XML element 'Unknown': item %d=%d is less than one in the list for attribute 'dependencies'",
                     numDepInd, ind);
                ms->isValidFlag = 0;
@@ -270,7 +259,7 @@ int fmi3_xml_parse_dependencies(fmi3_xml_parser_context_t *context,
             </xs:simpleType>
         </xs:attribute>
         */
-    if(fmi3_xml_get_attr_str(context, fmi3_xml_elmID_Unknown, fmi_attr_id_dependenciesKind, 0, &listKind)) {
+    if(fmi3_xml_get_attr_str(context, elmID, fmi_attr_id_dependenciesKind, 0, &listKind)) {
         ms->isValidFlag = 0;
         return 0;
     }
@@ -374,7 +363,7 @@ int fmi3_xml_parse_dependencies(fmi3_xml_parser_context_t *context,
 
 
 /**
- * Parses an Unknown element
+ * Parses an fmi3Unknown element(abstract parent to elements in ModelStructure)
  * After successful call, the variable will be put on the destVarList stack,
  * and the dependencies are stored in return-arg 'deps'.
  */
@@ -389,7 +378,7 @@ int fmi3_xml_parse_unknown(fmi3_xml_parser_context_t *context,
     fmi3_value_reference_t vr;
     fmi3_xml_variable_t* variable;
 
-    if (fmi3_xml_set_attr_uint32(context, fmi3_xml_elmID_Unknown, fmi_attr_id_valueReference, 1, &vr, 0)) return -1;
+    if (fmi3_xml_set_attr_uint32(context, elmID, fmi_attr_id_valueReference, 1, &vr, 0)) return -1;
 
     variable = fmi3_xml_get_variable_by_vr(md, vr);
     if (!variable) {
@@ -406,20 +395,24 @@ int fmi3_xml_parse_unknown(fmi3_xml_parser_context_t *context,
     return fmi3_xml_parse_dependencies(context, elmID, deps);
 }
 
-
-// TODO: Currently required for structural purposes, but not a valid ModelStructure element on its own
-// Is there a better way to handle this?
-int fmi3_xml_handle_Unknown(fmi3_xml_parser_context_t *context, const char* data) {
-    return -1;
-}
-
 int fmi3_xml_handle_Output(fmi3_xml_parser_context_t *context, const char* data) {
     if(!data) {
         fmi3_xml_model_description_t* md = context->modelDescription;
         fmi3_xml_model_structure_t* ms = md->modelStructure;
 
-        // TODO: Error check for correct causality
-        return fmi3_xml_parse_unknown(context, fmi3_xml_elmID_Output, &ms->outputs, ms->outputDeps);
+        int status =  fmi3_xml_parse_unknown(context, fmi3_xml_elmID_Output, &ms->outputs, ms->outputDeps);
+        if (status)
+            return status;
+
+        // Check for correct causality
+        fmi3_xml_variable_t* var = (fmi3_xml_variable_t*)jm_vector_get_last(jm_voidp)(&ms->outputs);
+        if (var->causality != fmi3_causality_enu_output){
+            ms->isValidFlag = 0;
+            fmi3_xml_parse_error(context,
+                    "The Output '%s' does not have causality='output'.",
+                    fmi3_xml_get_variable_name(var));
+            return -1;
+        }
     }
     return 0;
 }

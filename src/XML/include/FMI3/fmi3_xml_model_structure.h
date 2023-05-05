@@ -42,12 +42,6 @@ jm_vector(jm_voidp)* fmi3_xml_get_outputs(fmi3_xml_model_structure_t* ms);
 */
 jm_vector(jm_voidp)* fmi3_xml_get_continuous_state_derivatives(fmi3_xml_model_structure_t* ms);
 
-/** \brief Get the list of all the discrete state variables in the model.
-* @param ms A model structure pointer (returned by fmi3_xml_get_model_structure)
-* @return a variable list with all the discrete state variables in the model.
-*/
-jm_vector(jm_voidp)* fmi3_xml_get_discrete_states(fmi3_xml_model_structure_t* ms);
-
 /** \brief Get the list of all the initial unknown variables in the model.
 * @param ms A model structure pointer (returned by fmi3_xml_get_model_structure)
 * @return a variable list with all the initial unknowns in the model.
@@ -74,16 +68,6 @@ void fmi3_xml_get_outputs_dependencies(fmi3_xml_model_structure_t* ms, size_t** 
  */ 
 void fmi3_xml_get_continuous_state_derivatives_dependencies(fmi3_xml_model_structure_t* ms, size_t** startIndex, size_t** dependency, char** factorKind);
 
-/** \brief Get dependency information in row-compressed format. 
- * @param startIndex - outputs a pointer to an array of start indices (size of array is number of discrete states + 1).
- *                     First element is zero, last is equal to the number of elements in the dependency and factor arrays. 
- *                     NULL pointer is returned if no dependency information was provided in the XML. 
- * @param dependency - outputs a pointer to the dependency index data. Indices are 1-based. Index equals to zero  
- *                     means "depends on all" (no information in the XML). 
- * @param factorKind - outputs a pointer to the factor kind data. The values can be converted to ::fmi3_dependency_factor_kind_enu_t 
- */ 
-void fmi3_xml_get_discrete_states_dependencies(fmi3_xml_model_structure_t* ms, size_t** startIndex, size_t** dependency, char** factorKind);
- 
 /** \brief Get dependency information in row-compressed format. 
  * @param startIndex - outputs a pointer to an array of start indices (size of array is number of initial unknowns + 1).
  *                     First element is zero, last is equal to the number of elements in the dependency and factor arrays. 

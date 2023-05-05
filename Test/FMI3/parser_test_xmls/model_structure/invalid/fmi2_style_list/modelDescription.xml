@@ -1,33 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<fmiModelDescription
-  fmiVersion="3.0"
-  modelName="myModelName"
-  guid="myGuid"
-  description="myDescription"
-  author="myAuthor"
-  generationTool="myGenerationTool"
-  generationDateAndTime="2002-05-30T09:00:00"
-  version="myModelVersion"
-  variableNamingConvention="structured"
-  numberOfEventIndicators="3">
-
-<ModelExchange
-  modelIdentifier="myModelIdentifier" />
+<fmiModelDescription fmiVersion="3.0" modelName="" instantiationToken="">
+<ModelExchange modelIdentifier="myModelIdentifier" />
 
 <ModelVariables>
-    <!-- idx: 1 -->
-    <ScalarVariable name="state_var" valueReference="0">
-      <Real/>
-    </ScalarVariable>
-    <!-- idx: 2 -->
-    <ScalarVariable name="der(state_var)" valueReference="1" causality="output" variability="continuous" initial="approx">
-      <Real derivative="1" start="1.0"/>
-    </ScalarVariable>
+    <Float64 name="state_var" valueReference="0"/>
+    <Float64 name="der(state_var)" valueReference="1" causality="output" variability="continuous" initial="approx" derivative="1" start="1.0"/>
 </ModelVariables>
 
 <ModelStructure>
-  <Derivatives> <!-- valid FMI2 test FMU, no longer valid for FMI3 -->
-    <Unknown index="2"/>
+  <Derivatives> <!-- Lists in ModelStructure no longer valid in FMI3 -->
+    <ContinuousStateDerivative index="2"/>
   </Derivatives>
 </ModelStructure>
 </fmiModelDescription>

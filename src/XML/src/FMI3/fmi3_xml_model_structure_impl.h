@@ -47,12 +47,10 @@ void fmi3_xml_free_dependencies(fmi3_xml_dependencies_t* dep);
 struct fmi3_xml_model_structure_t {
     jm_vector(jm_voidp) outputs;
     jm_vector(jm_voidp) continuousStateDerivatives;
-    jm_vector(jm_voidp) discreteStates;
     jm_vector(jm_voidp) initialUnknowns;
 
     fmi3_xml_dependencies_t* outputDeps;
     fmi3_xml_dependencies_t* continuousStateDerivativeDeps;
-    fmi3_xml_dependencies_t* discreteStateDeps;
     fmi3_xml_dependencies_t* initialUnknownDeps;
 
     int isValidFlag;  /**\ brief The flag is used to signal if an error was discovered and the model structure is not usable */

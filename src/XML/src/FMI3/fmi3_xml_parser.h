@@ -150,7 +150,6 @@ typedef enum fmi3_xml_attr_enu_t {
     EXPAND_XML_ELMNAME(String) \
     EXPAND_XML_ELMNAME(Enumeration) \
     EXPAND_XML_ELMNAME(ModelStructure) \
-    EXPAND_XML_ELMNAME(Unknown) \
     EXPAND_XML_ELMNAME(Output) \
     EXPAND_XML_ELMNAME(ContinuousStateDerivative) \
     EXPAND_XML_ELMNAME(ClockedState) \

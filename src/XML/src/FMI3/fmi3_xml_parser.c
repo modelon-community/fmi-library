@@ -280,7 +280,7 @@ void fmi3_xml_parse_error(fmi3_xml_parser_context_t *context, const char* fmt, .
 }
 
 /**
- * Raises generic parse error for given attribute.
+ * Raises a generic parse error for the given attribute.
  */
 void fmi3_xml_parse_attr_error(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID,
         const char* attrStr) {
@@ -377,7 +377,7 @@ int fmi3_xml_set_attr_string(fmi3_xml_parser_context_t *context, fmi3_xml_elm_en
 int fmi3_xml_set_attr_enum(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID,
         int required, unsigned int* field, unsigned int defaultVal, jm_name_ID_map_t* nameMap)
 {
-    int i;
+    int i = 0;
     jm_string strVal;
 
     if (fmi3_xml_get_attr_str(context, elmID, attrID, required, &strVal)) {
@@ -393,7 +393,6 @@ int fmi3_xml_set_attr_enum(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_
         }
     }
 
-    i = 0;
     while(nameMap[i].name && strcmp(nameMap[i].name, strVal)) i++;
     if(!nameMap[i].name) {
         fmi3_xml_parse_attr_error(context, elmID, attrID, strVal);
@@ -500,22 +499,26 @@ int fmi3_xml_parse_attr_valueref_list(
     return 0;
 }
 
-/* - It's the value that must be downcast, and to to get it we must first cast the RHS pointer.
-   - The LHS must also be cast, since we're not allowed to write to void* (compiler needs to
-     know how much to write).
-   - NOTE: boundary check won't work if sizeof(FROM_T) == sizeof(TO_T)
-
-   @FROM_T: type to downcast from
-   @TO_T:   type to downcast to
-   @MIN: min value of type TO_T
-   @MAX: max value of type TO_T
-   @FIELD_READ:  pointer to field of type FROM_T where value will be read
-   @FIELD_WRITE: pointer to field of type TO_T where downcast value will be written
-   @USE_DEFAULT: boolean (int) value that decides if we will use default value, or read from FIELD_READ
-   @STATUS: exit status of this macro:
-        - 0: OK
-        - 1: boundary check failed
-*/
+/**
+ * Assigns the value in FIELD_READ to FIELD_WRITE as a downcast.
+ *
+ * It's required that both FIELDs are either signed or unsigned.
+ *
+ * Also performs a boundary check to ensure that the value to downcast is valid for the
+ * target type. Note that this check does not work if sizeof(FROM_T) == sizeof(TO_T)
+ * (since both types have the same MIN and MAX values, it's not possible to exceed the
+ * bounds, and it's also questionable if there really is a need for a downcast in that
+ * case.)
+ *
+ * @param FROM_T: type to downcast from
+ * @param TO_T:   type to downcast to
+ * @param MIN: min value of type TO_T
+ * @param MAX: max value of type TO_T
+ * @param FIELD_READ:  pointer to field of type FROM_T where value will be read
+ * @param FIELD_WRITE: pointer to field of type TO_T where downcast value will be written
+ * @param USE_DEFAULT: boolean (int) value if FIELD_WRITE is a default value, and therefore doesn't need boundary check
+ * @param STATUS: exit status of this macro
+ */
 #define fmi3_xml_assign_downcast(FROM_T, TO_T, MIN, MAX, FIELD_READ, FIELD_WRITE, USE_DEFAULT, STATUS) \
     STATUS = 0;                                                                                        \
     if (USE_DEFAULT) {                                                                                 \
@@ -538,33 +541,27 @@ int fmi3_xml_parse_attr_valueref_list(
 static int fmi3_xml_value_boundary_check_strcmp(jm_string strVal, const char* formatter, fmi3_int_buf_t* valueBuf) {
     char wbBuf[100];                                    /* write-back buffer for comparing numeric [u]int64 value with original string */
     size_t wbBufSz = sizeof(wbBuf) / sizeof(char);
-    int idx_start = strncmp(strVal, "+", 1) ? 0 : 1;    /* xs:long may contain leading '+' - skip it during comparison */
+    int idx_start = (strVal[0] == '+') ? 1 : 0;         /* xs:long may contain leading '+' - skip it during comparison */
     jm_snprintf(wbBuf, wbBufSz, formatter, *valueBuf);  /* write numeric value back to string */
 
     return strcmp(strVal + idx_start, wbBuf) == 0 ? 0 : 1;
 }
 
-/* return values:
-     0: OK
-    -1: parsing failed
-*/
-static int fmi3_xml_str_to_intXX(fmi3_xml_parser_context_t *context, int required, void* field, void* defaultVal,
+static int fmi3_xml_str_to_intXX(fmi3_xml_parser_context_t* context, int required, void* field, void* defaultVal,
         jm_string strVal, const fmi3_xml_primitive_type_t* primType) {
 
-    /*
-        We need to be able to read all intXX types, but there are some problems:
-
-        C99 specifies a header for reading types from stdint.h with scanf: "inttypes.h", but it
-        doesn't seem to be available for MSVC (since they don't fully support C99).
-
-        The general problem is that format specifiers (%u, %d, ...) are not mapped to fixed-width
-        types (stdint.h), but to platform+compiler dependent types, e.g. 'int'.
-        This means that size read from for example '%d' is matches exactly with 'int', but 'int'
-        is only limited to at least 16 bits - it could be larger.
-
-        To handle this we read as 'long long [unsigned] int', since this is at least 64 bits
-        wide, and then we downcast to correct fixed-width type.
-    */
+    // We need to be able to read all intXX types, but there are some problems:
+    //
+    // C99 specifies a header for reading types from stdint.h with scanf: "inttypes.h", but it
+    // doesn't seem to be available for MSVC (since they don't fully support C99).
+    //
+    // The general problem is that format specifiers (%u, %d, ...) are not mapped to fixed-width
+    // types (stdint.h), but to platform+compiler dependent types, e.g. 'int'.
+    // This means that size read from for example '%d' is matches exactly with 'int', but 'int'
+    // is only limited to at least 16 bits - it could be larger.
+    //
+    // To handle this we read as 'long long [unsigned] int', since this is at least 64 bits
+    // wide, and then we downcast to correct fixed-width type.
 
     char* formatter = primType->isSigned ? "%lld" : "%llu";
 

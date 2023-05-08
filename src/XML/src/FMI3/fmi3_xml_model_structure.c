@@ -71,8 +71,16 @@ jm_vector(jm_voidp)* fmi3_xml_get_continuous_state_derivatives(fmi3_xml_model_st
     return &ms->continuousStateDerivatives;
 }
 
+jm_vector(jm_voidp)* fmi3_xml_get_clocked_states(fmi3_xml_model_structure_t* ms){
+    return &ms->ClockedStates;
+}
+
 jm_vector(jm_voidp)* fmi3_xml_get_initial_unknowns(fmi3_xml_model_structure_t* ms){
     return &ms->initialUnknowns;
+}
+
+jm_vector(jm_voidp)* fmi3_xml_get_event_indicators(fmi3_xml_model_structure_t* ms){
+    return &ms->eventIndicators;
 }
 
 
@@ -103,9 +111,19 @@ void fmi3_xml_get_continuous_state_derivatives_dependencies(fmi3_xml_model_struc
     fmi3_xml_get_dependencies(ms->continuousStateDerivativeDeps, startIndex, dependency, factorKind);
 }
 
+void fmi3_xml_get_clocked_states_dependencies(fmi3_xml_model_structure_t* ms,
+                                           size_t** startIndex, size_t** dependency, char** factorKind) {
+    fmi3_xml_get_dependencies(ms->clockedStateDeps, startIndex, dependency, factorKind);
+}
+
 void fmi3_xml_get_initial_unknowns_dependencies(fmi3_xml_model_structure_t* ms,
                                            size_t** startIndex, size_t** dependency, char** factorKind) {
     fmi3_xml_get_dependencies(ms->initialUnknownDeps, startIndex, dependency, factorKind);
+}
+
+void fmi3_xml_get_event_indicators_dependencies(fmi3_xml_model_structure_t* ms,
+                                           size_t** startIndex, size_t** dependency, char** factorKind) {
+    fmi3_xml_get_dependencies(ms->eventIndicatorDeps, startIndex, dependency, factorKind);
 }
 
 
@@ -454,14 +472,17 @@ int fmi3_xml_handle_ContinuousStateDerivative(fmi3_xml_parser_context_t *context
     return 0;
 }
 
-// TODO
 int fmi3_xml_handle_ClockedState(fmi3_xml_parser_context_t *context, const char* data) {
     if(!data) {
         fmi3_xml_model_description_t* md = context->modelDescription;
         fmi3_xml_model_structure_t* ms = md->modelStructure;
 
-        // return fmi3_xml_parse_unknown(context, fmi3_xml_elmID_ClockedState, &ms->ClockedStates, ms->clockedStateDeps);
-        return -1; // TODO
+        // TODO: must correspond to clocked variables
+        // TODO: clock attribute required
+        // TODO: previous attribute required
+        // TODO: must not be of type fmi3Clock?
+
+        return fmi3_xml_parse_unknown(context, fmi3_xml_elmID_ClockedState, &ms->ClockedStates, ms->clockedStateDeps);
     }
     return 0;
 }
@@ -476,14 +497,14 @@ int fmi3_xml_handle_InitialUnknown(fmi3_xml_parser_context_t *context, const cha
     return 0;
 }
 
-// TODO
 int fmi3_xml_handle_EventIndicator(fmi3_xml_parser_context_t *context, const char* data) {
     if(!data) {
         fmi3_xml_model_description_t* md = context->modelDescription;
         fmi3_xml_model_structure_t* ms = md->modelStructure;
 
-        //return fmi3_xml_parse_unknown(context, fmi3_xml_elmID_EventIndicator, &ms->eventIndicators, ms->eventIndicatorDeps);
-        return -1; // TODO
+        // TODO: Ignored if Co-simulation & scheduled Execution
+
+        return fmi3_xml_parse_unknown(context, fmi3_xml_elmID_EventIndicator, &ms->eventIndicators, ms->eventIndicatorDeps);
     }
     return 0;
 }

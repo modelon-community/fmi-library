@@ -30,6 +30,21 @@ static void test_fmi3_import_get_continuous_state_derivatives_list(fmi3_import_t
     fmi3_import_free_variable_list(varList);
 }
 
+static void test_fmi3_import_get_clocked_states_list(fmi3_import_t* fmu) {
+
+    fmi3_import_variable_list_t* varList = fmi3_import_get_clocked_states_list(fmu);
+
+    // size_t nVar = 1;
+    // REQUIRE(fmi3_import_get_variable_list_size(varList) == nVar);
+
+    // fmi3_import_variable_t* var = fmi3_import_get_variable(varList, 0);
+
+    // fmi3_value_reference_t vr = 1;
+    // REQUIRE(fmi3_import_get_variable_vr(var) == vr);
+
+    fmi3_import_free_variable_list(varList);
+}
+
 static void test_fmi3_import_get_initial_unknowns_list(fmi3_import_t* fmu) {
 
     fmi3_import_variable_list_t* varList = fmi3_import_get_initial_unknowns_list(fmu);
@@ -37,6 +52,21 @@ static void test_fmi3_import_get_initial_unknowns_list(fmi3_import_t* fmu) {
 
     fmi3_import_variable_t* var = fmi3_import_get_variable(varList, 0);
     REQUIRE(fmi3_import_get_variable_vr(var) == 1);
+
+    fmi3_import_free_variable_list(varList);
+}
+
+static void test_fmi3_import_get_event_indicators_list(fmi3_import_t* fmu) {
+
+    fmi3_import_variable_list_t* varList = fmi3_import_get_event_indicators_list(fmu);
+
+    // size_t nVar = 1;
+    // REQUIRE(fmi3_import_get_variable_list_size(varList) == nVar);
+
+    // fmi3_import_variable_t* var = fmi3_import_get_variable(varList, 0);
+
+    // fmi3_value_reference_t vr = 1;
+    // REQUIRE(fmi3_import_get_variable_vr(var) == vr);
 
     fmi3_import_free_variable_list(varList);
 }
@@ -55,8 +85,16 @@ TEST_CASE("Valid ModelStructure parsing") {
         test_fmi3_import_get_continuous_state_derivatives_list(fmu);
     }
 
+    SECTION("Get ClockedStates") {
+        test_fmi3_import_get_clocked_states_list(fmu);
+    }
+
     SECTION("Get InitialUnknowns") {
         test_fmi3_import_get_initial_unknowns_list(fmu);
+    }
+
+    SECTION("Get EventIndicators") {
+        test_fmi3_import_get_event_indicators_list(fmu);
     }
     
     fmi3_import_free(fmu);

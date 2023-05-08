@@ -11,11 +11,15 @@
     <Float64 name="state_var" valueReference="0"/>
     <Float64 name="der(state_var)" valueReference="1" causality="output" variability="continuous" initial="approx" derivative="1" start="1.0"/>
     <Float64 name="output_var" valueReference="2" causality="output"/>
+    <!-- <Clock name="clopck_var" valueReference="3" internalVariability="constant"/> -->
+    <Float64 name="event_ind_0" valueReference="4"/>
 </ModelVariables>
 
 <ModelStructure>
   <Output valueReference="2"/>
   <ContinuousStateDerivative valueReference="1"/>
+  <!-- <ClockedState valueReference="3" clocks="?" previous="?"/> -->
   <InitialUnknown valueReference="1"/>
+  <!-- <EventIndicator valueReference="4"/> -->
 </ModelStructure>
 </fmiModelDescription>

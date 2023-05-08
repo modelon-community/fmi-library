@@ -423,7 +423,7 @@ void fmi3_import_get_outputs_dependencies(fmi3_import_t* fmu,size_t** startIndex
     fmi3_xml_get_outputs_dependencies(ms, startIndex, dependency, factorKind);
 }
 
-void fmi3_import_get_derivatives_dependencies(fmi3_import_t* fmu,size_t** startIndex, size_t** dependency, char** factorKind) {
+void fmi3_import_get_continuous_state_derivatives_dependencies(fmi3_import_t* fmu,size_t** startIndex, size_t** dependency, char** factorKind) {
     fmi3_xml_model_structure_t* ms;
     if(!fmi3_import_check_has_FMU(fmu)) {
         *startIndex = 0;

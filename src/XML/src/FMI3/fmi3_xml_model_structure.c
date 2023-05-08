@@ -32,15 +32,20 @@ fmi3_xml_model_structure_t* fmi3_xml_allocate_model_structure(jm_callbacks* cb) 
 
     jm_vector_init(jm_voidp)(&ms->outputs,0,cb);
     jm_vector_init(jm_voidp)(&ms->continuousStateDerivatives,0,cb);
+    jm_vector_init(jm_voidp)(&ms->clockedStates,0,cb);
     jm_vector_init(jm_voidp)(&ms->initialUnknowns,0,cb);
+    jm_vector_init(jm_voidp)(&ms->eventIndicators,0,cb);
 
     ms->isValidFlag = 1;
 
     ms->outputDeps = fmi3_xml_allocate_dependencies(cb);
     ms->continuousStateDerivativeDeps = fmi3_xml_allocate_dependencies(cb);
+    ms->clockedStateDeps = fmi3_xml_allocate_dependencies(cb);
     ms->initialUnknownDeps = fmi3_xml_allocate_dependencies(cb);
+    ms->eventIndicatorDeps = fmi3_xml_allocate_dependencies(cb);
 
-    if(!ms->outputDeps || !ms->continuousStateDerivativeDeps || !ms->initialUnknownDeps) {
+    if(!ms->outputDeps || !ms->continuousStateDerivativeDeps || !ms->initialUnknownDeps ||
+       !ms->clockedStateDeps || !ms->eventIndicatorDeps) {
         fmi3_xml_free_model_structure(ms);
         return 0;
     }
@@ -55,11 +60,15 @@ void fmi3_xml_free_model_structure(fmi3_xml_model_structure_t* ms) {
 
     jm_vector_free_data(jm_voidp)(&ms->outputs);
     jm_vector_free_data(jm_voidp)(&ms->continuousStateDerivatives);
+    jm_vector_free_data(jm_voidp)(&ms->clockedStates);
     jm_vector_free_data(jm_voidp)(&ms->initialUnknowns);
+    jm_vector_free_data(jm_voidp)(&ms->eventIndicators);
 
     fmi3_xml_free_dependencies(ms->outputDeps);
     fmi3_xml_free_dependencies(ms->continuousStateDerivativeDeps);
+    fmi3_xml_free_dependencies(ms->clockedStateDeps);
     fmi3_xml_free_dependencies(ms->initialUnknownDeps);
+    fmi3_xml_free_dependencies(ms->eventIndicatorDeps);
     cb->free(ms);
 }
 
@@ -72,7 +81,7 @@ jm_vector(jm_voidp)* fmi3_xml_get_continuous_state_derivatives(fmi3_xml_model_st
 }
 
 jm_vector(jm_voidp)* fmi3_xml_get_clocked_states(fmi3_xml_model_structure_t* ms){
-    return &ms->ClockedStates;
+    return &ms->clockedStates;
 }
 
 jm_vector(jm_voidp)* fmi3_xml_get_initial_unknowns(fmi3_xml_model_structure_t* ms){
@@ -477,12 +486,51 @@ int fmi3_xml_handle_ClockedState(fmi3_xml_parser_context_t *context, const char*
         fmi3_xml_model_description_t* md = context->modelDescription;
         fmi3_xml_model_structure_t* ms = md->modelStructure;
 
-        // TODO: must correspond to clocked variables
-        // TODO: clock attribute required
-        // TODO: previous attribute required
-        // TODO: must not be of type fmi3Clock?
+        /* perform the parsing */
+        if (fmi3_xml_parse_unknown(context, fmi3_xml_elmID_ClockedState,
+                                   &ms->clockedStates, ms->clockedStateDeps)) {
+            return -1;
+        }
 
-        return fmi3_xml_parse_unknown(context, fmi3_xml_elmID_ClockedState, &ms->ClockedStates, ms->clockedStateDeps);
+        /* validate return values */
+        fmi3_xml_variable_t* clock_var = (fmi3_xml_variable_t*)jm_vector_get_last(jm_voidp)(&ms->clockedStates);
+
+        /* clock attribute required */
+        if (!fmi3_xml_get_variable_has_clocks(clock_var)){
+            ms->isValidFlag = 0;
+            fmi3_xml_parse_error(context,
+                    "The ClockedState '%s' does not have the attribute='clocks'.",
+                    fmi3_xml_get_variable_name(clock_var));
+            return -1;
+
+        }
+
+        /* previous attribute is required */
+        if (!fmi3_xml_get_previous(clock_var)){
+            ms->isValidFlag = 0;
+            fmi3_xml_parse_error(context,
+                    "The ClockedState '%s' does not have the attribute 'previous'.",
+                    fmi3_xml_get_variable_name(clock_var));
+            return -1;
+        }
+
+        /* must be discrete */
+        if (fmi3_xml_get_variability(clock_var) != fmi3_variability_enu_discrete){
+            ms->isValidFlag = 0;
+            fmi3_xml_parse_error(context,
+                    "The ClockedState '%s' does not have variability='discrete'.",
+                    fmi3_xml_get_variable_name(clock_var));
+            return -1;
+        }
+
+        /* must not be of base type fmi3Clock */
+        if (fmi3_xml_get_variable_base_type(clock_var) == fmi3_base_type_clock){
+            ms->isValidFlag = 0;
+            fmi3_xml_parse_error(context,
+                    "The ClockedState '%s' must not have the base type fmi3Clock.",
+                    fmi3_xml_get_variable_name(clock_var));
+            return -1;
+        }
     }
     return 0;
 }
@@ -502,9 +550,39 @@ int fmi3_xml_handle_EventIndicator(fmi3_xml_parser_context_t *context, const cha
         fmi3_xml_model_description_t* md = context->modelDescription;
         fmi3_xml_model_structure_t* ms = md->modelStructure;
 
-        // TODO: Ignored if Co-simulation & scheduled Execution
+        // Ignored if Co-simulation & scheduled execution
+        fmi3_fmu_kind_enu_t fmu_kind = fmi3_xml_get_fmu_kind(md);
+        if ((fmu_kind == fmi3_fmu_kind_cs) || (fmu_kind == fmi3_fmu_kind_se)){
+            jm_log_info(md->callbacks, "FMI3XML", "EventIndicator ignored since FMU kind is Co-Simulation or Scheduled Excecution.");
+            return 0;
+        }
 
-        return fmi3_xml_parse_unknown(context, fmi3_xml_elmID_EventIndicator, &ms->eventIndicators, ms->eventIndicatorDeps);
+        /* perform the parsing */
+        if (fmi3_xml_parse_unknown(context, fmi3_xml_elmID_EventIndicator,
+                                   &ms->eventIndicators, ms->eventIndicatorDeps)) {
+            return -1;
+        }
+
+        /* validate return values */
+
+        fmi3_xml_variable_t* event_ind = (fmi3_xml_variable_t*)jm_vector_get_last(jm_voidp)(&ms->eventIndicators);
+        /* EventIndicator must be continuous */
+        if (fmi3_xml_get_variability(event_ind) != fmi3_variability_enu_continuous){
+            ms->isValidFlag = 0;
+            fmi3_xml_parse_error(context,
+                    "The EventIndicator '%s' does not have variability='continuous'.",
+                    fmi3_xml_get_variable_name(event_ind));
+            return -1;
+        }
+
+        fmi3_base_type_enu_t base_type = fmi3_xml_get_variable_base_type(event_ind);
+        if ((base_type != fmi3_base_type_float64) && (base_type != fmi3_base_type_float32)){
+            ms->isValidFlag = 0;
+            fmi3_xml_parse_error(context,
+                    "The EventIndicator '%s' does not have the base type 'Float32' or 'Float64'.",
+                    fmi3_xml_get_variable_name(event_ind));
+            return -1;
+        }
     }
     return 0;
 }

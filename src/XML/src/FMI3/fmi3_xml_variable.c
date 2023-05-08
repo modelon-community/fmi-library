@@ -174,6 +174,10 @@ fmi3_boolean_t fmi3_xml_get_canHandleMultipleSetPerTimeInstant(fmi3_xml_variable
     return (fmi3_boolean_t)v->canHandleMultipleSetPerTimeInstant;
 }
 
+fmi3_boolean_t fmi3_xml_get_variable_has_clocks(fmi3_xml_variable_t* v) {
+    return (fmi3_boolean_t)(v->clocks);
+}
+
 jm_status_enu_t fmi3_xml_get_variable_clocks(fmi3_xml_model_description_t* md, fmi3_xml_variable_t* v,
         jm_vector(jm_voidp)* list)
 {

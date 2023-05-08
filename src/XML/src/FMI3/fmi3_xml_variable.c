@@ -1347,12 +1347,9 @@ int fmi3_xml_handle_FloatXXVariable(fmi3_xml_parser_context_t* context, const ch
                 else /* default type */
                     dtProps = (fmi3_xml_float_type_props_t*)declaredType;
 
-                fmi3_xml_reserve_parse_buffer(context, 1, 0);
-                fmi3_xml_reserve_parse_buffer(context, 2, 0);
-
                 type = fmi3_xml_parse_float_type_properties(context, elmID, defaultType, primType);
                 if (!type) {
-                    variable->type = &((fmi3_xml_float_type_props_t*)declaredType)->super; /* fallback to default */
+                    variable->type = &((fmi3_xml_float_type_props_t*)declaredType)->super; /* fallback to declared */
                     return -1;
                 }
 
@@ -1567,6 +1564,47 @@ int fmi3_xml_handle_BooleanVariable(fmi3_xml_parser_context_t *context, const ch
     return 0;
 }
 
+
+// @param fallbackProps: The _props_t of the type (declared or default) from which values will be
+//                       taken if not set on the element.
+fmi3_xml_float_type_props_t* fmi3_xml_parse_binary_type_properties(fmi3_xml_parser_context_t* context,
+        fmi3_xml_elm_enu_t elmID, fmi3_xml_binary_type_props_t* fallbackProps)
+{
+    fmi3_xml_type_definitions_t* td = &context->modelDescription->typeDefinitions;
+    fmi3_xml_binary_type_props_t* props;
+
+    // Create props:
+    props = (fmi3_xml_binary_type_props_t*)fmi3_xml_alloc_variable_or_typedef_props(td, &fallbackProps->super,
+            sizeof(fmi3_xml_binary_type_props_t));
+    if (!props) return -1;
+
+    // maxSize:
+    if (fmi3_xml_set_attr_sizet(context, elmID, fmi_attr_id_maxSize, 0, &props->maxSize, &fallbackProps->maxSize)) {
+        return -1;
+    }
+
+    // mimeType:
+    int hasMimeType = fmi3_xml_is_attr_defined(context, fmi_attr_id_mimeType);
+    if (hasMimeType) {
+        jm_vector(char)* mimeType = fmi3_xml_reserve_parse_buffer(context, 1, 100);
+        if (!mimeType) return -1;
+        if (fmi3_xml_set_attr_string(context, fmi3_xml_elmID_BinaryVariable, fmi_attr_id_mimeType, 0, mimeType)) {
+            return -1;
+        }
+        if (jm_vector_get_size(char)(mimeType) == 0) {
+            // XXX: Doesn't seem like we proprely store the empty string? Will trigger assertion
+            // failures later, and 'quantity' is handled the same way.
+            props->mimeType = NULL;
+        } else {
+            props->mimeType = jm_string_set_put(&td->mimeTypes, jm_vector_get_itemp(char)(mimeType, 0));
+        }
+    } else {
+        props->mimeType = NULL;
+    }
+    return props;
+}
+
+
 int fmi3_xml_handle_BinaryVariable(fmi3_xml_parser_context_t* context, const char* data) {
     if (context->skipOneVariableFlag) return 0;
     if (fmi3_xml_handle_Variable(context, data)) return -1;
@@ -1594,34 +1632,10 @@ int fmi3_xml_handle_BinaryVariable(fmi3_xml_parser_context_t* context, const cha
                 dtProps = (fmi3_xml_binary_type_props_t*)declaredType;  // default
             }
             assert(dtProps->super.structKind == fmi3_xml_type_struct_enu_props);
-
-            // Create variable properties:
-            vProps = (fmi3_xml_binary_type_props_t*)fmi3_xml_alloc_variable_or_typedef_props(td, declaredType,
-                    sizeof(fmi3_xml_binary_type_props_t));
-            if (!vProps) return -1;
-
-            // maxSize:
-            if (fmi3_xml_set_attr_sizet(context, elmID, fmi_attr_id_maxSize, 0, &vProps->maxSize, &dtProps->maxSize)) {
-                return -1;
-            }
             
-            // mimeType:
-            if (hasMimeType) {
-                jm_vector(char)* mimeType = fmi3_xml_reserve_parse_buffer(context, 3, 100);
-                if (!mimeType) return -1;
-                if (fmi3_xml_set_attr_string(context, fmi3_xml_elmID_BinaryVariable, fmi_attr_id_mimeType, 0, mimeType)) {
-                    return -1;
-                }
-                if (jm_vector_get_size(char)(mimeType) == 0) {
-                    // XXX: Doesn't seem like we proprely store the empty string? Will trigger assertion
-                    // failures later, and 'quantity' is handled the same way.
-                    vProps->mimeType = NULL;
-                } else {
-                    vProps->mimeType = jm_string_set_put(&td->mimeTypes, jm_vector_get_itemp(char)(mimeType, 0));
-                }
-            } else {
-                vProps->mimeType = NULL;
-            }
+            // Create variable properties:
+            vProps = fmi3_xml_parse_binary_type_properties(context, elmID, dtProps);
+            if (!vProps) return -1;
         }
         else {
             vProps = (fmi3_xml_binary_type_props_t*)declaredType;

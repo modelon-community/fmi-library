@@ -223,13 +223,13 @@ FMILIB_EXPORT double fmi3_import_get_default_experiment_step(fmi3_import_t* fmu)
 FMILIB_EXPORT fmi3_fmu_kind_enu_t fmi3_import_get_fmu_kind(fmi3_import_t* fmu);
 
 /** \brief Get the list of all the type definitions in the model*/
-FMILIB_EXPORT fmi3_import_type_definitions_t* fmi3_import_get_type_definitions(fmi3_import_t* );
+FMILIB_EXPORT fmi3_import_type_definitions_t* fmi3_import_get_type_definitions(fmi3_import_t* fmu);
 
 /** \brief Get a list of all the unit definitions in the model. */
 FMILIB_EXPORT fmi3_import_unit_definitions_t* fmi3_import_get_unit_definitions(fmi3_import_t* fmu);
 
 /** \brief Get the variable with the same value reference that is not an alias*/
-FMILIB_EXPORT fmi3_import_variable_t* fmi3_import_get_variable_alias_base(fmi3_import_t* fmu,fmi3_import_variable_t*);
+FMILIB_EXPORT fmi3_import_variable_t* fmi3_import_get_variable_alias_base(fmi3_import_t* fmu, fmi3_import_variable_t* v);
 
 /**
     Get the list of all the variables aliased to the given one (including the base one).
@@ -237,7 +237,7 @@ FMILIB_EXPORT fmi3_import_variable_t* fmi3_import_get_variable_alias_base(fmi3_i
     Note that the list is ordered: base variable, aliases, negated aliases.
     Note that the caller is responsible for deallocating this list.
 */
-FMILIB_EXPORT fmi3_import_variable_list_t* fmi3_import_get_variable_aliases(fmi3_import_t* fmu, fmi3_import_variable_t*);
+FMILIB_EXPORT fmi3_import_variable_list_t* fmi3_import_get_variable_aliases(fmi3_import_t* fmu, fmi3_import_variable_t* v);
 
 /** \brief Get the list of all the variables in the model.
 * @param fmu An FMU object as returned by fmi3_import_parse_xml().

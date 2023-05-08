@@ -53,6 +53,14 @@ fmi3_import_enumeration_typedef_t* fmi3_import_get_type_as_enum(fmi3_import_vari
     return fmi3_xml_get_type_as_enum(t);
 }
 
+fmi3_import_binary_typedef_t* fmi3_import_get_type_as_binary(fmi3_import_variable_typedef_t* t) {
+    return fmi3_xml_get_type_as_binary(t);
+}
+
+fmi3_import_clock_typedef_t* fmi3_import_get_type_as_clock(fmi3_import_variable_typedef_t* t) {
+    return fmi3_xml_get_type_as_clock(t);
+}
+
 const char* fmi3_import_get_type_quantity(fmi3_import_variable_typedef_t* t) {
     return fmi3_xml_get_type_quantity(t);
 }

@@ -116,16 +116,18 @@ typedef enum {
  * 'nextLayer'. An attempt to show the ordering is made in the 'diagrams.drawio' file.
  *
  * More info can also be found at the top of the file where this type is described.
+ *
+ * Note that all objects of this type are appended to a list owned by the type definitions object.
  */
 typedef struct fmi3_xml_variable_type_base_t fmi3_xml_variable_type_base_t;
 struct fmi3_xml_variable_type_base_t {
-    fmi3_xml_variable_type_base_t* nextLayer;   /* the next layer in the type aggregate */
-    fmi3_xml_type_struct_kind_enu_t structKind; /* the actual (sub) type */
-    fmi3_base_type_enu_t baseType;              /* the FMI base type */
-    char isRelativeQuantity;                    /* relativeQuantity flag (only used in fmi3_xml_real_type_props_t) */
-    char isUnbounded;                           /* unbounded flag        (only used in fmi3_xml_real_type_props_t) */
+    fmi3_xml_variable_type_base_t* nextLayer;   /* The next layer in the type aggregate */
+    fmi3_xml_type_struct_kind_enu_t structKind; /* The actual (sub) type */
+    fmi3_base_type_enu_t baseType;              /* The FMI base type */
+    char isRelativeQuantity;                    /* RelativeQuantity flag (only used in fmi3_xml_real_type_props_t) */
+    char isUnbounded;                           /* Unbounded flag        (only used in fmi3_xml_real_type_props_t) */
 
-    fmi3_xml_variable_type_base_t* next;        /* should only be used for deallocation */
+    fmi3_xml_variable_type_base_t* next;        /* For deallocation: the next node in the deallocation list */
 };
 
 // ----------------------------------------------------------------------------
@@ -263,7 +265,15 @@ struct fmi3_xml_type_definitions_t {
     jm_string_set quantities; /* Storage for 'quantity' attribute for Variables and TypeDefinitions. */
     jm_string_set mimeTypes;  /* Storage for 'mimeType' attribute for Variables and TypeDefinitions. */
 
-    /* intended purpose seems to be as memory deallocation ptr, but also used in fmi3_xml_handle_Item (TODO: see if can be changed to single purpose) */
+    /**
+     * List that owns all allocated _props_t and _start_t objects, both for typedefs
+     * and variables.
+     * 
+     * The head points to the last allocated object, and needs to be updated when
+     * new objects are added.
+     * 
+     * XXX: We should rename it to reflect that it contains _start_t as well.
+     */
     fmi3_xml_variable_type_base_t* typePropsList;
 
     fmi3_xml_float_type_props_t   defaultFloat64Type;

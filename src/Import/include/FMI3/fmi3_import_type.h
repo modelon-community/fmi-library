@@ -44,6 +44,10 @@ typedef struct fmi3_xml_float_typedef_t fmi3_import_float_typedef_t;
 typedef struct fmi3_xml_int_typedef_t fmi3_import_int_typedef_t;
 /** \brief Opaque enumeration type definition object. */
 typedef struct fmi3_xml_enumeration_typedef_t fmi3_import_enumeration_typedef_t;
+/** \brief Opaque binary type definition object. */
+typedef struct fmi3_xml_binary_typedef_t fmi3_import_binary_typedef_t;
+/** \brief Opaque clock type definition object. */
+typedef struct fmi3_xml_clock_typedef_t fmi3_import_clock_typedef_t;
 /** \brief Opaque general variable type definition object. */
 typedef struct fmi3_xml_variable_typedef_t fmi3_import_variable_typedef_t;
 /** \brief Opaque list of the type definitions in the model */
@@ -88,6 +92,16 @@ FMILIB_EXPORT fmi3_import_int_typedef_t* fmi3_import_get_type_as_int(fmi3_import
     @return Pointer to the specific type object or NULL if base type does not match.
 */
 FMILIB_EXPORT fmi3_import_enumeration_typedef_t* fmi3_import_get_type_as_enum(fmi3_import_variable_typedef_t*);
+
+/** \brief Cast the general type definition object to an object with a specific base type 
+    @return Pointer to the specific type object or NULL if base type does not match.
+*/
+FMILIB_EXPORT fmi3_import_binary_typedef_t* fmi3_import_get_type_as_binary(fmi3_import_variable_typedef_t*);
+
+/** \brief Cast the general type definition object to an object with a specific base type 
+    @return Pointer to the specific type object or NULL if base type does not match.
+*/
+FMILIB_EXPORT fmi3_import_clock_typedef_t* fmi3_import_get_type_as_clock(fmi3_import_variable_typedef_t*);
 
 /** \brief Get the quantity associated with the type definition.
 

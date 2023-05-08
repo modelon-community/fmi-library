@@ -28,6 +28,8 @@
     <Float32     name="td_minimal_uint8"/>
     <String      name="td_minimal_string"/>
     <Boolean     name="td_minimal_boolean"/>
+    <Binary      name="td_minimal_binary"/>
+    <Clock       name="td_minimal_clock" intervalVariability="constant"/>
     <Enumeration name="td_minimal_enum">
         <Item name="EnumVar0" value="0"/>
     </Enumeration>

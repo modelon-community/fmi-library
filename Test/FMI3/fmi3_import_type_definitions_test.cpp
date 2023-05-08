@@ -879,7 +879,7 @@ err1:
 }
 
 TEST_CASE("TypeDefinitions test") {
-    fmi3_import_t *xml;
+    fmi3_import_t* xml;
     int ret = 1;
     const char* xmldir = FMI3_TEST_XML_DIR "/type_definitions/valid";
 
@@ -1037,7 +1037,7 @@ TEST_CASE("TypeDefinitions test") {
 }
 
 TEST_CASE("TypeDefinitions test: value_boundary_check") {
-    fmi3_import_t *xml;
+    fmi3_import_t* xml;
     const char* xmldir = FMI3_TEST_XML_DIR "/type_definitions/value_boundary_check";
 
     printf("\nThe next tests are expected to fail...\n");
@@ -1045,7 +1045,87 @@ TEST_CASE("TypeDefinitions test: value_boundary_check") {
     REQUIRE(test_value_boundary_check(xmldir) == 0);
     printf("---------------------------------------------------------------------------\n");
 
-    xml = parse_xml(xmldir);
     fmi3_import_free(xml);
+}
+
+static fmi3_import_variable_typedef_t* get_typedef_by_name(fmi3_import_type_definitions_t* tds, const char* name) {
+    size_t nTds = fmi3_import_get_type_definition_number(tds);
+    fmi3_import_variable_typedef_t *td;
+    for (size_t i = 0; i < nTds; i++) {
+        td = fmi3_import_get_typedef(tds, i);
+        const char* tdName = fmi3_import_get_type_name(td);
+        if (strcmp(tdName, name) == 0) {
+            return td;
+        }
+    }
+    return nullptr;
+}
+
+void test_binary_typedefs_and_inheritance(fmi3_import_t* xml) {
+    const char* mimeType;
+    const char* mimeTypeDefault = "application/octet-stream";
+    size_t maxSize;
+    size_t maxSizeDefault = 0;
+
+    //--------------------------------------------------------------------------
+    // Test attributes for TypeDefinitions
+    //--------------------------------------------------------------------------
+    fmi3_import_type_definitions_t* tds = fmi3_import_get_type_definitions(xml);
+    REQUIRE(tds != nullptr);
+    
+    fmi3_import_variable_typedef_t* tdMinimal = get_typedef_by_name(tds, "td_minimal");
+    REQUIRE(tdMinimal != nullptr);
+    fmi3_import_variable_typedef_t* tdMimeType = get_typedef_by_name(tds, "td_mimeType");
+    REQUIRE(tdMimeType != nullptr);
+    fmi3_import_variable_typedef_t* tdAllAttr = get_typedef_by_name(tds, "td_allAttr");
+    REQUIRE(tdAllAttr != nullptr);
+    
+//    mimeType = fmi3_import_get_type_as_binary(tdMinimal);
+
+
+//  <Binary name="td_minimal">
+//  <Binary name="td_mimeType" mimeType="mt0">
+//  <Binary name="td_allAttr"  mimeType="mt0" maxSize="0">
+
+    
+
+    //--------------------------------------------------------------------------
+    // Test attribute for variables with declaredType
+    //--------------------------------------------------------------------------
+
+    //--------------------------------------------------------------------------
+    // Test attribute for variables with overriding attributes
+    //--------------------------------------------------------------------------
+
+    fmi3_import_variable_t *v = fmi3_import_get_variable_by_name(xml, "var_default_type");
+    fmi3_import_variable_typedef_t *t;
+    fmi3_import_float_typedef_t *type;
+
+    REQUIRE(v != nullptr);
+    REQUIRE(fmi3_import_get_variable_vr(v) == 1073741824);
+
+    t = fmi3_import_get_variable_declared_type(v);
+    REQUIRE(t != nullptr);
+
+    REQUIRE(strcmp(fmi3_import_get_type_name(t), "Float64.name") == 0);
+    REQUIRE(strcmp(fmi3_import_get_type_quantity(t), "typeQuantity") == 0);
+
+    type = fmi3_import_get_type_as_float(t);
+    REQUIRE(type != nullptr);
+    REQUIRE(fmi3_import_get_float64_type_max(type) == DBL_MAX);        /* default */
+    REQUIRE(fmi3_import_get_float64_type_min(type) == 0.0);            /* from md */
+    REQUIRE(fmi3_import_get_float64_type_nominal(type) == 1.0);        /* default */
+    REQUIRE(fmi3_import_get_float64_type_is_relative_quantity(type) == fmi3_false);
+    REQUIRE(fmi3_import_get_float64_type_is_unbounded(type) == fmi3_false);
+}
+
+TEST_CASE("TypeDefinitions test: Binary") {
+    fmi3_import_t* xml;
+    const char* xmldir = FMI3_TEST_XML_DIR "/type_definitions/valid/binary";
+    xml = parse_xml(xmldir);
     REQUIRE(xml != nullptr);
+
+    test_binary_typedefs_and_inheritance(xml);
+
+    fmi3_import_free(xml);
 }

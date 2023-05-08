@@ -53,7 +53,7 @@ fmi3_xml_float_typedef_t* fmi3_xml_get_type_as_float(fmi3_xml_variable_typedef_t
     fmi3_base_type_enu_t bt = fmi3_xml_get_base_type(t);
     if (bt == fmi3_base_type_float64 || bt == fmi3_base_type_float32)
         return (fmi3_xml_float_typedef_t*)t;
-    return 0;
+    return NULL;
 }
 
 fmi3_xml_int_typedef_t* fmi3_xml_get_type_as_int(fmi3_xml_variable_typedef_t* t) {
@@ -68,46 +68,58 @@ fmi3_xml_int_typedef_t* fmi3_xml_get_type_as_int(fmi3_xml_variable_typedef_t* t)
             fmi3_base_type_uint8) {
         return (fmi3_xml_int_typedef_t*)t;
     }
-    return 0;
+    return NULL;
 }
 
 fmi3_xml_enumeration_typedef_t* fmi3_xml_get_type_as_enum(fmi3_xml_variable_typedef_t* t) {
-    if(fmi3_xml_get_base_type(t) == fmi3_base_type_enum) return (fmi3_xml_enumeration_typedef_t*)t;
-    return 0;
+    if (fmi3_xml_get_base_type(t) == fmi3_base_type_enum) {
+        return (fmi3_xml_enumeration_typedef_t*)t;
+    }
+    return NULL;
 }
 
-/* Note that 0-pointer is returned for strings and booleans, empty string quantity if not defined*/
+fmi3_xml_binary_typedef_t* fmi3_xml_get_type_as_binary(fmi3_xml_variable_typedef_t* t) {
+    if (fmi3_xml_get_base_type(t) == fmi3_base_type_binary) {
+        return (fmi3_xml_binary_typedef_t*)t;
+    }
+    return NULL;
+}
+
+fmi3_xml_clock_typedef_t* fmi3_xml_get_type_as_clock(fmi3_xml_variable_typedef_t* t) {
+    if (fmi3_xml_get_base_type(t) == fmi3_base_type_clock) {
+        return (fmi3_xml_clock_typedef_t*)t;
+    }
+    return NULL;
+}
+
 const char* fmi3_xml_get_type_quantity(fmi3_xml_variable_typedef_t* t) {
     fmi3_xml_variable_type_base_t* props = t->super.nextLayer;
-    const char * ret;
-    if(props->structKind != fmi3_xml_type_struct_enu_props) return 0;
+    if(props->structKind != fmi3_xml_type_struct_enu_props) return NULL;
+
     switch(props->baseType) {
-    case fmi3_base_type_float64: /* fallthrough */
+    case fmi3_base_type_float64:
     case fmi3_base_type_float32:
-        ret = ((fmi3_xml_float_type_props_t*)props)->quantity;
-        break;
-    case fmi3_base_type_int64:  /* fallthrough */
-    case fmi3_base_type_int32:  /* fallthrough */
-    case fmi3_base_type_int16:  /* fallthrough */
-    case fmi3_base_type_int8:   /* fallthrough */
-    case fmi3_base_type_uint64: /* fallthrough */
-    case fmi3_base_type_uint32: /* fallthrough */
-    case fmi3_base_type_uint16: /* fallthrough */
+        return ((fmi3_xml_float_type_props_t*)props)->quantity;
+    case fmi3_base_type_int64:
+    case fmi3_base_type_int32:
+    case fmi3_base_type_int16:
+    case fmi3_base_type_int8:
+    case fmi3_base_type_uint64:
+    case fmi3_base_type_uint32:
+    case fmi3_base_type_uint16:
     case fmi3_base_type_uint8:
-        ret = ((fmi3_xml_int_type_props_t*)props)->quantity;
-        break;
+        return ((fmi3_xml_int_type_props_t*)props)->quantity;
     case fmi3_base_type_bool:
-        return 0;
+    case fmi3_base_type_binary:
+    case fmi3_base_type_clock:
     case fmi3_base_type_str:
-        return 0;
+        return NULL;
     case fmi3_base_type_enum:
-        ret = ((fmi3_xml_enum_variable_props_t*)props)->quantity;
-        break;
+        return ((fmi3_xml_enum_variable_props_t*)props)->quantity;
     default:
-        assert(0); /* invalid execution path */
-        return 0;
+        assert(0); /* Implementation error */
+        return NULL;
     }
-    return (ret ? ret : 0);
 }
 
 fmi3_float64_t fmi3_xml_get_float64_type_min(fmi3_xml_float_typedef_t* t) {
@@ -519,7 +531,7 @@ void fmi3_xml_init_type_definitions(fmi3_xml_type_definitions_t* td, jm_callback
     fmi3_xml_init_variable_type_base(&td->defaultBooleanType, fmi3_xml_type_struct_enu_props, fmi3_base_type_bool);
     fmi3_xml_init_variable_type_base(&td->defaultStringType,  fmi3_xml_type_struct_enu_props, fmi3_base_type_str);
 
-    td->typePropsList = 0;
+    td->typePropsList = NULL;
 }
 
 void fmi3_xml_free_type_definitions_data(fmi3_xml_type_definitions_t* td) {
@@ -538,7 +550,7 @@ void fmi3_xml_free_type_definitions_data(fmi3_xml_type_definitions_t* td) {
             next = cur->next;
             if(    (cur->baseType == fmi3_base_type_enum)
                 && (cur->structKind == fmi3_xml_type_struct_enu_props)
-                && (cur->nextLayer == 0)
+                && (cur->nextLayer == NULL)
                 ) {
                 fmi3_xml_enum_typedef_props_t* props = (fmi3_xml_enum_typedef_props_t*)cur;
                 fmi3_xml_free_enumeration_type_props(props);
@@ -546,7 +558,7 @@ void fmi3_xml_free_type_definitions_data(fmi3_xml_type_definitions_t* td) {
             cb->free(cur);
             cur = next;
         }
-        td->typePropsList = 0;
+        td->typePropsList = NULL;
     }
 
     jm_named_vector_free_data(&td->typeDefinitions);
@@ -560,7 +572,6 @@ int fmi3_xml_handle_TypeDefinitions(fmi3_xml_parser_context_t *context, const ch
         fmi3_xml_type_definitions_t* defs =  &context->modelDescription->typeDefinitions;
 
         jm_vector_qsort(jm_named_ptr)(&defs->typeDefinitions, jm_compare_named);
-        /* might give out a warning if(data[0] != 0) */
         return 0;
     }
     return 0;
@@ -589,8 +600,8 @@ int fmi3_xml_handle_SimpleType(fmi3_xml_parser_context_t *context, const char* d
         }
 
         /* set default pointer fields to NULL so we later can verify if allocation works */
-        named.ptr = 0;
-        named.name = 0;
+        named.ptr = NULL;
+        named.name = NULL;
 
         /* push to typeDefinitions */
         pnamed = jm_vector_push_back(jm_named_ptr)(&td->typeDefinitions, named);
@@ -619,11 +630,10 @@ int fmi3_xml_handle_SimpleType(fmi3_xml_parser_context_t *context, const char* d
     } else { /* end of tag */
         jm_named_ptr named = jm_vector_get_last(jm_named_ptr)(&(context->modelDescription->typeDefinitions.typeDefinitions));
         fmi3_xml_variable_typedef_t* type = named.ptr;
-        if(type->super.nextLayer == 0) {
+        if(type->super.nextLayer == NULL) {
             fmi3_xml_parse_fatal(context, "No specific type given for type definition %s", type->typeName);
             return -1;
         }
-        /* might give out a warning if(data[0] != 0) */
         return 0;
     }
     return 0;
@@ -644,8 +654,11 @@ fmi3_xml_variable_type_base_t* fmi3_xml_alloc_variable_or_typedef_props(fmi3_xml
     if (!type) return NULL;
     fmi3_xml_init_variable_type_base(type, fmi3_xml_type_struct_enu_props, base->baseType);
     type->nextLayer = base;
+    
+    // Push to typePropsList:
     type->next = td->typePropsList;
     td->typePropsList = type;
+
     return type;
 }
 
@@ -666,44 +679,45 @@ fmi3_xml_variable_type_base_t* fmi3_xml_alloc_variable_type_start(fmi3_xml_type_
     jm_callbacks* cb = td->typeDefinitions.callbacks;
 
     fmi3_xml_variable_type_base_t* start = cb->malloc(typeSize);
-    if (!start) return 0;
+    if (!start) return NULL;
     fmi3_xml_init_variable_type_base(start, fmi3_xml_type_struct_enu_start, base->baseType);
     start->nextLayer = base;
 
-    /* Push to top of typePropsList */
+    // Push to typePropsList
     start->next = td->typePropsList;
     td->typePropsList = start;
 
     return start;
 }
 
+// @param fallbackType: The type (declared or default) from which values will be taken if not set on the element.
 fmi3_xml_float_type_props_t* fmi3_xml_parse_float_type_properties(fmi3_xml_parser_context_t* context,
-        fmi3_xml_elm_enu_t elmID, fmi3_xml_float_type_props_t* defaultType, const fmi3_xml_primitive_type_t* primType) {
+        fmi3_xml_elm_enu_t elmID, fmi3_xml_float_type_props_t* fallbackType, const fmi3_xml_primitive_type_t* primType)
+{
     jm_named_ptr named, *pnamed;
     fmi3_xml_model_description_t* md = context->modelDescription;
     fmi3_xml_float_type_props_t* props;
-    const char* quantity = 0;
+    const char* quantity = NULL;
     unsigned int relQuanBuf, unboundedBuf;
 
-    jm_vector(char)* bufQuantity = fmi3_xml_reserve_parse_buffer(context, 3, 100);
-    jm_vector(char)* bufUnit = fmi3_xml_reserve_parse_buffer(context, 4, 100);
-    jm_vector(char)* bufDispUnit = fmi3_xml_reserve_parse_buffer(context, 5, 100);
+    jm_vector(char)* bufQuantity = fmi3_xml_reserve_parse_buffer(context, 1, 100);
+    jm_vector(char)* bufUnit = fmi3_xml_reserve_parse_buffer(context, 2, 100);
+    jm_vector(char)* bufDispUnit = fmi3_xml_reserve_parse_buffer(context, 3, 100);
 
-    // XXX: Here we put in the defaultType, which means that the next node after props
-    // will be the default type. For variable parsing we instead later remap to the
-    // declared type. Isn't that what we should use as parameter in the first place?
-    props = (fmi3_xml_float_type_props_t*)fmi3_xml_alloc_variable_or_typedef_props(&md->typeDefinitions, &defaultType->super, sizeof(fmi3_xml_float_type_props_t));
+    props = (fmi3_xml_float_type_props_t*)fmi3_xml_alloc_variable_or_typedef_props(
+            &md->typeDefinitions, &fallbackType->super, sizeof(fmi3_xml_float_type_props_t));
 
     if (!bufQuantity || !bufUnit || !bufDispUnit || !props ||
-            fmi3_xml_set_attr_string(context, elmID, fmi_attr_id_quantity, 0, bufQuantity) || /* <xs:attribute name="quantity" type="xs:normalizedString"/> */
-            fmi3_xml_set_attr_string(context, elmID, fmi_attr_id_unit, 0, bufUnit) ||         /* <xs:attribute name="unit" type="xs:normalizedString"/>  */
-            fmi3_xml_set_attr_string(context, elmID, fmi_attr_id_displayUnit, 0, bufDispUnit) /* <xs:attribute name="displayUnit" type="xs:normalizedString">  */
-            ) {
+            fmi3_xml_set_attr_string(context, elmID, fmi_attr_id_quantity, 0, bufQuantity) ||
+            fmi3_xml_set_attr_string(context, elmID, fmi_attr_id_unit, 0, bufUnit) ||
+            fmi3_xml_set_attr_string(context, elmID, fmi_attr_id_displayUnit, 0, bufDispUnit))
+    {
         fmi3_xml_parse_fatal(context, "Error parsing float type properties");
-        return 0;
+        return NULL;
     }
-    if (jm_vector_get_size(char)(bufQuantity))
+    if (jm_vector_get_size(char)(bufQuantity)) {
         quantity = jm_string_set_put(&md->typeDefinitions.quantities, jm_vector_get_itemp(char)(bufQuantity, 0));
+    }
 
     props->quantity = quantity;
     props->displayUnit = 0;
@@ -712,7 +726,7 @@ fmi3_xml_float_type_props_t* fmi3_xml_parse_float_type_properties(fmi3_xml_parse
         pnamed = jm_vector_bsearch(jm_named_ptr)(&(md->displayUnitDefinitions), &named, jm_compare_named);
         if (!pnamed) {
             fmi3_xml_parse_fatal(context, "Unknown display unit %s in float type definition", jm_vector_get_itemp(char)(bufDispUnit, 0));
-            return 0;
+            return NULL;
         }
         props->displayUnit = pnamed->ptr;
     } else {
@@ -721,25 +735,25 @@ fmi3_xml_float_type_props_t* fmi3_xml_parse_float_type_properties(fmi3_xml_parse
         }
     }
 
-    if (
-            fmi3_xml_set_attr_boolean(context, elmID, fmi_attr_id_relativeQuantity, 0, &relQuanBuf, 0) || /* <xs:attribute name="relativeQuantity" type="xs:boolean" default="false"> */
-            fmi3_xml_set_attr_boolean(context, elmID, fmi_attr_id_unbounded, 0, &unboundedBuf, 0) ||      /* <xs:attribute name="unbounded" type="xs:boolean" default="false"> */
-            fmi3_xml_set_attr_floatXX(context, elmID, fmi_attr_id_min, 0, &props->typeMin, &defaultType->typeMin, primType) ||   /* <xs:attribute name="min" type="xs:double"/> */
-            fmi3_xml_set_attr_floatXX(context, elmID, fmi_attr_id_max, 0, &props->typeMax, &defaultType->typeMax, primType) ||    /* <xs:attribute name="max" type="xs:double"/> */
-            fmi3_xml_set_attr_floatXX(context, elmID, fmi_attr_id_nominal, 0, &props->typeNominal, &defaultType->typeNominal, primType)     /*  <xs:attribute name="nominal" type="xs:double"/> */
-            ) return 0;
+    if (fmi3_xml_set_attr_boolean(context, elmID, fmi_attr_id_relativeQuantity, 0, &relQuanBuf, 0) ||
+        fmi3_xml_set_attr_boolean(context, elmID, fmi_attr_id_unbounded, 0, &unboundedBuf, 0) ||
+        fmi3_xml_set_attr_floatXX(context, elmID, fmi_attr_id_min, 0, &props->typeMin, &fallbackType->typeMin, primType) ||
+        fmi3_xml_set_attr_floatXX(context, elmID, fmi_attr_id_max, 0, &props->typeMax, &fallbackType->typeMax, primType) ||
+        fmi3_xml_set_attr_floatXX(context, elmID, fmi_attr_id_nominal, 0, &props->typeNominal, &fallbackType->typeNominal, primType))
+    {
+        fmi3_xml_parse_fatal(context, "Error parsing float type properties");
+        return NULL;
+    }
 
-    props->super.isRelativeQuantity = (relQuanBuf) ? 1:0;
+    props->super.isRelativeQuantity = (relQuanBuf) ? 1 : 0;
     props->super.isUnbounded = (unboundedBuf) ? 1 : 0;
     return props;
 }
 
 int fmi3_xml_handle_Float(fmi3_xml_parser_context_t* context, const char* data, fmi3_xml_elm_enu_t elmID,
-        fmi3_xml_float_type_props_t* defaultType, const fmi3_xml_primitive_type_t* primType) {
-
-    int res = fmi3_xml_handle_SimpleType(context, data);
-    if (res)
-        return res;
+        fmi3_xml_float_type_props_t* defaultType, const fmi3_xml_primitive_type_t* primType)
+{
+    if (!fmi3_xml_handle_SimpleType(context, data)) return -1;
 
     if (!data) {
         fmi3_xml_model_description_t* md = context->modelDescription;
@@ -753,9 +767,6 @@ int fmi3_xml_handle_Float(fmi3_xml_parser_context_t* context, const char* data, 
         type = named.ptr;
         type->super.baseType = primType->baseType;
         type->super.nextLayer = &props->super;
-    } else {
-        /* don't do anything. might give out a warning if(data[0] != 0) */
-        return 0;
     }
     return 0;
 }
@@ -768,42 +779,42 @@ int fmi3_xml_handle_Float32(fmi3_xml_parser_context_t* context, const char* data
     return fmi3_xml_handle_Float(context, data, fmi3_xml_elmID_Float32, &context->modelDescription->typeDefinitions.defaultFloat32Type, &PRIMITIVE_TYPES.float32);
 }
 
-fmi3_xml_int_type_props_t * fmi3_xml_parse_intXX_type_properties(fmi3_xml_parser_context_t* context,
-        fmi3_xml_elm_enu_t elmID, fmi3_xml_int_type_props_t* defaultType, const fmi3_xml_primitive_type_t* primType) {
-
+// XXX: Why don't we give fatal errors here, but we do it for floatXX?
+//
+// @param fallbackType: The type (declared or default) from which values will be taken if not set on the element.
+fmi3_xml_int_type_props_t* fmi3_xml_parse_intXX_type_properties(fmi3_xml_parser_context_t* context,
+        fmi3_xml_elm_enu_t elmID, fmi3_xml_int_type_props_t* fallbackType, const fmi3_xml_primitive_type_t* primType)
+{
     fmi3_xml_model_description_t* md = context->modelDescription;
     fmi3_xml_type_definitions_t* td = &md->typeDefinitions;
     fmi3_xml_int_type_props_t* props = 0;
     const char* quantity = NULL;
 
-    jm_vector(char)* bufQuantity = fmi3_xml_reserve_parse_buffer(context, 3, 100);
-    if (!bufQuantity) return 0;
+    jm_vector(char)* bufQuantity = fmi3_xml_reserve_parse_buffer(context, 1, 100);
+    if (!bufQuantity) return NULL;
 
-    props = (fmi3_xml_int_type_props_t*)fmi3_xml_alloc_variable_or_typedef_props(td, &defaultType->super, sizeof(fmi3_xml_int_type_props_t));
-    if (!props) return 0;
+    props = (fmi3_xml_int_type_props_t*)fmi3_xml_alloc_variable_or_typedef_props(td, &fallbackType->super, sizeof(fmi3_xml_int_type_props_t));
+    if (!props) return NULL;
 
     if (fmi3_xml_set_attr_string(context, elmID, fmi_attr_id_quantity, 0, bufQuantity))
-        return 0;
+        return NULL;
 
     if (jm_vector_get_size(char)(bufQuantity))
         quantity = jm_string_set_put(&td->quantities, jm_vector_get_itemp(char)(bufQuantity, 0));
 
     props->quantity = quantity;
 
-    if (    fmi3_xml_set_attr_intXX(context, elmID, fmi_attr_id_min, 0, &props->typeMin, &defaultType->typeMin, primType) ||
-            fmi3_xml_set_attr_intXX(context, elmID, fmi_attr_id_max, 0, &props->typeMax, &defaultType->typeMax, primType))
-        return 0;
+    if (    fmi3_xml_set_attr_intXX(context, elmID, fmi_attr_id_min, 0, &props->typeMin, &fallbackType->typeMin, primType) ||
+            fmi3_xml_set_attr_intXX(context, elmID, fmi_attr_id_max, 0, &props->typeMax, &fallbackType->typeMax, primType))
+        return NULL;
 
     return props;
 }
 
 int fmi3_xml_handle_IntXX(fmi3_xml_parser_context_t *context, const char* data, fmi3_xml_elm_enu_t elemID,
-        fmi3_xml_int_type_props_t* defaultType, const fmi3_xml_primitive_type_t* primType) {
-
-    /* handle super type */
-    int res = fmi3_xml_handle_SimpleType(context, data);
-    if (res)
-        return res;
+        fmi3_xml_int_type_props_t* defaultType, const fmi3_xml_primitive_type_t* primType)
+{
+    if (!fmi3_xml_handle_SimpleType(context, data)) return -1;
 
     if(!data) {
         fmi3_xml_model_description_t* md = context->modelDescription;
@@ -817,10 +828,6 @@ int fmi3_xml_handle_IntXX(fmi3_xml_parser_context_t *context, const char* data, 
         type = named.ptr;
         type->super.baseType = primType->baseType;
         type->super.nextLayer = &props->super;
-    }
-    else {
-        /* don't do anything. might give out a warning if(data[0] != 0) */
-        return 0;
     }
     return 0;
 }
@@ -858,12 +865,9 @@ int fmi3_xml_handle_UInt8(fmi3_xml_parser_context_t* context, const char* data) 
 }
 
 int fmi3_xml_handle_Boolean(fmi3_xml_parser_context_t* context, const char* data) {
+    if (!fmi3_xml_handle_SimpleType(context, data)) return -1;
 
-    int res = fmi3_xml_handle_SimpleType(context, data);
-    if (res)
-        return res;
-
-    if(!data) {
+    if (!data) {
         fmi3_xml_model_description_t* md = context->modelDescription;
         jm_named_ptr named;
         fmi3_xml_variable_typedef_t* type;
@@ -873,17 +877,23 @@ int fmi3_xml_handle_Boolean(fmi3_xml_parser_context_t* context, const char* data
         type->super.baseType = fmi3_base_type_bool;
         type->super.nextLayer = &md->typeDefinitions.defaultBooleanType;
     }
-    else {
-        /* don't do anything. might give out a warning if(data[0] != 0) */
-        return 0;
-    }
     return 0;
 }
 
 int fmi3_xml_handle_Binary(fmi3_xml_parser_context_t* context, const char* data) {
-    // TODO
-    assert(0);
-    return -1;
+    if (!fmi3_xml_handle_SimpleType(context, data)) return -1;
+
+    if (!data) {
+        fmi3_xml_model_description_t* md = context->modelDescription;
+        jm_named_ptr named;
+        fmi3_xml_variable_typedef_t* type;
+
+        named = jm_vector_get_last(jm_named_ptr)(&context->modelDescription->typeDefinitions.typeDefinitions);
+        type = named.ptr;
+        type->super.baseType = fmi3_base_type_binary;
+        type->super.nextLayer = &md->typeDefinitions.defaultBinaryType;
+    }
+    return 0;
 }
 
 int fmi3_xml_handle_Clock(fmi3_xml_parser_context_t* context, const char* data) {
@@ -893,12 +903,9 @@ int fmi3_xml_handle_Clock(fmi3_xml_parser_context_t* context, const char* data) 
 }
 
 int fmi3_xml_handle_String(fmi3_xml_parser_context_t* context, const char* data) {
+    if (!fmi3_xml_handle_SimpleType(context, data)) return -1;
 
-    int res = fmi3_xml_handle_SimpleType(context, data);
-    if (res)
-        return res;
-
-    if(!data) {
+    if (!data) {
         fmi3_xml_model_description_t* md = context->modelDescription;
         jm_named_ptr named;
         fmi3_xml_variable_typedef_t* type;
@@ -908,20 +915,13 @@ int fmi3_xml_handle_String(fmi3_xml_parser_context_t* context, const char* data)
         type->super.baseType = fmi3_base_type_str;
         type->super.nextLayer = &md->typeDefinitions.defaultStringType;
     }
-    else {
-        /* don't do anything. might give out a warning if(data[0] != 0) */
-        return 0;
-    }
     return 0;
 }
 
 int fmi3_xml_handle_Enumeration(fmi3_xml_parser_context_t* context, const char* data) {
+    if (!fmi3_xml_handle_SimpleType(context, data)) return -1;
 
-    int res = fmi3_xml_handle_SimpleType(context, data);
-    if (res)
-        return res;
-
-    if(!data) {
+    if (!data) {
         jm_named_ptr named;
         fmi3_xml_model_description_t* md = context->modelDescription;
         fmi3_xml_enum_typedef_props_t * props;
@@ -934,19 +934,18 @@ int fmi3_xml_handle_Enumeration(fmi3_xml_parser_context_t* context, const char* 
                                                     &md->typeDefinitions.defaultEnumType.base.super,
                                                     sizeof(fmi3_xml_enum_typedef_props_t));
 
-        if(props) {
+        if (props) {
             /* the init call will override the 'next' field which has been set when the properties were allocated,
                so we need to restore it after initializing */
             fmi3_xml_variable_type_base_t* nextTmp = props->base.super.next;
             fmi3_xml_init_enumeration_type_properties(props, context->callbacks);
             props->base.super.next = nextTmp;
         }
-        if(!bufQuantity || !props ||
-                /* <xs:attribute name="quantity" type="xs:normalizedString"/> */
+        if (!bufQuantity || !props ||
                 fmi3_xml_set_attr_string(context, fmi3_xml_elmID_Int32, fmi_attr_id_quantity, 0, bufQuantity)
                 )
             return -1;
-        if(jm_vector_get_size(char)(bufQuantity))
+        if (jm_vector_get_size(char)(bufQuantity))
             quantity = jm_string_set_put(&md->typeDefinitions.quantities, jm_vector_get_itemp(char)(bufQuantity, 0));
 
         props->base.quantity = quantity;
@@ -964,10 +963,10 @@ int fmi3_xml_handle_Enumeration(fmi3_xml_parser_context_t* context, const char* 
         jm_vector(jm_named_ptr)* items = &props->enumItems;
         size_t i, n = jm_vector_get_size(jm_named_ptr)(items);
         jm_vector_qsort(jm_named_ptr)(items, fmi3_xml_compare_enum_val);
-        for(i = 1; i < n; i++) {
+        for (i = 1; i < n; i++) {
             fmi3_xml_enum_type_item_t* a = jm_vector_get_itemp(jm_named_ptr)(items, i-1)->ptr;
             fmi3_xml_enum_type_item_t* b = jm_vector_get_itemp(jm_named_ptr)(items, i)->ptr;
-            if(a->value == b->value) {
+            if (a->value == b->value) {
                 jm_log_error(context->callbacks, module, "Enum items '%s' and '%s' within enumeration '%s' have the same value %d",
                     a->itemName, b->itemName, type->typeName, a->value);
             }
@@ -983,7 +982,7 @@ int fmi3_xml_handle_Enumeration(fmi3_xml_parser_context_t* context, const char* 
 }
 
 int fmi3_xml_handle_Item(fmi3_xml_parser_context_t* context, const char* data) {
-    if(!data) {
+    if (!data) {
         fmi3_xml_model_description_t* md = context->modelDescription;
         jm_vector(char)* bufName = fmi3_xml_reserve_parse_buffer(context,1,100);
         jm_vector(char)* bufDescr = fmi3_xml_reserve_parse_buffer(context,2,100);
@@ -1008,21 +1007,17 @@ int fmi3_xml_handle_Item(fmi3_xml_parser_context_t* context, const char* data) {
         named.name = 0;
         pnamed = jm_vector_push_back(jm_named_ptr)(&enumProps->enumItems, named);
 
-        if(pnamed) *pnamed = named = jm_named_alloc_v(bufName,sizeof(fmi3_xml_enum_type_item_t)+descrlen+1,sizeof(fmi3_xml_enum_type_item_t)+descrlen,context->callbacks);
+        if (pnamed) *pnamed = named = jm_named_alloc_v(bufName,sizeof(fmi3_xml_enum_type_item_t)+descrlen+1,sizeof(fmi3_xml_enum_type_item_t)+descrlen,context->callbacks);
         item = named.ptr;
-        if( !pnamed || !item ) {
+        if (!pnamed || !item) {
             fmi3_xml_parse_fatal(context, "Could not allocate memory");
             return -1;
         }
         item->itemName = named.name;
         item->value = value;
-        if(descrlen)
+        if (descrlen)
             memcpy(item->itemDesciption,jm_vector_get_itemp(char)(bufDescr,0), descrlen);
         item->itemDesciption[descrlen] = 0;
-    }
-    else {
-        /* don't do anything. might give out a warning if(data[0] != 0) */
-        return 0;
     }
     return 0;
 }

@@ -53,10 +53,12 @@ typedef struct fmi3_xml_model_structure_t fmi3_xml_model_structure_t;
 
 /**\name Type definitions supporting structures
 @{ */
-typedef struct fmi3_xml_float_typedef_t fmi3_xml_float_typedef_t;
-typedef struct fmi3_xml_int_typedef_t fmi3_xml_int_typedef_t;
+typedef struct fmi3_xml_float_typedef_t       fmi3_xml_float_typedef_t;
+typedef struct fmi3_xml_int_typedef_t         fmi3_xml_int_typedef_t;
 typedef struct fmi3_xml_enumeration_typedef_t fmi3_xml_enumeration_typedef_t;
-typedef struct fmi3_xml_variable_typedef_t fmi3_xml_variable_typedef_t;
+typedef struct fmi3_xml_binary_typedef_t      fmi3_xml_binary_typedef_t;
+typedef struct fmi3_xml_clock_typedef_t       fmi3_xml_clock_typedef_t;
+typedef struct fmi3_xml_variable_typedef_t    fmi3_xml_variable_typedef_t;
 
 typedef struct fmi3_xml_type_definitions_t fmi3_xml_type_definitions_t;
 /** @} */

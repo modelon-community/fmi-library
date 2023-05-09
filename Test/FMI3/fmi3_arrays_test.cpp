@@ -285,7 +285,20 @@ TEST_CASE("Test array parsing and verify retrieved start values are as expected"
         SECTION("Test string start no array") {
         fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "string_array2");
         fmi3_string_t* start = fmi3_import_get_string_variable_start(fmi3_import_get_variable_as_string(v));
-        REQUIRE(start[0][0]   == 'T');
+        REQUIRE(start[0][0]    == 'A');
+        REQUIRE(start[0][1]    == ' ');
+        REQUIRE(start[0][2]    == 's');
+        REQUIRE(start[0][3]    == 'T');
+        REQUIRE(start[0][4]    == 'r');
+        REQUIRE(start[0][5]    == 'i');
+        REQUIRE(start[0][6]    == 'n');
+        REQUIRE(start[0][7]    == 'g');
+        REQUIRE(start[0][8]    == ' ');
+        REQUIRE(start[0][9]    == 'v');
+        REQUIRE(start[0][10]   == 'a');
+        REQUIRE(start[0][11]   == 'l');
+        REQUIRE(start[0][12]   == 'u');
+        REQUIRE(start[0][13]   == 'e');
     }
     fmi_import_free_context(context);
     fmi3_import_free(xml);

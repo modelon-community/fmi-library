@@ -270,6 +270,7 @@ void fmi3_xml_parse_free_context(fmi3_xml_parser_context_t *context) {
     jm_stack_free_data(int)(&context->elmStack);
     jm_vector_free_data(char)(&context->elmData);
     jm_vector_free_data(char)(&context->variableStartAttr);
+    jm_vector_free_data(jm_voidp)(&context->currentStartVariableValues);
 
     if (jm_resetlocale_numeric(context->callbacks, context->jm_locale)) {
         jm_log_error(context->callbacks, module, "Failed to reset locale.");
@@ -1429,7 +1430,7 @@ int fmi3_xml_parse_model_description(fmi3_xml_model_description_t* md,
     jm_stack_init(int)(&context->elmStack,  context->callbacks);
     jm_vector_init(char)(&context->elmData,           0, context->callbacks);
     jm_vector_init(char)(&context->variableStartAttr, 0, context->callbacks);
-    jm_vector_init(jm_voidp)(&context->variableStartValues, 0, context->callbacks);
+    jm_vector_init(jm_voidp)(&context->currentStartVariableValues, 0, context->callbacks);
 
     context->lastElmID = fmi3_xml_elmID_none;
     context->currentElmID = fmi3_xml_elmID_none;

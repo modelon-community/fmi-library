@@ -277,6 +277,12 @@ FMILIB_EXPORT const char* fmi3_import_get_enum_type_item_description(fmi3_import
 /** \brief Get an enumeration item name for the given value */
 FMILIB_EXPORT const char* fmi3_import_get_enum_type_value_name(fmi3_import_enumeration_typedef_t* t, int value);
 
+/** \brief Get mimeType for the type */
+FMILIB_EXPORT fmi3_string_t fmi3_import_get_binary_type_mime_type(fmi3_import_binary_typedef_t* t);
+
+/** \brief Get maxSize for the type */
+FMILIB_EXPORT size_t fmi3_import_get_binary_type_max_size(fmi3_import_binary_typedef_t* t);
+
 /**
 *  @}
 */

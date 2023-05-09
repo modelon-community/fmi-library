@@ -65,6 +65,10 @@ const char* fmi3_import_get_type_quantity(fmi3_import_variable_typedef_t* t) {
     return fmi3_xml_get_type_quantity(t);
 }
 
+// -----------------------------------------------------------------------------
+// Float64
+// -----------------------------------------------------------------------------
+
 fmi3_float64_t fmi3_import_get_float64_type_min(fmi3_import_float_typedef_t* t) {
     return fmi3_xml_get_float64_type_min(t);
 }
@@ -92,6 +96,10 @@ int fmi3_import_get_float64_type_is_unbounded(fmi3_import_float_typedef_t* t) {
 fmi3_import_display_unit_t* fmi3_import_get_float64_type_display_unit(fmi3_import_float_typedef_t* t) {
     return fmi3_xml_get_float64_type_display_unit(t);
 }
+
+// -----------------------------------------------------------------------------
+// Float32
+// -----------------------------------------------------------------------------
 
 fmi3_float32_t fmi3_import_get_float32_type_min(fmi3_import_float_typedef_t* t) {
     return fmi3_xml_get_float32_type_min(t);
@@ -121,6 +129,10 @@ fmi3_import_display_unit_t* fmi3_import_get_float32_type_display_unit(fmi3_impor
     return fmi3_xml_get_float32_type_display_unit(t);
 }
 
+// -----------------------------------------------------------------------------
+// Int64
+// -----------------------------------------------------------------------------
+
 fmi3_int64_t fmi3_import_get_int64_type_min(fmi3_import_int_typedef_t* t) {
     return fmi3_xml_get_int64_type_min(t);
 }
@@ -128,6 +140,10 @@ fmi3_int64_t fmi3_import_get_int64_type_min(fmi3_import_int_typedef_t* t) {
 fmi3_int64_t fmi3_import_get_int64_type_max(fmi3_import_int_typedef_t* t) {
     return fmi3_xml_get_int64_type_max(t);
 }
+
+// -----------------------------------------------------------------------------
+// Int32
+// -----------------------------------------------------------------------------
 
 fmi3_int32_t fmi3_import_get_int32_type_min(fmi3_import_int_typedef_t* t) {
     return fmi3_xml_get_int32_type_min(t);
@@ -137,6 +153,10 @@ fmi3_int32_t fmi3_import_get_int32_type_max(fmi3_import_int_typedef_t* t) {
     return fmi3_xml_get_int32_type_max(t);
 }
 
+// -----------------------------------------------------------------------------
+// Int16
+// -----------------------------------------------------------------------------
+
 fmi3_int16_t fmi3_import_get_int16_type_min(fmi3_import_int_typedef_t* t) {
     return fmi3_xml_get_int16_type_min(t);
 }
@@ -144,6 +164,10 @@ fmi3_int16_t fmi3_import_get_int16_type_min(fmi3_import_int_typedef_t* t) {
 fmi3_int16_t fmi3_import_get_int16_type_max(fmi3_import_int_typedef_t* t) {
     return fmi3_xml_get_int16_type_max(t);
 }
+
+// -----------------------------------------------------------------------------
+// Int8
+// -----------------------------------------------------------------------------
 
 fmi3_int8_t fmi3_import_get_int8_type_min(fmi3_import_int_typedef_t* t) {
     return fmi3_xml_get_int8_type_min(t);
@@ -153,6 +177,10 @@ fmi3_int8_t fmi3_import_get_int8_type_max(fmi3_import_int_typedef_t* t) {
     return fmi3_xml_get_int8_type_max(t);
 }
 
+// -----------------------------------------------------------------------------
+// UInt64
+// -----------------------------------------------------------------------------
+
 fmi3_uint64_t fmi3_import_get_uint64_type_min(fmi3_import_int_typedef_t* t) {
     return fmi3_xml_get_uint64_type_min(t);
 }
@@ -160,6 +188,10 @@ fmi3_uint64_t fmi3_import_get_uint64_type_min(fmi3_import_int_typedef_t* t) {
 fmi3_uint64_t fmi3_import_get_uint64_type_max(fmi3_import_int_typedef_t* t) {
     return fmi3_xml_get_uint64_type_max(t);
 }
+
+// -----------------------------------------------------------------------------
+// UInt32
+// -----------------------------------------------------------------------------
 
 fmi3_uint32_t fmi3_import_get_uint32_type_min(fmi3_import_int_typedef_t* t) {
     return fmi3_xml_get_uint32_type_min(t);
@@ -169,6 +201,10 @@ fmi3_uint32_t fmi3_import_get_uint32_type_max(fmi3_import_int_typedef_t* t) {
     return fmi3_xml_get_uint32_type_max(t);
 }
 
+// -----------------------------------------------------------------------------
+// UInt16
+// -----------------------------------------------------------------------------
+
 fmi3_uint16_t fmi3_import_get_uint16_type_min(fmi3_import_int_typedef_t* t) {
     return fmi3_xml_get_uint16_type_min(t);
 }
@@ -177,6 +213,10 @@ fmi3_uint16_t fmi3_import_get_uint16_type_max(fmi3_import_int_typedef_t* t) {
     return fmi3_xml_get_uint16_type_max(t);
 }
 
+// -----------------------------------------------------------------------------
+// UInt8
+// -----------------------------------------------------------------------------
+
 fmi3_uint8_t fmi3_import_get_uint8_type_min(fmi3_import_int_typedef_t* t) {
     return fmi3_xml_get_uint8_type_min(t);
 }
@@ -184,6 +224,10 @@ fmi3_uint8_t fmi3_import_get_uint8_type_min(fmi3_import_int_typedef_t* t) {
 fmi3_uint8_t fmi3_import_get_uint8_type_max(fmi3_import_int_typedef_t* t) {
     return fmi3_xml_get_uint8_type_max(t);
 }
+
+// -----------------------------------------------------------------------------
+// Enum
+// -----------------------------------------------------------------------------
 
 unsigned int fmi3_import_get_enum_type_min(fmi3_import_enumeration_typedef_t* t){
     return fmi3_xml_get_enum_type_min(t);
@@ -211,4 +255,16 @@ int fmi3_import_get_enum_type_item_value(fmi3_import_enumeration_typedef_t* t, u
 
 const char* fmi3_import_get_enum_type_value_name(fmi3_import_enumeration_typedef_t* t, int value) {
     return fmi3_xml_get_enum_type_value_name(t, value);
+}
+
+// -----------------------------------------------------------------------------
+// Binary
+// -----------------------------------------------------------------------------
+
+fmi3_string_t fmi3_import_get_binary_type_mime_type(fmi3_import_binary_typedef_t* t) {
+    return fmi3_xml_get_binary_type_mime_type(t);
+}
+
+size_t fmi3_import_get_binary_type_max_size(fmi3_import_binary_typedef_t* t) {
+    return fmi3_xml_get_binary_type_max_size(t);
 }

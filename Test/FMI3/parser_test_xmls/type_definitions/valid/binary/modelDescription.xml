@@ -4,23 +4,23 @@
 <ModelExchange modelIdentifier="myModelIdentifier" />
 
 <TypeDefinitions>
-  <Binary name="td_minimal">
-  <Binary name="td_mimeType" mimeType="mt0">
-  <Binary name="td_allAttr"  mimeType="mt0" maxSize="999">
+  <Binary name="td_minimal"/>
+  <Binary name="td_mimeType" mimeType="mt0"/>
+  <Binary name="td_allAttr"  mimeType="mt0" maxSize="999"/>
 </TypeDefinitions>
 
 <ModelVariables>
   <!-- Tests inheritance from typedef -->
-  <Binary name="var_default_type_1"/>
-  <Binary name="var_ext_td_minimal_1"  declaredType="td_minimal"/>
-  <Binary name="var_ext_td_mimeType_1" declaredType="td_mimeType"/>
-  <Binary name="var_ext_td_allAttr_1"  declaredType="td_allAttr"/>
+  <Binary name="var_default_type_1"    valueReference="0"/>
+  <Binary name="var_ext_td_minimal_1"  valueReference="1" declaredType="td_minimal"/>
+  <Binary name="var_ext_td_mimeType_1" valueReference="2" declaredType="td_mimeType"/>
+  <Binary name="var_ext_td_allAttr_1"  valueReference="3" declaredType="td_allAttr"/>
 
   <!-- Tests that attributes on variables get precedence, and that other attributes (maxSize) are still inherited -->
-  <Binary name="var_default_type_2"                               mimeType="mt2"/>
-  <Binary name="var_ext_td_minimal_2"  declaredType="td_minimal"  mimeType="mt2"/>
-  <Binary name="var_ext_td_mimeType_2" declaredType="td_mimeType" mimeType="mt2"/>
-  <Binary name="var_ext_td_allAttr_2"  declaredType="td_allAttr"  mimeType="mt2" maxSize="2"/>
+  <Binary name="var_default_type_2"    valueReference="4"                            mimeType="mt2"/>
+  <Binary name="var_ext_td_minimal_2"  valueReference="5" declaredType="td_minimal"  mimeType="mt2"/>
+  <Binary name="var_ext_td_mimeType_2" valueReference="6" declaredType="td_mimeType" mimeType="mt2"/>
+  <Binary name="var_ext_td_allAttr_2"  valueReference="7" declaredType="td_allAttr"  mimeType="mt2" maxSize="2"/>
 </ModelVariables>
 
 <ModelStructure/>

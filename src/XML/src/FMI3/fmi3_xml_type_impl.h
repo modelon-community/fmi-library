@@ -240,7 +240,7 @@ typedef struct fmi3_xml_int_variable_start_t {
 
 typedef struct fmi3_xml_variable_start_string_t {
     fmi3_xml_variable_type_base_t super;
-    jm_vector(jm_voidp) arrayStartValues;
+    jm_vector(jm_voidp) stringStartValues;
     char start[1];
 } fmi3_xml_string_variable_start_t;
 

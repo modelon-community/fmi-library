@@ -19,44 +19,30 @@
 #include <FMI3/fmi3_enums.h>
 
 
-int fmi3_base_type_enu_is_bool(fmi3_base_type_enu_t baseType) {
-    switch (baseType) {
-        case fmi3_base_type_bool:    return 1;
-        default: return 0;
-    }
-    return 0;
+bool fmi3_base_type_enu_is_bool(fmi3_base_type_enu_t baseType) {
+    return baseType == fmi3_base_type_bool;
 }
 
-int fmi3_base_type_enu_is_int(fmi3_base_type_enu_t baseType) {
+bool fmi3_base_type_enu_is_int(fmi3_base_type_enu_t baseType) {
     switch (baseType) {
-        case fmi3_base_type_int64:    return 1;
-        case fmi3_base_type_int32:    return 1;
-        case fmi3_base_type_int16:    return 1;
-        case fmi3_base_type_int8:     return 1;
-        case fmi3_base_type_uint64:   return 1;
-        case fmi3_base_type_uint32:   return 1;
-        case fmi3_base_type_uint16:   return 1;
-        case fmi3_base_type_uint8:    return 1;
-        default: return 0;
+        case fmi3_base_type_int64:    return true;
+        case fmi3_base_type_int32:    return true;
+        case fmi3_base_type_int16:    return true;
+        case fmi3_base_type_int8:     return true;
+        case fmi3_base_type_uint64:   return true;
+        case fmi3_base_type_uint32:   return true;
+        case fmi3_base_type_uint16:   return true;
+        case fmi3_base_type_uint8:    return true;
+        default: return false;
     }
-    return 0;
+    return false;
+}
+bool fmi3_base_type_enu_is_float(fmi3_base_type_enu_t baseType) {
+    return baseType==fmi3_base_type_float64 || baseType==fmi3_base_type_float32;
 }
 
-int fmi3_base_type_enu_is_float(fmi3_base_type_enu_t baseType) {
-    switch (baseType) {
-        case fmi3_base_type_float64: return 1;
-        case fmi3_base_type_float32: return 1;
-        default: return 0;
-    }
-    return 0;
-}
-
-int fmi3_base_type_enu_is_enum(fmi3_base_type_enu_t baseType) {
-    switch (baseType) {
-        case fmi3_base_type_enum: return 1;
-        default: return 0;
-    }
-    return 0;
+bool fmi3_base_type_enu_is_enum(fmi3_base_type_enu_t baseType) {
+    return baseType == fmi3_base_type_enum;
 }
 
 const char* fmi3_naming_convention_to_string(fmi3_variable_naming_convension_enu_t convention) {

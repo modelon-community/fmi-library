@@ -251,8 +251,8 @@ struct fmi3_xml_parser_context_t {
 
     XML_Parser parser;
 
-    /* A dynamic vector used to retrieve start values of String arrays and Binary arrays. */
-    jm_vector(jm_voidp) variableStartValues;
+    /* A dynamic vector used to retrieve start values of String- and Binary variables. */
+    jm_vector(jm_voidp) currentStartVariableValues;
 
     /**
      * Actual type: jm_vector of jm_vector(char).

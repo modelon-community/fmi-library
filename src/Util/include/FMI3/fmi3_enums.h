@@ -274,28 +274,28 @@ typedef enum fmi3_dependencies_kind_enu_t
 
 /** \brief Test if the input argument of type fmi3_base_type_enu_t is representing bool.
     \param enums The object of type fmi3_base_type_enu_t to check.
-    \return Returns 1 for bool, otherwise 0.
+    \return Returns true for bool, otherwise false.
 */
-int fmi3_base_type_enu_is_bool(fmi3_base_type_enu_t enums);
+bool fmi3_base_type_enu_is_bool(fmi3_base_type_enu_t enums);
 
 
 /** \brief Test if the input argument of type fmi3_base_type_enu_t is representing [u]int8/32/64.
     \param enums The object of type fmi3_base_type_enu_t to check.
-    \return Returns 1 for any of the signed/unsigned integer types, otherwise 0.
+    \return Returns true for any of the signed/unsigned integer types, otherwise fa;se.
 */
-int fmi3_base_type_enu_is_int(fmi3_base_type_enu_t enums);
+bool fmi3_base_type_enu_is_int(fmi3_base_type_enu_t enums);
 
 /** \brief Test if the input argument of type fmi3_base_type_enu_t* is representing float32 or float64.
     \param enums The object of type fmi3_base_type_enu_t to check.
-    \return Returns 1 for float32 and float64, otherwise 0.
+    \return Returns true for float32 and float64, otherwise false.
 */
-int fmi3_base_type_enu_is_float(fmi3_base_type_enu_t enums);
+bool fmi3_base_type_enu_is_float(fmi3_base_type_enu_t enums);
 
 /** \brief Test if the input argument of type fmi3_base_type_enu_t* is representing an enumeration.
     \param enums The object of type fmi3_base_type_enu_t to check.
-    \return Returns 1 for enums otherwise 0.
+    \return Returns true for enums otherwise false.
 */
-int fmi3_base_type_enu_is_enum(fmi3_base_type_enu_t enums);
+bool fmi3_base_type_enu_is_enum(fmi3_base_type_enu_t enums);
 
 /** \brief Bitness for types such as Float32/Float64 */
 typedef enum fmi3_bitness_enu_t {

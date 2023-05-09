@@ -21,7 +21,7 @@
 
 <ModelStructure>
   <Output valueReference="2"/>
-  <ContinuousStateDerivative valueReference="1"/>
+  <ContinuousStateDerivative valueReference="1" dependencies="0"/>
   <ClockedState valueReference="11"/>
   <InitialUnknown valueReference="1"/>
   <EventIndicator valueReference="100"/>

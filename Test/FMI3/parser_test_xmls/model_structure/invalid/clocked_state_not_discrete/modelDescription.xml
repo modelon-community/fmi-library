@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <fmiModelDescription fmiVersion="3.0" modelName="" instantiationToken="">
-<ModelExchange modelIdentifier="myModelIdentifier" />
+<ModelExchange modelIdentifier="ClockedState_not_discrete" />
 
 <ModelVariables>
     <Float64 name="clocked_var_previous" valueReference="10" variability="discrete"/>

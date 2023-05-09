@@ -253,9 +253,9 @@ int fmi3_xml_parse_dependencies(fmi3_xml_parser_context_t *context,
                ms->isValidFlag = 0;
                return 0;
             }
-            if(ind < 1) {
+            if(ind < 0) {
                 // TODO: Rework this error; list actual type
-                fmi3_xml_parse_error(context, "XML element 'Unknown': item %d=%d is less than one in the list for attribute 'dependencies'",
+                fmi3_xml_parse_error(context, "XML element 'Unknown': item %d=%d is negative in the list for attribute 'dependencies'",
                     numDepInd, ind);
                ms->isValidFlag = 0;
                return 0;
@@ -496,7 +496,7 @@ int fmi3_xml_handle_ClockedState(fmi3_xml_parser_context_t *context, const char*
         fmi3_xml_variable_t* clock_var = (fmi3_xml_variable_t*)jm_vector_get_last(jm_voidp)(&ms->clockedStates);
 
         /* clock attribute required */
-        if (!fmi3_xml_get_variable_has_clocks(clock_var)){
+        if (!fmi3_xml_is_clocked(clock_var)){
             ms->isValidFlag = 0;
             fmi3_xml_parse_error(context,
                     "The ClockedState '%s' does not have the attribute='clocks'.",
@@ -551,8 +551,10 @@ int fmi3_xml_handle_EventIndicator(fmi3_xml_parser_context_t *context, const cha
         fmi3_xml_model_structure_t* ms = md->modelStructure;
 
         // Ignored if Co-simulation & scheduled execution
-        fmi3_fmu_kind_enu_t fmu_kind = fmi3_xml_get_fmu_kind(md);
-        if ((fmu_kind == fmi3_fmu_kind_cs) || (fmu_kind == fmi3_fmu_kind_se)){
+        fmi3_fmu_kind_enu_t fmu_kind = fmi3_fmu_kind_unknown;
+        fmu_kind = fmi3_xml_get_fmu_kind(md);
+        // Multiple types can be defined, check for: not ME and (CS or SE)
+        if (!(fmu_kind & fmi3_fmu_kind_me) && ((fmu_kind & fmi3_fmu_kind_cs) || (fmu_kind & fmi3_fmu_kind_se))){
             jm_log_info(md->callbacks, "FMI3XML", "EventIndicator ignored since FMU kind is Co-Simulation or Scheduled Excecution.");
             return 0;
         }

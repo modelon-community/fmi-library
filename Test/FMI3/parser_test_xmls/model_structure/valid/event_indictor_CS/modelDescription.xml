@@ -1,11 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<fmiModelDescription
-  fmiVersion="3.0"
-  modelName="myModelName"
-  instantiationToken="myInstToken">
-
-<CoSimulation
-  modelIdentifier="myModelIdentifier" />
+<fmiModelDescription fmiVersion="3.0" modelName="" instantiationToken="">
+<CoSimulation modelIdentifier="EventIndicator_CoSimulation_ignore" />
 
 <ModelVariables>
     <Float64 name="event_ind" valueReference="4" variability="continuous"/>

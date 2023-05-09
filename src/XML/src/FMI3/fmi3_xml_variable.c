@@ -174,7 +174,8 @@ fmi3_boolean_t fmi3_xml_get_canHandleMultipleSetPerTimeInstant(fmi3_xml_variable
     return (fmi3_boolean_t)v->canHandleMultipleSetPerTimeInstant;
 }
 
-fmi3_boolean_t fmi3_xml_get_variable_has_clocks(fmi3_xml_variable_t* v) {
+fmi3_boolean_t fmi3_xml_is_clocked(fmi3_xml_variable_t* v) {
+    /* A variable is considered clocked if it has the 'clocks' attribute */
     return (fmi3_boolean_t)(v->clocks);
 }
 

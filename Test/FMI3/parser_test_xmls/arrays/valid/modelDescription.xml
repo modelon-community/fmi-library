@@ -170,14 +170,14 @@
 
   <String name="string_array" valueReference="120" causality="input" description="Testing string arrays">
     <Dimension start="3"/>
-      <Start value="The first string," />
-      <Start value="and the second string!" />
-      <Start value="abcd." />
+    <Start value="The first string," />
+    <Start value="and the second string!" />
+    <Start value="abcd." />
   </String>
 
 
   <String name="string_array2" valueReference="121" causality="input" description="Testing string no array">
-      <Start value="A string value"/>
+    <Start value="A sTring value"/>
   </String>
 
     <!-- variables used as dimension specifiers -->

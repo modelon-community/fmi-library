@@ -375,7 +375,7 @@ const char* fmi3_xml_get_enum_type_item_description(fmi3_xml_enumeration_typedef
     fmi3_xml_enum_type_item_t* e;
     if(item > fmi3_xml_get_enum_type_size(t) ) return  0;
     e = jm_vector_get_item(jm_named_ptr)(&props->enumItems,item-1).ptr;
-    return e->itemDesciption;
+    return e->itemDescription;
 }
 
 void fmi3_xml_init_variable_type_base(fmi3_xml_variable_type_base_t* type, fmi3_xml_type_struct_kind_enu_t kind, fmi3_base_type_enu_t baseType) {
@@ -651,7 +651,7 @@ fmi3_xml_variable_type_base_t* fmi3_xml_alloc_variable_or_typedef_props(fmi3_xml
 
 /**
  * Adds a new start object on top of the list-node given in parameter 'base'.
- * 
+ *
  * Generic for all struct kinds (float, int, ...), i.e. the caller needs to typecast to the
  * correct type and make sure that enough memory is given via parameter 'typeSize'.
  *
@@ -1017,8 +1017,8 @@ int fmi3_xml_handle_Item(fmi3_xml_parser_context_t* context, const char* data) {
         item->itemName = named.name;
         item->value = value;
         if(descrlen)
-            memcpy(item->itemDesciption,jm_vector_get_itemp(char)(bufDescr,0), descrlen);
-        item->itemDesciption[descrlen] = 0;
+            memcpy(item->itemDescription,jm_vector_get_itemp(char)(bufDescr,0), descrlen);
+        item->itemDescription[descrlen] = 0;
     }
     else {
         /* don't do anything. might give out a warning if(data[0] != 0) */

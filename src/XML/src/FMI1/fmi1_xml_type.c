@@ -41,7 +41,7 @@ fmi1_xml_variable_typedef_t* fmi1_xml_get_typedef(fmi1_xml_type_definitions_t* t
     return (fmi1_xml_variable_typedef_t*)jm_vector_get_item(jm_named_ptr)(&td->typeDefinitions, index).ptr;
 }
 
-const char* fmi1_xml_get_type_name(fmi1_xml_variable_typedef_t* t) {   
+const char* fmi1_xml_get_type_name(fmi1_xml_variable_typedef_t* t) {
     return t->typeName;
 }
 
@@ -110,7 +110,7 @@ double fmi1_xml_get_real_type_nominal(fmi1_xml_real_typedef_t* t) {
     return props->typeNominal;
 }
 
-fmi1_xml_unit_t* fmi1_xml_get_real_type_unit(fmi1_xml_real_typedef_t* t) {    
+fmi1_xml_unit_t* fmi1_xml_get_real_type_unit(fmi1_xml_real_typedef_t* t) {
     fmi1_xml_variable_typedef_t* vt = (void*)t;
     fmi1_xml_real_type_props_t* props = (fmi1_xml_real_type_props_t*)(vt->super.nextLayer);
     fmi1_xml_display_unit_t* du = props->displayUnit;
@@ -167,7 +167,7 @@ const char* fmi1_xml_get_enum_type_item_description(fmi1_xml_enumeration_typedef
     fmi1_xml_enum_type_item_t* e;
     if((item == 0) || (item > fmi1_xml_get_enum_type_size(t) )) return  0;
     e = jm_vector_get_item(jm_named_ptr)(&props->enumItems,item-1).ptr;
-    return e->itemDesciption;
+    return e->itemDescription;
 }
 
 void fmi1_xml_init_variable_type_base(fmi1_xml_variable_type_base_t* type, fmi1_xml_type_struct_kind_enu_t kind, fmi1_base_type_enu_t baseType) {
@@ -181,7 +181,7 @@ void fmi1_xml_init_variable_type_base(fmi1_xml_variable_type_base_t* type, fmi1_
 
 void fmi1_xml_init_real_type_properties(fmi1_xml_real_type_props_t* type) {
     fmi1_xml_init_variable_type_base(&type->super, fmi1_xml_type_struct_enu_props,fmi1_base_type_real);
-    type->quantity = 0;    
+    type->quantity = 0;
     type->typeMin = -DBL_MAX;
     type->typeMax = DBL_MAX;
     type->typeNominal = 1.0;
@@ -601,8 +601,8 @@ int fmi1_xml_handle_Item(fmi1_xml_parser_context_t *context, const char* data) {
             }
             item->itemName = named.name;
             if(descrlen)
-                memcpy(item->itemDesciption,jm_vector_get_itemp(char)(bufDescr,0), descrlen);
-            item->itemDesciption[descrlen] = 0;
+                memcpy(item->itemDescription,jm_vector_get_itemp(char)(bufDescr,0), descrlen);
+            item->itemDescription[descrlen] = 0;
         }
     }
     else {

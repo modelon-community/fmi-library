@@ -246,11 +246,30 @@ TEST_CASE("Test array parsing and verify retrieved start values are as expected"
         fmi3_import_free_dimension_list(dimList);
     }
 
+    SECTION("Test binary start array") {
+        fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "binary_array");
+        fmi3_import_dimension_list_t* dimList = basic_array_checks(v, xml, 1);
+        fmi3_binary_t* start = fmi3_import_get_binary_variable_start_array(fmi3_import_get_variable_as_binary(v));
+        REQUIRE(start[0][0]   == 0x00U);
+        REQUIRE(start[0][1]   == 0x11U);
+        REQUIRE(start[0][2]   == 0xBBU);
+        REQUIRE(start[0][3]   == 0xffU);
+        REQUIRE(start[0][4]   == 0x02U);
+        REQUIRE(start[0][5]   == 0x9eU);
+        REQUIRE(start[0][6]   == 0xE4U);
+        REQUIRE(start[0][7]   == 0xCdU);
+        start++;
+        REQUIRE(start[0][0]   == 0x3cU);
+        REQUIRE(start[0][1]   == 0x3fU);
+        start++;
+        REQUIRE(start[0][0]   == 0xE4U);
+        REQUIRE(start[0][1]   == 0xCdU);
+        fmi3_import_free_dimension_list(dimList);
+    }
 
     SECTION("Test string start array") {
         fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "string_array");
         fmi3_import_dimension_list_t* dimList = basic_array_checks(v, xml, 1);
-        size_t* start_l = fmi3_import_get_string_variable_start_array_length(fmi3_import_get_variable_as_string(v));
         fmi3_string_t* start = fmi3_import_get_string_variable_start_array(fmi3_import_get_variable_as_string(v));
         REQUIRE(start[0][0]   == 'T');
         REQUIRE(start[0][1]   == 'h');
@@ -262,7 +281,7 @@ TEST_CASE("Test array parsing and verify retrieved start values are as expected"
         REQUIRE(start[0][7]   == 's');
         REQUIRE(start[0][8]   == 't');
         REQUIRE(start[0][9]   == ' ');
-        REQUIRE(start[0][10]   == 's');
+        REQUIRE(start[0][10]  == 's');
         REQUIRE(start[0][11]  == 't');
         REQUIRE(start[0][12]  == 'r');
         REQUIRE(start[0][13]  == 'i');
@@ -282,8 +301,9 @@ TEST_CASE("Test array parsing and verify retrieved start values are as expected"
         REQUIRE(start[0][4]   == '.');
         fmi3_import_free_dimension_list(dimList);
     }
-        SECTION("Test string start no array") {
-        fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "string_array2");
+
+    SECTION("Test string start no array") {
+        fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "string_var");
         fmi3_string_t* start = fmi3_import_get_string_variable_start(fmi3_import_get_variable_as_string(v));
         REQUIRE(start[0][0]    == 'A');
         REQUIRE(start[0][1]    == ' ');

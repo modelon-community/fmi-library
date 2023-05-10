@@ -176,9 +176,16 @@
   </String>
 
 
-  <String name="string_array2" valueReference="121" causality="input" description="Testing string no array">
+  <String name="string_var" valueReference="121" causality="input" description="Testing string no array">
     <Start value="A sTring value"/>
   </String>
+
+    <Binary name="binary_array" valueReference="122" maxSize="28" initial="exact" description="Testing binary arrays">
+      <Dimension start="3"/>
+      <Start value="0011BBff029eE4Cd"/>
+      <Start value="3c3f"/>
+      <Start value="E4Cd"/>
+    </Binary>
 
     <!-- variables used as dimension specifiers -->
     <UInt32 name="uint32_1" valueReference="201" initial="exact" variability="constant" start="3" />

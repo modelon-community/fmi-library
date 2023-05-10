@@ -11,14 +11,10 @@
 static void test_fmi3_import_get_outputs_list(fmi3_import_t* fmu) {
 
     fmi3_import_variable_list_t* varList = fmi3_import_get_outputs_list(fmu);
-
-    size_t nVar = 1;
-    REQUIRE(fmi3_import_get_variable_list_size(varList) == nVar);
+    REQUIRE(fmi3_import_get_variable_list_size(varList) == 1);
 
     fmi3_import_variable_t* var = fmi3_import_get_variable(varList, 0);
-
-    fmi3_value_reference_t vr = 2;
-    REQUIRE(fmi3_import_get_variable_vr(var) == vr);
+    REQUIRE(fmi3_import_get_variable_vr(var) == 2);
 
     fmi3_import_free_variable_list(varList);
 }
@@ -26,14 +22,10 @@ static void test_fmi3_import_get_outputs_list(fmi3_import_t* fmu) {
 static void test_fmi3_import_get_continuous_state_derivatives_list(fmi3_import_t* fmu) {
 
     fmi3_import_variable_list_t* varList = fmi3_import_get_continuous_state_derivatives_list(fmu);
-
-    size_t nVar = 1;
-    REQUIRE(fmi3_import_get_variable_list_size(varList) == nVar);
+    REQUIRE(fmi3_import_get_variable_list_size(varList) == 1);
 
     fmi3_import_variable_t* var = fmi3_import_get_variable(varList, 0);
-
-    fmi3_value_reference_t vr = 1;
-    REQUIRE(fmi3_import_get_variable_vr(var) == vr);
+    REQUIRE(fmi3_import_get_variable_vr(var) == 1);
 
     fmi3_import_free_variable_list(varList);
 }
@@ -41,14 +33,10 @@ static void test_fmi3_import_get_continuous_state_derivatives_list(fmi3_import_t
 static void test_fmi3_import_get_initial_unknowns_list(fmi3_import_t* fmu) {
 
     fmi3_import_variable_list_t* varList = fmi3_import_get_initial_unknowns_list(fmu);
-
-    size_t nVar = 1;
-    REQUIRE(fmi3_import_get_variable_list_size(varList) == nVar);
+    REQUIRE(fmi3_import_get_variable_list_size(varList) == 1);
 
     fmi3_import_variable_t* var = fmi3_import_get_variable(varList, 0);
-
-    fmi3_value_reference_t vr = 1;
-    REQUIRE(fmi3_import_get_variable_vr(var) == vr);
+    REQUIRE(fmi3_import_get_variable_vr(var) == 1);
 
     fmi3_import_free_variable_list(varList);
 }
@@ -105,7 +93,7 @@ TEST_CASE("Warning check: ModelStructure; FMI2 style lists") {
 
     fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
     REQUIRE(tfmu != nullptr);
-    REQUIRE(tfmu->fmu != nullptr); // Parsing is successfull
+    REQUIRE(tfmu->fmu != nullptr); // Parsing is successful
 
     const char* err_msg = "Unknown element 'Derivatives' in XML, skipping";
     REQUIRE(fmi3_testutil_log_contains(tfmu, err_msg));

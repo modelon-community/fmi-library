@@ -139,11 +139,10 @@ const char* fmi3_import_get_model_name(fmi3_import_t* fmu) {
 }
 
 unsigned int fmi3_import_get_capability(fmi3_import_t* fmu , fmi3_capabilities_enu_t id) {
-    if (!fmi3_import_check_has_FMU(fmu)) return NULL;
+    if (!fmi3_import_check_has_FMU(fmu)) return 0;
 
     return fmi3_xml_get_capability(fmu->md, id);
 }
-
 
 const char* fmi3_import_get_model_identifier_ME(fmi3_import_t* fmu) {
     if (!fmi3_import_check_has_FMU(fmu)) return NULL;

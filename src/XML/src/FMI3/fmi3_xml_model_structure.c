@@ -555,8 +555,7 @@ int fmi3_xml_handle_EventIndicator(fmi3_xml_parser_context_t *context, const cha
         fmi3_xml_model_structure_t* ms = md->modelStructure;
 
         // Ignored if Co-simulation & scheduled execution
-        fmi3_fmu_kind_enu_t fmuKind = fmi3_fmu_kind_unknown;
-        fmuKind = fmi3_xml_get_fmu_kind(md);
+        fmi3_fmu_kind_enu_t fmuKind = fmi3_xml_get_fmu_kind(md);
         // Multiple types can be defined, check for: not ME and (CS or SE)
         if (!(fmuKind & fmi3_fmu_kind_me) && ((fmuKind & fmi3_fmu_kind_cs) || (fmuKind & fmi3_fmu_kind_se))) {
             jm_log_info(md->callbacks, "FMI3XML", "EventIndicator ignored since FMU kind is Co-Simulation or Scheduled Excecution.");

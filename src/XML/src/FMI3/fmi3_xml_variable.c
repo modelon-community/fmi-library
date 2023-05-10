@@ -844,6 +844,17 @@ size_t fmi3_xml_get_binary_variable_start_size(fmi3_xml_binary_variable_t* v) {
     return 0;
 }
 
+
+fmi3_binary_t* fmi3_xml_get_binary_variable_start_array(fmi3_xml_binary_variable_t* v) {
+    fmi3_xml_variable_t* vv = (fmi3_xml_variable_t*)v;
+    if (fmi3_xml_get_variable_has_start(vv)) {
+        fmi3_xml_binary_variable_start_t* start = (fmi3_xml_binary_variable_start_t*)(vv->type);
+        return (fmi3_binary_t*)jm_vector_get_itemp(jm_voidp)(&start->binaryStartValues, 0);
+    }
+    return NULL;
+}
+
+
 fmi3_binary_t fmi3_xml_get_binary_variable_start(fmi3_xml_binary_variable_t* v) {
     fmi3_xml_variable_t* vv = (fmi3_xml_variable_t*)v;
     if (fmi3_xml_get_variable_has_start(vv)) {
@@ -957,12 +968,14 @@ static void* fmi3_xml_get_variable_start_array(fmi3_xml_variable_t* v) {
         return fmi3_xml_get_int_variable_start((fmi3_xml_int_variable_t*)v).array8u;
     case fmi3_base_type_int8:
         return fmi3_xml_get_int_variable_start((fmi3_xml_int_variable_t*)v).array8s;
-    case fmi3_base_type_bool:     /* fallthrough */
+    case fmi3_base_type_bool:
         return fmi3_xml_get_boolean_variable_start_array((fmi3_xml_bool_variable_t*)v);
     case fmi3_base_type_enum:
         return fmi3_xml_get_enum_variable_start_array((fmi3_xml_enum_variable_t*)v);
-    case fmi3_base_type_str:      /* fallthrough */
-        return fmi3_xml_get_string_variable_start_array((fmi3_xml_string_variable_t*)v); /* TODO: NYI */
+    case fmi3_base_type_str:
+        return fmi3_xml_get_string_variable_start_array((fmi3_xml_string_variable_t*)v);
+    case fmi3_base_type_binary:
+        return fmi3_xml_get_binary_variable_start_array((fmi3_xml_binary_variable_t*)v);
     default:
         assert(0); /* impl. error */
         break;
@@ -970,6 +983,51 @@ static void* fmi3_xml_get_variable_start_array(fmi3_xml_variable_t* v) {
 
     assert(0); /* impl. error */
     return NULL;
+}
+
+
+/**
+ * Scans a hexstring to a bytearray.
+ *
+ * @param hexstr The input string to scan.
+ * @param bytearr (Output arg.) A buffer which must be able to fit the scanned bytes.
+*/
+static int fmi3_xml_hexstring_to_bytearray(fmi3_xml_parser_context_t* context, const char* hexstr, uint8_t* bytearr) {
+    size_t len = strlen(hexstr);
+    if (len % 2 != 0) {
+        // Note: 2 hexadecimal characters represent 1 byte.
+        fmi3_xml_parse_error(context, "Hexadecimal string is not of even length: %s", hexstr);
+        // TODO: Or just warning and pad with trailing '0'?
+        return -1;
+    }
+
+    const char* pos = hexstr;
+    size_t nByte = len / 2;
+    for (size_t i = 0; i < nByte; i++) {
+        // Since sscanf only returns how many arguments it succeeds to assign, we can't know how many
+        // chars it actually read.
+        // Example input: "FG". Here sscanf will only read the F, since the G is not valid, but it will
+        // return 1 because it did manage to scan the F. There is also only a format specifier that
+        // specifies the maximum number of chars to read, not minimum. Since we increment position
+        // with 2 each time, we therefore would just ignore the invalid G. Note that we would get a
+        // failure if the input was instead "GF".
+        //
+        // So while it's enough to check the second character, we may as well check all for consistency.
+        for (size_t j = 0; j <= 1; j++) {
+            char ch = pos[j];
+            if (!((ch >= '0' && ch <= '9') || (ch >= 'a' && ch <= 'f') || (ch >= 'A' && ch <= 'F'))) {
+                fmi3_xml_parse_error(context, "String is not hexadecimal: %s", hexstr);
+                return -1;
+            }
+        }
+
+        if (!sscanf(pos, "%2hhx", &bytearr[i])) {
+            fmi3_xml_parse_error(context, "Failure when scanning hexadecimal string: %s", hexstr);
+            return -1;
+        }
+        pos += 2;
+    }
+    return 0;
 }
 
 void fmi3_xml_variable_free_internals(jm_callbacks* callbacks, fmi3_xml_variable_t* var) {
@@ -982,6 +1040,15 @@ void fmi3_xml_variable_free_internals(jm_callbacks* callbacks, fmi3_xml_variable
             if (&start->stringStartValues) {
                 jm_vector_foreach(jm_voidp)(&start->stringStartValues, callbacks->free);
                 jm_vector_free_data(jm_voidp)(&start->stringStartValues);
+            }
+        } else if (var->type->baseType == fmi3_base_type_binary) {
+            fmi3_xml_binary_variable_start_t* start = (fmi3_xml_binary_variable_start_t*)(var->type);
+            if (&start->binaryStartValues) {
+                jm_vector_foreach(jm_voidp)(&start->binaryStartValues, callbacks->free);
+                jm_vector_free_data(jm_voidp)(&start->binaryStartValues);
+            }
+            if (&start->binaryStartValuesSize) {
+                jm_vector_free_data(size_t)(&start->binaryStartValuesSize);
             }
         } else {
             callbacks->free(fmi3_xml_get_variable_start_array(var));
@@ -1679,14 +1746,13 @@ int fmi3_xml_handle_BooleanVariable(fmi3_xml_parser_context_t *context, const ch
 int fmi3_xml_handle_BinaryVariable(fmi3_xml_parser_context_t* context, const char* data) {
     if (context->skipOneVariableFlag) return 0;
     if (fmi3_xml_handle_Variable(context, data)) return -1;
+    fmi3_xml_elm_enu_t elmID = fmi3_xml_elmID_Binary;  // The ID corresponding to the actual parsed element name
+    fmi3_xml_model_description_t* md = context->modelDescription;
+    fmi3_xml_type_definitions_t* td = &md->typeDefinitions;
+    fmi3_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
 
     if (!data) {
         fmi3_xml_set_element_handle(context, "Start", fmi3_xml_elmID_BinaryVariableStart);
-        fmi3_xml_elm_enu_t elmID = fmi3_xml_elmID_Binary;  // The ID corresponding to the actual parsed element name
-
-        fmi3_xml_model_description_t* md = context->modelDescription;
-        fmi3_xml_type_definitions_t* td = &md->typeDefinitions;
-        fmi3_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
 
         fmi3_xml_binary_type_props_t* vProps;  // Variable props
         fmi3_xml_variable_type_base_t* declaredType = fmi3_parse_declared_type_attr(context, elmID,
@@ -1703,6 +1769,52 @@ int fmi3_xml_handle_BinaryVariable(fmi3_xml_parser_context_t* context, const cha
         }
         assert(!variable->type);
         variable->type = &vProps->super;
+    } else {
+        /* Cannot use *has_start for binary variables */
+        size_t nStart = jm_vector_get_size(jm_voidp)(&context->currentStartVariableValues);
+        if (nStart > 0) {
+             // number of bytes per element in context->currentStartVariableValues
+            jm_vector(size_t)* bytesPerElement = jm_vector_alloc(size_t)(0, 0, context->callbacks);
+            uint8_t* startAsBytes[nStart];
+            for (int i = 0; i < nStart; i++) {
+                char* item = (char*)jm_vector_get_item(jm_voidp)(&context->currentStartVariableValues, i);
+                jm_vector_push_back(size_t)(bytesPerElement, (size_t)(strlen(item)/2));
+                size_t sz = jm_vector_get_item(size_t)(bytesPerElement, i);
+                startAsBytes[i] = context->callbacks->malloc(sz);
+                if (fmi3_xml_hexstring_to_bytearray(context, item, startAsBytes[i])) {
+                    return -1;
+                }
+                // We can now free the string now since we have converted it above
+                context->callbacks->free(item);
+            }
+
+            fmi3_xml_binary_variable_start_t* startObj =
+                    (fmi3_xml_binary_variable_start_t*)fmi3_xml_alloc_variable_type_start(
+                            td, variable->type, sizeof(fmi3_xml_binary_variable_start_t));
+            if (!startObj) {
+                fmi3_xml_parse_fatal(context, "Could not allocate memory");
+                return -1;
+            }
+            startObj->nStart = nStart;
+            jm_vector_init(jm_voidp)(&startObj->binaryStartValues, nStart, context->callbacks);
+            jm_vector_init(size_t)(&startObj->binaryStartValuesSize, nStart, context->callbacks);
+            // Passing ownership to binaryStartValues
+            for(size_t i = 0; i < nStart; i++) {
+                jm_vector_set_item(jm_voidp)(&startObj->binaryStartValues, i, startAsBytes[i]);
+            }
+            variable->type = &startObj->super;
+            size_t nCopiedSizes = jm_vector_copy(size_t)(&startObj->binaryStartValuesSize, bytesPerElement);
+            jm_vector_free(size_t)(bytesPerElement);
+            if ((nStart != nCopiedSizes)) {
+                fmi3_xml_parse_fatal(context, "Could not retrieve binary start values");
+                return -1;
+            }
+            variable->type = &startObj->super;
+            // Resize the vector to 0 since we are now done with the previous values.
+            jm_vector_resize(jm_voidp)(&context->currentStartVariableValues, 0);
+        } else {
+            fmi3_log_error_if_start_required(context, variable);
+        }
     }
     return 0;
 }
@@ -1799,7 +1911,6 @@ int fmi3_xml_handle_StringVariableStart(fmi3_xml_parser_context_t* context, cons
 
     if (!data) {
         /* For each <Start ...>, allocate memory, copy attribute to 'value' and push back to 'vec'. */
-        fmi3_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
         jm_vector(jm_voidp)* vec = &context->currentStartVariableValues;
         char* attr;
         if (fmi3_xml_get_attr_str(context, fmi3_xml_elmID_StringVariableStart, fmi_attr_id_value, 0, &attr)) return -1;
@@ -1820,86 +1931,63 @@ int fmi3_xml_handle_Start(fmi3_xml_parser_context_t* context, const char* data) 
     return 0;
 }
 
-/**
- * Scans a hexstring to a bytearray.
- *
- * @param hexstr The input string to scan.
- * @param bytearr (Output arg.) A buffer which must be able to fit the scanned bytes.
-*/
-static int fmi3_xml_hexstring_to_bytearray(fmi3_xml_parser_context_t* context, const char* hexstr, uint8_t* bytearr) {
-    size_t len = strlen(hexstr);
-    if (len % 2 != 0) {
-        // Note: 2 hexadecimal characters represent 1 byte.
-        fmi3_xml_parse_error(context, "Hexadecimal string is not of even length: %s", hexstr);
-        // TODO: Or just warning and pad with trailing '0'?
-        return -1;
-    }
-
-    const char* pos = hexstr;
-    size_t nByte = len / 2;
-    for (size_t i = 0; i < nByte; i++) {
-        // Since sscanf only returns how many arguments it succeeds to assign, we can't know how many
-        // chars it actually read.
-        // Example input: "FG". Here sscanf will only read the F, since the G is not valid, but it will
-        // return 1 because it did manage to scan the F. There is also only a format specifier that
-        // specifies the maximum number of chars to read, not minimum. Since we increment position
-        // with 2 each time, we therefore would just ignore the invalid G. Note that we would get a
-        // failure if the input was instead "GF".
-        //
-        // So while it's enough to check the second character, we may as well check all for consistency.
-        for (size_t j = 0; j <= 1; j++) {
-            char ch = pos[j];
-            if (!((ch >= '0' && ch <= '9') || (ch >= 'a' && ch <= 'f') || (ch >= 'A' && ch <= 'F'))) {
-                fmi3_xml_parse_error(context, "String is not hexadecimal: %s", hexstr);
-                return -1;
-            }
-        }
-
-        if (!sscanf(pos, "%2hhx", &bytearr[i])) {
-            fmi3_xml_parse_error(context, "Failure when scanning hexadecimal string: %s", hexstr);
-            return -1;
-        }
-        pos += 2;
-    }
-    return 0;
-}
 
 int fmi3_xml_handle_BinaryVariableStart(fmi3_xml_parser_context_t* context, const char* data) {
+    fmi3_xml_model_description_t* md = context->modelDescription;
+    fmi3_xml_type_definitions_t* td = &md->typeDefinitions;
+    fmi3_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
     if (!data) {
-        fmi3_xml_model_description_t* md = context->modelDescription;
-        fmi3_xml_type_definitions_t* td = &md->typeDefinitions;
-        fmi3_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
+        if (fmi3_xml_variable_is_array(variable)) {
+            /* For each <Start ...>, allocate memory, copy attribute to 'value' and push back to 'vec'. */
+            jm_vector(jm_voidp)* vec = &context->currentStartVariableValues;
+            char* attr;
+            if (fmi3_xml_get_attr_str(context, fmi3_xml_elmID_BinaryVariableStart, fmi_attr_id_value, 0, &attr)) return -1;
+            int len = strlen(attr);
+            if (len == 0) {
+                fmi3_xml_parse_error(context, "Empty value attribute in Start element");
+                return -1;
+            }
+            if (len % 2 != 0) {
+                // 2 hexadecimal chars per byte. This is also checked in the conversion, but if this happens
+                // and we want to handle it, then we must allocate extra size to take into account padding of
+                // the final char.
+                return -1;
+            }
+            char* attrAsStr = context->callbacks->malloc(len + 1);
+            strcpy(attrAsStr, attr);
+            jm_vector_push_back(jm_voidp)(vec, attrAsStr);
+        } else {
+            jm_vector(char)* bufStartStr = fmi3_xml_reserve_parse_buffer(context, 1, 100);
+            if (fmi3_xml_set_attr_string(context, fmi3_xml_elmID_BinaryVariableStart, fmi_attr_id_value, 0, bufStartStr)) {
+                return -1;
+            }
 
-        jm_vector(char)* bufStartStr = fmi3_xml_reserve_parse_buffer(context, 1, 100);
-        if (fmi3_xml_set_attr_string(context, fmi3_xml_elmID_BinaryVariableStart, fmi_attr_id_value, 0, bufStartStr)) {
-            return -1;
+            // Add a start object to the top of the variable's type list:
+            fmi3_xml_binary_variable_start_t* startObj;
+            size_t len = jm_vector_get_size(char)(bufStartStr);
+            if (len == 0) {
+                fmi3_xml_parse_error(context, "Empty value attribute in Start element");
+                return -1;
+            }
+            if (len % 2 != 0) {
+                // 2 hexadecimal chars per byte. This is also checked in the conversion, but if this happens
+                // and we want to handle it, then we must allocate extra size to take into account padding of
+                // the final char.
+                return -1;
+            }
+            size_t arrSize = len / 2;
+            size_t totSize = sizeof(fmi3_xml_binary_variable_start_t) + arrSize;
+            startObj = (fmi3_xml_binary_variable_start_t*)fmi3_xml_alloc_variable_type_start(td, variable->type, totSize);
+            if (!startObj) {
+                fmi3_xml_parse_fatal(context, "Could not allocate memory");
+                return -1;
+            }
+            startObj->nStart = arrSize;
+            if (fmi3_xml_hexstring_to_bytearray(context, jm_vector_get_itemp(char)(bufStartStr, 0), startObj->start)) {
+                return -1;
+            }
+            variable->type = &startObj->super;
         }
-
-        // Add a start object to the top of the variable's type list:
-        fmi3_xml_binary_variable_start_t* startObj;
-        size_t len = jm_vector_get_size(char)(bufStartStr);
-        if (len == 0) {
-            fmi3_xml_parse_error(context, "Empty value attribute in Start element");
-            return -1;
-        }
-        if (len % 2 != 0) {
-            // 2 hexadecimal chars per byte. This is also checked in the conversion, but if this happens
-            // and we want to handle it, then we must allocate extra size to take into account padding of
-            // the final char.
-            return -1;
-        }
-        size_t arrSize = len / 2;
-        size_t totSize = sizeof(fmi3_xml_binary_variable_start_t) + arrSize;
-        startObj = (fmi3_xml_binary_variable_start_t*)fmi3_xml_alloc_variable_type_start(td, variable->type, totSize);
-        if (!startObj) {
-            fmi3_xml_parse_fatal(context, "Could not allocate memory");
-            return -1;
-        }
-        startObj->nStart = arrSize;
-        if (fmi3_xml_hexstring_to_bytearray(context, jm_vector_get_itemp(char)(bufStartStr, 0), startObj->start)) {
-            return -1;
-        }
-        variable->type = &startObj->super;
     }
     return 0;
 }

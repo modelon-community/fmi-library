@@ -485,6 +485,10 @@ fmi3_binary_t fmi3_import_get_binary_variable_start(fmi3_import_binary_variable_
     return fmi3_xml_get_binary_variable_start(v);
 }
 
+fmi3_binary_t* fmi3_import_get_binary_variable_start_array(fmi3_import_binary_variable_t* v) {
+    return fmi3_xml_get_binary_variable_start_array(v);
+}
+
 fmi3_string_t fmi3_import_get_binary_variable_mime_type(fmi3_import_binary_variable_t* v) {
     return fmi3_xml_get_binary_variable_mime_type(v);
 }

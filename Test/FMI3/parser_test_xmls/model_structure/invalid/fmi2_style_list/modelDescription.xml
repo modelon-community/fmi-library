@@ -8,7 +8,8 @@
 </ModelVariables>
 
 <ModelStructure>
-  <ContinuousStateDerivative valueReference="0"/> <!-- Invalid: referenced variable is not a derivative  -->
-  <ContinuousStateDerivative valueReference="1"/>
+  <Derivatives> <!-- Lists in ModelStructure no longer valid in FMI3 -->
+    <ContinuousStateDerivative valueReference="1"/>
+  </Derivatives>
 </ModelStructure>
 </fmiModelDescription>

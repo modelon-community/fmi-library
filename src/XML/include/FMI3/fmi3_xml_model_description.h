@@ -128,7 +128,7 @@ fmi3_xml_model_description_t* fmi3_xml_allocate_model_description( jm_callbacks*
     @param xml_callbacks Callbacks to use for processing annotations (may be NULL).
     @param configuration Specifies how to parse the model description, 0 is
            default. Other possible configuration is FMI_XML_NAME_CHECK.
-   @return 0 if parsing was successfull. Non-zero value indicates an error.
+   @return 0 if parsing was successful. Non-zero value indicates an error.
 */
 int fmi3_xml_parse_model_description( fmi3_xml_model_description_t* md,
                                       const char* fileName,

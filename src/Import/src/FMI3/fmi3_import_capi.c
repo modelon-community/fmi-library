@@ -667,7 +667,7 @@ fmi3_status_t fmi3_import_completed_integrator_step(fmi3_import_t* fmu,
 }
 
 fmi3_status_t fmi3_import_get_derivatives(fmi3_import_t* fmu, fmi3_float64_t derivatives[], size_t nx) {
-    return fmi3_capi_get_derivatives(fmu->capi, derivatives, nx);
+    return fmi3_capi_get_continuous_state_derivatives(fmu->capi, derivatives, nx);
 }
 
 fmi3_status_t fmi3_import_get_event_indicators(fmi3_import_t* fmu, fmi3_float64_t eventIndicators[], size_t ni) {

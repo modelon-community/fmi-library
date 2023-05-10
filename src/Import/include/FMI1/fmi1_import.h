@@ -70,7 +70,7 @@ extern "C" {
 
     @param context A context data strucutre is used to propagate the callbacks for memory handling and logging.
     @param dirPath A directory name (full path) of a directory where the FMU was unzipped.
-    @return The new structure if parsing was successfull. 0-pointer is returned on error.
+    @return The new structure if parsing was successful. 0-pointer is returned on error.
 */
 FMILIB_EXPORT fmi1_import_t* fmi1_import_parse_xml( fmi_import_context_t* context, const char* dirPath);
 

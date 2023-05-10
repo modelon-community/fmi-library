@@ -506,7 +506,7 @@ fmi3_status_t fmi3_capi_get_directional_derivative(
         size_t nSensitivity);
 
 /**
- * \brief Calls the FMI function fmiGetAdjointalDerivative(...)
+ * \brief Calls the FMI function fmiGetAdjointDerivative(...)
  *
  * @param fmu C-API struct that has succesfully loaded the FMI function.
  * @param unknowns Value references for the derivatives/outputs to be processed.
@@ -728,14 +728,14 @@ fmi3_status_t fmi3_capi_completed_integrator_step(fmi3_capi_t* fmu,
     fmi3_boolean_t* enterEventMode, fmi3_boolean_t* terminateSimulation);
 
 /**
- * \brief Calls the FMI function fmiGetDerivatives(...)
+ * \brief Calls the FMI function fmiGetContinuousStateDerivatives(...)
  *
  * @param fmu C-API struct that has succesfully loaded the FMI function.
- * @param derivatives (Output) Array of the derivatives.
- * @param nx Number of derivatives.
+ * @param derivatives (Output) Array of the continuous state derivatives.
+ * @param nx Number of continuous state derivatives.
  * @return FMI status.
  */
-fmi3_status_t fmi3_capi_get_derivatives(fmi3_capi_t* fmu, fmi3_float64_t derivatives[], size_t nx);
+fmi3_status_t fmi3_capi_get_continuous_state_derivatives(fmi3_capi_t* fmu, fmi3_float64_t derivatives[], size_t nx);
 
 /**
  * \brief Calls the FMI function fmiGetEventIndicators(...)

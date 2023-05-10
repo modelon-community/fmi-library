@@ -1,11 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<fmiModelDescription
-  fmiVersion="3.0"
-  modelName="myModelName"
-  instantiationToken="myInstToken">
-
-<ModelExchange
-  modelIdentifier="myModelIdentifier" />
+<fmiModelDescription fmiVersion="3.0" modelName="" instantiationToken="">
+<ModelExchange modelIdentifier="myModelIdentifier" />
 
 <ModelVariables>
     <Float64 name="state_var" valueReference="0"/>
@@ -14,8 +9,7 @@
 </ModelVariables>
 
 <ModelStructure>
-  <Output valueReference="2"/>
   <ContinuousStateDerivative valueReference="1"/>
-  <InitialUnknown valueReference="1"/>
+  <Output valueReference="2"> <!-- Invalid: ModelStructure requires an ordered list; all 'Output' must be before 'ContinuousStateDerivative' -->
 </ModelStructure>
 </fmiModelDescription>

@@ -49,16 +49,8 @@
   </Int64>
 </ModelVariables>
 <ModelStructure>
-  <Outputs>
-    <Unknown valueReference="0"/>
-  </Outputs>
-  <Derivatives>
-    <Unknown valueReference="1"/>
-    <Unknown valueReference="2" dependencies="3" dependenciesKind="constant"/>
-  </Derivatives>
-  <DiscreteStates>
-  </DiscreteStates>
-  <InitialUnknowns>
-  </InitialUnknowns>
+  <Output valueReference="0"/>
+  <ContinuousStateDerivative valueReference="1"/>
+  <ContinuousStateDerivative valueReference="2" dependencies="3" dependenciesKind="constant"/>
 </ModelStructure>
 </fmiModelDescription>

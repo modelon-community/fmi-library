@@ -48,7 +48,7 @@ fmi3_status_t fmi3_capi_completed_integrator_step(fmi3_capi_t* fmu,
                                            enterEventMode, terminateSimulation);
 }
 
-fmi3_status_t fmi3_capi_get_derivatives(fmi3_capi_t* fmu, fmi3_float64_t derivatives[], size_t nx)
+fmi3_status_t fmi3_capi_get_continuous_state_derivatives(fmi3_capi_t* fmu, fmi3_float64_t derivatives[], size_t nx)
 {
     assert(fmu);
     jm_log_debug(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Calling fmi3GetContinuousStateDerivatives");

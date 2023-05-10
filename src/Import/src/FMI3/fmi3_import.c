@@ -402,14 +402,9 @@ fmi3_import_variable_list_t* fmi3_import_get_outputs_list(fmi3_import_t* fmu) {
     return fmi3_import_vector_to_varlist(fmu, fmi3_xml_get_outputs(fmi3_xml_get_model_structure(fmu->md)));
 }
 
-fmi3_import_variable_list_t* fmi3_import_get_derivatives_list(fmi3_import_t* fmu){
+fmi3_import_variable_list_t* fmi3_import_get_continuous_state_derivatives_list(fmi3_import_t* fmu){
     if(!fmi3_import_check_has_FMU(fmu)) return 0;
-    return fmi3_import_vector_to_varlist(fmu, fmi3_xml_get_derivatives(fmi3_xml_get_model_structure(fmu->md)));
-}
-
-fmi3_import_variable_list_t* fmi3_import_get_discrete_states_list(fmi3_import_t* fmu) {
-    if(!fmi3_import_check_has_FMU(fmu)) return 0;
-    return fmi3_import_vector_to_varlist(fmu, fmi3_xml_get_discrete_states(fmi3_xml_get_model_structure(fmu->md)));
+    return fmi3_import_vector_to_varlist(fmu, fmi3_xml_get_continuous_state_derivatives(fmi3_xml_get_model_structure(fmu->md)));
 }
 
 fmi3_import_variable_list_t* fmi3_import_get_initial_unknowns_list(fmi3_import_t* fmu) {
@@ -428,7 +423,7 @@ void fmi3_import_get_outputs_dependencies(fmi3_import_t* fmu,size_t** startIndex
     fmi3_xml_get_outputs_dependencies(ms, startIndex, dependency, factorKind);
 }
 
-void fmi3_import_get_derivatives_dependencies(fmi3_import_t* fmu,size_t** startIndex, size_t** dependency, char** factorKind) {
+void fmi3_import_get_continuous_state_derivatives_dependencies(fmi3_import_t* fmu,size_t** startIndex, size_t** dependency, char** factorKind) {
     fmi3_xml_model_structure_t* ms;
     if(!fmi3_import_check_has_FMU(fmu)) {
         *startIndex = 0;
@@ -436,18 +431,7 @@ void fmi3_import_get_derivatives_dependencies(fmi3_import_t* fmu,size_t** startI
     }
     ms = fmi3_xml_get_model_structure(fmu->md);
     assert(ms);
-    fmi3_xml_get_derivatives_dependencies(ms, startIndex, dependency, factorKind);
-}
-
-void fmi3_import_get_discrete_states_dependencies(fmi3_import_t* fmu,size_t** startIndex, size_t** dependency, char** factorKind) {
-    fmi3_xml_model_structure_t* ms;
-    if(!fmi3_import_check_has_FMU(fmu)) {
-        *startIndex = 0;
-        return;
-    }
-    ms = fmi3_xml_get_model_structure(fmu->md);
-    assert(ms);
-    fmi3_xml_get_discrete_states_dependencies(ms, startIndex, dependency, factorKind);
+    fmi3_xml_get_continuous_state_derivatives_dependencies(ms, startIndex, dependency, factorKind);
 }
 
 void fmi3_import_get_initial_unknowns_dependencies(fmi3_import_t* fmu,size_t** startIndex, size_t** dependency, char** factorKind) {

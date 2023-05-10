@@ -119,7 +119,7 @@ fmi1_xml_model_description_t* fmi1_xml_allocate_model_description( jm_callbacks*
     @param fileName A name (full path) of the XML file name with model definition.
     @param configuration Specifies how to parse the model description, 0 is
            default. Other possible configuration is FMI_XML_NAME_CHECK.
-   @return 0 if parsing was successfull. Non-zero value indicates an error.
+   @return 0 if parsing was successful. Non-zero value indicates an error.
 */
 int fmi1_xml_parse_model_description( fmi1_xml_model_description_t* md,
                                       const char* fileName,

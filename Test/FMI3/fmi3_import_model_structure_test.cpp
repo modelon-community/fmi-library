@@ -33,14 +33,10 @@ static void test_fmi3_import_get_continuous_state_derivatives_list(fmi3_import_t
 static void test_fmi3_import_get_clocked_states_list(fmi3_import_t* fmu) {
 
     fmi3_import_variable_list_t* varList = fmi3_import_get_clocked_states_list(fmu);
-
-    size_t nVar = 1;
-    REQUIRE(fmi3_import_get_variable_list_size(varList) == nVar);
+    REQUIRE(fmi3_import_get_variable_list_size(varList) == 1);
 
     fmi3_import_variable_t* var = fmi3_import_get_variable(varList, 0);
-
-    fmi3_value_reference_t vr = 11;
-    REQUIRE(fmi3_import_get_variable_vr(var) == vr);
+    REQUIRE(fmi3_import_get_variable_vr(var) == 11);
 
     fmi3_import_free_variable_list(varList);
 }
@@ -59,20 +55,16 @@ static void test_fmi3_import_get_initial_unknowns_list(fmi3_import_t* fmu) {
 static void test_fmi3_import_get_event_indicators_list(fmi3_import_t* fmu) {
 
     fmi3_import_variable_list_t* varList = fmi3_import_get_event_indicators_list(fmu);
-
-    size_t nVar = 1;
-    REQUIRE(fmi3_import_get_variable_list_size(varList) == nVar);
+    REQUIRE(fmi3_import_get_variable_list_size(varList) == 1);
 
     fmi3_import_variable_t* var = fmi3_import_get_variable(varList, 0);
-
-    fmi3_value_reference_t vr = 100;
-    REQUIRE(fmi3_import_get_variable_vr(var) == vr);
+    REQUIRE(fmi3_import_get_variable_vr(var) == 100);
 
     fmi3_import_free_variable_list(varList);
 }
 
 TEST_CASE("Valid ModelStructure parsing") {
-    const char* xmldir = FMI3_TEST_XML_DIR "/model_structure/valid/valid";
+    const char* xmldir = FMI3_TEST_XML_DIR "/model_structure/valid/basic";
 
     fmi3_import_t* fmu = fmi3_testutil_parse_xml(xmldir);
     REQUIRE(fmu != nullptr);
@@ -107,8 +99,8 @@ TEST_CASE("Error check: ModelStructure; ContinuousStateDerivative missing deriva
     REQUIRE(tfmu != nullptr);
     REQUIRE(tfmu->fmu == nullptr);
 
-    const char* err_msg = "The continuous state derivative 'state_var' does not specify the state variable that it is a derivative of.";
-    REQUIRE(fmi3_testutil_log_contains(tfmu, err_msg));
+    const char* errMsg = "The variable 'state_var' is a ContinuousStateDerivative, but does not specify the state variable it is a derivative of.";
+    REQUIRE(fmi3_testutil_log_contains(tfmu, errMsg));
 
     fmi3_testutil_import_free(tfmu);
 }
@@ -120,8 +112,8 @@ TEST_CASE("Error check: ModelStructure; Incorrect order of elements") {
     REQUIRE(tfmu != nullptr);
     REQUIRE(tfmu->fmu == nullptr);
 
-    const char* err_msg = "XML element 'Output' cannot be placed after element 'ContinuousStateDerivative', skipping";
-    REQUIRE(fmi3_testutil_log_contains(tfmu, err_msg));
+    const char* errMsg = "XML element 'Output' cannot be placed after element 'ContinuousStateDerivative', skipping";
+    REQUIRE(fmi3_testutil_log_contains(tfmu, errMsg));
 
     fmi3_testutil_import_free(tfmu);
 }
@@ -133,8 +125,8 @@ TEST_CASE("Warning check: ModelStructure; FMI2 style lists") {
     REQUIRE(tfmu != nullptr);
     REQUIRE(tfmu->fmu != nullptr); // Parsing is successful
 
-    const char* err_msg = "Unknown element 'Derivatives' in XML, skipping";
-    REQUIRE(fmi3_testutil_log_contains(tfmu, err_msg));
+    const char* errMsg = "Unknown element 'Derivatives' in XML, skipping";
+    REQUIRE(fmi3_testutil_log_contains(tfmu, errMsg));
 
     fmi3_testutil_import_free(tfmu);
 }
@@ -146,8 +138,8 @@ TEST_CASE("Error check: ModelStructure; Output incorrect causality") {
     REQUIRE(tfmu != nullptr);
     REQUIRE(tfmu->fmu == nullptr);
 
-    const char* err_msg = "The Output 'output_var' does not have causality='output'.";
-    REQUIRE(fmi3_testutil_log_contains(tfmu, err_msg));
+    const char* errMsg = "The variable 'output_var' is an Output, but does not have causality='output'.";
+    REQUIRE(fmi3_testutil_log_contains(tfmu, errMsg));
 
     fmi3_testutil_import_free(tfmu);
 }
@@ -159,8 +151,8 @@ TEST_CASE("Error check: ModelStructure; EventIndicator variability") {
     REQUIRE(tfmu != nullptr);
     REQUIRE(tfmu->fmu == nullptr);
 
-    const char* err_msg = "The EventIndicator 'event_ind' does not have variability='continuous'.";
-    REQUIRE(fmi3_testutil_log_contains(tfmu, err_msg));
+    const char* errMsg = "The variable 'event_ind' is an EventIndicator, but does not have variability='continuous'.";
+    REQUIRE(fmi3_testutil_log_contains(tfmu, errMsg));
 
     fmi3_testutil_import_free(tfmu);
 }
@@ -172,8 +164,8 @@ TEST_CASE("Error check: ModelStructure; EventIndicator base type") {
     REQUIRE(tfmu != nullptr);
     REQUIRE(tfmu->fmu == nullptr);
 
-    const char* err_msg = "The EventIndicator 'event_ind' does not have the base type 'Float32' or 'Float64'.";
-    REQUIRE(fmi3_testutil_log_contains(tfmu, err_msg));
+    const char* errMsg = "The variable 'event_ind' is an EventIndicator, but does not have the base type 'Float32' or 'Float64'.";
+    REQUIRE(fmi3_testutil_log_contains(tfmu, errMsg));
 
     fmi3_testutil_import_free(tfmu);
 }
@@ -185,8 +177,8 @@ TEST_CASE("Info check: ModelStructure; EventIndicator ignored for Co-Simulation"
     REQUIRE(tfmu != nullptr);
     REQUIRE(tfmu->fmu != nullptr); // Parsing successful
 
-    const char* log_msg = "EventIndicator ignored since FMU kind is Co-Simulation or Scheduled Excecution.";
-    REQUIRE(fmi3_testutil_log_contains(tfmu, log_msg));
+    const char* logMsg = "EventIndicator ignored since FMU kind is Co-Simulation or Scheduled Excecution.";
+    REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
 
     fmi3_testutil_import_free(tfmu);
 }
@@ -198,8 +190,8 @@ TEST_CASE("Error check: ModelStructure; ClockedState without clocks attribute") 
     REQUIRE(tfmu != nullptr);
     REQUIRE(tfmu->fmu == nullptr);
 
-    const char* log_msg = "The ClockedState 'clocked_var' does not have the attribute='clocks'.";
-    REQUIRE(fmi3_testutil_log_contains(tfmu, log_msg));
+    const char* logMsg = "The variable 'clocked_var' is a ClockedState, but does not define the attribute 'clocks'.";
+    REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
 
     fmi3_testutil_import_free(tfmu);
 }
@@ -211,8 +203,8 @@ TEST_CASE("Error check: ModelStructure; ClockedState without previous attribute"
     REQUIRE(tfmu != nullptr);
     REQUIRE(tfmu->fmu == nullptr);
 
-    const char* log_msg = "The ClockedState 'clocked_var' does not have the attribute 'previous'.";
-    REQUIRE(fmi3_testutil_log_contains(tfmu, log_msg));
+    const char* logMsg = "The variable 'clocked_var' is a ClockedState, but does not define the attribute 'previous'.";
+    REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
 
     fmi3_testutil_import_free(tfmu);
 }
@@ -224,8 +216,8 @@ TEST_CASE("Error check: ModelStructure; ClockedState with invalid variability, n
     REQUIRE(tfmu != nullptr);
     REQUIRE(tfmu->fmu == nullptr);
 
-    const char* log_msg = "The ClockedState 'clocked_var' does not have variability='discrete'.";
-    REQUIRE(fmi3_testutil_log_contains(tfmu, log_msg));
+    const char* logMsg = "The variable 'clocked_var' is a ClockedState, but does not have variability='discrete'.";
+    REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
 
     fmi3_testutil_import_free(tfmu);
 }
@@ -237,8 +229,8 @@ TEST_CASE("Error check: ModelStructure; ClockedState has Clock base type") {
     REQUIRE(tfmu != nullptr);
     REQUIRE(tfmu->fmu == nullptr);
 
-    const char* log_msg = "The ClockedState 'clock_01' must not have the base type fmi3Clock.";
-    REQUIRE(fmi3_testutil_log_contains(tfmu, log_msg));
+    const char* logMsg = "The variable 'clock_01' is a ClockedState, but has the base type 'fmi3Clock'.";
+    REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
 
     fmi3_testutil_import_free(tfmu);
 }

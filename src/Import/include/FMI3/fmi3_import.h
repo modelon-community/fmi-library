@@ -315,6 +315,14 @@ FMILIB_EXPORT fmi3_import_variable_list_t* fmi3_import_get_outputs_list(fmi3_imp
 */
 FMILIB_EXPORT fmi3_import_variable_list_t* fmi3_import_get_continuous_state_derivatives_list(fmi3_import_t* fmu);
 
+/** \brief Get the list of all the clocked state variables in the model.
+* @param fmu An FMU object as returned by fmi3_import_parse_xml().
+* @return a variable list with all the clocked states in the model.
+*
+* Note that variable lists are allocated dynamically and must be freed when not needed any longer.
+*/
+FMILIB_EXPORT fmi3_import_variable_list_t* fmi3_import_get_clocked_states_list(fmi3_import_t* fmu);
+
 /** \brief Get the list of all the initial unknown variables in the model.
 * @param fmu An FMU object as returned by fmi3_import_parse_xml().
 * @return a variable list with all the initial unknowns in the model.
@@ -322,6 +330,14 @@ FMILIB_EXPORT fmi3_import_variable_list_t* fmi3_import_get_continuous_state_deri
 * Note that variable lists are allocated dynamically and must be freed when not needed any longer.
 */
 FMILIB_EXPORT fmi3_import_variable_list_t* fmi3_import_get_initial_unknowns_list(fmi3_import_t* fmu);
+
+/** \brief Get the list of all the event indicator variables in the model.
+* @param fmu An FMU object as returned by fmi3_import_parse_xml().
+* @return a variable list with all the event indicators in the model.
+*
+* Note that variable lists are allocated dynamically and must be freed when not needed any longer.
+*/
+FMILIB_EXPORT fmi3_import_variable_list_t* fmi3_import_get_event_indicators_list(fmi3_import_t* fmu);
 
 /** \brief Get dependency information in row-compressed format.
  * @param fmu An FMU object as returned by fmi3_import_parse_xml().
@@ -347,6 +363,17 @@ FMILIB_EXPORT void fmi3_import_get_continuous_state_derivatives_dependencies(fmi
 
 /** \brief Get dependency information in row-compressed format.
  * @param fmu An FMU object as returned by fmi3_import_parse_xml().
+ * @param startIndex - outputs a pointer to an array of start indices (size of array is number of clocked states + 1).
+ *                     First element is zero, last is equal to the number of elements in the dependency and factor arrays.
+ *                     NULL pointer is returned if no dependency information was provided in the XML.
+ * @param dependency - outputs a pointer to the dependency index data. Indices are 1-based. Index equals to zero
+ *                     means "depends on all" (no information in the XML).
+ * @param factorKind - outputs a pointer to the factor kind data. The values can be converted to ::fmi3_dependency_factor_kind_enu_t
+ */
+FMILIB_EXPORT void fmi3_import_get_clocked_states_dependencies(fmi3_import_t* fmu, size_t** startIndex, size_t** dependency, char** factorKind);
+
+/** \brief Get dependency information in row-compressed format.
+ * @param fmu An FMU object as returned by fmi3_import_parse_xml().
  * @param startIndex - outputs a pointer to an array of start indices (size of array is number of initial unknowns + 1).
  *                     First element is zero, last is equal to the number of elements in the dependency and factor arrays.
  *                     NULL pointer is returned if no dependency information was provided in the XML.
@@ -355,6 +382,17 @@ FMILIB_EXPORT void fmi3_import_get_continuous_state_derivatives_dependencies(fmi
  * @param factorKind - outputs a pointer to the factor kind data. The values can be converted to ::fmi3_dependency_factor_kind_enu_t
  */
 FMILIB_EXPORT void fmi3_import_get_initial_unknowns_dependencies(fmi3_import_t* fmu, size_t** startIndex, size_t** dependency, char** factorKind);
+
+/** \brief Get dependency information in row-compressed format.
+ * @param fmu An FMU object as returned by fmi3_import_parse_xml().
+ * @param startIndex - outputs a pointer to an array of start indices (size of array is number of event indicators + 1).
+ *                     First element is zero, last is equal to the number of elements in the dependency and factor arrays.
+ *                     NULL pointer is returned if no dependency information was provided in the XML.
+ * @param dependency - outputs a pointer to the dependency index data. Indices are 1-based. Index equals to zero
+ *                     means "depends on all" (no information in the XML).
+ * @param factorKind - outputs a pointer to the factor kind data. The values can be converted to ::fmi3_dependency_factor_kind_enu_t
+ */
+FMILIB_EXPORT void fmi3_import_get_event_indicators_dependencies(fmi3_import_t* fmu, size_t** startIndex, size_t** dependency, char** factorKind);
 
 /**@} */
 

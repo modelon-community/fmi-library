@@ -377,7 +377,7 @@ int fmi3_xml_set_attr_string(fmi3_xml_parser_context_t *context, fmi3_xml_elm_en
 int fmi3_xml_set_attr_enum(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID,
         int required, unsigned int* field, unsigned int defaultVal, jm_name_ID_map_t* nameMap)
 {
-    int ret, i;
+    int i;
     jm_string strVal;
 
     if (fmi3_xml_get_attr_str(context, elmID, attrID, required, &strVal)) {

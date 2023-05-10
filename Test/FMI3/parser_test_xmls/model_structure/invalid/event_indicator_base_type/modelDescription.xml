@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription fmiVersion="3.0" modelName="" instantiationToken="">
+<ModelExchange modelIdentifier="EventIndicator_non_float_basetype" />
+
+<ModelVariables>
+    <Int64 name="event_ind" valueReference="0" variability="continuous"/>
+</ModelVariables>
+
+<ModelStructure>
+  <EventIndicator valueReference="0"/> <!-- all event indicators must have base type "Float32" or "Float64" -->
+</ModelStructure>
+</fmiModelDescription>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <fmiModelDescription fmiVersion="3.0" modelName="" instantiationToken="">
-<ModelExchange modelIdentifier="myModelIdentifier" />
+<ModelExchange modelIdentifier="Output_wrong_causality" />
 
 <ModelVariables>
     <Float64 name="output_var" valueReference="0" causality="independent"/>

@@ -698,13 +698,13 @@ int fmi3_xml_handle_SimpleType(fmi3_xml_parser_context_t *context, const char* d
  * correct type and make sure that enough memory is given via parameter 'typeSize'.
  */
 fmi3_xml_variable_type_base_t* fmi3_xml_alloc_variable_or_typedef_props(fmi3_xml_type_definitions_t* td,
-        fmi3_xml_variable_type_base_t* base, size_t typeSize)
+        fmi3_xml_variable_type_base_t* nextLayer, size_t typeSize)
 {
     jm_callbacks* cb = td->typeDefinitions.callbacks;
     fmi3_xml_variable_type_base_t* type = cb->malloc(typeSize);
     if (!type) return NULL;
-    fmi3_xml_init_variable_type_base(type, fmi3_xml_type_struct_enu_props, base->baseType);
-    type->nextLayer = base;
+    fmi3_xml_init_variable_type_base(type, fmi3_xml_type_struct_enu_props, nextLayer->baseType);
+    type->nextLayer = nextLayer;
     
     // Push to typePropsList:
     type->next = td->typePropsList;
@@ -720,19 +720,19 @@ fmi3_xml_variable_type_base_t* fmi3_xml_alloc_variable_or_typedef_props(fmi3_xml
  * correct type and make sure that enough memory is given via parameter 'typeSize'.
  *
  * @param td
- * @param base The current top of the type_base_t list. The new top will be the new start_t object.
+ * @param nextLayer The current top of the type_base_t list. The new top will be the new start_t object.
  * @param typeSize The total size of memory for the start_t object. Typically the size of the start_t struct
  *                 plus memory for the actual start value, if the value is variable-size.
  */
 fmi3_xml_variable_type_base_t* fmi3_xml_alloc_variable_type_start(fmi3_xml_type_definitions_t* td,
-        fmi3_xml_variable_type_base_t* base, size_t typeSize)
+        fmi3_xml_variable_type_base_t* nextLayer, size_t typeSize)
 {
     jm_callbacks* cb = td->typeDefinitions.callbacks;
 
     fmi3_xml_variable_type_base_t* start = cb->malloc(typeSize);
     if (!start) return NULL;
-    fmi3_xml_init_variable_type_base(start, fmi3_xml_type_struct_enu_start, base->baseType);
-    start->nextLayer = base;
+    fmi3_xml_init_variable_type_base(start, fmi3_xml_type_struct_enu_start, nextLayer->baseType);
+    start->nextLayer = nextLayer;
 
     // Push to typePropsList
     start->next = td->typePropsList;

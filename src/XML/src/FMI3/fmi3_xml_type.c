@@ -744,25 +744,32 @@ fmi3_xml_variable_type_base_t* fmi3_xml_alloc_variable_type_start(fmi3_xml_type_
 /**
  * Parses all the FloatXX-specific attributes.
  * 
- * @param fallbackProps:
- *      The _props_t of the type (declared or default) from which attribute values will be
- *      copied if optional and not present.
+ * @param fallbackType:
+ *      For Variables: The typedef_t of the declaredType if defined, else the props_t of the default type.
+ *      For TypeDefinitions: The props_t of the default type.
  */
 fmi3_xml_float_type_props_t* fmi3_xml_parse_float_type_properties(fmi3_xml_parser_context_t* context,
-        fmi3_xml_elm_enu_t elmID, fmi3_xml_float_type_props_t* fallbackType, const fmi3_xml_primitive_type_t* primType)
+        fmi3_xml_elm_enu_t elmID, fmi3_xml_variable_type_base_t* fallbackType, const fmi3_xml_primitive_type_t* primType)
 {
     jm_named_ptr named, *pnamed;
     fmi3_xml_model_description_t* md = context->modelDescription;
+    fmi3_xml_float_type_props_t* fallbackProps;
     fmi3_xml_float_type_props_t* props;
     const char* quantity = NULL;
     unsigned int relQuanBuf, unboundedBuf;
 
+    if (fallbackType->structKind == fmi3_xml_type_struct_enu_typedef) {
+        fallbackProps = (void*)fallbackType->nextLayer;
+    } else {
+        fallbackProps = (void*)fallbackType;
+    }
+
     jm_vector(char)* bufQuantity = fmi3_xml_reserve_parse_buffer(context, 1, 100);
-    jm_vector(char)* bufUnit = fmi3_xml_reserve_parse_buffer(context, 2, 100);
+    jm_vector(char)* bufUnit     = fmi3_xml_reserve_parse_buffer(context, 2, 100);
     jm_vector(char)* bufDispUnit = fmi3_xml_reserve_parse_buffer(context, 3, 100);
 
     props = (fmi3_xml_float_type_props_t*)fmi3_xml_alloc_variable_or_typedef_props(
-            &md->typeDefinitions, &fallbackType->super, sizeof(fmi3_xml_float_type_props_t));
+            &md->typeDefinitions, fallbackType, sizeof(fmi3_xml_float_type_props_t));
 
     if (!bufQuantity || !bufUnit || !bufDispUnit || !props ||
             fmi3_xml_set_attr_string(context, elmID, fmi_attr_id_quantity, 0, bufQuantity) ||
@@ -791,12 +798,12 @@ fmi3_xml_float_type_props_t* fmi3_xml_parse_float_type_properties(fmi3_xml_parse
             props->displayUnit = fmi3_xml_get_parsed_unit(context, bufUnit, 1);
         }
     }
-
-    if (fmi3_xml_set_attr_boolean(context, elmID, fmi_attr_id_relativeQuantity, 0, &relQuanBuf, 0) ||
-        fmi3_xml_set_attr_boolean(context, elmID, fmi_attr_id_unbounded, 0, &unboundedBuf, 0) ||
-        fmi3_xml_set_attr_floatXX(context, elmID, fmi_attr_id_min, 0, &props->typeMin, &fallbackType->typeMin, primType) ||
-        fmi3_xml_set_attr_floatXX(context, elmID, fmi_attr_id_max, 0, &props->typeMax, &fallbackType->typeMax, primType) ||
-        fmi3_xml_set_attr_floatXX(context, elmID, fmi_attr_id_nominal, 0, &props->typeNominal, &fallbackType->typeNominal, primType))
+    
+    if (fmi3_xml_set_attr_boolean(context, elmID, fmi_attr_id_relativeQuantity, 0, &relQuanBuf, fallbackProps->super.isRelativeQuantity) ||
+        fmi3_xml_set_attr_boolean(context, elmID, fmi_attr_id_unbounded, 0, &unboundedBuf, fallbackProps->super.isUnbounded) ||
+        fmi3_xml_set_attr_floatXX(context, elmID, fmi_attr_id_min, 0, &props->typeMin, &fallbackProps->typeMin, primType) ||
+        fmi3_xml_set_attr_floatXX(context, elmID, fmi_attr_id_max, 0, &props->typeMax, &fallbackProps->typeMax, primType) ||
+        fmi3_xml_set_attr_floatXX(context, elmID, fmi_attr_id_nominal, 0, &props->typeNominal, &fallbackProps->typeNominal, primType))
     {
         // NOTE: Should not need fatal error here since none of these attributes are used to
         // reference other parts of the XML.
@@ -818,7 +825,7 @@ int fmi3_xml_handle_Float(fmi3_xml_parser_context_t* context, const char* data, 
         fmi3_xml_variable_typedef_t* typeDef;
         fmi3_xml_float_type_props_t * props;
 
-        props = fmi3_xml_parse_float_type_properties(context, elmID, defaultType, primType);
+        props = fmi3_xml_parse_float_type_properties(context, elmID, &defaultType->super, primType);
         if (!props) return -1;
 
         // Get the typedef already created for SimpleType and set props
@@ -840,24 +847,31 @@ int fmi3_xml_handle_Float32(fmi3_xml_parser_context_t* context, const char* data
 /**
  * Parses all the IntXX-specific attributes.
  * 
- * @param fallbackProps:
- *      The _props_t of the type (declared or default) from which attribute values will be
- *      copied if optional and not present.
+ * @param fallbackType:
+ *      For Variables: The typedef_t of the declaredType if defined, else the props_t of the default type.
+ *      For TypeDefinitions: The props_t of the default type.
  */
 fmi3_xml_int_type_props_t* fmi3_xml_parse_intXX_type_properties(fmi3_xml_parser_context_t* context,
-        fmi3_xml_elm_enu_t elmID, fmi3_xml_int_type_props_t* fallbackType, const fmi3_xml_primitive_type_t* primType)
+        fmi3_xml_elm_enu_t elmID, fmi3_xml_variable_type_base_t* fallbackType, const fmi3_xml_primitive_type_t* primType)
 {
     fmi3_xml_model_description_t* md = context->modelDescription;
     fmi3_xml_type_definitions_t* td = &md->typeDefinitions;
-    fmi3_xml_int_type_props_t* props = 0;
+    fmi3_xml_int_type_props_t* fallbackProps = NULL;
+    fmi3_xml_int_type_props_t* props = NULL;
     const char* quantity = NULL;
 
     // XXX: Why don't we give fatal errors in this funciton, but we do it for floatXX?
+    
+    if (fallbackType->structKind == fmi3_xml_type_struct_enu_typedef) {
+        fallbackProps = (void*)fallbackType->nextLayer;
+    } else {
+        fallbackProps = (void*)fallbackType;
+    }
 
     jm_vector(char)* bufQuantity = fmi3_xml_reserve_parse_buffer(context, 1, 100);
     if (!bufQuantity) return NULL;
 
-    props = (fmi3_xml_int_type_props_t*)fmi3_xml_alloc_variable_or_typedef_props(td, &fallbackType->super, sizeof(fmi3_xml_int_type_props_t));
+    props = (fmi3_xml_int_type_props_t*)fmi3_xml_alloc_variable_or_typedef_props(td, fallbackType, sizeof(fmi3_xml_int_type_props_t));
     if (!props) return NULL;
 
     if (fmi3_xml_set_attr_string(context, elmID, fmi_attr_id_quantity, 0, bufQuantity))
@@ -868,8 +882,8 @@ fmi3_xml_int_type_props_t* fmi3_xml_parse_intXX_type_properties(fmi3_xml_parser_
 
     props->quantity = quantity;
 
-    if (    fmi3_xml_set_attr_intXX(context, elmID, fmi_attr_id_min, 0, &props->typeMin, &fallbackType->typeMin, primType) ||
-            fmi3_xml_set_attr_intXX(context, elmID, fmi_attr_id_max, 0, &props->typeMax, &fallbackType->typeMax, primType))
+    if (    fmi3_xml_set_attr_intXX(context, elmID, fmi_attr_id_min, 0, &props->typeMin, &fallbackProps->typeMin, primType) ||
+            fmi3_xml_set_attr_intXX(context, elmID, fmi_attr_id_max, 0, &props->typeMax, &fallbackProps->typeMax, primType))
         return NULL;
 
     return props;
@@ -885,7 +899,7 @@ int fmi3_xml_handle_IntXX(fmi3_xml_parser_context_t *context, const char* data, 
         fmi3_xml_variable_typedef_t* typeDef;
         fmi3_xml_int_type_props_t * props;
 
-        props = fmi3_xml_parse_intXX_type_properties(context, elemID, defaultType, primType);
+        props = fmi3_xml_parse_intXX_type_properties(context, elemID, &defaultType->super, primType);
         if (!props) return -1;
 
         // Get the typedef already created for SimpleType and set props
@@ -946,18 +960,25 @@ int fmi3_xml_handle_Boolean(fmi3_xml_parser_context_t* context, const char* data
 /**
  * Parses all the Binary-specific attributes.
  * 
- * @param fallbackProps:
- *      The _props_t of the type (declared or default) from which attribute values will be
- *      copied if optional and not present.
+ * @param fallbackType:
+ *      For Variables: The typedef_t of the declaredType if defined, else the props_t of the default type.
+ *      For TypeDefinitions: The props_t of the default type.
  */
 fmi3_xml_binary_type_props_t* fmi3_xml_parse_binary_type_properties(fmi3_xml_parser_context_t* context,
-        fmi3_xml_elm_enu_t elmID, fmi3_xml_binary_type_props_t* fallbackProps)
+        fmi3_xml_elm_enu_t elmID, fmi3_xml_variable_type_base_t* fallbackType)
 {
     fmi3_xml_type_definitions_t* td = &context->modelDescription->typeDefinitions;
+    fmi3_xml_binary_type_props_t* fallbackProps;
     fmi3_xml_binary_type_props_t* props;
+    
+    if (fallbackType->structKind == fmi3_xml_type_struct_enu_typedef) {
+        fallbackProps = (void*)fallbackType->nextLayer;
+    } else {
+        fallbackProps = (void*)fallbackType;
+    }
 
     // Create props:
-    props = (fmi3_xml_binary_type_props_t*)fmi3_xml_alloc_variable_or_typedef_props(td, &fallbackProps->super,
+    props = (fmi3_xml_binary_type_props_t*)fmi3_xml_alloc_variable_or_typedef_props(td, fallbackType,
             sizeof(fmi3_xml_binary_type_props_t));
     if (!props) return NULL;
 
@@ -996,7 +1017,7 @@ int fmi3_xml_handle_Binary(fmi3_xml_parser_context_t* context, const char* data)
         fmi3_xml_binary_type_props_t * props;
         fmi3_xml_binary_type_props_t* defaultType = &context->modelDescription->typeDefinitions.defaultBinaryType;
 
-        props = fmi3_xml_parse_binary_type_properties(context, fmi3_xml_elmID_Binary, defaultType);
+        props = fmi3_xml_parse_binary_type_properties(context, fmi3_xml_elmID_Binary, &defaultType->super);
         if (!props) return -1;
 
         // Get the typedef already created for SimpleType and set props

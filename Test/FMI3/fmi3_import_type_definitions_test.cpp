@@ -17,20 +17,25 @@
 
 static int G_nErrors; /* global used to count the number of errors reported to the logger during parsing - reset before use! */
 
-static fmi3_import_t *parse_xml(const char *model_desc_path)
-{
-    jm_callbacks *cb = jm_get_default_callbacks();
-    fmi_import_context_t *ctx = fmi_import_allocate_context(cb);
-    fmi3_import_t *xml;
-
-    if (ctx == nullptr) {
-        return nullptr;
+static fmi3_import_variable_typedef_t* get_typedef_by_name(fmi3_import_type_definitions_t* tds, const char* name) {
+    size_t nTds = fmi3_import_get_type_definition_number(tds);
+    fmi3_import_variable_typedef_t *td;
+    for (size_t i = 0; i < nTds; i++) {
+        td = fmi3_import_get_typedef(tds, i);
+        const char* tdName = fmi3_import_get_type_name(td);
+        if (strcmp(tdName, name) == 0) {
+            return td;
+        }
     }
+    return nullptr;
+}
 
-    xml = fmi3_import_parse_xml(ctx, model_desc_path, nullptr);
-
-    fmi_import_free_context(ctx);
-    return xml;
+static fmi3_import_binary_variable_t* get_binary_var_by_name(fmi3_import_t* xml, const char* name) {
+    fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, name);
+    REQUIRE(v != nullptr);
+    fmi3_import_binary_variable_t* bv = fmi3_import_get_variable_as_binary(v);
+    REQUIRE(bv != nullptr);
+    return bv;
 }
 
 /* Parse small Float64 typedef */
@@ -878,7 +883,7 @@ err1:
     return res;
 }
 
-TEST_CASE("TypeDefinitions test") {
+TEST_CASE("TypeDefinitions: FloatXX and IntXX") {
     fmi3_import_t* xml;
     int ret = 1;
     const char* xmldir = FMI3_TEST_XML_DIR "/type_definitions/valid";
@@ -1036,7 +1041,59 @@ TEST_CASE("TypeDefinitions test") {
     REQUIRE(ret == 1);
 }
 
-TEST_CASE("TypeDefinitions test: value_boundary_check") {
+static void require_variable_has_declared_type(fmi3_import_t* xml, const char* varName, const char* tdName) {
+    fmi3_import_type_definitions_t* tds; 
+    fmi3_import_variable_t* v;
+    fmi3_import_variable_typedef_t *tdVar, *tdByName;
+
+    tds = fmi3_import_get_type_definitions(xml);
+    REQUIRE(tds != nullptr);
+
+    v = fmi3_import_get_variable_by_name(xml, varName);
+    REQUIRE(v != nullptr);
+    tdVar = fmi3_import_get_variable_declared_type(v);
+    tdByName = get_typedef_by_name(tds, tdName);
+    REQUIRE(tdVar != nullptr);
+    REQUIRE(tdByName != nullptr);
+    
+    REQUIRE(tdVar == tdByName);
+}
+
+TEST_CASE("TypeDefinitions: FloatXX and IntXX - declaredType") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/type_definitions/valid";
+
+    fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
+    REQUIRE(xml != nullptr);
+    
+    SECTION("IntXX") {
+        // Variable: No attr, Typedef: No attr
+        require_variable_has_declared_type(xml, "variable_inherit_typedef_basic_int64", "typedef_basic_int64");
+        require_variable_has_declared_type(xml, "variable_inherit_typedef_basic_uint8", "typedef_basic_uint8");
+
+        // Variable: No attr, Typedef: Some attr
+        require_variable_has_declared_type(xml, "variable_inherit_typedef_override_int64", "typedef_override_int64");
+        require_variable_has_declared_type(xml, "variable_inherit_typedef_override_uint8", "typedef_override_uint8");
+
+        // Variable: Some attr, TypeDef: No attr
+        require_variable_has_declared_type(xml, "variable_override_basic_int64", "typedef_basic_int64");
+        require_variable_has_declared_type(xml, "variable_override_basic_uint8", "typedef_basic_uint8");
+
+        // Variable: Some attr, TypeDef: Some attr
+        require_variable_has_declared_type(xml, "variable_override_typedef_int64", "typedef_override_int64");
+        require_variable_has_declared_type(xml, "variable_override_typedef_uint8", "typedef_override_uint8");
+    }
+    SECTION("FloatXX") {
+        // Variable: No attr, TypeDef: Some attr
+        require_variable_has_declared_type(xml, "float64_with_typedef",          "float64_type_with_attributes");
+
+        // Variable: Some attr, TypeDef: Some attr
+        require_variable_has_declared_type(xml, "float64_with_typedef_override", "float64_type_with_attributes");
+    }
+    
+    fmi3_import_free(xml);
+}
+
+TEST_CASE("TypeDefinitions: value_boundary_check") {
     const char* xmldir = FMI3_TEST_XML_DIR "/type_definitions/value_boundary_check";
 
     printf("\nThe next tests are expected to fail...\n");
@@ -1045,32 +1102,11 @@ TEST_CASE("TypeDefinitions test: value_boundary_check") {
     printf("---------------------------------------------------------------------------\n");
 }
 
-static fmi3_import_variable_typedef_t* get_typedef_by_name(fmi3_import_type_definitions_t* tds, const char* name) {
-    size_t nTds = fmi3_import_get_type_definition_number(tds);
-    fmi3_import_variable_typedef_t *td;
-    for (size_t i = 0; i < nTds; i++) {
-        td = fmi3_import_get_typedef(tds, i);
-        const char* tdName = fmi3_import_get_type_name(td);
-        if (strcmp(tdName, name) == 0) {
-            return td;
-        }
-    }
-    return nullptr;
-}
-
-static fmi3_import_binary_variable_t* get_binary_var_by_name(fmi3_import_t* xml, const char* name) {
-    fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, name);
-    REQUIRE(v != nullptr);
-    fmi3_import_binary_variable_t* bv = fmi3_import_get_variable_as_binary(v);
-    REQUIRE(bv != nullptr);
-    return bv;
-}
-
-TEST_CASE("TypeDefinitions test: Binary") {
+TEST_CASE("TypeDefinitions: Binary") {
     fmi3_import_t* xml;
     const char* xmldir = FMI3_TEST_XML_DIR "/type_definitions/valid/binary";
 
-    xml = parse_xml(xmldir);
+    xml = fmi3_testutil_parse_xml(xmldir);
     REQUIRE(xml != nullptr);
 
     const char* mimeType;

@@ -1327,43 +1327,24 @@ int fmi3_xml_handle_FloatXXVariable(fmi3_xml_parser_context_t* context, const ch
         if (!declaredType) return -1;
 
         /* Set type properties */
-        {
-            int hasUnit = fmi3_xml_is_attr_defined(context, fmi_attr_id_unit)
-                       || fmi3_xml_is_attr_defined(context, fmi_attr_id_displayUnit);
-            int hasMin  = fmi3_xml_is_attr_defined(context, fmi_attr_id_min);
-            int hasMax  = fmi3_xml_is_attr_defined(context, fmi_attr_id_max);
-            int hasNom  = fmi3_xml_is_attr_defined(context, fmi_attr_id_nominal);
-            int hasQuan = fmi3_xml_is_attr_defined(context, fmi_attr_id_quantity);
-            int hasRelQ = fmi3_xml_is_attr_defined(context, fmi_attr_id_relativeQuantity);
-            int hasUnb  = fmi3_xml_is_attr_defined(context, fmi_attr_id_unbounded);
+        int hasUnit = fmi3_xml_is_attr_defined(context, fmi_attr_id_unit)
+                   || fmi3_xml_is_attr_defined(context, fmi_attr_id_displayUnit);
+        int hasMin  = fmi3_xml_is_attr_defined(context, fmi_attr_id_min);
+        int hasMax  = fmi3_xml_is_attr_defined(context, fmi_attr_id_max);
+        int hasNom  = fmi3_xml_is_attr_defined(context, fmi_attr_id_nominal);
+        int hasQuan = fmi3_xml_is_attr_defined(context, fmi_attr_id_quantity);
+        int hasRelQ = fmi3_xml_is_attr_defined(context, fmi_attr_id_relativeQuantity);
+        int hasUnb  = fmi3_xml_is_attr_defined(context, fmi_attr_id_unbounded);
 
-            if (hasUnit || hasMin || hasMax || hasNom || hasQuan || hasRelQ || hasUnb) {
-                /* create a new type_props that overrides declared type's properties when necessary */
-
-                fmi3_xml_float_type_props_t* dtProps = 0; /* declaredType properties */
-
-                if (declaredType->structKind == fmi3_xml_type_struct_enu_typedef)
-                    dtProps = (fmi3_xml_float_type_props_t*)(declaredType->nextLayer);
-                else /* default type */
-                    dtProps = (fmi3_xml_float_type_props_t*)declaredType;
-
-                type = fmi3_xml_parse_float_type_properties(context, elmID, defaultType, primType);
-                if (!type) {
-                    variable->type = &((fmi3_xml_float_type_props_t*)declaredType)->super; /* fallback to declared */
-                    return -1;
-                }
-
-                type->super.nextLayer = declaredType;
-                if (!hasUnit) type->displayUnit              = dtProps->displayUnit;
-                if (!hasMin)  type->typeMin                  = dtProps->typeMin;
-                if (!hasMax)  type->typeMax                  = dtProps->typeMax;
-                if (!hasNom)  type->typeNominal              = dtProps->typeNominal;
-                if (!hasQuan) type->quantity                 = dtProps->quantity;
-                if (!hasRelQ) type->super.isRelativeQuantity = dtProps->super.isRelativeQuantity;
-                if (!hasUnb)  type->super.isUnbounded        = dtProps->super.isUnbounded;
-            } else {
-                type = (fmi3_xml_float_type_props_t*)declaredType;
+        if (hasUnit || hasMin || hasMax || hasNom || hasQuan || hasRelQ || hasUnb) {
+            /* create a new type_props that overrides declared type's properties when necessary */
+            type = fmi3_xml_parse_float_type_properties(context, elmID, declaredType, primType);
+            if (!type) {
+                variable->type = declaredType; /* fallback */
+                return -1;
             }
+        } else {
+            type = (fmi3_xml_float_type_props_t*)declaredType;  // FIXME: Confusing typecast (could be _typedef).
         }
         variable->type = &type->super;
 
@@ -1418,71 +1399,56 @@ int fmi3_xml_handle_FloatXXVariable(fmi3_xml_parser_context_t* context, const ch
 int fmi3_xml_handle_IntXXVariable(fmi3_xml_parser_context_t* context, const char* data,
         fmi3_xml_int_type_props_t* defaultType,
         fmi3_xml_elm_enu_t elmID, /* ID of the Type (not the Variable) */
-        const fmi3_xml_primitive_type_t* primType) {
-    int res;
+        const fmi3_xml_primitive_type_t* primType)
+{
+    if (context->skipOneVariableFlag) return 0;
+    if (fmi3_xml_handle_Variable(context, data)) return -1;
 
-    if(context->skipOneVariableFlag) return 0;
-
-    /* Extract common Variable info */
-    res = fmi3_xml_handle_Variable(context, data);
-    if (res) return res;
-
-    if(!data) {
+    if (!data) {
         fmi3_xml_model_description_t* md = context->modelDescription;
         fmi3_xml_type_definitions_t* td = &md->typeDefinitions;
         fmi3_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
-        fmi3_xml_variable_type_base_t * declaredType = 0;
-        fmi3_xml_int_type_props_t * type = 0;
+        fmi3_xml_variable_type_base_t* declaredType = NULL;
+        fmi3_xml_int_type_props_t* type = NULL;
         int hasStart;
 
+        // Type-specific attributes:
         declaredType = fmi3_parse_declared_type_attr(context, elmID, &defaultType->super) ;
+        if (!declaredType) return -1;
 
-        if(!declaredType) return -1;
-        {
-            int hasMin = fmi3_xml_is_attr_defined(context,fmi_attr_id_min);
-            int hasMax = fmi3_xml_is_attr_defined(context,fmi_attr_id_max);
-            int hasQuan =  fmi3_xml_is_attr_defined(context,fmi_attr_id_quantity);
-        if( hasMin || hasMax || hasQuan) {
-            fmi3_xml_int_type_props_t* dtProps = 0; /* declaredType properties */
-
-            if (declaredType->structKind == fmi3_xml_type_struct_enu_typedef) {
-                dtProps = (fmi3_xml_int_type_props_t*)(declaredType->nextLayer);
-            } else {
-                dtProps = (fmi3_xml_int_type_props_t*)declaredType;
-            }
-            assert(dtProps->super.structKind == fmi3_xml_type_struct_enu_props);
-            type = fmi3_xml_parse_intXX_type_properties(context, elmID, defaultType, primType);
+        int hasMin  = fmi3_xml_is_attr_defined(context, fmi_attr_id_min);
+        int hasMax  = fmi3_xml_is_attr_defined(context, fmi_attr_id_max);
+        int hasQuan = fmi3_xml_is_attr_defined(context, fmi_attr_id_quantity);
+        if (hasMin || hasMax || hasQuan) {
+            type = fmi3_xml_parse_intXX_type_properties(context, elmID, declaredType, primType);
             if (!type) {
-                variable->type = &((fmi3_xml_int_type_props_t*)declaredType)->super; /* fallback to default */
+                variable->type = declaredType; /* fallback */
                 return -1;
             }
             type->super.nextLayer = declaredType;
-            if(!hasMin)  type->typeMin  = dtProps->typeMin;
-            if(!hasMax)  type->typeMax  = dtProps->typeMax;
-            if(!hasQuan) type->quantity = dtProps->quantity;
-        }
-        else
-            type = (fmi3_xml_int_type_props_t*)declaredType;
+        } else {
+            // FIXME: Confusing to typecast to _props when could be _typedef.
+            type = (fmi3_xml_int_type_props_t*)declaredType; 
         }
         variable->type = &type->super;
 
+        // Start attribute:
         hasStart = fmi3_xml_get_has_start(context, variable);
         if (hasStart) {
-            fmi3_xml_int_variable_start_t * start = (fmi3_xml_int_variable_start_t*)fmi3_xml_alloc_variable_type_start(td, &type->super, sizeof(fmi3_xml_int_variable_start_t));
-            fmi3_int_union_t defVal;
+            fmi3_xml_int_variable_start_t * start =
+                    (void*)fmi3_xml_alloc_variable_type_start(td, &type->super, sizeof(fmi3_xml_int_variable_start_t));
             if (!start) {
                 fmi3_xml_parse_fatal(context, "Could not allocate memory");
                 return -1;
             }
 
-            /*
-               This default value should never be used, since the standard does not define it.
-               The FMU will hard-code one in the C API and it might not match our (this) default value
-               - here I'm just giving a valid value for the type so it's defined on our side at least.
-            */
-            defVal.scalar64s = 0; /* set the whole bitfield to 0 - this will evaluate to '0' for all intXX types */
+            // This default value should never be used, since the standard does not define it.
+            // The FMU will hard-code one in the C API and it might not match our (this) default value.
+            // Here we just give a valid value for the type so it's defined on our side at least.
+            fmi3_int_union_t defaultVal;
+            defaultVal.scalar64s = 0; /* set the whole bitfield to 0 - this will evaluate to '0' for all intXX types */
 
-            if (fmi3_xml_set_attr_intXX(context, elmID, fmi_attr_id_start, 0, &start->start, &defVal, primType)) {
+            if (fmi3_xml_set_attr_intXX(context, elmID, fmi_attr_id_start, 0, &start->start, &defaultVal, primType)) {
                 jm_log_error(context->callbacks, module, "failed to parse start value for integer");
                 return -1;
             }
@@ -1582,18 +1548,8 @@ int fmi3_xml_handle_BinaryVariable(fmi3_xml_parser_context_t* context, const cha
         int hasMimeType = fmi3_xml_is_attr_defined(context, fmi_attr_id_mimeType);
         int hasMaxSize  = fmi3_xml_is_attr_defined(context, fmi_attr_id_maxSize);
         if (hasMimeType || hasMaxSize) {
-            // Find the TypeDefinition or default type properties:
-            fmi3_xml_binary_type_props_t* dtProps;
-            // Get declared type properties:
-            if (declaredType->structKind == fmi3_xml_type_struct_enu_typedef) {
-                dtProps = (fmi3_xml_binary_type_props_t*)(declaredType->nextLayer);  // TypeDef
-            } else {
-                dtProps = (fmi3_xml_binary_type_props_t*)declaredType;  // default
-            }
-            assert(dtProps->super.structKind == fmi3_xml_type_struct_enu_props);
-            
             // Create variable properties:
-            vProps = fmi3_xml_parse_binary_type_properties(context, elmID, dtProps);
+            vProps = fmi3_xml_parse_binary_type_properties(context, elmID, declaredType);
             if (!vProps) return -1;
         }
         else {

@@ -744,21 +744,21 @@ int fmi3_xml_get_enum_variable_max(fmi3_xml_enum_variable_t* v){
     return props->typeMax;
 }
 
-int fmi3_xml_get_enum_variable_start(fmi3_xml_enum_variable_t* v) {
+fmi3_int64_t fmi3_xml_get_enum_variable_start(fmi3_xml_enum_variable_t* v) {
     fmi3_xml_variable_t* vv = (fmi3_xml_variable_t*)v;
     if(fmi3_xml_get_variable_has_start(vv)) {
         fmi3_xml_int_variable_start_t* start = (fmi3_xml_int_variable_start_t*)(vv->type);
-        return start->start.scalar32s;
+        return start->start.scalar64s;
     }
     return 0;
 }
 
 
-int* fmi3_xml_get_enum_variable_start_array(fmi3_xml_enum_variable_t* v) {
+fmi3_int64_t* fmi3_xml_get_enum_variable_start_array(fmi3_xml_enum_variable_t* v) {
     fmi3_xml_variable_t* vv = (fmi3_xml_variable_t*)v;
     if(fmi3_xml_get_variable_has_start(vv)) {
         fmi3_xml_int_variable_start_t* start = (fmi3_xml_int_variable_start_t*)(vv->type);
-        return start->start.array32s;
+        return start->start.array64s;
     }
     return 0;
 }
@@ -2087,9 +2087,9 @@ int fmi3_xml_handle_EnumerationVariable(fmi3_xml_parser_context_t *context, cons
                 /* restore the attribute buffer before it's used in set_attr_int */
                 jm_vector_set_item(jm_string)(context->attrBuffer, fmi_attr_id_start, startAttr);
 
-                if (fmi3_xml_set_attr_int32(context, fmi3_xml_elmID_Enumeration,
-                        fmi_attr_id_start, 0, &start->start.scalar32s, 0)) {
-                    start->start.scalar32s = type->typeMin;
+                if (fmi3_xml_set_attr_intXX(context, fmi3_xml_elmID_Enumeration,
+                        fmi_attr_id_start, 0, &start->start.scalar64s, 0, &PRIMITIVE_TYPES.enumeration)) {
+                    start->start.scalar64s = type->typeMin;
                 }
             }
             variable->type = &start->super;

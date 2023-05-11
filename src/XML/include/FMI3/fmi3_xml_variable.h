@@ -179,8 +179,8 @@ fmi3_uint64_t fmi3_xml_get_clock_variable_shift_counter(fmi3_xml_clock_variable_
 
 fmi3_xml_enum_variable_t* fmi3_xml_get_variable_as_enum(fmi3_xml_variable_t*);
 fmi3_string_t fmi3_xml_get_enum_variable_quantity(fmi3_xml_enum_variable_t* v);
-int fmi3_xml_get_enum_variable_start(fmi3_xml_enum_variable_t* v);
-int* fmi3_xml_get_enum_variable_start_array(fmi3_xml_enum_variable_t* v);
+fmi3_int64_t fmi3_xml_get_enum_variable_start(fmi3_xml_enum_variable_t* v);
+fmi3_int64_t* fmi3_xml_get_enum_variable_start_array(fmi3_xml_enum_variable_t* v);
 int fmi3_xml_get_enum_variable_min(fmi3_xml_enum_variable_t* v);
 int fmi3_xml_get_enum_variable_max(fmi3_xml_enum_variable_t* v);
 

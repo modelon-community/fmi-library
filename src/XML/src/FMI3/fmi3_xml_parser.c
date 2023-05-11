@@ -239,8 +239,8 @@ const fmi3_xml_primitive_types_t PRIMITIVE_TYPES = {
     },
     {
         "Enumeration",
-        sizeof(fmi3_int32_t),
-        fmi3_bitness_32, /* TODO: Perhaps this should be 64bit in FMI3??? */
+        sizeof(fmi3_int64_t),
+        fmi3_bitness_64,
         1,
         fmi3_base_type_enum,
     }

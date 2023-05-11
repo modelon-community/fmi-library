@@ -554,11 +554,11 @@ fmi3_string_t fmi3_import_get_enum_variable_quantity(fmi3_import_enum_variable_t
     return fmi3_xml_get_enum_variable_quantity(v);
 }
 
-int fmi3_import_get_enum_variable_start(fmi3_import_enum_variable_t* v) {
+fmi3_int64_t fmi3_import_get_enum_variable_start(fmi3_import_enum_variable_t* v) {
     return fmi3_xml_get_enum_variable_start(v);
 }
 
-int* fmi3_import_get_enum_variable_start_array(fmi3_import_enum_variable_t* v) {
+fmi3_int64_t* fmi3_import_get_enum_variable_start_array(fmi3_import_enum_variable_t* v) {
     return fmi3_xml_get_enum_variable_start_array(v);
 }
 

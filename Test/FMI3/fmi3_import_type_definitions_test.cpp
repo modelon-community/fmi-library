@@ -1134,13 +1134,13 @@ TEST_CASE("TypeDefinitions: Binary") {
         mimeType = fmi3_import_get_binary_type_mime_type(tdMinimal);
         maxSize  = fmi3_import_get_binary_type_max_size(tdMinimal);
         REQUIRE(strcmp(mimeType, mimeTypeDefault) == 0);
-        REQUIRE(maxSize == 0);
+        REQUIRE(maxSize == maxSizeDefault);
     }
     SECTION("Typedef that sets mimeType") {
         mimeType = fmi3_import_get_binary_type_mime_type(tdMimeType);
         maxSize  = fmi3_import_get_binary_type_max_size(tdMimeType);
         REQUIRE(strcmp(mimeType, "mt0") == 0);
-        REQUIRE(maxSize == 0);
+        REQUIRE(maxSize == maxSizeDefault);
     }
     SECTION("Typedef that sets both mimeType and maxSize") {
         mimeType = fmi3_import_get_binary_type_mime_type(tdAllAttr);
@@ -1163,7 +1163,7 @@ TEST_CASE("TypeDefinitions: Binary") {
         maxSize  = fmi3_import_get_binary_variable_max_size(bv);
         REQUIRE(fmi3_import_get_variable_declared_type(v) == nullptr);
         REQUIRE(strcmp(mimeType, mimeTypeDefault) == 0);
-        REQUIRE(maxSize == 0);
+        REQUIRE(maxSize == maxSizeDefault);
     }
     SECTION("Variable inheriting minimal typedef") {
         v = fmi3_import_get_variable_by_name(xml, "var_inh_minimal_1");
@@ -1172,7 +1172,7 @@ TEST_CASE("TypeDefinitions: Binary") {
         maxSize  = fmi3_import_get_binary_variable_max_size(bv);
         REQUIRE(fmi3_import_get_variable_declared_type(v) == (void*)tdMinimal);
         REQUIRE(strcmp(mimeType, mimeTypeDefault) == 0);
-        REQUIRE(maxSize == 0);
+        REQUIRE(maxSize == maxSizeDefault);
     }
     SECTION("Variable inheriting typedef that defines mimeType") {
         v = fmi3_import_get_variable_by_name(xml, "var_inh_mimeType_1");
@@ -1181,7 +1181,7 @@ TEST_CASE("TypeDefinitions: Binary") {
         maxSize  = fmi3_import_get_binary_variable_max_size(bv);
         REQUIRE(fmi3_import_get_variable_declared_type(v) == (void*)tdMimeType);
         REQUIRE(strcmp(mimeType, "mt0") == 0);
-        REQUIRE(maxSize == 0);
+        REQUIRE(maxSize == maxSizeDefault);
     }
     SECTION("Variable inheriting typedef that defines mimeType and maxSize") {
         v = fmi3_import_get_variable_by_name(xml, "var_inh_allAttr_1");
@@ -1204,7 +1204,7 @@ TEST_CASE("TypeDefinitions: Binary") {
         maxSize  = fmi3_import_get_binary_variable_max_size(bv);
         REQUIRE(fmi3_import_get_variable_declared_type(v) == nullptr);
         REQUIRE(strcmp(mimeType, "mt2") == 0);
-        REQUIRE(maxSize == 0);
+        REQUIRE(maxSize == maxSizeDefault);
     }
     SECTION("Variable inheriting minimal typedef, and variable overrides mimeType") {
         v = fmi3_import_get_variable_by_name(xml, "var_inh_minimal_2");
@@ -1213,7 +1213,7 @@ TEST_CASE("TypeDefinitions: Binary") {
         maxSize  = fmi3_import_get_binary_variable_max_size(bv);
         REQUIRE(fmi3_import_get_variable_declared_type(v) == (void*)tdMinimal);
         REQUIRE(strcmp(mimeType, "mt2") == 0);
-        REQUIRE(maxSize == 0);
+        REQUIRE(maxSize == maxSizeDefault);
     }
     SECTION("Variable inheriting typedef that defines mimeType, and variable overrides mimeType") {
         v = fmi3_import_get_variable_by_name(xml, "var_inh_mimeType_2");
@@ -1222,7 +1222,7 @@ TEST_CASE("TypeDefinitions: Binary") {
         maxSize  = fmi3_import_get_binary_variable_max_size(bv);
         REQUIRE(fmi3_import_get_variable_declared_type(v) == (void*)tdMimeType);
         REQUIRE(strcmp(mimeType, "mt2") == 0);
-        REQUIRE(maxSize == 0);
+        REQUIRE(maxSize == maxSizeDefault);
     }
     SECTION("Variable inheriting typedef that defines mimeType and maxSize, and variable overrides both") {
         v = fmi3_import_get_variable_by_name(xml, "var_inh_allAttr_2");
@@ -1232,6 +1232,89 @@ TEST_CASE("TypeDefinitions: Binary") {
         REQUIRE(fmi3_import_get_variable_declared_type(v) == (void*)tdAllAttr);
         REQUIRE(strcmp(mimeType, "mt2") == 0);
         REQUIRE(maxSize == 2);
+    }
+
+    fmi3_import_free(xml);
+}
+
+static void require_clock_variable_constant_interval_variability(fmi3_import_clock_variable_t* cv) {
+    fmi3_interval_variability_enu_t intervalVariability = fmi3_import_get_clock_variable_interval_variability(cv);
+    REQUIRE(intervalVariability == fmi3_interval_variability_constant);
+}
+
+static void require_clock_variable_all_attr_default_except_resolution(fmi3_import_clock_variable_t* cv) {
+    require_clock_variable_constant_interval_variability(cv);
+
+    REQUIRE(fmi3_import_get_clock_variable_can_be_deactivated(cv) == false);
+    REQUIRE(fmi3_import_get_clock_variable_priority(cv)           == 0);
+    REQUIRE(fmi3_import_get_clock_variable_interval_decimal(cv)   == 0.0);
+    REQUIRE(fmi3_import_get_clock_variable_shift_decimal(cv)      == 0.0);
+    REQUIRE(fmi3_import_get_clock_variable_supports_fraction(cv)  == false);
+    REQUIRE(fmi3_import_get_clock_variable_interval_counter(cv)   == 0);
+    REQUIRE(fmi3_import_get_clock_variable_shift_counter(cv)      == 0);
+}
+
+static void require_clock_variable_all_attr_default(fmi3_import_clock_variable_t* cv) {
+    require_clock_variable_all_attr_default_except_resolution(cv);
+
+    REQUIRE(fmi3_import_get_clock_variable_resolution(cv) == 0);
+}
+
+TEST_CASE("TypeDefinitions: Clock") {
+    fmi3_import_t* xml;
+    const char* xmldir = FMI3_TEST_XML_DIR "/type_definitions/valid/clock";
+
+    xml = fmi3_testutil_parse_xml(xmldir);
+    REQUIRE(xml != nullptr);
+
+    //--------------------------------------------------------------------------
+    // Test attributes for TypeDefinitions
+    //--------------------------------------------------------------------------
+    fmi3_import_type_definitions_t* tds; 
+    fmi3_import_clock_typedef_t *tdMinimal, *tdResolution, *tdAllAttr;
+
+    tds = fmi3_import_get_type_definitions(xml);
+    REQUIRE(tds != nullptr);
+    
+    tdMinimal    = fmi3_import_get_type_as_clock(get_typedef_by_name(tds, "td_minimal"));
+    tdResolution = fmi3_import_get_type_as_clock(get_typedef_by_name(tds, "td_resolution"));
+    tdAllAttr    = fmi3_import_get_type_as_clock(get_typedef_by_name(tds, "td_allAttr"));
+    REQUIRE(tdMinimal  != nullptr);
+    REQUIRE(tdResolution != nullptr);
+    REQUIRE(tdAllAttr  != nullptr);
+    
+    SECTION("Minimal typedef") {
+        REQUIRE(fmi3_import_get_clock_type_can_be_deactivated(tdMinimal)   == false);
+        REQUIRE(fmi3_import_get_clock_type_priority(tdMinimal)             == 0);
+        REQUIRE(fmi3_import_get_clock_type_interval_decimal(tdMinimal)     == 0.0);
+        REQUIRE(fmi3_import_get_clock_type_shift_decimal(tdMinimal)        == 0.0);
+        REQUIRE(fmi3_import_get_clock_type_supports_fraction(tdMinimal)    == false);
+        REQUIRE(fmi3_import_get_clock_type_interval_counter(tdMinimal)     == 0);
+        REQUIRE(fmi3_import_get_clock_type_shift_counter(tdMinimal)        == 0);
+        REQUIRE(fmi3_import_get_clock_type_resolution(tdMinimal)           == 0);
+        REQUIRE(fmi3_import_get_clock_type_interval_variability(tdMinimal) == fmi3_interval_variability_constant);
+    }
+    SECTION("Typedef that sets resolution - other attributes inherited") {
+        REQUIRE(fmi3_import_get_clock_type_can_be_deactivated(tdResolution)   == false);
+        REQUIRE(fmi3_import_get_clock_type_priority(tdResolution)             == 0);
+        REQUIRE(fmi3_import_get_clock_type_interval_decimal(tdResolution)     == 0.0);
+        REQUIRE(fmi3_import_get_clock_type_shift_decimal(tdResolution)        == 0.0);
+        REQUIRE(fmi3_import_get_clock_type_supports_fraction(tdResolution)    == false);
+        REQUIRE(fmi3_import_get_clock_type_interval_counter(tdResolution)     == 0);
+        REQUIRE(fmi3_import_get_clock_type_shift_counter(tdResolution)        == 0);
+        REQUIRE(fmi3_import_get_clock_type_resolution(tdResolution)           == 99);
+        REQUIRE(fmi3_import_get_clock_type_interval_variability(tdResolution) == fmi3_interval_variability_constant);
+    }
+    SECTION("Typedef that sets all clock attributes") {
+        REQUIRE(fmi3_import_get_clock_type_can_be_deactivated(tdAllAttr)   == true);
+        REQUIRE(fmi3_import_get_clock_type_priority(tdAllAttr)             == 99);
+        REQUIRE(fmi3_import_get_clock_type_interval_decimal(tdAllAttr)     == 99.0);
+        REQUIRE(fmi3_import_get_clock_type_shift_decimal(tdAllAttr)        == 99.0);
+        REQUIRE(fmi3_import_get_clock_type_supports_fraction(tdAllAttr)    == true);
+        REQUIRE(fmi3_import_get_clock_type_interval_counter(tdAllAttr)     == 99);
+        REQUIRE(fmi3_import_get_clock_type_shift_counter(tdAllAttr)        == 99);
+        REQUIRE(fmi3_import_get_clock_type_resolution(tdAllAttr)           == 99);
+        REQUIRE(fmi3_import_get_clock_type_interval_variability(tdAllAttr) == fmi3_interval_variability_countdown);
     }
 
     fmi3_import_free(xml);

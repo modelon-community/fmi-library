@@ -126,49 +126,44 @@ const char* fmi3_xml_get_type_quantity(fmi3_xml_variable_typedef_t* t) {
 // Float64
 // -----------------------------------------------------------------------------
 
-fmi3_float64_t fmi3_xml_get_float64_type_min(fmi3_xml_float_typedef_t* t) {
+static fmi3_xml_float_type_props_t* fmi3_xml_get_float_type_props(fmi3_xml_float_typedef_t* t) {
     fmi3_xml_variable_typedef_t* vt = (void*)t;
-    fmi3_xml_float_type_props_t* props = (fmi3_xml_float_type_props_t*)(vt->super.nextLayer);
-    return props->typeMin.scalar64s;
+    return (void*)(vt->super.nextLayer);
+}
+
+fmi3_float64_t fmi3_xml_get_float64_type_min(fmi3_xml_float_typedef_t* t) {
+    return fmi3_xml_get_float_type_props(t)->typeMin.scalar64s;
 }
 
 fmi3_float64_t fmi3_xml_get_float64_type_max(fmi3_xml_float_typedef_t* t) {
-    fmi3_xml_variable_typedef_t* vt = (void*)t;
-    fmi3_xml_float_type_props_t* props = (fmi3_xml_float_type_props_t*)(vt->super.nextLayer);
-    return props->typeMax.scalar64s;
+    return fmi3_xml_get_float_type_props(t)->typeMax.scalar64s;
 }
 
 fmi3_float64_t fmi3_xml_get_float64_type_nominal(fmi3_xml_float_typedef_t* t) {
-    fmi3_xml_variable_typedef_t* vt = (void*)t;
-    fmi3_xml_float_type_props_t* props = (fmi3_xml_float_type_props_t*)(vt->super.nextLayer);
-    return props->typeNominal.scalar64s;
+    return fmi3_xml_get_float_type_props(t)->typeNominal.scalar64s;
 }
 
 fmi3_xml_unit_t* fmi3_xml_get_float64_type_unit(fmi3_xml_float_typedef_t* t) {
-    fmi3_xml_variable_typedef_t* vt = (void*)t;
-    fmi3_xml_float_type_props_t* props = (fmi3_xml_float_type_props_t*)(vt->super.nextLayer);
-    fmi3_xml_display_unit_t* du = props->displayUnit;
-    if(du) return du->baseUnit;
-    return 0;
+    fmi3_xml_display_unit_t* du = fmi3_xml_get_float_type_props(t)->displayUnit;
+    if (du) {
+        return du->baseUnit;
+    }
+    return NULL;
 }
 
 int fmi3_xml_get_float64_type_is_relative_quantity(fmi3_xml_float_typedef_t* t) {
-    fmi3_xml_variable_typedef_t* vt = (void*)t;
-    fmi3_xml_float_type_props_t* props = (fmi3_xml_float_type_props_t*)(vt->super.nextLayer);
-    return props->super.isRelativeQuantity;
+    return fmi3_xml_get_float_type_props(t)->super.isRelativeQuantity;
 }
 
 int fmi3_xml_get_float64_type_is_unbounded(fmi3_xml_float_typedef_t* t) {
-    fmi3_xml_variable_typedef_t* vt = (void*)t;
-    fmi3_xml_float_type_props_t* props = (fmi3_xml_float_type_props_t*)(vt->super.nextLayer);
-    return props->super.isUnbounded;
+    return fmi3_xml_get_float_type_props(t)->super.isUnbounded;
 }
 
 fmi3_xml_display_unit_t* fmi3_xml_get_float64_type_display_unit(fmi3_xml_float_typedef_t* t) {
-    fmi3_xml_variable_typedef_t* vt = (void*)t;
-    fmi3_xml_float_type_props_t* props = (fmi3_xml_float_type_props_t*)(vt->super.nextLayer);
-    fmi3_xml_display_unit_t* du = props->displayUnit;
-    if(!du || (&du->baseUnit->defaultDisplay == du)) return 0;
+    fmi3_xml_display_unit_t* du = fmi3_xml_get_float_type_props(t)->displayUnit;
+    if (!du || (&du->baseUnit->defaultDisplay == du)) {
+        return NULL;
+    }
     return du;
 }
 
@@ -177,48 +172,38 @@ fmi3_xml_display_unit_t* fmi3_xml_get_float64_type_display_unit(fmi3_xml_float_t
 // -----------------------------------------------------------------------------
 
 fmi3_float32_t fmi3_xml_get_float32_type_min(fmi3_xml_float_typedef_t* t) {
-    fmi3_xml_variable_typedef_t* vt = (void*)t;
-    fmi3_xml_float_type_props_t* props = (fmi3_xml_float_type_props_t*)(vt->super.nextLayer);
-    return props->typeMin.scalar32s;
+    return fmi3_xml_get_float_type_props(t)->typeMin.scalar32s;
 }
 
 fmi3_float32_t fmi3_xml_get_float32_type_max(fmi3_xml_float_typedef_t* t) {
-    fmi3_xml_variable_typedef_t* vt = (void*)t;
-    fmi3_xml_float_type_props_t* props = (fmi3_xml_float_type_props_t*)(vt->super.nextLayer);
-    return props->typeMax.scalar32s;
+    return fmi3_xml_get_float_type_props(t)->typeMax.scalar32s;
 }
 
 fmi3_float32_t fmi3_xml_get_float32_type_nominal(fmi3_xml_float_typedef_t* t) {
-    fmi3_xml_variable_typedef_t* vt = (void*)t;
-    fmi3_xml_float_type_props_t* props = (fmi3_xml_float_type_props_t*)(vt->super.nextLayer);
-    return props->typeNominal.scalar32s;
+    return fmi3_xml_get_float_type_props(t)->typeNominal.scalar32s;
 }
 
 fmi3_xml_unit_t* fmi3_xml_get_float32_type_unit(fmi3_xml_float_typedef_t* t) {
-    fmi3_xml_variable_typedef_t* vt = (void*)t;
-    fmi3_xml_float_type_props_t* props = (fmi3_xml_float_type_props_t*)(vt->super.nextLayer);
-    fmi3_xml_display_unit_t* du = props->displayUnit;
-    if(du) return du->baseUnit;
-    return 0;
+    fmi3_xml_display_unit_t* du = fmi3_xml_get_float_type_props(t)->displayUnit;
+    if (du) {
+        return du->baseUnit;
+    }
+    return NULL;
 }
 
 int fmi3_xml_get_float32_type_is_relative_quantity(fmi3_xml_float_typedef_t* t) {
-    fmi3_xml_variable_typedef_t* vt = (void*)t;
-    fmi3_xml_float_type_props_t* props = (fmi3_xml_float_type_props_t*)(vt->super.nextLayer);
-    return props->super.isRelativeQuantity;
+    return fmi3_xml_get_float_type_props(t)->super.isRelativeQuantity;
 }
 
 int fmi3_xml_get_float32_type_is_unbounded(fmi3_xml_float_typedef_t* t) {
-    fmi3_xml_variable_typedef_t* vt = (void*)t;
-    fmi3_xml_float_type_props_t* props = (fmi3_xml_float_type_props_t*)(vt->super.nextLayer);
-    return props->super.isUnbounded;
+    return fmi3_xml_get_float_type_props(t)->super.isUnbounded;
 }
 
 fmi3_xml_display_unit_t* fmi3_xml_get_float32_type_display_unit(fmi3_xml_float_typedef_t* t) {
-    fmi3_xml_variable_typedef_t* vt = (void*)t;
-    fmi3_xml_float_type_props_t* props = (fmi3_xml_float_type_props_t*)(vt->super.nextLayer);
-    fmi3_xml_display_unit_t* du = props->displayUnit;
-    if(!du || (&du->baseUnit->defaultDisplay == du)) return 0;
+    fmi3_xml_display_unit_t* du = fmi3_xml_get_float_type_props(t)->displayUnit;
+    if (!du || (&du->baseUnit->defaultDisplay == du)) {
+        return NULL;
+    }
     return du;
 }
 
@@ -226,16 +211,17 @@ fmi3_xml_display_unit_t* fmi3_xml_get_float32_type_display_unit(fmi3_xml_float_t
 // Int64
 // -----------------------------------------------------------------------------
 
-fmi3_int64_t fmi3_xml_get_int64_type_min(fmi3_xml_int_typedef_t* t) {
+static fmi3_xml_int_type_props_t* fmi3_xml_get_int_type_props(fmi3_xml_int_typedef_t* t) {
     fmi3_xml_variable_typedef_t* vt = (void*)t;
-    fmi3_xml_int_type_props_t* props = (fmi3_xml_int_type_props_t*)(vt->super.nextLayer);
-    return props->typeMin.scalar64s;
+    return (void*)(vt->super.nextLayer);
+}
+
+fmi3_int64_t fmi3_xml_get_int64_type_min(fmi3_xml_int_typedef_t* t) {
+    return fmi3_xml_get_int_type_props(t)->typeMin.scalar64s;
 }
 
 fmi3_int64_t fmi3_xml_get_int64_type_max(fmi3_xml_int_typedef_t* t) {
-    fmi3_xml_variable_typedef_t* vt = (void*)t;
-    fmi3_xml_int_type_props_t* props = (fmi3_xml_int_type_props_t*)(vt->super.nextLayer);
-    return props->typeMax.scalar64s;
+    return fmi3_xml_get_int_type_props(t)->typeMax.scalar64s;
 }
 
 // -----------------------------------------------------------------------------
@@ -243,15 +229,11 @@ fmi3_int64_t fmi3_xml_get_int64_type_max(fmi3_xml_int_typedef_t* t) {
 // -----------------------------------------------------------------------------
 
 fmi3_int32_t fmi3_xml_get_int32_type_min(fmi3_xml_int_typedef_t* t) {
-    fmi3_xml_variable_typedef_t* vt = (void*)t;
-    fmi3_xml_int_type_props_t* props = (fmi3_xml_int_type_props_t*)(vt->super.nextLayer);
-    return props->typeMin.scalar32s;
+    return fmi3_xml_get_int_type_props(t)->typeMin.scalar32s;
 }
 
 fmi3_int32_t fmi3_xml_get_int32_type_max(fmi3_xml_int_typedef_t* t) {
-    fmi3_xml_variable_typedef_t* vt = (void*)t;
-    fmi3_xml_int_type_props_t* props = (fmi3_xml_int_type_props_t*)(vt->super.nextLayer);
-    return props->typeMax.scalar32s;
+    return fmi3_xml_get_int_type_props(t)->typeMax.scalar32s;
 }
 
 // -----------------------------------------------------------------------------
@@ -259,15 +241,11 @@ fmi3_int32_t fmi3_xml_get_int32_type_max(fmi3_xml_int_typedef_t* t) {
 // -----------------------------------------------------------------------------
 
 fmi3_int16_t fmi3_xml_get_int16_type_min(fmi3_xml_int_typedef_t* t) {
-    fmi3_xml_variable_typedef_t* vt = (void*)t;
-    fmi3_xml_int_type_props_t* props = (fmi3_xml_int_type_props_t*)(vt->super.nextLayer);
-    return props->typeMin.scalar16s;
+    return fmi3_xml_get_int_type_props(t)->typeMin.scalar16s;
 }
 
 fmi3_int16_t fmi3_xml_get_int16_type_max(fmi3_xml_int_typedef_t* t) {
-    fmi3_xml_variable_typedef_t* vt = (void*)t;
-    fmi3_xml_int_type_props_t* props = (fmi3_xml_int_type_props_t*)(vt->super.nextLayer);
-    return props->typeMax.scalar16s;
+    return fmi3_xml_get_int_type_props(t)->typeMax.scalar16s;
 }
 
 // -----------------------------------------------------------------------------
@@ -275,15 +253,11 @@ fmi3_int16_t fmi3_xml_get_int16_type_max(fmi3_xml_int_typedef_t* t) {
 // -----------------------------------------------------------------------------
 
 fmi3_int8_t fmi3_xml_get_int8_type_min(fmi3_xml_int_typedef_t* t) {
-    fmi3_xml_variable_typedef_t* vt = (void*)t;
-    fmi3_xml_int_type_props_t* props = (fmi3_xml_int_type_props_t*)(vt->super.nextLayer);
-    return props->typeMin.scalar8s;
+    return fmi3_xml_get_int_type_props(t)->typeMin.scalar8s;
 }
 
 fmi3_int8_t fmi3_xml_get_int8_type_max(fmi3_xml_int_typedef_t* t) {
-    fmi3_xml_variable_typedef_t* vt = (void*)t;
-    fmi3_xml_int_type_props_t* props = (fmi3_xml_int_type_props_t*)(vt->super.nextLayer);
-    return props->typeMax.scalar8s;
+    return fmi3_xml_get_int_type_props(t)->typeMax.scalar8s;
 }
 
 // -----------------------------------------------------------------------------
@@ -291,15 +265,11 @@ fmi3_int8_t fmi3_xml_get_int8_type_max(fmi3_xml_int_typedef_t* t) {
 // -----------------------------------------------------------------------------
 
 fmi3_uint64_t fmi3_xml_get_uint64_type_min(fmi3_xml_int_typedef_t* t) {
-    fmi3_xml_variable_typedef_t* vt = (void*)t;
-    fmi3_xml_int_type_props_t* props = (fmi3_xml_int_type_props_t*)(vt->super.nextLayer);
-    return props->typeMin.scalar64u;
+    return fmi3_xml_get_int_type_props(t)->typeMin.scalar64u;
 }
 
 fmi3_uint64_t fmi3_xml_get_uint64_type_max(fmi3_xml_int_typedef_t* t) {
-    fmi3_xml_variable_typedef_t* vt = (void*)t;
-    fmi3_xml_int_type_props_t* props = (fmi3_xml_int_type_props_t*)(vt->super.nextLayer);
-    return props->typeMax.scalar64u;
+    return fmi3_xml_get_int_type_props(t)->typeMax.scalar64u;
 }
 
 // -----------------------------------------------------------------------------
@@ -307,15 +277,11 @@ fmi3_uint64_t fmi3_xml_get_uint64_type_max(fmi3_xml_int_typedef_t* t) {
 // -----------------------------------------------------------------------------
 
 fmi3_uint32_t fmi3_xml_get_uint32_type_min(fmi3_xml_int_typedef_t* t) {
-    fmi3_xml_variable_typedef_t* vt = (void*)t;
-    fmi3_xml_int_type_props_t* props = (fmi3_xml_int_type_props_t*)(vt->super.nextLayer);
-    return props->typeMin.scalar32u;
+    return fmi3_xml_get_int_type_props(t)->typeMin.scalar32u;
 }
 
 fmi3_uint32_t fmi3_xml_get_uint32_type_max(fmi3_xml_int_typedef_t* t) {
-    fmi3_xml_variable_typedef_t* vt = (void*)t;
-    fmi3_xml_int_type_props_t* props = (fmi3_xml_int_type_props_t*)(vt->super.nextLayer);
-    return props->typeMax.scalar32u;
+    return fmi3_xml_get_int_type_props(t)->typeMax.scalar32u;
 }
 
 // -----------------------------------------------------------------------------
@@ -323,15 +289,11 @@ fmi3_uint32_t fmi3_xml_get_uint32_type_max(fmi3_xml_int_typedef_t* t) {
 // -----------------------------------------------------------------------------
 
 fmi3_uint16_t fmi3_xml_get_uint16_type_min(fmi3_xml_int_typedef_t* t) {
-    fmi3_xml_variable_typedef_t* vt = (void*)t;
-    fmi3_xml_int_type_props_t* props = (fmi3_xml_int_type_props_t*)(vt->super.nextLayer);
-    return props->typeMin.scalar16u;
+    return fmi3_xml_get_int_type_props(t)->typeMin.scalar16u;
 }
 
 fmi3_uint16_t fmi3_xml_get_uint16_type_max(fmi3_xml_int_typedef_t* t) {
-    fmi3_xml_variable_typedef_t* vt = (void*)t;
-    fmi3_xml_int_type_props_t* props = (fmi3_xml_int_type_props_t*)(vt->super.nextLayer);
-    return props->typeMax.scalar16u;
+    return fmi3_xml_get_int_type_props(t)->typeMax.scalar16u;
 }
 
 // -----------------------------------------------------------------------------
@@ -339,15 +301,11 @@ fmi3_uint16_t fmi3_xml_get_uint16_type_max(fmi3_xml_int_typedef_t* t) {
 // -----------------------------------------------------------------------------
 
 fmi3_uint8_t fmi3_xml_get_uint8_type_min(fmi3_xml_int_typedef_t* t) {
-    fmi3_xml_variable_typedef_t* vt = (void*)t;
-    fmi3_xml_int_type_props_t* props = (fmi3_xml_int_type_props_t*)(vt->super.nextLayer);
-    return props->typeMin.scalar8u;
+    return fmi3_xml_get_int_type_props(t)->typeMin.scalar8u;
 }
 
 fmi3_uint8_t fmi3_xml_get_uint8_type_max(fmi3_xml_int_typedef_t* t) {
-    fmi3_xml_variable_typedef_t* vt = (void*)t;
-    fmi3_xml_int_type_props_t* props = (fmi3_xml_int_type_props_t*)(vt->super.nextLayer);
-    return props->typeMax.scalar8u;
+    return fmi3_xml_get_int_type_props(t)->typeMax.scalar8u;
 }
 
 // -----------------------------------------------------------------------------
@@ -362,9 +320,13 @@ static int fmi3_xml_compare_enum_val(const void* first, const void* second) {
     return (ai->value - bi->value);
 }
 
-int fmi3_xml_get_enum_type_min(fmi3_xml_enumeration_typedef_t* t){
+static fmi3_xml_enum_typedef_props_t* fmi3_xml_get_enum_typedef_props(fmi3_xml_enumeration_typedef_t* t) {
     fmi3_xml_variable_typedef_t* vt = (void*)t;
-    fmi3_xml_enum_typedef_props_t* props = (fmi3_xml_enum_typedef_props_t*)(vt->super.nextLayer);
+    return (void*)(vt->super.nextLayer);
+}
+
+int fmi3_xml_get_enum_type_min(fmi3_xml_enumeration_typedef_t* t){
+    fmi3_xml_enum_typedef_props_t* props = fmi3_xml_get_enum_typedef_props(t);
     fmi3_xml_enum_type_item_t* item;
     if(jm_vector_get_size(jm_named_ptr)(&props->enumItems) == 0) return 0;
     item = jm_vector_get_item(jm_named_ptr)(&props->enumItems, 0).ptr;
@@ -372,8 +334,7 @@ int fmi3_xml_get_enum_type_min(fmi3_xml_enumeration_typedef_t* t){
 }
 
 int fmi3_xml_get_enum_type_max(fmi3_xml_enumeration_typedef_t* t){
-    fmi3_xml_variable_typedef_t* vt = (void*)t;
-    fmi3_xml_enum_typedef_props_t* props = (fmi3_xml_enum_typedef_props_t*)(vt->super.nextLayer);
+    fmi3_xml_enum_typedef_props_t* props = fmi3_xml_get_enum_typedef_props(t);
     jm_named_ptr* itemp = jm_vector_get_lastp(jm_named_ptr)(&props->enumItems);
     fmi3_xml_enum_type_item_t* item;
     if(!itemp) return 0;
@@ -382,21 +343,18 @@ int fmi3_xml_get_enum_type_max(fmi3_xml_enumeration_typedef_t* t){
 }
 
 unsigned int fmi3_xml_get_enum_type_size(fmi3_xml_enumeration_typedef_t* t) {
-    fmi3_xml_variable_typedef_t* vt = (void*)t;
-    fmi3_xml_enum_typedef_props_t* props = (fmi3_xml_enum_typedef_props_t*)(vt->super.nextLayer);
+    fmi3_xml_enum_typedef_props_t* props = fmi3_xml_get_enum_typedef_props(t);
     return (unsigned int)jm_vector_get_size(jm_named_ptr)(&props->enumItems);
 }
 
 const char* fmi3_xml_get_enum_type_item_name(fmi3_xml_enumeration_typedef_t* t, unsigned int  item) {
-    fmi3_xml_variable_typedef_t* vt = (fmi3_xml_variable_typedef_t*)(void*)t;
-    fmi3_xml_enum_typedef_props_t* props = (fmi3_xml_enum_typedef_props_t*)(vt->super.nextLayer);
+    fmi3_xml_enum_typedef_props_t* props = fmi3_xml_get_enum_typedef_props(t);
     if((item == 0) || (item > fmi3_xml_get_enum_type_size(t) )) return  0;
     return jm_vector_get_item(jm_named_ptr)(&props->enumItems,item-1).name;
 }
 
 int fmi3_xml_get_enum_type_item_value(fmi3_xml_enumeration_typedef_t* t, unsigned int  item) {
-    fmi3_xml_variable_typedef_t* vt = (fmi3_xml_variable_typedef_t*)(void*)t;
-    fmi3_xml_enum_typedef_props_t* props = (fmi3_xml_enum_typedef_props_t*)(vt->super.nextLayer);
+    fmi3_xml_enum_typedef_props_t* props = fmi3_xml_get_enum_typedef_props(t);
     fmi3_xml_enum_type_item_t* eitem;
     if((item == 0) || (item > fmi3_xml_get_enum_type_size(t) )) return  0;
     eitem = jm_vector_get_item(jm_named_ptr)(&props->enumItems,item-1).ptr;
@@ -404,8 +362,7 @@ int fmi3_xml_get_enum_type_item_value(fmi3_xml_enumeration_typedef_t* t, unsigne
 }
 
 const char* fmi3_xml_get_enum_type_value_name(fmi3_xml_enumeration_typedef_t* t, int value) {
-    fmi3_xml_variable_typedef_t* vt = (fmi3_xml_variable_typedef_t*)(void*)t;
-    fmi3_xml_enum_typedef_props_t* props = (fmi3_xml_enum_typedef_props_t*)(vt->super.nextLayer);
+    fmi3_xml_enum_typedef_props_t* props = fmi3_xml_get_enum_typedef_props(t);
     fmi3_xml_enum_type_item_t keyitem;
     jm_named_ptr* itemp, key;
     keyitem.value = value;
@@ -416,8 +373,7 @@ const char* fmi3_xml_get_enum_type_value_name(fmi3_xml_enumeration_typedef_t* t,
 }
 
 const char* fmi3_xml_get_enum_type_item_description(fmi3_xml_enumeration_typedef_t* t, unsigned int  item){
-    fmi3_xml_variable_typedef_t* vt = (void*)t;
-    fmi3_xml_enum_typedef_props_t* props = (fmi3_xml_enum_typedef_props_t*)(vt->super.nextLayer);
+    fmi3_xml_enum_typedef_props_t* props = fmi3_xml_get_enum_typedef_props(t);
     fmi3_xml_enum_type_item_t* e;
     if(item > fmi3_xml_get_enum_type_size(t) ) return  0;
     e = jm_vector_get_item(jm_named_ptr)(&props->enumItems,item-1).ptr;
@@ -428,16 +384,62 @@ const char* fmi3_xml_get_enum_type_item_description(fmi3_xml_enumeration_typedef
 // Binary
 // -----------------------------------------------------------------------------
 
-fmi3_string_t fmi3_xml_get_binary_type_mime_type(fmi3_xml_binary_typedef_t* t) {
+static fmi3_xml_binary_type_props_t* fmi3_xml_get_binary_type_props(fmi3_xml_binary_typedef_t* t) {
     fmi3_xml_variable_typedef_t* vt = (void*)t;
-    fmi3_xml_binary_type_props_t* props = (fmi3_xml_binary_type_props_t*)(vt->super.nextLayer);
-    return props->mimeType;
+    return (void*)(vt->super.nextLayer);
+}
+
+fmi3_string_t fmi3_xml_get_binary_type_mime_type(fmi3_xml_binary_typedef_t* t) {
+    return fmi3_xml_get_binary_type_props(t)->mimeType;
 }
 
 size_t fmi3_xml_get_binary_type_max_size(fmi3_xml_binary_typedef_t* t) {
+    return fmi3_xml_get_binary_type_props(t)->maxSize;
+}
+
+// -----------------------------------------------------------------------------
+// Clock
+// -----------------------------------------------------------------------------
+
+static fmi3_xml_clock_type_props_t* fmi3_xml_get_clock_type_props(fmi3_xml_clock_typedef_t* t) {
     fmi3_xml_variable_typedef_t* vt = (void*)t;
-    fmi3_xml_binary_type_props_t* props = (fmi3_xml_binary_type_props_t*)(vt->super.nextLayer);
-    return props->maxSize;
+    return (void*)(vt->super.nextLayer);
+}
+
+fmi3_boolean_t fmi3_xml_get_clock_type_can_be_deactivated(fmi3_xml_clock_typedef_t* t) {
+    return fmi3_xml_get_clock_type_props(t)->canBeDeactivated;
+}
+
+fmi3_uint32_t fmi3_xml_get_clock_type_priority(fmi3_xml_clock_typedef_t* t) {
+    return fmi3_xml_get_clock_type_props(t)->priority;
+}
+
+fmi3_interval_variability_enu_t fmi3_xml_get_clock_type_interval_variability(fmi3_xml_clock_typedef_t* t) {
+    return fmi3_xml_get_clock_type_props(t)->intervalVariability;
+}
+
+fmi3_float32_t fmi3_xml_get_clock_type_interval_decimal(fmi3_xml_clock_typedef_t* t) {
+    return fmi3_xml_get_clock_type_props(t)->intervalDecimal;
+}
+
+fmi3_float32_t fmi3_xml_get_clock_type_shift_decimal(fmi3_xml_clock_typedef_t* t) {
+    return fmi3_xml_get_clock_type_props(t)->shiftDecimal;
+}
+
+fmi3_boolean_t fmi3_xml_get_clock_type_supports_fraction(fmi3_xml_clock_typedef_t* t) {
+    return fmi3_xml_get_clock_type_props(t)->supportsFraction;
+}
+
+fmi3_uint64_t fmi3_xml_get_clock_type_resolution(fmi3_xml_clock_typedef_t* t) {
+    return fmi3_xml_get_clock_type_props(t)->resolution;
+}
+
+fmi3_uint64_t fmi3_xml_get_clock_type_interval_counter(fmi3_xml_clock_typedef_t* t) {
+    return fmi3_xml_get_clock_type_props(t)->intervalCounter;
+}
+
+fmi3_uint64_t fmi3_xml_get_clock_type_shift_counter(fmi3_xml_clock_typedef_t* t) {
+    return fmi3_xml_get_clock_type_props(t)->shiftCounter;
 }
 
 // -----------------------------------------------------------------------------
@@ -702,7 +704,10 @@ fmi3_xml_variable_type_base_t* fmi3_xml_alloc_variable_or_typedef_props(fmi3_xml
 {
     jm_callbacks* cb = td->typeDefinitions.callbacks;
     fmi3_xml_variable_type_base_t* type = cb->malloc(typeSize);
-    if (!type) return NULL;
+    if (!type) {
+        jm_log_fatal(cb, module, "Could not allocate memory"); // TODO: Change to fmi3_xml_parse_fatal
+        return NULL;
+    }
     fmi3_xml_init_variable_type_base(type, fmi3_xml_type_struct_enu_props, nextLayer->baseType);
     type->nextLayer = nextLayer;
     
@@ -730,7 +735,10 @@ fmi3_xml_variable_type_base_t* fmi3_xml_alloc_variable_type_start(fmi3_xml_type_
     jm_callbacks* cb = td->typeDefinitions.callbacks;
 
     fmi3_xml_variable_type_base_t* start = cb->malloc(typeSize);
-    if (!start) return NULL;
+    if (!start) {
+        jm_log_fatal(cb, module, "Could not allocate memory"); // TODO: Change to fmi3_xml_parse_fatal
+        return NULL;
+    }
     fmi3_xml_init_variable_type_base(start, fmi3_xml_type_struct_enu_start, nextLayer->baseType);
     start->nextLayer = nextLayer;
 
@@ -1014,7 +1022,7 @@ int fmi3_xml_handle_Binary(fmi3_xml_parser_context_t* context, const char* data)
     if (!data) {
         fmi3_xml_model_description_t* md = context->modelDescription;
         fmi3_xml_variable_typedef_t* typeDef;
-        fmi3_xml_binary_type_props_t * props;
+        fmi3_xml_binary_type_props_t* props;
         fmi3_xml_binary_type_props_t* defaultType = &context->modelDescription->typeDefinitions.defaultBinaryType;
 
         props = fmi3_xml_parse_binary_type_properties(context, fmi3_xml_elmID_Binary, &defaultType->super);
@@ -1028,10 +1036,105 @@ int fmi3_xml_handle_Binary(fmi3_xml_parser_context_t* context, const char* data)
     return 0;
 }
 
+/**
+ * Parses all the Clock-specific attributes.
+ * 
+ * @param fallbackType:
+ *      For Variables: The typedef_t of the declaredType if defined, else the props_t of the default type.
+ *      For TypeDefinitions: The props_t of the default type.
+ */
+fmi3_xml_clock_type_props_t* fmi3_xml_parse_clock_type_properties(fmi3_xml_parser_context_t* context,
+        fmi3_xml_elm_enu_t elmID, fmi3_xml_variable_type_base_t* fallbackType)
+{
+    fmi3_xml_type_definitions_t* td = &context->modelDescription->typeDefinitions;
+    fmi3_xml_clock_type_props_t* fallbackProps;
+    fmi3_xml_clock_type_props_t* props;
+    
+    if (fallbackType->structKind == fmi3_xml_type_struct_enu_typedef) {
+        fallbackProps = (void*)fallbackType->nextLayer;
+    } else {
+        fallbackProps = (void*)fallbackType;
+    }
+
+    // Create properties:
+    props = (void*)fmi3_xml_alloc_variable_or_typedef_props(td, fallbackType, sizeof(fmi3_xml_clock_type_props_t));
+    if (!props) return NULL;
+    
+    jm_name_ID_map_t intervalVariabilityMap[] = {
+            {"constant",   fmi3_interval_variability_constant},
+            {"fixed",      fmi3_interval_variability_fixed},
+            {"tunable",    fmi3_interval_variability_tunable},
+            {"changing",   fmi3_interval_variability_changing},
+            {"countdown",  fmi3_interval_variability_countdown},
+            {"triggered",  fmi3_interval_variability_triggered},
+            {NULL,         0}
+    };
+    if (fmi3_xml_set_attr_enum(context, elmID, fmi_attr_id_intervalVariability, 1 /*required*/,
+            &props->intervalVariability, fallbackProps->intervalVariability, intervalVariabilityMap))
+    {
+        return NULL;
+    }
+    if (fmi3_xml_set_attr_bool(context, elmID, fmi_attr_id_canBeDeactivated, 0 /*required*/,
+            &props->canBeDeactivated, fallbackProps->canBeDeactivated))
+    {
+        return NULL;
+    }
+    if (fmi3_xml_set_attr_bool(context, elmID, fmi_attr_id_supportsFraction, 0 /*required*/,
+            &props->supportsFraction, fallbackProps->supportsFraction))
+    {
+        return NULL;
+    }
+    if (fmi3_xml_set_attr_uint32(context, elmID, fmi_attr_id_priority, 0 /*required*/,
+            &props->priority, fallbackProps->priority))
+    {
+        return NULL;
+    }
+    if (fmi3_xml_set_attr_uint64(context, elmID, fmi_attr_id_resolution, 0 /*required*/,
+            &props->resolution, fallbackProps->resolution))
+    {
+        return NULL;
+    }
+    if (fmi3_xml_set_attr_uint64(context, elmID, fmi_attr_id_intervalCounter, 0 /*required*/,
+            &props->intervalCounter, fallbackProps->intervalCounter))
+    {
+        return NULL;
+    }
+    if (fmi3_xml_set_attr_uint64(context, elmID, fmi_attr_id_shiftCounter, 0 /*required*/,
+            &props->shiftCounter, fallbackProps->shiftCounter))
+    {
+        return NULL;
+    }
+    if (fmi3_xml_set_attr_float32(context, elmID, fmi_attr_id_intervalDecimal, 0 /*required*/,
+            &props->intervalDecimal, fallbackProps->intervalDecimal))
+    {
+        return NULL;
+    }
+    if (fmi3_xml_set_attr_float32(context, elmID, fmi_attr_id_shiftDecimal, 0 /*required*/,
+            &props->shiftDecimal, fallbackProps->shiftDecimal))
+    {
+        return NULL;
+    }
+    return props;
+}
+
 int fmi3_xml_handle_Clock(fmi3_xml_parser_context_t* context, const char* data) {
-    // TODO
-    // assert(0);
-    return -1;
+    if (fmi3_xml_handle_SimpleType(context, data)) return -1;
+
+    if (!data) {
+        fmi3_xml_model_description_t* md = context->modelDescription;
+        fmi3_xml_variable_typedef_t* typeDef;
+        fmi3_xml_clock_type_props_t* props;
+        fmi3_xml_clock_type_props_t* defaultType = &context->modelDescription->typeDefinitions.defaultClockType;
+
+        props = fmi3_xml_parse_clock_type_properties(context, fmi3_xml_elmID_Clock, &defaultType->super);
+        if (!props) return -1;
+
+        // Get the typedef already created for SimpleType and set props
+        typeDef = jm_vector_get_last(jm_named_ptr)(&md->typeDefinitions.typeDefinitions).ptr;
+        typeDef->super.baseType = fmi3_base_type_clock;
+        typeDef->super.nextLayer = &props->super;
+    }
+    return 0;
 }
 
 int fmi3_xml_handle_String(fmi3_xml_parser_context_t* context, const char* data) {

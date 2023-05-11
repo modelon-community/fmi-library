@@ -283,6 +283,26 @@ FMILIB_EXPORT fmi3_string_t fmi3_import_get_binary_type_mime_type(fmi3_import_bi
 /** \brief Get maxSize for the type */
 FMILIB_EXPORT size_t fmi3_import_get_binary_type_max_size(fmi3_import_binary_typedef_t* t);
 
+
+/** \brief Get canBeDeactivated for the type */
+FMILIB_EXPORT fmi3_boolean_t fmi3_import_get_clock_type_can_be_deactivated(fmi3_import_clock_typedef_t* v);
+/** \brief Get priority for the type */
+FMILIB_EXPORT fmi3_uint32_t fmi3_import_get_clock_type_priority(fmi3_import_clock_typedef_t* v);
+/** \brief Get intervalVariability for the type */
+FMILIB_EXPORT fmi3_interval_variability_enu_t fmi3_import_get_clock_type_interval_variability(fmi3_import_clock_typedef_t* v);
+/** \brief Get intervalDecimal for the type */
+FMILIB_EXPORT fmi3_float32_t fmi3_import_get_clock_type_interval_decimal(fmi3_import_clock_typedef_t* v);
+/** \brief Get shiftDecimal for the type */
+FMILIB_EXPORT fmi3_float32_t fmi3_import_get_clock_type_shift_decimal(fmi3_import_clock_typedef_t* v);
+/** \brief Get supportsFraction for the type */
+FMILIB_EXPORT fmi3_boolean_t fmi3_import_get_clock_type_supports_fraction(fmi3_import_clock_typedef_t* v);
+/** \brief Get resolution for the type */
+FMILIB_EXPORT fmi3_uint64_t fmi3_import_get_clock_type_resolution(fmi3_import_clock_typedef_t* v);
+/** \brief Get intervalCounter for the type */
+FMILIB_EXPORT fmi3_uint64_t fmi3_import_get_clock_type_interval_counter(fmi3_import_clock_typedef_t* v);
+/** \brief Get shiftCounter for the type */
+FMILIB_EXPORT fmi3_uint64_t fmi3_import_get_clock_type_shift_counter(fmi3_import_clock_typedef_t* v);
+
 /**
 *  @}
 */

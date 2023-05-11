@@ -790,15 +790,6 @@ fmi3_string_t* fmi3_xml_get_string_variable_start_array(fmi3_xml_string_variable
     return NULL;
 }
 
-size_t* fmi3_xml_get_string_variable_start_array_length(fmi3_xml_string_variable_t* v){
-    fmi3_xml_variable_t* vv = (fmi3_xml_variable_t*)v;
-    if(fmi3_xml_get_variable_has_start(vv)) {
-        /* TODO */
-        return NULL;
-    }
-    return NULL;
-}
-
 // -----------------------------------------------------------------------------
 // Boolean
 // -----------------------------------------------------------------------------
@@ -953,21 +944,14 @@ static void* fmi3_xml_get_variable_start_array(fmi3_xml_variable_t* v) {
     case fmi3_base_type_float32:
         return fmi3_xml_get_float_variable_start((fmi3_xml_float_variable_t*)v).ptr;
     case fmi3_base_type_uint64:
-        return fmi3_xml_get_int_variable_start((fmi3_xml_int_variable_t*)v).array64u;
     case fmi3_base_type_int64:
-        return fmi3_xml_get_int_variable_start((fmi3_xml_int_variable_t*)v).array64s;
     case fmi3_base_type_uint32:
-        return fmi3_xml_get_int_variable_start((fmi3_xml_int_variable_t*)v).array32u;
     case fmi3_base_type_int32:
-        return fmi3_xml_get_int_variable_start((fmi3_xml_int_variable_t*)v).array32s;
     case fmi3_base_type_uint16:
-        return fmi3_xml_get_int_variable_start((fmi3_xml_int_variable_t*)v).array16u;
     case fmi3_base_type_int16:
-        return fmi3_xml_get_int_variable_start((fmi3_xml_int_variable_t*)v).array16s;
     case fmi3_base_type_uint8:
-        return fmi3_xml_get_int_variable_start((fmi3_xml_int_variable_t*)v).array8u;
     case fmi3_base_type_int8:
-        return fmi3_xml_get_int_variable_start((fmi3_xml_int_variable_t*)v).array8s;
+        return fmi3_xml_get_int_variable_start((fmi3_xml_int_variable_t*)v).ptr;
     case fmi3_base_type_bool:
         return fmi3_xml_get_boolean_variable_start_array((fmi3_xml_bool_variable_t*)v);
     case fmi3_base_type_enum:

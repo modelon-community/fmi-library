@@ -267,6 +267,15 @@ TEST_CASE("Test array parsing and verify retrieved start values are as expected"
         fmi3_import_free_dimension_list(dimList);
     }
 
+
+    SECTION("Test binary start value") {
+        fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "binary_var");
+        fmi3_binary_t start = fmi3_import_get_binary_variable_start(fmi3_import_get_variable_as_binary(v));
+        REQUIRE(start[0]   == 0x3dU);
+        REQUIRE(start[1]   == 0x3fU);
+    }
+
+
     SECTION("Test string start array") {
         fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "string_array");
         fmi3_import_dimension_list_t* dimList = basic_array_checks(v, xml, 1);

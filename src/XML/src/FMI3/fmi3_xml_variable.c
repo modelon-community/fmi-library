@@ -835,7 +835,7 @@ size_t fmi3_xml_get_binary_variable_start_size(fmi3_xml_binary_variable_t* v) {
     fmi3_xml_variable_t* vv = (fmi3_xml_variable_t*)v;
     if (fmi3_xml_get_variable_has_start(vv)) {
         fmi3_xml_binary_variable_start_t* start = (fmi3_xml_binary_variable_start_t*)(vv->type);
-        return start->nStart;
+        return jm_vector_get_item(size_t)(&start->binaryStartValuesSize, 0);
     }
     return 0;
 }
@@ -855,7 +855,7 @@ fmi3_binary_t fmi3_xml_get_binary_variable_start(fmi3_xml_binary_variable_t* v) 
     fmi3_xml_variable_t* vv = (fmi3_xml_variable_t*)v;
     if (fmi3_xml_get_variable_has_start(vv)) {
         fmi3_xml_binary_variable_start_t* start = (fmi3_xml_binary_variable_start_t*)(vv->type);
-        return start->start;
+        return (fmi3_binary_t)jm_vector_get_item(jm_voidp)(&start->binaryStartValues, 0);
     }
     return NULL;
 }
@@ -1363,24 +1363,20 @@ static void fmi3_log_error_if_start_required(
     fmi3_xml_variable_t *variable)
 {
     if (variable->causality == fmi3_causality_enu_input) {
-        jm_log_error(context->callbacks,
-                       "Error: variable %s: start value required for input variables",
+        jm_log_error(context->callbacks, module,
+                       "Variable %s: start value required for input variables",
                        variable->name);
     } else if (variable->causality == fmi3_causality_enu_parameter) {
-        jm_log_error(context->callbacks,
-                       "Error: variable %s: start value required for parameter variables",
+        jm_log_error(context->callbacks, module,
+                       "Variable %s: start value required for parameter variables",
                        variable->name);
     } else if (variable->variability == fmi3_variability_enu_constant) {
-        jm_log_error(context->callbacks,
-                       "Error: variable %s: start value required for variables with constant variability",
+        jm_log_error(context->callbacks, module,
+                       "Variable %s: start value required for variables with constant variability",
                        variable->name);
     } else if (variable->initial == fmi3_initial_enu_exact) {
-        jm_log_error(context->callbacks,
-                       "Error: variable %s: start value required for variables with initial == \"exact\"",
-                       variable->name);
-    } else if (variable->initial == fmi3_initial_enu_approx) {
-        jm_log_error(context->callbacks,
-                       "Error: variable %s: start value required for variables with initial == \"approx\"",
+        jm_log_error(context->callbacks, module,
+                       "Variable %s: start value required for variables with initial == \"approx\"",
                        variable->name);
     }
 }
@@ -2009,8 +2005,6 @@ int fmi3_xml_handle_StringVariable(fmi3_xml_parser_context_t *context, const cha
 */
 int fmi3_xml_handle_StringVariableStart(fmi3_xml_parser_context_t* context, const char* data) {
     if (context->skipOneVariableFlag) return 0;
-    fmi3_xml_model_description_t* md = context->modelDescription;
-
     if (!data) {
         /* For each <Start ...>, allocate memory, copy attribute to 'value' and push back to 'vec'. */
         jm_vector(jm_voidp)* vec = &context->currentStartVariableValues;
@@ -2035,61 +2029,25 @@ int fmi3_xml_handle_Start(fmi3_xml_parser_context_t* context, const char* data) 
 
 
 int fmi3_xml_handle_BinaryVariableStart(fmi3_xml_parser_context_t* context, const char* data) {
-    fmi3_xml_model_description_t* md = context->modelDescription;
-    fmi3_xml_type_definitions_t* td = &md->typeDefinitions;
-    fmi3_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
     if (!data) {
-        if (fmi3_xml_variable_is_array(variable)) {
-            /* For each <Start ...>, allocate memory, copy attribute to 'value' and push back to 'vec'. */
-            jm_vector(jm_voidp)* vec = &context->currentStartVariableValues;
-            char* attr;
-            if (fmi3_xml_get_attr_str(context, fmi3_xml_elmID_BinaryVariableStart, fmi_attr_id_value, 0, &attr)) return -1;
-            int len = strlen(attr);
-            if (len == 0) {
-                fmi3_xml_parse_error(context, "Empty value attribute in Start element");
-                return -1;
-            }
-            if (len % 2 != 0) {
-                // 2 hexadecimal chars per byte. This is also checked in the conversion, but if this happens
-                // and we want to handle it, then we must allocate extra size to take into account padding of
-                // the final char.
-                return -1;
-            }
-            char* attrAsStr = context->callbacks->malloc(len + 1);
-            strcpy(attrAsStr, attr);
-            jm_vector_push_back(jm_voidp)(vec, attrAsStr);
-        } else {
-            jm_vector(char)* bufStartStr = fmi3_xml_reserve_parse_buffer(context, 1, 100);
-            if (fmi3_xml_set_attr_string(context, fmi3_xml_elmID_BinaryVariableStart, fmi_attr_id_value, 0, bufStartStr)) {
-                return -1;
-            }
-
-            // Add a start object to the top of the variable's type list:
-            fmi3_xml_binary_variable_start_t* startObj;
-            size_t len = jm_vector_get_size(char)(bufStartStr);
-            if (len == 0) {
-                fmi3_xml_parse_error(context, "Empty value attribute in Start element");
-                return -1;
-            }
-            if (len % 2 != 0) {
-                // 2 hexadecimal chars per byte. This is also checked in the conversion, but if this happens
-                // and we want to handle it, then we must allocate extra size to take into account padding of
-                // the final char.
-                return -1;
-            }
-            size_t arrSize = len / 2;
-            size_t totSize = sizeof(fmi3_xml_binary_variable_start_t) + arrSize;
-            startObj = (fmi3_xml_binary_variable_start_t*)fmi3_xml_alloc_variable_type_start(td, variable->type, totSize);
-            if (!startObj) {
-                fmi3_xml_parse_fatal(context, "Could not allocate memory");
-                return -1;
-            }
-            startObj->nStart = arrSize;
-            if (fmi3_xml_hexstring_to_bytearray(context, jm_vector_get_itemp(char)(bufStartStr, 0), startObj->start)) {
-                return -1;
-            }
-            variable->type = &startObj->super;
+        /* For each <Start ...>, allocate memory, copy attribute to 'value' and push back to 'vec'. */
+        jm_vector(jm_voidp)* vec = &context->currentStartVariableValues;
+        char* attr;
+        if (fmi3_xml_get_attr_str(context, fmi3_xml_elmID_BinaryVariableStart, fmi_attr_id_value, 0, &attr)) return -1;
+        size_t len = strlen(attr);
+        if (len == 0) {
+            fmi3_xml_parse_error(context, "Empty value attribute in Start element");
+            return -1;
         }
+        if (len % 2 != 0) {
+            // 2 hexadecimal chars per byte. This is also checked in the conversion, but if this happens
+            // and we want to handle it, then we must allocate extra size to take into account padding of
+            // the final char.
+            return -1;
+        }
+        char* attrAsStr = context->callbacks->malloc(len + 1);
+        strcpy(attrAsStr, attr);
+        jm_vector_push_back(jm_voidp)(vec, attrAsStr);
     }
     return 0;
 }

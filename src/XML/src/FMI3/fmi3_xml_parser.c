@@ -1322,7 +1322,7 @@ static void XMLCALL fmi3_parse_element_end(void* c, const char *elm) {
 
     if( currentElMap->elementHandle(context, jm_vector_get_itemp(char)(&context->elmData, 0) )) {
         /* context->modelDescription->hasParsingError = 1;*/
-        return;
+        // TODO: What should happen here?
     }
     jm_vector_resize(char)(&context->elmData, 0);
 

@@ -484,9 +484,9 @@ FMILIB_EXPORT fmi3_uint8_t fmi3_import_get_uint8_variable_start(fmi3_import_uint
 /** \brief Get "quantity" attribute if defined, else NULL-pointer. */
 FMILIB_EXPORT fmi3_string_t fmi3_import_get_enum_variable_quantity(fmi3_import_enum_variable_t * v);
 /** \brief Get start value for the variable*/
-FMILIB_EXPORT int fmi3_import_get_enum_variable_start(fmi3_import_enum_variable_t* v);
+FMILIB_EXPORT fmi3_int64_t fmi3_import_get_enum_variable_start(fmi3_import_enum_variable_t* v);
 /** \brief Get start value for the array variable*/
-FMILIB_EXPORT int* fmi3_import_get_enum_variable_start_array(fmi3_import_enum_variable_t* v);
+FMILIB_EXPORT fmi3_int64_t* fmi3_import_get_enum_variable_start_array(fmi3_import_enum_variable_t* v);
 /** \brief Get minimal value for the variable */
 FMILIB_EXPORT int fmi3_import_get_enum_variable_min(fmi3_import_enum_variable_t* v);
 /** \brief Get max value for the variable */

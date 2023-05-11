@@ -42,7 +42,7 @@ jm_vector(jm_voidp)* fmi3_xml_get_outputs(fmi3_xml_model_structure_t* ms);
 */
 jm_vector(jm_voidp)* fmi3_xml_get_continuous_state_derivatives(fmi3_xml_model_structure_t* ms);
 
-/** \brief Get the list of all the clocked statess in the model.
+/** \brief Get the list of all the clocked states in the model.
 * @param ms A model structure pointer (returned by fmi3_xml_get_model_structure)
 * @return a variable list with all the clocked states in the model.
 */
@@ -60,55 +60,71 @@ jm_vector(jm_voidp)* fmi3_xml_get_initial_unknowns(fmi3_xml_model_structure_t* m
 */
 jm_vector(jm_voidp)* fmi3_xml_get_event_indicators(fmi3_xml_model_structure_t* ms);
 
-/** \brief Get dependency information in row-compressed format. 
- * @param startIndex - outputs a pointer to an array of start indices (size of array is number of outputs + 1).
- *                     First element is zero, last is equal to the number of elements in the dependency and factor arrays. 
- *                     NULL pointer is returned if no dependency information was provided in the XML. 
- * @param dependency - outputs a pointer to the dependency index data. Indices are 1-based. Index equals to zero  
- *                     means "depends on all" (no information in the XML). 
- * @param factorKind - outputs a pointer to the factor kind data. The values can be converted to ::fmi3_dependency_factor_kind_enu_t 
- */ 
-void fmi3_xml_get_outputs_dependencies(fmi3_xml_model_structure_t* ms, size_t** startIndex, size_t** dependency, char** factorKind);
-     
-/** \brief Get dependency information in row-compressed format. 
- * @param startIndex - outputs a pointer to an array of start indices (size of array is number of continuous state derivatives + 1).
- *                     First element is zero, last is equal to the number of elements in the dependency and factor arrays. 
- *                     NULL pointer is returned if no dependency information was provided in the XML. 
- * @param dependency - outputs a pointer to the dependency index data. Indices are 1-based. Index equals to zero  
- *                     means "depends on all" (no information in the XML). 
- * @param factorKind - outputs a pointer to the factor kind data. The values can be converted to ::fmi3_dependency_factor_kind_enu_t 
- */ 
-void fmi3_xml_get_continuous_state_derivatives_dependencies(fmi3_xml_model_structure_t* ms, size_t** startIndex, size_t** dependency, char** factorKind);
+/** \brief Get dependency information for Outputs. 
+ * @param ms              - A model structure pointer (returned by fmi3_xml_get_model_structure)
+ * @param variable        - A model variable, returned from fmi3_import_get_variable(varList, <index>), where 
+ *                          varList = fmi3_import_get_outputs_list(...);
+ * @param numDependencies - outputs number of dependencies, equals to SIZE_MAX in case of missing dependencies = depends on all
+ * @param dependency      - outputs a pointer to the dependency valueReferences data.
+ *                          NULL if numDependencies == 0 || numDependencies == <max(size_t)>
+ * @param factorKind      - outputs a pointer to the factor kind data. The values can be converted to ::fmi3_dependency_factor_kind_enu_t 
+ *                          NULL if numDependencies == 0 || numDependencies == <max(size_t)>
+ * @return - non-zero if variable is not an EventIndicator or other unexpected issue
+ */
+int fmi3_xml_get_output_dependencies(fmi3_xml_model_structure_t* ms, fmi3_xml_variable_t* variable,
+        size_t* numDependencies, size_t** dependency, char** factorKind);
 
-/** \brief Get dependency information in row-compressed format. 
- * @param startIndex - outputs a pointer to an array of start indices (size of array is number of clocked states + 1).
- *                     First element is zero, last is equal to the number of elements in the dependency and factor arrays. 
- *                     NULL pointer is returned if no dependency information was provided in the XML. 
- * @param dependency - outputs a pointer to the dependency index data. Indices are 1-based. Index equals to zero  
- *                     means "depends on all" (no information in the XML). 
- * @param factorKind - outputs a pointer to the factor kind data. The values can be converted to ::fmi3_dependency_factor_kind_enu_t 
- */ 
-void fmi3_xml_get_clocked_states_dependencies(fmi3_xml_model_structure_t* ms, size_t** startIndex, size_t** dependency, char** factorKind);
+/** \brief Get dependency information for EventIndicators. 
+ * @param variable        - A model variable, returned from fmi3_import_get_variable(varList, <index>), where 
+ *                          varList = fmi3_xml_get_event_indicators(...);
+ * @param numDependencies - ouputs number of dependencies, equals to <max(size_t)> in case of missing dependencies = depends on all
+ * @param dependency      - outputs a pointer to the dependency valueReferences data.
+ *                          NULL if numDependencies == 0 || numDependencies == <max(size_t)>
+ * @param factorKind      - outputs a pointer to the factor kind data. The values can be converted to ::fmi3_dependency_factor_kind_enu_t 
+ *                          NULL if numDependencies == 0 || numDependencies == <max(size_t)>
+ * @return - non-zero if variable is not an EventIndicator or other unexpected issue
+ */
+int fmi3_xml_get_continuous_state_derivative_dependencies(fmi3_xml_model_structure_t* ms, fmi3_xml_variable_t* variable,
+        size_t* numDependencies, size_t** dependency, char** factorKind);
 
-/** \brief Get dependency information in row-compressed format. 
- * @param startIndex - outputs a pointer to an array of start indices (size of array is number of initial unknowns + 1).
- *                     First element is zero, last is equal to the number of elements in the dependency and factor arrays. 
- *                     NULL pointer is returned if no dependency information was provided in the XML. 
- * @param dependency - outputs a pointer to the dependency index data. Indices are 1-based. Index equals to zero  
- *                     means "depends on all" (no information in the XML). 
- * @param factorKind - outputs a pointer to the factor kind data. The values can be converted to ::fmi3_dependency_factor_kind_enu_t 
- */ 
-void fmi3_xml_get_initial_unknowns_dependencies(fmi3_xml_model_structure_t* ms, size_t** startIndex, size_t** dependency, char** factorKind);
+/** \brief Get dependency information for EventIndicators. 
+ * @param variable        - A model variable, returned from fmi3_import_get_variable(varList, <index>), where 
+ *                          varList = fmi3_xml_get_event_indicators(...);
+ * @param numDependencies - ouputs number of dependencies, equals to <max(size_t)> in case of missing dependencies = depends on all
+ * @param dependency      - outputs a pointer to the dependency valueReferences data.
+ *                          NULL if numDependencies == 0 || numDependencies == <max(size_t)>
+ * @param factorKind      - outputs a pointer to the factor kind data. The values can be converted to ::fmi3_dependency_factor_kind_enu_t 
+ *                          NULL if numDependencies == 0 || numDependencies == <max(size_t)>
+ * @return - non-zero if variable is not an EventIndicator or other unexpected issue
+ */
+int fmi3_xml_get_clocked_state_dependencies(fmi3_xml_model_structure_t* ms, fmi3_xml_variable_t* variable,
+        size_t* numDependencies, size_t** dependency, char** factorKind);
 
-/** \brief Get dependency information in row-compressed format. 
- * @param startIndex - outputs a pointer to an array of start indices (size of array is number of event indicators + 1).
- *                     First element is zero, last is equal to the number of elements in the dependency and factor arrays. 
- *                     NULL pointer is returned if no dependency information was provided in the XML. 
- * @param dependency - outputs a pointer to the dependency index data. Indices are 1-based. Index equals to zero  
- *                     means "depends on all" (no information in the XML). 
- * @param factorKind - outputs a pointer to the factor kind data. The values can be converted to ::fmi3_dependency_factor_kind_enu_t 
- */ 
-void fmi3_xml_get_event_indicators_dependencies(fmi3_xml_model_structure_t* ms, size_t** startIndex, size_t** dependency, char** factorKind);
+/** \brief Get dependency information for EventIndicators. 
+ * @param variable        - A model variable, returned from fmi3_import_get_variable(varList, <index>), where 
+ *                          varList = fmi3_xml_get_event_indicators(...);
+ * @param numDependencies - ouputs number of dependencies, equals to <max(size_t)> in case of missing dependencies = depends on all
+ * @param dependency      - outputs a pointer to the dependency valueReferences data.
+ *                          NULL if numDependencies == 0 || numDependencies == <max(size_t)>
+ * @param factorKind      - outputs a pointer to the factor kind data. The values can be converted to ::fmi3_dependency_factor_kind_enu_t 
+ *                          NULL if numDependencies == 0 || numDependencies == <max(size_t)>
+ * @return - non-zero if variable is not an EventIndicator or other unexpected issue
+ */
+int fmi3_xml_get_initial_unknown_dependencies(fmi3_xml_model_structure_t* ms, fmi3_xml_variable_t* variable,
+        size_t* numDependencies, size_t** dependency, char** factorKind);
+
+/** \brief Get dependency information for EventIndicators. 
+ * @param variable        - A model variable, returned from fmi3_import_get_variable(varList, <index>), where 
+ *                          varList = fmi3_xml_get_event_indicators(...);
+ * @param numDependencies - ouputs number of dependencies, equals to <max(size_t)> in case of missing dependencies = depends on all
+ * @param dependency      - outputs a pointer to the dependency valueReferences data.
+ *                          NULL if numDependencies == 0 || numDependencies == <max(size_t)>
+ * @param factorKind      - outputs a pointer to the factor kind data. The values can be converted to ::fmi3_dependency_factor_kind_enu_t 
+ *                          NULL if numDependencies == 0 || numDependencies == <max(size_t)>
+ * @return - non-zero if variable is not an EventIndicator or other unexpected issue
+ */
+int fmi3_xml_get_event_indicator_dependencies(fmi3_xml_model_structure_t* ms, fmi3_xml_variable_t* variable,
+        size_t* numDependencies, size_t** dependency, char** factorKind);
 
 #ifdef __cplusplus
 }

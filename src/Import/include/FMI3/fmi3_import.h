@@ -237,7 +237,7 @@ FMILIB_EXPORT fmi3_import_variable_t* fmi3_import_get_variable_alias_base(fmi3_i
     Note that the list is ordered: base variable, aliases, negated aliases.
     Note that the caller is responsible for deallocating this list.
 */
-FMILIB_EXPORT fmi3_import_variable_list_t* fmi3_import_get_variable_aliases(fmi3_import_t* fmu,fmi3_import_variable_t*);
+FMILIB_EXPORT fmi3_import_variable_list_t* fmi3_import_get_variable_aliases(fmi3_import_t* fmu, fmi3_import_variable_t*);
 
 /** \brief Get the list of all the variables in the model.
 * @param fmu An FMU object as returned by fmi3_import_parse_xml().
@@ -254,7 +254,7 @@ FMILIB_EXPORT fmi3_import_variable_list_t* fmi3_import_get_variable_list(fmi3_im
 \param fmu An FMU object that this variable list will reference.
 \param v A variable.
 */
-FMILIB_EXPORT fmi3_import_variable_list_t* fmi3_import_create_var_list(fmi3_import_t* fmu,fmi3_import_variable_t* v);
+FMILIB_EXPORT fmi3_import_variable_list_t* fmi3_import_create_var_list(fmi3_import_t* fmu, fmi3_import_variable_t* v);
 
 /** \brief Get the number of vendors that had annotations in the XML*/
 FMILIB_EXPORT size_t fmi3_import_get_vendors_num(fmi3_import_t* fmu);
@@ -339,16 +339,18 @@ FMILIB_EXPORT fmi3_import_variable_list_t* fmi3_import_get_initial_unknowns_list
 */
 FMILIB_EXPORT fmi3_import_variable_list_t* fmi3_import_get_event_indicators_list(fmi3_import_t* fmu);
 
-/** \brief Get dependency information in row-compressed format.
- * @param fmu An FMU object as returned by fmi3_import_parse_xml().
- * @param startIndex - outputs a pointer to an array of start indices (size of array is number of outputs + 1).
- *                     First element is zero, last is equal to the number of elements in the dependency and factor arrays.
- *                     NULL pointer is returned if no dependency information was provided in the XML.
- * @param dependency - outputs a pointer to the dependency index data. Indices are 1-based. Index equals to zero
- *                     means "depends on all" (no information in the XML).
- * @param factorKind - outputs a pointer to the factor kind data. The values can be converted to ::fmi3_dependency_factor_kind_enu_t
+/** \brief Get dependency information for an Output.
+ * @param fmu             - An FMU object as returned by fmi3_import_parse_xml().
+ * @param variable        - A model variable, returned from fmi3_import_get_variable(varList, <index>), where 
+ *                          varList = fmi3_import_get_event_indicators_list(fmu)
+ * @param numDependencies - outputs number of dependencies, equals to SIZE_MAX in case of missing dependencies == depends on all
+ * @param dependency      - outputs a pointer to the dependency valueReferences.
+ * @param factorKind      - outputs a pointer to the factor kind data. The values can be converted to ::fmi3_dependency_factor_kind_enu_t 
+ * @return                - positive if variable cannot be found (e.g., not an Output)
+ *                          negative for invalid inputs and other unexpected failures
  */
-FMILIB_EXPORT void fmi3_import_get_outputs_dependencies(fmi3_import_t* fmu, size_t** startIndex, size_t** dependency, char** factorKind);
+FMILIB_EXPORT int fmi3_import_get_output_dependencies(fmi3_import_t* fmu, fmi3_import_variable_t* variable,
+        size_t* numDependencies, size_t** dependency, char** factorKind);
 
 /** \brief Get dependency information in row-compressed format.
  * @param fmu An FMU object as returned by fmi3_import_parse_xml().
@@ -359,7 +361,8 @@ FMILIB_EXPORT void fmi3_import_get_outputs_dependencies(fmi3_import_t* fmu, size
  *                     means "depends on all" (no information in the XML).
  * @param factorKind - outputs a pointer to the factor kind data. The values can be converted to ::fmi3_dependency_factor_kind_enu_t
  */
-FMILIB_EXPORT void fmi3_import_get_continuous_state_derivatives_dependencies(fmi3_import_t* fmu, size_t** startIndex, size_t** dependency, char** factorKind);
+FMILIB_EXPORT int fmi3_import_get_continuous_state_derivative_dependencies(fmi3_import_t* fmu, fmi3_import_variable_t* variable,
+        size_t* numDependencies, size_t** dependency, char** factorKind);
 
 /** \brief Get dependency information in row-compressed format.
  * @param fmu An FMU object as returned by fmi3_import_parse_xml().
@@ -370,7 +373,8 @@ FMILIB_EXPORT void fmi3_import_get_continuous_state_derivatives_dependencies(fmi
  *                     means "depends on all" (no information in the XML).
  * @param factorKind - outputs a pointer to the factor kind data. The values can be converted to ::fmi3_dependency_factor_kind_enu_t
  */
-FMILIB_EXPORT void fmi3_import_get_clocked_states_dependencies(fmi3_import_t* fmu, size_t** startIndex, size_t** dependency, char** factorKind);
+FMILIB_EXPORT int fmi3_import_get_clocked_state_dependencies(fmi3_import_t* fmu, fmi3_import_variable_t* variable,
+        size_t* numDependencies, size_t** dependency, char** factorKind);
 
 /** \brief Get dependency information in row-compressed format.
  * @param fmu An FMU object as returned by fmi3_import_parse_xml().
@@ -381,7 +385,8 @@ FMILIB_EXPORT void fmi3_import_get_clocked_states_dependencies(fmi3_import_t* fm
  *                     means "depends on all" (no information in the XML).
  * @param factorKind - outputs a pointer to the factor kind data. The values can be converted to ::fmi3_dependency_factor_kind_enu_t
  */
-FMILIB_EXPORT void fmi3_import_get_initial_unknowns_dependencies(fmi3_import_t* fmu, size_t** startIndex, size_t** dependency, char** factorKind);
+FMILIB_EXPORT int fmi3_import_get_initial_unknown_dependencies(fmi3_import_t* fmu, fmi3_import_variable_t* variable,
+        size_t* numDependencies, size_t** dependency, char** factorKind);
 
 /** \brief Get dependency information in row-compressed format.
  * @param fmu An FMU object as returned by fmi3_import_parse_xml().
@@ -392,7 +397,8 @@ FMILIB_EXPORT void fmi3_import_get_initial_unknowns_dependencies(fmi3_import_t* 
  *                     means "depends on all" (no information in the XML).
  * @param factorKind - outputs a pointer to the factor kind data. The values can be converted to ::fmi3_dependency_factor_kind_enu_t
  */
-FMILIB_EXPORT void fmi3_import_get_event_indicators_dependencies(fmi3_import_t* fmu, size_t** startIndex, size_t** dependency, char** factorKind);
+FMILIB_EXPORT int fmi3_import_get_event_indicator_dependencies(fmi3_import_t* fmu, fmi3_import_variable_t* variable,
+        size_t* numDependencies, size_t** dependency, char** factorKind);
 
 /**@} */
 

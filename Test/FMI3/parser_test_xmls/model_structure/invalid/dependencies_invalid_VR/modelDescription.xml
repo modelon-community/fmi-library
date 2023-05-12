@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription fmiVersion="3.0" modelName="" instantiationToken="">
+<ModelExchange modelIdentifier="Dependencies_invalid_VR_negative" />
+
+<ModelVariables>
+    <Float64 name="state_var" valueReference="0"/>
+    <Float64 name="der(state_var)" valueReference="1" causality="output" variability="continuous" initial="approx" derivative="1" start="1.0"/>
+</ModelVariables>
+
+<ModelStructure>
+  <ContinuousStateDerivative valueReference="1" dependencies="-1"/> <!-- Invalid dependency, must be non-negative -->
+</ModelStructure>
+</fmiModelDescription>

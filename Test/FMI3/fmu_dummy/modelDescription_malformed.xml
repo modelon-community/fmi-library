@@ -4,8 +4,7 @@
   modelName="BouncingBall_malformed"
   generationTool="None"
   description="A bouncing ball model"
-  instantiationToken="123"
-  numberOfEventIndicators="1">
+  instantiationToken="123">
   <ModelExchange modelIdentifier="BouncingBall3_malformed" />
   <TypeDefinitions>
       <Float64 name="Modelica.Blocks.Interfaces.RealOutput" />

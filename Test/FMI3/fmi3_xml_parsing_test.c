@@ -52,7 +52,11 @@ void test_parser(char *xml_dir, int should_log_expected_msg, int configuration)
     if (fmu == NULL) {
         goto err1;
     }
-    if (should_log_expected_msg != g_has_logged_expected_msg) {
+    if (should_log_expected_msg && !g_has_logged_expected_msg) {
+        printf("TEST FAILURE: Didn't log this message: %s\n", g_expected_message);
+        goto err2;
+    } else if (!should_log_expected_msg && g_has_logged_expected_msg) {
+        printf("TEST FAILURE: Logged this message when shouldn't: %s\n", g_expected_message);
         goto err2;
     }
     res = 0;
@@ -280,13 +284,7 @@ static void test_locale_lc_numeric() {
 
 int main(int argc, char *argv[])
 {
-    if (argc == 2) {
-        g_name_check_test_directory = argv[1];
-    } else {
-        printf("Usage: %s <path to folder 'parser_test_xmls'>\n", argv[0]);
-        exit(CTEST_RETURN_FAIL);
-    }
-
+    g_name_check_test_directory = FMI3_TEST_XML_DIR "/";
     test_variable_naming_conventions();
 
 #ifdef FMILIB_TEST_LOCALE

@@ -92,17 +92,23 @@ jm_vector_declare_template(fmi3_value_reference_t)
     EXPAND_XML_ATTRNAME(numberOfEventIndicators) \
     EXPAND_XML_ATTRNAME(input) \
     EXPAND_XML_ATTRNAME(needsExecutionTool) \
-    EXPAND_XML_ATTRNAME(canHandleVariableCommunicationStepSize) \
-    EXPAND_XML_ATTRNAME(completedIntegratorStepNotNeeded) \
     EXPAND_XML_ATTRNAME(canBeInstantiatedOnlyOncePerProcess) \
-    EXPAND_XML_ATTRNAME(canNotUseMemoryManagementFunctions) \
-    EXPAND_XML_ATTRNAME(canGetAndSetFMUstate) \
-    EXPAND_XML_ATTRNAME(canSerializeFMUstate) \
-    EXPAND_XML_ATTRNAME(providesDirectionalDerivatives) /* used for verification: checks that this attribute does not exist */ \
-    EXPAND_XML_ATTRNAME(providesDirectionalDerivative) \
-    EXPAND_XML_ATTRNAME(canInterpolateInputs) \
+    EXPAND_XML_ATTRNAME(canGetAndSetFMUState) \
+    EXPAND_XML_ATTRNAME(canSerializeFMUState) \
+    EXPAND_XML_ATTRNAME(providesDirectionalDerivatives) \
+    EXPAND_XML_ATTRNAME(providesDirectionalDerivative) /* Removed in FMI3. Used in error checking. */ \
+    EXPAND_XML_ATTRNAME(providesAdjointDerivatives) \
+    EXPAND_XML_ATTRNAME(providesPerElementDependencies) \
+    EXPAND_XML_ATTRNAME(providesEvaluateDiscreteStates) \
+    EXPAND_XML_ATTRNAME(needsCompletedIntegratorStep) \
+    EXPAND_XML_ATTRNAME(canHandleVariableCommunicationStepSize) \
+    EXPAND_XML_ATTRNAME(fixedInternalStepSize) \
     EXPAND_XML_ATTRNAME(maxOutputDerivativeOrder) \
-    EXPAND_XML_ATTRNAME(canRunAsynchronuously)
+    EXPAND_XML_ATTRNAME(recommendedIntermediateInputSmoothness) \
+    EXPAND_XML_ATTRNAME(providesIntermediateUpdate) \
+    EXPAND_XML_ATTRNAME(mightReturnEarlyFromDoStep) \
+    EXPAND_XML_ATTRNAME(canReturnEarlyAfterIntermediateUpdate) \
+    EXPAND_XML_ATTRNAME(hasEventMode)
 
 
 #define FMI3_XML_ATTR_ID(attr) fmi_attr_id_##attr,
@@ -285,7 +291,7 @@ struct fmi3_xml_parser_context_t {
      *
      * Typically attributes values are cleared when they are read, such that at the end of
      * parsing an element all attributes should be cleared.
-     * 
+     *
      * NOTE:
      * The pointers point to expat's internal memory. It's not allowed to save references
      * to this memory between element handle calls.
@@ -306,7 +312,7 @@ struct fmi3_xml_parser_context_t {
     jm_vector(fmi3_xml_element_handle_map_t)* elmMap;
 
     fmi3_xml_unit_t* lastBaseUnit;
-    
+
     /**
      * If there's an issue with the variable element, this flag says that its
      * children should be skipped.

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription fmiVersion="3.0" modelName="" instantiationToken=""
+    numberOfEventIndicators="2"> <!-- No longer an attribute in FMI3. Test that it gives warning. -->
+<ModelExchange modelIdentifier="id"/>
+<ModelVariables/>
+<ModelStructure/>
+</fmiModelDescription>

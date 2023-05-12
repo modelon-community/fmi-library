@@ -9,14 +9,21 @@
 extern "C" {
 #endif
 
-/**
- *  TODO: Decide about naming convention for test utils functions.
- */
+// Require string equality. Macro depends on Catch2.
+#define REQUIRE_STREQ(S1, S2)                                                                          \
+    do {                                                                                               \
+        if (S1 == nullptr && S2 == nullptr) { FAIL("Failed to compare strings. Both were nullptr."); } \
+        else if (S1 == nullptr ) { FAIL("nullptr != " << S2); }                                        \
+        else if (S2 == nullptr ) { FAIL(S1 << " != nullptr"); }                                        \
+        else if (strcmp(S1, S2) != 0) { FAIL(S1 << " != " << S2); }                                    \
+    } while (0);
 
 typedef struct fmi3_testutil_import_t {
     fmi3_import_t* fmu;
-    jm_vector(jm_voidp) log;  // All logged messages
-    jm_callbacks cb;          // Holds the test-logger and its context
+    jm_vector(jm_voidp) log;      // All logged messages
+    jm_vector(jm_voidp) warnLog;  // List of warning messages
+    jm_vector(jm_voidp) errLog;   // List of error and fatal messages
+    jm_callbacks cb;              // Holds the test-logger and its context
 } fmi3_testutil_import_t;
 
 /**
@@ -45,6 +52,16 @@ fmi3_testutil_import_t* fmi3_testutil_parse_xml_with_log(const char* xmldir);
  * Free the object.
  */
 void fmi3_testutil_import_free(fmi3_testutil_import_t* testfmu);
+
+/**
+ * Returns the number of logged errors.
+ */
+size_t fmi3_testutil_get_num_errors(fmi3_testutil_import_t* testfmu);
+
+/**
+ * Returns the number of logged problems, i.e. log-level warning or lower.
+ */
+size_t fmi3_testutil_get_num_problems(fmi3_testutil_import_t* testfmu);
 
 /**
  * Returns true if any logged message constains the given message substring.

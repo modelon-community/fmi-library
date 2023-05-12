@@ -334,6 +334,18 @@ fmi3_fmu_kind_enu_t fmi3_import_get_fmu_kind(fmi3_import_t* fmu) {
     return fmi3_xml_get_fmu_kind(fmu->md);
 }
 
+int fmi3_import_get_cs_has_fixed_internal_step_size(fmi3_import_t* fmu) {
+    return fmi3_xml_get_cs_has_fixed_internal_step_size(fmu->md);
+}
+
+double fmi3_import_get_cs_fixed_internal_step_size(fmi3_import_t* fmu) {
+    return fmi3_xml_get_cs_fixed_internal_step_size(fmu->md);
+}
+
+int fmi3_import_get_cs_recommended_intermediate_input_smoothness(fmi3_import_t* fmu) {
+    return fmi3_xml_get_cs_recommended_intermediate_input_smoothness(fmu->md);
+}
+
 size_t fmi3_import_get_vendors_num(fmi3_import_t* fmu) {
     if (!fmi3_import_check_has_FMU(fmu)) return 0;
 

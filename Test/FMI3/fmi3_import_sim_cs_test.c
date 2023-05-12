@@ -288,16 +288,8 @@ int main(int argc, char *argv[])
 
     fmi3_import_t* fmu;
 
-    if(argc < 3) {
-        printf("Usage: %s <fmu_file> <temporary_dir>\n", argv[0]);
-        do_exit(CTEST_RETURN_FAIL);
-    }
-    for (k = 0; k < argc; k ++)
-        printf("argv[%d] = %s\n", k, argv[k]);
-
-    FMUPath = argv[1];
-    tmpPath = argv[2];
-
+    FMUPath = FMU3_CS_PATH;
+    tmpPath = FMU_TEMPORARY_TEST_DIR;
 
     callbacks.malloc = malloc;
     callbacks.calloc = calloc;

@@ -24,7 +24,7 @@
 #include "fmi3_xml_model_structure_impl.h"
 #include "fmi3_xml_model_description_impl.h"
 
-static const char * module = "FMI3XML";
+static const char* module = "FMI3XML";
 
 fmi3_xml_model_structure_t* fmi3_xml_allocate_model_structure(jm_callbacks* cb) {
     fmi3_xml_model_structure_t* ms = (fmi3_xml_model_structure_t*)(cb->calloc(1, sizeof(fmi3_xml_model_structure_t)));
@@ -222,8 +222,6 @@ int fmi3_xml_handle_ModelStructure(fmi3_xml_parser_context_t *context, const cha
             fmi3_xml_parse_fatal(context, "Model structure is not valid due to detected errors. Cannot continue.");
             return -1;
         }
-
-        md->numberOfContinuousStates = jm_vector_get_size(jm_voidp)(&md->modelStructure->continuousStateDerivatives);
     }
     return 0;
 }

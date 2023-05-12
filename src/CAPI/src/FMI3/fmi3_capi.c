@@ -40,7 +40,7 @@ static jm_status_enu_t fmi3_capi_get_fcn(fmi3_capi_t* fmu, const char* function_
 /* Load FMI functions from DLL macro */
 #define LOAD_DLL_FUNCTION(FMIFUNCTION) fmi3_capi_get_fcn(fmu, #FMIFUNCTION, (jm_dll_function_ptr*)&fmu->FMIFUNCTION, &jm_status)
 
-static jm_status_enu_t fmi3_capi_load_common_fcn(fmi3_capi_t* fmu, unsigned int capabilities[])
+static jm_status_enu_t fmi3_capi_load_common_fcn(fmi3_capi_t* fmu)
 {
     jm_status_enu_t jm_status = jm_status_success;
 
@@ -120,13 +120,13 @@ static jm_status_enu_t fmi3_capi_load_common_fcn(fmi3_capi_t* fmu, unsigned int 
 
 
 /* Load FMI 3.0 CoSimulation functions */
-static jm_status_enu_t fmi3_capi_load_cs_fcn(fmi3_capi_t* fmu, unsigned int capabilities[])
+static jm_status_enu_t fmi3_capi_load_cs_fcn(fmi3_capi_t* fmu)
 {
     jm_status_enu_t jm_status = jm_status_success;
 
     jm_log_verbose(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Loading functions for the co-simulation interface");
 
-    jm_status = fmi3_capi_load_common_fcn(fmu, capabilities);
+    jm_status = fmi3_capi_load_common_fcn(fmu);
 
     /* Clock functions */
     LOAD_DLL_FUNCTION(fmi3GetClock);
@@ -149,13 +149,13 @@ static jm_status_enu_t fmi3_capi_load_cs_fcn(fmi3_capi_t* fmu, unsigned int capa
 }
 
 /* Load FMI 3.0 Scheduled Execution functions */
-static jm_status_enu_t fmi3_capi_load_se_fcn(fmi3_capi_t* fmu, unsigned int capabilities[])
+static jm_status_enu_t fmi3_capi_load_se_fcn(fmi3_capi_t* fmu)
 {
     jm_status_enu_t jm_status = jm_status_success;
 
     jm_log_verbose(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Loading functions for the scheduled execution interface");
 
-    jm_status = fmi3_capi_load_common_fcn(fmu, capabilities);
+    jm_status = fmi3_capi_load_common_fcn(fmu);
 
     /* Clock functions */
     LOAD_DLL_FUNCTION(fmi3GetClock);
@@ -171,13 +171,13 @@ static jm_status_enu_t fmi3_capi_load_se_fcn(fmi3_capi_t* fmu, unsigned int capa
 }
 
 /* Load FMI 3.0 Model Exchange functions */
-static jm_status_enu_t fmi3_capi_load_me_fcn(fmi3_capi_t* fmu, unsigned int capabilities[])
+static jm_status_enu_t fmi3_capi_load_me_fcn(fmi3_capi_t* fmu)
 {
     jm_status_enu_t jm_status = jm_status_success;
 
     jm_log_verbose(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Loading functions for the model exchange interface");
 
-    jm_status = fmi3_capi_load_common_fcn(fmu, capabilities);
+    jm_status = fmi3_capi_load_common_fcn(fmu);
 
     /* Clock functions */
     LOAD_DLL_FUNCTION(fmi3GetClock);
@@ -284,15 +284,15 @@ fmi3_capi_t* fmi3_capi_create_dllfmu(jm_callbacks* cb, const char* dllPath, cons
     return fmu;
 }
 
-jm_status_enu_t fmi3_capi_load_fcn(fmi3_capi_t* fmu, unsigned int capabilities[])
+jm_status_enu_t fmi3_capi_load_fcn(fmi3_capi_t* fmu)
 {
     assert(fmu);
     if (fmu->standard == fmi3_fmu_kind_me) {
-        return fmi3_capi_load_me_fcn(fmu, capabilities);
+        return fmi3_capi_load_me_fcn(fmu);
     } else if (fmu->standard == fmi3_fmu_kind_cs) {
-        return fmi3_capi_load_cs_fcn(fmu, capabilities);
+        return fmi3_capi_load_cs_fcn(fmu);
     } else if (fmu->standard == fmi3_fmu_kind_se) {
-        return fmi3_capi_load_se_fcn(fmu, capabilities);
+        return fmi3_capi_load_se_fcn(fmu);
 
     } else {
         jm_log_error(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Unexpected FMU kind in FMICAPI.");

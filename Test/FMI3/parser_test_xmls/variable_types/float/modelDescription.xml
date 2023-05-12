@@ -1,13 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<fmiModelDescription
-    fmiVersion="2.0"
-    modelName="none"
-    variableNamingConvention="structured"
-    instantiationToken="123"
-    numberOfEventIndicators="1">
-  <CoSimulation 
-      modelIdentifier="none1" 
-      canHandleVariableCommunicationStepSize="true"/>
+<fmiModelDescription fmiVersion="3.0" modelName="" instantiationToken="">
+  <CoSimulation modelIdentifier="id"/>
 
   <UnitDefinitions>
     <Unit name="K">
@@ -33,8 +26,6 @@
     <Float32 name="float32WithUnit" valueReference="102" unit="K" displayUnit="degC"/>
   </ModelVariables>
 
-  <ModelStructure>
-  </ModelStructure>
-
+  <ModelStructure/>
 </fmiModelDescription>
 

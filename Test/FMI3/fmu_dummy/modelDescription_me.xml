@@ -4,8 +4,7 @@
   modelName="BouncingBall"
   generationTool="None"
   description="A bouncing ball model"
-  instantiationToken="123"
-  numberOfEventIndicators="1">
+  instantiationToken="123">
   <ModelExchange modelIdentifier="BouncingBall3" />
   <TypeDefinitions>
       <Float64 name="Modelica.Blocks.Interfaces.RealOutput" />
@@ -43,10 +42,12 @@
     <Dimension start="2"/>
     <Dimension start="2"/>
   </Float64>
+  <Float64 name="event_indicator_1" valueReference="17" description="HEIGHT &lt; 0"/>
 </ModelVariables>
 <ModelStructure>
   <Output valueReference="0"/>
   <ContinuousStateDerivative valueReference="1"/>
   <ContinuousStateDerivative valueReference="2" dependencies="3" dependenciesKind="constant"/>
+  <EventIndicator valueReference="17" dependencies="0" dependenciesKind="constant"/>
 </ModelStructure>
 </fmiModelDescription>

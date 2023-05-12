@@ -179,6 +179,7 @@ static void test_fmi3_import_get_dependencies_invalid_API_calls(fmi3_import_t* f
     // variable not a ContinuousStateDerivative
     REQUIRE(fmi3_import_get_continuous_state_derivative_dependencies(fmu, var, &numDependencies, &dependency, &factorKind) > 0);
 
+    fmi3_import_free_variable_list(varList);
 }
 
 TEST_CASE("Valid ModelStructure parsing") {

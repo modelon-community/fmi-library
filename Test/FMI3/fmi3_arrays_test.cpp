@@ -100,9 +100,10 @@ TEST_CASE("Test array parsing and verify retrieved start values are as expected"
     char xmlPath[1000];
     size_t sizeXmlPath = sizeof(xmlPath) / sizeof(char);
 
-    fmi_testutil_build_xml_path(xmlPath, sizeXmlPath, ARRAY_TEST_MODEL_DESCRIPTION_DIR, "/arrays/valid");
+    fmi_testutil_build_xml_path(xmlPath, sizeXmlPath, FMI3_TEST_XML_DIR, "/arrays/valid");
     fmi3_import_t *xml = parse_xml(xmlPath);
     SECTION("Test boolean start array") {
+        REQUIRE(xml != nullptr);
         fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "bool_array");
         fmi3_import_dimension_list_t* dimList = basic_array_checks(v, xml, 2);
         fmi3_boolean_t* start = fmi3_import_get_boolean_variable_start_array(fmi3_import_get_variable_as_boolean(v));

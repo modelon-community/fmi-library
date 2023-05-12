@@ -32,6 +32,9 @@ else()
 endif()
 message(STATUS "Tests will be linked with ${FMILIBFORTEST}")
 
+set(CMAKE_CXX_STANDARD 11) # Required by Catch2
+add_library(Catch INTERFACE)
+
 # Test: jm_vector
 add_executable(jm_vector_test ${FMIL_TEST_DIR}/jm_vector_test.c)
 target_link_libraries(jm_vector_test ${JMUTIL_LIBRARIES})
@@ -207,10 +210,6 @@ if(FMILIB_BUILD_BEFORE_TESTS)
         ctest_fmi_import_test_cs_3
         ctest_fmi_zip_unzip_test
         ctest_fmi_zip_zip_test
-<<<<<<< HEAD
-        ctest_fmi3_basic_capi_test_cpp
-=======
->>>>>>> c63d188 (Fixed issues after rebase towards master)
         ctest_jm_locale_test
         PROPERTIES DEPENDS ctest_build_all)
 endif()

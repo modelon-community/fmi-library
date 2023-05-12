@@ -422,56 +422,56 @@ fmi3_import_variable_list_t* fmi3_import_get_event_indicators_list(fmi3_import_t
 }
 
 int fmi3_import_get_output_dependencies(fmi3_import_t* fmu, fmi3_import_variable_t* variable,
-        size_t* numDependencies, size_t** dependency, char** factorKind)
+        size_t* numDependencies, size_t** dependencies, char** dependenciesKind)
 {
     fmi3_xml_model_structure_t* ms;
     if (!fmi3_import_check_has_FMU(fmu)) return -1;
 
     ms = fmi3_xml_get_model_structure(fmu->md);
     assert(ms);
-    return fmi3_xml_get_output_dependencies(ms, variable, numDependencies, dependency, factorKind);
+    return fmi3_xml_get_output_dependencies(ms, variable, numDependencies, dependencies, dependenciesKind);
 }
 
 int fmi3_import_get_continuous_state_derivative_dependencies(fmi3_import_t* fmu, fmi3_import_variable_t* variable,
-        size_t* numDependencies, size_t** dependency, char** factorKind)
+        size_t* numDependencies, size_t** dependencies, char** dependenciesKind)
 {
     fmi3_xml_model_structure_t* ms;
     if (!fmi3_import_check_has_FMU(fmu)) return -1;
 
     ms = fmi3_xml_get_model_structure(fmu->md);
     assert(ms);
-    return fmi3_xml_get_continuous_state_derivative_dependencies(ms, variable, numDependencies, dependency, factorKind);
+    return fmi3_xml_get_continuous_state_derivative_dependencies(ms, variable, numDependencies, dependencies, dependenciesKind);
 }
 
 int fmi3_import_get_clocked_state_dependencies(fmi3_import_t* fmu, fmi3_import_variable_t* variable,
-        size_t* numDependencies, size_t** dependency, char** factorKind)
+        size_t* numDependencies, size_t** dependencies, char** dependenciesKind)
 {
     fmi3_xml_model_structure_t* ms;
     if (!fmi3_import_check_has_FMU(fmu)) return -1;
 
     ms = fmi3_xml_get_model_structure(fmu->md);
     assert(ms);
-    return fmi3_xml_get_clocked_state_dependencies(ms, variable, numDependencies, dependency, factorKind);
+    return fmi3_xml_get_clocked_state_dependencies(ms, variable, numDependencies, dependencies, dependenciesKind);
 }
 
 int fmi3_import_get_initial_unknown_dependencies(fmi3_import_t* fmu, fmi3_import_variable_t* variable,
-        size_t* numDependencies, size_t** dependency, char** factorKind)
+        size_t* numDependencies, size_t** dependencies, char** dependenciesKind)
 {
     fmi3_xml_model_structure_t* ms;
     if (!fmi3_import_check_has_FMU(fmu)) return -1;
 
     ms = fmi3_xml_get_model_structure(fmu->md);
     assert(ms);
-    return fmi3_xml_get_initial_unknown_dependencies(ms, variable, numDependencies, dependency, factorKind);
+    return fmi3_xml_get_initial_unknown_dependencies(ms, variable, numDependencies, dependencies, dependenciesKind);
 }
 
 int fmi3_import_get_event_indicator_dependencies(fmi3_import_t* fmu, fmi3_import_variable_t* variable,
-        size_t* numDependencies, size_t** dependency, char** factorKind)
+        size_t* numDependencies, size_t** dependencies, char** dependenciesKind)
 {
     fmi3_xml_model_structure_t* ms;
     if (!fmi3_import_check_has_FMU(fmu)) return -1;
 
     ms = fmi3_xml_get_model_structure(fmu->md);
     assert(ms);
-    return fmi3_xml_get_event_indicator_dependencies(ms, variable, numDependencies, dependency, factorKind);
+    return fmi3_xml_get_event_indicator_dependencies(ms, variable, numDependencies, dependencies, dependenciesKind);
 }

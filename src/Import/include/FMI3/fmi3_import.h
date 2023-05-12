@@ -340,79 +340,69 @@ FMILIB_EXPORT fmi3_import_variable_list_t* fmi3_import_get_initial_unknowns_list
 FMILIB_EXPORT fmi3_import_variable_list_t* fmi3_import_get_event_indicators_list(fmi3_import_t* fmu);
 
 /** \brief Get dependency information for an Output.
- * @param fmu             - An FMU object as returned by fmi3_import_parse_xml().
- * @param variable        - A model variable, returned from fmi3_import_get_variable(varList, <index>), where 
- *                          varList = fmi3_import_get_outputs_list(fmu)
- * @param numDependencies - outputs number of dependencies, equals to SIZE_MAX in case of missing dependencies == depends on all
- * @param dependency      - outputs a pointer to the dependency valueReferences.
- *                          NULL if numDependencies == 0 || numDependencies == SIZE_MAX
- * @param factorKind      - outputs a pointer to the factor kind data. The values can be converted to ::fmi3_dependency_factor_kind_enu_t 
- *                          NULL if numDependencies == 0 || numDependencies == SIZE_MAX
- * @return                - positive if variable cannot be found (e.g., not an Output)
- *                          negative for invalid inputs and other unexpected failures
+ * @param fmu              - An FMU object as returned by fmi3_import_parse_xml().
+ * @param variable         - A model variable in fmi3_import_get_outputs_list(...)
+ * @param numDependencies  - outputs number of dependencies, equals to SIZE_MAX in case of missing dependencies == depends on all
+ * @param dependencies     - outputs a pointer to the dependencies (valueReferences).
+ *                           NULL if numDependencies == 0 || numDependencies == SIZE_MAX
+ * @param dependenciesKind - outputs a pointer to the dependencieskind data. The values can be converted to ::fmi3_dependencies_kind_enu_t 
+ *                           NULL if numDependencies == 0 || numDependencies == SIZE_MAX
+ * @return                 - non-zero if variable cannot be found (e.g., not an Output), invalid inputs or unexpected failures
  */
 FMILIB_EXPORT int fmi3_import_get_output_dependencies(fmi3_import_t* fmu, fmi3_import_variable_t* variable,
-        size_t* numDependencies, size_t** dependency, char** factorKind);
+        size_t* numDependencies, size_t** dependencies, char** dependenciesKind);
 
 /** \brief Get dependency information for a ContinuousStateDerivative.
- * @param fmu             - An FMU object as returned by fmi3_import_parse_xml().
- * @param variable        - A model variable, returned from fmi3_import_get_variable(varList, <index>), where 
- *                          varList = fmi3_import_get_continuous_state_derivatives_list(fmu)
- * @param numDependencies - outputs number of dependencies, equals to SIZE_MAX in case of missing dependencies == depends on all
- * @param dependency      - outputs a pointer to the dependency valueReferences.
- *                          NULL if numDependencies == 0 || numDependencies == SIZE_MAX
- * @param factorKind      - outputs a pointer to the factor kind data. The values can be converted to ::fmi3_dependency_factor_kind_enu_t 
- *                          NULL if numDependencies == 0 || numDependencies == SIZE_MAX
- * @return                - positive if variable cannot be found (e.g., not a ContinuousStateDerivative)
- *                          negative for invalid inputs and other unexpected failures
+ * @param fmu              - An FMU object as returned by fmi3_import_parse_xml().
+ * @param variable         - A model variable in fmi3_import_get_continuous_state_derivatives_list(...)
+ * @param numDependencies  - outputs number of dependencies, equals to SIZE_MAX in case of missing dependencies == depends on all
+ * @param dependencies     - outputs a pointer to the dependencies (valueReferences).
+ *                           NULL if numDependencies == 0 || numDependencies == SIZE_MAX
+ * @param dependenciesKind - outputs a pointer to the dependencieskind data. The values can be converted to ::fmi3_dependencies_kind_enu_t 
+ *                           NULL if numDependencies == 0 || numDependencies == SIZE_MAX
+ * @return                 - non-zero if variable cannot be found (e.g., not a ContinuousStateDerivative), invalid inputs or unexpected failures
  */
 FMILIB_EXPORT int fmi3_import_get_continuous_state_derivative_dependencies(fmi3_import_t* fmu, fmi3_import_variable_t* variable,
-        size_t* numDependencies, size_t** dependency, char** factorKind);
+        size_t* numDependencies, size_t** dependencies, char** dependenciesKind);
 
 /** \brief Get dependency information for a ClockedState.
- * @param fmu             - An FMU object as returned by fmi3_import_parse_xml().
- * @param variable        - A model variable, returned from fmi3_import_get_variable(varList, <index>), where 
- *                          varList = fmi3_import_get_clocked_states_list(fmu)
- * @param numDependencies - outputs number of dependencies, equals to SIZE_MAX in case of missing dependencies == depends on all
- * @param dependency      - outputs a pointer to the dependency valueReferences.
- *                          NULL if numDependencies == 0 || numDependencies == SIZE_MAX
- * @param factorKind      - outputs a pointer to the factor kind data. The values can be converted to ::fmi3_dependency_factor_kind_enu_t 
- *                          NULL if numDependencies == 0 || numDependencies == SIZE_MAX
- * @return                - positive if variable cannot be found (e.g., not a ClockedState)
- *                          negative for invalid inputs and other unexpected failures
+ * @param fmu              - An FMU object as returned by fmi3_import_parse_xml().
+ * @param variable         - A model variable in fmi3_import_get_clocked_states_list(...)
+ * @param numDependencies  - outputs number of dependencies, equals to SIZE_MAX in case of missing dependencies == depends on all
+ * @param dependencies     - outputs a pointer to the dependencies (valueReferences).
+ *                           NULL if numDependencies == 0 || numDependencies == SIZE_MAX
+ * @param dependenciesKind - outputs a pointer to the dependencieskind data. The values can be converted to ::fmi3_dependencies_kind_enu_t 
+ *                           NULL if numDependencies == 0 || numDependencies == SIZE_MAX
+ * @return                 - non-zero if variable cannot be found (e.g., not a ClockedState), invalid inputs or unexpected failures
  */
 FMILIB_EXPORT int fmi3_import_get_clocked_state_dependencies(fmi3_import_t* fmu, fmi3_import_variable_t* variable,
-        size_t* numDependencies, size_t** dependency, char** factorKind);
+        size_t* numDependencies, size_t** dependencies, char** dependenciesKind);
 
 /** \brief Get dependency information for an InitialUnknown.
- * @param fmu             - An FMU object as returned by fmi3_import_parse_xml().
- * @param variable        - A model variable, returned from fmi3_import_get_variable(varList, <index>), where 
- *                          varList = fmi3_import_get_initial_unknowns_list(fmu)
- * @param numDependencies - outputs number of dependencies, equals to SIZE_MAX in case of missing dependencies == depends on all
- * @param dependency      - outputs a pointer to the dependency valueReferences.
- *                          NULL if numDependencies == 0 || numDependencies == SIZE_MAX
- * @param factorKind      - outputs a pointer to the factor kind data. The values can be converted to ::fmi3_dependency_factor_kind_enu_t 
- *                          NULL if numDependencies == 0 || numDependencies == SIZE_MAX
- * @return                - positive if variable cannot be found (e.g., not an InitialUnknown)
- *                          negative for invalid inputs and other unexpected failures
+ * @param fmu              - An FMU object as returned by fmi3_import_parse_xml().
+ * @param variable         - A model variable in fmi3_import_get_initial_unknowns_list(...)
+ * @param numDependencies  - outputs number of dependencies, equals to SIZE_MAX in case of missing dependencies == depends on all
+ * @param dependencies     - outputs a pointer to the dependencies (valueReferences).
+ *                           NULL if numDependencies == 0 || numDependencies == SIZE_MAX
+ * @param dependenciesKind - outputs a pointer to the dependencieskind data. The values can be converted to ::fmi3_dependencies_kind_enu_t 
+ *                           NULL if numDependencies == 0 || numDependencies == SIZE_MAX
+ * @return                 - non-zero if variable cannot be found (e.g., not an InitialUnknown), invalid inputs or unexpected failures
  */
 FMILIB_EXPORT int fmi3_import_get_initial_unknown_dependencies(fmi3_import_t* fmu, fmi3_import_variable_t* variable,
-        size_t* numDependencies, size_t** dependency, char** factorKind);
+        size_t* numDependencies, size_t** dependencies, char** dependenciesKind);
 
 /** \brief Get dependency information for an EventIndicator.
- * @param fmu             - An FMU object as returned by fmi3_import_parse_xml().
- * @param variable        - A model variable, returned from fmi3_import_get_variable(varList, <index>), where 
- *                          varList = fmi3_import_get_event_indicators_list(fmu)
- * @param numDependencies - outputs number of dependencies, equals to SIZE_MAX in case of missing dependencies == depends on all
- * @param dependency      - outputs a pointer to the dependency valueReferences.
- *                          NULL if numDependencies == 0 || numDependencies == SIZE_MAX
- * @param factorKind      - outputs a pointer to the factor kind data. The values can be converted to ::fmi3_dependency_factor_kind_enu_t 
- *                          NULL if numDependencies == 0 || numDependencies == SIZE_MAX
- * @return                - positive if variable cannot be found (e.g., not an EventIndicator)
- *                          negative for invalid inputs and other unexpected failures
+ * @param fmu              - An FMU object as returned by fmi3_import_parse_xml().
+ * @param variable         - A model variable in fmi3_import_get_event_indicators_list(...)
+ * @param numDependencies  - outputs number of dependencies, equals to SIZE_MAX in case of missing dependencies == depends on all
+ * @param dependencies     - outputs a pointer to the dependencies (valueReferences).
+ *                           NULL if numDependencies == 0 || numDependencies == SIZE_MAX
+ * @param dependenciesKind - outputs a pointer to the dependencieskind data. The values can be converted to ::fmi3_dependencies_kind_enu_t 
+ *                           NULL if numDependencies == 0 || numDependencies == SIZE_MAX
+ * @return                 - non-zero if variable cannot be found (e.g., not an EventIndicator), invalid inputs or unexpected failures
  */
 FMILIB_EXPORT int fmi3_import_get_event_indicator_dependencies(fmi3_import_t* fmu, fmi3_import_variable_t* variable,
-        size_t* numDependencies, size_t** dependency, char** factorKind);
+        size_t* numDependencies, size_t** dependencies, char** dependenciesKind);
 
 /**@} */
 

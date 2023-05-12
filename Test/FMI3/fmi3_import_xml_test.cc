@@ -313,7 +313,7 @@ void printDependenciesInfo(	fmi3_import_t* fmu, fmi3_import_variable_list_t* row
 			printf("\t%s depends on:\n",fmi3_import_get_variable_name(fmi3_import_get_variable(rows, i)));
 			for(j = start[i]; j < start[i+1]; j++) {
 				printf("\t\t%s (factor kind: %s)\n",fmi3_import_get_variable_name(fmi3_import_get_variable(cols, dep[j]-1)),
-					fmi3_dependency_factor_kind_to_string((fmi3_dependency_factor_kind_enu_t)factor[j]));
+					fmi3_dependencies_kind_to_string((fmi3_dependencies_kind_enu_t)factor[j]));
 			}
 		}
 	}

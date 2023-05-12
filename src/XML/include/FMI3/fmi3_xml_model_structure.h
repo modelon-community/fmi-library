@@ -61,74 +61,69 @@ jm_vector(jm_voidp)* fmi3_xml_get_initial_unknowns(fmi3_xml_model_structure_t* m
 jm_vector(jm_voidp)* fmi3_xml_get_event_indicators(fmi3_xml_model_structure_t* ms);
 
 /** \brief Get dependency information for an Output.
- * @param ms              - A model structure pointer (returned by fmi3_xml_get_model_structure)
- * @param variable        - A model variable, e.g., from fmi3_xml_get_outputs() vector.
- * @param numDependencies - outputs number of dependencies, equals to SIZE_MAX in case of missing dependencies == depends on all
- * @param dependency      - outputs a pointer to the dependency valueReferences.
- *                          NULL if numDependencies == 0 || numDependencies == SIZE_MAX
- * @param factorKind      - outputs a pointer to the factor kind data. The values can be converted to ::fmi3_dependency_factor_kind_enu_t 
- *                          NULL if numDependencies == 0 || numDependencies == SIZE_MAX
- * @return                - positive if variable cannot be found (e.g., not an Output)
- *                          negative for invalid inputs and other unexpected failures
+ * @param ms               - A model structure pointer (returned by fmi3_xml_get_model_structure)
+ * @param variable         - A model variable, e.g., from fmi3_xml_get_outputs() vector.
+ * @param numDependencies  - outputs number of dependencies, equals to SIZE_MAX in case of missing dependencies == depends on all
+ * @param dependencies     - outputs a pointer to the dependencies (valueReferences).
+ *                           NULL if numDependencies == 0 || numDependencies == SIZE_MAX
+ * @param dependenciesKind - outputs a pointer to the dependencieskind data. The values can be converted to ::fmi3_dependencies_kind_enu_t 
+ *                           NULL if numDependencies == 0 || numDependencies == SIZE_MAX
+ * @return                 - non-zero if variable cannot be found (e.g., not an Output), invalid inputs or unexpected failures
  */
 int fmi3_xml_get_output_dependencies(fmi3_xml_model_structure_t* ms, fmi3_xml_variable_t* variable,
-        size_t* numDependencies, size_t** dependency, char** factorKind);
+        size_t* numDependencies, size_t** dependencies, char** dependenciesKind);
 
 /** \brief Get dependency information for a ContinuousStateDerivative.
- * @param ms              - A model structure pointer (returned by fmi3_xml_get_model_structure)
- * @param variable        - A model variable, e.g., from fmi3_xml_get_continuous_state_derivatives() vector.
- * @param numDependencies - outputs number of dependencies, equals to SIZE_MAX in case of missing dependencies == depends on all
- * @param dependency      - outputs a pointer to the dependency valueReferences.
- *                          NULL if numDependencies == 0 || numDependencies == SIZE_MAX
- * @param factorKind      - outputs a pointer to the factor kind data. The values can be converted to ::fmi3_dependency_factor_kind_enu_t 
- *                          NULL if numDependencies == 0 || numDependencies == SIZE_MAX
- * @return                - positive if variable cannot be found (e.g., not a ContinuousStateDerivative)
- *                          negative for invalid inputs and other unexpected failures
+ * @param ms               - A model structure pointer (returned by fmi3_xml_get_model_structure)
+ * @param variable         - A model variable, e.g., from fmi3_xml_get_continuous_state_derivatives() vector.
+ * @param numDependencies  - outputs number of dependencies, equals to SIZE_MAX in case of missing dependencies == depends on all
+ * @param dependencies     - outputs a pointer to the dependencies (valueReferences).
+ *                           NULL if numDependencies == 0 || numDependencies == SIZE_MAX
+ * @param dependenciesKind - outputs a pointer to the dependencieskind data. The values can be converted to ::fmi3_dependencies_kind_enu_t 
+ *                           NULL if numDependencies == 0 || numDependencies == SIZE_MAX
+ * @return                 - non-zero if variable cannot be found (e.g., not a ContinuousStateDerivative), invalid inputs or unexpected failures
  */
 int fmi3_xml_get_continuous_state_derivative_dependencies(fmi3_xml_model_structure_t* ms, fmi3_xml_variable_t* variable,
-        size_t* numDependencies, size_t** dependency, char** factorKind);
+        size_t* numDependencies, size_t** dependencies, char** dependenciesKind);
 
 /** \brief Get dependency information for a ClockedState.
- * @param ms              - A model structure pointer (returned by fmi3_xml_get_model_structure)
- * @param variable        - A model variable, e.g., from fmi3_xml_get_clocked_states() vector.
- * @param numDependencies - outputs number of dependencies, equals to SIZE_MAX in case of missing dependencies == depends on all
- * @param dependency      - outputs a pointer to the dependency valueReferences.
- *                          NULL if numDependencies == 0 || numDependencies == SIZE_MAX
- * @param factorKind      - outputs a pointer to the factor kind data. The values can be converted to ::fmi3_dependency_factor_kind_enu_t 
- *                          NULL if numDependencies == 0 || numDependencies == SIZE_MAX
- * @return                - positive if variable cannot be found (e.g., not a ClockedState)
- *                          negative for invalid inputs and other unexpected failures
+ * @param ms               - A model structure pointer (returned by fmi3_xml_get_model_structure)
+ * @param variable         - A model variable, e.g., from fmi3_xml_get_clocked_states() vector.
+ * @param numDependencies  - outputs number of dependencies, equals to SIZE_MAX in case of missing dependencies == depends on all
+ * @param dependencies     - outputs a pointer to the dependencies (valueReferences).
+ *                           NULL if numDependencies == 0 || numDependencies == SIZE_MAX
+ * @param dependenciesKind - outputs a pointer to the dependencieskind data. The values can be converted to ::fmi3_dependencies_kind_enu_t 
+ *                           NULL if numDependencies == 0 || numDependencies == SIZE_MAX
+ * @return                 - non-zero if variable cannot be found (e.g., not a ClockedState), invalid inputs or unexpected failures
  */
 int fmi3_xml_get_clocked_state_dependencies(fmi3_xml_model_structure_t* ms, fmi3_xml_variable_t* variable,
-        size_t* numDependencies, size_t** dependency, char** factorKind);
+        size_t* numDependencies, size_t** dependencies, char** dependenciesKind);
 
 /** \brief Get dependency information for an InitialUnknown.
- * @param ms              - A model structure pointer (returned by fmi3_xml_get_model_structure)
- * @param variable        - A model variable, e.g., from fmi3_xml_get_initial_unknowns() vector.
- * @param numDependencies - outputs number of dependencies, equals to SIZE_MAX in case of missing dependencies == depends on all
- * @param dependency      - outputs a pointer to the dependency valueReferences.
- *                          NULL if numDependencies == 0 || numDependencies == SIZE_MAX
- * @param factorKind      - outputs a pointer to the factor kind data. The values can be converted to ::fmi3_dependency_factor_kind_enu_t 
- *                          NULL if numDependencies == 0 || numDependencies == SIZE_MAX
- * @return                - positive if variable cannot be found (e.g., not an InitialUnknown)
- *                          negative for invalid inputs and other unexpected failures
+ * @param ms               - A model structure pointer (returned by fmi3_xml_get_model_structure)
+ * @param variable         - A model variable, e.g., from fmi3_xml_get_initial_unknowns() vector.
+ * @param numDependencies  - outputs number of dependencies, equals to SIZE_MAX in case of missing dependencies == depends on all
+ * @param dependencies     - outputs a pointer to the dependencies (valueReferences).
+ *                           NULL if numDependencies == 0 || numDependencies == SIZE_MAX
+ * @param dependenciesKind - outputs a pointer to the dependencieskind data. The values can be converted to ::fmi3_dependencies_kind_enu_t 
+ *                           NULL if numDependencies == 0 || numDependencies == SIZE_MAX
+ * @return                 - non-zero if variable cannot be found (e.g., not an InitialUnknown), invalid inputs or unexpected failures
  */
 int fmi3_xml_get_initial_unknown_dependencies(fmi3_xml_model_structure_t* ms, fmi3_xml_variable_t* variable,
-        size_t* numDependencies, size_t** dependency, char** factorKind);
+        size_t* numDependencies, size_t** dependencies, char** dependenciesKind);
 
 /** \brief Get dependency information for an EventIndicator.
- * @param ms              - A model structure pointer (returned by fmi3_xml_get_model_structure)
- * @param variable        - A model variable, e.g., from fmi3_xml_get_event_indicators() vector.
- * @param numDependencies - outputs number of dependencies, equals to SIZE_MAX in case of missing dependencies == depends on all
- * @param dependency      - outputs a pointer to the dependency valueReferences.
- *                          NULL if numDependencies == 0 || numDependencies == SIZE_MAX
- * @param factorKind      - outputs a pointer to the factor kind data. The values can be converted to ::fmi3_dependency_factor_kind_enu_t 
- *                          NULL if numDependencies == 0 || numDependencies == SIZE_MAX
- * @return                - positive if variable cannot be found (e.g., not an EventIndicator)
- *                          negative for invalid inputs and other unexpected failures
+ * @param ms               - A model structure pointer (returned by fmi3_xml_get_model_structure)
+ * @param variable         - A model variable, e.g., from fmi3_xml_get_event_indicators() vector.
+ * @param numDependencies  - outputs number of dependencies, equals to SIZE_MAX in case of missing dependencies == depends on all
+ * @param dependencies     - outputs a pointer to the dependencies (valueReferences).
+ *                           NULL if numDependencies == 0 || numDependencies == SIZE_MAX
+ * @param dependenciesKind - outputs a pointer to the dependencieskind data. The values can be converted to ::fmi3_dependencies_kind_enu_t 
+ *                           NULL if numDependencies == 0 || numDependencies == SIZE_MAX
+ * @return                 - non-zero if variable cannot be found (e.g., not an EventIndicator), invalid inputs or unexpected failures
  */
 int fmi3_xml_get_event_indicator_dependencies(fmi3_xml_model_structure_t* ms, fmi3_xml_variable_t* variable,
-        size_t* numDependencies, size_t** dependency, char** factorKind);
+        size_t* numDependencies, size_t** dependencies, char** dependenciesKind);
 
 #ifdef __cplusplus
 }

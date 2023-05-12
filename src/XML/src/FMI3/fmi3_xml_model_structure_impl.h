@@ -29,18 +29,17 @@ extern "C" {
 /** \brief Structure for keeping information about variable dependencies.
 */
 typedef struct fmi3_xml_dependencies_t {
-    /** Information is stored in the CSR format, with the extra speciality
-     * that an empty row (i.e., startIndex[i] == startIndex[i + 1]) doubles for 
-     * "depends on all" (missing dependencies attribute in the XML) and no dependencies,
-     * in that case check dependencyOnAll[i]
-    */
+    // Information is stored in the CSR format, with the extra speciality
+    // that an empty row (i.e., startIndex[i] == startIndex[i + 1]) doubles for 
+    // "depends on all" (missing dependencies attribute in the XML) and no dependencies,
+    // in that case check dependencyOnAll[i]
 
-    /* Start index in dependency data, length = <number of variables> + 1 */
+    // Start index in dependency data, length = <number of variables> + 1
     jm_vector(size_t) startIndex;  
-    /* Dependency data, valueReferences */
-    jm_vector(size_t) dependencyVRs;
-    /* Dependency types corresponding to dependencyVRs */
-    jm_vector(char)   dependencyFactorKind;
+    // Dependency data, valueReferences
+    jm_vector(size_t) dependenciesVRs;
+    // Dependency types corresponding to dependenciesVRs
+    jm_vector(char)   dependenciesKind;
     jm_vector(char)   dependencyOnAll;
 } fmi3_xml_dependencies_t;
 

@@ -127,7 +127,7 @@ jm_status_enu_t fmi3_import_create_dllfmu(fmi3_import_t* fmu, fmi3_fmu_kind_enu_
     }
 
     /* Load the DLL functions */
-    if (fmi3_capi_load_fcn(fmu->capi, fmi3_xml_get_capabilities(fmu->md)) == jm_status_error) {
+    if (fmi3_capi_load_fcn(fmu->capi) == jm_status_error) {
         fmi3_capi_free_dll(fmu->capi);
         fmi3_capi_destroy_dllfmu(fmu->capi);
         fmu->capi = NULL;

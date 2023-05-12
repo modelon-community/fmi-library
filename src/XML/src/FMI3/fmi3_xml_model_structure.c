@@ -122,8 +122,8 @@ static int fmi3_xml_get_dependencies(jm_vector(jm_voidp)* msVector,
         if (jm_vector_get_item(char)(&dep->dependencyOnAll, varIndex)) {
             *numDependencies = SIZE_MAX;
         } 
-        dependency = NULL;
-        factorKind = NULL;
+        *dependency = NULL;
+        *factorKind = NULL;
     } else {
         *dependency = jm_vector_get_itemp(size_t)(&dep->dependencyVRs, startIndex);
         *factorKind = jm_vector_get_itemp(char)(&dep->dependencyFactorKind, startIndex);
@@ -367,6 +367,8 @@ int fmi3_xml_parse_dependencies(fmi3_xml_parser_context_t *context,
             ms->isValidFlag = 0;
             return 0;
         }
+        jm_vector_push_back(size_t)(&deps->startIndex, totNumDep + numDepInd);
+        jm_vector_push_back(char)(&deps->dependencyOnAll, 0);
     }
     else if (listInd) {
         /* only Dependencies are present, set all kinds to dependent */

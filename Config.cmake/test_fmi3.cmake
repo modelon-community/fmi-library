@@ -137,7 +137,7 @@ set(FAIL_NAME_CHECK 0)
 set(PASS_NAME_CHECK 1)
 
 add_catch2_test(fmi3_capi_basic_test             FMI3)
-add_catch2_test(fmi3_arrays_test                 FMI3)
+add_catch2_test(fmi3_import_valid_arrays_test    FMI3)
 add_catch2_test(fmi3_import_variable_test        FMI3)
 add_catch2_test(fmi3_import_convenience_test     FMI3)
 add_catch2_test(fmi3_import_model_structure_test FMI3)

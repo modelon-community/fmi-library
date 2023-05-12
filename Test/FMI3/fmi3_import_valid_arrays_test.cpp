@@ -177,7 +177,7 @@ TEST_CASE("Test array parsing and verify retrieved start values are as expected"
         fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "uint64_array");
         fmi3_import_dimension_list_t* dimList = basic_array_checks(v, xml, 2);
         fmi3_uint64_t* start = fmi3_import_get_uint64_variable_start_array(fmi3_import_get_variable_as_uint64(v));
-        REQUIRE(start[0] == 18446744073709551615);
+        REQUIRE(start[0] == 18446744073709551615ULL);
         REQUIRE(start[1] == 0);
         REQUIRE(start[2] == 1);
         REQUIRE(start[3] == 2);

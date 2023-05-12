@@ -13,13 +13,13 @@
     along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 */
 
-/*
- * This file tests that C++ applications can use FMIL, i.e. that C++ directives are used in all headers:
+/**
+ * This test mainly just prints things instead of doing asserts (it's old), but
+ * there's still some value in it since it can detect segfaults, and it's using the
+ * API on a model (BouncingBall) which is a bit larger and diverse than the usual test
+ * modelDescription files.
  *
- *      #ifdef __cplusplus
- *          extern "C" {
- *      #endif
- *
+ * It also gives an exmaple on how to define callbacks for custom Annotations.
  */
 
 #include <stdio.h>
@@ -28,11 +28,12 @@
 #include <assert.h>
 #include <time.h>
 
+#include "fmilib.h"
 #include "config_test.h"
+#include "fmi_testutil.h"
 
-#include <FMI/fmi_import_context.h>
-
-#include <FMI3/fmi3_import.h>
+#define CATCH_CONFIG_MAIN
+#include "catch.hpp"
 
 
 int annotation_start_handle(void *context, const char *parentName, void *parent, const char *elm, const char **attr) {
@@ -170,7 +171,7 @@ void printTypeInfo(fmi3_import_variable_typedef_t* vt) {
     }
     default:
         printf("Error in fmiGetBaseType()\n");
-        assert(0); /* implementation error, most likely because I haven't added cases for all intXX types */
+        assert(0);
     }
 
 }
@@ -319,11 +320,10 @@ void printDependenciesInfo(	fmi3_import_t* fmu, fmi3_import_variable_list_t* row
 	}
 }
 
-int main(int argc, char *argv[])
+static void test_parse_bouncingball(const char* xmldir)
 {
     clock_t start, stop;
     double t = 0.0;
-	const char* tmpPath;
 	jm_callbacks callbacks;
 	fmi_import_context_t* context;
     int res = 0;
@@ -332,13 +332,7 @@ int main(int argc, char *argv[])
 
 	fmi3_import_t* fmu;
 
-	if(argc < 2) {
-		printf("Usage: %s <path to a dir with modelDescription.xml>\n", argv[0]);
-		do_exit(1);
-	}
-
-	tmpPath = argv[1];
-    printf("Testing XML in directory: %s\n", tmpPath);
+    printf("Testing XML in directory: %s\n", xmldir);
 
 	callbacks.malloc = malloc;
     callbacks.calloc = calloc;
@@ -356,7 +350,7 @@ int main(int argc, char *argv[])
 
     /* time the parsing */
     start = clock();
-    fmu = fmi3_import_parse_xml(context, tmpPath, &annotation_callbacks);
+    fmu = fmi3_import_parse_xml(context, xmldir, &annotation_callbacks);
     stop = clock();
     t = (double)(stop - start) / CLOCKS_PER_SEC;
     printf("Parsing took %g seconds\n", t);
@@ -474,7 +468,6 @@ int main(int argc, char *argv[])
 		fmi3_import_variable_list_t* ders = fmi3_import_get_continuous_state_derivatives_list(fmu);
 		const fmi3_value_reference_t* vrl = fmi3_import_get_value_reference_list(vl);
 
-
         assert(vl);
 
         nv = fmi3_import_get_variable_list_size(vl);
@@ -489,91 +482,12 @@ int main(int argc, char *argv[])
 			}
             else {
                 printVariableInfo(fmu, var);
-/*				size_t stateIndex = fmi3_import_get_state_index(var);
-				if(stateIndex) {
-					printf("This variable is a state. Its derivative: %s\n",
-						fmi3_import_get_variable_name(fmi3_import_get_variable(ders, stateIndex-1)));
-				} */
 				testVariableSearch(fmu, var);
 			}
         }
         fmi3_import_free_variable_list(vl);
         fmi3_import_free_variable_list(ders);
     }
-/*	{
-		fmi3_import_variable_list_t* vl = fmi3_import_get_inputs_list( fmu);
-        size_t i, n = 0;
-		if(vl)
-			n = fmi3_import_get_variable_list_size(vl);
-        if(n>0) {
-            printf("Listing inputs: \n");
-            for(i = 0;i<n;i++)
-                printf("\t%s\n",fmi3_import_get_variable_name(fmi3_import_get_variable(vl, i)));
-        }
-		else {
-            printf("There are no inputs\n");
-		}
-        fmi3_import_free_variable_list(vl);
-	}
-	{
-		fmi3_import_variable_list_t* states = fmi3_import_get_states_list( fmu);
-		fmi3_import_variable_list_t* inputs = fmi3_import_get_inputs_list( fmu);
-        size_t n = 0;
-		if(states)
-			n = fmi3_import_get_variable_list_size(states);
-        if(n>0) {
-			size_t *start, *dep;
-			char* factor;
-            printf("Listing states and dependencies on inputs: \n");
-			fmi3_import_get_dependencies_derivatives_on_inputs(fmu, &start, &dep, &factor);
-			printDependenciesInfo(	fmu, states, inputs, start, dep, factor);
-
-			fmi3_import_get_dependencies_derivatives_on_states(fmu, &start, &dep, &factor);
-			if(start) {
-				printf("Listing states and dependencies on other states: \n");
-				printDependenciesInfo(	fmu, states, states, start, dep, factor);
-			}
-			else {
-				printf("No dependencies on states available\n");
-			}
-        }
-		else {
-            printf("There are no states\n");
-		}
-        fmi3_import_free_variable_list(inputs);
-        fmi3_import_free_variable_list(states);
-	}
-	{
-		fmi3_import_variable_list_t* states = fmi3_import_get_states_list( fmu);
-		fmi3_import_variable_list_t* inputs = fmi3_import_get_inputs_list( fmu);
-		fmi3_import_variable_list_t* outputs = fmi3_import_get_outputs_list( fmu);
-        size_t n = 0;
-		if(outputs)
-			n = fmi3_import_get_variable_list_size(outputs);
-        if(n>0) {
-			size_t *start, *dep;
-			char* factor;
-            printf("Listing outputs and dependencies on inputs: \n");
-			fmi3_import_get_dependencies_outputs_on_inputs(fmu, &start, &dep, &factor);
-			printDependenciesInfo(	fmu, outputs, inputs, start, dep, factor);
-
-			fmi3_import_get_dependencies_outputs_on_states(fmu, &start, &dep, &factor);
-			if(start) {
-				printf("Listing outputs and dependencies on states: \n");
-				printDependenciesInfo(	fmu, outputs, states, start, dep, factor);
-			}
-			else {
-				printf("No dependencies on states available\n");
-			}
-        }
-		else {
-            printf("There are no outputs\n");
-		}
-        fmi3_import_free_variable_list(outputs);
-        fmi3_import_free_variable_list(inputs);
-        fmi3_import_free_variable_list(states);
-	}
-*/
 
 err2:
 	fmi3_import_free(fmu);
@@ -585,4 +499,19 @@ err1: /* fmu not allocated */
 	printf("Everything seems to be OK since you got this far=)!\n");
 
 	do_exit(res);
+}
+
+TEST_CASE("Test exercising the XML API on BouncingBall") {
+    SECTION("Empty (missing modelDescription.xml)") {
+        test_parse_bouncingball(FMIL_TEST_DIR "/FMI3/fmu_dummy");
+    }
+    SECTION("ME") {
+        test_parse_bouncingball(TEST_OUTPUT_FOLDER "/BouncingBall3_me");
+    }
+    SECTION("CS") {
+        test_parse_bouncingball(TEST_OUTPUT_FOLDER "/BouncingBall3_cs");
+    }
+    SECTION("Malformed XML") {
+        test_parse_bouncingball(TEST_OUTPUT_FOLDER "/BouncingBall3_malformed_mf");
+    }
 }

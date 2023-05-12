@@ -13,12 +13,6 @@
 
 include_directories(${FMIL_TEST_DIR}/FMI3)
 
-#Defines for the test FMUs
-set(FMU3_DUMMY_ME_MODEL_IDENTIFIER BouncingBall3) #This must be the same as in the xml-file
-set(FMU3_DUMMY_CS_MODEL_IDENTIFIER BouncingBall3) #This must be the same as in the xml-file
-set(FMU3_DUMMY_SE_MODEL_IDENTIFIER BouncingBall3) #This must be the same as in the xml-file
-set(FMU3_DUMMY_MF_MODEL_IDENTIFIER BouncingBall3_malformed) #This must be the same as in the xml-file
-
 set(FMU3_DUMMY_FOLDER ${FMIL_TEST_DIR}/FMI3/fmu_dummy)
 to_native_c_path(${TEST_OUTPUT_FOLDER}/tempfolder/FMI3 FMU3_TEMPFOLDER)
 
@@ -69,21 +63,17 @@ to_native_c_path("\"${CMAKE_CURRENT_BINARY_DIR}/\" CMAKE_INTDIR \"/${CMAKE_SHARE
                  fmu3_DLL_SE_PATH)
 
 #function(compress_fmu OUTPUT_FOLDER MODEL_IDENTIFIER FILE_NAME_CS_ME_EXT TARGET_NAME XML_PATH SHARED_LIBRARY_PATH)
-compress_fmu("${TEST_OUTPUT_FOLDER}" "${FMU3_DUMMY_ME_MODEL_IDENTIFIER}" "me" "fmu3_dll_me" "${XML_ME_PATH}" "${SHARED_LIBRARY_ME_PATH}")
-compress_fmu("${TEST_OUTPUT_FOLDER}" "${FMU3_DUMMY_CS_MODEL_IDENTIFIER}" "cs" "fmu3_dll_cs" "${XML_CS_PATH}" "${SHARED_LIBRARY_CS_PATH}")
-compress_fmu("${TEST_OUTPUT_FOLDER}" "${FMU3_DUMMY_SE_MODEL_IDENTIFIER}" "se" "fmu3_dll_se" "${XML_SE_PATH}" "${SHARED_LIBRARY_SE_PATH}")
-compress_fmu("${TEST_OUTPUT_FOLDER}" "${FMU3_DUMMY_MF_MODEL_IDENTIFIER}" "mf" "fmu3_dll_cs" "${XML_MF_PATH}" "${SHARED_LIBRARY_CS_PATH}")
+compress_fmu("${TEST_OUTPUT_FOLDER}" "BouncingBall3"           "me" "fmu3_dll_me" "${XML_ME_PATH}" "${SHARED_LIBRARY_ME_PATH}")
+compress_fmu("${TEST_OUTPUT_FOLDER}" "BouncingBall3"           "cs" "fmu3_dll_cs" "${XML_CS_PATH}" "${SHARED_LIBRARY_CS_PATH}")
+compress_fmu("${TEST_OUTPUT_FOLDER}" "BouncingBall3"           "se" "fmu3_dll_se" "${XML_SE_PATH}" "${SHARED_LIBRARY_SE_PATH}")
+compress_fmu("${TEST_OUTPUT_FOLDER}" "BouncingBall3_malformed" "mf" "fmu3_dll_cs" "${XML_MF_PATH}" "${SHARED_LIBRARY_CS_PATH}")
 
-to_native_c_path("${TEST_OUTPUT_FOLDER}/${FMU3_DUMMY_ME_MODEL_IDENTIFIER}_me.fmu" FMU3_ME_PATH)
-to_native_c_path("${TEST_OUTPUT_FOLDER}/${FMU3_DUMMY_CS_MODEL_IDENTIFIER}_cs.fmu" FMU3_CS_PATH)
-to_native_c_path("${TEST_OUTPUT_FOLDER}/${FMU3_DUMMY_SE_MODEL_IDENTIFIER}_se.fmu" FMU3_SE_PATH)
-to_native_c_path("${TEST_OUTPUT_FOLDER}/${FMU3_DUMMY_CS_MODEL_IDENTIFIER}_mf.fmu" FMU3_MF_PATH)
+to_native_c_path("${TEST_OUTPUT_FOLDER}/BouncingBall3_me.fmu" FMU3_ME_PATH)
+to_native_c_path("${TEST_OUTPUT_FOLDER}/BouncingBall3_cs.fmu" FMU3_CS_PATH)
+to_native_c_path("${TEST_OUTPUT_FOLDER}/BouncingBall3_se.fmu" FMU3_SE_PATH)
+to_native_c_path("${TEST_OUTPUT_FOLDER}/BouncingBall3_mf.fmu" FMU3_MF_PATH)
 to_native_c_path("${TEST_OUTPUT_FOLDER}/Temporary" FMU_TEMPORARY_TEST_DIR)
 
-
-# Test that it works for C++ applications
-add_executable (fmi3_import_xml_test ${FMIL_TEST_DIR}/FMI3/fmi3_import_xml_test.cc)
-target_link_libraries (fmi3_import_xml_test  ${FMILIBFORTEST})
 
 # General functionality tests
 add_executable (fmi3_xml_parsing_test ${FMIL_TEST_DIR}/FMI3/fmi3_xml_parsing_test.c)
@@ -122,7 +112,6 @@ target_link_libraries(fmi3_enum_test ${FMILIBFORTEST})
 
 set_target_properties(
     fmi3_xml_parsing_test
-    fmi3_import_xml_test
     fmi3_import_sim_me_test
     fmi3_import_sim_cs_test
     fmi3_import_sim_se_test
@@ -133,19 +122,15 @@ set_target_properties(
 set(FAIL_NAME_CHECK 0)
 set(PASS_NAME_CHECK 1)
 
-add_catch2_test(fmi3_capi_basic_test              FMI3)
-add_catch2_test(fmi3_import_variable_test         FMI3)
-add_catch2_test(fmi3_import_convenience_test      FMI3)
-add_catch2_test(fmi3_import_model_structure_test  FMI3)
-add_catch2_test(fmi3_import_type_definitions_test FMI3)
+add_catch2_test(fmi3_capi_basic_test                 FMI3)
+add_catch2_test(fmi3_import_variable_test            FMI3)
+add_catch2_test(fmi3_import_convenience_test         FMI3)
+add_catch2_test(fmi3_import_model_structure_test     FMI3)
+add_catch2_test(fmi3_import_type_definitions_test    FMI3)
+add_catch2_test(fmi3_import_bouncingball_xmlapi_test FMI3)
+
 
 add_test(ctest_fmi3_xml_parsing_test fmi3_xml_parsing_test ${FMIL_TEST_DIR}/FMI3/parser_test_xmls/)
-
-add_test(ctest_fmi3_import_xml_test_empty fmi3_import_xml_test ${FMU3_DUMMY_FOLDER})
-add_test(ctest_fmi3_import_xml_test_me fmi3_import_xml_test ${TEST_OUTPUT_FOLDER}/${FMU3_DUMMY_ME_MODEL_IDENTIFIER}_me)
-add_test(ctest_fmi3_import_xml_test_cs fmi3_import_xml_test ${TEST_OUTPUT_FOLDER}/${FMU3_DUMMY_CS_MODEL_IDENTIFIER}_cs)
-add_test(ctest_fmi3_import_xml_test_mf fmi3_import_xml_test ${TEST_OUTPUT_FOLDER}/${FMU3_DUMMY_MF_MODEL_IDENTIFIER}_mf)
-set_tests_properties(ctest_fmi3_import_xml_test_mf PROPERTIES WILL_FAIL TRUE)
 
 add_test(ctest_fmi3_import_sim_test_me  fmi3_import_sim_me_test ${FMU3_ME_PATH} ${FMU_TEMPFOLDER})
 add_test(ctest_fmi3_import_sim_test_bcs fmi3_import_sim_cs_test ${FMU3_CS_PATH} ${FMU_TEMPFOLDER})
@@ -171,10 +156,6 @@ add_test(ctest_fmi3_enum_test
 if(FMILIB_BUILD_BEFORE_TESTS)
     set_tests_properties(
         ctest_fmi3_xml_parsing_test
-        ctest_fmi3_import_xml_test_me
-        ctest_fmi3_import_xml_test_cs
-        ctest_fmi3_import_xml_test_mf
-        ctest_fmi3_import_xml_test_empty
         ctest_fmi3_import_sim_test_me
         ctest_fmi3_import_sim_test_bcs
         ctest_fmi3_import_sim_test_se

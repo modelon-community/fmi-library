@@ -1515,27 +1515,9 @@ int fmi3_xml_handle_FloatXXVariable(fmi3_xml_parser_context_t* context, const ch
             type = (fmi3_xml_float_type_props_t*)declaredType;  // FIXME: Confusing typecast (could be _typedef).
         }
         variable->type = &type->super;
-
-        /* Handle rest of attributes except start */
-        // XXX: Correct to use fmi3_xml_elmID_Float64 here?
         if (fmi3_xml_variable_process_attr_derivative(context, variable, fmi3_xml_elmID_Float64)) return -1;
         if (fmi3_xml_variable_process_attr_reinit(    context, variable, fmi3_xml_elmID_Float64)) return -1;
 
-            if (fmi3_xml_set_attr_uint32(context, fmi3_xml_elmID_Float64, fmi_attr_id_derivative, 0, &derivativeOf, 0))
-                return -1;
-            /* Store the index as a pointer since we cannot access the variables list yet (we are constructing it). */
-            variable->derivativeOf = (void*)((char*)NULL + derivativeOf);
-
-            if (fmi3_xml_set_attr_boolean(context, fmi3_xml_elmID_Float64, fmi_attr_id_reinit, 0, &reinit, 0)) /* <xs:attribute name="reinit" type="xs:boolean" use="optional" default="false"> */
-                return -1;
-            variable->reinit = (char)reinit;
-
-            if (variable->variability != fmi3_variability_enu_continuous && reinit) {
-                /* If reinit is true, this variable must be continuous. */
-                fmi3_xml_parse_error(context, "The reinit attribute may only be set on continuous-time states.");
-                return -1;
-            }
-        }
     } else { /* end of tag */
         /* set start value */
 
@@ -1891,12 +1873,10 @@ int fmi3_xml_handle_StringVariable(fmi3_xml_parser_context_t *context, const cha
 */
 int fmi3_xml_handle_StringVariableStart(fmi3_xml_parser_context_t* context, const char* data) {
     if (context->skipOneVariableFlag) return 0;
-    fmi3_xml_model_description_t* md = context->modelDescription;
-
     if (!data) {
         /* For each <Start ...>, allocate memory, copy attribute to 'value' and push back to 'vec'. */
         jm_vector(jm_voidp)* vec = &context->currentStartVariableValues;
-        char* attr;
+        const char* attr;
         if (fmi3_xml_get_attr_str(context, fmi3_xml_elmID_StringVariableStart, fmi_attr_id_value, 0, &attr)) return -1;
         char* attrValue = context->callbacks->malloc(strlen(attr) + 1);
         strcpy(attrValue, attr);
@@ -1924,7 +1904,7 @@ int fmi3_xml_handle_BinaryVariableStart(fmi3_xml_parser_context_t* context, cons
         if (fmi3_xml_variable_is_array(variable)) {
             /* For each <Start ...>, allocate memory, copy attribute to 'value' and push back to 'vec'. */
             jm_vector(jm_voidp)* vec = &context->currentStartVariableValues;
-            char* attr;
+            const char* attr;
             if (fmi3_xml_get_attr_str(context, fmi3_xml_elmID_BinaryVariableStart, fmi_attr_id_value, 0, &attr)) return -1;
             int len = strlen(attr);
             if (len == 0) {

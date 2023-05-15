@@ -342,67 +342,67 @@ FMILIB_EXPORT fmi3_import_variable_list_t* fmi3_import_get_event_indicators_list
 /** \brief Get dependency information for an Output.
  * @param fmu              - An FMU object as returned by fmi3_import_parse_xml().
  * @param variable         - A model variable in fmi3_import_get_outputs_list(...)
- * @param numDependencies  - outputs number of dependencies, equals to SIZE_MAX in case of missing dependencies == depends on all
- * @param dependencies     - outputs a pointer to the dependencies (valueReferences).
- *                           NULL if numDependencies == 0 || numDependencies == SIZE_MAX
+ * @param numDependencies  - outputs number of dependencies; 0 for no dependencies and depends on all, check 'dependsOnAll' output
+ * @param dependsOnAll     - outputs 1 if a variable depends on all variables, else 0. Only relevant if numDependencies == 0
+ * @param dependencies     - outputs a pointer to the dependencies (valueReferences), NULL if numDependencies == 0
  * @param dependenciesKind - outputs a pointer to the dependencieskind data. The values can be converted to ::fmi3_dependencies_kind_enu_t 
- *                           NULL if numDependencies == 0 || numDependencies == SIZE_MAX
+ *                           NULL if numDependencies == 0
  * @return                 - non-zero if variable cannot be found (e.g., not an Output), invalid inputs or unexpected failures
  */
 FMILIB_EXPORT int fmi3_import_get_output_dependencies(fmi3_import_t* fmu, fmi3_import_variable_t* variable,
-        size_t* numDependencies, size_t** dependencies, char** dependenciesKind);
+        size_t* numDependencies, bool* dependsOnAll, size_t** dependencies, char** dependenciesKind);
 
 /** \brief Get dependency information for a ContinuousStateDerivative.
  * @param fmu              - An FMU object as returned by fmi3_import_parse_xml().
  * @param variable         - A model variable in fmi3_import_get_continuous_state_derivatives_list(...)
- * @param numDependencies  - outputs number of dependencies, equals to SIZE_MAX in case of missing dependencies == depends on all
- * @param dependencies     - outputs a pointer to the dependencies (valueReferences).
- *                           NULL if numDependencies == 0 || numDependencies == SIZE_MAX
+ * @param numDependencies  - outputs number of dependencies; 0 for no dependencies and depends on all, check 'dependsOnAll' output
+ * @param dependsOnAll     - outputs 1 if a variable depends on all variables, else 0. Only relevant if numDependencies == 0
+ * @param dependencies     - outputs a pointer to the dependencies (valueReferences), NULL if numDependencies == 0
  * @param dependenciesKind - outputs a pointer to the dependencieskind data. The values can be converted to ::fmi3_dependencies_kind_enu_t 
- *                           NULL if numDependencies == 0 || numDependencies == SIZE_MAX
+ *                           NULL if numDependencies == 0
  * @return                 - non-zero if variable cannot be found (e.g., not a ContinuousStateDerivative), invalid inputs or unexpected failures
  */
 FMILIB_EXPORT int fmi3_import_get_continuous_state_derivative_dependencies(fmi3_import_t* fmu, fmi3_import_variable_t* variable,
-        size_t* numDependencies, size_t** dependencies, char** dependenciesKind);
+        size_t* numDependencies, bool* dependsOnAll, size_t** dependencies, char** dependenciesKind);
 
 /** \brief Get dependency information for a ClockedState.
  * @param fmu              - An FMU object as returned by fmi3_import_parse_xml().
  * @param variable         - A model variable in fmi3_import_get_clocked_states_list(...)
- * @param numDependencies  - outputs number of dependencies, equals to SIZE_MAX in case of missing dependencies == depends on all
- * @param dependencies     - outputs a pointer to the dependencies (valueReferences).
- *                           NULL if numDependencies == 0 || numDependencies == SIZE_MAX
+ * @param numDependencies  - outputs number of dependencies; 0 for no dependencies and depends on all, check 'dependsOnAll' output
+ * @param dependsOnAll     - outputs 1 if a variable depends on all variables, else 0. Only relevant if numDependencies == 0
+ * @param dependencies     - outputs a pointer to the dependencies (valueReferences), NULL if numDependencies == 0
  * @param dependenciesKind - outputs a pointer to the dependencieskind data. The values can be converted to ::fmi3_dependencies_kind_enu_t 
- *                           NULL if numDependencies == 0 || numDependencies == SIZE_MAX
+ *                           NULL if numDependencies == 0
  * @return                 - non-zero if variable cannot be found (e.g., not a ClockedState), invalid inputs or unexpected failures
  */
 FMILIB_EXPORT int fmi3_import_get_clocked_state_dependencies(fmi3_import_t* fmu, fmi3_import_variable_t* variable,
-        size_t* numDependencies, size_t** dependencies, char** dependenciesKind);
+        size_t* numDependencies, bool* dependsOnAll, size_t** dependencies, char** dependenciesKind);
 
 /** \brief Get dependency information for an InitialUnknown.
  * @param fmu              - An FMU object as returned by fmi3_import_parse_xml().
  * @param variable         - A model variable in fmi3_import_get_initial_unknowns_list(...)
- * @param numDependencies  - outputs number of dependencies, equals to SIZE_MAX in case of missing dependencies == depends on all
- * @param dependencies     - outputs a pointer to the dependencies (valueReferences).
- *                           NULL if numDependencies == 0 || numDependencies == SIZE_MAX
+ * @param numDependencies  - outputs number of dependencies; 0 for no dependencies and depends on all, check 'dependsOnAll' output
+ * @param dependsOnAll     - outputs 1 if a variable depends on all variables, else 0. Only relevant if numDependencies == 0
+ * @param dependencies     - outputs a pointer to the dependencies (valueReferences), NULL if numDependencies == 0
  * @param dependenciesKind - outputs a pointer to the dependencieskind data. The values can be converted to ::fmi3_dependencies_kind_enu_t 
- *                           NULL if numDependencies == 0 || numDependencies == SIZE_MAX
+ *                           NULL if numDependencies == 0
  * @return                 - non-zero if variable cannot be found (e.g., not an InitialUnknown), invalid inputs or unexpected failures
  */
 FMILIB_EXPORT int fmi3_import_get_initial_unknown_dependencies(fmi3_import_t* fmu, fmi3_import_variable_t* variable,
-        size_t* numDependencies, size_t** dependencies, char** dependenciesKind);
+        size_t* numDependencies, bool* dependsOnAll, size_t** dependencies, char** dependenciesKind);
 
 /** \brief Get dependency information for an EventIndicator.
  * @param fmu              - An FMU object as returned by fmi3_import_parse_xml().
  * @param variable         - A model variable in fmi3_import_get_event_indicators_list(...)
- * @param numDependencies  - outputs number of dependencies, equals to SIZE_MAX in case of missing dependencies == depends on all
- * @param dependencies     - outputs a pointer to the dependencies (valueReferences).
- *                           NULL if numDependencies == 0 || numDependencies == SIZE_MAX
+ * @param numDependencies  - outputs number of dependencies; 0 for no dependencies and depends on all, check 'dependsOnAll' output
+ * @param dependsOnAll     - outputs 1 if a variable depends on all variables, else 0. Only relevant if numDependencies == 0
+ * @param dependencies     - outputs a pointer to the dependencies (valueReferences), NULL if numDependencies == 0
  * @param dependenciesKind - outputs a pointer to the dependencieskind data. The values can be converted to ::fmi3_dependencies_kind_enu_t 
- *                           NULL if numDependencies == 0 || numDependencies == SIZE_MAX
+ *                           NULL if numDependencies == 0
  * @return                 - non-zero if variable cannot be found (e.g., not an EventIndicator), invalid inputs or unexpected failures
  */
 FMILIB_EXPORT int fmi3_import_get_event_indicator_dependencies(fmi3_import_t* fmu, fmi3_import_variable_t* variable,
-        size_t* numDependencies, size_t** dependencies, char** dependenciesKind);
+        size_t* numDependencies, bool* dependsOnAll, size_t** dependencies, char** dependenciesKind);
 
 /**@} */
 

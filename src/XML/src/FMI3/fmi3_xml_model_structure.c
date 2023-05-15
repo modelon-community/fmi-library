@@ -94,7 +94,7 @@ jm_vector(jm_voidp)* fmi3_xml_get_event_indicators(fmi3_xml_model_structure_t* m
 
 static int fmi3_xml_get_dependencies(jm_vector(jm_voidp)* msVector, 
         fmi3_xml_dependencies_t* dep, fmi3_xml_variable_t* variable,
-        size_t* numDependencies, size_t** dependencies, char** dependenciesKind) 
+        size_t* numDependencies, bool* dependsOnAll, size_t** dependencies, char** dependenciesKind)
 {
     if (!msVector || !dep || !variable) return -1;
 
@@ -120,11 +120,14 @@ static int fmi3_xml_get_dependencies(jm_vector(jm_voidp)* msVector,
 
     if (*numDependencies == 0) { // no dependencies or "depends on all"
         if (jm_vector_get_item(char)(&dep->dependencyOnAll, varIndex)) {
-            *numDependencies = SIZE_MAX;
-        } 
+            *dependsOnAll = 1;
+        } else {
+            *dependsOnAll = 0;
+        }
         *dependencies = NULL;
         *dependenciesKind = NULL;
     } else {
+        *dependsOnAll = 0;
         *dependencies = jm_vector_get_itemp(size_t)(&dep->dependenciesVRs, startIndex);
         *dependenciesKind = jm_vector_get_itemp(char)(&dep->dependenciesKind, startIndex);
     }
@@ -132,38 +135,38 @@ static int fmi3_xml_get_dependencies(jm_vector(jm_voidp)* msVector,
 }
 
 int fmi3_xml_get_output_dependencies(fmi3_xml_model_structure_t* ms, fmi3_xml_variable_t* variable,
-        size_t* numDependencies, size_t** dependencies, char** dependenciesKind)
+        size_t* numDependencies, bool* dependsOnAll, size_t** dependencies, char** dependenciesKind)
 {
     return fmi3_xml_get_dependencies(&(ms->outputs), ms->outputDeps, variable,
-            numDependencies, dependencies, dependenciesKind);
+            numDependencies, dependsOnAll, dependencies, dependenciesKind);
 }
 
 int fmi3_xml_get_continuous_state_derivative_dependencies(fmi3_xml_model_structure_t* ms, fmi3_xml_variable_t* variable,
-        size_t* numDependencies, size_t** dependencies, char** dependenciesKind)
+        size_t* numDependencies, bool* dependsOnAll, size_t** dependencies, char** dependenciesKind)
 {
     return fmi3_xml_get_dependencies(&(ms->continuousStateDerivatives), ms->continuousStateDerivativeDeps, variable,
-            numDependencies, dependencies, dependenciesKind);
+            numDependencies, dependsOnAll, dependencies, dependenciesKind);
 }
 
 int fmi3_xml_get_clocked_state_dependencies(fmi3_xml_model_structure_t* ms, fmi3_xml_variable_t* variable,
-        size_t* numDependencies, size_t** dependencies, char** dependenciesKind)
+        size_t* numDependencies, bool* dependsOnAll, size_t** dependencies, char** dependenciesKind)
 {
     return fmi3_xml_get_dependencies(&(ms->clockedStates), ms->clockedStateDeps, variable,
-            numDependencies, dependencies, dependenciesKind);
+            numDependencies, dependsOnAll, dependencies, dependenciesKind);
 }
 
 int fmi3_xml_get_initial_unknown_dependencies(fmi3_xml_model_structure_t* ms, fmi3_xml_variable_t* variable,
-        size_t* numDependencies, size_t** dependencies, char** dependenciesKind)
+        size_t* numDependencies, bool* dependsOnAll, size_t** dependencies, char** dependenciesKind)
 {
     return fmi3_xml_get_dependencies(&(ms->initialUnknowns), ms->initialUnknownDeps, variable,
-            numDependencies, dependencies, dependenciesKind);
+            numDependencies, dependsOnAll, dependencies, dependenciesKind);
 }
 
 int fmi3_xml_get_event_indicator_dependencies(fmi3_xml_model_structure_t* ms, fmi3_xml_variable_t* variable,
-        size_t* numDependencies, size_t** dependencies, char** dependenciesKind)
+        size_t* numDependencies, bool* dependsOnAll, size_t** dependencies, char** dependenciesKind)
 {
     return fmi3_xml_get_dependencies(&(ms->eventIndicators), ms->eventIndicatorDeps, variable,
-            numDependencies, dependencies, dependenciesKind);
+            numDependencies, dependsOnAll, dependencies, dependenciesKind);
 }
 
 fmi3_xml_dependencies_t* fmi3_xml_allocate_dependencies(jm_callbacks* cb) {
@@ -269,8 +272,7 @@ int fmi3_xml_parse_dependencies(fmi3_xml_parser_context_t *context,
             }
             if (ind < 0) {
                 // TODO: Rework this error; list actual type
-                fmi3_xml_parse_error(context, "XML element 'Unknown': item %d=%d is negative in the list for attribute 'dependencies'",
-                    numDepInd, ind);
+                fmi3_xml_parse_error(context, "XML element 'Unknown': Attribute 'dependencies' contains invalid value: %d.", ind);
                ms->isValidFlag = 0;
                return 0;
             }

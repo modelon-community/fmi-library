@@ -122,12 +122,12 @@ set_target_properties(
 set(FAIL_NAME_CHECK 0)
 set(PASS_NAME_CHECK 1)
 
-add_catch2_test(fmi3_capi_basic_test                 FMI3)
-add_catch2_test(fmi3_import_variable_test            FMI3)
-add_catch2_test(fmi3_import_convenience_test         FMI3)
-add_catch2_test(fmi3_import_model_structure_test     FMI3)
-add_catch2_test(fmi3_import_type_definitions_test    FMI3)
-add_catch2_test(fmi3_import_bouncingball_xmlapi_test FMI3)
+add_catch2_test(fmi3_capi_basic_test              FMI3)
+add_catch2_test(fmi3_import_variable_test         FMI3)
+add_catch2_test(fmi3_import_convenience_test      FMI3)
+add_catch2_test(fmi3_import_model_structure_test  FMI3)
+add_catch2_test(fmi3_import_type_definitions_test FMI3)
+add_catch2_test(fmi3_import_bouncingball_xml_test FMI3)
 
 
 add_test(ctest_fmi3_xml_parsing_test fmi3_xml_parsing_test ${FMIL_TEST_DIR}/FMI3/parser_test_xmls/)

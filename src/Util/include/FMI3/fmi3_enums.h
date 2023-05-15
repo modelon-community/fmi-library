@@ -57,8 +57,8 @@ typedef enum fmi3_fmu_kind_enu_t
 {
         fmi3_fmu_kind_unknown   = 1 << 0,
         fmi3_fmu_kind_me        = 1 << 1,
-        fmi3_fmu_kind_cs       = 1 << 2,
-        fmi3_fmu_kind_se       = 1 << 3
+        fmi3_fmu_kind_cs        = 1 << 2,
+        fmi3_fmu_kind_se        = 1 << 3
 } fmi3_fmu_kind_enu_t;
 
 /** \brief Convert a #fmi3_fmu_kind_enu_t constant into string  */
@@ -66,12 +66,12 @@ FMILIB_EXPORT const char* fmi3_fmu_kind_to_string(fmi3_fmu_kind_enu_t kind);
 
 /**  \brief Variability property for variables */
 typedef enum fmi3_variability_enu_t {
-        fmi3_variability_enu_constant = 0,
-        fmi3_variability_enu_fixed  = 1,
-        fmi3_variability_enu_tunable  = 2,
-        fmi3_variability_enu_discrete  = 3,
+        fmi3_variability_enu_constant    = 0,
+        fmi3_variability_enu_fixed       = 1,
+        fmi3_variability_enu_tunable     = 2,
+        fmi3_variability_enu_discrete    = 3,
         fmi3_variability_enu_continuous  = 4,
-        fmi3_variability_enu_unknown  = 5
+        fmi3_variability_enu_unknown     = 5
 } fmi3_variability_enu_t;
 
 /** \brief Convert a #fmi3_variability_enu_t constant into string  */
@@ -79,13 +79,14 @@ FMILIB_EXPORT const char* fmi3_variability_to_string(fmi3_variability_enu_t v);
 
 /**  \brief Causality property for variables */
 typedef enum fmi3_causality_enu_t {
-        fmi3_causality_enu_parameter = 0,
+        fmi3_causality_enu_parameter            = 0,
         fmi3_causality_enu_calculated_parameter = 1,
-        fmi3_causality_enu_input  = 2,
-        fmi3_causality_enu_output  = 3,
-        fmi3_causality_enu_local  = 4,
-        fmi3_causality_enu_independent = 5,
-        fmi3_causality_enu_unknown = 6
+        fmi3_causality_enu_input                = 2,
+        fmi3_causality_enu_output               = 3,
+        fmi3_causality_enu_local                = 4,
+        fmi3_causality_enu_independent          = 5,
+        fmi3_causality_enu_structural_parameter = 6,
+        fmi3_causality_enu_unknown              = 7
 } fmi3_causality_enu_t;
 
 /** \brief Convert a #fmi3_causality_enu_t constant into string */

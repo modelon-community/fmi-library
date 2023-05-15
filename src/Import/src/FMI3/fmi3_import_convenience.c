@@ -32,11 +32,11 @@ void fmi3_import_collect_model_counts(fmi3_import_t* fmu, fmi3_import_model_coun
     jm_vector(jm_voidp)* vars = fmi3_xml_get_variables_original_order(fmu->md);
     size_t nv, i;
     memset(counts,0,sizeof(fmi3_import_model_counts_t));
-    if(!vars) return;
+    if (!vars) return;
     nv = jm_vector_get_size(jm_voidp)(vars);
-    for(i = 0; i< nv; i++) {
+    for (i = 0; i< nv; i++) {
         fmi3_xml_variable_t* var = (fmi3_xml_variable_t*)jm_vector_get_item(jm_voidp)(vars, i);
-                switch (fmi3_xml_get_variability(var)) {
+        switch (fmi3_xml_get_variability(var)) {
         case fmi3_variability_enu_constant:
             counts->num_constants++;
             break;
@@ -72,6 +72,9 @@ void fmi3_import_collect_model_counts(fmi3_import_t* fmu, fmi3_import_model_coun
             counts->num_local++;
             break;
         case fmi3_causality_enu_independent:
+            counts->num_local++;
+            break;
+        case fmi3_causality_enu_structural_parameter:
             counts->num_local++;
             break;
         default: assert(0);
@@ -338,10 +341,10 @@ void fmi3_default_callback_logger(fmi3_instance_environment_t c, fmi3_string_t i
     char buf[BUFSIZE], *curp;
     curp = buf;
     *curp = 0;
-    if(instanceName) {
+    if (instanceName) {
         curp += jm_snprintf(curp, 200, "[%s]", instanceName);
     }
-    if(category) {
+    if (category) {
         curp += jm_snprintf(curp, 200, "[%s]", category);
     }
     fprintf(stdout, "%s[status=%s]", buf, fmi3_status_to_string(status));
@@ -352,19 +355,19 @@ void fmi3_logger(jm_callbacks* cb, jm_string module, jm_log_level_enu_t log_leve
     fmi3_logger_context_t* ctx = (fmi3_logger_context_t*)cb->context;
     fmi3_status_t status;
 
-    if(!ctx || !ctx->logMessage) return;
+    if (!ctx || !ctx->logMessage) return;
 
-    if(log_level > jm_log_level_all) {
+    if (log_level > jm_log_level_all) {
         assert(0);
         status = fmi3_status_error;
     }
-    else if(log_level >= jm_log_level_info)
+    else if (log_level >= jm_log_level_info)
         status = fmi3_status_ok;
-    else if(log_level >= jm_log_level_warning)
+    else if (log_level >= jm_log_level_warning)
         status = fmi3_status_warning;
-    else if(log_level >= jm_log_level_error)
+    else if (log_level >= jm_log_level_error)
         status = fmi3_status_error;
-    else if(log_level >= jm_log_level_fatal)
+    else if (log_level >= jm_log_level_fatal)
         status = fmi3_status_fatal;
     else {
         status = fmi3_status_ok;

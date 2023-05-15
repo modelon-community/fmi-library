@@ -443,7 +443,7 @@ int fmi3_xml_is_valid_parent(fmi3_xml_elm_enu_t child_id, fmi3_xml_elm_enu_t par
 int fmi3_xml_get_super_type_rec(fmi3_xml_elm_enu_t id);
 int fmi3_xml_are_same_type(fmi3_xml_elm_enu_t id1, fmi3_xml_elm_enu_t id2);
 
-jm_string fmi3_xml_elmid_to_elmname(fmi3_xml_elm_enu_t id);
+const char* fmi3_xml_elmid_to_name(fmi3_xml_elm_enu_t id);
 
 #ifdef __cplusplus
 }

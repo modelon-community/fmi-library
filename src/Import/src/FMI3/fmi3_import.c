@@ -422,7 +422,7 @@ fmi3_import_variable_list_t* fmi3_import_get_event_indicators_list(fmi3_import_t
 }
 
 int fmi3_import_get_output_dependencies(fmi3_import_t* fmu, fmi3_import_variable_t* variable,
-        size_t* numDependencies, bool* dependsOnAll, size_t** dependencies, char** dependenciesKind)
+        size_t* numDependencies, int* dependsOnAll, size_t** dependencies, char** dependenciesKind)
 {
     fmi3_xml_model_structure_t* ms;
     if (!fmi3_import_check_has_FMU(fmu)) return -1;
@@ -434,7 +434,7 @@ int fmi3_import_get_output_dependencies(fmi3_import_t* fmu, fmi3_import_variable
 }
 
 int fmi3_import_get_continuous_state_derivative_dependencies(fmi3_import_t* fmu, fmi3_import_variable_t* variable,
-        size_t* numDependencies, bool* dependsOnAll, size_t** dependencies, char** dependenciesKind)
+        size_t* numDependencies, int* dependsOnAll, size_t** dependencies, char** dependenciesKind)
 {
     fmi3_xml_model_structure_t* ms;
     if (!fmi3_import_check_has_FMU(fmu)) return -1;
@@ -446,7 +446,7 @@ int fmi3_import_get_continuous_state_derivative_dependencies(fmi3_import_t* fmu,
 }
 
 int fmi3_import_get_clocked_state_dependencies(fmi3_import_t* fmu, fmi3_import_variable_t* variable,
-        size_t* numDependencies, bool* dependsOnAll, size_t** dependencies, char** dependenciesKind)
+        size_t* numDependencies, int* dependsOnAll, size_t** dependencies, char** dependenciesKind)
 {
     fmi3_xml_model_structure_t* ms;
     if (!fmi3_import_check_has_FMU(fmu)) return -1;
@@ -458,7 +458,7 @@ int fmi3_import_get_clocked_state_dependencies(fmi3_import_t* fmu, fmi3_import_v
 }
 
 int fmi3_import_get_initial_unknown_dependencies(fmi3_import_t* fmu, fmi3_import_variable_t* variable,
-        size_t* numDependencies, bool* dependsOnAll, size_t** dependencies, char** dependenciesKind)
+        size_t* numDependencies, int* dependsOnAll, size_t** dependencies, char** dependenciesKind)
 {
     fmi3_xml_model_structure_t* ms;
     if (!fmi3_import_check_has_FMU(fmu)) return -1;
@@ -470,7 +470,7 @@ int fmi3_import_get_initial_unknown_dependencies(fmi3_import_t* fmu, fmi3_import
 }
 
 int fmi3_import_get_event_indicator_dependencies(fmi3_import_t* fmu, fmi3_import_variable_t* variable,
-        size_t* numDependencies, bool* dependsOnAll, size_t** dependencies, char** dependenciesKind)
+        size_t* numDependencies, int* dependsOnAll, size_t** dependencies, char** dependenciesKind)
 {
     fmi3_xml_model_structure_t* ms;
     if (!fmi3_import_check_has_FMU(fmu)) return -1;

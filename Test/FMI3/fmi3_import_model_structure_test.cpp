@@ -15,7 +15,7 @@ static void test_fmi3_import_get_outputs(fmi3_import_t* fmu) {
 
     /* check VRs and dependencies of all Outputs */
     size_t numDependencies;
-    bool dependsOnAll;
+    int dependsOnAll;
     size_t* dependencies;
     char* dependenciesKind;
 
@@ -37,7 +37,7 @@ static void test_fmi3_import_get_continuous_state_derivatives(fmi3_import_t* fmu
 
     /* check VRs and dependencies of all continuousStateDerivatives */
     size_t numDependencies;
-    bool dependsOnAll;
+    int dependsOnAll;
     size_t* dependencies;
     char* dependenciesKind;
     fmi3_import_variable_t* var;
@@ -109,7 +109,7 @@ static void test_fmi3_import_get_clocked_states(fmi3_import_t* fmu) {
 
     /* check VRs and dependencies of all ClockedStates */
     size_t numDependencies;
-    bool dependsOnAll;
+    int dependsOnAll;
     size_t* dependencies;
     char* dependenciesKind;
 
@@ -131,7 +131,7 @@ static void test_fmi3_import_get_initial_unknowns(fmi3_import_t* fmu) {
 
     /* check VRs and dependencies of all InitialUnknowns */
     size_t numDependencies;
-    bool dependsOnAll;
+    int dependsOnAll;
     size_t* dependencies;
     char* dependenciesKind;
 
@@ -153,7 +153,7 @@ static void test_fmi3_import_get_event_indicators(fmi3_import_t* fmu) {
 
     /* check VRs and dependencies of all EventIndicators */
     size_t numDependencies;
-    bool dependsOnAll;
+    int dependsOnAll;
     size_t* dependencies;
     char* dependenciesKind;
 
@@ -179,7 +179,7 @@ static void test_fmi3_import_get_dependencies_invalid_api_calls(fmi3_import_t* f
     REQUIRE(fmi3_import_get_variable_list_size(varListEvent) > 0); // make sure there are EventIndicators
 
     size_t numDependencies;
-    bool dependsOnAll;
+    int dependsOnAll;
     size_t* dependencies;
     char* dependenciesKind;
     fmi3_import_variable_t* var = fmi3_import_get_variable(varListEvent, 0);
@@ -393,17 +393,6 @@ TEST_CASE("Error check: ModelStructure; Invalid dependency value; not a number")
 
     const char* logMsg = "XML element 'ContinuousStateDerivative': could not parse item 0, character 'a' in the list for attribute 'dependencies'";
     REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
-
-    fmi3_testutil_import_free(tfmu);
-}
-
-TEST_CASE("Error check: ModelStructure; Invalid dependency value; no variable with that VR") {
-    const char* xmldir = FMI3_TEST_XML_DIR "/model_structure/invalid/dependencies_invalid_VR_no_var";
-
-    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
-    REQUIRE(tfmu != nullptr);
-    // TODO: Extra error check required to make this invalid
-    REQUIRE(tfmu->fmu != nullptr);
 
     fmi3_testutil_import_free(tfmu);
 }

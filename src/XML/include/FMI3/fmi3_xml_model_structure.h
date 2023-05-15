@@ -71,7 +71,7 @@ jm_vector(jm_voidp)* fmi3_xml_get_event_indicators(fmi3_xml_model_structure_t* m
  * @return                 - non-zero if variable cannot be found (e.g., not an Output), invalid inputs or unexpected failures
  */
 int fmi3_xml_get_output_dependencies(fmi3_xml_model_structure_t* ms, fmi3_xml_variable_t* variable,
-        size_t* numDependencies, bool* dependsOnAll, size_t** dependencies, char** dependenciesKind);
+        size_t* numDependencies, int* dependsOnAll, size_t** dependencies, char** dependenciesKind);
 
 /** \brief Get dependency information for a ContinuousStateDerivative.
  * @param ms               - A model structure pointer (returned by fmi3_xml_get_model_structure)
@@ -84,7 +84,7 @@ int fmi3_xml_get_output_dependencies(fmi3_xml_model_structure_t* ms, fmi3_xml_va
  * @return                 - non-zero if variable cannot be found (e.g., not a ContinuousStateDerivative), invalid inputs or unexpected failures
  */
 int fmi3_xml_get_continuous_state_derivative_dependencies(fmi3_xml_model_structure_t* ms, fmi3_xml_variable_t* variable,
-        size_t* numDependencies, bool* dependsOnAll, size_t** dependencies, char** dependenciesKind);
+        size_t* numDependencies, int* dependsOnAll, size_t** dependencies, char** dependenciesKind);
 
 /** \brief Get dependency information for a ClockedState.
  * @param ms               - A model structure pointer (returned by fmi3_xml_get_model_structure)
@@ -97,7 +97,7 @@ int fmi3_xml_get_continuous_state_derivative_dependencies(fmi3_xml_model_structu
  * @return                 - non-zero if variable cannot be found (e.g., not a ClockedState), invalid inputs or unexpected failures
  */
 int fmi3_xml_get_clocked_state_dependencies(fmi3_xml_model_structure_t* ms, fmi3_xml_variable_t* variable,
-        size_t* numDependencies, bool* dependsOnAll, size_t** dependencies, char** dependenciesKind);
+        size_t* numDependencies, int* dependsOnAll, size_t** dependencies, char** dependenciesKind);
 
 /** \brief Get dependency information for an InitialUnknown.
  * @param ms               - A model structure pointer (returned by fmi3_xml_get_model_structure)
@@ -110,7 +110,7 @@ int fmi3_xml_get_clocked_state_dependencies(fmi3_xml_model_structure_t* ms, fmi3
  * @return                 - non-zero if variable cannot be found (e.g., not an InitialUnknown), invalid inputs or unexpected failures
  */
 int fmi3_xml_get_initial_unknown_dependencies(fmi3_xml_model_structure_t* ms, fmi3_xml_variable_t* variable,
-        size_t* numDependencies, bool* dependsOnAll, size_t** dependencies, char** dependenciesKind);
+        size_t* numDependencies, int* dependsOnAll, size_t** dependencies, char** dependenciesKind);
 
 /** \brief Get dependency information for an EventIndicator.
  * @param ms               - A model structure pointer (returned by fmi3_xml_get_model_structure)
@@ -123,7 +123,7 @@ int fmi3_xml_get_initial_unknown_dependencies(fmi3_xml_model_structure_t* ms, fm
  * @return                 - non-zero if variable cannot be found (e.g., not an EventIndicator), invalid inputs or unexpected failures
  */
 int fmi3_xml_get_event_indicator_dependencies(fmi3_xml_model_structure_t* ms, fmi3_xml_variable_t* variable,
-        size_t* numDependencies, bool* dependsOnAll, size_t** dependencies, char** dependenciesKind);
+        size_t* numDependencies, int* dependsOnAll, size_t** dependencies, char** dependenciesKind);
 
 #ifdef __cplusplus
 }

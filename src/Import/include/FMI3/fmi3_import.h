@@ -350,7 +350,7 @@ FMILIB_EXPORT fmi3_import_variable_list_t* fmi3_import_get_event_indicators_list
  * @return                 - non-zero if variable cannot be found (e.g., not an Output), invalid inputs or unexpected failures
  */
 FMILIB_EXPORT int fmi3_import_get_output_dependencies(fmi3_import_t* fmu, fmi3_import_variable_t* variable,
-        size_t* numDependencies, bool* dependsOnAll, size_t** dependencies, char** dependenciesKind);
+        size_t* numDependencies, int* dependsOnAll, size_t** dependencies, char** dependenciesKind);
 
 /** \brief Get dependency information for a ContinuousStateDerivative.
  * @param fmu              - An FMU object as returned by fmi3_import_parse_xml().
@@ -363,7 +363,7 @@ FMILIB_EXPORT int fmi3_import_get_output_dependencies(fmi3_import_t* fmu, fmi3_i
  * @return                 - non-zero if variable cannot be found (e.g., not a ContinuousStateDerivative), invalid inputs or unexpected failures
  */
 FMILIB_EXPORT int fmi3_import_get_continuous_state_derivative_dependencies(fmi3_import_t* fmu, fmi3_import_variable_t* variable,
-        size_t* numDependencies, bool* dependsOnAll, size_t** dependencies, char** dependenciesKind);
+        size_t* numDependencies, int* dependsOnAll, size_t** dependencies, char** dependenciesKind);
 
 /** \brief Get dependency information for a ClockedState.
  * @param fmu              - An FMU object as returned by fmi3_import_parse_xml().
@@ -376,7 +376,7 @@ FMILIB_EXPORT int fmi3_import_get_continuous_state_derivative_dependencies(fmi3_
  * @return                 - non-zero if variable cannot be found (e.g., not a ClockedState), invalid inputs or unexpected failures
  */
 FMILIB_EXPORT int fmi3_import_get_clocked_state_dependencies(fmi3_import_t* fmu, fmi3_import_variable_t* variable,
-        size_t* numDependencies, bool* dependsOnAll, size_t** dependencies, char** dependenciesKind);
+        size_t* numDependencies, int* dependsOnAll, size_t** dependencies, char** dependenciesKind);
 
 /** \brief Get dependency information for an InitialUnknown.
  * @param fmu              - An FMU object as returned by fmi3_import_parse_xml().
@@ -389,7 +389,7 @@ FMILIB_EXPORT int fmi3_import_get_clocked_state_dependencies(fmi3_import_t* fmu,
  * @return                 - non-zero if variable cannot be found (e.g., not an InitialUnknown), invalid inputs or unexpected failures
  */
 FMILIB_EXPORT int fmi3_import_get_initial_unknown_dependencies(fmi3_import_t* fmu, fmi3_import_variable_t* variable,
-        size_t* numDependencies, bool* dependsOnAll, size_t** dependencies, char** dependenciesKind);
+        size_t* numDependencies, int* dependsOnAll, size_t** dependencies, char** dependenciesKind);
 
 /** \brief Get dependency information for an EventIndicator.
  * @param fmu              - An FMU object as returned by fmi3_import_parse_xml().
@@ -402,7 +402,7 @@ FMILIB_EXPORT int fmi3_import_get_initial_unknown_dependencies(fmi3_import_t* fm
  * @return                 - non-zero if variable cannot be found (e.g., not an EventIndicator), invalid inputs or unexpected failures
  */
 FMILIB_EXPORT int fmi3_import_get_event_indicator_dependencies(fmi3_import_t* fmu, fmi3_import_variable_t* variable,
-        size_t* numDependencies, bool* dependsOnAll, size_t** dependencies, char** dependenciesKind);
+        size_t* numDependencies, int* dependsOnAll, size_t** dependencies, char** dependenciesKind);
 
 /**@} */
 

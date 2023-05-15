@@ -216,11 +216,12 @@ typedef enum fmi3_interval_variability_enu_t {
     H(canSerializeFMUstate) \
     H(providesDirectionalDerivatives)
 
-/** \brief Capability flags for ModelExchange, CoSimulation and ScheduledExecution */
-typedef enum fmi3_capabilities_enu_t {
 #define FMI3_EXPAND_ME_CAPABILITIES_ENU(c) fmi3_me_ ## c,
 #define FMI3_EXPAND_CS_CAPABILITIES_ENU(c) fmi3_cs_ ## c,
 #define FMI3_EXPAND_SE_CAPABILITIES_ENU(c) fmi3_se_ ## c,
+
+/** \brief Capability flags for ModelExchange, CoSimulation and ScheduledExecution */
+typedef enum fmi3_capabilities_enu_t {
     FMI3_ME_CAPABILITIES(FMI3_EXPAND_ME_CAPABILITIES_ENU)
     FMI3_CS_CAPABILITIES(FMI3_EXPAND_CS_CAPABILITIES_ENU)
     FMI3_SE_CAPABILITIES(FMI3_EXPAND_SE_CAPABILITIES_ENU)
@@ -231,7 +232,7 @@ typedef enum fmi3_capabilities_enu_t {
     \param id Capability flag ID.
     \return Name of the flag or Unknown if the id is out of range.
 */
-FMILIB_EXPORT const char * fmi3_capability_to_string(fmi3_capabilities_enu_t id);
+FMILIB_EXPORT const char* fmi3_capability_to_string(fmi3_capabilities_enu_t id);
 
 /** \brief List of SI base units used in Unit defitions*/
 #define FMI3_SI_BASE_UNITS(H) \

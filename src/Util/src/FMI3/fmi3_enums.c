@@ -184,13 +184,15 @@ FMILIB_EXPORT fmi3_initial_enu_t fmi3_get_valid_initial(fmi3_variability_enu_t v
     return defaultInitial;
 }
 
-
-const char * fmi3_capability_to_string(fmi3_capabilities_enu_t id) {
 #define FMI3_ME_CAPABILITIES_ENU_TO_STR(c) case fmi3_me_ ## c: return "me_"#c;
 #define FMI3_CS_CAPABILITIES_ENU_TO_STR(c) case fmi3_cs_ ## c: return "cs_"#c;
+#define FMI3_SE_CAPABILITIES_ENU_TO_STR(c) case fmi3_se_ ## c: return "se_"#c;
+
+const char* fmi3_capability_to_string(fmi3_capabilities_enu_t id) {
     switch (id) {
     FMI3_ME_CAPABILITIES(FMI3_ME_CAPABILITIES_ENU_TO_STR)
     FMI3_CS_CAPABILITIES(FMI3_CS_CAPABILITIES_ENU_TO_STR)
+    FMI3_SE_CAPABILITIES(FMI3_SE_CAPABILITIES_ENU_TO_STR)
     default: break;
     }
     return "Unknown";

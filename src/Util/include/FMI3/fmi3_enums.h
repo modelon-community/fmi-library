@@ -262,15 +262,15 @@ FMILIB_EXPORT size_t fmi3_SI_base_unit_exp_to_string(const int exp[fmi3_SI_base_
 
 
 /** \brief Dependency factor kinds are used as part of ModelStructure definition */
-typedef enum fmi3_dependency_factor_kind_enu_t
+typedef enum fmi3_dependencies_kind_enu_t
 {
-    fmi3_dependency_factor_kind_dependent = 0,
-    fmi3_dependency_factor_kind_constant,
-    fmi3_dependency_factor_kind_fixed,
-    fmi3_dependency_factor_kind_tunable,
-    fmi3_dependency_factor_kind_discrete,
-    fmi3_dependency_factor_kind_num
-} fmi3_dependency_factor_kind_enu_t;
+    fmi3_dependencies_kind_dependent = 0,
+    fmi3_dependencies_kind_constant,
+    fmi3_dependencies_kind_fixed,
+    fmi3_dependencies_kind_tunable,
+    fmi3_dependencies_kind_discrete,
+    fmi3_dependencies_kind_num
+} fmi3_dependencies_kind_enu_t;
 
 
 /** \brief Bitness for types such as Float32/Float64 */
@@ -285,7 +285,7 @@ typedef enum fmi3_bitness_enu_t {
     \param fc Dependency factor kind identifier.
     \return Corresponding factor kind as string.
     */
-FMILIB_EXPORT const char* fmi3_dependency_factor_kind_to_string(fmi3_dependency_factor_kind_enu_t fc);
+FMILIB_EXPORT const char* fmi3_dependencies_kind_to_string(fmi3_dependencies_kind_enu_t fc);
 /**
  @}
 */

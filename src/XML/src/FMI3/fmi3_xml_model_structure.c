@@ -92,52 +92,81 @@ jm_vector(jm_voidp)* fmi3_xml_get_event_indicators(fmi3_xml_model_structure_t* m
     return &ms->eventIndicators;
 }
 
+static int fmi3_xml_get_dependencies(jm_vector(jm_voidp)* msVector, 
+        fmi3_xml_dependencies_t* dep, fmi3_xml_variable_t* variable,
+        size_t* numDependencies, int* dependsOnAll, size_t** dependencies, char** dependenciesKind)
+{
+    if (!msVector || !dep || !variable) return -1;
 
-void fmi3_xml_get_dependencies(fmi3_xml_dependencies_t* dep, size_t** startIndex, size_t** dependency, char** factorKind) {
-    if (dep) {
-        if (jm_vector_get_size(size_t)(&dep->dependencyIndex) == 0) {
-            *startIndex = NULL;
-            *dependency = NULL;
-            *factorKind = NULL;
-        } else {
-            *startIndex = jm_vector_get_itemp(size_t)(&dep->startIndex, 0);
-            *dependency = jm_vector_get_itemp(size_t)(&dep->dependencyIndex, 0);
-            *factorKind = jm_vector_get_itemp(char)(&dep->dependencyFactorKind, 0);
+    int varFound = 0;
+    size_t numOutputs = jm_vector_get_size(jm_voidp)(msVector);
+    fmi3_value_reference_t inputVR = fmi3_xml_get_variable_vr(variable);
+
+    // Do a linear search to find index of <variable> in <msVector>
+    size_t varIndex;
+    fmi3_xml_variable_t* var;
+    for (varIndex = 0; varIndex < numOutputs; varIndex++) {
+        var = (fmi3_xml_variable_t*)jm_vector_get_item(jm_voidp)(msVector, varIndex);
+        if (fmi3_xml_get_variable_vr(var) == inputVR) {
+            varFound = 1;
+            break;
         }
     }
-    else {
-        *startIndex = 0;
+    if (varFound == 0) return 1; // variable not found
+    // variable found & varIndex = index of variable in msVector list
+
+    size_t startIndex = jm_vector_get_item(size_t)(&dep->startIndex, varIndex);
+    *numDependencies = jm_vector_get_item(size_t)(&dep->startIndex, varIndex + 1) - startIndex;
+
+    if (*numDependencies == 0) { // no dependencies or "depends on all"
+        if (jm_vector_get_item(char)(&dep->dependencyOnAll, varIndex)) {
+            *dependsOnAll = 1;
+        } else {
+            *dependsOnAll = 0;
+        }
+        *dependencies = NULL;
+        *dependenciesKind = NULL;
+    } else {
+        *dependsOnAll = 0;
+        *dependencies = jm_vector_get_itemp(size_t)(&dep->dependenciesVRs, startIndex);
+        *dependenciesKind = jm_vector_get_itemp(char)(&dep->dependenciesKind, startIndex);
     }
+    return 0; // OK
 }
 
-void fmi3_xml_get_outputs_dependencies(fmi3_xml_model_structure_t* ms,
-        size_t** startIndex, size_t** dependency, char** factorKind) 
+int fmi3_xml_get_output_dependencies(fmi3_xml_model_structure_t* ms, fmi3_xml_variable_t* variable,
+        size_t* numDependencies, int* dependsOnAll, size_t** dependencies, char** dependenciesKind)
 {
-    fmi3_xml_get_dependencies(ms->outputDeps, startIndex, dependency, factorKind);
+    return fmi3_xml_get_dependencies(&(ms->outputs), ms->outputDeps, variable,
+            numDependencies, dependsOnAll, dependencies, dependenciesKind);
 }
 
-void fmi3_xml_get_continuous_state_derivatives_dependencies(fmi3_xml_model_structure_t* ms,
-        size_t** startIndex, size_t** dependency, char** factorKind) 
+int fmi3_xml_get_continuous_state_derivative_dependencies(fmi3_xml_model_structure_t* ms, fmi3_xml_variable_t* variable,
+        size_t* numDependencies, int* dependsOnAll, size_t** dependencies, char** dependenciesKind)
 {
-    fmi3_xml_get_dependencies(ms->continuousStateDerivativeDeps, startIndex, dependency, factorKind);
+    return fmi3_xml_get_dependencies(&(ms->continuousStateDerivatives), ms->continuousStateDerivativeDeps, variable,
+            numDependencies, dependsOnAll, dependencies, dependenciesKind);
 }
 
-void fmi3_xml_get_clocked_states_dependencies(fmi3_xml_model_structure_t* ms,
-        size_t** startIndex, size_t** dependency, char** factorKind)
+int fmi3_xml_get_clocked_state_dependencies(fmi3_xml_model_structure_t* ms, fmi3_xml_variable_t* variable,
+        size_t* numDependencies, int* dependsOnAll, size_t** dependencies, char** dependenciesKind)
 {
-    fmi3_xml_get_dependencies(ms->clockedStateDeps, startIndex, dependency, factorKind);
+    return fmi3_xml_get_dependencies(&(ms->clockedStates), ms->clockedStateDeps, variable,
+            numDependencies, dependsOnAll, dependencies, dependenciesKind);
 }
 
-void fmi3_xml_get_initial_unknowns_dependencies(fmi3_xml_model_structure_t* ms,
-        size_t** startIndex, size_t** dependency, char** factorKind)
+int fmi3_xml_get_initial_unknown_dependencies(fmi3_xml_model_structure_t* ms, fmi3_xml_variable_t* variable,
+        size_t* numDependencies, int* dependsOnAll, size_t** dependencies, char** dependenciesKind)
 {
-    fmi3_xml_get_dependencies(ms->initialUnknownDeps, startIndex, dependency, factorKind);
+    return fmi3_xml_get_dependencies(&(ms->initialUnknowns), ms->initialUnknownDeps, variable,
+            numDependencies, dependsOnAll, dependencies, dependenciesKind);
 }
 
-void fmi3_xml_get_event_indicators_dependencies(fmi3_xml_model_structure_t* ms,
-        size_t** startIndex, size_t** dependency, char** factorKind)
+int fmi3_xml_get_event_indicator_dependencies(fmi3_xml_model_structure_t* ms, fmi3_xml_variable_t* variable,
+        size_t* numDependencies, int* dependsOnAll, size_t** dependencies, char** dependenciesKind)
 {
-    fmi3_xml_get_dependencies(ms->eventIndicatorDeps, startIndex, dependency, factorKind);
+    return fmi3_xml_get_dependencies(&(ms->eventIndicators), ms->eventIndicatorDeps, variable,
+            numDependencies, dependsOnAll, dependencies, dependenciesKind);
 }
 
 fmi3_xml_dependencies_t* fmi3_xml_allocate_dependencies(jm_callbacks* cb) {
@@ -146,28 +175,12 @@ fmi3_xml_dependencies_t* fmi3_xml_allocate_dependencies(jm_callbacks* cb) {
     jm_vector_init(size_t)(&dep->startIndex, 0, cb);
     jm_vector_push_back(size_t)(&dep->startIndex, 0);
 
-    jm_vector_init(size_t)(&dep->dependencyIndex, 0, cb);
-    jm_vector_init(char)(&dep->dependencyFactorKind, 0, cb);
-
-    dep->isRowMajor = 1;
+    jm_vector_init(size_t)(&dep->dependenciesVRs, 0, cb);
+    jm_vector_init(char)(&dep->dependenciesKind, 0, cb);
+    jm_vector_init(char)(&dep->dependencyOnAll, 0, cb);
 
     return dep;
 }
-
-void fmi3_xml_zero_empty_dependencies(fmi3_xml_dependencies_t** pdep) {
-    fmi3_xml_dependencies_t* dep =*pdep;
-    size_t ndep = jm_vector_get_size(size_t)(&dep->dependencyIndex);
-    size_t i;
-    if (!dep) return;
-    for (i = 0; i<ndep;i++) {
-        if (jm_vector_get_item(size_t)(&dep->dependencyIndex, i)) break;
-    }
-    if (i == ndep) {
-        fmi3_xml_free_dependencies(dep);
-        *pdep = 0;
-    }
-}
-
 
 void fmi3_xml_free_dependencies(fmi3_xml_dependencies_t* dep) {
     jm_callbacks* cb;
@@ -175,11 +188,11 @@ void fmi3_xml_free_dependencies(fmi3_xml_dependencies_t* dep) {
     cb = dep->startIndex.callbacks;
     jm_vector_free_data(size_t)(&dep->startIndex);
 
-    jm_vector_free_data(size_t)(&dep->dependencyIndex);
-    jm_vector_free_data(char)(&dep->dependencyFactorKind);
+    jm_vector_free_data(size_t)(&dep->dependenciesVRs);
+    jm_vector_free_data(char)(&dep->dependenciesKind);
+    jm_vector_free_data(char)(&dep->dependencyOnAll);
     cb->free(dep);
 }
-
 
 int fmi3_xml_check_model_structure(fmi3_xml_model_description_t* md) {
     fmi3_xml_model_structure_t* ms = md->modelStructure;
@@ -218,7 +231,7 @@ int fmi3_xml_handle_ModelStructure(fmi3_xml_parser_context_t *context, const cha
 /**
  * Parse the dependencies of an element in ModelStructure
  */
-int fmi3_xml_parse_dependencies(fmi3_xml_parser_context_t *context,
+static int fmi3_xml_parse_dependencies(fmi3_xml_parser_context_t *context,
                                 fmi3_xml_elm_enu_t elmID,
                                 fmi3_xml_dependencies_t* deps)
 {
@@ -229,7 +242,7 @@ int fmi3_xml_parse_dependencies(fmi3_xml_parser_context_t *context,
     const char* listKind;
     size_t numDepInd = 0;
     size_t numDepKind = 0;
-    size_t totNumDep = jm_vector_get_size(size_t)(&deps->dependencyIndex);
+    size_t totNumDep = jm_vector_get_size(size_t)(&deps->dependenciesVRs);
 
     /*  <xs:attribute name="dependencies">
             <xs:simpleType>
@@ -251,21 +264,18 @@ int fmi3_xml_parse_dependencies(fmi3_xml_parser_context_t *context,
             }
             if (!ch) break;
             if (sscanf(cur, "%d", &ind) != 1) {
-                // TODO: Rework this error; list actual type
-                fmi3_xml_parse_error(context, "XML element 'Unknown': could not parse item %d in the list for attribute 'dependencies'",
-                    numDepInd);
+                fmi3_xml_parse_error(context, "XML element '%s': could not parse item %d, character '%c' in the list for attribute 'dependencies'",
+                    fmi3_xml_elmid_to_name(elmID), numDepInd, ch);
                ms->isValidFlag = 0;
                return 0;
             }
-            // TODO: This change requires some more strucutral changes in how we output dependencies.
             if (ind < 0) {
-                // TODO: Rework this error; list actual type
-                fmi3_xml_parse_error(context, "XML element 'Unknown': item %d=%d is negative in the list for attribute 'dependencies'",
-                    numDepInd, ind);
+                fmi3_xml_parse_error(context, "XML element '%s': Attribute 'dependencies' contains invalid value: %d.", 
+                    fmi3_xml_elmid_to_name(elmID), ind);
                ms->isValidFlag = 0;
                return 0;
             }
-            if (!jm_vector_push_back(size_t)(&deps->dependencyIndex, (size_t)ind)) {
+            if (!jm_vector_push_back(size_t)(&deps->dependenciesVRs, (size_t)ind)) {
                fmi3_xml_parse_fatal(context, "Could not allocate memory");
                return -1;
             }
@@ -305,44 +315,43 @@ int fmi3_xml_parse_dependencies(fmi3_xml_parser_context_t *context,
              }
              if (!ch) break;
              if (strncmp("dependent", cur, 9) == 0) {
-                 kind = fmi3_dependency_factor_kind_dependent;
+                 kind = fmi3_dependencies_kind_dependent;
                  cur+=9;
              }
              else if (strncmp("constant", cur, 8) == 0) {
-                 kind = fmi3_dependency_factor_kind_constant;
+                 kind = fmi3_dependencies_kind_constant;
                  cur+=8;
              }
              else if (strncmp("fixed", cur, 5) == 0) {
-                 kind = fmi3_dependency_factor_kind_fixed;
+                 kind = fmi3_dependencies_kind_fixed;
                  cur+=5;
              }
              else if (strncmp("tunable", cur, 7) == 0) {
-                 kind = fmi3_dependency_factor_kind_tunable;
+                 kind = fmi3_dependencies_kind_tunable;
                  cur+=7;
              }
              else if (strncmp("discrete", cur, 8) == 0) {
-                  kind = fmi3_dependency_factor_kind_discrete;
+                  kind = fmi3_dependencies_kind_discrete;
                  cur+=8;
              }
              else {
-                // TODO: Rework this error; list actual type
-                 fmi3_xml_parse_error(context, "XML element 'Unknown': could not parse item %d in the list for attribute 'dependenciesKind'",
-                     numDepKind);
+                 fmi3_xml_parse_error(context, "XML element '%s': could not parse item %d in the list for attribute 'dependenciesKind'",
+                    fmi3_xml_elmid_to_name(elmID), numDepKind);
                  ms->isValidFlag = 0;
                  return 0;
              }
              if (elmID == fmi3_xml_elmID_InitialUnknown) {
-                if (kind == fmi3_dependency_factor_kind_fixed) {
+                if (kind == fmi3_dependencies_kind_fixed) {
                     fmi3_xml_parse_error(context, "XML element 'InitialUnknown': 'fixed' is not allowed in list for attribute 'dependenciesKind'; setting to 'dependent'");
-                    kind = fmi3_dependency_factor_kind_dependent;
+                    kind = fmi3_dependencies_kind_dependent;
                 }
-                else if (!(kind == fmi3_dependency_factor_kind_dependent || kind == fmi3_dependency_factor_kind_constant)) {
+                else if (!(kind == fmi3_dependencies_kind_dependent || kind == fmi3_dependencies_kind_constant)) {
                     fmi3_xml_parse_error(context, "XML element 'InitialUnknown': only 'dependent' and 'constant' allowed in list for attribute 'dependenciesKind'");
                     ms->isValidFlag = 0;
                     return 0;
                 }
              }
-             if (!jm_vector_push_back(char)(&deps->dependencyFactorKind, kind)) {
+             if (!jm_vector_push_back(char)(&deps->dependenciesKind, kind)) {
                 fmi3_xml_parse_fatal(context, "Could not allocate memory");
                 return -1;
             }
@@ -352,47 +361,41 @@ int fmi3_xml_parse_dependencies(fmi3_xml_parser_context_t *context,
     if (listInd && listKind) {
         /* both lists are present - the number of items must match */
         if (numDepInd != numDepKind) {
-            // TODO: Reference actual XML element type
-            fmi3_xml_parse_error(context, "XML element 'Unknown': different number of items (%u and %u) in the lists for 'dependencies' and 'dependenciesKind'",
-                                 numDepInd, numDepKind);
+            fmi3_xml_parse_error(context, "XML element '%s': different number of items (%u and %u) in the lists for 'dependencies' and 'dependenciesKind'",
+                                 fmi3_xml_elmid_to_name(elmID), numDepInd, numDepKind);
             ms->isValidFlag = 0;
             return 0;
         }
+        jm_vector_push_back(size_t)(&deps->startIndex, totNumDep + numDepInd);
+        jm_vector_push_back(char)(&deps->dependencyOnAll, 0);
     }
     else if (listInd) {
         /* only Dependencies are present, set all kinds to dependent */
-        char kind = fmi3_dependency_factor_kind_dependent;
-        if (jm_vector_reserve(char)(&deps->dependencyFactorKind,totNumDep + numDepInd) < totNumDep + numDepInd) {
+        /* this includes the case of empty dependencies */
+        char kind = fmi3_dependencies_kind_dependent;
+        if (jm_vector_reserve(char)(&deps->dependenciesKind, totNumDep + numDepInd) < totNumDep + numDepInd) {
             fmi3_xml_parse_fatal(context, "Could not allocate memory");
             return -1;
         }
-        for (;numDepKind < numDepInd; numDepKind++)
-            jm_vector_push_back(char)(&deps->dependencyFactorKind, kind);
+        for (;numDepKind < numDepInd; numDepKind++) {
+            jm_vector_push_back(char)(&deps->dependenciesKind, kind);
+        }
+        jm_vector_push_back(size_t)(&deps->startIndex, totNumDep + numDepInd);
+        jm_vector_push_back(char)(&deps->dependencyOnAll, 0); // not dependent on all
     }
     else if (listKind) {
-        // TODO: Reference actual XML element type
-        fmi3_xml_parse_error(context, "XML element 'Unknown': if `dependenciesKind` attribute is present then the `dependencies` attribute must be present also.");
+        fmi3_xml_parse_error(context, "XML element '%s': if `dependenciesKind` attribute is present then the `dependencies` attribute must also be present.",
+            fmi3_xml_elmid_to_name(elmID));
         ms->isValidFlag = 0;
         return 0;
     }
     else {
-        /* Dependencies are not provided. Put zero index/dependent to indicate that full row must be considered. */
-        numDepInd = numDepKind = 1;
-        if (!jm_vector_push_back(char)(&deps->dependencyFactorKind, fmi3_dependency_factor_kind_dependent) ||
-         !jm_vector_push_back(size_t)(&deps->dependencyIndex, 0)
-          ) {
-            fmi3_xml_parse_fatal(context, "Could not allocate memory");
-            return -1;
-        }
+        /* Dependencies attribute is missing*/
+        jm_vector_push_back(size_t)(&deps->startIndex, totNumDep);
+        jm_vector_push_back(char)(&deps->dependencyOnAll, 1);
     }
-    if (!jm_vector_push_back(size_t)(&deps->startIndex, totNumDep + numDepInd)) {
-        fmi3_xml_parse_fatal(context, "Could not allocate memory");
-        return -1;
-    }
-
     return 0;
 }
-
 
 /**
  * Parses an fmi3Unknown element(abstract parent to elements in ModelStructure)

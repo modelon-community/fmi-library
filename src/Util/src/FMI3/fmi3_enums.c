@@ -28,31 +28,31 @@ const char* fmi3_fmu_kind_to_string(fmi3_fmu_kind_enu_t kind) {
     switch (kind) {
     case fmi3_fmu_kind_unknown: return "Unknown";
     case fmi3_fmu_kind_me:      return "ModelExchange";
-    case fmi3_fmu_kind_cs:     return "CoSimulation";
-    case fmi3_fmu_kind_se:     return "Scheduled Execution";
+    case fmi3_fmu_kind_cs:      return "CoSimulation";
+    case fmi3_fmu_kind_se:      return "Scheduled Execution";
     default: break;
     }
     return "Multi-Type";
 }
 
-const char* fmi3_dependency_factor_kind_to_string(fmi3_dependency_factor_kind_enu_t fc) {
+const char* fmi3_dependencies_kind_to_string(fmi3_dependencies_kind_enu_t fc) {
     switch(fc) {
-    case fmi3_dependency_factor_kind_dependent: return "dependent";
-    case fmi3_dependency_factor_kind_constant: return "constant";
-    case fmi3_dependency_factor_kind_fixed: return "fixed";
-    case fmi3_dependency_factor_kind_tunable: return "tunable";
-    case fmi3_dependency_factor_kind_discrete: return "discrete";
+    case fmi3_dependencies_kind_dependent: return "dependent";
+    case fmi3_dependencies_kind_constant:  return "constant";
+    case fmi3_dependencies_kind_fixed:     return "fixed";
+    case fmi3_dependencies_kind_tunable:   return "tunable";
+    case fmi3_dependencies_kind_discrete:  return "discrete";
     default:break;
     }
-    return "illegal factor kind";
+    return "illegal dependencies kind";
 }
 
 const char* fmi3_variability_to_string(fmi3_variability_enu_t v) {
     switch(v) {
-    case fmi3_variability_enu_constant: return "constant";
-    case fmi3_variability_enu_fixed: return "fixed";
-    case fmi3_variability_enu_tunable: return "tunable";
-    case fmi3_variability_enu_discrete: return "discrete";
+    case fmi3_variability_enu_constant:   return "constant";
+    case fmi3_variability_enu_fixed:      return "fixed";
+    case fmi3_variability_enu_tunable:    return "tunable";
+    case fmi3_variability_enu_discrete:   return "discrete";
     case fmi3_variability_enu_continuous: return "continuous";
     default: break;
     }
@@ -61,12 +61,12 @@ const char* fmi3_variability_to_string(fmi3_variability_enu_t v) {
 
 const char* fmi3_causality_to_string(fmi3_causality_enu_t c) {
     switch(c) {
-    case fmi3_causality_enu_input: return "input";
-    case fmi3_causality_enu_output: return "output";
-    case fmi3_causality_enu_parameter: return "parameter";
+    case fmi3_causality_enu_input:                return "input";
+    case fmi3_causality_enu_output:               return "output";
+    case fmi3_causality_enu_parameter:            return "parameter";
     case fmi3_causality_enu_calculated_parameter: return "calculatedParameter";
-    case fmi3_causality_enu_local: return "local";
-    case fmi3_causality_enu_independent: return "independent";
+    case fmi3_causality_enu_local:                return "local";
+    case fmi3_causality_enu_independent:          return "independent";
     default: break;
     };
     return "Unknown";

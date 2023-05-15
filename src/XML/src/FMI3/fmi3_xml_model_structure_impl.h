@@ -29,16 +29,18 @@ extern "C" {
 /** \brief Structure for keeping information about variable dependencies.
 */
 typedef struct fmi3_xml_dependencies_t {
-    int isRowMajor;    /** Information is stored in row-major format flag */
+    // Information is stored in the CSR format, with the extra speciality
+    // that an empty row (i.e., startIndex[i] == startIndex[i + 1]) doubles for 
+    // "depends on all" (missing dependencies attribute in the XML) and no dependencies,
+    // in that case check dependencyOnAll[i]
 
-    /** Start index in dependency data for the corresponding row (isRowMajor=1) or column (isRowMajor = 0) */
+    // Start index in dependency data, length = <number of variables> + 1
     jm_vector(size_t) startIndex;  
-
-    /** Column indices (isRowMajor=1) or row indices (isRowMajor=0)
-        Note that indices are 1-based. 0 has a special meaning - depends on all.
-    */
-    jm_vector(size_t) dependencyIndex;
-    jm_vector(char)   dependencyFactorKind;
+    // Dependency data, valueReferences
+    jm_vector(size_t) dependenciesVRs;
+    // Dependency types corresponding to dependenciesVRs
+    jm_vector(char)   dependenciesKind;
+    jm_vector(char)   dependencyOnAll;
 } fmi3_xml_dependencies_t;
 
 fmi3_xml_dependencies_t* fmi3_xml_allocate_dependencies(jm_callbacks* cb);

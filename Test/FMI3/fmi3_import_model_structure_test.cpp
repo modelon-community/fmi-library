@@ -8,59 +8,191 @@
 #define CATCH_CONFIG_MAIN
 #include "catch.hpp"
 
-static void test_fmi3_import_get_outputs_list(fmi3_import_t* fmu) {
+static void test_fmi3_import_get_outputs(fmi3_import_t* fmu) {
 
     fmi3_import_variable_list_t* varList = fmi3_import_get_outputs_list(fmu);
     REQUIRE(fmi3_import_get_variable_list_size(varList) == 1);
 
+    /* check VRs and dependencies of all Outputs */
+    size_t numDependencies;
+    int dependsOnAll;
+    size_t* dependencies;
+    char* dependenciesKind;
+
     fmi3_import_variable_t* var = fmi3_import_get_variable(varList, 0);
     REQUIRE(fmi3_import_get_variable_vr(var) == 2);
+    REQUIRE(fmi3_import_get_output_dependencies(fmu, var, &numDependencies, &dependsOnAll, &dependencies, &dependenciesKind) == 0);
+    REQUIRE(numDependencies == 0);
+    REQUIRE(dependsOnAll == 1);
+    REQUIRE(dependencies == nullptr);
+    REQUIRE(dependenciesKind == nullptr);
 
     fmi3_import_free_variable_list(varList);
 }
 
-static void test_fmi3_import_get_continuous_state_derivatives_list(fmi3_import_t* fmu) {
+static void test_fmi3_import_get_continuous_state_derivatives(fmi3_import_t* fmu) {
 
     fmi3_import_variable_list_t* varList = fmi3_import_get_continuous_state_derivatives_list(fmu);
-    REQUIRE(fmi3_import_get_variable_list_size(varList) == 1);
+    REQUIRE(fmi3_import_get_variable_list_size(varList) == 6);
 
-    fmi3_import_variable_t* var = fmi3_import_get_variable(varList, 0);
+    /* check VRs and dependencies of all continuousStateDerivatives */
+    size_t numDependencies;
+    int dependsOnAll;
+    size_t* dependencies;
+    char* dependenciesKind;
+    fmi3_import_variable_t* var;
+    size_t idx = 0;
+
+    idx = 0; // <ContinuousStateDerivative valueReference="1" dependencies="0" dependenciesKind="fixed"/>
+    var = fmi3_import_get_variable(varList, idx);
     REQUIRE(fmi3_import_get_variable_vr(var) == 1);
+    REQUIRE(fmi3_import_get_continuous_state_derivative_dependencies(fmu, var, &numDependencies, &dependsOnAll, &dependencies, &dependenciesKind) == 0);
+    REQUIRE(numDependencies == 1);
+    REQUIRE(dependencies[0] == 0);
+    REQUIRE(dependenciesKind[0] == fmi3_dependencies_kind_fixed);
+
+    idx = 1; // <ContinuousStateDerivative valueReference="300" dependencies="200 201 202" dependenciesKind="fixed constant tunable"/>
+    var = fmi3_import_get_variable(varList, idx);
+    REQUIRE(fmi3_import_get_variable_vr(var) == 300);
+    REQUIRE(fmi3_import_get_continuous_state_derivative_dependencies(fmu, var, &numDependencies, &dependsOnAll, &dependencies, &dependenciesKind) == 0);
+    REQUIRE(numDependencies == 3);
+    REQUIRE(dependencies[0] == 200);
+    REQUIRE(dependencies[1] == 201);
+    REQUIRE(dependencies[2] == 202);
+    REQUIRE(dependenciesKind[0] == fmi3_dependencies_kind_fixed);
+    REQUIRE(dependenciesKind[1] == fmi3_dependencies_kind_constant);
+    REQUIRE(dependenciesKind[2] == fmi3_dependencies_kind_tunable);
+
+    idx = 2; // <ContinuousStateDerivative valueReference="301" dependencies="201 202" dependenciesKind="fixed constant"/>
+    var = fmi3_import_get_variable(varList, idx);
+    REQUIRE(fmi3_import_get_variable_vr(var) == 301);
+    REQUIRE(fmi3_import_get_continuous_state_derivative_dependencies(fmu, var, &numDependencies, &dependsOnAll, &dependencies, &dependenciesKind) == 0);
+    REQUIRE(numDependencies == 2);
+    REQUIRE(dependencies[0] == 201);
+    REQUIRE(dependencies[1] == 202);
+    REQUIRE(dependenciesKind[0] == fmi3_dependencies_kind_fixed);
+    REQUIRE(dependenciesKind[1] == fmi3_dependencies_kind_constant);
+
+    idx = 3; // <ContinuousStateDerivative valueReference="302" dependencies="202" dependenciesKind="constant"/>
+    var = fmi3_import_get_variable(varList, idx);
+    REQUIRE(fmi3_import_get_variable_vr(var) == 302);
+    REQUIRE(fmi3_import_get_continuous_state_derivative_dependencies(fmu, var, &numDependencies, &dependsOnAll, &dependencies, &dependenciesKind) == 0);
+    REQUIRE(numDependencies == 1);
+    REQUIRE(dependencies[0] == 202);
+    REQUIRE(dependenciesKind[0] == fmi3_dependencies_kind_constant);
+
+    idx = 4; // <ContinuousStateDerivative valueReference="303"/>
+    var = fmi3_import_get_variable(varList, idx);
+    REQUIRE(fmi3_import_get_variable_vr(var) == 303);
+    REQUIRE(fmi3_import_get_continuous_state_derivative_dependencies(fmu, var, &numDependencies, &dependsOnAll, &dependencies, &dependenciesKind) == 0);
+    REQUIRE(numDependencies == 0);
+    REQUIRE(dependsOnAll == 1);
+    REQUIRE(dependencies == nullptr);
+    REQUIRE(dependenciesKind == nullptr);
+
+    idx = 5; // <ContinuousStateDerivative valueReference="304" dependencies="" dependenciesKind=""/>
+    var = fmi3_import_get_variable(varList, idx);
+    REQUIRE(fmi3_import_get_variable_vr(var) == 304);
+    REQUIRE(fmi3_import_get_continuous_state_derivative_dependencies(fmu, var, &numDependencies, &dependsOnAll, &dependencies, &dependenciesKind) == 0);
+    REQUIRE(numDependencies == 0);
+    REQUIRE(dependsOnAll == 0); // no dependencies
+    REQUIRE(dependencies == nullptr);
+    REQUIRE(dependenciesKind == nullptr);
 
     fmi3_import_free_variable_list(varList);
 }
 
-static void test_fmi3_import_get_clocked_states_list(fmi3_import_t* fmu) {
+static void test_fmi3_import_get_clocked_states(fmi3_import_t* fmu) {
 
     fmi3_import_variable_list_t* varList = fmi3_import_get_clocked_states_list(fmu);
     REQUIRE(fmi3_import_get_variable_list_size(varList) == 1);
 
+    /* check VRs and dependencies of all ClockedStates */
+    size_t numDependencies;
+    int dependsOnAll;
+    size_t* dependencies;
+    char* dependenciesKind;
+
     fmi3_import_variable_t* var = fmi3_import_get_variable(varList, 0);
     REQUIRE(fmi3_import_get_variable_vr(var) == 11);
+    REQUIRE(fmi3_import_get_clocked_state_dependencies(fmu, var, &numDependencies, &dependsOnAll, &dependencies, &dependenciesKind) == 0);
+    REQUIRE(numDependencies == 0);
+    REQUIRE(dependsOnAll == 1);
+    REQUIRE(dependencies == nullptr);
+    REQUIRE(dependenciesKind == nullptr);
 
     fmi3_import_free_variable_list(varList);
 }
 
-static void test_fmi3_import_get_initial_unknowns_list(fmi3_import_t* fmu) {
+static void test_fmi3_import_get_initial_unknowns(fmi3_import_t* fmu) {
 
     fmi3_import_variable_list_t* varList = fmi3_import_get_initial_unknowns_list(fmu);
     REQUIRE(fmi3_import_get_variable_list_size(varList) == 1);
 
+    /* check VRs and dependencies of all InitialUnknowns */
+    size_t numDependencies;
+    int dependsOnAll;
+    size_t* dependencies;
+    char* dependenciesKind;
+
     fmi3_import_variable_t* var = fmi3_import_get_variable(varList, 0);
     REQUIRE(fmi3_import_get_variable_vr(var) == 1);
+    REQUIRE(fmi3_import_get_initial_unknown_dependencies(fmu, var, &numDependencies, &dependsOnAll, &dependencies, &dependenciesKind) == 0);
+    REQUIRE(numDependencies == 0);
+    REQUIRE(dependsOnAll == 1);
+    REQUIRE(dependencies == nullptr);
+    REQUIRE(dependenciesKind == nullptr);
 
     fmi3_import_free_variable_list(varList);
 }
 
-static void test_fmi3_import_get_event_indicators_list(fmi3_import_t* fmu) {
+static void test_fmi3_import_get_event_indicators(fmi3_import_t* fmu) {
 
     fmi3_import_variable_list_t* varList = fmi3_import_get_event_indicators_list(fmu);
     REQUIRE(fmi3_import_get_variable_list_size(varList) == 1);
 
+    /* check VRs and dependencies of all EventIndicators */
+    size_t numDependencies;
+    int dependsOnAll;
+    size_t* dependencies;
+    char* dependenciesKind;
+
     fmi3_import_variable_t* var = fmi3_import_get_variable(varList, 0);
     REQUIRE(fmi3_import_get_variable_vr(var) == 100);
+    REQUIRE(fmi3_import_get_event_indicator_dependencies(fmu, var, &numDependencies, &dependsOnAll, &dependencies, &dependenciesKind) == 0);
+    REQUIRE(numDependencies == 0);
+    REQUIRE(dependsOnAll == 1);
+    REQUIRE(dependencies == nullptr);
+    REQUIRE(dependenciesKind == nullptr);
 
     fmi3_import_free_variable_list(varList);
+}
+
+static void test_fmi3_import_get_dependencies_invalid_api_calls(fmi3_import_t* fmu) {
+
+    REQUIRE(fmi3_import_get_continuous_state_derivatives_list(nullptr) == nullptr); // invalid fmu input
+
+    fmi3_import_variable_list_t* varListCont = fmi3_import_get_continuous_state_derivatives_list(fmu);
+    REQUIRE(fmi3_import_get_variable_list_size(varListCont) > 0); // make sure there are ContinuousStateDerivatives
+
+    fmi3_import_variable_list_t* varListEvent = fmi3_import_get_event_indicators_list(fmu);
+    REQUIRE(fmi3_import_get_variable_list_size(varListEvent) > 0); // make sure there are EventIndicators
+
+    size_t numDependencies;
+    int dependsOnAll;
+    size_t* dependencies;
+    char* dependenciesKind;
+    fmi3_import_variable_t* var = fmi3_import_get_variable(varListEvent, 0);
+
+    // no FMU
+    REQUIRE(fmi3_import_get_continuous_state_derivative_dependencies(nullptr, var, &numDependencies, &dependsOnAll, &dependencies, &dependenciesKind) != 0);
+    // no variable
+    REQUIRE(fmi3_import_get_continuous_state_derivative_dependencies(fmu, nullptr, &numDependencies, &dependsOnAll, &dependencies, &dependenciesKind) != 0);
+    // variable not a ContinuousStateDerivative
+    REQUIRE(fmi3_import_get_continuous_state_derivative_dependencies(fmu, var, &numDependencies, &dependsOnAll, &dependencies, &dependenciesKind) != 0);
+
+    fmi3_import_free_variable_list(varListCont);
+    fmi3_import_free_variable_list(varListEvent);
 }
 
 TEST_CASE("Valid ModelStructure parsing") {
@@ -70,23 +202,27 @@ TEST_CASE("Valid ModelStructure parsing") {
     REQUIRE(fmu != nullptr);
 
     SECTION("Get Outputs") {
-        test_fmi3_import_get_outputs_list(fmu);
+        test_fmi3_import_get_outputs(fmu);
     }
 
     SECTION("Get ContinuousStateDerivatives") {
-        test_fmi3_import_get_continuous_state_derivatives_list(fmu);
+        test_fmi3_import_get_continuous_state_derivatives(fmu);
     }
 
     SECTION("Get ClockedStates") {
-        test_fmi3_import_get_clocked_states_list(fmu);
+        test_fmi3_import_get_clocked_states(fmu);
     }
 
     SECTION("Get InitialUnknowns") {
-        test_fmi3_import_get_initial_unknowns_list(fmu);
+        test_fmi3_import_get_initial_unknowns(fmu);
     }
 
     SECTION("Get EventIndicators") {
-        test_fmi3_import_get_event_indicators_list(fmu);
+        test_fmi3_import_get_event_indicators(fmu);
+    }
+
+    SECTION("Invalid API calls") {
+        test_fmi3_import_get_dependencies_invalid_api_calls(fmu);
     }
     
     fmi3_import_free(fmu);
@@ -230,6 +366,71 @@ TEST_CASE("Error check: ModelStructure; ClockedState has Clock base type") {
     REQUIRE(tfmu->fmu == nullptr);
 
     const char* logMsg = "The variable 'clock_01' is a ClockedState, but has the base type 'fmi3Clock'.";
+    REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
+
+    fmi3_testutil_import_free(tfmu);
+}
+
+TEST_CASE("Error check: ModelStructure; Negative dependency value") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/model_structure/invalid/dependencies_invalid_VR";
+
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    REQUIRE(tfmu != nullptr);
+    REQUIRE(tfmu->fmu == nullptr);
+
+    const char* logMsg = "XML element 'ContinuousStateDerivative': Attribute 'dependencies' contains invalid value: -1.";
+    REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
+
+    fmi3_testutil_import_free(tfmu);
+}
+
+TEST_CASE("Error check: ModelStructure; Invalid dependency value; not a number") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/model_structure/invalid/dependencies_invalid_VR2";
+
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    REQUIRE(tfmu != nullptr);
+    REQUIRE(tfmu->fmu == nullptr);
+
+    const char* logMsg = "XML element 'ContinuousStateDerivative': could not parse item 0, character 'a' in the list for attribute 'dependencies'";
+    REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
+
+    fmi3_testutil_import_free(tfmu);
+}
+
+TEST_CASE("Error check: ModelStructure; Mismatched number of dependencies and dependenciesKind") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/model_structure/invalid/dependencies_mismatched_list_lengths";
+
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    REQUIRE(tfmu != nullptr);
+    REQUIRE(tfmu->fmu == nullptr);
+
+    const char* logMsg = "XML element 'ContinuousStateDerivative': different number of items (1 and 2) in the lists for 'dependencies' and 'dependenciesKind'";
+    REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
+
+    fmi3_testutil_import_free(tfmu);
+}
+
+TEST_CASE("Error check: ModelStructure; Invalid dependenciesKind item in list") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/model_structure/invalid/dependencies_invalid_kind";
+
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    REQUIRE(tfmu != nullptr);
+    REQUIRE(tfmu->fmu == nullptr);
+
+    const char* logMsg = "XML element 'ContinuousStateDerivative': could not parse item 0 in the list for attribute 'dependenciesKind'";
+    REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
+
+    fmi3_testutil_import_free(tfmu);
+}
+
+TEST_CASE("Error check: ModelStructure; dependencies missing but dependenciesKind present") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/model_structure/invalid/dependencies_missing_kind_present";
+
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    REQUIRE(tfmu != nullptr);
+    REQUIRE(tfmu->fmu == nullptr);
+
+    const char* logMsg = "XML element 'ContinuousStateDerivative': if `dependenciesKind` attribute is present then the `dependencies` attribute must also be present.";
     REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
 
     fmi3_testutil_import_free(tfmu);

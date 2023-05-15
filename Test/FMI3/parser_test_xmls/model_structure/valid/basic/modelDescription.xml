@@ -17,11 +17,34 @@
     <Clock name="clock_01" valueReference="20" intervalVariability="constant"/>
 
     <Float64 name="event_ind_0" valueReference="100" variability="continuous"/>
+
+    <!-- states for dependency testing -->
+    <Float64 name="state_0" valueReference="200"/>
+    <Float64 name="state_1" valueReference="201"/>
+    <Float64 name="state_2" valueReference="202"/>
+    
+    <Float64 name="state_depend_on_all" valueReference="203"/>
+    <Float64 name="state_independent"   valueReference="204"/>
+    
+    <Float64 name="der(state_0)" valueReference="300" variability="continuous" derivative="200" start="1.0"/>
+    <Float64 name="der(state_1)" valueReference="301" variability="continuous" derivative="201" start="1.0"/>
+    <Float64 name="der(state_2)" valueReference="302" variability="continuous" derivative="202" start="1.0"/>
+
+    <Float64 name="der(state_depend_on_all)" valueReference="303" variability="continuous" derivative="203" start="1.0"/>
+    <Float64 name="der(state_independent)"   valueReference="304" variability="continuous" derivative="204" start="1.0"/>
 </ModelVariables>
 
 <ModelStructure>
   <Output valueReference="2"/>
-  <ContinuousStateDerivative valueReference="1" dependencies="0"/>
+  <ContinuousStateDerivative valueReference="1" dependencies="0" dependenciesKind="fixed"/>
+  <!-- dependency testing -->
+  <ContinuousStateDerivative valueReference="300" dependencies="200 201 202" dependenciesKind="fixed constant tunable"/>
+  <ContinuousStateDerivative valueReference="301" dependencies="201 202" dependenciesKind="fixed constant"/>
+  <ContinuousStateDerivative valueReference="302" dependencies="202" dependenciesKind="constant"/>
+
+  <ContinuousStateDerivative valueReference="303"/>
+  <ContinuousStateDerivative valueReference="304" dependencies="" dependenciesKind=""/>
+
   <ClockedState valueReference="11"/>
   <InitialUnknown valueReference="1"/>
   <EventIndicator valueReference="100"/>

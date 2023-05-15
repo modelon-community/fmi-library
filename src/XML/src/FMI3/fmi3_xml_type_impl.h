@@ -72,25 +72,25 @@ typedef union fmi3_int_union_t {
  * Attributes specific to the primitive type. Each TypeDefinition has one, and every default
  * type is also represented by a _props.
  * 
- * Every Variable that defines a primitive-type-specific attribute also has a variable-specific
- * _props, for which the attribute values have been copied from it's TypeDefinition (or default
- * type properties) if the value was not specified.
+ * Every Variable that defines a type-specific attribute also has a variable-specific
+ * _props. Optional attributes that are not present on the Variable get their value copied
+ * copied from it's TypeDefinition (or default type).
  * 
  * So to conclude there are three cases that cause this struct:
  *      - Default type    (always)
  *      - TypeDefinition  (always)
- *      - Variable        (if type attribute)
+ *      - Variable        (if has type attribute)
  * 
- * The next node for a _props on a TypeDefinition (i.e. for _typedef or _typedef._props) is always
- * the default type.
+ * The next node for a _props on a TypeDefinition (i.e. _typedef._props) is always
+ * the default type. XXX: But it seems to never be used, since we don't have diff-sets.
  * 
- * The next node for a _props on a Variable is either the default type or the TypeDefinition,
- * depending on whether there was a declaredType.
- * So to find if a variable has TypeDefinition, you iterate through the nodes and if there is
- * a _typedef, then the answer is yes.
+ * The next node for a _props on a Variable is its declaredType TypeDefinition (or the
+ * default type).
+ * This is also how a Variable is connected to it's declaredType. I.e. to find it, one
+ * needs to iterate the nodes until a _typedef is found.
  * 
  * XXX:
- * It seems the only reason to keep references the "fallbacks" is to find the declared type.
+ * It seems the only reason to keep references to the "fallback" _props is to find the declared type.
  * And to eventually create diff-sets, but currently we just copy.
  *
  * ======================================
@@ -101,6 +101,22 @@ typedef union fmi3_int_union_t {
  * start value.
  * 
  * The next node is the _props.
+ * 
+ * -----------------------------------------------------------------------------
+ *
+ * Examples of how the structure will be for some variables:
+ *
+ * <Float64/>
+ *      type: -------------------------------------------------------------------------------------> (default>_props_t
+ *
+ * <Float64 start="..."/>
+ *      type: start_t -----------------------------------------------------------------------------> (default)_props_t
+ *
+ * <Float64 start="..." declaredType="..."/>
+ *      type: start_t -----------------------> (declaredType)_typedef_t -> (declaredType)_props_t -> (default)_props_t
+ *
+ * <Float64 start="..." declaredType="..." max="..."/>
+ *      type: start_t -> (variable)_props_t -> (declaredType)_typedef_t -> (declaredType)_props_t -> (default)_props_t
  */
 typedef enum {
     fmi3_xml_type_struct_enu_typedef, // Base object for a user-defined TypeDefinition
@@ -116,16 +132,19 @@ typedef enum {
  * 'nextLayer'. An attempt to show the ordering is made in the 'diagrams.drawio' file.
  *
  * More info can also be found at the top of the file where this type is described.
+ *
+ * Note that all objects of this type are appended to a list owned by the type definitions object.
  */
 typedef struct fmi3_xml_variable_type_base_t fmi3_xml_variable_type_base_t;
 struct fmi3_xml_variable_type_base_t {
-    fmi3_xml_variable_type_base_t* nextLayer;   /* the next layer in the type aggregate */
-    fmi3_xml_type_struct_kind_enu_t structKind; /* the actual (sub) type */
-    fmi3_base_type_enu_t baseType;              /* the FMI base type */
-    char isRelativeQuantity;                    /* relativeQuantity flag (only used in fmi3_xml_real_type_props_t) */
-    char isUnbounded;                           /* unbounded flag        (only used in fmi3_xml_real_type_props_t) */
+    fmi3_xml_variable_type_base_t* nextLayer;   /* The next layer in the type aggregate */ // TODO: Rename to next
+    fmi3_xml_type_struct_kind_enu_t structKind; /* The actual (sub) type */
+    fmi3_base_type_enu_t baseType;              /* The FMI base type */
+    char isRelativeQuantity;                    /* RelativeQuantity flag (only used in fmi3_xml_real_type_props_t) */
+    char isUnbounded;                           /* Unbounded flag        (only used in fmi3_xml_real_type_props_t) */
 
-    fmi3_xml_variable_type_base_t* next;        /* should only be used for deallocation */
+    // TODO: Remove (create a new jm_vector on typeDefinitions that works the same)
+    fmi3_xml_variable_type_base_t* next;        /* For deallocation: the next node in the deallocation list */
 };
 
 // ----------------------------------------------------------------------------
@@ -258,12 +277,22 @@ static fmi3_xml_variable_type_base_t* fmi3_xml_find_type_props(fmi3_xml_variable
 }
 
 struct fmi3_xml_type_definitions_t {
+
+    // All the parsed TypeDefinitions. Type of .ptr: fmi3_xml_variable_typedef_t
     jm_vector(jm_named_ptr) typeDefinitions;
 
     jm_string_set quantities; /* Storage for 'quantity' attribute for Variables and TypeDefinitions. */
     jm_string_set mimeTypes;  /* Storage for 'mimeType' attribute for Variables and TypeDefinitions. */
 
-    /* intended purpose seems to be as memory deallocation ptr, but also used in fmi3_xml_handle_Item (TODO: see if can be changed to single purpose) */
+    /**
+     * List that owns all allocated _props_t and _start_t objects, both for typedefs
+     * and variables.
+     * 
+     * The head points to the last allocated object, and needs to be updated when
+     * new objects are added.
+     * 
+     * XXX: We should rename it to reflect that it contains _start_t as well.
+     */
     fmi3_xml_variable_type_base_t* typePropsList;
 
     fmi3_xml_float_type_props_t   defaultFloat64Type;
@@ -295,9 +324,10 @@ fmi3_xml_variable_type_base_t* fmi3_xml_alloc_variable_or_typedef_props(fmi3_xml
 
 fmi3_xml_variable_type_base_t* fmi3_xml_alloc_variable_type_start(fmi3_xml_type_definitions_t* td,fmi3_xml_variable_type_base_t* base, size_t typeSize);
 
-fmi3_xml_float_type_props_t* fmi3_xml_parse_float_type_properties(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID, fmi3_xml_float_type_props_t* defaultType, const fmi3_xml_primitive_type_t* primType);
-
-fmi3_xml_int_type_props_t* fmi3_xml_parse_intXX_type_properties(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID, fmi3_xml_int_type_props_t* defaultType, const fmi3_xml_primitive_type_t* primType);
+fmi3_xml_float_type_props_t* fmi3_xml_parse_float_type_properties(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID, fmi3_xml_variable_type_base_t* fallbackType, const fmi3_xml_primitive_type_t* primType);
+fmi3_xml_int_type_props_t* fmi3_xml_parse_intXX_type_properties(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID, fmi3_xml_variable_type_base_t* fallbackType, const fmi3_xml_primitive_type_t* primType);
+fmi3_xml_binary_type_props_t* fmi3_xml_parse_binary_type_properties(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID, fmi3_xml_variable_type_base_t* fallbackType);
+fmi3_xml_clock_type_props_t* fmi3_xml_parse_clock_type_properties(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID, fmi3_xml_variable_type_base_t* fallbackType);
 
 fmi3_xml_variable_type_base_t* fmi3_parse_declared_type_attr(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_variable_type_base_t* defaultType);
 

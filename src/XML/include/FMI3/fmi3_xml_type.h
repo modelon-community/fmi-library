@@ -57,6 +57,8 @@ fmi3_base_type_enu_t fmi3_xml_get_base_type(fmi3_xml_variable_typedef_t*);
 fmi3_xml_float_typedef_t* fmi3_xml_get_type_as_float(fmi3_xml_variable_typedef_t* t);
 fmi3_xml_int_typedef_t* fmi3_xml_get_type_as_int(fmi3_xml_variable_typedef_t*);
 fmi3_xml_enumeration_typedef_t* fmi3_xml_get_type_as_enum(fmi3_xml_variable_typedef_t*);
+fmi3_xml_binary_typedef_t* fmi3_xml_get_type_as_binary(fmi3_xml_variable_typedef_t*);
+fmi3_xml_clock_typedef_t* fmi3_xml_get_type_as_clock(fmi3_xml_variable_typedef_t*);
 
 /* Note that NULL-pointer is always returned for strings and booleans */
 const char* fmi3_xml_get_type_quantity(fmi3_xml_variable_typedef_t*);
@@ -99,6 +101,19 @@ const char* fmi3_xml_get_enum_type_item_name(fmi3_xml_enumeration_typedef_t*, un
 int fmi3_xml_get_enum_type_item_value(fmi3_xml_enumeration_typedef_t*, unsigned int  item);
 const char* fmi3_xml_get_enum_type_item_description(fmi3_xml_enumeration_typedef_t*, unsigned int  item);
 const char* fmi3_xml_get_enum_type_value_name(fmi3_xml_enumeration_typedef_t* t, int value);
+
+fmi3_string_t fmi3_xml_get_binary_type_mime_type(fmi3_xml_binary_typedef_t* t);
+size_t fmi3_xml_get_binary_type_max_size(fmi3_xml_binary_typedef_t* t);
+
+fmi3_boolean_t fmi3_xml_get_clock_type_can_be_deactivated(fmi3_xml_clock_typedef_t* t);
+fmi3_uint32_t fmi3_xml_get_clock_type_priority(fmi3_xml_clock_typedef_t* t);
+fmi3_interval_variability_enu_t fmi3_xml_get_clock_type_interval_variability(fmi3_xml_clock_typedef_t* t);
+fmi3_float32_t fmi3_xml_get_clock_type_interval_decimal(fmi3_xml_clock_typedef_t* t);
+fmi3_float32_t fmi3_xml_get_clock_type_shift_decimal(fmi3_xml_clock_typedef_t* t);
+fmi3_boolean_t fmi3_xml_get_clock_type_supports_fraction(fmi3_xml_clock_typedef_t* t);
+fmi3_uint64_t fmi3_xml_get_clock_type_resolution(fmi3_xml_clock_typedef_t* t);
+fmi3_uint64_t fmi3_xml_get_clock_type_interval_counter(fmi3_xml_clock_typedef_t* t);
+fmi3_uint64_t fmi3_xml_get_clock_type_shift_counter(fmi3_xml_clock_typedef_t* t);
 
 /*
 *  @}

@@ -44,6 +44,10 @@ typedef struct fmi3_xml_float_typedef_t fmi3_import_float_typedef_t;
 typedef struct fmi3_xml_int_typedef_t fmi3_import_int_typedef_t;
 /** \brief Opaque enumeration type definition object. */
 typedef struct fmi3_xml_enumeration_typedef_t fmi3_import_enumeration_typedef_t;
+/** \brief Opaque binary type definition object. */
+typedef struct fmi3_xml_binary_typedef_t fmi3_import_binary_typedef_t;
+/** \brief Opaque clock type definition object. */
+typedef struct fmi3_xml_clock_typedef_t fmi3_import_clock_typedef_t;
 /** \brief Opaque general variable type definition object. */
 typedef struct fmi3_xml_variable_typedef_t fmi3_import_variable_typedef_t;
 /** \brief Opaque list of the type definitions in the model */
@@ -88,6 +92,16 @@ FMILIB_EXPORT fmi3_import_int_typedef_t* fmi3_import_get_type_as_int(fmi3_import
     @return Pointer to the specific type object or NULL if base type does not match.
 */
 FMILIB_EXPORT fmi3_import_enumeration_typedef_t* fmi3_import_get_type_as_enum(fmi3_import_variable_typedef_t*);
+
+/** \brief Cast the general type definition object to an object with a specific base type 
+    @return Pointer to the specific type object or NULL if base type does not match.
+*/
+FMILIB_EXPORT fmi3_import_binary_typedef_t* fmi3_import_get_type_as_binary(fmi3_import_variable_typedef_t*);
+
+/** \brief Cast the general type definition object to an object with a specific base type 
+    @return Pointer to the specific type object or NULL if base type does not match.
+*/
+FMILIB_EXPORT fmi3_import_clock_typedef_t* fmi3_import_get_type_as_clock(fmi3_import_variable_typedef_t*);
 
 /** \brief Get the quantity associated with the type definition.
 
@@ -262,6 +276,32 @@ FMILIB_EXPORT const char* fmi3_import_get_enum_type_item_description(fmi3_import
 
 /** \brief Get an enumeration item name for the given value */
 FMILIB_EXPORT const char* fmi3_import_get_enum_type_value_name(fmi3_import_enumeration_typedef_t* t, int value);
+
+/** \brief Get mimeType for the type */
+FMILIB_EXPORT fmi3_string_t fmi3_import_get_binary_type_mime_type(fmi3_import_binary_typedef_t* t);
+
+/** \brief Get maxSize for the type */
+FMILIB_EXPORT size_t fmi3_import_get_binary_type_max_size(fmi3_import_binary_typedef_t* t);
+
+
+/** \brief Get canBeDeactivated for the type */
+FMILIB_EXPORT fmi3_boolean_t fmi3_import_get_clock_type_can_be_deactivated(fmi3_import_clock_typedef_t* v);
+/** \brief Get priority for the type */
+FMILIB_EXPORT fmi3_uint32_t fmi3_import_get_clock_type_priority(fmi3_import_clock_typedef_t* v);
+/** \brief Get intervalVariability for the type */
+FMILIB_EXPORT fmi3_interval_variability_enu_t fmi3_import_get_clock_type_interval_variability(fmi3_import_clock_typedef_t* v);
+/** \brief Get intervalDecimal for the type */
+FMILIB_EXPORT fmi3_float32_t fmi3_import_get_clock_type_interval_decimal(fmi3_import_clock_typedef_t* v);
+/** \brief Get shiftDecimal for the type */
+FMILIB_EXPORT fmi3_float32_t fmi3_import_get_clock_type_shift_decimal(fmi3_import_clock_typedef_t* v);
+/** \brief Get supportsFraction for the type */
+FMILIB_EXPORT fmi3_boolean_t fmi3_import_get_clock_type_supports_fraction(fmi3_import_clock_typedef_t* v);
+/** \brief Get resolution for the type */
+FMILIB_EXPORT fmi3_uint64_t fmi3_import_get_clock_type_resolution(fmi3_import_clock_typedef_t* v);
+/** \brief Get intervalCounter for the type */
+FMILIB_EXPORT fmi3_uint64_t fmi3_import_get_clock_type_interval_counter(fmi3_import_clock_typedef_t* v);
+/** \brief Get shiftCounter for the type */
+FMILIB_EXPORT fmi3_uint64_t fmi3_import_get_clock_type_shift_counter(fmi3_import_clock_typedef_t* v);
 
 /**
 *  @}

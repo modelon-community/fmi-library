@@ -50,7 +50,7 @@ int annotation_start_handle(void *context, const char *parentName, void *parent,
 
 int annotation_data_handle(void* context, const char *s, int len) {
 	int i;
-	for(i = 0; i < len; i++)
+	for (i = 0; i < len; i++)
 		printf("%c", s[i]);
 	return 0;
 }
@@ -62,34 +62,20 @@ int annotation_end_handle(void *context, const char *elm) {
 
 /** \brief XML callbacks are used to process parts of XML that are not handled by the library */
 fmi3_xml_callbacks_t annotation_callbacks = {
-	annotation_start_handle,
-	annotation_data_handle,
-	annotation_end_handle, NULL};
-
-
-void do_exit(int code)
-{
-	printf("Press 'Enter' to exit\n");
-	exit(code);
-}
+        annotation_start_handle,
+        annotation_data_handle,
+        annotation_end_handle,
+        NULL};
 
 void mylogger(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_level, jm_string message)
 {
     printf("[%s][%s] %s\n", module, jm_log_level_to_string(log_level), message);
 }
 
-void print_int(int i,void* data) {
-    printf("%d\n", i);
-}
-
-void print_dbl(double d,void* data) {
-    printf("%g\n", d);
-}
-
 void printTypeInfo(fmi3_import_variable_typedef_t* vt) {
     const char* quan;
 
-    if(!vt) {
+    if (!vt) {
         printf("No type definition\n");
         return;
     }
@@ -100,10 +86,10 @@ void printTypeInfo(fmi3_import_variable_typedef_t* vt) {
 
     printf("Base type: %s\n", fmi3_base_type_to_string(fmi3_import_get_base_type(vt)));
 
-    if(quan) {
+    if (quan) {
         printf("Quantity: %s\n", quan);
     }
-    switch(fmi3_import_get_base_type(vt)) {
+    switch (fmi3_import_get_base_type(vt)) {
     case fmi3_base_type_float64: {
         fmi3_import_float_typedef_t* rt = fmi3_import_get_type_as_float(vt);
         fmi3_float64_t min = fmi3_import_get_float64_type_min(rt);
@@ -114,7 +100,7 @@ void printTypeInfo(fmi3_import_variable_typedef_t* vt) {
 
         printf("Min %g, max %g, nominal %g\n", min, max, nom);
 
-        if(u) {
+        if (u) {
 			char buf[1000];
 			fmi3_SI_base_unit_exp_to_string(fmi3_import_get_SI_unit_exponents(u), 1000, buf);
             printf("Unit: %s, base unit %s, factor %g, offset %g\n",
@@ -123,7 +109,7 @@ void printTypeInfo(fmi3_import_variable_typedef_t* vt) {
 				fmi3_import_get_SI_unit_factor(u),
 				fmi3_import_get_SI_unit_offset(u));
         }
-        if(du) {
+        if (du) {
             printf("Display unit: %s, factor: %g, offset: %g, is relative: %s\n",
                    fmi3_import_get_display_unit_name(du),
                    fmi3_import_get_display_unit_factor(du),
@@ -156,7 +142,7 @@ void printTypeInfo(fmi3_import_variable_typedef_t* vt) {
             unsigned ni, i;
             ni = fmi3_import_get_enum_type_size(et);
             printf("There are %d items \n",ni);
-            for(i = 1; i <= ni; i++) {
+            for (i = 1; i <= ni; i++) {
 				int val = fmi3_import_get_enum_type_item_value(et, i);
 				const char* str = fmi3_import_get_enum_type_value_name(et, val);
 				const char* itnm = fmi3_import_get_enum_type_item_name(et, i);
@@ -173,40 +159,30 @@ void printTypeInfo(fmi3_import_variable_typedef_t* vt) {
         printf("Error in fmiGetBaseType()\n");
         assert(0);
     }
-
 }
 
-void testVariableSearch(fmi3_import_t* fmu,
-	fmi3_import_variable_t* v) {
+void testVariableSearch(fmi3_import_t* fmu, fmi3_import_variable_t* v) {
+    const char * a_name = fmi3_import_get_variable_name(v);
+    fmi3_import_variable_t* found;
+    
+    found = fmi3_import_get_variable_by_name(fmu, a_name);
+    if (!found) {
+        FAIL("Search by name failed for variable: " << a_name);
+    }
+    else if (found != v) {
+        FAIL("Searched by name for " << a_name << " found incorrect variable: " << fmi3_import_get_variable_name(found));
+    }
 
-		const char * a_name = fmi3_import_get_variable_name(v);
-		fmi3_import_variable_t* found;
-        
-        found = fmi3_import_get_variable_by_name(fmu, a_name);
-		if(found != v) {
-			printf("Searching by name %s found var %s\n", a_name, found?fmi3_import_get_variable_name(found):"nothing");
-			do_exit(1);
-		}
-		else {
-			printf("Searching by name worked fine\n");
-		}
-
-		found = fmi3_import_get_variable_by_vr(fmu, fmi3_import_get_variable_vr(v));
-		if(!found) {
-			printf("Searching by vr failed for variable '%s'\n", a_name);
-			do_exit(1);
-		}
-		else if(fmi3_import_get_variable_base_type(v) != fmi3_import_get_variable_base_type(found)) {
-			printf("Searching %s found var %s", a_name, fmi3_import_get_variable_name(found));
-			do_exit(1);
-		}
-		else if(fmi3_import_get_variable_vr(v) != fmi3_import_get_variable_vr(found)) {
-			printf("Searching %s found var %s", a_name, fmi3_import_get_variable_name(found));
-			do_exit(1);
-		}
-		else {
-			printf("Searching by vr worked fine\n");
-		}
+    found = fmi3_import_get_variable_by_vr(fmu, fmi3_import_get_variable_vr(v));
+    if (!found) {
+        FAIL("Search by VR failed for variable: " << a_name);
+    }
+    else if (fmi3_import_get_variable_base_type(v) != fmi3_import_get_variable_base_type(found)) {
+        FAIL("Search by VR for " << a_name << " found var with incorrect base type: " << fmi3_import_get_variable_name(found));
+    }
+    else if (fmi3_import_get_variable_vr(v) != fmi3_import_get_variable_vr(found)) {
+        FAIL("Searching by VR for " << a_name << " found var with incorrect VR: " << fmi3_import_get_variable_name(found));
+    }
 }
 
 void printVariableInfo(fmi3_import_t* fmu,
@@ -232,7 +208,7 @@ void printVariableInfo(fmi3_import_t* fmu,
         printf("Unit: %s, display unit: %s\n", u ? fmi3_import_get_unit_name(u) : 0, du ? fmi3_import_get_display_unit_name(du) : "not provided");
     }
 
-    if(fmi3_import_get_variable_has_start(v)) {
+    if (fmi3_import_get_variable_has_start(v)) {
         printf("There is a start value\n");
 
         switch(fmi3_import_get_variable_base_type(v)) {
@@ -261,7 +237,7 @@ void printVariableInfo(fmi3_import_t* fmu,
             printf("Error in fmiGetBaseType()\n");
         }
     }
-    if(fmi3_import_get_variable_alias_kind(v) != fmi3_variable_is_not_alias) {
+    if (fmi3_import_get_variable_alias_kind(v) != fmi3_variable_is_not_alias) {
         printf("The variable is aliased to %s\n",
                fmi3_import_get_variable_name( fmi3_import_get_variable_alias_base(fmu, v)));
     }
@@ -271,9 +247,9 @@ void printVariableInfo(fmi3_import_t* fmu,
     {
         fmi3_import_variable_list_t* vl = fmi3_import_get_variable_aliases(fmu, v);
         size_t i, n = fmi3_import_get_variable_list_size(vl);
-        if(n>1) {
+        if (n > 1) {
             printf("Listing aliases: \n");
-            for(i = 0;i<n;i++)
+            for (i = 0;i<n;i++)
                 printf("\t%s\n",fmi3_import_get_variable_name(fmi3_import_get_variable(vl, i)));
         }
         fmi3_import_free_variable_list(vl);
@@ -283,7 +259,7 @@ void printVariableInfo(fmi3_import_t* fmu,
 void printCapabilitiesInfo(fmi3_import_t* fmu) {
 	size_t i;
 
-	for( i = 0; i < fmi3_capabilities_Num; ++i) {
+	for (i = 0; i < fmi3_capabilities_Num; ++i) {
 		printf("%s = %u\n",
 			fmi3_capability_to_string((fmi3_capabilities_enu_t)i),
 			fmi3_import_get_capability(fmu, (fmi3_capabilities_enu_t)i));
@@ -292,27 +268,27 @@ void printCapabilitiesInfo(fmi3_import_t* fmu) {
 
 void printDependenciesInfo(	fmi3_import_t* fmu, fmi3_import_variable_list_t* rows, fmi3_import_variable_list_t* cols, size_t* start, size_t *dep, char* factor) {
 	size_t i, j, nr;
-	if(!rows || !cols || !start) {
+	if (!rows || !cols || !start) {
 		printf("Dependencies are not available\n");
-		if(rows) {
+		if (rows) {
 			nr = fmi3_import_get_variable_list_size(rows);
-			for(i = 0; i < nr; i++) {
+			for (i = 0; i < nr; i++) {
 				printf("\t%s\n",fmi3_import_get_variable_name(fmi3_import_get_variable(rows, i)));
 			}
 		}
 		return;
 	}
 	nr = fmi3_import_get_variable_list_size(rows);
-	for(i = 0; i < nr; i++) {
-		if(start[i] == start[i+1]) {
+	for (i = 0; i < nr; i++) {
+		if (start[i] == start[i+1]) {
 			printf("\t%s has no dependencies\n",fmi3_import_get_variable_name(fmi3_import_get_variable(rows, i)));
 		}
-		else if((start[i] + 1 == start[i+1]) && (dep[start[i]] == 0)) {
+		else if ((start[i] + 1 == start[i+1]) && (dep[start[i]] == 0)) {
 			printf("\t%s depends on all\n",fmi3_import_get_variable_name(fmi3_import_get_variable(rows, i)));
 		}
 		else {
 			printf("\t%s depends on:\n",fmi3_import_get_variable_name(fmi3_import_get_variable(rows, i)));
-			for(j = start[i]; j < start[i+1]; j++) {
+			for (j = start[i]; j < start[i+1]; j++) {
 				printf("\t\t%s (factor kind: %s)\n",fmi3_import_get_variable_name(fmi3_import_get_variable(cols, dep[j]-1)),
 					fmi3_dependencies_kind_to_string((fmi3_dependencies_kind_enu_t)factor[j]));
 			}
@@ -320,8 +296,7 @@ void printDependenciesInfo(	fmi3_import_t* fmu, fmi3_import_variable_list_t* row
 	}
 }
 
-static void test_parse_bouncingball(const char* xmldir)
-{
+static void test_parse_bouncingball(const char* xmldir, bool expectParseFailure) {
     clock_t start, stop;
     double t = 0.0;
 	jm_callbacks callbacks;
@@ -356,12 +331,13 @@ static void test_parse_bouncingball(const char* xmldir)
     printf("Parsing took %g seconds\n", t);
 
     fmi_import_free_context(context);
-
-	if (!fmu) {
-		printf("Error parsing XML, exiting\n");
-        res = 1;
-        goto err1;
-	}
+    
+    if (expectParseFailure) {
+        REQUIRE(fmu == nullptr);
+        return;
+    } else {
+        REQUIRE(fmu != nullptr);
+    }
 
     printf("Model name: %s\n", fmi3_import_get_model_name(fmu));
     printf("Model instantiationToken: %s\n", fmi3_import_get_instantiation_token(fmu));
@@ -374,11 +350,11 @@ static void test_parse_bouncingball(const char* xmldir)
     printf("Version: %s\n", fmi3_import_get_model_version(fmu));
     printf("Naming : %s\n", fmi3_naming_convention_to_string(fmi3_import_get_naming_convention(fmu)));
 
-    if(fmi3_import_get_fmu_kind(fmu) == fmi3_fmu_kind_me)
+    if (fmi3_import_get_fmu_kind(fmu) == fmi3_fmu_kind_me)
         printf("Model identifier ME: %s\n", fmi3_import_get_model_identifier_ME(fmu));
-    if(fmi3_import_get_fmu_kind(fmu) == fmi3_fmu_kind_cs)
+    if (fmi3_import_get_fmu_kind(fmu) == fmi3_fmu_kind_cs)
         printf("Model identifier CS: %s\n", fmi3_import_get_model_identifier_CS(fmu));
-    if(fmi3_import_get_fmu_kind(fmu) == fmi3_fmu_kind_se)
+    if (fmi3_import_get_fmu_kind(fmu) == fmi3_fmu_kind_se)
         printf("Model identifier SE: %s\n", fmi3_import_get_model_identifier_SE(fmu));
     printCapabilitiesInfo(fmu);
 
@@ -414,20 +390,20 @@ static void test_parse_bouncingball(const char* xmldir)
     {
         size_t i, nv = fmi3_import_get_vendors_num(fmu);
         printf("There are %u tool annotation records \n", (unsigned)nv);
-        for( i = 0; i < nv; i++) {
+        for (i = 0; i < nv; i++) {
             printf("Vendor name [%u] %s", (unsigned)i, fmi3_import_get_vendor_name(fmu, i));
 		}
 	}
     {
         fmi3_import_unit_definitions_t* ud = fmi3_import_get_unit_definitions(fmu);
-        if(ud) {
+        if (ud) {
             unsigned  i, nu = fmi3_import_get_unit_definitions_number(ud);
             printf("There are %d different units used \n", nu);
 
-            for(i = 0; i < nu; i++) {
+            for (i = 0; i < nu; i++) {
                 fmi3_import_unit_t* u = fmi3_import_get_unit(ud, i);
 				char buf[1000];
-                if(!u) {
+                if (!u) {
                     printf("Error getting unit for index %d (%s)\n", i, fmi3_import_get_last_error(fmu));
                     break;
                 }
@@ -445,13 +421,13 @@ static void test_parse_bouncingball(const char* xmldir)
     }
     {
         fmi3_import_type_definitions_t* td = fmi3_import_get_type_definitions(fmu);
-        if(td) {
+        if (td) {
             {
                 unsigned i, ntd = fmi3_import_get_type_definition_number(td);
                 printf("There are %d defs\n", ntd);
-                for(i = 0; i < ntd; i++) {
+                for (i = 0; i < ntd; i++) {
                     fmi3_import_variable_typedef_t* vt = fmi3_import_get_typedef(td, i);
-                    if(!vt) {
+                    if (!vt) {
                         printf("Error getting vartype for index %d (%s)\n", i, fmi3_import_get_last_error(fmu));
                         break;
                     }
@@ -472,46 +448,31 @@ static void test_parse_bouncingball(const char* xmldir)
 
         nv = fmi3_import_get_variable_list_size(vl);
         printf("There are %u variables in total \n",(unsigned)nv);
-        for(i = 0; i < nv; i++) {
+        for (i = 0; i < nv; i++) {
             fmi3_import_variable_t* var = fmi3_import_get_variable(vl, i);
 			assert(vrl[i] == fmi3_import_get_variable_vr(var));
-            if(!var) {
-				printf("Something wrong with variable %u \n",(unsigned)i);
-                res = 1;
-                goto err2;
-			}
-            else {
-                printVariableInfo(fmu, var);
-				testVariableSearch(fmu, var);
-			}
+            REQUIRE(var != nullptr);
+            printVariableInfo(fmu, var);
+            testVariableSearch(fmu, var);
         }
         fmi3_import_free_variable_list(vl);
         fmi3_import_free_variable_list(ders);
     }
 
-err2:
 	fmi3_import_free(fmu);
-err1: /* fmu not allocated */
-    if (res) {
-        do_exit(res);
-    }
-
-	printf("Everything seems to be OK since you got this far=)!\n");
-
-	do_exit(res);
 }
 
 TEST_CASE("Test exercising the XML API on BouncingBall") {
     SECTION("Empty (missing modelDescription.xml)") {
-        test_parse_bouncingball(FMIL_TEST_DIR "/FMI3/fmu_dummy");
+        test_parse_bouncingball(FMIL_TEST_DIR "/FMI3/fmu_dummy", false);
     }
     SECTION("ME") {
-        test_parse_bouncingball(TEST_OUTPUT_FOLDER "/BouncingBall3_me");
+        test_parse_bouncingball(TEST_OUTPUT_FOLDER "/BouncingBall3_me", false);
     }
     SECTION("CS") {
-        test_parse_bouncingball(TEST_OUTPUT_FOLDER "/BouncingBall3_cs");
+        test_parse_bouncingball(TEST_OUTPUT_FOLDER "/BouncingBall3_cs", false);
     }
     SECTION("Malformed XML") {
-        test_parse_bouncingball(TEST_OUTPUT_FOLDER "/BouncingBall3_malformed_mf");
+        test_parse_bouncingball(TEST_OUTPUT_FOLDER "/BouncingBall3_malformed_mf", true);
     }
 }

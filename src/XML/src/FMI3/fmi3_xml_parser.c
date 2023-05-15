@@ -1440,6 +1440,10 @@ int fmi3_xml_parse_model_description(fmi3_xml_model_description_t* md,
     return 0;
 }
 
+jm_string fmi3_xml_elmid_to_elmname(fmi3_xml_elm_enu_t id){
+    return fmi3_element_handle_map[id].elementName;
+}
+
 #define JM_TEMPLATE_INSTANCE_TYPE fmi3_xml_element_handle_map_t
 #include "JM/jm_vector_template.h"
 

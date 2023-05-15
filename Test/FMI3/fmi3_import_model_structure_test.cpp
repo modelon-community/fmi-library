@@ -378,7 +378,7 @@ TEST_CASE("Error check: ModelStructure; Negative dependency value") {
     REQUIRE(tfmu != nullptr);
     REQUIRE(tfmu->fmu == nullptr);
 
-    const char* logMsg = "XML element 'Unknown': Attribute 'dependencies' contains invalid value: -1.";
+    const char* logMsg = "XML element 'ContinuousStateDerivative': Attribute 'dependencies' contains invalid value: -1.";
     REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
 
     fmi3_testutil_import_free(tfmu);
@@ -391,7 +391,7 @@ TEST_CASE("Error check: ModelStructure; Invalid dependency value; not a number")
     REQUIRE(tfmu != nullptr);
     REQUIRE(tfmu->fmu == nullptr);
 
-    const char* logMsg = "XML element 'Unknown': could not parse item 0, character 'a' in the list for attribute 'dependencies'";
+    const char* logMsg = "XML element 'ContinuousStateDerivative': could not parse item 0, character 'a' in the list for attribute 'dependencies'";
     REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
 
     fmi3_testutil_import_free(tfmu);
@@ -415,7 +415,7 @@ TEST_CASE("Error check: ModelStructure; Mismatched number of dependencies and de
     REQUIRE(tfmu != nullptr);
     REQUIRE(tfmu->fmu == nullptr);
 
-    const char* logMsg = "XML element 'Unknown': different number of items (1 and 2) in the lists for 'dependencies' and 'dependenciesKind'";
+    const char* logMsg = "XML element 'ContinuousStateDerivative': different number of items (1 and 2) in the lists for 'dependencies' and 'dependenciesKind'";
     REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
 
     fmi3_testutil_import_free(tfmu);
@@ -428,7 +428,7 @@ TEST_CASE("Error check: ModelStructure; Invalid dependenciesKind item in list") 
     REQUIRE(tfmu != nullptr);
     REQUIRE(tfmu->fmu == nullptr);
 
-    const char* logMsg = "XML element 'Unknown': could not parse item 0 in the list for attribute 'dependenciesKind'";
+    const char* logMsg = "XML element 'ContinuousStateDerivative': could not parse item 0 in the list for attribute 'dependenciesKind'";
     REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
 
     fmi3_testutil_import_free(tfmu);
@@ -441,7 +441,7 @@ TEST_CASE("Error check: ModelStructure; dependencies missing but dependenciesKin
     REQUIRE(tfmu != nullptr);
     REQUIRE(tfmu->fmu == nullptr);
 
-    const char* logMsg = "XML element 'Unknown': if `dependenciesKind` attribute is present then the `dependencies` attribute must also be present.";
+    const char* logMsg = "XML element 'ContinuousStateDerivative': if `dependenciesKind` attribute is present then the `dependencies` attribute must also be present.";
     REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
 
     fmi3_testutil_import_free(tfmu);

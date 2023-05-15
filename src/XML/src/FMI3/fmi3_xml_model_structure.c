@@ -231,7 +231,7 @@ int fmi3_xml_handle_ModelStructure(fmi3_xml_parser_context_t *context, const cha
 /**
  * Parse the dependencies of an element in ModelStructure
  */
-int fmi3_xml_parse_dependencies(fmi3_xml_parser_context_t *context,
+static int fmi3_xml_parse_dependencies(fmi3_xml_parser_context_t *context,
                                 fmi3_xml_elm_enu_t elmID,
                                 fmi3_xml_dependencies_t* deps)
 {
@@ -264,15 +264,14 @@ int fmi3_xml_parse_dependencies(fmi3_xml_parser_context_t *context,
             }
             if (!ch) break;
             if (sscanf(cur, "%d", &ind) != 1) {
-                // TODO: Rework this error; list actual type
-                fmi3_xml_parse_error(context, "XML element 'Unknown': could not parse item %d, character '%c' in the list for attribute 'dependencies'",
-                    numDepInd, ch);
+                fmi3_xml_parse_error(context, "XML element '%s': could not parse item %d, character '%c' in the list for attribute 'dependencies'",
+                    fmi3_xml_elmid_to_elmname(elmID), numDepInd, ch);
                ms->isValidFlag = 0;
                return 0;
             }
             if (ind < 0) {
-                // TODO: Rework this error; list actual type
-                fmi3_xml_parse_error(context, "XML element 'Unknown': Attribute 'dependencies' contains invalid value: %d.", ind);
+                fmi3_xml_parse_error(context, "XML element '%s': Attribute 'dependencies' contains invalid value: %d.", 
+                    fmi3_xml_elmid_to_elmname(elmID), ind);
                ms->isValidFlag = 0;
                return 0;
             }
@@ -336,9 +335,8 @@ int fmi3_xml_parse_dependencies(fmi3_xml_parser_context_t *context,
                  cur+=8;
              }
              else {
-                // TODO: Rework this error; list actual type
-                 fmi3_xml_parse_error(context, "XML element 'Unknown': could not parse item %d in the list for attribute 'dependenciesKind'",
-                     numDepKind);
+                 fmi3_xml_parse_error(context, "XML element '%s': could not parse item %d in the list for attribute 'dependenciesKind'",
+                    fmi3_xml_elmid_to_elmname(elmID), numDepKind);
                  ms->isValidFlag = 0;
                  return 0;
              }
@@ -363,9 +361,8 @@ int fmi3_xml_parse_dependencies(fmi3_xml_parser_context_t *context,
     if (listInd && listKind) {
         /* both lists are present - the number of items must match */
         if (numDepInd != numDepKind) {
-            // TODO: Reference actual XML element type
-            fmi3_xml_parse_error(context, "XML element 'Unknown': different number of items (%u and %u) in the lists for 'dependencies' and 'dependenciesKind'",
-                                 numDepInd, numDepKind);
+            fmi3_xml_parse_error(context, "XML element '%s': different number of items (%u and %u) in the lists for 'dependencies' and 'dependenciesKind'",
+                                 fmi3_xml_elmid_to_elmname(elmID), numDepInd, numDepKind);
             ms->isValidFlag = 0;
             return 0;
         }
@@ -387,8 +384,8 @@ int fmi3_xml_parse_dependencies(fmi3_xml_parser_context_t *context,
         jm_vector_push_back(char)(&deps->dependencyOnAll, 0); // not dependent on all
     }
     else if (listKind) {
-        // TODO: Reference actual XML element type
-        fmi3_xml_parse_error(context, "XML element 'Unknown': if `dependenciesKind` attribute is present then the `dependencies` attribute must also be present.");
+        fmi3_xml_parse_error(context, "XML element '%s': if `dependenciesKind` attribute is present then the `dependencies` attribute must also be present.",
+            fmi3_xml_elmid_to_elmname(elmID));
         ms->isValidFlag = 0;
         return 0;
     }

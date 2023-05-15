@@ -686,7 +686,7 @@ fmi3_status_t fmi3_import_get_number_of_event_indicators(fmi3_import_t* fmu, siz
 {
     if (!fmi3_import_check_has_FMU(fmu)) return fmi3_status_error;
 
-    /* Since this CAPI is redundant, the values can be taken from XML if the FMU is not yet instantiated */
+    /* The values can be taken from XML if the FMU is not yet instantiated */
     if (!fmu->capi || !fmu->capi->inst) {
         *nz = fmi3_xml_get_number_of_event_indicators(fmu->md);
         return fmi3_status_ok;
@@ -699,7 +699,7 @@ fmi3_status_t fmi3_import_get_number_of_continuous_states(fmi3_import_t* fmu, si
 {
     if (!fmi3_import_check_has_FMU(fmu)) return fmi3_status_error;
 
-    /* Since this CAPI is redundant, the values can be taken from XML if the FMU is not yet instantiated */
+    /* The values can be taken from XML if the FMU is not yet instantiated */
     if (!fmu->capi || !fmu->capi->inst) {
         *nx = fmi3_xml_get_number_of_continuous_states(fmu->md);
         return fmi3_status_ok;

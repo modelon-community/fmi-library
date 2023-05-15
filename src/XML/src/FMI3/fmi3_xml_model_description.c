@@ -406,66 +406,52 @@ int fmi3_xml_is_valid_model_ID(const char* str) {
 }
 
 int fmi3_xml_handle_fmiModelDescription(fmi3_xml_parser_context_t *context, const char* data) {
-    jm_name_ID_map_t namingConventionMap[] = {{"flat",fmi3_naming_enu_flat},{"structured", fmi3_naming_enu_structured},{0,0}};
+    jm_name_ID_map_t namingConventionMap[] = {{"flat",fmi3_naming_enu_flat}, {"structured",fmi3_naming_enu_structured}, {NULL,0}};
     fmi3_xml_model_description_t* md = context->modelDescription;
-    if(!data) {
-        fmi3_uint32_t numEventIndicators=0;
+    if (!data) {
         int ret;
-        if(context -> currentElmID != fmi3_xml_elmID_none) {
+        if (context->currentElmID != fmi3_xml_elmID_none) {
             fmi3_xml_parse_fatal(context, "fmi3_xml_model_description must be the root XML element");
             return -1;
         }
         jm_log_verbose(context->callbacks, module, "Parsing XML element fmiModelDescription");
         md->fmuKind = fmi3_fmu_kind_unknown;
         /* process the attributes */
-        ret =        /* <xs:attribute name="fmiVersion" type="xs:normalizedString" use="required" fixed="3.0"/> */
-                    fmi3_xml_set_attr_string(context, fmi3_xml_elmID_fmiModelDescription, fmi_attr_id_fmiVersion, 1, &(md->fmi3_xml_standard_version)) ||
-                    /* <xs:attribute name="modelName" type="xs:normalizedString" use="required"> */
-                    fmi3_xml_set_attr_string(context, fmi3_xml_elmID_fmiModelDescription, fmi_attr_id_modelName, 1, &(md->modelName)) ||
-                    /* <xs:attribute name="guid" type="xs:normalizedString" use="required"> */
-                    fmi3_xml_set_attr_string(context, fmi3_xml_elmID_fmiModelDescription, fmi_attr_id_instantiationToken, 1, &(md->instantiationToken)) ||
-                    /* <xs:attribute name="description" type="xs:string"/> */
-                    fmi3_xml_set_attr_string(context, fmi3_xml_elmID_fmiModelDescription, fmi_attr_id_description, 0, &(md->description)) ||
-                    /* <xs:attribute name="author" type="xs:string"/> */
-                    fmi3_xml_set_attr_string(context, fmi3_xml_elmID_fmiModelDescription, fmi_attr_id_author, 0, &(md->author)) ||
-                    /* <xs:attribute name="version" type="xs:normalizedString"> */
-                    fmi3_xml_set_attr_string(context, fmi3_xml_elmID_fmiModelDescription, fmi_attr_id_version, 0, &(md->version)) ||
-                    /* <xs:attribute name="copyright" type="xs:string"> */
-                    fmi3_xml_set_attr_string(context, fmi3_xml_elmID_fmiModelDescription, fmi_attr_id_copyright, 0, &(md->copyright)) ||
-                    /* <xs:attribute name="license" type="xs:string"> */
-                    fmi3_xml_set_attr_string(context, fmi3_xml_elmID_fmiModelDescription, fmi_attr_id_license, 0, &(md->license)) ||
-                    /* <xs:attribute name="generationTool" type="xs:normalizedString"/> */
-                    fmi3_xml_set_attr_string(context, fmi3_xml_elmID_fmiModelDescription, fmi_attr_id_generationTool, 0, &(md->generationTool)) ||
-                    /* <xs:attribute name="generationDateAndTime" type="xs:dateTime"/> */
-                    fmi3_xml_set_attr_string(context, fmi3_xml_elmID_fmiModelDescription, fmi_attr_id_generationDateAndTime, 0, &(md->generationDateAndTime)) ||
-                    /* <xs:attribute name="variableNamingConvention" use="optional" default="flat"> */
-                    fmi3_xml_set_attr_enum(context, fmi3_xml_elmID_fmiModelDescription, fmi_attr_id_variableNamingConvention, 0, (unsigned*)&(md->namingConvension), fmi3_naming_enu_flat, namingConventionMap) ||
-                    /* <xs:attribute name="numberOfEventIndicators" type="xs:unsignedInt"/> */
-                    fmi3_xml_set_attr_uint32(context, fmi3_xml_elmID_fmiModelDescription, fmi_attr_id_numberOfEventIndicators, 0, &numEventIndicators, 0);
-                    md->numberOfEventIndicators = numEventIndicators;
-        return (ret );
+        ret =   fmi3_xml_set_attr_string(context, fmi3_xml_elmID_fmiModelDescription, fmi_attr_id_fmiVersion, 1, &(md->fmi3_xml_standard_version)) ||
+                fmi3_xml_set_attr_string(context, fmi3_xml_elmID_fmiModelDescription, fmi_attr_id_modelName, 1, &(md->modelName)) ||
+                fmi3_xml_set_attr_string(context, fmi3_xml_elmID_fmiModelDescription, fmi_attr_id_instantiationToken, 1, &(md->instantiationToken)) ||
+                fmi3_xml_set_attr_string(context, fmi3_xml_elmID_fmiModelDescription, fmi_attr_id_description, 0, &(md->description)) ||
+                fmi3_xml_set_attr_string(context, fmi3_xml_elmID_fmiModelDescription, fmi_attr_id_author, 0, &(md->author)) ||
+                fmi3_xml_set_attr_string(context, fmi3_xml_elmID_fmiModelDescription, fmi_attr_id_version, 0, &(md->version)) ||
+                fmi3_xml_set_attr_string(context, fmi3_xml_elmID_fmiModelDescription, fmi_attr_id_copyright, 0, &(md->copyright)) ||
+                fmi3_xml_set_attr_string(context, fmi3_xml_elmID_fmiModelDescription, fmi_attr_id_license, 0, &(md->license)) ||
+                fmi3_xml_set_attr_string(context, fmi3_xml_elmID_fmiModelDescription, fmi_attr_id_generationTool, 0, &(md->generationTool)) ||
+                fmi3_xml_set_attr_string(context, fmi3_xml_elmID_fmiModelDescription, fmi_attr_id_generationDateAndTime, 0, &(md->generationDateAndTime)) ||
+                fmi3_xml_set_attr_enum(context, fmi3_xml_elmID_fmiModelDescription, fmi_attr_id_variableNamingConvention, 0, (unsigned*)&(md->namingConvension),
+                                       fmi3_naming_enu_flat, namingConventionMap);
+        return (ret);
     }
     else {
         /* check that fmuKind is defined and that model identifiers are valid */
-        if(md->fmuKind == fmi3_fmu_kind_unknown) {
+        if (md->fmuKind == fmi3_fmu_kind_unknown) {
             fmi3_xml_parse_fatal(
                 context,
                 "Neither ModelExchange, CoSimulation nor ScheduledExecution element were parsed correctly. FMU kind not known.");
             return -1;
         }
-        if( (md->fmuKind & fmi3_fmu_kind_me) && !fmi3_xml_is_valid_model_ID(fmi3_xml_get_model_identifier_ME(md))) {
+        if ((md->fmuKind & fmi3_fmu_kind_me) && !fmi3_xml_is_valid_model_ID(fmi3_xml_get_model_identifier_ME(md))) {
             fmi3_xml_parse_error(context, "Model identifier '%s' is not valid (must be a valid C-identifier)", fmi3_xml_get_model_identifier_ME(md));
             return -1;
         }
-        if( (md->fmuKind & fmi3_fmu_kind_cs) && !fmi3_xml_is_valid_model_ID(fmi3_xml_get_model_identifier_CS(md))) {
+        if ((md->fmuKind & fmi3_fmu_kind_cs) && !fmi3_xml_is_valid_model_ID(fmi3_xml_get_model_identifier_CS(md))) {
             fmi3_xml_parse_error(context, "Model identifier '%s' is not valid (must be a valid C-identifier)", fmi3_xml_get_model_identifier_CS(md));
             return -1;
         }
-        if( (md->fmuKind & fmi3_fmu_kind_se) && !fmi3_xml_is_valid_model_ID(fmi3_xml_get_model_identifier_SE(md))) {
+        if ((md->fmuKind & fmi3_fmu_kind_se) && !fmi3_xml_is_valid_model_ID(fmi3_xml_get_model_identifier_SE(md))) {
             fmi3_xml_parse_error(context, "Model identifier '%s' is not valid (must be a valid C-identifier)", fmi3_xml_get_model_identifier_SE(md));
             return -1;
         }
-        if(!md->modelStructure) {
+        if (!md->modelStructure) {
             fmi3_xml_parse_fatal(context, "No model structure information available. Cannot continue.");
             return -1;
         }
@@ -491,12 +477,14 @@ int fmi3_xml_handle_ModelExchange(fmi3_xml_parser_context_t *context, const char
         }
 
         /* process the attributes */
-
-        /* <xs:attribute name="providesDirectionalDerivative" type="xs:boolean" default="false"/> */
-        if (fmi3_xml_is_attr_defined(context, fmi_attr_id_providesDirectionalDerivatives)) {
-            fmi3_xml_parse_error(context, "Attribute 'providesDirectionalDerivatives' has been renamed to 'providesDirectionalDerivative'.");
-            if (fmi3_xml_set_attr_boolean(context,fmi3_xml_elmID_ModelExchange, fmi_attr_id_providesDirectionalDerivatives,0,
-                &md->capabilities[fmi3_me_providesDirectionalDerivatives],0)) return -1;
+        if (fmi3_xml_is_attr_defined(context, fmi_attr_id_providesDirectionalDerivative)) {
+            fmi3_xml_parse_error(context, "Attribute 'providesDirectionalDerivative' has been renamed to 'providesDirectionalDerivatives'.");
+            if (fmi3_xml_set_attr_boolean(context, fmi3_xml_elmID_ModelExchange,
+                    fmi_attr_id_providesDirectionalDerivatives, 0,
+                    &md->capabilities[fmi3_me_providesDirectionalDerivatives], 0))
+            {
+                return -1;
+            }
         }
         else {
             if (fmi3_xml_set_attr_boolean(context,fmi3_xml_elmID_ModelExchange, fmi_attr_id_providesDirectionalDerivative,0,

@@ -1920,12 +1920,6 @@ int fmi3_xml_handle_BinaryVariableStart(fmi3_xml_parser_context_t* context, cons
                 fmi3_xml_parse_error(context, "Empty value attribute in Start element");
                 return -1;
             }
-            if (len % 2 != 0) {
-                // 2 hexadecimal chars per byte. This is also checked in the conversion, but if this happens
-                // and we want to handle it, then we must allocate extra size to take into account padding of
-                // the final char.
-                return -1;
-            }
             char* attrAsStr = context->callbacks->malloc(len + 1);
             strcpy(attrAsStr, attr);
             jm_vector_push_back(jm_voidp)(vec, attrAsStr);
@@ -1940,12 +1934,6 @@ int fmi3_xml_handle_BinaryVariableStart(fmi3_xml_parser_context_t* context, cons
             size_t len = jm_vector_get_size(char)(bufStartStr);
             if (len == 0) {
                 fmi3_xml_parse_error(context, "Empty value attribute in Start element");
-                return -1;
-            }
-            if (len % 2 != 0) {
-                // 2 hexadecimal chars per byte. This is also checked in the conversion, but if this happens
-                // and we want to handle it, then we must allocate extra size to take into account padding of
-                // the final char.
                 return -1;
             }
             size_t arrSize = len / 2;

@@ -15,8 +15,9 @@ extern "C" {
 
 typedef struct fmi3_testutil_import_t {
     fmi3_import_t* fmu;
-    jm_vector(jm_voidp) log;  // All logged messages
-    jm_callbacks cb;          // Holds the test-logger and its context
+    jm_vector(jm_voidp) log;     // All logged messages
+    jm_vector(jm_voidp) errLog;  // List of fatal and error messages
+    jm_callbacks cb;             // Holds the test-logger and its context
 } fmi3_testutil_import_t;
 
 /**
@@ -45,6 +46,11 @@ fmi3_testutil_import_t* fmi3_testutil_parse_xml_with_log(const char* xmldir);
  * Free the object.
  */
 void fmi3_testutil_import_free(fmi3_testutil_import_t* testfmu);
+
+/**
+ * Returns the number of logged errors.
+ */
+size_t fmi3_testutil_get_num_errors(fmi3_testutil_import_t* testfmu);
 
 /**
  * Returns true if any logged message constains the given message substring.

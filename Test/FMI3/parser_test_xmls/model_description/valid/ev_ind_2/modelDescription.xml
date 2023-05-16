@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription fmiVersion="3.0" modelName="" instantiationToken="">
+<ModelExchange modelIdentifier="id"/>
+
+<ModelVariables>
+  <Float64 name="v0" valueReference="0"/>
+  <Float64 name="v1" valueReference="1"/>
+</ModelVariables>
+<ModelStructure>
+  <EventIndicator valueReference="0"/>
+  <EventIndicator valueReference="1"/>
+</ModelStructure>
+
+</fmiModelDescription>

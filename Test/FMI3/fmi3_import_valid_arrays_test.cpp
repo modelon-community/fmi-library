@@ -83,6 +83,33 @@ static fmi3_import_dimension_list_t* basic_array_checks(fmi3_import_variable_t* 
 }
 
 
+TEST_CASE("Binary array") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/arrays/valid/binary_array";
+    fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
+    REQUIRE(xml != nullptr);
+
+    SECTION("Test binary start array") {
+        fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "binary_array");
+        fmi3_import_dimension_list_t* dimList = basic_array_checks(v, xml, 1);
+        fmi3_binary_t* start = fmi3_import_get_binary_variable_start_array(fmi3_import_get_variable_as_binary(v));
+        REQUIRE(start[0][0]   == 0x00U);
+        REQUIRE(start[0][1]   == 0x11U);
+        REQUIRE(start[0][2]   == 0xBBU);
+        REQUIRE(start[0][3]   == 0xffU);
+        REQUIRE(start[0][4]   == 0x02U);
+        REQUIRE(start[0][5]   == 0x9eU);
+        REQUIRE(start[0][6]   == 0xE4U);
+        REQUIRE(start[0][7]   == 0xCdU);
+        start++;
+        REQUIRE(start[0][0]   == 0x3cU);
+        REQUIRE(start[0][1]   == 0x3fU);
+        start++;
+        REQUIRE(start[0][0]   == 0xE4U);
+        REQUIRE(start[0][1]   == 0xCdU);
+        fmi3_import_free_dimension_list(dimList);
+    }
+    fmi3_import_free(xml);
+}
 
 TEST_CASE("Test array parsing and verify retrieved start values are as expected"){
     jm_callbacks cb;
@@ -244,27 +271,6 @@ TEST_CASE("Test array parsing and verify retrieved start values are as expected"
         fmi3_import_dimension_list_t* dimList = basic_array_checks(v, xml, 1);
         fmi3_int64_t* start = fmi3_import_get_enum_variable_start_array(fmi3_import_get_variable_as_enum(v));
         REQUIRE(start[0] == -57);
-        fmi3_import_free_dimension_list(dimList);
-    }
-
-    SECTION("Test binary start array") {
-        fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "binary_array");
-        fmi3_import_dimension_list_t* dimList = basic_array_checks(v, xml, 1);
-        fmi3_binary_t* start = fmi3_import_get_binary_variable_start_array(fmi3_import_get_variable_as_binary(v));
-        REQUIRE(start[0][0]   == 0x00U);
-        REQUIRE(start[0][1]   == 0x11U);
-        REQUIRE(start[0][2]   == 0xBBU);
-        REQUIRE(start[0][3]   == 0xffU);
-        REQUIRE(start[0][4]   == 0x02U);
-        REQUIRE(start[0][5]   == 0x9eU);
-        REQUIRE(start[0][6]   == 0xE4U);
-        REQUIRE(start[0][7]   == 0xCdU);
-        start++;
-        REQUIRE(start[0][0]   == 0x3cU);
-        REQUIRE(start[0][1]   == 0x3fU);
-        start++;
-        REQUIRE(start[0][0]   == 0xE4U);
-        REQUIRE(start[0][1]   == 0xCdU);
         fmi3_import_free_dimension_list(dimList);
     }
 

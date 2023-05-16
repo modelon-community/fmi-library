@@ -1849,7 +1849,7 @@ int fmi3_xml_handle_BinaryVariable(fmi3_xml_parser_context_t* context, const cha
                 return -1;
             }
             variable->type = &startObj->super;
-            // Resize the vector to 0 since we are now done with the previous values.
+            // Resize the vector to 0 since we are now done with the current variable.
             jm_vector_resize(jm_voidp)(&context->currentStartVariableValues, 0);
         } else {
             fmi3_log_error_if_start_required(context, variable);

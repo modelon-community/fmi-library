@@ -137,6 +137,9 @@ fmi3Status fmi_get_float64(fmi3Instance instance, const fmi3ValueReference value
                 values[m++] = inst->states[1];
                 values[m++] = inst->states_der[1];
             }
+            else if (currentValueReference == 17) {
+                values[m] = inst->event_indicators[0];
+            }
             else {
                 values[m] = inst->reals[currentValueReference];
             }

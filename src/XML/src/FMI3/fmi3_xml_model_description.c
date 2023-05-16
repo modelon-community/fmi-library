@@ -59,8 +59,6 @@ fmi3_xml_model_description_t * fmi3_xml_allocate_model_description( jm_callbacks
 
 
     md->namingConvension = fmi3_naming_enu_flat;
-    md->numberOfContinuousStates = 0;
-    md->numberOfEventIndicators = 0;
 
     /* DefaultExperiment: we must initialize '*Defined' variables since the element is optional */
     md->defaultExperiment.startTimeDefined = 0;
@@ -127,8 +125,6 @@ void fmi3_xml_clear_model_description( fmi3_xml_model_description_t* md) {
     jm_vector_free_data(char)(&md->generationDateAndTime);
 
     md->namingConvension = fmi3_naming_enu_flat;
-    md->numberOfContinuousStates = 0;
-    md->numberOfEventIndicators = 0;
 
     md->defaultExperiment.startTime = 0;
     md->defaultExperiment.stopTime = 0;
@@ -266,11 +262,11 @@ fmi3_variable_naming_convension_enu_t fmi3_xml_get_naming_convention(fmi3_xml_mo
 
 
 size_t fmi3_xml_get_number_of_continuous_states(fmi3_xml_model_description_t* md) {
-    return md->numberOfContinuousStates;
+    return jm_vector_get_size(jm_voidp)(&md->modelStructure->continuousStateDerivatives);
 }
 
 size_t fmi3_xml_get_number_of_event_indicators(fmi3_xml_model_description_t* md) {
-    return md->numberOfEventIndicators;
+    return jm_vector_get_size(jm_voidp)(&md->modelStructure->eventIndicators);
 }
 
 int fmi3_xml_get_default_experiment_has_start(fmi3_xml_model_description_t* md) {

@@ -64,10 +64,6 @@ struct fmi3_xml_model_description_t {
 
     fmi3_variable_naming_convension_enu_t namingConvension;
 
-    size_t numberOfContinuousStates;
-
-    size_t numberOfEventIndicators;
-
     fmi3_xml_default_experiment defaultExperiment;
 
     jm_vector(char) modelIdentifierME;

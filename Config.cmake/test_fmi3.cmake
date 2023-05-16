@@ -61,6 +61,9 @@ to_native_c_path("${TEST_OUTPUT_FOLDER}/BouncingBall3_me.fmu" FMU3_ME_PATH)
 to_native_c_path("${TEST_OUTPUT_FOLDER}/BouncingBall3_cs.fmu" FMU3_CS_PATH)
 to_native_c_path("${TEST_OUTPUT_FOLDER}/BouncingBall3_se.fmu" FMU3_SE_PATH)
 to_native_c_path("${TEST_OUTPUT_FOLDER}/BouncingBall3_mf.fmu" FMU3_MF_PATH)
+
+# The path to the directory where the FMU will be unzipped.
+# FIXME: Using the same unpack dir for multiple tests prevents test parallelization.
 to_native_c_path("${TEST_OUTPUT_FOLDER}/Temporary" FMU_TEMPORARY_TEST_DIR)
 
 

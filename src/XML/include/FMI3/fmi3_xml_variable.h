@@ -159,9 +159,11 @@ fmi3_boolean_t fmi3_xml_get_boolean_variable_start(fmi3_xml_bool_variable_t* v);
 fmi3_boolean_t* fmi3_xml_get_boolean_variable_start_array(fmi3_xml_bool_variable_t* v);
 
 fmi3_xml_binary_variable_t* fmi3_xml_get_variable_as_binary(fmi3_xml_variable_t*);
-size_t fmi3_xml_get_binary_variable_start_size(fmi3_xml_binary_variable_t* v);
-fmi3_binary_t fmi3_xml_get_binary_variable_start(fmi3_xml_binary_variable_t* v);
+size_t         fmi3_xml_get_binary_variable_start_size(fmi3_xml_binary_variable_t* v);
+fmi3_binary_t  fmi3_xml_get_binary_variable_start(fmi3_xml_binary_variable_t* v);
 fmi3_binary_t* fmi3_xml_get_binary_variable_start_array(fmi3_xml_binary_variable_t* v);
+size_t*        fmi3_xml_get_binary_variable_start_array_size(fmi3_xml_binary_variable_t* v);
+size_t         fmi3_xml_get_binary_variable_start_array_length(fmi3_xml_binary_variable_t* v);
 fmi3_string_t fmi3_xml_get_binary_variable_mime_type(fmi3_xml_binary_variable_t* v);
 size_t fmi3_xml_get_binary_variable_max_size(fmi3_xml_binary_variable_t* v);
 

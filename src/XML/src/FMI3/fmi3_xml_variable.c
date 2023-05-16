@@ -835,6 +835,23 @@ size_t fmi3_xml_get_binary_variable_start_size(fmi3_xml_binary_variable_t* v) {
     return 0;
 }
 
+size_t fmi3_xml_get_binary_variable_start_array_length(fmi3_xml_binary_variable_t* v) {
+    fmi3_xml_variable_t* vv = (fmi3_xml_variable_t*)v;
+    if (fmi3_xml_get_variable_has_start(vv)) {
+        fmi3_xml_binary_variable_start_t* start = (fmi3_xml_binary_variable_start_t*)(vv->type);
+        return start->nStart;
+    }
+    return 0;
+}
+
+size_t* fmi3_xml_get_binary_variable_start_array_size(fmi3_xml_binary_variable_t* v) {
+    fmi3_xml_variable_t* vv = (fmi3_xml_variable_t*)v;
+    if (fmi3_xml_get_variable_has_start(vv)) {
+        fmi3_xml_binary_variable_start_t* start = (fmi3_xml_binary_variable_start_t*)(vv->type);
+        return (size_t*)jm_vector_get_itemp(jm_voidp)(&start->binaryStartValuesSize, 0);
+    }
+    return NULL;
+}
 
 fmi3_binary_t* fmi3_xml_get_binary_variable_start_array(fmi3_xml_binary_variable_t* v) {
     fmi3_xml_variable_t* vv = (fmi3_xml_variable_t*)v;

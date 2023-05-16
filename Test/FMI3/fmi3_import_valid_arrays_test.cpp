@@ -108,6 +108,18 @@ TEST_CASE("Binary array") {
         REQUIRE(start[0][1]   == 0xCdU);
         fmi3_import_free_dimension_list(dimList);
     }
+
+    SECTION("Test binary start array length and size") {
+        fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "binary_array");
+        fmi3_import_dimension_list_t* dimList = basic_array_checks(v, xml, 1);
+        size_t length = fmi3_import_get_binary_variable_start_array_length(fmi3_import_get_variable_as_binary(v));
+        REQUIRE(length == 3);
+        size_t* sizes = fmi3_import_get_binary_variable_start_array_size(fmi3_import_get_variable_as_binary(v));
+        REQUIRE(sizes[0]   == 8);
+        REQUIRE(sizes[1]   == 2);
+        REQUIRE(sizes[2]   == 2);
+        fmi3_import_free_dimension_list(dimList);
+    }
     fmi3_import_free(xml);
 }
 

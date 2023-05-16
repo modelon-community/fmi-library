@@ -9,9 +9,14 @@
 extern "C" {
 #endif
 
-/**
- *  TODO: Decide about naming convention for test utils functions.
- */
+// Require string equallity. Macro depends on Catch2.
+#define REQUIRE_STREQ(S1, S2)                                                                          \
+    do {                                                                                               \
+        if (S1 == nullptr && S2 == nullptr) { FAIL("Failed to compare strings. Both were nullptr."); } \
+        else if (S1 == nullptr ) { FAIL("nullptr != " << S2); }                                        \
+        else if (S2 == nullptr ) { FAIL(S1 << " != nullptr"); }                                        \
+        else if (strcmp(S1, S2) != 0) { FAIL(S1 << " != " << S2); }                                    \
+    } while (0);
 
 typedef struct fmi3_testutil_import_t {
     fmi3_import_t* fmu;

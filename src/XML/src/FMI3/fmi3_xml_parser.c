@@ -64,7 +64,7 @@ const char *fmi3_xmlAttrNames[fmi3_xml_attr_number] = {
 #define fmi3_xml_scheme_SourceFiles               {fmi3_xml_elmID_none,       fmi3_xml_elmID_ModelExchange,        0,       0}
 #define fmi3_xml_scheme_File                      {fmi3_xml_elmID_none,       fmi3_xml_elmID_SourceFiles,          0,       1}
 #define fmi3_xml_scheme_CoSimulation              {fmi3_xml_elmID_none,       fmi3_xml_elmID_fmiModelDescription,  1,       0}
-#define fmi3_xml_scheme_ScheduledExecution        {fmi3_xml_elmID_none,       fmi3_xml_elmID_fmiModelDescription,  1,       0}
+#define fmi3_xml_scheme_ScheduledExecution        {fmi3_xml_elmID_none,       fmi3_xml_elmID_fmiModelDescription,  2,       0}
 #define fmi3_xml_scheme_SourceFilesCS             {fmi3_xml_elmID_none,       fmi3_xml_elmID_CoSimulation,         0,       0}
 #define fmi3_xml_scheme_FileCS                    {fmi3_xml_elmID_none,       fmi3_xml_elmID_SourceFilesCS,        0,       1}
 #define fmi3_xml_scheme_UnitDefinitions           {fmi3_xml_elmID_none,       fmi3_xml_elmID_fmiModelDescription,  2,       0}

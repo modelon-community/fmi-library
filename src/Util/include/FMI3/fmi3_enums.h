@@ -281,7 +281,7 @@ bool fmi3_base_type_enu_is_bool(fmi3_base_type_enu_t enums);
 
 /** \brief Test if the input argument of type fmi3_base_type_enu_t is representing [u]int8/32/64.
     \param enums The object of type fmi3_base_type_enu_t to check.
-    \return Returns true for any of the signed/unsigned integer types, otherwise fa;se.
+    \return Returns true for any of the signed/unsigned integer types, otherwise false.
 */
 bool fmi3_base_type_enu_is_int(fmi3_base_type_enu_t enums);
 

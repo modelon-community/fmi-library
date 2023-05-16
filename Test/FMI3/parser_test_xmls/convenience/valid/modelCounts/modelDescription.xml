@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription fmiVersion="3.0" modelName="" instantiationToken="">
+<ModelExchange modelIdentifier="modelCounts"/>
+
+<ModelVariables>
+  <!-- Have a number of variables with different variabilities and causalities to test model counts -->
+
+  <!-- causalities -->
+  <Float64 name="v100" valueReference="100" causality="parameter" variability="tunable" start="0"/>
+
+  <Float64 name="v110" valueReference="110" causality="calculatedParameter" variability="tunable"/>
+  <Float64 name="v111" valueReference="111" causality="calculatedParameter" variability="tunable"/>
+
+  <Float64 name="v120" valueReference="120" causality="input" start="0"/>
+  <Float64 name="v121" valueReference="121" causality="input" start="0"/>
+  <Float64 name="v122" valueReference="122" causality="input" start="0"/>
+
+  <Float64 name="v130" valueReference="130" causality="output"/>
+  <Float64 name="v131" valueReference="131" causality="output"/>
+  <Float64 name="v132" valueReference="132" causality="output"/>
+  <Float64 name="v133" valueReference="133" causality="output"/>
+
+  <Float64 name="v140" valueReference="140" causality="local"/>
+  <Float64 name="v141" valueReference="141" causality="local"/>
+  <Float64 name="v142" valueReference="142" causality="local"/>
+  <Float64 name="v143" valueReference="143" causality="local"/>
+  <Float64 name="v144" valueReference="144" causality="local"/>
+
+  <Float64 name="v150" valueReference="150" causality="independent"/>
+  <Float64 name="v151" valueReference="151" causality="independent"/>
+  <Float64 name="v152" valueReference="152" causality="independent"/>
+  <Float64 name="v153" valueReference="153" causality="independent"/>
+  <Float64 name="v154" valueReference="154" causality="independent"/>
+  <Float64 name="v155" valueReference="155" causality="independent"/>
+
+  <Float64 name="v160" valueReference="160" causality="structuralParameter" start="0"/>
+  <Float64 name="v161" valueReference="161" causality="structuralParameter" start="0"/>
+  <Float64 name="v162" valueReference="162" causality="structuralParameter" start="0"/>
+  <Float64 name="v163" valueReference="163" causality="structuralParameter" start="0"/>
+  <Float64 name="v164" valueReference="164" causality="structuralParameter" start="0"/>
+  <Float64 name="v165" valueReference="165" causality="structuralParameter" start="0"/>
+  <Float64 name="v166" valueReference="166" causality="structuralParameter" start="0"/>
+ 
+  <!-- variabilities -->
+  <Float64 name="v200" valueReference="200" variability="constant" start="0"/>
+
+  <Float64 name="v210" valueReference="210" variability="fixed"/>
+  <Float64 name="v211" valueReference="211" variability="fixed"/>
+
+  <Float64 name="v220" valueReference="220" variability="tunable"/>
+  <Float64 name="v221" valueReference="221" variability="tunable"/>
+  <Float64 name="v222" valueReference="222" variability="tunable"/>
+
+  <Float64 name="v230" valueReference="230" variability="discrete" causality="output"/>
+  <Float64 name="v231" valueReference="231" variability="discrete" causality="output"/>
+  <Float64 name="v232" valueReference="232" variability="discrete" causality="output"/>
+  <Float64 name="v233" valueReference="233" variability="discrete" causality="output"/>
+
+  <Float64 name="v240" valueReference="240" variability="continuous"/>
+  <Float64 name="v241" valueReference="241" variability="continuous"/>
+  <Float64 name="v242" valueReference="242" variability="continuous"/>
+  <Float64 name="v243" valueReference="243" variability="continuous"/>
+  <Float64 name="v244" valueReference="244" variability="continuous"/>
+
+</ModelVariables>
+
+<ModelStructure/>
+
+</fmiModelDescription>

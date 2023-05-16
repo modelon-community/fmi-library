@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription fmiVersion="3.0" modelName="" instantiationToken="">
+<ModelExchange modelIdentifier="structuralParameter_with_dimension" />
+
+<ModelVariables>
+    <Float64 name="structVar" valueReference="0" causality="structuralParameter" start="0">
+        <Dimension start="1"/> <!-- structuralParameter must not have Dimension -->
+    </Float64> 
+</ModelVariables>
+
+<ModelStructure/>
+
+</fmiModelDescription>

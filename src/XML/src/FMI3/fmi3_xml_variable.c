@@ -1104,12 +1104,13 @@ static int fmi3_xml_variable_process_attr_causality_variability_initial(fmi3_xml
         fmi3_xml_variable_t* variable, fmi3_xml_elm_enu_t elm_id)
 {
     jm_name_ID_map_t causalityConventionMap[] = {
-            {"local",               fmi3_causality_enu_local},
-            {"input",               fmi3_causality_enu_input},
-            {"output",              fmi3_causality_enu_output},
             {"parameter",           fmi3_causality_enu_parameter},
             {"calculatedParameter", fmi3_causality_enu_calculated_parameter},
+            {"input",               fmi3_causality_enu_input},
+            {"output",              fmi3_causality_enu_output},
+            {"local",               fmi3_causality_enu_local},
             {"independent",         fmi3_causality_enu_independent},
+            {"structuralParameter", fmi3_causality_enu_structural_parameter},
             {NULL,                  0} /* Equivalent to fmi3_causality_enu_parameter. Is this correct? */
     };
     jm_name_ID_map_t variabilityConventionMap[] = {
@@ -1401,30 +1402,28 @@ int fmi3_xml_get_has_start(fmi3_xml_parser_context_t *context, fmi3_xml_variable
     return hasStart;
 }
 
-static void fmi3_log_error_if_start_required(
-    fmi3_xml_parser_context_t *context,
-    fmi3_xml_variable_t *variable)
-{
+static void fmi3_log_error_if_start_required(fmi3_xml_parser_context_t* context, fmi3_xml_variable_t* variable) {
+    // causality checks
     if (variable->causality == fmi3_causality_enu_input) {
-        jm_log_error(context->callbacks, module,
-                       "Error: variable %s: start value required for input variables",
-                       variable->name);
+        fmi3_xml_parse_error(context, "Error: variable %s: start value required for input variables",
+            fmi3_xml_get_variable_name(variable));
     } else if (variable->causality == fmi3_causality_enu_parameter) {
-        jm_log_error(context->callbacks, module,
-                       "Error: variable %s: start value required for parameter variables",
-                       variable->name);
+        fmi3_xml_parse_error(context, "Error: variable %s: start value required for parameter variables",
+            fmi3_xml_get_variable_name(variable));
+    } else if (variable->causality == fmi3_causality_enu_structural_parameter) {
+        fmi3_xml_parse_error(context, "Error: variable %s: start value required for structuralParameter variables",
+            fmi3_xml_get_variable_name(variable));
+    // variability checks
     } else if (variable->variability == fmi3_variability_enu_constant) {
-        jm_log_error(context->callbacks, module,
-                       "Error: variable %s: start value required for variables with constant variability",
-                       variable->name);
+        fmi3_xml_parse_error(context, "Error: variable %s: start value required for variables with constant variability",
+            fmi3_xml_get_variable_name(variable));
+    // initial checks
     } else if (variable->initial == fmi3_initial_enu_exact) {
-        jm_log_error(context->callbacks, module,
-                       "Error: variable %s: start value required for variables with initial == \"exact\"",
-                       variable->name);
+        fmi3_xml_parse_error(context, "Error: variable %s: start value required for variables with initial == \"exact\"",
+            fmi3_xml_get_variable_name(variable));
     } else if (variable->initial == fmi3_initial_enu_approx) {
-        jm_log_error(context->callbacks, module,
-                       "Error: variable %s: start value required for variables with initial == \"approx\"",
-                       variable->name);
+        fmi3_xml_parse_error(context, "Error: variable %s: start value required for variables with initial == \"approx\"",
+            fmi3_xml_get_variable_name(variable));
     }
 }
 
@@ -1437,6 +1436,14 @@ int fmi3_xml_handle_Dimension(fmi3_xml_parser_context_t* context, const char* da
     if (!data) { /* start of tag */
 
         fmi3_xml_variable_t* currentVar = jm_vector_get_last(jm_named_ptr)(&context->modelDescription->variablesByName).ptr;
+
+        // check if dimension is allowed for parent variable
+        if (currentVar->causality == fmi3_causality_enu_structural_parameter) {
+            fmi3_xml_parse_error(context, "Error: variable %s: structuralParameters must not have Dimension elements.",
+                fmi3_xml_get_variable_name(currentVar));
+            return -1;
+        }
+
         fmi3_xml_dimension_t dim;
         fmi3_xml_attr_enu_t attrId;
         int hasStart;

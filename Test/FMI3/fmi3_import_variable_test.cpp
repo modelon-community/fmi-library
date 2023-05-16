@@ -338,3 +338,27 @@ TEST_CASE("Invalid Binary variable - non-hexadecimal char second in byte tuple",
     REQUIRE(strcmp(errMsg, "String is not hexadecimal: FG") == 0);
     fmi3_import_free(xml);
 }
+
+TEST_CASE("Invalid structuralParameter - requires start attribute") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/variable_test/invalid/structuralParameter_no_start";
+
+    fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
+    REQUIRE(xml != nullptr);
+
+    const char* errMsg = fmi3_import_get_last_error(xml);
+    REQUIRE(strcmp(errMsg, "Error: variable structVar: start value required for structuralParameter variables") == 0);
+
+    fmi3_import_free(xml);
+}
+
+TEST_CASE("Invalid structuralParameter - has dimension") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/variable_test/invalid/structuralParameter_with_dimension";
+
+    fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
+    REQUIRE(xml != nullptr);
+
+    const char* errMsg = fmi3_import_get_last_error(xml);
+    REQUIRE(strcmp(errMsg, "Error: variable structVar: structuralParameters must not have Dimension elements.") == 0);
+
+    fmi3_import_free(xml);
+}

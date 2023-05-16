@@ -180,3 +180,15 @@ TEST_CASE("Error check: Variables with same VR") {
 
     fmi3_testutil_import_free(tfmu);
 }
+
+TEST_CASE("Test model counts") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/convenience/valid/modelCounts";
+
+    fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
+    REQUIRE(xml != nullptr);
+
+    // const char* errMsg = fmi3_import_get_last_error(xml);
+    // REQUIRE(strcmp(errMsg, "\0") == 0); // no errors
+
+    fmi3_import_free(xml);
+}

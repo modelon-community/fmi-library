@@ -172,11 +172,12 @@ FMILIB_EXPORT fmi3_initial_enu_t fmi3_get_default_initial(fmi3_variability_enu_t
 }
 
 static int valid_variability_causality[fmi3_variability_enu_unknown][fmi3_causality_enu_unknown] = {
-    {0, 0, 0, 1, 1, 0},
-    {1, 1, 0, 0, 1, 0},
-    {1, 1, 0, 0, 1, 0},
-    {0, 0, 1, 1, 1, 0},
-    {0, 0, 1, 1, 1, 1}
+    // TODO: Last column is for structuralParameter, needs to be adjusted with correct values
+    {0, 0, 0, 1, 1, 0, 1},
+    {1, 1, 0, 0, 1, 0, 1},
+    {1, 1, 0, 0, 1, 0, 1},
+    {0, 0, 1, 1, 1, 0, 1},
+    {0, 0, 1, 1, 1, 1, 1}
 };
 
 FMILIB_EXPORT int fmi3_is_valid_variability_causality(fmi3_variability_enu_t v,

@@ -12,14 +12,15 @@ TEST_CASE("Default valid variability"){
     // constants: fixed
     REQUIRE(fmi3_get_default_valid_variability(fmi3_causality_enu_parameter)            == fmi3_variability_enu_fixed);
     REQUIRE(fmi3_get_default_valid_variability(fmi3_causality_enu_calculated_parameter) == fmi3_variability_enu_fixed);
+    // TODO
+    REQUIRE(fmi3_get_default_valid_variability(fmi3_causality_enu_structural_parameter) == fmi3_variability_enu_continuous);
     // non-constants: continuous
     REQUIRE(fmi3_get_default_valid_variability(fmi3_causality_enu_input)                == fmi3_variability_enu_continuous);
     REQUIRE(fmi3_get_default_valid_variability(fmi3_causality_enu_output)               == fmi3_variability_enu_continuous);
     REQUIRE(fmi3_get_default_valid_variability(fmi3_causality_enu_local)                == fmi3_variability_enu_continuous);
     REQUIRE(fmi3_get_default_valid_variability(fmi3_causality_enu_independent)          == fmi3_variability_enu_continuous);
-
-    // TODO
-    //REQUIRE(fmi3_get_default_valid_variability(fmi3_causality_enu_structural_parameter) == fmi3_variability_enu_continuous);
+    // TOOD: Should probably be unknown?
+    REQUIRE(fmi3_get_default_valid_variability(fmi3_causality_enu_unknown)              == fmi3_variability_enu_continuous);
 }
 
 #define N_VARIABILITIES (6)
@@ -167,4 +168,9 @@ TEST_CASE("Default valid combinations for causality = structuralParameter"){
 TEST_CASE("Default valid combinations for causality = unknown"){
     int expected[N_VARIABILITIES] = {0, 0, 0, 0, 0, 0};
     validate_variability_causality(fmi3_causality_enu_unknown, expected);
+}
+
+TEST_CASE("Model counts"){
+    // TODO
+    //fmi3_import_collect_model_counts
 }

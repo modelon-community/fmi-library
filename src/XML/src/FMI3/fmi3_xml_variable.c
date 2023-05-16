@@ -1810,7 +1810,6 @@ int fmi3_xml_handle_BinaryVariable(fmi3_xml_parser_context_t* context, const cha
         assert(!variable->type);
         variable->type = &vProps->super;
     } else {
-        /* Cannot use *has_start for binary variables */
         size_t nStart = jm_vector_get_size(jm_voidp)(&context->currentStartVariableValues);
         if (nStart > 0) {
              // number of bytes per element in context->currentStartVariableValues

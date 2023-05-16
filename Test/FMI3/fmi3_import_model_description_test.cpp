@@ -16,6 +16,8 @@ TEST_CASE("fmiModelDescription: FMI3 with FMI2 attribute numberOfEventIndicators
     REQUIRE(tfmu != nullptr);
     REQUIRE(fmu  != nullptr);
     REQUIRE(fmi3_testutil_get_num_errors(tfmu) == 0);
+    REQUIRE(fmi3_testutil_log_contains(tfmu, 
+            "Attribute 'numberOfEventIndicators' not processed by element 'fmiModelDescription' handle"));
 
     size_t nEvInd;
     fmi3_import_get_number_of_event_indicators(fmu, &nEvInd);

@@ -1021,19 +1021,13 @@ void fmi3_xml_variable_free_internals(jm_callbacks* callbacks, fmi3_xml_variable
     if (fmi3_xml_variable_is_array(var)) {
         if (var->type->baseType == fmi3_base_type_str) {
             fmi3_xml_string_variable_start_t* start = (fmi3_xml_string_variable_start_t*)(var->type);
-            if (&start->stringStartValues) {
-                jm_vector_foreach(jm_voidp)(&start->stringStartValues, callbacks->free);
-                jm_vector_free_data(jm_voidp)(&start->stringStartValues);
-            }
+            jm_vector_foreach(jm_voidp)(&start->stringStartValues, callbacks->free);
+            jm_vector_free_data(jm_voidp)(&start->stringStartValues);
         } else if (var->type->baseType == fmi3_base_type_binary) {
             fmi3_xml_binary_variable_start_t* start = (fmi3_xml_binary_variable_start_t*)(var->type);
-            if (&start->binaryStartValues) {
-                jm_vector_foreach(jm_voidp)(&start->binaryStartValues, callbacks->free);
-                jm_vector_free_data(jm_voidp)(&start->binaryStartValues);
-            }
-            if (&start->binaryStartValuesSize) {
-                jm_vector_free_data(size_t)(&start->binaryStartValuesSize);
-            }
+            jm_vector_foreach(jm_voidp)(&start->binaryStartValues, callbacks->free);
+            jm_vector_free_data(jm_voidp)(&start->binaryStartValues);
+            jm_vector_free_data(size_t)(&start->binaryStartValuesSize);
         } else {
             callbacks->free(fmi3_xml_get_variable_start_array(var));
         }

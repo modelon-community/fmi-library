@@ -1761,7 +1761,6 @@ int fmi3_xml_handle_BinaryVariable(fmi3_xml_parser_context_t* context, const cha
             for(size_t i = 0; i < nStart; i++) {
                 jm_vector_set_item(jm_voidp)(&startObj->binaryStartValues, i, startAsBytes[i]);
             }
-            variable->type = &startObj->super;
             size_t nCopiedSizes = jm_vector_copy(size_t)(&startObj->binaryStartValuesSize, bytesPerElement);
             jm_vector_free(size_t)(bytesPerElement);
             if ((nStart != nCopiedSizes)) {

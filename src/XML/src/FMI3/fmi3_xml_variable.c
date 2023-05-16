@@ -1014,16 +1014,28 @@ static int fmi3_xml_hexstring_to_bytearray(fmi3_xml_parser_context_t* context, c
     return 0;
 }
 
+static void free_string_start_values(jm_callbacks* callbacks, fmi3_xml_variable_t* var) {
+    fmi3_xml_string_variable_start_t* start = (fmi3_xml_string_variable_start_t*)(var->type);
+    jm_vector_foreach(jm_voidp)(&start->stringStartValues, callbacks->free);
+    jm_vector_free_data(jm_voidp)(&start->stringStartValues);
+}
+
+static bool is_string_variable_with_start(fmi3_xml_variable_t* var) {
+    return var->type->baseType == fmi3_base_type_str && (var->type->structKind == fmi3_xml_type_struct_enu_start);
+}
+
+static bool is_binary_variable_with_start(fmi3_xml_variable_t* var) {
+    return var->type->baseType == fmi3_base_type_binary && (var->type->structKind == fmi3_xml_type_struct_enu_start);
+}
+
 void fmi3_xml_variable_free_internals(jm_callbacks* callbacks, fmi3_xml_variable_t* var) {
     /* We need special handling of Strings and Binaries because
     *  of how start values are handled differently for those types.
     */
     if (fmi3_xml_variable_is_array(var)) {
-        if (var->type->baseType == fmi3_base_type_str) {
-            fmi3_xml_string_variable_start_t* start = (fmi3_xml_string_variable_start_t*)(var->type);
-            jm_vector_foreach(jm_voidp)(&start->stringStartValues, callbacks->free);
-            jm_vector_free_data(jm_voidp)(&start->stringStartValues);
-        } else if (var->type->baseType == fmi3_base_type_binary) {
+        if (is_string_variable_with_start(var)) {
+            free_string_start_values(callbacks, var);
+        } else if (is_binary_variable_with_start(var)) {
             fmi3_xml_binary_variable_start_t* start = (fmi3_xml_binary_variable_start_t*)(var->type);
             jm_vector_foreach(jm_voidp)(&start->binaryStartValues, callbacks->free);
             jm_vector_free_data(jm_voidp)(&start->binaryStartValues);
@@ -1035,12 +1047,8 @@ void fmi3_xml_variable_free_internals(jm_callbacks* callbacks, fmi3_xml_variable
         var->dimensionsArray = NULL;
     } else {
         /* Scalar String variables can have a start value that we need to free.*/
-        if (var->type->baseType == fmi3_base_type_str && (var->type->structKind == fmi3_xml_type_struct_enu_start)) {
-            fmi3_xml_string_variable_start_t* start = (void*)var->type;
-            if (&start->stringStartValues) {
-                jm_vector_foreach(jm_voidp)(&start->stringStartValues, callbacks->free);
-                jm_vector_free_data(jm_voidp)(&start->stringStartValues);
-            }
+        if (is_string_variable_with_start(var)) {
+            free_string_start_values(callbacks, var);
         }
     }
     if (var->clocks) {

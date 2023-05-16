@@ -1035,11 +1035,11 @@ void fmi3_xml_variable_free_internals(jm_callbacks* callbacks, fmi3_xml_variable
         var->dimensionsArray = NULL;
     } else {
         /* Scalar String variables can have a start value that we need to free.*/
-        if (var->type->baseType == fmi3_base_type_str) {
-            fmi3_xml_string_variable_start_t* start = (fmi3_xml_string_variable_start_t*)(var->type);
+        if (var->type->baseType == fmi3_base_type_str && (var->type->structKind == fmi3_xml_type_struct_enu_start)) {
+            fmi3_xml_string_variable_start_t* start = (void*)var->type;
             if (&start->stringStartValues) {
                 jm_vector_foreach(jm_voidp)(&start->stringStartValues, callbacks->free);
-                //jm_vector_free_data(jm_voidp)(&start->stringStartValues);
+                jm_vector_free_data(jm_voidp)(&start->stringStartValues);
             }
         }
     }
@@ -1732,21 +1732,6 @@ int fmi3_xml_handle_BinaryVariable(fmi3_xml_parser_context_t* context, const cha
     } else {
         size_t nStart = jm_vector_get_size(jm_voidp)(&context->currentStartVariableValues);
         if (nStart > 0) {
-             // number of bytes per element in context->currentStartVariableValues
-            jm_vector(size_t)* bytesPerElement = jm_vector_alloc(size_t)(0, 0, context->callbacks);
-            uint8_t* startAsBytes[nStart];
-            for (int i = 0; i < nStart; i++) {
-                char* item = (char*)jm_vector_get_item(jm_voidp)(&context->currentStartVariableValues, i);
-                jm_vector_push_back(size_t)(bytesPerElement, (size_t)(strlen(item)/2));
-                size_t sz = jm_vector_get_item(size_t)(bytesPerElement, i);
-                startAsBytes[i] = context->callbacks->malloc(sz);
-                if (fmi3_xml_hexstring_to_bytearray(context, item, startAsBytes[i])) {
-                    return -1;
-                }
-                // We can now free the string now since we have converted it above
-                context->callbacks->free(item);
-            }
-
             fmi3_xml_binary_variable_start_t* startObj =
                     (fmi3_xml_binary_variable_start_t*)fmi3_xml_alloc_variable_type_start(
                             td, variable->type, sizeof(fmi3_xml_binary_variable_start_t));
@@ -1755,18 +1740,25 @@ int fmi3_xml_handle_BinaryVariable(fmi3_xml_parser_context_t* context, const cha
                 return -1;
             }
             startObj->nStart = nStart;
-            jm_vector_init(jm_voidp)(&startObj->binaryStartValues, nStart, context->callbacks);
-            jm_vector_init(size_t)(&startObj->binaryStartValuesSize, nStart, context->callbacks);
-            // Passing ownership to binaryStartValues
-            for(size_t i = 0; i < nStart; i++) {
-                jm_vector_set_item(jm_voidp)(&startObj->binaryStartValues, i, startAsBytes[i]);
+
+             // number of bytes per element in context->currentStartVariableValues
+            jm_vector_init(jm_voidp)(&startObj->binaryStartValues, 0, context->callbacks);
+            jm_vector_init(size_t)(&startObj->binaryStartValuesSize, 0, context->callbacks);
+            uint8_t* bytes;
+            for (int i = 0; i < nStart; i++) {
+                char* item = (char*)jm_vector_get_item(jm_voidp)(&context->currentStartVariableValues, i);
+                size_t sz = strlen(item)/((size_t)2);
+                bytes = context->callbacks->malloc(sz);
+                if (fmi3_xml_hexstring_to_bytearray(context, item, bytes)) {
+                    return -1;
+                }
+                jm_vector_push_back(jm_voidp)(&startObj->binaryStartValues, bytes);
+                jm_vector_push_back(size_t)(&startObj->binaryStartValuesSize, sz);
+
+                // We can now free the string now since we have converted it above
+                context->callbacks->free(item);
             }
-            size_t nCopiedSizes = jm_vector_copy(size_t)(&startObj->binaryStartValuesSize, bytesPerElement);
-            jm_vector_free(size_t)(bytesPerElement);
-            if ((nStart != nCopiedSizes)) {
-                fmi3_xml_parse_fatal(context, "Could not retrieve binary start values");
-                return -1;
-            }
+
             variable->type = &startObj->super;
             // Resize the vector to 0 since we are now done with the current variable.
             jm_vector_resize(jm_voidp)(&context->currentStartVariableValues, 0);

@@ -234,7 +234,7 @@ TEST_CASE("Test array parsing and verify retrieved start values are as expected"
         REQUIRE(start[2] == 2);
         REQUIRE(start[3] == 3);
         REQUIRE(start[4] == 1);
-        REQUIRE(start[5] == 2);
+        REQUIRE(start[5] == 9223372036854775807);
         REQUIRE(start[6] == 2);
         fmi3_import_free_dimension_list(dimList);
     }

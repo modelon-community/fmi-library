@@ -181,14 +181,46 @@ TEST_CASE("Error check: Variables with same VR") {
     fmi3_testutil_import_free(tfmu);
 }
 
-TEST_CASE("Test model counts") {
-    const char* xmldir = FMI3_TEST_XML_DIR "/convenience/valid/modelCounts";
+TEST_CASE("Test model counts variability") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/convenience/valid/modelCountsVariability";
 
     fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
     REQUIRE(xml != nullptr);
 
-    // const char* errMsg = fmi3_import_get_last_error(xml);
-    // REQUIRE(strcmp(errMsg, "\0") == 0); // no errors
+    fmi3_import_model_counts_t* counts = fmi3_import_init_model_counts();
+    REQUIRE(counts != nullptr);
 
+    fmi3_import_collect_model_counts(xml, counts);
+
+    REQUIRE(counts->num_constants  == 1);
+    REQUIRE(counts->num_fixed      == 2);
+    REQUIRE(counts->num_tunable    == 3);
+    REQUIRE(counts->num_discrete   == 4);
+    REQUIRE(counts->num_continuous == 5);
+
+    fmi3_import_free_model_counts(counts);
+    fmi3_import_free(xml);
+}
+
+TEST_CASE("Test model counts causality") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/convenience/valid/modelCountsCausality";
+
+    fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
+    REQUIRE(xml != nullptr);
+
+    fmi3_import_model_counts_t* counts = fmi3_import_init_model_counts();
+    REQUIRE(counts != nullptr);
+
+    fmi3_import_collect_model_counts(xml, counts);
+
+    REQUIRE(counts->num_parameters            == 1);
+    REQUIRE(counts->num_calculated_parameters == 2);
+    REQUIRE(counts->num_inputs                == 3);
+    REQUIRE(counts->num_outputs               == 4);
+    REQUIRE(counts->num_local                 == 5);
+    REQUIRE(counts->num_independent           == 6);
+    REQUIRE(counts->num_structural_parameters == 7);
+
+    fmi3_import_free_model_counts(counts);
     fmi3_import_free(xml);
 }

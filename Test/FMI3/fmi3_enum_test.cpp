@@ -169,8 +169,3 @@ TEST_CASE("Default valid combinations for causality = unknown"){
     int expected[N_VARIABILITIES] = {0, 0, 0, 0, 0, 0};
     validate_variability_causality(fmi3_causality_enu_unknown, expected);
 }
-
-TEST_CASE("Model counts"){
-    // TODO
-    //fmi3_import_collect_model_counts
-}

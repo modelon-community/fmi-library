@@ -1816,8 +1816,8 @@ int fmi3_xml_handle_BinaryVariable(fmi3_xml_parser_context_t* context, const cha
             startObj->nStart = nStart;
 
              // number of bytes per element in context->currentStartVariableValues
-            jm_vector_init(jm_voidp)(&startObj->binaryStartValues, nStart, context->callbacks);
-            jm_vector_init(size_t)(&startObj->binaryStartValuesSize, nStart, context->callbacks);
+            jm_vector_init(jm_voidp)(&startObj->binaryStartValues, 0, context->callbacks);
+            jm_vector_init(size_t)(&startObj->binaryStartValuesSize, 0, context->callbacks);
             uint8_t* bytes;
             for (int i = 0; i < nStart; i++) {
                 char* item = (char*)jm_vector_get_item(jm_voidp)(&context->currentStartVariableValues, i);

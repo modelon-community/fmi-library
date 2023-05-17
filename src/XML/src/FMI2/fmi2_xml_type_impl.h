@@ -114,7 +114,7 @@ typedef fmi2_xml_variable_type_base_t fmi2_xml_bool_type_props_t;
 typedef struct fmi2_xml_enum_type_item_t {
     jm_string itemName;
     int value;
-    char itemDesciption[1];
+    char itemDescription[1];
 } fmi2_xml_enum_type_item_t;
 
 typedef struct fmi2_xml_enum_variable_props_t {

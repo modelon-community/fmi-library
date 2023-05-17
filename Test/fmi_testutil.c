@@ -15,7 +15,7 @@ void fmi_testutil_build_xml_path(char* buf, size_t bufSize, const char* basePath
 }
 
 /**
- * This function is called before a test fails via macro, so you can put a 
+ * This function is called before a test fails via macro, so you can put a
  * breakpoint on it to make debugging easier
  */
 void fmi_testutil_enter_breakpoint()

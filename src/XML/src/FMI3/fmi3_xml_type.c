@@ -377,7 +377,7 @@ const char* fmi3_xml_get_enum_type_item_description(fmi3_xml_enumeration_typedef
     fmi3_xml_enum_type_item_t* e;
     if(item > fmi3_xml_get_enum_type_size(t) ) return  0;
     e = jm_vector_get_item(jm_named_ptr)(&props->enumItems,item-1).ptr;
-    return e->itemDesciption;
+    return e->itemDescription;
 }
 
 // -----------------------------------------------------------------------------
@@ -710,7 +710,7 @@ fmi3_xml_variable_type_base_t* fmi3_xml_alloc_variable_or_typedef_props(fmi3_xml
     }
     fmi3_xml_init_variable_type_base(type, fmi3_xml_type_struct_enu_props, nextLayer->baseType);
     type->nextLayer = nextLayer;
-    
+
     // Push to typePropsList:
     type->next = td->typePropsList;
     td->typePropsList = type;
@@ -720,7 +720,7 @@ fmi3_xml_variable_type_base_t* fmi3_xml_alloc_variable_or_typedef_props(fmi3_xml
 
 /**
  * Adds a new start object on top of the list-node given in parameter 'base'.
- * 
+ *
  * Generic for all struct kinds (float, int, ...), i.e. the caller needs to typecast to the
  * correct type and make sure that enough memory is given via parameter 'typeSize'.
  *
@@ -751,7 +751,7 @@ fmi3_xml_variable_type_base_t* fmi3_xml_alloc_variable_type_start(fmi3_xml_type_
 
 /**
  * Parses all the FloatXX-specific attributes.
- * 
+ *
  * @param fallbackType:
  *      For Variables: The typedef_t of the declaredType if defined, else the props_t of the default type.
  *      For TypeDefinitions: The props_t of the default type.
@@ -806,7 +806,7 @@ fmi3_xml_float_type_props_t* fmi3_xml_parse_float_type_properties(fmi3_xml_parse
             props->displayUnit = fmi3_xml_get_parsed_unit(context, bufUnit, 1);
         }
     }
-    
+
     if (fmi3_xml_set_attr_boolean(context, elmID, fmi_attr_id_relativeQuantity, 0, &relQuanBuf, fallbackProps->super.isRelativeQuantity) ||
         fmi3_xml_set_attr_boolean(context, elmID, fmi_attr_id_unbounded, 0, &unboundedBuf, fallbackProps->super.isUnbounded) ||
         fmi3_xml_set_attr_floatXX(context, elmID, fmi_attr_id_min, 0, &props->typeMin, &fallbackProps->typeMin, primType) ||
@@ -854,7 +854,7 @@ int fmi3_xml_handle_Float32(fmi3_xml_parser_context_t* context, const char* data
 
 /**
  * Parses all the IntXX-specific attributes.
- * 
+ *
  * @param fallbackType:
  *      For Variables: The typedef_t of the declaredType if defined, else the props_t of the default type.
  *      For TypeDefinitions: The props_t of the default type.
@@ -869,7 +869,7 @@ fmi3_xml_int_type_props_t* fmi3_xml_parse_intXX_type_properties(fmi3_xml_parser_
     const char* quantity = NULL;
 
     // XXX: Why don't we give fatal errors in this funciton, but we do it for floatXX?
-    
+
     if (fallbackType->structKind == fmi3_xml_type_struct_enu_typedef) {
         fallbackProps = (void*)fallbackType->nextLayer;
     } else {
@@ -967,7 +967,7 @@ int fmi3_xml_handle_Boolean(fmi3_xml_parser_context_t* context, const char* data
 
 /**
  * Parses all the Binary-specific attributes.
- * 
+ *
  * @param fallbackType:
  *      For Variables: The typedef_t of the declaredType if defined, else the props_t of the default type.
  *      For TypeDefinitions: The props_t of the default type.
@@ -978,7 +978,7 @@ fmi3_xml_binary_type_props_t* fmi3_xml_parse_binary_type_properties(fmi3_xml_par
     fmi3_xml_type_definitions_t* td = &context->modelDescription->typeDefinitions;
     fmi3_xml_binary_type_props_t* fallbackProps;
     fmi3_xml_binary_type_props_t* props;
-    
+
     if (fallbackType->structKind == fmi3_xml_type_struct_enu_typedef) {
         fallbackProps = (void*)fallbackType->nextLayer;
     } else {
@@ -1038,7 +1038,7 @@ int fmi3_xml_handle_Binary(fmi3_xml_parser_context_t* context, const char* data)
 
 /**
  * Parses all the Clock-specific attributes.
- * 
+ *
  * @param fallbackType:
  *      For Variables: The typedef_t of the declaredType if defined, else the props_t of the default type.
  *      For TypeDefinitions: The props_t of the default type.
@@ -1049,7 +1049,7 @@ fmi3_xml_clock_type_props_t* fmi3_xml_parse_clock_type_properties(fmi3_xml_parse
     fmi3_xml_type_definitions_t* td = &context->modelDescription->typeDefinitions;
     fmi3_xml_clock_type_props_t* fallbackProps;
     fmi3_xml_clock_type_props_t* props;
-    
+
     if (fallbackType->structKind == fmi3_xml_type_struct_enu_typedef) {
         fallbackProps = (void*)fallbackType->nextLayer;
     } else {
@@ -1059,7 +1059,7 @@ fmi3_xml_clock_type_props_t* fmi3_xml_parse_clock_type_properties(fmi3_xml_parse
     // Create properties:
     props = (void*)fmi3_xml_alloc_variable_or_typedef_props(td, fallbackType, sizeof(fmi3_xml_clock_type_props_t));
     if (!props) return NULL;
-    
+
     jm_name_ID_map_t intervalVariabilityMap[] = {
             {"constant",   fmi3_interval_variability_constant},
             {"fixed",      fmi3_interval_variability_fixed},
@@ -1255,8 +1255,8 @@ int fmi3_xml_handle_Item(fmi3_xml_parser_context_t* context, const char* data) {
         item->itemName = named.name;
         item->value = value;
         if (descrlen)
-            memcpy(item->itemDesciption,jm_vector_get_itemp(char)(bufDescr,0), descrlen);
-        item->itemDesciption[descrlen] = 0;
+            memcpy(item->itemDescription,jm_vector_get_itemp(char)(bufDescr,0), descrlen);
+        item->itemDescription[descrlen] = 0;
     }
     return 0;
 }

@@ -121,13 +121,14 @@ const char *fmi3_xmlAttrNames[fmi3_xml_attr_number] = {
 #define fmi3_xml_scheme_EnumerationVariable       {fmi3_xml_elmID_Variable,   fmi3_xml_elmID_ModelVariables,       0,       1}
 #define fmi3_xml_scheme_Dimension                 {fmi3_xml_elmID_none,       fmi3_xml_elmID_Variable,             0,       1}
 
-#define fmi3_xml_scheme_BinaryVariableStart       {fmi3_xml_elmID_none,       fmi3_xml_elmID_BinaryVariable,       0,       1}
+#define fmi3_xml_scheme_BinaryVariableStart       {fmi3_xml_elmID_Start,      fmi3_xml_elmID_BinaryVariable,       1,       1}
+#define fmi3_xml_scheme_StringVariableStart       {fmi3_xml_elmID_Start,      fmi3_xml_elmID_StringVariable,       1,       1}
 
 #define fmi3_xml_scheme_Annotations               {fmi3_xml_elmID_none,       fmi3_xml_elmID_Variable,             1,       0}
 #define fmi3_xml_scheme_VariableTool              {fmi3_xml_elmID_none,       fmi3_xml_elmID_Annotations,          0,       1}
 
 // Not used except for setting up the element handler framework:
-#define fmi3_xml_scheme_Start                     {fmi3_xml_elmID_none,       fmi3_xml_elmID_none,                 0,       0}
+#define fmi3_xml_scheme_Start                     {fmi3_xml_elmID_none,       fmi3_xml_elmID_none,                 1,       0}
 
 /**
  * The expansion of below macro is also a macro. Example:
@@ -228,6 +229,20 @@ const fmi3_xml_primitive_types_t PRIMITIVE_TYPES = {
         fmi3_bitness_8,
         0,
         fmi3_base_type_uint8,
+    },
+    {
+        "Boolean",
+        sizeof(bool),
+        0, /* N/A */
+        0,
+        fmi3_base_type_bool,
+    },
+    {
+        "Enumeration",
+        sizeof(fmi3_int64_t),
+        fmi3_bitness_64,
+        1,
+        fmi3_base_type_enum,
     }
 };
 
@@ -252,8 +267,10 @@ void fmi3_xml_parse_free_context(fmi3_xml_parser_context_t *context) {
         jm_vector_free(jm_string)(context->attrBuffer);
         context->attrBuffer = 0;
     }
-    jm_stack_free_data(int)(& context->elmStack );
-    jm_vector_free_data(char)( &context->elmData );
+    jm_stack_free_data(int)(&context->elmStack);
+    jm_vector_free_data(char)(&context->elmData);
+    jm_vector_free_data(char)(&context->variableStartAttr);
+    jm_vector_free_data(jm_voidp)(&context->currentStartVariableValues);
 
     if (jm_resetlocale_numeric(context->callbacks, context->jm_locale)) {
         jm_log_error(context->callbacks, module, "Failed to reset locale.");
@@ -402,11 +419,11 @@ int fmi3_xml_set_attr_enum(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_
     return 0;
 }
 
-int fmi3_xml_set_attr_boolean(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID,
-        int required, unsigned int* field, unsigned int defaultVal)
+int fmi3_xml_set_attr_boolean(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID,
+        fmi3_xml_attr_enu_t attrID, int required, unsigned int* field, unsigned int defaultVal)
 {
-    jm_name_ID_map_t fmi_boolean_i_dMap[] = {{"true", 1},{"false", 0}, {"1", 1},{"0", 0}, {0,0}};
-    return fmi3_xml_set_attr_enum(context, elmID, attrID, required, field, defaultVal, fmi_boolean_i_dMap);
+    jm_name_ID_map_t fmi_boolean_i_dMap[] = {{"true", 1}, {"false", 0}, {"1", 1}, {"0", 0}, {0, 0}};
+    return fmi3_xml_set_attr_enum(context,elmID, attrID,required, field, defaultVal, fmi_boolean_i_dMap);
 }
 
 // TODO: For FMI3, do we want to use bool in the getters for boolean attributes, or keep using unsigned int?
@@ -427,7 +444,7 @@ int fmi3_xml_set_attr_bool(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_
             return 0;
         }
     }
-    
+
     if (strcmp(strVal, "true") == 0 || strcmp(strVal, "1") == 0) {
         *field = true;
     } else if (strcmp(strVal, "false") == 0 || strcmp(strVal, "0") == 0) {
@@ -445,10 +462,10 @@ int fmi3_xml_set_attr_bool(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_
 /**
  * Parses the given attribute as a jm_vector of value references for the element
  * that is currently being handled.
- * 
+ *
  * The attributes are dynamically allocated in 'vrs', which the caller is responsible
  * for deallocating.
- * 
+ *
  * This also clears the attribute from its parser buffer.
  */
 int fmi3_xml_parse_attr_valueref_list(
@@ -545,6 +562,27 @@ static int fmi3_xml_value_boundary_check_strcmp(jm_string strVal, const char* fo
     jm_snprintf(wbBuf, wbBufSz, formatter, *valueBuf);  /* write numeric value back to string */
 
     return strcmp(strVal + idx_start, wbBuf) == 0 ? 0 : 1;
+}
+
+static int fmi3_xml_str_to_bool(fmi3_xml_parser_context_t *context, int required, bool* field, bool* defaultVal,
+        jm_string strVal) {
+    if (!strVal) {
+        if (required) {
+            return -1;  // Call should already have failed by now
+        } else {
+            *field = defaultVal;
+            return 0;
+        }
+    }
+
+    if ((strncmp(strVal, "false", 5) == 0) || (strncmp(strVal, "0", 1) == 0)) {
+        *field = false;
+    } else if ((strncmp(strVal, "true", 4) == 0) || (strncmp(strVal, "1", 1) == 0)) {
+        *field = true;
+    } else {
+        return -1;
+    }
+    return 0;
 }
 
 static int fmi3_xml_str_to_intXX(fmi3_xml_parser_context_t* context, int required, void* field, void* defaultVal,
@@ -652,7 +690,7 @@ int fmi3_xml_set_attr_sizet(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu
         fmi3_xml_parse_error(context, "Didn't find suitable size for parsing size_t.");
         return -1;
     }
-    
+
     return fmi3_xml_set_attr_intXX(context, elmID, attrID, required, field, defaultVal, primType);
 }
 
@@ -673,7 +711,7 @@ int fmi3_xml_set_attr_intXX(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu
     ret = fmi3_xml_get_attr_str(context, elmID, attrID, required, &strVal); /* checks for (!strVal && required) condition */
     if (ret) return ret;
 
-    /* convert to float and write value to field */
+    /* convert to integer and write value to field */
     ret = fmi3_xml_str_to_intXX(context, required, field, defaultVal, strVal, primType);
     if (ret) {
         fmi3_xml_parse_attr_error(context, elmID, attrID, strVal);
@@ -682,11 +720,6 @@ int fmi3_xml_set_attr_intXX(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu
     return ret;
 }
 
-
-/* return values:
-     0: OK
-    -1: parsing failed
-*/
 static int fmi3_xml_str_to_floatXX(fmi3_xml_parser_context_t *context, int required, void* field, void* defaultVal,
         jm_string strVal, const fmi3_xml_primitive_type_t* primType) {
     /*
@@ -781,12 +814,36 @@ gen_fmi3_xml_set_attr_TYPEXX(uint32,  intXX)
         jm_log_error(context->callbacks, module, "Unable to allocate memory. File: %s, Line: %d", __FILE__, __LINE__);      \
     } while (0);
 
+static int fmi3_xml_str_to_primitive(fmi3_xml_parser_context_t *context,
+        int required, void* field, void* defaultVal, jm_string strVal,
+        const fmi3_xml_primitive_type_t* primType) {
+    if (fmi3_base_type_enu_is_int(primType->baseType) || fmi3_base_type_enu_is_enum(primType->baseType)) {
+        if (fmi3_xml_str_to_intXX(context, required, field, defaultVal, strVal, primType)) {
+            jm_log_error(context->callbacks, module, "Unable to parse to %s: %s", primType->name, strVal);
+            return -1;
+        }
+    } else if (fmi3_base_type_enu_is_float(primType->baseType)) {
+        if (fmi3_xml_str_to_floatXX(context, required, field, defaultVal, strVal, primType)) {
+            jm_log_error(context->callbacks, module, "Unable to parse to %s: %s", primType->name, strVal);
+            return -1;
+        }
+    } else if (fmi3_base_type_enu_is_bool(primType->baseType)) {
+        if (fmi3_xml_str_to_bool(context, required, field, defaultVal, strVal)) {
+            jm_log_error(context->callbacks, module, "Unable to parse to %s: %s", primType->name, strVal);
+            return -1;
+        }
+    }
+    return 0;
+}
+
 /**
- * Parses a string to an array of float64 values
+ * Parses a string to an array of values. Currently supports int and float.
+ * An assert will fail if primType is of any non-supported type.
  *
- * str: the string containing the float64 values, they must be separated by exactly one <space> character, must not be NULL
- * arrPtr: pointer to the array where the values will be stored. Memory is dynamically allocated for this array, and must be freed by caller
- * nArr: the number of values in 'arrPtr'
+ * str:     The string containing the values, they must be separated by blank spaces and/or newlines and must not be NULL.
+ * arrPtr:  A pointer to the array where the values will be stored.
+ *          Memory is dynamically allocated for this array, and must be freed by caller
+ * nArr:    The number of values in 'arrPtr'
  *
  * LIMITATION:
  * some expressions that are not a valid target type will be incorrectly formatted (this only happen with invalid XMLs)
@@ -794,7 +851,9 @@ gen_fmi3_xml_set_attr_TYPEXX(uint32,  intXX)
  * example: float: "1.1;2.2", "1a3", "1e999"
  *
  */
-static int fmi3_xml_str_to_array_floatXX(fmi3_xml_parser_context_t* context, const char* str, void** arrPtr, size_t* nArr, const fmi3_xml_primitive_type_t* primType) {
+static int fmi3_xml_str_to_array(
+        fmi3_xml_parser_context_t* context, const char* str, void** arrPtr,
+        size_t* nArr, const fmi3_xml_primitive_type_t* primType) {
     char* strCopy;
     char* delim = " ";
     size_t nVals = fmi3_xml_string_char_count(str, delim[0]) + 1;
@@ -805,7 +864,15 @@ static int fmi3_xml_str_to_array_floatXX(fmi3_xml_parser_context_t* context, con
 
     assert(str);
 
-    /* create a copy that it's OK that strtok mutates */
+    /* Check first that the current function has implemented support for the type passed to this function.
+    *   Otherwise we will have errors further down where check if the parsing of scalars/arrays is OK.
+    */
+    assert((fmi3_base_type_enu_is_int(primType->baseType)
+            || fmi3_base_type_enu_is_float(primType->baseType)
+            || fmi3_base_type_enu_is_enum(primType->baseType)
+            || fmi3_base_type_enu_is_bool(primType->baseType)));
+
+    /* Create a copy that it's OK that strtok mutates */
     strCopy = context->callbacks->malloc(strlen(str) + 1); /* plus one for null character */
     if (!strCopy) {
         JM_LOG_ERROR_NO_MEM();
@@ -814,42 +881,34 @@ static int fmi3_xml_str_to_array_floatXX(fmi3_xml_parser_context_t* context, con
     }
     strncpy(strCopy, str, strlen(str) + 1);
 
-    /* allocate memory for the start values */
+    /* Allocate memory for the start values */
     vals = context->callbacks->malloc(nVals * primType->size); /* freed in fmi3_xml_clear_model_description */
     if (!vals) {
         JM_LOG_ERROR_NO_MEM();
         res = -1;
         goto err2;
     }
-
-    /* write start value(s) to correct type */
+    /* Write start value(s) to correct type */
     if (nVals == 1) { /* scalar */
-        if (fmi3_xml_str_to_floatXX(context, 1, vals, NULL, str, primType)) {
-            jm_log_error(context->callbacks, module, "Unable to parse to %s: %s", primType->name, str);
-            res = -1;
+        if (fmi3_xml_str_to_primitive(context, 1, vals, NULL, str, primType)) {
             goto err2;
         }
     } else { /* array */
 
-        /* get the first token */
+        /* Get the first token */
         token = strtok(strCopy, delim);
 
-        /* walk through other tokens */
+        /* Walk through other tokens */
         writeAddr = vals;
         while (token != NULL) {
-
-            /* write attribute as float */
-
-            if (fmi3_xml_str_to_floatXX(context, 1, writeAddr, NULL, token, primType)) {
-                jm_log_error(context->callbacks, module, "Unable to parse to %s: %s", primType->name, token);
-                res = -1;
+            if (fmi3_xml_str_to_primitive(context, 1, writeAddr, NULL, token, primType)) {
                 goto err2;
             }
 
-            /* update where to write next value */
+            /* Update where to write next value */
             writeAddr = (char*)writeAddr + primType->size;
 
-            /* get next token */
+            /* Get next token */
             token = strtok(NULL, delim); /* strtok maintains internal buffer - pass NULL as first arg to continue with previous string */
         }
     }
@@ -858,9 +917,9 @@ static int fmi3_xml_str_to_array_floatXX(fmi3_xml_parser_context_t* context, con
     *arrPtr = vals;
     *nArr = nVals;
     goto clean;
-
     /* clean up */
 err2:
+    res = -1;
     context->callbacks->free(vals);
 err1:
 clean:
@@ -869,10 +928,18 @@ clean:
 
     return res;
 }
+
 /**
- * Get attribute as float array. This will clear the attribute from the parser buffer.
- *  arrPtr (return arg): where the array will be stored
- *  arrSize (return arg): size of 'arrPtr'
+ *
+ * Get attribute as an array. This will clear the attribute from the parser buffer.
+ *
+ * TODO:
+ * 1. This should not be a _set_attr_ function because it doesn't use the attrBuffer.
+ *    ... this function should probably not even exist.
+ *
+ *
+ * @param arrPtr (return arg): where the array will be stored
+ * @param arrSize (return arg): size of 'arrPtr'
  */
 int fmi3_xml_set_attr_array(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID,
         int required, void** arrPtr, size_t* arrSize, jm_string str, const fmi3_xml_primitive_type_t* primType) {
@@ -884,11 +951,13 @@ int fmi3_xml_set_attr_array(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu
     }
 
     /* write all attributes to array of correct type */
-    if (fmi3_xml_str_to_array_floatXX(context, str, arrPtr, arrSize, primType)) {
-        fmi3_xml_parse_attr_error(context, elmID, attrID, str);
+    if (fmi3_xml_str_to_array(context, str, arrPtr, arrSize, primType)) {
+        jm_string elmName = fmi3_element_handle_map[elmID].elementName;
+        jm_string attrName = fmi3_xmlAttrNames[attrID];
+        fmi3_xml_parse_error(context, "XML element '%s': could not parse value for %s attribute '%s'='%s'",
+            elmName, primType->name, attrName, str);
         return -1;
     }
-
     return 0;
 }
 
@@ -1360,7 +1429,10 @@ int fmi3_xml_parse_model_description(fmi3_xml_model_description_t* md,
     context->skipOneVariableFlag = 0;
     context->skipElementCnt = 0;
     jm_stack_init(int)(&context->elmStack,  context->callbacks);
-    jm_vector_init(char)(&context->elmData, 0, context->callbacks);
+    jm_vector_init(char)(&context->elmData,           0, context->callbacks);
+    jm_vector_init(char)(&context->variableStartAttr, 0, context->callbacks);
+    jm_vector_init(jm_voidp)(&context->currentStartVariableValues, 0, context->callbacks);
+
     context->lastElmID = fmi3_xml_elmID_none;
     context->currentElmID = fmi3_xml_elmID_none;
     context->anyElmCount = 0;

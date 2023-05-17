@@ -50,8 +50,6 @@ fmi3_value_reference_t fmi3_xml_get_variable_vr(fmi3_xml_variable_t*);
 fmi3_xml_variable_typedef_t* fmi3_xml_get_variable_declared_type(fmi3_xml_variable_t*);
 fmi3_base_type_enu_t fmi3_xml_get_variable_base_type(fmi3_xml_variable_t*);
 
-fmi3_float64_t* fmi3_xml_get_float64_variable_start_array(fmi3_xml_float64_variable_t* v);
-fmi3_float32_t* fmi3_xml_get_float32_variable_start_array(fmi3_xml_float32_variable_t* v);
 
 jm_vector(fmi3_xml_dimension_t)* fmi3_xml_get_variable_dimension_vector(fmi3_xml_variable_t* v);
 
@@ -74,6 +72,7 @@ fmi3_boolean_t fmi3_xml_get_float64_variable_reinit (fmi3_xml_float64_variable_t
 fmi3_xml_unit_t* fmi3_xml_get_float64_variable_unit (fmi3_xml_float64_variable_t* v);
 fmi3_xml_display_unit_t* fmi3_xml_get_float64_variable_display_unit (fmi3_xml_float64_variable_t* v);
 fmi3_float64_t fmi3_xml_get_float64_variable_start (fmi3_xml_float64_variable_t* v);
+fmi3_float64_t* fmi3_xml_get_float64_variable_start_array(fmi3_xml_float64_variable_t* v);
 fmi3_float64_t fmi3_xml_get_float64_variable_min (fmi3_xml_float64_variable_t* v);
 fmi3_float64_t fmi3_xml_get_float64_variable_max (fmi3_xml_float64_variable_t* v);
 fmi3_float64_t fmi3_xml_get_float64_variable_nominal (fmi3_xml_float64_variable_t* v);
@@ -87,6 +86,7 @@ fmi3_boolean_t fmi3_xml_get_float32_variable_reinit (fmi3_xml_float32_variable_t
 fmi3_xml_unit_t* fmi3_xml_get_float32_variable_unit (fmi3_xml_float32_variable_t* v);
 fmi3_xml_display_unit_t* fmi3_xml_get_float32_variable_display_unit (fmi3_xml_float32_variable_t* v);
 fmi3_float32_t fmi3_xml_get_float32_variable_start (fmi3_xml_float32_variable_t* v);
+fmi3_float32_t* fmi3_xml_get_float32_variable_start_array(fmi3_xml_float32_variable_t* v);
 fmi3_float32_t fmi3_xml_get_float32_variable_min (fmi3_xml_float32_variable_t* v);
 fmi3_float32_t fmi3_xml_get_float32_variable_max (fmi3_xml_float32_variable_t* v);
 fmi3_float32_t fmi3_xml_get_float32_variable_nominal (fmi3_xml_float32_variable_t* v);
@@ -98,59 +98,72 @@ fmi3_xml_int64_variable_t* fmi3_xml_get_variable_as_int64(fmi3_xml_variable_t*);
 fmi3_int64_t fmi3_xml_get_int64_variable_min (fmi3_xml_int64_variable_t* v);
 fmi3_int64_t fmi3_xml_get_int64_variable_max (fmi3_xml_int64_variable_t* v);
 fmi3_int64_t fmi3_xml_get_int64_variable_start (fmi3_xml_int64_variable_t* v);
+fmi3_int64_t* fmi3_xml_get_int64_variable_start_array(fmi3_xml_int64_variable_t* v);
 fmi3_string_t fmi3_xml_get_int64_variable_quantity (fmi3_xml_int64_variable_t* v);
 
 fmi3_xml_int32_variable_t* fmi3_xml_get_variable_as_int32(fmi3_xml_variable_t*);
 fmi3_int32_t fmi3_xml_get_int32_variable_min (fmi3_xml_int32_variable_t* v);
 fmi3_int32_t fmi3_xml_get_int32_variable_max (fmi3_xml_int32_variable_t* v);
 fmi3_int32_t fmi3_xml_get_int32_variable_start (fmi3_xml_int32_variable_t* v);
+fmi3_int32_t* fmi3_xml_get_int32_variable_start_array(fmi3_xml_int32_variable_t* v);
 fmi3_string_t fmi3_xml_get_int32_variable_quantity (fmi3_xml_int32_variable_t* v);
 
 fmi3_xml_int16_variable_t* fmi3_xml_get_variable_as_int16(fmi3_xml_variable_t*);
 fmi3_int16_t fmi3_xml_get_int16_variable_min (fmi3_xml_int16_variable_t* v);
 fmi3_int16_t fmi3_xml_get_int16_variable_max (fmi3_xml_int16_variable_t* v);
 fmi3_int16_t fmi3_xml_get_int16_variable_start (fmi3_xml_int16_variable_t* v);
+fmi3_int16_t* fmi3_xml_get_int16_variable_start_array(fmi3_xml_int16_variable_t* v);
 fmi3_string_t fmi3_xml_get_int16_variable_quantity (fmi3_xml_int16_variable_t* v);
 
 fmi3_xml_int8_variable_t* fmi3_xml_get_variable_as_int8(fmi3_xml_variable_t*);
 fmi3_int8_t fmi3_xml_get_int8_variable_min (fmi3_xml_int8_variable_t* v);
 fmi3_int8_t fmi3_xml_get_int8_variable_max (fmi3_xml_int8_variable_t* v);
 fmi3_int8_t fmi3_xml_get_int8_variable_start (fmi3_xml_int8_variable_t* v);
+fmi3_int8_t* fmi3_xml_get_int8_variable_start_array(fmi3_xml_int8_variable_t* v);
 fmi3_string_t fmi3_xml_get_int8_variable_quantity (fmi3_xml_int8_variable_t* v);
 
 fmi3_xml_uint64_variable_t* fmi3_xml_get_variable_as_uint64(fmi3_xml_variable_t*);
 fmi3_uint64_t fmi3_xml_get_uint64_variable_min (fmi3_xml_uint64_variable_t* v);
 fmi3_uint64_t fmi3_xml_get_uint64_variable_max (fmi3_xml_uint64_variable_t* v);
 fmi3_uint64_t fmi3_xml_get_uint64_variable_start (fmi3_xml_uint64_variable_t* v);
+fmi3_uint64_t* fmi3_xml_get_uint64_variable_start_array(fmi3_xml_uint64_variable_t* v);
 fmi3_string_t fmi3_xml_get_uint64_variable_quantity (fmi3_xml_uint64_variable_t* v);
 
 fmi3_xml_uint32_variable_t* fmi3_xml_get_variable_as_uint32(fmi3_xml_variable_t*);
 fmi3_uint32_t fmi3_xml_get_uint32_variable_min (fmi3_xml_uint32_variable_t* v);
 fmi3_uint32_t fmi3_xml_get_uint32_variable_max (fmi3_xml_uint32_variable_t* v);
 fmi3_uint32_t fmi3_xml_get_uint32_variable_start (fmi3_xml_uint32_variable_t* v);
+fmi3_uint32_t* fmi3_xml_get_uint32_variable_start_array(fmi3_xml_uint32_variable_t* v);
 fmi3_string_t fmi3_xml_get_uint32_variable_quantity (fmi3_xml_uint32_variable_t* v);
 
 fmi3_xml_uint16_variable_t* fmi3_xml_get_variable_as_uint16(fmi3_xml_variable_t*);
 fmi3_uint16_t fmi3_xml_get_uint16_variable_min (fmi3_xml_uint16_variable_t* v);
 fmi3_uint16_t fmi3_xml_get_uint16_variable_max (fmi3_xml_uint16_variable_t* v);
 fmi3_uint16_t fmi3_xml_get_uint16_variable_start (fmi3_xml_uint16_variable_t* v);
+fmi3_uint16_t* fmi3_xml_get_uint16_variable_start_array(fmi3_xml_uint16_variable_t* v);
 fmi3_string_t fmi3_xml_get_uint16_variable_quantity (fmi3_xml_uint16_variable_t* v);
 
 fmi3_xml_uint8_variable_t* fmi3_xml_get_variable_as_uint8(fmi3_xml_variable_t*);
 fmi3_uint8_t fmi3_xml_get_uint8_variable_min (fmi3_xml_uint8_variable_t* v);
 fmi3_uint8_t fmi3_xml_get_uint8_variable_max (fmi3_xml_uint8_variable_t* v);
 fmi3_uint8_t fmi3_xml_get_uint8_variable_start (fmi3_xml_uint8_variable_t* v);
+fmi3_uint8_t* fmi3_xml_get_uint8_variable_start_array(fmi3_xml_uint8_variable_t* v);
 fmi3_string_t fmi3_xml_get_uint8_variable_quantity (fmi3_xml_uint8_variable_t* v);
 
 fmi3_xml_string_variable_t* fmi3_xml_get_variable_as_string(fmi3_xml_variable_t*);
-const char* fmi3_xml_get_string_variable_start(fmi3_xml_string_variable_t* v);
+fmi3_string_t* fmi3_xml_get_string_variable_start(fmi3_xml_string_variable_t* v);
+fmi3_string_t* fmi3_xml_get_string_variable_start_array(fmi3_xml_string_variable_t* v);
 
 fmi3_xml_bool_variable_t* fmi3_xml_get_variable_as_boolean(fmi3_xml_variable_t*);
 fmi3_boolean_t fmi3_xml_get_boolean_variable_start(fmi3_xml_bool_variable_t* v);
+fmi3_boolean_t* fmi3_xml_get_boolean_variable_start_array(fmi3_xml_bool_variable_t* v);
 
 fmi3_xml_binary_variable_t* fmi3_xml_get_variable_as_binary(fmi3_xml_variable_t*);
-size_t fmi3_xml_get_binary_variable_start_size(fmi3_xml_binary_variable_t* v);
-fmi3_binary_t fmi3_xml_get_binary_variable_start(fmi3_xml_binary_variable_t* v);
+size_t         fmi3_xml_get_binary_variable_start_size(fmi3_xml_binary_variable_t* v);
+fmi3_binary_t  fmi3_xml_get_binary_variable_start(fmi3_xml_binary_variable_t* v);
+fmi3_binary_t* fmi3_xml_get_binary_variable_start_array(fmi3_xml_binary_variable_t* v);
+size_t*        fmi3_xml_get_binary_variable_start_array_sizes(fmi3_xml_binary_variable_t* v);
+size_t         fmi3_xml_get_binary_variable_start_array_size(fmi3_xml_binary_variable_t* v);
 fmi3_string_t fmi3_xml_get_binary_variable_mime_type(fmi3_xml_binary_variable_t* v);
 size_t fmi3_xml_get_binary_variable_max_size(fmi3_xml_binary_variable_t* v);
 
@@ -167,7 +180,8 @@ fmi3_uint64_t fmi3_xml_get_clock_variable_shift_counter(fmi3_xml_clock_variable_
 
 fmi3_xml_enum_variable_t* fmi3_xml_get_variable_as_enum(fmi3_xml_variable_t*);
 fmi3_string_t fmi3_xml_get_enum_variable_quantity(fmi3_xml_enum_variable_t* v);
-int fmi3_xml_get_enum_variable_start(fmi3_xml_enum_variable_t* v);
+fmi3_int64_t fmi3_xml_get_enum_variable_start(fmi3_xml_enum_variable_t* v);
+fmi3_int64_t* fmi3_xml_get_enum_variable_start_array(fmi3_xml_enum_variable_t* v);
 int fmi3_xml_get_enum_variable_min(fmi3_xml_enum_variable_t* v);
 int fmi3_xml_get_enum_variable_max(fmi3_xml_enum_variable_t* v);
 

@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<!-- 
+<!--
     this file is partial/full copy of the example in the github repo:
         fmi-standard\docs\examples\variable_types.xml
 -->
 <fmiModelDescription fmiVersion="3.0-alpha" modelName="VariableTypes" instantiationToken="">
 
   <CoSimulation modelIdentifier="VariableTypes"/>
+
+  <TypeDefinitions>
+      <Enumeration name="TestEnum">
+        <Item name="item1" value="1"/>
+        <Item name="item2" value="2"/>
+        <Item name="item3" value="3"/>
+      </Enumeration>
+      <Enumeration name="TestEnum2">
+        <Item name="item1" value="55"/>
+        <Item name="item2" value="-57"/>
+      </Enumeration>
+  </TypeDefinitions>
 
   <ModelVariables>
     <!-- float64 -->
@@ -73,13 +85,114 @@
       <Dimension valueReference="202"/>
       <Dimension start="2"/>
     </Float32>
+    <Int64 name="int64_array" valueReference="109" causality="input"
+        description="Array used to test the largest and smalles value of int64"
+        start="9223372036854775807                 1234
+               9223372036854775805 -9223372036854775805
+                                 0 -9223372036854775807">
+      <Dimension start="3"/>
+      <Dimension start="2"/>
+    </Int64>
+    <Int32 name="int32_array" valueReference="110" causality="input"
+        description="Array used to test the largest and smalles value of int32"
+        start=" 2147483647  2147483646
+               -2147483648 -2147483647">
+      <Dimension start="2"/>
+      <Dimension start="2"/>
+    </Int32>
+    <Int16 name="int16_array" valueReference="111" causality="input"
+        description="Array used to test the largest and smalles value of int16"
+        start=" 32767  32766
+               -32768 -32767">
+      <Dimension start="2"/>
+      <Dimension start="2"/>
+    </Int16>
+    <Int8 name="int8_array" valueReference="112" causality="input"
+      description="Array used to test the largest and smalles value of int8"
+      start=" 127  126
+             -128 -127">
+      <Dimension start="2"/>
+      <Dimension start="2"/>
+    </Int8>
+    <UInt64 name="uint64_array" valueReference="113" causality="input"
+      description="Array used to test the largest and smalles value of uint64"
+      start="18446744073709551615 0
+                                1 2">
+      <Dimension start="2"/>
+      <Dimension start="2"/>
+    </UInt64>
+    <UInt32 name="uint32_array" valueReference="114" causality="input"
+      description="Array used to test the largest and smalles value of uint32"
+      start="0 4294967295 5
+             1          2 1">
+      <Dimension start="2"/>
+      <Dimension start="3"/>
+    </UInt32>
+    <UInt16 name="uint16_array" valueReference="115" causality="input"
+      description="Array used to test the largest and smalles value of uint16"
+      start="65535 65535
+                 1     2
+                 3     4">
+      <Dimension start="3"/>
+      <Dimension start="2"/>
+    </UInt16>
+    <UInt8 name="uint8_array" valueReference="116" causality="input"
+      description="Array used to test the largest and smalles value of uint8"
+      start="255 255
+               3 255
+                       5   6
+                     255 255">
+      <Dimension start="2"/>
+      <Dimension start="2"/>
+      <Dimension start="2"/>
+    </UInt8>
+
+    <Boolean name="bool_array" valueReference="117" causality="input"
+        description="Array used to test bool arrays. Note that legal literals are false, true, 0, 1"
+        start="false true 1 0">
+      <Dimension start="1"/>
+      <Dimension start="4"/>
+    </Boolean>
+
+    <Enumeration name="enum_array" valueReference="118" causality="input" variability="discrete"
+      declaredType="TestEnum"
+      description="Array used to test enum arrays."
+      start="3 1 2 3 1 9223372036854775807 2">
+      <Dimension start="7"/>
+    </Enumeration>
+
+    <Enumeration name="enum_array2" valueReference="119" causality="input" variability="discrete"
+      declaredType="TestEnum2"
+      description="Array used to test enum arrays, this tests only 1 value and a negative."
+      start="-57">
+      <Dimension start="1"/>
+    </Enumeration>
+
+  <String name="string_array" valueReference="120" causality="input" description="Testing string arrays">
+    <Dimension start="3"/>
+    <Start value="The first string," />
+    <Start value="and the second string!" />
+    <Start value="abcd." />
+  </String>
+
+
+  <String name="string_var" valueReference="121" causality="input" description="Testing string no array">
+    <Start value="A sTring value"/>
+  </String>
+
+    <Binary name="binary_array" valueReference="122" maxSize="28" initial="exact" description="Testing binary arrays">
+      <Dimension start="3"/>
+      <Start value="0011BBff029eE4Cd"/>
+      <Start value="3c3f"/>
+      <Start value="E4Cd"/>
+    </Binary>
 
     <!-- variables used as dimension specifiers -->
     <UInt32 name="uint32_1" valueReference="201" initial="exact" variability="constant" start="3" />
     <UInt32 name="uint32_2" valueReference="202" initial="exact" variability="constant" start="2" />
 
   </ModelVariables>
-  
+
   <ModelStructure/>
 
 </fmiModelDescription>

@@ -31,7 +31,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-    
+
 
 jm_vector_declare_template(fmi3_value_reference_t)
 
@@ -103,7 +103,7 @@ jm_vector_declare_template(fmi3_value_reference_t)
     EXPAND_XML_ATTRNAME(canInterpolateInputs) \
     EXPAND_XML_ATTRNAME(maxOutputDerivativeOrder) \
     EXPAND_XML_ATTRNAME(canRunAsynchronuously)
-    
+
 
 #define FMI3_XML_ATTR_ID(attr) fmi_attr_id_##attr,
 typedef enum fmi3_xml_attr_enu_t {
@@ -175,6 +175,7 @@ typedef enum fmi3_xml_attr_enu_t {
     EXPAND_XML_ELMNAME(StringVariable) \
     EXPAND_XML_ELMNAME(EnumerationVariable) \
     EXPAND_XML_ELMNAME(BinaryVariableStart) \
+    EXPAND_XML_ELMNAME(StringVariableStart) \
     EXPAND_XML_ELMNAME(VariableTool) \
     EXPAND_XML_ELMNAME(SourceFilesCS) \
     EXPAND_XML_ELMNAME(FileCS)
@@ -249,7 +250,10 @@ struct fmi3_xml_parser_context_t {
     jm_callbacks* callbacks;
 
     XML_Parser parser;
-    
+
+    /* Temporary storage of start values for String and Binary variables. */
+    jm_vector(jm_voidp) currentStartVariableValues;
+
     /**
      * Actual type: jm_vector of jm_vector(char).
      *
@@ -267,7 +271,7 @@ struct fmi3_xml_parser_context_t {
      * Used for writing to attrBuffer. Uses lookup by attribute name instead
      * of attribute ID. The .ptr field points to attrBuffer[id(attr_name)].
      * Currently used ONLY for writing.
-     * 
+     *
      * TODO: Rename to attrMapByName?
      */
     jm_vector(jm_named_ptr)* attrMap;
@@ -275,10 +279,10 @@ struct fmi3_xml_parser_context_t {
     /**
      * Vector with a slot for every attribute for every element to allow constant lookup:
      *     attrBuffer[<attr_id>] = <attr_value>
-     * 
+     *
      * Is populated with all parsed attributes for the current element before that element
      * handler is invoked.
-     * 
+     *
      * Typically attributes values are cleared when they are read, such that at the end of
      * parsing an element all attributes should be cleared.
      * 
@@ -345,6 +349,12 @@ struct fmi3_xml_parser_context_t {
     jm_vector(char) elmData;
 
     /**
+     * Contains a Variable's start attribute. Purpose is to allow it to be
+     * processed in the Variable's end-handler.
+     */
+    jm_vector(char) variableStartAttr;
+
+    /**
      * Element ID of the last processed sibling, or fmi3_xml_elmID_none if
      * no siblings have been processed.
      */
@@ -396,7 +406,8 @@ typedef struct fmi3_xml_primitive_types_t {
     fmi3_xml_primitive_type_t uint32;
     fmi3_xml_primitive_type_t uint16;
     fmi3_xml_primitive_type_t uint8;
-    fmi3_xml_primitive_type_t sizet;
+    fmi3_xml_primitive_type_t boolean;
+    fmi3_xml_primitive_type_t enumeration;
 } fmi3_xml_primitive_types_t;
 
 extern const fmi3_xml_primitive_types_t PRIMITIVE_TYPES;
@@ -404,7 +415,7 @@ extern const fmi3_xml_primitive_types_t PRIMITIVE_TYPES;
 jm_vector(char) * fmi3_xml_reserve_parse_buffer(fmi3_xml_parser_context_t *context, size_t index, size_t size);
 jm_vector(char) * fmi3_xml_get_parse_buffer(fmi3_xml_parser_context_t *context, size_t index);
 int fmi3_xml_alloc_parse_buffer(fmi3_xml_parser_context_t *context, size_t items);
-
+void fmi3_xml_free_variable_start_values(fmi3_xml_parser_context_t *context);
 void fmi3_xml_free_parse_buffer(fmi3_xml_parser_context_t *context);
 
 void fmi3_xml_parse_fatal(fmi3_xml_parser_context_t *context, const char* fmt, ...);

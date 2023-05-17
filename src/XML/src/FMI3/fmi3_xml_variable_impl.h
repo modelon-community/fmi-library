@@ -30,7 +30,7 @@ extern "C" {
 /**
  * Holds the VR until all Variables have been parsed. Then the variable
  * can be looked up.
- */    
+ */
 typedef union fmi3_xml_valueref_or_variable_union_t {
     fmi3_value_reference_t vr;
     fmi3_xml_variable_t* variable;

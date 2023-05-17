@@ -133,11 +133,12 @@ set_target_properties(
 set(FAIL_NAME_CHECK 0)
 set(PASS_NAME_CHECK 1)
 
-add_catch2_test(fmi3_capi_basic_test              FMI3)
-add_catch2_test(fmi3_import_variable_test         FMI3)
-add_catch2_test(fmi3_import_convenience_test      FMI3)
-add_catch2_test(fmi3_import_model_structure_test  FMI3)
+add_catch2_test(fmi3_capi_basic_test             FMI3)
+add_catch2_test(fmi3_import_start_arrays_test    FMI3)
+add_catch2_test(fmi3_import_variable_test        FMI3)
+add_catch2_test(fmi3_import_convenience_test     FMI3)
 add_catch2_test(fmi3_import_type_definitions_test FMI3)
+add_catch2_test(fmi3_import_model_structure_test FMI3)
 
 add_test(ctest_fmi3_xml_parsing_test fmi3_xml_parsing_test ${FMIL_TEST_DIR}/FMI3/parser_test_xmls/)
 
@@ -180,7 +181,6 @@ if(FMILIB_BUILD_BEFORE_TESTS)
         ctest_fmi3_import_sim_test_se
         ctest_fmi3_import_fatal_test
         ctest_fmi3_import_arrays_test
-        ctest_fmi3_import_variable_test
         ctest_fmi3_import_default_experiment_test
         ctest_fmi3_enum_test
         ctest_fmi3_variable_bad_variability_causality_test

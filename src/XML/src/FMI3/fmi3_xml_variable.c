@@ -1592,7 +1592,6 @@ int fmi3_xml_handle_IntXXVariable(fmi3_xml_parser_context_t* context, const char
     fmi3_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
     fmi3_xml_variable_type_base_t* declaredType = NULL;
     fmi3_xml_int_type_props_t* type = NULL;
-    int hasStart;
     if (!data) {
         // Type-specific attributes:
         declaredType = fmi3_parse_declared_type_attr(context, elmID, &defaultType->super) ;
@@ -1621,7 +1620,7 @@ int fmi3_xml_handle_IntXXVariable(fmi3_xml_parser_context_t* context, const char
         if (hasStart) {
             jm_string startAttr = jm_vector_get_itemp(char)(&context->variableStartAttr, 0);
             fmi3_xml_int_variable_start_t* start =
-                    (void*)fmi3_xml_alloc_variable_type_start(td, &type->super, sizeof(fmi3_xml_int_variable_start_t));
+                    (void*)fmi3_xml_alloc_variable_type_start(td, variable->type, sizeof(fmi3_xml_int_variable_start_t));
             if (!start) {
                 fmi3_xml_parse_fatal(context, "Could not allocate memory");
                 return -1;
@@ -1635,16 +1634,16 @@ int fmi3_xml_handle_IntXXVariable(fmi3_xml_parser_context_t* context, const char
             } else { /* is scalar */
                 /* restore the attribute buffer before it's used in set_attr_int */
                 jm_vector_set_item(jm_string)(context->attrBuffer, fmi_attr_id_start, startAttr);
+                // This default value should never be used, since the standard does not define it.
+                // The FMU will hard-code one in the C API and it might not match our (this) default value.
+                // Here we just give a valid value for the type so it's defined on our side at least.
+                fmi3_int_union_t defaultVal;
+                defaultVal.scalar64s = 0; /* set the whole bitfield to 0 - this will evaluate to '0' for all intXX types */
 
-            // This default value should never be used, since the standard does not define it.
-            // The FMU will hard-code one in the C API and it might not match our (this) default value.
-            // Here we just give a valid value for the type so it's defined on our side at least.
-            fmi3_int_union_t defaultVal;
-            defaultVal.scalar64s = 0; /* set the whole bitfield to 0 - this will evaluate to '0' for all intXX types */
-
-            if (fmi3_xml_set_attr_intXX(context, elmID, fmi_attr_id_start, 0, &start->start, &defaultVal, primType)) {
-                jm_log_error(context->callbacks, module, "failed to parse start value for integer");
-                return -1;
+                if (fmi3_xml_set_attr_intXX(context, elmID, fmi_attr_id_start, 0, &start->start, &defaultVal, primType)) {
+                    jm_log_error(context->callbacks, module, "failed to parse start value for integer");
+                    return -1;
+                }
             }
             variable->type = &start->super;
         } else {

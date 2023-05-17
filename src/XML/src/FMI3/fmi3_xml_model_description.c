@@ -459,15 +459,21 @@ int fmi3_xml_handle_fmiModelDescription(fmi3_xml_parser_context_t* context, cons
             return -1;
         }
         if ((md->fmuKind & fmi3_fmu_kind_me) && !fmi3_xml_is_valid_model_ID(fmi3_xml_get_model_identifier_ME(md))) {
-            fmi3_xml_parse_error(context, "Model identifier '%s' is not valid (must be a valid C-identifier)", fmi3_xml_get_model_identifier_ME(md));
+            fmi3_xml_parse_error(context,
+                    "ModelExchange: Model identifier '%s' is not valid (must be a valid C-identifier)",
+                    fmi3_xml_get_model_identifier_ME(md));
             return -1;
         }
         if ((md->fmuKind & fmi3_fmu_kind_cs) && !fmi3_xml_is_valid_model_ID(fmi3_xml_get_model_identifier_CS(md))) {
-            fmi3_xml_parse_error(context, "Model identifier '%s' is not valid (must be a valid C-identifier)", fmi3_xml_get_model_identifier_CS(md));
+            fmi3_xml_parse_error(context,
+                    "CoSimulation: Model identifier '%s' is not valid (must be a valid C-identifier)",
+                    fmi3_xml_get_model_identifier_CS(md));
             return -1;
         }
         if ((md->fmuKind & fmi3_fmu_kind_se) && !fmi3_xml_is_valid_model_ID(fmi3_xml_get_model_identifier_SE(md))) {
-            fmi3_xml_parse_error(context, "Model identifier '%s' is not valid (must be a valid C-identifier)", fmi3_xml_get_model_identifier_SE(md));
+            fmi3_xml_parse_error(context,
+                    "ScheduledExecution: Model identifier '%s' is not valid (must be a valid C-identifier)",
+                    fmi3_xml_get_model_identifier_SE(md));
             return -1;
         }
         if (!md->modelStructure) {
@@ -522,8 +528,7 @@ static int fmi3_xml_process_interface_type_common_attrs(fmi3_xml_parser_context_
         return -1;
     }
 
-    if (fmi3_xml_set_attr_string(context, elmID, fmi_attr_id_modelIdentifier, 1,
-                modelIdentifierPtr)
+    if (fmi3_xml_set_attr_string(context, elmID, fmi_attr_id_modelIdentifier, 1, modelIdentifierPtr)
         ||
         fmi3_xml_set_attr_boolean(context, elmID, fmi_attr_id_needsExecutionTool, 0,
                 &md->capabilities[fmi3_me_needsExecutionTool + offset], 0)
@@ -604,7 +609,7 @@ int fmi3_xml_handle_CoSimulation(fmi3_xml_parser_context_t *context, const char*
         }
 
         // Process attributes
-        if (fmi3_xml_process_interface_type_common_attrs(context, fmi3_fmu_kind_me)) {
+        if (fmi3_xml_process_interface_type_common_attrs(context, fmi3_fmu_kind_cs)) {
             return -1;
         }
 
@@ -678,7 +683,7 @@ int fmi3_xml_handle_ScheduledExecution(fmi3_xml_parser_context_t *context, const
         }
 
         // Process attributes
-        if (fmi3_xml_process_interface_type_common_attrs(context, fmi3_fmu_kind_me)) {
+        if (fmi3_xml_process_interface_type_common_attrs(context, fmi3_fmu_kind_se)) {
             return -1;
         }
 

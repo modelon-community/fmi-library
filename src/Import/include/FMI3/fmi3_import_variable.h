@@ -499,9 +499,9 @@ FMILIB_EXPORT fmi3_binary_t fmi3_import_get_binary_variable_start(fmi3_import_bi
 /** \brief Get start value for the variable */
 FMILIB_EXPORT fmi3_binary_t* fmi3_import_get_binary_variable_start_array(fmi3_import_binary_variable_t* v);
 /** \brief Get the size of each start value for the variable */
-FMILIB_EXPORT size_t* fmi3_import_get_binary_variable_start_array_size(fmi3_import_binary_variable_t* v);
+FMILIB_EXPORT size_t* fmi3_import_get_binary_variable_start_array_sizes(fmi3_import_binary_variable_t* v);
 /** \brief Get the number of values in the start array for the variable */
-FMILIB_EXPORT size_t fmi3_import_get_binary_variable_start_array_length(fmi3_import_binary_variable_t* v);
+FMILIB_EXPORT size_t fmi3_import_get_binary_variable_start_array_size(fmi3_import_binary_variable_t* v);
 /** \brief Get mimeType for the variable */
 FMILIB_EXPORT fmi3_string_t fmi3_import_get_binary_variable_mime_type(fmi3_import_binary_variable_t* v);
 /** \brief Get maxSize for the variable */

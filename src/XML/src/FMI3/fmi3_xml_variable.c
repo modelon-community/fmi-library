@@ -835,7 +835,7 @@ size_t fmi3_xml_get_binary_variable_start_size(fmi3_xml_binary_variable_t* v) {
     return 0;
 }
 
-size_t fmi3_xml_get_binary_variable_start_array_length(fmi3_xml_binary_variable_t* v) {
+size_t fmi3_xml_get_binary_variable_start_array_size(fmi3_xml_binary_variable_t* v) {
     fmi3_xml_variable_t* vv = (fmi3_xml_variable_t*)v;
     if (fmi3_xml_get_variable_has_start(vv)) {
         fmi3_xml_binary_variable_start_t* start = (fmi3_xml_binary_variable_start_t*)(vv->type);
@@ -844,11 +844,11 @@ size_t fmi3_xml_get_binary_variable_start_array_length(fmi3_xml_binary_variable_
     return 0;
 }
 
-size_t* fmi3_xml_get_binary_variable_start_array_size(fmi3_xml_binary_variable_t* v) {
+size_t* fmi3_xml_get_binary_variable_start_array_sizes(fmi3_xml_binary_variable_t* v) {
     fmi3_xml_variable_t* vv = (fmi3_xml_variable_t*)v;
     if (fmi3_xml_get_variable_has_start(vv)) {
         fmi3_xml_binary_variable_start_t* start = (fmi3_xml_binary_variable_start_t*)(vv->type);
-        return (size_t*)jm_vector_get_itemp(jm_voidp)(&start->binaryStartValuesSize, 0);
+        return (size_t*)jm_vector_get_itemp(size_t)(&start->binaryStartValuesSize, 0);
     }
     return NULL;
 }
@@ -1851,20 +1851,13 @@ int fmi3_xml_handle_StringVariable(fmi3_xml_parser_context_t *context, const cha
             }
             jm_vector_init(jm_voidp)(&startObj->stringStartValues, 0, context->callbacks);
             // Passing ownership to stringStartValues
-            size_t nCopied = jm_vector_copy(jm_voidp)(&startObj->stringStartValues, &context->currentStartVariableValues);
+            jm_vector_copy(jm_voidp)(&startObj->stringStartValues, &context->currentStartVariableValues);
             variable->type = &startObj->super;
             // Resize the vector to 0 since we are now done with the previous values.
             jm_vector_resize(jm_voidp)(&context->currentStartVariableValues, 0);
-            if ((fmi3_xml_variable_is_array(variable))) {
-                if (nStart != nCopied) {
-                    fmi3_xml_parse_fatal(context, "Could not retrieve string start values");
-                    return -1;
-                }
-            } else {
-                if (nStart != 1) {
-                    fmi3_xml_parse_fatal(context, "Could not retrieve string start values");
-                    return -1;
-                }
+            if (!fmi3_xml_variable_is_array(variable) && (nStart != 1)) {
+                fmi3_xml_parse_fatal(context, "Found too many start values for variable %s", variable->name);
+                return -1;
             }
         } else {
             fmi3_log_error_if_start_required(context, variable);

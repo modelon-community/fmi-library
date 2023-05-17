@@ -484,12 +484,12 @@ fmi3_binary_t* fmi3_import_get_binary_variable_start_array(fmi3_import_binary_va
     return fmi3_xml_get_binary_variable_start_array(v);
 }
 
-size_t* fmi3_import_get_binary_variable_start_array_size(fmi3_import_binary_variable_t* v) {
-    return fmi3_xml_get_binary_variable_start_array_size(v);
+size_t* fmi3_import_get_binary_variable_start_array_sizes(fmi3_import_binary_variable_t* v) {
+    return fmi3_xml_get_binary_variable_start_array_sizes(v);
 }
 
-size_t fmi3_import_get_binary_variable_start_array_length(fmi3_import_binary_variable_t* v) {
-    return fmi3_xml_get_binary_variable_start_array_length(v);
+size_t fmi3_import_get_binary_variable_start_array_size(fmi3_import_binary_variable_t* v) {
+    return fmi3_xml_get_binary_variable_start_array_size(v);
 }
 
 

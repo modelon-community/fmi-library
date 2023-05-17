@@ -63,6 +63,8 @@ static void fmi3_testutil_log_and_save(jm_callbacks* cb, jm_string module, jm_lo
     jm_vector_push_back(jm_voidp)(&testfmu->log, msg);
     if (log_level == jm_log_level_error || log_level == jm_log_level_fatal) {
         jm_vector_push_back(jm_voidp)(&testfmu->errLog, msg);
+    } else if (log_level == jm_log_level_warning) {
+        jm_vector_push_back(jm_voidp)(&testfmu->warnLog, msg);
     }
 }
 
@@ -79,8 +81,9 @@ fmi3_testutil_import_t* fmi3_testutil_parse_xml_with_log(const char* xmldir) {
     testfmu->cb.logger    = fmi3_testutil_log_and_save;
     testfmu->cb.log_level = jm_log_level_info;
     testfmu->cb.context   = testfmu;
-    jm_vector_init(jm_voidp)(&testfmu->log,    0, 0);
-    jm_vector_init(jm_voidp)(&testfmu->errLog, 0, 0);
+    jm_vector_init(jm_voidp)(&testfmu->log,     0, 0);
+    jm_vector_init(jm_voidp)(&testfmu->warnLog, 0, 0);
+    jm_vector_init(jm_voidp)(&testfmu->errLog,  0, 0);
     testfmu->fmu = NULL;
 
     fmi_import_context_t* ctx = fmi_import_allocate_context(&testfmu->cb);
@@ -104,10 +107,10 @@ fmi3_testutil_import_t* fmi3_testutil_parse_xml_with_log(const char* xmldir) {
 void fmi3_testutil_import_free(fmi3_testutil_import_t* testfmu) {
     jm_callbacks* cb = jm_get_default_callbacks();
 
-    // Free testfmu->log
-    jm_vector_foreach(jm_voidp)(&testfmu->log, cb->free);  // NOTE: 'log' and 'logError' point to the same memory.
+    // Free logs:
+    jm_vector_foreach(jm_voidp)(&testfmu->log, cb->free);  // NOTE: 'log' owns all the log message memory
     jm_vector_free_data(jm_voidp)(&testfmu->log);
-    // Free testfmu->errLog
+    jm_vector_free_data(jm_voidp)(&testfmu->warnLog);
     jm_vector_free_data(jm_voidp)(&testfmu->errLog);
     
     // Free the fmi3_import_t:
@@ -120,6 +123,11 @@ void fmi3_testutil_import_free(fmi3_testutil_import_t* testfmu) {
 
 size_t fmi3_testutil_get_num_errors(fmi3_testutil_import_t* testfmu) {
     return jm_vector_get_size(jm_voidp)(&testfmu->errLog);
+}
+
+size_t fmi3_testutil_get_num_problems(fmi3_testutil_import_t* testfmu) {
+    return jm_vector_get_size(jm_voidp)(&testfmu->warnLog)
+         + jm_vector_get_size(jm_voidp)(&testfmu->errLog);
 }
 
 bool fmi3_testutil_log_contains(fmi3_testutil_import_t* testfmu, const char* msgSubstr) {

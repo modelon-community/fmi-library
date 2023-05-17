@@ -92,17 +92,23 @@ jm_vector_declare_template(fmi3_value_reference_t)
     EXPAND_XML_ATTRNAME(numberOfEventIndicators) \
     EXPAND_XML_ATTRNAME(input) \
     EXPAND_XML_ATTRNAME(needsExecutionTool) \
-    EXPAND_XML_ATTRNAME(canHandleVariableCommunicationStepSize) \
-    EXPAND_XML_ATTRNAME(completedIntegratorStepNotNeeded) \
     EXPAND_XML_ATTRNAME(canBeInstantiatedOnlyOncePerProcess) \
-    EXPAND_XML_ATTRNAME(canNotUseMemoryManagementFunctions) \
     EXPAND_XML_ATTRNAME(canGetAndSetFMUstate) \
     EXPAND_XML_ATTRNAME(canSerializeFMUstate) \
-    EXPAND_XML_ATTRNAME(providesDirectionalDerivatives) /* used for verification: checks that this attribute does not exist */ \
-    EXPAND_XML_ATTRNAME(providesDirectionalDerivative) \
-    EXPAND_XML_ATTRNAME(canInterpolateInputs) \
+    EXPAND_XML_ATTRNAME(providesDirectionalDerivatives) \
+    EXPAND_XML_ATTRNAME(providesDirectionalDerivative) /* Removed in FMI3. Used in error checking. */ \
+    EXPAND_XML_ATTRNAME(providesAdjointDerivatives) \
+    EXPAND_XML_ATTRNAME(providesPerElementDependencies) \
+    EXPAND_XML_ATTRNAME(providesEvaluateDiscreteStates) \
+    EXPAND_XML_ATTRNAME(needsCompletedIntegratorStep) \
+    EXPAND_XML_ATTRNAME(canHandleVariableCommunicationStepSize) \
+    EXPAND_XML_ATTRNAME(fixedInternalStepSize) \
     EXPAND_XML_ATTRNAME(maxOutputDerivativeOrder) \
-    EXPAND_XML_ATTRNAME(canRunAsynchronuously)
+    EXPAND_XML_ATTRNAME(recommendedIntermediateInputSmoothness) \
+    EXPAND_XML_ATTRNAME(providesIntermediateUpdate) \
+    EXPAND_XML_ATTRNAME(mightReturnEarlyFromDoStep) \
+    EXPAND_XML_ATTRNAME(canReturnEarlyAfterIntermediateUpdate) \
+    EXPAND_XML_ATTRNAME(hasEventMode)
     
 
 #define FMI3_XML_ATTR_ID(attr) fmi_attr_id_##attr,

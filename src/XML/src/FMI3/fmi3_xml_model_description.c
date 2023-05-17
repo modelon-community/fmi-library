@@ -16,10 +16,11 @@
 #include <stdio.h>
 
 
-#include <JM/jm_named_ptr.h>
+#include "JM/jm_named_ptr.h"
 #include "fmi3_xml_model_description_impl.h"
 #include "fmi3_xml_model_structure_impl.h"
 #include "fmi3_xml_parser.h"
+#include "FMI3/fmi3_enums.h"
 
 static const char* module = "FMI3XML";
 
@@ -43,19 +44,16 @@ fmi3_xml_model_description_t * fmi3_xml_allocate_model_description( jm_callbacks
 
     md->status = fmi3_xml_model_description_enu_empty;
 
-    jm_vector_init(char)( & md->fmi3_xml_standard_version, 0,cb);
-    jm_vector_init(char)(&md->modelName, 0,cb);
-    jm_vector_init(char)(&md->modelIdentifierME, 0,cb);
-    jm_vector_init(char)(&md->modelIdentifierCS, 0,cb);
-    jm_vector_init(char)(&md->modelIdentifierSE, 0,cb);
-    jm_vector_init(char)(&md->instantiationToken, 0,cb);
-    jm_vector_init(char)(&md->description, 0,cb);
-    jm_vector_init(char)(&md->author, 0,cb);
-    jm_vector_init(char)(&md->license, 0,cb);
-    jm_vector_init(char)(&md->copyright, 0,cb);
-    jm_vector_init(char)(&md->version, 0,cb);
-    jm_vector_init(char)(&md->generationTool, 0,cb);
-    jm_vector_init(char)(&md->generationDateAndTime, 0,cb);
+    jm_vector_init(char)(&md->fmi3_xml_standard_version, 0, cb);
+    jm_vector_init(char)(&md->modelName,                 0, cb);
+    jm_vector_init(char)(&md->instantiationToken,        0, cb);
+    jm_vector_init(char)(&md->description,               0, cb);
+    jm_vector_init(char)(&md->author,                    0, cb);
+    jm_vector_init(char)(&md->license,                   0, cb);
+    jm_vector_init(char)(&md->copyright,                 0, cb);
+    jm_vector_init(char)(&md->version,                   0, cb);
+    jm_vector_init(char)(&md->generationTool,            0, cb);
+    jm_vector_init(char)(&md->generationDateAndTime,     0, cb);
 
 
     md->namingConvension = fmi3_naming_enu_flat;
@@ -67,9 +65,19 @@ fmi3_xml_model_description_t * fmi3_xml_allocate_model_description( jm_callbacks
     md->defaultExperiment.stepSizeDefined  = 0;
 
     md->defaultExperiment.startTime = 0;
-    md->defaultExperiment.stopTime = 1.0;
+    md->defaultExperiment.stopTime  = 1.0;
     md->defaultExperiment.tolerance = FMI3_DEFAULT_EXPERIMENT_TOLERANCE;
-    md->defaultExperiment.stepSize = FMI3_DEFAULT_EXPERIMENT_STEPSIZE;
+    md->defaultExperiment.stepSize  = FMI3_DEFAULT_EXPERIMENT_STEPSIZE;
+    
+    jm_vector_init(char)(&md->modelExchange.modelIdentifier, 0, cb);
+
+    jm_vector_init(char)(&md->coSimulation.modelIdentifier, 0, cb);
+    md->coSimulation.hasFixedInternalStepSize = 0;
+    md->coSimulation.fixedInternalStepSize    = 0.0;
+    md->coSimulation.hasRecommendedIntermediateInputSmoothness = 0;
+    md->coSimulation.recommendedIntermediateInputSmoothness    = 0;
+
+    jm_vector_init(char)(&md->scheduledExecution.modelIdentifier, 0, cb);
 
     jm_vector_init(jm_string)(&md->sourceFilesME, 0, cb);
     jm_vector_init(jm_string)(&md->sourceFilesCS, 0, cb);
@@ -93,12 +101,10 @@ fmi3_xml_model_description_t * fmi3_xml_allocate_model_description( jm_callbacks
 
     md->fmuKind = fmi3_fmu_kind_unknown;
 
-    {
-        int i = fmi3_capabilities_Num;
-        while(i > 0)
-            md->capabilities[--i] = 0;
-        md->capabilities[fmi3_me_completedEventIterationIsProvided] = 1;
+    for (size_t i = 0; i < fmi3_capabilities_Num; i++) {
+        md->capabilities[i] = 0;
     }
+
     return md;
 }
 
@@ -112,9 +118,6 @@ void fmi3_xml_clear_model_description( fmi3_xml_model_description_t* md) {
     md->status = fmi3_xml_model_description_enu_empty;
     jm_vector_free_data(char)(&md->fmi3_xml_standard_version);
     jm_vector_free_data(char)(&md->modelName);
-    jm_vector_free_data(char)(&md->modelIdentifierME);
-    jm_vector_free_data(char)(&md->modelIdentifierCS);
-    jm_vector_free_data(char)(&md->modelIdentifierSE);
     jm_vector_free_data(char)(&md->instantiationToken);
     jm_vector_free_data(char)(&md->description);
     jm_vector_free_data(char)(&md->author);
@@ -130,6 +133,10 @@ void fmi3_xml_clear_model_description( fmi3_xml_model_description_t* md) {
     md->defaultExperiment.stopTime = 0;
     md->defaultExperiment.tolerance = 0;
     md->defaultExperiment.stepSize = 0;
+    
+    jm_vector_free_data(char)(&md->modelExchange.modelIdentifier);
+    jm_vector_free_data(char)(&md->coSimulation.modelIdentifier);
+    jm_vector_free_data(char)(&md->scheduledExecution.modelIdentifier);
 
     jm_vector_foreach(jm_string)(&md->sourceFilesME, cb_free);
     jm_vector_free_data(jm_string)(&md->sourceFilesME);
@@ -208,15 +215,15 @@ const char* fmi3_xml_get_model_name(fmi3_xml_model_description_t* md) {
 }
 
 const char* fmi3_xml_get_model_identifier_ME(fmi3_xml_model_description_t* md){
-    return jm_vector_char2string(&md->modelIdentifierME);
+    return jm_vector_char2string(&md->modelExchange.modelIdentifier);
 }
 
 const char* fmi3_xml_get_model_identifier_CS(fmi3_xml_model_description_t* md){
-    return jm_vector_char2string(&md->modelIdentifierCS);
+    return jm_vector_char2string(&md->coSimulation.modelIdentifier);
 }
 
 const char* fmi3_xml_get_model_identifier_SE(fmi3_xml_model_description_t* md){
-    return jm_vector_char2string(&md->modelIdentifierSE);
+    return jm_vector_char2string(&md->scheduledExecution.modelIdentifier);
 }
 
 const char* fmi3_xml_get_instantiation_token(fmi3_xml_model_description_t* md){
@@ -319,6 +326,22 @@ fmi3_fmu_kind_enu_t fmi3_xml_get_fmu_kind(fmi3_xml_model_description_t* md) {
     return md->fmuKind;
 }
 
+int fmi3_xml_get_cs_has_fixed_internal_step_size(fmi3_xml_model_description_t* md) {
+    return md->coSimulation.hasFixedInternalStepSize;
+}
+
+int fmi3_xml_get_cs_has_recommended_intermediate_input_smoothness(fmi3_xml_model_description_t* md) {
+    return md->coSimulation.hasRecommendedIntermediateInputSmoothness;
+}
+
+double fmi3_xml_get_cs_fixed_internal_step_size(fmi3_xml_model_description_t* md) {
+    return md->coSimulation.fixedInternalStepSize;
+}
+
+int fmi3_xml_get_cs_recommended_intermediate_input_smoothness(fmi3_xml_model_description_t* md) {
+    return md->coSimulation.recommendedIntermediateInputSmoothness;
+}
+
 unsigned int* fmi3_xml_get_capabilities(fmi3_xml_model_description_t* md) {
     return md->capabilities;
 }
@@ -401,7 +424,7 @@ int fmi3_xml_is_valid_model_ID(const char* str) {
     return 1;
 }
 
-int fmi3_xml_handle_fmiModelDescription(fmi3_xml_parser_context_t *context, const char* data) {
+int fmi3_xml_handle_fmiModelDescription(fmi3_xml_parser_context_t* context, const char* data) {
     jm_name_ID_map_t namingConventionMap[] = {{"flat",fmi3_naming_enu_flat}, {"structured",fmi3_naming_enu_structured}, {NULL,0}};
     fmi3_xml_model_description_t* md = context->modelDescription;
     if (!data) {
@@ -455,64 +478,112 @@ int fmi3_xml_handle_fmiModelDescription(fmi3_xml_parser_context_t *context, cons
     }
 }
 
+#define FMI3_XML_REPLACE_WITH_CH(S) '_',
+
+static int fmi3_xml_process_interface_type_common_attrs(fmi3_xml_parser_context_t *context,
+        fmi3_fmu_kind_enu_t fmuKind)
+{
+    fmi3_xml_model_description_t* md = context->modelDescription;
+
+    fmi3_capabilities_enu_t providesDirDerId    = fmi_attr_id_providesDirectionalDerivatives;
+    fmi3_capabilities_enu_t providesDirDerIdOld = fmi_attr_id_providesDirectionalDerivative;
+    if (fmi3_xml_is_attr_defined(context, providesDirDerIdOld)) {
+        fmi3_xml_parse_error(context,
+                "Attribute 'providesDirectionalDerivative' has been renamed to 'providesDirectionalDerivatives'.");
+        providesDirDerId = providesDirDerIdOld;
+    }
+
+    // Used to find the capability enu_t. Assumes all capabilities are sorted, have same order, and ME < CS < SE.
+    size_t offset;
+    // Helpers for finding num capabilities for each FMU-kind. (Just expands to one dummy char per capability.)
+    char capArrME[] = { FMI3_ME_CAPABILITIES(FMI3_XML_REPLACE_WITH_CH) };
+    char capArrCS[] = { FMI3_CS_CAPABILITIES(FMI3_XML_REPLACE_WITH_CH) };
+
+    fmi3_xml_elm_enu_t elmID;
+    jm_vector(char)* modelIdentifierPtr;
+    switch (fmuKind) {
+    case fmi3_fmu_kind_me:
+        elmID = fmi3_xml_elmID_ModelExchange;
+        modelIdentifierPtr = &md->modelExchange.modelIdentifier;
+        offset = 0;
+        break;
+    case fmi3_fmu_kind_cs:
+        elmID = fmi3_xml_elmID_CoSimulation;
+        modelIdentifierPtr = &md->coSimulation.modelIdentifier;
+        offset = sizeof(capArrME);  // CS comes after ME
+        break;
+    case fmi3_fmu_kind_se:
+        elmID = fmi3_xml_elmID_ScheduledExecution;
+        modelIdentifierPtr = &md->scheduledExecution.modelIdentifier;
+        offset = sizeof(capArrME) + sizeof(capArrCS);  // SE comes after CS
+        break;
+    default:
+        fmi3_xml_parse_fatal(context, "Invalid FMU kind");
+        return -1;
+    }
+
+    if (fmi3_xml_set_attr_string(context, elmID, fmi_attr_id_modelIdentifier, 1,
+                modelIdentifierPtr)
+        ||
+        fmi3_xml_set_attr_boolean(context, elmID, fmi_attr_id_needsExecutionTool, 0,
+                &md->capabilities[fmi3_me_needsExecutionTool + offset], 0)
+        ||
+        fmi3_xml_set_attr_boolean(context, elmID, fmi_attr_id_canBeInstantiatedOnlyOncePerProcess, 0,
+                &md->capabilities[fmi3_me_canBeInstantiatedOnlyOncePerProcess + offset], 0)
+        ||
+        fmi3_xml_set_attr_boolean(context, elmID, fmi_attr_id_canGetAndSetFMUstate, 0,
+                &md->capabilities[fmi3_me_canGetAndSetFMUState + offset], 0)
+        ||
+        fmi3_xml_set_attr_boolean(context, elmID, fmi_attr_id_canSerializeFMUstate, 0,
+                &md->capabilities[fmi3_me_canSerializeFMUState + offset], 0)
+        ||
+        fmi3_xml_set_attr_boolean(context, elmID, providesDirDerId, 0,
+                &md->capabilities[fmi3_me_providesDirectionalDerivatives + offset], 0)
+        ||
+        fmi3_xml_set_attr_boolean(context, elmID, fmi_attr_id_providesAdjointDerivatives, 0,
+                &md->capabilities[fmi3_me_providesAdjointDerivatives + offset], 0)
+        ||
+        fmi3_xml_set_attr_boolean(context, elmID, fmi_attr_id_providesPerElementDependencies, 0,
+                &md->capabilities[fmi3_me_providesPerElementDependencies + offset], 0))
+    {
+        return -1;
+    }
+    return 0;
+}
+
 int fmi3_xml_handle_ModelExchange(fmi3_xml_parser_context_t *context, const char* data) {
     fmi3_xml_model_description_t* md = context->modelDescription;
-    if(!data) {
+    if (!data) {
         jm_log_verbose(context->callbacks, module, "Parsing XML element ModelExchange");
 
-        /*  reset handles for the elements that are specific under ModelExchange */
+        // Reset handles for the elements that are specific under ModelExchange
         fmi3_xml_set_element_handle(context, "SourceFiles", FMI3_XML_ELM_ID(SourceFiles));
         fmi3_xml_set_element_handle(context, "File", FMI3_XML_ELM_ID(File));
 
-        /* update fmuKind */
+        // Update fmuKind
         if (md->fmuKind == fmi3_fmu_kind_unknown) {
             md->fmuKind = fmi3_fmu_kind_me;
         } else {
-            /* add ME to found kinds (i.e. for multi-types) */
+            // Handle multi-kind FMUs
             md->fmuKind |= fmi3_fmu_kind_me;
         }
 
-        /* process the attributes */
-        if (fmi3_xml_is_attr_defined(context, fmi_attr_id_providesDirectionalDerivative)) {
-            fmi3_xml_parse_error(context, "Attribute 'providesDirectionalDerivative' has been renamed to 'providesDirectionalDerivatives'.");
-            if (fmi3_xml_set_attr_boolean(context, fmi3_xml_elmID_ModelExchange,
-                    fmi_attr_id_providesDirectionalDerivatives, 0,
-                    &md->capabilities[fmi3_me_providesDirectionalDerivatives], 0))
-            {
-                return -1;
-            }
-        }
-        else {
-            if (fmi3_xml_set_attr_boolean(context,fmi3_xml_elmID_ModelExchange, fmi_attr_id_providesDirectionalDerivative,0,
-                &md->capabilities[fmi3_me_providesDirectionalDerivatives],0)) return -1;
+        // Process attributes
+        if (fmi3_xml_process_interface_type_common_attrs(context, fmi3_fmu_kind_me)) {
+            return -1;
         }
 
-        return (    /* <xs:attribute name="modelIdentifier" type="xs:normalizedString" use="required"> */
-                    fmi3_xml_set_attr_string(context, fmi3_xml_elmID_ModelExchange, fmi_attr_id_modelIdentifier, 1, &(md->modelIdentifierME)) ||
-                    /*     <xs:attribute name="needsExecutionTool" type="xs:boolean" default="false"> */
-                    fmi3_xml_set_attr_boolean(context,fmi3_xml_elmID_ModelExchange, fmi_attr_id_needsExecutionTool,0,
-                                             &md->capabilities[fmi3_me_needsExecutionTool],0) ||
-                    /* <xs:attribute name="completedIntegratorStepNotNeeded" type="xs:boolean" default="false"/> */
-                    fmi3_xml_set_attr_boolean(context,fmi3_xml_elmID_ModelExchange, fmi_attr_id_completedIntegratorStepNotNeeded,0,
-                                             &md->capabilities[fmi3_me_completedIntegratorStepNotNeeded],0) ||
-                    /* <xs:attribute name="canBeInstantiatedOnlyOncePerProcess" type="xs:boolean" default="false"/> */
-                    fmi3_xml_set_attr_boolean(context,fmi3_xml_elmID_ModelExchange, fmi_attr_id_canBeInstantiatedOnlyOncePerProcess,0,
-                                             &md->capabilities[fmi3_me_canBeInstantiatedOnlyOncePerProcess],0) ||
-                    /* <xs:attribute name="canNotUseMemoryManagementFunctions" type="xs:boolean" default="false"/> */
-                    fmi3_xml_set_attr_boolean(context,fmi3_xml_elmID_ModelExchange, fmi_attr_id_canNotUseMemoryManagementFunctions,0,
-                                             &md->capabilities[fmi3_me_canNotUseMemoryManagementFunctions],0) ||
-                    /* <xs:attribute name="canGetAndSetFMUstate" type="xs:boolean" default="false"/> */
-                    fmi3_xml_set_attr_boolean(context,fmi3_xml_elmID_ModelExchange, fmi_attr_id_canGetAndSetFMUstate,0,
-                                             &md->capabilities[fmi3_me_canGetAndSetFMUstate],0) ||
-                    /* <xs:attribute name="canSerializeFMUstate" type="xs:boolean" default="false"/> */
-                    fmi3_xml_set_attr_boolean(context,fmi3_xml_elmID_ModelExchange, fmi_attr_id_canSerializeFMUstate,0,
-                                             &md->capabilities[fmi3_me_canSerializeFMUstate],0)
-                   );
+        fmi3_xml_elm_enu_t elmID  = fmi3_xml_elmID_ModelExchange;
+        if (fmi3_xml_set_attr_boolean(context, elmID, fmi_attr_id_needsCompletedIntegratorStep, 0,
+                    &md->capabilities[fmi3_me_needsCompletedIntegratorStep], 0)
+            ||
+            fmi3_xml_set_attr_boolean(context, elmID, fmi_attr_id_providesEvaluateDiscreteStates, 0,
+                    &md->capabilities[fmi3_me_needsCompletedIntegratorStep], 0))
+        {
+            return -1;
+        }
     }
-    else {
-        /* don't do anything. might give out a warning if(data[0] != 0) */
-        return 0;
-    }
+    return 0;
 }
 
 int fmi3_xml_handle_CoSimulation(fmi3_xml_parser_context_t *context, const char* data) {
@@ -520,66 +591,72 @@ int fmi3_xml_handle_CoSimulation(fmi3_xml_parser_context_t *context, const char*
     if(!data) {
         jm_log_verbose(context->callbacks, module, "Parsing XML element CoSimulation");
 
-        /*  reset handles for the elements that are specific under CoSimulation */
+        //  Reset handles for the elements that are specific under CoSimulation
         fmi3_xml_set_element_handle(context, "SourceFiles", FMI3_XML_ELM_ID(SourceFilesCS));
         fmi3_xml_set_element_handle(context, "File", FMI3_XML_ELM_ID(FileCS));
 
-        /* update fmuKind */
+        // Update fmuKind
         if (md->fmuKind == fmi3_fmu_kind_unknown) {
             md->fmuKind = fmi3_fmu_kind_cs;
         } else {
-            /* add CS to found kinds (i.e. for multi-types) */
+            // Add CS to found kinds (i.e. for multi-types)
             md->fmuKind |= fmi3_fmu_kind_cs;
         }
 
-        /* process the attributes */
-
-        /* <xs:attribute name="providesDirectionalDerivative" type="xs:boolean" default="false"/> */
-        if (fmi3_xml_is_attr_defined(context, fmi_attr_id_providesDirectionalDerivatives)) {
-            fmi3_xml_parse_error(context, "Attribute 'providesDirectionalDerivatives' has been renamed to 'providesDirectionalDerivative'.");
-            if (fmi3_xml_set_attr_boolean(context,fmi3_xml_elmID_CoSimulation, fmi_attr_id_providesDirectionalDerivatives,0,
-                &md->capabilities[fmi3_cs_providesDirectionalDerivatives],0)) return -1;
-        }
-        else {
-            if (fmi3_xml_set_attr_boolean(context,fmi3_xml_elmID_CoSimulation, fmi_attr_id_providesDirectionalDerivative,0,
-                &md->capabilities[fmi3_cs_providesDirectionalDerivatives],0)) return -1;
+        // Process attributes
+        if (fmi3_xml_process_interface_type_common_attrs(context, fmi3_fmu_kind_me)) {
+            return -1;
         }
 
-        return (    /* <xs:attribute name="modelIdentifier" type="xs:normalizedString" use="required"> */
-                    fmi3_xml_set_attr_string(context, fmi3_xml_elmID_CoSimulation, fmi_attr_id_modelIdentifier, 1, &(md->modelIdentifierCS)) ||
-                    /*     <xs:attribute name="needsExecutionTool" type="xs:boolean" default="false"> */
-                    fmi3_xml_set_attr_boolean(context,fmi3_xml_elmID_CoSimulation, fmi_attr_id_needsExecutionTool,0,
-                                             &md->capabilities[fmi3_cs_needsExecutionTool],0) ||
-                    /* <xs:attribute name="canHandleVariableCommunicationStepSize" type="xs:boolean" default="false"/> */
-                    fmi3_xml_set_attr_boolean(context,fmi3_xml_elmID_CoSimulation, fmi_attr_id_canHandleVariableCommunicationStepSize,0,
-                                             &md->capabilities[fmi3_cs_canHandleVariableCommunicationStepSize],0) ||
-                    /* <xs:attribute name="canInterpolateInputs" type="xs:boolean" default="false"/>*/
-                    fmi3_xml_set_attr_boolean(context,fmi3_xml_elmID_CoSimulation, fmi_attr_id_canInterpolateInputs,0,
-                                             &md->capabilities[fmi3_cs_canInterpolateInputs],0) ||
-                    /* <xs:attribute name="maxOutputDerivativeOrder" type="xs:unsignedInt" default="0"/> */
-                    fmi3_xml_set_attr_uint32(context,fmi3_xml_elmID_CoSimulation, fmi_attr_id_maxOutputDerivativeOrder,0,
-                                             &md->capabilities[fmi3_cs_maxOutputDerivativeOrder],0) ||
-                    /* <xs:attribute name="canRunAsynchronuously" type="xs:boolean" default="false"/> */
-                    fmi3_xml_set_attr_boolean(context,fmi3_xml_elmID_CoSimulation, fmi_attr_id_canRunAsynchronuously,0,
-                                             &md->capabilities[fmi3_cs_canRunAsynchronuously],0) ||
-                    /* <xs:attribute name="canBeInstantiatedOnlyOncePerProcess" type="xs:boolean" default="false"/> */
-                    fmi3_xml_set_attr_boolean(context,fmi3_xml_elmID_CoSimulation, fmi_attr_id_canBeInstantiatedOnlyOncePerProcess,0,
-                                             &md->capabilities[fmi3_cs_canBeInstantiatedOnlyOncePerProcess],0) ||
-                    /* <xs:attribute name="canNotUseMemoryManagementFunctions" type="xs:boolean" default="false"/> */
-                    fmi3_xml_set_attr_boolean(context,fmi3_xml_elmID_CoSimulation, fmi_attr_id_canNotUseMemoryManagementFunctions,0,
-                                             &md->capabilities[fmi3_cs_canNotUseMemoryManagementFunctions],0) ||
-                    /* <xs:attribute name="canGetAndSetFMUstate" type="xs:boolean" default="false"/> */
-                    fmi3_xml_set_attr_boolean(context,fmi3_xml_elmID_CoSimulation, fmi_attr_id_canGetAndSetFMUstate,0,
-                                             &md->capabilities[fmi3_cs_canGetAndSetFMUstate],0) ||
-                    /* <xs:attribute name="canSerializeFMUstate" type="xs:boolean" default="false"/> */
-                    fmi3_xml_set_attr_boolean(context,fmi3_xml_elmID_CoSimulation, fmi_attr_id_canSerializeFMUstate,0,
-                                             &md->capabilities[fmi3_cs_canSerializeFMUstate],0)
-                   );
+        fmi3_xml_elm_enu_t elmID  = fmi3_xml_elmID_CoSimulation;
+        if (fmi3_xml_set_attr_boolean(context, elmID, fmi_attr_id_canHandleVariableCommunicationStepSize, 0,
+                    &md->capabilities[fmi3_cs_canHandleVariableCommunicationStepSize], 0)
+            ||
+            fmi3_xml_set_attr_boolean(context, elmID, fmi_attr_id_providesIntermediateUpdate, 0,
+                    &md->capabilities[fmi3_cs_providesIntermediateUpdate], 0)
+            ||
+            fmi3_xml_set_attr_boolean(context, elmID, fmi_attr_id_mightReturnEarlyFromDoStep, 0,
+                    &md->capabilities[fmi3_cs_mightReturnEarlyFromDoStep], 0)
+            ||
+            fmi3_xml_set_attr_boolean(context, elmID, fmi_attr_id_canReturnEarlyAfterIntermediateUpdate, 0,
+                    &md->capabilities[fmi3_cs_canReturnEarlyAfterIntermediateUpdate], 0)
+            ||
+            fmi3_xml_set_attr_boolean(context, elmID, fmi_attr_id_hasEventMode, 0,
+                    &md->capabilities[fmi3_cs_hasEventMode], 0)
+            ||
+            fmi3_xml_set_attr_boolean(context, elmID, fmi_attr_id_providesEvaluateDiscreteStates, 0,
+                    &md->capabilities[fmi3_cs_providesEvaluateDiscreteStates], 0))
+        {
+            return -1;
+        }
+
+        // NOTE: This attribute is unsigned int, so not really a capability. However, in
+        // FMI2 it's part of the capabilities enum, so keeping it the same for FMI3.
+        if (fmi3_xml_set_attr_uint32(context, elmID, fmi_attr_id_maxOutputDerivativeOrder, 0,
+                &md->capabilities[fmi3_cs_maxOutputDerivativeOrder], 0))
+        {
+            return -1;
+        }
+        
+        // Other non-capability attributes:
+        if (fmi3_xml_is_attr_defined(context, fmi_attr_id_fixedInternalStepSize)) {
+            md->coSimulation.hasFixedInternalStepSize = 1;
+            if (fmi3_xml_set_attr_float64(context, elmID, fmi_attr_id_fixedInternalStepSize, 0,
+                    &md->coSimulation.fixedInternalStepSize, 0))
+            {
+                return -1;
+            }
+        }
+        if (fmi3_xml_is_attr_defined(context, fmi_attr_id_recommendedIntermediateInputSmoothness)) {
+            md->coSimulation.hasRecommendedIntermediateInputSmoothness = 1;
+            if (fmi3_xml_set_attr_int32(context, elmID, fmi_attr_id_recommendedIntermediateInputSmoothness, 0,
+                    &md->coSimulation.recommendedIntermediateInputSmoothness, 0))
+            {
+                return -1;
+            }
+        }
     }
-    else {
-        /* don't do anything. might give out a warning if(data[0] != 0) */
-        return 0;
-    }
+    return 0;
 }
 
 
@@ -588,73 +665,49 @@ int fmi3_xml_handle_ScheduledExecution(fmi3_xml_parser_context_t *context, const
     if(!data) {
         jm_log_verbose(context->callbacks, module, "Parsing XML element ScheduledExecution");
 
-        /*  reset handles for the elements that are specific under ScheduledExecution */
+        // Reset handles for the elements that are specific under ScheduledExecution TODO: Remove:
         /*  fmi3_xml_set_element_handle(context, "SourceFiles", FMI3_XML_ELM_ID(SourceFilesSE)); */
         /*  fmi3_xml_set_element_handle(context, "File", FMI3_XML_ELM_ID(FileSE)); */
 
-        /* update fmuKind */
+        // Update fmuKind
         if (md->fmuKind == fmi3_fmu_kind_unknown) {
             md->fmuKind = fmi3_fmu_kind_se;
         } else {
-            /* add SE to found kinds (i.e. for multi-types) */
+            // Handle multi-kind FMU
             md->fmuKind |= fmi3_fmu_kind_se;
         }
 
-        /* process the attributes */
-
-        /* <xs:attribute name="providesDirectionalDerivative" type="xs:boolean" default="false"/> */
-        if (fmi3_xml_is_attr_defined(context, fmi_attr_id_providesDirectionalDerivatives)) {
-            fmi3_xml_parse_error(context, "Attribute 'providesDirectionalDerivatives' has been renamed to 'providesDirectionalDerivative'.");
-            if (fmi3_xml_set_attr_boolean(context,
-                fmi3_xml_elmID_ScheduledExecution,
-                fmi_attr_id_providesDirectionalDerivatives,
-                0,
-                &md->capabilities[fmi3_se_providesDirectionalDerivatives],
-                0)) return -1;
-        }
-        else {
-            if (fmi3_xml_set_attr_boolean(context,
-                fmi3_xml_elmID_ScheduledExecution,
-                fmi_attr_id_providesDirectionalDerivative,
-                0,
-                &md->capabilities[fmi3_se_providesDirectionalDerivatives], 0)) return -1;
+        // Process attributes
+        if (fmi3_xml_process_interface_type_common_attrs(context, fmi3_fmu_kind_me)) {
+            return -1;
         }
 
-        return (    /* <xs:attribute name="modelIdentifier" type="xs:normalizedString" use="required"> */
+        // TODO
+        /*
+        return 
                     fmi3_xml_set_attr_string(context, fmi3_xml_elmID_ScheduledExecution, fmi_attr_id_modelIdentifier, 1, &(md->modelIdentifierSE)) ||
-                    /*     <xs:attribute name="needsExecutionTool" type="xs:boolean" default="false"> */
                     fmi3_xml_set_attr_boolean(context, fmi3_xml_elmID_ScheduledExecution, fmi_attr_id_needsExecutionTool, 0,
                                              &md->capabilities[fmi3_se_needsExecutionTool], 0) ||
-                    /* <xs:attribute name="canHandleVariableCommunicationStepSize" type="xs:boolean" default="false"/> */
                     fmi3_xml_set_attr_boolean(context, fmi3_xml_elmID_ScheduledExecution, fmi_attr_id_canHandleVariableCommunicationStepSize,0,
                                              &md->capabilities[fmi3_se_canHandleVariableCommunicationStepSize], 0) ||
-                    /* <xs:attribute name="canInterpolateInputs" type="xs:boolean" default="false"/>*/
                     fmi3_xml_set_attr_boolean(context,fmi3_xml_elmID_ScheduledExecution, fmi_attr_id_canInterpolateInputs,0,
                                              &md->capabilities[fmi3_se_canInterpolateInputs], 0) ||
-                    /* <xs:attribute name="maxOutputDerivativeOrder" type="xs:unsignedInt" default="0"/> */
                     fmi3_xml_set_attr_uint32(context,fmi3_xml_elmID_ScheduledExecution, fmi_attr_id_maxOutputDerivativeOrder,0,
                                              &md->capabilities[fmi3_se_maxOutputDerivativeOrder], 0) ||
-                    /* <xs:attribute name="canRunAsynchronuously" type="xs:boolean" default="false"/> */
                     fmi3_xml_set_attr_boolean(context,fmi3_xml_elmID_ScheduledExecution, fmi_attr_id_canRunAsynchronuously,0,
                                              &md->capabilities[fmi3_se_canRunAsynchronuously], 0) ||
-                    /* <xs:attribute name="canBeInstantiatedOnlyOncePerProcess" type="xs:boolean" default="false"/> */
                     fmi3_xml_set_attr_boolean(context,fmi3_xml_elmID_ScheduledExecution, fmi_attr_id_canBeInstantiatedOnlyOncePerProcess,0,
                                              &md->capabilities[fmi3_se_canBeInstantiatedOnlyOncePerProcess], 0) ||
-                    /* <xs:attribute name="canNotUseMemoryManagementFunctions" type="xs:boolean" default="false"/> */
                     fmi3_xml_set_attr_boolean(context,fmi3_xml_elmID_ScheduledExecution, fmi_attr_id_canNotUseMemoryManagementFunctions,0,
                                              &md->capabilities[fmi3_se_canNotUseMemoryManagementFunctions], 0) ||
-                    /* <xs:attribute name="canGetAndSetFMUstate" type="xs:boolean" default="false"/> */
                     fmi3_xml_set_attr_boolean(context,fmi3_xml_elmID_ScheduledExecution, fmi_attr_id_canGetAndSetFMUstate,0,
                                              &md->capabilities[fmi3_se_canGetAndSetFMUstate], 0) ||
-                    /* <xs:attribute name="canSerializeFMUstate" type="xs:boolean" default="false"/> */
                     fmi3_xml_set_attr_boolean(context,fmi3_xml_elmID_ScheduledExecution, fmi_attr_id_canSerializeFMUstate,0,
                                              &md->capabilities[fmi3_se_canSerializeFMUstate], 0)
                    );
+        */
     }
-    else {
-        /* don't do anything. might give out a warning if(data[0] != 0) */
-        return 0;
-    }
+    return 0;
 }
 
 int fmi3_xml_handle_SourceFiles(fmi3_xml_parser_context_t *context, const char* data) {

@@ -39,6 +39,22 @@ typedef struct fmi3_xml_default_experiment {
     int     stepSizeDefined;
 } fmi3_xml_default_experiment;
 
+typedef struct fmi3_xml_model_exchange {
+    jm_vector(char) modelIdentifier;
+} fmi3_xml_model_exchange;
+
+typedef struct fmi3_xml_co_simulation {
+    jm_vector(char) modelIdentifier;
+    int hasFixedInternalStepSize;
+    double fixedInternalStepSize;
+    int hasRecommendedIntermediateInputSmoothness;
+    int recommendedIntermediateInputSmoothness;
+} fmi3_xml_co_simulation;
+
+typedef struct fmi3_xml_scheduled_execution {
+    jm_vector(char) modelIdentifier;
+} fmi3_xml_scheduled_execution;
+
 /*  ModelDescription is the entry point for the package*/
 struct fmi3_xml_model_description_t {
 
@@ -65,12 +81,10 @@ struct fmi3_xml_model_description_t {
     fmi3_variable_naming_convension_enu_t namingConvension;
 
     fmi3_xml_default_experiment defaultExperiment;
-
-    jm_vector(char) modelIdentifierME;
-
-    jm_vector(char) modelIdentifierCS;
-
-    jm_vector(char) modelIdentifierSE;
+    
+    fmi3_xml_model_exchange modelExchange;
+    fmi3_xml_co_simulation coSimulation;
+    fmi3_xml_scheduled_execution scheduledExecution;
 
     jm_vector(jm_string) sourceFilesME;
     jm_vector(jm_string) sourceFilesCS;

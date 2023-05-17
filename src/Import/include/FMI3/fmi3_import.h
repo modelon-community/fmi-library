@@ -222,6 +222,26 @@ FMILIB_EXPORT double fmi3_import_get_default_experiment_step(fmi3_import_t* fmu)
     if it's a multi-kind FMU. See #fmi3_fmu_kind_enu_t for more info. */
 FMILIB_EXPORT fmi3_fmu_kind_enu_t fmi3_import_get_fmu_kind(fmi3_import_t* fmu);
 
+/**
+ * \brief Returns true if the fixedInternalStepSize attribute is defined on the CoSimulation element
+ */
+FMILIB_EXPORT int fmi3_import_get_cs_has_fixed_internal_step_size(fmi3_xml_model_description_t* md);
+
+/**
+ * \brief Returns true if the recommendedIntermediateInputSmoothness attribute is defined on the CoSimulation element.
+ */
+FMILIB_EXPORT int fmi3_import_get_cs_has_recommended_intermediate_input_smoothness(fmi3_xml_model_description_t* md);
+
+/**
+ * \brief Returns the fixedInternalStepSize attribute if it's is defined on the CoSimulation element.
+ */
+FMILIB_EXPORT double fmi3_import_get_cs_fixed_internal_step_size(fmi3_xml_model_description_t* md);
+
+/**
+ * \brief Returns the recommendedIntermediateInputSmoothness attribute if it's is defined on the CoSimulation element.
+ */
+FMILIB_EXPORT int fmi3_import_get_cs_recommended_intermediate_input_smoothness(fmi3_xml_model_description_t* md);
+
 /** \brief Get the list of all the type definitions in the model*/
 FMILIB_EXPORT fmi3_import_type_definitions_t* fmi3_import_get_type_definitions(fmi3_import_t* fmu);
 

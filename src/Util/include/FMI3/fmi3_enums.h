@@ -183,38 +183,49 @@ typedef enum fmi3_interval_variability_enu_t {
 /** \brief List of capability flags for ModelExchange */
 #define FMI3_ME_CAPABILITIES(H) \
     H(needsExecutionTool) \
-    H(completedIntegratorStepNotNeeded) \
     H(canBeInstantiatedOnlyOncePerProcess) \
-    H(canNotUseMemoryManagementFunctions) \
-    H(canGetAndSetFMUstate) \
-    H(canSerializeFMUstate) \
-    H(providesDirectionalDerivatives)\
-    H(completedEventIterationIsProvided)
+    H(canGetAndSetFMUState) \
+    H(canSerializeFMUState) \
+    H(providesDirectionalDerivatives) \
+    H(providesAdjointDerivatives) \
+    H(providesPerElementDependencies) \
+    \
+    H(needsCompletedIntegratorStep) \
+    H(providesEvaluateDiscreteStates)
 
 /** \brief List of capability flags for CoSimulation */
 #define FMI3_CS_CAPABILITIES(H) \
     H(needsExecutionTool) \
-    H(canHandleVariableCommunicationStepSize) \
-    H(canInterpolateInputs) \
-    H(maxOutputDerivativeOrder) \
-    H(canRunAsynchronuously) \
     H(canBeInstantiatedOnlyOncePerProcess) \
-    H(canNotUseMemoryManagementFunctions) \
-    H(canGetAndSetFMUstate) \
-    H(canSerializeFMUstate) \
-    H(providesDirectionalDerivatives)
+    H(canGetAndSetFMUState) \
+    H(canSerializeFMUState) \
+    H(providesDirectionalDerivatives) \
+    H(providesAdjointDerivatives) \
+    H(providesPerElementDependencies) \
+    \
+    H(canHandleVariableCommunicationStepSize) \
+    H(maxOutputDerivativeOrder) \
+    H(providesIntermediateUpdate) \
+    H(mightReturnEarlyFromDoStep) \
+    H(canReturnEarlyAfterIntermediateUpdate) \
+    H(hasEventMode) \
+    H(providesEvaluateDiscreteStates)
 
+/* TODO:
+    H(fixedInternalStepSize) \
+    H(maxOutputDerivativeOrder) \
+    H(recommendedIntermediateInputSmoothness) \
+*/
+
+/** \brief List of capability flags for ScheduledExecution */
 #define FMI3_SE_CAPABILITIES(H) \
     H(needsExecutionTool) \
-    H(canHandleVariableCommunicationStepSize) \
-    H(canInterpolateInputs) \
-    H(maxOutputDerivativeOrder) \
-    H(canRunAsynchronuously) \
     H(canBeInstantiatedOnlyOncePerProcess) \
-    H(canNotUseMemoryManagementFunctions) \
-    H(canGetAndSetFMUstate) \
-    H(canSerializeFMUstate) \
-    H(providesDirectionalDerivatives)
+    H(canGetAndSetFMUState) \
+    H(canSerializeFMUState) \
+    H(providesDirectionalDerivatives) \
+    H(providesAdjointDerivatives) \
+    H(providesPerElementDependencies)
 
 #define FMI3_EXPAND_ME_CAPABILITIES_ENU(c) fmi3_me_ ## c,
 #define FMI3_EXPAND_CS_CAPABILITIES_ENU(c) fmi3_cs_ ## c,

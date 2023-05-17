@@ -218,6 +218,13 @@ double fmi3_xml_get_default_experiment_step(fmi3_xml_model_description_t* md);
 
 fmi3_fmu_kind_enu_t fmi3_xml_get_fmu_kind(fmi3_xml_model_description_t* md);
 
+int fmi3_xml_get_cs_has_fixed_internal_step_size(fmi3_xml_model_description_t* md);
+int fmi3_xml_get_cs_has_recommended_intermediate_input_smoothness(fmi3_xml_model_description_t* md);
+
+double fmi3_xml_get_cs_fixed_internal_step_size(fmi3_xml_model_description_t* md);
+int fmi3_xml_get_cs_recommended_intermediate_input_smoothness(fmi3_xml_model_description_t* md);
+
+
 /** \brief Get a pointer to the internal capabilities array */
 unsigned int* fmi3_xml_get_capabilities(fmi3_xml_model_description_t* md);
 

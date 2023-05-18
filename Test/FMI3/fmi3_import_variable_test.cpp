@@ -321,7 +321,7 @@ TEST_CASE("Invalid Binary variable - non-hexadecimal char first in byte tuple", 
     const char* xmldir = FMI3_TEST_XML_DIR "/variable_test/invalid/binaryStart1";
 
     fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
-    REQUIRE(xml != nullptr);
+    REQUIRE(xml != nullptr); /* TODO how do we want this to work? */
 
     const char* errMsg = fmi3_import_get_last_error(xml);
     REQUIRE(strcmp(errMsg, "String is not hexadecimal: gf") == 0);
@@ -332,7 +332,7 @@ TEST_CASE("Invalid Binary variable - non-hexadecimal char second in byte tuple",
     const char* xmldir = FMI3_TEST_XML_DIR "/variable_test/invalid/binaryStart2";
 
     fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
-    REQUIRE(xml != nullptr);
+    REQUIRE(xml != nullptr);  /* TODO how do we want this to work? */
 
     const char* errMsg = fmi3_import_get_last_error(xml);
     REQUIRE(strcmp(errMsg, "String is not hexadecimal: FG") == 0);

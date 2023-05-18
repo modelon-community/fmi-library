@@ -123,6 +123,21 @@ TEST_CASE("Binary array") {
     fmi3_import_free(xml);
 }
 
+
+TEST_CASE("Binary scalar") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/arrays/valid";
+    fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
+    REQUIRE(xml != nullptr);
+
+    SECTION("Test binary scalar variable") {
+        fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "binary_var");
+        fmi3_binary_t start = fmi3_import_get_binary_variable_start(fmi3_import_get_variable_as_binary(v));
+        REQUIRE(start[0]   == 0x3cU);
+        REQUIRE(start[1]   == 0x3fU);
+    }
+    fmi3_import_free(xml);
+}
+
 TEST_CASE("Test array parsing and verify retrieved start values are as expected"){
     jm_callbacks cb;
     fmi_import_context_t *context;

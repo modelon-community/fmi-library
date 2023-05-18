@@ -240,16 +240,14 @@ typedef struct fmi3_xml_int_variable_start_t {
 
 typedef struct fmi3_xml_variable_start_string_t {
     fmi3_xml_variable_type_base_t super;
-    jm_vector(jm_voidp) stringStartValues;
-    char start[1];
+    jm_vector(jm_voidp) values;
 } fmi3_xml_string_variable_start_t;
 
 typedef struct fmi3_xml_binary_variable_start_t {
     fmi3_xml_variable_type_base_t super;
-    jm_vector(jm_voidp) binaryStartValues;
-    jm_vector(size_t) binaryStartValuesSize;
     size_t nStart;
-    fmi3_uint8_t start[1]; /* NOTE: Can be longer than 1. Memory can be allocated outside of struct boundary. */
+    jm_vector(jm_voidp) values;
+    jm_vector(size_t) valuesSize;
 } fmi3_xml_binary_variable_start_t;
 
 // ----------------------------------------------------------------------------

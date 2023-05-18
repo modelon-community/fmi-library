@@ -776,7 +776,7 @@ fmi3_string_t* fmi3_xml_get_string_variable_start(fmi3_xml_string_variable_t* v)
     fmi3_xml_variable_t* vv = (fmi3_xml_variable_t*)v;
     if(fmi3_xml_get_variable_has_start(vv)) {
         fmi3_xml_string_variable_start_t* start = (fmi3_xml_string_variable_start_t*)(vv->type);
-        return (fmi3_string_t*)jm_vector_get_itemp(jm_voidp)(&start->stringStartValues, 0);
+        return (fmi3_string_t*)jm_vector_get_itemp(jm_voidp)(&start->values, 0);
     }
     return NULL;
 }
@@ -785,7 +785,7 @@ fmi3_string_t* fmi3_xml_get_string_variable_start_array(fmi3_xml_string_variable
     fmi3_xml_variable_t* vv = (fmi3_xml_variable_t*)v;
     if(fmi3_xml_get_variable_has_start(vv)) {
         fmi3_xml_string_variable_start_t* start = (fmi3_xml_string_variable_start_t*)(vv->type);
-        return (fmi3_string_t*)jm_vector_get_itemp(jm_voidp)(&start->stringStartValues, 0);
+        return (fmi3_string_t*)jm_vector_get_itemp(jm_voidp)(&start->values, 0);
     }
     return NULL;
 }
@@ -830,9 +830,9 @@ size_t fmi3_xml_get_binary_variable_start_size(fmi3_xml_binary_variable_t* v) {
     fmi3_xml_variable_t* vv = (fmi3_xml_variable_t*)v;
     if (fmi3_xml_get_variable_has_start(vv)) {
         fmi3_xml_binary_variable_start_t* start = (fmi3_xml_binary_variable_start_t*)(vv->type);
-        return start->nStart;
+        return (size_t)jm_vector_get_item(size_t)(&start->valuesSize, 0);
     }
-    return 0;
+    return NULL;
 }
 
 size_t fmi3_xml_get_binary_variable_start_array_size(fmi3_xml_binary_variable_t* v) {
@@ -848,7 +848,7 @@ size_t* fmi3_xml_get_binary_variable_start_array_sizes(fmi3_xml_binary_variable_
     fmi3_xml_variable_t* vv = (fmi3_xml_variable_t*)v;
     if (fmi3_xml_get_variable_has_start(vv)) {
         fmi3_xml_binary_variable_start_t* start = (fmi3_xml_binary_variable_start_t*)(vv->type);
-        return (size_t*)jm_vector_get_itemp(size_t)(&start->binaryStartValuesSize, 0);
+        return (size_t*)jm_vector_get_itemp(size_t)(&start->valuesSize, 0);
     }
     return NULL;
 }
@@ -857,7 +857,7 @@ fmi3_binary_t* fmi3_xml_get_binary_variable_start_array(fmi3_xml_binary_variable
     fmi3_xml_variable_t* vv = (fmi3_xml_variable_t*)v;
     if (fmi3_xml_get_variable_has_start(vv)) {
         fmi3_xml_binary_variable_start_t* start = (fmi3_xml_binary_variable_start_t*)(vv->type);
-        return (fmi3_binary_t*)jm_vector_get_itemp(jm_voidp)(&start->binaryStartValues, 0);
+        return (fmi3_binary_t*)jm_vector_get_itemp(jm_voidp)(&start->values, 0);
     }
     return NULL;
 }
@@ -867,7 +867,7 @@ fmi3_binary_t fmi3_xml_get_binary_variable_start(fmi3_xml_binary_variable_t* v) 
     fmi3_xml_variable_t* vv = (fmi3_xml_variable_t*)v;
     if (fmi3_xml_get_variable_has_start(vv)) {
         fmi3_xml_binary_variable_start_t* start = (fmi3_xml_binary_variable_start_t*)(vv->type);
-        return start->start;
+        return (fmi3_binary_t)jm_vector_get_item(jm_voidp)(&start->values, 0);
     }
     return NULL;
 }
@@ -1031,12 +1031,6 @@ static int fmi3_xml_hexstring_to_bytearray(fmi3_xml_parser_context_t* context, c
     return 0;
 }
 
-static void free_string_start_values(jm_callbacks* callbacks, fmi3_xml_variable_t* var) {
-    fmi3_xml_string_variable_start_t* start = (fmi3_xml_string_variable_start_t*)(var->type);
-    jm_vector_foreach(jm_voidp)(&start->stringStartValues, callbacks->free);
-    jm_vector_free_data(jm_voidp)(&start->stringStartValues);
-}
-
 static bool is_string_variable_with_start(fmi3_xml_variable_t* var) {
     return var->type->baseType == fmi3_base_type_str && (var->type->structKind == fmi3_xml_type_struct_enu_start);
 }
@@ -1048,26 +1042,27 @@ static bool is_binary_variable_with_start(fmi3_xml_variable_t* var) {
 void fmi3_xml_variable_free_internals(jm_callbacks* callbacks, fmi3_xml_variable_t* var) {
     /* We need special handling of Strings and Binaries because
     *  of how start values are handled differently for those types.
+    * Note that below handles BOTH scalars and arrays.
     */
+    if (is_string_variable_with_start(var)) {
+        fmi3_xml_string_variable_start_t* start = (void*)(var->type);
+        jm_vector_foreach(jm_voidp)(&start->values, callbacks->free);
+        jm_vector_free_data(jm_voidp)(&start->values);
+    } else if (is_binary_variable_with_start(var)) {
+        fmi3_xml_binary_variable_start_t* start = (void*)(var->type);
+        jm_vector_foreach(jm_voidp)(&start->values, callbacks->free);
+        jm_vector_free_data(jm_voidp)(&start->values);
+        jm_vector_free_data(size_t)(&start->valuesSize);
+    }
+
     if (fmi3_xml_variable_is_array(var)) {
-        if (is_string_variable_with_start(var)) {
-            free_string_start_values(callbacks, var);
-        } else if (is_binary_variable_with_start(var)) {
-            fmi3_xml_binary_variable_start_t* start = (fmi3_xml_binary_variable_start_t*)(var->type);
-            jm_vector_foreach(jm_voidp)(&start->binaryStartValues, callbacks->free);
-            jm_vector_free_data(jm_voidp)(&start->binaryStartValues);
-            jm_vector_free_data(size_t)(&start->binaryStartValuesSize);
-        } else {
+        if (!is_string_variable_with_start(var) && !is_binary_variable_with_start(var)) {
             callbacks->free(fmi3_xml_get_variable_start_array(var));
         }
         callbacks->free(var->dimensionsArray);
         var->dimensionsArray = NULL;
-    } else {
-        /* Scalar String variables can have a start value that we need to free.*/
-        if (is_string_variable_with_start(var)) {
-            free_string_start_values(callbacks, var);
-        }
     }
+
     if (var->clocks) {
         jm_vector_free(fmi3_value_reference_t)(var->clocks);
         var->clocks = NULL;
@@ -1766,18 +1761,19 @@ int fmi3_xml_handle_BinaryVariable(fmi3_xml_parser_context_t* context, const cha
             startObj->nStart = nStart;
 
              // number of bytes per element in context->currentStartVariableValues
-            jm_vector_init(jm_voidp)(&startObj->binaryStartValues, 0, context->callbacks);
-            jm_vector_init(size_t)(&startObj->binaryStartValuesSize, 0, context->callbacks);
+            jm_vector_init(jm_voidp)(&startObj->values, 0, context->callbacks);
+            jm_vector_init(size_t)(&startObj->valuesSize, 0, context->callbacks);
             uint8_t* bytes;
             for (int i = 0; i < nStart; i++) {
                 char* item = (char*)jm_vector_get_item(jm_voidp)(&context->currentStartVariableValues, i);
                 size_t sz = strlen(item)/((size_t)2);
                 bytes = context->callbacks->malloc(sz);
                 if (fmi3_xml_hexstring_to_bytearray(context, item, bytes)) {
+                    fmi3_xml_parse_fatal(context, "Unable to convert hexstring to a byte array");
                     return -1;
                 }
-                jm_vector_push_back(jm_voidp)(&startObj->binaryStartValues, bytes);
-                jm_vector_push_back(size_t)(&startObj->binaryStartValuesSize, sz);
+                jm_vector_push_back(jm_voidp)(&startObj->values, bytes);
+                jm_vector_push_back(size_t)(&startObj->valuesSize, sz);
 
                 // We can now free the string now since we have converted it above
                 context->callbacks->free(item);
@@ -1848,9 +1844,9 @@ int fmi3_xml_handle_StringVariable(fmi3_xml_parser_context_t *context, const cha
                 fmi3_xml_parse_fatal(context, "Could not allocate memory");
                 return -1;
             }
-            jm_vector_init(jm_voidp)(&startObj->stringStartValues, 0, context->callbacks);
-            // Passing ownership to stringStartValues
-            jm_vector_copy(jm_voidp)(&startObj->stringStartValues, &context->currentStartVariableValues);
+            jm_vector_init(jm_voidp)(&startObj->values, 0, context->callbacks);
+            // Passing ownership to values
+            jm_vector_copy(jm_voidp)(&startObj->values, &context->currentStartVariableValues);
             variable->type = &startObj->super;
             // Resize the vector to 0 since we are now done with the previous values.
             jm_vector_resize(jm_voidp)(&context->currentStartVariableValues, 0);
@@ -1902,45 +1898,18 @@ int fmi3_xml_handle_BinaryVariableStart(fmi3_xml_parser_context_t* context, cons
     fmi3_xml_type_definitions_t* td = &md->typeDefinitions;
     fmi3_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
     if (!data) {
-        if (fmi3_xml_variable_is_array(variable)) {
-            /* For each <Start ...>, allocate memory, copy attribute to 'value' and push back to 'vec'. */
-            jm_vector(jm_voidp)* vec = &context->currentStartVariableValues;
-            const char* attr;
-            if (fmi3_xml_get_attr_str(context, fmi3_xml_elmID_BinaryVariableStart, fmi_attr_id_value, 0, &attr)) return -1;
-            int len = strlen(attr);
-            if (len == 0) {
-                fmi3_xml_parse_error(context, "Empty value attribute in Start element");
-                return -1;
-            }
-            char* attrAsStr = context->callbacks->malloc(len + 1);
-            strcpy(attrAsStr, attr);
-            jm_vector_push_back(jm_voidp)(vec, attrAsStr);
-        } else {
-            jm_vector(char)* bufStartStr = fmi3_xml_reserve_parse_buffer(context, 1, 100);
-            if (fmi3_xml_set_attr_string(context, fmi3_xml_elmID_BinaryVariableStart, fmi_attr_id_value, 0, bufStartStr)) {
-                return -1;
-            }
-
-            // Add a start object to the top of the variable's type list:
-            fmi3_xml_binary_variable_start_t* startObj;
-            size_t len = jm_vector_get_size(char)(bufStartStr);
-            if (len == 0) {
-                fmi3_xml_parse_error(context, "Empty value attribute in Start element");
-                return -1;
-            }
-            size_t arrSize = len / 2;
-            size_t totSize = sizeof(fmi3_xml_binary_variable_start_t) + arrSize;
-            startObj = (fmi3_xml_binary_variable_start_t*)fmi3_xml_alloc_variable_type_start(td, variable->type, totSize);
-            if (!startObj) {
-                fmi3_xml_parse_fatal(context, "Could not allocate memory");
-                return -1;
-            }
-            startObj->nStart = arrSize;
-            if (fmi3_xml_hexstring_to_bytearray(context, jm_vector_get_itemp(char)(bufStartStr, 0), startObj->start)) {
-                return -1;
-            }
-            variable->type = &startObj->super;
+        /* For each <Start ...>, allocate memory, copy attribute to 'value' and push back to 'vec'. */
+        jm_vector(jm_voidp)* vec = &context->currentStartVariableValues;
+        const char* attr;
+        if (fmi3_xml_get_attr_str(context, fmi3_xml_elmID_BinaryVariableStart, fmi_attr_id_value, 0, &attr)) return -1;
+        int len = strlen(attr);
+        if (len == 0) {
+            fmi3_xml_parse_error(context, "Empty value attribute in Start element");
+            return -1;
         }
+        char* attrAsStr = context->callbacks->malloc(len + 1);
+        strcpy(attrAsStr, attr);
+        jm_vector_push_back(jm_voidp)(vec, attrAsStr);
     }
     return 0;
 }

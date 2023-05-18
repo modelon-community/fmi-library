@@ -180,11 +180,8 @@
     <Start value="A sTring value"/>
   </String>
 
-    <Binary name="binary_array" valueReference="122" maxSize="28" initial="exact" description="Testing binary arrays">
-      <Dimension start="3"/>
-      <Start value="0011BBff029eE4Cd"/>
+    <Binary name="binary_var" valueReference="122" maxSize="28" initial="exact" description="Testing binary scalar">
       <Start value="3c3f"/>
-      <Start value="E4Cd"/>
     </Binary>
 
     <!-- variables used as dimension specifiers -->

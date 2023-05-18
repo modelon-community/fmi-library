@@ -7,7 +7,7 @@
 
   <CoSimulation modelIdentifier="VariableTypes"/>
   <ModelVariables>
-    <Binary name="binary_array" valueReference="122" maxSize="28" initial="exact" description="Testing binary arrays">
+    <Binary name="binary_array" valueReference="125" maxSize="28" initial="exact" description="Testing binary arrays">
       <Dimension start="3"/>
       <Start value="0011BBff029eE4Cd"/>
       <Start value="3c3f"/>

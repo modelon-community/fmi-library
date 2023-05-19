@@ -66,8 +66,7 @@ TEST_CASE("FMU interface types: Default attributes") {
         REQUIRE(fmi3_import_get_capability(fmu, fmi3_se_providesAdjointDerivatives)          == 0);
         REQUIRE(fmi3_import_get_capability(fmu, fmi3_se_providesPerElementDependencies)      == 0);
     }
-
-    fmi3_import_free(fmu);
+    fmi3_testutil_import_free(tfmu);
 }
 
 TEST_CASE("FMU interface types: All attributes") {
@@ -126,4 +125,5 @@ TEST_CASE("FMU interface types: All attributes") {
         REQUIRE(fmi3_import_get_capability(fmu, fmi3_se_providesAdjointDerivatives)          == 1);
         REQUIRE(fmi3_import_get_capability(fmu, fmi3_se_providesPerElementDependencies)      == 1);
     }
+    fmi3_testutil_import_free(tfmu);
 }

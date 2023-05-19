@@ -209,13 +209,10 @@ typedef enum fmi3_interval_variability_enu_t {
     H(mightReturnEarlyFromDoStep) \
     H(canReturnEarlyAfterIntermediateUpdate) \
     H(hasEventMode) \
-    H(providesEvaluateDiscreteStates)
-
-/* TODO:
+    H(providesEvaluateDiscreteStates) \
     H(fixedInternalStepSize) \
-    H(maxOutputDerivativeOrder) \
-    H(recommendedIntermediateInputSmoothness) \
-*/
+    H(recommendedIntermediateInputSmoothness)
+
 
 /** \brief List of capability flags for ScheduledExecution */
 #define FMI3_SE_CAPABILITIES(H) \

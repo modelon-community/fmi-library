@@ -31,7 +31,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-    
+
 
 jm_vector_declare_template(fmi3_value_reference_t)
 
@@ -93,8 +93,8 @@ jm_vector_declare_template(fmi3_value_reference_t)
     EXPAND_XML_ATTRNAME(input) \
     EXPAND_XML_ATTRNAME(needsExecutionTool) \
     EXPAND_XML_ATTRNAME(canBeInstantiatedOnlyOncePerProcess) \
-    EXPAND_XML_ATTRNAME(canGetAndSetFMUstate) \
-    EXPAND_XML_ATTRNAME(canSerializeFMUstate) \
+    EXPAND_XML_ATTRNAME(canGetAndSetFMUState) \
+    EXPAND_XML_ATTRNAME(canSerializeFMUState) \
     EXPAND_XML_ATTRNAME(providesDirectionalDerivatives) \
     EXPAND_XML_ATTRNAME(providesDirectionalDerivative) /* Removed in FMI3. Used in error checking. */ \
     EXPAND_XML_ATTRNAME(providesAdjointDerivatives) \
@@ -109,7 +109,7 @@ jm_vector_declare_template(fmi3_value_reference_t)
     EXPAND_XML_ATTRNAME(mightReturnEarlyFromDoStep) \
     EXPAND_XML_ATTRNAME(canReturnEarlyAfterIntermediateUpdate) \
     EXPAND_XML_ATTRNAME(hasEventMode)
-    
+
 
 #define FMI3_XML_ATTR_ID(attr) fmi_attr_id_##attr,
 typedef enum fmi3_xml_attr_enu_t {
@@ -255,7 +255,7 @@ struct fmi3_xml_parser_context_t {
     jm_callbacks* callbacks;
 
     XML_Parser parser;
-    
+
     /**
      * Actual type: jm_vector of jm_vector(char).
      *
@@ -273,7 +273,7 @@ struct fmi3_xml_parser_context_t {
      * Used for writing to attrBuffer. Uses lookup by attribute name instead
      * of attribute ID. The .ptr field points to attrBuffer[id(attr_name)].
      * Currently used ONLY for writing.
-     * 
+     *
      * TODO: Rename to attrMapByName?
      */
     jm_vector(jm_named_ptr)* attrMap;
@@ -281,13 +281,13 @@ struct fmi3_xml_parser_context_t {
     /**
      * Vector with a slot for every attribute for every element to allow constant lookup:
      *     attrBuffer[<attr_id>] = <attr_value>
-     * 
+     *
      * Is populated with all parsed attributes for the current element before that element
      * handler is invoked.
-     * 
+     *
      * Typically attributes values are cleared when they are read, such that at the end of
      * parsing an element all attributes should be cleared.
-     * 
+     *
      * NOTE:
      * The pointers point to expat's internal memory. It's not allowed to save references
      * to this memory between element handle calls.
@@ -308,7 +308,7 @@ struct fmi3_xml_parser_context_t {
     jm_vector(fmi3_xml_element_handle_map_t)* elmMap;
 
     fmi3_xml_unit_t* lastBaseUnit;
-    
+
     /**
      * If there's an issue with the variable element, this flag says that its
      * children should be skipped.

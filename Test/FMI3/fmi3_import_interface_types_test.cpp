@@ -70,5 +70,60 @@ TEST_CASE("FMU interface types: Default attributes") {
     fmi3_import_free(fmu);
 }
 
-//TEST_CASE("FMU interface types: All attributes") {
-//}
+TEST_CASE("FMU interface types: All attributes") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/interface_types/valid/non_default_attrs";
+
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(tfmu != nullptr);
+    REQUIRE(fmu  != nullptr);
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
+
+    SECTION("ME") {
+        REQUIRE_STREQ(fmi3_import_get_model_identifier_ME(fmu), "id_me");
+        // Common
+        REQUIRE(fmi3_import_get_capability(fmu, fmi3_me_needsExecutionTool)                  == 1);
+        REQUIRE(fmi3_import_get_capability(fmu, fmi3_me_canBeInstantiatedOnlyOncePerProcess) == 1);
+        REQUIRE(fmi3_import_get_capability(fmu, fmi3_me_canGetAndSetFMUState)                == 1);
+        REQUIRE(fmi3_import_get_capability(fmu, fmi3_me_canSerializeFMUState)                == 1);
+        REQUIRE(fmi3_import_get_capability(fmu, fmi3_me_providesDirectionalDerivatives)      == 1);
+        REQUIRE(fmi3_import_get_capability(fmu, fmi3_me_providesAdjointDerivatives)          == 1);
+        REQUIRE(fmi3_import_get_capability(fmu, fmi3_me_providesPerElementDependencies)      == 1);
+        // ME
+        REQUIRE(fmi3_import_get_capability(fmu, fmi3_me_needsCompletedIntegratorStep)   == 1);
+        REQUIRE(fmi3_import_get_capability(fmu, fmi3_me_providesEvaluateDiscreteStates) == 1);
+    }
+    SECTION("CS") {
+        REQUIRE_STREQ(fmi3_import_get_model_identifier_CS(fmu), "id_cs");
+        // Common
+        REQUIRE(fmi3_import_get_capability(fmu, fmi3_cs_needsExecutionTool)                  == 1);
+        REQUIRE(fmi3_import_get_capability(fmu, fmi3_cs_canBeInstantiatedOnlyOncePerProcess) == 1);
+        REQUIRE(fmi3_import_get_capability(fmu, fmi3_cs_canGetAndSetFMUState)                == 1);
+        REQUIRE(fmi3_import_get_capability(fmu, fmi3_cs_canSerializeFMUState)                == 1);
+        REQUIRE(fmi3_import_get_capability(fmu, fmi3_cs_providesDirectionalDerivatives)      == 1);
+        REQUIRE(fmi3_import_get_capability(fmu, fmi3_cs_providesAdjointDerivatives)          == 1);
+        REQUIRE(fmi3_import_get_capability(fmu, fmi3_cs_providesPerElementDependencies)      == 1);
+        // CS
+        REQUIRE(     fmi3_import_get_capability(fmu, fmi3_cs_canHandleVariableCommunicationStepSize) == 1);
+        REQUIRE(fabs(fmi3_import_get_cs_fixed_internal_step_size(fmu) - 3.0)                         <  0.00001);
+        REQUIRE(     fmi3_import_get_capability(fmu, fmi3_cs_maxOutputDerivativeOrder)               == 5);
+        REQUIRE(     fmi3_import_get_cs_recommended_intermediate_input_smoothness(fmu)               == -2);
+        REQUIRE(     fmi3_import_get_capability(fmu, fmi3_cs_providesIntermediateUpdate)             == 1);
+        REQUIRE(     fmi3_import_get_capability(fmu, fmi3_cs_mightReturnEarlyFromDoStep)             == 1);
+        REQUIRE(     fmi3_import_get_capability(fmu, fmi3_cs_canReturnEarlyAfterIntermediateUpdate)  == 1);
+        REQUIRE(     fmi3_import_get_capability(fmu, fmi3_cs_hasEventMode)                           == 1);
+        REQUIRE(     fmi3_import_get_capability(fmu, fmi3_cs_providesEvaluateDiscreteStates)         == 1);
+    }
+    SECTION("SE") {
+        REQUIRE_STREQ(fmi3_import_get_model_identifier_SE(fmu), "id_se");
+        // Common
+        REQUIRE(fmi3_import_get_capability(fmu, fmi3_se_needsExecutionTool)                  == 1);
+        REQUIRE(fmi3_import_get_capability(fmu, fmi3_se_canBeInstantiatedOnlyOncePerProcess) == 1);
+        REQUIRE(fmi3_import_get_capability(fmu, fmi3_se_canGetAndSetFMUState)                == 1);
+        /* Have at least one value off by design */
+        REQUIRE(fmi3_import_get_capability(fmu, fmi3_se_canSerializeFMUState)                == 0);
+        REQUIRE(fmi3_import_get_capability(fmu, fmi3_se_providesDirectionalDerivatives)      == 1);
+        REQUIRE(fmi3_import_get_capability(fmu, fmi3_se_providesAdjointDerivatives)          == 1);
+        REQUIRE(fmi3_import_get_capability(fmu, fmi3_se_providesPerElementDependencies)      == 1);
+    }
+}

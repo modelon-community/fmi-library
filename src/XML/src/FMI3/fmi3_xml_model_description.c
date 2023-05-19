@@ -68,7 +68,7 @@ fmi3_xml_model_description_t * fmi3_xml_allocate_model_description( jm_callbacks
     md->defaultExperiment.stopTime  = 1.0;
     md->defaultExperiment.tolerance = FMI3_DEFAULT_EXPERIMENT_TOLERANCE;
     md->defaultExperiment.stepSize  = FMI3_DEFAULT_EXPERIMENT_STEPSIZE;
-    
+
     jm_vector_init(char)(&md->modelExchange.modelIdentifier, 0, cb);
 
     jm_vector_init(char)(&md->coSimulation.modelIdentifier, 0, cb);
@@ -133,7 +133,7 @@ void fmi3_xml_clear_model_description( fmi3_xml_model_description_t* md) {
     md->defaultExperiment.stopTime = 0;
     md->defaultExperiment.tolerance = 0;
     md->defaultExperiment.stepSize = 0;
-    
+
     jm_vector_free_data(char)(&md->modelExchange.modelIdentifier);
     jm_vector_free_data(char)(&md->coSimulation.modelIdentifier);
     jm_vector_free_data(char)(&md->scheduledExecution.modelIdentifier);
@@ -536,10 +536,10 @@ static int fmi3_xml_process_interface_type_common_attrs(fmi3_xml_parser_context_
         fmi3_xml_set_attr_boolean(context, elmID, fmi_attr_id_canBeInstantiatedOnlyOncePerProcess, 0,
                 &md->capabilities[fmi3_me_canBeInstantiatedOnlyOncePerProcess + offset], 0)
         ||
-        fmi3_xml_set_attr_boolean(context, elmID, fmi_attr_id_canGetAndSetFMUstate, 0,
+        fmi3_xml_set_attr_boolean(context, elmID, fmi_attr_id_canGetAndSetFMUState, 0,
                 &md->capabilities[fmi3_me_canGetAndSetFMUState + offset], 0)
         ||
-        fmi3_xml_set_attr_boolean(context, elmID, fmi_attr_id_canSerializeFMUstate, 0,
+        fmi3_xml_set_attr_boolean(context, elmID, fmi_attr_id_canSerializeFMUState, 0,
                 &md->capabilities[fmi3_me_canSerializeFMUState + offset], 0)
         ||
         fmi3_xml_set_attr_boolean(context, elmID, providesDirDerId, 0,
@@ -583,7 +583,7 @@ int fmi3_xml_handle_ModelExchange(fmi3_xml_parser_context_t *context, const char
                     &md->capabilities[fmi3_me_needsCompletedIntegratorStep], 0)
             ||
             fmi3_xml_set_attr_boolean(context, elmID, fmi_attr_id_providesEvaluateDiscreteStates, 0,
-                    &md->capabilities[fmi3_me_needsCompletedIntegratorStep], 0))
+                    &md->capabilities[fmi3_me_providesEvaluateDiscreteStates], 0))
         {
             return -1;
         }
@@ -635,6 +635,7 @@ int fmi3_xml_handle_CoSimulation(fmi3_xml_parser_context_t *context, const char*
             return -1;
         }
 
+
         // NOTE: This attribute is unsigned int, so not really a capability. However, in
         // FMI2 it's part of the capabilities enum, so keeping it the same for FMI3.
         if (fmi3_xml_set_attr_uint32(context, elmID, fmi_attr_id_maxOutputDerivativeOrder, 0,
@@ -642,7 +643,7 @@ int fmi3_xml_handle_CoSimulation(fmi3_xml_parser_context_t *context, const char*
         {
             return -1;
         }
-        
+
         // Other non-capability attributes:
         if (fmi3_xml_is_attr_defined(context, fmi_attr_id_fixedInternalStepSize)) {
             md->coSimulation.hasFixedInternalStepSize = 1;
@@ -689,7 +690,7 @@ int fmi3_xml_handle_ScheduledExecution(fmi3_xml_parser_context_t *context, const
 
         // TODO
         /*
-        return 
+        return
                     fmi3_xml_set_attr_string(context, fmi3_xml_elmID_ScheduledExecution, fmi_attr_id_modelIdentifier, 1, &(md->modelIdentifierSE)) ||
                     fmi3_xml_set_attr_boolean(context, fmi3_xml_elmID_ScheduledExecution, fmi_attr_id_needsExecutionTool, 0,
                                              &md->capabilities[fmi3_se_needsExecutionTool], 0) ||
@@ -705,10 +706,10 @@ int fmi3_xml_handle_ScheduledExecution(fmi3_xml_parser_context_t *context, const
                                              &md->capabilities[fmi3_se_canBeInstantiatedOnlyOncePerProcess], 0) ||
                     fmi3_xml_set_attr_boolean(context,fmi3_xml_elmID_ScheduledExecution, fmi_attr_id_canNotUseMemoryManagementFunctions,0,
                                              &md->capabilities[fmi3_se_canNotUseMemoryManagementFunctions], 0) ||
-                    fmi3_xml_set_attr_boolean(context,fmi3_xml_elmID_ScheduledExecution, fmi_attr_id_canGetAndSetFMUstate,0,
-                                             &md->capabilities[fmi3_se_canGetAndSetFMUstate], 0) ||
-                    fmi3_xml_set_attr_boolean(context,fmi3_xml_elmID_ScheduledExecution, fmi_attr_id_canSerializeFMUstate,0,
-                                             &md->capabilities[fmi3_se_canSerializeFMUstate], 0)
+                    fmi3_xml_set_attr_boolean(context,fmi3_xml_elmID_ScheduledExecution, fmi_attr_id_canGetAndSetFMUState,0,
+                                             &md->capabilities[fmi3_se_canGetAndSetFMUState], 0) ||
+                    fmi3_xml_set_attr_boolean(context,fmi3_xml_elmID_ScheduledExecution, fmi_attr_id_canSerializeFMUState,0,
+                                             &md->capabilities[fmi3_se_canSerializeFMUState], 0)
                    );
         */
     }

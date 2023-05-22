@@ -15,7 +15,7 @@ FMILIB_CMAKE_CUSTOM_FLAGS=-DCMAKE_C_FLAGS="-m64"             \
                           -DCMAKE_SHARED_LINKER_FLAGS="-m64" \
                           -DCMAKE_EXE_LINKER_FLAGS="-m64"
 BUILD_TYPE=Release
-TEST_COMMAND=ctest --build-config $(BUILD_TYPE) --parallel $(shell nproc) --output-on-failure
+TEST_COMMAND=ctest --build-config $(BUILD_TYPE) --parallel $(NPROC) --output-on-failure
 
 # FMILIB_...
 GENERATE_DOXYGEN_DOC=0

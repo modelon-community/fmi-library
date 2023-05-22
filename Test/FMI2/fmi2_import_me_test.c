@@ -217,7 +217,6 @@ int test_simulate_me(fmi2_import_t* fmu)
 int main(int argc, char *argv[])
 {
     fmi2_callback_functions_t callBackFunctions;
-    const char* FMUPath;
     const char* tmpPath;
     jm_callbacks callbacks;
     fmi_import_context_t* context;
@@ -225,15 +224,6 @@ int main(int argc, char *argv[])
     jm_status_enu_t status;
 
     fmi2_import_t* fmu;    
-
-    if(argc < 3) {
-        printf("Usage: %s <fmu_file> <temporary_dir>\n", argv[0]);
-        do_exit(CTEST_RETURN_FAIL);
-    }
-
-    FMUPath = argv[1];
-    tmpPath = argv[2];
-
 
     callbacks.malloc = malloc;
     callbacks.calloc = calloc;
@@ -247,10 +237,14 @@ int main(int argc, char *argv[])
     printf("Library build stamp:\n%s\n", fmilib_get_build_stamp());
 #endif
 
+    tmpPath = fmi_import_mk_temp_dir(&callbacks, FMU_TEMPORARY_TEST_DIR, NULL);
+    if (!tmpPath) {
+        printf("Failed to create temporary directory in: " FMU_TEMPORARY_TEST_DIR "\n");
+        do_exit(CTEST_RETURN_FAIL);
+    }
 
     context = fmi_import_allocate_context(&callbacks);
-
-    version = fmi_import_get_fmi_version(context, FMUPath, tmpPath);
+    version = fmi_import_get_fmi_version(context, FMU2_ME_PATH, tmpPath);
 
     if(version != fmi_version_2_0_enu) {
         printf("Only version 2.0 is supported by this code\n");
@@ -285,15 +279,14 @@ int main(int argc, char *argv[])
     test_simulate_me(fmu);
 
     fmi2_import_destroy_dllfmu(fmu);
-
     fmi2_import_free(fmu);
     fmi_import_free_context(context);
+    if (fmi_import_rmdir(&callbacks, tmpPath)) {
+        printf("Problem when deleting FMU unpack directory.\n");
+        do_exit(CTEST_RETURN_FAIL);
+    }
+    callbacks.free((void*)tmpPath);
     
     printf("Everything seems to be OK since you got this far=)!\n");
-
-    do_exit(CTEST_RETURN_SUCCESS);
-
     return 0;
 }
-
-

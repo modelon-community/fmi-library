@@ -156,7 +156,6 @@ set(CTEST_RETURN_SUCCESS 0)
 set(CTEST_RETURN_FAIL 1)
 
 to_native_c_path(${TEST_OUTPUT_FOLDER}/tempfolder FMU_TEMPFOLDER)
-
 file(MAKE_DIRECTORY ${FMU_TEMPFOLDER})
 
 if(FMILIB_BUILD_BEFORE_TESTS)
@@ -190,14 +189,14 @@ include(test_fmi1)
 include(test_fmi2)
 include(test_fmi3)
 
-add_test(ctest_fmi_import_test_no_xml fmi_import_test ${UNCOMPRESSED_DUMMY_FILE_PATH_SRC} ${FMU_TEMPFOLDER})
+add_test(ctest_fmi_import_test_no_xml fmi_import_test ${UNCOMPRESSED_DUMMY_FILE_PATH_SRC})
   set_tests_properties(ctest_fmi_import_test_no_xml PROPERTIES WILL_FAIL TRUE)
-add_test(ctest_fmi_import_test_me_1 fmi_import_test ${FMU_ME_PATH} ${FMU_TEMPFOLDER})
-add_test(ctest_fmi_import_test_cs_1 fmi_import_test ${FMU_CS_PATH} ${FMU_TEMPFOLDER})
-add_test(ctest_fmi_import_test_me_2 fmi_import_test ${FMU2_ME_PATH} ${FMU_TEMPFOLDER})
-add_test(ctest_fmi_import_test_cs_2 fmi_import_test ${FMU2_CS_PATH} ${FMU_TEMPFOLDER})
-add_test(ctest_fmi_import_test_me_3 fmi_import_test ${FMU3_ME_PATH} ${FMU_TEMPFOLDER})
-add_test(ctest_fmi_import_test_cs_3 fmi_import_test ${FMU3_CS_PATH} ${FMU_TEMPFOLDER})
+add_test(ctest_fmi_import_test_me_1 fmi_import_test ${FMU1_ME_PATH})
+add_test(ctest_fmi_import_test_cs_1 fmi_import_test ${FMU1_CS_PATH})
+add_test(ctest_fmi_import_test_me_2 fmi_import_test ${FMU2_ME_PATH})
+add_test(ctest_fmi_import_test_cs_2 fmi_import_test ${FMU2_CS_PATH})
+add_test(ctest_fmi_import_test_me_3 fmi_import_test ${FMU3_ME_PATH})
+add_test(ctest_fmi_import_test_cs_3 fmi_import_test ${FMU3_CS_PATH})
 
 if(FMILIB_BUILD_BEFORE_TESTS)
     set_tests_properties(

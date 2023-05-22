@@ -47,14 +47,12 @@ int main(int argc, char *argv[])
     fmi_version_enu_t version;
     int ret;
 
-    if(argc < 3) {
-        printf("Usage: %s <fmu_file> <temporary_dir>\n", argv[0]);
+    if(argc < 2) {
+        printf("Usage: %s <fmu_file>\n", argv[0]);
         do_exit(CTEST_RETURN_FAIL);
     }
 
     FMUPath = argv[1];
-    tmpPath = argv[2];
-
 
     callbacks.malloc = malloc;
     callbacks.calloc = calloc;
@@ -68,8 +66,12 @@ int main(int argc, char *argv[])
     printf("Library build stamp:\n%s\n", fmilib_get_build_stamp());
 #endif
 
+    tmpPath = fmi_import_mk_temp_dir(&callbacks, FMU_TEMPORARY_TEST_DIR, NULL);
+    if (!tmpPath) {
+        printf("Failed to create temporary directory in: " FMU_TEMPORARY_TEST_DIR "\n");
+        do_exit(CTEST_RETURN_FAIL);
+    }
     context = fmi_import_allocate_context(&callbacks);
-
     version = fmi_import_get_fmi_version(context, FMUPath, tmpPath);
 
     /* Check that version can be retrieved from unzipped FMU: */
@@ -94,6 +96,11 @@ int main(int argc, char *argv[])
     }
 
     fmi_import_free_context(context);
+    if (fmi_import_rmdir(&callbacks, tmpPath)) {
+        printf("Problem when deleting FMU unpack directory.\n");
+        do_exit(CTEST_RETURN_FAIL);
+    }
+    callbacks.free((void*)tmpPath);
 
     if(ret == CTEST_RETURN_SUCCESS)
         printf("Everything seems to be OK since you got this far=)!\n");

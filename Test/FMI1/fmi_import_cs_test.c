@@ -329,9 +329,9 @@ int main(int argc, char *argv[])
     printf("Library build stamp:\n%s\n", fmilib_get_build_stamp());
 #endif
 
-    tmpPath = fmi_import_mk_temp_dir(&callbacks, FMU_TEMPORARY_TEST_DIR, NULL);
+    tmpPath = fmi_import_mk_temp_dir(&callbacks, FMU_UNPACK_DIR, NULL);
     if (!tmpPath) {
-        printf("Failed to create temporary directory in: " FMU_TEMPORARY_TEST_DIR "\n");
+        printf("Failed to create temporary directory in: " FMU_UNPACK_DIR "\n");
         do_exit(CTEST_RETURN_FAIL);
     }
     context = fmi_import_allocate_context(&callbacks);

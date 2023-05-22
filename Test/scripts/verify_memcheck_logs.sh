@@ -27,12 +27,12 @@ logdir="$1"
 
 # --- SCRIPT_START -------------------------------------------------- #
 
-# Find the number of log files that contain warnings or errors after running
-# memcheck.
-memcheck_logs="$(find "$logdir" -not -empty -name "MemoryChecker.*.log")"
+# Find the log files with memcheck problems.
+memcheck_logs="$(find "$(realpath "$logdir")" -not -empty -name "MemoryChecker.*.log")"
 
 if [[ -n "$memcheck_logs" ]]; then
-    err "memcheck problems: $memcheck_logs"
+    logs_line_separated="$(echo $memcheck_logs | sed 's,\([^ ]\+\),\n    \1,g')"
+    err "memcheck problems: $logs_line_separated"
     exit 1
 fi
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <fmiModelDescription
   fmiVersion="3.0"
-  modelName="Empty"
+  modelName="Brief"
   instantiationToken="{B003C6D1-D687-49A9-8A5A-4A513EA0ED1C}"
   description=""
   generationTool=""
@@ -9,7 +9,7 @@
   variableNamingConvention="structured"
   author="">
   <ModelExchange
-    modelIdentifier="Empty"
+    modelIdentifier="Brief"
   />
   <DefaultExperiment
     startTime="0"

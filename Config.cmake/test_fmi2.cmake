@@ -112,10 +112,10 @@ set(FAIL_NAME_CHECK 0)
 set(PASS_NAME_CHECK 1)
 
 add_test(ctest_fmi2_xml_parsing_test fmi2_xml_parsing_test ${FMIL_TEST_DIR}/FMI2/parser_test_xmls/)
-add_test(ctest_fmi2_import_xml_test_empty fmi2_import_xml_test ${FMU2_DUMMY_FOLDER})
-add_test(ctest_fmi2_import_xml_test_me fmi2_import_xml_test ${TEST_OUTPUT_FOLDER}/BouncingBall2_me)
-add_test(ctest_fmi2_import_xml_test_cs fmi2_import_xml_test ${TEST_OUTPUT_FOLDER}/BouncingBall2_cs)
-add_test(ctest_fmi2_import_xml_test_mf fmi2_import_xml_test ${TEST_OUTPUT_FOLDER}/BouncingBall2_mf)
+add_test(ctest_fmi2_import_xml_test_brief fmi2_import_xml_test ${FMU2_DUMMY_FOLDER}) # 'brief' as in close to minimal XML
+add_test(ctest_fmi2_import_xml_test_me    fmi2_import_xml_test ${TEST_OUTPUT_FOLDER}/BouncingBall2_me)
+add_test(ctest_fmi2_import_xml_test_cs    fmi2_import_xml_test ${TEST_OUTPUT_FOLDER}/BouncingBall2_cs)
+add_test(ctest_fmi2_import_xml_test_mf    fmi2_import_xml_test ${TEST_OUTPUT_FOLDER}/BouncingBall2_mf)
 set_tests_properties(ctest_fmi2_import_xml_test_mf PROPERTIES WILL_FAIL TRUE)
 add_test(ctest_fmi2_import_test_me fmi2_import_me_test)
 add_test(ctest_fmi2_import_test_cs fmi2_import_cs_test)
@@ -150,7 +150,7 @@ if(FMILIB_BUILD_BEFORE_TESTS)
         ctest_fmi2_import_xml_test_me
         ctest_fmi2_import_xml_test_cs
         ctest_fmi2_import_xml_test_mf
-        ctest_fmi2_import_xml_test_empty
+        ctest_fmi2_import_xml_test_brief
         ctest_fmi2_import_test_me
         ctest_fmi2_import_test_cs
         ctest_fmi2_import_variable_test

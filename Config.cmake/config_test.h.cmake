@@ -33,7 +33,7 @@
 #define FMU3_SE_PATH "@FMU3_SE_PATH@"
 
 /* Paths to temp directories */
-#define FMU_TEMPORARY_TEST_DIR "@FMU_TEMPORARY_TEST_DIR@"
+#define FMU_UNPACK_DIR "@FMU_UNPACK_DIR@"
 
 /* Paths to other test directories */
 #define TEST_OUTPUT_FOLDER "@TEST_OUTPUT_FOLDER@"

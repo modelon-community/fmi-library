@@ -2,13 +2,16 @@
 # Jenkins to build some predetermined configurations, do testing as a separate
 # stage, and build the documentation.
 
+# NOTE: 'nproc' doesn't exist on Windows, so just hardcoding "some" value for now.
+NPROC=8
+
 include $(CONFIG_FILE)
 
 .PHONY: install test documentation generate clean
 
 install: generate
 	cd $(BUILD_DIR) && \
-		cmake --build . --config $(BUILD_TYPE) --target '$@'
+		cmake --build . --parallel $(NPROC) --config $(BUILD_TYPE) --target '$@'
 
 # Note that this does not execute the test binaries that are using the test framework Catch2
 test: generate

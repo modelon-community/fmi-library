@@ -102,17 +102,19 @@ tasks[conf.name] = {
     }
 }
 
-// Currently getting cygwin heap error when parallellizing win64 and win64_static_runtime, so not doing that for now
 def parallellTasks = [
     'centos64': tasks.centos64,
     'ubuntu64': tasks.ubuntu64,
     'mingw_w64': tasks.mingw_w64,
     'win64': tasks.win64,
+    'win64_static_runtime': tasks.win64_static_runtime,
     'documentation': tasks.documentation,
 ]
 parallel parallellTasks
 
-tasks.win64_static_runtime()
+// NOTE: Used to get cygwin heap error when parallellizing win64 and win64_static_runtime.
+// If that happens, revert back to running one of them in series:
+// tasks.win64_static_runtime()
 
 
 def clean(conf) {

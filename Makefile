@@ -3,7 +3,7 @@
 # stage, and build the documentation.
 
 # NOTE: 'nproc' doesn't exist on Windows, so just hardcoding "some" value for now.
-NPROC=4
+NPROC=8
 
 include $(CONFIG_FILE)
 

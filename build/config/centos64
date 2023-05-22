@@ -21,7 +21,7 @@ TEST_COMMAND=ctest $(CTEST_FLAGS_COMMON) --tests-regex   ctest_build_all \
           && ctest $(CTEST_FLAGS_COMMON) --exclude-regex ctest_build_all --label-exclude skip_memcheck --test-action memcheck \
           && ctest $(CTEST_FLAGS_COMMON) --exclude-regex ctest_build_all --label-regex   skip_memcheck  \
           && chmod +x ../Test/scripts/verify_memcheck_logs.sh \
-          && ../Test/scripts/verify_memcheck_logs.sh Testing/TestResults
+          && ../Test/scripts/verify_memcheck_logs.sh Testing/Temporary
 
 # FMILIB_...
 GENERATE_DOXYGEN_DOC=0

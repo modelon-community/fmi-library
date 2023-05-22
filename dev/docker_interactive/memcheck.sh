@@ -43,4 +43,4 @@ cmake --build . --config Debug --clean-first --target "$test_name"
 ctest -C Debug -R "$test_name" -T memcheck
 
 # examine valgrind result
-vim Testing/TestResults/MemoryChecker.$test_idx.log
+vim Testing/Temporary/MemoryChecker.$test_idx.log

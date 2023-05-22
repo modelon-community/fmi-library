@@ -10,7 +10,8 @@
                 "vms-vscode.cpptools",
                 "ms-vscode.cmake-tools",
                 "ms-vscode.makefile-tools",
-                "ms-vscode.cpptools-extension-pack"
+                "ms-vscode.cpptools-extension-pack",
+                "matepek.vscode-catch2-test-adapter"
             ]
         }
     }

@@ -201,9 +201,9 @@ fmul_t load(int argc, char *argv[])
     context = fmi_import_allocate_context(callbacks);
 
     if (!tmpPath) { /* Unzip the FMU only once. Overwriting the dll/so file may cause a segfault. */
-        tmpPath = fmi_import_mk_temp_dir(callbacks, FMU_TEMPORARY_TEST_DIR, NULL);
+        tmpPath = fmi_import_mk_temp_dir(callbacks, FMU_UNPACK_DIR, NULL);
         if (!tmpPath) {
-            printf("Failed to create temporary directory in: " FMU_TEMPORARY_TEST_DIR "\n");
+            printf("Failed to create temporary directory in: " FMU_UNPACK_DIR "\n");
             do_exit(CTEST_RETURN_FAIL);
         }
         version = fmi_import_get_fmi_version(context, FMU1_ME_PATH, tmpPath);

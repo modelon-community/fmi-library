@@ -8,7 +8,7 @@ include $(CONFIG_FILE)
 
 install: generate
 	cd $(BUILD_DIR) && \
-		cmake --build . --config $(BUILD_TYPE) --target '$@'
+		cmake --build . --parallel $(shell nproc) --config $(BUILD_TYPE) --target '$@'
 
 # Note that this does not execute the test binaries that are using the test framework Catch2
 test: generate

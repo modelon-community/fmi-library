@@ -54,7 +54,7 @@ Configs.each { conf_entry ->
     def conf = conf_entry.value // bind variable before use in closure
     tasks[conf.name] = {
         node(conf.node) {
-            def testLogDir = "build_${conf.name}/Testing/Temporary"
+            def testLogDir = "build_${conf.name}/Testing/TestResults"
             def installDir = "install_${conf.name}"
 
             stage("Checkout: ${conf.name}") {

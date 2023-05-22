@@ -102,8 +102,8 @@ TEST_CASE("Test CAPI methods using a Model Exchange FMU", test_file_name)
     callbacks.log_level = jm_log_level_debug;
     callbacks.context = 0;
     context = fmi_import_allocate_context(&callbacks);
-    fmi_version_enu_t version = fmi_import_get_fmi_version(context, FMU3_ME_PATH, FMU_TEMPORARY_TEST_DIR);
-    fmi3_import_t* fmu = fmi3_import_parse_xml(context, FMU_TEMPORARY_TEST_DIR, 0);
+    fmi_version_enu_t version = fmi_import_get_fmi_version(context, FMU3_ME_PATH, FMU_UNPACK_DIR);
+    fmi3_import_t* fmu = fmi3_import_parse_xml(context, FMU_UNPACK_DIR, 0);
 
     /* Create C-API struct and instantiate FMU, necessary for some test cases that follows. */
     jm_status_enu_t status = fmi3_import_create_dllfmu(fmu, fmi3_fmu_kind_me, nullptr, nullptr);
@@ -156,8 +156,8 @@ TEST_CASE("Test CAPI methods using a Co-Simulation FMU", test_file_name)
     callbacks.log_level = jm_log_level_debug;
     callbacks.context = 0;
     context = fmi_import_allocate_context(&callbacks);
-    fmi_version_enu_t version = fmi_import_get_fmi_version(context, FMU3_CS_PATH, FMU_TEMPORARY_TEST_DIR);
-    fmi3_import_t* fmu = fmi3_import_parse_xml(context, FMU_TEMPORARY_TEST_DIR, 0);
+    fmi_version_enu_t version = fmi_import_get_fmi_version(context, FMU3_CS_PATH, FMU_UNPACK_DIR);
+    fmi3_import_t* fmu = fmi3_import_parse_xml(context, FMU_UNPACK_DIR, 0);
 
     jm_status_enu_t status = fmi3_import_create_dllfmu(fmu, fmi3_fmu_kind_cs, nullptr, nullptr);
     REQUIRE(status == 0);
@@ -217,8 +217,8 @@ TEST_CASE("Test CAPI methods using a Scheduled-Execution FMU", test_file_name)
     callbacks.log_level = jm_log_level_debug;
     callbacks.context = 0;
     context = fmi_import_allocate_context(&callbacks);
-    fmi_version_enu_t version = fmi_import_get_fmi_version(context, FMU3_SE_PATH, FMU_TEMPORARY_TEST_DIR);
-    fmi3_import_t* fmu = fmi3_import_parse_xml(context, FMU_TEMPORARY_TEST_DIR, 0);
+    fmi_version_enu_t version = fmi_import_get_fmi_version(context, FMU3_SE_PATH, FMU_UNPACK_DIR);
+    fmi3_import_t* fmu = fmi3_import_parse_xml(context, FMU_UNPACK_DIR, 0);
 
     jm_status_enu_t status = fmi3_import_create_dllfmu(fmu, fmi3_fmu_kind_se, nullptr, nullptr);
     REQUIRE(status == 0);

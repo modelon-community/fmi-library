@@ -463,9 +463,6 @@ static void test_parse_bouncingball(const char* xmldir, bool expectParseFailure)
 }
 
 TEST_CASE("Test exercising the XML API on BouncingBall") {
-    SECTION("Empty (missing modelDescription.xml)") {
-        test_parse_bouncingball(FMIL_TEST_DIR "/FMI3/fmu_dummy", false);
-    }
     SECTION("ME") {
         test_parse_bouncingball(TEST_OUTPUT_FOLDER "/BouncingBall3_me", false);
     }
@@ -474,5 +471,8 @@ TEST_CASE("Test exercising the XML API on BouncingBall") {
     }
     SECTION("Malformed XML") {
         test_parse_bouncingball(TEST_OUTPUT_FOLDER "/BouncingBall3_malformed_mf", true);
+    }
+    SECTION("Brief (a close to minimal XML - not BouncingBall really...)") {
+        test_parse_bouncingball(FMIL_TEST_DIR "/FMI3/fmu_dummy", false);
     }
 }

@@ -150,9 +150,9 @@ int main(int argc, char *argv[])
     printf("Library build stamp:\n%s\n", fmilib_get_build_stamp());
 #endif
 
-    tmpPath = fmi_import_mk_temp_dir(&callbacks, FMU_TEMPORARY_TEST_DIR, NULL);
+    tmpPath = fmi_import_mk_temp_dir(&callbacks, FMU_UNPACK_DIR, NULL);
     if (!tmpPath) {
-        printf("Failed to create temporary directory in: " FMU_TEMPORARY_TEST_DIR "\n");
+        printf("Failed to create temporary directory in: " FMU_UNPACK_DIR "\n");
         do_exit(CTEST_RETURN_FAIL);
     }
 
@@ -182,11 +182,11 @@ int main(int argc, char *argv[])
     /* Clean up: */
     fmi2_import_free(fmu);
     fmi_import_free_context(context);
-    tmpPath = fmi_import_mk_temp_dir(&callbacks, FMU_TEMPORARY_TEST_DIR, NULL);
-    if (!tmpPath) {
-        printf("Failed to create temporary directory in: " FMU_TEMPORARY_TEST_DIR "\n");
+    if (fmi_import_rmdir(&callbacks, tmpPath)) {
+        printf("Problem when deleting FMU unpack directory.\n");
         do_exit(CTEST_RETURN_FAIL);
     }
+    callbacks.free((void*)tmpPath);
     
     printf("Everything seems to be OK since you got this far=)!\n");
     return 0;

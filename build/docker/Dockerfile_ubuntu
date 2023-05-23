@@ -12,13 +12,13 @@ RUN adduser baseuser; \
     passwd  -d "root"; \
     usermod -a -G sudo baseuser
 
-# Install development tools
-# curl is used by certain VSCode extensions
-RUN apt-get update && apt-get install -yq \
-    vim     tmux    doxygen               \
-    cmake   g++     language-pack-sv git  \
-    curl    valgrind
-
+# Install development tools:
+# (curl is used by some VSCode extensions)
+RUN apt-get update && apt-get install -yq    \
+    vim          tmux      doxygen           \
+    cmake        g++       language-pack-sv  \
+    git          curl      valgrind          \
+    ninja-build
 
 # Switch to baseuser
 USER baseuser

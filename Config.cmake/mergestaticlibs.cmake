@@ -18,7 +18,7 @@ function(merge_static_libs outlib)
     list(REMOVE_AT libs 0)
     # Create a dummy file that the target will depend on
     set(dummyfile ${CMAKE_CURRENT_BINARY_DIR}/${outlib}_dummy.c)
-    file(WRITE ${dummyfile} "const char * dummy = \"${dummyfile}\";")
+    file(WRITE ${dummyfile} "const char* dummy = \"${dummyfile}\";")
     
     add_library(${outlib} STATIC ${dummyfile})
 
@@ -80,47 +80,48 @@ function(merge_static_libs outlib)
         if(multiconfig)
             message(FATAL_ERROR "Multiple configurations are not supported")
         endif()
-        get_target_property(outfile ${outlib} LOCATION)
-        message(STATUS "outfile location is ${outfile}")
-        foreach(lib ${libfiles})
-            # objlistfile will contain the list of object files for the library
-            set(objlistfile ${lib}.objlist)
-            set(objdir ${lib}.objdir)
-            set(objlistcmake  ${objlistfile}.cmake)
+        foreach(libtarget ${libs})
+            set(objlistfile  ${CMAKE_CURRENT_BINARY_DIR}/${libtarget}.objlist)  # Contains a list of the object files
+            set(objdir       ${CMAKE_CURRENT_BINARY_DIR}/${libtarget}.objdir)   # Directory where to extract object files
+            set(objlistcmake ${CMAKE_CURRENT_BINARY_DIR}/${objlistfile}.cmake)  # Script that extracts object files and creates the listing file
             # we only need to extract files once 
             if(${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/cmake.check_cache IS_NEWER_THAN ${objlistcmake})
-#---------------------------------            
+#-------------------------------------------------------------------------------
                 file(WRITE ${objlistcmake}
 "# Extract object files from the library
-message(STATUS \"Extracting object files from ${lib}\")
-EXECUTE_PROCESS(COMMAND ${CMAKE_AR} -x ${lib}                
+message(STATUS libpath: \${libpath})
+message(STATUS \"Extracting object files from \${libpath}\")
+EXECUTE_PROCESS(COMMAND ${CMAKE_AR} -x \${libpath}
                 WORKING_DIRECTORY ${objdir})
-# save the list of object files
-EXECUTE_PROCESS(COMMAND ls . 
+# Save the list of object files
+EXECUTE_PROCESS(COMMAND ls .
                 OUTPUT_FILE ${objlistfile}
                 WORKING_DIRECTORY ${objdir})")
-#---------------------------------                    
+#-------------------------------------------------------------------------------
                 file(MAKE_DIRECTORY ${objdir})
                 add_custom_command(
                     OUTPUT ${objlistfile}
-                    COMMAND ${CMAKE_COMMAND} -P ${objlistcmake}
-                    DEPENDS ${lib})
+                    COMMAND ${CMAKE_COMMAND} -Dlibpath="$<TARGET_FILE:${libtarget}>" -P ${objlistcmake}
+                    DEPENDS ${libtarget})
             endif()
             list(APPEND extrafiles "${objlistfile}")
             # relative path is needed by ar under MSYS
             file(RELATIVE_PATH objlistfilerpath ${objdir} ${objlistfile})
             add_custom_command(TARGET ${outlib} POST_BUILD
-                COMMAND ${CMAKE_COMMAND} -E echo "Running: ${CMAKE_AR} ru ${outfile} @${objlistfilerpath}"
-                COMMAND ${CMAKE_AR} ru "${outfile}" @"${objlistfilerpath}"
+                COMMAND ${CMAKE_COMMAND} -E echo "Running: ${CMAKE_AR} cruU $<TARGET_FILE:${outlib}> @${objlistfilerpath}"
+                COMMAND ${CMAKE_AR} cruU "$<TARGET_FILE:${outlib}>" @"${objlistfilerpath}"
                 WORKING_DIRECTORY ${objdir})        
         endforeach()
         add_custom_command(TARGET ${outlib} POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E echo "Running: ${CMAKE_RANLIB} ${outfile}"
-            COMMAND ${CMAKE_RANLIB} ${outfile})
+            COMMAND ${CMAKE_COMMAND} -E echo "Running: ${CMAKE_RANLIB} $<TARGET_FILE:${outlib}>"
+            COMMAND ${CMAKE_RANLIB} $<TARGET_FILE:${outlib}>)
+        add_custom_command(TARGET ${outlib} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E echo "Running: ${CMAKE_RANLIB} $<TARGET_FILE:${outlib}>"
+            COMMAND ${CMAKE_RANLIB} $<TARGET_FILE:${outlib}>)
     endif()
     file(WRITE ${dummyfile}.base "const char* ${outlib}_sublibs=\"${libs}\";")
     add_custom_command( 
         OUTPUT  ${dummyfile}
         COMMAND ${CMAKE_COMMAND} -E copy ${dummyfile}.base ${dummyfile}
         DEPENDS ${libs} ${extrafiles})
- endfunction()
+endfunction()

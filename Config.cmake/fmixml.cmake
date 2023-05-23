@@ -237,21 +237,29 @@ if(MSVC)
 else()
     set(EXPAT_LIB_PREFIX ${CMAKE_STATIC_LIBRARY_PREFIX})
 endif()
-set(expatlib "${CMAKE_BINARY_DIR}/ExpatEx/${CMAKE_CFG_INTDIR}/${EXPAT_LIB_PREFIX}expat${CMAKE_STATIC_LIBRARY_SUFFIX}")
 
-# Helper rule to make it explicit that targtet 'expat' produces 'expatlib'. (Ninja complains otherwise.)
+if("${CMAKE_CFG_INTDIR}" STREQUAL ".")
+    # Ninja complains about 'ExpatEx/./libexpat.a' otherwise. Probably because
+    # generator expressions in mergestaticlibs give slighlty different paths.
+    set(expatlib "${CMAKE_BINARY_DIR}/ExpatEx/${EXPAT_LIB_PREFIX}expat${CMAKE_STATIC_LIBRARY_SUFFIX}")
+else()
+    set(expatlib "${CMAKE_BINARY_DIR}/ExpatEx/${CMAKE_CFG_INTDIR}/${EXPAT_LIB_PREFIX}expat${CMAKE_STATIC_LIBRARY_SUFFIX}")
+endif()
+
+# Helper to make it explicit that targtet 'expat' produces 'expatlib'. (Ninja complains otherwise.)
 add_custom_command(
     OUTPUT "${expatlib}"
-    CMAKE_COMMAND -E touch_nocreate "${expatlib}"
+    BYPRODUCTS expat-NOTFOUND
     DEPENDS expatex
 )
+add_custom_target(tmp_expatlib DEPENDS ${expatlib})
 
 add_library(expat STATIC IMPORTED)
 set_target_properties(
     expat PROPERTIES
         IMPORTED_LOCATION "${expatlib}"
 )
-add_dependencies(expat "${expatlib}")
+add_dependencies(expat tmp_expatlib)
 
 if(FMILIB_INSTALL_SUBLIBS)
     install(FILES "${expatlib}" DESTINATION lib)

@@ -228,7 +228,7 @@ ExternalProject_Add_Step(
 )
 
 # XXX: Maybe we could use FetchContent to find targets of expat? Then we hopefully
-# wouldn't need to have below workarounds for guessing expatlib's location and name.
+# wouldn't need below workarounds for guessing expatlib's location and name.
 # Requires CMake 3.16 though.
 
 if(MSVC)
@@ -246,7 +246,7 @@ else()
     set(expatlib "${CMAKE_BINARY_DIR}/ExpatEx/${CMAKE_CFG_INTDIR}/${EXPAT_LIB_PREFIX}expat${CMAKE_STATIC_LIBRARY_SUFFIX}")
 endif()
 
-# Helper to make it explicit that targtet 'expatex' produces 'expatlib'. (Ninja complains otherwise.)
+# Helper to make it explicit that target 'expatex' produces 'expatlib'. (Ninja complains otherwise.)
 add_custom_command(
     OUTPUT "${expatlib}"
     DEPENDS expatex

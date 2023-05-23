@@ -250,7 +250,6 @@ endif()
 add_custom_command(
     OUTPUT "${expatlib}"
     BYPRODUCTS expat-NOTFOUND
-    COMMAND ${CMAKE_COMMAND} -E touch_nocreate "${expatlib}"
     DEPENDS expatex
 )
 add_custom_target(tmp_expatlib DEPENDS ${expatlib})

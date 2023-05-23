@@ -13,7 +13,7 @@
 
 # Merge_static_libs(outlib lib1 lib2 ... libn) merges a number of static
 # libs into a single static library.
-function(merge_static_libs outlib )
+function(merge_static_libs outlib)
     set(libs ${ARGV})
     list(REMOVE_AT libs 0)
     # Create a dummy file that the target will depend on
@@ -121,6 +121,6 @@ EXECUTE_PROCESS(COMMAND ls .
     file(WRITE ${dummyfile}.base "const char* ${outlib}_sublibs=\"${libs}\";")
     add_custom_command( 
         OUTPUT  ${dummyfile}
-        COMMAND ${CMAKE_COMMAND}  -E copy ${dummyfile}.base ${dummyfile}
+        COMMAND ${CMAKE_COMMAND} -E copy ${dummyfile}.base ${dummyfile}
         DEPENDS ${libs} ${extrafiles})
  endfunction()

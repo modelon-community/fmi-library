@@ -83,7 +83,7 @@ function(merge_static_libs outlib)
         foreach(libtarget ${libs})
             set(objlistfile  ${CMAKE_CURRENT_BINARY_DIR}/${libtarget}.objlist)  # Contains a list of the object files
             set(objdir       ${CMAKE_CURRENT_BINARY_DIR}/${libtarget}.objdir)   # Directory where to extract object files
-            set(objlistcmake ${CMAKE_CURRENT_BINARY_DIR}/${objlistfile}.cmake)  # Script that extracts object files and creates the listing file
+            set(objlistcmake ${objlistfile}.cmake)                              # Script that extracts object files and creates the listing file
             # we only need to extract files once 
             if(${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/cmake.check_cache IS_NEWER_THAN ${objlistcmake})
 #-------------------------------------------------------------------------------

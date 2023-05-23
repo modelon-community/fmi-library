@@ -40,7 +40,6 @@ function(merge_static_libs outlib)
     # Now the easy part for MSVC and for MAC
     if(MSVC)
         # lib.exe does the merging of libraries just need to conver the list into string
-        string(TOUPPER "STATIC_LIBRARY_FLAGS_${CONFIG_TYPE}" )
         foreach(lib ${libs})
             set(propname "STATIC_LIBRARY_FLAGS_$<CONFIG_TYPE:${outlib}>")
             get_target_property(prop ${lib} ${propname})

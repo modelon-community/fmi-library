@@ -111,20 +111,6 @@ typedef struct {
 } fmi3_logger_context_t;
 
 /**
- * \brief Create empty fmi3_import_model_counts_t struct.
- * @returns  fmi3_import_model_counts_t struct with all fields set to 0.
- *           Free via fmi3_import_free_model_counts(...)
- */
-FMILIB_EXPORT
-fmi3_import_model_counts_t* fmi3_import_init_model_counts();
-
-/**
- * \brief Free fmi3_import_model_counts_t struct from fmi3_import_init_model_counts().
- */
-FMILIB_EXPORT
-void fmi3_import_free_model_counts(fmi3_import_model_counts_t* count);
-
-/**
     \brief Collect model information by counting the number of variables with specific properties and filling in fmi3_import_model_counts_t struct.
     \param fmu - An fmu object as returned by fmi3_import_parse_xml().
     \param counts - a pointer to a preallocated struct.

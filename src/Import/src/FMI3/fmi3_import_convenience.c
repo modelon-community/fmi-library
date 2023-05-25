@@ -23,47 +23,6 @@
 
 #include "fmi3_import_impl.h"
 
-fmi3_import_model_counts_t* fmi3_import_init_model_counts(){
-    fmi3_import_model_counts_t* counts = (fmi3_import_model_counts_t*)malloc(sizeof(fmi3_import_model_counts_t));
-    if (!counts) return NULL;
-
-    counts->num_constants  = 0;
-    counts->num_fixed      = 0;
-    counts->num_tunable    = 0;
-    counts->num_discrete   = 0;
-    counts->num_continuous = 0;
-
-    counts->num_parameters            = 0;
-    counts->num_calculated_parameters = 0;
-    counts->num_inputs                = 0;
-    counts->num_outputs               = 0;
-    counts->num_local                 = 0;
-    counts->num_independent           = 0;
-    counts->num_structural_parameters = 0;
-
-    counts->num_float64_vars = 0;
-    counts->num_float32_vars = 0;
-
-    counts->num_int64_vars  = 0;
-    counts->num_int32_vars  = 0;
-    counts->num_int16_vars  = 0;
-    counts->num_int8_vars   = 0;
-    counts->num_uint64_vars = 0;
-    counts->num_uint32_vars = 0;
-    counts->num_uint16_vars = 0;
-    counts->num_uint8_vars  = 0;
-
-    counts->num_enum_vars   = 0;
-    counts->num_bool_vars   = 0;
-    counts->num_string_vars = 0;
-
-    return counts;
-}
-
-void fmi3_import_free_model_counts(fmi3_import_model_counts_t* count){
-    free(count);
-}
-
 /**
     \brief Collect model information by counting the number of variables with specific properties and fillinf in fmi3_import_model_counts_t struct.
     \param fmu - An fmu object as returned by fmi3_import_parse_xml().
@@ -72,7 +31,7 @@ void fmi3_import_free_model_counts(fmi3_import_model_counts_t* count){
 void fmi3_import_collect_model_counts(fmi3_import_t* fmu, fmi3_import_model_counts_t* counts) {
     jm_vector(jm_voidp)* vars = fmi3_xml_get_variables_original_order(fmu->md);
     size_t nv, i;
-    memset(counts,0,sizeof(fmi3_import_model_counts_t));
+    memset(counts, 0, sizeof(fmi3_import_model_counts_t)); // set all values to zero
     if (!vars) return;
     nv = jm_vector_get_size(jm_voidp)(vars);
     for (i = 0; i< nv; i++) {

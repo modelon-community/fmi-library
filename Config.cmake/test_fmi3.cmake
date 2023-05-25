@@ -113,10 +113,6 @@ target_link_libraries(fmi3_import_variable_types_test ${FMILIBFORTEST})
 add_executable(fmi3_import_default_experiment_test ${FMIL_TEST_DIR}/FMI3/fmi3_import_default_experiment_test.c)
 target_link_libraries(fmi3_import_default_experiment_test ${FMILIBFORTEST})
 
-add_executable(fmi3_variable_bad_variability_causality_test
-               ${FMIL_TEST_DIR}/FMI3/fmi3_variable_bad_variability_causality_test.c)
-target_link_libraries(fmi3_variable_bad_variability_causality_test ${FMILIBFORTEST})
-
 set_target_properties(
     fmi3_xml_parsing_test
     fmi3_import_xml_test
@@ -130,13 +126,13 @@ set_target_properties(
 set(FAIL_NAME_CHECK 0)
 set(PASS_NAME_CHECK 1)
 
-add_catch2_test(fmi3_capi_basic_test             FMI3)
-add_catch2_test(fmi3_import_start_arrays_test    FMI3)
-add_catch2_test(fmi3_import_variable_test        FMI3)
-add_catch2_test(fmi3_import_convenience_test     FMI3)
-add_catch2_test(fmi3_import_type_definitions_test FMI3)
-add_catch2_test(fmi3_import_model_structure_test FMI3)
-add_catch2_test(fmi3_enum_test                   FMI3)
+add_catch2_test(fmi3_capi_basic_test                    FMI3)
+add_catch2_test(fmi3_import_start_arrays_test           FMI3)
+add_catch2_test(fmi3_import_variable_test               FMI3)
+add_catch2_test(fmi3_import_convenience_test            FMI3)
+add_catch2_test(fmi3_import_type_definitions_test       FMI3)
+add_catch2_test(fmi3_import_model_structure_test        FMI3)
+add_catch2_test(fmi3_causality_variability_initial_test FMI3)
 
 add_test(ctest_fmi3_xml_parsing_test fmi3_xml_parsing_test ${FMIL_TEST_DIR}/FMI3/parser_test_xmls/)
 
@@ -162,8 +158,6 @@ add_test(ctest_fmi3_import_arrays_test
 add_test(ctest_fmi3_import_default_experiment_test
          fmi3_import_default_experiment_test
          ${DEFAULT_EXPERIMENT_MODEL_DESC_DIR})
-add_test(ctest_fmi3_variable_bad_variability_causality_test
-         fmi3_variable_bad_variability_causality_test)
 
 if(FMILIB_BUILD_BEFORE_TESTS)
     set_tests_properties(
@@ -178,6 +172,5 @@ if(FMILIB_BUILD_BEFORE_TESTS)
         ctest_fmi3_import_fatal_test
         ctest_fmi3_import_arrays_test
         ctest_fmi3_import_default_experiment_test
-        ctest_fmi3_variable_bad_variability_causality_test
         PROPERTIES DEPENDS ctest_build_all)
 endif()

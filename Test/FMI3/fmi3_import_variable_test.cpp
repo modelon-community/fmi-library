@@ -346,7 +346,7 @@ TEST_CASE("Invalid structuralParameter - requires start attribute") {
     REQUIRE(xml != nullptr);
 
     const char* errMsg = fmi3_import_get_last_error(xml);
-    REQUIRE(strcmp(errMsg, "Error: variable structVar: start value required for structuralParameter variables") == 0);
+    REQUIRE(strcmp(errMsg, "Variable structVar: start value required for structuralParameter variables") == 0);
 
     fmi3_import_free(xml);
 }
@@ -358,7 +358,7 @@ TEST_CASE("Invalid structuralParameter - has dimension") {
     REQUIRE(xml != nullptr);
 
     const char* errMsg = fmi3_import_get_last_error(xml);
-    REQUIRE(strcmp(errMsg, "Error: variable structVar: structuralParameters must not have Dimension elements.") == 0);
+    REQUIRE(strcmp(errMsg, "Variable structVar: structuralParameters must not have Dimension elements.") == 0);
 
     fmi3_import_free(xml);
 }

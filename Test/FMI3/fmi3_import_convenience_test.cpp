@@ -187,7 +187,7 @@ TEST_CASE("Test model counts variability") {
     fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
     REQUIRE(xml != nullptr);
 
-    fmi3_import_model_counts_t* counts = fmi3_import_init_model_counts();
+    fmi3_import_model_counts_t* counts;
     REQUIRE(counts != nullptr);
 
     fmi3_import_collect_model_counts(xml, counts);
@@ -198,17 +198,17 @@ TEST_CASE("Test model counts variability") {
     REQUIRE(counts->num_discrete   == 4);
     REQUIRE(counts->num_continuous == 5);
 
-    fmi3_import_free_model_counts(counts);
     fmi3_import_free(xml);
 }
 
 TEST_CASE("Test model counts causality") {
     const char* xmldir = FMI3_TEST_XML_DIR "/convenience/valid/modelCountsCausality";
 
+
     fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
     REQUIRE(xml != nullptr);
 
-    fmi3_import_model_counts_t* counts = fmi3_import_init_model_counts();
+    fmi3_import_model_counts_t* counts;
     REQUIRE(counts != nullptr);
 
     fmi3_import_collect_model_counts(xml, counts);
@@ -221,6 +221,5 @@ TEST_CASE("Test model counts causality") {
     REQUIRE(counts->num_independent           == 6);
     REQUIRE(counts->num_structural_parameters == 7);
 
-    fmi3_import_free_model_counts(counts);
     fmi3_import_free(xml);
 }

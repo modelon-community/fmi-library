@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription fmiVersion="3.0" modelName="" instantiationToken="">
+<CoSimulation modelIdentifier="badVariabilityCausality" />
+
+<ModelVariables>
+	<!-- constant inputs cannot exist, trigger parser error handling -->
+	<Float64 name="dummy1" valueReference="0" causality="input" variability="constant" start="0.0"/>
+</ModelVariables>
+
+<ModelStructure/>
+</fmiModelDescription>

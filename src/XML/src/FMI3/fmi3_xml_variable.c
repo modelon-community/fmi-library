@@ -986,6 +986,39 @@ static void* fmi3_xml_get_variable_start_array(fmi3_xml_variable_t* v) {
     return NULL;
 }
 
+/**
+ * Scans the first two characters in a hexstring and calculates the byte value.
+ */
+static int fmi3_xml_hexstring_to_byte(fmi3_xml_parser_context_t* context, const char* hexstr, uint8_t* byte) {
+    // XXX: Should just use sscanf(pos, "%2hhx", byte), but MinGW-TDM GCC 5.1
+    // doesn't understand the format and gives warnings. Ignoring the warning will result
+    // in arrays of Binary variable causing heap corruption (maybe due to buffer overflow).
+
+    *byte = 0;
+    for (int i = 0; i < 2; i++) {
+        uint8_t chVal;
+        char ch = hexstr[i];
+        if (ch >= '0' && ch <= '9') {
+            chVal = ch - 48;
+        }
+        else if(ch >= 'a' && ch <= 'f') {
+            chVal = ch - 97 + 10;
+        }
+        else if (ch >= 'A' && ch <= 'F') {
+            chVal = ch - 65 + 10;
+        }
+        else {
+            fmi3_xml_parse_error(context, "String is not hexadecimal: %s", hexstr);
+            return -1;
+        }
+        if (i == 0) {
+            *byte += chVal << 4;
+        } else {
+            *byte += chVal;
+        }
+    }
+    return 0;
+}
 
 /**
  * Scans a hexstring to a bytearray.
@@ -1005,25 +1038,7 @@ static int fmi3_xml_hexstring_to_bytearray(fmi3_xml_parser_context_t* context, c
     const char* pos = hexstr;
     size_t nByte = len / 2;
     for (size_t i = 0; i < nByte; i++) {
-        // Since sscanf only returns how many arguments it succeeds to assign, we can't know how many
-        // chars it actually read.
-        // Example input: "FG". Here sscanf will only read the F, since the G is not valid, but it will
-        // return 1 because it did manage to scan the F. There is also only a format specifier that
-        // specifies the maximum number of chars to read, not minimum. Since we increment position
-        // with 2 each time, we therefore would just ignore the invalid G. Note that we would get a
-        // failure if the input was instead "GF".
-        //
-        // So while it's enough to check the second character, we may as well check all for consistency.
-        for (size_t j = 0; j <= 1; j++) {
-            char ch = pos[j];
-            if (!((ch >= '0' && ch <= '9') || (ch >= 'a' && ch <= 'f') || (ch >= 'A' && ch <= 'F'))) {
-                fmi3_xml_parse_error(context, "String is not hexadecimal: %s", hexstr);
-                return -1;
-            }
-        }
-
-        if (!sscanf(pos, "%2hhx", &bytearr[i])) {
-            fmi3_xml_parse_error(context, "Failure when scanning hexadecimal string: %s", hexstr);
+        if (fmi3_xml_hexstring_to_byte(context, pos, &bytearr[i])) {
             return -1;
         }
         pos += 2;
@@ -1780,6 +1795,10 @@ int fmi3_xml_handle_BinaryVariable(fmi3_xml_parser_context_t* context, const cha
                 char* item = (char*)jm_vector_get_item(jm_voidp)(&context->currentStartVariableValues, i);
                 size_t sz = strlen(item)/((size_t)2);
                 bytes = context->callbacks->malloc(sz);
+                if (!bytes) {
+                    fmi3_xml_parse_fatal(context, "Could not allocate memory");
+                    return -1;
+                }
                 if (fmi3_xml_hexstring_to_bytearray(context, item, bytes)) {
                     return -1;
                 }

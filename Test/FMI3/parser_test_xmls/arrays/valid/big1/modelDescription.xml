@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <fmiModelDescription fmiVersion="3.0" modelName="" instantiationToken="">
 
-  <CoSimulation modelIdentifier=""/>
+  <CoSimulation modelIdentifier="modelIdentifier"/>
 
   <ModelVariables>
     <Int64 name="int64_array_100" valueReference="118" causality="input"

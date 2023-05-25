@@ -187,16 +187,14 @@ TEST_CASE("Test model counts variability") {
     fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
     REQUIRE(xml != nullptr);
 
-    fmi3_import_model_counts_t* counts;
-    REQUIRE(counts != nullptr);
+    fmi3_import_model_counts_t counts;
+    fmi3_import_collect_model_counts(xml, &counts);
 
-    fmi3_import_collect_model_counts(xml, counts);
-
-    REQUIRE(counts->num_constants  == 1);
-    REQUIRE(counts->num_fixed      == 2);
-    REQUIRE(counts->num_tunable    == 3);
-    REQUIRE(counts->num_discrete   == 4);
-    REQUIRE(counts->num_continuous == 5);
+    REQUIRE(counts.num_constants  == 1);
+    REQUIRE(counts.num_fixed      == 2);
+    REQUIRE(counts.num_tunable    == 3);
+    REQUIRE(counts.num_discrete   == 4);
+    REQUIRE(counts.num_continuous == 5);
 
     fmi3_import_free(xml);
 }

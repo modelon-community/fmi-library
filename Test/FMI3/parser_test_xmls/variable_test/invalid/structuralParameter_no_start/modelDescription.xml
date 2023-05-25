@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription fmiVersion="3.0" modelName="" instantiationToken="">
+<ModelExchange modelIdentifier="structuralParameter_no_start" />
+
+<ModelVariables>
+    <Float64 name="structVar" valueReference="0" causality="structuralParameter"/> <!-- start attribute mandatory for structuralParameter-->
+</ModelVariables>
+
+<ModelStructure/>
+
+</fmiModelDescription>

@@ -46,7 +46,7 @@ bool fmi3_base_type_enu_is_enum(fmi3_base_type_enu_t baseType) {
 }
 
 const char* fmi3_naming_convention_to_string(fmi3_variable_naming_convension_enu_t convention) {
-    if(convention == fmi3_naming_enu_flat) return "flat";
+    if(convention == fmi3_naming_enu_flat)       return "flat";
     if(convention == fmi3_naming_enu_structured) return "structured";
     return "Unknown";
 }
@@ -88,12 +88,13 @@ const char* fmi3_variability_to_string(fmi3_variability_enu_t v) {
 
 const char* fmi3_causality_to_string(fmi3_causality_enu_t c) {
     switch(c) {
-    case fmi3_causality_enu_input:                return "input";
-    case fmi3_causality_enu_output:               return "output";
     case fmi3_causality_enu_parameter:            return "parameter";
     case fmi3_causality_enu_calculated_parameter: return "calculatedParameter";
+    case fmi3_causality_enu_input:                return "input";
+    case fmi3_causality_enu_output:               return "output";
     case fmi3_causality_enu_local:                return "local";
     case fmi3_causality_enu_independent:          return "independent";
+    case fmi3_causality_enu_structural_parameter: return "structuralParameter";
     default: break;
     };
     return "Unknown";
@@ -138,8 +139,8 @@ const char* fmi3_base_type_to_string(fmi3_base_type_enu_t bt) {
 
 const char* fmi3_initial_to_string(fmi3_initial_enu_t ini) {
     switch (ini) {
-    case fmi3_initial_enu_exact: return "exact";
-    case fmi3_initial_enu_approx: return "approx";
+    case fmi3_initial_enu_exact:      return "exact";
+    case fmi3_initial_enu_approx:     return "approx";
     case fmi3_initial_enu_calculated: return "calculated";
         default: break;
     }
@@ -171,11 +172,12 @@ FMILIB_EXPORT fmi3_initial_enu_t fmi3_get_default_initial(fmi3_variability_enu_t
 }
 
 static int valid_variability_causality[fmi3_variability_enu_unknown][fmi3_causality_enu_unknown] = {
-    {0, 0, 0, 1, 1, 0},
-    {1, 1, 0, 0, 1, 0},
-    {1, 1, 0, 0, 1, 0},
-    {0, 0, 1, 1, 1, 0},
-    {0, 0, 1, 1, 1, 1}
+    // TODO: Last column is for structuralParameter, needs to be adjusted with correct values
+    {0, 0, 0, 1, 1, 0, 1},
+    {1, 1, 0, 0, 1, 0, 1},
+    {1, 1, 0, 0, 1, 0, 1},
+    {0, 0, 1, 1, 1, 0, 1},
+    {0, 0, 1, 1, 1, 1, 1}
 };
 
 FMILIB_EXPORT int fmi3_is_valid_variability_causality(fmi3_variability_enu_t v,

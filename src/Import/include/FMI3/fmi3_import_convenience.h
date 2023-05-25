@@ -69,6 +69,8 @@ typedef struct {
     unsigned int num_local;
     /** \brief  Number of independent variables */
     unsigned int num_independent;
+    /** \brief  Number of structural variables */
+    unsigned int num_structural_parameters;
 
     /** \brief  Number of float64 variables*/
     unsigned int num_float64_vars;
@@ -109,7 +111,7 @@ typedef struct {
 } fmi3_logger_context_t;
 
 /**
-    \brief Collect model information by counting the number of variables with specific properties and fillinf in fmi3_import_model_counts_t struct.
+    \brief Collect model information by counting the number of variables with specific properties and filling in fmi3_import_model_counts_t struct.
     \param fmu - An fmu object as returned by fmi3_import_parse_xml().
     \param counts - a pointer to a preallocated struct.
 */
@@ -165,7 +167,7 @@ void fmi3_log_forwarding(fmi3_instance_environment_t inst, fmi3_status_t status,
 
 /** \brief  Default FMI 3.0 logger may be used when instantiating FMUs */
 FMILIB_EXPORT
-void  fmi3_default_callback_logger(fmi3_instance_environment_t inst, fmi3_string_t instanceName, fmi3_status_t status, fmi3_string_t category, fmi3_string_t message);
+void fmi3_default_callback_logger(fmi3_instance_environment_t inst, fmi3_string_t instanceName, fmi3_status_t status, fmi3_string_t category, fmi3_string_t message);
 
 /** \brief  Given ::fmi3_callback_functions_t logger (fmi3_logger), the ::jm_callbacks logger may be setup to redirect the messages to the fmi3_logger.
 

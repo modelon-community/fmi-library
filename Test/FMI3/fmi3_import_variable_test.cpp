@@ -268,8 +268,8 @@ static void test_clock_all_attrs(fmi3_import_t* xml) {
     REQUIRE(fmi3_import_get_clock_variable_shift_counter(cv)        == 6);
 }
 
-TEST_CASE("Variable parsing", "[xml_variables]") {
-    const char* xmldir = FMI3_TEST_XML_DIR "/variable_test";
+TEST_CASE("Variable parsing") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/variables/valid/basic1";
 
     fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
     REQUIRE(xml != nullptr);
@@ -308,16 +308,16 @@ TEST_CASE("Variable parsing", "[xml_variables]") {
     fmi3_import_free(xml);
 }
 
-TEST_CASE("Invalid Clock variable - no intervalVariability attr", "[xml_variables]") {
-    const char* xmldir = FMI3_TEST_XML_DIR "/variable_test/invalid/intervalVariability1";
+TEST_CASE("Invalid Clock variable - no intervalVariability attr") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/variables/invalid/intervalVariability1";
 
     /* Disabled the test for now because of memory leak
      fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
     REQUIRE(xml == nullptr); */
 }
 
-TEST_CASE("Invalid Binary variable - non-hexadecimal char first in byte tuple", "[xml_variables]") {
-    const char* xmldir = FMI3_TEST_XML_DIR "/variable_test/invalid/binaryStart1";
+TEST_CASE("Invalid Binary variable - non-hexadecimal char first in byte tuple") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/variables/invalid/binaryStart1";
 
     fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
     REQUIRE(xml != nullptr);
@@ -327,8 +327,8 @@ TEST_CASE("Invalid Binary variable - non-hexadecimal char first in byte tuple", 
     fmi3_import_free(xml);
 }
 
-TEST_CASE("Invalid Binary variable - non-hexadecimal char second in byte tuple", "[xml_variables]") {
-    const char* xmldir = FMI3_TEST_XML_DIR "/variable_test/invalid/binaryStart2";
+TEST_CASE("Invalid Binary variable - non-hexadecimal char second in byte tuple") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/variables/invalid/binaryStart2";
 
     fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
     REQUIRE(xml != nullptr);
@@ -339,7 +339,7 @@ TEST_CASE("Invalid Binary variable - non-hexadecimal char second in byte tuple",
 }
 
 TEST_CASE("Invalid structuralParameter - requires start attribute") {
-    const char* xmldir = FMI3_TEST_XML_DIR "/variable_test/invalid/structuralParameter_no_start";
+    const char* xmldir = FMI3_TEST_XML_DIR "/variables/invalid/structuralParameter_no_start";
 
     fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
     REQUIRE(xml != nullptr);
@@ -351,7 +351,7 @@ TEST_CASE("Invalid structuralParameter - requires start attribute") {
 }
 
 TEST_CASE("Invalid structuralParameter - has dimension") {
-    const char* xmldir = FMI3_TEST_XML_DIR "/variable_test/invalid/structuralParameter_with_dimension";
+    const char* xmldir = FMI3_TEST_XML_DIR "/variables/invalid/structuralParameter_with_dimension";
 
     fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
     REQUIRE(xml != nullptr);
@@ -360,4 +360,18 @@ TEST_CASE("Invalid structuralParameter - has dimension") {
     REQUIRE(strcmp(errMsg, "Variable structVar: structuralParameters must not have Dimension elements.") == 0);
 
     fmi3_import_free(xml);
+}
+
+TEST_CASE("Alias variables") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/variables/valid/alias1";
+
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu != nullptr);
+    
+//    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
+    
+    // TODO: Make use of API
+    
+    fmi3_testutil_import_free(tfmu);
 }

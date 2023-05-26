@@ -14,15 +14,14 @@ TEST_CASE("Default valid variability") {
     // constants: fixed
     REQUIRE(fmi3_get_default_valid_variability(fmi3_causality_enu_parameter)            == fmi3_variability_enu_fixed);
     REQUIRE(fmi3_get_default_valid_variability(fmi3_causality_enu_calculated_parameter) == fmi3_variability_enu_fixed);
-    // TODO
-    REQUIRE(fmi3_get_default_valid_variability(fmi3_causality_enu_structural_parameter) == fmi3_variability_enu_continuous);
+    REQUIRE(fmi3_get_default_valid_variability(fmi3_causality_enu_structural_parameter) == fmi3_variability_enu_fixed);
     // non-constants: continuous
     REQUIRE(fmi3_get_default_valid_variability(fmi3_causality_enu_input)                == fmi3_variability_enu_continuous);
     REQUIRE(fmi3_get_default_valid_variability(fmi3_causality_enu_output)               == fmi3_variability_enu_continuous);
     REQUIRE(fmi3_get_default_valid_variability(fmi3_causality_enu_local)                == fmi3_variability_enu_continuous);
     REQUIRE(fmi3_get_default_valid_variability(fmi3_causality_enu_independent)          == fmi3_variability_enu_continuous);
-    // TOOD: Should probably be unknown?
-    REQUIRE(fmi3_get_default_valid_variability(fmi3_causality_enu_unknown)              == fmi3_variability_enu_continuous);
+
+    REQUIRE(fmi3_get_default_valid_variability(fmi3_causality_enu_unknown)              == fmi3_variability_enu_unknown);
 }
 
 #define N_VARIABILITIES (6)
@@ -65,8 +64,8 @@ TEST_CASE("Default initial for causality = input") {
         fmi3_initial_enu_unknown,
         fmi3_initial_enu_unknown,
         fmi3_initial_enu_unknown,
-        fmi3_initial_enu_unknown,
-        fmi3_initial_enu_unknown,
+        fmi3_initial_enu_exact,
+        fmi3_initial_enu_exact,
         fmi3_initial_enu_unknown
     };
     validate_initial(fmi3_causality_enu_input, expected);
@@ -109,7 +108,15 @@ TEST_CASE("Default initial for causality = independent") {
 }
 
 TEST_CASE("Default initial for causality = structuralParameter") {
-; // TODO
+    fmi3_initial_enu_t expected[N_VARIABILITIES] = {
+        fmi3_initial_enu_unknown,
+        fmi3_initial_enu_exact,
+        fmi3_initial_enu_exact,
+        fmi3_initial_enu_unknown,
+        fmi3_initial_enu_unknown,
+        fmi3_initial_enu_unknown
+    };
+    validate_initial(fmi3_causality_enu_structural_parameter, expected);
 }
 
 TEST_CASE("Default initial for causality = unknown") {
@@ -164,12 +171,89 @@ TEST_CASE("Default valid combinations for causality = independent") {
 }
 
 TEST_CASE("Default valid combinations for causality = structuralParameter") {
-    ; // TODO
+    int expected[N_VARIABILITIES] = {0, 1, 1, 0, 0, 0};
+    validate_variability_causality(fmi3_causality_enu_structural_parameter, expected);
 }
 
 TEST_CASE("Default valid combinations for causality = unknown") {
     int expected[N_VARIABILITIES] = {0, 0, 0, 0, 0, 0};
     validate_variability_causality(fmi3_causality_enu_unknown, expected);
+}
+
+#define N_VALIDCVI (12)
+#define IDX_CAUSALITY   (0)
+#define IDX_VARIABILITY (1)
+#define IDX_INITIAL     (2)
+
+// non-default valid causality-variability-initial combinations
+int g_nonDefaultValidCVI[N_VALIDCVI][3] = {
+    // causality                              variability                      initial
+    {fmi3_causality_enu_calculated_parameter, fmi3_variability_enu_fixed,      fmi3_initial_enu_approx},
+    {fmi3_causality_enu_calculated_parameter, fmi3_variability_enu_tunable,    fmi3_initial_enu_approx},
+
+    {fmi3_causality_enu_output,               fmi3_variability_enu_discrete,   fmi3_initial_enu_exact},
+    {fmi3_causality_enu_output,               fmi3_variability_enu_discrete,   fmi3_initial_enu_approx},
+    {fmi3_causality_enu_output,               fmi3_variability_enu_continuous, fmi3_initial_enu_exact},
+    {fmi3_causality_enu_output,               fmi3_variability_enu_continuous, fmi3_initial_enu_approx},
+
+    {fmi3_causality_enu_local,                fmi3_variability_enu_fixed,      fmi3_initial_enu_approx},
+    {fmi3_causality_enu_local,                fmi3_variability_enu_tunable,    fmi3_initial_enu_approx},
+    {fmi3_causality_enu_local,                fmi3_variability_enu_discrete,   fmi3_initial_enu_exact},
+    {fmi3_causality_enu_local,                fmi3_variability_enu_discrete,   fmi3_initial_enu_approx},
+    {fmi3_causality_enu_local,                fmi3_variability_enu_continuous, fmi3_initial_enu_exact},
+    {fmi3_causality_enu_local,                fmi3_variability_enu_continuous, fmi3_initial_enu_approx},
+};
+
+static bool non_default_valid_combination(fmi3_variability_enu_t v, fmi3_causality_enu_t c, fmi3_initial_enu_t init) {
+    // check if v, c, init combination is in g_nonDefaultValidCVI
+    for (int i = 0; i < N_VALIDCVI; i++) {
+        if (   (c  == g_nonDefaultValidCVI[i][IDX_CAUSALITY]) 
+            && (v    == g_nonDefaultValidCVI[i][IDX_VARIABILITY])
+            && (init == g_nonDefaultValidCVI[i][IDX_INITIAL])
+            ) 
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+static void test_valid_cvi(fmi3_variability_enu_t v, fmi3_causality_enu_t c, fmi3_initial_enu_t defaultInitial, fmi3_initial_enu_t testInitial) {
+    fmi3_initial_enu_t res = fmi3_get_valid_initial(v, c, testInitial); // res = testInitial if valid
+    if (defaultInitial == fmi3_initial_enu_unknown) { // Unknown = no valid initials
+        REQUIRE(res == fmi3_initial_enu_unknown);
+    } else { // there are valid initials 
+        // valid initials: default + g_nonDefaultValidCVI array combinations
+        // Correct defaults are already tested separately
+        bool valid = (res == defaultInitial) || non_default_valid_combination(v, c, testInitial);
+        REQUIRE(valid == true);
+    }
+}
+
+static void test_valid_cvi_cv_fixed(fmi3_variability_enu_t v, fmi3_causality_enu_t c) {
+    fmi3_initial_enu_t defaultInitial = fmi3_get_default_initial(v, c);
+    test_valid_cvi(v, c, defaultInitial, fmi3_initial_enu_exact);
+    test_valid_cvi(v, c, defaultInitial, fmi3_initial_enu_approx);
+    test_valid_cvi(v, c, defaultInitial, fmi3_initial_enu_calculated);
+}
+
+static void test_valid_cvi_v_fixed(fmi3_variability_enu_t v) {
+    test_valid_cvi_cv_fixed(v, fmi3_causality_enu_parameter);
+    test_valid_cvi_cv_fixed(v, fmi3_causality_enu_calculated_parameter);
+    test_valid_cvi_cv_fixed(v, fmi3_causality_enu_input);
+    test_valid_cvi_cv_fixed(v, fmi3_causality_enu_output);
+    test_valid_cvi_cv_fixed(v, fmi3_causality_enu_local);
+    test_valid_cvi_cv_fixed(v, fmi3_causality_enu_independent);
+    test_valid_cvi_cv_fixed(v, fmi3_causality_enu_structural_parameter);
+}
+
+TEST_CASE("Test all causality - variability - intial combinations for validity") {
+    test_valid_cvi_v_fixed(fmi3_variability_enu_constant);
+    test_valid_cvi_v_fixed(fmi3_variability_enu_fixed);
+    test_valid_cvi_v_fixed(fmi3_variability_enu_tunable);
+    test_valid_cvi_v_fixed(fmi3_variability_enu_discrete);
+    test_valid_cvi_v_fixed(fmi3_variability_enu_continuous);
+    test_valid_cvi_v_fixed(fmi3_variability_enu_unknown);
 }
 
 TEST_CASE("Error check bad variability causality combination") {

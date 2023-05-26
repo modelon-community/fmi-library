@@ -5,7 +5,6 @@
 #include "config_test.h"
 #include "fmi_testutil.h"
 
-#define CATCH_CONFIG_MAIN
 #include "catch.hpp"
 
 static void test_fmi3_import_get_outputs(fmi3_import_t* fmu) {

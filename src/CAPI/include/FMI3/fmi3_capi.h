@@ -81,10 +81,9 @@ fmi3_capi_t* fmi3_capi_create_dllfmu(jm_callbacks* callbacks, const char* dllPat
  * \brief Loads the FMI functions from the shared library. The shared library must be loaded before this function can be called, see fmi3_import_create_dllfmu.
  *
  * @param fmu A model description object returned by fmi3_import_allocate.
- * @param capabilities An array of capability flags according to fmi3_capabilities_enu_t order.
  * @return Error status. If the function returns with an error, no other C-API functions than fmi3_import_free_dll and fmi3_import_destroy_dllfmu are allowed to be called.
  */
-jm_status_enu_t fmi3_capi_load_fcn(fmi3_capi_t* fmu, unsigned int capabilities[]);
+jm_status_enu_t fmi3_capi_load_fcn(fmi3_capi_t* fmu);
 
 /**
  * \brief Loads the FMUs shared library. The shared library functions are not loaded in this call, see fmi3_import_create_dllfmu.

@@ -15,16 +15,20 @@
 
 #ifndef CONFIG_TEST_H
 #define CONFIG_TEST_H
-/* PATHs to test files */
+
+/* Paths to test files */
 #define FMU1_DLL_ME_PATH @FMU1_DLL_ME_PATH@
 #define FMU1_DLL_CS_PATH @FMU1_DLL_CS_PATH@
-/* PATHs to test FMUs for FMI 3.0 */
+
+/* Paths to test FMUs for FMI 3.0 */
 #define FMU3_ME_PATH "@FMU3_ME_PATH@"
 #define FMU3_CS_PATH "@FMU3_CS_PATH@"
 #define FMU3_SE_PATH "@FMU3_SE_PATH@"
-/* PATHs to temporary test directory */
+
+/* Paths to temp directories */
 #define FMU_TEMPORARY_TEST_DIR "@FMU_TEMPORARY_TEST_DIR@"
 
+/* Paths to other test directories */
 #define TEST_OUTPUT_FOLDER "@TEST_OUTPUT_FOLDER@"
 #define FMIL_TEST_DIR "@FMIL_TEST_DIR@"
 #define FMI3_TEST_XML_DIR "@FMI3_TEST_XML_DIR@"

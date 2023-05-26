@@ -161,23 +161,17 @@ def test(conf, testLogDir) {
         error(message: "Invalid config operating system: ${conf.os}")
     }
     if (res) {
-        setBuildStatus('UNSTABLE', "Test failure. Exit code: ${res}")
+        unstable("Test failure. Exit code: ${res}")
     }
 
     dir(testLogDir) {
         if (fileExists("LastTestsFailed.log")) {
-            setBuildStatus('UNSTABLE', "Failing tests: ${testLogDir}/LastTestsFailed.log)")
+            unstable("Failing tests: ${testLogDir}/LastTestsFailed.log)")
         }
         // The test log has different names if we run memcheck or not, but this file should
         // always exist if we run tests:
         if (!fileExists("CTestCostData.txt")) {
-            setBuildStatus('UNSTABLE', 'File CTestCostData.txt is missing - perhaps tests were not run?')
+            unstable('File CTestCostData.txt is missing - perhaps tests were not run?')
         }
     }
-}
-
-
-def setBuildStatus(status, msg) {
-    currentBuild.result = status
-    println("Build result manually set to ${status}. Reason:\n${msg}")
 }

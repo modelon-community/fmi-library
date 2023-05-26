@@ -767,25 +767,25 @@ fmi3_int64_t* fmi3_xml_get_enum_variable_start_array(fmi3_xml_enum_variable_t* v
 // String
 // -----------------------------------------------------------------------------
 
-fmi3_xml_string_variable_t* fmi3_xml_get_variable_as_string(fmi3_xml_variable_t* v){
-    if(fmi3_xml_get_variable_base_type(v) == fmi3_base_type_str)  return (void*)v;
-    return 0;
+fmi3_xml_string_variable_t* fmi3_xml_get_variable_as_string(fmi3_xml_variable_t* v) {
+    if (fmi3_xml_get_variable_base_type(v) == fmi3_base_type_str) return (void*)v;
+    return NULL;
 }
 
-fmi3_string_t* fmi3_xml_get_string_variable_start(fmi3_xml_string_variable_t* v){
+fmi3_string_t fmi3_xml_get_string_variable_start(fmi3_xml_string_variable_t* v) {
     fmi3_xml_variable_t* vv = (fmi3_xml_variable_t*)v;
-    if(fmi3_xml_get_variable_has_start(vv)) {
+    if (fmi3_xml_get_variable_has_start(vv)) {
         fmi3_xml_string_variable_start_t* start = (fmi3_xml_string_variable_start_t*)(vv->type);
-        return (fmi3_string_t*)jm_vector_get_itemp(jm_voidp)(&start->stringStartValues, 0);
+        return jm_vector_get_item(jm_voidp)(&start->stringStartValues, 0);
     }
     return NULL;
 }
 
-fmi3_string_t* fmi3_xml_get_string_variable_start_array(fmi3_xml_string_variable_t* v){
+fmi3_string_t* fmi3_xml_get_string_variable_start_array(fmi3_xml_string_variable_t* v) {
     fmi3_xml_variable_t* vv = (fmi3_xml_variable_t*)v;
-    if(fmi3_xml_get_variable_has_start(vv)) {
+    if (fmi3_xml_get_variable_has_start(vv)) {
         fmi3_xml_string_variable_start_t* start = (fmi3_xml_string_variable_start_t*)(vv->type);
-        return (fmi3_string_t*)jm_vector_get_itemp(jm_voidp)(&start->stringStartValues, 0);
+        return jm_vector_get_itemp(jm_voidp)(&start->stringStartValues, 0);
     }
     return NULL;
 }

@@ -32,9 +32,6 @@ else()
 endif()
 message(STATUS "Tests will be linked with ${FMILIBFORTEST}")
 
-set(CMAKE_CXX_STANDARD 11) # Required by Catch2
-add_library(Catch INTERFACE)
-
 # Test: jm_vector
 add_executable(jm_vector_test ${FMIL_TEST_DIR}/jm_vector_test.c)
 target_link_libraries(jm_vector_test ${JMUTIL_LIBRARIES})
@@ -171,6 +168,18 @@ add_test(ctest_fmi_zip_unzip_test fmi_zip_unzip_test)
 add_test(ctest_fmi_zip_zip_test fmi_zip_zip_test)
 
 
+# ------------------------------------------------------------------------------
+# Catch2
+# ------------------------------------------------------------------------------
+
+set(CMAKE_CXX_STANDARD 11) # Required by Catch2
+add_library(Catch INTERFACE)
+
+# Catch2 consists of only headers, but we still want to compile its main function
+# in a separate object file so we don't need to do it for each test.
+add_library(catch2_main STATIC ${FMIL_TEST_DIR}/catch2_main.cpp)
+target_link_libraries(catch2_main Catch)
+
 # Creates a Catch2 test.
 #
 # @TEST_NAME: Name of the test file, without any suffix.
@@ -178,13 +187,15 @@ add_test(ctest_fmi_zip_zip_test fmi_zip_zip_test)
 function(add_catch2_test TEST_NAME TEST_DIR)
     add_executable(${TEST_NAME} ${FMIL_TEST_DIR}/${TEST_DIR}/${TEST_NAME}.cpp)
     set_source_files_properties(${FMIL_TEST_DIR}/${TEST_DIR}/${TEST_NAME}.cpp PROPERTIES LANGUAGE CXX)
-    target_link_libraries(${TEST_NAME} Catch ${FMILIBFORTEST})
+    target_link_libraries(${TEST_NAME} Catch catch2_main ${FMILIBFORTEST})
     add_test(ctest_${TEST_NAME} ${TEST_NAME})
     set_target_properties(${TEST_NAME} PROPERTIES FOLDER "Test/${TEST_DIR}")
     if(FMILIB_BUILD_BEFORE_TESTS)
         set_tests_properties(ctest_${TEST_NAME} PROPERTIES DEPENDS ctest_build_all)
     endif()
 endfunction()
+
+# ------------------------------------------------------------------------------
 
 include(test_fmi1)
 include(test_fmi2)

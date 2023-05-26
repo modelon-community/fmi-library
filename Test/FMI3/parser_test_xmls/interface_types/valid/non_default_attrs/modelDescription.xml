@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription fmiVersion="3.0" modelName="" instantiationToken="">
+
+<ModelExchange      modelIdentifier="id_me"
+                    needsExecutionTool="true"
+                    canBeInstantiatedOnlyOncePerProcess="true"
+                    canGetAndSetFMUState="true"
+                    canSerializeFMUState="true"
+                    providesDirectionalDerivatives="true"
+                    providesAdjointDerivatives="true"
+                    providesPerElementDependencies="true"
+                    needsCompletedIntegratorStep="true"
+                    providesEvaluateDiscreteStates="true"
+/>
+<CoSimulation       modelIdentifier="id_cs"
+                    needsExecutionTool="true"
+                    canBeInstantiatedOnlyOncePerProcess="true"
+                    canGetAndSetFMUState="true"
+                    canSerializeFMUState="true"
+                    providesDirectionalDerivatives="true"
+                    providesAdjointDerivatives="true"
+                    providesPerElementDependencies="true"
+                    canHandleVariableCommunicationStepSize="true"
+                    fixedInternalStepSize="3.0"
+                    maxOutputDerivativeOrder="5"
+                    recommendedIntermediateInputSmoothness="-2"
+                    providesIntermediateUpdate="true"
+                    mightReturnEarlyFromDoStep="true"
+                    canReturnEarlyAfterIntermediateUpdate="true"
+                    hasEventMode="true"
+                    providesEvaluateDiscreteStates="true"
+/>
+<ScheduledExecution modelIdentifier="id_se"
+                    needsExecutionTool="true"
+                    canBeInstantiatedOnlyOncePerProcess="true"
+                    canGetAndSetFMUState="true"
+                    canSerializeFMUState="false"
+                    providesDirectionalDerivatives="true"
+                    providesAdjointDerivatives="true"
+                    providesPerElementDependencies="true"
+/>
+
+<ModelVariables/>
+<ModelStructure/>
+</fmiModelDescription>

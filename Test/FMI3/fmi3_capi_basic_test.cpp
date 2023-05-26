@@ -16,7 +16,6 @@
 #include <cstdlib>
 #include <cstdarg>
 
-#define CATCH_CONFIG_MAIN
 #include "catch.hpp"
 #include "config_test.h"
 #include "fmilib.h"

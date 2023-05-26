@@ -5,7 +5,6 @@
 #include "config_test.h"
 #include "fmi_testutil.h"
 
-#define CATCH_CONFIG_MAIN
 #include "catch.hpp"
 
 TEST_CASE("fmiModelDescription: FMI3 with FMI2 attribute numberOfEventIndicators") {

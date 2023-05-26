@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription fmiVersion="3.0" modelName="" instantiationToken="">
+<ModelExchange modelIdentifier="modelIdentifier"/>
+
+<ModelVariables>
+    <Float64 name="v1" valueReference="1"/>
+        <Alias description="desc"/>  <!-- Missing required attribute: name -->
+    </Float64>
+</ModelVariables>
+
+<ModelStructure/>
+</fmiModelDescription>

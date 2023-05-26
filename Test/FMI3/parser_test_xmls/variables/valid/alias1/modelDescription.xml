@@ -2,8 +2,53 @@
 <fmiModelDescription fmiVersion="3.0" modelName="" instantiationToken="">
 <ModelExchange modelIdentifier="modelIdentifier"/>
 
+<UnitDefinitions>
+    <Unit name="K">
+        <BaseUnit K="1" />
+        <DisplayUnit name="degC" offset="-273.15" />
+    </Unit>
+</UnitDefinitions>
+
 <ModelVariables>
-    <Float64 name="..." valueReference="0"/>
+    <!-- No alias -->
+    <Float64 name="v1" valueReference="1"/>
+
+    <!-- Minimal alias -->
+    <Float64 name="v2" valueReference="2">
+        <Alias name="v2_a1"/>
+    <Float64/>
+
+    <!-- Alias with optional attributes -->
+    <Float64 name="v3" valueReference="3">
+        <Alias name="v3_a1" description="v3_a1_desc" displayUnit="degC"/>
+    <Float64/>
+
+    <!-- Multiple aliases -->
+    <Float64 name="v4" valueReference="4">
+        <Alias name="v4_a1"/>
+        <Alias name="v4_a2"/>
+        <Alias name="v4_a3"/>
+    <Float64/>
+
+    <!-- Multiple aliases with different optional attributes -->
+    <Float64 name="v5" valueReference="5">
+        <Alias name="v5_a1" displayUnit="degC"/>
+        <Alias name="v5_a2" description="v5_a2_desc"/>
+    <Float64/>
+
+    <!-- Alias on Non-Float64 -->
+    <Binary name="v6" valueReference="6">
+        <Alias name="v6_a1"/>
+    <Binary/>
+
+    <!-- The Variable contains other child elements -->
+    <String name="v7" valueReference="7">
+        <Dimension start="2"/>
+        <Start value="x"/>
+        <Start value="y"/>
+        <Alias name="v7_a1"/>
+        <Alias name="v7_a2"/>
+    <String/>
 </ModelVariables>
 
 <ModelStructure/>

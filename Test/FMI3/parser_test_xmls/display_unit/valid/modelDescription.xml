@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription fmiVersion="3.0" modelName="" instantiationToken="">
+<ModelExchange modelIdentifier="DisplayUnitTest"/>
+
+<UnitDefinitions>
+  <Unit name="meter">
+    <BaseUnit m="1" factor="1" offset="0"/>
+    <DisplayUnit name="inverse_kilometer" inverse="true" factor="1000"/>
+  </Unit>
+</UnitDefinitions>
+
+<ModelVariables>
+  <Float64 name="d64" valueReference="0" unit="meter" displayUnit="inverse_kilometer"/>
+  <Float32 name="d32" valueReference="1" unit="meter" displayUnit="inverse_kilometer"/>
+</ModelVariables>
+
+<ModelStructure/>
+</fmiModelDescription>

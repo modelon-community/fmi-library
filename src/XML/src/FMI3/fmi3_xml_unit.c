@@ -91,6 +91,10 @@ double fmi3_xml_get_display_unit_offset(fmi3_xml_display_unit_t* du) {
     return du->offset;
 }
 
+unsigned int fmi3_xml_get_display_unit_inverse(fmi3_xml_display_unit_t* du) {
+    return du->inverse;
+}
+
 double fmi3_xml_convert_to_display_unit(double val , fmi3_xml_display_unit_t* du, int isRelativeQuantity) {
     double gain = fmi3_xml_get_display_unit_factor(du);
     double offset = fmi3_xml_get_display_unit_offset(du);
@@ -256,15 +260,21 @@ int fmi3_xml_handle_DisplayUnit(fmi3_xml_parser_context_t *context, const char* 
                 /*  <xs:attribute name="factor" type="xs:double" default="1"/>  */
                 fmi3_xml_set_attr_float64(context, fmi3_xml_elmID_DisplayUnit, fmi_attr_id_factor, 0, &dispUnit->factor, 1)  ||
                 /*  <xs:attribute name="offset" type="xs:double" default="0"/>  */
-                fmi3_xml_set_attr_float64(context, fmi3_xml_elmID_DisplayUnit, fmi_attr_id_offset, 0, &dispUnit->offset, 0);
-            if(dispUnit->factor == 0) {
+                fmi3_xml_set_attr_float64(context, fmi3_xml_elmID_DisplayUnit, fmi_attr_id_offset, 0, &dispUnit->offset, 0) || 
+                /* <xs:attribute name="inverse" type="xs:boolean" default="false"/> */
+                fmi3_xml_set_attr_boolean(context, fmi3_xml_elmID_DisplayUnit, fmi_attr_id_inverse, 0, &dispUnit->inverse, 0);
+            if (dispUnit->factor == 0) {
                 dispUnit->factor = 1.0;
                 if(!ret) {
-                    fmi3_xml_parse_error(context, "Attribute 'factor' cannot be equal to zero");
+                    fmi3_xml_parse_error(context, "DisplayUnit attribute 'factor' cannot be equal to zero");
                 }
             }
+            if ((dispUnit->inverse) && (dispUnit->offset != 0)) {
+                // TODO: How to handle, set inverse = False or just continue?
+                fmi3_xml_parse_error(context, "DisplayUnit attribute 'inverse' = true only allowed for 'offset' = 0");
+            }
 
-            return ( ret );
+            return ret ;
     }
     else {
         /* don't do anything. might give out a warning if(data[0] != 0) */

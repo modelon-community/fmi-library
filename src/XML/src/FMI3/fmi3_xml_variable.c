@@ -785,7 +785,7 @@ fmi3_string_t* fmi3_xml_get_string_variable_start_array(fmi3_xml_string_variable
     fmi3_xml_variable_t* vv = (fmi3_xml_variable_t*)v;
     if (fmi3_xml_get_variable_has_start(vv)) {
         fmi3_xml_string_variable_start_t* start = (fmi3_xml_string_variable_start_t*)(vv->type);
-        return jm_vector_get_itemp(jm_voidp)(&start->stringStartValues, 0);
+        return (void*)jm_vector_get_itemp(jm_voidp)(&start->stringStartValues, 0);
     }
     return NULL;
 }

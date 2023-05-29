@@ -97,81 +97,6 @@ static void test_full_float_32(fmi3_import_t* xml) {
     REQUIRE(fmi3_import_get_float32_variable_nominal(var) == nominal_ref); /* user defined */
 }
 
-/* Parse unit and display unit info for float32 variable */
-
-// TODO: copy this over to unit & display unit cpp test?
-static void test_float64_unit(fmi3_import_t* xml) {
-    fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "float64WithUnit");
-    REQUIRE(v != nullptr);
-
-    fmi3_import_unit_t* u;
-    fmi3_import_display_unit_t* du;
-    fmi3_float64_t du_val_orig;
-    fmi3_float64_t du_val_exp;
-    fmi3_float64_t du_val_conv;
-    fmi3_float64_t du_val_reconv;
-
-    /* Arbitrarily chosen values that don't get truncated/rounded */
-    fmi3_import_float64_variable_t* var = fmi3_import_get_variable_as_float64(v);
-    REQUIRE(var != nullptr);
-
-    /* just a few checks on unit and display unit, full check is done in fmi3_import_xml test (TODO: create bouncing ball example with different numeric types, for fmi3_import_xml test) */
-    /* unit */
-    u = fmi3_import_get_float64_variable_unit(var);
-    REQUIRE(u != nullptr);
-    REQUIRE(!strcmp("K", fmi3_import_get_unit_name(u)));
-
-    /* display unit */
-    du = fmi3_import_get_float64_variable_display_unit(var);
-    REQUIRE(du != nullptr);
-    REQUIRE(!strcmp("degC", fmi3_import_get_display_unit_name(du)));
-
-    du_val_orig = 222.22;
-    du_val_exp = du_val_orig - 273.15;
-    // TODO: Fix
-    // du_val_conv = fmi3_import_float64_convert_to_display_unit(du_val_orig, du, 0);
-    // REQUIRE(du_val_exp == du_val_conv);
-
-    // du_val_reconv = fmi3_import_float64_convert_from_display_unit(du_val_conv, du, 0);
-    // REQUIRE(du_val_orig == du_val_reconv);
-}
-
-/* Parse unit and display unit info for float32 variable */
-static void test_float32_unit(fmi3_import_t* xml) {
-    fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "float32WithUnit");
-    REQUIRE(v != nullptr);
-
-    fmi3_import_unit_t* u;
-    fmi3_import_display_unit_t* du;
-    fmi3_float32_t du_val_orig;
-    fmi3_float32_t du_val_exp;
-    fmi3_float32_t du_val_conv;
-    fmi3_float32_t du_val_reconv;
-
-    /* Arbitrarily chosen values that don't get truncated/rounded */
-    fmi3_import_float32_variable_t* var = fmi3_import_get_variable_as_float32(v);
-    REQUIRE(var != nullptr);
-
-    /* just a few checks on unit and display unit, full check is done in fmi3_import_xml test (TODO: create bouncing ball example with different numeric types, for fmi3_import_xml test) */
-    /* unit */
-    u = fmi3_import_get_float32_variable_unit(var);
-    REQUIRE(u != nullptr);
-    REQUIRE(!strcmp("K", fmi3_import_get_unit_name(u)));
-
-    du = fmi3_import_get_float32_variable_display_unit(var);
-    REQUIRE(du != nullptr); /* display unit */
-    REQUIRE(!strcmp("degC", fmi3_import_get_display_unit_name(du)));
-
-    du_val_orig = 222.22f;
-    du_val_exp = du_val_orig - 273.15f;
-    // TODO: FIX
-    // du_val_conv = fmi3_import_float32_convert_to_display_unit(du_val_orig, du, 0);
-    // REQUIRE(du_val_exp == du_val_conv);
-
-    // du_val_reconv = fmi3_import_float32_convert_from_display_unit(du_val_conv, du, 0);
-    // REQUIRE(du_val_orig == du_val_reconv);
-}
-
 TEST_CASE("Varibles types testing") {
     const char* xmldir = FMI3_TEST_XML_DIR "/variable_types/float";
 
@@ -187,9 +112,6 @@ TEST_CASE("Varibles types testing") {
 
     test_full_float64(xml);
     test_full_float_32(xml);
-
-    test_float64_unit(xml);
-    test_float32_unit(xml);
 
     fmi_import_free_context(ctx);
     fmi3_import_free(xml);

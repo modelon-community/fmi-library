@@ -2082,6 +2082,37 @@ int fmi3_xml_handle_EnumerationVariable(fmi3_xml_parser_context_t *context, cons
     return 0;
 }
 
+int fmi3_xml_handle_Alias(fmi3_xml_parser_context_t* context, const char* data) {
+    if (!data) {
+        fmi3_xml_elm_enu_t elmID = fmi3_xml_elmID_Alias;
+        fmi3_xml_model_description_t* md = context->modelDescription;
+        const char* desc = NULL;
+        fmi3_xml_variable_t* baseVar = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
+        
+        jm_vector(char)* bufName = fmi3_xml_reserve_parse_buffer(context, 1, 100);
+        jm_vector(char)* bufDesc = fmi3_xml_reserve_parse_buffer(context, 2, 100);
+        if (!bufName || !bufDesc) return -1;
+
+        if (fmi3_xml_set_attr_string(context, elmID, fmi_attr_id_name,        1, bufName)) return -1;
+        if (fmi3_xml_set_attr_string(context, elmID, fmi_attr_id_description, 0, bufDesc)) return -1;
+
+        if (jm_vector_get_size(char)(bufDesc)) {
+            /* Add the description to the model-wide set and retrieve the pointer */
+            desc = jm_string_set_put(&md->descriptions, jm_vector_get_itemp(char)(bufDesc, 0));
+        }
+
+        /* Get description if exists */
+        if (jm_vector_get_size(char)(bufDesc)) {
+            desc = jm_string_set_put(&md->descriptions, jm_vector_get_itemp(char)(bufDesc, 0));
+        }
+
+        // TODO: Create alias obj
+        // TODO: displayUnit
+        // TODO: Improve fmi3_xml_get_get_variable_alias_base ?
+    }
+    return 0;
+}
+
 static int fmi3_xml_compare_variable_original_index (const void* first, const void* second) {
     size_t a = (*(fmi3_xml_variable_t**)first)->originalIndex;
     size_t b = (*(fmi3_xml_variable_t**)second)->originalIndex;

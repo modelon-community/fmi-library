@@ -368,10 +368,10 @@ TEST_CASE("Alias variables") {
     fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
     fmi3_import_t* fmu = tfmu->fmu;
     REQUIRE(fmu != nullptr);
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
     
-//    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
-    
-    // TODO: Make use of API
+    SECTION("Test variable without alias") {
+    }
     
     fmi3_testutil_import_free(tfmu);
 }

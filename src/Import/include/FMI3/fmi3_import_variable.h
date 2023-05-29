@@ -523,9 +523,6 @@ FMILIB_EXPORT fmi3_uint64_t fmi3_import_get_clock_variable_interval_counter(fmi3
 /** \brief Get shiftCounter for the variable */
 FMILIB_EXPORT fmi3_uint64_t fmi3_import_get_clock_variable_shift_counter(fmi3_import_clock_variable_t* v);
 
-/** \brief Get the variable alias kind*/
-FMILIB_EXPORT fmi3_variable_alias_kind_enu_t fmi3_import_get_variable_alias_kind(fmi3_import_variable_t*);
-
 /** \brief Get the original index in xml of the variable */
 FMILIB_EXPORT size_t fmi3_import_get_variable_original_order(fmi3_import_variable_t* v);
 

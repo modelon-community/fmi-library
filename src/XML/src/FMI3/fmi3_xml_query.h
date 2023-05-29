@@ -25,6 +25,8 @@
 extern "C" {
 #endif
 
+// TODO: Remove alias (is query even part of (import) API?)
+
 /* Query below has the following syntax:
   query =   elementary_query
                   | '(' query ')'

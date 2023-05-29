@@ -845,9 +845,7 @@ fmi3_xml_variable_t* fmi3_xml_get_variable_by_vr(fmi3_xml_model_description_t* m
 
     if (!md->variablesByVR) return NULL;
 
-    // TODO: When variablesByVR no longer contains alias variables, then just return by index.
     key.vr = vr;
-    key.aliasKind = fmi3_variable_is_not_alias;
     found = jm_vector_bsearch(jm_voidp)(md->variablesByVR, (void**)&pkey, fmi3_xml_compare_vr);
     if (!found) return NULL;
     return (fmi3_xml_variable_t*)(*found);

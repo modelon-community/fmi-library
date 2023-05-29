@@ -331,8 +331,8 @@ int fmi3_xml_is_attr_defined(fmi3_xml_parser_context_t *context, fmi3_xml_attr_e
 }
 
 /**
- * Read value from parse buffer "as is". Also resets the buffer's entry.
- *    valp (return arg): points to attribute value
+ * Read value from parse buffer and clear the buffer entry.
+ * @param valp (outptu arg): pointer to attribute value (memory still owned by expat)
  */
 int fmi3_xml_get_attr_str(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID,
         int required, const char** valp)
@@ -354,18 +354,18 @@ int fmi3_xml_get_attr_str(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t
 
 /**
  * Reads the attribute from attribute buffer as jm_vector(char). This will clear the attribute from the buffer.
- *   field (return arg): contains value after function call
+ * @param field (return arg): Attribute value (memory owned by this vector)
  */
 int fmi3_xml_set_attr_string(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID,
         int required, jm_vector(char)* field)
 {
-    int ret;
     jm_string val;
     size_t len;
 
-    /* Get existing from attribute value */
-    ret = fmi3_xml_get_attr_str(context, elmID, attrID, required, &val);
-    if (ret) return ret;
+    /* Get pointer to attribute value (owned by expat) */
+    if (fmi3_xml_get_attr_str(context, elmID, attrID, required, &val)) {
+        return -1;
+    };
 
     if ((!val || !val[0]) && !required) {
         /* Return empty string */
@@ -385,10 +385,9 @@ int fmi3_xml_set_attr_string(fmi3_xml_parser_context_t *context, fmi3_xml_elm_en
         return -1;
     }
 
-    /* Write to buffer */
-    /* copy terminating 0 as well but set vector size to be actual string length */
-    memcpy(jm_vector_get_itemp(char)(field, 0), val, len);
-    jm_vector_resize(char)(field, len - 1);
+    /* Copy to output memory owned by FMIL */
+    strcpy(jm_vector_get_itemp(char)(field, 0), val);
+    jm_vector_resize(char)(field, len - 1);  // Make length as as for strlen
     return 0;
 }
 
@@ -991,7 +990,7 @@ void fmi3_xml_free_parse_buffer(fmi3_xml_parser_context_t *context) {
  */
 jm_vector(char)* fmi3_xml_reserve_parse_buffer(fmi3_xml_parser_context_t* context, size_t index, size_t size) {
     jm_vector(jm_voidp)* parseBuffer = &context->parseBuffer;
-    jm_vector(char)*  item = jm_vector_get_item(jm_voidp)(parseBuffer, index);
+    jm_vector(char)* item = jm_vector_get_item(jm_voidp)(parseBuffer, index);
     if (!item) {
         item = jm_vector_alloc(char)(size, size, context->callbacks);
         jm_vector_set_item(jm_voidp)(parseBuffer, index, item);

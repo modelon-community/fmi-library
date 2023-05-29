@@ -52,19 +52,19 @@ extern "C" {
 *
 * \brief Allocates a vector on heap with the specified size and specified number of preallocated items (can be larger than size).
 *
-*  extern jm_vector(T)* jm_vector_alloc(T)(size_t size, size_t capacity, jm_callbacks*c );
-*  Note that there is no need to call jm_vector_init for a vector allocated with this function.
-*  @param  size - initial size of the vector, can be 0
-*  @param  capacity - initial capacity of the vector, can be 0. At least initSize elements are allocated.
-*  @param  c - jm_callbacks callbacks, can be zero
-*  @return Newly allocated vector
+* extern jm_vector(T)* jm_vector_alloc(T)(size_t size, size_t capacity, jm_callbacks*c );
+* Note that there is no need to call jm_vector_init for a vector allocated with this function.
+* @param  size - initial size of the vector, can be 0 - note that jm_vector_push_back won't start at index 0 if non-zero
+* @param  capacity - initial capacity of the vector, can be 0. At least initSize elements are allocated.
+* @param  c - jm_callbacks callbacks, can be zero
+* @return Newly allocated vector
 */
 #define jm_vector_alloc(T) jm_mangle(jm_vector_alloc, T)
 
 /**
-  jm_vector_free releases the memory allocated by jm_vector_alloc.
-extern void jm_vector_free(T)(jm_vector(T)* a);
-*/
+ * Releases the memory allocated by jm_vector_alloc. (The pointer itself is also freed.)
+ * extern void jm_vector_free(T)(jm_vector(T)* a)
+ */
 #define jm_vector_free(T) jm_mangle(jm_vector_free, T)
 
 /**

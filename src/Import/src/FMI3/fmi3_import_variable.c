@@ -576,27 +576,6 @@ int fmi3_import_get_enum_variable_max(fmi3_import_enum_variable_t* v) {
 
 // -----------------------------------------------------------------------------
 
-fmi3_variable_alias_kind_enu_t fmi3_import_get_variable_alias_kind(fmi3_import_variable_t* v) {
-    return fmi3_xml_get_variable_alias_kind(v);
-}
-
-fmi3_import_variable_t* fmi3_import_get_variable_alias_base(fmi3_import_t* fmu,fmi3_import_variable_t* v) {
-    return fmi3_xml_get_variable_alias_base(fmu->md, v);
-}
-
-/**
- *  Return the list of all the variables aliased to the given one (including the base one).
- *  The list is ordered: base variable, aliases, negated aliases.
- */
-fmi3_import_variable_list_t* fmi3_import_get_variable_aliases(fmi3_import_t* fmu, fmi3_import_variable_t* v) {
-    fmi3_import_variable_list_t* list = fmi3_import_alloc_variable_list(fmu, 0);
-    if(fmi3_xml_get_variable_aliases(fmu->md, v, &list->variables) != jm_status_success) {
-        fmi3_import_free_variable_list(list);
-        return 0;
-    }
-    return list;
-}
-
 size_t fmi3_import_get_variable_original_order(fmi3_import_variable_t* v) {
     return fmi3_xml_get_variable_original_order((fmi3_xml_variable_t*)v);
 }

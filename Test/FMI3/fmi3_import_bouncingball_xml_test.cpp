@@ -235,22 +235,16 @@ void printVariableInfo(fmi3_import_t* fmu,
             printf("Error in fmiGetBaseType()\n");
         }
     }
-    if (fmi3_import_get_variable_alias_kind(v) != fmi3_variable_is_not_alias) {
-        printf("The variable is aliased to %s\n",
-               fmi3_import_get_variable_name( fmi3_import_get_variable_alias_base(fmu, v)));
-    }
-    else {
-        printf("The variable is not an alias\n");
-    }
     {
-        fmi3_import_variable_list_t* vl = fmi3_import_get_variable_aliases(fmu, v);
-        size_t i, n = fmi3_import_get_variable_list_size(vl);
-        if (n > 1) {
-            printf("Listing aliases: \n");
-            for (i = 0;i<n;i++)
-                printf("\t%s\n",fmi3_import_get_variable_name(fmi3_import_get_variable(vl, i)));
-        }
-        fmi3_import_free_variable_list(vl);
+        // TODO: Print variable aliases
+        // fmi3_import_variable_list_t* vl = fmi3_import_get_variable_aliases(fmu, v);
+        // size_t i, n = fmi3_import_get_variable_list_size(vl);
+        // if (n > 1) {
+        //     printf("Listing aliases: \n");
+        //     for (i = 0;i<n;i++)
+        //         printf("\t%s\n",fmi3_import_get_variable_name(fmi3_import_get_variable(vl, i)));
+        // }
+        // fmi3_import_free_variable_list(vl);
     }
 }
 

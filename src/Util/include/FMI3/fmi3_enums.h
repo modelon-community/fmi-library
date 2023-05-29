@@ -140,12 +140,6 @@ FMILIB_EXPORT fmi3_initial_enu_t fmi3_get_default_initial(fmi3_variability_enu_t
 */
 FMILIB_EXPORT fmi3_initial_enu_t fmi3_get_valid_initial(fmi3_variability_enu_t v, fmi3_causality_enu_t c, fmi3_initial_enu_t i);
 
-/** \brief Alias property for variables */
-typedef enum fmi3_variable_alias_kind_enu_t {
-    fmi3_variable_is_not_alias = 0,
-    fmi3_variable_is_alias = 1
-} fmi3_variable_alias_kind_enu_t;
-
 /** \brief Base types used in type definitions */
 typedef enum fmi3_base_type_enu_t
 {

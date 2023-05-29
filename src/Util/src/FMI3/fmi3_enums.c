@@ -37,6 +37,7 @@ bool fmi3_base_type_enu_is_int(fmi3_base_type_enu_t baseType) {
     }
     return false;
 }
+
 bool fmi3_base_type_enu_is_float(fmi3_base_type_enu_t baseType) {
     return baseType==fmi3_base_type_float64 || baseType==fmi3_base_type_float32;
 }

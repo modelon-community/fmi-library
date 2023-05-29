@@ -244,17 +244,6 @@ FMILIB_EXPORT fmi3_import_type_definitions_t* fmi3_import_get_type_definitions(f
 /** \brief Get a list of all the unit definitions in the model. */
 FMILIB_EXPORT fmi3_import_unit_definitions_t* fmi3_import_get_unit_definitions(fmi3_import_t* fmu);
 
-/** \brief Get the variable with the same value reference that is not an alias*/
-FMILIB_EXPORT fmi3_import_variable_t* fmi3_import_get_variable_alias_base(fmi3_import_t* fmu, fmi3_import_variable_t* v);
-
-/**
-    Get the list of all the variables aliased to the given one (including the base one).
-
-    Note that the list is ordered: base variable, aliases, negated aliases.
-    Note that the caller is responsible for deallocating this list.
-*/
-FMILIB_EXPORT fmi3_import_variable_list_t* fmi3_import_get_variable_aliases(fmi3_import_t* fmu, fmi3_import_variable_t* v);
-
 /** \brief Get the list of all the variables in the model.
 * @param fmu An FMU object as returned by fmi3_import_parse_xml().
 * @param sortOrder Specifies the order of the variables in the list:

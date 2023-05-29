@@ -51,6 +51,7 @@ fmi3_xml_variable_typedef_t* fmi3_xml_get_variable_declared_type(fmi3_xml_variab
 fmi3_base_type_enu_t fmi3_xml_get_variable_base_type(fmi3_xml_variable_t*);
 
 
+jm_vector(jm_voidp)* fmi3_xml_get_variable_aliases(fmi3_xml_variable_t* v);
 jm_vector(fmi3_xml_dimension_t)* fmi3_xml_get_variable_dimension_vector(fmi3_xml_variable_t* v);
 
 int fmi3_xml_variable_is_array(fmi3_xml_variable_t* v);
@@ -185,17 +186,7 @@ fmi3_int64_t* fmi3_xml_get_enum_variable_start_array(fmi3_xml_enum_variable_t* v
 int fmi3_xml_get_enum_variable_min(fmi3_xml_enum_variable_t* v);
 int fmi3_xml_get_enum_variable_max(fmi3_xml_enum_variable_t* v);
 
-
-fmi3_variable_alias_kind_enu_t fmi3_xml_get_variable_alias_kind(fmi3_xml_variable_t*);
-fmi3_xml_variable_t* fmi3_xml_get_variable_alias_base(fmi3_xml_model_description_t* md,fmi3_xml_variable_t*);
-
 void fmi3_xml_variable_free_internals(jm_callbacks* callbacks, fmi3_xml_variable_t* var);
-
-/**
-    Return the list of all the variables aliased to the given one (including the base one.
-    The list is ordered: base variable, aliases, negated aliases.
-*/
-jm_status_enu_t fmi3_xml_get_variable_aliases(fmi3_xml_model_description_t* md, fmi3_xml_variable_t*, jm_vector(jm_voidp)*);
 
 /**
 @}

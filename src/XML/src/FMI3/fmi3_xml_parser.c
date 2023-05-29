@@ -119,10 +119,11 @@ const char *fmi3_xmlAttrNames[fmi3_xml_attr_number] = {
 #define fmi3_xml_scheme_ClockVariable             {fmi3_xml_elmID_Variable,   fmi3_xml_elmID_ModelVariables,       0,       1}
 #define fmi3_xml_scheme_StringVariable            {fmi3_xml_elmID_Variable,   fmi3_xml_elmID_ModelVariables,       0,       1}
 #define fmi3_xml_scheme_EnumerationVariable       {fmi3_xml_elmID_Variable,   fmi3_xml_elmID_ModelVariables,       0,       1}
-#define fmi3_xml_scheme_Dimension                 {fmi3_xml_elmID_none,       fmi3_xml_elmID_Variable,             0,       1}
 
+#define fmi3_xml_scheme_Dimension                 {fmi3_xml_elmID_none,       fmi3_xml_elmID_Variable,             0,       1}
 #define fmi3_xml_scheme_BinaryVariableStart       {fmi3_xml_elmID_Start,      fmi3_xml_elmID_BinaryVariable,       1,       1}
 #define fmi3_xml_scheme_StringVariableStart       {fmi3_xml_elmID_Start,      fmi3_xml_elmID_StringVariable,       1,       1}
+#define fmi3_xml_scheme_Alias                     {fmi3_xml_elmID_none,       fmi3_xml_elmID_Variable,             2,       1}
 
 #define fmi3_xml_scheme_Annotations               {fmi3_xml_elmID_none,       fmi3_xml_elmID_Variable,             1,       0}
 #define fmi3_xml_scheme_VariableTool              {fmi3_xml_elmID_none,       fmi3_xml_elmID_Annotations,          0,       1}

@@ -1290,6 +1290,11 @@ static int fmi3_xml_variable_process_attr_reinit(fmi3_xml_parser_context_t* cont
     return 0;
 }
 
+static size_t fmi3_xml_get_variable_t_name_offset() {
+    fmi3_xml_variable_t v;
+    return v.name - (char*)&v;
+}
+
 /**
  * Common handler for Variables.
  *
@@ -1307,19 +1312,17 @@ int fmi3_xml_handle_Variable(fmi3_xml_parser_context_t* context, const char* dat
     if (!data) {
         fmi3_xml_model_description_t* md = context->modelDescription;
         fmi3_xml_variable_t* variable;
-        fmi3_xml_variable_t dummyV;
-        const char* description = 0;
-        jm_named_ptr named, *pnamed;
-        jm_vector(char)* bufName  = fmi3_xml_reserve_parse_buffer(context, 1, 100);
-        jm_vector(char)* bufDescr = fmi3_xml_reserve_parse_buffer(context, 2, 100);
+        const char* description = NULL;
+        jm_vector(char)* bufName = fmi3_xml_reserve_parse_buffer(context, 1, 100);
+        jm_vector(char)* bufDesc = fmi3_xml_reserve_parse_buffer(context, 2, 100);
         unsigned int vr;
 
-        if(!bufName || !bufDescr) return -1;
+        if(!bufName || !bufDesc) return -1;
 
         /* Get vr, name and description */
-        if (fmi3_xml_set_attr_uint32(context, elm_id, fmi_attr_id_valueReference, 1, &vr, 0))         return -1;
-        if (fmi3_xml_set_attr_string(context, fmi3_xml_elmID_Variable, fmi_attr_id_name, 1, bufName)) return -1;
-        if (fmi3_xml_set_attr_string(context, elm_id, fmi_attr_id_description, 0, bufDescr))          return -1;
+        if (fmi3_xml_set_attr_uint32(context, elm_id, fmi_attr_id_valueReference, 1, &vr, 0))  return -1;
+        if (fmi3_xml_set_attr_string(context, elm_id, fmi_attr_id_name,           1, bufName)) return -1;
+        if (fmi3_xml_set_attr_string(context, elm_id, fmi_attr_id_description,    0, bufDesc)) return -1;
 
         /* Return early if undefined variable */
         if (context->skipOneVariableFlag) {
@@ -1327,27 +1330,26 @@ int fmi3_xml_handle_Variable(fmi3_xml_parser_context_t* context, const char* dat
             return 0;
         }
 
-        /* Get description if exists */
-        if (jm_vector_get_size(char)(bufDescr)) {
-            description = jm_string_set_put(&md->descriptions, jm_vector_get_itemp(char)(bufDescr,0));
+        if (jm_vector_get_size(char)(bufDesc)) {
+            /* Add the description to the model-wide set and retrieve the pointer */
+            description = jm_string_set_put(&md->descriptions, jm_vector_get_itemp(char)(bufDesc, 0));
+        }
+
+        /* Create Variable and set its name at the same time */
+        size_t nameOffset = fmi3_xml_get_variable_t_name_offset();
+        jm_named_ptr named = jm_named_alloc_v(bufName, sizeof(fmi3_xml_variable_t), nameOffset, context->callbacks);
+        if (!named.ptr) {
+            fmi3_xml_parse_fatal(context, "Could not allocate memory");
+            return -1;
         }
 
         /* Add Variable ptr to modelDescription obj */
-        named.ptr = 0;
-        named.name = 0;
-        pnamed = jm_vector_push_back(jm_named_ptr)(&md->variablesByName, named);
-        if (!pnamed) {
+        if (!jm_vector_push_back(jm_named_ptr)(&md->variablesByName, named)) {
             fmi3_xml_parse_fatal(context, "Could not allocate memory");
             return -1;
         }
 
-        /* Set p.name and allocate Variable */
-        *pnamed = jm_named_alloc_v(bufName, sizeof(fmi3_xml_variable_t), dummyV.name - (char*)&dummyV, context->callbacks);
-        if (!pnamed->ptr) {
-            fmi3_xml_parse_fatal(context, "Could not allocate memory");
-            return -1;
-        }
-        variable = pnamed->ptr;
+        variable = named.ptr;
 
         /* Initialize rest of Variable */
         variable->vr = vr;

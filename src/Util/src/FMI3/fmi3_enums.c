@@ -205,7 +205,7 @@ FMILIB_EXPORT fmi3_initial_enu_t fmi3_get_valid_initial(fmi3_variability_enu_t v
         return defaultInitial;
     // At this point we know that v, c & i are fine (non unknown) and that (defaultInitial != i)
     // Check the other allowed combinations, reference: Table 22 in FMI 3.0 spec
-    switch (c){
+    switch (c) {
     case fmi3_causality_enu_calculated_parameter:
         if ((i == fmi3_initial_enu_approx) && ((v == fmi3_variability_enu_fixed) || (v == fmi3_variability_enu_tunable)) ) {
             return i;

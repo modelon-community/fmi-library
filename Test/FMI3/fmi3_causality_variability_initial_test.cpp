@@ -185,7 +185,7 @@ TEST_CASE("Default valid combinations for causality = unknown") {
 #define IDX_VARIABILITY (1)
 #define IDX_INITIAL     (2)
 
-// non-default valid causality-variability-initial combinations
+// All non-default valid causality-variability-initial combinations
 int g_nonDefaultValidCVI[N_VALIDCVI][3] = {
     // causality                              variability                      initial
     {fmi3_causality_enu_calculated_parameter, fmi3_variability_enu_fixed,      fmi3_initial_enu_approx},
@@ -204,7 +204,7 @@ int g_nonDefaultValidCVI[N_VALIDCVI][3] = {
     {fmi3_causality_enu_local,                fmi3_variability_enu_continuous, fmi3_initial_enu_approx},
 };
 
-static bool non_default_valid_combination(fmi3_variability_enu_t v, fmi3_causality_enu_t c, fmi3_initial_enu_t init) {
+static bool is_non_default_valid_combination(fmi3_variability_enu_t v, fmi3_causality_enu_t c, fmi3_initial_enu_t init) {
     // check if v, c, init combination is in g_nonDefaultValidCVI
     for (int i = 0; i < N_VALIDCVI; i++) {
         if (   (c  == g_nonDefaultValidCVI[i][IDX_CAUSALITY]) 

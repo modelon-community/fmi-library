@@ -167,7 +167,8 @@ fmi3_variability_enu_t fmi3_get_default_valid_variability(fmi3_causality_enu_t c
     }
 
     if (isFloat) {
-        // Spec: "The default for variables of type `<Float32>` and `<Float64>` and causality other than `parameter`, `structural parameter` or `calculated parameter` is <<continuous>>"
+        // Spec: "The default for variables of type `<Float32>` and `<Float64>`
+        // and causality other than `parameter`, `structural parameter` or `calculated parameter` is <<continuous>>"
         return fmi3_variability_enu_continuous;
     } else {
         // Spec: "The default for variables of causility `input`, `output` or `local` of type other than `<Float32>` or `<Float64>` is <<discrete>>"

@@ -578,7 +578,7 @@ int fmi3_import_get_enum_variable_max(fmi3_import_enum_variable_t* v) {
 // Alias variable
 // -----------------------------------------------------------------------------
 
-fmi3_import_alias_variable_t* fmi3_import_get_variable_aliases(fmi3_import_variable_t* v) {
+fmi3_import_alias_variable_t** fmi3_import_get_variable_aliases(fmi3_import_variable_t* v) {
     return fmi3_xml_get_variable_aliases(v);
 }
 

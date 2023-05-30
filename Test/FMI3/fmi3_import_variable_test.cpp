@@ -362,6 +362,50 @@ TEST_CASE("Invalid structuralParameter - has dimension") {
     fmi3_import_free(xml);
 }
 
+fmi3_import_alias_variable_t** get_aliases(fmi3_import_t* fmu, const char* baseVarName,
+        size_t nAliasExp)
+{
+    fmi3_import_variable_t* v;
+    fmi3_import_alias_variable_t** aliases;
+    size_t nAlias;
+
+    v = fmi3_import_get_variable_by_name(fmu, baseVarName);
+    REQUIRE(v != nullptr);
+    nAlias = fmi3_import_get_variable_aliases_size(v);
+    aliases = fmi3_import_get_variable_aliases(v);
+    REQUIRE(nAlias == nAliasExp);
+    REQUIRE(aliases != nullptr);
+
+    return aliases;
+}
+
+void check_aliases(fmi3_import_t* fmu, const char* baseVarName, size_t nAliasExp,
+        const char** namesExp, const char** descExp, fmi3_import_display_unit_t** duExp)
+{
+    const char* desc;
+    const char* name;
+    fmi3_xml_display_unit_t* displayUnit;
+
+    fmi3_import_alias_variable_t** aliases = get_aliases(fmu, baseVarName, nAliasExp);
+    
+    for (size_t i = 0; i < nAliasExp; i++) {
+        name = fmi3_import_get_alias_variable_name(aliases[i]);
+        desc = fmi3_import_get_alias_variable_description(aliases[i]);
+        displayUnit = fmi3_import_get_alias_variable_display_unit(aliases[i]);
+        if (namesExp[i] == nullptr) {
+            REQUIRE(name == nullptr);
+        } else {
+            REQUIRE_STREQ(name, namesExp[i]);
+        }
+        if (descExp[i] == nullptr) {
+            REQUIRE(desc == nullptr);
+        } else {
+            REQUIRE_STREQ(desc, descExp[i]);
+        }
+        REQUIRE(displayUnit == duExp[i]);
+    }
+}
+
 TEST_CASE("Alias variables") {
     const char* xmldir = FMI3_TEST_XML_DIR "/variables/valid/alias1";
 
@@ -369,17 +413,65 @@ TEST_CASE("Alias variables") {
     fmi3_import_t* fmu = tfmu->fmu;
     REQUIRE(fmu != nullptr);
     REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
-    fmi3_import_variable_t* v;
-    fmi3_import_alias_variable_t* aliases;
+    
+    // Get display unit that we expect some tests will reference:
+    fmi3_import_unit_definitions_t* uds = fmi3_import_get_unit_definitions(fmu);
+    fmi3_import_unit_t* degK = fmi3_import_get_unit(uds, 0);
+    fmi3_import_display_unit_t* degC = fmi3_import_get_unit_display_unit(degK, 0);
+    REQUIRE_STREQ(fmi3_import_get_display_unit_name(degC), "degC");
+
+    fmi3_import_alias_variable_t** aliases;
     size_t nAlias;
     
-    SECTION("Test variable without alias") {
-        v = fmi3_import_get_variable_by_name(fmu, "v1");
+    SECTION("Without alias") {
+        fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(fmu, "v1");
         REQUIRE(v != nullptr);
         nAlias = fmi3_import_get_variable_aliases_size(v);
         aliases = fmi3_import_get_variable_aliases(v);
         REQUIRE(nAlias == 0);
         REQUIRE(aliases == nullptr);
+    }
+    
+    SECTION("Minimal alias") {
+        const char* namesExp[]              = { "v2_a1" };
+        const char* descExp[]               = { nullptr };
+        fmi3_import_display_unit_t* duExp[] = { nullptr };
+        check_aliases(fmu, "v2", 1, namesExp, descExp, duExp);
+    }
+    
+    SECTION("Alias with optional attributes") {
+        const char* namesExp[]              = { "v3_a1"      };
+        const char* descExp[]               = { "v3_a1_desc" };
+        fmi3_import_display_unit_t* duExp[] = { degC         };
+        check_aliases(fmu, "v3", 1, namesExp, descExp, duExp);
+    }
+    
+    SECTION("Multiple aliases") {
+        const char* namesExp[]              = { "v4_a1", "v4_a2", "v4_a3" };
+        const char* descExp[]               = { nullptr, nullptr, nullptr };
+        fmi3_import_display_unit_t* duExp[] = { nullptr, nullptr, nullptr };
+        check_aliases(fmu, "v4", 3, namesExp, descExp, duExp);
+    }
+    
+    SECTION("Multiple aliases with different optional attributes") {
+        const char* namesExp[]              = { "v5_a1", "v5_a2"      };
+        const char* descExp[]               = { nullptr, "v5_a2_desc" };
+        fmi3_import_display_unit_t* duExp[] = { degC,    nullptr      };
+        check_aliases(fmu, "v5", 2, namesExp, descExp, duExp);
+    }
+    
+    SECTION("Alias on non-Float64") {
+        const char* namesExp[]              = { "v6_a1" };
+        const char* descExp[]               = { nullptr };
+        fmi3_import_display_unit_t* duExp[] = { nullptr };
+        check_aliases(fmu, "v6", 1, namesExp, descExp, duExp);
+    }
+    
+    SECTION("Alias with other sibling elements") {
+        const char* namesExp[]              = { "v7_a1", "v7_a2" };
+        const char* descExp[]               = { nullptr, nullptr };
+        fmi3_import_display_unit_t* duExp[] = { nullptr, nullptr };
+        check_aliases(fmu, "v7", 2, namesExp, descExp, duExp);
     }
     
     fmi3_testutil_import_free(tfmu);

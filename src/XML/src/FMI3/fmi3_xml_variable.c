@@ -890,7 +890,7 @@ fmi3_uint64_t fmi3_xml_get_clock_variable_shift_counter(fmi3_xml_clock_variable_
 // Alias variable
 // -----------------------------------------------------------------------------
 
-fmi3_xml_alias_variable_t* fmi3_xml_get_variable_aliases(fmi3_xml_variable_t* v) {
+fmi3_xml_alias_variable_t** fmi3_xml_get_variable_aliases(fmi3_xml_variable_t* v) {
     if (v->aliases) {
         return (void*)jm_vector_get_itemp(jm_voidp)(v->aliases, 0);
     }

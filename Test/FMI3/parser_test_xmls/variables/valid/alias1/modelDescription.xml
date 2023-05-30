@@ -36,12 +36,12 @@
         <Alias name="v5_a2" description="v5_a2_desc"/>
     </Float64>
 
-    <!-- Alias on Non-Float64 -->
+    <!-- Alias on non-Float64 -->
     <Binary name="v6" valueReference="6">
         <Alias name="v6_a1"/>
     </Binary>
 
-    <!-- The Variable contains other child elements -->
+    <!-- Alias with other sibling elements -->
     <String name="v7" valueReference="7">
         <Dimension start="2"/>
         <Start value="x"/>

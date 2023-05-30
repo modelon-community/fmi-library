@@ -79,13 +79,13 @@ FMILIB_EXPORT const char* fmi3_variability_to_string(fmi3_variability_enu_t v);
 
 /**  \brief Causality property for variables */
 typedef enum fmi3_causality_enu_t {
-        fmi3_causality_enu_parameter            = 0,
-        fmi3_causality_enu_calculated_parameter = 1,
-        fmi3_causality_enu_input                = 2,
-        fmi3_causality_enu_output               = 3,
-        fmi3_causality_enu_local                = 4,
-        fmi3_causality_enu_independent          = 5,
-        fmi3_causality_enu_structural_parameter = 6,
+        fmi3_causality_enu_structural_parameter = 0,
+        fmi3_causality_enu_parameter            = 1,
+        fmi3_causality_enu_calculated_parameter = 2,
+        fmi3_causality_enu_input                = 3,
+        fmi3_causality_enu_output               = 4,
+        fmi3_causality_enu_local                = 5,
+        fmi3_causality_enu_independent          = 6,
         fmi3_causality_enu_unknown              = 7
 } fmi3_causality_enu_t;
 
@@ -96,15 +96,17 @@ FMILIB_EXPORT const char* fmi3_causality_to_string(fmi3_causality_enu_t c);
 FMILIB_EXPORT const char* fmi3_status_to_string(fmi3_status_t status);
 
 /**
- * \brief Get the default variability for a given causality. NOTE: the FMI 3.0
- *        defines the default to always be continuous, but this is incompatible
- *        with causalities "parameter" and "calculatedParameter". These will
- *        instead be treated as having variability "fixed".
+ * \brief Get the default variability for a given causality and if the variable is Float32/Float64.
+ * For parameter type causality, the default is 'fixed'
+ * For other causality, if Float32/64: 'continuous' and else: 'discrete'
+ * 
+ * \param c causality
+ * \param isFloat non-zero for Float32/Float64 variables
  *
  * \return A default variability compatible with the given causality.
  *
  */
-FMILIB_EXPORT fmi3_variability_enu_t fmi3_get_default_valid_variability(fmi3_causality_enu_t c);
+FMILIB_EXPORT fmi3_variability_enu_t fmi3_get_default_valid_variability(fmi3_causality_enu_t c, int isFloat);
 
 /**
  * \brief Check if a given combination of variablity and causality is valid.

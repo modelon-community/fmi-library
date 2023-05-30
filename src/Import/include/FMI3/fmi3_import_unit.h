@@ -46,48 +46,48 @@ typedef struct fmi3_xml_unit_definitions_t fmi3_import_unit_definitions_t;
 /**@} */
 
 /** \brief Get the number of unit definitions. */
-FMILIB_EXPORT unsigned int  fmi3_import_get_unit_definitions_number(fmi3_import_unit_definitions_t*);
+FMILIB_EXPORT unsigned int fmi3_import_get_unit_definitions_number(fmi3_import_unit_definitions_t* ud);
 
 /** \brief Get a unit definition */
-FMILIB_EXPORT fmi3_import_unit_t* fmi3_import_get_unit(fmi3_import_unit_definitions_t*, unsigned int  index);
+FMILIB_EXPORT fmi3_import_unit_t* fmi3_import_get_unit(fmi3_import_unit_definitions_t* ud, unsigned int index);
 
 /** \brief Get a unit name */
-FMILIB_EXPORT const char* fmi3_import_get_unit_name(fmi3_import_unit_t*);
+FMILIB_EXPORT const char* fmi3_import_get_unit_name(fmi3_import_unit_t* u);
 
 /** \brief Get the number of display units associated with this unit */
-FMILIB_EXPORT unsigned int fmi3_import_get_unit_display_unit_number(fmi3_import_unit_t*);
+FMILIB_EXPORT unsigned int fmi3_import_get_unit_display_unit_number(fmi3_import_unit_t* u);
 
 /**
     \brief Get fmi3_SI_base_units_Num SI base units exponents associated with the unit.
 */
-FMILIB_EXPORT const int* fmi3_import_get_SI_unit_exponents(fmi3_import_unit_t*);
+FMILIB_EXPORT const int* fmi3_import_get_SI_unit_exponents(fmi3_import_unit_t* u);
 
 /**
     \brief Get factor to the corresponding SI base units.
 */
-FMILIB_EXPORT double fmi3_import_get_SI_unit_factor(fmi3_import_unit_t*);
+FMILIB_EXPORT double fmi3_import_get_SI_unit_factor(fmi3_import_unit_t* u);
 
 /**
     \brief Get offset to the corresponding SI base units.
 */
-FMILIB_EXPORT double fmi3_import_get_SI_unit_offset(fmi3_import_unit_t*);
+FMILIB_EXPORT double fmi3_import_get_SI_unit_offset(fmi3_import_unit_t* u);
 
 /**
     \brief Convert a value with respect to the unit to the
     value with respect to the SI base unit.
 */
-FMILIB_EXPORT double fmi3_import_convert_to_SI_base_unit(double, fmi3_import_unit_t*);
+FMILIB_EXPORT double fmi3_import_convert_to_SI_base_unit(double v, fmi3_import_unit_t* u);
 
 /**
     \brief Convert a value with respect to the SI base unit to the
     value with respect to the unit.
 */
-FMILIB_EXPORT double fmi3_import_convert_from_SI_base_unit(double, fmi3_import_unit_t*);
+FMILIB_EXPORT double fmi3_import_convert_from_SI_base_unit(double v, fmi3_import_unit_t* u);
 
 /** \brief Get a display unit object by index.
     @param index The index of display unit to be returned. Must be less than the number returned by fmi3_import_get_unit_display_unit_number()
 */
-FMILIB_EXPORT fmi3_import_display_unit_t* fmi3_import_get_unit_display_unit(fmi3_import_unit_t*, size_t index);
+FMILIB_EXPORT fmi3_import_display_unit_t* fmi3_import_get_unit_display_unit(fmi3_import_unit_t* u, size_t index);
 
 /**
     \brief Get unit defition for a display unit.

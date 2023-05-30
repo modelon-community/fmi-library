@@ -1253,14 +1253,14 @@ static int fmi3_xml_variable_process_attr_previous(fmi3_xml_parser_context_t* co
     if (fmi3_xml_get_variability(variable) != fmi3_variability_enu_discrete) {
         // TODO: This should not be a fatal error
         fmi3_xml_parse_fatal(context, "Only variables with variability='discrete' may have the 'previous' attribute.");
-        //fmi3_xml_parse_error(context, "Only variables with variability='discrete' may have the 'previous' attribute.");
+        // fmi3_xml_parse_error(context, "Only variables with variability='discrete' may have the 'previous' attribute.");
         return -1;
     }
 
     if (previous == fmi3_xml_get_variable_vr(variable)) {
         // TODO: This should not be a fatal error
         fmi3_xml_parse_fatal(context, "A variable must not refer to itself in the 'previous' attribute.");
-        //fmi3_xml_parse_error(context, "A variable must not refer to itself in the 'previous' attribute.");
+        // fmi3_xml_parse_error(context, "A variable must not refer to itself in the 'previous' attribute.");
         return -1;
     }
 

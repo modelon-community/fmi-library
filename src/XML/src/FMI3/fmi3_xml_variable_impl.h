@@ -36,11 +36,11 @@ typedef union fmi3_xml_valueref_or_variable_union_t {
     fmi3_xml_variable_t* variable;
 } fmi3_xml_valueref_or_variable_union_t;
 
-typedef struct fmi3_xml_alias_t {
+struct fmi3_xml_alias_variable_t {
     const char* description;
     fmi3_xml_display_unit_t* displayUnit;  // Only used for FLoatXX variables.
     char name[1];
-} fmi3_xml_alias_t;
+};
 
 /* General variable type is convenient to unify all the variable list operations */
 struct fmi3_xml_variable_t {
@@ -89,6 +89,7 @@ struct fmi3_xml_variable_t {
 static int fmi3_xml_compare_vr(const void* first, const void* second) {
     fmi3_xml_variable_t* a = *(fmi3_xml_variable_t**)first;
     fmi3_xml_variable_t* b = *(fmi3_xml_variable_t**)second;
+    if (a->vr == b->vr) return 0;
     return a->vr < b->vr ? -1 : 1;
 }
 

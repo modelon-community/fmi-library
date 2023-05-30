@@ -15,9 +15,10 @@
 
 
 
-/** \file fmi3_import_variable.h
-*  \brief Public interface to the FMI import C-library. Handling of model variables.
-*/
+/**
+ * \file fmi3_import_variable.h
+ * \brief Public interface to the FMI import C-library. Handling of model variables.
+ */
 
 #ifndef FMI3_IMPORT_VARIABLE_H_
 #define FMI3_IMPORT_VARIABLE_H_
@@ -31,24 +32,30 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-        /**
-    \addtogroup fmi3_import
-    @{
-    \addtogroup fmi3_import_variables Functions for handling variable definitions.
-    @}
-    \addtogroup fmi3_import_variables Functions for handling variable definitions.
-    \brief All the functions in this group take a pointer to ::fmi3_import_variable_t as a parameter.
-    A variable pointer may be obtained via a \ref fmi3_import_varlist module or via functions
-    fmi3_import_get_variable_by_name() and fmi3_import_get_variable_by_vr().
-    @{
-    */
-    /**@name Scalar variable types */
-/**@{ */
+
+/**
+ * \addtogroup fmi3_import
+ * @{
+ * \addtogroup fmi3_import_variables Functions for handling variable definitions.
+ * @}
+ *
+ * \addtogroup fmi3_import_variables Functions for handling variable definitions.
+ * \brief All the functions in this group take a pointer to ::fmi3_import_variable_t as a parameter.
+ * A variable pointer may be obtained via a \ref fmi3_import_varlist module or via functions
+ * fmi3_import_get_variable_by_name() and fmi3_import_get_variable_by_vr().
+ * @{
+ */
+
+/**
+ * @name Scalar variable types
+ * @{
+ */
+
 /** \brief General variable type.
-*
-* This type is convenient to unify all the variable list operations.
-*    However, typed variables are needed to support specific attributes.
-*/
+ *
+ * This type is convenient to unify all the variable list operations.
+ * However, typed variables are needed to support specific attributes.
+ */
 typedef struct fmi3_xml_variable_t fmi3_import_variable_t;
 /** \brief  Opaque float32 variable */
 typedef struct fmi3_xml_float32_variable_t fmi3_import_float32_variable_t;
@@ -82,7 +89,10 @@ typedef struct fmi3_xml_binary_variable_t fmi3_import_binary_variable_t;
 typedef struct fmi3_xml_clock_variable_t fmi3_import_clock_variable_t;
 /** \brief List of variables */
 typedef struct fmi3_import_variable_list_t fmi3_import_variable_list_t;
+/** \brief Opaque alias variable. Only represents the alias-specific data. */
+typedef struct fmi3_xml_alias_variable_t fmi3_import_alias_variable_t;
 /**@} */
+
 
 /** \brief Get the variable name */
 FMILIB_EXPORT const char* fmi3_import_get_variable_name(fmi3_import_variable_t*);
@@ -104,64 +114,54 @@ FMILIB_EXPORT fmi3_import_variable_typedef_t* fmi3_import_get_variable_declared_
 FMILIB_EXPORT fmi3_base_type_enu_t fmi3_import_get_variable_base_type(fmi3_import_variable_t*);
 
 /** \brief Get the start values of an array variable
-    @return Pointer to array with start values. Total length of array is given by product of the dimensions given by
-        #fmi3_import_get_variable_dimensions. FMI Library handles memory for the array.
-*/
+ * @return Pointer to array with start values. Total length of array is given by array dimensions.
+ */
 FMILIB_EXPORT fmi3_float64_t* fmi3_import_get_float64_variable_start_array(fmi3_import_float64_variable_t* v);
 
 /** \brief Get the start values of an array variable.
-    @return Pointer to array with start values. Total length of array is given by product of the dimensions given by
-        #fmi3_import_get_variable_dimensions. FMI Library handles memory for the array.
-*/
+ * @return Pointer to array with start values. Total length of array is given by array dimensions.
+ */
 FMILIB_EXPORT fmi3_float32_t* fmi3_import_get_float32_variable_start_array(fmi3_import_float32_variable_t* v);
 
 /** \brief Get the start values of an array variable
-    @return Pointer to array with start values. Total length of array is given by product of the dimensions given by
-        #fmi3_import_get_variable_dimensions. FMI Library handles memory for the array.
-*/
+ * @return Pointer to array with start values. Total length of array is given by array dimensions.
+ */
 FMILIB_EXPORT fmi3_int64_t* fmi3_import_get_int64_variable_start_array(fmi3_import_int64_variable_t* v);
 
 /** \brief Get the start values of an array variable
-    @return Pointer to array with start values. Total length of array is given by product of the dimensions given by
-        #fmi3_import_get_variable_dimensions. FMI Library handles memory for the array.
-*/
+ * @return Pointer to array with start values. Total length of array is given by array dimensions.
+ */
 FMILIB_EXPORT fmi3_int32_t* fmi3_import_get_int32_variable_start_array(fmi3_import_int32_variable_t* v);
 
 /** \brief Get the start values of an array variable
-    @return Pointer to array with start values. Total length of array is given by product of the dimensions given by
-        #fmi3_import_get_variable_dimensions. FMI Library handles memory for the array.
-*/
+ * @return Pointer to array with start values. Total length of array is given by array dimensions.
+ */
 FMILIB_EXPORT fmi3_int16_t* fmi3_import_get_int16_variable_start_array(fmi3_import_int16_variable_t* v);
 
 /** \brief Get the start values of an array variable
-    @return Pointer to array with start values. Total length of array is given by product of the dimensions given by
-        #fmi3_import_get_variable_dimensions. FMI Library handles memory for the array.
-*/
+ * @return Pointer to array with start values. Total length of array is given by array dimensions.
+ */
 FMILIB_EXPORT fmi3_int8_t* fmi3_import_get_int8_variable_start_array(fmi3_import_int8_variable_t* v);
 
 
 /** \brief Get the start values of an array variable
-    @return Pointer to array with start values. Total length of array is given by product of the dimensions given by
-        #fmi3_import_get_variable_dimensions. FMI Library handles memory for the array.
-*/
+ * @return Pointer to array with start values. Total length of array is given by array dimensions.
+ */
 FMILIB_EXPORT fmi3_uint64_t* fmi3_import_get_uint64_variable_start_array(fmi3_import_uint64_variable_t* v);
 
 /** \brief Get the start values of an array variable
-    @return Pointer to array with start values. Total length of array is given by product of the dimensions given by
-        #fmi3_import_get_variable_dimensions. FMI Library handles memory for the array.
-*/
+ * @return Pointer to array with start values. Total length of array is given by array dimensions.
+ */
 FMILIB_EXPORT fmi3_uint32_t* fmi3_import_get_uint32_variable_start_array(fmi3_import_uint32_variable_t* v);
 
 /** \brief Get the start values of an array variable
-    @return Pointer to array with start values. Total length of array is given by product of the dimensions given by
-        #fmi3_import_get_variable_dimensions. FMI Library handles memory for the array.
-*/
+ * @return Pointer to array with start values. Total length of array is given by array dimensions.
+ */
 FMILIB_EXPORT fmi3_uint16_t* fmi3_import_get_uint16_variable_start_array(fmi3_import_uint16_variable_t* v);
 
 /** \brief Get the start values of an array variable
-    @return Pointer to array with start values. Total length of array is given by product of the dimensions given by
-        #fmi3_import_get_variable_dimensions. FMI Library handles memory for the array.
-*/
+ * @return Pointer to array with start values. Total length of array is given by array dimensions.
+ */
 FMILIB_EXPORT fmi3_uint8_t* fmi3_import_get_uint8_variable_start_array(fmi3_import_uint8_variable_t* v);
 
 
@@ -526,7 +526,17 @@ FMILIB_EXPORT fmi3_uint64_t fmi3_import_get_clock_variable_shift_counter(fmi3_im
 /** \brief Get the original index in xml of the variable */
 FMILIB_EXPORT size_t fmi3_import_get_variable_original_order(fmi3_import_variable_t* v);
 
+/** \brief Get the alias variables. */
+FMILIB_EXPORT fmi3_import_alias_variable_t* fmi3_import_get_variable_aliases(fmi3_import_variable_t* v);
+/** \brief Get the number of alias variables. */
+FMILIB_EXPORT size_t fmi3_import_get_variable_aliases_size(fmi3_import_variable_t* v);
 
+/** \brief Get name for the alias variable.  */
+FMILIB_EXPORT const char* fmi3_import_get_alias_variable_name(fmi3_import_alias_variable_t* alias);
+/** \brief Get the description for the alias variable */
+FMILIB_EXPORT const char* fmi3_import_get_alias_variable_description(fmi3_import_alias_variable_t* alias);
+/** \brief Get the displayUnit for the alias variable, or NULL if not defined. */
+FMILIB_EXPORT fmi3_import_display_unit_t* fmi3_import_get_alias_variable_display_unit(fmi3_import_alias_variable_t* alias);
 
 /** @} */
 

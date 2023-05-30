@@ -575,6 +575,30 @@ int fmi3_import_get_enum_variable_max(fmi3_import_enum_variable_t* v) {
 }
 
 // -----------------------------------------------------------------------------
+// Alias variable
+// -----------------------------------------------------------------------------
+
+fmi3_import_alias_variable_t* fmi3_import_get_variable_aliases(fmi3_import_variable_t* v) {
+    return fmi3_xml_get_variable_aliases(v);
+}
+
+size_t fmi3_import_get_variable_aliases_size(fmi3_import_variable_t* v) {
+    return fmi3_xml_get_variable_aliases_size(v);
+}
+
+const char* fmi3_import_get_alias_variable_name(fmi3_import_alias_variable_t* alias) {
+    return fmi3_xml_get_alias_variable_name(alias);
+}
+
+const char* fmi3_import_get_alias_variable_description(fmi3_import_alias_variable_t* alias) {
+    return fmi3_xml_get_alias_variable_description(alias);
+}
+
+fmi3_import_display_unit_t* fmi3_import_get_alias_variable_display_unit(fmi3_import_alias_variable_t* alias) {
+    return fmi3_xml_get_alias_variable_display_unit(alias);
+}
+
+// -----------------------------------------------------------------------------
 
 size_t fmi3_import_get_variable_original_order(fmi3_import_variable_t* v) {
     return fmi3_xml_get_variable_original_order((fmi3_xml_variable_t*)v);

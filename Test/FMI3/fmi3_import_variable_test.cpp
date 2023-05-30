@@ -118,7 +118,7 @@ static void test_binary_all_attrs(fmi3_import_t* xml) {
     REQUIRE(fmi3_import_get_variable_vr(v) == 4);
     REQUIRE(fmi3_import_get_causality(v) == fmi3_causality_enu_output);
     REQUIRE(fmi3_import_get_variability(v) == fmi3_variability_enu_discrete);
-    REQUIRE(fmi3_import_get_initial(v) == fmi3_initial_enu_exact);
+    REQUIRE(fmi3_import_get_initial(v) == fmi3_initial_enu_calculated);
     REQUIRE(strcmp(fmi3_import_get_variable_description(v), "myDesc") == 0);
     REQUIRE(fmi3_import_get_canHandleMultipleSetPerTimeInstant(v) == true); /* default */
 
@@ -369,8 +369,17 @@ TEST_CASE("Alias variables") {
     fmi3_import_t* fmu = tfmu->fmu;
     REQUIRE(fmu != nullptr);
     REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
+    fmi3_import_variable_t* v;
+    fmi3_import_alias_variable_t* aliases;
+    size_t nAlias;
     
     SECTION("Test variable without alias") {
+        v = fmi3_import_get_variable_by_name(fmu, "v1");
+        REQUIRE(v != nullptr);
+        nAlias = fmi3_import_get_variable_aliases_size(v);
+        aliases = fmi3_import_get_variable_aliases(v);
+        REQUIRE(nAlias == 0);
+        REQUIRE(aliases == nullptr);
     }
     
     fmi3_testutil_import_free(tfmu);

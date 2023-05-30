@@ -1165,7 +1165,8 @@ static int fmi3_xml_variable_process_attr_causality_variability_initial(fmi3_xml
     }
     if (!fmi3_is_valid_variability_causality(variability, causality)) {
         fmi3_variability_enu_t bad_variability = variability;
-        variability = fmi3_get_default_valid_variability(causality);
+        bool isFloat = (elm_id == fmi3_xml_elmID_Float32Variable) || (elm_id == fmi3_xml_elmID_Float64Variable);
+        variability = fmi3_get_default_valid_variability(causality, isFloat);
         fmi3_xml_parse_error(context,
                 "Invalid combination of variability %s and causality %s for"
                 " variable '%s'. Setting variability to '%s'",

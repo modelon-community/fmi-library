@@ -63,7 +63,7 @@ const char* fmi3_fmu_kind_to_string(fmi3_fmu_kind_enu_t kind) {
 }
 
 const char* fmi3_dependencies_kind_to_string(fmi3_dependencies_kind_enu_t fc) {
-    switch(fc) {
+    switch (fc) {
     case fmi3_dependencies_kind_dependent: return "dependent";
     case fmi3_dependencies_kind_constant:  return "constant";
     case fmi3_dependencies_kind_fixed:     return "fixed";
@@ -75,7 +75,7 @@ const char* fmi3_dependencies_kind_to_string(fmi3_dependencies_kind_enu_t fc) {
 }
 
 const char* fmi3_variability_to_string(fmi3_variability_enu_t v) {
-    switch(v) {
+    switch (v) {
     case fmi3_variability_enu_constant:   return "constant";
     case fmi3_variability_enu_fixed:      return "fixed";
     case fmi3_variability_enu_tunable:    return "tunable";
@@ -87,21 +87,21 @@ const char* fmi3_variability_to_string(fmi3_variability_enu_t v) {
 }
 
 const char* fmi3_causality_to_string(fmi3_causality_enu_t c) {
-    switch(c) {
+    switch (c) {
+    case fmi3_causality_enu_structural_parameter: return "structuralParameter";
     case fmi3_causality_enu_parameter:            return "parameter";
     case fmi3_causality_enu_calculated_parameter: return "calculatedParameter";
     case fmi3_causality_enu_input:                return "input";
     case fmi3_causality_enu_output:               return "output";
     case fmi3_causality_enu_local:                return "local";
     case fmi3_causality_enu_independent:          return "independent";
-    case fmi3_causality_enu_structural_parameter: return "structuralParameter";
     default: break;
     };
     return "Unknown";
 }
 
 const char* fmi3_status_to_string(fmi3_status_t status) {
-    switch(status) {
+    switch (status) {
     case fmi3_status_ok:
         return "OK";
     case fmi3_status_warning:
@@ -118,7 +118,7 @@ const char* fmi3_status_to_string(fmi3_status_t status) {
 }
 
 const char* fmi3_base_type_to_string(fmi3_base_type_enu_t bt) {
-    switch(bt) {
+    switch (bt) {
     case fmi3_base_type_float64: return "Float64";
     case fmi3_base_type_float32: return "Float32";
     case fmi3_base_type_int64:   return "Int64";
@@ -148,66 +148,92 @@ const char* fmi3_initial_to_string(fmi3_initial_enu_t ini) {
 }
 
 fmi3_initial_enu_t fmi3InitialDefaultsTable[fmi3_variability_enu_unknown][fmi3_causality_enu_unknown] = {
-    /*              parameter                  calculated parameter,        input                     output                       local                        independent */
-    /* constant */  {fmi3_initial_enu_unknown, fmi3_initial_enu_unknown,    fmi3_initial_enu_unknown,  fmi3_initial_enu_exact,      fmi3_initial_enu_exact,      fmi3_initial_enu_unknown},
-    /* fixed   */   {fmi3_initial_enu_exact,   fmi3_initial_enu_calculated, fmi3_initial_enu_unknown,  fmi3_initial_enu_unknown,    fmi3_initial_enu_calculated, fmi3_initial_enu_unknown},
-    /* tunable */   {fmi3_initial_enu_exact,   fmi3_initial_enu_calculated, fmi3_initial_enu_unknown,  fmi3_initial_enu_unknown,    fmi3_initial_enu_calculated, fmi3_initial_enu_unknown},
-    /* discrete */  {fmi3_initial_enu_unknown, fmi3_initial_enu_unknown,    fmi3_initial_enu_unknown,  fmi3_initial_enu_calculated, fmi3_initial_enu_calculated, fmi3_initial_enu_unknown},
-    /* continuous */{fmi3_initial_enu_unknown, fmi3_initial_enu_unknown,    fmi3_initial_enu_unknown,  fmi3_initial_enu_calculated, fmi3_initial_enu_calculated, fmi3_initial_enu_unknown}
+    /*              structural parameter       parameter                 calculated parameter,        input                     output                       local                        independent             */
+    /* constant */  {fmi3_initial_enu_unknown, fmi3_initial_enu_unknown, fmi3_initial_enu_unknown,    fmi3_initial_enu_unknown, fmi3_initial_enu_exact,      fmi3_initial_enu_exact,      fmi3_initial_enu_unknown},
+    /* fixed   */   {fmi3_initial_enu_exact,   fmi3_initial_enu_exact,   fmi3_initial_enu_calculated, fmi3_initial_enu_unknown, fmi3_initial_enu_unknown,    fmi3_initial_enu_calculated, fmi3_initial_enu_unknown},
+    /* tunable */   {fmi3_initial_enu_exact,   fmi3_initial_enu_exact,   fmi3_initial_enu_calculated, fmi3_initial_enu_unknown, fmi3_initial_enu_unknown,    fmi3_initial_enu_calculated, fmi3_initial_enu_unknown},
+    /* discrete */  {fmi3_initial_enu_unknown, fmi3_initial_enu_unknown, fmi3_initial_enu_unknown,    fmi3_initial_enu_exact  , fmi3_initial_enu_calculated, fmi3_initial_enu_calculated, fmi3_initial_enu_unknown},
+    /* continuous */{fmi3_initial_enu_unknown, fmi3_initial_enu_unknown, fmi3_initial_enu_unknown,    fmi3_initial_enu_exact  , fmi3_initial_enu_calculated, fmi3_initial_enu_calculated, fmi3_initial_enu_unknown}
 };
 
-FMILIB_EXPORT fmi3_variability_enu_t fmi3_get_default_valid_variability(fmi3_causality_enu_t c)
+fmi3_variability_enu_t fmi3_get_default_valid_variability(fmi3_causality_enu_t c, int isFloat)
 {
-    if (c == fmi3_causality_enu_calculated_parameter || c == fmi3_causality_enu_parameter) {
+    if (c >= fmi3_causality_enu_unknown) {
+        return fmi3_variability_enu_unknown;
+    }
+    // Spec: "The default for variables of causality `parameter`, `structural parameter` or `calculated parameter` is `fixed`"
+    if (c <= fmi3_causality_enu_calculated_parameter) {
         return fmi3_variability_enu_fixed;
-    } else {
+    }
+
+    if (isFloat) {
+        // Spec: "The default for variables of type `<Float32>` and `<Float64>`
+        // and causality other than `parameter`, `structural parameter` or `calculated parameter` is <<continuous>>"
         return fmi3_variability_enu_continuous;
+    } else {
+        // Spec: "The default for variables of causility `input`, `output` or `local` of type other than `<Float32>` or `<Float64>` is <<discrete>>"
+        return fmi3_variability_enu_discrete;
     }
 }
 
-FMILIB_EXPORT fmi3_initial_enu_t fmi3_get_default_initial(fmi3_variability_enu_t v, fmi3_causality_enu_t c) {
-    if((unsigned)v >= (unsigned)fmi3_variability_enu_unknown) return fmi3_initial_enu_unknown;
-    if((unsigned)c >= (unsigned)fmi3_causality_enu_unknown) return fmi3_initial_enu_unknown;
+fmi3_initial_enu_t fmi3_get_default_initial(fmi3_variability_enu_t v, fmi3_causality_enu_t c) {
+    if ((unsigned)v >= (unsigned)fmi3_variability_enu_unknown) return fmi3_initial_enu_unknown;
+    if ((unsigned)c >= (unsigned)fmi3_causality_enu_unknown)   return fmi3_initial_enu_unknown;
     return fmi3InitialDefaultsTable[v][c];
 }
 
 static int valid_variability_causality[fmi3_variability_enu_unknown][fmi3_causality_enu_unknown] = {
-    // TODO: Last column is for structuralParameter, needs to be adjusted with correct values
-    {0, 0, 0, 1, 1, 0, 1},
-    {1, 1, 0, 0, 1, 0, 1},
-    {1, 1, 0, 0, 1, 0, 1},
-    {0, 0, 1, 1, 1, 0, 1},
-    {0, 0, 1, 1, 1, 1, 1}
+    {0, 0, 0, 0, 1, 1, 0},
+    {1, 1, 1, 0, 0, 1, 0},
+    {1, 1, 1, 0, 0, 1, 0},
+    {0, 0, 0, 1, 1, 1, 0},
+    {0, 0, 0, 1, 1, 1, 1}
 };
 
-FMILIB_EXPORT int fmi3_is_valid_variability_causality(fmi3_variability_enu_t v,
-                                                      fmi3_causality_enu_t c)
+int fmi3_is_valid_variability_causality(fmi3_variability_enu_t v, fmi3_causality_enu_t c)
 {
     if (v < fmi3_variability_enu_constant ||
         v >= fmi3_variability_enu_unknown ||
-        c < fmi3_causality_enu_parameter ||
-        c >= fmi3_causality_enu_unknown) {
-
+        c < fmi3_causality_enu_structural_parameter ||
+        c >= fmi3_causality_enu_unknown) 
+    {
         return 0;
     }
 
     return valid_variability_causality[v][c];
 }
 
-FMILIB_EXPORT fmi3_initial_enu_t fmi3_get_valid_initial(fmi3_variability_enu_t v, fmi3_causality_enu_t c, fmi3_initial_enu_t i) {
+fmi3_initial_enu_t fmi3_get_valid_initial(fmi3_variability_enu_t v, fmi3_causality_enu_t c, fmi3_initial_enu_t i) {
     fmi3_initial_enu_t defaultInitial = fmi3_get_default_initial(v, c);
     if( (defaultInitial == i) ||
         ((unsigned)i >= (unsigned)fmi3_initial_enu_unknown) ||
         (defaultInitial == fmi3_initial_enu_unknown))
         return defaultInitial;
-    /*  At this point we know that v, c & i are fine and that (defaultInitial != i)
-        Check the other allowed combinations: */
-    if(defaultInitial == fmi3_initial_enu_calculated) {
-        if(v >= fmi3_variability_enu_discrete) {
+    // At this point we know that v, c & i are fine (non unknown) and that (defaultInitial != i)
+    // Check the other allowed combinations, reference: Table 22 in FMI 3.0 spec
+    switch (c) {
+    case fmi3_causality_enu_calculated_parameter:
+        if ((i == fmi3_initial_enu_approx) && ((v == fmi3_variability_enu_fixed) || (v == fmi3_variability_enu_tunable)) ) {
+            return i;
+        } else {
+            break;
+        }
+    case fmi3_causality_enu_output:
+        if ((v == fmi3_variability_enu_discrete) || (v == fmi3_variability_enu_continuous)) {
+            return i;
+        } else {
+            break;
+        }
+    case fmi3_causality_enu_local:
+        if ((i == fmi3_initial_enu_approx) && (v > fmi3_variability_enu_constant)) {
             return i;
         }
-        else if(i != fmi3_initial_enu_exact)
+        if ((i == fmi3_initial_enu_exact) && ((v == fmi3_variability_enu_discrete) || (v == fmi3_variability_enu_continuous))) {
             return i;
+        } else {
+            break;
+        }
+    default: break;
     }
     /* in all other cases the combination is not valid and default should be used */
     return defaultInitial;
@@ -229,7 +255,7 @@ const char* fmi3_capability_to_string(fmi3_capabilities_enu_t id) {
 
 const char * fmi3_SI_base_unit_to_string(fmi3_SI_base_units_enu_t id) {
 #define FMI3_SI_BASE_UNIT_ENU_TO_STR(c) case fmi3_SI_base_unit_ ## c: return #c;
-    switch(id) {
+    switch (id) {
         FMI3_SI_BASE_UNITS(FMI3_SI_BASE_UNIT_ENU_TO_STR)
     default: break;
     }

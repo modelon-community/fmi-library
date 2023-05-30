@@ -467,12 +467,48 @@ TEST_CASE("Alias variables") {
         check_aliases(fmu, "v6", 1, namesExp, descExp, duExp);
     }
     
-    SECTION("Alias with other sibling elements") {
+    SECTION("Aliases with other sibling elements") {
         const char* namesExp[]              = { "v7_a1", "v7_a2" };
         const char* descExp[]               = { nullptr, nullptr };
         fmi3_import_display_unit_t* duExp[] = { nullptr, nullptr };
         check_aliases(fmu, "v7", 2, namesExp, descExp, duExp);
     }
+    
+    SECTION("Aliases with same description") {
+        const char* namesExp[]              = { "v8_a1", "v8_a2" };
+        const char* descExp[]               = { "desc",  "desc" };
+        fmi3_import_display_unit_t* duExp[] = { nullptr, nullptr };
+        check_aliases(fmu, "v8", 2, namesExp, descExp, duExp);
+    }
+    
+    SECTION("Alias with empty description") {
+        const char* namesExp[]              = { "v9_a1" };
+        const char* descExp[]               = { ""      };
+        fmi3_import_display_unit_t* duExp[] = { nullptr };
+        check_aliases(fmu, "v9", 1, namesExp, descExp, duExp);
+    }
+    
+    fmi3_testutil_import_free(tfmu);
+}
+
+TEST_CASE("Invalid Alias - unresolvable displayUnit") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/variables/invalid/alias_unresolvable_displayUnit";
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu == nullptr);
+    
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Unknown displayUnit: missing_du"));
+    
+    fmi3_testutil_import_free(tfmu);
+}
+
+TEST_CASE("Invalid Alias - no name") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/variables/invalid/alias_no_name";
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu == nullptr);
+    
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'Alias': required attribute 'name' not found"));
     
     fmi3_testutil_import_free(tfmu);
 }

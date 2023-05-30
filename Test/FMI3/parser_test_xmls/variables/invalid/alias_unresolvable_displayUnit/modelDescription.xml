@@ -3,8 +3,8 @@
 <ModelExchange modelIdentifier="modelIdentifier"/>
 
 <ModelVariables>
-    <Float64 name="v1" valueReference="1"/>
-        <Alias name="v1_a1" description="desc" displayUnit="missing"/>  <!-- displayUnit can't be resolved -->
+    <Float64 name="v1" valueReference="1">
+        <Alias name="v1_a1" description="desc" displayUnit="missing_du"/>  <!-- displayUnit can't be resolved -->
     </Float64>
 </ModelVariables>
 

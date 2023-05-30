@@ -2082,6 +2082,10 @@ int fmi3_xml_handle_Alias(fmi3_xml_parser_context_t* context, const char* data) 
         fmi3_xml_model_description_t* md = context->modelDescription;
         fmi3_xml_variable_t* baseVar = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
         size_t bufIdx = 1;
+
+        // FIXME: bufDesc will have size==0 when the attribute value is the empty string,
+        // making it indistinguishable from not being defined at all.
+        bool hasDesc = fmi3_xml_peek_attr_str(context, fmi_attr_id_description) != NULL;
         
         // Read the attributes to memory owned by FMIL:
         jm_vector(char)* bufName = fmi3_xml_reserve_parse_buffer(context, bufIdx++, 100);
@@ -2095,9 +2099,14 @@ int fmi3_xml_handle_Alias(fmi3_xml_parser_context_t* context, const char* data) 
         if (!alias) return -1;
 
         // Set the other fields:
-        if (jm_vector_get_size(char)(bufDesc)) {
+        if (hasDesc) {
             /* Add the description to the model-wide set and retrieve the pointer */
-            alias->description = jm_string_set_put(&md->descriptions, jm_vector_get_itemp(char)(bufDesc, 0));
+            if (jm_vector_get_size(char)(bufDesc) == 0) {
+                // FIXME: It doesn't work to get empty string from bufDesc since it's resized to 0
+                alias->description = jm_string_set_put(&md->descriptions, "");
+            } else {
+                alias->description = jm_string_set_put(&md->descriptions, jm_vector_get_itemp(char)(bufDesc, 0));
+            }
         }
 
         // Set displayUnit if FloatXX:
@@ -2106,16 +2115,16 @@ int fmi3_xml_handle_Alias(fmi3_xml_parser_context_t* context, const char* data) 
             if (!bufDisplayUnit) return -1;
             if (fmi3_xml_set_attr_string(context, elmID, fmi_attr_id_displayUnit, 0, bufDisplayUnit)) return -1;
             if (jm_vector_get_size(char)(bufDisplayUnit)) {
-                jm_named_ptr named;
-                named.name = jm_vector_get_itemp(char)(bufDisplayUnit, 0);
-                void* displayUnit = jm_vector_bsearch(jm_named_ptr)(
-                            &md->displayUnitDefinitions, &named, jm_compare_named)->ptr;
-                if (!displayUnit) {
+                jm_named_ptr searchKey, *searchRes;
+                searchKey.name = jm_vector_get_itemp(char)(bufDisplayUnit, 0);
+                searchRes = jm_vector_bsearch(jm_named_ptr)(
+                            &md->displayUnitDefinitions, &searchKey, jm_compare_named);
+                if (!searchRes) {
                     fmi3_xml_parse_fatal(context, "Unknown displayUnit: %s",
                             jm_vector_get_itemp(char)(bufDisplayUnit, 0));
                     return -1;
                 }
-                alias->displayUnit = displayUnit;
+                alias->displayUnit = searchRes->ptr;
                 // TODO: Spec requires that displayUnit is only defined if unit is also defined. Check it!
             } else {
                 // XXX: For variables we set the displayUnit to the unit when the displayUnit is not defined.

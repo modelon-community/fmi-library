@@ -31,7 +31,7 @@
     </Float64>
 
     <!-- Multiple aliases with different optional attributes -->
-    <Float64 name="v5" valueReference="5">
+    <Float64 name="v5" valueReference="5" description="v5_desc">
         <Alias name="v5_a1" displayUnit="degC"/>
         <Alias name="v5_a2" description="v5_a2_desc"/>
     </Float64>
@@ -50,10 +50,19 @@
         <Alias name="v7_a2"/>
     </String>
 
+    <!-- Aliases with same descriptions -->
+    <String name="v8" valueReference="8" description="desc">
+        <Alias name="v8_a1" description="desc"/>
+        <Alias name="v8_a2" description="desc"/>
+    </String>
+
+    <!-- Aliases with same descriptions -->
+    <String name="v9" valueReference="9">
+        <Alias name="v9_a1" description=""/>
+    </String>
+
     <!--
     TODO:
-        - Override description, displayUnit
-        - Access of post-process attrs: Dimension, Start
         - Test that same VR x2 gives error
         - Negated alias?
     -->

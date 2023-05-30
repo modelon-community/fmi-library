@@ -145,20 +145,25 @@ Default definition below is jm_diff and is implemented as (int)(first-second)
 #define jm_diff(first, second) (int)(first-second)
 
 /**
-  \brief jm_vector_find functions use linear search to find items in a vector. JM_COMPAR_OP is used for comparison.
-
-  T* jm_vector_find(T)(jm_vector(T)* a, T item, jm_compare_ft f)
-
-  size_t jm_vector_find_index(T)(jm_vector(T)* a, T item, jm_compare_ft f)
+  \brief Uses linear search to find items in a vector. JM_COMPAR_OP is used for comparison.
 
   @param a - the vector;
   @param item - the searched item;
 
   Return:
     T* jm_vector_find(T)(jm_vector(T)* a, T item, jm_compare_ft f)  returns a pointer to the found item or NULL if not found
-    size_t jm_vector_find_index(T)(jm_vector(T)* a, T item, jm_compare_ft f) return the index of the found item or size of the vector if not found.
 */
 #define jm_vector_find(T) jm_mangle(jm_vector_find, T)
+
+/**
+  \brief Uses linear search to find item index in a vector. JM_COMPAR_OP is used for comparison.
+
+  @param a - the vector;
+  @param item - the searched item;
+
+  Return:
+    size_t jm_vector_find_index(T)(jm_vector(T)* a, T item, jm_compare_ft f) return the index of the found item or size of the vector if not found.
+*/
 #define jm_vector_find_index(T) jm_mangle(jm_vector_find_index, T)
 
 /*
@@ -171,13 +176,17 @@ Default definition below is jm_diff and is implemented as (int)(first-second)
 
 /**
   jm_vector_bsearch uses standard binary search (bsearch) to find elements in a sorted vector.
-  It returns the index of an item in the vector or vector's size if not found.
-    JM_COMPAR_OP is used for comparison.
 
   T* jm_vector_bsearch(T)(jm_vector(T)* v, T* key, jm_compare_ft f)
-  size_t jm_vector_bsearch_index(T)(jm_vector(T)* v, T* key, jm_compare_ft f)
 */
 #define jm_vector_bsearch(T) jm_mangle(jm_vector_bsearch, T)
+
+/**
+  Returns the index of an item in the vector or vector's size if not found.
+    JM_COMPAR_OP is used for comparison.
+
+  size_t jm_vector_bsearch_index(T)(jm_vector(T)* v, T* key, jm_compare_ft f)
+*/
 #define jm_vector_bsearch_index(T) jm_mangle(jm_vector_bsearch_index, T)
 
 /**

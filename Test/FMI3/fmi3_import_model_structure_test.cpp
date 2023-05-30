@@ -382,7 +382,7 @@ TEST_CASE("Error check: ModelStructure; ClockedState has Clock base type") {
 
     fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
     REQUIRE(tfmu != nullptr);
-    REQUIRE(tfmu->fmu != nullptr);
+    REQUIRE(tfmu->fmu == nullptr);
 
     // Also tested in TEST_CASE("Invalid Clock variable - has previous")
     const char* logMsg = "Variables of type Clock must not have the 'previous' attribute.";

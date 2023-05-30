@@ -334,13 +334,15 @@ TEST_CASE("Info check: ModelStructure; EventIndicator ignored for Co-Simulation"
 }
 
 TEST_CASE("Error check: ModelStructure; ClockedState without clocks attribute") {
+    // Spec: All clocked states must [...], must have the attribute clocks, [...]
     const char* xmldir = FMI3_TEST_XML_DIR "/model_structure/invalid/clocked_state_no_clocks";
 
     fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
     REQUIRE(tfmu != nullptr);
     REQUIRE(tfmu->fmu == nullptr);
 
-    const char* logMsg = "The variable 'clocked_var' is a ClockedState, but does not define the attribute 'clocks'.";
+    // Also tested by TEST_CASE("Invalid previous - requires clocks")
+    const char* logMsg = "Only variables with the attribute 'clocks' may have attribute 'previous'.";
     REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
 
     fmi3_testutil_import_free(tfmu);
@@ -360,26 +362,30 @@ TEST_CASE("Error check: ModelStructure; ClockedState without previous attribute"
 }
 
 TEST_CASE("Error check: ModelStructure; ClockedState with invalid variability, not discrete") {
+    // Spec: All clocked states must have variability = discrete, [...]
     const char* xmldir = FMI3_TEST_XML_DIR "/model_structure/invalid/clocked_state_not_discrete";
 
     fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
     REQUIRE(tfmu != nullptr);
     REQUIRE(tfmu->fmu == nullptr);
 
-    const char* logMsg = "The variable 'clocked_var' is a ClockedState, but does not have variability='discrete'.";
+    // Also tested in TEST_CASE("Invalid previous - requires variability='discrete'")
+    const char* logMsg = "Only variables with variability='discrete' may have the 'previous' attribute.";
     REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
 
     fmi3_testutil_import_free(tfmu);
 }
 
 TEST_CASE("Error check: ModelStructure; ClockedState has Clock base type") {
+    // Spec: All clocked states must [...], and must not be of type fmi3Clock
     const char* xmldir = FMI3_TEST_XML_DIR "/model_structure/invalid/clocked_state_is_clock";
 
     fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
     REQUIRE(tfmu != nullptr);
-    REQUIRE(tfmu->fmu == nullptr);
+    REQUIRE(tfmu->fmu != nullptr);
 
-    const char* logMsg = "The variable 'clock_01' is a ClockedState, but has the base type 'fmi3Clock'.";
+    // Also tested in TEST_CASE("Invalid Clock variable - has previous")
+    const char* logMsg = "Variables of type Clock must not have the 'previous' attribute.";
     REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
 
     fmi3_testutil_import_free(tfmu);

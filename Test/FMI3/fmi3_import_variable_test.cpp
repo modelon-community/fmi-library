@@ -609,14 +609,53 @@ TEST_CASE("Alias with name being the empty string") {
     REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
     fmi3_testutil_import_free(tfmu);
 }
+
 TEST_CASE("Invalid intermediateUpdate - has causality parameter") {
     const char* xmldir = FMI3_TEST_XML_DIR "/variables/invalid/intermediateUpdate_parameter";
-
+    
     fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
     REQUIRE(xml != nullptr);
 
     const char* errMsg = fmi3_import_get_last_error(xml);
     REQUIRE_STREQ(errMsg, "Variables with causality='parameter' must not be marked with intermediateUpdate='true'.");
+
+    fmi3_import_free(xml);
+}
+
+TEST_CASE("Invalid previous - requires clocks") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/variable_test/invalid/previous_no_clocks";
+
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    REQUIRE(tfmu != nullptr);
+    REQUIRE(tfmu->fmu == nullptr); // TODO: Currently a fatal error, but maybe shouldn't be?
+
+    const char* logMsg = "Only variables with the attribute 'clocks' may have attribute 'previous'.";
+    REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
+
+    fmi3_testutil_import_free(tfmu);
+}
+
+TEST_CASE("Invalid previous - requires variability='discrete'") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/variable_test/invalid/previous_not_discrete";
+
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    REQUIRE(tfmu != nullptr);
+    REQUIRE(tfmu->fmu == nullptr); // TODO: Currently a fatal error, but maybe shouldn't be?
+
+    const char* logMsg = "Only variables with variability='discrete' may have the 'previous' attribute.";
+    REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
+
+    fmi3_testutil_import_free(tfmu);
+}
+
+TEST_CASE("Invalid Clock variable - has previous") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/variable_test/invalid/clock_with_previous";
+
+    fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
+    REQUIRE(xml != nullptr);
+
+    const char* errMsg = fmi3_import_get_last_error(xml);
+    REQUIRE(strcmp(errMsg, "Variables of type Clock must not have the 'previous' attribute.") == 0);
 
     fmi3_import_free(xml);
 }
@@ -642,6 +681,19 @@ TEST_CASE("Info check - intermediateUpdate ignored unless Co-Simulation") {
     REQUIRE(tfmu->fmu != nullptr);
 
     const char* logMsg = "Attribute 'intermediateUpdate' ignored since FMU kind is not Co-Simulation.";
+    REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
+
+    fmi3_testutil_import_free(tfmu);
+}
+
+TEST_CASE("Invalid previous - self reference") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/variable_test/invalid/previous_self_reference";
+
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    REQUIRE(tfmu != nullptr);
+    REQUIRE(tfmu->fmu == nullptr); // TODO: Currently a fatal error, but maybe shouldn't be?
+
+    const char* logMsg = "A variable must not refer to itself in the 'previous' attribute.";
     REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
 
     fmi3_testutil_import_free(tfmu);

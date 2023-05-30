@@ -67,6 +67,7 @@ fmi3_variability_enu_t fmi3_xml_get_variability(fmi3_xml_variable_t*);
 fmi3_causality_enu_t fmi3_xml_get_causality(fmi3_xml_variable_t*);
 fmi3_initial_enu_t fmi3_xml_get_initial(fmi3_xml_variable_t*);
 
+bool fmi3_xml_variable_has_previous(fmi3_xml_variable_t* v);
 fmi3_xml_variable_t* fmi3_xml_get_previous(fmi3_xml_variable_t* v);
 fmi3_boolean_t fmi3_xml_get_can_handle_multiple_set_per_time_instant(fmi3_xml_variable_t* v);
 fmi3_boolean_t fmi3_xml_get_intermediate_update(fmi3_xml_variable_t* v);

@@ -150,6 +150,10 @@ fmi3_initial_enu_t fmi3_xml_get_initial(fmi3_xml_variable_t* v) {
     return (fmi3_initial_enu_t)v->initial;
 }
 
+bool fmi3_xml_variable_has_previous(fmi3_xml_variable_t* v) {
+    return v->hasPrevious;
+}
+
 fmi3_xml_variable_t* fmi3_xml_get_previous(fmi3_xml_variable_t* v) {
     return v->previous.variable;
 }
@@ -1234,9 +1238,32 @@ static int fmi3_xml_variable_process_attr_previous(fmi3_xml_parser_context_t* co
     {
         return -1;
     }
+
     /* Store the VR since we cannot access the variable until after parsing all variables. */
     variable->previous.vr = previous;
     variable->hasPrevious = true;
+
+    if (!fmi3_xml_variable_is_clocked(variable)) {
+        // TODO: This should not be a fatal error
+        fmi3_xml_parse_fatal(context, "Only variables with the attribute 'clocks' may have attribute 'previous'.");
+        // fmi3_xml_parse_error(context, "Only variables with the attribute 'clocks' may have attribute 'previous'.");
+        return -1;
+    }
+
+    if (fmi3_xml_get_variability(variable) != fmi3_variability_enu_discrete) {
+        // TODO: This should not be a fatal error
+        fmi3_xml_parse_fatal(context, "Only variables with variability='discrete' may have the 'previous' attribute.");
+        //fmi3_xml_parse_error(context, "Only variables with variability='discrete' may have the 'previous' attribute.");
+        return -1;
+    }
+
+    if (previous == fmi3_xml_get_variable_vr(variable)) {
+        // TODO: This should not be a fatal error
+        fmi3_xml_parse_fatal(context, "A variable must not refer to itself in the 'previous' attribute.");
+        //fmi3_xml_parse_error(context, "A variable must not refer to itself in the 'previous' attribute.");
+        return -1;
+    }
+
     return 0;
 }
 
@@ -1434,10 +1461,11 @@ int fmi3_xml_handle_Variable(fmi3_xml_parser_context_t* context, const char* dat
 
         /* Process common attributes */
         if (fmi3_xml_variable_process_attr_causality_variability_initial(context, variable, elm_id)) return -1;
+        if (fmi3_xml_variable_process_attr_clocks(context, variable, elm_id)) return -1;
+        /* clocks required in error check for previous */
         if (fmi3_xml_variable_process_attr_previous(context, variable, elm_id))    return -1;
         if (fmi3_xml_variable_process_attr_multipleset(context, variable, elm_id)) return -1;
         if (fmi3_xml_variable_process_attr_intermediateupdate(context, variable, elm_id)) return -1;
-        if (fmi3_xml_variable_process_attr_clocks(context, variable, elm_id)) return -1;
     }
     else { /* end of xml tag */
         if (context->skipOneVariableFlag) {
@@ -1910,6 +1938,11 @@ int fmi3_xml_handle_ClockVariable(fmi3_xml_parser_context_t* context, const char
         if (!props) return -1;
 
         variable->type = &props->super;
+
+        if (fmi3_xml_variable_has_previous(variable)) {
+            fmi3_xml_parse_error(context, "Variables of type Clock must not have the 'previous' attribute.");
+            return -1;
+        }
     }
     return 0;
 }

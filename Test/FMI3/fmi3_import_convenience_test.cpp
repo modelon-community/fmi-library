@@ -205,3 +205,39 @@ TEST_CASE("Test model counts causality") {
 
     fmi3_import_free(xml);
 }
+
+TEST_CASE("Get variable from alias name") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/convenience/valid/get_variable_by_alias_name1";
+    fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
+    REQUIRE(xml != nullptr);
+    
+    fmi3_import_variable_t* baseVar    = fmi3_import_get_variable_by_name(xml, "v1");
+    fmi3_import_variable_t* aliasVar   = fmi3_import_get_variable_by_name(xml, "v1_a1");
+    fmi3_import_variable_t* missingVar = fmi3_import_get_variable_by_name(xml, "v1_missing");
+    REQUIRE(baseVar != nullptr);
+    REQUIRE(baseVar == aliasVar);
+    REQUIRE(missingVar == nullptr);
+    REQUIRE_STREQ(fmi3_import_get_variable_name(baseVar),  "v1");
+
+    fmi3_import_free(xml);
+}
+
+TEST_CASE("Get variable from alias name - mixed alphabetical order") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/convenience/valid/get_variable_by_alias_name2";
+    fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
+    REQUIRE(xml != nullptr);
+    
+    fmi3_import_variable_t* baseVar   = fmi3_import_get_variable_by_name(xml, "a");
+    fmi3_import_variable_t* otherVar1 = fmi3_import_get_variable_by_name(xml, "b");
+    fmi3_import_variable_t* aliasVar  = fmi3_import_get_variable_by_name(xml, "c");
+    fmi3_import_variable_t* otherVar2 = fmi3_import_get_variable_by_name(xml, "d");
+    REQUIRE(baseVar != nullptr);
+    REQUIRE(baseVar == aliasVar);
+    REQUIRE(baseVar != otherVar1);
+    REQUIRE(otherVar1 != otherVar2);
+    REQUIRE_STREQ(fmi3_import_get_variable_name(baseVar),   "a");
+    REQUIRE_STREQ(fmi3_import_get_variable_name(otherVar1), "b");
+    REQUIRE_STREQ(fmi3_import_get_variable_name(otherVar2), "d");
+
+    fmi3_import_free(xml);
+}

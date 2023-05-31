@@ -168,18 +168,6 @@ TEST_CASE("Variable name expansion via logger") {
     fmi3_testutil_import_free(tfmu);
 }
 
-TEST_CASE("Error check: Variables with same VR") {
-    const char* xmldir = FMI3_TEST_XML_DIR "/convenience/invalid/sameVR";
-
-    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
-    REQUIRE(tfmu != nullptr);
-    REQUIRE(tfmu->fmu == nullptr);
-
-    REQUIRE(fmi3_testutil_log_contains(tfmu, "The following variables have the same value reference: v1, v3"));
-
-    fmi3_testutil_import_free(tfmu);
-}
-
 TEST_CASE("Test model counts variability") {
     const char* xmldir = FMI3_TEST_XML_DIR "/convenience/valid/modelCountsVariability";
 

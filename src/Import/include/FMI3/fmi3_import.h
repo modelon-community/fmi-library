@@ -289,7 +289,7 @@ FMILIB_EXPORT size_t fmi3_import_get_source_files_cs_num(fmi3_import_t* fmu);
 FMILIB_EXPORT const char* fmi3_import_get_source_file_cs(fmi3_import_t* fmu, size_t index);
 
 /**
-    \brief Get variable by variable name.
+    \brief Get variable by variable name. Alias variable names result in their base variable.
     \param fmu - An fmu object as returned by fmi3_import_parse_xml().
     \param name - variable name
     \return variable pointer.

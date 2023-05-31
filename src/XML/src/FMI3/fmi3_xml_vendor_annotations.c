@@ -65,7 +65,7 @@ int fmi3_xml_handle_VariableTool(fmi3_xml_parser_context_t *context, const char*
             vendor[len] = 0;
 
             context->anyToolName = vendor;
-            context->anyParent = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
+            context->anyParent = jm_vector_get_last(jm_voidp)(&md->variablesOrigOrder);
             context->useAnyHandleFlg = 1;
     }
     else {

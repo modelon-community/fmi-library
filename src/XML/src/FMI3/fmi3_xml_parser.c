@@ -1395,7 +1395,7 @@ void fmi3_check_variable_naming_conventions(fmi3_xml_model_description_t *md) {
         yyfmi3lex_init(&scanner);
         for (k = 0; k < n; k++) {
             char *name = ((fmi3_xml_variable_t *) jm_vector_get_item(jm_voidp)(
-                    md->variablesOrigOrder, k))->name;
+                    &md->variablesOrigOrder, k))->name;
             buf = yyfmi3_scan_string(name, scanner);
             yyfmi3parse(scanner, md->callbacks, name);
             yyfmi3_delete_buffer(buf, scanner);

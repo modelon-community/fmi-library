@@ -92,10 +92,8 @@ fmi3_xml_model_description_t * fmi3_xml_allocate_model_description( jm_callbacks
     fmi3_xml_init_type_definitions(&md->typeDefinitions, cb);
 
     jm_vector_init(jm_named_ptr)(&md->variablesByName, 0, cb);
-
-    md->variablesOrigOrder = 0;
-
-    md->variablesByVR = 0;
+    jm_vector_init(jm_voidp)(&md->variablesOrigOrder, 0, cb);
+    jm_vector_init(jm_voidp)(&md->variablesByVR, 0, cb);
 
     jm_vector_init(jm_string)(&md->descriptions, 0, cb);
 
@@ -159,23 +157,15 @@ void fmi3_xml_clear_model_description( fmi3_xml_model_description_t* md) {
     /* --- variables --- */
     {
         /* free memory inside the variables */
-        /* NOTE: we have to use variablesByName here, because if parsing fails the other lists won't exist */
-        for (i = 0; i < jm_vector_get_size(jm_named_ptr)(&md->variablesByName); i++) {
-            fmi3_xml_variable_t* var = (fmi3_xml_variable_t*)jm_vector_get_item(jm_named_ptr)(&md->variablesByName, i).ptr;
+        for (i = 0; i < jm_vector_get_size(jm_voidp)(&md->variablesOrigOrder); i++) {
+            fmi3_xml_variable_t* var = (fmi3_xml_variable_t*)jm_vector_get_item(jm_voidp)(&md->variablesOrigOrder, i);
             fmi3_xml_variable_free_internals(md->callbacks, var);
         }
-        /* free extra pointers */
-        if (md->variablesOrigOrder) {
-            jm_vector_free(jm_voidp)(md->variablesOrigOrder);
-            md->variablesOrigOrder = 0;
-        }
-        /* free extra pointers */
-        if (md->variablesByVR) {
-            jm_vector_free(jm_voidp)(md->variablesByVR);
-            md->variablesByVR = 0;
-        }
+        /* free other vector data  */
+        jm_vector_free_data(jm_voidp)(&md->variablesOrigOrder);
+        jm_vector_free_data(jm_voidp)(&md->variablesByVR);
         /* free original pointers and variable structs */
-        jm_named_vector_free_data(&md->variablesByName);
+        jm_vector_free_data(jm_named_ptr)(&md->variablesByName);
     }
 
     /* type definition must be freed after variables, because arrays check for number of start values  */
@@ -817,7 +807,7 @@ int fmi3_xml_handle_DefaultExperiment(fmi3_xml_parser_context_t *context, const 
 }
 
 jm_vector(jm_voidp)* fmi3_xml_get_variables_original_order(fmi3_xml_model_description_t* md) {
-    return md->variablesOrigOrder;
+    return &md->variablesOrigOrder;
 }
 
 jm_vector(jm_named_ptr)* fmi3_xml_get_variables_alphabetical_order(fmi3_xml_model_description_t* md){
@@ -825,7 +815,7 @@ jm_vector(jm_named_ptr)* fmi3_xml_get_variables_alphabetical_order(fmi3_xml_mode
 }
 
 jm_vector(jm_voidp)* fmi3_xml_get_variables_vr_order(fmi3_xml_model_description_t* md) {
-    return md->variablesByVR;
+    return &md->variablesByVR;
 }
 
 
@@ -833,7 +823,7 @@ fmi3_xml_variable_t* fmi3_xml_get_variable_by_name(fmi3_xml_model_description_t*
     jm_named_ptr key, *found;
     key.name = name;
     found = jm_vector_bsearch(jm_named_ptr)(&md->variablesByName, &key, jm_compare_named);
-    if(!found) return 0;
+    if (!found) return NULL;
     return found->ptr;
 }
 
@@ -843,10 +833,8 @@ fmi3_xml_variable_t* fmi3_xml_get_variable_by_vr(fmi3_xml_model_description_t* m
     fmi3_xml_variable_t *pkey = &key;
     void** found;
 
-    if (!md->variablesByVR) return NULL;
-
     key.vr = vr;
-    found = jm_vector_bsearch(jm_voidp)(md->variablesByVR, (void**)&pkey, fmi3_xml_compare_vr);
+    found = jm_vector_bsearch(jm_voidp)(&md->variablesByVR, (void**)&pkey, fmi3_xml_compare_vr);
     if (!found) return NULL;
     return (fmi3_xml_variable_t*)(*found);
 }

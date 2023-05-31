@@ -547,3 +547,21 @@ TEST_CASE("Invalid valueReference - same VR but different type") {
     
     fmi3_testutil_import_free(tfmu);
 }
+
+TEST_CASE("Variable with name being the empty string") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/variables/valid/variable_name_empty_str";
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu != nullptr);
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
+    fmi3_testutil_import_free(tfmu);
+}
+
+TEST_CASE("Alias with name being the empty string") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/variables/valid/alias_name_empty_str";
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu != nullptr);
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
+    fmi3_testutil_import_free(tfmu);
+}

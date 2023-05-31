@@ -102,10 +102,8 @@ struct fmi3_xml_model_description_t {
     jm_string_set descriptions;
 
     jm_vector(jm_named_ptr) variablesByName;
-
-    jm_vector(jm_voidp)* variablesOrigOrder;
-
-    jm_vector(jm_voidp)* variablesByVR;
+    jm_vector(jm_voidp) variablesOrigOrder;
+    jm_vector(jm_voidp) variablesByVR;
 
     fmi3_fmu_kind_enu_t fmuKind;
 

@@ -67,6 +67,7 @@ jm_vector_declare_template(fmi3_value_reference_t)
     EXPAND_XML_ATTRNAME(previous) \
     EXPAND_XML_ATTRNAME(clocks) \
     EXPAND_XML_ATTRNAME(canHandleMultipleSetPerTimeInstant) \
+    EXPAND_XML_ATTRNAME(intermediateUpdate) \
     EXPAND_XML_ATTRNAME(mimeType) \
     EXPAND_XML_ATTRNAME(maxSize) \
     EXPAND_XML_ATTRNAME(intervalVariability) \

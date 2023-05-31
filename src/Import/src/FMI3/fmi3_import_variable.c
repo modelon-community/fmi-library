@@ -88,6 +88,10 @@ fmi3_boolean_t fmi3_import_get_canHandleMultipleSetPerTimeInstant(fmi3_import_va
     return fmi3_xml_get_canHandleMultipleSetPerTimeInstant(v);
 }
 
+fmi3_boolean_t fmi3_import_get_intermediateUpdate(fmi3_import_variable_t* v) {
+    return fmi3_xml_get_intermediateUpdate(v);
+}
+
 fmi3_import_variable_list_t* fmi3_import_get_variable_clocks(fmi3_import_t* fmu, fmi3_import_variable_t* v) {
     fmi3_import_variable_list_t* list = fmi3_import_alloc_variable_list(fmu, 0);
     if (fmi3_xml_get_variable_clocks(fmu->md, v, &list->variables) != jm_status_success) {

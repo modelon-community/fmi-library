@@ -69,6 +69,7 @@ fmi3_initial_enu_t fmi3_xml_get_initial(fmi3_xml_variable_t*);
 
 fmi3_xml_variable_t* fmi3_xml_get_previous(fmi3_xml_variable_t* v);
 fmi3_boolean_t fmi3_xml_get_canHandleMultipleSetPerTimeInstant(fmi3_xml_variable_t* v);
+fmi3_boolean_t fmi3_xml_get_intermediateUpdate(fmi3_xml_variable_t* v);
 int fmi3_xml_variable_is_clocked(fmi3_xml_variable_t* v);
 jm_status_enu_t fmi3_xml_get_variable_clocks(fmi3_xml_model_description_t* md, fmi3_xml_variable_t* v, jm_vector(jm_voidp)* list);
 

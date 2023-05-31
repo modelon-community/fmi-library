@@ -102,6 +102,8 @@ static void test_binary_default_attrs(fmi3_import_t* xml) {
     REQUIRE(fmi3_import_get_causality(v) == fmi3_causality_enu_local);
     REQUIRE(fmi3_import_get_variability(v) == fmi3_variability_enu_discrete);
     REQUIRE(fmi3_import_get_initial(v) == fmi3_initial_enu_calculated);  // Depends on causality and variability
+    REQUIRE(fmi3_import_get_canHandleMultipleSetPerTimeInstant(v) == true); // default
+    REQUIRE(fmi3_import_get_intermediateUpdate(v) == false); // default
 
     clockVars = fmi3_import_get_variable_clocks(xml, v);
     REQUIRE(fmi3_import_get_variable_list_size(clockVars) == 0);
@@ -135,7 +137,8 @@ static void test_binary_all_attrs(fmi3_import_t* xml) {
     REQUIRE(fmi3_import_get_variability(v) == fmi3_variability_enu_discrete);
     REQUIRE(fmi3_import_get_initial(v) == fmi3_initial_enu_calculated);
     REQUIRE(strcmp(fmi3_import_get_variable_description(v), "myDesc") == 0);
-    REQUIRE(fmi3_import_get_canHandleMultipleSetPerTimeInstant(v) == true); /* default */
+    REQUIRE(fmi3_import_get_canHandleMultipleSetPerTimeInstant(v) == true); // default
+    REQUIRE(fmi3_import_get_intermediateUpdate(v) == true);
 
     preBv = fmi3_import_get_previous(v);
     REQUIRE(preBv != nullptr);
@@ -590,5 +593,42 @@ TEST_CASE("Alias with name being the empty string") {
     fmi3_import_t* fmu = tfmu->fmu;
     REQUIRE(fmu != nullptr);
     REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
+    fmi3_testutil_import_free(tfmu);
+}
+TEST_CASE("Invalid intermediateUpdate - has causality parameter") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/variable_test/invalid/intermediateUpdate_parameter";
+
+    fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
+    REQUIRE(xml != nullptr);
+
+    const char* errMsg = fmi3_import_get_last_error(xml);
+    REQUIRE(strcmp(errMsg, "Variables with causality='parameter' must not be marked with intermediateUpdate='true'.") == 0);
+
+    fmi3_import_free(xml);
+}
+
+TEST_CASE("Invalid Clock - has attribute intermediateUpdate") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/variable_test/invalid/intermediateUpdate_clock";
+
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    REQUIRE(tfmu != nullptr);
+    REQUIRE(tfmu->fmu != nullptr);
+
+    const char* logMsg = "Variables of type 'Clock' must not have the 'intermediateUpdate' attribute.";
+    REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg)); // contains other errors; does not finish parsing all attributes
+
+    fmi3_testutil_import_free(tfmu);
+}
+
+TEST_CASE("Info check - intermediateUpdate ignored unless Co-Simulation") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/variable_test/valid/intermediateUpdate_not_cs";
+
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    REQUIRE(tfmu != nullptr);
+    REQUIRE(tfmu->fmu != nullptr);
+
+    const char* logMsg = "'intermediateUpdate' attribute ignored since FMU kind is not Co-Simulation.";
+    REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
+
     fmi3_testutil_import_free(tfmu);
 }

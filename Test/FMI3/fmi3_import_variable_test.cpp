@@ -286,6 +286,16 @@ static void test_clock_all_attrs(fmi3_import_t* xml) {
     REQUIRE(fmi3_import_get_clock_variable_shift_counter(cv)        == 6);
 }
 
+/**
+ * Tests parsing a variable with non-default canHandleMultipleSetPerTimeInstant attribute.
+ */
+static void test_non_default_canhandlemultiplesetpertimeinstant(fmi3_import_t* xml) {
+    fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "cannotHandle");
+    REQUIRE(v != nullptr);
+
+    REQUIRE(fmi3_import_get_canHandleMultipleSetPerTimeInstant(v) == 0);
+}
+
 TEST_CASE("Variable parsing") {
     const char* xmldir = FMI3_TEST_XML_DIR "/variables/valid/basic1";
 
@@ -321,6 +331,10 @@ TEST_CASE("Variable parsing") {
 
     SECTION("ClockAttr: multiple values") {
         test_clock_attr_multi_value(xml);
+    }
+
+    SECTION("canHandleMultipleSetPerTimeInstant attribute: non-default value") {
+        test_non_default_canhandlemultiplesetpertimeinstant(xml);
     }
 
     fmi3_import_free(xml);

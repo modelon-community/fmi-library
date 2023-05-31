@@ -60,6 +60,8 @@
     (Trying to create a separation with value refs, but probably not worth the effort.)
   =================================================================================== -->
 
+  <!-- Variable with non-default canHandleMultipleSetPerTimeInstant -->
+  <Float64 name="cannotHandle" valueReference="20" causality="input" canHandleMultipleSetPerTimeInstant="false" />
 
   <!-- Binary with empty mimeType-->
   <Binary name="binaryEmptyMimeType" valueReference="998" mimeType=""/>

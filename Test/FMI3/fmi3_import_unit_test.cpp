@@ -9,144 +9,318 @@
 
 // Tests for the Unit & DisplayUnit constructs
 
+#define DOUBLE_TOL (1.e-12) // tolerance for various conversions involving floating point arithmetics
+#define FLOAT_TOL  (1.e-4) // tolerance for various conversions involving floating point arithmetics
 
-/*
-TODO; 
-Notes:
+static void test_unit_basics(fmi3_import_t* xml) {
+    fmi3_import_unit_definitions_t* udList;
+    udList = fmi3_import_get_unit_definitions(xml);
+    REQUIRE(udList != nullptr);
+    REQUIRE(fmi3_import_get_unit_definitions_number(udList) == 1); // there is exactly one unit definition
 
-vbase = factor∗vunit + if relativeQuantity then 0 else offset
-"RelativeQuantity" is an attribute of a TypeDef on a variable
+    // check unit
+    fmi3_import_unit_t* u = fmi3_import_get_unit(udList, 0);
+    REQUIRE(u != nullptr);
+    REQUIRE(fmi3_import_get_unit(udList, 1) == nullptr); // only one unit exists, but should not segfault
+    REQUIRE(strcmp(fmi3_import_get_unit_name(u), "K") == 0);
 
-vdisplay = {factor∗vunit + offset       if inverse = false 
-            factor*1/vunit              if inverse = true
+    // Check SI unit exponents
+    const int* siExp;
+    siExp = fmi3_import_get_SI_unit_exponents(u);
+    REQUIRE(siExp[fmi3_SI_base_unit_kg]  == 0);
+    REQUIRE(siExp[fmi3_SI_base_unit_m]   == 0);
+    REQUIRE(siExp[fmi3_SI_base_unit_s]   == 0);
+    REQUIRE(siExp[fmi3_SI_base_unit_A]   == 0);
+    REQUIRE(siExp[fmi3_SI_base_unit_K]   == 1);
+    REQUIRE(siExp[fmi3_SI_base_unit_mol] == 0);
+    REQUIRE(siExp[fmi3_SI_base_unit_cd]  == 0);
+    REQUIRE(siExp[fmi3_SI_base_unit_rad] == 0);
 
-*/
+    REQUIRE(fmi3_import_get_SI_unit_factor(u) == 1.);
+    REQUIRE(fmi3_import_get_SI_unit_offset(u) == 0.);
 
-/* Parsing of Unit and DisplayUnit for Float64 variable */
-static void test_float64_unit(fmi3_import_t* xml) {
-    fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "float64WithUnit");
+    // trivial in this example, since factor == 1. & offset = 0.
+    REQUIRE(fmi3_import_convert_to_SI_base_unit(1., u) == 1.);
+    REQUIRE(fmi3_import_convert_from_SI_base_unit(1., u) == 1.);
+
+    // check displayUnit
+    unsigned int duNum = fmi3_import_get_unit_display_unit_number(u);
+    REQUIRE(duNum == 4);
+
+    fmi3_import_display_unit_t* du;
+    fmi3_import_unit_t* uBase;
+    // degF
+    du = fmi3_import_get_unit_display_unit(u, 0);
+    REQUIRE(du != nullptr);
+    uBase = fmi3_import_get_base_unit(du);
+    REQUIRE(uBase == u);
+    REQUIRE(strcmp(fmi3_import_get_display_unit_name(du), "degF") == 0);
+    REQUIRE(fmi3_import_get_display_unit_factor(du) == 1.7999999999999998);
+    REQUIRE(fmi3_import_get_display_unit_offset(du) == -459.67);
+    REQUIRE(fmi3_import_get_display_unit_inverse(du) == 0);
+
+    // degC
+    du = fmi3_import_get_unit_display_unit(u, 1);
+    REQUIRE(du != nullptr);
+    uBase = fmi3_import_get_base_unit(du);
+    REQUIRE(uBase == u);
+    REQUIRE(strcmp(fmi3_import_get_display_unit_name(du), "degC") == 0);
+    REQUIRE(fmi3_import_get_display_unit_factor(du) == 1.0);
+    REQUIRE(fmi3_import_get_display_unit_offset(du) == -273.15);
+    REQUIRE(fmi3_import_get_display_unit_inverse(du) == 0);
+
+    // degK_inv
+    du = fmi3_import_get_unit_display_unit(u, 2);
+    REQUIRE(du != nullptr);
+    uBase = fmi3_import_get_base_unit(du);
+    REQUIRE(uBase == u);
+    REQUIRE(strcmp(fmi3_import_get_display_unit_name(du), "degK_inv") == 0);
+    REQUIRE(fmi3_import_get_display_unit_factor(du) == 1.0);
+    REQUIRE(fmi3_import_get_display_unit_offset(du) == 0.0);
+    REQUIRE(fmi3_import_get_display_unit_inverse(du) == 1);
+
+    // 10degK_inv
+    du = fmi3_import_get_unit_display_unit(u, 3);
+    REQUIRE(du != nullptr);
+    uBase = fmi3_import_get_base_unit(du);
+    REQUIRE(uBase == u);
+    REQUIRE(strcmp(fmi3_import_get_display_unit_name(du), "10degK_inv") == 0);
+    REQUIRE(fmi3_import_get_display_unit_factor(du) == 10.0);
+    REQUIRE(fmi3_import_get_display_unit_offset(du) == 0.0);
+    REQUIRE(fmi3_import_get_display_unit_inverse(du) == 1);
+
+    // out of bounds; should not segfault
+    du = fmi3_import_get_unit_display_unit(u, 4);
+    REQUIRE(du == nullptr);
+}
+
+/* Parsing and testing of Unit and DisplayUnit for Float64 variable */
+static void test_float64(fmi3_import_t* xml) {
+    fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "temp64_C");
     REQUIRE(v != nullptr);
 
-    fmi3_import_unit_t* u;
-    fmi3_import_display_unit_t* du;
-    fmi3_float64_t du_val_orig;
-    fmi3_float64_t du_val_exp;
-    fmi3_float64_t du_val_conv;
-    fmi3_float64_t du_val_reconv;
-
-    /* Arbitrarily chosen values that don't get truncated/rounded */
     fmi3_import_float64_variable_t* var = fmi3_import_get_variable_as_float64(v);
     REQUIRE(var != nullptr);
 
-    /* just a few checks on unit and display unit, full check is done in fmi3_import_xml test (TODO: create bouncing ball example with different numeric types, for fmi3_import_xml test) */
     /* unit */
-    u = fmi3_import_get_float64_variable_unit(var);
+    fmi3_import_unit_t* u = fmi3_import_get_float64_variable_unit(var);
     REQUIRE(u != nullptr);
-    REQUIRE(!strcmp("K", fmi3_import_get_unit_name(u)));
+    REQUIRE(strcmp(fmi3_import_get_unit_name(u), "K") == 0);
 
-    /* display unit */
-    du = fmi3_import_get_float64_variable_display_unit(var);
+    fmi3_float64_t du_val_orig, du_val_exp, du_val_conv, du_val_reconv;
+
+    /* associated displayUnit */
+    fmi3_import_display_unit_t* du = fmi3_import_get_float64_variable_display_unit(var);
     REQUIRE(du != nullptr);
-    REQUIRE(!strcmp("degC", fmi3_import_get_display_unit_name(du)));
+    REQUIRE(strcmp(fmi3_import_get_display_unit_name(du), "degC") == 0);
 
-    du_val_orig = 222.22;
-    du_val_exp = du_val_orig - 273.15;
-    // TODO: Fix
-    // du_val_conv = fmi3_import_float64_convert_to_display_unit(du_val_orig, du, 0);
-    // REQUIRE(du_val_exp == du_val_conv);
+    // test default displayUnit: degC
+    du_val_orig = 222.22; // K, base unit
 
-    // du_val_reconv = fmi3_import_float64_convert_from_display_unit(du_val_conv, du, 0);
-    // REQUIRE(du_val_orig == du_val_reconv);
+    du_val_exp = du_val_orig - 273.15; // degC
+    du_val_conv = fmi3_import_float64_convert_to_display_unit(du_val_orig, du, 0);
+    REQUIRE(du_val_exp == du_val_conv);
+    du_val_reconv = fmi3_import_float64_convert_from_display_unit(du_val_conv, du, 0);
+    REQUIRE(du_val_orig == du_val_reconv);
+
+    // test as relativeQuantity; value is a temperature difference, offsets cancel out and are ignored
+    du_val_orig = 10; // K
+    du_val_exp = 10; // degC, temperature differences in K and degC are identical
+    du_val_conv = fmi3_import_float64_convert_to_display_unit(du_val_orig, du, 1);
+    REQUIRE(du_val_exp == du_val_conv);
+    du_val_reconv = fmi3_import_float64_convert_from_display_unit(du_val_conv, du, 1);
+    REQUIRE(du_val_orig == du_val_reconv);
+
+    // Test other displayUnits
+    // degF
+    du = fmi3_import_get_unit_display_unit(u, 0);
+    REQUIRE(du != nullptr);
+    REQUIRE(strcmp(fmi3_import_get_display_unit_name(du), "degF") == 0);
+
+    du_val_orig = 273.15; // K, base unit
+    du_val_exp = 32.0; // degF
+    du_val_conv = fmi3_import_float64_convert_to_display_unit(du_val_orig, du, 0);
+    // Add some tolerance for conversion due to floatig point errors
+    REQUIRE_THAT(du_val_exp - du_val_conv, Catch::Matchers::Floating::WithinAbsMatcher(0., DOUBLE_TOL));
+    du_val_reconv = fmi3_import_float64_convert_from_display_unit(du_val_conv, du, 0);
+    REQUIRE_THAT(du_val_orig - du_val_reconv, Catch::Matchers::Floating::WithinAbsMatcher(0., DOUBLE_TOL));
+
+    // test as relativeQuantity; value is a temperature difference, offsets cancel out and are ignored
+    du_val_orig = 10; // K
+    du_val_exp = 10 * (9./5.); // degF, temperature differences in K and degF are only affected by factor
+    du_val_conv = fmi3_import_float64_convert_to_display_unit(du_val_orig, du, 1);
+    REQUIRE_THAT(du_val_exp - du_val_conv, Catch::Matchers::Floating::WithinAbsMatcher(0., DOUBLE_TOL));
+    du_val_reconv = fmi3_import_float64_convert_from_display_unit(du_val_conv, du, 1);
+    REQUIRE_THAT(du_val_orig - du_val_reconv, Catch::Matchers::Floating::WithinAbsMatcher(0., DOUBLE_TOL));
+
+    // degK_inv
+    du = fmi3_import_get_unit_display_unit(u, 2);
+    REQUIRE(du != nullptr);
+    REQUIRE(strcmp(fmi3_import_get_display_unit_name(du), "degK_inv") == 0);
+
+    du_val_orig = 273.15; // K, base unit
+    du_val_exp = 1./273.15; // degK_inv
+    du_val_conv = fmi3_import_float64_convert_to_display_unit(du_val_orig, du, 0);
+    // Add some tolerance for conversion due to floatig point errors
+    REQUIRE_THAT(du_val_exp - du_val_conv, Catch::Matchers::Floating::WithinAbsMatcher(0., DOUBLE_TOL));
+    du_val_reconv = fmi3_import_float64_convert_from_display_unit(du_val_conv, du, 0);
+    REQUIRE_THAT(du_val_orig - du_val_reconv, Catch::Matchers::Floating::WithinAbsMatcher(0., DOUBLE_TOL));
+
+    // test as relativeQuantity; value is a temperature difference, offsets cancel out and are ignored
+    du_val_orig = 10; // K
+    du_val_exp = 1./10.; // degK_inv
+    du_val_conv = fmi3_import_float64_convert_to_display_unit(du_val_orig, du, 1);
+    REQUIRE_THAT(du_val_exp - du_val_conv, Catch::Matchers::Floating::WithinAbsMatcher(0., DOUBLE_TOL));
+    du_val_reconv = fmi3_import_float64_convert_from_display_unit(du_val_conv, du, 1);
+    REQUIRE_THAT(du_val_orig - du_val_reconv, Catch::Matchers::Floating::WithinAbsMatcher(0., DOUBLE_TOL));
+
+    // 10degK_inv
+    du = fmi3_import_get_unit_display_unit(u, 3);
+    REQUIRE(du != nullptr);
+    REQUIRE(strcmp(fmi3_import_get_display_unit_name(du), "10degK_inv") == 0);
+
+    du_val_orig = 273.15; // K, base unit
+    du_val_exp = 10./273.15; // 10degK_inv
+    du_val_conv = fmi3_import_float64_convert_to_display_unit(du_val_orig, du, 0);
+    // Add some tolerance for conversion due to floatig point errors
+    REQUIRE_THAT(du_val_exp - du_val_conv, Catch::Matchers::Floating::WithinAbsMatcher(0., DOUBLE_TOL));
+    du_val_reconv = fmi3_import_float64_convert_from_display_unit(du_val_conv, du, 0);
+    REQUIRE_THAT(du_val_orig - du_val_reconv, Catch::Matchers::Floating::WithinAbsMatcher(0., DOUBLE_TOL));
+
+    // test as relativeQuantity; value is a temperature difference, offsets cancel out and are ignored
+    du_val_orig = 10; // K
+    du_val_exp = 1.; // 10degK_inv
+    du_val_conv = fmi3_import_float64_convert_to_display_unit(du_val_orig, du, 1);
+    REQUIRE_THAT(du_val_exp - du_val_conv, Catch::Matchers::Floating::WithinAbsMatcher(0., DOUBLE_TOL));
+    du_val_reconv = fmi3_import_float64_convert_from_display_unit(du_val_conv, du, 1);
+    REQUIRE_THAT(du_val_orig - du_val_reconv, Catch::Matchers::Floating::WithinAbsMatcher(0., DOUBLE_TOL));
 }
 
-/* Parsing of Unit and DisplayUnit for Float32 variable */
-static void test_float32_unit(fmi3_import_t* xml) {
-    fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "float32WithUnit");
+/* Parsing and testing of Unit and DisplayUnit for Float32 variable */
+static void test_float32(fmi3_import_t* xml) {
+    fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "temp32_C");
     REQUIRE(v != nullptr);
 
-    fmi3_import_unit_t* u;
-    fmi3_import_display_unit_t* du;
-    fmi3_float32_t du_val_orig;
-    fmi3_float32_t du_val_exp;
-    fmi3_float32_t du_val_conv;
-    fmi3_float32_t du_val_reconv;
-
-    /* Arbitrarily chosen values that don't get truncated/rounded */
     fmi3_import_float32_variable_t* var = fmi3_import_get_variable_as_float32(v);
     REQUIRE(var != nullptr);
 
-    /* just a few checks on unit and display unit, full check is done in fmi3_import_xml test (TODO: create bouncing ball example with different numeric types, for fmi3_import_xml test) */
     /* unit */
-    u = fmi3_import_get_float32_variable_unit(var);
+    fmi3_import_unit_t* u = fmi3_import_get_float32_variable_unit(var);
     REQUIRE(u != nullptr);
-    REQUIRE(!strcmp("K", fmi3_import_get_unit_name(u)));
+    REQUIRE(strcmp(fmi3_import_get_unit_name(u), "K") == 0);
 
-    du = fmi3_import_get_float32_variable_display_unit(var);
-    REQUIRE(du != nullptr); /* display unit */
-    REQUIRE(!strcmp("degC", fmi3_import_get_display_unit_name(du)));
+    fmi3_float32_t du_val_orig, du_val_exp, du_val_conv, du_val_reconv;
 
-    du_val_orig = 222.22f;
-    du_val_exp = du_val_orig - 273.15f;
-    // TODO: FIX
-    // du_val_conv = fmi3_import_float32_convert_to_display_unit(du_val_orig, du, 0);
-    // REQUIRE(du_val_exp == du_val_conv);
+    /* associated displayUnit */
+    fmi3_import_display_unit_t* du = fmi3_import_get_float32_variable_display_unit(var);
+    REQUIRE(du != nullptr);
+    REQUIRE(strcmp(fmi3_import_get_display_unit_name(du), "degC") == 0);
 
-    // du_val_reconv = fmi3_import_float32_convert_from_display_unit(du_val_conv, du, 0);
-    // REQUIRE(du_val_orig == du_val_reconv);
+    // test default displayUnit: degC
+    du_val_orig = 222.22f; // K, base unit
+
+    du_val_exp = du_val_orig - 273.15f; // degC
+    du_val_conv = fmi3_import_float32_convert_to_display_unit(du_val_orig, du, 0);
+    REQUIRE(du_val_exp == du_val_conv);
+    du_val_reconv = fmi3_import_float32_convert_from_display_unit(du_val_conv, du, 0);
+    REQUIRE(du_val_orig == du_val_reconv);
+
+    // test as relativeQuantity; value is a temperature difference, offsets cancel out and are ignored
+    du_val_orig = 10.f; // K
+    du_val_exp = 10.f; // degC, temperature differences in K and degC are identical
+    du_val_conv = fmi3_import_float32_convert_to_display_unit(du_val_orig, du, 1);
+    REQUIRE(du_val_exp == du_val_conv);
+    du_val_reconv = fmi3_import_float32_convert_from_display_unit(du_val_conv, du, 1);
+    REQUIRE(du_val_orig == du_val_reconv);
+
+    // Test other displayUnits
+    // degF
+    du = fmi3_import_get_unit_display_unit(u, 0);
+    REQUIRE(du != nullptr);
+    REQUIRE(strcmp(fmi3_import_get_display_unit_name(du), "degF") == 0);
+
+    du_val_orig = 273.15f; // K, base unit
+    du_val_exp = 32.0f; // degF
+    du_val_conv = fmi3_import_float32_convert_to_display_unit(du_val_orig, du, 0);
+    // Add some tolerance for conversion due to floatig point errors
+    REQUIRE_THAT(du_val_exp - du_val_conv, Catch::Matchers::Floating::WithinAbsMatcher(0., FLOAT_TOL));
+    du_val_reconv = fmi3_import_float32_convert_from_display_unit(du_val_conv, du, 0);
+    REQUIRE_THAT(du_val_orig - du_val_reconv, Catch::Matchers::Floating::WithinAbsMatcher(0., FLOAT_TOL));
+
+    // test as relativeQuantity; value is a temperature difference, offsets cancel out and are ignored
+    du_val_orig = 10.f; // K
+    du_val_exp = 10.f * (9.f/5.f); // degF, temperature differences in K and degF are only affected by factor
+    du_val_conv = fmi3_import_float32_convert_to_display_unit(du_val_orig, du, 1);
+    REQUIRE_THAT(du_val_exp - du_val_conv, Catch::Matchers::Floating::WithinAbsMatcher(0., FLOAT_TOL));
+    du_val_reconv = fmi3_import_float32_convert_from_display_unit(du_val_conv, du, 1);
+    REQUIRE_THAT(du_val_orig - du_val_reconv, Catch::Matchers::Floating::WithinAbsMatcher(0., FLOAT_TOL));
+
+    // degK_inv
+    du = fmi3_import_get_unit_display_unit(u, 2);
+    REQUIRE(du != nullptr);
+    REQUIRE(strcmp(fmi3_import_get_display_unit_name(du), "degK_inv") == 0);
+
+    du_val_orig = 273.15f; // K, base unit
+    du_val_exp = 1.f/273.15f; // degK_inv
+    du_val_conv = fmi3_import_float32_convert_to_display_unit(du_val_orig, du, 0);
+    // Add some tolerance for conversion due to floatig point errors
+    REQUIRE_THAT(du_val_exp - du_val_conv, Catch::Matchers::Floating::WithinAbsMatcher(0., FLOAT_TOL));
+    du_val_reconv = fmi3_import_float32_convert_from_display_unit(du_val_conv, du, 0);
+    REQUIRE_THAT(du_val_orig - du_val_reconv, Catch::Matchers::Floating::WithinAbsMatcher(0., FLOAT_TOL));
+
+    // test as relativeQuantity; value is a temperature difference, offsets cancel out and are ignored
+    du_val_orig = 10.f; // K
+    du_val_exp = 1.f/10.f; // degK_inv
+    du_val_conv = fmi3_import_float32_convert_to_display_unit(du_val_orig, du, 1);
+    REQUIRE_THAT(du_val_exp - du_val_conv, Catch::Matchers::Floating::WithinAbsMatcher(0., FLOAT_TOL));
+    du_val_reconv = fmi3_import_float32_convert_from_display_unit(du_val_conv, du, 1);
+    REQUIRE_THAT(du_val_orig - du_val_reconv, Catch::Matchers::Floating::WithinAbsMatcher(0., FLOAT_TOL));
+
+    // 10degK_inv
+    du = fmi3_import_get_unit_display_unit(u, 3);
+    REQUIRE(du != nullptr);
+    REQUIRE(strcmp(fmi3_import_get_display_unit_name(du), "10degK_inv") == 0);
+
+    du_val_orig = 273.15f; // K, base unit
+    du_val_exp = 10.f/273.15f; // 10degK_inv
+    du_val_conv = fmi3_import_float32_convert_to_display_unit(du_val_orig, du, 0);
+    // Add some tolerance for conversion due to floatig point errors
+    REQUIRE_THAT(du_val_exp - du_val_conv, Catch::Matchers::Floating::WithinAbsMatcher(0., FLOAT_TOL));
+    du_val_reconv = fmi3_import_float32_convert_from_display_unit(du_val_conv, du, 0);
+    REQUIRE_THAT(du_val_orig - du_val_reconv, Catch::Matchers::Floating::WithinAbsMatcher(0., FLOAT_TOL));
+
+    // test as relativeQuantity; value is a temperature difference, offsets cancel out and are ignored
+    du_val_orig = 10.f; // K
+    du_val_exp = 1.f; // 10degK_inv
+    du_val_conv = fmi3_import_float32_convert_to_display_unit(du_val_orig, du, 1);
+    REQUIRE_THAT(du_val_exp - du_val_conv, Catch::Matchers::Floating::WithinAbsMatcher(0., FLOAT_TOL));
+    du_val_reconv = fmi3_import_float32_convert_from_display_unit(du_val_conv, du, 1);
+    REQUIRE_THAT(du_val_orig - du_val_reconv, Catch::Matchers::Floating::WithinAbsMatcher(0., FLOAT_TOL));
 }
 
-TEST_CASE("DisplayUnit parsing") {
-    const char* xmldir = FMI3_TEST_XML_DIR "/display_unit/valid";
+TEST_CASE("Unit and DisplayUnit testing") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/unit_display_unit/valid";
 
     fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
     REQUIRE(xml != nullptr);
 
-    // TODO: Do full test of all the import functions, resp copy them from the other one?
-
-    // TODO: Also add a test for inverse = false
-
-    SECTION("Float32") {
-        fmi3_import_variable_t* v = fmi3_import_get_variable_by_vr(xml, 1);
-        REQUIRE(v != nullptr);
-
-        fmi3_import_float32_variable_t* f32v = fmi3_import_get_variable_as_float32(v);
-        REQUIRE(f32v != nullptr);
-
-        fmi3_import_display_unit_t* du = fmi3_import_get_float32_variable_display_unit(f32v);
-        REQUIRE(du != nullptr);
-
-        REQUIRE(fmi3_import_get_display_unit_inverse(du) == 1);
-
-        REQUIRE(fmi3_import_float64_convert_to_display_unit(1000, du) == 1);
+    SECTION("Basic Unit verification") {
+        test_unit_basics(xml);
     }
 
     SECTION("Float64") {
-        fmi3_import_variable_t* v = fmi3_import_get_variable_by_vr(xml, 0);
-        REQUIRE(v != nullptr);
-
-        fmi3_import_float64_variable_t* f64v = fmi3_import_get_variable_as_float64(v);
-        REQUIRE(f64v != nullptr);
-
-        fmi3_import_display_unit_t* du = fmi3_import_get_float64_variable_display_unit(f64v);
-        REQUIRE(du != nullptr);
-
-        REQUIRE(fmi3_import_get_display_unit_inverse(du) == 1);
-        REQUIRE(fmi3_import_float64_convert_to_display_unit(1000, du) == 1);
+        test_float64(xml);
     }
 
-    SECTION("Float64 old") {
-        test_float32_unit(xml);
-    }
-
-    SECTION("Float32 old") {
-        test_float32_unit(xml);
+    SECTION("Float32") {
+        test_float32(xml);
     }
 
     fmi3_import_free(xml);   
 }
 
 TEST_CASE("Invalid DisplayUnit - inserve = true  + non-zero offset") {
-    const char* xmldir = FMI3_TEST_XML_DIR "/display_unit/invalid/inverse_offset";
+    const char* xmldir = FMI3_TEST_XML_DIR "/unit_display_unit/invalid/inverse_offset";
 
     fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
     REQUIRE(xml != nullptr);
@@ -157,7 +331,7 @@ TEST_CASE("Invalid DisplayUnit - inserve = true  + non-zero offset") {
 }
 
 TEST_CASE("Invalid DisplayUnit - zero factor") {
-    const char* xmldir = FMI3_TEST_XML_DIR "/display_unit/invalid/zero_factor";
+    const char* xmldir = FMI3_TEST_XML_DIR "/unit_display_unit/invalid/zero_factor";
 
     fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
     REQUIRE(xml != nullptr);

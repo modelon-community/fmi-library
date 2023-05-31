@@ -19,7 +19,7 @@
 static const char* module = "FMI3XML";
 
 fmi3_xml_unit_t* fmi3_xml_get_unit(fmi3_xml_unit_definitions_t* ud, unsigned int  index) {
-    if(index >= fmi3_xml_get_unit_definitions_number(ud)) return 0;
+    if(index >= fmi3_xml_get_unit_definitions_number(ud)) return NULL;
     return jm_vector_get_item(jm_named_ptr)(&ud->definitions, index).ptr;
 }
 
@@ -74,7 +74,6 @@ fmi3_xml_display_unit_t* fmi3_xml_get_unit_display_unit(fmi3_xml_unit_t* u, size
     return jm_vector_get_item(jm_voidp)(&u->displayUnits, index);
 }
 
-
 fmi3_xml_unit_t* fmi3_xml_get_base_unit(fmi3_xml_display_unit_t* du) {
     return du->baseUnit;
 }
@@ -125,7 +124,6 @@ int fmi3_xml_handle_UnitDefinitions(fmi3_xml_parser_context_t *context, const ch
     }
     return 0;
 }
-
 
 fmi3_xml_display_unit_t* fmi3_xml_get_parsed_unit(fmi3_xml_parser_context_t *context, jm_vector(char)* name, int sorted) {
     fmi3_xml_unit_t dummy, *unit;
@@ -206,8 +204,6 @@ int fmi3_xml_handle_BaseUnit(fmi3_xml_parser_context_t *context, const char* dat
     return 0;
 }
 
-
-
 int fmi3_xml_handle_Unit(fmi3_xml_parser_context_t *context, const char* data) {
     if(!data) {
             fmi3_xml_display_unit_t* unit;
@@ -270,8 +266,8 @@ int fmi3_xml_handle_DisplayUnit(fmi3_xml_parser_context_t *context, const char* 
                 }
             }
             if ((dispUnit->inverse) && (dispUnit->offset != 0)) {
-                // TODO: How to handle, set inverse = False or just continue?
                 fmi3_xml_parse_error(context, "DisplayUnit attribute 'inverse' = true only allowed for 'offset' = 0");
+                ret = -1;
             }
 
             return ret ;
@@ -282,4 +278,3 @@ int fmi3_xml_handle_DisplayUnit(fmi3_xml_parser_context_t *context, const char* 
     }
     return 0;
 }
-

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription fmiVersion="3.0" modelName="" instantiationToken="">
+<ModelExchange modelIdentifier="DisplayUnitTest"/>
+
+<UnitDefinitions>
+	<Unit name="K">
+		<BaseUnit K="1" />
+		<DisplayUnit name="degF" factor="1.7999999999999998" offset="-459.67" />
+		<DisplayUnit name="degC" offset="-273.15" />
+		<DisplayUnit name="degK_inv" inverse="true" /> <!-- not physically sensible, just testing -->
+		<DisplayUnit name="10degK_inv" factor="10" inverse="true" /> <!-- not physically sensible, just testing -->
+	</Unit>
+</UnitDefinitions>
+
+<ModelVariables>
+	<!-- with unit and displayunit -->
+	<Float64 name="temp64_C" valueReference="0" unit="K" displayUnit="degC"/>
+	<Float32 name="temp32_C" valueReference="1" unit="K" displayUnit="degC"/>
+</ModelVariables>
+
+<ModelStructure/>
+</fmiModelDescription>

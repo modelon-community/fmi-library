@@ -514,3 +514,36 @@ TEST_CASE("Invalid Alias - no name") {
     
     fmi3_testutil_import_free(tfmu);
 }
+
+TEST_CASE("Invalid valueReference - two vars with same VR - basic") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/variables/invalid/same_vr1";
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu == nullptr);
+    
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "The following variables have the same valueReference: v1, v2"));
+    
+    fmi3_testutil_import_free(tfmu);
+}
+
+TEST_CASE("Invalid valueReference - two vars with same VR - more vars") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/variables/invalid/same_vr2";
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu == nullptr);
+    
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "The following variables have the same valueReference: v3, v8"));
+    
+    fmi3_testutil_import_free(tfmu);
+}
+
+TEST_CASE("Invalid valueReference - same VR but different type") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/variables/invalid/same_vr4";
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu == nullptr);
+    
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "The following variables have the same valueReference: v1, v2"));
+    
+    fmi3_testutil_import_free(tfmu);
+}

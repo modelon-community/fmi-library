@@ -228,23 +228,22 @@ void printVariableInfo(fmi3_import_t* fmu,
             break;
         }
         case fmi3_base_type_enum:{
-            printf("start = %d\n", fmi3_import_get_enum_variable_start(fmi3_import_get_variable_as_enum(v)));
+            printf("start = %ld\n", fmi3_import_get_enum_variable_start(fmi3_import_get_variable_as_enum(v)));
             break;
         }
         default:
             printf("Error in fmiGetBaseType()\n");
         }
     }
-    {
-        // TODO: Print variable aliases
-        // fmi3_import_variable_list_t* vl = fmi3_import_get_variable_aliases(fmu, v);
-        // size_t i, n = fmi3_import_get_variable_list_size(vl);
-        // if (n > 1) {
-        //     printf("Listing aliases: \n");
-        //     for (i = 0;i<n;i++)
-        //         printf("\t%s\n",fmi3_import_get_variable_name(fmi3_import_get_variable(vl, i)));
-        // }
-        // fmi3_import_free_variable_list(vl);
+    // Print aliases:
+    fmi3_import_alias_variables_t* aliases = fmi3_import_get_variable_aliases(v);
+    fmi3_import_alias_variable_t* alias;
+    for (size_t i = 0; i < fmi3_import_get_variable_aliases_number(v); i++) {
+        if (i == 0) {
+            printf("Listing aliases: \n");
+        }
+        alias = fmi3_import_get_alias(aliases, i);
+        printf("\t%s\n", fmi3_import_get_alias_variable_name(alias));
     }
 }
 

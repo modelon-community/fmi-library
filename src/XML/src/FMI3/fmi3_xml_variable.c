@@ -1040,7 +1040,7 @@ static void fmi3_xml_free_alias(jm_callbacks* callbacks, fmi3_xml_alias_variable
     callbacks->free(alias);  // Also frees alias->name
 }
 
-void fmi3_xml_variable_free_internals(jm_callbacks* callbacks, fmi3_xml_variable_t* var) {
+void fmi3_xml_free_variable(jm_callbacks* callbacks, fmi3_xml_variable_t* var) {
     /* We need special handling of Strings and Binaries because
     *  of how start values are handled differently for those types.
     */
@@ -1077,6 +1077,7 @@ void fmi3_xml_variable_free_internals(jm_callbacks* callbacks, fmi3_xml_variable
         jm_vector_free(fmi3_value_reference_t)(var->clocks);
         var->clocks = NULL;
     }
+    callbacks->free(var);
 }
 
 /**

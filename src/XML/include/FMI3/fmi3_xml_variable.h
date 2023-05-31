@@ -191,7 +191,7 @@ fmi3_int64_t* fmi3_xml_get_enum_variable_start_array(fmi3_xml_enum_variable_t* v
 int fmi3_xml_get_enum_variable_min(fmi3_xml_enum_variable_t* v);
 int fmi3_xml_get_enum_variable_max(fmi3_xml_enum_variable_t* v);
 
-void fmi3_xml_variable_free_internals(jm_callbacks* callbacks, fmi3_xml_variable_t* var);
+void fmi3_xml_free_variable(jm_callbacks* callbacks, fmi3_xml_variable_t* var);
 
 /**
 @}

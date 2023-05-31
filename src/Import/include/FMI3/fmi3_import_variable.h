@@ -213,9 +213,7 @@ FMILIB_EXPORT fmi3_boolean_t fmi3_import_get_canHandleMultipleSetPerTimeInstant(
 
 /** \brief Get the intermediateUpdate flag for a variable.
 
-    @return For inputs: If false, then only one fmiSetXXX call is allowed at
-    one super dense time instant. In other words, this input is not allowed to
-    appear in an algebraic loop.
+    @return If true, the variable can be accessed in Intermediate Update Mode
 */
 FMILIB_EXPORT fmi3_boolean_t fmi3_import_get_intermediateUpdate(fmi3_import_variable_t* v);
 

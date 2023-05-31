@@ -36,6 +36,10 @@ typedef union fmi3_xml_valueref_or_variable_union_t {
     fmi3_xml_variable_t* variable;
 } fmi3_xml_valueref_or_variable_union_t;
 
+struct fmi3_xml_alias_variables_t {
+    jm_vector(jm_voidp) vec;
+};
+
 struct fmi3_xml_alias_variable_t {
     const char* description;
     fmi3_xml_display_unit_t* displayUnit;  // Only used for FLoatXX variables.

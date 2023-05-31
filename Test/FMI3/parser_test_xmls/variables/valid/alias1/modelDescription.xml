@@ -60,12 +60,6 @@
     <String name="v9" valueReference="9">
         <Alias name="v9_a1" description=""/>
     </String>
-
-    <!--
-    TODO:
-        - Test that same VR x2 gives error
-        - Negated alias?
-    -->
 </ModelVariables>
 
 <ModelStructure/>

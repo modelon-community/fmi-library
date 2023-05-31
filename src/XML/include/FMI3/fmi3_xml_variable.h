@@ -51,7 +51,7 @@ fmi3_xml_variable_typedef_t* fmi3_xml_get_variable_declared_type(fmi3_xml_variab
 fmi3_base_type_enu_t fmi3_xml_get_variable_base_type(fmi3_xml_variable_t*);
 
 fmi3_xml_alias_variables_t* fmi3_xml_get_variable_aliases(fmi3_xml_variable_t* v);
-size_t fmi3_xml_get_variable_aliases_size(fmi3_xml_variable_t* v);
+size_t fmi3_xml_get_alias_variables_number(fmi3_xml_alias_variables_t* aliases);
 fmi3_xml_alias_variable_t* fmi3_xml_get_alias(fmi3_xml_alias_variables_t* aliases, size_t index);
 const char* fmi3_xml_get_alias_variable_name(fmi3_xml_alias_variable_t* alias);
 const char* fmi3_xml_get_alias_variable_description(fmi3_xml_alias_variable_t* alias);

@@ -371,8 +371,8 @@ fmi3_import_alias_variables_t* get_aliases(fmi3_import_t* fmu, const char* baseV
 
     v = fmi3_import_get_variable_by_name(fmu, baseVarName);
     REQUIRE(v != nullptr);
-    nAlias  = fmi3_import_get_variable_aliases_number(v);
     aliases = fmi3_import_get_variable_aliases(v);
+    nAlias  = fmi3_import_get_alias_variables_number(aliases);
     REQUIRE(nAlias == nAliasExp);
     REQUIRE(aliases != nullptr);
 
@@ -428,8 +428,8 @@ TEST_CASE("Alias variables") {
     SECTION("Without alias") {
         fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(fmu, "v1");
         REQUIRE(v != nullptr);
-        nAlias  = fmi3_import_get_variable_aliases_number(v);
         aliases = fmi3_import_get_variable_aliases(v);
+        nAlias  = fmi3_import_get_alias_variables_number(aliases);
         REQUIRE(nAlias == 0);
         REQUIRE(aliases == nullptr);
     }

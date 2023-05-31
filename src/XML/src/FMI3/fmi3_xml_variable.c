@@ -897,9 +897,9 @@ fmi3_xml_alias_variables_t* fmi3_xml_get_variable_aliases(fmi3_xml_variable_t* v
     return NULL;
 }
 
-size_t fmi3_xml_get_variable_aliases_size(fmi3_xml_variable_t* v) {
-    if (v->aliases) {
-        return jm_vector_get_size(jm_voidp)(v->aliases);
+size_t fmi3_xml_get_alias_variables_number(fmi3_xml_alias_variables_t* aliases) {
+    if (aliases) {
+        return jm_vector_get_size(jm_voidp)(&aliases->vec);
     }
     return 0;
 }

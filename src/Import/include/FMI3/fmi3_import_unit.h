@@ -73,8 +73,7 @@ FMILIB_EXPORT double fmi3_import_get_SI_unit_factor(fmi3_import_unit_t* u);
 FMILIB_EXPORT double fmi3_import_get_SI_unit_offset(fmi3_import_unit_t* u);
 
 /**
-    \brief Convert a value with respect to the unit to the
-    value with respect to the SI base unit.
+    \brief Convert a value with respect to the unit to the value with respect to the SI base unit.
 */
 FMILIB_EXPORT double fmi3_import_convert_to_SI_base_unit(double v, fmi3_import_unit_t* u);
 
@@ -90,9 +89,10 @@ FMILIB_EXPORT double fmi3_import_convert_from_SI_base_unit(double v, fmi3_import
 FMILIB_EXPORT fmi3_import_display_unit_t* fmi3_import_get_unit_display_unit(fmi3_import_unit_t* u, size_t index);
 
 /**
-    \brief Get unit defition for a display unit.
+    \brief Get unit definition for a display unit.
 */
 FMILIB_EXPORT fmi3_import_unit_t* fmi3_import_get_base_unit(fmi3_import_display_unit_t* du);
+
 /**
     \brief Get display unit name
 */

@@ -22,9 +22,7 @@ vdisplay = {factor∗vunit + offset       if inverse = false
 
 */
 
-/* Parse unit and display unit info for float32 variable */
-
-// TODO: copy this over to unit & display unit cpp test?
+/* Parsing of Unit and DisplayUnit for Float64 variable */
 static void test_float64_unit(fmi3_import_t* xml) {
     fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "float64WithUnit");
     REQUIRE(v != nullptr);
@@ -61,7 +59,7 @@ static void test_float64_unit(fmi3_import_t* xml) {
     // REQUIRE(du_val_orig == du_val_reconv);
 }
 
-/* Parse unit and display unit info for float32 variable */
+/* Parsing of Unit and DisplayUnit for Float32 variable */
 static void test_float32_unit(fmi3_import_t* xml) {
     fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "float32WithUnit");
     REQUIRE(v != nullptr);

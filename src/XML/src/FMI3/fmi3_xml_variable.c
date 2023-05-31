@@ -2104,6 +2104,12 @@ int fmi3_xml_handle_Alias(fmi3_xml_parser_context_t* context, const char* data) 
         // Create the alias and set name at same time:
         fmi3_xml_alias_variable_t* alias = fmi3_xml_alloc_alias_with_name(context, jm_vector_get_itemp(char)(bufName, 0));
         if (!alias) return -1;
+        
+        // Add the alias to the base variable:
+        if (!baseVar->aliases) {
+            baseVar->aliases = jm_vector_alloc(jm_voidp)(0, 0, context->callbacks);
+        }
+        jm_vector_push_back(jm_voidp)(baseVar->aliases, alias);
 
         // Set the other fields:
         if (hasDesc) {
@@ -2138,15 +2144,6 @@ int fmi3_xml_handle_Alias(fmi3_xml_parser_context_t* context, const char* data) 
                 // Not clear why we do that. Skipping here for now.
             }
         }
-        
-        // Add the alias to the base variable:
-        if (!baseVar->aliases) {
-            baseVar->aliases = jm_vector_alloc(jm_voidp)(0, 0, context->callbacks);
-        }
-        jm_vector_push_back(jm_voidp)(baseVar->aliases, alias);
-
-        // TODO: Create alias obj
-        // TODO: displayUnit
     }
     return 0;
 }

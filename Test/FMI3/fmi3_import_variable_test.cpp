@@ -135,7 +135,7 @@ static void test_binary_all_attrs(fmi3_import_t* xml) {
     REQUIRE(fmi3_import_get_variable_vr(v) == 4);
     REQUIRE(fmi3_import_get_causality(v) == fmi3_causality_enu_output);
     REQUIRE(fmi3_import_get_variability(v) == fmi3_variability_enu_discrete);
-    REQUIRE(fmi3_import_get_initial(v) == fmi3_initial_enu_exact);
+    REQUIRE(fmi3_import_get_initial(v) == fmi3_initial_enu_calculated);
     REQUIRE_STREQ(fmi3_import_get_variable_description(v), "myDesc");
     REQUIRE(fmi3_import_get_can_handle_multiple_set_per_time_instant(v) == true); // default
     REQUIRE(fmi3_import_get_intermediate_update(v) == true);

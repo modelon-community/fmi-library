@@ -86,42 +86,17 @@ int fmi3_import_get_display_unit_inverse(fmi3_import_display_unit_t* du) {
 }
 
 fmi3_float64_t fmi3_import_float64_convert_to_display_unit(fmi3_float64_t val, fmi3_import_display_unit_t* du, int isRelativeQuantity) {
-    fmi3_float64_t factor = (fmi3_float64_t)fmi3_import_get_display_unit_factor(du);
-    if (fmi3_import_get_display_unit_inverse(du)) { // inverse="true" requires offset=0
-        return factor / val;
-    } else {
-        fmi3_float64_t offset = (fmi3_float64_t) (isRelativeQuantity ? 0.0 : fmi3_import_get_display_unit_offset(du));
-        return factor * val + offset;
-    }
+    return fmi3_xml_float64_convert_to_display_unit(val, du, isRelativeQuantity);
 }
 
 fmi3_float64_t fmi3_import_float64_convert_from_display_unit(fmi3_float64_t val, fmi3_import_display_unit_t* du, int isRelativeQuantity) {
-    fmi3_float64_t factor = fmi3_import_get_display_unit_factor(du);
-    if (fmi3_import_get_display_unit_inverse(du)) { // inverse="true" requires offset=0
-        return factor / val; // (1 / val) / factor
-    } else {
-        fmi3_float64_t offset = (fmi3_float64_t) (isRelativeQuantity ? 0.0 : fmi3_import_get_display_unit_offset(du));
-        return (val - offset) / factor;
-    }
+    return fmi3_xml_float64_convert_from_display_unit(val, du, isRelativeQuantity);
 }
 
 fmi3_float32_t fmi3_import_float32_convert_to_display_unit(fmi3_float32_t val, fmi3_import_display_unit_t* du, int isRelativeQuantity) {
-    fmi3_float32_t factor = (fmi3_float32_t)fmi3_import_get_display_unit_factor(du);
-    if (fmi3_import_get_display_unit_inverse(du)) { // inverse="true" requires offset=0
-        return factor / val;
-    } else {
-        fmi3_float32_t offset = isRelativeQuantity ? 0.0f : (fmi3_float32_t)fmi3_import_get_display_unit_offset(du);
-        return factor * val + offset;
-    }
+    return fmi3_xml_float32_convert_to_display_unit(val, du, isRelativeQuantity);
 }
 
 fmi3_float32_t fmi3_import_float32_convert_from_display_unit(fmi3_float32_t val, fmi3_import_display_unit_t* du, int isRelativeQuantity) {
-    fmi3_float32_t factor = (fmi3_float32_t)fmi3_import_get_display_unit_factor(du);
-    if (fmi3_import_get_display_unit_inverse(du)) { // inverse="true" requires offset=0
-        return factor / val; // (1 / val) / factor
-    } else {
-        fmi3_float32_t offset = isRelativeQuantity ? 0.0f : (fmi3_float32_t)fmi3_import_get_display_unit_offset(du);
-        return (val - offset) / factor;
-    }
+    return fmi3_xml_float32_convert_from_display_unit(val, du, isRelativeQuantity);
 }
-

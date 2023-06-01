@@ -77,8 +77,10 @@ double fmi3_xml_get_display_unit_factor(fmi3_xml_display_unit_t* du);
 double fmi3_xml_get_display_unit_offset(fmi3_xml_display_unit_t* du);
 unsigned int fmi3_xml_get_display_unit_inverse(fmi3_xml_display_unit_t* du);
 
-double fmi3_xml_convert_to_display_unit(double val, fmi3_xml_display_unit_t* du, int isRelativeQuantity);
-double fmi3_xml_convert_from_display_unit(double val, fmi3_xml_display_unit_t* du, int isRelativeQuantity);
+fmi3_float64_t fmi3_xml_float64_convert_to_display_unit  (fmi3_float64_t value, fmi3_xml_display_unit_t* du, int isRelativeQuantity);
+fmi3_float64_t fmi3_xml_float64_convert_from_display_unit(fmi3_float64_t value, fmi3_xml_display_unit_t* du, int isRelativeQuantity);
+fmi3_float32_t fmi3_xml_float32_convert_to_display_unit  (fmi3_float32_t value, fmi3_xml_display_unit_t* du, int isRelativeQuantity);
+fmi3_float32_t fmi3_xml_float32_convert_from_display_unit(fmi3_float32_t value, fmi3_xml_display_unit_t* du, int isRelativeQuantity);
 /**
 @}
 */

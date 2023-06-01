@@ -217,7 +217,7 @@ TEST_CASE("Get variable from alias name") {
     REQUIRE(baseVar != nullptr);
     REQUIRE(baseVar == aliasVar);
     REQUIRE(missingVar == nullptr);
-    REQUIRE_STREQ(fmi3_import_get_variable_name(baseVar),  "v1");
+    REQUIRE_STREQ(fmi3_import_get_variable_name(baseVar), "v1");
 
     fmi3_import_free(xml);
 }

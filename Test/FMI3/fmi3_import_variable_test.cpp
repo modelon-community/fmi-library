@@ -372,9 +372,9 @@ fmi3_import_alias_variables_t* get_aliases(fmi3_import_t* fmu, const char* baseV
     v = fmi3_import_get_variable_by_name(fmu, baseVarName);
     REQUIRE(v != nullptr);
     aliases = fmi3_import_get_variable_aliases(v);
+    REQUIRE(aliases != nullptr);
     nAlias  = fmi3_import_get_alias_variables_number(aliases);
     REQUIRE(nAlias == nAliasExp);
-    REQUIRE(aliases != nullptr);
 
     return aliases;
 }

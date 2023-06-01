@@ -641,7 +641,7 @@ TEST_CASE("Info check - intermediateUpdate ignored unless Co-Simulation") {
     REQUIRE(tfmu != nullptr);
     REQUIRE(tfmu->fmu != nullptr);
 
-    const char* logMsg = "'intermediateUpdate' attribute ignored since FMU kind is not Co-Simulation.";
+    const char* logMsg = "Attribute 'intermediateUpdate' ignored since FMU kind is not Co-Simulation.";
     REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
 
     fmi3_testutil_import_free(tfmu);

@@ -1264,7 +1264,7 @@ static int fmi3_xml_variable_process_attr_intermediateupdate(fmi3_xml_parser_con
     fmi3_xml_model_description_t* md = context->modelDescription;
 
     // peek due to "must not have attribute" error check
-    if (!fmi3_xml_peek_attr_str(context, fmi_attr_id_intermediateUpdate)) { // if attribute not set, use default
+    if (!fmi3_xml_peek_attr_str(context, fmi_attr_id_intermediateUpdate)) {
         variable->intermediateUpdate = 0; // default
         return 0;
     } 

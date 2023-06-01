@@ -38,26 +38,6 @@ jm_named_ptr jm_named_alloc(const char* name, size_t size, size_t nameoffset, jm
     return out;
 }
 
-/**
- * Returns a jm_named_ptr where the memory for the .ptr field has been allocated
- * and the name set.
- * 
- * The caller needs to verify that the .ptr field is not NULL.
- *
- * The allocated memory must be able to store 'name', and 'nameoffset' must give
- * the offset to that address.
- * 
- * @param name:
- *      The name.
- * @param size:
- *      Size of memory for the .ptr (just like for malloc). Do NOT take into account size
- *      for the name since this function handles that.
- * @param nameoffset:
- *      Write the name at offset from the start of the requested 'size'.
- *      Impl. note: this needs to be calculated by caller, because it's possible
- *      to get different byte padding of the struct, and it allows the function
- *      to be used without structs that end with a name field.
- */
 jm_named_ptr jm_named_alloc_v(jm_vector(char)* name, size_t size, size_t nameoffset, jm_callbacks* c) {
     jm_named_ptr out;
     size_t namelen = jm_vector_get_size(char)(name);

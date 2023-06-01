@@ -119,10 +119,11 @@ const char *fmi3_xmlAttrNames[fmi3_xml_attr_number] = {
 #define fmi3_xml_scheme_ClockVariable             {fmi3_xml_elmID_Variable,   fmi3_xml_elmID_ModelVariables,       0,       1}
 #define fmi3_xml_scheme_StringVariable            {fmi3_xml_elmID_Variable,   fmi3_xml_elmID_ModelVariables,       0,       1}
 #define fmi3_xml_scheme_EnumerationVariable       {fmi3_xml_elmID_Variable,   fmi3_xml_elmID_ModelVariables,       0,       1}
-#define fmi3_xml_scheme_Dimension                 {fmi3_xml_elmID_none,       fmi3_xml_elmID_Variable,             0,       1}
 
+#define fmi3_xml_scheme_Dimension                 {fmi3_xml_elmID_none,       fmi3_xml_elmID_Variable,             0,       1}
 #define fmi3_xml_scheme_BinaryVariableStart       {fmi3_xml_elmID_Start,      fmi3_xml_elmID_BinaryVariable,       1,       1}
 #define fmi3_xml_scheme_StringVariableStart       {fmi3_xml_elmID_Start,      fmi3_xml_elmID_StringVariable,       1,       1}
+#define fmi3_xml_scheme_Alias                     {fmi3_xml_elmID_none,       fmi3_xml_elmID_Variable,             2,       1}
 
 #define fmi3_xml_scheme_Annotations               {fmi3_xml_elmID_none,       fmi3_xml_elmID_Variable,             1,       0}
 #define fmi3_xml_scheme_VariableTool              {fmi3_xml_elmID_none,       fmi3_xml_elmID_Annotations,          0,       1}
@@ -330,8 +331,8 @@ int fmi3_xml_is_attr_defined(fmi3_xml_parser_context_t *context, fmi3_xml_attr_e
 }
 
 /**
- * Read value from parse buffer "as is". Also resets the buffer's entry.
- *    valp (return arg): points to attribute value
+ * Read value from parse buffer and clear the buffer entry.
+ * @param valp (output arg): pointer to attribute value (memory still owned by expat)
  */
 int fmi3_xml_get_attr_str(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID,
         int required, const char** valp)
@@ -353,18 +354,18 @@ int fmi3_xml_get_attr_str(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t
 
 /**
  * Reads the attribute from attribute buffer as jm_vector(char). This will clear the attribute from the buffer.
- *   field (return arg): contains value after function call
+ * @param field (return arg): Attribute value (memory owned by this vector)
  */
 int fmi3_xml_set_attr_string(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID,
         int required, jm_vector(char)* field)
 {
-    int ret;
     jm_string val;
     size_t len;
 
-    /* Get existing from attribute value */
-    ret = fmi3_xml_get_attr_str(context, elmID, attrID, required, &val);
-    if (ret) return ret;
+    /* Get pointer to attribute value (owned by expat) */
+    if (fmi3_xml_get_attr_str(context, elmID, attrID, required, &val)) {
+        return -1;
+    };
 
     if ((!val || !val[0]) && !required) {
         /* Return empty string */
@@ -384,10 +385,9 @@ int fmi3_xml_set_attr_string(fmi3_xml_parser_context_t *context, fmi3_xml_elm_en
         return -1;
     }
 
-    /* Write to buffer */
-    /* copy terminating 0 as well but set vector size to be actual string length */
-    memcpy(jm_vector_get_itemp(char)(field, 0), val, len);
-    jm_vector_resize(char)(field, len - 1);
+    /* Copy to output memory owned by FMIL */
+    strcpy(jm_vector_get_itemp(char)(field, 0), val);
+    jm_vector_resize(char)(field, len - 1);  // Make length as for strlen
     return 0;
 }
 
@@ -990,7 +990,7 @@ void fmi3_xml_free_parse_buffer(fmi3_xml_parser_context_t *context) {
  */
 jm_vector(char)* fmi3_xml_reserve_parse_buffer(fmi3_xml_parser_context_t* context, size_t index, size_t size) {
     jm_vector(jm_voidp)* parseBuffer = &context->parseBuffer;
-    jm_vector(char)*  item = jm_vector_get_item(jm_voidp)(parseBuffer, index);
+    jm_vector(char)* item = jm_vector_get_item(jm_voidp)(parseBuffer, index);
     if (!item) {
         item = jm_vector_alloc(char)(size, size, context->callbacks);
         jm_vector_set_item(jm_voidp)(parseBuffer, index, item);
@@ -1395,7 +1395,7 @@ void fmi3_check_variable_naming_conventions(fmi3_xml_model_description_t *md) {
         yyfmi3lex_init(&scanner);
         for (k = 0; k < n; k++) {
             char *name = ((fmi3_xml_variable_t *) jm_vector_get_item(jm_voidp)(
-                    md->variablesOrigOrder, k))->name;
+                    &md->variablesOrigOrder, k))->name;
             buf = yyfmi3_scan_string(name, scanner);
             yyfmi3parse(scanner, md->callbacks, name);
             yyfmi3_delete_buffer(buf, scanner);
@@ -1498,6 +1498,7 @@ int fmi3_xml_parse_model_description(fmi3_xml_model_description_t* md,
         return -1;
     }
 
+    // FIXME: Move to end-tag of ModelVariables
     if (configuration & FMI3_XML_NAME_CHECK) {
         fmi3_check_variable_naming_conventions(md);
     }

@@ -88,6 +88,13 @@ typedef struct fmi3_xml_binary_variable_t  fmi3_xml_binary_variable_t;
 typedef struct fmi3_xml_clock_variable_t   fmi3_xml_clock_variable_t;
 /** @} */
 
+/** \name Structure encapsulating alias variable information
+ * @{
+ */
+typedef struct fmi3_xml_alias_variable_t  fmi3_xml_alias_variable_t;
+typedef struct fmi3_xml_alias_variables_t fmi3_xml_alias_variables_t;
+/** @} */
+
 /**\name Structures encapsulating unit information */
 /**@{ */
 typedef struct fmi3_xml_unit_t fmi3_xml_unit_t;

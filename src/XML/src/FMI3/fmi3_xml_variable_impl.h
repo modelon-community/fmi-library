@@ -36,6 +36,16 @@ typedef union fmi3_xml_valueref_or_variable_union_t {
     fmi3_xml_variable_t* variable;
 } fmi3_xml_valueref_or_variable_union_t;
 
+struct fmi3_xml_alias_variables_t {
+    jm_vector(jm_voidp) vec;
+};
+
+struct fmi3_xml_alias_variable_t {
+    const char* description;
+    fmi3_xml_display_unit_t* displayUnit;  // Only used for FLoatXX variables.
+    char name[1];
+};
+
 /* General variable type is convenient to unify all the variable list operations */
 struct fmi3_xml_variable_t {
     fmi3_xml_variable_type_base_t* type;     /** \brief Contains type-specific attributes. */
@@ -53,7 +63,6 @@ struct fmi3_xml_variable_t {
     bool hasPrevious;
 
     fmi3_value_reference_t vr;                /** \brief Value reference */
-    char aliasKind;
     char initial;
     char variability;
     char causality;
@@ -65,6 +74,8 @@ struct fmi3_xml_variable_t {
     // TODO: Convert to pointer to save memory - most variables are not arrays
     /* array fields */
     jm_vector(fmi3_xml_dimension_t) dimensionsVector; /* stores the dimensions and their attributes */
+
+    jm_vector(jm_voidp)* aliases;
     /*
      * Dynamic memory storage for resolved dimensions (i.e. vr's are dereferenced).
      * This field will be exposed to the user, but FMIL handles memory management,
@@ -82,9 +93,8 @@ struct fmi3_xml_variable_t {
 static int fmi3_xml_compare_vr(const void* first, const void* second) {
     fmi3_xml_variable_t* a = *(fmi3_xml_variable_t**)first;
     fmi3_xml_variable_t* b = *(fmi3_xml_variable_t**)second;
-    if(a->vr < b->vr) return -1;
-    if(a->vr > b->vr) return 1;
-    return ((int)a->aliasKind - (int)b->aliasKind);
+    if (a->vr == b->vr) return 0;
+    return a->vr < b->vr ? -1 : 1;
 }
 
 #ifdef __cplusplus

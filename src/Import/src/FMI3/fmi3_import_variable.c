@@ -575,27 +575,34 @@ int fmi3_import_get_enum_variable_max(fmi3_import_enum_variable_t* v) {
 }
 
 // -----------------------------------------------------------------------------
+// Alias variable
+// -----------------------------------------------------------------------------
 
-fmi3_variable_alias_kind_enu_t fmi3_import_get_variable_alias_kind(fmi3_import_variable_t* v) {
-    return fmi3_xml_get_variable_alias_kind(v);
+fmi3_import_alias_variables_t* fmi3_import_get_variable_aliases(fmi3_import_variable_t* v) {
+    return fmi3_xml_get_variable_aliases(v);
 }
 
-fmi3_import_variable_t* fmi3_import_get_variable_alias_base(fmi3_import_t* fmu,fmi3_import_variable_t* v) {
-    return fmi3_xml_get_variable_alias_base(fmu->md, v);
+size_t fmi3_import_get_alias_variables_number(fmi3_import_alias_variables_t* aliases) {
+    return fmi3_xml_get_alias_variables_number(aliases);
 }
 
-/**
- *  Return the list of all the variables aliased to the given one (including the base one).
- *  The list is ordered: base variable, aliases, negated aliases.
- */
-fmi3_import_variable_list_t* fmi3_import_get_variable_aliases(fmi3_import_t* fmu, fmi3_import_variable_t* v) {
-    fmi3_import_variable_list_t* list = fmi3_import_alloc_variable_list(fmu, 0);
-    if(fmi3_xml_get_variable_aliases(fmu->md, v, &list->variables) != jm_status_success) {
-        fmi3_import_free_variable_list(list);
-        return 0;
-    }
-    return list;
+fmi3_import_alias_variable_t* fmi3_import_get_alias(fmi3_import_alias_variables_t* aliases, size_t index) {
+    return fmi3_xml_get_alias(aliases, index);
 }
+
+const char* fmi3_import_get_alias_variable_name(fmi3_import_alias_variable_t* alias) {
+    return fmi3_xml_get_alias_variable_name(alias);
+}
+
+const char* fmi3_import_get_alias_variable_description(fmi3_import_alias_variable_t* alias) {
+    return fmi3_xml_get_alias_variable_description(alias);
+}
+
+fmi3_import_display_unit_t* fmi3_import_get_alias_variable_display_unit(fmi3_import_alias_variable_t* alias) {
+    return fmi3_xml_get_alias_variable_display_unit(alias);
+}
+
+// -----------------------------------------------------------------------------
 
 size_t fmi3_import_get_variable_original_order(fmi3_import_variable_t* v) {
     return fmi3_xml_get_variable_original_order((fmi3_xml_variable_t*)v);

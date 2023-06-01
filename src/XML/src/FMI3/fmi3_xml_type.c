@@ -797,7 +797,7 @@ fmi3_xml_float_type_props_t* fmi3_xml_parse_float_type_properties(fmi3_xml_parse
         named.name = jm_vector_get_itemp(char)(bufDispUnit, 0);
         pnamed = jm_vector_bsearch(jm_named_ptr)(&(md->displayUnitDefinitions), &named, jm_compare_named);
         if (!pnamed) {
-            fmi3_xml_parse_fatal(context, "Unknown display unit %s in float type definition", jm_vector_get_itemp(char)(bufDispUnit, 0));
+            fmi3_xml_parse_fatal(context, "Unknown displayUnit: %s", jm_vector_get_itemp(char)(bufDispUnit, 0));
             return NULL;
         }
         props->displayUnit = pnamed->ptr;

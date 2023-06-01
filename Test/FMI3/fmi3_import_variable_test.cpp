@@ -118,7 +118,7 @@ static void test_binary_all_attrs(fmi3_import_t* xml) {
     REQUIRE(fmi3_import_get_variable_vr(v) == 4);
     REQUIRE(fmi3_import_get_causality(v) == fmi3_causality_enu_output);
     REQUIRE(fmi3_import_get_variability(v) == fmi3_variability_enu_discrete);
-    REQUIRE(fmi3_import_get_initial(v) == fmi3_initial_enu_exact);
+    REQUIRE(fmi3_import_get_initial(v) == fmi3_initial_enu_calculated);
     REQUIRE(strcmp(fmi3_import_get_variable_description(v), "myDesc") == 0);
     REQUIRE(fmi3_import_get_canHandleMultipleSetPerTimeInstant(v) == true); /* default */
 
@@ -268,8 +268,8 @@ static void test_clock_all_attrs(fmi3_import_t* xml) {
     REQUIRE(fmi3_import_get_clock_variable_shift_counter(cv)        == 6);
 }
 
-TEST_CASE("Variable parsing", "[xml_variables]") {
-    const char* xmldir = FMI3_TEST_XML_DIR "/variable_test";
+TEST_CASE("Variable parsing") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/variables/valid/basic1";
 
     fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
     REQUIRE(xml != nullptr);
@@ -308,16 +308,16 @@ TEST_CASE("Variable parsing", "[xml_variables]") {
     fmi3_import_free(xml);
 }
 
-TEST_CASE("Invalid Clock variable - no intervalVariability attr", "[xml_variables]") {
-    const char* xmldir = FMI3_TEST_XML_DIR "/variable_test/invalid/intervalVariability1";
+TEST_CASE("Invalid Clock variable - no intervalVariability attr") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/variables/invalid/intervalVariability1";
 
     /* Disabled the test for now because of memory leak
      fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
     REQUIRE(xml == nullptr); */
 }
 
-TEST_CASE("Invalid Binary variable - non-hexadecimal char first in byte tuple", "[xml_variables]") {
-    const char* xmldir = FMI3_TEST_XML_DIR "/variable_test/invalid/binaryStart1";
+TEST_CASE("Invalid Binary variable - non-hexadecimal char first in byte tuple") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/variables/invalid/binaryStart1";
 
     fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
     REQUIRE(xml != nullptr);
@@ -327,8 +327,8 @@ TEST_CASE("Invalid Binary variable - non-hexadecimal char first in byte tuple", 
     fmi3_import_free(xml);
 }
 
-TEST_CASE("Invalid Binary variable - non-hexadecimal char second in byte tuple", "[xml_variables]") {
-    const char* xmldir = FMI3_TEST_XML_DIR "/variable_test/invalid/binaryStart2";
+TEST_CASE("Invalid Binary variable - non-hexadecimal char second in byte tuple") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/variables/invalid/binaryStart2";
 
     fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
     REQUIRE(xml != nullptr);
@@ -339,7 +339,7 @@ TEST_CASE("Invalid Binary variable - non-hexadecimal char second in byte tuple",
 }
 
 TEST_CASE("Invalid structuralParameter - requires start attribute") {
-    const char* xmldir = FMI3_TEST_XML_DIR "/variable_test/invalid/structuralParameter_no_start";
+    const char* xmldir = FMI3_TEST_XML_DIR "/variables/invalid/structuralParameter_no_start";
 
     fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
     REQUIRE(xml != nullptr);
@@ -351,7 +351,7 @@ TEST_CASE("Invalid structuralParameter - requires start attribute") {
 }
 
 TEST_CASE("Invalid structuralParameter - has dimension") {
-    const char* xmldir = FMI3_TEST_XML_DIR "/variable_test/invalid/structuralParameter_with_dimension";
+    const char* xmldir = FMI3_TEST_XML_DIR "/variables/invalid/structuralParameter_with_dimension";
 
     fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
     REQUIRE(xml != nullptr);
@@ -360,4 +360,220 @@ TEST_CASE("Invalid structuralParameter - has dimension") {
     REQUIRE(strcmp(errMsg, "Variable structVar: structuralParameters must not have Dimension elements.") == 0);
 
     fmi3_import_free(xml);
+}
+
+static fmi3_import_alias_variables_t* get_aliases(fmi3_import_t* fmu, const char* baseVarName,
+        size_t nAliasExp)
+{
+    fmi3_import_variable_t* v;
+    fmi3_import_alias_variables_t* aliases;
+    size_t nAlias;
+
+    v = fmi3_import_get_variable_by_name(fmu, baseVarName);
+    REQUIRE(v != nullptr);
+    aliases = fmi3_import_get_variable_aliases(v);
+    REQUIRE(aliases != nullptr);
+    nAlias  = fmi3_import_get_alias_variables_number(aliases);
+    REQUIRE(nAlias == nAliasExp);
+
+    return aliases;
+}
+
+static void check_aliases(fmi3_import_t* fmu, const char* baseVarName, size_t nAliasExp,
+        const char** namesExp, const char** descExp, fmi3_import_display_unit_t** duExp)
+{
+    const char* desc;
+    const char* name;
+    fmi3_xml_display_unit_t* displayUnit;
+
+    fmi3_import_alias_variables_t* aliases = get_aliases(fmu, baseVarName, nAliasExp);
+    fmi3_import_alias_variable_t* alias;
+    
+    for (size_t i = 0; i < nAliasExp; i++) {
+        alias = fmi3_import_get_alias(aliases, i);
+        name = fmi3_import_get_alias_variable_name(alias);
+        desc = fmi3_import_get_alias_variable_description(alias);
+        displayUnit = fmi3_import_get_alias_variable_display_unit(alias);
+        if (namesExp[i] == nullptr) {
+            REQUIRE(name == nullptr);
+        } else {
+            REQUIRE_STREQ(name, namesExp[i]);
+        }
+        if (descExp[i] == nullptr) {
+            REQUIRE(desc == nullptr);
+        } else {
+            REQUIRE_STREQ(desc, descExp[i]);
+        }
+        REQUIRE(displayUnit == duExp[i]);
+    }
+}
+
+TEST_CASE("Alias variables") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/variables/valid/alias1";
+
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu != nullptr);
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
+    
+    // Get display unit that we expect some tests will reference:
+    fmi3_import_unit_definitions_t* uds = fmi3_import_get_unit_definitions(fmu);
+    fmi3_import_unit_t* degK = fmi3_import_get_unit(uds, 0);
+    fmi3_import_display_unit_t* degC = fmi3_import_get_unit_display_unit(degK, 0);
+    REQUIRE_STREQ(fmi3_import_get_display_unit_name(degC), "degC");
+
+    fmi3_import_alias_variables_t* aliases;
+    size_t nAlias;
+    
+    SECTION("Without alias") {
+        fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(fmu, "v1");
+        REQUIRE(v != nullptr);
+        aliases = fmi3_import_get_variable_aliases(v);
+        nAlias  = fmi3_import_get_alias_variables_number(aliases);
+        REQUIRE(nAlias == 0);
+        REQUIRE(aliases == nullptr);
+    }
+    
+    SECTION("Minimal alias") {
+        const char* namesExp[]              = { "v2_a1" };
+        const char* descExp[]               = { nullptr };
+        fmi3_import_display_unit_t* duExp[] = { nullptr };
+        check_aliases(fmu, "v2", 1, namesExp, descExp, duExp);
+    }
+    
+    SECTION("Alias with optional attributes") {
+        const char* namesExp[]              = { "v3_a1"      };
+        const char* descExp[]               = { "v3_a1_desc" };
+        fmi3_import_display_unit_t* duExp[] = { degC         };
+        check_aliases(fmu, "v3", 1, namesExp, descExp, duExp);
+    }
+    
+    SECTION("Multiple aliases") {
+        const char* namesExp[]              = { "v4_a1", "v4_a2", "v4_a3" };
+        const char* descExp[]               = { nullptr, nullptr, nullptr };
+        fmi3_import_display_unit_t* duExp[] = { nullptr, nullptr, nullptr };
+        check_aliases(fmu, "v4", 3, namesExp, descExp, duExp);
+    }
+    
+    SECTION("Multiple aliases with different optional attributes") {
+        const char* namesExp[]              = { "v5_a1", "v5_a2"      };
+        const char* descExp[]               = { nullptr, "v5_a2_desc" };
+        fmi3_import_display_unit_t* duExp[] = { degC,    nullptr      };
+        check_aliases(fmu, "v5", 2, namesExp, descExp, duExp);
+    }
+    
+    SECTION("Alias on non-Float64") {
+        const char* namesExp[]              = { "v6_a1" };
+        const char* descExp[]               = { nullptr };
+        fmi3_import_display_unit_t* duExp[] = { nullptr };
+        check_aliases(fmu, "v6", 1, namesExp, descExp, duExp);
+    }
+    
+    SECTION("Aliases with other sibling elements") {
+        const char* namesExp[]              = { "v7_a1", "v7_a2" };
+        const char* descExp[]               = { nullptr, nullptr };
+        fmi3_import_display_unit_t* duExp[] = { nullptr, nullptr };
+        check_aliases(fmu, "v7", 2, namesExp, descExp, duExp);
+    }
+    
+    SECTION("Aliases with same description") {
+        const char* namesExp[]              = { "v8_a1", "v8_a2" };
+        const char* descExp[]               = { "desc",  "desc" };
+        fmi3_import_display_unit_t* duExp[] = { nullptr, nullptr };
+        check_aliases(fmu, "v8", 2, namesExp, descExp, duExp);
+    }
+    
+    SECTION("Alias with empty description") {
+        const char* namesExp[]              = { "v9_a1" };
+        const char* descExp[]               = { ""      };
+        fmi3_import_display_unit_t* duExp[] = { nullptr };
+        check_aliases(fmu, "v9", 1, namesExp, descExp, duExp);
+    }
+    
+    fmi3_testutil_import_free(tfmu);
+}
+
+TEST_CASE("Invalid Alias - unresolvable displayUnit") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/variables/invalid/alias_unresolvable_displayUnit";
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu == nullptr);
+    
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Unknown displayUnit: missing_du"));
+    
+    fmi3_testutil_import_free(tfmu);
+}
+
+TEST_CASE("Invalid Alias - no name") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/variables/invalid/alias_no_name";
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu == nullptr);
+    
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'Alias': required attribute 'name' not found"));
+    
+    fmi3_testutil_import_free(tfmu);
+}
+
+TEST_CASE("Invalid valueReference - two vars with same VR - basic") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/variables/invalid/same_vr1";
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu == nullptr);
+    
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "The following variables have the same valueReference: v1, v2"));
+    
+    fmi3_testutil_import_free(tfmu);
+}
+
+TEST_CASE("Invalid valueReference - two vars with same VR - more vars") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/variables/invalid/same_vr2";
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu == nullptr);
+    
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "The following variables have the same valueReference: v3, v8"));
+    
+    fmi3_testutil_import_free(tfmu);
+}
+
+TEST_CASE("Invalid valueReference - three vars with same VR") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/variables/invalid/same_vr3";
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu == nullptr);
+    
+    // Only the first duplicate names are listed. Could be enhanced.
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "The following variables have the same valueReference: v3, v4"));
+    
+    fmi3_testutil_import_free(tfmu);
+}
+
+TEST_CASE("Invalid valueReference - same VR but different type") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/variables/invalid/same_vr4";
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu == nullptr);
+    
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "The following variables have the same valueReference: v1, v2"));
+    
+    fmi3_testutil_import_free(tfmu);
+}
+
+TEST_CASE("Variable with name being the empty string") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/variables/valid/variable_name_empty_str";
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu != nullptr);
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
+    fmi3_testutil_import_free(tfmu);
+}
+
+TEST_CASE("Alias with name being the empty string") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/variables/valid/alias_name_empty_str";
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu != nullptr);
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
+    fmi3_testutil_import_free(tfmu);
 }

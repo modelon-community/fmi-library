@@ -52,19 +52,19 @@ extern "C" {
 *
 * \brief Allocates a vector on heap with the specified size and specified number of preallocated items (can be larger than size).
 *
-*  extern jm_vector(T)* jm_vector_alloc(T)(size_t size, size_t capacity, jm_callbacks*c );
-*  Note that there is no need to call jm_vector_init for a vector allocated with this function.
-*  @param  size - initial size of the vector, can be 0
-*  @param  capacity - initial capacity of the vector, can be 0. At least initSize elements are allocated.
-*  @param  c - jm_callbacks callbacks, can be zero
-*  @return Newly allocated vector
+* extern jm_vector(T)* jm_vector_alloc(T)(size_t size, size_t capacity, jm_callbacks*c );
+* Note that there is no need to call jm_vector_init for a vector allocated with this function.
+* @param  size - initial size of the vector, can be 0 - note that jm_vector_push_back won't start at index 0 if non-zero
+* @param  capacity - initial capacity of the vector, can be 0. At least initSize elements are allocated.
+* @param  c - jm_callbacks callbacks, can be zero
+* @return Newly allocated vector
 */
 #define jm_vector_alloc(T) jm_mangle(jm_vector_alloc, T)
 
 /**
-  jm_vector_free releases the memory allocated by jm_vector_alloc.
-extern void jm_vector_free(T)(jm_vector(T)* a);
-*/
+ * Releases the memory allocated by jm_vector_alloc. (The pointer itself is also freed.)
+ * extern void jm_vector_free(T)(jm_vector(T)* a)
+ */
 #define jm_vector_free(T) jm_mangle(jm_vector_free, T)
 
 /**
@@ -145,25 +145,31 @@ Default definition below is jm_diff and is implemented as (int)(first-second)
 #define jm_diff(first, second) (int)(first-second)
 
 /**
-  \brief jm_vector_find functions use linear search to find items in a vector. JM_COMPAR_OP is used for comparison.
-
-  T* jm_vector_find(T)(jm_vector(T)* a, T item, jm_compare_ft f)
-
-  size_t jm_vector_find_index(T)(jm_vector(T)* a, T item, jm_compare_ft f)
+  \brief Uses linear search to find items in a vector.
 
   @param a - the vector;
   @param item - the searched item;
+  @param f - the comparison function;
 
   Return:
     T* jm_vector_find(T)(jm_vector(T)* a, T item, jm_compare_ft f)  returns a pointer to the found item or NULL if not found
-    size_t jm_vector_find_index(T)(jm_vector(T)* a, T item, jm_compare_ft f) return the index of the found item or size of the vector if not found.
 */
 #define jm_vector_find(T) jm_mangle(jm_vector_find, T)
+
+/**
+  \brief Uses linear search to find item index in a vector.
+
+  @param a - the vector;
+  @param item - the searched item;
+  @param f - the comparison function;
+
+  Return:
+    size_t jm_vector_find_index(T)(jm_vector(T)* a, T item, jm_compare_ft f) return the index of the found item or size of the vector if not found.
+*/
 #define jm_vector_find_index(T) jm_mangle(jm_vector_find_index, T)
 
 /*
     jm_vector_qsort uses standard quick sort to sort the vector contents.
-    JM_COMPAR_OP is used for comparison.
 
     void jm_vector_qsort(T)(jm_vector(T)* v, jm_compare_ft f);
 */
@@ -171,13 +177,16 @@ Default definition below is jm_diff and is implemented as (int)(first-second)
 
 /**
   jm_vector_bsearch uses standard binary search (bsearch) to find elements in a sorted vector.
-  It returns the index of an item in the vector or vector's size if not found.
-    JM_COMPAR_OP is used for comparison.
 
   T* jm_vector_bsearch(T)(jm_vector(T)* v, T* key, jm_compare_ft f)
-  size_t jm_vector_bsearch_index(T)(jm_vector(T)* v, T* key, jm_compare_ft f)
 */
 #define jm_vector_bsearch(T) jm_mangle(jm_vector_bsearch, T)
+
+/**
+  Returns the index of an item in the vector or vector's size if not found.
+
+  size_t jm_vector_bsearch_index(T)(jm_vector(T)* v, T* key, jm_compare_ft f)
+*/
 #define jm_vector_bsearch_index(T) jm_mangle(jm_vector_bsearch_index, T)
 
 /**

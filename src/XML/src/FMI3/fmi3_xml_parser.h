@@ -137,6 +137,8 @@ typedef enum fmi3_xml_attr_enu_t {
     EXPAND_XML_ELMNAME(Tool) \
     EXPAND_XML_ELMNAME(ModelVariables) \
     EXPAND_XML_ELMNAME(Dimension) \
+    EXPAND_XML_ELMNAME(Start) \
+    EXPAND_XML_ELMNAME(Alias) \
     EXPAND_XML_ELMNAME(Annotations) \
     EXPAND_XML_ELMNAME(LogCategories) \
     EXPAND_XML_ELMNAME(Category) \
@@ -160,8 +162,7 @@ typedef enum fmi3_xml_attr_enu_t {
     EXPAND_XML_ELMNAME(ContinuousStateDerivative) \
     EXPAND_XML_ELMNAME(ClockedState) \
     EXPAND_XML_ELMNAME(InitialUnknown) \
-    EXPAND_XML_ELMNAME(EventIndicator) \
-    EXPAND_XML_ELMNAME(Start)
+    EXPAND_XML_ELMNAME(EventIndicator)
 
 /** \brief Element that can be placed under different parents get alternative names from the info struct */
 #define FMI3_XML_ELMLIST_ALT(EXPAND_XML_ELMNAME) \

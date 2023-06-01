@@ -113,69 +113,6 @@ fmi3_value_reference_t fmi3_xml_get_variable_vr(fmi3_xml_variable_t* v) {
     return v->vr;
 }
 
-fmi3_variable_alias_kind_enu_t fmi3_xml_get_variable_alias_kind(fmi3_xml_variable_t* v) {
-    return (fmi3_variable_alias_kind_enu_t)v->aliasKind;
-}
-
-fmi3_xml_variable_t* fmi3_xml_get_variable_alias_base(fmi3_xml_model_description_t* md, fmi3_xml_variable_t* v) {
-    fmi3_xml_variable_t key;
-    fmi3_xml_variable_t *pkey = &key, *base;
-    void ** found;
-    if(!md->variablesByVR) return 0;
-    if(v->aliasKind == fmi3_variable_is_not_alias) return v;
-    key = *v;
-    key.aliasKind = fmi3_variable_is_not_alias;
-
-    found = jm_vector_bsearch(jm_voidp)(md->variablesByVR,(void**)&pkey, fmi3_xml_compare_vr);
-    assert(found);
-    base = *found;
-    return base;
-}
-
-/*
-    Return the list of all the variables aliased to the given one (including the base one.
-    The list is ordered: base variable, aliases.
-*/
-jm_status_enu_t fmi3_xml_get_variable_aliases(fmi3_xml_model_description_t* md, fmi3_xml_variable_t* v,
-        jm_vector(jm_voidp)* list)
-{
-    fmi3_xml_variable_t key, *cur;
-    fmi3_value_reference_t vr = fmi3_xml_get_variable_vr(v);
-    size_t baseIndex, i, num = jm_vector_get_size(jm_voidp)(md->variablesByVR);
-    key = *v;
-    key.aliasKind = 0;
-    cur = &key;
-    baseIndex = jm_vector_bsearch_index(jm_voidp)(md->variablesByVR,(void**)&cur, fmi3_xml_compare_vr);
-    cur = (fmi3_xml_variable_t*)jm_vector_get_item(jm_voidp)(md->variablesByVR, baseIndex);
-    assert(cur);
-    i = baseIndex + 1;
-    while(fmi3_xml_get_variable_vr(cur) == vr) {
-        if(!jm_vector_push_back(jm_voidp)(list, cur)) {
-            jm_log_fatal(md->callbacks,module,"Could not allocate memory");
-            return jm_status_error;
-        };
-        if(i >= num) break;
-        cur = (fmi3_xml_variable_t*)jm_vector_get_item(jm_voidp)(md->variablesByVR, i);
-        assert(cur);
-        i++;
-    }
-    if(baseIndex) {
-        i = baseIndex - 1;
-        cur = (fmi3_xml_variable_t*)jm_vector_get_item(jm_voidp)(md->variablesByVR, i);
-        while(fmi3_xml_get_variable_vr(cur) == vr) {
-            if(!jm_vector_push_back(jm_voidp)(list, cur)) {
-                jm_log_fatal(md->callbacks,module,"Could not allocate memory");
-                return jm_status_error;
-            };
-            i--;
-            if(!i) break;
-            cur = (fmi3_xml_variable_t*)jm_vector_get_item(jm_voidp)(md->variablesByVR, i - 1);
-            assert(cur);
-        }
-    }
-    return jm_status_success;
-}
-
 fmi3_xml_variable_typedef_t* fmi3_xml_get_variable_declared_type(fmi3_xml_variable_t* v) {
     return (fmi3_xml_variable_typedef_t*)(fmi3_xml_find_type_struct(v->type, fmi3_xml_type_struct_enu_typedef));
 }
@@ -785,7 +722,7 @@ fmi3_string_t* fmi3_xml_get_string_variable_start_array(fmi3_xml_string_variable
     fmi3_xml_variable_t* vv = (fmi3_xml_variable_t*)v;
     if (fmi3_xml_get_variable_has_start(vv)) {
         fmi3_xml_string_variable_start_t* start = (fmi3_xml_string_variable_start_t*)(vv->type);
-        return jm_vector_get_itemp(jm_voidp)(&start->stringStartValues, 0);
+        return (void*)jm_vector_get_itemp(jm_voidp)(&start->stringStartValues, 0);
     }
     return NULL;
 }
@@ -950,6 +887,43 @@ fmi3_uint64_t fmi3_xml_get_clock_variable_shift_counter(fmi3_xml_clock_variable_
 }
 
 // -----------------------------------------------------------------------------
+// Alias variable
+// -----------------------------------------------------------------------------
+
+fmi3_xml_alias_variables_t* fmi3_xml_get_variable_aliases(fmi3_xml_variable_t* v) {
+    if (v->aliases) {
+        return (void*)v->aliases;  // cast to opaque type
+    }
+    return NULL;
+}
+
+size_t fmi3_xml_get_alias_variables_number(fmi3_xml_alias_variables_t* aliases) {
+    if (aliases) {
+        return jm_vector_get_size(jm_voidp)(&aliases->vec);
+    }
+    return 0;
+}
+
+fmi3_xml_alias_variable_t* fmi3_xml_get_alias(fmi3_xml_alias_variables_t* aliases, size_t index) {
+    if (!aliases) {
+        return NULL;
+    }
+    return jm_vector_get_item(jm_voidp)(&aliases->vec, index);
+}
+
+const char* fmi3_xml_get_alias_variable_name(fmi3_xml_alias_variable_t* alias) {
+    return alias->name;
+}
+
+const char* fmi3_xml_get_alias_variable_description(fmi3_xml_alias_variable_t* alias) {
+    return alias->description;
+}
+
+fmi3_xml_display_unit_t* fmi3_xml_get_alias_variable_display_unit(fmi3_xml_alias_variable_t* alias) {
+    return alias->displayUnit;
+}
+
+// -----------------------------------------------------------------------------
 
 /**
  * Returns the pointer to allocated start values, independent of variable type.
@@ -1060,7 +1034,13 @@ static bool is_binary_variable_with_start(fmi3_xml_variable_t* var) {
     return var->type->baseType == fmi3_base_type_binary && (var->type->structKind == fmi3_xml_type_struct_enu_start);
 }
 
-void fmi3_xml_variable_free_internals(jm_callbacks* callbacks, fmi3_xml_variable_t* var) {
+static void fmi3_xml_free_alias(jm_callbacks* callbacks, fmi3_xml_alias_variable_t* alias) {
+    alias->description = NULL;  // Memory not owned by alias
+    alias->displayUnit = NULL;  // Memory not owned by alias
+    callbacks->free(alias);  // Also frees alias->name
+}
+
+void fmi3_xml_free_variable(jm_callbacks* callbacks, fmi3_xml_variable_t* var) {
     /* We need special handling of Strings and Binaries because
     *  of how start values are handled differently for those types.
     */
@@ -1083,14 +1063,21 @@ void fmi3_xml_variable_free_internals(jm_callbacks* callbacks, fmi3_xml_variable
             free_string_start_values(callbacks, var);
         }
     }
+
+    if (var->aliases) {
+        size_t nAlias = jm_vector_get_size(jm_voidp)(var->aliases);
+        for (size_t i = 0; i < nAlias; i++) {
+            fmi3_xml_free_alias(callbacks, (fmi3_xml_alias_variable_t*)jm_vector_get_item(jm_voidp)(var->aliases, i));
+        }
+        jm_vector_free(jm_voidp)(var->aliases);
+        var->aliases = NULL;
+    }
+
     if (var->clocks) {
         jm_vector_free(fmi3_value_reference_t)(var->clocks);
         var->clocks = NULL;
     }
-    if (var->clocks) {
-        callbacks->free(var->clocks);
-        var->clocks = NULL;
-    }
+    callbacks->free(var);
 }
 
 /**
@@ -1290,6 +1277,28 @@ static int fmi3_xml_variable_process_attr_reinit(fmi3_xml_parser_context_t* cont
     return 0;
 }
 
+static fmi3_xml_variable_t* fmi3_xml_alloc_variable_with_name(fmi3_xml_parser_context_t* context, const char* name) {
+    // No need to +1 on size for null terminator since the 'name' field adds one byte
+    fmi3_xml_variable_t* v = context->callbacks->calloc(1, sizeof(fmi3_xml_variable_t) + strlen(name));
+    if (!v) {
+        fmi3_xml_parse_fatal(context, "Could not allocate memory");
+        return NULL;
+    }
+    strcpy(v->name, name);
+    return v;
+}
+
+static fmi3_xml_alias_variable_t* fmi3_xml_alloc_alias_with_name(fmi3_xml_parser_context_t* context, const char* name) {
+    // No need to +1 on size for null terminator since the 'name' field adds one byte
+    fmi3_xml_alias_variable_t* alias = context->callbacks->calloc(1, sizeof(fmi3_xml_alias_variable_t) + strlen(name));
+    if (!alias) {
+        fmi3_xml_parse_fatal(context, "Could not allocate memory");
+        return NULL;
+    }
+    strcpy(alias->name, name);
+    return alias;
+}
+
 /**
  * Common handler for Variables.
  *
@@ -1307,19 +1316,17 @@ int fmi3_xml_handle_Variable(fmi3_xml_parser_context_t* context, const char* dat
     if (!data) {
         fmi3_xml_model_description_t* md = context->modelDescription;
         fmi3_xml_variable_t* variable;
-        fmi3_xml_variable_t dummyV;
-        const char* description = 0;
-        jm_named_ptr named, *pnamed;
-        jm_vector(char)* bufName  = fmi3_xml_reserve_parse_buffer(context, 1, 100);
-        jm_vector(char)* bufDescr = fmi3_xml_reserve_parse_buffer(context, 2, 100);
+        const char* description = NULL;
+        jm_vector(char)* bufName = fmi3_xml_reserve_parse_buffer(context, 1, 100);
+        jm_vector(char)* bufDesc = fmi3_xml_reserve_parse_buffer(context, 2, 100);
         unsigned int vr;
 
-        if(!bufName || !bufDescr) return -1;
+        if(!bufName || !bufDesc) return -1;
 
         /* Get vr, name and description */
-        if (fmi3_xml_set_attr_uint32(context, elm_id, fmi_attr_id_valueReference, 1, &vr, 0))         return -1;
-        if (fmi3_xml_set_attr_string(context, fmi3_xml_elmID_Variable, fmi_attr_id_name, 1, bufName)) return -1;
-        if (fmi3_xml_set_attr_string(context, elm_id, fmi_attr_id_description, 0, bufDescr))          return -1;
+        if (fmi3_xml_set_attr_uint32(context, elm_id, fmi_attr_id_valueReference, 1, &vr, 0))  return -1;
+        if (fmi3_xml_set_attr_string(context, elm_id, fmi_attr_id_name,           1, bufName)) return -1;
+        if (fmi3_xml_set_attr_string(context, elm_id, fmi_attr_id_description,    0, bufDesc)) return -1;
 
         /* Return early if undefined variable */
         if (context->skipOneVariableFlag) {
@@ -1327,43 +1334,42 @@ int fmi3_xml_handle_Variable(fmi3_xml_parser_context_t* context, const char* dat
             return 0;
         }
 
-        /* Get description if exists */
-        if (jm_vector_get_size(char)(bufDescr)) {
-            description = jm_string_set_put(&md->descriptions, jm_vector_get_itemp(char)(bufDescr,0));
+        if (jm_vector_get_size(char)(bufDesc)) {
+            /* Add the description to the model-wide set and retrieve the pointer */
+            description = jm_string_set_put(&md->descriptions, jm_vector_get_itemp(char)(bufDesc, 0));
         }
+
+        // Create the alias and set name at same time:
+        const char* name;
+        if (jm_vector_get_size(char)(bufName) == 0) {  // FIXME: Empty string has been resized to 0
+            name = "";
+        } else {
+            name = jm_vector_get_itemp(char)(bufName, 0);
+        }
+        variable = fmi3_xml_alloc_variable_with_name(context, name);
+        if (!variable) return -1;
 
         /* Add Variable ptr to modelDescription obj */
-        named.ptr = 0;
-        named.name = 0;
-        pnamed = jm_vector_push_back(jm_named_ptr)(&md->variablesByName, named);
-        if (!pnamed) {
+        if (!jm_vector_push_back(jm_voidp)(&md->variablesOrigOrder, variable)) {
             fmi3_xml_parse_fatal(context, "Could not allocate memory");
             return -1;
         }
-
-        /* Set p.name and allocate Variable */
-        *pnamed = jm_named_alloc_v(bufName, sizeof(fmi3_xml_variable_t), dummyV.name - (char*)&dummyV, context->callbacks);
-        if (!pnamed->ptr) {
-            fmi3_xml_parse_fatal(context, "Could not allocate memory");
-            return -1;
-        }
-        variable = pnamed->ptr;
 
         /* Initialize rest of Variable */
         variable->vr = vr;
         variable->description = description;
         /* Default values */
         variable->type = NULL;
-        variable->originalIndex = jm_vector_get_size(jm_named_ptr)(&md->variablesByName) - 1;
+        variable->originalIndex = jm_vector_get_size(jm_voidp)(&md->variablesOrigOrder) - 1;
         variable->derivativeOf.variable = NULL;  // Could correspond to a valid vr, why we need the 'hasDerivativeOf' as well.
         variable->hasDerivativeOf = false;
         variable->previous.variable = NULL;      // Could correspond to a valid vr, why we need the 'hasPrevious' as well.
         variable->hasPrevious = false;
         variable->clocks = NULL;
-        variable->aliasKind = fmi3_variable_is_not_alias;
         variable->reinit = 0;
         variable->canHandleMultipleSetPerTimeInstant = 1;
         jm_vector_init(fmi3_xml_dimension_t)(&variable->dimensionsVector, 0, context->callbacks);
+        variable->aliases = NULL;
 
         /* Save start value for processing after reading all Dimensions */
         if (fmi3_xml_set_attr_string(context, elm_id, fmi_attr_id_start, 0, &context->variableStartAttr)) return -1;
@@ -1380,7 +1386,7 @@ int fmi3_xml_handle_Variable(fmi3_xml_parser_context_t* context, const char* dat
         } else {
             /* Check that the type for the variable is set */
             fmi3_xml_model_description_t* md = context->modelDescription;
-            fmi3_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
+            fmi3_xml_variable_t* variable = jm_vector_get_last(jm_voidp)(&md->variablesOrigOrder);
             if(!variable->type) {
                 jm_log_error(context->callbacks, module, "No variable type element for variable %s. Assuming Float64.", variable->name);
 
@@ -1451,7 +1457,7 @@ int fmi3_xml_handle_Dimension(fmi3_xml_parser_context_t* context, const char* da
 
     if (!data) { /* start of tag */
 
-        fmi3_xml_variable_t* currentVar = jm_vector_get_last(jm_named_ptr)(&context->modelDescription->variablesByName).ptr;
+        fmi3_xml_variable_t* currentVar = jm_vector_get_last(jm_voidp)(&context->modelDescription->variablesOrigOrder);
 
         // check if dimension is allowed for parent variable
         if (currentVar->causality == fmi3_causality_enu_structural_parameter) {
@@ -1524,7 +1530,7 @@ int fmi3_xml_handle_FloatXXVariable(fmi3_xml_parser_context_t* context, const ch
     if (res) return res;
 
     md = context->modelDescription;
-    variable = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
+    variable = jm_vector_get_last(jm_voidp)(&md->variablesOrigOrder);
     td = &md->typeDefinitions;
 
     if (!data) { /* start of tag */
@@ -1612,7 +1618,7 @@ int fmi3_xml_handle_IntXXVariable(fmi3_xml_parser_context_t* context, const char
 
     fmi3_xml_model_description_t* md = context->modelDescription;
     fmi3_xml_type_definitions_t* td = &md->typeDefinitions;
-    fmi3_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
+    fmi3_xml_variable_t* variable = jm_vector_get_last(jm_voidp)(&md->variablesOrigOrder);
     fmi3_xml_variable_type_base_t* declaredType = NULL;
     fmi3_xml_int_type_props_t* type = NULL;
     if (!data) {
@@ -1706,7 +1712,7 @@ int fmi3_xml_handle_BooleanVariable(fmi3_xml_parser_context_t *context, const ch
 
     fmi3_xml_model_description_t* md = context->modelDescription;
     fmi3_xml_type_definitions_t* td = &md->typeDefinitions;
-    fmi3_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
+    fmi3_xml_variable_t* variable = jm_vector_get_last(jm_voidp)(&md->variablesOrigOrder);
     if(!data) {
 
         assert(!variable->type);
@@ -1756,7 +1762,7 @@ int fmi3_xml_handle_BinaryVariable(fmi3_xml_parser_context_t* context, const cha
     fmi3_xml_elm_enu_t elmID = fmi3_xml_elmID_Binary;  // The ID corresponding to the actual parsed element name
     fmi3_xml_model_description_t* md = context->modelDescription;
     fmi3_xml_type_definitions_t* td = &md->typeDefinitions;
-    fmi3_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
+    fmi3_xml_variable_t* variable = jm_vector_get_last(jm_voidp)(&md->variablesOrigOrder);
 
     if (!data) {
         fmi3_xml_set_element_handle(context, "Start", fmi3_xml_elmID_BinaryVariableStart);
@@ -1828,7 +1834,7 @@ int fmi3_xml_handle_ClockVariable(fmi3_xml_parser_context_t* context, const char
         fmi3_xml_elm_enu_t elmID = fmi3_xml_elmID_Clock;  // The ID corresponding to the actual parsed element name
         fmi3_xml_model_description_t* md = context->modelDescription;
         fmi3_xml_type_definitions_t* td = &md->typeDefinitions;
-        fmi3_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
+        fmi3_xml_variable_t* variable = jm_vector_get_last(jm_voidp)(&md->variablesOrigOrder);
 
         // NOTE:
         // For other Variables we typically check if any type-specific attributes have been
@@ -1854,7 +1860,7 @@ int fmi3_xml_handle_StringVariable(fmi3_xml_parser_context_t *context, const cha
     if (fmi3_xml_handle_Variable(context, data)) return -1;
     fmi3_xml_model_description_t* md = context->modelDescription;
     fmi3_xml_type_definitions_t* td = &md->typeDefinitions;
-    fmi3_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
+    fmi3_xml_variable_t* variable = jm_vector_get_last(jm_voidp)(&md->variablesOrigOrder);
 
 
     if (!data) {
@@ -1927,7 +1933,7 @@ int fmi3_xml_handle_Start(fmi3_xml_parser_context_t* context, const char* data) 
 int fmi3_xml_handle_BinaryVariableStart(fmi3_xml_parser_context_t* context, const char* data) {
     fmi3_xml_model_description_t* md = context->modelDescription;
     fmi3_xml_type_definitions_t* td = &md->typeDefinitions;
-    fmi3_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
+    fmi3_xml_variable_t* variable = jm_vector_get_last(jm_voidp)(&md->variablesOrigOrder);
     if (!data) {
         if (fmi3_xml_variable_is_array(variable)) {
             /* For each <Start ...>, allocate memory, copy attribute to 'value' and push back to 'vec'. */
@@ -2008,7 +2014,7 @@ int fmi3_xml_handle_EnumerationVariable(fmi3_xml_parser_context_t *context, cons
     if (res) return res;
     fmi3_xml_model_description_t* md = context->modelDescription;
     fmi3_xml_type_definitions_t* td = &md->typeDefinitions;
-    fmi3_xml_variable_t* variable = jm_vector_get_last(jm_named_ptr)(&md->variablesByName).ptr;
+    fmi3_xml_variable_t* variable = jm_vector_get_last(jm_voidp)(&md->variablesOrigOrder);
     fmi3_xml_variable_type_base_t * declaredType = 0;
     fmi3_xml_enum_variable_props_t * type = 0;
 
@@ -2080,61 +2086,100 @@ int fmi3_xml_handle_EnumerationVariable(fmi3_xml_parser_context_t *context, cons
     return 0;
 }
 
-static int fmi3_xml_compare_variable_original_index (const void* first, const void* second) {
-    size_t a = (*(fmi3_xml_variable_t**)first)->originalIndex;
-    size_t b = (*(fmi3_xml_variable_t**)second)->originalIndex;
-    if(a < b) return -1;
-    if(a > b) return 1;
+int fmi3_xml_handle_Alias(fmi3_xml_parser_context_t* context, const char* data) {
+    if (!data) {
+        fmi3_xml_elm_enu_t elmID = fmi3_xml_elmID_Alias;
+        fmi3_xml_model_description_t* md = context->modelDescription;
+        fmi3_xml_variable_t* baseVar = jm_vector_get_last(jm_voidp)(&md->variablesOrigOrder);
+        size_t bufIdx = 1;
+
+        // FIXME: bufDesc will have size==0 when the attribute value is the empty string,
+        // making it indistinguishable from not being defined at all.
+        bool hasDesc = fmi3_xml_peek_attr_str(context, fmi_attr_id_description) != NULL;
+        
+        // Read the attributes to memory owned by FMIL:
+        jm_vector(char)* bufName = fmi3_xml_reserve_parse_buffer(context, bufIdx++, 100);
+        jm_vector(char)* bufDesc = fmi3_xml_reserve_parse_buffer(context, bufIdx++, 100);
+        if (!bufName || !bufDesc) return -1;
+        if (fmi3_xml_set_attr_string(context, elmID, fmi_attr_id_name,        1, bufName)) return -1;
+        if (fmi3_xml_set_attr_string(context, elmID, fmi_attr_id_description, 0, bufDesc)) return -1;
+
+        // Create the alias and set name at same time:
+        const char* name;
+        if (jm_vector_get_size(char)(bufName) == 0) {  // FIXME: Empty string has been resized to 0
+            name = "";
+        } else {
+            name = jm_vector_get_itemp(char)(bufName, 0);
+        }
+        fmi3_xml_alias_variable_t* alias = fmi3_xml_alloc_alias_with_name(context, name);
+        if (!alias) return -1;
+        
+        // Add the alias to the base variable:
+        if (!baseVar->aliases) {
+            baseVar->aliases = jm_vector_alloc(jm_voidp)(0, 0, context->callbacks);
+        }
+        jm_vector_push_back(jm_voidp)(baseVar->aliases, alias);
+
+        // Set the other fields:
+        if (hasDesc) {
+            /* Add the description to the model-wide set and retrieve the pointer */
+            if (jm_vector_get_size(char)(bufDesc) == 0) {
+                // FIXME: It doesn't work to get empty string from bufDesc since it's resized to 0
+                alias->description = jm_string_set_put(&md->descriptions, "");
+            } else {
+                alias->description = jm_string_set_put(&md->descriptions, jm_vector_get_itemp(char)(bufDesc, 0));
+            }
+        }
+
+        // Set displayUnit if FloatXX:
+        if (fmi3_base_type_enu_is_float(fmi3_xml_get_variable_base_type(baseVar))) {
+            jm_vector(char)* bufDisplayUnit = fmi3_xml_reserve_parse_buffer(context, bufIdx++, 100);
+            if (!bufDisplayUnit) return -1;
+            if (fmi3_xml_set_attr_string(context, elmID, fmi_attr_id_displayUnit, 0, bufDisplayUnit)) return -1;
+            if (jm_vector_get_size(char)(bufDisplayUnit)) {
+                jm_named_ptr searchKey, *searchRes;
+                searchKey.name = jm_vector_get_itemp(char)(bufDisplayUnit, 0);
+                searchRes = jm_vector_bsearch(jm_named_ptr)(
+                            &md->displayUnitDefinitions, &searchKey, jm_compare_named);
+                if (!searchRes) {
+                    fmi3_xml_parse_fatal(context, "Unknown displayUnit: %s",
+                            jm_vector_get_itemp(char)(bufDisplayUnit, 0));
+                    return -1;
+                }
+                alias->displayUnit = searchRes->ptr;
+                // TODO: Spec requires that displayUnit is only defined if unit is also defined. Check it!
+            } else {
+                // XXX: For variables we set the displayUnit to the unit when the displayUnit is not defined.
+                // Not clear why we do that. Skipping here for now.
+            }
+        }
+    }
     return 0;
 }
 
-void fmi3_xml_eliminate_bad_alias(fmi3_xml_parser_context_t *context, size_t indexVR) {
-    fmi3_xml_model_description_t* md = context->modelDescription;
-    jm_vector(jm_voidp)* varByVR = md->variablesByVR;
-    fmi3_xml_variable_t* v = (fmi3_xml_variable_t*)jm_vector_get_item(jm_voidp)(varByVR, indexVR);
-    fmi3_value_reference_t vr = v->vr;
-    fmi3_base_type_enu_t vt = fmi3_xml_get_variable_base_type(v);
-    size_t i, n = jm_vector_get_size(jm_voidp)(varByVR);
-    for(i = 0; i< n; i++) {
-        jm_named_ptr key;
-        size_t index;
-        v = (fmi3_xml_variable_t*)jm_vector_get_item(jm_voidp)(varByVR, i);
-        if((v->vr != vr)||(vt != fmi3_xml_get_variable_base_type(v))) continue;
-        jm_vector_remove_item_jm_voidp(varByVR,i);
-        n--; i--;
-        key.name = v->name;
-        index = jm_vector_bsearch_index(jm_named_ptr)(&md->variablesByName, &key, jm_compare_named);
-        assert(index <= n);
-        jm_vector_remove_item(jm_named_ptr)(&md->variablesByName,index);
-
-        index = jm_vector_bsearch_index(jm_voidp)(md->variablesOrigOrder, (jm_voidp*)&v, fmi3_xml_compare_variable_original_index);
-        assert(index <= n);
-
-        jm_vector_remove_item(jm_voidp)(md->variablesOrigOrder,index);
-
-        jm_log_error(context->callbacks, module,"Removing incorrect alias variable '%s'", v->name);
-        md->callbacks->free(v);
-    }
+static int fmi3_xml_compare_variable_original_index(const void* first, const void* second) {
+    size_t a = (*(fmi3_xml_variable_t**)first)->originalIndex;
+    size_t b = (*(fmi3_xml_variable_t**)second)->originalIndex;
+    if (a < b) return -1;
+    if (a > b) return 1;
+    return 0;
 }
 
-static int fmi3_xml_compare_vr_and_original_index (const void* first, const void* second) {
+static int fmi3_xml_compare_vr_and_original_index(const void* first, const void* second) {
     int ret = fmi3_xml_compare_vr(first, second);
-    if(ret != 0) return ret;
+    if (ret != 0) return ret;
 
-    {
-        fmi3_xml_variable_t* a = *(fmi3_xml_variable_t**)first;
-        fmi3_xml_variable_t* b = *(fmi3_xml_variable_t**)second;
-        ret = a->causality - b->causality;
-        if(ret != 0 ) return ret;
-        ret = a->variability - b->variability;
-        if(ret != 0) return ret;
-        {
-            size_t ai = a->originalIndex;
-            size_t bi = b->originalIndex;
-            if(ai > bi) return 1;
-            if(ai < bi) return -1;
-        }
-    }
+    fmi3_xml_variable_t* a = *(fmi3_xml_variable_t**)first;
+    fmi3_xml_variable_t* b = *(fmi3_xml_variable_t**)second;
+    ret = a->causality - b->causality;
+    if (ret != 0 ) return ret;
+    ret = a->variability - b->variability;
+    if (ret != 0) return ret;
+
+    size_t ai = a->originalIndex;
+    size_t bi = b->originalIndex;
+    if (ai > bi) return 1;
+    if (ai < bi) return -1;
 
     return 0;
 }
@@ -2161,169 +2206,80 @@ int fmi3_xml_handle_ModelVariables(fmi3_xml_parser_context_t *context, const cha
         fmi3_xml_set_element_handle(context, "Tool",        FMI3_XML_ELM_ID(VariableTool));
     }
     else {
-         /* postprocess variable list */
-
+         // Post-process variable list
         fmi3_xml_model_description_t* md = context->modelDescription;
-        jm_vector(jm_voidp)* varByVR;
-        size_t i, numvar;
 
-        numvar = jm_vector_get_size(jm_named_ptr)(&md->variablesByName);
-
-        /* store the list of vars in original order */
-        {
-            size_t size = jm_vector_get_size(jm_named_ptr)(&md->variablesByName);
-            md->variablesOrigOrder = jm_vector_alloc(jm_voidp)(size,size,md->callbacks);
-            if (!md->variablesOrigOrder) {
-                fmi3_xml_parse_fatal(context, "Could not allocate memory");
-                return -1;
-            }
-            size_t i;
-            for(i= 0; i < size; ++i) {
-                jm_vector_set_item(jm_voidp)(md->variablesOrigOrder, i, jm_vector_get_item(jm_named_ptr)(&md->variablesByName,i).ptr);
+        // Create variablesByName
+        size_t nVars = jm_vector_get_size(jm_voidp)(&md->variablesOrigOrder);
+        jm_vector_resize(jm_named_ptr)(&md->variablesByName, nVars);  // Allocate a lot of memory to avoid resizing
+        jm_vector_resize(jm_named_ptr)(&md->variablesByName, 0);      // Make sure we start pushback at index=0
+        for (size_t i = 0; i < nVars; i++) {
+            jm_named_ptr named;
+            fmi3_xml_variable_t* v = jm_vector_get_item(jm_voidp)(&md->variablesOrigOrder, i);
+            named.name = v->name;
+            named.ptr = v;
+            jm_vector_push_back(jm_named_ptr)(&md->variablesByName, named);
+            if (v->aliases) {
+                fmi3_xml_alias_variable_t* alias;
+                for (size_t j = 0; j < jm_vector_get_size(jm_voidp)(v->aliases); j++) {
+                    alias = jm_vector_get_item(jm_voidp)(v->aliases, j);
+                    named.name = alias->name;
+                    named.ptr = v;
+                    jm_vector_push_back(jm_named_ptr)(&md->variablesByName, named);
+                }
             }
         }
-
-        /* sort the variables by names */
         jm_vector_qsort(jm_named_ptr)(&md->variablesByName, jm_compare_named);
 
-        /* create VR index */
-        md->status = fmi3_xml_model_description_enu_ok;
-        {
-            size_t size = jm_vector_get_size(jm_named_ptr)(&md->variablesByName);
-            md->variablesByVR = jm_vector_alloc(jm_voidp)(size, size, md->callbacks);
-            if (!md->variablesByVR) {
-                fmi3_xml_parse_fatal(context, "Could not allocate memory");
-                return -1;
-            }
-            for (size_t i = 0; i < size; ++i) {
-                jm_vector_set_item(jm_voidp)(md->variablesByVR, i, jm_vector_get_item(jm_named_ptr)(&md->variablesByName, i).ptr);
-            }
-            jm_vector_qsort(jm_voidp)(md->variablesByVR, fmi3_xml_compare_vr_and_original_index);
+        // Create variablesByVR
+        jm_vector_resize(jm_voidp)(&md->variablesByVR, nVars);
+        for (size_t i = 0; i < nVars; i++) {
+            jm_vector_set_item(jm_voidp)(&md->variablesByVR, i, jm_vector_get_item(jm_voidp)(&md->variablesOrigOrder, i));
+        }
+        jm_vector_qsort(jm_voidp)(&md->variablesByVR, fmi3_xml_compare_vr_and_original_index);
 
-            if (size > 0) {  // size=0 would cause integer overflow in the loop condition
-                for (size_t i = 0; i < size-1; ++i) {
-                    fmi3_xml_variable_t* v1 = jm_vector_get_item(jm_voidp)(md->variablesByVR, i);
-                    fmi3_xml_variable_t* v2 = jm_vector_get_item(jm_voidp)(md->variablesByVR, i+1);
-                    if (v1->vr == v2->vr) {
-                        fmi3_xml_parse_fatal(context, "The following variables have the same value reference: %s, %s",
-                                v1->name, v2->name);
-                        return -1;
-                    }
+        // Error check duplicate VRs:
+        if (nVars > 0) {  // nVars=0 would cause integer overflow in the loop condition
+            for (size_t i = 0; i < nVars-1; ++i) {
+                fmi3_xml_variable_t* v1 = jm_vector_get_item(jm_voidp)(&md->variablesByVR, i);
+                fmi3_xml_variable_t* v2 = jm_vector_get_item(jm_voidp)(&md->variablesByVR, i+1);
+                if (v1->vr == v2->vr) {
+                    fmi3_xml_parse_fatal(context, "The following variables have the same valueReference: %s, %s",
+                            v1->name, v2->name);
+                    return -1;
                 }
             }
         }
 
-        /* look up actual pointers for the derivativeOf and previous fields in variablesOrigOrder */
-        {
-            size_t size = jm_vector_get_size(jm_voidp)(md->variablesOrigOrder);
-            size_t k;
-            for (k=0; k < size; k++) {
-                fmi3_xml_variable_t *variable = jm_vector_get_item(jm_voidp)(md->variablesOrigOrder, k);
+        // look up actual pointers for the derivativeOf and previous fields
+        for (size_t i = 0; i < nVars; i++) {
+            fmi3_xml_variable_t *variable = jm_vector_get_item(jm_voidp)(&md->variablesOrigOrder, i);
 
-                if (variable->hasDerivativeOf) {
-                    // Resolve VR to variable.
-                    fmi3_value_reference_t vr = variable->derivativeOf.vr;
-                    variable->derivativeOf.variable = fmi3_xml_get_variable_by_vr(md, vr);
-                    if (!variable->derivativeOf.variable) {
-                        fmi3_xml_parse_error(context, "The valueReference in derivative=\"%" PRIu32 "\" "
-                                                      "did not resolve to any variable.", vr);
-                        return -1;
-                    }
+            if (variable->hasDerivativeOf) {
+                // Resolve VR to variable.
+                fmi3_value_reference_t vr = variable->derivativeOf.vr;
+                variable->derivativeOf.variable = fmi3_xml_get_variable_by_vr(md, vr);
+                if (!variable->derivativeOf.variable) {
+                    fmi3_xml_parse_error(context, "The valueReference in derivative=\"%" PRIu32 "\" "
+                                                  "did not resolve to any variable.", vr);
+                    return -1;
                 }
-                if (variable->hasPrevious) {
-                    // Resolve VR to variable.
-                    fmi3_value_reference_t vr = variable->previous.vr;
-                    variable->previous.variable = fmi3_xml_get_variable_by_vr(md, vr);
-                    if (!variable->previous.variable) {
-                        fmi3_xml_parse_error(context, "The valueReference in previous=\"%" PRIu32 "\" "
-                                                      "did not resolve to any variable.", vr);
-                        return -1;
-                    }
+            }
+            if (variable->hasPrevious) {
+                // Resolve VR to variable.
+                fmi3_value_reference_t vr = variable->previous.vr;
+                variable->previous.variable = fmi3_xml_get_variable_by_vr(md, vr);
+                if (!variable->previous.variable) {
+                    fmi3_xml_parse_error(context, "The valueReference in previous=\"%" PRIu32 "\" "
+                                                  "did not resolve to any variable.", vr);
+                    return -1;
                 }
             }
         }
 
         md->status = fmi3_xml_model_description_enu_empty;
-        varByVR = md->variablesByVR;
-        numvar = jm_vector_get_size(jm_voidp)(varByVR);
 
-        if(numvar > 1){
-            int foundBadAlias;
-
-            jm_log_verbose(context->callbacks, module,"Building alias index");
-            do {
-                fmi3_xml_variable_t* a = (fmi3_xml_variable_t*)jm_vector_get_item(jm_voidp)(varByVR, 0);
-                int startPresent = fmi3_xml_get_variable_has_start(a);
-                int isConstant = (fmi3_xml_get_variability(a) == fmi3_variability_enu_constant);
-                a->aliasKind = fmi3_variable_is_not_alias;
-
-                foundBadAlias = 0;
-
-                for(i = 1; i< numvar; i++) {
-                    fmi3_xml_variable_t* b = (fmi3_xml_variable_t*)jm_vector_get_item(jm_voidp)(varByVR, i);
-                    int b_startPresent = fmi3_xml_get_variable_has_start(b);
-                    int b_isConstant = (fmi3_xml_get_variability(b) == fmi3_variability_enu_constant);
-                    if((fmi3_xml_get_variable_base_type(a) == fmi3_xml_get_variable_base_type(b))
-                            && (a->vr == b->vr)) {
-                            /* an alias */
-                            jm_log_verbose(context->callbacks,module,"Variables %s and %s reference the same vr %u. Marking '%s' as alias.",
-                                                  a->name, b->name, b->vr, b->name);
-                            b->aliasKind = fmi3_variable_is_alias;
-
-                            if(!isConstant != !b_isConstant) {
-                                jm_log_error(context->callbacks,module,
-                                "Only constants can be aliases with constants (variables: %s and %s)",
-                                    a->name, b->name);
-                                fmi3_xml_eliminate_bad_alias(context,i);
-                                numvar = jm_vector_get_size(jm_voidp)(varByVR);
-                                foundBadAlias = 1;
-                                break;
-                            } else if (isConstant) {
-                                if (!startPresent  || !b_startPresent) {
-                                    jm_log_error(context->callbacks,module,
-                                        "Constants in alias set must all have start attributes (variables: %s and %s)",
-                                        a->name, b->name);
-                                    fmi3_xml_eliminate_bad_alias(context,i);
-                                    numvar = jm_vector_get_size(jm_voidp)(varByVR);
-                                    foundBadAlias = 1;
-                                    break;
-                                }
-                                /* TODO: Check that both start values are the same */
-                            } else if(startPresent && b_startPresent) {
-                                jm_log_error(context->callbacks,module,
-                                    "Only one variable among non constant aliases is allowed to have start attribute (variables: %s and %s) %d, %d, const enum value: %d",
-                                        a->name, b->name, fmi3_xml_get_variability(a), fmi3_xml_get_variability(b), fmi3_variability_enu_constant);
-                                fmi3_xml_eliminate_bad_alias(context,i);
-                                numvar = jm_vector_get_size(jm_voidp)(varByVR);
-                                foundBadAlias = 1;
-                                break;
-                            }
-                            if(b_startPresent) {
-                                startPresent = 1;
-                                a = b;
-                            }
-                    }
-                    else {
-                        b->aliasKind = fmi3_variable_is_not_alias;
-                        startPresent = b_startPresent;
-                        isConstant = b_isConstant;
-                        a = b;
-                    }
-                }
-            } while(foundBadAlias);
-        }
-
-        /* TODO: validate variables from Dimension VRs */
-        {
-            /*
-                TODO: create a new vector that contains all VRs from dimensions
-                from VR, find all variables and verify that they are integers with (causality == structuralParameter || variability == constant)
-            */
-        }
-
-        numvar = jm_vector_get_size(jm_named_ptr)(&md->variablesByName);
-
-        /* might give out a warning if(data[0] != 0) */
+        // TODO: Check variables that specify Dimension sizes (must be structuralParameter or constant)
     }
     return 0;
 }

@@ -362,7 +362,7 @@ TEST_CASE("Invalid structuralParameter - has dimension") {
     fmi3_import_free(xml);
 }
 
-fmi3_import_alias_variables_t* get_aliases(fmi3_import_t* fmu, const char* baseVarName,
+static fmi3_import_alias_variables_t* get_aliases(fmi3_import_t* fmu, const char* baseVarName,
         size_t nAliasExp)
 {
     fmi3_import_variable_t* v;
@@ -379,7 +379,7 @@ fmi3_import_alias_variables_t* get_aliases(fmi3_import_t* fmu, const char* baseV
     return aliases;
 }
 
-void check_aliases(fmi3_import_t* fmu, const char* baseVarName, size_t nAliasExp,
+static void check_aliases(fmi3_import_t* fmu, const char* baseVarName, size_t nAliasExp,
         const char** namesExp, const char** descExp, fmi3_import_display_unit_t** duExp)
 {
     const char* desc;
@@ -533,6 +533,18 @@ TEST_CASE("Invalid valueReference - two vars with same VR - more vars") {
     REQUIRE(fmu == nullptr);
     
     REQUIRE(fmi3_testutil_log_contains(tfmu, "The following variables have the same valueReference: v3, v8"));
+    
+    fmi3_testutil_import_free(tfmu);
+}
+
+TEST_CASE("Invalid valueReference - three vars with same VR") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/variables/invalid/same_vr3";
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu == nullptr);
+    
+    // Only the first duplicate names are listed. Could be enhanced.
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "The following variables have the same valueReference: v3, v4"));
     
     fmi3_testutil_import_free(tfmu);
 }

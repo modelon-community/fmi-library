@@ -1,3 +1,18 @@
+/*
+    Copyright (C) 2023 Modelon AB
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the BSD style license.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    FMILIB_License.txt file for more details.
+
+    You should have received a copy of the FMILIB_License.txt file
+    along with this program. If not, contact Modelon AB <http://www.modelon.com>.
+*/
+
 #include <stdio.h>
 #include <stdint.h>
 
@@ -102,14 +117,14 @@ static void test_float64(fmi3_import_t* xml) {
     fmi3_import_float64_variable_t* var = fmi3_import_get_variable_as_float64(v);
     REQUIRE(var != nullptr);
 
-    /* unit */
+    // unit
     fmi3_import_unit_t* u = fmi3_import_get_float64_variable_unit(var);
     REQUIRE(u != nullptr);
     REQUIRE(strcmp(fmi3_import_get_unit_name(u), "K") == 0);
 
     fmi3_float64_t du_val_orig, du_val_exp, du_val_conv, du_val_reconv;
 
-    /* associated displayUnit */
+    // associated displayUnit
     fmi3_import_display_unit_t* du = fmi3_import_get_float64_variable_display_unit(var);
     REQUIRE(du != nullptr);
     REQUIRE(strcmp(fmi3_import_get_display_unit_name(du), "degC") == 0);
@@ -204,14 +219,14 @@ static void test_float32(fmi3_import_t* xml) {
     fmi3_import_float32_variable_t* var = fmi3_import_get_variable_as_float32(v);
     REQUIRE(var != nullptr);
 
-    /* unit */
+    // unit
     fmi3_import_unit_t* u = fmi3_import_get_float32_variable_unit(var);
     REQUIRE(u != nullptr);
     REQUIRE(strcmp(fmi3_import_get_unit_name(u), "K") == 0);
 
     fmi3_float32_t du_val_orig, du_val_exp, du_val_conv, du_val_reconv;
 
-    /* associated displayUnit */
+    // associated displayUnit
     fmi3_import_display_unit_t* du = fmi3_import_get_float32_variable_display_unit(var);
     REQUIRE(du != nullptr);
     REQUIRE(strcmp(fmi3_import_get_display_unit_name(du), "degC") == 0);

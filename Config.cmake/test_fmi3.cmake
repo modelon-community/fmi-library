@@ -112,7 +112,7 @@ add_catch2_test(fmi3_import_model_structure_test         FMI3)
 add_catch2_test(fmi3_variability_causality_initial_test  FMI3)
 add_catch2_test(fmi3_import_bouncingball_xml_test        FMI3)
 add_catch2_test(fmi3_import_interface_types_test         FMI3)
-add_catch2_test(fmi3_import_unit_test                    FMI3)
+add_catch2_test(fmi3_import_unit_definitions_test        FMI3)
 add_catch2_test(fmi3_import_variable_types_test          FMI3)
 
 add_test(ctest_fmi3_xml_parsing_test fmi3_xml_parsing_test ${FMIL_TEST_DIR}/FMI3/parser_test_xmls/)

@@ -145,10 +145,11 @@ Default definition below is jm_diff and is implemented as (int)(first-second)
 #define jm_diff(first, second) (int)(first-second)
 
 /**
-  \brief Uses linear search to find items in a vector. JM_COMPAR_OP is used for comparison.
+  \brief Uses linear search to find items in a vector.
 
   @param a - the vector;
   @param item - the searched item;
+  @param f - the comparison function;
 
   Return:
     T* jm_vector_find(T)(jm_vector(T)* a, T item, jm_compare_ft f)  returns a pointer to the found item or NULL if not found
@@ -156,10 +157,11 @@ Default definition below is jm_diff and is implemented as (int)(first-second)
 #define jm_vector_find(T) jm_mangle(jm_vector_find, T)
 
 /**
-  \brief Uses linear search to find item index in a vector. JM_COMPAR_OP is used for comparison.
+  \brief Uses linear search to find item index in a vector.
 
   @param a - the vector;
   @param item - the searched item;
+  @param f - the comparison function;
 
   Return:
     size_t jm_vector_find_index(T)(jm_vector(T)* a, T item, jm_compare_ft f) return the index of the found item or size of the vector if not found.
@@ -168,7 +170,6 @@ Default definition below is jm_diff and is implemented as (int)(first-second)
 
 /*
     jm_vector_qsort uses standard quick sort to sort the vector contents.
-    JM_COMPAR_OP is used for comparison.
 
     void jm_vector_qsort(T)(jm_vector(T)* v, jm_compare_ft f);
 */
@@ -183,7 +184,6 @@ Default definition below is jm_diff and is implemented as (int)(first-second)
 
 /**
   Returns the index of an item in the vector or vector's size if not found.
-    JM_COMPAR_OP is used for comparison.
 
   size_t jm_vector_bsearch_index(T)(jm_vector(T)* v, T* key, jm_compare_ft f)
 */

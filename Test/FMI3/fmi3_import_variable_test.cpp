@@ -629,7 +629,7 @@ TEST_CASE("Invalid previous - requires clocks") {
     REQUIRE(tfmu != nullptr);
     REQUIRE(tfmu->fmu == nullptr); // TODO: Currently a fatal error, but maybe shouldn't be?
 
-    const char* logMsg = "Only variables with the attribute 'clocks' may have attribute 'previous'.";
+    const char* logMsg = "Only variables with the attribute 'clocks' may have the attribute 'previous'.";
     REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
 
     fmi3_testutil_import_free(tfmu);
@@ -642,7 +642,7 @@ TEST_CASE("Invalid previous - requires variability='discrete'") {
     REQUIRE(tfmu != nullptr);
     REQUIRE(tfmu->fmu == nullptr); // TODO: Currently a fatal error, but maybe shouldn't be?
 
-    const char* logMsg = "Only variables with variability='discrete' may have the 'previous' attribute.";
+    const char* logMsg = "Only variables with variability='discrete' may have the attribute 'previous'.";
     REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
 
     fmi3_testutil_import_free(tfmu);
@@ -655,7 +655,7 @@ TEST_CASE("Invalid Clock variable - has previous") {
     REQUIRE(xml != nullptr);
 
     const char* errMsg = fmi3_import_get_last_error(xml);
-    REQUIRE(strcmp(errMsg, "Variables of type Clock must not have the 'previous' attribute.") == 0);
+    REQUIRE_STREQ(errMsg, "Variables of type Clock must not have the 'previous' attribute.");
 
     fmi3_import_free(xml);
 }
@@ -693,7 +693,7 @@ TEST_CASE("Invalid previous - self reference") {
     REQUIRE(tfmu != nullptr);
     REQUIRE(tfmu->fmu == nullptr); // TODO: Currently a fatal error, but maybe shouldn't be?
 
-    const char* logMsg = "A variable must not refer to itself in the 'previous' attribute.";
+    const char* logMsg = "A variable must not refer to itself in the attribute 'previous'.";
     REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
 
     fmi3_testutil_import_free(tfmu);

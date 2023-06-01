@@ -150,10 +150,6 @@ fmi3_initial_enu_t fmi3_xml_get_initial(fmi3_xml_variable_t* v) {
     return (fmi3_initial_enu_t)v->initial;
 }
 
-bool fmi3_xml_variable_has_previous(fmi3_xml_variable_t* v) {
-    return v->hasPrevious;
-}
-
 fmi3_xml_variable_t* fmi3_xml_get_previous(fmi3_xml_variable_t* v) {
     return v->previous.variable;
 }
@@ -1245,22 +1241,19 @@ static int fmi3_xml_variable_process_attr_previous(fmi3_xml_parser_context_t* co
 
     if (!fmi3_xml_variable_is_clocked(variable)) {
         // TODO: This should not be a fatal error
-        fmi3_xml_parse_fatal(context, "Only variables with the attribute 'clocks' may have attribute 'previous'.");
-        // fmi3_xml_parse_error(context, "Only variables with the attribute 'clocks' may have attribute 'previous'.");
+        fmi3_xml_parse_fatal(context, "Only variables with the attribute 'clocks' may have the attribute 'previous'.");
         return -1;
     }
 
-    if (fmi3_xml_get_variability(variable) != fmi3_variability_enu_discrete) {
+    if (variable->variability != fmi3_variability_enu_discrete) {
         // TODO: This should not be a fatal error
-        fmi3_xml_parse_fatal(context, "Only variables with variability='discrete' may have the 'previous' attribute.");
-        // fmi3_xml_parse_error(context, "Only variables with variability='discrete' may have the 'previous' attribute.");
+        fmi3_xml_parse_fatal(context, "Only variables with variability='discrete' may have the attribute 'previous'.");
         return -1;
     }
 
     if (previous == fmi3_xml_get_variable_vr(variable)) {
         // TODO: This should not be a fatal error
-        fmi3_xml_parse_fatal(context, "A variable must not refer to itself in the 'previous' attribute.");
-        // fmi3_xml_parse_error(context, "A variable must not refer to itself in the 'previous' attribute.");
+        fmi3_xml_parse_fatal(context, "A variable must not refer to itself in the attribute 'previous'.");
         return -1;
     }
 
@@ -1939,7 +1932,7 @@ int fmi3_xml_handle_ClockVariable(fmi3_xml_parser_context_t* context, const char
 
         variable->type = &props->super;
 
-        if (fmi3_xml_variable_has_previous(variable)) {
+        if (variable->hasPrevious) {
             fmi3_xml_parse_error(context, "Variables of type Clock must not have the 'previous' attribute.");
             return -1;
         }

@@ -334,7 +334,7 @@ TEST_CASE("Info check: ModelStructure; EventIndicator ignored for Co-Simulation"
 }
 
 TEST_CASE("Error check: ModelStructure; ClockedState without clocks attribute") {
-    // Spec: All clocked states must [...], must have the attribute clocks, [...]
+    // Spec: "All clocked states [...], must have the attribute clocks, [...]"
     const char* xmldir = FMI3_TEST_XML_DIR "/model_structure/invalid/clocked_state_no_clocks";
 
     fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
@@ -342,7 +342,7 @@ TEST_CASE("Error check: ModelStructure; ClockedState without clocks attribute") 
     REQUIRE(tfmu->fmu == nullptr);
 
     // Also tested by TEST_CASE("Invalid previous - requires clocks")
-    const char* logMsg = "Only variables with the attribute 'clocks' may have attribute 'previous'.";
+    const char* logMsg = "Only variables with the attribute 'clocks' may have the attribute 'previous'.";
     REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
 
     fmi3_testutil_import_free(tfmu);
@@ -362,7 +362,7 @@ TEST_CASE("Error check: ModelStructure; ClockedState without previous attribute"
 }
 
 TEST_CASE("Error check: ModelStructure; ClockedState with invalid variability, not discrete") {
-    // Spec: All clocked states must have variability = discrete, [...]
+    // Spec: "All clocked states must have variability = discrete, [...]"
     const char* xmldir = FMI3_TEST_XML_DIR "/model_structure/invalid/clocked_state_not_discrete";
 
     fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
@@ -370,14 +370,14 @@ TEST_CASE("Error check: ModelStructure; ClockedState with invalid variability, n
     REQUIRE(tfmu->fmu == nullptr);
 
     // Also tested in TEST_CASE("Invalid previous - requires variability='discrete'")
-    const char* logMsg = "Only variables with variability='discrete' may have the 'previous' attribute.";
+    const char* logMsg = "Only variables with variability='discrete' may have the attribute 'previous'.";
     REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
 
     fmi3_testutil_import_free(tfmu);
 }
 
 TEST_CASE("Error check: ModelStructure; ClockedState has Clock base type") {
-    // Spec: All clocked states must [...], and must not be of type fmi3Clock
+    // Spec: "All clocked states [...] must not be of type fmi3Clock."
     const char* xmldir = FMI3_TEST_XML_DIR "/model_structure/invalid/clocked_state_is_clock";
 
     fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);

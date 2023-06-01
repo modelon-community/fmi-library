@@ -1498,6 +1498,7 @@ int fmi3_xml_parse_model_description(fmi3_xml_model_description_t* md,
         return -1;
     }
 
+    // FIXME: Move to end-tag of ModelVariables
     if (configuration & FMI3_XML_NAME_CHECK) {
         fmi3_check_variable_naming_conventions(md);
     }

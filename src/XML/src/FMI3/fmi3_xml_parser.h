@@ -39,6 +39,7 @@ jm_vector_declare_template(fmi3_value_reference_t)
     EXPAND_XML_ATTRNAME(fmiVersion) \
     EXPAND_XML_ATTRNAME(factor) \
     EXPAND_XML_ATTRNAME(offset) \
+    EXPAND_XML_ATTRNAME(inverse) \
     FMI3_SI_BASE_UNITS(EXPAND_XML_ATTRNAME) \
     EXPAND_XML_ATTRNAME(name) \
     EXPAND_XML_ATTRNAME(description) \

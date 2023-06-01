@@ -29,6 +29,7 @@ extern "C" {
 struct fmi3_xml_display_unit_t {
     double factor;
     double offset;
+    unsigned int inverse;
     fmi3_xml_unit_t* baseUnit;
     char displayUnit[1];
 };

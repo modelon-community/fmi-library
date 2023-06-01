@@ -37,47 +37,50 @@ extern "C" {
 
 /** \brief Get a list of all the unit definitions */
 fmi3_xml_unit_definitions_t* fmi3_xml_get_unit_definitions(fmi3_xml_model_description_t* md);
-unsigned int  fmi3_xml_get_unit_definitions_number(fmi3_xml_unit_definitions_t*);
-fmi3_xml_unit_t* fmi3_xml_get_unit(fmi3_xml_unit_definitions_t*, unsigned int  index);
+unsigned int fmi3_xml_get_unit_definitions_number(fmi3_xml_unit_definitions_t* ud);
+fmi3_xml_unit_t* fmi3_xml_get_unit(fmi3_xml_unit_definitions_t* ud, unsigned int index);
 
-const char* fmi3_xml_get_unit_name(fmi3_xml_unit_t*);
-unsigned int fmi3_xml_get_unit_display_unit_number(fmi3_xml_unit_t*);
-fmi3_xml_display_unit_t* fmi3_xml_get_unit_display_unit(fmi3_xml_unit_t*, size_t index);
+const char* fmi3_xml_get_unit_name(fmi3_xml_unit_t* u);
+unsigned int fmi3_xml_get_unit_display_unit_number(fmi3_xml_unit_t* u);
+fmi3_xml_display_unit_t* fmi3_xml_get_unit_display_unit(fmi3_xml_unit_t* u, size_t index);
 
 /**
     \brief Get fmi3_SI_base_units_Num SI base units exponents associated with the unit.
 */
-const int* fmi3_xml_get_SI_unit_exponents(fmi3_xml_unit_t*);
+const int* fmi3_xml_get_SI_unit_exponents(fmi3_xml_unit_t* u);
 
 /**
     \brief Get factor to the corresponding SI base units.
 */
-double fmi3_xml_get_SI_unit_factor(fmi3_xml_unit_t*);
+double fmi3_xml_get_SI_unit_factor(fmi3_xml_unit_t* u);
 
 /**
     \brief Get offset to the corresponding SI base units.
 */
-double fmi3_xml_get_SI_unit_offset(fmi3_xml_unit_t*);
+double fmi3_xml_get_SI_unit_offset(fmi3_xml_unit_t* u);
 
 /**
     \brief Convert a value with respect to the unit to the
     value with respect to the SI base unit.
 */
-double fmi3_xml_convert_to_SI_base_unit(double, fmi3_xml_unit_t*);
+double fmi3_xml_convert_to_SI_base_unit(double uv, fmi3_xml_unit_t* u);
 
 /**
     \brief Convert a value with respect to the SI base unit to the
     value with respect to the unit.
 */
-double fmi3_xml_convert_from_SI_base_unit(double, fmi3_xml_unit_t*);
+double fmi3_xml_convert_from_SI_base_unit(double SIv, fmi3_xml_unit_t* u);
 
-fmi3_xml_unit_t* fmi3_xml_get_base_unit(fmi3_xml_display_unit_t*);
-const char* fmi3_xml_get_display_unit_name(fmi3_xml_display_unit_t*);
-double fmi3_xml_get_display_unit_factor(fmi3_xml_display_unit_t*);
-double fmi3_xml_get_display_unit_offset(fmi3_xml_display_unit_t*);
+fmi3_xml_unit_t* fmi3_xml_get_base_unit(fmi3_xml_display_unit_t* du);
+const char* fmi3_xml_get_display_unit_name(fmi3_xml_display_unit_t* du);
+double fmi3_xml_get_display_unit_factor(fmi3_xml_display_unit_t* du);
+double fmi3_xml_get_display_unit_offset(fmi3_xml_display_unit_t* du);
+unsigned int fmi3_xml_get_display_unit_inverse(fmi3_xml_display_unit_t* du);
 
-double fmi3_xml_convert_to_display_unit(double, fmi3_xml_display_unit_t*, int isRelativeQuantity);
-double fmi3_xml_convert_from_display_unit(double, fmi3_xml_display_unit_t*, int isRelativeQuantity);
+fmi3_float64_t fmi3_xml_float64_convert_to_display_unit  (fmi3_float64_t value, fmi3_xml_display_unit_t* du, int isRelativeQuantity);
+fmi3_float64_t fmi3_xml_float64_convert_from_display_unit(fmi3_float64_t value, fmi3_xml_display_unit_t* du, int isRelativeQuantity);
+fmi3_float32_t fmi3_xml_float32_convert_to_display_unit  (fmi3_float32_t value, fmi3_xml_display_unit_t* du, int isRelativeQuantity);
+fmi3_float32_t fmi3_xml_float32_convert_from_display_unit(fmi3_float32_t value, fmi3_xml_display_unit_t* du, int isRelativeQuantity);
 /**
 @}
 */

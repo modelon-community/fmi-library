@@ -6,7 +6,7 @@
 
      This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
     FMILIB_License.txt file for more details.
 
     You should have received a copy of the FMILIB_License.txt file
@@ -15,7 +15,7 @@
 
 #include "fmi3_import_impl.h"
 
-fmi3_import_unit_t* fmi3_import_get_unit(fmi3_import_unit_definitions_t* ud, unsigned int  index) {
+fmi3_import_unit_t* fmi3_import_get_unit(fmi3_import_unit_definitions_t* ud, unsigned int index) {
     return fmi3_xml_get_unit(ud, index);
 }
 
@@ -23,7 +23,7 @@ const char* fmi3_import_get_unit_name(fmi3_import_unit_t* u) {
     return fmi3_xml_get_unit_name(u);
 }
 
-const int* fmi3_import_get_SI_unit_exponents(fmi3_import_unit_t* u){
+const int* fmi3_import_get_SI_unit_exponents(fmi3_import_unit_t* u) {
     return fmi3_xml_get_SI_unit_exponents(u);
 }
 
@@ -53,7 +53,7 @@ double fmi3_import_convert_to_SI_base_unit(double v, fmi3_import_unit_t* u) {
     \brief Convert a value with respect to the SI base unit to the
     value with respect to the unit.
 */
-double fmi3_import_convert_from_SI_base_unit(double v , fmi3_import_unit_t* u) {
+double fmi3_import_convert_from_SI_base_unit(double v, fmi3_import_unit_t* u) {
     return fmi3_xml_convert_from_SI_base_unit( v, u);
 }
 
@@ -81,39 +81,22 @@ double fmi3_import_get_display_unit_offset(fmi3_import_display_unit_t* du) {
     return fmi3_xml_get_display_unit_offset(du);
 }
 
-fmi3_float64_t fmi3_import_float64_convert_to_display_unit(fmi3_float64_t val , fmi3_import_display_unit_t* du, int isRelativeQuantity) {
-    double factor = fmi3_import_get_display_unit_factor(du);
-    double offset = fmi3_import_get_display_unit_offset(du);
-    if (isRelativeQuantity)
-        return val * factor;
-    else
-        return (val*factor + offset);
+int fmi3_import_get_display_unit_inverse(fmi3_import_display_unit_t* du) {
+    return (int)fmi3_xml_get_display_unit_inverse(du);
+}
+
+fmi3_float64_t fmi3_import_float64_convert_to_display_unit(fmi3_float64_t val, fmi3_import_display_unit_t* du, int isRelativeQuantity) {
+    return fmi3_xml_float64_convert_to_display_unit(val, du, isRelativeQuantity);
 }
 
 fmi3_float64_t fmi3_import_float64_convert_from_display_unit(fmi3_float64_t val, fmi3_import_display_unit_t* du, int isRelativeQuantity) {
-    double factor = fmi3_import_get_display_unit_factor(du);
-    double offset = fmi3_import_get_display_unit_offset(du);
-    if (isRelativeQuantity)
-        return val / factor;
-    else
-        return (val - offset)/factor;
+    return fmi3_xml_float64_convert_from_display_unit(val, du, isRelativeQuantity);
 }
 
-fmi3_float32_t fmi3_import_float32_convert_to_display_unit(fmi3_float32_t val , fmi3_import_display_unit_t* du, int isRelativeQuantity) {
-    fmi3_float32_t factor = (fmi3_float32_t) fmi3_import_get_display_unit_factor(du);
-    fmi3_float32_t offset = (fmi3_float32_t) fmi3_import_get_display_unit_offset(du);
-    if (isRelativeQuantity)
-        return val * factor;
-    else
-        return (val*factor + offset);
+fmi3_float32_t fmi3_import_float32_convert_to_display_unit(fmi3_float32_t val, fmi3_import_display_unit_t* du, int isRelativeQuantity) {
+    return fmi3_xml_float32_convert_to_display_unit(val, du, isRelativeQuantity);
 }
 
 fmi3_float32_t fmi3_import_float32_convert_from_display_unit(fmi3_float32_t val, fmi3_import_display_unit_t* du, int isRelativeQuantity) {
-    fmi3_float32_t factor = (fmi3_float32_t) fmi3_import_get_display_unit_factor(du);
-    fmi3_float32_t offset = (fmi3_float32_t) fmi3_import_get_display_unit_offset(du);
-    if (isRelativeQuantity)
-        return val / factor;
-    else
-        return (val - offset)/factor;
+    return fmi3_xml_float32_convert_from_display_unit(val, du, isRelativeQuantity);
 }
-

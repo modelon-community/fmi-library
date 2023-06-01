@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription fmiVersion="3.0" modelName="" instantiationToken="">
+<ModelExchange modelIdentifier="DisplayUnit_zero_factor"/>
+
+<UnitDefinitions>
+  <Unit name="meter">
+    <BaseUnit m="1" factor="1" offset="0"/>
+    <DisplayUnit name="kilometer" factor="0"/> <!-- factor must be nonzero -->
+  </Unit>
+</UnitDefinitions>
+
+<ModelVariables>
+  <Float64 name="distance" valueReference="0" unit="meter" displayUnit="kilometer" />
+</ModelVariables>
+
+<ModelStructure/>
+</fmiModelDescription>

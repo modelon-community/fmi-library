@@ -209,8 +209,13 @@ FMILIB_EXPORT fmi3_import_variable_t* fmi3_import_get_previous(fmi3_import_varia
     one super dense time instant. In other words, this input is not allowed to
     appear in an algebraic loop.
 */
-FMILIB_EXPORT fmi3_boolean_t fmi3_import_get_canHandleMultipleSetPerTimeInstant(fmi3_import_variable_t* v);
+FMILIB_EXPORT fmi3_boolean_t fmi3_import_get_can_handle_multiple_set_per_time_instant(fmi3_import_variable_t* v);
 
+/** \brief Get the intermediateUpdate flag for a variable.
+
+    @return If true, the variable can be accessed in Intermediate Update Mode
+*/
+FMILIB_EXPORT fmi3_boolean_t fmi3_import_get_intermediate_update(fmi3_import_variable_t* v);
 
 /** \brief Get a list of variables referenced in the 'clock' attribute.
  *  Note that the caller is responsible for deallocating the list.

@@ -68,6 +68,7 @@ struct fmi3_xml_variable_t {
     char causality;
     char reinit; /** \brief Only for continuous FloatXX variables */
     char canHandleMultipleSetPerTimeInstant;
+    char intermediateUpdate;
 
     jm_vector(fmi3_value_reference_t)* clocks;   /* Vrs in the clock attribute. NULL if attribute doesn't exist. */
 

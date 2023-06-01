@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <fmiModelDescription fmiVersion="3.0" modelName="" instantiationToken="">
-<ModelExchange modelIdentifier="id"/>
+<ModelExchange modelIdentifier="id_me"/>
+<CoSimulation modelIdentifier="id_cs"/> <!-- required, else intermediateUpdate is ignored -->
 
 <UnitDefinitions>
     <Unit name="K">
@@ -30,7 +31,8 @@
   <Binary name="binaryDefault" valueReference="3"/>
   <Binary name="binaryAllAttr" valueReference="4" variability="discrete"
           causality="output" initial="calculated" description="myDesc"
-          previous="4001" clocks="4002" mimeType="myMimeType" maxSize="444"/>
+          previous="4001" clocks="4002" mimeType="myMimeType" maxSize="444"
+          intermediateUpdate="true"/>
   <!-- Variables referenced in attributes: -->
   <Binary name="preBinary" valueReference="4001"/>
   <Clock name="clocks4" valueReference="4002" intervalVariability="constant"/>
@@ -53,6 +55,8 @@
     (Trying to create a separation with value refs, but probably not worth the effort.)
   =================================================================================== -->
 
+    <!-- Variable with non-default canHandleMultipleSetPerTimeInstant -->
+  <Float64 name="cannotHandle" valueReference="20" causality="input" canHandleMultipleSetPerTimeInstant="false" />
 
   <!-- Binary with empty mimeType-->
   <Binary name="binaryEmptyMimeType" valueReference="998" mimeType=""/>

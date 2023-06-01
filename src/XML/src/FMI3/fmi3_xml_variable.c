@@ -131,7 +131,11 @@ int fmi3_xml_variable_is_array(fmi3_xml_variable_t* v) {
 }
 
 int fmi3_xml_get_variable_has_start(fmi3_xml_variable_t* v) {
-    return (v->type->structKind == fmi3_xml_type_struct_enu_start);
+    if (v->type) { // Can be null if parse error 
+        return (v->type->structKind == fmi3_xml_type_struct_enu_start);
+    } else {
+        return 0;
+    }
 }
 
 fmi3_variability_enu_t fmi3_xml_get_variability(fmi3_xml_variable_t* v) {
@@ -150,8 +154,12 @@ fmi3_xml_variable_t* fmi3_xml_get_previous(fmi3_xml_variable_t* v) {
     return v->previous.variable;
 }
 
-fmi3_boolean_t fmi3_xml_get_canHandleMultipleSetPerTimeInstant(fmi3_xml_variable_t* v) {
+fmi3_boolean_t fmi3_xml_get_can_handle_multiple_set_per_time_instant(fmi3_xml_variable_t* v) {
     return (fmi3_boolean_t)v->canHandleMultipleSetPerTimeInstant;
+}
+
+fmi3_boolean_t fmi3_xml_get_intermediate_update(fmi3_xml_variable_t* v) {
+    return (fmi3_boolean_t)v->intermediateUpdate;
 }
 
 int fmi3_xml_variable_is_clocked(fmi3_xml_variable_t* v) {
@@ -1027,11 +1035,19 @@ static void free_string_start_values(jm_callbacks* callbacks, fmi3_xml_variable_
 }
 
 static bool is_string_variable_with_start(fmi3_xml_variable_t* var) {
-    return var->type->baseType == fmi3_base_type_str && (var->type->structKind == fmi3_xml_type_struct_enu_start);
+    if (var->type) { // Can be null if parse error
+        return var->type->baseType == fmi3_base_type_str && (var->type->structKind == fmi3_xml_type_struct_enu_start);
+    } else {
+        return 0;
+    }
 }
 
 static bool is_binary_variable_with_start(fmi3_xml_variable_t* var) {
-    return var->type->baseType == fmi3_base_type_binary && (var->type->structKind == fmi3_xml_type_struct_enu_start);
+    if (var->type) { // Can be null if parse error
+        return var->type->baseType == fmi3_base_type_binary && (var->type->structKind == fmi3_xml_type_struct_enu_start);
+    } else {
+        return 0;
+    }
 }
 
 static void fmi3_xml_free_alias(jm_callbacks* callbacks, fmi3_xml_alias_variable_t* alias) {
@@ -1241,6 +1257,48 @@ static int fmi3_xml_variable_process_attr_multipleset(fmi3_xml_parser_context_t*
     return 0;
 }
 
+static int fmi3_xml_variable_process_attr_intermediateupdate(fmi3_xml_parser_context_t* context,
+        fmi3_xml_variable_t* variable, fmi3_xml_elm_enu_t elm_id)
+{
+    unsigned int intermediateUpdate;
+
+    variable->intermediateUpdate = 0; // default, set early due to possible ignore
+    // peek due to "must not have attribute" error check 
+    if (!fmi3_xml_peek_attr_str(context, fmi_attr_id_intermediateUpdate)) {
+        return 0;
+    } 
+    // else: attribute exists
+
+    fmi3_xml_model_description_t* md = context->modelDescription;
+    fmi3_fmu_kind_enu_t fmuKind = fmi3_xml_get_fmu_kind(md);
+    // Spec: "This attribute is ignored in Model Exchange and Scheduled Execution", ignored unless Co-Simulation
+    // Multiple types can be defined, check for: not CS
+    if (!(fmuKind & fmi3_fmu_kind_cs)) {
+        jm_log_info(md->callbacks, "FMI3XML", "Attribute 'intermediateUpdate' ignored since FMU kind is not Co-Simulation.");
+        return 0;
+    }
+
+    // Spec: "Variables of type Clock must not have the intermediateUpdate attribute"
+    // TODO: This should probably only trigger for intermediateUpdate="true", but requires clarification in the standard.
+    if (elm_id == fmi3_xml_elmID_ClockVariable) {
+        fmi3_xml_parse_error(context, "Variables of type 'Clock' must not have the 'intermediateUpdate' attribute.");
+        return -1;
+    }
+
+    if (fmi3_xml_set_attr_boolean(context, elm_id, fmi_attr_id_intermediateUpdate,
+            0 /* required */, &intermediateUpdate, 0 /* defaultVal */)) {
+        return -1;
+    }
+    variable->intermediateUpdate = (char)intermediateUpdate;
+
+    // Spec: "Variables with causality = parameter must not be marked with intermediateUpdate = true"
+    if (intermediateUpdate && (fmi3_xml_get_causality(variable) == fmi3_causality_enu_parameter)) {
+        fmi3_xml_parse_error(context, "Variables with causality='parameter' must not be marked with intermediateUpdate='true'.");
+        return -1;
+    }
+    return 0;
+}
+
 static int fmi3_xml_variable_process_attr_clocks(fmi3_xml_parser_context_t* context,
         fmi3_xml_variable_t* variable, fmi3_xml_elm_enu_t elm_id)
 {
@@ -1378,6 +1436,7 @@ int fmi3_xml_handle_Variable(fmi3_xml_parser_context_t* context, const char* dat
         if (fmi3_xml_variable_process_attr_causality_variability_initial(context, variable, elm_id)) return -1;
         if (fmi3_xml_variable_process_attr_previous(context, variable, elm_id))    return -1;
         if (fmi3_xml_variable_process_attr_multipleset(context, variable, elm_id)) return -1;
+        if (fmi3_xml_variable_process_attr_intermediateupdate(context, variable, elm_id)) return -1;
         if (fmi3_xml_variable_process_attr_clocks(context, variable, elm_id)) return -1;
     }
     else { /* end of xml tag */

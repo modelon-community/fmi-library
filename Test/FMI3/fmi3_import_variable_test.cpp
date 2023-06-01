@@ -45,8 +45,8 @@ static void test_enum_default_attrs(fmi3_import_t* xml) {
     t = fmi3_import_get_variable_declared_type(v);
     REQUIRE(t != nullptr);
 
-    REQUIRE(strcmp(fmi3_import_get_type_name(t), "MyEnum") == 0);
-    REQUIRE(strcmp(fmi3_import_get_type_quantity(t), "TypeQuantity") == 0);
+    REQUIRE_STREQ(fmi3_import_get_type_name(t), "MyEnum");
+    REQUIRE_STREQ(fmi3_import_get_type_quantity(t), "TypeQuantity");
 
     et = fmi3_import_get_type_as_enum(t);
     REQUIRE(et != nullptr);
@@ -64,7 +64,7 @@ static void test_enum_all_attrs(fmi3_import_t* xml) {
 
     REQUIRE(v != nullptr);
     REQUIRE(fmi3_import_get_variable_vr(v) == 2);
-    REQUIRE(strcmp(fmi3_import_get_variable_description(v), "myDescription") == 0);
+    REQUIRE_STREQ(fmi3_import_get_variable_description(v), "myDescription");
     REQUIRE(fmi3_import_get_causality(v) == fmi3_causality_enu_output);
     REQUIRE(fmi3_import_get_variability(v) == fmi3_variability_enu_discrete);
     REQUIRE(fmi3_import_get_initial(v) == fmi3_initial_enu_exact);
@@ -77,8 +77,8 @@ static void test_enum_all_attrs(fmi3_import_t* xml) {
 
     t = fmi3_import_get_variable_declared_type(v);
     REQUIRE(t != nullptr);
-    REQUIRE(strcmp(fmi3_import_get_type_name(t), "MyEnum") == 0);
-    REQUIRE(strcmp(fmi3_import_get_type_quantity(t), "TypeQuantity") == 0);
+    REQUIRE_STREQ(fmi3_import_get_type_name(t), "MyEnum");
+    REQUIRE_STREQ(fmi3_import_get_type_quantity(t), "TypeQuantity");
 
     et = fmi3_import_get_type_as_enum(t);
     REQUIRE(et != nullptr);
@@ -102,6 +102,8 @@ static void test_binary_default_attrs(fmi3_import_t* xml) {
     REQUIRE(fmi3_import_get_causality(v) == fmi3_causality_enu_local);
     REQUIRE(fmi3_import_get_variability(v) == fmi3_variability_enu_discrete);
     REQUIRE(fmi3_import_get_initial(v) == fmi3_initial_enu_calculated);  // Depends on causality and variability
+    REQUIRE(fmi3_import_get_can_handle_multiple_set_per_time_instant(v) == true); // default
+    REQUIRE(fmi3_import_get_intermediate_update(v) == false); // default
 
     clockVars = fmi3_import_get_variable_clocks(xml, v);
     REQUIRE(fmi3_import_get_variable_list_size(clockVars) == 0);
@@ -112,7 +114,7 @@ static void test_binary_default_attrs(fmi3_import_t* xml) {
     REQUIRE(fmi3_import_get_binary_variable_start_size(bv) == 0);
     REQUIRE(fmi3_import_get_binary_variable_start(bv) == nullptr);
     REQUIRE(fmi3_import_get_binary_variable_max_size(bv) == 0);
-    REQUIRE(strcmp(fmi3_import_get_binary_variable_mime_type(bv), "application/octet-stream") == 0);
+    REQUIRE_STREQ(fmi3_import_get_binary_variable_mime_type(bv), "application/octet-stream");
 
     t = fmi3_import_get_variable_declared_type(v);
     REQUIRE(t == nullptr);  // No declared type
@@ -134,8 +136,9 @@ static void test_binary_all_attrs(fmi3_import_t* xml) {
     REQUIRE(fmi3_import_get_causality(v) == fmi3_causality_enu_output);
     REQUIRE(fmi3_import_get_variability(v) == fmi3_variability_enu_discrete);
     REQUIRE(fmi3_import_get_initial(v) == fmi3_initial_enu_calculated);
-    REQUIRE(strcmp(fmi3_import_get_variable_description(v), "myDesc") == 0);
-    REQUIRE(fmi3_import_get_canHandleMultipleSetPerTimeInstant(v) == true); /* default */
+    REQUIRE_STREQ(fmi3_import_get_variable_description(v), "myDesc");
+    REQUIRE(fmi3_import_get_can_handle_multiple_set_per_time_instant(v) == true); // default
+    REQUIRE(fmi3_import_get_intermediate_update(v) == true);
 
     preBv = fmi3_import_get_previous(v);
     REQUIRE(preBv != nullptr);
@@ -151,7 +154,7 @@ static void test_binary_all_attrs(fmi3_import_t* xml) {
     bv = fmi3_import_get_variable_as_binary(v);
     REQUIRE(bv != nullptr);
     REQUIRE(fmi3_import_get_binary_variable_max_size(bv) == 444);
-    REQUIRE(strcmp(fmi3_import_get_binary_variable_mime_type(bv), "myMimeType") == 0);
+    REQUIRE_STREQ(fmi3_import_get_binary_variable_mime_type(bv), "myMimeType");
 
     t = fmi3_import_get_variable_declared_type(v);
     REQUIRE(t == nullptr);  // No declared type
@@ -283,6 +286,16 @@ static void test_clock_all_attrs(fmi3_import_t* xml) {
     REQUIRE(fmi3_import_get_clock_variable_shift_counter(cv)        == 6);
 }
 
+/**
+ * Tests parsing a variable with non-default canHandleMultipleSetPerTimeInstant attribute.
+ */
+static void test_non_default_canhandlemultiplesetpertimeinstant(fmi3_import_t* xml) {
+    fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "cannotHandle");
+    REQUIRE(v != nullptr);
+
+    REQUIRE(fmi3_import_get_can_handle_multiple_set_per_time_instant(v) == 0);
+}
+
 TEST_CASE("Variable parsing") {
     const char* xmldir = FMI3_TEST_XML_DIR "/variables/valid/basic1";
 
@@ -320,6 +333,10 @@ TEST_CASE("Variable parsing") {
         test_clock_attr_multi_value(xml);
     }
 
+    SECTION("canHandleMultipleSetPerTimeInstant attribute: non-default value") {
+        test_non_default_canhandlemultiplesetpertimeinstant(xml);
+    }
+
     fmi3_import_free(xml);
 }
 
@@ -338,7 +355,7 @@ TEST_CASE("Invalid Binary variable - non-hexadecimal char first in byte tuple") 
     REQUIRE(xml != nullptr);
 
     const char* errMsg = fmi3_import_get_last_error(xml);
-    REQUIRE(strcmp(errMsg, "String is not hexadecimal: gf") == 0);
+    REQUIRE_STREQ(errMsg, "String is not hexadecimal: gf");
     fmi3_import_free(xml);
 }
 
@@ -349,7 +366,7 @@ TEST_CASE("Invalid Binary variable - non-hexadecimal char second in byte tuple")
     REQUIRE(xml != nullptr);
 
     const char* errMsg = fmi3_import_get_last_error(xml);
-    REQUIRE(strcmp(errMsg, "String is not hexadecimal: FG") == 0);
+    REQUIRE_STREQ(errMsg, "String is not hexadecimal: FG");
     fmi3_import_free(xml);
 }
 
@@ -360,7 +377,7 @@ TEST_CASE("Invalid structuralParameter - requires start attribute") {
     REQUIRE(xml != nullptr);
 
     const char* errMsg = fmi3_import_get_last_error(xml);
-    REQUIRE(strcmp(errMsg, "Variable structVar: start value required for structuralParameter variables") == 0);
+    REQUIRE_STREQ(errMsg, "Variable structVar: start value required for structuralParameter variables");
 
     fmi3_import_free(xml);
 }
@@ -372,7 +389,7 @@ TEST_CASE("Invalid structuralParameter - has dimension") {
     REQUIRE(xml != nullptr);
 
     const char* errMsg = fmi3_import_get_last_error(xml);
-    REQUIRE(strcmp(errMsg, "Variable structVar: structuralParameters must not have Dimension elements.") == 0);
+    REQUIRE_STREQ(errMsg, "Variable structVar: structuralParameters must not have Dimension elements.");
 
     fmi3_import_free(xml);
 }
@@ -590,5 +607,42 @@ TEST_CASE("Alias with name being the empty string") {
     fmi3_import_t* fmu = tfmu->fmu;
     REQUIRE(fmu != nullptr);
     REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
+    fmi3_testutil_import_free(tfmu);
+}
+TEST_CASE("Invalid intermediateUpdate - has causality parameter") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/variables/invalid/intermediateUpdate_parameter";
+
+    fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
+    REQUIRE(xml != nullptr);
+
+    const char* errMsg = fmi3_import_get_last_error(xml);
+    REQUIRE_STREQ(errMsg, "Variables with causality='parameter' must not be marked with intermediateUpdate='true'.");
+
+    fmi3_import_free(xml);
+}
+
+TEST_CASE("Invalid Clock - has attribute intermediateUpdate") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/variables/invalid/intermediateUpdate_clock";
+
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    REQUIRE(tfmu != nullptr);
+    REQUIRE(tfmu->fmu != nullptr);
+
+    const char* logMsg = "Variables of type 'Clock' must not have the 'intermediateUpdate' attribute.";
+    REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg)); // contains other errors; does not finish parsing all attributes
+
+    fmi3_testutil_import_free(tfmu);
+}
+
+TEST_CASE("Info check - intermediateUpdate ignored unless Co-Simulation") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/variables/valid/intermediateUpdate_not_cs";
+
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    REQUIRE(tfmu != nullptr);
+    REQUIRE(tfmu->fmu != nullptr);
+
+    const char* logMsg = "Attribute 'intermediateUpdate' ignored since FMU kind is not Co-Simulation.";
+    REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
+
     fmi3_testutil_import_free(tfmu);
 }

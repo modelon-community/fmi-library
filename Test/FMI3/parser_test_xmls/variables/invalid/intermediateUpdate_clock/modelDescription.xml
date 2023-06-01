@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription fmiVersion="3.0" modelName="" instantiationToken="">
+<CoSimulation modelIdentifier="intermediateUpdate_is_clock"/>
+
+<ModelVariables>
+    <!-- Variables of type Clock must not have the intermediateUpdate attribute -->
+    <Clock name="var" valueReference="0" intervalVariability="constant" causality="input" intermediateUpdate="true"/>
+</ModelVariables>
+
+<ModelStructure/>
+</fmiModelDescription>

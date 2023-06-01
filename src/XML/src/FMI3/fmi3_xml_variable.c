@@ -1261,10 +1261,15 @@ static int fmi3_xml_variable_process_attr_intermediateupdate(fmi3_xml_parser_con
         fmi3_xml_variable_t* variable, fmi3_xml_elm_enu_t elm_id)
 {
     unsigned int intermediateUpdate;
+
+    variable->intermediateUpdate = 0; // default, set early due to possible ignore
+    // peek due to "must not have attribute" error check 
+    if (!fmi3_xml_peek_attr_str(context, fmi_attr_id_intermediateUpdate)) {
+        return 0;
+    } 
+    // else: attribute exists
+
     fmi3_xml_model_description_t* md = context->modelDescription;
-
-    variable->intermediateUpdate = 0; // default
-
     fmi3_fmu_kind_enu_t fmuKind = fmi3_xml_get_fmu_kind(md);
     // Spec: "This attribute is ignored in Model Exchange and Scheduled Execution", ignored unless Co-Simulation
     // Multiple types can be defined, check for: not CS
@@ -1273,14 +1278,8 @@ static int fmi3_xml_variable_process_attr_intermediateupdate(fmi3_xml_parser_con
         return 0;
     }
 
-    // peek due to "must not have attribute" error check 
-    // TODO: This is probably redudant, but requires clarification in the standard.
-    if (!fmi3_xml_peek_attr_str(context, fmi_attr_id_intermediateUpdate)) {
-        return 0;
-    } 
-    // else: attribute exists
-
     // Spec: "Variables of type Clock must not have the intermediateUpdate attribute"
+    // TODO: This should probably only trigger for intermediateUpdate="true", but requires clarification in the standard.
     if (elm_id == fmi3_xml_elmID_ClockVariable) {
         fmi3_xml_parse_error(context, "Variables of type 'Clock' must not have the 'intermediateUpdate' attribute.");
         return -1;

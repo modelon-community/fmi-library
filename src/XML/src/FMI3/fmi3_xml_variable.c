@@ -905,7 +905,7 @@ size_t fmi3_xml_get_alias_variables_number(fmi3_xml_alias_variables_t* aliases) 
 }
 
 fmi3_xml_alias_variable_t* fmi3_xml_get_alias(fmi3_xml_alias_variables_t* aliases, size_t index) {
-    if (!aliases || index > jm_vector_get_size(jm_voidp)(&aliases->vec)) {
+    if (!aliases) {
         return NULL;
     }
     return jm_vector_get_item(jm_voidp)(&aliases->vec, index);

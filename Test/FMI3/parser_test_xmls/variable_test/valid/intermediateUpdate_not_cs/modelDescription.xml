@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <fmiModelDescription fmiVersion="3.0" modelName="" instantiationToken="">
-<ModelExchange modelIdentifier="intermediateUpdate_ignored"/>
-<ScheduledExecution modelIdentifier="id_me"/>
+<ModelExchange modelIdentifier="id_me"/>
+<ScheduledExecution modelIdentifier="id_se"/>
 
 <ModelVariables>
   <!-- intermediateUpdate ingored for Model Exchange and Scheduled Execution -->

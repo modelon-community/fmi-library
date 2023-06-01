@@ -154,11 +154,11 @@ fmi3_xml_variable_t* fmi3_xml_get_previous(fmi3_xml_variable_t* v) {
     return v->previous.variable;
 }
 
-fmi3_boolean_t fmi3_xml_get_canHandleMultipleSetPerTimeInstant(fmi3_xml_variable_t* v) {
+fmi3_boolean_t fmi3_xml_get_can_handle_multiple_set_per_time_instant(fmi3_xml_variable_t* v) {
     return (fmi3_boolean_t)v->canHandleMultipleSetPerTimeInstant;
 }
 
-fmi3_boolean_t fmi3_xml_get_intermediateUpdate(fmi3_xml_variable_t* v) {
+fmi3_boolean_t fmi3_xml_get_intermediate_update(fmi3_xml_variable_t* v) {
     return (fmi3_boolean_t)v->intermediateUpdate;
 }
 
@@ -1263,20 +1263,22 @@ static int fmi3_xml_variable_process_attr_intermediateupdate(fmi3_xml_parser_con
     unsigned int intermediateUpdate;
     fmi3_xml_model_description_t* md = context->modelDescription;
 
-    // peek due to "must not have attribute" error check
-    if (!fmi3_xml_peek_attr_str(context, fmi_attr_id_intermediateUpdate)) {
-        variable->intermediateUpdate = 0; // default
-        return 0;
-    } 
-    // else: attribute exists
+    variable->intermediateUpdate = 0; // default
 
     fmi3_fmu_kind_enu_t fmuKind = fmi3_xml_get_fmu_kind(md);
     // Spec: "This attribute is ignored in Model Exchange and Scheduled Execution", ignored unless Co-Simulation
     // Multiple types can be defined, check for: not CS
     if (!(fmuKind & fmi3_fmu_kind_cs)) {
-        jm_log_info(md->callbacks, "FMI3XML", "'intermediateUpdate' attribute ignored since FMU kind is not Co-Simulation.");
+        jm_log_info(md->callbacks, "FMI3XML", "Attribute 'intermediateUpdate' ignored since FMU kind is not Co-Simulation.");
         return 0;
     }
+
+    // peek due to "must not have attribute" error check 
+    // TODO: This is probably redudant, but requires clarification in the standard.
+    if (!fmi3_xml_peek_attr_str(context, fmi_attr_id_intermediateUpdate)) {
+        return 0;
+    } 
+    // else: attribute exists
 
     // Spec: "Variables of type Clock must not have the intermediateUpdate attribute"
     if (elm_id == fmi3_xml_elmID_ClockVariable) {

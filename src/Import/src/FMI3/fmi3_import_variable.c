@@ -84,12 +84,12 @@ fmi3_import_variable_t* fmi3_import_get_previous(fmi3_import_variable_t* v) {
     return fmi3_xml_get_previous(v);
 }
 
-fmi3_boolean_t fmi3_import_get_canHandleMultipleSetPerTimeInstant(fmi3_import_variable_t* v) {
-    return fmi3_xml_get_canHandleMultipleSetPerTimeInstant(v);
+fmi3_boolean_t fmi3_import_get_can_handle_multiple_set_per_time_instant(fmi3_import_variable_t* v) {
+    return fmi3_xml_get_can_handle_multiple_set_per_time_instant(v);
 }
 
-fmi3_boolean_t fmi3_import_get_intermediateUpdate(fmi3_import_variable_t* v) {
-    return fmi3_xml_get_intermediateUpdate(v);
+fmi3_boolean_t fmi3_import_get_intermediate_update(fmi3_import_variable_t* v) {
+    return fmi3_xml_get_intermediate_update(v);
 }
 
 fmi3_import_variable_list_t* fmi3_import_get_variable_clocks(fmi3_import_t* fmu, fmi3_import_variable_t* v) {

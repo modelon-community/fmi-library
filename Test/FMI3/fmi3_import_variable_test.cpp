@@ -610,7 +610,7 @@ TEST_CASE("Alias with name being the empty string") {
     fmi3_testutil_import_free(tfmu);
 }
 TEST_CASE("Invalid intermediateUpdate - has causality parameter") {
-    const char* xmldir = FMI3_TEST_XML_DIR "/variable_test/invalid/intermediateUpdate_parameter";
+    const char* xmldir = FMI3_TEST_XML_DIR "/variables/invalid/intermediateUpdate_parameter";
 
     fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
     REQUIRE(xml != nullptr);
@@ -622,7 +622,7 @@ TEST_CASE("Invalid intermediateUpdate - has causality parameter") {
 }
 
 TEST_CASE("Invalid Clock - has attribute intermediateUpdate") {
-    const char* xmldir = FMI3_TEST_XML_DIR "/variable_test/invalid/intermediateUpdate_clock";
+    const char* xmldir = FMI3_TEST_XML_DIR "/variables/invalid/intermediateUpdate_clock";
 
     fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
     REQUIRE(tfmu != nullptr);
@@ -635,7 +635,7 @@ TEST_CASE("Invalid Clock - has attribute intermediateUpdate") {
 }
 
 TEST_CASE("Info check - intermediateUpdate ignored unless Co-Simulation") {
-    const char* xmldir = FMI3_TEST_XML_DIR "/variable_test/valid/intermediateUpdate_not_cs";
+    const char* xmldir = FMI3_TEST_XML_DIR "/variables/valid/intermediateUpdate_not_cs";
 
     fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
     REQUIRE(tfmu != nullptr);

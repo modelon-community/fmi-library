@@ -332,7 +332,7 @@ int fmi3_xml_is_attr_defined(fmi3_xml_parser_context_t *context, fmi3_xml_attr_e
 
 /**
  * Read value from parse buffer and clear the buffer entry.
- * @param valp (outptu arg): pointer to attribute value (memory still owned by expat)
+ * @param valp (output arg): pointer to attribute value (memory still owned by expat)
  */
 int fmi3_xml_get_attr_str(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID,
         int required, const char** valp)
@@ -387,7 +387,7 @@ int fmi3_xml_set_attr_string(fmi3_xml_parser_context_t *context, fmi3_xml_elm_en
 
     /* Copy to output memory owned by FMIL */
     strcpy(jm_vector_get_itemp(char)(field, 0), val);
-    jm_vector_resize(char)(field, len - 1);  // Make length as as for strlen
+    jm_vector_resize(char)(field, len - 1);  // Make length as for strlen
     return 0;
 }
 

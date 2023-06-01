@@ -4,9 +4,9 @@
 <ModelExchange modelIdentifier="myModelIdentifier" />
 
 <TypeDefinitions>
-  <Binary name="td_minimal"/>
-  <Binary name="td_mimeType" mimeType="mt0"/>
-  <Binary name="td_allAttr"  mimeType="mt0" maxSize="999"/>
+  <BinaryType name="td_minimal"/>
+  <BinaryType name="td_mimeType" mimeType="mt0"/>
+  <BinaryType name="td_allAttr"  mimeType="mt0" maxSize="999"/>
 </TypeDefinitions>
 
 <ModelVariables>

@@ -10,9 +10,9 @@
   <ModelExchange modelIdentifier="model_identifier"/>
 
   <TypeDefinitions>
-      <Enumeration name="MyEnum" quantity="TypeQuantity">
+      <EnumerationType name="MyEnum" quantity="TypeQuantity">
           <Item name="item1" value="1"/>
-      </Enumeration>
+      </EnumerationType>
   </TypeDefinitions>
 
   <ModelVariables>

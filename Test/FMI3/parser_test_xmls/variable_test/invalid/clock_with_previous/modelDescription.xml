@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription fmiVersion="3.0" modelName="" instantiationToken="">
+<ModelExchange modelIdentifier="Clock_with_previous" />
+
+<ModelVariables>
+    <Float64 name="clocked_var_previous" valueReference="10" variability="discrete"/>
+    <Clock name="clock_01" valueReference="20" variability="discrete" intervalVariability="constant" clocks="21" previous="10"/> <!-- Clock Type variable must not have the 'previous' attribute -->
+    <Clock name="clock_02" valueReference="21" intervalVariability="constant"/>
+</ModelVariables>
+
+<ModelStructure/>
+</fmiModelDescription>

@@ -501,17 +501,8 @@ int fmi3_xml_handle_ClockedState(fmi3_xml_parser_context_t *context, const char*
         /* validate return values */
         fmi3_xml_variable_t* clockVar = (fmi3_xml_variable_t*)jm_vector_get_last(jm_voidp)(&ms->clockedStates);
 
-        /* clock attribute required */
-        if (!fmi3_xml_variable_is_clocked(clockVar)) {
-            ms->isValidFlag = 0;
-            fmi3_xml_parse_error(context,
-                    "The variable '%s' is a ClockedState, but does not define the attribute 'clocks'.",
-                    fmi3_xml_get_variable_name(clockVar));
-            return -1;
-        }
-
-        /* previous attribute is required */
-        if (!fmi3_xml_get_previous(clockVar)) {
+        // previous attribute is required, spec: "If present, this variable is a <ClockedState>" */
+        if (!clockVar->hasPrevious) {
             ms->isValidFlag = 0;
             fmi3_xml_parse_error(context,
                     "The variable '%s' is a ClockedState, but does not define the attribute 'previous'.",
@@ -519,14 +510,9 @@ int fmi3_xml_handle_ClockedState(fmi3_xml_parser_context_t *context, const char*
             return -1;
         }
 
-        /* must be discrete */
-        if (fmi3_xml_get_variability(clockVar) != fmi3_variability_enu_discrete) {
-            ms->isValidFlag = 0;
-            fmi3_xml_parse_error(context,
-                    "The variable '%s' is a ClockedState, but does not have variability='discrete'.",
-                    fmi3_xml_get_variable_name(clockVar));
-            return -1;
-        }
+        // ClockedStates must also have variability='discrete', and the attribute 'clocks'.
+        // The same applies for variables with the attribute 'previous'.
+        // ClockedStates require the attribute 'previous' , so this is already checked.
 
         /* must not be of base type fmi3Clock */
         if (fmi3_xml_get_variable_base_type(clockVar) == fmi3_base_type_clock) {

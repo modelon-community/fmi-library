@@ -8,11 +8,11 @@
 
 \mainpage FMI Library
 
-\version     2.4.1
-\date        15 September 2022
+\version     3.0a1
+\date        2 June 2023
 \section Summary
 FMI library is intended as a foundation for applications interfacing FMUs
-(Functional Mockup Units) that follow FMI Standard. This version of the library supports FMI 1.0 and FMI 2.0.
+(Functional Mockup Units) that follow FMI Standard. This version of the library supports FMI 1.0, FMI 2.0 and FMI 3.0.
 See <http://www.fmi-standard.org/>
 
 The test codes provided with the library can serve as starting point for the
@@ -103,10 +103,20 @@ The following build configuration options are provided:
   Default: ON\n
   '\e fmilib_shared' may be used for dynamic linking.
 
-- \b FMILIB_FMI_PLATFORM - FMI platform defines the subdirectory within FMU
-  where binary is located.\n
-  The build system will automatically detect win32, win64, linux32, linux64,
+- \b FMILIB_FMI1_PLATFORM - Defines the subdirectory within FMU
+  where binary is located, for FMI1.\n
+  The build system will automatically detect: win32, win64, linux32, linux64,
   darwin32, darwin64.
+
+- \b FMILIB_FMI2_PLATFORM - Defines the subdirectory within FMU
+  where binary is located, for FMI2.\n
+  The build system will automatically detect: win32, win64, linux32, linux64,
+  darwin32, darwin64.
+
+- \b FMILIB_FMI3_PLATFORM - Defines the subdirectory within FMU
+  where binary is located, for FMI3.\n
+  The build system will automatically detect: x86-windows, x86_64-windows,
+  x86-linux, x86_64-linux, x86-darwin, x86_64-darwin.
 
 - \b FMILIB_BUILD_FOR_SHARED_LIBS  The static library 'fmilib' can be linked
   into shared libraries.\n

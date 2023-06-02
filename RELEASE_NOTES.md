@@ -6,10 +6,18 @@ Note that version 2.1 is the first version with release notes. Please see the co
 
 ## NEXT_RELEASE
 
+## 3.0a1
+
 ### Improvements
 
-- Added work-in-progress for FMI 3. Everything related to FMI 3 should be considered experimental.
+- Added initial support for FMI 3.0. Limitations:
+    - XML elements `Annotations`, `TerminalsAndIcons`, and `BuildConfiguration` are not yet supported.
+    - Many error checks are missing.
+    
+### Changes
 
+- `fmi_construct_dll_dir_name` and `fmi_construct_dll_file_name` have been removed.
+- `fmi_import_get_dll_path` has been removed. Instead use `fmi<FMI_VERSION>_import_get_dll_path`.
 
 ## 2.4.1
 

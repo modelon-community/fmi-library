@@ -236,15 +236,22 @@ else(WIN32)
     set(FMI_FILE_SEP "/")
 endif(WIN32)
 
-set(FMILIB_FMI_PLATFORM_DOC "FMI platform defines the subdirectory within FMU where binary is located")
-set(FMILIB_FMI_PLATFORM ”unknown” CACHE STRING ${FMILIB_FMI_PLATFORM_DOC})
-if(FMILIB_FMI_PLATFORM MATCHES ”unknown”)
-    include(fmiplatform)
-    fmi_platform(FMI_PLATFORM)
-    set(FMILIB_FMI_PLATFORM ${FMI_PLATFORM} CACHE STRING ${FMILIB_FMI_PLATFORM_DOC} FORCE)
-else()
-    set(FMI_PLATFORM ${FMILIB_FMI_PLATFORM})
-endif()
+# Sets VARNAME to the user-configured platform name, or auto-detects it based on the
+# current platform and provided FMI version.
+macro(set_fmi_platform VARNAME FMI_VERSION)
+    set(FMILIB_FMI_PLATFORM_DOC "The subdirectory in the FMU's binaries directory where the shared library is located")
+    set(FMILIB_FMI${FMI_VERSION}_PLATFORM unknown CACHE STRING ${FMILIB_FMI_PLATFORM_DOC})
+    if(FMILIB_FMI${FMI_VERSION}_PLATFORM MATCHES unknown)
+        include(fmiplatform)
+        fmi_platform(${VARNAME} ${FMI_VERSION})
+        set(FMILIB_FMI${FMI_VERSION}_PLATFORM ${${VARNAME}} CACHE STRING ${FMILIB_FMI_PLATFORM_DOC} FORCE)
+    else()
+        set(${VARNAME} ${FMILIB_FMI${FMI_VERSION}_PLATFORM})
+    endif()
+endmacro()
+set_fmi_platform(FMI1_PLATFORM 1)
+set_fmi_platform(FMI2_PLATFORM 2)
+set_fmi_platform(FMI3_PLATFORM 3)
 
 configure_file (
     "${FMILibrary_SOURCE_DIR}/Config.cmake/config_fmilib.h.cmake"

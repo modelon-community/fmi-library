@@ -320,7 +320,11 @@ int main(int argc, char *argv[])
 
     fmi3_import_t* fmu;
 
-    FMUPath = FMU3_ME_PATH;
+    if (argc > 1) {
+        FMUPath = argv[1]; // Allows testing on any FMU
+    } else {
+        FMUPath = FMU3_ME_PATH;
+    }
     tmpPath = FMU_TEMPORARY_TEST_DIR;
 
     callbacks.malloc = malloc;

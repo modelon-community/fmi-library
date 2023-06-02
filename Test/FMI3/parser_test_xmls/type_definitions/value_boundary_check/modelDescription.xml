@@ -13,34 +13,34 @@
     <!-- value boundary check -->
     <!-- parsing breaks for element immediately on failure, so only having min or max to test both -->
     <!-- float: incremented absolute value of least significant decimal -->
-    <Float64 name="vbc_td_min_float64"  min="-1.7976931348623159e+308" />
-    <Float64 name="vbc_td_max_float64"  max="1.7976931348623159e+308"  />
-    <Float32 name="vbc_td_min_float32"  min="-3.402823467e+38"         />
-    <Float32 name="vbc_td_max_float32"  max="3.402823467e+38"          />
+    <Float64Type name="vbc_td_min_float64"  min="-1.7976931348623159e+308" />
+    <Float64Type name="vbc_td_max_float64"  max="1.7976931348623159e+308"  />
+    <Float32Type name="vbc_td_min_float32"  min="-3.402823467e+38"         />
+    <Float32Type name="vbc_td_max_float32"  max="3.402823467e+38"          />
 
     <!-- intXX:
         min: INTXX_MIN-=1
         max: INTXX_MAX+=1
     -->
-    <Int64  name="vbc_td_min_int64"  min="-9223372036854775809" /> 
-    <Int32  name="vbc_td_min_int32"  min="-2147483649"          />
-    <Int16  name="vbc_td_min_int16"  min="-32769"               />
-    <Int8   name="vbc_t_mind_int8"   min="-129"                 />
+    <Int64Type  name="vbc_td_min_int64"  min="-9223372036854775809" /> 
+    <Int32Type  name="vbc_td_min_int32"  min="-2147483649"          />
+    <Int16Type  name="vbc_td_min_int16"  min="-32769"               />
+    <Int8Type   name="vbc_t_mind_int8"   min="-129"                 />
 
-    <Int64  name="vbc_td_max_int64"  max="9223372036854775808"  /> 
-    <Int32  name="vbc_td_max_int32"  max="2147483648"           />
-    <Int16  name="vbc_td_max_int16"  max="32768"                />
-    <Int8   name="vbc_td_max_int8"   max="128"                  />
+    <Int64Type  name="vbc_td_max_int64"  max="9223372036854775808"  /> 
+    <Int32Type  name="vbc_td_max_int32"  max="2147483648"           />
+    <Int16Type  name="vbc_td_max_int16"  max="32768"                />
+    <Int8Type   name="vbc_td_max_int8"   max="128"                  />
 
-    <UInt64 name="vbc_td_min_uint64" min="-1"                   />
-    <UInt32 name="vbc_td_min_uint32" min="-1"                   />
-    <UInt16 name="vbc_td_min_uint16" min="-1"                   />
-    <UInt8  name="vbc_td_min_uint8"  min="-1"                   />
+    <UInt64Type name="vbc_td_min_uint64" min="-1"                   />
+    <UInt32Type name="vbc_td_min_uint32" min="-1"                   />
+    <UInt16Type name="vbc_td_min_uint16" min="-1"                   />
+    <UInt8Type  name="vbc_td_min_uint8"  min="-1"                   />
 
-    <UInt64 name="vbc_td_max_uint64" max="18446744073709551616" />
-    <UInt32 name="vbc_td_max_uint32" max="4294967296"           />
-    <UInt16 name="vbc_td_max_uint16" max="65536"                />
-    <UInt8  name="vbc_td_max_uint8"  max="256"                  />
+    <UInt64Type name="vbc_td_max_uint64" max="18446744073709551616" />
+    <UInt32Type name="vbc_td_max_uint32" max="4294967296"           />
+    <UInt16Type name="vbc_td_max_uint16" max="65536"                />
+    <UInt8Type  name="vbc_td_max_uint8"  max="256"                  />
   </TypeDefinitions>
 
   <ModelVariables>

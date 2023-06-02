@@ -7,7 +7,7 @@
   instantiationToken="123">
   <ModelExchange modelIdentifier="BouncingBall3" />
   <TypeDefinitions>
-      <Float64 name="Modelica.Blocks.Interfaces.RealOutput" />
+      <Float64Type name="Modelica.Blocks.Interfaces.RealOutput" />
   </TypeDefinitions>
   <VendorAnnotations>
     <Tool name ="JModelica">

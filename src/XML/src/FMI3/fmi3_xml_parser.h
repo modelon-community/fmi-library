@@ -144,6 +144,27 @@ typedef enum fmi3_xml_attr_enu_t {
     EXPAND_XML_ELMNAME(Annotations) \
     EXPAND_XML_ELMNAME(LogCategories) \
     EXPAND_XML_ELMNAME(Category) \
+    EXPAND_XML_ELMNAME(Float64Type) \
+    EXPAND_XML_ELMNAME(Float32Type) \
+    EXPAND_XML_ELMNAME(Int64Type) \
+    EXPAND_XML_ELMNAME(Int32Type) \
+    EXPAND_XML_ELMNAME(Int16Type) \
+    EXPAND_XML_ELMNAME(Int8Type) \
+    EXPAND_XML_ELMNAME(UInt64Type) \
+    EXPAND_XML_ELMNAME(UInt32Type) \
+    EXPAND_XML_ELMNAME(UInt16Type) \
+    EXPAND_XML_ELMNAME(UInt8Type) \
+    EXPAND_XML_ELMNAME(BooleanType) \
+    EXPAND_XML_ELMNAME(BinaryType) \
+    EXPAND_XML_ELMNAME(ClockType) \
+    EXPAND_XML_ELMNAME(StringType) \
+    EXPAND_XML_ELMNAME(EnumerationType) \
+    EXPAND_XML_ELMNAME(ModelStructure) \
+    EXPAND_XML_ELMNAME(Output) \
+    EXPAND_XML_ELMNAME(ContinuousStateDerivative) \
+    EXPAND_XML_ELMNAME(ClockedState) \
+    EXPAND_XML_ELMNAME(InitialUnknown) \
+    EXPAND_XML_ELMNAME(EventIndicator) \
     EXPAND_XML_ELMNAME(Float64) \
     EXPAND_XML_ELMNAME(Float32) \
     EXPAND_XML_ELMNAME(Int64) \
@@ -158,31 +179,10 @@ typedef enum fmi3_xml_attr_enu_t {
     EXPAND_XML_ELMNAME(Binary) \
     EXPAND_XML_ELMNAME(Clock) \
     EXPAND_XML_ELMNAME(String) \
-    EXPAND_XML_ELMNAME(Enumeration) \
-    EXPAND_XML_ELMNAME(ModelStructure) \
-    EXPAND_XML_ELMNAME(Output) \
-    EXPAND_XML_ELMNAME(ContinuousStateDerivative) \
-    EXPAND_XML_ELMNAME(ClockedState) \
-    EXPAND_XML_ELMNAME(InitialUnknown) \
-    EXPAND_XML_ELMNAME(EventIndicator)
+    EXPAND_XML_ELMNAME(Enumeration)
 
 /** \brief Element that can be placed under different parents get alternative names from the info struct */
 #define FMI3_XML_ELMLIST_ALT(EXPAND_XML_ELMNAME) \
-    EXPAND_XML_ELMNAME(Float64Variable) \
-    EXPAND_XML_ELMNAME(Float32Variable) \
-    EXPAND_XML_ELMNAME(Int64Variable) \
-    EXPAND_XML_ELMNAME(Int32Variable) \
-    EXPAND_XML_ELMNAME(Int16Variable) \
-    EXPAND_XML_ELMNAME(Int8Variable) \
-    EXPAND_XML_ELMNAME(UInt64Variable) \
-    EXPAND_XML_ELMNAME(UInt32Variable) \
-    EXPAND_XML_ELMNAME(UInt16Variable) \
-    EXPAND_XML_ELMNAME(UInt8Variable) \
-    EXPAND_XML_ELMNAME(BooleanVariable) \
-    EXPAND_XML_ELMNAME(BinaryVariable) \
-    EXPAND_XML_ELMNAME(ClockVariable) \
-    EXPAND_XML_ELMNAME(StringVariable) \
-    EXPAND_XML_ELMNAME(EnumerationVariable) \
     EXPAND_XML_ELMNAME(BinaryVariableStart) \
     EXPAND_XML_ELMNAME(StringVariableStart) \
     EXPAND_XML_ELMNAME(VariableTool) \

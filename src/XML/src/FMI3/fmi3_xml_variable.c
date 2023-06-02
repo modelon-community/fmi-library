@@ -1104,8 +1104,8 @@ void fmi3_xml_free_variable(jm_callbacks* callbacks, fmi3_xml_variable_t* var) {
 static fmi3_variability_enu_t fmi3_xml_variable_get_default_variability(fmi3_xml_elm_enu_t elm_id,
         fmi3_causality_enu_t causality)
 {
-    bool isFloat = (elm_id == fmi3_xml_elmID_Float32Variable
-                 || elm_id == fmi3_xml_elmID_Float64Variable);
+    bool isFloat = (elm_id == fmi3_xml_elmID_Float32
+                 || elm_id == fmi3_xml_elmID_Float64);
     // TODO: Also check for structural parameter
     bool isParam = (causality == fmi3_causality_enu_parameter ||
                     causality == fmi3_causality_enu_calculated_parameter);
@@ -1168,7 +1168,7 @@ static int fmi3_xml_variable_process_attr_causality_variability_initial(fmi3_xml
     }
     if (!fmi3_is_valid_variability_causality(variability, causality)) {
         fmi3_variability_enu_t bad_variability = variability;
-        bool isFloat = (elm_id == fmi3_xml_elmID_Float32Variable) || (elm_id == fmi3_xml_elmID_Float64Variable);
+        bool isFloat = (elm_id == fmi3_xml_elmID_Float32) || (elm_id == fmi3_xml_elmID_Float64);
         variability = fmi3_get_default_valid_variability(causality, isFloat);
         fmi3_xml_parse_error(context,
                 "Invalid combination of variability %s and causality %s for"
@@ -1300,7 +1300,7 @@ static int fmi3_xml_variable_process_attr_intermediateupdate(fmi3_xml_parser_con
 
     // Spec: "Variables of type Clock must not have the intermediateUpdate attribute"
     // TODO: This should probably only trigger for intermediateUpdate="true", but requires clarification in the standard.
-    if (elm_id == fmi3_xml_elmID_ClockVariable) {
+    if (elm_id == fmi3_xml_elmID_Clock) {
         fmi3_xml_parse_error(context, "Variables of type 'Clock' must not have the 'intermediateUpdate' attribute.");
         return -1;
     }
@@ -1470,7 +1470,7 @@ int fmi3_xml_handle_Variable(fmi3_xml_parser_context_t* context, const char* dat
             if(!variable->type) {
                 jm_log_error(context->callbacks, module, "No variable type element for variable %s. Assuming Float64.", variable->name);
 
-                return fmi3_xml_handle_Float64Variable(context, NULL);
+                return fmi3_xml_handle_Float64(context, NULL);
             }
 
             /* Allocate memory for the resolved dimensions. The main reason to do it here is because we have access to the callbacks. */
@@ -1592,7 +1592,7 @@ int fmi3_xml_handle_Dimension(fmi3_xml_parser_context_t* context, const char* da
     return 0;
 }
 
-int fmi3_xml_handle_FloatXXVariable(fmi3_xml_parser_context_t* context, const char* data,
+int fmi3_xml_handle_FloatXX(fmi3_xml_parser_context_t* context, const char* data,
         fmi3_xml_float_type_props_t* defaultType,
         fmi3_xml_elm_enu_t elmID, /* ID of the Type (not the Variable) */  // XXX: Why?
         const fmi3_xml_primitive_type_t* primType) {
@@ -1643,8 +1643,8 @@ int fmi3_xml_handle_FloatXXVariable(fmi3_xml_parser_context_t* context, const ch
             type = (fmi3_xml_float_type_props_t*)declaredType;  // FIXME: Confusing typecast (could be _typedef).
         }
         variable->type = &type->super;
-        if (fmi3_xml_variable_process_attr_derivative(context, variable, fmi3_xml_elmID_Float64)) return -1;
-        if (fmi3_xml_variable_process_attr_reinit(    context, variable, fmi3_xml_elmID_Float64)) return -1;
+        if (fmi3_xml_variable_process_attr_derivative(context, variable, elmID)) return -1;
+        if (fmi3_xml_variable_process_attr_reinit(    context, variable, elmID)) return -1;
 
     } else { /* end of tag */
         /* set start value */
@@ -1688,7 +1688,7 @@ int fmi3_xml_handle_FloatXXVariable(fmi3_xml_parser_context_t* context, const ch
     return 0;
 }
 
-int fmi3_xml_handle_IntXXVariable(fmi3_xml_parser_context_t* context, const char* data,
+int fmi3_xml_handle_IntXX(fmi3_xml_parser_context_t* context, const char* data,
         fmi3_xml_int_type_props_t* defaultType,
         fmi3_xml_elm_enu_t elmID, /* ID of the Type (not the Variable) */
         const fmi3_xml_primitive_type_t* primType)
@@ -1762,27 +1762,27 @@ int fmi3_xml_handle_IntXXVariable(fmi3_xml_parser_context_t* context, const char
     return 0;
 }
 
-/* Macro for creating handle_TYPEXXVariable function wrappers. */
-#define gen_fmi3_xml_handle_TYPEXXVariable(TYPE_NO_SIGN, TYPE, TYPE_LC, BITNESS)                            \
-    int fmi3_xml_handle_##TYPE##BITNESS##Variable(fmi3_xml_parser_context_t* context, const char* data) {   \
-        return fmi3_xml_handle_##TYPE_NO_SIGN##XXVariable(context, data,                                    \
-                &context->modelDescription->typeDefinitions.default##TYPE##BITNESS##Type,                   \
-                fmi3_xml_elmID_##TYPE##BITNESS, &PRIMITIVE_TYPES.TYPE_LC##BITNESS);                         \
+/* Macro for creating handle_TYPEXX function wrappers. */
+#define gen_fmi3_xml_handle_TYPEXX(TYPE_NO_SIGN, TYPE, TYPE_LC, BITNESS)                          \
+    int fmi3_xml_handle_##TYPE##BITNESS(fmi3_xml_parser_context_t* context, const char* data) {   \
+        return fmi3_xml_handle_##TYPE_NO_SIGN##XX(context, data,                                  \
+                &context->modelDescription->typeDefinitions.default##TYPE##BITNESS##Type,         \
+                fmi3_xml_elmID_##TYPE##BITNESS, &PRIMITIVE_TYPES.TYPE_LC##BITNESS);               \
     }
 
-gen_fmi3_xml_handle_TYPEXXVariable(Float, Float, float, 64)
-gen_fmi3_xml_handle_TYPEXXVariable(Float, Float, float, 32)
+gen_fmi3_xml_handle_TYPEXX(Float, Float, float, 64)
+gen_fmi3_xml_handle_TYPEXX(Float, Float, float, 32)
 
-gen_fmi3_xml_handle_TYPEXXVariable(Int,  Int,  int, 64)
-gen_fmi3_xml_handle_TYPEXXVariable(Int,  Int,  int, 32)
-gen_fmi3_xml_handle_TYPEXXVariable(Int,  Int,  int, 16)
-gen_fmi3_xml_handle_TYPEXXVariable(Int,  Int,  int,  8)
-gen_fmi3_xml_handle_TYPEXXVariable(Int, UInt, uint, 64)
-gen_fmi3_xml_handle_TYPEXXVariable(Int, UInt, uint, 32)
-gen_fmi3_xml_handle_TYPEXXVariable(Int, UInt, uint, 16)
-gen_fmi3_xml_handle_TYPEXXVariable(Int, UInt, uint,  8)
+gen_fmi3_xml_handle_TYPEXX(Int,  Int,  int, 64)
+gen_fmi3_xml_handle_TYPEXX(Int,  Int,  int, 32)
+gen_fmi3_xml_handle_TYPEXX(Int,  Int,  int, 16)
+gen_fmi3_xml_handle_TYPEXX(Int,  Int,  int,  8)
+gen_fmi3_xml_handle_TYPEXX(Int, UInt, uint, 64)
+gen_fmi3_xml_handle_TYPEXX(Int, UInt, uint, 32)
+gen_fmi3_xml_handle_TYPEXX(Int, UInt, uint, 16)
+gen_fmi3_xml_handle_TYPEXX(Int, UInt, uint,  8)
 
-int fmi3_xml_handle_BooleanVariable(fmi3_xml_parser_context_t *context, const char* data) {
+int fmi3_xml_handle_Boolean(fmi3_xml_parser_context_t *context, const char* data) {
     int res;
 
     if(context->skipOneVariableFlag) return 0;
@@ -1836,7 +1836,7 @@ int fmi3_xml_handle_BooleanVariable(fmi3_xml_parser_context_t *context, const ch
     return 0;
 }
 
-int fmi3_xml_handle_BinaryVariable(fmi3_xml_parser_context_t* context, const char* data) {
+int fmi3_xml_handle_Binary(fmi3_xml_parser_context_t* context, const char* data) {
     if (context->skipOneVariableFlag) return 0;
     if (fmi3_xml_handle_Variable(context, data)) return -1;
     fmi3_xml_elm_enu_t elmID = fmi3_xml_elmID_Binary;  // The ID corresponding to the actual parsed element name
@@ -1906,7 +1906,7 @@ int fmi3_xml_handle_BinaryVariable(fmi3_xml_parser_context_t* context, const cha
     return 0;
 }
 
-int fmi3_xml_handle_ClockVariable(fmi3_xml_parser_context_t* context, const char* data) {
+int fmi3_xml_handle_Clock(fmi3_xml_parser_context_t* context, const char* data) {
     if (context->skipOneVariableFlag) return 0;
     if (fmi3_xml_handle_Variable(context, data)) return -1;
 
@@ -1940,7 +1940,7 @@ int fmi3_xml_handle_ClockVariable(fmi3_xml_parser_context_t* context, const char
     return 0;
 }
 
-int fmi3_xml_handle_StringVariable(fmi3_xml_parser_context_t *context, const char* data) {
+int fmi3_xml_handle_String(fmi3_xml_parser_context_t *context, const char* data) {
     if (context->skipOneVariableFlag) return 0;
     if (fmi3_xml_handle_Variable(context, data)) return -1;
     fmi3_xml_model_description_t* md = context->modelDescription;
@@ -2090,7 +2090,7 @@ fmi3_xml_enum_variable_props_t* fmi3_xml_parse_enum_properties(fmi3_xml_parser_c
     return props;
 }
 
-int fmi3_xml_handle_EnumerationVariable(fmi3_xml_parser_context_t *context, const char* data) {
+int fmi3_xml_handle_Enumeration(fmi3_xml_parser_context_t *context, const char* data) {
     int res;
 
     if(context->skipOneVariableFlag) return 0;
@@ -2272,23 +2272,6 @@ static int fmi3_xml_compare_vr_and_original_index(const void* first, const void*
 int fmi3_xml_handle_ModelVariables(fmi3_xml_parser_context_t *context, const char* data) {
     if(!data) {
         jm_log_verbose(context->callbacks, module,"Parsing XML element ModelVariables");
-        /*  reset handles for the elements that are specific under ModelVariables */
-        fmi3_xml_set_element_handle(context, "Float64",     FMI3_XML_ELM_ID(Float64Variable));
-        fmi3_xml_set_element_handle(context, "Float32",     FMI3_XML_ELM_ID(Float32Variable));
-        fmi3_xml_set_element_handle(context, "Int64",       FMI3_XML_ELM_ID(Int64Variable));
-        fmi3_xml_set_element_handle(context, "Int32",       FMI3_XML_ELM_ID(Int32Variable));
-        fmi3_xml_set_element_handle(context, "Int16",       FMI3_XML_ELM_ID(Int16Variable));
-        fmi3_xml_set_element_handle(context, "Int8",        FMI3_XML_ELM_ID(Int8Variable));
-        fmi3_xml_set_element_handle(context, "UInt64",      FMI3_XML_ELM_ID(UInt64Variable));
-        fmi3_xml_set_element_handle(context, "UInt32",      FMI3_XML_ELM_ID(UInt32Variable));
-        fmi3_xml_set_element_handle(context, "UInt16",      FMI3_XML_ELM_ID(UInt16Variable));
-        fmi3_xml_set_element_handle(context, "UInt8",       FMI3_XML_ELM_ID(UInt8Variable));
-        fmi3_xml_set_element_handle(context, "Enumeration", FMI3_XML_ELM_ID(EnumerationVariable));
-        fmi3_xml_set_element_handle(context, "String",      FMI3_XML_ELM_ID(StringVariable));
-        fmi3_xml_set_element_handle(context, "Boolean",     FMI3_XML_ELM_ID(BooleanVariable));
-        fmi3_xml_set_element_handle(context, "Binary",      FMI3_XML_ELM_ID(BinaryVariable));
-        fmi3_xml_set_element_handle(context, "Clock",       FMI3_XML_ELM_ID(ClockVariable));
-        fmi3_xml_set_element_handle(context, "Tool",        FMI3_XML_ELM_ID(VariableTool));
     }
     else {
          // Post-process variable list

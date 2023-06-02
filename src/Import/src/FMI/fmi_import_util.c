@@ -20,6 +20,7 @@
 
 #include <fmilib_config.h>
 #include <JM/jm_portability.h>
+#include <FMI/fmi_util.h>
 #include <FMI/fmi_import_util.h>
 
 char* fmi_import_mk_temp_dir(jm_callbacks* cb, const char* systemTempDir, const char* tempPrefix) {
@@ -35,27 +36,29 @@ jm_status_enu_t fmi_import_rmdir(jm_callbacks* cb, const char* dir) {
     return jm_rmdir(cb, dir);
 }
 
-char* fmi_import_get_dll_path(const char* fmu_unzipped_path, const char* model_identifier, jm_callbacks* callbacks)
+static char* fmi_import_get_dll_path(const char* fmu_unzipped_path, const char* model_identifier,
+        jm_callbacks* callbacks, fmi_version_enu_t fmi_version)
 {
-    char* dll_path;
-    size_t len;
-
-    if (model_identifier == NULL || fmu_unzipped_path == NULL) {
-        assert(0);
+    char* dllDir = fmi_construct_dll_dir_name(callbacks, fmu_unzipped_path, fmi_version);
+    if (!dllDir) {
         return NULL;
     }
+    return fmi_construct_dll_file_name(callbacks, dllDir, model_identifier);
+}
 
-    len = strlen(fmu_unzipped_path) + strlen(FMI_FILE_SEP) + strlen(FMI_BINARIES) + strlen(FMI_FILE_SEP) + strlen(FMI_PLATFORM) + strlen(FMI_FILE_SEP) + strlen(model_identifier) + strlen(FMI_DLL_EXT) + 1;
+char* fmi1_import_get_dll_path(const char* fmu_unzipped_path, const char* model_identifier, jm_callbacks* callbacks)
+{
+    return fmi_import_get_dll_path(fmu_unzipped_path, model_identifier, callbacks, fmi_version_1_enu);
+}
 
-    dll_path = (char*)callbacks->calloc(len, sizeof(char));
-    if (dll_path == NULL) {
-        jm_log_fatal(callbacks, "FMILIB", "Failed to allocate memory.");
-        return NULL;
-    }
+char* fmi2_import_get_dll_path(const char* fmu_unzipped_path, const char* model_identifier, jm_callbacks* callbacks)
+{
+    return fmi_import_get_dll_path(fmu_unzipped_path, model_identifier, callbacks, fmi_version_2_0_enu);
+}
 
-    jm_snprintf(dll_path, len, "%s%s%s%s%s%s%s%s", fmu_unzipped_path, FMI_FILE_SEP, FMI_BINARIES, FMI_FILE_SEP, FMI_PLATFORM, FMI_FILE_SEP, model_identifier, FMI_DLL_EXT);
-
-    return dll_path;
+char* fmi3_import_get_dll_path(const char* fmu_unzipped_path, const char* model_identifier, jm_callbacks* callbacks)
+{
+    return fmi_import_get_dll_path(fmu_unzipped_path, model_identifier, callbacks, fmi_version_3_0_enu);
 }
 
 char* fmi_import_get_model_description_path(const char* fmu_unzipped_path, jm_callbacks* callbacks)

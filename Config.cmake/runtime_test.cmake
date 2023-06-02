@@ -93,17 +93,17 @@ endfunction()
 # @TARGET_NAME_T:          The target for building the shared library.
 # @XML_PATH_T:             The path to the modelDescription that will be zipped.
 # @SHARED_LIBRARY_PATH_T:  The path to the shared library produced by TARGET_NAME_T.
-function(compress_fmu OUTPUT_FOLDER_T MODEL_IDENTIFIER_T FILE_NAME_CS_ME_EXT_T TARGET_NAME_T XML_PATH_T SHARED_LIBRARY_PATH_T)
+function(compress_fmu OUTPUT_FOLDER_T MODEL_IDENTIFIER_T FILE_NAME_CS_ME_EXT_T TARGET_NAME_T XML_PATH_T SHARED_LIBRARY_PATH_T FMI_PLATFORM_T)
     set(FMU_FILE_NAME_T ${MODEL_IDENTIFIER_T}_${FILE_NAME_CS_ME_EXT_T})
     set(FMU_OUTPUT_FOLDER_T ${OUTPUT_FOLDER_T}/${FMU_FILE_NAME_T})
-    set(FMU_OUTPUT_SHARED_LIBRARY_PATH_T ${FMU_OUTPUT_FOLDER_T}/binaries/${FMI_PLATFORM}/${MODEL_IDENTIFIER_T}${CMAKE_SHARED_LIBRARY_SUFFIX})
+    set(FMU_OUTPUT_SHARED_LIBRARY_PATH_T ${FMU_OUTPUT_FOLDER_T}/binaries/${FMI_PLATFORM_T}/${MODEL_IDENTIFIER_T}${CMAKE_SHARED_LIBRARY_SUFFIX})
 
     #Must create the FMU directory in a separate command..
-    if(NOT EXISTS ${FMU_OUTPUT_FOLDER_T}/binaries/${FMI_PLATFORM})
-        file(MAKE_DIRECTORY ${FMU_OUTPUT_FOLDER_T}/binaries/${FMI_PLATFORM})
+    if(NOT EXISTS ${FMU_OUTPUT_FOLDER_T}/binaries/${FMI_PLATFORM_T})
+        file(MAKE_DIRECTORY ${FMU_OUTPUT_FOLDER_T}/binaries/${FMI_PLATFORM_T})
     endif()
 
-    file(TO_NATIVE_PATH binaries/${FMI_PLATFORM}/${MODEL_IDENTIFIER_T}${CMAKE_SHARED_LIBRARY_SUFFIX} FMU_OUTPUT_SHARED_LIBRARY_PATH_OUT_T)
+    file(TO_NATIVE_PATH binaries/${FMI_PLATFORM_T}/${MODEL_IDENTIFIER_T}${CMAKE_SHARED_LIBRARY_SUFFIX} FMU_OUTPUT_SHARED_LIBRARY_PATH_OUT_T)
 
     #Move files to the FMU directories and compress  # TODO: Why not compress to correct location right away?
     add_custom_command(

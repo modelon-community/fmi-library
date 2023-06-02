@@ -12,11 +12,11 @@
 </UnitDefinitions>
 
 <TypeDefinitions>
-    <Enumeration name="MyEnum" quantity="TypeQuantity">
+    <EnumerationType name="MyEnum" quantity="TypeQuantity">
         <Item name="item1" value="1"/>
         <Item name="item2" value="2"/>
         <Item name="item3" value="3"/>
-    </Enumeration>
+    </EnumerationType>
 </TypeDefinitions>
 
 <ModelVariables>

@@ -8,15 +8,15 @@
   <CoSimulation modelIdentifier="VariableTypes"/>
 
   <TypeDefinitions>
-      <Enumeration name="TestEnum">
+      <EnumerationType name="TestEnum">
         <Item name="item1" value="1"/>
         <Item name="item2" value="2"/>
         <Item name="item3" value="3"/>
-      </Enumeration>
-      <Enumeration name="TestEnum2">
+      </EnumerationType>
+      <EnumerationType name="TestEnum2">
         <Item name="item1" value="55"/>
         <Item name="item2" value="-57"/>
-      </Enumeration>
+      </EnumerationType>
   </TypeDefinitions>
 
   <ModelVariables>

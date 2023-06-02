@@ -8,12 +8,12 @@
     It doesn't make much sense to put intervalVariability on typedefs when they must be
     overriden on variables, but the schema files require it.
   -->
-  <Clock name="td_minimal"    intervalVariability="constant"/>
-  <Clock name="td_resolution" intervalVariability="constant"  resolution="99"/>
-  <Clock name="td_allAttr"    intervalVariability="countdown" resolution="99"
-         canBeDeactivated="true" priority="99" intervalDecimal="99.0"
-         shiftDecimal="99.0" supportsFraction="true" intervalCounter="99"
-         shiftCounter="99"/>
+  <ClockType name="td_minimal"    intervalVariability="constant"/>
+  <ClockType name="td_resolution" intervalVariability="constant"  resolution="99"/>
+  <ClockType name="td_allAttr"    intervalVariability="countdown" resolution="99"
+             canBeDeactivated="true" priority="99" intervalDecimal="99.0"
+             shiftDecimal="99.0" supportsFraction="true" intervalCounter="99"
+             shiftCounter="99"/>
 </TypeDefinitions>
 
 <ModelVariables>

@@ -823,7 +823,7 @@ fmi3_xml_float_type_props_t* fmi3_xml_parse_float_type_properties(fmi3_xml_parse
     return props;
 }
 
-int fmi3_xml_handle_Float(fmi3_xml_parser_context_t* context, const char* data, fmi3_xml_elm_enu_t elmID,
+int fmi3_xml_handle_FloatType(fmi3_xml_parser_context_t* context, const char* data, fmi3_xml_elm_enu_t elmID,
         fmi3_xml_float_type_props_t* defaultType, const fmi3_xml_primitive_type_t* primType)
 {
     if (fmi3_xml_handle_SimpleType(context, data)) return -1;
@@ -844,12 +844,12 @@ int fmi3_xml_handle_Float(fmi3_xml_parser_context_t* context, const char* data, 
     return 0;
 }
 
-int fmi3_xml_handle_Float64(fmi3_xml_parser_context_t* context, const char* data) {
-    return fmi3_xml_handle_Float(context, data, fmi3_xml_elmID_Float64, &context->modelDescription->typeDefinitions.defaultFloat64Type, &PRIMITIVE_TYPES.float64);
+int fmi3_xml_handle_Float64Type(fmi3_xml_parser_context_t* context, const char* data) {
+    return fmi3_xml_handle_FloatType(context, data, fmi3_xml_elmID_Float64Type, &context->modelDescription->typeDefinitions.defaultFloat64Type, &PRIMITIVE_TYPES.float64);
 }
 
-int fmi3_xml_handle_Float32(fmi3_xml_parser_context_t* context, const char* data) {
-    return fmi3_xml_handle_Float(context, data, fmi3_xml_elmID_Float32, &context->modelDescription->typeDefinitions.defaultFloat32Type, &PRIMITIVE_TYPES.float32);
+int fmi3_xml_handle_Float32Type(fmi3_xml_parser_context_t* context, const char* data) {
+    return fmi3_xml_handle_FloatType(context, data, fmi3_xml_elmID_Float32Type, &context->modelDescription->typeDefinitions.defaultFloat32Type, &PRIMITIVE_TYPES.float32);
 }
 
 /**
@@ -897,7 +897,7 @@ fmi3_xml_int_type_props_t* fmi3_xml_parse_intXX_type_properties(fmi3_xml_parser_
     return props;
 }
 
-int fmi3_xml_handle_IntXX(fmi3_xml_parser_context_t *context, const char* data, fmi3_xml_elm_enu_t elemID,
+int fmi3_xml_handle_IntXXType(fmi3_xml_parser_context_t *context, const char* data, fmi3_xml_elm_enu_t elemID,
         fmi3_xml_int_type_props_t* defaultType, const fmi3_xml_primitive_type_t* primType)
 {
     if (fmi3_xml_handle_SimpleType(context, data)) return -1;
@@ -918,39 +918,39 @@ int fmi3_xml_handle_IntXX(fmi3_xml_parser_context_t *context, const char* data, 
     return 0;
 }
 
-int fmi3_xml_handle_Int64(fmi3_xml_parser_context_t* context, const char* data) {
-    return fmi3_xml_handle_IntXX(context, data, fmi3_xml_elmID_Int64, &context->modelDescription->typeDefinitions.defaultInt64Type, &PRIMITIVE_TYPES.int64);
+int fmi3_xml_handle_Int64Type(fmi3_xml_parser_context_t* context, const char* data) {
+    return fmi3_xml_handle_IntXXType(context, data, fmi3_xml_elmID_Int64Type, &context->modelDescription->typeDefinitions.defaultInt64Type, &PRIMITIVE_TYPES.int64);
 }
 
-int fmi3_xml_handle_Int32(fmi3_xml_parser_context_t* context, const char* data) {
-    return fmi3_xml_handle_IntXX(context, data, fmi3_xml_elmID_Int32, &context->modelDescription->typeDefinitions.defaultInt32Type, &PRIMITIVE_TYPES.int32);
+int fmi3_xml_handle_Int32Type(fmi3_xml_parser_context_t* context, const char* data) {
+    return fmi3_xml_handle_IntXXType(context, data, fmi3_xml_elmID_Int32Type, &context->modelDescription->typeDefinitions.defaultInt32Type, &PRIMITIVE_TYPES.int32);
 }
 
-int fmi3_xml_handle_Int16(fmi3_xml_parser_context_t* context, const char* data) {
-    return fmi3_xml_handle_IntXX(context, data, fmi3_xml_elmID_Int16, &context->modelDescription->typeDefinitions.defaultInt16Type, &PRIMITIVE_TYPES.int16);
+int fmi3_xml_handle_Int16Type(fmi3_xml_parser_context_t* context, const char* data) {
+    return fmi3_xml_handle_IntXXType(context, data, fmi3_xml_elmID_Int16Type, &context->modelDescription->typeDefinitions.defaultInt16Type, &PRIMITIVE_TYPES.int16);
 }
 
-int fmi3_xml_handle_Int8(fmi3_xml_parser_context_t* context, const char* data) {
-    return fmi3_xml_handle_IntXX(context, data, fmi3_xml_elmID_Int8, &context->modelDescription->typeDefinitions.defaultInt8Type, &PRIMITIVE_TYPES.int8);
+int fmi3_xml_handle_Int8Type(fmi3_xml_parser_context_t* context, const char* data) {
+    return fmi3_xml_handle_IntXXType(context, data, fmi3_xml_elmID_Int8Type, &context->modelDescription->typeDefinitions.defaultInt8Type, &PRIMITIVE_TYPES.int8);
 }
 
-int fmi3_xml_handle_UInt64(fmi3_xml_parser_context_t* context, const char* data) {
-    return fmi3_xml_handle_IntXX(context, data, fmi3_xml_elmID_UInt64, &context->modelDescription->typeDefinitions.defaultUInt64Type, &PRIMITIVE_TYPES.uint64);
+int fmi3_xml_handle_UInt64Type(fmi3_xml_parser_context_t* context, const char* data) {
+    return fmi3_xml_handle_IntXXType(context, data, fmi3_xml_elmID_UInt64Type, &context->modelDescription->typeDefinitions.defaultUInt64Type, &PRIMITIVE_TYPES.uint64);
 }
 
-int fmi3_xml_handle_UInt32(fmi3_xml_parser_context_t* context, const char* data) {
-    return fmi3_xml_handle_IntXX(context, data, fmi3_xml_elmID_UInt32, &context->modelDescription->typeDefinitions.defaultUInt32Type, &PRIMITIVE_TYPES.uint32);
+int fmi3_xml_handle_UInt32Type(fmi3_xml_parser_context_t* context, const char* data) {
+    return fmi3_xml_handle_IntXXType(context, data, fmi3_xml_elmID_UInt32Type, &context->modelDescription->typeDefinitions.defaultUInt32Type, &PRIMITIVE_TYPES.uint32);
 }
 
-int fmi3_xml_handle_UInt16(fmi3_xml_parser_context_t* context, const char* data) {
-    return fmi3_xml_handle_IntXX(context, data, fmi3_xml_elmID_UInt16, &context->modelDescription->typeDefinitions.defaultUInt16Type, &PRIMITIVE_TYPES.uint16);
+int fmi3_xml_handle_UInt16Type(fmi3_xml_parser_context_t* context, const char* data) {
+    return fmi3_xml_handle_IntXXType(context, data, fmi3_xml_elmID_UInt16Type, &context->modelDescription->typeDefinitions.defaultUInt16Type, &PRIMITIVE_TYPES.uint16);
 }
 
-int fmi3_xml_handle_UInt8(fmi3_xml_parser_context_t* context, const char* data) {
-    return fmi3_xml_handle_IntXX(context, data, fmi3_xml_elmID_UInt8, &context->modelDescription->typeDefinitions.defaultUInt8Type, &PRIMITIVE_TYPES.uint8);
+int fmi3_xml_handle_UInt8Type(fmi3_xml_parser_context_t* context, const char* data) {
+    return fmi3_xml_handle_IntXXType(context, data, fmi3_xml_elmID_UInt8Type, &context->modelDescription->typeDefinitions.defaultUInt8Type, &PRIMITIVE_TYPES.uint8);
 }
 
-int fmi3_xml_handle_Boolean(fmi3_xml_parser_context_t* context, const char* data) {
+int fmi3_xml_handle_BooleanType(fmi3_xml_parser_context_t* context, const char* data) {
     if (fmi3_xml_handle_SimpleType(context, data)) return -1;
 
     if (!data) {
@@ -1000,7 +1000,7 @@ fmi3_xml_binary_type_props_t* fmi3_xml_parse_binary_type_properties(fmi3_xml_par
     if (hasMimeType) {
         jm_vector(char)* mimeType = fmi3_xml_reserve_parse_buffer(context, 1, 100);
         if (!mimeType) return NULL;
-        if (fmi3_xml_set_attr_string(context, fmi3_xml_elmID_BinaryVariable, fmi_attr_id_mimeType, 0, mimeType)) {
+        if (fmi3_xml_set_attr_string(context, elmID, fmi_attr_id_mimeType, 0, mimeType)) {
             return NULL;
         }
         if (jm_vector_get_size(char)(mimeType) == 0) {
@@ -1016,7 +1016,7 @@ fmi3_xml_binary_type_props_t* fmi3_xml_parse_binary_type_properties(fmi3_xml_par
     return props;
 }
 
-int fmi3_xml_handle_Binary(fmi3_xml_parser_context_t* context, const char* data) {
+int fmi3_xml_handle_BinaryType(fmi3_xml_parser_context_t* context, const char* data) {
     if (fmi3_xml_handle_SimpleType(context, data)) return -1;
 
     if (!data) {
@@ -1025,7 +1025,7 @@ int fmi3_xml_handle_Binary(fmi3_xml_parser_context_t* context, const char* data)
         fmi3_xml_binary_type_props_t* props;
         fmi3_xml_binary_type_props_t* defaultType = &context->modelDescription->typeDefinitions.defaultBinaryType;
 
-        props = fmi3_xml_parse_binary_type_properties(context, fmi3_xml_elmID_Binary, &defaultType->super);
+        props = fmi3_xml_parse_binary_type_properties(context, fmi3_xml_elmID_BinaryType, &defaultType->super);
         if (!props) return -1;
 
         // Get the typedef already created for SimpleType and set props
@@ -1120,7 +1120,7 @@ fmi3_xml_clock_type_props_t* fmi3_xml_parse_clock_type_properties(fmi3_xml_parse
     return props;
 }
 
-int fmi3_xml_handle_Clock(fmi3_xml_parser_context_t* context, const char* data) {
+int fmi3_xml_handle_ClockType(fmi3_xml_parser_context_t* context, const char* data) {
     if (fmi3_xml_handle_SimpleType(context, data)) return -1;
 
     if (!data) {
@@ -1129,7 +1129,7 @@ int fmi3_xml_handle_Clock(fmi3_xml_parser_context_t* context, const char* data) 
         fmi3_xml_clock_type_props_t* props;
         fmi3_xml_clock_type_props_t* defaultType = &context->modelDescription->typeDefinitions.defaultClockType;
 
-        props = fmi3_xml_parse_clock_type_properties(context, fmi3_xml_elmID_Clock, &defaultType->super);
+        props = fmi3_xml_parse_clock_type_properties(context, fmi3_xml_elmID_ClockType, &defaultType->super);
         if (!props) return -1;
 
         // Get the typedef already created for SimpleType and set props
@@ -1140,7 +1140,7 @@ int fmi3_xml_handle_Clock(fmi3_xml_parser_context_t* context, const char* data) 
     return 0;
 }
 
-int fmi3_xml_handle_String(fmi3_xml_parser_context_t* context, const char* data) {
+int fmi3_xml_handle_StringType(fmi3_xml_parser_context_t* context, const char* data) {
     if (fmi3_xml_handle_SimpleType(context, data)) return -1;
 
     if (!data) {
@@ -1155,7 +1155,7 @@ int fmi3_xml_handle_String(fmi3_xml_parser_context_t* context, const char* data)
     return 0;
 }
 
-int fmi3_xml_handle_Enumeration(fmi3_xml_parser_context_t* context, const char* data) {
+int fmi3_xml_handle_EnumerationType(fmi3_xml_parser_context_t* context, const char* data) {
     if (fmi3_xml_handle_SimpleType(context, data)) return -1;
 
     if (!data) {
@@ -1178,7 +1178,7 @@ int fmi3_xml_handle_Enumeration(fmi3_xml_parser_context_t* context, const char* 
             props->base.super.next = nextTmp;
         }
         if (!bufQuantity || !props ||
-                fmi3_xml_set_attr_string(context, fmi3_xml_elmID_Int32, fmi_attr_id_quantity, 0, bufQuantity)
+                fmi3_xml_set_attr_string(context, fmi3_xml_elmID_Int32Type, fmi_attr_id_quantity, 0, bufQuantity)
                 )
             return -1;
         if (jm_vector_get_size(char)(bufQuantity))

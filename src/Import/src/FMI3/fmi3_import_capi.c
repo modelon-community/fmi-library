@@ -77,7 +77,7 @@ jm_status_enu_t fmi3_import_create_dllfmu(fmi3_import_t* fmu, fmi3_fmu_kind_enu_
         curDir[0] = 0;
     };
 
-    dllDirPath = fmi_construct_dll_dir_name(fmu->callbacks, fmu->dirPath);
+    dllDirPath = fmi_construct_dll_dir_name(fmu->callbacks, fmu->dirPath, fmi_version_3_0_enu);
     dllFileName = fmi_construct_dll_file_name(fmu->callbacks, dllDirPath, modelIdentifier);
 
     if (!dllDirPath ||!dllFileName) {
@@ -107,7 +107,7 @@ jm_status_enu_t fmi3_import_create_dllfmu(fmi3_import_t* fmu, fmi3_fmu_kind_enu_
 
     /* Load the DLL handle */
     if (fmu->capi) {
-        jm_log_info(fmu->callbacks, module, "Loading '" FMI_PLATFORM "' binary");
+        jm_log_info(fmu->callbacks, module, "Loading '" FMI3_PLATFORM "' binary");
 
         if(fmi3_capi_load_dll(fmu->capi) == jm_status_error) {
             fmi3_capi_destroy_dllfmu(fmu->capi);

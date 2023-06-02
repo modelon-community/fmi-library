@@ -18,16 +18,27 @@
 #include <stdio.h>
 #include <FMI/fmi_util.h>
 
-char* fmi_construct_dll_dir_name(jm_callbacks* callbacks, const char* fmu_unzipped_path) {
+char* fmi_construct_dll_dir_name(jm_callbacks* callbacks, const char* fmu_unzipped_path, fmi_version_enu_t fmi_version)
+{
     char* dir_path;
     size_t len;
 
-    assert( fmu_unzipped_path && callbacks);
+    assert(fmu_unzipped_path && callbacks);
+    
+    const char* platform = NULL;
+    switch (fmi_version) {
+    case fmi_version_1_enu:   platform = FMI1_PLATFORM; break;
+    case fmi_version_2_0_enu: platform = FMI2_PLATFORM; break;
+    case fmi_version_3_0_enu: platform = FMI3_PLATFORM; break;
+    default:
+        jm_log_fatal(callbacks, "FMIUT", "Failed to construct shared library directory name. Unknown FMI version.");
+        return NULL;
+    }
 
     len =
         strlen(fmu_unzipped_path) + strlen(FMI_FILE_SEP)
         + strlen(FMI_BINARIES) + strlen(FMI_FILE_SEP)
-        + strlen(FMI_PLATFORM) + strlen(FMI_FILE_SEP) + 1;
+        + strlen(platform) + strlen(FMI_FILE_SEP) + 1;
 
     dir_path = (char*)callbacks->malloc(len);
     if (dir_path == NULL) {
@@ -35,7 +46,7 @@ char* fmi_construct_dll_dir_name(jm_callbacks* callbacks, const char* fmu_unzipp
         return NULL;
     }
 
-    sprintf(dir_path, "%s%s%s%s%s%s", fmu_unzipped_path, FMI_FILE_SEP, FMI_BINARIES, FMI_FILE_SEP, FMI_PLATFORM, FMI_FILE_SEP);/*safe */
+    sprintf(dir_path, "%s%s%s%s%s%s", fmu_unzipped_path, FMI_FILE_SEP, FMI_BINARIES, FMI_FILE_SEP, platform, FMI_FILE_SEP);/*safe */
 
     return dir_path;
 }

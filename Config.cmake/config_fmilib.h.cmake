@@ -50,8 +50,14 @@ It is redefined to "." for Makefile based build environments. Otherwise is set b
 /** \brief DLL file name suffix(.so, .dll, ...) */
 #define FMI_DLL_EXT "@CMAKE_SHARED_LIBRARY_SUFFIX@" 
 
-/** \brief Folder name inside FMU in which the DLL is found for this platform */
-#define FMI_PLATFORM "@FMI_PLATFORM@"
+/** \brief Folder name inside FMU in which the DLL is found for this platform for FMI 1 */
+#define FMI1_PLATFORM "@FMI1_PLATFORM@"
+
+/** \brief Folder name inside FMU in which the DLL is found for this platform for FMI 2 */
+#define FMI2_PLATFORM "@FMI2_PLATFORM@"
+
+/** \brief Folder name inside FMU in which the DLL is found for this platform for FMI 3 */
+#define FMI3_PLATFORM "@FMI3_PLATFORM@"
 
 /** \brief Folder name inside FMU where binaries are */
 #define FMI_BINARIES "binaries"

@@ -51,10 +51,10 @@ set(SHARED_LIBRARY_SE_PATH ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${CMA
 #Create FMU 3.0 ME/CS/SE Model and generate library path
 
 #function(compress_fmu OUTPUT_FOLDER MODEL_IDENTIFIER FILE_NAME_CS_ME_EXT TARGET_NAME XML_PATH SHARED_LIBRARY_PATH)
-compress_fmu("${TEST_OUTPUT_FOLDER}" "BouncingBall3"           "me" "fmu3_dll_me" "${XML_ME_PATH}" "${SHARED_LIBRARY_ME_PATH}")
-compress_fmu("${TEST_OUTPUT_FOLDER}" "BouncingBall3"           "cs" "fmu3_dll_cs" "${XML_CS_PATH}" "${SHARED_LIBRARY_CS_PATH}")
-compress_fmu("${TEST_OUTPUT_FOLDER}" "BouncingBall3"           "se" "fmu3_dll_se" "${XML_SE_PATH}" "${SHARED_LIBRARY_SE_PATH}")
-compress_fmu("${TEST_OUTPUT_FOLDER}" "BouncingBall3_malformed" "mf" "fmu3_dll_cs" "${XML_MF_PATH}" "${SHARED_LIBRARY_CS_PATH}")
+compress_fmu("${TEST_OUTPUT_FOLDER}" "BouncingBall3"           "me" "fmu3_dll_me" "${XML_ME_PATH}" "${SHARED_LIBRARY_ME_PATH}" "${FMI3_PLATFORM}")
+compress_fmu("${TEST_OUTPUT_FOLDER}" "BouncingBall3"           "cs" "fmu3_dll_cs" "${XML_CS_PATH}" "${SHARED_LIBRARY_CS_PATH}" "${FMI3_PLATFORM}")
+compress_fmu("${TEST_OUTPUT_FOLDER}" "BouncingBall3"           "se" "fmu3_dll_se" "${XML_SE_PATH}" "${SHARED_LIBRARY_SE_PATH}" "${FMI3_PLATFORM}")
+compress_fmu("${TEST_OUTPUT_FOLDER}" "BouncingBall3_malformed" "mf" "fmu3_dll_cs" "${XML_MF_PATH}" "${SHARED_LIBRARY_CS_PATH}" "${FMI3_PLATFORM}")
 
 to_native_c_path("${TEST_OUTPUT_FOLDER}/BouncingBall3_me.fmu" FMU3_ME_PATH)
 to_native_c_path("${TEST_OUTPUT_FOLDER}/BouncingBall3_cs.fmu" FMU3_CS_PATH)

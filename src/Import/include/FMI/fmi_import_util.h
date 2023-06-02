@@ -53,10 +53,20 @@ FMILIB_EXPORT jm_status_enu_t fmi_import_rmdir(jm_callbacks* cb, const char* dir
 */
 FMILIB_EXPORT char* fmi_import_create_URL_from_abs_path(jm_callbacks* cb, const char* absPath);
 
+// FIXME: Parametrize below FMIXX calls or move them to FMI version specific files
+
 /** Given directory name fmu_unzipped_path and model identifier consturct Dll/so name
     @return Pointer to a string with the file name. Caller is responsible for freeing the memory.
 */
-FMILIB_EXPORT char* fmi_import_get_dll_path(const char* fmu_unzipped_path, const char* model_identifier, jm_callbacks* callBackFunctions);
+FMILIB_EXPORT char* fmi1_import_get_dll_path(const char* fmu_unzipped_path, const char* model_identifier, jm_callbacks* callBackFunctions);
+/** Given directory name fmu_unzipped_path and model identifier consturct Dll/so name
+    @return Pointer to a string with the file name. Caller is responsible for freeing the memory.
+*/
+FMILIB_EXPORT char* fmi2_import_get_dll_path(const char* fmu_unzipped_path, const char* model_identifier, jm_callbacks* callBackFunctions);
+/** Given directory name fmu_unzipped_path and model identifier consturct Dll/so name
+    @return Pointer to a string with the file name. Caller is responsible for freeing the memory.
+*/
+FMILIB_EXPORT char* fmi3_import_get_dll_path(const char* fmu_unzipped_path, const char* model_identifier, jm_callbacks* callBackFunctions);
 
 /** Given directory name fmu_unzipped_path and model identifier consturct XML file name
     @return Pointer to a string with the file name. Caller is responsible for freeing the memory.

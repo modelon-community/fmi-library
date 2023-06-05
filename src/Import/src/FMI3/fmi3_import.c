@@ -78,6 +78,7 @@ const char* fmi3_import_get_last_error(fmi3_import_t* fmu) {
 fmi3_import_t* fmi3_import_parse_xml(
         fmi_import_context_t* context, const char* dirPath, fmi3_xml_callbacks_t* xml_callbacks) {
     char* xmlPath;
+    char* terminalsAndIconsPath;
     char absPath[FILENAME_MAX + 2];
     fmi3_import_t* fmu = 0;
 
@@ -87,10 +88,12 @@ fmi3_import_t* fmi3_import_parse_xml(
     }
 
     xmlPath =  fmi_import_get_model_description_path(dirPath, context->callbacks);
+    terminalsAndIconsPath = fmi_import_get_terminals_and_icons_path(dirPath, context->callbacks);
     fmu = fmi3_import_allocate(context->callbacks);
 
     if (!fmu) {
         context->callbacks->free(xmlPath);
+        if (!terminalsAndIconsPath) {context->callbacks->free(terminalsAndIconsPath);}
         return NULL;
     }
 
@@ -104,6 +107,7 @@ fmi3_import_t* fmi3_import_parse_xml(
         jm_log_fatal( context->callbacks, "FMILIB", "Could not allocate memory");
         fmi3_import_free(fmu);
         context->callbacks->free(xmlPath);
+        if (!terminalsAndIconsPath) {context->callbacks->free(terminalsAndIconsPath);}
         return NULL;
     }
     strcpy(fmu->dirPath, dirPath);
@@ -115,6 +119,11 @@ fmi3_import_t* fmi3_import_parse_xml(
         fmu = 0;
     }
     context->callbacks->free(xmlPath);
+    if (fmi3_xml_parse_terminals_and_icons(fmu->md, terminalsAndIconsPath, xml_callbacks)) {
+        fmi3_import_free(fmu);
+        fmu = 0;
+    }
+    context->callbacks->free(terminalsAndIconsPath);
 
     if (fmu) {
         jm_log_verbose(context->callbacks, "FMILIB", "Parsing finished successfully");
@@ -462,7 +471,7 @@ int fmi3_import_get_continuous_state_derivative_dependencies(fmi3_import_t* fmu,
 
     ms = fmi3_xml_get_model_structure(fmu->md);
     assert(ms);
-    return fmi3_xml_get_continuous_state_derivative_dependencies(ms, variable, 
+    return fmi3_xml_get_continuous_state_derivative_dependencies(ms, variable,
         numDependencies, dependsOnAll, dependencies, dependenciesKind);
 }
 

@@ -127,7 +127,7 @@ fmi3_xml_model_description_t* fmi3_xml_allocate_model_description(jm_callbacks* 
 
 /**
    \brief Parse XML file
-   Repeaded calls invalidate the data structures created with the previous call to fmiParseXML,
+   Repeated calls invalidate the data structures created with the previous call to fmiParseXML,
    i.e., fmiClearModelDescrition is automatically called before reading in the new file.
 
     @param md A model description object as returned by fmi3_xml_allocate_model_description.
@@ -138,6 +138,20 @@ fmi3_xml_model_description_t* fmi3_xml_allocate_model_description(jm_callbacks* 
 int fmi3_xml_parse_model_description(fmi3_xml_model_description_t* md,
                                      const char* fileName,
                                      fmi3_xml_callbacks_t* xml_callbacks);
+
+/**
+   \brief Parse XML file
+   Repeaded calls invalidate the data structures created with the previous call to fmiParseXML,
+   i.e., fmiClearModelDescrition is automatically called before reading in the new file.
+
+    @param md TODO.
+    @param fileName TODO.
+    @param xml_callbacks TODO.
+   @return 0 if parsing was successful. Non-zero value indicates an error.
+*/
+int fmi3_xml_parse_terminals_and_icons(fmi3_xml_model_description_t* md,
+                                       const char* fileName,
+                                       fmi3_xml_callbacks_t* xml_callbacks);
 
 /**
    Clears the data associated with the model description. This is useful if the same object

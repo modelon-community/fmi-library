@@ -1459,6 +1459,108 @@ int fmi3_xml_parse_model_description(fmi3_xml_model_description_t* md,
     return 0;
 }
 
+
+int fmi3_xml_parse_terminals_and_icons(fmi3_xml_model_description_t* md,
+                                     const char* filename,
+                                     fmi3_xml_callbacks_t* xml_callbacks,
+                                     int configuration) {
+    XML_Memory_Handling_Suite memsuite;
+    fmi3_xml_parser_context_t* context;
+    XML_Parser parser = NULL;
+    FILE* file;
+
+    context = (fmi3_xml_parser_context_t*)md->callbacks->calloc(1, sizeof(fmi3_xml_parser_context_t));
+    if(!context) {
+        jm_log_fatal(md->callbacks, "FMIXML", "Could not allocate memory for XML parser context");
+    }
+    context->callbacks = md->callbacks;
+    context->modelDescription = md;
+    if(fmi3_xml_alloc_parse_buffer(context, 16)) return -1;
+    if(fmi3_create_attr_map(context) || fmi3_create_elm_map(context)) {
+        fmi3_xml_parse_fatal(context, "Error in parsing initialization");
+        fmi3_xml_parse_free_context(context);
+        return -1;
+    }
+    context->lastBaseUnit = 0;
+    context->skipOneVariableFlag = 0;
+    context->skipElementCnt = 0;
+    jm_stack_init(int)(&context->elmStack,  context->callbacks);
+    jm_vector_init(char)(&context->elmData,           0, context->callbacks);
+    jm_vector_init(char)(&context->variableStartAttr, 0, context->callbacks);
+    jm_vector_init(jm_voidp)(&context->currentStartVariableValues, 0, context->callbacks);
+
+    context->lastElmID = fmi3_xml_elmID_none;
+    context->currentElmID = fmi3_xml_elmID_none;
+    context->anyElmCount = 0;
+    context->useAnyHandleFlg = 0;
+    context->anyParent = 0;
+    context->anyHandle = xml_callbacks;
+
+    /* Set locale such that parsing does not depend on the environment.
+     * For example, LC_NUMERIC affects what sscanf identifies as the floating
+     * point delimiter. */
+    context->jm_locale = jm_setlocale_numeric(context->callbacks, "C");
+    if (!context->jm_locale) {
+        jm_log_error(context->callbacks, module, "Failed to set locale. Parsing might be incorrect.");
+    }
+
+    memsuite.malloc_fcn = context->callbacks->malloc;
+    memsuite.realloc_fcn = context->callbacks->realloc;
+    memsuite.free_fcn = context->callbacks->free;
+    context -> parser = parser = XML_ParserCreate_MM(0, &memsuite, "|");
+
+    if(! parser) {
+        fmi3_xml_parse_fatal(context, "Could not initialize XML parsing library.");
+        fmi3_xml_parse_free_context(context);
+        return -1;
+    }
+
+    XML_SetUserData( parser, context);
+
+    XML_SetElementHandler(parser, fmi3_parse_element_start, fmi3_parse_element_end);
+
+    XML_SetCharacterDataHandler(parser, fmi3_parse_element_data);
+
+    file = fopen(filename, "rb");
+    if (file == NULL) {
+        fmi3_xml_parse_fatal(context, "Cannot open file '%s' for parsing", filename);
+        fmi3_xml_parse_free_context(context);
+        return -1;
+    }
+
+    while (!feof(file)) {
+        char * text = jm_vector_get_itemp(char)(fmi3_xml_reserve_parse_buffer(context,0,XML_BLOCK_SIZE),0);
+        int n = (int)fread(text, sizeof(char), XML_BLOCK_SIZE, file);
+        if(ferror(file)) {
+            fmi3_xml_parse_fatal(context, "Error reading from file %s", filename);
+            fclose(file);
+            fmi3_xml_parse_free_context(context);
+            return -1;
+        }
+        if (!XML_Parse(parser, text, n, feof(file))) {
+             fmi3_xml_parse_fatal(context, "Parse error at line %d:\n%s",
+                         (int)XML_GetCurrentLineNumber(parser),
+                         XML_ErrorString(XML_GetErrorCode(parser)));
+             fclose(file);
+             fmi3_xml_parse_free_context(context);
+             return -1; /* failure */
+        }
+    }
+    fclose(file);
+    /* done later XML_ParserFree(parser);*/
+    if(!jm_stack_is_empty(int)(&context->elmStack)) {
+        fmi3_xml_parse_fatal(context, "Unexpected end of file (not all elements ended) when parsing %s", filename);
+        fmi3_xml_parse_free_context(context);
+        return -1;
+    }
+
+    md->status = fmi3_xml_model_description_enu_ok;
+    context->modelDescription = 0;
+    fmi3_xml_parse_free_context(context);
+
+    return 0;
+}
+
 const char* fmi3_xml_elmid_to_name(fmi3_xml_elm_enu_t id){
     return fmi3_element_handle_map[id].elementName;
 }

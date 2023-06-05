@@ -36,6 +36,24 @@ jm_status_enu_t fmi_import_rmdir(jm_callbacks* cb, const char* dir) {
     return jm_rmdir(cb, dir);
 }
 
+char* fmi_import_get_terminals_and_icons_path(const char* fmu_unzipped_path, jm_callbacks* callbacks)
+{
+    char* xmlPath;
+    size_t len;
+
+    len = strlen(fmu_unzipped_path) + strlen(FMI_FILE_SEP) + strlen(FMI_TERMINALS_AND_ICONS_XML) + 1;
+
+    xmlPath = (char*)callbacks->calloc(len, sizeof(char));
+    if (xmlPath == NULL) {
+        callbacks->logger(NULL, "FMIIMPORTUTIL", jm_log_level_error, "Failed to allocate memory.");
+        return NULL;
+    }
+
+    jm_snprintf(xmlPath, len, "%s%s%s", fmu_unzipped_path, FMI_FILE_SEP, FMI_TERMINALS_AND_ICONS_XML);
+
+    return xmlPath;
+}
+
 char* fmi_import_get_model_description_path(const char* fmu_unzipped_path, jm_callbacks* callbacks)
 {
     char* model_description_path;

@@ -325,7 +325,6 @@ int main(int argc, char *argv[])
     } else {
         FMUPath = FMU3_ME_PATH;
     }
-    tmpPath = FMU_TEMPORARY_TEST_DIR;
 
     callbacks.malloc = malloc;
     callbacks.calloc = calloc;

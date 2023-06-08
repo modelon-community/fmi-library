@@ -246,7 +246,7 @@ else()
     set(expatlib "${CMAKE_BINARY_DIR}/ExpatEx/${CMAKE_CFG_INTDIR}/${EXPAT_LIB_PREFIX}expat${CMAKE_STATIC_LIBRARY_SUFFIX}")
 endif()
 
-# Helper to make it explicit that target 'expatex' produces 'expatlib'. (Ninja complains otherwise.)
+# Workaround to make it explicit that target 'expatex' produces 'expatlib'. (Ninja complains otherwise.)
 add_custom_command(
     OUTPUT "${expatlib}"
     DEPENDS expatex

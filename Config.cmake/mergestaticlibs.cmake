@@ -89,7 +89,6 @@ function(merge_static_libs outlib)
 #-------------------------------------------------------------------------------
                 file(WRITE ${objlistcmake}
 "# Extract object files from the library
-message(STATUS libpath: \${libpath})
 message(STATUS \"Extracting object files from \${libpath}\")
 EXECUTE_PROCESS(COMMAND ${CMAKE_AR} -x \${libpath}
                 WORKING_DIRECTORY ${objdir})

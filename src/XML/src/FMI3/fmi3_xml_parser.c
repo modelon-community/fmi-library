@@ -1198,12 +1198,15 @@ static void XMLCALL fmi3_parse_element_start(void *c, const char *elm, const cha
 #define XMLSchema_instance "http://www.w3.org/2001/XMLSchema-instance"
             const size_t stdNSlen = strlen(XMLSchema_instance);
             const size_t attrStrLen = strlen(attr[i]);
-            if ((attrStrLen > stdNSlen) && (attr[i][stdNSlen] == '|') && (strncmp(attr[i], XMLSchema_instance, stdNSlen) == 0)) {
+            if ((attrStrLen > stdNSlen) && (attr[i][stdNSlen] == '|')
+                && (strncmp(attr[i], XMLSchema_instance, stdNSlen) == 0)) {
                 const char* localName = attr[i] + stdNSlen + 1;
                 if (strcmp(localName, "noNamespaceSchemaLocation") == 0)
-                    jm_log_warning(context->callbacks, module, "Attribute noNamespaceSchemaLocation='%s' is ignored. Using standard fmiModelDescription.xsd.",
-                    attr[i+1]);
-                else if ((strcmp(localName, "nil") == 0)
+                    jm_log_warning(context->callbacks,
+                        module,
+                        "Attribute noNamespaceSchemaLocation='%s' is ignored. Using standard fmiModelDescription.xsd.",
+                        attr[i+1]);
+                else if((strcmp(localName, "nil") == 0)
                     ||  (strcmp(localName, "type") == 0)) {
                         jm_log_warning(context->callbacks, module, "Attribute {" XMLSchema_instance "}%s=%s is ignored",
                             localName, attr[i+1]);
@@ -1237,7 +1240,7 @@ static void XMLCALL fmi3_parse_element_start(void *c, const char *elm, const cha
     }
 
     /* handle the element */
-    if (currentElMap->elementHandle(context, 0) ) {
+    if (currentElMap->elementHandle(context, 0)) {
         /* try to skip and continue anyway */
         if (!context->skipElementCnt) context->skipElementCnt = 1;
     }
@@ -1481,13 +1484,13 @@ int fmi3_xml_parse_terminals_and_icons(fmi3_xml_model_description_t* md,
         fmi3_xml_parse_free_context(context);
         return -1;
     }
-    context->lastBaseUnit = 0;
-    context->skipOneVariableFlag = 0;
+    context->lastBaseUnit = 0; // remove
+    context->skipOneVariableFlag = 0; // remove
     context->skipElementCnt = 0;
     jm_stack_init(int)(&context->elmStack,  context->callbacks);
     jm_vector_init(char)(&context->elmData,           0, context->callbacks);
-    jm_vector_init(char)(&context->variableStartAttr, 0, context->callbacks);
-    jm_vector_init(jm_voidp)(&context->currentStartVariableValues, 0, context->callbacks);
+    jm_vector_init(char)(&context->variableStartAttr, 0, context->callbacks); // remove
+    jm_vector_init(jm_voidp)(&context->currentStartVariableValues, 0, context->callbacks); // remove
 
     context->lastElmID = fmi3_xml_elmID_none;
     context->currentElmID = fmi3_xml_elmID_none;

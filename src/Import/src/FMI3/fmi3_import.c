@@ -16,6 +16,14 @@
 #include <stdio.h>
 #include <stdarg.h>
 
+#ifdef WIN32
+#include <io.h>
+#define F_OK 0
+#define access _access
+#else
+#include <unistd.h>
+#endif
+
 #include <JM/jm_named_ptr.h>
 #include "FMI/fmi_util.h"
 #include <FMI3/fmi3_types.h>
@@ -93,7 +101,7 @@ fmi3_import_t* fmi3_import_parse_xml(
 
     if (!fmu) {
         context->callbacks->free(xmlPath);
-        if (!terminalsAndIconsPath) {context->callbacks->free(terminalsAndIconsPath);}
+        if (!terminalsAndIconsPath) context->callbacks->free(terminalsAndIconsPath);
         return NULL;
     }
 
@@ -107,7 +115,7 @@ fmi3_import_t* fmi3_import_parse_xml(
         jm_log_fatal( context->callbacks, "FMILIB", "Could not allocate memory");
         fmi3_import_free(fmu);
         context->callbacks->free(xmlPath);
-        if (!terminalsAndIconsPath) {context->callbacks->free(terminalsAndIconsPath);}
+        if (!terminalsAndIconsPath) context->callbacks->free(terminalsAndIconsPath);
         return NULL;
     }
     strcpy(fmu->dirPath, dirPath);
@@ -119,9 +127,15 @@ fmi3_import_t* fmi3_import_parse_xml(
         fmu = 0;
     }
     context->callbacks->free(xmlPath);
-    if (fmi3_xml_parse_terminals_and_icons(fmu->md, terminalsAndIconsPath, xml_callbacks)) {
-        fmi3_import_free(fmu);
-        fmu = 0;
+
+    /*  Verify that the file exists before attempting to parse it, since it is an optional file.
+        Note that this might fail if the file exists and is larger than 2GB in size.
+    */
+    if (access(terminalsAndIconsPath, F_OK) == 0) {
+        if (fmi3_xml_parse_terminals_and_icons(fmu->md, terminalsAndIconsPath, xml_callbacks)) {
+            fmi3_import_free(fmu);
+            fmu = 0;
+        }
     }
     context->callbacks->free(terminalsAndIconsPath);
 

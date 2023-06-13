@@ -23,6 +23,13 @@ endif()
 
 project(FMILibrary)
 
+# Only check this when developing. (Project minimum required is less.)
+if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.3")
+    # Require that we specify when using "byproducts" (i.e. files in the build tree without any explicit target)
+    # to prevent problems with Ninja.
+    cmake_policy(SET CMP0058 NEW)  
+endif()
+
 # Avoid warnings in mergestaticlibs.cmake. TODO: Fix the warnings.
 cmake_policy(SET CMP0026 OLD)
 
@@ -302,7 +309,7 @@ if(FMILIB_BUILD_STATIC_LIB)
             set_target_properties(fmilib PROPERTIES ${PROPNAME} "${flags} Shlwapi.lib")
         endforeach()
     else()
-        merge_static_libs(fmilib ${FMILIB_SUBLIBS} )
+        merge_static_libs(fmilib ${FMILIB_SUBLIBS})
     endif()
     if(UNIX)
         target_link_libraries(fmilib dl)

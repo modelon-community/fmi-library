@@ -227,6 +227,9 @@ ExternalProject_Add_Step(
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/ExpatEx
 )
 
+# XXX: Maybe we could use FetchContent to find targets of expat? Then we hopefully
+# wouldn't need below workarounds for guessing expatlib's location and name.
+# Requires CMake 3.16 though.
 
 if(MSVC)
     # Expat uses special naming with MSVC, which is mirrored here.
@@ -235,21 +238,30 @@ else()
     set(EXPAT_LIB_PREFIX ${CMAKE_STATIC_LIBRARY_PREFIX})
 endif()
 
-set(expatlib "${CMAKE_BINARY_DIR}/ExpatEx/${CMAKE_CFG_INTDIR}/${EXPAT_LIB_PREFIX}expat${CMAKE_STATIC_LIBRARY_SUFFIX}")
+if("${CMAKE_CFG_INTDIR}" STREQUAL ".")
+    # Ninja complains about 'ExpatEx/./libexpat.a' otherwise. Probably because
+    # generator expressions in mergestaticlibs give slighlty different paths.
+    set(expatlib "${CMAKE_BINARY_DIR}/ExpatEx/${EXPAT_LIB_PREFIX}expat${CMAKE_STATIC_LIBRARY_SUFFIX}")
+else()
+    set(expatlib "${CMAKE_BINARY_DIR}/ExpatEx/${CMAKE_CFG_INTDIR}/${EXPAT_LIB_PREFIX}expat${CMAKE_STATIC_LIBRARY_SUFFIX}")
+endif()
+
+# Workaround to make it explicit that target 'expatex' produces 'expatlib'. (Ninja complains otherwise.)
+add_custom_command(
+    OUTPUT "${expatlib}"
+    DEPENDS expatex
+)
+add_custom_target(tmp_expatlib DEPENDS ${expatlib})
 
 add_library(expat STATIC IMPORTED)
-
 set_target_properties(
     expat PROPERTIES
         IMPORTED_LOCATION "${expatlib}"
 )
-
-add_dependencies(expat expatex)
+add_dependencies(expat tmp_expatlib)
 
 if(FMILIB_INSTALL_SUBLIBS)
-    install(FILES
-    "${CMAKE_BINARY_DIR}/ExpatEx/install/lib/${CMAKE_STATIC_LIBRARY_PREFIX}expat${CMAKE_STATIC_LIBRARY_SUFFIX}"
-    DESTINATION lib)
+    install(FILES "${expatlib}" DESTINATION lib)
 endif()
 
 set(EXPAT_INCLUDE_DIRS ${CMAKE_BINARY_DIR}/ExpatEx/install/include)

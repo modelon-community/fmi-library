@@ -102,7 +102,7 @@ int test_simulate_cs(fmi3_import_t * fmu)
     fmi3_boolean_t loggingOn = fmi3_false;
     fmi3_boolean_t eventModeUsed = fmi3_false;
     fmi3_boolean_t earlyReturnAllowed = fmi3_false;
-    const fmi3_value_reference_t requiredIntermediateVariables[] = {NULL};
+    const fmi3_value_reference_t requiredIntermediateVariables[] = {0};
     size_t nRequiredIntermediateVariables = 0;
 
     /* DoStep output args */
@@ -243,7 +243,7 @@ int test_simulate_cs(fmi3_import_t * fmu)
             diff = ref_res[k] - arrValues[k];
             diff = diff > 0 ? diff : -diff;
             if (diff > tol) {
-                printf("error: incorrect final result for array idx: '%d', exp: '%f', act: '%f', diff: '%f', tol (abs.): '%f'\n", k, ref_res[k], arrValues[k], diff, tol);
+                printf("error: incorrect final result for array idx: '%zu', exp: '%f', act: '%f', diff: '%f', tol (abs.): '%f'\n", k, ref_res[k], arrValues[k], diff, tol);
                 do_exit(CTEST_RETURN_FAIL);
             }
         }
@@ -278,18 +278,13 @@ void fmi3_test_log_forwarding_wrap(fmi3_instance_environment_t instEnv, fmi3_sta
 int main(int argc, char *argv[])
 {
     fmi3_inst_env_count_calls_t instEnv;
-    const char* FMUPath;
     const char* tmpPath;
     jm_callbacks callbacks;
     fmi_import_context_t* context;
     fmi_version_enu_t version;
     jm_status_enu_t status;
-    int k;
 
     fmi3_import_t* fmu;
-
-    FMUPath = FMU3_CS_PATH;
-    tmpPath = FMU_TEMPORARY_TEST_DIR;
 
     callbacks.malloc = malloc;
     callbacks.calloc = calloc;
@@ -303,9 +298,14 @@ int main(int argc, char *argv[])
     printf("Library build stamp:\n%s\n", fmilib_get_build_stamp());
 #endif
 
-    context = fmi_import_allocate_context(&callbacks);
+    tmpPath = fmi_import_mk_temp_dir(&callbacks, FMU_UNPACK_DIR, NULL);
+    if (!tmpPath) {
+        printf("Failed to create temporary directory in: " FMU_UNPACK_DIR "\n");
+        do_exit(CTEST_RETURN_FAIL);
+    }
 
-    version = fmi_import_get_fmi_version(context, FMUPath, tmpPath);
+    context = fmi_import_allocate_context(&callbacks);
+    version = fmi_import_get_fmi_version(context, FMU3_CS_PATH, tmpPath);
     if(version != fmi_version_3_0_enu) {
         printf("The code only supports version 3.0\n");
         do_exit(CTEST_RETURN_FAIL);
@@ -334,13 +334,14 @@ int main(int argc, char *argv[])
     test_simulate_cs(fmu);
 
     fmi3_import_destroy_dllfmu(fmu);
-
     fmi3_import_free(fmu);
     fmi_import_free_context(context);
+    if (fmi_import_rmdir(&callbacks, tmpPath)) {
+        printf("Problem when deleting FMU unpack directory.\n");
+        do_exit(CTEST_RETURN_FAIL);
+    }
+    callbacks.free((void*)tmpPath);
 
     printf("Everything seems to be OK since you got this far=)!\n");
-
-    do_exit(CTEST_RETURN_SUCCESS);
-
     return 0;
 }

@@ -1,0 +1,5 @@
+{
+    "cmake.buildDirectory": "${workspaceFolder}/build_cmake",  // The default ('build') is already used
+    "testMate.cpp.test.executables": "{build_cmake}/**/*{test,Test,TEST}*",
+    "testMate.cpp.log.logpanel": true,
+}

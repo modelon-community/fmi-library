@@ -15,10 +15,6 @@ include_directories(${FMIL_TEST_DIR}/FMI2)
 
 
 #Defines for the test FMUs
-set(FMU2_DUMMY_ME_MODEL_IDENTIFIER BouncingBall2) #This must be the same as in the xml-file
-set(FMU2_DUMMY_CS_MODEL_IDENTIFIER BouncingBall2) #This must be the same as in the xml-file
-set(FMU2_DUMMY_MF_MODEL_IDENTIFIER BouncingBall2_malformed) #This must be the same as in the xml-file
-
 set(FMU2_DUMMY_FOLDER ${FMIL_TEST_DIR}/FMI2/fmu_dummy)
 to_native_c_path(${TEST_OUTPUT_FOLDER}/tempfolder/FMI2 FMU2_TEMPFOLDER)
 
@@ -61,13 +57,13 @@ set(SHARED_LIBRARY_CS_PATH ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${CMA
 #Create FMU 2.0 ME/CS Model and generate library path
 
 #function(compress_fmu OUTPUT_FOLDER MODEL_IDENTIFIER FILE_NAME_CS_ME_EXT TARGET_NAME XML_PATH SHARED_LIBRARY_PATH)
-compress_fmu("${TEST_OUTPUT_FOLDER}" "${FMU2_DUMMY_ME_MODEL_IDENTIFIER}" "me" "fmu2_dll_me" "${XML_ME_PATH}" "${SHARED_LIBRARY_ME_PATH}" "${FMI2_PLATFORM}")
-compress_fmu("${TEST_OUTPUT_FOLDER}" "${FMU2_DUMMY_CS_MODEL_IDENTIFIER}" "cs" "fmu2_dll_cs" "${XML_CS_PATH}" "${SHARED_LIBRARY_CS_PATH}" "${FMI2_PLATFORM}")
-compress_fmu("${TEST_OUTPUT_FOLDER}" "${FMU2_DUMMY_MF_MODEL_IDENTIFIER}" "mf" "fmu2_dll_cs" "${XML_MF_PATH}" "${SHARED_LIBRARY_CS_PATH}" "${FMI2_PLATFORM}")
+compress_fmu("${TEST_OUTPUT_FOLDER}" "BouncingBall2"           "me" "fmu2_dll_me" "${XML_ME_PATH}" "${SHARED_LIBRARY_ME_PATH}" "${FMI2_PLATFORM}")
+compress_fmu("${TEST_OUTPUT_FOLDER}" "BouncingBall2"           "cs" "fmu2_dll_cs" "${XML_CS_PATH}" "${SHARED_LIBRARY_CS_PATH}" "${FMI2_PLATFORM}")
+compress_fmu("${TEST_OUTPUT_FOLDER}" "BouncingBall2_malformed" "mf" "fmu2_dll_cs" "${XML_MF_PATH}" "${SHARED_LIBRARY_CS_PATH}" "${FMI2_PLATFORM}")
 
-to_native_c_path("${TEST_OUTPUT_FOLDER}/${FMU2_DUMMY_ME_MODEL_IDENTIFIER}_me.fmu" FMU2_ME_PATH)
-to_native_c_path("${TEST_OUTPUT_FOLDER}/${FMU2_DUMMY_CS_MODEL_IDENTIFIER}_cs.fmu" FMU2_CS_PATH)
-to_native_c_path("${TEST_OUTPUT_FOLDER}/${FMU2_DUMMY_CS_MODEL_IDENTIFIER}_mf.fmu" FMU2_MF_PATH)
+to_native_c_path("${TEST_OUTPUT_FOLDER}/BouncingBall2_me.fmu" FMU2_ME_PATH)
+to_native_c_path("${TEST_OUTPUT_FOLDER}/BouncingBall2_cs.fmu" FMU2_CS_PATH)
+to_native_c_path("${TEST_OUTPUT_FOLDER}/BouncingBall2_mf.fmu" FMU2_MF_PATH)
 
 add_executable(fmi2_xml_parsing_test ${FMIL_TEST_DIR}/FMI2/fmi2_xml_parsing_test.c)
 target_link_libraries(fmi2_xml_parsing_test  ${FMILIBFORTEST})
@@ -116,14 +112,14 @@ set(FAIL_NAME_CHECK 0)
 set(PASS_NAME_CHECK 1)
 
 add_test(ctest_fmi2_xml_parsing_test fmi2_xml_parsing_test ${FMIL_TEST_DIR}/FMI2/parser_test_xmls/)
-add_test(ctest_fmi2_import_xml_test_empty fmi2_import_xml_test ${FMU2_DUMMY_FOLDER})
-add_test(ctest_fmi2_import_xml_test_me fmi2_import_xml_test ${TEST_OUTPUT_FOLDER}/${FMU2_DUMMY_ME_MODEL_IDENTIFIER}_me)
-add_test(ctest_fmi2_import_xml_test_cs fmi2_import_xml_test ${TEST_OUTPUT_FOLDER}/${FMU2_DUMMY_CS_MODEL_IDENTIFIER}_cs)
-add_test(ctest_fmi2_import_xml_test_mf fmi2_import_xml_test ${TEST_OUTPUT_FOLDER}/${FMU2_DUMMY_MF_MODEL_IDENTIFIER}_mf)
+add_test(ctest_fmi2_import_xml_test_brief fmi2_import_xml_test ${FMU2_DUMMY_FOLDER}) # 'brief' as in close to minimal XML
+add_test(ctest_fmi2_import_xml_test_me    fmi2_import_xml_test ${TEST_OUTPUT_FOLDER}/BouncingBall2_me)
+add_test(ctest_fmi2_import_xml_test_cs    fmi2_import_xml_test ${TEST_OUTPUT_FOLDER}/BouncingBall2_cs)
+add_test(ctest_fmi2_import_xml_test_mf    fmi2_import_xml_test ${TEST_OUTPUT_FOLDER}/BouncingBall2_mf)
 set_tests_properties(ctest_fmi2_import_xml_test_mf PROPERTIES WILL_FAIL TRUE)
-add_test(ctest_fmi2_import_test_me fmi2_import_me_test ${FMU2_ME_PATH} ${FMU_TEMPFOLDER})
-add_test(ctest_fmi2_import_test_cs fmi2_import_cs_test ${FMU2_CS_PATH} ${FMU_TEMPFOLDER})
-add_test(ctest_fmi2_import_test_options fmi2_import_options_test ${FMU2_ME_PATH} ${FMU_TEMPFOLDER})
+add_test(ctest_fmi2_import_test_me fmi2_import_me_test)
+add_test(ctest_fmi2_import_test_cs fmi2_import_cs_test)
+add_test(ctest_fmi2_import_test_options fmi2_import_options_test)
 add_test(ctest_fmi2_import_variable_test
          fmi2_import_variable_test
          ${VARIALBE_TEST_MODEL_DESC_DIR})
@@ -154,7 +150,7 @@ if(FMILIB_BUILD_BEFORE_TESTS)
         ctest_fmi2_import_xml_test_me
         ctest_fmi2_import_xml_test_cs
         ctest_fmi2_import_xml_test_mf
-        ctest_fmi2_import_xml_test_empty
+        ctest_fmi2_import_xml_test_brief
         ctest_fmi2_import_test_me
         ctest_fmi2_import_test_cs
         ctest_fmi2_import_variable_test

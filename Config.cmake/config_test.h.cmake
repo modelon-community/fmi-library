@@ -20,13 +20,20 @@
 #define FMU1_DLL_ME_PATH @FMU1_DLL_ME_PATH@
 #define FMU1_DLL_CS_PATH @FMU1_DLL_CS_PATH@
 
+/* Paths to test FMUs for FMI 1.0 */
+#define FMU1_ME_PATH "@FMU1_ME_PATH@"
+
+/* Paths to test FMUs for FMI 2.0 */
+#define FMU2_ME_PATH "@FMU2_ME_PATH@"
+#define FMU2_CS_PATH "@FMU2_CS_PATH@"
+
 /* Paths to test FMUs for FMI 3.0 */
 #define FMU3_ME_PATH "@FMU3_ME_PATH@"
 #define FMU3_CS_PATH "@FMU3_CS_PATH@"
 #define FMU3_SE_PATH "@FMU3_SE_PATH@"
 
 /* Paths to temp directories */
-#define FMU_TEMPORARY_TEST_DIR "@FMU_TEMPORARY_TEST_DIR@"
+#define FMU_UNPACK_DIR "@FMU_UNPACK_DIR@"
 
 /* Paths to other test directories */
 #define TEST_OUTPUT_FOLDER "@TEST_OUTPUT_FOLDER@"

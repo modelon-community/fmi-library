@@ -290,7 +290,7 @@ int test_simulate_me(fmi3_import_t* fmu)
             diff = ref_res[k] - arrValues[k];
             diff = diff > 0 ? diff : -diff;
             if (diff > tol) {
-                printf("error: incorrect final result for array idx: '%d', exp: '%f', act: '%f', diff: '%f', tol (abs.): '%f'\n", k, ref_res[k], arrValues[k], diff, tol);
+                printf("error: incorrect final result for array idx: '%zu', exp: '%f', act: '%f', diff: '%f', tol (abs.): '%f'\n", k, ref_res[k], arrValues[k], diff, tol);
                 do_exit(CTEST_RETURN_FAIL);
             }
         }
@@ -311,7 +311,6 @@ int test_simulate_me(fmi3_import_t* fmu)
 
 int main(int argc, char *argv[])
 {
-    const char* FMUPath;
     const char* tmpPath;
     jm_callbacks callbacks;
     fmi_import_context_t* context;
@@ -319,13 +318,13 @@ int main(int argc, char *argv[])
     jm_status_enu_t status;
 
     fmi3_import_t* fmu;
+    const char* FMUPath;
 
     if (argc > 1) {
         FMUPath = argv[1]; // Allows testing on any FMU
     } else {
         FMUPath = FMU3_ME_PATH;
     }
-    tmpPath = FMU_TEMPORARY_TEST_DIR;
 
     callbacks.malloc = malloc;
     callbacks.calloc = calloc;
@@ -339,18 +338,20 @@ int main(int argc, char *argv[])
     printf("Library build stamp:\n%s\n", fmilib_get_build_stamp());
 #endif
 
+    tmpPath = fmi_import_mk_temp_dir(&callbacks, FMU_UNPACK_DIR, NULL);
+    if (!tmpPath) {
+        printf("Failed to create temporary directory in: " FMU_UNPACK_DIR "\n");
+        do_exit(CTEST_RETURN_FAIL);
+    }
 
     context = fmi_import_allocate_context(&callbacks);
-
-    version = fmi_import_get_fmi_version(context, FMUPath, tmpPath);
-
+    version = fmi_import_get_fmi_version(context, FMU3_ME_PATH, tmpPath);
     if(version != fmi_version_3_0_enu) {
         printf("Only version 3.0 is supported by this code\n");
         do_exit(CTEST_RETURN_FAIL);
     }
 
     fmu = fmi3_import_parse_xml(context, tmpPath, 0);
-
     if(!fmu) {
         printf("Error parsing XML, exiting\n");
         do_exit(CTEST_RETURN_FAIL);
@@ -372,13 +373,14 @@ int main(int argc, char *argv[])
     test_simulate_me(fmu);
 
     fmi3_import_destroy_dllfmu(fmu);
-
     fmi3_import_free(fmu);
     fmi_import_free_context(context);
+    if (fmi_import_rmdir(&callbacks, tmpPath)) {
+        printf("Problem when deleting FMU unpack directory.\n");
+        do_exit(CTEST_RETURN_FAIL);
+    }
+    callbacks.free((void*)tmpPath);
 
     printf("Everything seems to be OK since you got this far=)!\n");
-
-    do_exit(CTEST_RETURN_SUCCESS);
-
     return 0;
 }

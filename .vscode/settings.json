@@ -1,5 +1,9 @@
 {
     "cmake.buildDirectory": "${workspaceFolder}/build_cmake",  // The default ('build') is already used
+    "cmake.configureOnOpen": false,
+    "cmake.preferredGenerators": [
+        "Ninja" // NOTE: Jenkins still runs with "Unix Makefiles" since other downstream projects use that
+    ],
     "testMate.cpp.test.executables": "{build_cmake}/**/*{test,Test,TEST}*",
     "testMate.cpp.log.logpanel": true,
 }

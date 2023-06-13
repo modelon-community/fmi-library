@@ -153,7 +153,6 @@ int test_simulate_me(fmi1_import_t* fmu)
 
 
     fmistatus = fmi1_import_terminate(fmu);
-
     fmi1_import_free_model_instance(fmu);
 
     free(states);
@@ -171,27 +170,17 @@ typedef struct {
     fmi1_callback_functions_t callBackFunctions;
 } fmul_t;
 
+static const char* tmpPath = NULL;
+
 fmul_t load(int argc, char *argv[])
 {
     fmi1_callback_functions_t callBackFunctions;
-    const char* FMUPath;
-    const char* tmpPath;
     jm_callbacks* callbacks;
     fmi_import_context_t* context;
     fmi_version_enu_t version;
     jm_status_enu_t status;
-    static int isunzipped;
 
     fmi1_import_t* fmu;
-
-    if(argc < 3) {
-        printf("Usage: %s <fmu_file> <temporary_dir>\n", argv[0]);
-        do_exit(CTEST_RETURN_FAIL);
-    }
-
-    FMUPath = argv[1];
-    tmpPath = argv[2];
-
 
     callbacks = (jm_callbacks*)malloc(sizeof(jm_callbacks));
     callbacks->malloc = malloc;
@@ -209,17 +198,19 @@ fmul_t load(int argc, char *argv[])
 #ifdef FMILIB_GENERATE_BUILD_STAMP
     printf("Library build stamp:\n%s\n", fmilib_get_build_stamp());
 #endif
-
-
     context = fmi_import_allocate_context(callbacks);
 
-    if (isunzipped == 0) { /* Unzip the FMU only once. Overwriting the dll/so file may cause a segfault. */
-        version = fmi_import_get_fmi_version(context, FMUPath, tmpPath);
+    if (!tmpPath) { /* Unzip the FMU only once. Overwriting the dll/so file may cause a segfault. */
+        tmpPath = fmi_import_mk_temp_dir(callbacks, FMU_UNPACK_DIR, NULL);
+        if (!tmpPath) {
+            printf("Failed to create temporary directory in: " FMU_UNPACK_DIR "\n");
+            do_exit(CTEST_RETURN_FAIL);
+        }
+        version = fmi_import_get_fmi_version(context, FMU1_ME_PATH, tmpPath);
         if(version != fmi_version_1_enu) {
             printf("Only version 1.0 is supported so far\n");
             do_exit(CTEST_RETURN_FAIL);
         }
-        isunzipped = 1;
     }
 
     fmu = fmi1_import_parse_xml(context, tmpPath);
@@ -271,5 +262,11 @@ int main(int argc, char *argv[])
         destroy(&fmul[k]);
     }
 
-    do_exit(CTEST_RETURN_SUCCESS);
+    if (fmi_import_rmdir(jm_get_default_callbacks(), tmpPath)) {
+        printf("Problem when deleting FMU unpack directory.\n");
+        do_exit(CTEST_RETURN_FAIL);
+    }
+    free((void*)tmpPath);
+
+    return 0;
 }

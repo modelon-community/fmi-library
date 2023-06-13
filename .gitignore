@@ -1,8 +1,5 @@
-# If you add anything to this file, then also consider adding it to .dockerignore.
-
 /.git/
 /.vs/
-/.vscode/settings.json
 
 /out/
 
@@ -17,5 +14,4 @@
 
 /src/XML/src-gen/
 
-# Should not go in .dockerignore:
 /ThirdParty/winflexbison/

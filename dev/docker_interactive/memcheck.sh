@@ -44,4 +44,3 @@ ctest -C Debug -R "$test_name" -T memcheck
 
 # examine valgrind result
 vim Testing/Temporary/MemoryChecker.$test_idx.log
-

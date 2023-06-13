@@ -152,14 +152,13 @@ int main(int argc, char *argv[])
     fmi1_import_t* fmu;
     char* outfile;
 
-    if(argc < 4) {
-        printf("Usage: %s <fmu_file> <temporary_dir> <output_file>\n", argv[0]);
+    if(argc < 3) {
+        printf("Usage: %s <fmu_file> <output_file>\n", argv[0]);
         do_exit(CTEST_RETURN_FAIL);
     }
 
     FMUPath = argv[1];
-    tmpPath = argv[2];
-    outfile = argv[3];
+    outfile = argv[2];
 
     logFile = fopen(outfile, "wb");
 
@@ -184,8 +183,12 @@ int main(int argc, char *argv[])
     printf("Library build stamp:\n%s\n", fmilib_get_build_stamp());
 #endif
 
+    tmpPath = fmi_import_mk_temp_dir(&callbacks, FMU_UNPACK_DIR, NULL);
+    if (!tmpPath) {
+        printf("Failed to create temporary directory in: " FMU_UNPACK_DIR "\n");
+        do_exit(CTEST_RETURN_FAIL);
+    }
     context = fmi_import_allocate_context(&callbacks);
-
     version = fmi_import_get_fmi_version(context, FMUPath, tmpPath);
 
     if(version != fmi_version_1_enu) {
@@ -213,6 +216,11 @@ int main(int argc, char *argv[])
 
     fmi1_import_free(fmu);
     fmi_import_free_context(context);
+    if (fmi_import_rmdir(&callbacks, tmpPath)) {
+        printf("Problem when deleting FMU unpack directory.\n");
+        do_exit(CTEST_RETURN_FAIL);
+    }
+    callbacks.free((void*)tmpPath);
     fclose(logFile);
     return 0;
 }

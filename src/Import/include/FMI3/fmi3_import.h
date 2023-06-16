@@ -46,23 +46,18 @@ extern "C" {
 #endif
 
 /**
- * \addtogroup  fmi3_import FMI 3.0 import interface
+ * \addtogroup fmi3_import FMI 3.0 import interface
  *  All the structures used in the interfaces are intended to
  *  be treated as opaque objects by the client code.
- @{
+ * @{
+ *      \addtogroup fmi3_import_init Constuction, destruction and error handling
+ *      \addtogroup fmi3_import_gen General information retrieval
+ *      \addtogroup fmi3_import_capi Interface to the standard FMI 3.0 "C" API
+ *      @{
+ *           \brief Convenient functions for calling the FMI functions. This interface wrappes the "C" API.
+ *      @}
+ * @}
  */
-
-/**    \addtogroup fmi3_import_init Constuction, destruction and error handling
- *    \addtogroup fmi3_import_gen General information retrieval
- *    \addtogroup fmi3_import_capi Interface to the standard FMI 3.0 "C" API
- *  \brief Convenient functions for calling the FMI functions. This interface wrappes the "C" API.
- */
- /** @} */
- /** @} */
-
-/** \addtogroup fmi3_import_init Constuction, destruction and error handling
-@{
-*/
 
 /**
 * \brief Retrieve the last error message.

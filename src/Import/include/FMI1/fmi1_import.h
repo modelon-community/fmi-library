@@ -246,8 +246,8 @@ FMILIB_EXPORT fmi1_import_variable_list_t* fmi1_import_get_variable_list_alphabe
 
 /** \brief Create a variable list with a single variable.
   
-\param fmu An FMU object that this variable list will reference.
-\param v A variable.
+    @param fmu An FMU object that this variable list will reference.
+    @param v A variable.
 */
 FMILIB_EXPORT fmi1_import_variable_list_t* fmi1_import_create_var_list(fmi1_import_t* fmu,fmi1_import_variable_t* v);
 
@@ -261,8 +261,8 @@ FMILIB_EXPORT fmi1_import_variable_list_t* fmi1_import_create_var_list(fmi1_impo
 /**
  * Returns the fmi_import_options_t:: object.
  *
- * \param fmu - an fmu object as returned by fmi1_import_parse_xml().
- * \return fmi_import_options_t:: opaque object pointer
+ * @param fmu - an fmu object as returned by fmi1_import_parse_xml().
+ * @return fmi_import_options_t:: opaque object pointer
  */
 FMILIB_EXPORT fmi_import_options_t* fmi1_import_get_options(fmi1_import_t* fmu);
 

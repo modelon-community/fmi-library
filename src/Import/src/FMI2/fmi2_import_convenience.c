@@ -24,8 +24,8 @@
 
 /**
     \brief Collect model information by counting the number of variables with specific properties and fillinf in fmi2_import_model_counts_t struct.
-    \param fmu - An fmu object as returned by fmi2_import_parse_xml().
-    \param counts - a pointer to a preallocated struct.
+    @param fmu - An fmu object as returned by fmi2_import_parse_xml().
+    @param counts - a pointer to a preallocated struct.
 */
 void fmi2_import_collect_model_counts(fmi2_import_t* fmu, fmi2_import_model_counts_t* counts) {
     jm_vector(jm_voidp)* vars = fmi2_xml_get_variables_original_order(fmu->md);

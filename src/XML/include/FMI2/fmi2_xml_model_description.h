@@ -216,18 +216,18 @@ jm_vector(jm_voidp)* fmi2_xml_get_variables_vr_order(fmi2_xml_model_description_
 
 /**
     \brief Get variable by variable name.
-    \param md - the model description
-    \param name - variable name
-    \return variable pointer.
+    @param md - the model description
+    @param name - variable name
+    @return variable pointer.
 */
 fmi2_xml_variable_t* fmi2_xml_get_variable_by_name(fmi2_xml_model_description_t* md, const char* name);
 
 /**
     \brief Get variable by value reference.
-    \param md - the model description
-    \param baseType - basic data type
-    \param vr - value reference
-    \return variable pointer.
+    @param md - the model description
+    @param baseType - basic data type
+    @param vr - value reference
+    @return variable pointer.
 */
 fmi2_xml_variable_t* fmi2_xml_get_variable_by_vr(fmi2_xml_model_description_t* md, fmi2_base_type_enu_t baseType, fmi2_value_reference_t vr);
 

@@ -44,7 +44,7 @@ extern "C" {
 fmi3_import_dimension_list_t* fmi3_import_alloc_dimension_list(fmi3_import_t* fmu, fmi3_import_variable_t* v);
 
 /**  \brief Free a dimension list. Note that dimension lists are allocated dynamically and must be freed when not needed any longer 
-    \param dl A dimension list.
+    @param dl A dimension list.
 */
 FMILIB_EXPORT void fmi3_import_free_dimension_list(fmi3_import_dimension_list_t* dl);
 

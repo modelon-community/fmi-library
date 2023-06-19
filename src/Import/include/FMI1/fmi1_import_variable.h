@@ -65,18 +65,18 @@ typedef struct fmi1_import_variable_list_t fmi1_import_variable_list_t;
 
 /**
     \brief Get variable by variable name.
-    \param fmu - An fmu object as returned by fmi1_import_parse_xml().
-    \param name - variable name
-    \return variable pointer.
+    @param fmu - An fmu object as returned by fmi1_import_parse_xml().
+    @param name - variable name
+    @return variable pointer.
 */
 FMILIB_EXPORT fmi1_import_variable_t* fmi1_import_get_variable_by_name(fmi1_import_t* fmu, const char* name);
 
 /**
     \brief Get variable by value reference.
-    \param fmu - An fmu object as returned by fmi1_import_parse_xml().
-    \param baseType - basic data type
-    \param vr - value reference
-    \return variable pointer.
+    @param fmu - An fmu object as returned by fmi1_import_parse_xml().
+    @param baseType - basic data type
+    @param vr - value reference
+    @return variable pointer.
 */
 FMILIB_EXPORT fmi1_import_variable_t* fmi1_import_get_variable_by_vr(fmi1_import_t* fmu, fmi1_base_type_enu_t baseType, fmi1_value_reference_t vr);
 

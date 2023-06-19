@@ -84,8 +84,8 @@ typedef struct {
 
 /**
     \brief Collect model information by counting the number of variables with specific properties and fillinf in fmi2_import_model_counts_t struct.
-    \param fmu - An fmu object as returned by fmi2_import_parse_xml().
-    \param counts - a pointer to a preallocated struct.
+    @param fmu - An fmu object as returned by fmi2_import_parse_xml().
+    @param counts - a pointer to a preallocated struct.
 */
 FMILIB_EXPORT 
 void fmi2_import_collect_model_counts(fmi2_import_t* fmu, fmi2_import_model_counts_t* counts);
@@ -93,10 +93,10 @@ void fmi2_import_collect_model_counts(fmi2_import_t* fmu, fmi2_import_model_coun
 /**
   \brief Print msgIn into msgOut by expanding variable references of the form #\<Type\>\<VR\># into variable names
   and replacing '##' with a single #.
-   \param fmu - An fmu object as returned by fmi2_import_parse_xml().
-   \param msgIn - Log message as produced by an FMU.
-   \param msgOut - Output message buffer. 
-   \param maxMsgSize - maximum message size
+   @param fmu - An fmu object as returned by fmi2_import_parse_xml().
+   @param msgIn - Log message as produced by an FMU.
+   @param msgOut - Output message buffer. 
+   @param maxMsgSize - maximum message size
    */
 FMILIB_EXPORT 
 void fmi2_import_expand_variable_references(fmi2_import_t* fmu, const char* msgIn, char* msgOut, size_t maxMsgSize);
@@ -130,8 +130,8 @@ void  fmi2_default_callback_logger(fmi2_component_t c, fmi2_string_t instanceNam
 /** \brief  Given ::fmi2_callback_functions_t logger (fmi2_logger), the ::jm_callbacks logger may be setup to redirect the messages to the fmi2_logger.
 
     The functions sets up the redirection. Note that the context field in ::jm_callbacks is set to point to the provided ::fmi2_callback_functions_t.
-    \param cb FMI Library callbacks
-    \param fmiCallbacks FMI 2.0 standard callbacks
+    @param cb FMI Library callbacks
+    @param fmiCallbacks FMI 2.0 standard callbacks
 */
 FMILIB_EXPORT
 void fmi2_import_init_logger(jm_callbacks* cb, fmi2_callback_functions_t* fmiCallbacks);

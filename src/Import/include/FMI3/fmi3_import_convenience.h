@@ -110,8 +110,8 @@ typedef struct {
 
 /**
     \brief Collect model information by counting the number of variables with specific properties and filling in fmi3_import_model_counts_t struct.
-    \param fmu - An fmu object as returned by fmi3_import_parse_xml().
-    \param counts - a pointer to a preallocated struct.
+    @param fmu - An fmu object as returned by fmi3_import_parse_xml().
+    @param counts - a pointer to a preallocated struct.
 */
 FMILIB_EXPORT
 void fmi3_import_collect_model_counts(fmi3_import_t* fmu, fmi3_import_model_counts_t* counts);
@@ -120,10 +120,10 @@ void fmi3_import_collect_model_counts(fmi3_import_t* fmu, fmi3_import_model_coun
    \brief Transform msgIn into msgOut by expanding variable references of the form #\<Type\>\<VR\># into variable names
    and replacing '##' with a single #.
 
-   \param fmu - An fmu object as returned by fmi3_import_parse_xml().
-   \param msgIn - Log message as produced by an FMU.
-   \param msgOut - Output message buffer.
-   \param maxMsgSize - maximum message size
+   @param fmu - An fmu object as returned by fmi3_import_parse_xml().
+   @param msgIn - Log message as produced by an FMU.
+   @param msgOut - Output message buffer.
+   @param maxMsgSize - maximum message size
  */
 FMILIB_EXPORT
 void fmi3_import_expand_variable_references(fmi3_import_t* fmu, const char* msgIn, char* msgOut, size_t maxMsgSize);
@@ -170,8 +170,8 @@ void fmi3_default_callback_logger(fmi3_instance_environment_t inst, fmi3_string_
 /** \brief  Given ::fmi3_logger_context_t logger (fmi3_logger), the ::jm_callbacks logger may be setup to redirect the messages to the fmi3_logger.
 
     The functions sets up the redirection. Note that the context field in ::jm_callbacks is set to point to the provided ::fmi3_logger_context_t.
-    \param cb FMI Library callbacks
-    \param loggerCallbacks FMI 3.0 standard callbacks
+    @param cb FMI Library callbacks
+    @param loggerCallbacks FMI 3.0 standard callbacks
 */
 FMILIB_EXPORT
 void fmi3_import_init_logger(jm_callbacks* cb, fmi3_logger_context_t* loggerCallbacks);

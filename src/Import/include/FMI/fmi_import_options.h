@@ -37,8 +37,8 @@ typedef struct fmi_util_options_t fmi_import_options_t;
  * An example value for 'dlopen' would be RTLD_NOW|RTLD_LOCAL|RTLD_DEEPBIND, granted the
  * system supports the 'RTLD_DEEPBIND' flag.
  *
- * \param options fmi_import_options_t:: opaque object pointer
- * \param flag jm_portability_loadlibrary_flag_t:: flag value to be set
+ * @param options fmi_import_options_t:: opaque object pointer
+ * @param flag jm_portability_loadlibrary_flag_t:: flag value to be set
  */
 FMILIB_EXPORT void fmi_import_set_option_loadlibrary_flag(fmi_import_options_t* options, jm_portability_loadlibrary_flag_t flag);
 

@@ -115,7 +115,7 @@ void jm_set_default_callbacks(jm_callbacks* c);
 
 /**
     \brief Get default callbacks. The function never returns NULL.
-    \return Default ::jm_callbacks struture. Either the one supplied by the library of the one set with jm_set_default_callbacks().
+    @return Default ::jm_callbacks struture. Either the one supplied by the library of the one set with jm_set_default_callbacks().
 */
 FMILIB_EXPORT
 jm_callbacks* jm_get_default_callbacks(void);

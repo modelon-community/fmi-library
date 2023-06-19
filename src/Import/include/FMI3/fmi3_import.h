@@ -255,8 +255,8 @@ FMILIB_EXPORT fmi3_import_variable_list_t* fmi3_import_get_variable_list(fmi3_im
 
 /** \brief Create a variable list with a single variable.
 
-\param fmu An FMU object that this variable list will reference.
-\param v A variable.
+@param fmu An FMU object that this variable list will reference.
+@param v A variable.
 */
 FMILIB_EXPORT fmi3_import_variable_list_t* fmi3_import_create_var_list(fmi3_import_t* fmu, fmi3_import_variable_t* v);
 
@@ -289,17 +289,17 @@ FMILIB_EXPORT const char* fmi3_import_get_source_file_cs(fmi3_import_t* fmu, siz
 
 /**
     \brief Get variable by variable name. Alias variable names result in their base variable.
-    \param fmu - An fmu object as returned by fmi3_import_parse_xml().
-    \param name - variable name
-    \return variable pointer.
+    @param fmu - An fmu object as returned by fmi3_import_parse_xml().
+    @param name - variable name
+    @return variable pointer.
 */
 FMILIB_EXPORT fmi3_import_variable_t* fmi3_import_get_variable_by_name(fmi3_import_t* fmu, const char* name);
 
 /**
     \brief Get variable by value reference.
-    \param fmu - An fmu object as returned by fmi3_import_parse_xml().
-    \param vr - value reference
-    \return variable pointer.
+    @param fmu - An fmu object as returned by fmi3_import_parse_xml().
+    @param vr - value reference
+    @return variable pointer.
 */
 FMILIB_EXPORT fmi3_import_variable_t* fmi3_import_get_variable_by_vr(fmi3_import_t* fmu, fmi3_value_reference_t vr);
 

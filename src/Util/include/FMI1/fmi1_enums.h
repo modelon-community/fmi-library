@@ -103,8 +103,8 @@ typedef enum fmi1_base_type_enu_t
 } fmi1_base_type_enu_t;
 
 /**  \brief Convert base type constant to string 
-    \param bt Base type identifier.
-    \return Corresponding base type name.
+    @param bt Base type identifier.
+    @return Corresponding base type name.
     */
 FMILIB_EXPORT const char* fmi1_base_type_to_string(fmi1_base_type_enu_t bt);
 

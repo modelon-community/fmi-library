@@ -121,27 +121,27 @@ typedef struct fmi3_import_t fmi3_import_t;
 
 /**
     \brief Parse FMI 1.0 XML file found in the directory dirName.
-    \param c - library context.
-    \param dirName - a directory where the FMU was unpacked and XML file is present.
-    \return fmi1_import_t:: opaque object pointer
+    @param c - library context.
+    @param dirName - a directory where the FMU was unpacked and XML file is present.
+    @return fmi1_import_t:: opaque object pointer
 */
 FMILIB_EXPORT fmi1_import_t* fmi1_import_parse_xml( fmi_import_context_t* c, const char* dirName);
 
 /**
     \brief Create ::fmi2_import_t structure and parse the FMI 2.0 XML file found in the directory dirName.
-    \param context - library context.
-    \param dirPath - a directory where the FMU was unpacked and XML file is present.
-    \param xml_callbacks Callbacks to use for processing of annotations (may be NULL).
-    \return fmi2_import_t:: opaque object pointer
+    @param context - library context.
+    @param dirPath - a directory where the FMU was unpacked and XML file is present.
+    @param xml_callbacks Callbacks to use for processing of annotations (may be NULL).
+    @return fmi2_import_t:: opaque object pointer
 */
 FMILIB_EXPORT fmi2_import_t* fmi2_import_parse_xml( fmi_import_context_t* context, const char* dirPath, fmi2_xml_callbacks_t* xml_callbacks);
 
 /**
     \brief Create ::fmi3_import_t structure and parse the FMI 3.0 XML file found in the directory dirName.
-    \param context - library context.
-    \param dirPath - a directory where the FMU was unpacked and XML file is present.
-    \param xml_callbacks Callbacks to use for processing of annotations (may be NULL).
-    \return fmi3_import_t:: opaque object pointer
+    @param context - library context.
+    @param dirPath - a directory where the FMU was unpacked and XML file is present.
+    @param xml_callbacks Callbacks to use for processing of annotations (may be NULL).
+    @return fmi3_import_t:: opaque object pointer
 */
 FMILIB_EXPORT fmi3_import_t* fmi3_import_parse_xml( fmi_import_context_t* context, const char* dirPath, fmi3_xml_callbacks_t* xml_callbacks);
 

@@ -27,28 +27,28 @@ extern "C" {
 */
 /** 
     \brief Create a unique temporary directory
-    \param cb - callbacks for memory allocation and logging. Default callbacks are used if this parameter is NULL.
-    \param systemTempDir - directory where the temp dir should be located both absolute and relative path are accepted.
+    @param cb - callbacks for memory allocation and logging. Default callbacks are used if this parameter is NULL.
+    @param systemTempDir - directory where the temp dir should be located both absolute and relative path are accepted.
                 System-wide directory is used if this parameter is NULL.
-    \param tempPrefix - File name template prefix used when creating temporaty directories. "fmil" is used if this is NULL.
-    \return A pointer to the temporary directory name (absolute path, no terminating '/'). Caller is responsible for freeing the memory.
+    @param tempPrefix - File name template prefix used when creating temporaty directories. "fmil" is used if this is NULL.
+    @return A pointer to the temporary directory name (absolute path, no terminating '/'). Caller is responsible for freeing the memory.
         The function returns NULL if there were errors in which case a message is send to the logger.    
 */
 FMILIB_EXPORT char* fmi_import_mk_temp_dir(jm_callbacks* cb, const char* systemTempDir, const char* tempPrefix);
 
 /**
 \brief Remove directory and all it contents.
-    \param cb - callbacks for memory allocation and logging. Default callbacks are used if this parameter is NULL.
-    \param dir - path to be removed.
-    \return Statuc success or error.
+    @param cb - callbacks for memory allocation and logging. Default callbacks are used if this parameter is NULL.
+    @param dir - path to be removed.
+    @return Statuc success or error.
 */
 FMILIB_EXPORT jm_status_enu_t fmi_import_rmdir(jm_callbacks* cb, const char* dir);
 
 /** 
     \brief Create a file:// URL from absolute path
-    \param cb - callbacks for memory allocation and logging. Default callbacks are used if this parameter is NULL.
-    \param absPath - absolute path to be converted into the URL
-    \return A pointer to the URL. Caller is responsible for freeing the memory.
+    @param cb - callbacks for memory allocation and logging. Default callbacks are used if this parameter is NULL.
+    @param absPath - absolute path to be converted into the URL
+    @return A pointer to the URL. Caller is responsible for freeing the memory.
         The function returns NULL if there were errors in which case a message is send to the logger.    
 */
 FMILIB_EXPORT char* fmi_import_create_URL_from_abs_path(jm_callbacks* cb, const char* absPath);

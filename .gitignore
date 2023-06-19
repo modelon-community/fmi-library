@@ -9,6 +9,7 @@
 
 /build_*/
 /install_*/
+/install/
 /testlogs-*/
 /doc/
 

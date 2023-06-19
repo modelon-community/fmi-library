@@ -60,6 +60,11 @@ extern "C" {
  */
 
 /**
+ * \addtogroup fmi3_import_init
+ * @{
+ */
+
+/**
 * \brief Retrieve the last error message.
 *
 * Error handling:
@@ -120,7 +125,6 @@ FMILIB_EXPORT const char* fmi3_import_get_model_identifier_CS(fmi3_import_t* fmu
 @param fmu An fmu object as returned by fmi3_import_parse_xml().
 */
 FMILIB_EXPORT const char* fmi3_import_get_model_identifier_SE(fmi3_import_t* fmu);
-
 
 /**
 \brief Get FMU instantiationToken.

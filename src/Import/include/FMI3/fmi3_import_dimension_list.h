@@ -27,7 +27,8 @@ extern "C" {
 #endif
 
 /**
-    \addtogroup fmi3_import @{
+    \addtogroup fmi3_import 
+    @{
        \defgroup fmi3_import_dimlist Handling of dimension lists
     @}
  */
@@ -52,6 +53,8 @@ FMILIB_EXPORT size_t fmi3_import_get_dimension_list_size(fmi3_import_dimension_l
 
 /** \brief Get a single dimension from a list */
 FMILIB_EXPORT fmi3_import_dimension_t* fmi3_import_get_dimension_list_item(fmi3_import_dimension_list_t* dl, size_t index);
+
+/** @} */
 
 #ifdef __cplusplus
 }

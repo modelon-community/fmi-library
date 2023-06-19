@@ -100,34 +100,34 @@ struct jm_callbacks {
 static jm_string jm_get_last_error(jm_callbacks* cb) {return cb->errMessageBuffer; }
 
 /**
- \brief Clear the last generated log message.
+    \brief Clear the last generated log message.
 */
 static void jm_clear_last_error(jm_callbacks* cb) { cb->errMessageBuffer[0] = 0; }
 
 /**
 \brief Set the structure to be returned by jm_get_default_callbacks().
 
-@param c - a pointer to initialized struct to be used as default later on. If this is NULL
-    library default implementation will be used.
+    @param c - a pointer to initialized struct to be used as default later on. If this is NULL
+        library default implementation will be used.
 */
 FMILIB_EXPORT
 void jm_set_default_callbacks(jm_callbacks* c);
 
 /**
-\brief Get default callbacks. The function never returns NULL.
-\return Default ::jm_callbacks struture. Either the one supplied by the library of the one set with jm_set_default_callbacks().
+    \brief Get default callbacks. The function never returns NULL.
+    \return Default ::jm_callbacks struture. Either the one supplied by the library of the one set with jm_set_default_callbacks().
 */
 FMILIB_EXPORT
 jm_callbacks* jm_get_default_callbacks(void);
 
 /**
-\brief The default logger implementation prints messages to stderr.
+    \brief The default logger implementation prints messages to stderr.
 */
 FMILIB_EXPORT
 void jm_default_logger(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_level, jm_string message);
 
 /**
-\brief Send a message to the logger function.
+    \brief Send a message to the logger function.
     @param cb - callbacks to be used for reporting;
     @param module - a name of reporting module;
     @param log_level - message kind;
@@ -221,7 +221,7 @@ static void jm_log_debug(jm_callbacks* cb, const char* module, const char* fmt, 
 #endif
 
 
-/* @}
+/** @}
 */
 
 #ifdef __cplusplus

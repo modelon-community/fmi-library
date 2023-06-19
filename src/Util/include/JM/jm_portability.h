@@ -108,7 +108,6 @@ const char* jm_get_system_temp_dir();
 */
 char *jm_mkdtemp(jm_callbacks *cb, char *tmplt);
 
-
 /**
     \brief Get absolute path to an existing directory
     \param cb - callbacks for memory allocation and logging. Default callbacks are used if this parameter is NULL.
@@ -219,5 +218,5 @@ int jm_resetlocale_numeric(jm_callbacks* cb, jm_locale_t* jmloc);
 #endif
 
 
-/*@}*/
+/**@}*/
 #endif /* End of header file JM_PORTABILITY_H_ */

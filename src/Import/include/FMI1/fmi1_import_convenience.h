@@ -130,9 +130,6 @@ void  fmi1_default_callback_logger(fmi1_component_t c, fmi1_string_t instanceNam
 */
 FMILIB_EXPORT
 void fmi1_import_init_logger(jm_callbacks* cb, fmi1_callback_functions_t* fmiCallbacks);
-/**    @}
-*/
-
 
 /** @} */
 

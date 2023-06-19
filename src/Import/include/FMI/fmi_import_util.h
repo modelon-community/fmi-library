@@ -74,7 +74,6 @@ FMILIB_EXPORT char* fmi3_import_get_dll_path(const char* fmu_unzipped_path, cons
 FMILIB_EXPORT char* fmi_import_get_model_description_path(const char* fmu_unzipped_path, jm_callbacks* callBackFunctions);
 /**
 @}
-@}
 */
 #ifdef __cplusplus
 }

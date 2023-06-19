@@ -49,6 +49,7 @@ extern "C" {
 
 /**
 * \name  Vector handling functions.
+* @{
 *
 * \brief Allocates a vector on heap with the specified size and specified number of preallocated items (can be larger than size).
 *
@@ -122,6 +123,9 @@ inline T* jm_vector_get_lastp(jm_vector(T)* a)
 
 /**
 \brief Function type for item comparison. Can be generated with jm_define_comp_f.
+\brief Function type for item comparison. Can be generated with jm_define_comp_f.
+
+  \brief Function type for item comparison. Can be generated with jm_define_comp_f.
 
 */
 typedef int (*jm_compare_ft) (const void* , const void*);
@@ -383,8 +387,7 @@ jm_define_comp_f(jm_compare_string, jm_string, strcmp)
 #define jm_diff_name(a, b) strcmp(a.name,b.name)
 jm_define_comp_f(jm_compare_name, jm_name_ID_map_t, jm_diff_name)
 
-/** 
-@}
+/** @}
 */
 
 #ifdef __cplusplus

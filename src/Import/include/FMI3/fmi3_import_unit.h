@@ -84,6 +84,7 @@ FMILIB_EXPORT double fmi3_import_convert_to_SI_base_unit(double v, fmi3_import_u
 FMILIB_EXPORT double fmi3_import_convert_from_SI_base_unit(double v, fmi3_import_unit_t* u);
 
 /** \brief Get a display unit object by index.
+    @param u unit
     @param index The index of display unit to be returned. Must be less than the number returned by fmi3_import_get_unit_display_unit_number()
 */
 FMILIB_EXPORT fmi3_import_display_unit_t* fmi3_import_get_unit_display_unit(fmi3_import_unit_t* u, size_t index);

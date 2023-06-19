@@ -187,9 +187,8 @@ int jm_snprintf(char * str, size_t size, const char * fmt, ...);
    'jm_resetlocale_numeric' is needed to free the returned 'jm_locale_t'
    object.
 
-   \param jmloc:
-   \param value:
-     Value to set for LC_NUMERIC.
+   \param cb ::jm_callbacks
+   \param value: Value to set for LC_NUMERIC.
    \return:
      Pointer to object for reseting thread settings (locale, and
      _configthreadlocale on Windows). NULL on failure.
@@ -204,7 +203,8 @@ jm_locale_t* jm_setlocale_numeric(jm_callbacks* cb, const char* value);
    returned from that call. On Linux, the locale must in no way be modified since that
    call.
 
-   \param jmloc:
+    \param cb ::jm_callbacks
+    \param jmloc:
      Return value from previous call to 'jm_setlocale_numeric'. Current
      locale must be set with that function. This call will free 'jmloc', so it's
      not allowed to be used after.

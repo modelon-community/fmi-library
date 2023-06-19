@@ -101,7 +101,7 @@ typedef struct {
 } fmi3_import_model_counts_t;
 
 /**
-\brief Struct for initializing #fmi3_logger.
+    \brief Struct for initializing #fmi3_logger_context_t.
  */
 typedef struct {
     const fmi3_instance_environment_t instanceEnvironment;
@@ -167,11 +167,11 @@ void fmi3_log_forwarding(fmi3_instance_environment_t inst, fmi3_status_t status,
 FMILIB_EXPORT
 void fmi3_default_callback_logger(fmi3_instance_environment_t inst, fmi3_string_t instanceName, fmi3_status_t status, fmi3_string_t category, fmi3_string_t message);
 
-/** \brief  Given ::fmi3_callback_functions_t logger (fmi3_logger), the ::jm_callbacks logger may be setup to redirect the messages to the fmi3_logger.
+/** \brief  Given ::fmi3_logger_context_t logger (fmi3_logger), the ::jm_callbacks logger may be setup to redirect the messages to the fmi3_logger.
 
-    The functions sets up the redirection. Note that the context field in ::jm_callbacks is set to point to the provided ::fmi3_callback_functions_t.
+    The functions sets up the redirection. Note that the context field in ::jm_callbacks is set to point to the provided ::fmi3_logger_context_t.
     \param cb FMI Library callbacks
-    \param fmiCallbacks FMI 3.0 standard callbacks
+    \param loggerCallbacks FMI 3.0 standard callbacks
 */
 FMILIB_EXPORT
 void fmi3_import_init_logger(jm_callbacks* cb, fmi3_logger_context_t* loggerCallbacks);

@@ -40,11 +40,12 @@ static fmi2_import_t* parse_xml(const char* model_desc_path, jm_logger_f logger)
 /**
  * Tests that a unit referenced by a Type's attribute exists in UnitDefinitions.
  *
- * @xmlTestRootDir: path to 'parser_test_xmls' directory
- * @xmlDirRel: Relative path to the XML directory from root dir for parser test
+ * @param expectFailure: Expected outcome of test
+ * @param xmlTestRootDir: path to 'parser_test_xmls' directory
+ * @param xmlDirRel: Relative path to the XML directory from root dir for parser test
  *   XMLs. Must start with leading '/' character.
- * @logger: logger function to use. If NULL, default logger will be used.
- * @xmlOut: return arg that will point to the parsed XML struct. Provide NULL
+ * @param logger: logger function to use. If NULL, default logger will be used.
+ * @param xmlOut: return arg that will point to the parsed XML struct. Provide NULL
  *   if not desired.
  */
 static int test_parse_xml(int expectFailure, char* xmlTestRootDir, char* xmlDirRel, jm_logger_f logger,

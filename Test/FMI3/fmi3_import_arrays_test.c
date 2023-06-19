@@ -53,6 +53,9 @@ static fmi3_uint64_t get_array_size(const fmi3_uint64_t* dimSizes, size_t nDim) 
 
 /**
  * Get array with dimension start sizes, resolved from VRs if necessary.
+ * @param fmu: parsed model description
+ * @param cb: callbacks
+ * @param dimList list of dimensions
  * @param dimSizes: contains the start sizes, must be freed
  * TODO: should this perhaps be a util API method?
  */

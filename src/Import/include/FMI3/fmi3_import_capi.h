@@ -223,11 +223,11 @@ FMILIB_EXPORT void fmi3_import_free_instance(fmi3_import_t* fmu);
  * \brief Calls the FMI function fmiEnterInitializationMode(...)
  *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
- * @param tolerance_defined True if the @p tolerance argument is to be used
- * @param tolerance Solvers internal to the FMU should use this tolerance or finer, if @p tolerance_defined is true
- * @param start_time Start time of the experiment
- * @param stop_time_defined True if the @p stop_time argument is to be used
- * @param stop_time Stop time of the experiment, if @p stop_time_defined is true
+ * @param toleranceDefined True if the @p tolerance argument is to be used
+ * @param tolerance Solvers internal to the FMU should use this tolerance or finer, if @p toleranceDefined is true
+ * @param startTime Start time of the experiment
+ * @param stopTimeDefined True if the @p stopTime argument is to be used
+ * @param stopTime Stop time of the experiment, if @p stopTimeDefined is true
  * @return FMI status.
  */
 FMILIB_EXPORT fmi3_status_t fmi3_import_enter_initialization_mode(
@@ -625,7 +625,7 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_get_variable_dependencies(
         fmi3_value_reference_t  dependent,
         size_t                  elementIndicesOfDependent[],
         fmi3_value_reference_t  independents[],
-        size_t                  elementIndicesOfIndependents[],
+        size_t                  elementIndicesOfIndependent[],
         fmi3_dependency_kind_t  dependencyKinds[],
         size_t                  nDeps);
 
@@ -843,7 +843,6 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_set_interval_decimal(
  *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
  * @param valueReferences Array of value references to clock variables.
- * @param nValueReferences Number of elements in 'valueReferences' array.
  * @param nValueReferences Number of elements in 'valueReferences' array.
  * @param counters Array of size nValueReferences that holds the Clock counters to be set.
  * @param resolutions Array of size nValueReferences that holds the Clock resolutions to be set.

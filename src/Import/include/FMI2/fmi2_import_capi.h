@@ -140,11 +140,11 @@ FMILIB_EXPORT void fmi2_import_free_instance(fmi2_import_t* fmu);
  * \brief Calls the FMI function fmiSetupExperiment(...)
  * 
  * @param fmu A model description object returned by fmi2_import_parse_xml() that has loaded the FMI functions, see fmi2_import_create_dllfmu().
- * @param tolerance_defined True if the @p tolerance argument is to be used
- * @param tolerance Solvers internal to the FMU should use this tolerance or finer, if @p tolerance_defined is true
- * @param start_time Start time of the experiment
- * @param stop_time_defined True if the @p stop_time argument is to be used
- * @param stop_time Stop time of the experiment, if @p stop_time_defined is true
+ * @param toleranceDefined True if the @p tolerance argument is to be used
+ * @param tolerance Solvers internal to the FMU should use this tolerance or finer, if @p toleranceDefined is true
+ * @param startTime Start time of the experiment
+ * @param stopTimeDefined True if the @p stopTime argument is to be used
+ * @param stopTime Stop time of the experiment, if @p stopTimeDefined is true
  * @return FMI status.
  */
 FMILIB_EXPORT fmi2_status_t fmi2_import_setup_experiment(fmi2_import_t* fmu,

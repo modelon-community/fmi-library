@@ -29,9 +29,9 @@ extern "C" {
     /**
     \addtogroup fmi2_xml
     @{
-    \addtogroup fmi2_xml_units Functions for handling unit definitions.
+    \addtogroup fmi2_xml_units Functions for handling unit definitions
     @}
-    \addtogroup fmi2_xml_units Functions for handling unit definitions.
+    \addtogroup fmi2_xml_units Functions for handling unit definitions
     @{
     */
 

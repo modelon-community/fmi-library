@@ -33,9 +33,9 @@ extern "C" {
         /**
     \addtogroup fmi1_import
     @{
-    \addtogroup fmi1_import_variables Functions for handling variable definitions.
+    \addtogroup fmi1_import_variables Functions for handling variable definitions
     @}
-    \addtogroup fmi1_import_variables Functions for handling variable definitions.
+    \addtogroup fmi1_import_variables Functions for handling variable definitions
     \brief All the functions in this group take a pointer to ::fmi1_import_variable_t as a parameter.
     A variable pointer may be obtained via a \ref fmi1_import_varlist module or via functions
     fmi1_import_get_variable_by_name() and fmi1_import_get_variable_by_vr().

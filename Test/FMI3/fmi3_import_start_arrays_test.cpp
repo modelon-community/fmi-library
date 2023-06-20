@@ -12,6 +12,7 @@
     You should have received a copy of the FMILIB_License.txt file
     along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 */
+
 #include <cstdio>
 #include <cstdlib>
 #include <cstdarg>

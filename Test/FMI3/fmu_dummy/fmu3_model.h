@@ -1,18 +1,16 @@
 /*
-Copyright (C) 2012-2023 Modelon AB
+    Copyright (C) 2023 Modelon AB
 
-This program is free software: you can redistribute it and/or modify
-it under the terms of the BSD style license.
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the BSD style license.
 
-the Free Software Foundation, version 3 of the License.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    FMILIB_License.txt file for more details.
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-FMILIB_License.txt file for more details.
-
-You should have received a copy of the FMILIB_License.txt file
-along with this program. If not, contact Modelon AB <http://www.modelon.com>.
+    You should have received a copy of the FMILIB_License.txt file
+    along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 */
 
 #ifndef FMU3_MODEL_H_

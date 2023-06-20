@@ -230,7 +230,7 @@ typedef enum fmi3_capabilities_enu_t {
     FMI3_ME_CAPABILITIES(FMI3_EXPAND_ME_CAPABILITIES_ENU)
     FMI3_CS_CAPABILITIES(FMI3_EXPAND_CS_CAPABILITIES_ENU)
     FMI3_SE_CAPABILITIES(FMI3_EXPAND_SE_CAPABILITIES_ENU)
-    fmi3_capabilities_Num
+    fmi3_capabilities_num
 } fmi3_capabilities_enu_t;
 
 /** \brief Convert capability flag to a string

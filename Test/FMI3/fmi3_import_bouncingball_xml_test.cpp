@@ -250,7 +250,7 @@ void printVariableInfo(fmi3_import_t* fmu,
 void printCapabilitiesInfo(fmi3_import_t* fmu) {
     size_t i;
 
-    for (i = 0; i < fmi3_capabilities_Num; ++i) {
+    for (i = 0; i < fmi3_capabilities_num; ++i) {
         printf("%s = %u\n",
             fmi3_capability_to_string((fmi3_capabilities_enu_t)i),
             fmi3_import_get_capability(fmu, (fmi3_capabilities_enu_t)i));

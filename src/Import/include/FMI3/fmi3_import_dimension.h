@@ -48,6 +48,8 @@ extern "C" {
 
 /** \brief Opaque dimension data type */
 typedef struct fmi3_xml_dimension_t fmi3_import_dimension_t;
+/** \brief Opaque dimension list data type */
+typedef struct fmi3_import_dimension_list_t fmi3_import_dimension_list_t;
 
 /** \brief Checks if the dimension contains the valueReference attribute */
 FMILIB_EXPORT int fmi3_import_get_dimension_has_vr(fmi3_import_dimension_t*);

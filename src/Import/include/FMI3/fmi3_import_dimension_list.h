@@ -35,10 +35,13 @@ extern "C" {
 
 /**
     \addtogroup fmi3_import_dimlist
-    \brief dimension lists are provided to handle sets of dimensions.
+    \brief Dimension lists are provided to handle sets of dimensions.
     Note that dimension lists are allocated dynamically and must be freed when not needed any longer.
     @{ 
  */
+
+/** \brief Opaque dimension list data type */
+typedef struct fmi3_import_dimension_list_t fmi3_import_dimension_list_t;
 
 /** \brief Allocate an empty list (internal only) */
 fmi3_import_dimension_list_t* fmi3_import_alloc_dimension_list(fmi3_import_t* fmu, fmi3_import_variable_t* v);

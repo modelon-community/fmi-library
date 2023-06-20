@@ -437,7 +437,7 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_set_binary(fmi3_import_t* fmu, const fmi
  * @param fmu C-API struct that has succesfully loaded the FMI function.
  * @param vr Array of value references.
  * @param nvr Number of array elements.
- * @param value (Output) Array of variable values.
+ * @param[out] value  Array of variable values.
  * @param nValues Total number of variable values, i.e. the number of elements in each array + the number of scalar variables.
  * @return FMI status.
  */
@@ -449,7 +449,7 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_get_float64(fmi3_import_t* fmu, const fm
  * @param fmu C-API struct that has succesfully loaded the FMI function.
  * @param vr Array of value references.
  * @param nvr Number of array elements.
- * @param value (Output) Array of variable values.
+ * @param[out] value  Array of variable values.
  * @param nValues Total number of variable values, i.e. the number of elements in each array + the number of scalar variables.
  * @return FMI status.
  */
@@ -462,7 +462,7 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_get_float32(fmi3_import_t* fmu, const fm
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
  * @param vr Array of value references.
  * @param nvr Number of array elements.
- * @param value (Output) Array of variable values.
+ * @param[out] value  Array of variable values.
  * @param nValues Total number of variable values, i.e. the number of elements in each array + the number of scalar variables.
  * @return FMI status.
  */
@@ -474,7 +474,7 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_get_int64(fmi3_import_t* fmu, const fmi3
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
  * @param vr Array of value references.
  * @param nvr Number of array elements.
- * @param value (Output) Array of variable values.
+ * @param[out] value  Array of variable values.
  * @param nValues Total number of variable values, i.e. the number of elements in each array + the number of scalar variables.
  * @return FMI status.
  */
@@ -486,7 +486,7 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_get_int32(fmi3_import_t* fmu, const fmi3
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
  * @param vr Array of value references.
  * @param nvr Number of array elements.
- * @param value (Output) Array of variable values.
+ * @param[out] value  Array of variable values.
  * @param nValues Total number of variable values, i.e. the number of elements in each array + the number of scalar variables.
  * @return FMI status.
  */
@@ -498,7 +498,7 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_get_int16(fmi3_import_t* fmu, const fmi3
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
  * @param vr Array of value references.
  * @param nvr Number of array elements.
- * @param value (Output) Array of variable values.
+ * @param[out] value  Array of variable values.
  * @param nValues Total number of variable values, i.e. the number of elements in each array + the number of scalar variables.
  * @return FMI status.
  */
@@ -510,7 +510,7 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_get_int8(fmi3_import_t* fmu, const fmi3_
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
  * @param vr Array of value references.
  * @param nvr Number of array elements.
- * @param value (Output) Array of variable values.
+ * @param[out] value  Array of variable values.
  * @param nValues Total number of variable values, i.e. the number of elements in each array + the number of scalar variables.
  * @return FMI status.
  */
@@ -522,7 +522,7 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_get_uint64(fmi3_import_t* fmu, const fmi
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
  * @param vr Array of value references.
  * @param nvr Number of array elements.
- * @param value (Output) Array of variable values.
+ * @param[out] value  Array of variable values.
  * @param nValues Total number of variable values, i.e. the number of elements in each array + the number of scalar variables.
  * @return FMI status.
  */
@@ -534,7 +534,7 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_get_uint32(fmi3_import_t* fmu, const fmi
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
  * @param vr Array of value references.
  * @param nvr Number of array elements.
- * @param value (Output) Array of variable values.
+ * @param[out] value  Array of variable values.
  * @param nValues Total number of variable values, i.e. the number of elements in each array + the number of scalar variables.
  * @return FMI status.
  */
@@ -546,7 +546,7 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_get_uint16(fmi3_import_t* fmu, const fmi
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
  * @param vr Array of value references.
  * @param nvr Number of array elements.
- * @param value (Output) Array of variable values.
+ * @param[out] value  Array of variable values.
  * @param nValues Total number of variable values, i.e. the number of elements in each array + the number of scalar variables.
  * @return FMI status.
  */
@@ -558,7 +558,7 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_get_uint8(fmi3_import_t* fmu, const fmi3
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
  * @param vr Array of value references.
  * @param nvr Number of array elements.
- * @param value (Output) Array of variable values.
+ * @param[out] value  Array of variable values.
  * @param nValues Total number of variable values, i.e. the number of elements in each array + the number of scalar variables.
  * @return FMI status.
  */
@@ -571,7 +571,7 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_get_boolean(fmi3_import_t* fmu, const fm
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
  * @param vr Array of value references.
  * @param nvr Number of array elements.
- * @param value (Output) Array of variable values.
+ * @param[out] value  Array of variable values.
  * @param nValues Total number of variable values, i.e. the number of elements in each array + the number of scalar variables.
  * @return FMI status.
  */
@@ -584,8 +584,8 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_get_string(fmi3_import_t* fmu, const fmi
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
  * @param vr Array of value references.
  * @param nvr Number of array elements.
- * @param sizes (Output) Array with the actual sizes of the values for binary variables.
- * @param value (Output) Array of variable values.
+ * @param[out] sizes  Array with the actual sizes of the values for binary variables.
+ * @param[out] value  Array of variable values.
  * @param nValues Total number of variable values, i.e. the number of elements in each array + the number of scalar variables.
  * @return FMI status.
  */
@@ -925,8 +925,8 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_set_continuous_states(fmi3_import_t* fmu
  * @param noSetFMUStatePriorToCurrentPoint True if fmiSetFMUState will no
           longer be called for time instants prior to current time in this
           simulation run.
- * @param enterEventMode (Output) Call fmiEnterEventMode indicator.
- * @param terminateSimulation (Output) Terminate simulation indicator.
+ * @param[out] enterEventMode  Call fmiEnterEventMode indicator.
+ * @param[out] terminateSimulation  Terminate simulation indicator.
  * @return FMI status.
  */
 FMILIB_EXPORT fmi3_status_t fmi3_import_completed_integrator_step(fmi3_import_t* fmu,
@@ -937,7 +937,7 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_completed_integrator_step(fmi3_import_t*
  * \brief Wrapper for the FMI function fmiGetDerivatives(...)
  *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
- * @param derivatives (Output) Array of the derivatives.
+ * @param[out] derivatives  Array of the derivatives.
  * @param nx Number of derivatives.
  * @return FMI status.
  */
@@ -947,7 +947,7 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_get_derivatives(fmi3_import_t* fmu, fmi3
  * \brief Wrapper for the FMI function fmiGetEventIndicators(...)
  *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
- * @param eventIndicators (Output) The event indicators.
+ * @param[out] eventIndicators  The event indicators.
  * @param ni Number of event indicators.
  * @return FMI status.
  */
@@ -957,7 +957,7 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_get_event_indicators(fmi3_import_t* fmu,
  * \brief Wrapper for the FMI function fmiGetContinuousStates(...)
  *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
- * @param x (Output) Array of state values.
+ * @param[out] x  Array of state values.
  * @param nx Number of states.
  * @return FMI status.
  */
@@ -967,7 +967,7 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_get_continuous_states(fmi3_import_t* fmu
  * \brief Wrapper for the FMI function fmiGetNominalsOfContinuousStates(...)
  *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
- * @param nominals (Output) The nominal values.
+ * @param[out] nominals  The nominal values.
  * @param nx Number of nominal values.
  * @return FMI status.
  */
@@ -978,7 +978,7 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_get_nominals_of_continuous_states(fmi3_i
  * \brief Wrapper for the FMI function fmi3GetNumberOfEventIndicators(...)
  *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
- * @param nz (Output arg) Number of event indicators.
+ * @param[out] nz  Number of event indicators.
  * @return FMI status.
  */
 FMILIB_EXPORT fmi3_status_t fmi3_import_get_number_of_event_indicators(fmi3_import_t* fmu, size_t* nz);
@@ -989,7 +989,7 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_get_number_of_event_indicators(fmi3_impo
  * examined. The returned value is expected to be the same.
  *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
- * @param nx (Output arg) Number of continuous states.
+ * @param[out] nx  Number of continuous states.
  * @return FMI status.
  */
 FMILIB_EXPORT fmi3_status_t fmi3_import_get_number_of_continuous_states(fmi3_import_t* fmu, size_t* nx);
@@ -1037,10 +1037,10 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_get_output_derivatives(
  * @param noSetFMUStatePriorToCurrentPoint Indicates that the master will not cal SetFMUState to a time prior to
  *        currentCommunicationPoint.
  * @param eventHandlingNeeded Indicates that an event was encountered by the FMU at lastSuccessfulTime.
- * @param terminate (Output arg) If the FMU requests the simulation to be terminated (since the FMU reached end of
+ * @param[out] terminate  If the FMU requests the simulation to be terminated (since the FMU reached end of
  *        simulation time - not due to internal error).
- * @param earlyReturn (Output arg) If the FMU returns early.
- * @param lastSuccessfulTime (Output arg) The internal FMU time when this function returned.
+ * @param[out] earlyReturn  If the FMU returns early.
+ * @param[out] lastSuccessfulTime  The internal FMU time when this function returned.
  * @return FMI status.
  */
 FMILIB_EXPORT fmi3_status_t fmi3_import_do_step(

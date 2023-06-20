@@ -36,27 +36,27 @@
 
 
 int annotation_start_handle(void *context, const char *parentName, void *parent, const char *elm, const char **attr) {
-	int i = 0;
-	printf("Annotation element %s start (tool: %s, parent:%s)\n", elm, parentName,
-		parent?fmi3_import_get_variable_name((fmi3_import_variable_t*)parent):"model");
-	while(attr[i]) {
-		printf("Attribute %s = %s\n", attr[i], attr[i+1]);
-		i+=2;
-	}
-	printf("Annotation data:\n");
-	return 0;
+    int i = 0;
+    printf("Annotation element %s start (tool: %s, parent:%s)\n", elm, parentName,
+        parent?fmi3_import_get_variable_name((fmi3_import_variable_t*)parent):"model");
+    while(attr[i]) {
+        printf("Attribute %s = %s\n", attr[i], attr[i+1]);
+        i+=2;
+    }
+    printf("Annotation data:\n");
+    return 0;
 }
 
 int annotation_data_handle(void* context, const char *s, int len) {
-	int i;
-	for (i = 0; i < len; i++)
-		printf("%c", s[i]);
-	return 0;
+    int i;
+    for (i = 0; i < len; i++)
+        printf("%c", s[i]);
+    return 0;
 }
 
 int annotation_end_handle(void *context, const char *elm) {
-	printf("\nAnnotation element %s end\n", elm);
-	return 0;
+    printf("\nAnnotation element %s end\n", elm);
+    return 0;
 }
 
 /** \brief XML callbacks are used to process parts of XML that are not handled by the library */
@@ -100,13 +100,13 @@ void printTypeInfo(fmi3_import_variable_typedef_t* vt) {
         printf("Min %g, max %g, nominal %g\n", min, max, nom);
 
         if (u) {
-			char buf[1000];
-			fmi3_SI_base_unit_exp_to_string(fmi3_import_get_SI_unit_exponents(u), 1000, buf);
+            char buf[1000];
+            fmi3_SI_base_unit_exp_to_string(fmi3_import_get_SI_unit_exponents(u), 1000, buf);
             printf("Unit: %s, base unit %s, factor %g, offset %g\n",
-				fmi3_import_get_unit_name(u),
-				buf,
-				fmi3_import_get_SI_unit_factor(u),
-				fmi3_import_get_SI_unit_offset(u));
+                fmi3_import_get_unit_name(u),
+                buf,
+                fmi3_import_get_SI_unit_factor(u),
+                fmi3_import_get_SI_unit_offset(u));
         }
         if (du) {
             printf("Display unit: %s, factor: %g, offset: %g, is relative: %s\n",
@@ -142,15 +142,15 @@ void printTypeInfo(fmi3_import_variable_typedef_t* vt) {
             ni = fmi3_import_get_enum_type_size(et);
             printf("There are %d items \n",ni);
             for (i = 1; i <= ni; i++) {
-				int val = fmi3_import_get_enum_type_item_value(et, i);
-				const char* str = fmi3_import_get_enum_type_value_name(et, val);
-				const char* itnm = fmi3_import_get_enum_type_item_name(et, i);
-				REQUIRE(strcmp(itnm, str) == 0);
+                int val = fmi3_import_get_enum_type_item_value(et, i);
+                const char* str = fmi3_import_get_enum_type_value_name(et, val);
+                const char* itnm = fmi3_import_get_enum_type_item_name(et, i);
+                REQUIRE(strcmp(itnm, str) == 0);
                 printf("[%d] %s=%d (%s) \n", i,
-					itnm,
-					val,
-					fmi3_import_get_enum_type_item_description(et, i));
-			}
+                    itnm,
+                    val,
+                    fmi3_import_get_enum_type_item_description(et, i));
+            }
         }
         break;
     }
@@ -248,71 +248,71 @@ void printVariableInfo(fmi3_import_t* fmu,
 }
 
 void printCapabilitiesInfo(fmi3_import_t* fmu) {
-	size_t i;
+    size_t i;
 
-	for (i = 0; i < fmi3_capabilities_Num; ++i) {
-		printf("%s = %u\n",
-			fmi3_capability_to_string((fmi3_capabilities_enu_t)i),
-			fmi3_import_get_capability(fmu, (fmi3_capabilities_enu_t)i));
-	}
+    for (i = 0; i < fmi3_capabilities_Num; ++i) {
+        printf("%s = %u\n",
+            fmi3_capability_to_string((fmi3_capabilities_enu_t)i),
+            fmi3_import_get_capability(fmu, (fmi3_capabilities_enu_t)i));
+    }
 }
 
-void printDependenciesInfo(	fmi3_import_t* fmu, fmi3_import_variable_list_t* rows, fmi3_import_variable_list_t* cols, size_t* start, size_t *dep, char* factor) {
-	size_t i, j, nr;
-	if (!rows || !cols || !start) {
-		printf("Dependencies are not available\n");
-		if (rows) {
-			nr = fmi3_import_get_variable_list_size(rows);
-			for (i = 0; i < nr; i++) {
-				printf("\t%s\n",fmi3_import_get_variable_name(fmi3_import_get_variable(rows, i)));
-			}
-		}
-		return;
-	}
-	nr = fmi3_import_get_variable_list_size(rows);
-	for (i = 0; i < nr; i++) {
-		if (start[i] == start[i+1]) {
-			printf("\t%s has no dependencies\n",fmi3_import_get_variable_name(fmi3_import_get_variable(rows, i)));
-		}
-		else if ((start[i] + 1 == start[i+1]) && (dep[start[i]] == 0)) {
-			printf("\t%s depends on all\n",fmi3_import_get_variable_name(fmi3_import_get_variable(rows, i)));
-		}
-		else {
-			printf("\t%s depends on:\n",fmi3_import_get_variable_name(fmi3_import_get_variable(rows, i)));
-			for (j = start[i]; j < start[i+1]; j++) {
-				printf("\t\t%s (factor kind: %s)\n",fmi3_import_get_variable_name(fmi3_import_get_variable(cols, dep[j]-1)),
-					fmi3_dependencies_kind_to_string((fmi3_dependencies_kind_enu_t)factor[j]));
-			}
-		}
-	}
+void printDependenciesInfo(fmi3_import_t* fmu, fmi3_import_variable_list_t* rows, fmi3_import_variable_list_t* cols, size_t* start, size_t *dep, char* factor) {
+    size_t i, j, nr;
+    if (!rows || !cols || !start) {
+        printf("Dependencies are not available\n");
+        if (rows) {
+            nr = fmi3_import_get_variable_list_size(rows);
+            for (i = 0; i < nr; i++) {
+                printf("\t%s\n",fmi3_import_get_variable_name(fmi3_import_get_variable(rows, i)));
+            }
+        }
+        return;
+    }
+    nr = fmi3_import_get_variable_list_size(rows);
+    for (i = 0; i < nr; i++) {
+        if (start[i] == start[i+1]) {
+            printf("\t%s has no dependencies\n",fmi3_import_get_variable_name(fmi3_import_get_variable(rows, i)));
+        }
+        else if ((start[i] + 1 == start[i+1]) && (dep[start[i]] == 0)) {
+            printf("\t%s depends on all\n",fmi3_import_get_variable_name(fmi3_import_get_variable(rows, i)));
+        }
+        else {
+            printf("\t%s depends on:\n",fmi3_import_get_variable_name(fmi3_import_get_variable(rows, i)));
+            for (j = start[i]; j < start[i+1]; j++) {
+                printf("\t\t%s (factor kind: %s)\n",fmi3_import_get_variable_name(fmi3_import_get_variable(cols, dep[j]-1)),
+                    fmi3_dependencies_kind_to_string((fmi3_dependencies_kind_enu_t)factor[j]));
+            }
+        }
+    }
 }
 
 static void test_parse_bouncingball(const char* xmldir, bool expectParseFailure) {
     clock_t start, stop;
     double t = 0.0;
-	jm_callbacks callbacks;
-	fmi_import_context_t* context;
+    jm_callbacks callbacks;
+    fmi_import_context_t* context;
     int res = 0;
     size_t n_states;
     size_t n_event_indicators;
 
-	fmi3_import_t* fmu;
+    fmi3_import_t* fmu;
 
     printf("Testing XML in directory: %s\n", xmldir);
 
-	callbacks.malloc = malloc;
+    callbacks.malloc = malloc;
     callbacks.calloc = calloc;
     callbacks.realloc = realloc;
     callbacks.free = free;
     callbacks.logger = mylogger;
     callbacks.context = 0;
-	callbacks.log_level = jm_log_level_debug;
+    callbacks.log_level = jm_log_level_debug;
 
 #ifdef FMILIB_GENERATE_BUILD_STAMP
-	printf("Library build stamp:\n%s\n", fmilib_get_build_stamp());
+    printf("Library build stamp:\n%s\n", fmilib_get_build_stamp());
 #endif
 
-	context = fmi_import_allocate_context(&callbacks);
+    context = fmi_import_allocate_context(&callbacks);
 
     /* time the parsing */
     start = clock();
@@ -383,8 +383,8 @@ static void test_parse_bouncingball(const char* xmldir, bool expectParseFailure)
         printf("There are %u tool annotation records \n", (unsigned)nv);
         for (i = 0; i < nv; i++) {
             printf("Vendor name [%u] %s", (unsigned)i, fmi3_import_get_vendor_name(fmu, i));
-		}
-	}
+        }
+    }
     {
         fmi3_import_unit_definitions_t* ud = fmi3_import_get_unit_definitions(fmu);
         if (ud) {
@@ -393,18 +393,18 @@ static void test_parse_bouncingball(const char* xmldir, bool expectParseFailure)
 
             for (i = 0; i < nu; i++) {
                 fmi3_import_unit_t* u = fmi3_import_get_unit(ud, i);
-				char buf[1000];
+                char buf[1000];
                 if (!u) {
                     printf("Error getting unit for index %d (%s)\n", i, fmi3_import_get_last_error(fmu));
                     break;
                 }
-				fmi3_SI_base_unit_exp_to_string(fmi3_import_get_SI_unit_exponents(u), 1000, buf);
+                fmi3_SI_base_unit_exp_to_string(fmi3_import_get_SI_unit_exponents(u), 1000, buf);
                 printf("Unit [%d] is %s, base unit %s, factor %g, offset %g, it has %d display units\n",
-					i, fmi3_import_get_unit_name(u),
-					buf,
-					fmi3_import_get_SI_unit_factor(u),
-					fmi3_import_get_SI_unit_offset(u),
-					fmi3_import_get_unit_display_unit_number(u));
+                    i, fmi3_import_get_unit_name(u),
+                    buf,
+                    fmi3_import_get_SI_unit_factor(u),
+                    fmi3_import_get_SI_unit_offset(u),
+                    fmi3_import_get_unit_display_unit_number(u));
             }
         }
         else
@@ -432,8 +432,8 @@ static void test_parse_bouncingball(const char* xmldir, bool expectParseFailure)
     {
         size_t nv, i;
         fmi3_import_variable_list_t* vl = fmi3_import_get_variable_list(fmu, 0);
-		fmi3_import_variable_list_t* ders = fmi3_import_get_continuous_state_derivatives_list(fmu);
-		const fmi3_value_reference_t* vrl = fmi3_import_get_value_reference_list(vl);
+        fmi3_import_variable_list_t* ders = fmi3_import_get_continuous_state_derivatives_list(fmu);
+        const fmi3_value_reference_t* vrl = fmi3_import_get_value_reference_list(vl);
 
         REQUIRE(vl);
 
@@ -441,7 +441,7 @@ static void test_parse_bouncingball(const char* xmldir, bool expectParseFailure)
         printf("There are %u variables in total \n",(unsigned)nv);
         for (i = 0; i < nv; i++) {
             fmi3_import_variable_t* var = fmi3_import_get_variable(vl, i);
-			REQUIRE(vrl[i] == fmi3_import_get_variable_vr(var));
+            REQUIRE(vrl[i] == fmi3_import_get_variable_vr(var));
             REQUIRE(var != nullptr);
             printVariableInfo(fmu, var);
             testVariableSearch(fmu, var);
@@ -450,7 +450,7 @@ static void test_parse_bouncingball(const char* xmldir, bool expectParseFailure)
         fmi3_import_free_variable_list(ders);
     }
 
-	fmi3_import_free(fmu);
+    fmi3_import_free(fmu);
 }
 
 TEST_CASE("Test exercising the XML API on BouncingBall") {

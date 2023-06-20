@@ -37,10 +37,10 @@ extern "C" {
 FMILIB_EXPORT char* fmi_import_mk_temp_dir(jm_callbacks* cb, const char* systemTempDir, const char* tempPrefix);
 
 /**
-\brief Remove directory and all it contents.
+    \brief Remove directory and all it contents.
     @param cb - callbacks for memory allocation and logging. Default callbacks are used if this parameter is NULL.
     @param dir - path to be removed.
-    @return Statuc success or error.
+    @return Status: success or error.
 */
 FMILIB_EXPORT jm_status_enu_t fmi_import_rmdir(jm_callbacks* cb, const char* dir);
 

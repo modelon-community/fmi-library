@@ -54,7 +54,7 @@ extern "C" {
  *      \addtogroup fmi3_import_gen General information retrieval
  *      \addtogroup fmi3_import_capi Interface to the standard FMI 3.0 "C" API
  *      @{
- *           \brief Convenient functions for calling the FMI functions. This interface wrappes the "C" API.
+ *           \brief Convenient functions for calling the FMI functions. This interface wraps the "C" API.
  *      @}
  * @}
  */
@@ -88,8 +88,8 @@ FMILIB_EXPORT const char* fmi3_import_get_last_error(fmi3_import_t* fmu);
 FMILIB_EXPORT int fmi3_import_clear_last_error(fmi3_import_t* fmu);
 
 /**
-\brief Release the memory allocated
-@param fmu An fmu object as returned by fmi3_import_parse_xml().
+    \brief Release the memory allocated
+    @param fmu An fmu object as returned by fmi3_import_parse_xml().
 */
 FMILIB_EXPORT void fmi3_import_free(fmi3_import_t* fmu);
 /** @}
@@ -100,8 +100,8 @@ FMILIB_EXPORT void fmi3_import_free(fmi3_import_t* fmu);
  * @{
 */
 /**
-\brief Get model name.
-@param fmu An fmu object as returned by fmi3_import_parse_xml().
+    \brief Get model name.
+    @param fmu An fmu object as returned by fmi3_import_parse_xml().
 */
 FMILIB_EXPORT const char* fmi3_import_get_model_name(fmi3_import_t* fmu);
 
@@ -109,75 +109,75 @@ FMILIB_EXPORT const char* fmi3_import_get_model_name(fmi3_import_t* fmu);
 FMILIB_EXPORT unsigned int fmi3_import_get_capability(fmi3_import_t* , fmi3_capabilities_enu_t id);
 
 /**
-\brief Get model identifier for ModelExchange.
-@param fmu An fmu object as returned by fmi3_import_parse_xml().
+    \brief Get model identifier for ModelExchange.
+    @param fmu An fmu object as returned by fmi3_import_parse_xml().
 */
 FMILIB_EXPORT const char* fmi3_import_get_model_identifier_ME(fmi3_import_t* fmu);
 
 /**
-\brief Get model identifier for CoSimulation.
-@param fmu An fmu object as returned by fmi3_import_parse_xml().
+    \brief Get model identifier for CoSimulation.
+    @param fmu An fmu object as returned by fmi3_import_parse_xml().
 */
 FMILIB_EXPORT const char* fmi3_import_get_model_identifier_CS(fmi3_import_t* fmu);
 
 /**
-\brief Get model identifier for ScheduledExecution.
-@param fmu An fmu object as returned by fmi3_import_parse_xml().
+    \brief Get model identifier for ScheduledExecution.
+    @param fmu An fmu object as returned by fmi3_import_parse_xml().
 */
 FMILIB_EXPORT const char* fmi3_import_get_model_identifier_SE(fmi3_import_t* fmu);
 
 /**
-\brief Get FMU instantiationToken.
-@param fmu An fmu object as returned by fmi3_import_parse_xml().
+    \brief Get FMU instantiationToken.
+    @param fmu An fmu object as returned by fmi3_import_parse_xml().
 */
 FMILIB_EXPORT const char* fmi3_import_get_instantiation_token(fmi3_import_t* fmu);
 
 /**
-\brief Get FMU description.
-@param fmu An fmu object as returned by fmi3_import_parse_xml().
+    \brief Get FMU description.
+    @param fmu An fmu object as returned by fmi3_import_parse_xml().
 */
 FMILIB_EXPORT const char* fmi3_import_get_description(fmi3_import_t* fmu);
 
 /**
-\brief Get FMU author.
-@param fmu An fmu object as returned by fmi3_import_parse_xml().
+    \brief Get FMU author.
+    @param fmu An fmu object as returned by fmi3_import_parse_xml().
 */
 FMILIB_EXPORT const char* fmi3_import_get_author(fmi3_import_t* fmu);
 
 /**
-\brief Get FMU copyright information.
-@param fmu An fmu object as returned by fmi3_import_parse_xml().
+    \brief Get FMU copyright information.
+    @param fmu An fmu object as returned by fmi3_import_parse_xml().
 */
 FMILIB_EXPORT const char* fmi3_import_get_copyright(fmi3_import_t* fmu);
 
 /**
-\brief Get FMU license information.
-@param fmu An fmu object as returned by fmi3_import_parse_xml().
+    \brief Get FMU license information.
+    @param fmu An fmu object as returned by fmi3_import_parse_xml().
 */
 FMILIB_EXPORT const char* fmi3_import_get_license(fmi3_import_t* fmu);
 
 /** \brief Get FMU version.
-@param fmu An fmu object as returned by fmi3_import_parse_xml().
+    @param fmu An fmu object as returned by fmi3_import_parse_xml().
 */
 FMILIB_EXPORT const char* fmi3_import_get_model_version(fmi3_import_t* fmu);
 
 /** \brief Get FMI standard version (always 3.0).
-@param fmu An fmu object as returned by fmi3_import_parse_xml().
+    @param fmu An fmu object as returned by fmi3_import_parse_xml().
 */
 FMILIB_EXPORT const char* fmi3_import_get_model_standard_version(fmi3_import_t* fmu);
 
 /** \brief Get FMU generation tool.
-@param fmu An fmu object as returned by fmi3_import_parse_xml().
+    @param fmu An fmu object as returned by fmi3_import_parse_xml().
 */
 FMILIB_EXPORT const char* fmi3_import_get_generation_tool(fmi3_import_t* fmu);
 
 /** \brief Get FMU generation date and time.
-@param fmu An fmu object as returned by fmi3_import_parse_xml().
+    @param fmu An fmu object as returned by fmi3_import_parse_xml().
 */
 FMILIB_EXPORT const char* fmi3_import_get_generation_date_and_time(fmi3_import_t* fmu);
 
 /** \brief Get variable naming convention used.
-@param fmu An fmu object as returned by fmi3_import_parse_xml().
+    @param fmu An fmu object as returned by fmi3_import_parse_xml().
 */
 FMILIB_EXPORT fmi3_variable_naming_convension_enu_t fmi3_import_get_naming_convention(fmi3_import_t* fmu);
 
@@ -255,8 +255,8 @@ FMILIB_EXPORT fmi3_import_variable_list_t* fmi3_import_get_variable_list(fmi3_im
 
 /** \brief Create a variable list with a single variable.
 
-@param fmu An FMU object that this variable list will reference.
-@param v A variable.
+    @param fmu An FMU object that this variable list will reference.
+    @param v A variable.
 */
 FMILIB_EXPORT fmi3_import_variable_list_t* fmi3_import_create_var_list(fmi3_import_t* fmu, fmi3_import_variable_t* v);
 

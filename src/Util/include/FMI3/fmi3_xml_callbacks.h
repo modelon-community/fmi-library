@@ -44,7 +44,7 @@ typedef struct fmi3_xml_callbacks_t fmi3_xml_callbacks_t;
 *   @param attr - attributes (names and values).
 *  The function should return 0 on success or error code on exit (in which case parsing will be aborted).
 */
-typedef int (*fmi3_xml_element_start_handle_ft)(    void *context, const char *toolName, void *parent, const char *elm, const char **attr);
+typedef int (*fmi3_xml_element_start_handle_ft)(void* context, const char *toolName, void* parent, const char *elm, const char **attr);
 
 /** \brief Handle data of an XML element within tool annotation in a SAX parser.
 *
@@ -61,7 +61,7 @@ typedef int (*fmi3_xml_element_data_handle_ft)(void* context, const char *s, int
 *  @param elm - name of the element.
 *  The function should return 0 on success or error code on exit (in which case parsing will be aborted).
 */
-typedef int (*fmi3_xml_element_end_handle_ft)(void *context, const char *elm);
+typedef int (*fmi3_xml_element_end_handle_ft)(void* context, const char *elm);
 
 /** \brief XML callbacks are used to process parts of XML that are not handled by the library */
 struct fmi3_xml_callbacks_t {

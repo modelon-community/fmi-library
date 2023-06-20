@@ -34,7 +34,7 @@ extern "C" {
 */
 
 /** \addtogroup fmi1_capi Standard FMI 1.0 "C" API
- * \brief The "C" API loads and frees the FMI functions and it is through theise functions all the communcation with the FMU occures. The FMI import library wrappes these functions in a more convenient way.
+ * \brief The "C" API loads and frees the FMI functions and it is through these functions all the communcation with the FMU occurs. The FMI import library wraps these functions in a more convenient way.
  *  @{
  */
 
@@ -185,7 +185,7 @@ fmi1_status_t fmi1_capi_set_string(fmi1_capi_t* fmu, const fmi1_value_reference_
  * @param fmu C-API struct that has succesfully loaded the FMI function.
  * @param vr Array of value references.
  * @param nvr Number of array elements.
- * @param value (Output)Array of variable values.
+ * @param[out] value Array of variable values.
  * @return FMI status.
  */
 fmi1_status_t fmi1_capi_get_real(fmi1_capi_t* fmu, const fmi1_value_reference_t vr[], size_t nvr, fmi1_real_t    value[]);
@@ -196,7 +196,7 @@ fmi1_status_t fmi1_capi_get_real(fmi1_capi_t* fmu, const fmi1_value_reference_t 
  * @param fmu C-API struct that has succesfully loaded the FMI function.
  * @param vr Array of value references.
  * @param nvr Number of array elements.
- * @param value (Output)Array of variable values.
+ * @param[out] value Array of variable values.
  * @return FMI status.
  */
 fmi1_status_t fmi1_capi_get_integer(fmi1_capi_t* fmu, const fmi1_value_reference_t vr[], size_t nvr, fmi1_integer_t value[]);
@@ -207,7 +207,7 @@ fmi1_status_t fmi1_capi_get_integer(fmi1_capi_t* fmu, const fmi1_value_reference
  * @param fmu C-API struct that has succesfully loaded the FMI function.
  * @param vr Array of value references.
  * @param nvr Number of array elements.
- * @param value (Output)Array of variable values.
+ * @param[out] value Array of variable values.
  * @return FMI status.
  */
 fmi1_status_t fmi1_capi_get_boolean(fmi1_capi_t* fmu, const fmi1_value_reference_t vr[], size_t nvr, fmi1_boolean_t value[]);
@@ -218,7 +218,7 @@ fmi1_status_t fmi1_capi_get_boolean(fmi1_capi_t* fmu, const fmi1_value_reference
  * @param fmu C-API struct that has succesfully loaded the FMI function.
  * @param vr Array of value references.
  * @param nvr Number of array elements.
- * @param value (Output)Array of variable values.
+ * @param[out] value Array of variable values.
  * @return FMI status.
  */
 fmi1_status_t fmi1_capi_get_string(fmi1_capi_t* fmu, const fmi1_value_reference_t vr[], size_t nvr, fmi1_string_t  value[]);
@@ -278,7 +278,7 @@ fmi1_status_t fmi1_capi_set_continuous_states(fmi1_capi_t* fmu, const fmi1_real_
  * \brief Calls the FMI function fmiCompletedIntegratorStep(...)
  *
  * @param fmu C-API struct that has succesfully loaded the FMI function.
- * @param callEventUpdate (Output) Call fmiEventUpdate indicator.
+ * @param[out] callEventUpdate  Call fmiEventUpdate indicator.
  * @return FMI status.
  */
 fmi1_status_t fmi1_capi_completed_integrator_step(fmi1_capi_t* fmu, fmi1_boolean_t* callEventUpdate);
@@ -289,7 +289,7 @@ fmi1_status_t fmi1_capi_completed_integrator_step(fmi1_capi_t* fmu, fmi1_boolean
  * @param fmu C-API struct that has succesfully loaded the FMI function.
  * @param toleranceControlled Enable or disable the use of relativeTolerance in the FMU.
  * @param relativeTolerance A relative tolerance used in the FMU.
- * @param eventInfo (Output) fmiEventInfo struct.
+ * @param[out] eventInfo  fmiEventInfo struct.
  * @return FMI status.
  */
 fmi1_status_t fmi1_capi_initialize(fmi1_capi_t* fmu, fmi1_boolean_t toleranceControlled, fmi1_real_t relativeTolerance, fmi1_event_info_t* eventInfo);
@@ -298,7 +298,7 @@ fmi1_status_t fmi1_capi_initialize(fmi1_capi_t* fmu, fmi1_boolean_t toleranceCon
  * \brief Calls the FMI function fmiGetDerivatives(...)
  *
  * @param fmu C-API struct that has succesfully loaded the FMI function.
- * @param derivatives (Output) Array of the derivatives.
+ * @param[out] derivatives  Array of the derivatives.
  * @param nx Number of derivatives.
  * @return FMI status.
  */
@@ -308,7 +308,7 @@ fmi1_status_t fmi1_capi_get_derivatives(fmi1_capi_t* fmu, fmi1_real_t derivative
  * \brief Calls the FMI function fmiGetEventIndicators(...)
  *
  * @param fmu C-API struct that has succesfully loaded the FMI function.
- * @param eventIndicators (Output) The event indicators.
+ * @param[out] eventIndicators  The event indicators.
  * @param ni Number of event indicators.
  * @return FMI status.
  */
@@ -319,7 +319,7 @@ fmi1_status_t fmi1_capi_get_event_indicators(fmi1_capi_t* fmu, fmi1_real_t event
  *
  * @param fmu C-API struct that has succesfully loaded the FMI function.
  * @param intermediateResults Indicate whether or not the fmiEventUpdate shall return after every internal event interation.
- * @param eventInfo (Output) An fmiEventInfo struct.
+ * @param[out] eventInfo  An fmiEventInfo struct.
  * @return FMI status.
  */
 fmi1_status_t fmi1_capi_eventUpdate(fmi1_capi_t* fmu, fmi1_boolean_t intermediateResults, fmi1_event_info_t* eventInfo);
@@ -328,7 +328,7 @@ fmi1_status_t fmi1_capi_eventUpdate(fmi1_capi_t* fmu, fmi1_boolean_t intermediat
  * \brief Calls the FMI function fmiGetContinuousStates(...)
  *
  * @param fmu C-API struct that has succesfully loaded the FMI function.
- * @param states (Output) Array of state values.
+ * @param[out] states  Array of state values.
  * @param nx Number of states.
  * @return FMI status.
  */
@@ -338,7 +338,7 @@ fmi1_status_t fmi1_capi_get_continuous_states(fmi1_capi_t* fmu, fmi1_real_t stat
  * \brief Calls the FMI function fmiGetNominalContinuousStates(...)
  *
  * @param fmu C-API struct that has succesfully loaded the FMI function.
- * @param x_nominal (Output) The nominal values.
+ * @param[out] x_nominal  The nominal values.
  * @param nx Number of nominal values.
  * @return FMI status.
  */
@@ -348,7 +348,7 @@ fmi1_status_t fmi1_capi_get_nominal_continuous_states(fmi1_capi_t* fmu, fmi1_rea
  * \brief Calls the FMI function fmiGetStateValueReferences(...)
  *
  * @param fmu C-API struct that has succesfully loaded the FMI function.
- * @param vrx (Output) The value-references of the states.
+ * @param[out] vrx  The value-references of the states.
  * @param nx Number of value-references.
  * @return FMI status.
  */
@@ -444,7 +444,7 @@ fmi1_status_t fmi1_capi_set_real_input_derivatives(fmi1_capi_t* fmu, const fmi1_
  * @param vr Array of value references.
  * @param nvr Number of array elements.
  * @param order Array of derivative orders.
- * @param value (Output) Array of variable values.
+ * @param[out] value  Array of variable values.
  * @return FMI status.
  */
 fmi1_status_t fmi1_capi_get_real_output_derivatives(fmi1_capi_t* fmu, const fmi1_value_reference_t vr[], size_t nvr, const fmi1_integer_t order[], fmi1_real_t value[]);
@@ -473,7 +473,7 @@ fmi1_status_t fmi1_capi_do_step(fmi1_capi_t* fmu, fmi1_real_t currentCommunicati
  *
  * @param fmu C-API struct that has succesfully loaded the FMI function.
  * @param s Kind of status to return the value for.
- * @param value (Output) FMI status value.
+ * @param[out] value  FMI status value.
  * @return FMI status.
  */
 fmi1_status_t fmi1_capi_get_status(fmi1_capi_t* fmu, const fmi1_status_kind_t s, fmi1_status_t*  value);
@@ -483,7 +483,7 @@ fmi1_status_t fmi1_capi_get_status(fmi1_capi_t* fmu, const fmi1_status_kind_t s,
  *
  * @param fmu C-API struct that has succesfully loaded the FMI function.
  * @param s Kind of status to return the value for.
- * @param value (Output) FMI real value.
+ * @param[out] value  FMI real value.
  * @return FMI status.
  */
 fmi1_status_t fmi1_capi_get_real_status(fmi1_capi_t* fmu, const fmi1_status_kind_t s, fmi1_real_t*    value);
@@ -493,7 +493,7 @@ fmi1_status_t fmi1_capi_get_real_status(fmi1_capi_t* fmu, const fmi1_status_kind
  *
  * @param fmu C-API struct that has succesfully loaded the FMI function.
  * @param s Kind of status to return the value for.
- * @param value (Output) FMI integer value.
+ * @param[out] value  FMI integer value.
  * @return FMI status.
  */
 fmi1_status_t fmi1_capi_get_integer_status(fmi1_capi_t* fmu, const fmi1_status_kind_t s, fmi1_integer_t* value);
@@ -503,7 +503,7 @@ fmi1_status_t fmi1_capi_get_integer_status(fmi1_capi_t* fmu, const fmi1_status_k
  *
  * @param fmu C-API struct that has succesfully loaded the FMI function.
  * @param s Kind of status to return the value for.
- * @param value (Output) FMI boolean value.
+ * @param[out] value  FMI boolean value.
  * @return FMI status.
  */
 fmi1_status_t fmi1_capi_get_boolean_status(fmi1_capi_t* fmu, const fmi1_status_kind_t s, fmi1_boolean_t* value);
@@ -513,7 +513,7 @@ fmi1_status_t fmi1_capi_get_boolean_status(fmi1_capi_t* fmu, const fmi1_status_k
  *
  * @param fmu C-API struct that has succesfully loaded the FMI function.
  * @param s Kind of status to return the value for.
- * @param value (Output) FMI string value.
+ * @param[out] value  FMI string value.
  * @return FMI status.
  */
 fmi1_status_t fmi1_capi_get_string_status(fmi1_capi_t* fmu, const fmi1_status_kind_t s, fmi1_string_t*  value);

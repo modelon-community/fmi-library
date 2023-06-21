@@ -135,7 +135,6 @@ TEST_CASE("Test array parsing and verify retrieved start values are as expected"
     cb.log_level = jm_log_level_all;
     cb.context   = NULL;
     context = fmi_import_allocate_context(&cb);
-    fmi_import_set_configuration(context, FMI_IMPORT_NAME_CHECK);
     char xmlPath[1000];
     size_t sizeXmlPath = sizeof(xmlPath) / sizeof(char);
 

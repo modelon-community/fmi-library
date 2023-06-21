@@ -698,3 +698,16 @@ TEST_CASE("Invalid previous - self reference") {
 
     fmi3_testutil_import_free(tfmu);
 }
+
+TEST_CASE("Invalid; duplicate variable name") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/variable_test/invalid/duplicate_name";
+
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    REQUIRE(tfmu != nullptr);
+    REQUIRE(tfmu->fmu == nullptr);
+
+    const char* logMsg = "Two variables with the same name 'sameName' found. This is not allowed.";
+    REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
+
+    fmi3_testutil_import_free(tfmu);
+}

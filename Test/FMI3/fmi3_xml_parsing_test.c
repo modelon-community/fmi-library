@@ -101,66 +101,66 @@ void test_variable_naming_conventions(void)
      */
 
     /* Test examples mentioned */
-    // fail_name_check("naming_conventions_xmls/examples/foo");
-    // fail_name_check("naming_conventions_xmls/examples/derderx");
-    // pass_name_check("naming_conventions_xmls/examples/derx2");
+    fail_name_check("naming_conventions_xmls/examples/foo");
+    fail_name_check("naming_conventions_xmls/examples/derderx");
+    pass_name_check("naming_conventions_xmls/examples/derx2");
 
     /* FMI 2.0 standard examples from the documentaiton */
-    // pass_name_check("naming_conventions_xmls/standard/vehicle.engine.speed");
-    // pass_name_check("naming_conventions_xmls/standard/resistor12.u");
-    // pass_name_check("naming_conventions_xmls/standard/v_min");
-    // pass_name_check("naming_conventions_xmls/standard/robot.axis.motor234");
-    // pass_name_check("naming_conventions_xmls/standard/derpipe34.T142");
+    pass_name_check("naming_conventions_xmls/standard/vehicle.engine.speed");
+    pass_name_check("naming_conventions_xmls/standard/resistor12.u");
+    pass_name_check("naming_conventions_xmls/standard/v_min");
+    pass_name_check("naming_conventions_xmls/standard/robot.axis.motor234");
+    pass_name_check("naming_conventions_xmls/standard/derpipe34.T142");
 
     /* Implementation test examples */
-    // fail_name_check("naming_conventions_xmls/implementation/empty");
-    // fail_name_check("naming_conventions_xmls/implementation/-0");
-    // pass_name_check("naming_conventions_xmls/implementation/_0");
-    // pass_name_check("naming_conventions_xmls/implementation/a0");
-    // fail_name_check("naming_conventions_xmls/implementation/0a");
-    // fail_name_check("naming_conventions_xmls/implementation/0");
+    fail_name_check("naming_conventions_xmls/implementation/empty");
+    fail_name_check("naming_conventions_xmls/implementation/-0");
+    pass_name_check("naming_conventions_xmls/implementation/_0");
+    pass_name_check("naming_conventions_xmls/implementation/a0");
+    fail_name_check("naming_conventions_xmls/implementation/0a");
+    fail_name_check("naming_conventions_xmls/implementation/0");
 
     /* q-name tests */
-    // fail_name_check("naming_conventions_xmls/q-name/empty");
-    // pass_name_check("naming_conventions_xmls/q-name/space");
-    // fail_name_check("naming_conventions_xmls/q-name/backslash");
-    // pass_name_check("naming_conventions_xmls/q-name/q-char");
-    // pass_name_check("naming_conventions_xmls/q-name/escape");
-    // fail_name_check("naming_conventions_xmls/q-name/chinese");
+    fail_name_check("naming_conventions_xmls/q-name/empty");
+    pass_name_check("naming_conventions_xmls/q-name/space");
+    fail_name_check("naming_conventions_xmls/q-name/backslash");
+    pass_name_check("naming_conventions_xmls/q-name/q-char");
+    pass_name_check("naming_conventions_xmls/q-name/escape");
+    fail_name_check("naming_conventions_xmls/q-name/chinese");
 
     /* der() tests */
-    // fail_name_check("naming_conventions_xmls/der/dera32");
-    // fail_name_check("naming_conventions_xmls/der/dera12");
-    // pass_name_check("naming_conventions_xmls/der/dera32-no-space");
-    // pass_name_check("naming_conventions_xmls/der/dera");
-    // fail_name_check("naming_conventions_xmls/der/dera-no-closing-parenthesis");
-    // pass_name_check("naming_conventions_xmls/der/somederthing");
-    // pass_name_check("naming_conventions_xmls/der/der0");
-    // fail_name_check("naming_conventions_xmls/der/der2");
-    // fail_name_check("naming_conventions_xmls/der/adera");
+    fail_name_check("naming_conventions_xmls/der/dera32");
+    fail_name_check("naming_conventions_xmls/der/dera12");
+    pass_name_check("naming_conventions_xmls/der/dera32-no-space");
+    pass_name_check("naming_conventions_xmls/der/dera");
+    fail_name_check("naming_conventions_xmls/der/dera-no-closing-parenthesis");
+    pass_name_check("naming_conventions_xmls/der/somederthing");
+    pass_name_check("naming_conventions_xmls/der/der0");
+    fail_name_check("naming_conventions_xmls/der/der2");
+    fail_name_check("naming_conventions_xmls/der/adera");
 
     /* array and hierarchy tests */
-    // pass_name_check("naming_conventions_xmls/array/n0");
-    // fail_name_check("naming_conventions_xmls/array/a1comma");
-    // pass_name_check("naming_conventions_xmls/array/a12345678");
-    // fail_name_check("naming_conventions_xmls/array/a12345678space");
-    // pass_name_check("naming_conventions_xmls/array/a1.a3");
-    // pass_name_check("naming_conventions_xmls/array/a.a123");
-    // fail_name_check("naming_conventions_xmls/array/aspace1");
-    // fail_name_check("naming_conventions_xmls/array/a1space");
-    // fail_name_check("naming_conventions_xmls/array/a1space1");
-    // fail_name_check("naming_conventions_xmls/array/aspacebracket1");
-    // fail_name_check("naming_conventions_xmls/array/a-1");
-    // pass_name_check("naming_conventions_xmls/array/a1");
-    // pass_name_check("naming_conventions_xmls/array/a.a");
-    // pass_name_check("naming_conventions_xmls/array/a");
+    pass_name_check("naming_conventions_xmls/array/n0");
+    fail_name_check("naming_conventions_xmls/array/a1comma");
+    pass_name_check("naming_conventions_xmls/array/a12345678");
+    fail_name_check("naming_conventions_xmls/array/a12345678space");
+    pass_name_check("naming_conventions_xmls/array/a1.a3");
+    pass_name_check("naming_conventions_xmls/array/a.a123");
+    fail_name_check("naming_conventions_xmls/array/aspace1");
+    fail_name_check("naming_conventions_xmls/array/a1space");
+    fail_name_check("naming_conventions_xmls/array/a1space1");
+    fail_name_check("naming_conventions_xmls/array/aspacebracket1");
+    fail_name_check("naming_conventions_xmls/array/a-1");
+    pass_name_check("naming_conventions_xmls/array/a1");
+    pass_name_check("naming_conventions_xmls/array/a.a");
+    pass_name_check("naming_conventions_xmls/array/a");
 
     /* list of variables */
-    // fail_name_check("naming_conventions_xmls/list/aemptyc");
-    // pass_name_check("naming_conventions_xmls/list/cba");
+    fail_name_check("naming_conventions_xmls/list/aemptyc");
+    pass_name_check("naming_conventions_xmls/list/cba");
 
     /* flat hierarchy test */
-    pass_name_check("naming_conventions_xmls/flat/q-char-nonescaped");
+    fail_name_check("naming_conventions_xmls/flat/q-char-nonescaped");
 }
 
 static fmi3_import_t* parse_xml(jm_callbacks* cb, const char* xmldir) {

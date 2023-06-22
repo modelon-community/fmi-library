@@ -46,9 +46,9 @@ extern "C" {
     @{ 
  */
 
-/** \brief Opaque dimension data type */
+/** \brief Opaque data type for dimension handling */
 typedef struct fmi3_xml_dimension_t fmi3_import_dimension_t;
-/** \brief Opaque dimension list data type */
+/** \brief Opaque data type for dimension list handling*/
 typedef struct fmi3_import_dimension_list_t fmi3_import_dimension_list_t;
 
 /** \brief Checks if the dimension contains the valueReference attribute */

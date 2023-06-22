@@ -35,7 +35,7 @@ int fmi3_test(fmi_import_context_t* context, const char* dirPath)
 {
     const char* modelIdentifier;
     const char* modelName;
-    const char*  instantiationToken;
+    const char* instantiationToken;
     jm_status_enu_t status;
 
     fmi3_import_t* fmu;

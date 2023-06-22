@@ -138,7 +138,7 @@ TEST_CASE("Test array parsing and verify retrieved start values are as expected"
     char xmlPath[1000];
     size_t sizeXmlPath = sizeof(xmlPath) / sizeof(char);
 
-    fmi_testutil_build_xml_path(xmlPath, sizeXmlPath, FMI3_TEST_XML_DIR, "/arrays/valid");
+    fmi_testutil_build_xml_path(xmlPath, sizeXmlPath, FMI3_TEST_XML_DIR, "/arrays/valid/base");
     fmi3_import_t *xml = parse_xml(xmlPath);
     SECTION("Test boolean start array") {
         REQUIRE(xml != nullptr);

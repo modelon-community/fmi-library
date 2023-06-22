@@ -20,6 +20,8 @@
 #include "config_test.h"
 #include "fmi_testutil.h"
 
+#include "catch.hpp"
+
 static fmi3_import_t *parse_xml(const char *model_desc_path)
 {
     jm_callbacks *cb = jm_get_default_callbacks();
@@ -66,7 +68,7 @@ static int get_dimensions_start_sizes(fmi3_import_t* fmu, jm_callbacks* cb, fmi3
     nDims = fmi3_import_get_dimension_list_size(dimList);
 
     /* allocate memory for sizes array */
-    *dimSizes = cb->malloc(sizeof(fmi3_uint64_t) * nDims);
+    *dimSizes = (fmi3_uint64_t*) cb->malloc(sizeof(fmi3_uint64_t) * nDims);
     if (!*dimSizes) {
         printf("unable to alloc memory for dimSizes, line: %d", __LINE__);
         return 1;
@@ -461,20 +463,14 @@ cleanup:
  * Attempt to parse a bad array. Test will fail if XML is successfully parsed.
  *   md_parent_dir_path: absolute path to the parent directory of the modelDescription.xml to parse
  */
-static int test_array_bad(const char* md_parent_dir_path)
+static void test_array_bad(const char* md_parent_dir_path)
 {
     fmi3_import_t* xml = parse_xml(md_parent_dir_path);
-
-    if (xml != NULL) {
-        fmi3_import_free(xml);
-        TEST_FAILED("unexpected non-NULL return value from parsing xml: %s", md_parent_dir_path);
-    }
-
-    return TEST_OK;
+    REQUIRE(xml == nullptr);
 }
 
-int main(int argc, char **argv)
-{
+// TODO: Name
+TEST_CASE("Testing ") {
     char xmlPath[1000];
     size_t sizeXmlPath = sizeof(xmlPath) / sizeof(char);
 
@@ -483,27 +479,19 @@ int main(int argc, char **argv)
     char* dirs[] = { "enclosed_string", "mixed_string_double", "string" };
     size_t nDirs = sizeof(dirs) / sizeof(char*);
 
-    fmi3_import_t *xml;
+    // fmi3_import_t *xml;
     int ret = 1;
     size_t i;
 
-    if (argc != 2) {
-        printf("Usage: %s <path_to_(parser_test_xmls/arrays)>\n", argv[0]);
-        return CTEST_RETURN_FAIL;
-    }
-
-#define INPUT_LEN_MAX (700) /* arbitrarily choosen */
-    ASSERT_MSG(strlen(argv[1]) < INPUT_LEN_MAX,
-            "Unreasonably long base path as input for test. Num chars: %d", strlen(argv[1]));
-
-
     printf("Running fmi3_import_arrays_test\n");
 
-    fmi_testutil_build_xml_path(xmlPath, sizeXmlPath, argv[1], "/valid");
-    xml = parse_xml(xmlPath);
-    if (xml == NULL) {
-        return CTEST_RETURN_FAIL;
-    }
+    // const char* xmldir = FMI3_TEST_XML_DIR "/variable_test/invalid/previous_self_reference";
+
+    // fmi_testutil_build_xml_path(xmlPath, sizeXmlPath, "arrays", "/valid");
+    // xml = parse_xml(xmlPath);
+    const char* xmldir = FMI3_TEST_XML_DIR "/arrays/valid/base";
+    fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
+    REQUIRE(xml != nullptr);
 
     /* test valid */
     ret &= test_array1_64(xml);
@@ -523,7 +511,10 @@ int main(int argc, char **argv)
     ret &= test_array8_32_can_find_index_and_vr_of_dimensions(xml);
 
     fmi3_import_free(xml);
+}
 
+// TODO: name
+TEST_CASE("Testing bad 1") {
     /*
      * Test bad
      *
@@ -534,16 +525,28 @@ int main(int argc, char **argv)
      * TODO: add test for fmi3_import_variable_is_array: give scalar as arg
      *
      */
-    fmi_testutil_build_xml_path(dirPath, sizeDirPath, argv[1], "/bad/");
-    printf("\nThe next tests are expected to fail...\n"); /* creating some space in the output log */
-    printf("---------------------------------------------------------------------------\n");
-    for (i = 0; i < nDirs; i++) {
-        fmi_testutil_build_xml_path(xmlPath, sizeXmlPath, dirPath, dirs[i]);
+    // fmi_testutil_build_xml_path(dirPath, sizeDirPath, "arrays", "/bad/");
+    // printf("\nThe next tests are expected to fail...\n"); /* creating some space in the output log */
+    // printf("---------------------------------------------------------------------------\n");
+    // for (i = 0; i < nDirs; i++) {
+    //     fmi_testutil_build_xml_path(xmlPath, sizeXmlPath, dirPath, dirs[i]);
 
-        ret &= test_array_bad(xmlPath);
-    }
-    printf("---------------------------------------------------------------------------\n");
-    
-    return ret == 0 ? CTEST_RETURN_FAIL : CTEST_RETURN_SUCCESS;
+    //     test_array_bad(xmlPath);
+    // }
+    // printf("---------------------------------------------------------------------------\n");
+    const char* xmldir = FMI3_TEST_XML_DIR "/arrays/invalid/enclosed_string";
+    fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
+    REQUIRE(xml == nullptr);
 }
 
+TEST_CASE("Testing bad 2") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/arrays/invalid/mixed_string_double";
+    fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
+    REQUIRE(xml == nullptr);
+}
+
+TEST_CASE("Testing bad 3") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/arrays/invalid/string";
+    fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
+    REQUIRE(xml == nullptr);
+}

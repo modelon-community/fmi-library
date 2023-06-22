@@ -90,16 +90,12 @@ target_link_libraries(fmi3_import_arrays_test ${FMILIBFORTEST})
 add_executable(fmi3_import_default_experiment_test ${FMIL_TEST_DIR}/FMI3/fmi3_import_default_experiment_test.c)
 target_link_libraries(fmi3_import_default_experiment_test ${FMILIBFORTEST})
 
-add_executable(fmi3_import_options_test ${FMIL_TEST_DIR}/FMI3/fmi3_import_options_test.c)
-target_link_libraries (fmi3_import_options_test ${FMILIBFORTEST})
-
 set_target_properties(
     fmi3_xml_parsing_test
     fmi3_import_sim_me_test
     fmi3_import_sim_cs_test
     fmi3_import_sim_se_test
     fmi3_import_default_experiment_test
-    fmi3_import_options_test
     PROPERTIES FOLDER "Test/FMI3"
 )
 set(FAIL_NAME_CHECK 0)
@@ -117,6 +113,7 @@ add_catch2_test(fmi3_import_bouncingball_xml_test        FMI3)
 add_catch2_test(fmi3_import_interface_types_test         FMI3)
 add_catch2_test(fmi3_import_unit_definitions_test        FMI3)
 add_catch2_test(fmi3_import_variable_types_test          FMI3)
+add_catch2_test(fmi3_import_options_test                 FMI3)
 
 add_test(ctest_fmi3_xml_parsing_test fmi3_xml_parsing_test ${FMIL_TEST_DIR}/FMI3/parser_test_xmls/)
 
@@ -134,7 +131,6 @@ add_test(ctest_fmi3_import_arrays_test
 add_test(ctest_fmi3_import_default_experiment_test
          fmi3_import_default_experiment_test
          ${DEFAULT_EXPERIMENT_MODEL_DESC_DIR})
-add_test(ctest_fmi3_import_test_options fmi3_import_options_test)
 
 if(FMILIB_BUILD_BEFORE_TESTS)
     set_tests_properties(

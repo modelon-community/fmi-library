@@ -6,7 +6,7 @@
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
     FMILIB_License.txt file for more details.
 
     You should have received a copy of the FMILIB_License.txt file
@@ -17,8 +17,11 @@
 #include <stdlib.h>
 #include <stdarg.h>
 
-#include "config_test.h"
 #include "fmilib.h"
+#include "config_test.h"
+#include "fmi_testutil.h"
+
+#include "catch.hpp"
 
 #ifdef WIN32
 #include <windows.h>
@@ -26,32 +29,11 @@
 #include <dlfcn.h>
 #endif
 
-#define BUFFER 1000
-
-#define ASSERT_STATUS(EXPECTED_STATUS, ACTUAL_STATUS, FUNCTION_NAME) \
-    if (EXPECTED_STATUS != ACTUAL_STATUS) { \
-        printf("Function gave unexpected status: " FUNCTION_NAME "\n"); \
-        do_exit(CTEST_RETURN_FAIL); \
-    }
-
-#define ASSERT_EQUALS(A, B, MESSAGE) \
-    if (A != B) { \
-        printf(MESSAGE "\n"); \
-        do_exit(CTEST_RETURN_FAIL); \
-    }
-
-void do_exit(int code)
-{
-    printf("Press 'Enter' to exit\n");
-    /* getchar(); */
-    exit(code);
-}
-
 /**
  * Tests that memory management for options is working when creating dllfmu and
  * freeing it multiple times.
  */
-void test_option_memory_management(fmi3_import_t* fmu) {
+static void test_option_memory_management(fmi3_import_t* fmu) {
     fmi_import_options_t* opts;
     fmi_import_options_t* opts2;
     jm_status_enu_t status;
@@ -68,26 +50,26 @@ void test_option_memory_management(fmi3_import_t* fmu) {
     fmi_import_set_option_loadlibrary_flag(opts, flag);
 
     /* Test after creating dllfmu */
-    status = fmi3_import_create_dllfmu(fmu, fmi3_fmu_kind_me, NULL, NULL);
-    ASSERT_STATUS(jm_status_success, status, "fmi3_import_create_dllfmu");
+    status = fmi3_import_create_dllfmu(fmu, fmi3_fmu_kind_me, nullptr, nullptr);
+    REQUIRE(status == jm_status_success);
 
     opts2 = fmi3_import_get_options(fmu);
-    ASSERT_EQUALS(opts, opts2, "A different options object was returned");
+    REQUIRE(opts == opts2);
     fmi_import_set_option_loadlibrary_flag(opts, flag);
 
     /* Test with dllfmu destroyed */
     fmi3_import_destroy_dllfmu(fmu);
 
     opts2 = fmi3_import_get_options(fmu);
-    ASSERT_EQUALS(opts, opts2, "A different options object was returned");
+    REQUIRE(opts == opts2);
     fmi_import_set_option_loadlibrary_flag(opts, flag);
 
     /* Test after creating new dllfmu */
-    status = fmi3_import_create_dllfmu(fmu, fmi3_fmu_kind_me, NULL, NULL);
-    ASSERT_STATUS(jm_status_success, status, "fmi3_import_create_dllfmu");
+    status = fmi3_import_create_dllfmu(fmu, fmi3_fmu_kind_me, nullptr, nullptr);
+    REQUIRE(status == jm_status_success);
 
     opts2 = fmi3_import_get_options(fmu);
-    ASSERT_EQUALS(opts, opts2, "A different options object was returned");
+    REQUIRE(opts == opts2);
     fmi_import_set_option_loadlibrary_flag(opts, flag);
 
     fmi3_import_destroy_dllfmu(fmu);
@@ -96,7 +78,7 @@ void test_option_memory_management(fmi3_import_t* fmu) {
 /**
  * Tests that the option has an effect.
  */
-void test_loadlibrary_flag(fmi3_import_t* fmu) {
+static void test_loadlibrary_flag(fmi3_import_t* fmu) {
     fmi_import_options_t* opts;
     jm_status_enu_t status;
 
@@ -108,26 +90,25 @@ void test_loadlibrary_flag(fmi3_import_t* fmu) {
 
     /* Expect failure because we haven't signed the dll */
     fmi_import_set_option_loadlibrary_flag(opts, LOAD_LIBRARY_REQUIRE_SIGNED_TARGET);
-    status = fmi3_import_create_dllfmu(fmu, fmi3_fmu_kind_me, NULL, NULL);
-    ASSERT_STATUS(jm_status_error, status, "fmi3_import_create_dllfmu");
+    status = fmi3_import_create_dllfmu(fmu, fmi3_fmu_kind_me, nullptr, nullptr);
+    REQUIRE(status == jm_status_error);
     fmi3_import_destroy_dllfmu(fmu);
 
     /* Expect success because ALTERED_SEARCH_PATH should not matter in this case. */
     fmi_import_set_option_loadlibrary_flag(opts, LOAD_WITH_ALTERED_SEARCH_PATH);
-    status = fmi3_import_create_dllfmu(fmu, fmi3_fmu_kind_me, NULL, NULL);
-    ASSERT_STATUS(jm_status_success, status, "fmi3_import_create_dllfmu");
+    status = fmi3_import_create_dllfmu(fmu, fmi3_fmu_kind_me, nullptr, nullptr);
+    REQUIRE(status == jm_status_success);
     fmi3_import_destroy_dllfmu(fmu);
 #else
     /* Expect failure because library should not get loaded */
     fmi_import_set_option_loadlibrary_flag(opts, RTLD_NOW | RTLD_NOLOAD);
-    status = fmi3_import_create_dllfmu(fmu, fmi3_fmu_kind_me, NULL, NULL);
-    ASSERT_STATUS(jm_status_error, status, "fmi3_import_create_dllfmu");
+    status = fmi3_import_create_dllfmu(fmu, fmi3_fmu_kind_me, nullptr, nullptr);
+    REQUIRE(status == jm_status_error);
     fmi3_import_destroy_dllfmu(fmu);
 #endif
 }
 
-int main(int argc, char *argv[])
-{
+TEST_CASE("Import option testing") {
     const char* tmpPath;
     jm_callbacks callbacks;
     fmi_import_context_t* context;
@@ -141,31 +122,21 @@ int main(int argc, char *argv[])
     callbacks.free = free;
     callbacks.logger = jm_default_logger;
     callbacks.log_level = jm_log_level_debug;
-    callbacks.context = NULL;
+    callbacks.context = nullptr;
 
 #ifdef FMILIB_GENERATE_BUILD_STAMP
     printf("Library build stamp:\n%s\n", fmilib_get_build_stamp());
 #endif
 
-    tmpPath = fmi_import_mk_temp_dir(&callbacks, FMU_UNPACK_DIR, NULL);
-    if (!tmpPath) {
-        printf("Failed to create temporary directory in: " FMU_UNPACK_DIR "\n");
-        do_exit(CTEST_RETURN_FAIL);
-    }
+    tmpPath = fmi_import_mk_temp_dir(&callbacks, FMU_UNPACK_DIR, nullptr);
+    REQUIRE(tmpPath != nullptr);
 
     context = fmi_import_allocate_context(&callbacks);
     version = fmi_import_get_fmi_version(context, FMU3_ME_PATH, tmpPath);
-    if (version != fmi_version_3_0_enu) {
-        printf("Only version 3.0 is supported by this code\n");
-        do_exit(CTEST_RETURN_FAIL);
-    }
+    REQUIRE(version == fmi_version_3_0_enu);
 
-    fmu = fmi3_import_parse_xml(context, tmpPath, NULL);
-
-    if (!fmu) {
-        printf("Error parsing XML. Exiting.\n");
-        do_exit(CTEST_RETURN_FAIL);
-    }    
+    fmu = fmi3_import_parse_xml(context, tmpPath, nullptr);
+    REQUIRE(fmu != nullptr);
 
     /* Tests (they will exit early on failure): */
     test_option_memory_management(fmu);
@@ -174,12 +145,6 @@ int main(int argc, char *argv[])
     /* Clean up: */
     fmi3_import_free(fmu);
     fmi_import_free_context(context);
-    if (fmi_import_rmdir(&callbacks, tmpPath)) {
-        printf("Problem when deleting FMU unpack directory.\n");
-        do_exit(CTEST_RETURN_FAIL);
-    }
+    REQUIRE(fmi_import_rmdir(&callbacks, tmpPath) == jm_status_success);
     callbacks.free((void*)tmpPath);
-    
-    printf("Everything seems to be OK since you got this far=)!\n");
-    return 0;
 }

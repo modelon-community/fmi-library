@@ -130,7 +130,7 @@ void test_loadlibrary_flag(fmi3_import_t* fmu, fmi3_logger_context_t* cbf)
 
 int main(int argc, char *argv[])
 {
-    fmi3_logger_context_t callBackFunctions;
+    fmi3_logger_context_t callBackFunctions = {NULL, NULL};
     const char* tmpPath;
     jm_callbacks callbacks;
     fmi_import_context_t* context;

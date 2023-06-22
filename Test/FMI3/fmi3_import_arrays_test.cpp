@@ -58,7 +58,7 @@ static void get_dimensions_start_sizes(fmi3_import_t* fmu, jm_callbacks* cb, fmi
         if (fmi3_import_get_dimension_has_vr(d)) {
             fmi3_value_reference_t dimVr = fmi3_import_get_dimension_vr(d);
             fmi3_import_uint32_variable_t* var = (fmi3_import_uint32_variable_t*)fmi3_import_get_variable_by_vr(fmu, dimVr);
-            REQUIRE(var != NULL);
+            REQUIRE(var != nullptr);
             *((*dimSizes) + i) = fmi3_import_get_uint32_variable_start(var);
         } else { /* has start */
             *((*dimSizes) + i) = fmi3_import_get_dimension_start(d);

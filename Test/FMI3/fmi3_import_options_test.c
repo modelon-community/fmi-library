@@ -51,8 +51,7 @@ void do_exit(int code)
  * Tests that memory management for options is working when creating dllfmu and
  * freeing it multiple times.
  */
-void test_option_memory_management(fmi3_import_t* fmu, fmi3_logger_context_t* cbf)
-{
+void test_option_memory_management(fmi3_import_t* fmu) {
     fmi_import_options_t* opts;
     fmi_import_options_t* opts2;
     jm_status_enu_t status;
@@ -69,7 +68,7 @@ void test_option_memory_management(fmi3_import_t* fmu, fmi3_logger_context_t* cb
     fmi_import_set_option_loadlibrary_flag(opts, flag);
 
     /* Test after creating dllfmu */
-    status = fmi3_import_create_dllfmu(fmu, fmi3_fmu_kind_me, cbf->instanceEnvironment, cbf->logMessage);
+    status = fmi3_import_create_dllfmu(fmu, fmi3_fmu_kind_me, NULL, NULL);
     ASSERT_STATUS(jm_status_success, status, "fmi3_import_create_dllfmu");
 
     opts2 = fmi3_import_get_options(fmu);
@@ -84,7 +83,7 @@ void test_option_memory_management(fmi3_import_t* fmu, fmi3_logger_context_t* cb
     fmi_import_set_option_loadlibrary_flag(opts, flag);
 
     /* Test after creating new dllfmu */
-    status = fmi3_import_create_dllfmu(fmu, fmi3_fmu_kind_me, cbf->instanceEnvironment, cbf->logMessage);
+    status = fmi3_import_create_dllfmu(fmu, fmi3_fmu_kind_me, NULL, NULL);
     ASSERT_STATUS(jm_status_success, status, "fmi3_import_create_dllfmu");
 
     opts2 = fmi3_import_get_options(fmu);
@@ -97,8 +96,7 @@ void test_option_memory_management(fmi3_import_t* fmu, fmi3_logger_context_t* cb
 /**
  * Tests that the option has an effect.
  */
-void test_loadlibrary_flag(fmi3_import_t* fmu, fmi3_logger_context_t* cbf)
-{
+void test_loadlibrary_flag(fmi3_import_t* fmu) {
     fmi_import_options_t* opts;
     jm_status_enu_t status;
 
@@ -110,19 +108,19 @@ void test_loadlibrary_flag(fmi3_import_t* fmu, fmi3_logger_context_t* cbf)
 
     /* Expect failure because we haven't signed the dll */
     fmi_import_set_option_loadlibrary_flag(opts, LOAD_LIBRARY_REQUIRE_SIGNED_TARGET);
-    status = fmi3_import_create_dllfmu(fmu, fmi3_fmu_kind_me, cbf->instanceEnvironment, cbf->logMessage);
+    status = fmi3_import_create_dllfmu(fmu, fmi3_fmu_kind_me, NULL, NULL);
     ASSERT_STATUS(jm_status_error, status, "fmi3_import_create_dllfmu");
     fmi3_import_destroy_dllfmu(fmu);
 
     /* Expect success because ALTERED_SEARCH_PATH should not matter in this case. */
     fmi_import_set_option_loadlibrary_flag(opts, LOAD_WITH_ALTERED_SEARCH_PATH);
-    status = fmi3_import_create_dllfmu(fmu, fmi3_fmu_kind_me, cbf->instanceEnvironment, cbf->logMessage);
+    status = fmi3_import_create_dllfmu(fmu, fmi3_fmu_kind_me, NULL, NULL);
     ASSERT_STATUS(jm_status_success, status, "fmi3_import_create_dllfmu");
     fmi3_import_destroy_dllfmu(fmu);
 #else
     /* Expect failure because library should not get loaded */
     fmi_import_set_option_loadlibrary_flag(opts, RTLD_NOW | RTLD_NOLOAD);
-    status = fmi3_import_create_dllfmu(fmu, fmi3_fmu_kind_me, cbf->instanceEnvironment, cbf->logMessage);
+    status = fmi3_import_create_dllfmu(fmu, fmi3_fmu_kind_me, NULL, NULL);
     ASSERT_STATUS(jm_status_error, status, "fmi3_import_create_dllfmu");
     fmi3_import_destroy_dllfmu(fmu);
 #endif
@@ -130,7 +128,6 @@ void test_loadlibrary_flag(fmi3_import_t* fmu, fmi3_logger_context_t* cbf)
 
 int main(int argc, char *argv[])
 {
-    fmi3_logger_context_t callBackFunctions = {NULL, NULL};
     const char* tmpPath;
     jm_callbacks callbacks;
     fmi_import_context_t* context;
@@ -171,8 +168,8 @@ int main(int argc, char *argv[])
     }    
 
     /* Tests (they will exit early on failure): */
-    test_option_memory_management(fmu, &callBackFunctions);
-    test_loadlibrary_flag(fmu, &callBackFunctions);
+    test_option_memory_management(fmu);
+    test_loadlibrary_flag(fmu);
 
     /* Clean up: */
     fmi3_import_free(fmu);

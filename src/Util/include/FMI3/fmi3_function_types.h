@@ -83,9 +83,9 @@ typedef void (*fmi3_intermediate_update_callback_ft) (
         fmi3_boolean_t* earlyReturnRequested,
         fmi3_float64_t* earlyReturnTime);
 
-typedef void       (*fmi3_clock_update_callback_ft)      ();
-typedef void       (*fmi3_lock_preemption_callback_ft)   ();
-typedef void       (*fmi3_unlock_preemption_callback_ft) ();
+typedef void (*fmi3_clock_update_callback_ft)      ();
+typedef void (*fmi3_lock_preemption_callback_ft)   ();
+typedef void (*fmi3_unlock_preemption_callback_ft) ();
 
 /* Define fmi3 function pointer types to simplify dynamic loading */
 
@@ -96,10 +96,10 @@ Types for Common Functions
 /* Inquire version numbers of header files and setting logging status */
 typedef const char* (*fmi3_get_version_ft)(void);
 
-typedef fmi3_status_t  (*fmi3_set_debug_logging_ft)(fmi3_instance_t instance,
-                                                    fmi3_boolean_t loggingOn,
-                                                    size_t nCategories,
-                                                    const fmi3_string_t categories[]);
+typedef fmi3_status_t (*fmi3_set_debug_logging_ft)(fmi3_instance_t instance,
+                                                   fmi3_boolean_t loggingOn,
+                                                   size_t nCategories,
+                                                   const fmi3_string_t categories[]);
 
 /* Creation and destruction of FMU instances and setting debug status */
 typedef fmi3_instance_t (*fmi3_instantiate_model_exchange_ft)(

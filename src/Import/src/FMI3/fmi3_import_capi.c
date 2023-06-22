@@ -29,6 +29,18 @@ extern "C" {
 
 static const char * module = "FMILIB";
 
+
+static void fmi3_import_capi_destroy_dllfmu_and_restore_options(fmi3_import_t* fmu) {
+	if (fmu->capi->options) {
+		/* Take back ownership of Options */
+		fmu->options = fmu->capi->options;
+		fmu->capi->options = NULL;
+	}
+
+    fmi3_capi_destroy_dllfmu(fmu->capi);
+	fmu->capi = NULL;
+}
+
 /* Load and destroy functions */
 jm_status_enu_t fmi3_import_create_dllfmu(fmi3_import_t* fmu, fmi3_fmu_kind_enu_t fmuKind,
         const fmi3_instance_environment_t instanceEnvironment, const fmi3_log_message_callback_ft logMessage) {
@@ -104,14 +116,19 @@ jm_status_enu_t fmi3_import_create_dllfmu(fmi3_import_t* fmu, fmi3_fmu_kind_enu_
                 logMessageFinal, fmuKind);
     }
 
+	if (fmu->capi) {
+		/* Replace the CAPI options with the import ones */
+        fmi_util_free_options(fmu->callbacks, fmu->capi->options);
+		fmu->capi->options = fmu->options;
+		fmu->options = NULL;
+	}
 
     /* Load the DLL handle */
     if (fmu->capi) {
         jm_log_info(fmu->callbacks, module, "Loading '" FMI3_PLATFORM "' binary");
 
         if(fmi3_capi_load_dll(fmu->capi) == jm_status_error) {
-            fmi3_capi_destroy_dllfmu(fmu->capi);
-            fmu->capi = NULL;
+            fmi3_import_capi_destroy_dllfmu_and_restore_options(fmu);
         }
     }
 
@@ -129,8 +146,7 @@ jm_status_enu_t fmi3_import_create_dllfmu(fmi3_import_t* fmu, fmi3_fmu_kind_enu_
     /* Load the DLL functions */
     if (fmi3_capi_load_fcn(fmu->capi) == jm_status_error) {
         fmi3_capi_free_dll(fmu->capi);
-        fmi3_capi_destroy_dllfmu(fmu->capi);
-        fmu->capi = NULL;
+        fmi3_import_capi_destroy_dllfmu_and_restore_options(fmu);
         return jm_status_error;
     }
     jm_log_verbose(fmu->callbacks, module, "Successfully loaded all the interface functions");
@@ -158,10 +174,8 @@ void fmi3_import_destroy_dllfmu(fmi3_import_t* fmu) {
         /* Free DLL handle */
         fmi3_capi_free_dll(fmu->capi);
 
-        /* Destroy the C-API struct */
-        fmi3_capi_destroy_dllfmu(fmu->capi);
-
-        fmu->capi = NULL;
+        /* Destroy the C-API struct and restore options */
+        fmi3_import_capi_destroy_dllfmu_and_restore_options(fmu);
     }
 }
 

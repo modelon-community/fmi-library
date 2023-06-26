@@ -29,9 +29,9 @@ extern "C" {
         /**
     \addtogroup fmi2_import
     @{
-    \addtogroup fmi2_import_units Functions for handling unit definitions.
+    \addtogroup fmi2_import_units Functions for handling unit definitions
     @}
-    \addtogroup fmi2_import_units Functions for handling unit definitions.
+    \addtogroup fmi2_import_units Functions for handling unit definitions
     @{
     */
 

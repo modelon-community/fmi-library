@@ -267,10 +267,10 @@ const char * fmi3_SI_base_unit_to_string(fmi3_SI_base_units_enu_t id) {
 /** \brief Convert a list of SI base unit exponents (corresponding to the IDs from  fmi3_SI_base_units_enu_t)
     to a string of the form kg*m^2/s^2.
 
-    \param exp An array of SI base units exponents.
-    \param bufSize Size of the buffer to store the string.
-    \param buf Buffer to store the string
-    \return Required size of the buffer to store the string including the terminating zero.
+    @param exp An array of SI base units exponents.
+    @param bufSize Size of the buffer to store the string.
+    @param buf Buffer to store the string
+    @return Required size of the buffer to store the string including the terminating zero.
         This most likely be under [8*fmi3_SI_base_units_Num]. If the return value is larger or equal
         than bufSize than the string could not be fitted in the buffer.
 */

@@ -100,10 +100,10 @@ FMILIB_EXPORT const char* fmi3_status_to_string(fmi3_status_t status);
  * For parameter type causality, the default is 'fixed'
  * For other causality, if Float32/64: 'continuous' and else: 'discrete'
  * 
- * \param c causality
- * \param isFloat non-zero for Float32/Float64 variables
+ * @param c causality
+ * @param isFloat non-zero for Float32/Float64 variables
  *
- * \return A default variability compatible with the given causality.
+ * @return A default variability compatible with the given causality.
  *
  */
 FMILIB_EXPORT fmi3_variability_enu_t fmi3_get_default_valid_variability(fmi3_causality_enu_t c, int isFloat);
@@ -111,7 +111,7 @@ FMILIB_EXPORT fmi3_variability_enu_t fmi3_get_default_valid_variability(fmi3_cau
 /**
  * \brief Check if a given combination of variablity and causality is valid.
  *
- * \return 0 if not valid, non-zero otherwise
+ * @return 0 if not valid, non-zero otherwise
  */
 FMILIB_EXPORT int fmi3_is_valid_variability_causality(fmi3_variability_enu_t v,
                                                       fmi3_causality_enu_t c);
@@ -129,14 +129,14 @@ FMILIB_EXPORT const char* fmi3_initial_to_string(fmi3_initial_enu_t c);
 
 /**
     \brief Get default initial attribute value for the given variability and causality combination.
-    \return The default initial attribute or fmi3_initial_enu_unknown if combination of causality
+    @return The default initial attribute or fmi3_initial_enu_unknown if combination of causality
             and variability is not valid.
 */
 FMILIB_EXPORT fmi3_initial_enu_t fmi3_get_default_initial(fmi3_variability_enu_t v, fmi3_causality_enu_t c);
 
 /**
     \brief Check if the combination of variability, causality and initial is valid.
-    \return Same initial as submitted if the combination is valid. Otherwise, same as fmi3_get_default_initial.
+    @return Same initial as submitted if the combination is valid. Otherwise, same as fmi3_get_default_initial.
 */
 FMILIB_EXPORT fmi3_initial_enu_t fmi3_get_valid_initial(fmi3_variability_enu_t v, fmi3_causality_enu_t c, fmi3_initial_enu_t i);
 
@@ -161,8 +161,8 @@ typedef enum fmi3_base_type_enu_t
 } fmi3_base_type_enu_t;
 
 /**  \brief Convert base type constant to string
-    \param bt Base type identifier.
-    \return Corresponding base type name.
+    @param bt Base type identifier.
+    @return Corresponding base type name.
     */
 FMILIB_EXPORT const char* fmi3_base_type_to_string(fmi3_base_type_enu_t bt);
 
@@ -230,12 +230,12 @@ typedef enum fmi3_capabilities_enu_t {
     FMI3_ME_CAPABILITIES(FMI3_EXPAND_ME_CAPABILITIES_ENU)
     FMI3_CS_CAPABILITIES(FMI3_EXPAND_CS_CAPABILITIES_ENU)
     FMI3_SE_CAPABILITIES(FMI3_EXPAND_SE_CAPABILITIES_ENU)
-    fmi3_capabilities_Num
+    fmi3_capabilities_num
 } fmi3_capabilities_enu_t;
 
 /** \brief Convert capability flag to a string
-    \param id Capability flag ID.
-    \return Name of the flag or Unknown if the id is out of range.
+    @param id Capability flag ID.
+    @return Name of the flag or Unknown if the id is out of range.
 */
 FMILIB_EXPORT const char* fmi3_capability_to_string(fmi3_capabilities_enu_t id);
 
@@ -251,17 +251,17 @@ typedef enum fmi3_SI_base_units_enu_t {
 } fmi3_SI_base_units_enu_t;
 
 /** \brief Convert SI base unit ID a string
-    \param id SI base unit ID.
-    \return Name of the base unit or "unknown" if the id is out of range.
+    @param id SI base unit ID.
+    @return Name of the base unit or "unknown" if the id is out of range.
 */
 FMILIB_EXPORT const char * fmi3_SI_base_unit_to_string(fmi3_SI_base_units_enu_t id);
 
 /** \brief Convert a list of SI base unit exponents (corresponding to the IDs from  fmi3_SI_base_units_enu_t)
     to a string of the form kg*m^2/s^2. Prints '-' if all the exponents are zero.
-    \param exp An array of SI base units exponents.
-    \param bufSize Size of the buffer to store the string.
-    \param buf Buffer to store the string
-    \return Required size of the buffer to store the string. This most likely be under [8*fmi3_SI_base_units_Num].
+    @param exp An array of SI base units exponents.
+    @param bufSize Size of the buffer to store the string.
+    @param buf Buffer to store the string
+    @return Required size of the buffer to store the string. This most likely be under [8*fmi3_SI_base_units_Num].
     If the return value is larger or equal than bufSize than the string could not be fitted in the buffer.
 */
 FMILIB_EXPORT size_t fmi3_SI_base_unit_exp_to_string(const int exp[fmi3_SI_base_units_Num], size_t bufSize, char buf[]);
@@ -279,27 +279,27 @@ typedef enum fmi3_dependencies_kind_enu_t
 } fmi3_dependencies_kind_enu_t;
 
 /** \brief Test if the input argument of type fmi3_base_type_enu_t is representing bool.
-    \param enums The object of type fmi3_base_type_enu_t to check.
-    \return Returns true for bool, otherwise false.
+    @param enums The object of type fmi3_base_type_enu_t to check.
+    @return Returns true for bool, otherwise false.
 */
 bool fmi3_base_type_enu_is_bool(fmi3_base_type_enu_t enums);
 
 
 /** \brief Test if the input argument of type fmi3_base_type_enu_t is representing [u]int8/32/64.
-    \param enums The object of type fmi3_base_type_enu_t to check.
-    \return Returns true for any of the signed/unsigned integer types, otherwise false.
+    @param enums The object of type fmi3_base_type_enu_t to check.
+    @return Returns true for any of the signed/unsigned integer types, otherwise false.
 */
 bool fmi3_base_type_enu_is_int(fmi3_base_type_enu_t enums);
 
 /** \brief Test if the input argument of type fmi3_base_type_enu_t* is representing float32 or float64.
-    \param enums The object of type fmi3_base_type_enu_t to check.
-    \return Returns true for float32 and float64, otherwise false.
+    @param enums The object of type fmi3_base_type_enu_t to check.
+    @return Returns true for float32 and float64, otherwise false.
 */
 bool fmi3_base_type_enu_is_float(fmi3_base_type_enu_t enums);
 
 /** \brief Test if the input argument of type fmi3_base_type_enu_t* is representing an enumeration.
-    \param enums The object of type fmi3_base_type_enu_t to check.
-    \return Returns true for enums otherwise false.
+    @param enums The object of type fmi3_base_type_enu_t to check.
+    @return Returns true for enums otherwise false.
 */
 bool fmi3_base_type_enu_is_enum(fmi3_base_type_enu_t enums);
 
@@ -312,8 +312,8 @@ typedef enum fmi3_bitness_enu_t {
 } fmi3_bitness_enu_t;
 
 /**  \brief Convert dependency factor kind constant to string
-    \param fc Dependency factor kind identifier.
-    \return Corresponding factor kind as string.
+    @param fc Dependency factor kind identifier.
+    @return Corresponding factor kind as string.
     */
 FMILIB_EXPORT const char* fmi3_dependencies_kind_to_string(fmi3_dependencies_kind_enu_t fc);
 /**

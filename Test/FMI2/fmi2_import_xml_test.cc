@@ -26,39 +26,39 @@
 #include <FMI2/fmi2_import.h>
 
 int annotation_start_handle(void *context, const char *parentName, void *parent, const char *elm, const char **attr) {
-	int i = 0;
-	printf("Annotation element %s start (tool: %s, parent:%s)\n", elm, parentName, 
-		parent?fmi2_import_get_variable_name((fmi2_import_variable_t*)parent):"model");
-	while(attr[i]) {
-		printf("Attribute %s = %s\n", attr[i], attr[i+1]);
-		i+=2;
-	}
-	printf("Annotation data:\n");
-	return 0;
+    int i = 0;
+    printf("Annotation element %s start (tool: %s, parent:%s)\n", elm, parentName, 
+        parent?fmi2_import_get_variable_name((fmi2_import_variable_t*)parent):"model");
+    while(attr[i]) {
+        printf("Attribute %s = %s\n", attr[i], attr[i+1]);
+        i+=2;
+    }
+    printf("Annotation data:\n");
+    return 0;
 }
 
 int annotation_data_handle(void* context, const char *s, int len) {
-	int i;
-	for(i = 0; i < len; i++)
-		printf("%c", s[i]);
-	return 0;
+    int i;
+    for(i = 0; i < len; i++)
+        printf("%c", s[i]);
+    return 0;
 }
 
 int annotation_end_handle(void *context, const char *elm) {
-	printf("\nAnnotation element %s end\n", elm);
-	return 0;
+    printf("\nAnnotation element %s end\n", elm);
+    return 0;
 }
 
 /** \brief XML callbacks are used to process parts of XML that are not handled by the library */
 fmi2_xml_callbacks_t annotation_callbacks = {
-	annotation_start_handle,
-	annotation_data_handle,
-	annotation_end_handle, NULL};
+    annotation_start_handle,
+    annotation_data_handle,
+    annotation_end_handle, NULL};
 
 
 void do_exit(int code)
 {
-	exit(code);
+    exit(code);
 }
 
 void mylogger(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_level, jm_string message)
@@ -103,13 +103,13 @@ void printTypeInfo(fmi2_import_variable_typedef_t* vt) {
         printf("Min %g, max %g, nominal %g\n", min, max, nom);
 
         if(u) {
-			char buf[1000];
-			fmi2_SI_base_unit_exp_to_string(fmi2_import_get_SI_unit_exponents(u), 1000, buf);
+            char buf[1000];
+            fmi2_SI_base_unit_exp_to_string(fmi2_import_get_SI_unit_exponents(u), 1000, buf);
             printf("Unit: %s, base unit %s, factor %g, offset %g\n", 
-				fmi2_import_get_unit_name(u), 
-				buf,
-				fmi2_import_get_SI_unit_factor(u),
-				fmi2_import_get_SI_unit_offset(u));
+                fmi2_import_get_unit_name(u), 
+                buf,
+                fmi2_import_get_SI_unit_factor(u),
+                fmi2_import_get_SI_unit_offset(u));
         }
         if(du) {
             printf("Display unit: %s, factor: %g, offset: %g, is relative: %s\n",
@@ -145,15 +145,15 @@ void printTypeInfo(fmi2_import_variable_typedef_t* vt) {
             ni = fmi2_import_get_enum_type_size(et);
             printf("There are %d items \n",ni);
             for(i = 1; i <= ni; i++) {
-				int val = fmi2_import_get_enum_type_item_value(et, i);
-				const char* str = fmi2_import_get_enum_type_value_name(et, val);
-				const char* itnm = fmi2_import_get_enum_type_item_name(et, i);
-				assert(strcmp(itnm, str)==0);
+                int val = fmi2_import_get_enum_type_item_value(et, i);
+                const char* str = fmi2_import_get_enum_type_value_name(et, val);
+                const char* itnm = fmi2_import_get_enum_type_item_name(et, i);
+                assert(strcmp(itnm, str)==0);
                 printf("[%d] %s=%d (%s) \n", i, 
-					itnm, 
-					val,
-					fmi2_import_get_enum_type_item_description(et, i));
-			}
+                    itnm, 
+                    val,
+                    fmi2_import_get_enum_type_item_description(et, i));
+            }
         }
         break;
     }
@@ -164,33 +164,33 @@ void printTypeInfo(fmi2_import_variable_typedef_t* vt) {
 }
 
 void testVariableSearch(fmi2_import_t* fmu,
-	fmi2_import_variable_t* v) {
+    fmi2_import_variable_t* v) {
 
-		const char * a_name = fmi2_import_get_variable_name(v);
-		fmi2_import_variable_t* found = fmi2_import_get_variable_by_name(fmu, a_name);
-		if(found != v) {
-			printf("Searching by name %s found var %s\n", a_name, found?fmi2_import_get_variable_name(found):"nothing");
-			do_exit(1);
-		}
-		else {
-			printf("Searching by name worked fine\n");
-		}
-		found = fmi2_import_get_variable_by_vr(fmu, fmi2_import_get_variable_base_type(v),fmi2_import_get_variable_vr(v));
-		if(!found) {
-			printf("Searching by vr failed for variable '%s'\n", a_name);
-			do_exit(1);
-		}
-		else if(fmi2_import_get_variable_base_type(v) != fmi2_import_get_variable_base_type(found)) {			
-			printf("Searching %s found var %s", a_name, fmi2_import_get_variable_name(found));
-			do_exit(1);
-		}
-		else if(fmi2_import_get_variable_vr(v) != fmi2_import_get_variable_vr(found)) {			
-			printf("Searching %s found var %s", a_name, fmi2_import_get_variable_name(found));
-			do_exit(1);
-		}
-		else {
-			printf("Searching by vr worked fine\n");
-		}
+        const char * a_name = fmi2_import_get_variable_name(v);
+        fmi2_import_variable_t* found = fmi2_import_get_variable_by_name(fmu, a_name);
+        if(found != v) {
+            printf("Searching by name %s found var %s\n", a_name, found?fmi2_import_get_variable_name(found):"nothing");
+            do_exit(1);
+        }
+        else {
+            printf("Searching by name worked fine\n");
+        }
+        found = fmi2_import_get_variable_by_vr(fmu, fmi2_import_get_variable_base_type(v),fmi2_import_get_variable_vr(v));
+        if(!found) {
+            printf("Searching by vr failed for variable '%s'\n", a_name);
+            do_exit(1);
+        }
+        else if(fmi2_import_get_variable_base_type(v) != fmi2_import_get_variable_base_type(found)) {            
+            printf("Searching %s found var %s", a_name, fmi2_import_get_variable_name(found));
+            do_exit(1);
+        }
+        else if(fmi2_import_get_variable_vr(v) != fmi2_import_get_variable_vr(found)) {            
+            printf("Searching %s found var %s", a_name, fmi2_import_get_variable_name(found));
+            do_exit(1);
+        }
+        else {
+            printf("Searching by vr worked fine\n");
+        }
 }
 
 void printVariableInfo(fmi2_import_t* fmu,
@@ -265,91 +265,91 @@ void printVariableInfo(fmi2_import_t* fmu,
 }
 
 void printCapabilitiesInfo(fmi2_import_t* fmu) {
-	size_t i;
+    size_t i;
 
-	for( i = 0; i < fmi2_capabilities_Num; ++i) {
-		printf("%s = %u\n", 
-			fmi2_capability_to_string((fmi2_capabilities_enu_t)i), 
-			fmi2_import_get_capability(fmu, (fmi2_capabilities_enu_t)i));
-	}
+    for( i = 0; i < fmi2_capabilities_Num; ++i) {
+        printf("%s = %u\n", 
+            fmi2_capability_to_string((fmi2_capabilities_enu_t)i), 
+            fmi2_import_get_capability(fmu, (fmi2_capabilities_enu_t)i));
+    }
 }
 
-void printDependenciesInfo(	fmi2_import_t* fmu, fmi2_import_variable_list_t* rows, fmi2_import_variable_list_t* cols, size_t* start, size_t *dep, char* factor) {
-	size_t i, j, nr;
-	if(!rows || !cols || !start) {
-		printf("Dependencies are not available\n");
-		if(rows) {
-			nr = fmi2_import_get_variable_list_size(rows);
-			for(i = 0; i < nr; i++) {
-				printf("\t%s\n",fmi2_import_get_variable_name(fmi2_import_get_variable(rows, i)));
-			}
-		}
-		return;
-	}
-	nr = fmi2_import_get_variable_list_size(rows);
-	for(i = 0; i < nr; i++) {
-		if(start[i] == start[i+1]) {
-			printf("\t%s has no dependencies\n",fmi2_import_get_variable_name(fmi2_import_get_variable(rows, i)));
-		}
-		else if((start[i] + 1 == start[i+1]) && (dep[start[i]] == 0)) {
-			printf("\t%s depends on all\n",fmi2_import_get_variable_name(fmi2_import_get_variable(rows, i)));
-		}
-		else {
-			printf("\t%s depends on:\n",fmi2_import_get_variable_name(fmi2_import_get_variable(rows, i)));
-			for(j = start[i]; j < start[i+1]; j++) {
-				printf("\t\t%s (factor kind: %s)\n",fmi2_import_get_variable_name(fmi2_import_get_variable(cols, dep[j]-1)), 
-					fmi2_dependency_factor_kind_to_string((fmi2_dependency_factor_kind_enu_t)factor[j]));
-			}
-		}
-	}
+void printDependenciesInfo(fmi2_import_t* fmu, fmi2_import_variable_list_t* rows, fmi2_import_variable_list_t* cols, size_t* start, size_t *dep, char* factor) {
+    size_t i, j, nr;
+    if(!rows || !cols || !start) {
+        printf("Dependencies are not available\n");
+        if(rows) {
+            nr = fmi2_import_get_variable_list_size(rows);
+            for(i = 0; i < nr; i++) {
+                printf("\t%s\n",fmi2_import_get_variable_name(fmi2_import_get_variable(rows, i)));
+            }
+        }
+        return;
+    }
+    nr = fmi2_import_get_variable_list_size(rows);
+    for(i = 0; i < nr; i++) {
+        if(start[i] == start[i+1]) {
+            printf("\t%s has no dependencies\n",fmi2_import_get_variable_name(fmi2_import_get_variable(rows, i)));
+        }
+        else if((start[i] + 1 == start[i+1]) && (dep[start[i]] == 0)) {
+            printf("\t%s depends on all\n",fmi2_import_get_variable_name(fmi2_import_get_variable(rows, i)));
+        }
+        else {
+            printf("\t%s depends on:\n",fmi2_import_get_variable_name(fmi2_import_get_variable(rows, i)));
+            for(j = start[i]; j < start[i+1]; j++) {
+                printf("\t\t%s (factor kind: %s)\n",fmi2_import_get_variable_name(fmi2_import_get_variable(cols, dep[j]-1)), 
+                    fmi2_dependency_factor_kind_to_string((fmi2_dependency_factor_kind_enu_t)factor[j]));
+            }
+        }
+    }
 }
 
 int main(int argc, char *argv[])
 {
     clock_t start, stop;
     double t = 0.0;
-	const char* tmpPath;
-	jm_callbacks callbacks;
-	fmi_import_context_t* context;
+    const char* tmpPath;
+    jm_callbacks callbacks;
+    fmi_import_context_t* context;
     int res = 0;
 
-	fmi2_import_t* fmu;
+    fmi2_import_t* fmu;
 
-	if(argc < 2) {
-		printf("Usage: %s <path to a dir with modelDescription.xml>\n", argv[0]);
-		do_exit(1);
-	}
+    if(argc < 2) {
+        printf("Usage: %s <path to a dir with modelDescription.xml>\n", argv[0]);
+        do_exit(1);
+    }
 
-	tmpPath = argv[1];
+    tmpPath = argv[1];
 
-	callbacks.malloc = malloc;
+    callbacks.malloc = malloc;
     callbacks.calloc = calloc;
     callbacks.realloc = realloc;
     callbacks.free = free;
     callbacks.logger = mylogger;
     callbacks.context = 0;
-	callbacks.log_level = jm_log_level_debug;
+    callbacks.log_level = jm_log_level_debug;
 
 #ifdef FMILIB_GENERATE_BUILD_STAMP
-	printf("Library build stamp:\n%s\n", fmilib_get_build_stamp());
+    printf("Library build stamp:\n%s\n", fmilib_get_build_stamp());
 #endif
 
-	context = fmi_import_allocate_context(&callbacks);
+    context = fmi_import_allocate_context(&callbacks);
 
     /* time the parsing */
-	start = clock();
-	fmu = fmi2_import_parse_xml(context, tmpPath, &annotation_callbacks);
+    start = clock();
+    fmu = fmi2_import_parse_xml(context, tmpPath, &annotation_callbacks);
     stop = clock();
     t = (double) (stop-start)/CLOCKS_PER_SEC;
     printf("Parsing took %g seconds\n", t);
 
-	fmi_import_free_context(context);
+    fmi_import_free_context(context);
 
-	if (!fmu) {
-		printf("Error parsing XML, exiting\n");
+    if (!fmu) {
+        printf("Error parsing XML, exiting\n");
         res = 1;
         goto err1;
-	}
+    }
 
     printf("Model name: %s\n", fmi2_import_get_model_name(fmu));
     printf("Model GUID: %s\n", fmi2_import_get_GUID(fmu));
@@ -363,9 +363,9 @@ int main(int argc, char *argv[])
     printf("Naming : %s\n", fmi2_naming_convention_to_string(fmi2_import_get_naming_convention(fmu)));
 
     if(fmi2_import_get_fmu_kind(fmu) != fmi2_fmu_kind_cs)
-	    printf("Model identifier ME: %s\n", fmi2_import_get_model_identifier_ME(fmu));
+        printf("Model identifier ME: %s\n", fmi2_import_get_model_identifier_ME(fmu));
     if(fmi2_import_get_fmu_kind(fmu) != fmi2_fmu_kind_me)
-	    printf("Model identifier CS: %s\n", fmi2_import_get_model_identifier_CS(fmu));
+        printf("Model identifier CS: %s\n", fmi2_import_get_model_identifier_CS(fmu));
     printCapabilitiesInfo(fmu);
 
     printf("NumberOfContinuousStates = " FMILIB_SIZET_FORMAT "\n", fmi2_import_get_number_of_continuous_states(fmu));
@@ -400,8 +400,8 @@ int main(int argc, char *argv[])
         printf("There are %u tool annotation records \n", (unsigned)nv);
         for( i = 0; i < nv; i++) {
             printf("Vendor name [%u] %s", (unsigned)i, fmi2_import_get_vendor_name(fmu, i));
-		}
-	}
+        }
+    }
     {
         fmi2_import_unit_definitions_t* ud = fmi2_import_get_unit_definitions(fmu);
         if(ud) {
@@ -410,18 +410,18 @@ int main(int argc, char *argv[])
 
             for(i = 0; i < nu; i++) {
                 fmi2_import_unit_t* u = fmi2_import_get_unit(ud, i);
-				char buf[1000];
+                char buf[1000];
                 if(!u) {
                     printf("Error getting unit for index %d (%s)\n", i, fmi2_import_get_last_error(fmu));
                     break;
                 }
-				fmi2_SI_base_unit_exp_to_string(fmi2_import_get_SI_unit_exponents(u), 1000, buf);
+                fmi2_SI_base_unit_exp_to_string(fmi2_import_get_SI_unit_exponents(u), 1000, buf);
                 printf("Unit [%d] is %s, base unit %s, factor %g, offset %g, it has %d display units\n", 
-					i, fmi2_import_get_unit_name(u), 
-					buf,
-					fmi2_import_get_SI_unit_factor(u),
-					fmi2_import_get_SI_unit_offset(u),
-					fmi2_import_get_unit_display_unit_number(u));
+                    i, fmi2_import_get_unit_name(u), 
+                    buf,
+                    fmi2_import_get_SI_unit_factor(u),
+                    fmi2_import_get_SI_unit_offset(u),
+                    fmi2_import_get_unit_display_unit_number(u));
             }
         }
         else
@@ -449,108 +449,108 @@ int main(int argc, char *argv[])
     {
         size_t nv, i;
         fmi2_import_variable_list_t* vl = fmi2_import_get_variable_list(fmu, 0);
-/*		fmi2_import_variable_list_t* ders = fmi2_import_get_derivatives_list( fmu); */
-		const fmi2_value_reference_t* vrl = fmi2_import_get_value_reference_list(vl);
+/*        fmi2_import_variable_list_t* ders = fmi2_import_get_derivatives_list( fmu); */
+        const fmi2_value_reference_t* vrl = fmi2_import_get_value_reference_list(vl);
 
 
         assert(vl);
-		
+        
         nv = fmi2_import_get_variable_list_size(vl);
         printf("There are %u variables in total \n",(unsigned)nv);
         for(i = 0; i < nv; i++) {
             fmi2_import_variable_t* var = fmi2_import_get_variable(vl, i);
-			assert(vrl[i] == fmi2_import_get_variable_vr(var));
+            assert(vrl[i] == fmi2_import_get_variable_vr(var));
             if(!var) {
-				printf("Something wrong with variable %u \n",(unsigned)i);
+                printf("Something wrong with variable %u \n",(unsigned)i);
                 res = 1;
                 goto err2;
-			}
+            }
             else {
                 printVariableInfo(fmu, var);
-/*				size_t stateIndex = fmi2_import_get_state_index(var);
-				if(stateIndex) {
-					printf("This variable is a state. Its derivative: %s\n", 
-						fmi2_import_get_variable_name(fmi2_import_get_variable(ders, stateIndex-1)));
-				} */
-				testVariableSearch(fmu, var);
-			}
+/*                size_t stateIndex = fmi2_import_get_state_index(var);
+                if(stateIndex) {
+                    printf("This variable is a state. Its derivative: %s\n", 
+                        fmi2_import_get_variable_name(fmi2_import_get_variable(ders, stateIndex-1)));
+                } */
+                testVariableSearch(fmu, var);
+            }
         }
         fmi2_import_free_variable_list(vl);
 /*        fmi2_import_free_variable_list(ders); */
     }
-/*	{
-		fmi2_import_variable_list_t* vl = fmi2_import_get_inputs_list( fmu);
+/*    {
+        fmi2_import_variable_list_t* vl = fmi2_import_get_inputs_list( fmu);
         size_t i, n = 0;
-		if(vl) 
-			n = fmi2_import_get_variable_list_size(vl);
+        if(vl) 
+            n = fmi2_import_get_variable_list_size(vl);
         if(n>0) {
             printf("Listing inputs: \n");
             for(i = 0;i<n;i++) 
                 printf("\t%s\n",fmi2_import_get_variable_name(fmi2_import_get_variable(vl, i)));
         }
-		else {
+        else {
             printf("There are no inputs\n");
-		}
-        fmi2_import_free_variable_list(vl);
-	}	
-	{
-		fmi2_import_variable_list_t* states = fmi2_import_get_states_list( fmu);
-		fmi2_import_variable_list_t* inputs = fmi2_import_get_inputs_list( fmu);
-        size_t n = 0;
-		if(states) 
-			n = fmi2_import_get_variable_list_size(states);
-        if(n>0) {
-			size_t *start, *dep;
-			char* factor;
-            printf("Listing states and dependencies on inputs: \n");
-			fmi2_import_get_dependencies_derivatives_on_inputs(fmu, &start, &dep, &factor);
-			printDependenciesInfo(	fmu, states, inputs, start, dep, factor);
-
-			fmi2_import_get_dependencies_derivatives_on_states(fmu, &start, &dep, &factor);
-			if(start) {
-				printf("Listing states and dependencies on other states: \n");
-				printDependenciesInfo(	fmu, states, states, start, dep, factor);
-			}
-			else {
-				printf("No dependencies on states available\n");
-			}
         }
-		else {
+        fmi2_import_free_variable_list(vl);
+    }    
+    {
+        fmi2_import_variable_list_t* states = fmi2_import_get_states_list( fmu);
+        fmi2_import_variable_list_t* inputs = fmi2_import_get_inputs_list( fmu);
+        size_t n = 0;
+        if(states) 
+            n = fmi2_import_get_variable_list_size(states);
+        if(n>0) {
+            size_t *start, *dep;
+            char* factor;
+            printf("Listing states and dependencies on inputs: \n");
+            fmi2_import_get_dependencies_derivatives_on_inputs(fmu, &start, &dep, &factor);
+            printDependenciesInfo(fmu, states, inputs, start, dep, factor);
+
+            fmi2_import_get_dependencies_derivatives_on_states(fmu, &start, &dep, &factor);
+            if(start) {
+                printf("Listing states and dependencies on other states: \n");
+                printDependenciesInfo(fmu, states, states, start, dep, factor);
+            }
+            else {
+                printf("No dependencies on states available\n");
+            }
+        }
+        else {
             printf("There are no states\n");
-		}
+        }
         fmi2_import_free_variable_list(inputs);
         fmi2_import_free_variable_list(states);
-	}	
-	{
-		fmi2_import_variable_list_t* states = fmi2_import_get_states_list( fmu);
-		fmi2_import_variable_list_t* inputs = fmi2_import_get_inputs_list( fmu);
-		fmi2_import_variable_list_t* outputs = fmi2_import_get_outputs_list( fmu);
+    }    
+    {
+        fmi2_import_variable_list_t* states = fmi2_import_get_states_list( fmu);
+        fmi2_import_variable_list_t* inputs = fmi2_import_get_inputs_list( fmu);
+        fmi2_import_variable_list_t* outputs = fmi2_import_get_outputs_list( fmu);
         size_t n = 0;
-		if(outputs) 
-			n = fmi2_import_get_variable_list_size(outputs);
+        if(outputs) 
+            n = fmi2_import_get_variable_list_size(outputs);
         if(n>0) {
-			size_t *start, *dep;
-			char* factor;
+            size_t *start, *dep;
+            char* factor;
             printf("Listing outputs and dependencies on inputs: \n");
-			fmi2_import_get_dependencies_outputs_on_inputs(fmu, &start, &dep, &factor);
-			printDependenciesInfo(	fmu, outputs, inputs, start, dep, factor);
+            fmi2_import_get_dependencies_outputs_on_inputs(fmu, &start, &dep, &factor);
+            printDependenciesInfo(fmu, outputs, inputs, start, dep, factor);
 
-			fmi2_import_get_dependencies_outputs_on_states(fmu, &start, &dep, &factor);
-			if(start) {
-				printf("Listing outputs and dependencies on states: \n");
-				printDependenciesInfo(	fmu, outputs, states, start, dep, factor);
-			}
-			else {
-				printf("No dependencies on states available\n");
-			}
+            fmi2_import_get_dependencies_outputs_on_states(fmu, &start, &dep, &factor);
+            if(start) {
+                printf("Listing outputs and dependencies on states: \n");
+                printDependenciesInfo(fmu, outputs, states, start, dep, factor);
+            }
+            else {
+                printf("No dependencies on states available\n");
+            }
         }
-		else {
+        else {
             printf("There are no outputs\n");
-		}
+        }
         fmi2_import_free_variable_list(outputs);
         fmi2_import_free_variable_list(inputs);
         fmi2_import_free_variable_list(states);
-	}	
+    }
 */
 
 err2:

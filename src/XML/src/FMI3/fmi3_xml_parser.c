@@ -332,7 +332,7 @@ int fmi3_xml_is_attr_defined(fmi3_xml_parser_context_t *context, fmi3_xml_attr_e
 
 /**
  * Read value from parse buffer and clear the buffer entry.
- * @param valp (output arg): pointer to attribute value (memory still owned by expat)
+ * @param[out] valp : pointer to attribute value (memory still owned by expat)
  */
 int fmi3_xml_get_attr_str(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID,
         int required, const char** valp)

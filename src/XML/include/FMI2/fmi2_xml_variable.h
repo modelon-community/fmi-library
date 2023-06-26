@@ -32,9 +32,9 @@ extern "C" {
         /**
     \addtogroup fmi2_xml
     @{
-    \addtogroup fmi2_xml_variables Functions for handling variable definitions.
+    \addtogroup fmi2_xml_variables Functions for handling variable definitions
     @}
-    \addtogroup fmi2_xml_variables Functions for handling variable definitions.
+    \addtogroup fmi2_xml_variables Functions for handling variable definitions
     @{
     */
 const char* fmi2_xml_get_variable_name(fmi2_xml_variable_t*);

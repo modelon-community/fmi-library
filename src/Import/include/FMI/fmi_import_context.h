@@ -72,13 +72,13 @@ typedef struct fmi_xml_context_t fmi_import_context_t ;
     @param callbacks - a pointer to the library callbacks for memory management and logging. May be NULL if defaults are utilized.
     @return A new structure if memory allocation was successful.
 */
-FMILIB_EXPORT fmi_import_context_t* fmi_import_allocate_context( jm_callbacks* callbacks);
+FMILIB_EXPORT fmi_import_context_t* fmi_import_allocate_context(jm_callbacks* callbacks);
 
 /**
     \brief Free memory allocated for the library context.
-    @param c - library context allocated by fmi_import_allocate_context()
+    @param c - library context allocated by ::fmi_import_allocate_context()
 */
-FMILIB_EXPORT void fmi_import_free_context( fmi_import_context_t* c);
+FMILIB_EXPORT void fmi_import_free_context(fmi_import_context_t* c);
 
 /**
     \brief If this configuration option is set, the model description will be
@@ -91,9 +91,10 @@ FMILIB_EXPORT void fmi_import_free_context( fmi_import_context_t* c);
     \brief Sets advanced configuration, if zero is passed default configuration
     is set. Currently only one non default configuration is available:
     FMI_IMPORT_XML_NAME_CHECK.
+    @param c - library context allocated by ::fmi_import_allocate_context()
     @param conf - specifies the configuration to use
 */
-FMILIB_EXPORT void fmi_import_set_configuration( fmi_import_context_t* c, int conf);
+FMILIB_EXPORT void fmi_import_set_configuration(fmi_import_context_t* c, int conf);
 
 /**
     \brief Parse XML to get FMI standard version. If 'fileName' is not NULL, the FMU will first be unpacked into the directory 'dirName'.
@@ -120,27 +121,27 @@ typedef struct fmi3_import_t fmi3_import_t;
 
 /**
     \brief Parse FMI 1.0 XML file found in the directory dirName.
-    \param c - library context.
-    \param dirName - a directory where the FMU was unpacked and XML file is present.
-    \return fmi1_import_t:: opaque object pointer
+    @param c - library context.
+    @param dirName - a directory where the FMU was unpacked and XML file is present.
+    @return fmi1_import_t:: opaque object pointer
 */
 FMILIB_EXPORT fmi1_import_t* fmi1_import_parse_xml( fmi_import_context_t* c, const char* dirName);
 
 /**
     \brief Create ::fmi2_import_t structure and parse the FMI 2.0 XML file found in the directory dirName.
-    \param context - library context.
-    \param dirPath - a directory where the FMU was unpacked and XML file is present.
-    \param xml_callbacks Callbacks to use for processing of annotations (may be NULL).
-    \return fmi2_import_t:: opaque object pointer
+    @param context - library context.
+    @param dirPath - a directory where the FMU was unpacked and XML file is present.
+    @param xml_callbacks Callbacks to use for processing of annotations (may be NULL).
+    @return fmi2_import_t:: opaque object pointer
 */
 FMILIB_EXPORT fmi2_import_t* fmi2_import_parse_xml( fmi_import_context_t* context, const char* dirPath, fmi2_xml_callbacks_t* xml_callbacks);
 
 /**
     \brief Create ::fmi3_import_t structure and parse the FMI 3.0 XML file found in the directory dirName.
-    \param context - library context.
-    \param dirPath - a directory where the FMU was unpacked and XML file is present.
-    \param xml_callbacks Callbacks to use for processing of annotations (may be NULL).
-    \return fmi3_import_t:: opaque object pointer
+    @param context - library context.
+    @param dirPath - a directory where the FMU was unpacked and XML file is present.
+    @param xml_callbacks Callbacks to use for processing of annotations (may be NULL).
+    @return fmi3_import_t:: opaque object pointer
 */
 FMILIB_EXPORT fmi3_import_t* fmi3_import_parse_xml( fmi_import_context_t* context, const char* dirPath, fmi3_xml_callbacks_t* xml_callbacks);
 

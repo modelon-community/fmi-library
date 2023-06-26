@@ -25,7 +25,7 @@
     @}
 */
 
-/**    \addtogroup fmi3_utils Functions and types supporting FMI 3.0 processing.
+/**    \addtogroup fmi3_utils Functions and types supporting FMI 3.0 processing
     @{
 */
 /** \name Renaming of typedefs 

@@ -148,7 +148,7 @@ extern "C" {
 #endif
 
 /** \brief Get the library build stamp. 
-    \return A string giving SVN revision and build time for the library.
+    @return A string giving SVN revision and build time for the library.
 
     The function is only active if the library was configured with #FMILIB_GENERATE_BUILD_STAMP ON
 */

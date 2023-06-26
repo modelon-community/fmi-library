@@ -61,8 +61,8 @@ extern void jm_stack_free(T)(jm_stack(T)* a);
 
 /**
 *  \brief Initializes a #jm_stack allocated on stack.
-*  \param a - pointer to the stack to be initialized;
-*  \param c - ::jm_callbacks callbacks, can be zero
+*  @param a - pointer to the stack to be initialized;
+*  @param c - ::jm_callbacks callbacks, can be zero
 *
 *  \code
 void jm_stack_init(T)(jm_stack(T)* a, jm_callbacks* c)
@@ -77,7 +77,7 @@ void jm_stack_init(T)(jm_stack(T)* a, jm_callbacks* c)
 *\code
 inline void jm_stack_free_data(T)(jm_stack(T)* a)
 \endcode
-*\param a - pointer to the stack.
+*@param a - pointer to the stack.
 *
 */
 #define jm_stack_free_data(T) jm_mangle(jm_stack_free_data, T)
@@ -94,7 +94,7 @@ inline size_t jm_stack_get_size(T)(jm_stack(T)* a)
 /**
 *  \brief Preallocate memory for the stack (to speed up consequent push).
 *
-*  \return The actually reserved space. Can be smaller than "capacity" if memory allocation failed.
+*  @return The actually reserved space. Can be smaller than "capacity" if memory allocation failed.
 *  Can be larger than "capacity" if more memory was previously allocated.
 *  size_t jm_stack_reserve(T)(jm_stack(T)* a, size_t capacity)
 */
@@ -102,7 +102,7 @@ inline size_t jm_stack_get_size(T)(jm_stack(T)* a)
 
 /**
 *  \brief Put an element on the stack.
-*  \return A pointer to the inserted element or zero pointer if failed.
+*  @return A pointer to the inserted element or zero pointer if failed.
 *
 \code
 T* jm_stack_push_back(jm_stack(T)* a, T item);

@@ -59,7 +59,7 @@ TEST_CASE("Test parsing with locale set") {
      * OK. Also, ctest tests are by default not run in parallel.
      */
     tmp = setlocale(LC_NUMERIC, locale_bad);
-    REQUIRE(tmp != nullptr); 
+    REQUIRE(tmp != NULL); 
     /* If this errors, it's possible that your machine doesn't have
         * the locale installed.
         *
@@ -77,9 +77,9 @@ TEST_CASE("Test parsing with locale set") {
      * 'tmp'.
      */
     loc_old = (char*)malloc(strlen(tmp) + 1);
-    REQUIRE(loc_old != nullptr);
+    REQUIRE(loc_old != NULL);
     strcpy(loc_old, tmp);
-    tmp = nullptr;
+    tmp = NULL;
 
     SECTION("Parsing test") {
         /* Perform parsing and verify that the bad global locale did not affect
@@ -98,7 +98,7 @@ TEST_CASE("Test parsing with locale set") {
         REQUIRE(fmi3_import_get_default_experiment_step(xml)      == 2e-3);
 
         fmi3_import_free(xml);
-     }
+    }
 
     /* Cleanup and verify that locale is properly restored.
      *
@@ -106,7 +106,7 @@ TEST_CASE("Test parsing with locale set") {
      * per_thread context.
      */
     tmp = setlocale(LC_NUMERIC, loc_old);
-    REQUIRE(tmp != nullptr);
+    REQUIRE(tmp != NULL);
     REQUIRE_STREQ(tmp, locale_bad);
     free(loc_old);
 

@@ -145,7 +145,7 @@ fmi3Status fmi_get_float64(fmi3Instance instance, const fmi3ValueReference value
             m++;
         }
 
-        if (m - 1 != nValues) {
+        if (m != nValues) {
             return fmi3Fatal;
         }
 

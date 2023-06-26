@@ -17,8 +17,11 @@
 #include <stdlib.h>
 #include <stdarg.h>
 
-#include "config_test.h"
 #include "fmilib.h"
+#include "config_test.h"
+#include "fmi_testutil.h"
+
+#include "catch.hpp"
 
 #define BUFFER 1000
 
@@ -100,8 +103,8 @@ void test_capi_wrappers_me(fmi3_import_t* fmu)
     }
 
     /* test that get_nominals API is loaded */
-    jmstatus = fmi3_import_get_nominals_of_continuous_states(fmu, NULL, 0);
-    if (jmstatus == jm_status_error) {
+    fmistatus = fmi3_import_get_nominals_of_continuous_states(fmu, NULL, 0);
+    if (fmistatus == fmi3_status_error) {
         printf("fmi3_import_get_nominals_of_continuous_states failed\n");
         do_exit(CTEST_RETURN_FAIL);
     }
@@ -149,11 +152,11 @@ int test_simulate_me(fmi3_import_t* fmu)
         do_exit(CTEST_RETURN_FAIL);
     }
 
-    states = calloc(n_states, sizeof(double));
-    states_der = calloc(n_states, sizeof(double));
-    event_indicators = calloc(n_event_indicators, sizeof(double));
-    event_indicators_prev = calloc(n_event_indicators, sizeof(double));
-    roots_found = calloc(n_event_indicators, sizeof(fmi3_int32_t));
+    states = (fmi3_float64_t*)calloc(n_states, sizeof(double));
+    states_der = (fmi3_float64_t*)calloc(n_states, sizeof(double));
+    event_indicators = (fmi3_float64_t*)calloc(n_event_indicators, sizeof(double));
+    event_indicators_prev = (fmi3_float64_t*)calloc(n_event_indicators, sizeof(double));
+    roots_found = (fmi3_int32_t*)calloc(n_event_indicators, sizeof(fmi3_int32_t));
 
     jmstatus = fmi3_import_instantiate_model_exchange(
         fmu,
@@ -309,8 +312,7 @@ int test_simulate_me(fmi3_import_t* fmu)
     return 0;
 }
 
-int main(int argc, char *argv[])
-{
+TEST_CASE("main") {
     const char* tmpPath;
     jm_callbacks callbacks;
     fmi_import_context_t* context;
@@ -318,13 +320,7 @@ int main(int argc, char *argv[])
     jm_status_enu_t status;
 
     fmi3_import_t* fmu;
-    const char* FMUPath;
-
-    if (argc > 1) {
-        FMUPath = argv[1]; // Allows testing on any FMU
-    } else {
-        FMUPath = FMU3_ME_PATH;
-    }
+    const char* FMUPath = FMU3_ME_PATH;
 
     callbacks.malloc = malloc;
     callbacks.calloc = calloc;
@@ -382,5 +378,4 @@ int main(int argc, char *argv[])
     callbacks.free((void*)tmpPath);
 
     printf("Everything seems to be OK since you got this far=)!\n");
-    return 0;
 }

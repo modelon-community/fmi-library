@@ -19,9 +19,12 @@
 
 #include "config_test.h"
 
-#include <fmilib.h>
+#include "fmilib.h"
+#include "config_test.h"
+#include "fmi_testutil.h"
 #include <JM/jm_portability.h>
 
+#include "catch.hpp"
 
 #define BUFFER 1000
 
@@ -41,7 +44,7 @@ fmi3_status_t dummy_intermediate_update_callback(
         fmi3_boolean_t* earlyReturnRequested,
         fmi3_float64_t* earlyReturnTime)
 {
-    return fmi3_status_ok; /* NYI */
+    return fmi3_status_ok;
 }
 
 void do_exit(int code)
@@ -52,41 +55,30 @@ void do_exit(int code)
 }
 
 /* just check that it's possible to call the dependency functions */
-int call_dependency_functions(fmi3_import_t* fmu)
-{
-    fmi3_status_t fmistatus;
+void call_dependency_functions(fmi3_import_t* fmu) {
     fmi3_value_reference_t dependent = 1; /* arbitrarily chosen */
-    size_t* elementIndicesOfDependent;
-    fmi3_value_reference_t* independents;
-    size_t* elementIndicesOfIndependents;
-    fmi3_dependency_kind_t* dependencyKinds;
     size_t nDeps;
 
-    fmistatus = fmi3_import_get_number_of_variable_dependencies(fmu, 1, &nDeps);
-    if (fmistatus != fmi3_status_ok) {
-        printf("fmi3_import_get_number_of_variable_dependencies failed\n");
-        do_exit(CTEST_RETURN_FAIL);
-    }
+    REQUIRE(fmi3_import_get_number_of_variable_dependencies(fmu, 1, &nDeps) == fmi3_status_ok); // populates nDeps
 
-    elementIndicesOfDependent = malloc(nDeps * sizeof(size_t));
-    independents = malloc(nDeps * sizeof(fmi3_value_reference_t));
-    elementIndicesOfIndependents = malloc(nDeps * sizeof(size_t));
-    dependencyKinds = malloc(nDeps * sizeof(fmi3_dependency_kind_t));
+    size_t* elementIndicesOfDependent = (size_t*)malloc(nDeps * sizeof(size_t));
+    fmi3_value_reference_t* independents =(fmi3_value_reference_t*)malloc(nDeps * sizeof(fmi3_value_reference_t));
+    size_t* elementIndicesOfIndependents = (size_t*)malloc(nDeps * sizeof(size_t));
+    fmi3_dependency_kind_t* dependencyKinds = (fmi3_dependency_kind_t*)malloc(nDeps * sizeof(fmi3_dependency_kind_t));
 
-    fmistatus = fmi3_import_get_variable_dependencies(fmu, dependent, elementIndicesOfDependent, independents,
-            elementIndicesOfIndependents, dependencyKinds, nDeps);
-    if (fmistatus != fmi3_status_ok) {
-        printf("fmi3_import_get_number_of_variable_dependencies failed\n");
-        do_exit(CTEST_RETURN_FAIL);
-    }
+    // populates elementIndicesOfDependent, independents, elementIndicesOfIndependents, dependencyKinds
+    REQUIRE(fmi3_import_get_variable_dependencies(fmu, dependent, elementIndicesOfDependent, independents,
+            elementIndicesOfIndependents, dependencyKinds, nDeps) == fmi3_status_ok);
 
-    /* note: ignoring cleanup on test failure to keep it simple */
+    REQUIRE(elementIndicesOfDependent != nullptr);
+    REQUIRE(independents != nullptr);
+    REQUIRE(elementIndicesOfIndependents != nullptr);
+    REQUIRE(dependencyKinds != nullptr);
+
     free(elementIndicesOfDependent);
     free(independents);
     free(elementIndicesOfIndependents);
     free(dependencyKinds);
-
-    return 0;
 }
 
 
@@ -115,8 +107,8 @@ int test_simulate_cs(fmi3_import_t * fmu)
 
 
     /* fmi3_float64_t simulation_results[] = {-0.001878, -1.722275}; */
-    fmi3_float64_t simulation_results[] = { 0.0143633,   -1.62417 };
-    fmi3_value_reference_t compare_real_variables_vr[] = { 0, 1 };
+    fmi3_float64_t simulation_results[2] = { 0.0143633,   -1.62417 };
+    fmi3_value_reference_t compare_real_variables_vr[2] = { 0, 1 };
     size_t k;
 
     fmi3_float64_t tstart = 0.0;
@@ -127,16 +119,10 @@ int test_simulate_cs(fmi3_import_t * fmu)
 
     size_t nValues = 1;
 
-    if (sizeof(compare_real_variables_vr) / sizeof(fmi3_value_reference_t) != sizeof(simulation_results) / sizeof(fmi3_float64_t)) {
-        printf("Number of simulation values and reference values are different\n");
-        do_exit(CTEST_RETURN_FAIL);
-    }
+    REQUIRE(sizeof(compare_real_variables_vr) / sizeof(fmi3_value_reference_t) == sizeof(simulation_results) / sizeof(fmi3_float64_t));
 
-    printf("Version returned from FMU:   %s\n", fmi3_import_get_version(fmu));
-
-    fmuInstantiationToken = fmi3_import_get_instantiation_token(fmu);
-    printf("instantiationToken:      %s\n", fmuInstantiationToken);
-
+    REQUIRE_STREQ(fmi3_import_get_version(fmu), "3.0");
+    REQUIRE_STREQ(fmi3_import_get_instantiation_token(fmu), "123");
 
     /* TODO */
     jmstatus = fmi3_import_instantiate_co_simulation(
@@ -153,58 +139,33 @@ int test_simulate_cs(fmi3_import_t * fmu)
             NULL,
             NULL);
 
-    if (jmstatus == jm_status_error) {
-        printf("fmi3_import_instantiate_co_simulation failed\n");
-        do_exit(CTEST_RETURN_FAIL);
-    }
+    REQUIRE(jmstatus == jm_status_success);
 
-    fmistatus = fmi3_import_enter_initialization_mode(fmu, fmi3_true,
-        relativeTol, tstart, StopTimeDefined, tend);
-    if (fmistatus != fmi3_status_ok) {
-        printf("fmi3_import_enter_initialization_mode failed\n");
-        do_exit(CTEST_RETURN_FAIL);
-    }
+    REQUIRE(fmi3_import_enter_initialization_mode(fmu, fmi3_true,
+        relativeTol, tstart, StopTimeDefined, tend) == fmi3_status_ok);
+    REQUIRE(fmi3_import_exit_initialization_mode(fmu) == fmi3_status_ok);
 
-    fmistatus = fmi3_import_exit_initialization_mode(fmu);
-    if (fmistatus != fmi3_status_ok) {
-        printf("fmi3_import_exit_initialization_mode failed\n");
-        do_exit(CTEST_RETURN_FAIL);
-    }
-
-    if (call_dependency_functions(fmu)) {
-        printf("call_dependency_functions failed\n");
-        do_exit(CTEST_RETURN_FAIL);
-    }
+    call_dependency_functions(fmu);
 
     tcur = tstart;
-    printf("%10s %10s\n", "Ball height", "Ball speed");
     while (tcur < tend) {
         fmi3_boolean_t newStep = fmi3_true; /* noSetFMUStatePriorToCurrentPoint */
-#if 0 /* Prints a real value.. */
-        fmi3_float64_t rvalue;
-        fmi3_value_reference_t vr = 0;
-
-        fmistatus = fmi3_import_get_real(fmu, &vr, 1, &rvalue);
-        printf("rvalue = %f\n", rvalue);
-#endif
         /* The test FMU behaves "normally" for now, so not checking the new FMI 3 output args */
-        fmistatus = fmi3_import_do_step(fmu, tcur, hstep, newStep, &eventHandlingNeeded, &terminate, &earlyReturn, &lastSuccessfulTime);
+        REQUIRE(fmi3_import_do_step(fmu, tcur, hstep, newStep, &eventHandlingNeeded, &terminate, &earlyReturn, &lastSuccessfulTime) == fmi3_status_ok);
 
         for (k = 0; k < sizeof(compare_real_variables_vr)/sizeof(fmi3_value_reference_t); k++) {
             fmi3_value_reference_t vr = compare_real_variables_vr[k];
             fmi3_float64_t rvalue;
-            fmistatus = fmi3_import_get_float64(fmu, &vr, 1, &rvalue, nValues);
+            fmistatus = fmi3_import_get_float64(fmu, &vr, 1, &rvalue, 1);
+            REQUIRE(fmistatus == fmi3_status_ok);
         }
-        {
-            fmi3_float64_t val[2];
-            fmi3_import_get_float64(fmu, compare_real_variables_vr, 2, val, nValues);
-            printf("%10g %10g\n", val[0],val[1]);
-        }
+        fmi3_float64_t val[2];
+        REQUIRE(fmi3_import_get_float64(fmu, compare_real_variables_vr, 2, val, 2) == fmi3_status_ok);
 
         tcur += hstep;
     }
 
-    printf("Simulation finished. Checking results\n");
+    // Simulation finished. Checking results
 
     /* Validate result */
     for (k = 0; k < sizeof(compare_real_variables_vr)/sizeof(fmi3_value_reference_t); k++) {
@@ -275,8 +236,7 @@ void fmi3_test_log_forwarding_wrap(fmi3_instance_environment_t instEnv, fmi3_sta
  *** main ***
  ************/
 
-int main(int argc, char *argv[])
-{
+TEST_CASE("main") {
     fmi3_inst_env_count_calls_t instEnv;
     const char* tmpPath;
     jm_callbacks callbacks;
@@ -343,5 +303,4 @@ int main(int argc, char *argv[])
     callbacks.free((void*)tmpPath);
 
     printf("Everything seems to be OK since you got this far=)!\n");
-    return 0;
 }

@@ -17,15 +17,9 @@ set(FMI3_TEST_XML_DIR ${FMIL_TEST_DIR}/FMI3/parser_test_xmls)
 set(FMU3_DUMMY_FOLDER ${FMIL_TEST_DIR}/FMI3/fmu_dummy)
 to_native_c_path(${TEST_OUTPUT_FOLDER}/tempfolder/FMI3 FMU3_TEMPFOLDER)
 
-set(FMU3_DUMMY_ME_SOURCE
-    ${FMU3_DUMMY_FOLDER}/fmu3_model_me.c
-)
-set(FMU3_DUMMY_CS_SOURCE
-    ${FMU3_DUMMY_FOLDER}/fmu3_model_cs.c
-)
-set(FMU3_DUMMY_SE_SOURCE
-    ${FMU3_DUMMY_FOLDER}/fmu3_model_se.c
-)
+set(FMU3_DUMMY_ME_SOURCE ${FMU3_DUMMY_FOLDER}/fmu3_model_me.c)
+set(FMU3_DUMMY_CS_SOURCE ${FMU3_DUMMY_FOLDER}/fmu3_model_cs.c)
+set(FMU3_DUMMY_SE_SOURCE ${FMU3_DUMMY_FOLDER}/fmu3_model_se.c)
 set(FMU3_DUMMY_HEADERS
     ${FMU3_DUMMY_FOLDER}/fmu3_model.h
     ${FMU3_DUMMY_FOLDER}/fmu3_model_defines.h
@@ -62,26 +56,7 @@ to_native_c_path("${TEST_OUTPUT_FOLDER}/FmuUnpack" FMU_UNPACK_DIR)
 file(MAKE_DIRECTORY ${FMU_UNPACK_DIR})
 
 # General functionality tests
-add_executable(fmi3_import_sim_me_test ${FMIL_TEST_DIR}/FMI3/fmi3_import_sim_me_test.c)
-target_link_libraries(fmi3_import_sim_me_test ${FMILIBFORTEST})
-
-add_executable(fmi3_import_sim_cs_test ${FMIL_TEST_DIR}/FMI3/fmi3_import_sim_cs_test.c)
-target_link_libraries(fmi3_import_sim_cs_test ${FMILIBFORTEST})
-
-add_executable(fmi3_import_sim_se_test ${FMIL_TEST_DIR}/FMI3/fmi3_import_sim_se_test.c)
-target_link_libraries(fmi3_import_sim_se_test ${FMILIBFORTEST})
-
-set_target_properties(
-    fmi3_import_sim_me_test
-    fmi3_import_sim_cs_test
-    fmi3_import_sim_se_test
-    PROPERTIES FOLDER "Test/FMI3"
-)
-set(FAIL_NAME_CHECK 0)
-set(PASS_NAME_CHECK 1)
-
 # TODO: Sort these by name
-
 add_catch2_test(fmi3_capi_basic_test                     FMI3)
 add_catch2_test(fmi3_import_start_arrays_test            FMI3)
 add_catch2_test(fmi3_import_variable_test                FMI3)
@@ -97,6 +72,9 @@ add_catch2_test(fmi3_import_options_test                 FMI3)
 add_catch2_test(fmi3_import_arrays_test                  FMI3)
 add_catch2_test(fmi3_import_default_experiment_test      FMI3)
 add_catch2_test(fmi3_import_fatal_test                   FMI3)
+add_catch2_test(fmi3_import_sim_cs_test                  FMI3)
+add_catch2_test(fmi3_import_sim_me_test                  FMI3)
+add_catch2_test(fmi3_import_sim_se_test                  FMI3)
 add_catch2_test(fmi3_variability_causality_initial_test  FMI3)
 add_catch2_test(fmi3_xml_naming_conv_test                FMI3)
 
@@ -104,17 +82,4 @@ if(FMILIB_TEST_LOCALE)
     add_catch2_test_with_compile_def(fmi3_xml_locale_test FMI3 PRIVATE -DFMILIB_TEST_LOCALE)
 else()
     add_catch2_test(fmi3_xml_locale_test FMI3)
-endif()
-
-# FIXME: Missing dependency on building the FMU
-add_test(ctest_fmi3_import_sim_me_test fmi3_import_sim_me_test)
-add_test(ctest_fmi3_import_sim_cs_test fmi3_import_sim_cs_test)
-add_test(ctest_fmi3_import_sim_se_test fmi3_import_sim_se_test)
-
-if(FMILIB_BUILD_BEFORE_TESTS)
-    set_tests_properties(
-        ctest_fmi3_import_sim_me_test
-        ctest_fmi3_import_sim_cs_test
-        ctest_fmi3_import_sim_se_test
-        PROPERTIES DEPENDS ctest_build_all)
 endif()

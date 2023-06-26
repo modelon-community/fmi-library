@@ -19,14 +19,19 @@
 
 #include "config_test.h"
 
-#include <fmilib.h>
+#include "fmilib.h"
+#include "config_test.h"
+#include "fmi_testutil.h"
 #include <JM/jm_portability.h>
+
+#include "catch.hpp"
 
 #define BUFFER 1000
 
 /* globals */
 fmi3_boolean_t G_dummy_lock_preemption_callback_called;
 fmi3_boolean_t G_dummy_unlock_preemption_callback_called;
+static int g_dummy_clock_callbacks;
 
 typedef struct {
     fmi3_boolean_t clock_update_callback_called; /* Boolean used to test the call to fmi3ClockUpdateCallback */
@@ -47,9 +52,9 @@ void dummy_log_message_callback(
     ((dummy_fmi3_instance_environment_t*)env)->log_message_callback_called = fmi3_true;
 }
 
-void dummy_clock_update_callback(fmi3_instance_environment_t* env)
+void dummy_clock_update_callback()
 {
-    ((dummy_fmi3_instance_environment_t*)env)->clock_update_callback_called = fmi3_true;
+    g_dummy_clock_callbacks++;
 }
 
 /* function implementing fmi3_lock_preemption_callback_ft */
@@ -74,10 +79,10 @@ void do_exit(int code)
 
 void test_capi_activate_model_partition(fmi3_import_t* fmu)
 {
-    jm_status_enu_t jmstatus;
+    fmi3_status_t fmi3status;
 
-    jmstatus = fmi3_import_activate_model_partition(fmu, 0, 0);
-    if (jmstatus == jm_status_error) {
+    fmi3status = fmi3_import_activate_model_partition(fmu, 0, 0);
+    if (fmi3status == fmi3_status_error) {
         printf("fmi3_import_activate_model_partition failed\n");
         do_exit(CTEST_RETURN_FAIL);
     }
@@ -96,6 +101,8 @@ int test_capi_wrappers_se(fmi3_import_t * fmu)
         .clock_update_callback_called = fmi3_false,
         .log_message_callback_called = fmi3_false
     };
+
+    g_dummy_clock_callbacks = 0;
 
 
     /* reset value that will be set by intermedate update callback */
@@ -127,7 +134,7 @@ int test_capi_wrappers_se(fmi3_import_t * fmu)
         printf("fmi3_import_instantiate_scheduled_execution failed, dummy for fmi3LogMessageCallback was never called\n");
         do_exit(CTEST_RETURN_FAIL);
     }
-    if (instance_env.clock_update_callback_called == fmi3_false) {
+    if (g_dummy_clock_callbacks == 0) {
         printf("fmi3_import_instantiate_scheduled_execution failed, dummy for fmi3ClockUpdateCallback was never called\n");
         do_exit(CTEST_RETURN_FAIL);
     }
@@ -174,8 +181,7 @@ void fmi3_test_log_forwarding_wrap(fmi3_instance_environment_t instEnv, fmi3_sta
  *** main ***
  ************/
 
-int main(int argc, char *argv[])
-{
+TEST_CASE("main") {
     fmi3_inst_env_count_calls_t instEnv;
     const char* tmpPath;
     jm_callbacks callbacks;
@@ -244,5 +250,4 @@ int main(int argc, char *argv[])
     callbacks.free((void*)tmpPath);
 
     printf("Everything seems to be OK since you got this far=)!\n");
-    return 0;
 }

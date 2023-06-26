@@ -40,8 +40,6 @@ set(XML_SE_PATH ${FMU3_DUMMY_FOLDER}/modelDescription_se.xml)
 set(XML_MF_PATH ${FMU3_DUMMY_FOLDER}/modelDescription_malformed.xml)
 
 set(FMI3_TEST_XML_DIR ${FMIL_TEST_DIR}/FMI3/parser_test_xmls)
-set(DEFAULT_EXPERIMENT_MODEL_DESC_DIR                 ${FMI3_TEST_XML_DIR}/default_experiment/) # Trailing '/' necessary (for building system independent path)
-set(VARIABLE_BAD_VARIABILITY_CAUSALITY_MODEL_DESC_DIR ${FMI3_TEST_XML_DIR}/variable_bad_variability_causality)
 
 set(SHARED_LIBRARY_ME_PATH ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${CMAKE_SHARED_LIBRARY_PREFIX}fmu3_dll_me${CMAKE_SHARED_LIBRARY_SUFFIX})
 set(SHARED_LIBRARY_CS_PATH ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${CMAKE_SHARED_LIBRARY_PREFIX}fmu3_dll_cs${CMAKE_SHARED_LIBRARY_SUFFIX})

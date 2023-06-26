@@ -33,9 +33,8 @@
 TEST_CASE("Test parsing with locale set") {
 
 #ifdef FMILIB_TEST_LOCALE
-    jm_callbacks* cb = jm_get_default_callbacks();
-    char* loc_old = NULL;
-    char* tmp = NULL;
+    char* loc_old = nullptr;
+    char* tmp = nullptr;
 
     /* Any locale that uses decimal comma instead of decimal point. */
 #ifdef WIN32
@@ -80,7 +79,7 @@ TEST_CASE("Test parsing with locale set") {
     loc_old = (char*)malloc(strlen(tmp) + 1);
     REQUIRE(loc_old != nullptr);
     strcpy(loc_old, tmp);
-    tmp = NULL;
+    tmp = nullptr;
 
     SECTION("Parsing test") {
         /* Perform parsing and verify that the bad global locale did not affect

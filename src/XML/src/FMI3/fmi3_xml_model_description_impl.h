@@ -122,7 +122,7 @@ struct fmi3_xml_model_description_t {
 
     fmi3_fmu_kind_enu_t fmuKind;
 
-    unsigned int capabilities[fmi3_capabilities_Num];
+    unsigned int capabilities[fmi3_capabilities_num];
 
     fmi3_xml_model_structure_t* modelStructure;
 };

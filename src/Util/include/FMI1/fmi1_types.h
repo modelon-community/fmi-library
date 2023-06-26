@@ -25,7 +25,7 @@
     @}
 */
 
-/**    \addtogroup fmi1_utils Functions and types supporting FMI 1.0 processing.
+/**    \addtogroup fmi1_utils Functions and types supporting FMI 1.0 processing
     @{
 */
 /** \name Renaming of typedefs 

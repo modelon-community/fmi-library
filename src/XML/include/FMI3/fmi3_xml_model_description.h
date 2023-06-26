@@ -243,17 +243,17 @@ jm_vector(jm_voidp)* fmi3_xml_get_variables_vr_order(fmi3_xml_model_description_
 
 /**
     \brief Get variable by variable name.
-    \param md - the model description
-    \param name - variable name
-    \return variable pointer.
+    @param md - the model description
+    @param name - variable name
+    @return variable pointer.
 */
 fmi3_xml_variable_t* fmi3_xml_get_variable_by_name(fmi3_xml_model_description_t* md, const char* name);
 
 /**
     \brief Get variable by value reference.
-    \param md - the model description
-    \param vr - value reference
-    \return variable pointer.
+    @param md - the model description
+    @param vr - value reference
+    @return variable pointer.
 */
 fmi3_xml_variable_t* fmi3_xml_get_variable_by_vr(fmi3_xml_model_description_t* md, fmi3_value_reference_t vr);
 
@@ -261,7 +261,7 @@ fmi3_xml_variable_t* fmi3_xml_get_variable_by_vr(fmi3_xml_model_description_t* m
 size_t fmi3_xml_get_vendors_num(fmi3_xml_model_description_t* md);
 
 /** \brief Get the name of the vendor with that had annotations in the XML by index */
-const char* fmi3_xml_get_vendor_name(fmi3_xml_model_description_t* md, size_t  index);
+const char* fmi3_xml_get_vendor_name(fmi3_xml_model_description_t* md, size_t index);
 
 /** \brief Get the log categories defined in the XML */
 jm_vector(jm_string)* fmi3_xml_get_log_categories(fmi3_xml_model_description_t* md);

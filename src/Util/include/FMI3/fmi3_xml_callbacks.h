@@ -37,14 +37,14 @@ typedef struct fmi3_xml_callbacks_t fmi3_xml_callbacks_t;
 */
 /** \brief Handle start of an XML element within tool annotation in a SAX parser.
 *
-*    @param context as specified when setting up the callbacks,
+*   @param context as specified when setting up the callbacks,
 *   @param parentName - tool name as given by name attibute to the Tool elelent,
 *   @param parent - NULL for model level annotations; fmi3_import_variable_t * variable pointer for variable annotations. 
 *   @param elm - name of the element, 
 *   @param attr - attributes (names and values).
 *  The function should return 0 on success or error code on exit (in which case parsing will be aborted).
 */
-typedef int (*fmi3_xml_element_start_handle_ft)(    void *context, const char *toolName, void *parent, const char *elm, const char **attr);
+typedef int (*fmi3_xml_element_start_handle_ft)(void* context, const char *toolName, void* parent, const char *elm, const char **attr);
 
 /** \brief Handle data of an XML element within tool annotation in a SAX parser.
 *
@@ -61,16 +61,17 @@ typedef int (*fmi3_xml_element_data_handle_ft)(void* context, const char *s, int
 *  @param elm - name of the element.
 *  The function should return 0 on success or error code on exit (in which case parsing will be aborted).
 */
-typedef int (*fmi3_xml_element_end_handle_ft)(void *context, const char *elm);
+typedef int (*fmi3_xml_element_end_handle_ft)(void* context, const char *elm);
 
 /** \brief XML callbacks are used to process parts of XML that are not handled by the library */
 struct fmi3_xml_callbacks_t {
     fmi3_xml_element_start_handle_ft startHandle; /** \brief Handle start of an XML element within tool annotation in a SAX parser. */
     fmi3_xml_element_data_handle_ft  dataHandle;  /** \brief Handle data of an XML element within tool annotation in a SAX parser.  */
     fmi3_xml_element_end_handle_ft   endHandle;   /** \brief Handle end of an XML element within tool annotation in a SAX parser. */
-    void* context;    /** \breif Context ponter is forwarded to the handle functions. */
+    void* context;    /** \brief Context ponter is forwarded to the handle functions. */
 };
-/* @}
+/** @} 
+*  @}
 */
 
 #ifdef __cplusplus

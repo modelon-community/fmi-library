@@ -34,10 +34,10 @@ extern "C" {
 /**
  * \addtogroup fmi3_import
  * @{
- * \addtogroup fmi3_import_variables Functions for handling variable definitions.
+ * \addtogroup fmi3_import_variables Functions for handling variable definitions
  * @}
  *
- * \addtogroup fmi3_import_variables Functions for handling variable definitions.
+ * \addtogroup fmi3_import_variables Functions for handling variable definitions
  * \brief All the functions in this group take a pointer to ::fmi3_import_variable_t as a parameter.
  * A variable pointer may be obtained via a \ref fmi3_import_varlist module or via functions
  * fmi3_import_get_variable_by_name() and fmi3_import_get_variable_by_vr().
@@ -55,9 +55,9 @@ extern "C" {
  * However, typed variables are needed to support specific attributes.
  */
 typedef struct fmi3_xml_variable_t fmi3_import_variable_t;
-/** \brief  Opaque float32 variable */
+/** \brief Opaque float32 variable */
 typedef struct fmi3_xml_float32_variable_t fmi3_import_float32_variable_t;
-/** \brief  Opaque float64 variable */
+/** \brief Opaque float64 variable */
 typedef struct fmi3_xml_float64_variable_t fmi3_import_float64_variable_t;
 /** \brief Opaque int64 variable */
 typedef struct fmi3_xml_int64_variable_t fmi3_import_int64_variable_t;
@@ -411,32 +411,31 @@ FMILIB_EXPORT fmi3_string_t fmi3_import_get_string_variable_start(fmi3_import_st
 /** \brief Get start values for the array variable */
 FMILIB_EXPORT fmi3_string_t* fmi3_import_get_string_variable_start_array(fmi3_import_string_variable_t* v);
 
-
 /** \brief Get start value for the variable */
 FMILIB_EXPORT fmi3_boolean_t fmi3_import_get_boolean_variable_start(fmi3_import_bool_variable_t* v);
 
 /** \brief Get the start values of an array variable
     @return Pointer to array with start values. Total length of array is given by product of the dimensions given by
-        #fmi3_import_get_variable_dimensions. FMI Library handles memory for the array.
+        #fmi3_import_get_variable_dimension_list. FMI Library handles memory for the array.
 */
 FMILIB_EXPORT fmi3_boolean_t* fmi3_import_get_boolean_variable_start_array(fmi3_import_bool_variable_t* v);
 
 /** \brief Get "quantity" attribute if defined, else NULL-pointer. */
-FMILIB_EXPORT fmi3_string_t fmi3_import_get_int64_variable_quantity(fmi3_import_int64_variable_t * v);
+FMILIB_EXPORT fmi3_string_t fmi3_import_get_int64_variable_quantity(fmi3_import_int64_variable_t* v);
 /** \brief Get "quantity" attribute if defined, else NULL-pointer. */
-FMILIB_EXPORT fmi3_string_t fmi3_import_get_int32_variable_quantity(fmi3_import_int32_variable_t * v);
+FMILIB_EXPORT fmi3_string_t fmi3_import_get_int32_variable_quantity(fmi3_import_int32_variable_t* v);
 /** \brief Get "quantity" attribute if defined, else NULL-pointer. */
-FMILIB_EXPORT fmi3_string_t fmi3_import_get_int16_variable_quantity(fmi3_import_int16_variable_t * v);
+FMILIB_EXPORT fmi3_string_t fmi3_import_get_int16_variable_quantity(fmi3_import_int16_variable_t* v);
 /** \brief Get "quantity" attribute if defined, else NULL-pointer. */
-FMILIB_EXPORT fmi3_string_t fmi3_import_get_int8_variable_quantity(fmi3_import_int8_variable_t * v);
+FMILIB_EXPORT fmi3_string_t fmi3_import_get_int8_variable_quantity(fmi3_import_int8_variable_t* v);
 /** \brief Get "quantity" attribute if defined, else NULL-pointer. */
-FMILIB_EXPORT fmi3_string_t fmi3_import_get_uint64_variable_quantity(fmi3_import_uint64_variable_t * v);
+FMILIB_EXPORT fmi3_string_t fmi3_import_get_uint64_variable_quantity(fmi3_import_uint64_variable_t* v);
 /** \brief Get "quantity" attribute if defined, else NULL-pointer. */
-FMILIB_EXPORT fmi3_string_t fmi3_import_get_uint32_variable_quantity(fmi3_import_uint32_variable_t * v);
+FMILIB_EXPORT fmi3_string_t fmi3_import_get_uint32_variable_quantity(fmi3_import_uint32_variable_t* v);
 /** \brief Get "quantity" attribute if defined, else NULL-pointer. */
-FMILIB_EXPORT fmi3_string_t fmi3_import_get_uint16_variable_quantity(fmi3_import_uint16_variable_t * v);
+FMILIB_EXPORT fmi3_string_t fmi3_import_get_uint16_variable_quantity(fmi3_import_uint16_variable_t* v);
 /** \brief Get "quantity" attribute if defined, else NULL-pointer. */
-FMILIB_EXPORT fmi3_string_t fmi3_import_get_uint8_variable_quantity(fmi3_import_uint8_variable_t * v);
+FMILIB_EXPORT fmi3_string_t fmi3_import_get_uint8_variable_quantity(fmi3_import_uint8_variable_t* v);
 
 /** \brief Get minimal value for the variable */
 FMILIB_EXPORT fmi3_int64_t fmi3_import_get_int64_variable_min(fmi3_import_int64_variable_t* v);
@@ -490,7 +489,7 @@ FMILIB_EXPORT fmi3_uint16_t fmi3_import_get_uint16_variable_start(fmi3_import_ui
 FMILIB_EXPORT fmi3_uint8_t fmi3_import_get_uint8_variable_start(fmi3_import_uint8_variable_t* v);
 
 /** \brief Get "quantity" attribute if defined, else NULL-pointer. */
-FMILIB_EXPORT fmi3_string_t fmi3_import_get_enum_variable_quantity(fmi3_import_enum_variable_t * v);
+FMILIB_EXPORT fmi3_string_t fmi3_import_get_enum_variable_quantity(fmi3_import_enum_variable_t* v);
 /** \brief Get start value for the variable*/
 FMILIB_EXPORT fmi3_int64_t fmi3_import_get_enum_variable_start(fmi3_import_enum_variable_t* v);
 /** \brief Get start value for the array variable*/
@@ -544,7 +543,7 @@ FMILIB_EXPORT size_t fmi3_import_get_alias_variables_number(fmi3_import_alias_va
 /** \brief Get the alias from the list at the given index. */
 FMILIB_EXPORT fmi3_import_alias_variable_t* fmi3_import_get_alias(fmi3_import_alias_variables_t* aliases, size_t index);
 
-/** \brief Get name for the alias variable.  */
+/** \brief Get name for the alias variable. */
 FMILIB_EXPORT const char* fmi3_import_get_alias_variable_name(fmi3_import_alias_variable_t* alias);
 /** \brief Get the description for the alias variable */
 FMILIB_EXPORT const char* fmi3_import_get_alias_variable_description(fmi3_import_alias_variable_t* alias);

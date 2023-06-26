@@ -43,10 +43,10 @@ struct jm_named_ptr {
 
 /**
 \brief Allocate memory for the object and the name string and sets pointer to it packed together with the name pointer.
- \param name Name for the object.
- \param size Size of the data structure.
- \param nameoffset Offset of the name field within the data structure.
- \param c Callbacks to be used for memory allocation.
+ @param name Name for the object.
+ @param size Size of the data structure.
+ @param nameoffset Offset of the name field within the data structure.
+ @param c Callbacks to be used for memory allocation.
 
 The function jm_named_alloc() is intended for types defined as:
 \code

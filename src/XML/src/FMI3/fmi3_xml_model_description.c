@@ -99,7 +99,7 @@ fmi3_xml_model_description_t * fmi3_xml_allocate_model_description( jm_callbacks
 
     md->fmuKind = fmi3_fmu_kind_unknown;
 
-    for (size_t i = 0; i < fmi3_capabilities_Num; i++) {
+    for (size_t i = 0; i < fmi3_capabilities_num; i++) {
         md->capabilities[i] = 0;
     }
 
@@ -333,7 +333,7 @@ unsigned int* fmi3_xml_get_capabilities(fmi3_xml_model_description_t* md) {
 }
 
 unsigned int fmi3_xml_get_capability(fmi3_xml_model_description_t* md, fmi3_capabilities_enu_t id) {
-    assert((unsigned)id < (unsigned)fmi3_capabilities_Num);
+    assert((unsigned)id < (unsigned)fmi3_capabilities_num);
     return md->capabilities[id];
 }
 

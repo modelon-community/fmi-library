@@ -20,11 +20,11 @@
 
 
 /** \file fmi3_import_dimension_list.h
-*  \brief Public interface to the FMI XML C-library. Handling of dimension lists.
+*  \brief Public interface to the FMI XML C-library. Handling of dimensions.
 */
 
-#ifndef FMI3_IMPORT_DIMENSIONLIST_H_
-#define FMI3_IMPORT_DIMENSIONLIST_H_
+#ifndef FMI3_IMPORT_DIMENSION_H_
+#define FMI3_IMPORT_DIMENSION_H_
 
 #include "fmilib_config.h"
 #include "FMI3/fmi3_xml_dimension.h"
@@ -33,7 +33,22 @@
 extern "C" {
 #endif
 
+/**
+    \addtogroup fmi3_import 
+    @{
+       \defgroup fmi3_import_dim Handling of dimensions
+    @}
+ */
+
+/**
+    \addtogroup fmi3_import_dim
+    \brief Handling of dimensions for array variables.
+    @{ 
+ */
+
+/** \brief Opaque data type for dimension handling */
 typedef struct fmi3_xml_dimension_t fmi3_import_dimension_t;
+/** \brief Opaque data type for dimension list handling*/
 typedef struct fmi3_import_dimension_list_t fmi3_import_dimension_list_t;
 
 /** \brief Checks if the dimension contains the valueReference attribute */
@@ -48,8 +63,11 @@ FMILIB_EXPORT fmi3_uint64_t fmi3_import_get_dimension_start(fmi3_import_dimensio
 /** \brief Get the valueReference of the dimension */
 FMILIB_EXPORT fmi3_value_reference_t fmi3_import_get_dimension_vr(fmi3_import_dimension_t*);
 
+/** @}
+ */
+
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* FMI3_IMPORT_DIMENSIONLIST_H_ */
+#endif /* FMI3_IMPORT_DIMENSION_H_ */

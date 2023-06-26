@@ -98,43 +98,42 @@ const char* jm_get_system_temp_dir();
 
 /**
     \brief Create a uniquely named temporary directory.
-    \param cb - callbacks for memory allocation and logging. Default callbacks
+    @param cb - callbacks for memory allocation and logging. Default callbacks
             are used if this parameter is NULL.
-    \param tmplt Directory name template ending with XXXXXX. The template is
+    @param tmplt Directory name template ending with XXXXXX. The template is
             modified by the call.
-    \return A pointer to the modified template. The function returns NULL if
+    @return A pointer to the modified template. The function returns NULL if
             the template does not end with XXXXXX, or if the directory could
             not be created.
 */
 char *jm_mkdtemp(jm_callbacks *cb, char *tmplt);
 
-
 /**
     \brief Get absolute path to an existing directory
-    \param cb - callbacks for memory allocation and logging. Default callbacks are used if this parameter is NULL.
-    \param dir - path to a directory (relative or absolute).
-    \param outPath - buffer for storing the directory
-    \param len - of the buffer (if size is larger than FILENAME_MAX + 1 then the path will always fit in)
-    \return Pointer to outPath on success, 0 - on error in which case a message is send to the logger.
+    @param cb - callbacks for memory allocation and logging. Default callbacks are used if this parameter is NULL.
+    @param dir - path to a directory (relative or absolute).
+    @param outPath - buffer for storing the directory
+    @param len - of the buffer (if size is larger than FILENAME_MAX + 1 then the path will always fit in)
+    @return Pointer to outPath on success, 0 - on error in which case a message is send to the logger.
 */
 char* jm_get_dir_abspath(jm_callbacks* cb, const char* dir, char* outPath, size_t len);
 
 /**
     \brief Create a unique temporary directory
-    \param cb - callbacks for memory allocation and logging. Default callbacks are used if this parameter is NULL.
-    \param systemTempDir - directory where the temp dir should be located both absolute and relative path are accepted.
+    @param cb - callbacks for memory allocation and logging. Default callbacks are used if this parameter is NULL.
+    @param systemTempDir - directory where the temp dir should be located both absolute and relative path are accepted.
                 System-wide directory is used if this parameter is NULL.
-    \param tempPrefix - File name template prefix used when creating temporaty directories. "jm" is used if this is NULL.
-    \return A pointer to the temporary directory name (absolute path, no terminating '/'). Caller is responsible for freeing the memory.
+    @param tempPrefix - File name template prefix used when creating temporaty directories. "jm" is used if this is NULL.
+    @return A pointer to the temporary directory name (absolute path, no terminating '/'). Caller is responsible for freeing the memory.
         The function returns NULL if there were errors in which case a message is send to the logger.
 */
 char* jm_mk_temp_dir(jm_callbacks* cb, const char* systemTempDir, const char* tempPrefix);
 
 /**
     \brief Create a file:// URL from absolute path
-    \param cb - callbacks for memory allocation and logging. Default callbacks are used if this parameter is NULL.
-    \param absPath - absolute path to be converted into the URL
-    \return A pointer to the URL. Caller is responsible for freeing the memory.
+    @param cb - callbacks for memory allocation and logging. Default callbacks are used if this parameter is NULL.
+    @param absPath - absolute path to be converted into the URL
+    @return A pointer to the URL. Caller is responsible for freeing the memory.
         The function returns NULL if there were errors in which case a message is send to the logger.
 */
 char* jm_create_URL_from_abs_path(jm_callbacks* cb, const char* absPath);
@@ -188,10 +187,9 @@ int jm_snprintf(char * str, size_t size, const char * fmt, ...);
    'jm_resetlocale_numeric' is needed to free the returned 'jm_locale_t'
    object.
 
-   \param jmloc:
-   \param value:
-     Value to set for LC_NUMERIC.
-   \return:
+   @param cb ::jm_callbacks
+   @param value: Value to set for LC_NUMERIC.
+   @return:
      Pointer to object for reseting thread settings (locale, and
      _configthreadlocale on Windows). NULL on failure.
  */
@@ -205,13 +203,14 @@ jm_locale_t* jm_setlocale_numeric(jm_callbacks* cb, const char* value);
    returned from that call. On Linux, the locale must in no way be modified since that
    call.
 
-   \param jmloc:
+    @param cb ::jm_callbacks
+    @param jmloc:
      Return value from previous call to 'jm_setlocale_numeric'. Current
      locale must be set with that function. This call will free 'jmloc', so it's
      not allowed to be used after.
-   \return:
+   @return:
      0 on success.
- */
+    */
 int jm_resetlocale_numeric(jm_callbacks* cb, jm_locale_t* jmloc);
 
 #ifdef __cplusplus
@@ -219,5 +218,5 @@ int jm_resetlocale_numeric(jm_callbacks* cb, jm_locale_t* jmloc);
 #endif
 
 
-/*@}*/
+/**@}*/
 #endif /* End of header file JM_PORTABILITY_H_ */

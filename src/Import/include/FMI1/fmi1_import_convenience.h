@@ -79,8 +79,8 @@ typedef struct {
 
 /**
     \brief Collect model information by counting the number of variables with specific properties and fillinf in fmi1_import_model_counts_t struct.
-    \param fmu - An fmu object as returned by fmi1_import_parse_xml().
-    \param counts - a pointer to a preallocated struct.
+    @param fmu - An fmu object as returned by fmi1_import_parse_xml().
+    @param counts - a pointer to a preallocated struct.
 */
 FMILIB_EXPORT 
 void fmi1_import_collect_model_counts(fmi1_import_t* fmu, fmi1_import_model_counts_t* counts);
@@ -88,10 +88,10 @@ void fmi1_import_collect_model_counts(fmi1_import_t* fmu, fmi1_import_model_coun
 /**
   \brief Print msgIn into msgOut by expanding variable references of the form #\<Type\>\<VR\># into variable names
   and replacing '##' with a single #.
-   \param fmu - An fmu object as returned by fmi1_import_parse_xml().
-   \param msgIn - Log message as produced by an FMU.
-   \param msgOut - Output message buffer. 
-   \param maxMsgSize - maximum message size
+   @param fmu - An fmu object as returned by fmi1_import_parse_xml().
+   @param msgIn - Log message as produced by an FMU.
+   @param msgOut - Output message buffer. 
+   @param maxMsgSize - maximum message size
    */
 FMILIB_EXPORT 
 void fmi1_import_expand_variable_references(fmi1_import_t* fmu, const char* msgIn, char* msgOut, size_t maxMsgSize);
@@ -125,14 +125,11 @@ void  fmi1_default_callback_logger(fmi1_component_t c, fmi1_string_t instanceNam
 /** \brief  Given ::fmi1_callback_functions_t logger (fmi1_logger), the ::jm_callbacks logger may be setup to redirect the messages to the fmi1_logger.
 
     The functions sets up the redirection. Note that the context field in ::jm_callbacks is set to point to the provided ::fmi1_callback_functions_t.
-    \param cb FMI Library callbacks
-    \param fmiCallbacks FMI 1.0 standard callbacks
+    @param cb FMI Library callbacks
+    @param fmiCallbacks FMI 1.0 standard callbacks
 */
 FMILIB_EXPORT
 void fmi1_import_init_logger(jm_callbacks* cb, fmi1_callback_functions_t* fmiCallbacks);
-/**    @}
-*/
-
 
 /** @} */
 

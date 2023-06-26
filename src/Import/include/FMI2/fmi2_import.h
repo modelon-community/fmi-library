@@ -249,8 +249,8 @@ FMILIB_EXPORT fmi2_import_variable_list_t* fmi2_import_get_variable_list(fmi2_im
 
 /** \brief Create a variable list with a single variable.
   
-\param fmu An FMU object that this variable list will reference.
-\param v A variable.
+@param fmu An FMU object that this variable list will reference.
+@param v A variable.
 */
 FMILIB_EXPORT fmi2_import_variable_list_t* fmi2_import_create_var_list(fmi2_import_t* fmu,fmi2_import_variable_t* v);
 
@@ -283,18 +283,18 @@ FMILIB_EXPORT const char* fmi2_import_get_source_file_cs(fmi2_import_t* fmu, siz
 
 /**
     \brief Get variable by variable name.
-    \param fmu - An fmu object as returned by fmi2_import_parse_xml().
-    \param name - variable name
-    \return variable pointer.
+    @param fmu - An fmu object as returned by fmi2_import_parse_xml().
+    @param name - variable name
+    @return variable pointer.
 */
 FMILIB_EXPORT fmi2_import_variable_t* fmi2_import_get_variable_by_name(fmi2_import_t* fmu, const char* name);
 
 /**
     \brief Get variable by value reference.
-    \param fmu - An fmu object as returned by fmi2_import_parse_xml().
-    \param baseType - basic data type
-    \param vr - value reference
-    \return variable pointer.
+    @param fmu - An fmu object as returned by fmi2_import_parse_xml().
+    @param baseType - basic data type
+    @param vr - value reference
+    @return variable pointer.
 */
 FMILIB_EXPORT fmi2_import_variable_t* fmi2_import_get_variable_by_vr(fmi2_import_t* fmu, fmi2_base_type_enu_t baseType, fmi2_value_reference_t vr);
 
@@ -384,8 +384,8 @@ FMILIB_EXPORT void fmi2_import_get_initial_unknowns_dependencies(fmi2_import_t* 
 /**
  * Returns the fmi_import_options_t:: object.
  *
- * \param fmu - an fmu object as returned by fmi2_import_parse_xml().
- * \return fmi_import_options_t:: opaque object pointer
+ * @param fmu - an fmu object as returned by fmi2_import_parse_xml().
+ * @return fmi_import_options_t:: opaque object pointer
  */
 FMILIB_EXPORT fmi_import_options_t* fmi2_import_get_options(fmi2_import_t* fmu);
 

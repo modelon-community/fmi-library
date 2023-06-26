@@ -386,7 +386,7 @@ fmi3_status_t fmi3_capi_set_binary(fmi3_capi_t* fmu, const fmi3_value_reference_
  * @param fmu C-API struct that has succesfully loaded the FMI function.
  * @param vr Array of value references.
  * @param nvr Number of array elements.
- * @param value (Output)Array of variable values.
+ * @param[out] value Array of variable values.
  * @param nValues Total number of variable values, i.e. the number of elements in each array + the number of scalar variables.
  * @return FMI status.
  */
@@ -398,7 +398,7 @@ fmi3_status_t fmi3_capi_get_float64(fmi3_capi_t* fmu, const fmi3_value_reference
  * @param fmu C-API struct that has succesfully loaded the FMI function.
  * @param vr Array of value references.
  * @param nvr Number of array elements.
- * @param value (Output)Array of variable values.
+ * @param[out] value Array of variable values.
  * @param nValues Total number of variable values, i.e. the number of elements in each array + the number of scalar variables.
  * @return FMI status.
  */
@@ -422,7 +422,7 @@ fmi3_status_t fmi3_capi_get_uint8( fmi3_capi_t* fmu, const fmi3_value_reference_
  * @param fmu C-API struct that has succesfully loaded the FMI function.
  * @param vr Array of value references.
  * @param nvr Number of array elements.
- * @param value (Output)Array of variable values.
+ * @param[out] value Array of variable values.
  * @param nValues Number of values in 'value' vector - might not equal 'nvr' if any variable is an array.
  * @return FMI status.
  */
@@ -435,7 +435,7 @@ fmi3_status_t fmi3_capi_get_boolean(fmi3_capi_t* fmu, const fmi3_value_reference
  * @param fmu C-API struct that has succesfully loaded the FMI function.
  * @param vr Array of value references.
  * @param nvr Number of array elements.
- * @param value (Output)Array of variable values.
+ * @param[out] value Array of variable values.
  * @param nValues Number of values in 'value' vector - might not equal 'nvr' if any variable is an array.
  * @return FMI status.
  */
@@ -449,7 +449,7 @@ fmi3_status_t fmi3_capi_get_string(fmi3_capi_t* fmu, const fmi3_value_reference_
  * @param vr Array of value references.
  * @param nvr Number of array elements.
  * @param sizes Array with the actual sizes of the values for binary variables.
- * @param value (Output)Array of variable values.
+ * @param[out] value Array of variable values.
  * @param nValues Number of values in 'value' vector - might not equal 'nvr' if any variable is an array.
  * @return FMI status.
  */
@@ -718,8 +718,8 @@ fmi3_status_t fmi3_capi_set_continuous_states(fmi3_capi_t* fmu, const fmi3_float
  * @param noSetFMUStatePriorToCurrentPoint True if fmiSetFMUState will no
           longer be called for time instants prior to current time in this
           simulation run.
- * @param enterEventMode (Output) Call fmiEnterEventMode indicator.
- * @param terminateSimulation (Output) Terminate simulation indicator.
+ * @param[out] enterEventMode  Call fmiEnterEventMode indicator.
+ * @param[out] terminateSimulation  Terminate simulation indicator.
  * @return FMI status.
  */
 fmi3_status_t fmi3_capi_completed_integrator_step(fmi3_capi_t* fmu,
@@ -730,7 +730,7 @@ fmi3_status_t fmi3_capi_completed_integrator_step(fmi3_capi_t* fmu,
  * \brief Calls the FMI function fmiGetContinuousStateDerivatives(...)
  *
  * @param fmu C-API struct that has succesfully loaded the FMI function.
- * @param derivatives (Output) Array of the continuous state derivatives.
+ * @param[out] derivatives  Array of the continuous state derivatives.
  * @param nx Number of continuous state derivatives.
  * @return FMI status.
  */
@@ -740,7 +740,7 @@ fmi3_status_t fmi3_capi_get_continuous_state_derivatives(fmi3_capi_t* fmu, fmi3_
  * \brief Calls the FMI function fmiGetEventIndicators(...)
  *
  * @param fmu C-API struct that has succesfully loaded the FMI function.
- * @param eventIndicators (Output) The event indicators.
+ * @param[out] eventIndicators  The event indicators.
  * @param ni Number of event indicators.
  * @return FMI status.
  */
@@ -750,7 +750,7 @@ fmi3_status_t fmi3_capi_get_event_indicators(fmi3_capi_t* fmu, fmi3_float64_t ev
  * \brief Calls the FMI function fmiGetContinuousStates(...)
  *
  * @param fmu C-API struct that has succesfully loaded the FMI function.
- * @param x (Output) Array of state values.
+ * @param[out] x  Array of state values.
  * @param nx Number of states.
  * @return FMI status.
  */
@@ -760,7 +760,7 @@ fmi3_status_t fmi3_capi_get_continuous_states(fmi3_capi_t* fmu, fmi3_float64_t x
  * \brief Calls the FMI function fmiGetNominalsOfContinuousStates(...)
  *
  * @param fmu C-API struct that has succesfully loaded the FMI function.
- * @param nominals (Output) The nominal values.
+ * @param[out] nominals  The nominal values.
  * @param nx Number of nominal values.
  * @return FMI status.
  */
@@ -770,7 +770,7 @@ fmi3_status_t fmi3_capi_get_nominals_of_continuous_states(fmi3_capi_t* fmu, fmi3
  * \brief Calls the FMI function fmi3GetNumberOfEventIndicators(...)
  *
  * @param fmu C-API struct that has succesfully loaded the FMI function.
- * @param nz (Output arg) Number of event indicators.
+ * @param[out] nz  Number of event indicators.
  * @return FMI status.
  */
 fmi3_status_t fmi3_capi_get_number_of_event_indicators(fmi3_capi_t* fmu, size_t* nz);
@@ -779,7 +779,7 @@ fmi3_status_t fmi3_capi_get_number_of_event_indicators(fmi3_capi_t* fmu, size_t*
  * \brief Calls the FMI function fmi3GetNumberOfContinuousStates(...)
  *
  * @param fmu C-API struct that has succesfully loaded the FMI function.
- * @param nx (Output arg) Number of continuous states.
+ * @param[out] nx  Number of continuous states.
  * @return FMI status.
  */
 fmi3_status_t fmi3_capi_get_number_of_continuous_states(fmi3_capi_t* fmu, size_t* nx);
@@ -826,10 +826,10 @@ fmi3_status_t fmi3_capi_get_output_derivatives(
  * @param noSetFMUStatePriorToCurrentPoint Indicates that the master will not cal SetFMUState to a time prior to
  *        currentCommunicationPoint.
  * @param eventHandlingNeeded Indicates that an event was encountered by the FMU at lastSuccessfulTime.
- * @param terminate (Output arg) If the FMU requests the simulation to be terminated (since the FMU reached end of
+ * @param[out] terminate  If the FMU requests the simulation to be terminated (since the FMU reached end of
  *        simulation time - not due to internal error).
- * @param earlyReturn (Output arg) If the FMU returns early.
- * @param lastSuccessfulTime (Output arg) The internal FMU time when this function returned.
+ * @param[out] earlyReturn  If the FMU returns early.
+ * @param[out] lastSuccessfulTime  The internal FMU time when this function returned.
  * @return FMI status.
  */
 fmi3_status_t fmi3_capi_do_step(

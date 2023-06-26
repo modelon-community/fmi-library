@@ -27,14 +27,15 @@ extern "C" {
 #endif
 
 /**
-    \addtogroup fmi3_import @{
+    \addtogroup fmi3_import 
+    @{
        \defgroup fmi3_import_dimlist Handling of dimension lists
     @}
  */
 
 /**
     \addtogroup fmi3_import_dimlist
-    \brief dimension lists are provided to handle sets of dimensions.
+    \brief Dimension lists are provided to handle sets of dimensions.
     Note that dimension lists are allocated dynamically and must be freed when not needed any longer.
     @{ 
  */
@@ -43,7 +44,7 @@ extern "C" {
 fmi3_import_dimension_list_t* fmi3_import_alloc_dimension_list(fmi3_import_t* fmu, fmi3_import_variable_t* v);
 
 /**  \brief Free a dimension list. Note that dimension lists are allocated dynamically and must be freed when not needed any longer 
-    \param dl A dimension list.
+    @param dl A dimension list.
 */
 FMILIB_EXPORT void fmi3_import_free_dimension_list(fmi3_import_dimension_list_t* dl);
 
@@ -52,6 +53,8 @@ FMILIB_EXPORT size_t fmi3_import_get_dimension_list_size(fmi3_import_dimension_l
 
 /** \brief Get a single dimension from a list */
 FMILIB_EXPORT fmi3_import_dimension_t* fmi3_import_get_dimension_list_item(fmi3_import_dimension_list_t* dl, size_t index);
+
+/** @} */
 
 #ifdef __cplusplus
 }

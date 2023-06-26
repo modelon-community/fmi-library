@@ -25,7 +25,7 @@
     @}
 */
 
-/**    \addtogroup fmi2_utils Functions and types supporting FMI 2.0 processing.
+/**    \addtogroup fmi2_utils Functions and types supporting FMI 2.0 processing
     @{
 */
 /** \name Renaming of typedefs 

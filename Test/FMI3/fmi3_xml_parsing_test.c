@@ -37,12 +37,12 @@ void importlogger(jm_callbacks* c, jm_string module,
     }
 }
 
-void test_parser(char *xml_dir, int should_log_expected_msg, int configuration)
+void test_parser(char *xml_dir, int should_log_expected_msg)
 {
     jm_callbacks cb;
-    fmi_import_context_t *context;
-    fmi3_import_t *fmu;
-    char *full_path;
+    fmi_import_context_t* context;
+    fmi3_import_t* fmu;
+    char* full_path;
     int res = 1;
 
     cb.malloc    = malloc;
@@ -53,9 +53,6 @@ void test_parser(char *xml_dir, int should_log_expected_msg, int configuration)
     cb.log_level = jm_log_level_all;
     cb.context   = NULL;
     context = fmi_import_allocate_context(&cb);
-    if (configuration != 0) {
-        fmi_import_set_configuration(context, configuration);
-    }
 
     g_has_logged_expected_msg = 0;
 
@@ -85,15 +82,12 @@ err1:
     }
 }
 
-void fail_name_check(char *xml_dir)
-{
-    test_parser(xml_dir, 1, FMI_IMPORT_NAME_CHECK);
-    test_parser(xml_dir, 0, 0);
+void fail_name_check(char *xml_dir) {
+    test_parser(xml_dir, 1);
 }
 
-void pass_name_check(char *xml_dir)
-{
-    test_parser(xml_dir, 0, FMI_IMPORT_NAME_CHECK);
+void pass_name_check(char *xml_dir) {
+    test_parser(xml_dir, 0);
 }
 
 void test_variable_naming_conventions(void)
@@ -132,10 +126,10 @@ void test_variable_naming_conventions(void)
     fail_name_check("naming_conventions_xmls/q-name/backslash");
     pass_name_check("naming_conventions_xmls/q-name/q-char");
     pass_name_check("naming_conventions_xmls/q-name/escape");
-    fail_name_check("naming_conventions_xmls/q-name/chinese"); /* this should pass in FMI 1.0 */
+    fail_name_check("naming_conventions_xmls/q-name/chinese");
 
     /* der() tests */
-    fail_name_check("naming_conventions_xmls/der/dera32"); /* this should pass in FMI 1.0 */
+    fail_name_check("naming_conventions_xmls/der/dera32");
     fail_name_check("naming_conventions_xmls/der/dera12");
     pass_name_check("naming_conventions_xmls/der/dera32-no-space");
     pass_name_check("naming_conventions_xmls/der/dera");
@@ -149,12 +143,12 @@ void test_variable_naming_conventions(void)
     pass_name_check("naming_conventions_xmls/array/n0");
     fail_name_check("naming_conventions_xmls/array/a1comma");
     pass_name_check("naming_conventions_xmls/array/a12345678");
-    fail_name_check("naming_conventions_xmls/array/a12345678space"); /* this should pass in FMI 1.0 */
+    fail_name_check("naming_conventions_xmls/array/a12345678space");
     pass_name_check("naming_conventions_xmls/array/a1.a3");
     pass_name_check("naming_conventions_xmls/array/a.a123");
     fail_name_check("naming_conventions_xmls/array/aspace1");
     fail_name_check("naming_conventions_xmls/array/a1space");
-    fail_name_check("naming_conventions_xmls/array/a1space1"); /* this should pass in FMI 1.0 */
+    fail_name_check("naming_conventions_xmls/array/a1space1");
     fail_name_check("naming_conventions_xmls/array/aspacebracket1");
     fail_name_check("naming_conventions_xmls/array/a-1");
     pass_name_check("naming_conventions_xmls/array/a1");
@@ -163,13 +157,10 @@ void test_variable_naming_conventions(void)
 
     /* list of variables */
     fail_name_check("naming_conventions_xmls/list/aemptyc");
-    g_expected_message = "Two variables with the same name";
     pass_name_check("naming_conventions_xmls/list/cba");
-    fail_name_check("naming_conventions_xmls/list/acad");
 
     /* flat hierarchy test */
-    fail_name_check("naming_conventions_xmls/flat/acad");
-    pass_name_check("naming_conventions_xmls/flat/q-char-nonescaped");
+    fail_name_check("naming_conventions_xmls/flat/q-char-nonescaped");
 }
 
 static fmi3_import_t* parse_xml(jm_callbacks* cb, const char* xmldir) {

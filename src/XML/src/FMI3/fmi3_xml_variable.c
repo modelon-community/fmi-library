@@ -27,6 +27,11 @@
 
 #include "fmi3_xml_variable_impl.h"
 
+/* For checking variable naming conventions */
+#include <fmi3_xml_variable_name_parser.tab.h>
+#define YYSTYPE YYFMI3STYPE
+#include <fmi3_xml_variable_name_lex.h>
+
 static const char* module = "FMI3XML";
 struct fmi3_xml_variable_default_values {
     fmi3_float32_t float32;
@@ -2306,8 +2311,19 @@ int fmi3_xml_handle_ModelVariables(fmi3_xml_parser_context_t *context, const cha
         }
         jm_vector_qsort(jm_voidp)(&md->variablesByVR, fmi3_xml_compare_vr_and_original_index);
 
-        // Error check duplicate VRs:
         if (nVars > 0) {  // nVars=0 would cause integer overflow in the loop condition
+            /* Error check duplicate variable names */
+            for (size_t i = 0; i < nVars-1; ++i) {
+                const char* name1 = jm_vector_get_item(jm_named_ptr)(&md->variablesByName, i).name;
+                const char* name2 = jm_vector_get_item(jm_named_ptr)(&md->variablesByName, i+1).name;
+                if(strcmp(name1, name2) == 0) {
+                    fmi3_xml_parse_fatal(context, 
+                            "Two variables with the same name '%s' found. This is not allowed.", name1);
+                    return -1;
+                }
+            }
+
+            // Error check duplicate VRs:
             for (size_t i = 0; i < nVars-1; ++i) {
                 fmi3_xml_variable_t* v1 = jm_vector_get_item(jm_voidp)(&md->variablesByVR, i);
                 fmi3_xml_variable_t* v2 = jm_vector_get_item(jm_voidp)(&md->variablesByVR, i+1);
@@ -2317,6 +2333,21 @@ int fmi3_xml_handle_ModelVariables(fmi3_xml_parser_context_t *context, const cha
                     return -1;
                 }
             }
+        }
+
+        yyscan_t scanner;
+        YY_BUFFER_STATE buf;
+        /* check variable name syntax */
+        if (md->namingConvension == fmi3_naming_enu_structured) {
+            yyfmi3lex_init(&scanner);
+            for (size_t i = 0; i < nVars; ++i) {
+                char *name = ((fmi3_xml_variable_t *) jm_vector_get_item(jm_voidp)(
+                        &md->variablesOrigOrder, i))->name;
+                buf = yyfmi3_scan_string(name, scanner);
+                yyfmi3parse(scanner, md->callbacks, name);
+                yyfmi3_delete_buffer(buf, scanner);
+            }
+            yyfmi3lex_destroy(scanner);
         }
 
         // look up actual pointers for the derivativeOf and previous fields

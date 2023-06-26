@@ -9,10 +9,6 @@
   <Float64 name="vFloat64" valueReference="1"/>
   <Float32 name="vFloat32" valueReference="2"/>
 
-  <!-- Variables with same name -->
-  <Int32 name="sameName" valueReference="3"/>
-  <Int32 name="sameName" valueReference="4"/>
-
   <!-- Variables with special chars in name -->
   <Int32 name=" Special chars: $^/\ " valueReference="5"/>
 </ModelVariables>

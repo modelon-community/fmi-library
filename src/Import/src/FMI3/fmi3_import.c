@@ -67,7 +67,6 @@ fmi3_import_t* fmi3_import_parse_xml(
     char* xmlPath;
     char absPath[FILENAME_MAX + 2];
     fmi3_import_t* fmu = 0;
-    int configuration = 0;
 
     if (strlen(dirPath) + 20 > FILENAME_MAX) {
         jm_log_fatal(context->callbacks, module, "Directory path for FMU is too long");
@@ -88,7 +87,7 @@ fmi3_import_t* fmi3_import_parse_xml(
         fmu->resourcePath = fmi_import_create_URL_from_abs_path(context->callbacks, absPath);
     }
     fmu->dirPath = context->callbacks->malloc(strlen(dirPath) + 1);
-    if (!fmu->dirPath ||  !fmu->resourcePath) {
+    if (!fmu->dirPath || !fmu->resourcePath) {
         jm_log_fatal( context->callbacks, "FMILIB", "Could not allocate memory");
         fmi3_import_free(fmu);
         context->callbacks->free(xmlPath);
@@ -96,21 +95,17 @@ fmi3_import_t* fmi3_import_parse_xml(
     }
     strcpy(fmu->dirPath, dirPath);
 
-    jm_log_verbose( context->callbacks, "FMILIB", "Parsing model description XML");
+    jm_log_verbose(context->callbacks, "FMILIB", "Parsing model description XML");
 
-    /* convert the import configuration to the xml configuration */
-    if (context->configuration & FMI_IMPORT_NAME_CHECK) {
-        configuration |= FMI3_XML_NAME_CHECK;
-    }
-
-    if (fmi3_xml_parse_model_description( fmu->md, xmlPath, xml_callbacks, configuration)) {
+    if (fmi3_xml_parse_model_description(fmu->md, xmlPath, xml_callbacks)) {
         fmi3_import_free(fmu);
         fmu = 0;
     }
     context->callbacks->free(xmlPath);
 
-    if (fmu)
-        jm_log_verbose( context->callbacks, "FMILIB", "Parsing finished successfully");
+    if (fmu) {
+        jm_log_verbose(context->callbacks, "FMILIB", "Parsing finished successfully");
+    }
 
     return fmu;
 }
@@ -373,7 +368,7 @@ const char* fmi3_import_get_log_category(fmi3_import_t* fmu, size_t  index) {
 }
 
 /** \brief Get the log category description by index */
-const char* fmi3_import_get_log_category_description(fmi3_import_t* fmu, size_t  index) {
+const char* fmi3_import_get_log_category_description(fmi3_import_t* fmu, size_t index) {
     if (!fmi3_import_check_has_FMU(fmu)) return NULL;
 
     return jm_vector_get_item(jm_string)(fmi3_xml_get_log_category_descriptions(fmu->md), index);
@@ -387,7 +382,7 @@ size_t fmi3_import_get_source_files_me_num(fmi3_import_t* fmu) {
 }
 
 /** \brief Get the ME source file by index */
-const char* fmi3_import_get_source_file_me(fmi3_import_t* fmu, size_t  index) {
+const char* fmi3_import_get_source_file_me(fmi3_import_t* fmu, size_t index) {
     if (!fmi3_import_check_has_FMU(fmu)) return NULL;
 
     return jm_vector_get_item(jm_string)(fmi3_xml_get_source_files_me(fmu->md), index);
@@ -401,7 +396,7 @@ size_t fmi3_import_get_source_files_cs_num(fmi3_import_t* fmu) {
 }
 
 /** \brief Get the CS source file by index */
-const char* fmi3_import_get_source_file_cs(fmi3_import_t* fmu, size_t  index) {
+const char* fmi3_import_get_source_file_cs(fmi3_import_t* fmu, size_t index) {
     if (!fmi3_import_check_has_FMU(fmu)) return NULL;
 
     return jm_vector_get_item(jm_string)(fmi3_xml_get_source_files_cs(fmu->md), index);

@@ -84,6 +84,8 @@ FMILIB_EXPORT void fmi_import_free_context(fmi_import_context_t* c);
     \brief If this configuration option is set, the model description will be
     checked to follow the variable naming conventions. Variables not following
     the convention will be logged.
+
+    This option is obsolete for FMI2 and removed for FMI3.
 */
 #define FMI_IMPORT_NAME_CHECK 1
 
@@ -125,7 +127,7 @@ typedef struct fmi3_import_t fmi3_import_t;
     @param dirName - a directory where the FMU was unpacked and XML file is present.
     @return fmi1_import_t:: opaque object pointer
 */
-FMILIB_EXPORT fmi1_import_t* fmi1_import_parse_xml( fmi_import_context_t* c, const char* dirName);
+FMILIB_EXPORT fmi1_import_t* fmi1_import_parse_xml(fmi_import_context_t* c, const char* dirName);
 
 /**
     \brief Create ::fmi2_import_t structure and parse the FMI 2.0 XML file found in the directory dirName.
@@ -134,7 +136,7 @@ FMILIB_EXPORT fmi1_import_t* fmi1_import_parse_xml( fmi_import_context_t* c, con
     @param xml_callbacks Callbacks to use for processing of annotations (may be NULL).
     @return fmi2_import_t:: opaque object pointer
 */
-FMILIB_EXPORT fmi2_import_t* fmi2_import_parse_xml( fmi_import_context_t* context, const char* dirPath, fmi2_xml_callbacks_t* xml_callbacks);
+FMILIB_EXPORT fmi2_import_t* fmi2_import_parse_xml(fmi_import_context_t* context, const char* dirPath, fmi2_xml_callbacks_t* xml_callbacks);
 
 /**
     \brief Create ::fmi3_import_t structure and parse the FMI 3.0 XML file found in the directory dirName.
@@ -143,7 +145,7 @@ FMILIB_EXPORT fmi2_import_t* fmi2_import_parse_xml( fmi_import_context_t* contex
     @param xml_callbacks Callbacks to use for processing of annotations (may be NULL).
     @return fmi3_import_t:: opaque object pointer
 */
-FMILIB_EXPORT fmi3_import_t* fmi3_import_parse_xml( fmi_import_context_t* context, const char* dirPath, fmi3_xml_callbacks_t* xml_callbacks);
+FMILIB_EXPORT fmi3_import_t* fmi3_import_parse_xml(fmi_import_context_t* context, const char* dirPath, fmi3_xml_callbacks_t* xml_callbacks);
 
 /** 
 @}

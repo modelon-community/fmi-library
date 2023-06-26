@@ -40,18 +40,6 @@ void parse_include_msg(const char* xml_dir, const char* log_msg) {
     fmi3_testutil_import_free(tfmu);
 }
 
-static fmi3_import_t* parse_xml(jm_callbacks* cb, const char* xmldir) {
-    fmi_import_context_t* context;
-    fmi3_import_t* xml;
-
-    context = fmi_import_allocate_context(cb);
-
-    xml = fmi3_import_parse_xml(context, xmldir, NULL);
-    fmi_import_free_context(context);
-
-    return xml;
-}
-
 TEST_CASE("Test naming conventions") {
     /* Test scalar variable names
      *

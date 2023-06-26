@@ -100,7 +100,11 @@ add_catch2_test(fmi3_import_fatal_test                   FMI3)
 add_catch2_test(fmi3_variability_causality_initial_test  FMI3)
 add_catch2_test(fmi3_xml_naming_conv_test                FMI3)
 
-add_catch2_test_with_compile_def(fmi3_xml_locale_test FMI3 PRIVATE -DFMILIB_TEST_LOCALE)
+if(FMILIB_TEST_LOCALE)
+    add_catch2_test_with_compile_def(fmi3_xml_locale_test FMI3 PRIVATE -DFMILIB_TEST_LOCALE)
+else()
+    add_catch2_test(fmi3_xml_locale_test FMI3)
+endif()
 
 # FIXME: Missing dependency on building the FMU
 add_test(ctest_fmi3_import_sim_me_test fmi3_import_sim_me_test)

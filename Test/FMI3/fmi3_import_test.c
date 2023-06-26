@@ -21,6 +21,8 @@
 #include <fmilib.h>
 #include <JM/jm_portability.h>
 
+/* KEEP THIS TEST AS PURE C TEST, DO NOT CONVERT TO C++ */
+
 #define BUFFER 1000
 
 /* Logger function used by the FMU internally */

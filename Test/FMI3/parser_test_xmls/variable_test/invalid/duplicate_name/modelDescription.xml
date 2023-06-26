@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription fmiVersion="3.0" modelName="" instantiationToken="">
+<ModelExchange modelIdentifier="duplicate_name" />
+
+<ModelVariables>
+    <Int32 name="sameName" valueReference="0"/> <!-- Variable names must be unique -->
+    <Int32 name="sameName" valueReference="1"/>
+</ModelVariables>
+
+<ModelStructure/>
+</fmiModelDescription>

@@ -25,11 +25,6 @@
 #define snprintf _snprintf
 #endif
 
-/* For checking variable naming conventions */
-#include <fmi3_xml_variable_name_parser.tab.h>
-#define YYSTYPE YYFMI3STYPE
-#include <fmi3_xml_variable_name_lex.h>
-
 #include "fmi3_xml_model_description_impl.h"
 #include "fmi3_xml_parser.h"
 #include "JM/jm_portability.h"
@@ -1213,7 +1208,7 @@ static void XMLCALL fmi3_parse_element_start(void *c, const char *elm, const cha
             const size_t attrStrLen = strlen(attr[i]);
             if((attrStrLen > stdNSlen) && (attr[i][stdNSlen] == '|') && (strncmp(attr[i], XMLSchema_instance, stdNSlen) == 0)) {
                 const char* localName = attr[i] + stdNSlen + 1;
-                if(    strcmp(localName, "noNamespaceSchemaLocation") == 0)
+                if(strcmp(localName, "noNamespaceSchemaLocation") == 0)
                     jm_log_warning(context->callbacks, module, "Attribute noNamespaceSchemaLocation='%s' is ignored. Using standard fmiModelDescription.xsd.",
                     attr[i+1]);
                 else if((strcmp(localName, "nil") == 0)
@@ -1250,7 +1245,7 @@ static void XMLCALL fmi3_parse_element_start(void *c, const char *elm, const cha
     }
 
     /* handle the element */
-    if ( currentElMap->elementHandle(context, 0) ) {
+    if (currentElMap->elementHandle(context, 0) ) {
         /* try to skip and continue anyway */
         if(!context->skipElementCnt) context->skipElementCnt = 1;
     }
@@ -1318,7 +1313,7 @@ static void XMLCALL fmi3_parse_element_end(void* c, const char *elm) {
 
     jm_vector_push_back(char)(&context->elmData, 0);
 
-    if( currentElMap->elementHandle(context, jm_vector_get_itemp(char)(&context->elmData, 0) )) {
+    if(currentElMap->elementHandle(context, jm_vector_get_itemp(char)(&context->elmData, 0) )) {
         /* context->modelDescription->hasParsingError = 1;*/
         return;
     }
@@ -1373,41 +1368,9 @@ static void XMLCALL fmi3_parse_element_data(void* c, const XML_Char *s, int len)
         }
 }
 
-void fmi3_check_variable_naming_conventions(fmi3_xml_model_description_t *md) {
-    size_t n = jm_vector_get_size(jm_named_ptr)(&md->variablesByName);
-    size_t k;
-    yyscan_t scanner;
-    YY_BUFFER_STATE buf;
-
-    /* check for duplicate variable names */
-    for (k = 1; k < n; k++) {
-        const char *v1 = jm_vector_get_item(jm_named_ptr)(&md->variablesByName, k - 1).name;
-        const char *v2 = jm_vector_get_item(jm_named_ptr)(&md->variablesByName, k).name;
-        if(strcmp(v1, v2) == 0) {
-            jm_log_error(md->callbacks, module,
-                    "Two variables with the same name %s found. This is not allowed.",
-                    v1);
-        }
-    }
-
-    /* check variable name syntax */
-    if (md->namingConvension == fmi3_naming_enu_structured) {
-        yyfmi3lex_init(&scanner);
-        for (k = 0; k < n; k++) {
-            char *name = ((fmi3_xml_variable_t *) jm_vector_get_item(jm_voidp)(
-                    &md->variablesOrigOrder, k))->name;
-            buf = yyfmi3_scan_string(name, scanner);
-            yyfmi3parse(scanner, md->callbacks, name);
-            yyfmi3_delete_buffer(buf, scanner);
-        }
-        yyfmi3lex_destroy(scanner);
-    }
-}
-
 int fmi3_xml_parse_model_description(fmi3_xml_model_description_t* md,
                                      const char* filename,
-                                     fmi3_xml_callbacks_t* xml_callbacks,
-                                     int configuration) {
+                                     fmi3_xml_callbacks_t* xml_callbacks) {
     XML_Memory_Handling_Suite memsuite;
     fmi3_xml_parser_context_t* context;
     XML_Parser parser = NULL;
@@ -1453,13 +1416,13 @@ int fmi3_xml_parse_model_description(fmi3_xml_model_description_t* md,
     memsuite.free_fcn = context->callbacks->free;
     context -> parser = parser = XML_ParserCreate_MM(0, &memsuite, "|");
 
-    if(! parser) {
+    if (!parser) {
         fmi3_xml_parse_fatal(context, "Could not initialize XML parsing library.");
         fmi3_xml_parse_free_context(context);
         return -1;
     }
 
-    XML_SetUserData( parser, context);
+    XML_SetUserData(parser, context);
 
     XML_SetElementHandler(parser, fmi3_parse_element_start, fmi3_parse_element_end);
 
@@ -1496,11 +1459,6 @@ int fmi3_xml_parse_model_description(fmi3_xml_model_description_t* md,
         fmi3_xml_parse_fatal(context, "Unexpected end of file (not all elements ended) when parsing %s", filename);
         fmi3_xml_parse_free_context(context);
         return -1;
-    }
-
-    // FIXME: Move to end-tag of ModelVariables
-    if (configuration & FMI3_XML_NAME_CHECK) {
-        fmi3_check_variable_naming_conventions(md);
     }
 
     md->status = fmi3_xml_model_description_enu_ok;

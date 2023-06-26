@@ -80,9 +80,6 @@ target_link_libraries(fmi3_import_sim_cs_test ${FMILIBFORTEST})
 add_executable(fmi3_import_sim_se_test ${FMIL_TEST_DIR}/FMI3/fmi3_import_sim_se_test.c)
 target_link_libraries(fmi3_import_sim_se_test ${FMILIBFORTEST})
 
-add_executable(fmi3_import_fatal_test ${FMIL_TEST_DIR}/FMI3/fmi3_import_fatal_test.c)
-target_link_libraries(fmi3_import_fatal_test ${FMILIBFORTEST})
-
 set_target_properties(
     fmi3_xml_parsing_test
     fmi3_import_sim_me_test
@@ -110,6 +107,7 @@ add_catch2_test(fmi3_import_variable_types_test          FMI3)
 add_catch2_test(fmi3_import_options_test                 FMI3)
 add_catch2_test(fmi3_import_arrays_test                  FMI3)
 add_catch2_test(fmi3_import_default_experiment_test      FMI3)
+add_catch2_test(fmi3_import_fatal_test                   FMI3)
 
 add_test(ctest_fmi3_xml_parsing_test fmi3_xml_parsing_test ${FMIL_TEST_DIR}/FMI3/parser_test_xmls/)
 
@@ -118,16 +116,11 @@ add_test(ctest_fmi3_import_sim_me_test fmi3_import_sim_me_test)
 add_test(ctest_fmi3_import_sim_cs_test fmi3_import_sim_cs_test)
 add_test(ctest_fmi3_import_sim_se_test fmi3_import_sim_se_test)
 
-add_test(ctest_fmi3_import_fatal_test
-         fmi3_import_fatal_test
-         ${FMI3_TEST_XML_DIR})
-
 if(FMILIB_BUILD_BEFORE_TESTS)
     set_tests_properties(
         ctest_fmi3_xml_parsing_test
         ctest_fmi3_import_sim_me_test
         ctest_fmi3_import_sim_cs_test
         ctest_fmi3_import_sim_se_test
-        ctest_fmi3_import_fatal_test
         PROPERTIES DEPENDS ctest_build_all)
 endif()

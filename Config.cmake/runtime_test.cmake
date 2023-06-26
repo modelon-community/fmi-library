@@ -194,6 +194,16 @@ function(add_catch2_test TEST_NAME TEST_DIR)
     endif()
 endfunction()
 
+# Creates a Catch2 test with compile definitions.
+#
+# @TEST_NAME: Name of the test file, without any suffix.
+# @TEST_DIR:  The basename of parent directory of the test file.
+# @SCOPE:     INTERFACE|PUBLIC|PRIVATE
+# @DEFS:      Definitions
+function(add_catch2_test_with_compile_def TEST_NAME TEST_DIR SCOPE DEFS)
+    add_catch2_test(${TEST_NAME} ${TEST_DIR})
+    target_compile_definitions(${TEST_NAME} ${SCOPE} ${DEFS})
+endfunction()
 # ------------------------------------------------------------------------------
 
 include(test_fmi1)

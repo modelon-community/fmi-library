@@ -32,7 +32,7 @@ void importlogger(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_leve
 {
         printf("module = %s, log level = %s: %s\n", module, jm_log_level_to_string(log_level), message);
 }
-
+// TODO: Should make sure it is actually being called via a counter?
 /* function implementing fmi3_intermediate_update_callback_ft */
 fmi3_status_t dummy_intermediate_update_callback(
         fmi3_instance_environment_t instanceEnvironment,
@@ -45,13 +45,6 @@ fmi3_status_t dummy_intermediate_update_callback(
         fmi3_float64_t* earlyReturnTime)
 {
     return fmi3_status_ok;
-}
-
-void do_exit(int code)
-{
-    printf("Press 'Enter' to exit\n");
-    /* getchar(); */
-    exit(code);
 }
 
 /* just check that it's possible to call the dependency functions */
@@ -82,11 +75,7 @@ void call_dependency_functions(fmi3_import_t* fmu) {
 }
 
 
-int test_simulate_cs(fmi3_import_t * fmu)
-{
-    fmi3_status_t fmistatus;
-    jm_status_enu_t jmstatus;
-
+void test_simulate_cs(fmi3_import_t* fmu) {
     fmi3_string_t instanceName = "Test CS model instance";
     fmi3_string_t fmuInstantiationToken;
     fmi3_string_t resourcePath = "";
@@ -105,11 +94,8 @@ int test_simulate_cs(fmi3_import_t * fmu)
 
     fmi3_float64_t relativeTol = 1e-4;
 
-
-    /* fmi3_float64_t simulation_results[] = {-0.001878, -1.722275}; */
     fmi3_float64_t simulation_results[2] = { 0.0143633,   -1.62417 };
     fmi3_value_reference_t compare_real_variables_vr[2] = { 0, 1 };
-    size_t k;
 
     fmi3_float64_t tstart = 0.0;
     fmi3_float64_t tcur = tstart;
@@ -117,15 +103,12 @@ int test_simulate_cs(fmi3_import_t * fmu)
     fmi3_float64_t tend = 2.0;
     fmi3_boolean_t StopTimeDefined = fmi3_false;
 
-    size_t nValues = 1;
-
     REQUIRE(sizeof(compare_real_variables_vr) / sizeof(fmi3_value_reference_t) == sizeof(simulation_results) / sizeof(fmi3_float64_t));
 
     REQUIRE_STREQ(fmi3_import_get_version(fmu), "3.0");
     REQUIRE_STREQ(fmi3_import_get_instantiation_token(fmu), "123");
 
-    /* TODO */
-    jmstatus = fmi3_import_instantiate_co_simulation(
+    jm_status_enu_t jmstatus = fmi3_import_instantiate_co_simulation(
             fmu,
             instanceName,
             resourcePath,
@@ -147,74 +130,59 @@ int test_simulate_cs(fmi3_import_t * fmu)
 
     call_dependency_functions(fmu);
 
+    fmi3_float64_t rvalue;
     tcur = tstart;
     while (tcur < tend) {
+        INFO("tcur = " << tcur);
         fmi3_boolean_t newStep = fmi3_true; /* noSetFMUStatePriorToCurrentPoint */
         /* The test FMU behaves "normally" for now, so not checking the new FMI 3 output args */
         REQUIRE(fmi3_import_do_step(fmu, tcur, hstep, newStep, &eventHandlingNeeded, &terminate, &earlyReturn, &lastSuccessfulTime) == fmi3_status_ok);
-
-        for (k = 0; k < sizeof(compare_real_variables_vr)/sizeof(fmi3_value_reference_t); k++) {
+        
+        for (size_t k = 0; k < sizeof(compare_real_variables_vr)/sizeof(fmi3_value_reference_t); k++) {
+            INFO("k = " << k);
             fmi3_value_reference_t vr = compare_real_variables_vr[k];
-            fmi3_float64_t rvalue;
-            fmistatus = fmi3_import_get_float64(fmu, &vr, 1, &rvalue, 1);
-            REQUIRE(fmistatus == fmi3_status_ok);
+            REQUIRE(fmi3_import_get_float64(fmu, &vr, 1, &rvalue, 1) == fmi3_status_ok);
         }
-        fmi3_float64_t val[2];
-        REQUIRE(fmi3_import_get_float64(fmu, compare_real_variables_vr, 2, val, 2) == fmi3_status_ok);
+        const size_t nValue = 2;
+        fmi3_float64_t val[nValue];
+        REQUIRE(fmi3_import_get_float64(fmu, compare_real_variables_vr, nValue, val, nValue) == fmi3_status_ok);
 
         tcur += hstep;
     }
-
-    // Simulation finished. Checking results
+    // Simulation finished
 
     /* Validate result */
-    for (k = 0; k < sizeof(compare_real_variables_vr)/sizeof(fmi3_value_reference_t); k++) {
+    for (size_t k = 0; k < sizeof(compare_real_variables_vr)/sizeof(fmi3_value_reference_t); k++) {
+        INFO("k = " << k);
         fmi3_value_reference_t vr = compare_real_variables_vr[k];
         fmi3_float64_t rvalue;
-        fmi3_float64_t res;
-        fmistatus = fmi3_import_get_float64(fmu, &vr, 1, &rvalue, nValues);
-        res = rvalue - simulation_results[k];
-        res = res > 0 ? res: -res; /* Take abs */
-        if (res > 3e-3) {
-            printf("Simulation results is wrong!\n");
-            printf("State [%u]  %g != %g, |res| = %g\n", (unsigned)k, rvalue, simulation_results[k], res);
-            printf("\n");
-            do_exit(CTEST_RETURN_FAIL);
-        }
+        REQUIRE(fmi3_import_get_float64(fmu, &vr, 1, &rvalue, 1) == fmi3_status_ok);
+        fmi3_float64_t res = rvalue - simulation_results[k]; // error
+        res = res > 0 ? res: -res; // abs
+        REQUIRE(res <= 3e-3);
     }
 
     /* Validate array variable results */
     {
         fmi3_value_reference_t vr = 12;
-        fmi3_float64_t arrValues[4];
+        const size_t nValue = 4;
+        fmi3_float64_t arrValues[nValue];
         fmi3_float64_t diff;
         fmi3_float64_t tol = 3e-3; /* absolute tolerance */
-        size_t nValues = sizeof(arrValues)/sizeof(fmi3_float64_t);
         fmi3_float64_t ref_res[] = {simulation_results[0], simulation_results[1], simulation_results[1], -9.81};
 
-        /* get result */
-        fmistatus = fmi3_import_get_float64(fmu, &vr, 1, (fmi3_float64_t*)&arrValues, nValues);
-        if (fmistatus != fmi3_status_ok) {
-            printf("error: get values for array failed\n");
-            do_exit(CTEST_RETURN_FAIL);
-        }
-
         /* check result */
-        for (k = 0; k < nValues; k++) {
-            diff = ref_res[k] - arrValues[k];
-            diff = diff > 0 ? diff : -diff;
-            if (diff > tol) {
-                printf("error: incorrect final result for array idx: '%zu', exp: '%f', act: '%f', diff: '%f', tol (abs.): '%f'\n", k, ref_res[k], arrValues[k], diff, tol);
-                do_exit(CTEST_RETURN_FAIL);
-            }
+        REQUIRE(fmi3_import_get_float64(fmu, &vr, 1, (fmi3_float64_t*)&arrValues, nValue) == fmi3_status_ok);
+        for (size_t k = 0; k < nValue; k++) {
+            INFO("k = " << k);
+            diff = ref_res[k] - arrValues[k]; // error
+            diff = diff > 0 ? diff : -diff; // abs
+            REQUIRE(diff <= tol);
         }
     }
 
-    fmistatus = fmi3_import_terminate(fmu);
-
+    REQUIRE(fmi3_import_terminate(fmu) == fmi3_status_ok);
     fmi3_import_free_instance(fmu);
-
-    return 0;
 }
 
 /*****************************************
@@ -232,11 +200,7 @@ void fmi3_test_log_forwarding_wrap(fmi3_instance_environment_t instEnv, fmi3_sta
     fmi3_log_forwarding(((fmi3_inst_env_count_calls_t*)instEnv)->fmu, status, category, message);
 }
 
-/************
- *** main ***
- ************/
-
-TEST_CASE("main") {
+TEST_CASE("Co-Simulation FMU example") {
     fmi3_inst_env_count_calls_t instEnv;
     const char* tmpPath;
     jm_callbacks callbacks;
@@ -259,48 +223,25 @@ TEST_CASE("main") {
 #endif
 
     tmpPath = fmi_import_mk_temp_dir(&callbacks, FMU_UNPACK_DIR, NULL);
-    if (!tmpPath) {
-        printf("Failed to create temporary directory in: " FMU_UNPACK_DIR "\n");
-        do_exit(CTEST_RETURN_FAIL);
-    }
+    REQUIRE(tmpPath != nullptr);
 
     context = fmi_import_allocate_context(&callbacks);
-    version = fmi_import_get_fmi_version(context, FMU3_CS_PATH, tmpPath);
-    if(version != fmi_version_3_0_enu) {
-        printf("The code only supports version 3.0\n");
-        do_exit(CTEST_RETURN_FAIL);
-    }
+    REQUIRE(fmi_import_get_fmi_version(context, FMU3_CS_PATH, tmpPath) == fmi_version_3_0_enu);
 
     fmu = fmi3_import_parse_xml(context, tmpPath, 0);
-    if(!fmu) {
-        printf("Error parsing XML, exiting\n");
-        do_exit(CTEST_RETURN_FAIL);
-    }
-
-    if (!(fmi3_import_get_fmu_kind(fmu) & fmi3_fmu_kind_cs)) {
-        printf("Only CS 3.0 is supported by this code\n");
-        do_exit(CTEST_RETURN_FAIL);
-    }
+    REQUIRE(fmu != nullptr);
+    REQUIRE((fmi3_import_get_fmu_kind(fmu) & fmi3_fmu_kind_cs) == fmi3_fmu_kind_cs); // is CS FMU
 
     /* Test custom callbacks - .._me_test tests default */
-    instEnv.fmu    = fmu;
+    instEnv.fmu = fmu;
 
-    status = fmi3_import_create_dllfmu(fmu, fmi3_fmu_kind_cs, &instEnv, fmi3_test_log_forwarding_wrap);
-    if (status == jm_status_error) {
-        printf("Could not create the DLL loading mechanism(C-API) (error: %s).\n", fmi3_import_get_last_error(fmu));
-        do_exit(CTEST_RETURN_FAIL);
-    }
+    REQUIRE(fmi3_import_create_dllfmu(fmu, fmi3_fmu_kind_cs, &instEnv, fmi3_test_log_forwarding_wrap) == jm_status_success);
 
     test_simulate_cs(fmu);
 
     fmi3_import_destroy_dllfmu(fmu);
     fmi3_import_free(fmu);
     fmi_import_free_context(context);
-    if (fmi_import_rmdir(&callbacks, tmpPath)) {
-        printf("Problem when deleting FMU unpack directory.\n");
-        do_exit(CTEST_RETURN_FAIL);
-    }
+    REQUIRE(fmi_import_rmdir(&callbacks, tmpPath) == jm_status_success);
     callbacks.free((void*)tmpPath);
-
-    printf("Everything seems to be OK since you got this far=)!\n");
 }

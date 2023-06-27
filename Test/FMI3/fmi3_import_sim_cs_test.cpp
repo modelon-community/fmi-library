@@ -32,7 +32,7 @@ void importlogger(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_leve
 {
         printf("module = %s, log level = %s: %s\n", module, jm_log_level_to_string(log_level), message);
 }
-// TODO: Should make sure it is actually being called via a counter?
+
 /* function implementing fmi3_intermediate_update_callback_ft */
 fmi3_status_t dummy_intermediate_update_callback(
         fmi3_instance_environment_t instanceEnvironment,
@@ -74,7 +74,6 @@ void call_dependency_functions(fmi3_import_t* fmu) {
     free(dependencyKinds);
 }
 
-
 void test_simulate_cs(fmi3_import_t* fmu) {
     fmi3_string_t instanceName = "Test CS model instance";
     fmi3_string_t fmuInstantiationToken;
@@ -105,6 +104,7 @@ void test_simulate_cs(fmi3_import_t* fmu) {
 
     REQUIRE(sizeof(compare_real_variables_vr) / sizeof(fmi3_value_reference_t) == sizeof(simulation_results) / sizeof(fmi3_float64_t));
 
+    INFO("Instantiation");
     REQUIRE_STREQ(fmi3_import_get_version(fmu), "3.0");
     REQUIRE_STREQ(fmi3_import_get_instantiation_token(fmu), "123");
 
@@ -124,12 +124,15 @@ void test_simulate_cs(fmi3_import_t* fmu) {
 
     REQUIRE(jmstatus == jm_status_success);
 
+    INFO("Initialization");
     REQUIRE(fmi3_import_enter_initialization_mode(fmu, fmi3_true,
         relativeTol, tstart, StopTimeDefined, tend) == fmi3_status_ok);
     REQUIRE(fmi3_import_exit_initialization_mode(fmu) == fmi3_status_ok);
 
+    INFO("Testing dependecies");
     call_dependency_functions(fmu);
 
+    INFO("Simulation");
     fmi3_float64_t rvalue;
     tcur = tstart;
     while (tcur < tend) {
@@ -151,7 +154,7 @@ void test_simulate_cs(fmi3_import_t* fmu) {
     }
     // Simulation finished
 
-    /* Validate result */
+    INFO("Validate scalar variables result");
     for (size_t k = 0; k < sizeof(compare_real_variables_vr)/sizeof(fmi3_value_reference_t); k++) {
         INFO("k = " << k);
         fmi3_value_reference_t vr = compare_real_variables_vr[k];
@@ -162,7 +165,7 @@ void test_simulate_cs(fmi3_import_t* fmu) {
         REQUIRE(res <= 3e-3);
     }
 
-    /* Validate array variable results */
+    INFO("Validate array variables result");
     {
         fmi3_value_reference_t vr = 12;
         const size_t nValue = 4;
@@ -181,6 +184,7 @@ void test_simulate_cs(fmi3_import_t* fmu) {
         }
     }
 
+    INFO("Terminate and free instance");
     REQUIRE(fmi3_import_terminate(fmu) == fmi3_status_ok);
     fmi3_import_free_instance(fmu);
 }
@@ -202,13 +206,7 @@ void fmi3_test_log_forwarding_wrap(fmi3_instance_environment_t instEnv, fmi3_sta
 
 TEST_CASE("Co-Simulation FMU example") {
     fmi3_inst_env_count_calls_t instEnv;
-    const char* tmpPath;
     jm_callbacks callbacks;
-    fmi_import_context_t* context;
-    fmi_version_enu_t version;
-    jm_status_enu_t status;
-
-    fmi3_import_t* fmu;
 
     callbacks.malloc = malloc;
     callbacks.calloc = calloc;
@@ -222,13 +220,13 @@ TEST_CASE("Co-Simulation FMU example") {
     printf("Library build stamp:\n%s\n", fmilib_get_build_stamp());
 #endif
 
-    tmpPath = fmi_import_mk_temp_dir(&callbacks, FMU_UNPACK_DIR, NULL);
+    const char* tmpPath = fmi_import_mk_temp_dir(&callbacks, FMU_UNPACK_DIR, NULL);
     REQUIRE(tmpPath != nullptr);
 
-    context = fmi_import_allocate_context(&callbacks);
+    fmi_import_context_t* context = fmi_import_allocate_context(&callbacks);
     REQUIRE(fmi_import_get_fmi_version(context, FMU3_CS_PATH, tmpPath) == fmi_version_3_0_enu);
 
-    fmu = fmi3_import_parse_xml(context, tmpPath, 0);
+    fmi3_import_t* fmu = fmi3_import_parse_xml(context, tmpPath, 0);
     REQUIRE(fmu != nullptr);
     REQUIRE((fmi3_import_get_fmu_kind(fmu) & fmi3_fmu_kind_cs) == fmi3_fmu_kind_cs); // is CS FMU
 

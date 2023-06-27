@@ -23,15 +23,6 @@
 
 #include "catch.hpp"
 
-#define BUFFER 1000
-
-void do_exit(int code)
-{
-    printf("Press 'Enter' to exit\n");
-    /* getchar(); */
-    exit(code);
-}
-
 typedef struct {
     fmi3_boolean_t discreteStatesNeedUpdate;
     fmi3_boolean_t terminateSimulation;
@@ -41,10 +32,9 @@ typedef struct {
     fmi3_float64_t nextEventTime;
 } test_event_info_t;
 
-void do_event_iteration(fmi3_import_t *fmu, test_event_info_t* eventInfo)
-{
+void do_event_iteration(fmi3_import_t* fmu, test_event_info_t* eventInfo) {
     eventInfo->discreteStatesNeedUpdate = fmi3_true;
-    eventInfo->terminateSimulation     = fmi3_false;
+    eventInfo->terminateSimulation      = fmi3_false;
     while (eventInfo->discreteStatesNeedUpdate && !eventInfo->terminateSimulation) {
         fmi3_import_update_discrete_states(
                 fmu,
@@ -59,10 +49,7 @@ void do_event_iteration(fmi3_import_t *fmu, test_event_info_t* eventInfo)
 
 /* All ME common + ME specific functions must always exist, this function tests
  * what is not already being called in the simulation test function. */
-void test_capi_wrappers_me(fmi3_import_t* fmu)
-{
-    jm_status_enu_t jmstatus;
-    fmi3_status_t fmistatus;
+void test_capi_wrappers_me(fmi3_import_t* fmu) {
     size_t n_states_xml;
     size_t n_event_indicators_xml;
     size_t n_states_capi;
@@ -72,10 +59,10 @@ void test_capi_wrappers_me(fmi3_import_t* fmu)
      * states are taken from XML in the first call */
     fmi3_import_free_instance(fmu);
 
-    fmi3_import_get_number_of_continuous_states(fmu, &n_states_xml);
-    fmi3_import_get_number_of_event_indicators(fmu, &n_event_indicators_xml);
+    REQUIRE(fmi3_import_get_number_of_continuous_states(fmu, &n_states_xml) == fmi3_status_ok);
+    REQUIRE(fmi3_import_get_number_of_event_indicators(fmu, &n_event_indicators_xml) == fmi3_status_ok);
 
-    jmstatus = fmi3_import_instantiate_model_exchange(
+    jm_status_enu_t jmstatus = fmi3_import_instantiate_model_exchange(
         fmu,
         "Test ME model instance",
         NULL,
@@ -84,43 +71,23 @@ void test_capi_wrappers_me(fmi3_import_t* fmu)
         NULL,
         NULL
     );
-    if (jmstatus == jm_status_error) {
-        printf("fmi3_import_instantiate_model_exchange failed\n");
-        do_exit(CTEST_RETURN_FAIL);
-    }
+    REQUIRE(jmstatus == jm_status_success);
 
     /* verify that XML and CAPI give same result */
     fmi3_import_get_number_of_continuous_states(fmu, &n_states_capi);
-    if (n_states_xml != n_states_capi) {
-        printf("fmi3_import_get_number_of_continuous_states: capi and xml variants gave different results\n");
-        do_exit(CTEST_RETURN_FAIL);
-    }
+    REQUIRE(n_states_capi == n_states_xml);
 
     fmi3_import_get_number_of_event_indicators(fmu, &n_event_indicators_capi);
-    if (n_event_indicators_xml != n_event_indicators_capi) {
-        printf("fmi3_import_get_number_of_event_indicators: capi and xml variants gave different results\n");
-        do_exit(CTEST_RETURN_FAIL);
-    }
+    REQUIRE(n_event_indicators_capi == n_event_indicators_xml);
 
     /* test that get_nominals API is loaded */
-    fmistatus = fmi3_import_get_nominals_of_continuous_states(fmu, NULL, 0);
-    if (fmistatus == fmi3_status_error) {
-        printf("fmi3_import_get_nominals_of_continuous_states failed\n");
-        do_exit(CTEST_RETURN_FAIL);
-    }
+    REQUIRE(fmi3_import_get_nominals_of_continuous_states(fmu, NULL, 0) == fmi3_status_ok);
 
-    fmistatus = fmi3_import_terminate(fmu);
-    if (fmistatus != fmi3_status_ok) {
-        printf("fmi3_import_terminate failed\n");
-        do_exit(CTEST_RETURN_FAIL);
-    }
-
+    REQUIRE(fmi3_import_terminate(fmu) == fmi3_status_ok);
     fmi3_import_free_instance(fmu);
 }
 
-int test_simulate_me(fmi3_import_t* fmu)
-{
-    fmi3_status_t fmistatus;
+void test_simulate_me(fmi3_import_t* fmu) {
     jm_status_enu_t jmstatus;
     fmi3_float64_t tstart = 0.0;
     fmi3_float64_t tcur;
@@ -143,14 +110,11 @@ int test_simulate_me(fmi3_import_t* fmu)
     fmi3_boolean_t time_event = fmi3_false;
     size_t k;
 
-    printf("Version returned from FMU:   %s\n", fmi3_import_get_version(fmu));
-    fmi3_import_get_number_of_continuous_states(fmu, &n_states);
-    fmi3_import_get_number_of_event_indicators(fmu, &n_event_indicators);
+    REQUIRE_STREQ(fmi3_import_get_version(fmu), "3.0");
+    REQUIRE(fmi3_import_get_number_of_continuous_states(fmu, &n_states) == fmi3_status_ok); // populates n_states
+    REQUIRE(fmi3_import_get_number_of_event_indicators(fmu, &n_event_indicators) == fmi3_status_ok); // populates n_event_indicators
 
-    if (sizeof(states_end_results)/sizeof(fmi3_float64_t) != n_states) {
-        printf("Number of states and results have different length n_states = %u n_results = %u\n", (unsigned)n_states, (unsigned)sizeof(states_end_results));
-        do_exit(CTEST_RETURN_FAIL);
-    }
+    REQUIRE(sizeof(states_end_results)/sizeof(fmi3_float64_t) == n_states); // sanity check on reference result data size
 
     states = (fmi3_float64_t*)calloc(n_states, sizeof(double));
     states_der = (fmi3_float64_t*)calloc(n_states, sizeof(double));
@@ -167,19 +131,18 @@ int test_simulate_me(fmi3_import_t* fmu)
         NULL,
         NULL
     );
-    if (jmstatus == jm_status_error) {
-        printf("fmi3_import_instantiate_model_exchange failed\n");
-        do_exit(CTEST_RETURN_FAIL);
-    }
+    REQUIRE(jmstatus == jm_status_success);
 
-    fmistatus = fmi3_import_set_debug_logging(fmu, fmi3_false,0,0);
-    printf("fmi3_import_set_debug_logging:  %s\n", fmi3_status_to_string(fmistatus));
-    fmi3_import_set_debug_logging(fmu, fmi3_true, 0, 0);
+    // Try toggling debug logging
+    REQUIRE(fmi3_import_set_debug_logging(fmu, fmi3_false, 0, 0) == fmi3_status_ok);
+    REQUIRE(fmi3_import_set_debug_logging(fmu, fmi3_true, 0, 0) == fmi3_status_ok);
 
-    fmistatus = fmi3_import_enter_initialization_mode(fmu, toleranceControlled,
-        relativeTolerance, tstart, fmi3_false, 0.0);
-    fmistatus = fmi3_import_exit_initialization_mode(fmu);
+    INFO("Initialziation");
+    REQUIRE(fmi3_import_enter_initialization_mode(fmu, toleranceControlled,
+        relativeTolerance, tstart, fmi3_false, 0.0) == fmi3_status_ok);
+    REQUIRE(fmi3_import_exit_initialization_mode(fmu) == fmi3_status_ok);
 
+    INFO("Simulation; continuous time mode");
     tcur = tstart;
     hcur = hdef;
     step_event = fmi3_false;
@@ -193,27 +156,29 @@ int test_simulate_me(fmi3_import_t* fmu)
 
     /* fmiExitInitializationMode leaves FMU in event mode */
     do_event_iteration(fmu, &eventInfo);
-    fmi3_import_enter_continuous_time_mode(fmu);
+    REQUIRE(fmi3_import_enter_continuous_time_mode(fmu) == fmi3_status_ok);
 
-    fmistatus = fmi3_import_get_continuous_states(fmu, states, n_states);
-    fmistatus = fmi3_import_get_event_indicators(fmu, event_indicators, n_event_indicators);
+    REQUIRE(fmi3_import_get_continuous_states(fmu, states, n_states) == fmi3_status_ok);
+    REQUIRE(fmi3_import_get_event_indicators(fmu, event_indicators, n_event_indicators) == fmi3_status_ok);
 
     while ((tcur < tend) && (!(eventInfo.terminateSimulation || terminateSimulation))) {
+        INFO("tcur " << tcur);
         size_t k;
         fmi3_float64_t tlast;
         int zero_crossing_event = 0;
 
-        fmistatus = fmi3_import_set_time(fmu, tcur);
+        REQUIRE(fmi3_import_set_time(fmu, tcur) == fmi3_status_ok);
 
         { /* Swap event_indicators and event_indicators_prev so that we can get new indicators */
-            fmi3_float64_t *temp = event_indicators;
+            fmi3_float64_t* temp = event_indicators;
             event_indicators = event_indicators_prev;
             event_indicators_prev = temp;
         }
-        fmistatus = fmi3_import_get_event_indicators(fmu, event_indicators, n_event_indicators);
+        REQUIRE(fmi3_import_get_event_indicators(fmu, event_indicators, n_event_indicators) == fmi3_status_ok);
 
         /* Check if an event indicator has triggered, and get direction of event indicator */
         for (k = 0; k < n_event_indicators; k++) {
+            INFO("k = " << k);
             if ((event_indicators[k] >= 0) && (event_indicators_prev[k] < 0)) {
                 zero_crossing_event = 1;
                 roots_found[k] = 1;
@@ -228,12 +193,12 @@ int test_simulate_me(fmi3_import_t* fmu)
         /* Handle any events */
         time_event = eventInfo.nextEventTimeDefined && tcur == eventInfo.nextEventTime;
         if (step_event || zero_crossing_event || time_event) {
-            fmistatus = fmi3_import_enter_event_mode(fmu);
+            REQUIRE(fmi3_import_enter_event_mode(fmu) == fmi3_status_ok);
             do_event_iteration(fmu, &eventInfo);
-            fmistatus = fmi3_import_enter_continuous_time_mode(fmu);
+            REQUIRE(fmi3_import_enter_continuous_time_mode(fmu) == fmi3_status_ok);
 
-            fmistatus = fmi3_import_get_continuous_states(fmu, states, n_states);
-            fmistatus = fmi3_import_get_event_indicators(fmu, event_indicators, n_event_indicators);
+            REQUIRE(fmi3_import_get_continuous_states(fmu, states, n_states) == fmi3_status_ok);
+            REQUIRE(fmi3_import_get_event_indicators(fmu, event_indicators, n_event_indicators) == fmi3_status_ok);
         }
 
         /* Calculate next time step */
@@ -249,27 +214,24 @@ int test_simulate_me(fmi3_import_t* fmu)
         }
 
         /* Integrate a step */
-        fmistatus = fmi3_import_get_derivatives(fmu, states_der, n_states);
+        REQUIRE(fmi3_import_get_derivatives(fmu, states_der, n_states) == fmi3_status_ok);
         for (k = 0; k < n_states; k++) {
             states[k] = states[k] + hcur*states_der[k];
-            if (k == 0) printf("Ball height state[%u] = %f\n", (unsigned)k, states[k]);
         }
 
         /* Set states */
-        fmistatus = fmi3_import_set_continuous_states(fmu, states, n_states);
+        REQUIRE(fmi3_import_set_continuous_states(fmu, states, n_states) == fmi3_status_ok);
         /* Step is complete */
-        fmistatus = fmi3_import_completed_integrator_step(fmu, fmi3_true, &step_event,
-                                                          &terminateSimulation);
+        REQUIRE(fmi3_import_completed_integrator_step(fmu, fmi3_true, &step_event,
+                &terminateSimulation) == fmi3_status_ok);
     }
 
     /* Validate result */
     for (k = 0; k < n_states; k++) {
+        INFO("k = " << k);
         fmi3_float64_t diff = states[k] - states_end_results[k];
         diff = diff > 0 ? diff: -diff; /* Take abs */
-        if (diff > 1e-10) {
-            printf("Simulation results is wrong  states[%u] %f != %f, |res| = %f\n", (unsigned)k, states[k], states_end_results[k], diff);
-            do_exit(CTEST_RETURN_FAIL);
-        }
+        REQUIRE(diff <= 1e-10);
     }
 
     /* Validate array variable results */
@@ -282,37 +244,28 @@ int test_simulate_me(fmi3_import_t* fmu)
         fmi3_float64_t ref_res[] = { states_end_results[0], states_end_results[1], states_end_results[1], -9.81 };
 
         /* get result */
-        fmistatus = fmi3_import_get_float64(fmu, &vr, 1, (fmi3_float64_t*)&arrValues, nValues);
-        if (fmistatus != fmi3_status_ok) {
-            printf("error: get values for array failed\n");
-            do_exit(CTEST_RETURN_FAIL);
-        }
+        REQUIRE(fmi3_import_get_float64(fmu, &vr, 1, (fmi3_float64_t*)&arrValues, nValues) == fmi3_status_ok);
 
         /* check result */
         for (k = 0; k < nValues; k++) {
+            INFO("k = " << k);
             diff = ref_res[k] - arrValues[k];
             diff = diff > 0 ? diff : -diff;
-            if (diff > tol) {
-                printf("error: incorrect final result for array idx: '%zu', exp: '%f', act: '%f', diff: '%f', tol (abs.): '%f'\n", k, ref_res[k], arrValues[k], diff, tol);
-                do_exit(CTEST_RETURN_FAIL);
-            }
+            REQUIRE(diff <= tol);
         }
     }
 
-    fmistatus = fmi3_import_terminate(fmu);
+    REQUIRE(fmi3_import_terminate(fmu) == fmi3_status_ok);
 
     fmi3_import_free_instance(fmu);
-
     free(states);
     free(states_der);
     free(event_indicators);
     free(event_indicators_prev);
     free(roots_found);
-
-    return 0;
 }
 
-TEST_CASE("main") {
+TEST_CASE("Model-Exchange FMU example") {
     const char* tmpPath;
     jm_callbacks callbacks;
     fmi_import_context_t* context;
@@ -335,35 +288,18 @@ TEST_CASE("main") {
 #endif
 
     tmpPath = fmi_import_mk_temp_dir(&callbacks, FMU_UNPACK_DIR, NULL);
-    if (!tmpPath) {
-        printf("Failed to create temporary directory in: " FMU_UNPACK_DIR "\n");
-        do_exit(CTEST_RETURN_FAIL);
-    }
+    REQUIRE(tmpPath != nullptr);
 
     context = fmi_import_allocate_context(&callbacks);
-    version = fmi_import_get_fmi_version(context, FMU3_ME_PATH, tmpPath);
-    if(version != fmi_version_3_0_enu) {
-        printf("Only version 3.0 is supported by this code\n");
-        do_exit(CTEST_RETURN_FAIL);
-    }
+    REQUIRE(context != nullptr);
+    REQUIRE(fmi_import_get_fmi_version(context, FMU3_ME_PATH, tmpPath) == fmi_version_3_0_enu);
 
     fmu = fmi3_import_parse_xml(context, tmpPath, 0);
-    if(!fmu) {
-        printf("Error parsing XML, exiting\n");
-        do_exit(CTEST_RETURN_FAIL);
-    }
+    REQUIRE(fmu != nullptr);
 
-    if (!(fmi3_fmu_kind_me & fmi3_import_get_fmu_kind(fmu))) { /* compare bitmasks */
-        printf("Only ME 3.0 is supported by this code\n");
-        do_exit(CTEST_RETURN_FAIL);
-    }
+    REQUIRE((fmi3_import_get_fmu_kind(fmu) & fmi3_fmu_kind_me) == fmi3_fmu_kind_me);
 
-    /* Test default callbacks - .._cs_test tests custom */
-    status = fmi3_import_create_dllfmu(fmu, fmi3_fmu_kind_me, NULL, NULL);
-    if (status == jm_status_error) {
-        printf("Could not create the DLL loading mechanism(C-API test).\n");
-        do_exit(CTEST_RETURN_FAIL);
-    }
+    REQUIRE(fmi3_import_create_dllfmu(fmu, fmi3_fmu_kind_me, NULL, NULL) == jm_status_success);
 
     test_capi_wrappers_me(fmu);
     test_simulate_me(fmu);
@@ -371,11 +307,6 @@ TEST_CASE("main") {
     fmi3_import_destroy_dllfmu(fmu);
     fmi3_import_free(fmu);
     fmi_import_free_context(context);
-    if (fmi_import_rmdir(&callbacks, tmpPath)) {
-        printf("Problem when deleting FMU unpack directory.\n");
-        do_exit(CTEST_RETURN_FAIL);
-    }
+    REQUIRE(fmi_import_rmdir(&callbacks, tmpPath) == jm_status_success);
     callbacks.free((void*)tmpPath);
-
-    printf("Everything seems to be OK since you got this far=)!\n");
 }

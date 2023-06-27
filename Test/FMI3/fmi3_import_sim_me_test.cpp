@@ -62,6 +62,7 @@ void test_capi_wrappers_me(fmi3_import_t* fmu) {
     REQUIRE(fmi3_import_get_number_of_continuous_states(fmu, &n_states_xml) == fmi3_status_ok);
     REQUIRE(fmi3_import_get_number_of_event_indicators(fmu, &n_event_indicators_xml) == fmi3_status_ok);
 
+    INFO("Instantiation");
     jm_status_enu_t jmstatus = fmi3_import_instantiate_model_exchange(
         fmu,
         "Test ME model instance",
@@ -73,14 +74,14 @@ void test_capi_wrappers_me(fmi3_import_t* fmu) {
     );
     REQUIRE(jmstatus == jm_status_success);
 
-    /* verify that XML and CAPI give same result */
-    fmi3_import_get_number_of_continuous_states(fmu, &n_states_capi);
+    INFO("Verify that XML and CAPI give same result");
+    REQUIRE(fmi3_import_get_number_of_continuous_states(fmu, &n_states_capi) == fmi3_status_ok);
     REQUIRE(n_states_capi == n_states_xml);
 
-    fmi3_import_get_number_of_event_indicators(fmu, &n_event_indicators_capi);
+    REQUIRE(fmi3_import_get_number_of_event_indicators(fmu, &n_event_indicators_capi) == fmi3_status_ok);
     REQUIRE(n_event_indicators_capi == n_event_indicators_xml);
 
-    /* test that get_nominals API is loaded */
+    INFO("Test that get_nominals API is loaded");
     REQUIRE(fmi3_import_get_nominals_of_continuous_states(fmu, NULL, 0) == fmi3_status_ok);
 
     REQUIRE(fmi3_import_terminate(fmu) == fmi3_status_ok);
@@ -108,7 +109,6 @@ void test_simulate_me(fmi3_import_t* fmu) {
     test_event_info_t eventInfo;
     fmi3_boolean_t step_event = fmi3_false;
     fmi3_boolean_t time_event = fmi3_false;
-    size_t k;
 
     REQUIRE_STREQ(fmi3_import_get_version(fmu), "3.0");
     REQUIRE(fmi3_import_get_number_of_continuous_states(fmu, &n_states) == fmi3_status_ok); // populates n_states
@@ -122,6 +122,7 @@ void test_simulate_me(fmi3_import_t* fmu) {
     event_indicators_prev = (fmi3_float64_t*)calloc(n_event_indicators, sizeof(double));
     roots_found = (fmi3_int32_t*)calloc(n_event_indicators, sizeof(fmi3_int32_t));
 
+    INFO("Instantiate");
     jmstatus = fmi3_import_instantiate_model_exchange(
         fmu,
         "Test ME model instance",
@@ -137,7 +138,7 @@ void test_simulate_me(fmi3_import_t* fmu) {
     REQUIRE(fmi3_import_set_debug_logging(fmu, fmi3_false, 0, 0) == fmi3_status_ok);
     REQUIRE(fmi3_import_set_debug_logging(fmu, fmi3_true, 0, 0) == fmi3_status_ok);
 
-    INFO("Initialziation");
+    INFO("Initialization");
     REQUIRE(fmi3_import_enter_initialization_mode(fmu, toleranceControlled,
         relativeTolerance, tstart, fmi3_false, 0.0) == fmi3_status_ok);
     REQUIRE(fmi3_import_exit_initialization_mode(fmu) == fmi3_status_ok);
@@ -176,8 +177,8 @@ void test_simulate_me(fmi3_import_t* fmu) {
         }
         REQUIRE(fmi3_import_get_event_indicators(fmu, event_indicators, n_event_indicators) == fmi3_status_ok);
 
-        /* Check if an event indicator has triggered, and get direction of event indicator */
-        for (k = 0; k < n_event_indicators; k++) {
+        INFO("Check if an event indicator has triggered, and get direction of event indicator");
+        for (size_t k = 0; k < n_event_indicators; k++) {
             INFO("k = " << k);
             if ((event_indicators[k] >= 0) && (event_indicators_prev[k] < 0)) {
                 zero_crossing_event = 1;
@@ -190,7 +191,7 @@ void test_simulate_me(fmi3_import_t* fmu) {
             }
         }
 
-        /* Handle any events */
+        INFO("Handle any events");
         time_event = eventInfo.nextEventTimeDefined && tcur == eventInfo.nextEventTime;
         if (step_event || zero_crossing_event || time_event) {
             REQUIRE(fmi3_import_enter_event_mode(fmu) == fmi3_status_ok);
@@ -213,9 +214,9 @@ void test_simulate_me(fmi3_import_t* fmu) {
             hcur = tcur - tlast;
         }
 
-        /* Integrate a step */
+        INFO("Integrate a step");
         REQUIRE(fmi3_import_get_derivatives(fmu, states_der, n_states) == fmi3_status_ok);
-        for (k = 0; k < n_states; k++) {
+        for (size_t k = 0; k < n_states; k++) {
             states[k] = states[k] + hcur*states_der[k];
         }
 
@@ -226,15 +227,15 @@ void test_simulate_me(fmi3_import_t* fmu) {
                 &terminateSimulation) == fmi3_status_ok);
     }
 
-    /* Validate result */
-    for (k = 0; k < n_states; k++) {
+    INFO("Validate result of scalar variables");
+    for (size_t k = 0; k < n_states; k++) {
         INFO("k = " << k);
         fmi3_float64_t diff = states[k] - states_end_results[k];
         diff = diff > 0 ? diff: -diff; /* Take abs */
         REQUIRE(diff <= 1e-10);
     }
 
-    /* Validate array variable results */
+    INFO("Validate array variable results");
     {
         fmi3_value_reference_t vr = 12;
         fmi3_float64_t arrValues[4];
@@ -247,7 +248,7 @@ void test_simulate_me(fmi3_import_t* fmu) {
         REQUIRE(fmi3_import_get_float64(fmu, &vr, 1, (fmi3_float64_t*)&arrValues, nValues) == fmi3_status_ok);
 
         /* check result */
-        for (k = 0; k < nValues; k++) {
+        for (size_t k = 0; k < nValues; k++) {
             INFO("k = " << k);
             diff = ref_res[k] - arrValues[k];
             diff = diff > 0 ? diff : -diff;
@@ -255,6 +256,7 @@ void test_simulate_me(fmi3_import_t* fmu) {
         }
     }
 
+    INFO("Cleanup");
     REQUIRE(fmi3_import_terminate(fmu) == fmi3_status_ok);
 
     fmi3_import_free_instance(fmu);

@@ -86,6 +86,7 @@ void test_capi_wrappers_se(fmi3_import_t* fmu) {
     REQUIRE_STREQ(fmi3_import_get_version(fmu), "3.0");
     REQUIRE_STREQ(fmi3_import_get_instantiation_token(fmu), "123");
 
+    INFO("Instantiate");
     jmstatus = fmi3_import_instantiate_scheduled_execution(
         fmu,
         instanceName,
@@ -100,6 +101,7 @@ void test_capi_wrappers_se(fmi3_import_t* fmu) {
     );
     REQUIRE(jmstatus == jm_status_success);
 
+    INFO("Verify callbacks");
     REQUIRE(instance_env.log_message_callback_called == fmi3_true);
 
     REQUIRE(g_dummy_clock_callbacks > 0);

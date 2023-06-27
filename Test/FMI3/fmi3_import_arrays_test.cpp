@@ -53,6 +53,7 @@ static void get_dimensions_start_sizes(fmi3_import_t* fmu, jm_callbacks* cb, fmi
 
     /* fill the array */
     for (size_t i = 0; i < nDims; i++) {
+        INFO("i = " << i);
         fmi3_import_dimension_t* d = fmi3_import_get_dimension_list_item(dimList, i);
 
         if (fmi3_import_get_dimension_has_vr(d)) {
@@ -93,6 +94,7 @@ static void test_array_ok_64(fmi3_import_t* xml, const char* varName, fmi3_float
     /* check resolved dimension start sizes */
     get_dimensions_start_sizes(xml, cb, dimList, &dimSizes);
     for (size_t i = 0; i < nDims; i++) {
+        INFO("i = " << i);
         REQUIRE(dimSizes[i] == dimSizesExp[i]);
     }
 
@@ -103,6 +105,7 @@ static void test_array_ok_64(fmi3_import_t* xml, const char* varName, fmi3_float
 
     /* check start values */
     for (size_t i = 0; i < arrSize; i++) {
+        INFO("i = " << i);
         REQUIRE(starts[i] == startsExp[i]);
     }
 
@@ -199,6 +202,7 @@ static void test_array_ok_32(fmi3_import_t* xml, const char* varName, fmi3_float
     /* check resolved dimension start sizes */
     get_dimensions_start_sizes(xml, cb, dimList, &dimSizes);
     for (size_t i = 0; i < nDims; i++) {
+        INFO("i = " << i);
         REQUIRE(dimSizes[i] == dimSizesExp[i]);
     }
 
@@ -209,6 +213,7 @@ static void test_array_ok_32(fmi3_import_t* xml, const char* varName, fmi3_float
 
     /* check start values */
     for (size_t i = 0; i < arrSize; i++) {
+        INFO("i = " << i);
         REQUIRE(starts[i] == startsExp[i]);
     }
 
@@ -362,6 +367,7 @@ static void test_array8_32_can_find_index_and_vr_of_dimensions(fmi3_import_t* xm
 
     /* check values (both start and integer) */
     for (size_t i = 0; i < nDims; i++) {
+        INFO("i = " << i);
         dim = fmi3_import_get_dimension_list_item(dimList, i);
         if (fmi3_import_get_dimension_has_start(dim)) {
             sizeTot *= fmi3_import_get_dimension_start(dim);
@@ -385,6 +391,7 @@ static void test_array8_32_can_find_index_and_vr_of_dimensions(fmi3_import_t* xm
 
     starts = fmi3_import_get_float32_variable_start_array(fmi3_import_get_variable_as_float32(v));
     for (size_t i = 0; i < sizeTot; i++) {
+        INFO("i = " << i);
         fmi3_float32_t exp = *((fmi3_float32_t*)startsExp + i);
         fmi3_float32_t act = *(starts + i);
         REQUIRE(exp == act);

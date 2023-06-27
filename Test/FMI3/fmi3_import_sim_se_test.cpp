@@ -73,10 +73,9 @@ void test_capi_wrappers_se(fmi3_import_t* fmu) {
     fmi3_string_t resourcePath = "";
     fmi3_boolean_t visible = fmi3_false;
     fmi3_boolean_t loggingOn = fmi3_false;
-    dummy_fmi3_instance_environment_t instance_env = {
-        .clock_update_callback_called = fmi3_false,
-        .log_message_callback_called = fmi3_false
-    };
+    dummy_fmi3_instance_environment_t instance_env;
+    instance_env.clock_update_callback_called = fmi3_false;
+    instance_env.log_message_callback_called = fmi3_false;
 
     g_dummy_clock_callbacks = 0;
 

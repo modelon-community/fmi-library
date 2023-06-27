@@ -55,6 +55,8 @@ to_native_c_path("${TEST_OUTPUT_FOLDER}/BouncingBall3_mf.fmu" FMU3_MF_PATH)
 to_native_c_path("${TEST_OUTPUT_FOLDER}/FmuUnpack" FMU_UNPACK_DIR)
 file(MAKE_DIRECTORY ${FMU_UNPACK_DIR})
 
+# FIXME: Missing dependency on building the FMU for sim tests
+
 # General functionality tests
 # TODO: Sort these by name
 add_catch2_test(fmi3_capi_basic_test                     FMI3)

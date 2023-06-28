@@ -1411,12 +1411,6 @@ int fmi3_xml_handle_Variable(fmi3_xml_parser_context_t* context, const char* dat
         if (fmi3_xml_set_attr_string(context, elm_id, fmi_attr_id_name,           1, bufName)) return -1;
         if (fmi3_xml_set_attr_string(context, elm_id, fmi_attr_id_description,    0, bufDesc)) return -1;
 
-        /* Return early if undefined variable */
-        if (context->skipOneVariableFlag) {
-            jm_log_error(context->callbacks, module, "Ignoring variable with undefined vr '%s'", jm_vector_get_itemp(char)(bufName,0));
-            return 0;
-        }
-
         if (jm_vector_get_size(char)(bufDesc)) {
             /* Add the description to the model-wide set and retrieve the pointer */
             description = jm_string_set_put(&md->descriptions, jm_vector_get_itemp(char)(bufDesc, 0));
@@ -1466,26 +1460,22 @@ int fmi3_xml_handle_Variable(fmi3_xml_parser_context_t* context, const char* dat
         if (fmi3_xml_variable_process_attr_intermediateupdate(context, variable, elm_id)) return -1;
     }
     else { /* end of xml tag */
-        if (context->skipOneVariableFlag) {
-            context->skipOneVariableFlag = 0;
-        } else {
-            /* Check that the type for the variable is set */
-            fmi3_xml_model_description_t* md = context->modelDescription;
-            fmi3_xml_variable_t* variable = jm_vector_get_last(jm_voidp)(&md->variablesOrigOrder);
-            if(!variable->type) {
-                jm_log_error(context->callbacks, module, "No variable type element for variable %s. Assuming Float64.", variable->name);
+        /* Check that the type for the variable is set */
+        fmi3_xml_model_description_t* md = context->modelDescription;
+        fmi3_xml_variable_t* variable = jm_vector_get_last(jm_voidp)(&md->variablesOrigOrder);
+        if(!variable->type) {
+            jm_log_error(context->callbacks, module, "No variable type element for variable %s. Assuming Float64.", variable->name);
 
-                return fmi3_xml_handle_Float64(context, NULL);
-            }
+            return fmi3_xml_handle_Float64(context, NULL);
+        }
 
-            /* Allocate memory for the resolved dimensions. The main reason to do it here is because we have access to the callbacks. */
-            if (fmi3_xml_variable_is_array(variable)) {
-                size_t nDims = jm_vector_get_size(fmi3_xml_dimension_t)(&variable->dimensionsVector);
-                variable->dimensionsArray = context->callbacks->malloc(nDims * sizeof(unsigned int));
-                if (!variable->dimensionsArray) {
-                    jm_log_error(context->callbacks, module, "Error: Unable to allocate memory for dimension as array");
-                    return -1;
-                }
+        /* Allocate memory for the resolved dimensions. The main reason to do it here is because we have access to the callbacks. */
+        if (fmi3_xml_variable_is_array(variable)) {
+            size_t nDims = jm_vector_get_size(fmi3_xml_dimension_t)(&variable->dimensionsVector);
+            variable->dimensionsArray = context->callbacks->malloc(nDims * sizeof(unsigned int));
+            if (!variable->dimensionsArray) {
+                jm_log_error(context->callbacks, module, "Error: Unable to allocate memory for dimension as array");
+                return -1;
             }
         }
     }
@@ -1535,11 +1525,6 @@ static void fmi3_log_error_if_start_required(fmi3_xml_parser_context_t* context,
 }
 
 int fmi3_xml_handle_Dimension(fmi3_xml_parser_context_t* context, const char* data) {
-
-    if (context->skipOneVariableFlag) {
-        return 0; /* skip nested variable element */
-    }
-
     if (!data) { /* start of tag */
 
         fmi3_xml_variable_t* currentVar = jm_vector_get_last(jm_voidp)(&context->modelDescription->variablesOrigOrder);
@@ -1607,8 +1592,6 @@ int fmi3_xml_handle_FloatXX(fmi3_xml_parser_context_t* context, const char* data
     fmi3_xml_type_definitions_t* td;
     fmi3_xml_float_type_props_t* type;
     int res;
-
-    if (context->skipOneVariableFlag) return 0;
 
     /* Extract common Variable info */
     res = fmi3_xml_handle_Variable(context, data);
@@ -1698,7 +1681,6 @@ int fmi3_xml_handle_IntXX(fmi3_xml_parser_context_t* context, const char* data,
         fmi3_xml_elm_enu_t elmID, /* ID of the Type (not the Variable) */
         const fmi3_xml_primitive_type_t* primType)
 {
-    if (context->skipOneVariableFlag) return 0;
     if (fmi3_xml_handle_Variable(context, data)) return -1;
 
     fmi3_xml_model_description_t* md = context->modelDescription;
@@ -1789,8 +1771,6 @@ gen_fmi3_xml_handle_TYPEXX(Int, UInt, uint,  8)
 int fmi3_xml_handle_Boolean(fmi3_xml_parser_context_t *context, const char* data) {
     int res;
 
-    if(context->skipOneVariableFlag) return 0;
-
     res = fmi3_xml_handle_Variable(context, data);
     if (res) return res;
 
@@ -1841,7 +1821,6 @@ int fmi3_xml_handle_Boolean(fmi3_xml_parser_context_t *context, const char* data
 }
 
 int fmi3_xml_handle_Binary(fmi3_xml_parser_context_t* context, const char* data) {
-    if (context->skipOneVariableFlag) return 0;
     if (fmi3_xml_handle_Variable(context, data)) return -1;
     fmi3_xml_elm_enu_t elmID = fmi3_xml_elmID_Binary;  // The ID corresponding to the actual parsed element name
     fmi3_xml_model_description_t* md = context->modelDescription;
@@ -1911,7 +1890,6 @@ int fmi3_xml_handle_Binary(fmi3_xml_parser_context_t* context, const char* data)
 }
 
 int fmi3_xml_handle_Clock(fmi3_xml_parser_context_t* context, const char* data) {
-    if (context->skipOneVariableFlag) return 0;
     if (fmi3_xml_handle_Variable(context, data)) return -1;
 
     if (!data) {
@@ -1945,7 +1923,6 @@ int fmi3_xml_handle_Clock(fmi3_xml_parser_context_t* context, const char* data) 
 }
 
 int fmi3_xml_handle_String(fmi3_xml_parser_context_t *context, const char* data) {
-    if (context->skipOneVariableFlag) return 0;
     if (fmi3_xml_handle_Variable(context, data)) return -1;
     fmi3_xml_model_description_t* md = context->modelDescription;
     fmi3_xml_type_definitions_t* td = &md->typeDefinitions;
@@ -1995,7 +1972,6 @@ int fmi3_xml_handle_String(fmi3_xml_parser_context_t *context, const char* data)
  * and so on.
 */
 int fmi3_xml_handle_StringVariableStart(fmi3_xml_parser_context_t* context, const char* data) {
-    if (context->skipOneVariableFlag) return 0;
     if (!data) {
         /* For each <Start ...>, allocate memory, copy attribute to 'value' and push back to 'vec'. */
         jm_vector(jm_voidp)* vec = &context->currentStartVariableValues;
@@ -2096,8 +2072,6 @@ fmi3_xml_enum_variable_props_t* fmi3_xml_parse_enum_properties(fmi3_xml_parser_c
 
 int fmi3_xml_handle_Enumeration(fmi3_xml_parser_context_t *context, const char* data) {
     int res;
-
-    if(context->skipOneVariableFlag) return 0;
 
     res = fmi3_xml_handle_Variable(context, data);
     if (res) return res;

@@ -1245,8 +1245,8 @@ static void XMLCALL fmi3_parse_element_start(void *c, const char *elm, const cha
     /* check that the element handler has processed all the attributes */
     for (i = 0; i < fmi3_xml_attr_number; i++) {
         if (jm_vector_get_item(jm_string)(context->attrBuffer, i)) {
-            if (!context->skipOneVariableFlag)
-                jm_log_warning(context->callbacks,module, "Attribute '%s' not processed by element '%s' handle", fmi3_xmlAttrNames[i], elm);
+            // Element has not been processed because no handler exists
+            jm_log_warning(context->callbacks,module, "Attribute '%s' not processed by element '%s' handle", fmi3_xmlAttrNames[i], elm);
             jm_vector_set_item(jm_string)(context->attrBuffer, i,0);
         }
     }
@@ -1381,7 +1381,6 @@ int fmi3_xml_parse_model_description(fmi3_xml_model_description_t* md,
         return -1;
     }
     context->lastBaseUnit = 0;
-    context->skipOneVariableFlag = 0;
     context->skipElementCnt = 0;
     jm_stack_init(int)(&context->elmStack,  context->callbacks);
     jm_vector_init(char)(&context->elmData,           0, context->callbacks);

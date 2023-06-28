@@ -317,14 +317,6 @@ struct fmi3_xml_parser_context_t {
     fmi3_xml_unit_t* lastBaseUnit;
 
     /**
-     * If there's an issue with the variable element, this flag says that its
-     * children should be skipped.
-     *
-     * XXX: Seems to only be set FMI 1.
-     */
-    int skipOneVariableFlag;
-
-    /**
      * Incremented when an invalid element(or nested elements of invalid root
      * element) is found. Decremented when invalid element end tags are parsed.
      */

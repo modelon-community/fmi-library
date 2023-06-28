@@ -359,7 +359,7 @@ struct fmi3_xml_parser_context_t {
      * Element ID of the last processed sibling, or fmi3_xml_elmID_none if
      * no siblings have been processed.
      */
-    fmi3_xml_elm_enu_t lastElmID;
+    fmi3_xml_elm_enu_t lastSiblingElemId;
 
     /**
      * Used for error checking and scheme verification.

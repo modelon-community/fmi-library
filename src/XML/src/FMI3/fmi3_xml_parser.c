@@ -1150,7 +1150,7 @@ static void XMLCALL fmi3_parse_element_start(void *c, const char *elm, const cha
     /* Check that parent-child & siblings are fine */
     {
         fmi3_xml_elm_enu_t parentID = context->currentElmID;
-        fmi3_xml_elm_enu_t siblingID =  context->lastElmID;
+        fmi3_xml_elm_enu_t siblingID =  context->lastSiblingElemId;
 
         if (!fmi3_xml_is_valid_parent(currentID, parentID)) {
                 jm_log_error(context->callbacks, module,
@@ -1181,8 +1181,8 @@ static void XMLCALL fmi3_parse_element_start(void *c, const char *elm, const cha
                 }
             }
         }
-        /* lastElmID references the previous sibling-element's id - set it to 'none' before handling children. TODO: rename lastElmName --> lastSiblingElemId */
-        context->lastElmID = fmi3_xml_elmID_none;
+        /* lastSiblingElemId references the previous sibling-element's id - set it to 'none' before handling children. */
+        context->lastSiblingElemId = fmi3_xml_elmID_none;
     }
 
     /* process the attributes  */
@@ -1312,7 +1312,7 @@ static void XMLCALL fmi3_parse_element_end(void* c, const char *elm) {
     jm_vector_resize(char)(&context->elmData, 0);
 
     /* record the last handle and pop the stack */
-    context->lastElmID = currentID;
+    context->lastSiblingElemId = currentID;
 
     if(jm_stack_is_empty(int)(&context->elmStack)) {
         context -> currentElmID = fmi3_xml_elmID_none;
@@ -1387,7 +1387,7 @@ int fmi3_xml_parse_model_description(fmi3_xml_model_description_t* md,
     jm_vector_init(char)(&context->variableStartAttr, 0, context->callbacks);
     jm_vector_init(jm_voidp)(&context->currentStartVariableValues, 0, context->callbacks);
 
-    context->lastElmID = fmi3_xml_elmID_none;
+    context->lastSiblingElemId = fmi3_xml_elmID_none;
     context->currentElmID = fmi3_xml_elmID_none;
     context->anyElmCount = 0;
     context->useAnyHandleFlg = 0;

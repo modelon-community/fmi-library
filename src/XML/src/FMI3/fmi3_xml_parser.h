@@ -269,25 +269,20 @@ struct fmi3_xml_parser_context_t {
      * Purpose seems to be to reduce the cost of converting char* to jm_vector(char)
      * by using an object pool. Typically for attributes.
      *
-     * It's possible that it was also used as a way to keep strings from one element
-     * handler to another, but that's not how it should be used moving forward.
-     *
-     * TODO: Rename to charvecPool?
+     * This should be used to keep values between elements.
      */
     jm_vector(jm_voidp) parseBuffer;
 
     /**
-     * Used for writing to attrBuffer. Uses lookup by attribute name instead
-     * of attribute ID. The .ptr field points to attrBuffer[id(attr_name)].
+     * Used for writing to attrMapById. Uses lookup by attribute name instead
+     * of attribute ID. The .ptr field points to attrMapById[id(attr_name)].
      * Currently used ONLY for writing.
-     *
-     * TODO: Rename to attrMapByName?
      */
-    jm_vector(jm_named_ptr)* attrMap;
+    jm_vector(jm_named_ptr)* attrMapByName;
 
     /**
      * Vector with a slot for every attribute for every element to allow constant lookup:
-     *     attrBuffer[<attr_id>] = <attr_value>
+     *     attrMapById[<attr_id>] = <attr_value>
      *
      * Is populated with all parsed attributes for the current element before that element
      * handler is invoked.
@@ -298,10 +293,8 @@ struct fmi3_xml_parser_context_t {
      * NOTE:
      * The pointers point to expat's internal memory. It's not allowed to save references
      * to this memory between element handle calls.
-     *
-     * TODO: Rename to attrMapById?
      */
-    jm_vector(jm_string)* attrBuffer;
+    jm_vector(jm_string)* attrMapById;
 
     /**
      * A vector that only contains mappings from element names to element

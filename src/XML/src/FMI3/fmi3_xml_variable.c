@@ -1659,7 +1659,7 @@ int fmi3_xml_handle_FloatXX(fmi3_xml_parser_context_t* context, const char* data
                 // from the string.
 
                 /* restore the attribute buffer before it's used in set_attr_float */
-                jm_vector_set_item(jm_string)(context->attrBuffer, fmi_attr_id_start, startAttr);
+                jm_vector_set_item(jm_string)(context->attrMapById, fmi_attr_id_start, startAttr);
 
                 if (fmi3_xml_parse_attr_as_floatXX(context, elmID, fmi_attr_id_start, 0, &start->start,
                         fmi3_xml_get_type_default_value(primType->baseType), primType)) {
@@ -1728,7 +1728,7 @@ int fmi3_xml_handle_IntXX(fmi3_xml_parser_context_t* context, const char* data,
                 }
             } else { /* is scalar */
                 /* restore the attribute buffer before it's used in set_attr_int */
-                jm_vector_set_item(jm_string)(context->attrBuffer, fmi_attr_id_start, startAttr);
+                jm_vector_set_item(jm_string)(context->attrMapById, fmi_attr_id_start, startAttr);
                 // This default value should never be used, since the standard does not define it.
                 // The FMU will hard-code one in the C API and it might not match our (this) default value.
                 // Here we just give a valid value for the type so it's defined on our side at least.
@@ -1804,7 +1804,7 @@ int fmi3_xml_handle_Boolean(fmi3_xml_parser_context_t *context, const char* data
                 }
             } else {
                 /* restore the attribute buffer before it's used in set_attr_boolean */
-                jm_vector_set_item(jm_string)(context->attrBuffer, fmi_attr_id_start, startAttr);
+                jm_vector_set_item(jm_string)(context->attrMapById, fmi_attr_id_start, startAttr);
 
                 if (fmi3_xml_parse_attr_as_boolean(context, fmi3_xml_elmID_Boolean, fmi_attr_id_start, 0,
                         (unsigned int*)&start->start.scalar32s, 0)) {
@@ -2134,7 +2134,7 @@ int fmi3_xml_handle_Enumeration(fmi3_xml_parser_context_t *context, const char* 
                 }
             } else {
                 /* restore the attribute buffer before it's used in set_attr_int */
-                jm_vector_set_item(jm_string)(context->attrBuffer, fmi_attr_id_start, startAttr);
+                jm_vector_set_item(jm_string)(context->attrMapById, fmi_attr_id_start, startAttr);
 
                 if (fmi3_xml_parse_attr_as_intXX(context, fmi3_xml_elmID_Enumeration,
                         fmi_attr_id_start, 0, &start->start.scalar64s, 0, &PRIMITIVE_TYPES.enumeration)) {

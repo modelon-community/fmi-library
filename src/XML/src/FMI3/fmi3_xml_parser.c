@@ -251,17 +251,17 @@ void fmi3_xml_parse_free_context(fmi3_xml_parser_context_t *context) {
         context->parser = 0;
     }
     fmi3_xml_free_parse_buffer(context);
-    if(context->attrMap) {
-        jm_vector_free(jm_named_ptr)(context->attrMap);
-        context->attrMap = 0;
+    if(context->attrMapByName) {
+        jm_vector_free(jm_named_ptr)(context->attrMapByName);
+        context->attrMapByName = 0;
     }
     if(context->elmMap) {
         jm_vector_free(fmi3_xml_element_handle_map_t)(context->elmMap);
         context->elmMap = 0;
     }
-    if(context->attrBuffer) {
-        jm_vector_free(jm_string)(context->attrBuffer);
-        context->attrBuffer = 0;
+    if(context->attrMapById) {
+        jm_vector_free(jm_string)(context->attrMapById);
+        context->attrMapById = 0;
     }
     jm_stack_free_data(int)(&context->elmStack);
     jm_vector_free_data(char)(&context->elmData);
@@ -318,7 +318,7 @@ static size_t fmi3_xml_string_char_count(const char* str, char ch) {
 
 /* Get attribute as string without clearing the buffer entry */
 jm_string fmi3_xml_peek_attr_str(fmi3_xml_parser_context_t* context, fmi3_xml_attr_enu_t attrID) {
-    return jm_vector_get_item(jm_string)(context->attrBuffer, attrID);
+    return jm_vector_get_item(jm_string)(context->attrMapById, attrID);
 }
 
 int fmi3_xml_is_attr_defined(fmi3_xml_parser_context_t *context, fmi3_xml_attr_enu_t attrID) {
@@ -334,7 +334,7 @@ int fmi3_xml_get_attr_str(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t
 {
     /* Read and clear attribute */
     jm_string value = fmi3_xml_peek_attr_str(context, attrID);
-    jm_vector_set_item(jm_string)(context->attrBuffer, attrID, 0);
+    jm_vector_set_item(jm_string)(context->attrMapById, attrID, 0);
 
     if (!value && required) {
         jm_string elmName = fmi3_element_handle_map[elmID].elementName;
@@ -659,7 +659,7 @@ static int fmi3_xml_str_to_intXX(fmi3_xml_parser_context_t* context, int require
 
 /**
  * Reads an attribute to size_t.
- * This will also clear the attribute from the attrBuffer.
+ * This will also clear the attribute from the attrMapById.
  *
  * @param field: where the value will be stored (return arg)
  * @param defaultVal: pointer to default value that will be used if attribute wasn't defined -
@@ -691,7 +691,7 @@ int fmi3_xml_parse_attr_as_sizet(fmi3_xml_parser_context_t* context, fmi3_xml_el
 
 /**
  * Reads a fixed-width [unsigned] integer.
- * This will also clear the attribute from the attrBuffer
+ * This will also clear the attribute from the attrMapById
  *
  * @param field: where the value will be stored (return arg)
  * @param defaultVal: pointer to default value that will be used if attribute wasn't defined -
@@ -929,7 +929,7 @@ clean:
  * Get attribute as an array. This will clear the attribute from the parser buffer.
  *
  * TODO:
- * 1. This should not be a _set_attr_ function because it doesn't use the attrBuffer.
+ * 1. This should not be a _set_attr_ function because it doesn't use the attrMapById.
  *    ... this function should probably not even exist.
  *
  *
@@ -1005,18 +1005,18 @@ jm_vector(char)* fmi3_xml_reserve_parse_buffer(fmi3_xml_parser_context_t* contex
 
 int fmi3_create_attr_map(fmi3_xml_parser_context_t* context) {
     int i;
-    context->attrBuffer = jm_vector_alloc(jm_string)(fmi3_xml_attr_number, fmi3_xml_attr_number, context->callbacks);
-    if(!context->attrBuffer) return -1;
-    context->attrMap = jm_vector_alloc(jm_named_ptr)(fmi3_xml_attr_number, fmi3_xml_attr_number, context->callbacks);
-    if(!context->attrMap) return -1;
+    context->attrMapById = jm_vector_alloc(jm_string)(fmi3_xml_attr_number, fmi3_xml_attr_number, context->callbacks);
+    if(!context->attrMapById) return -1;
+    context->attrMapByName = jm_vector_alloc(jm_named_ptr)(fmi3_xml_attr_number, fmi3_xml_attr_number, context->callbacks);
+    if(!context->attrMapByName) return -1;
     for(i = 0; i < fmi3_xml_attr_number; i++) {
         jm_named_ptr map;
-        jm_vector_set_item(jm_string)(context->attrBuffer, i, 0);
+        jm_vector_set_item(jm_string)(context->attrMapById, i, 0);
         map.name = fmi3_xmlAttrNames[i];
-        map.ptr = (void*)(jm_vector_get_itemp(jm_string)(context->attrBuffer, i));
-        jm_vector_set_item(jm_named_ptr)(context->attrMap, i, map);
+        map.ptr = (void*)(jm_vector_get_itemp(jm_string)(context->attrMapById, i));
+        jm_vector_set_item(jm_named_ptr)(context->attrMapByName, i, map);
     }
-    jm_vector_qsort(jm_named_ptr)(context->attrMap, jm_compare_named);
+    jm_vector_qsort(jm_named_ptr)(context->attrMapByName, jm_compare_named);
     return 0;
 }
 
@@ -1193,7 +1193,7 @@ static void XMLCALL fmi3_parse_element_start(void *c, const char *elm, const cha
 
         /* find attribute by name */
         key.name = attr[i];
-        attrMapping = jm_vector_bsearch(jm_named_ptr)(context->attrMap, &key, jm_compare_named);
+        attrMapping = jm_vector_bsearch(jm_named_ptr)(context->attrMapByName, &key, jm_compare_named);
         if (!attrMapping) {
 #define XMLSchema_instance "http://www.w3.org/2001/XMLSchema-instance"
             const size_t stdNSlen = strlen(XMLSchema_instance);
@@ -1244,10 +1244,10 @@ static void XMLCALL fmi3_parse_element_start(void *c, const char *elm, const cha
     if (context->skipElementCnt) return;
     /* check that the element handler has processed all the attributes */
     for (i = 0; i < fmi3_xml_attr_number; i++) {
-        if (jm_vector_get_item(jm_string)(context->attrBuffer, i)) {
+        if (jm_vector_get_item(jm_string)(context->attrMapById, i)) {
             // Element has not been processed because no handler exists
             jm_log_warning(context->callbacks,module, "Attribute '%s' not processed by element '%s' handle", fmi3_xmlAttrNames[i], elm);
-            jm_vector_set_item(jm_string)(context->attrBuffer, i,0);
+            jm_vector_set_item(jm_string)(context->attrMapById, i,0);
         }
     }
     if (context -> currentElmID != fmi3_xml_elmID_none) { /* with nested elements: put the parent on the stack */

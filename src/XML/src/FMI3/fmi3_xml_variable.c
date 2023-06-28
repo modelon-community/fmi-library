@@ -1644,10 +1644,10 @@ int fmi3_xml_handle_FloatXX(fmi3_xml_parser_context_t* context, const char* data
                 variable->type = declaredType; /* fallback */
                 return -1;
             }
+            variable->type = &type->super;
         } else {
-            type = (fmi3_xml_float_type_props_t*)declaredType;  // FIXME: Confusing typecast (could be _typedef).
+            variable->type = declaredType;
         }
-        variable->type = &type->super;
         if (fmi3_xml_variable_process_attr_derivative(context, variable, elmID)) return -1;
         if (fmi3_xml_variable_process_attr_reinit(    context, variable, elmID)) return -1;
 
@@ -1721,11 +1721,10 @@ int fmi3_xml_handle_IntXX(fmi3_xml_parser_context_t* context, const char* data,
                 return -1;
             }
             type->super.nextLayer = declaredType;
+            variable->type = &type->super;
         } else {
-            // FIXME: Confusing to typecast to _props when could be _typedef.
-            type = (fmi3_xml_int_type_props_t*)declaredType;
+            variable->type = declaredType;
         }
-        variable->type = &type->super;
     }
     else {
         /* We must wait until after parsing dimensions, because we can't otherwise know

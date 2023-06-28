@@ -1003,14 +1003,6 @@ jm_vector(char)* fmi3_xml_reserve_parse_buffer(fmi3_xml_parser_context_t* contex
     return item;
 }
 
-// XXX: Seems unused - remove? I think it was intended to serve as a way to access
-// attributes from a previous handler, but I'm not certain why we would like to do
-// that. Typically there's a way to access previously parsed elements.
-jm_vector(char)* fmi3_xml_get_parse_buffer(fmi3_xml_parser_context_t* context, size_t index) {
-    jm_vector(jm_voidp)* parseBuffer = &context->parseBuffer;
-    return jm_vector_get_item(jm_voidp)(parseBuffer, index);
-}
-
 int fmi3_create_attr_map(fmi3_xml_parser_context_t* context) {
     int i;
     context->attrBuffer = jm_vector_alloc(jm_string)(fmi3_xml_attr_number, fmi3_xml_attr_number, context->callbacks);

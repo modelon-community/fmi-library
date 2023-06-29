@@ -392,5 +392,5 @@ TEST_CASE("Test default variabilities") {
         v = fmi3_import_get_variable_by_vr(tfmu->fmu, 17);
         REQUIRE(fmi3_import_get_variability(v) == fmi3_variability_enu_continuous);
     }
-
+    fmi3_testutil_import_free(tfmu);
 }

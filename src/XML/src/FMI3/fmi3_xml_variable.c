@@ -1229,20 +1229,18 @@ static int fmi3_xml_variable_process_attr_previous(fmi3_xml_parser_context_t* co
     variable->previous.vr = previous;
     variable->hasPrevious = true;
 
+    // TODO: These should not be fatal
     if (!fmi3_xml_variable_is_clocked(variable)) {
-        // TODO: This should not be a fatal error
         fmi3_xml_parse_fatal(context, "Only variables with the attribute 'clocks' may have the attribute 'previous'.");
         return -1;
     }
 
     if (variable->variability != fmi3_variability_enu_discrete) {
-        // TODO: This should not be a fatal error
         fmi3_xml_parse_fatal(context, "Only variables with variability='discrete' may have the attribute 'previous'.");
         return -1;
     }
 
     if (previous == fmi3_xml_get_variable_vr(variable)) {
-        // TODO: This should not be a fatal error
         fmi3_xml_parse_fatal(context, "A variable must not refer to itself in the attribute 'previous'.");
         return -1;
     }
@@ -1289,7 +1287,6 @@ static int fmi3_xml_variable_process_attr_intermediateupdate(fmi3_xml_parser_con
     }
 
     // Spec: "Variables of type Clock must not have the intermediateUpdate attribute"
-    // TODO: This should probably only trigger for intermediateUpdate="true", but requires clarification in the standard.
     if (elm_id == fmi3_xml_elmID_Clock) {
         fmi3_xml_parse_error(context, "Variables of type 'Clock' must not have the 'intermediateUpdate' attribute.");
         return -1;

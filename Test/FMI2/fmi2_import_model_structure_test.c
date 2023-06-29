@@ -35,9 +35,6 @@ static fmi2_import_t* parse_xml(const char* model_desc_path, jm_logger_f logger)
 }
 
 /**
-    TODO: function copied from PR 21; extract when merged
-*/
-/**
  * Tests that a unit referenced by a Type's attribute exists in UnitDefinitions.
  *
  * @param expectFailure: Expected outcome of test

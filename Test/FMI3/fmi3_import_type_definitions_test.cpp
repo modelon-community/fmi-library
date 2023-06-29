@@ -32,7 +32,7 @@
 static int G_nErrors; /* global used to count the number of errors reported to the logger during parsing - reset before use! */
 
 static fmi3_import_variable_typedef_t* get_typedef_by_name(fmi3_import_type_definitions_t* tds, const char* name) {
-    size_t nTds = fmi3_import_get_type_definition_number(tds);
+    size_t nTds = fmi3_import_get_type_definition_list_size(tds);
     fmi3_import_variable_typedef_t *td;
     for (size_t i = 0; i < nTds; i++) {
         td = fmi3_import_get_typedef(tds, i);
@@ -125,7 +125,7 @@ static int test_quantity_default(fmi3_import_t* xml)
     
     tds = fmi3_import_get_type_definitions(xml);
     REQUIRE(tds != nullptr);
-    n_tds = fmi3_import_get_type_definition_number(tds);
+    n_tds = fmi3_import_get_type_definition_list_size(tds);
 
     /* check that nullptr is returned for all types */
     for (i = 0; i < n_tds; i++) {
@@ -757,7 +757,7 @@ static int get_typedef_by_name(fmi3_import_type_definitions_t* tds, fmi2_string_
     fmi3_import_variable_typedef_t *td;
     unsigned int i;
 
-    nTds = fmi3_import_get_type_definition_number(tds);
+    nTds = fmi3_import_get_type_definition_list_size(tds);
     for (i = 0; i < nTds; i++) {
         td = fmi3_import_get_typedef(tds, i);
 

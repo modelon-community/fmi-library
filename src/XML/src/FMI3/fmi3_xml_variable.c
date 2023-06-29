@@ -1561,7 +1561,7 @@ int fmi3_xml_handle_FloatXX(fmi3_xml_parser_context_t* context, const char* data
 
     fmi3_xml_model_description_t* md;
     fmi3_xml_variable_t* variable;
-    fmi3_xml_type_definitions_t* td;
+    fmi3_xml_type_definition_list_t* td;
     fmi3_xml_float_type_props_t* type;
     int res;
 
@@ -1656,7 +1656,7 @@ int fmi3_xml_handle_IntXX(fmi3_xml_parser_context_t* context, const char* data,
     if (fmi3_xml_handle_Variable(context, data)) return -1;
 
     fmi3_xml_model_description_t* md = context->modelDescription;
-    fmi3_xml_type_definitions_t* td = &md->typeDefinitions;
+    fmi3_xml_type_definition_list_t* td = &md->typeDefinitions;
     fmi3_xml_variable_t* variable = jm_vector_get_last(jm_voidp)(&md->variablesOrigOrder);
     fmi3_xml_variable_type_base_t* declaredType = NULL;
     fmi3_xml_int_type_props_t* type = NULL;
@@ -1747,7 +1747,7 @@ int fmi3_xml_handle_Boolean(fmi3_xml_parser_context_t *context, const char* data
     if (res) return res;
 
     fmi3_xml_model_description_t* md = context->modelDescription;
-    fmi3_xml_type_definitions_t* td = &md->typeDefinitions;
+    fmi3_xml_type_definition_list_t* td = &md->typeDefinitions;
     fmi3_xml_variable_t* variable = jm_vector_get_last(jm_voidp)(&md->variablesOrigOrder);
     if(!data) {
 
@@ -1796,7 +1796,7 @@ int fmi3_xml_handle_Binary(fmi3_xml_parser_context_t* context, const char* data)
     if (fmi3_xml_handle_Variable(context, data)) return -1;
     fmi3_xml_elm_enu_t elmID = fmi3_xml_elmID_Binary;  // The ID corresponding to the actual parsed element name
     fmi3_xml_model_description_t* md = context->modelDescription;
-    fmi3_xml_type_definitions_t* td = &md->typeDefinitions;
+    fmi3_xml_type_definition_list_t* td = &md->typeDefinitions;
     fmi3_xml_variable_t* variable = jm_vector_get_last(jm_voidp)(&md->variablesOrigOrder);
 
     if (!data) {
@@ -1867,7 +1867,7 @@ int fmi3_xml_handle_Clock(fmi3_xml_parser_context_t* context, const char* data) 
     if (!data) {
         fmi3_xml_elm_enu_t elmID = fmi3_xml_elmID_Clock;  // The ID corresponding to the actual parsed element name
         fmi3_xml_model_description_t* md = context->modelDescription;
-        fmi3_xml_type_definitions_t* td = &md->typeDefinitions;
+        fmi3_xml_type_definition_list_t* td = &md->typeDefinitions;
         fmi3_xml_variable_t* variable = jm_vector_get_last(jm_voidp)(&md->variablesOrigOrder);
 
         // NOTE:
@@ -1897,7 +1897,7 @@ int fmi3_xml_handle_Clock(fmi3_xml_parser_context_t* context, const char* data) 
 int fmi3_xml_handle_String(fmi3_xml_parser_context_t *context, const char* data) {
     if (fmi3_xml_handle_Variable(context, data)) return -1;
     fmi3_xml_model_description_t* md = context->modelDescription;
-    fmi3_xml_type_definitions_t* td = &md->typeDefinitions;
+    fmi3_xml_type_definition_list_t* td = &md->typeDefinitions;
     fmi3_xml_variable_t* variable = jm_vector_get_last(jm_voidp)(&md->variablesOrigOrder);
 
 
@@ -1969,7 +1969,7 @@ int fmi3_xml_handle_Start(fmi3_xml_parser_context_t* context, const char* data) 
 
 int fmi3_xml_handle_BinaryVariableStart(fmi3_xml_parser_context_t* context, const char* data) {
     fmi3_xml_model_description_t* md = context->modelDescription;
-    fmi3_xml_type_definitions_t* td = &md->typeDefinitions;
+    fmi3_xml_type_definition_list_t* td = &md->typeDefinitions;
     fmi3_xml_variable_t* variable = jm_vector_get_last(jm_voidp)(&md->variablesOrigOrder);
     if (!data) {
         if (fmi3_xml_variable_is_array(variable)) {
@@ -2048,7 +2048,7 @@ int fmi3_xml_handle_Enumeration(fmi3_xml_parser_context_t *context, const char* 
     res = fmi3_xml_handle_Variable(context, data);
     if (res) return res;
     fmi3_xml_model_description_t* md = context->modelDescription;
-    fmi3_xml_type_definitions_t* td = &md->typeDefinitions;
+    fmi3_xml_type_definition_list_t* td = &md->typeDefinitions;
     fmi3_xml_variable_t* variable = jm_vector_get_last(jm_voidp)(&md->variablesOrigOrder);
     fmi3_xml_variable_type_base_t * declaredType = 0;
     fmi3_xml_enum_variable_props_t * type = 0;

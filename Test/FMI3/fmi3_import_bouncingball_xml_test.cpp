@@ -414,7 +414,7 @@ static void test_parse_bouncingball(const char* xmldir, bool expectParseFailure)
         fmi3_import_type_definitions_t* td = fmi3_import_get_type_definitions(fmu);
         if (td) {
             {
-                unsigned i, ntd = fmi3_import_get_type_definition_number(td);
+                unsigned i, ntd = fmi3_import_get_type_definition_list_size(td);
                 printf("There are %d defs\n", ntd);
                 for (i = 0; i < ntd; i++) {
                     fmi3_import_variable_typedef_t* vt = fmi3_import_get_typedef(td, i);

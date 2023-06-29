@@ -35,13 +35,13 @@ extern "C" {
     @{
     */
 
-fmi3_xml_type_definitions_t* fmi3_xml_get_type_definitions(fmi3_xml_model_description_t* md);
+fmi3_xml_type_definition_list_t* fmi3_xml_get_type_definitions(fmi3_xml_model_description_t* md);
 
 /* Convert base type constant to string */
 
-unsigned int fmi3_xml_get_type_definition_number(fmi3_xml_type_definitions_t* td);
+unsigned int fmi3_xml_get_type_definition_number(fmi3_xml_type_definition_list_t* td);
 
-fmi3_xml_variable_typedef_t* fmi3_xml_get_typedef(fmi3_xml_type_definitions_t* td, unsigned int  index);
+fmi3_xml_variable_typedef_t* fmi3_xml_get_typedef(fmi3_xml_type_definition_list_t* td, unsigned int  index);
 
 const char* fmi3_xml_get_type_name(fmi3_xml_variable_typedef_t*);
 

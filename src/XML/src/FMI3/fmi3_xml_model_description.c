@@ -349,7 +349,7 @@ unsigned int  fmi3_xml_get_unit_definitions_number(fmi3_xml_unit_definitions_t* 
     return (unsigned int)jm_vector_get_size(jm_named_ptr)(&ud->definitions);
 }
 
-fmi3_xml_type_definitions_t* fmi3_xml_get_type_definitions(fmi3_xml_model_description_t* md) {
+fmi3_xml_type_definition_list_t* fmi3_xml_get_type_definitions(fmi3_xml_model_description_t* md) {
     assert(md);
     return &md->typeDefinitions;
 }

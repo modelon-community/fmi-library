@@ -19,7 +19,7 @@
 
 #include "fmi3_import_impl.h"
 
-unsigned int fmi3_import_get_type_definition_number(fmi3_import_type_definitions_t* td) {
+unsigned int fmi3_import_get_type_definition_list_size(fmi3_import_type_definitions_t* td) {
     return fmi3_xml_get_type_definition_number(td);
 }
 

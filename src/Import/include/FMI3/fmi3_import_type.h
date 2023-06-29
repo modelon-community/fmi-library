@@ -49,16 +49,16 @@ typedef struct fmi3_xml_clock_typedef_t fmi3_import_clock_typedef_t;
 /** \brief Opaque general variable type definition object. */
 typedef struct fmi3_xml_variable_typedef_t fmi3_import_variable_typedef_t;
 /** \brief Opaque list of the type definitions in the model */
-typedef struct fmi3_xml_type_definitions_t fmi3_import_type_definitions_t;
+typedef struct fmi3_xml_type_definition_list_t fmi3_import_type_definitions_t;
 /**@} */
 
 /** \brief Get the number of available type definitions */
-FMILIB_EXPORT unsigned int fmi3_import_get_type_definition_number(fmi3_import_type_definitions_t* td);
+FMILIB_EXPORT unsigned int fmi3_import_get_type_definition_list_size(fmi3_import_type_definitions_t* td);
 
 /** \brief Get a type definition specified by the index. Parameter 'index' does not reflect the index in the XML, but the
         index in an internal list of type definitions.
     @param td the type definition list object
-    @param index the index of type definition. Must be less than the number returned by #fmi3_import_get_type_definition_number
+    @param index the index of type definition. Must be less than the number returned by #fmi3_import_get_type_definition_list_size
     @return A type definition object or NULL if index is out of range.
 */
 FMILIB_EXPORT fmi3_import_variable_typedef_t* fmi3_import_get_typedef(fmi3_import_type_definitions_t* td, unsigned int index);

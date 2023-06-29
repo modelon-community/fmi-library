@@ -15,7 +15,7 @@
 
 #include "fmi3_import_impl.h"
 
-fmi3_import_unit_t* fmi3_import_get_unit(fmi3_import_unit_definitions_t* ud, unsigned int index) {
+fmi3_import_unit_t* fmi3_import_get_unit(fmi3_import_unit_definition_list_t* ud, unsigned int index) {
     return fmi3_xml_get_unit(ud, index);
 }
 

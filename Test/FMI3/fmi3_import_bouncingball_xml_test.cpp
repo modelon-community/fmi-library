@@ -386,7 +386,7 @@ static void test_parse_bouncingball(const char* xmldir, bool expectParseFailure)
         }
     }
     {
-        fmi3_import_unit_definitions_t* ud = fmi3_import_get_unit_definitions(fmu);
+        fmi3_import_unit_definition_list_t* ud = fmi3_import_get_unit_definitions(fmu);
         if (ud) {
             unsigned  i, nu = fmi3_import_get_unit_definitions_number(ud);
             printf("There are %d different units used \n", nu);

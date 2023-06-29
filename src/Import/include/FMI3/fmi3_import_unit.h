@@ -42,14 +42,14 @@ typedef struct fmi3_xml_unit_t fmi3_import_unit_t;
 /** \brief A display unit. */
 typedef struct fmi3_xml_display_unit_t fmi3_import_display_unit_t;
 /** \brief The list of all the unit definitions in the model */
-typedef struct fmi3_xml_unit_definitions_t fmi3_import_unit_definitions_t;
+typedef struct fmi3_xml_unit_definitions_t fmi3_import_unit_definition_list_t;
 /**@} */
 
 /** \brief Get the number of unit definitions. */
-FMILIB_EXPORT unsigned int fmi3_import_get_unit_definitions_number(fmi3_import_unit_definitions_t* ud);
+FMILIB_EXPORT unsigned int fmi3_import_get_unit_definitions_number(fmi3_import_unit_definition_list_t* ud);
 
 /** \brief Get a unit definition */
-FMILIB_EXPORT fmi3_import_unit_t* fmi3_import_get_unit(fmi3_import_unit_definitions_t* ud, unsigned int index);
+FMILIB_EXPORT fmi3_import_unit_t* fmi3_import_get_unit(fmi3_import_unit_definition_list_t* ud, unsigned int index);
 
 /** \brief Get a unit name */
 FMILIB_EXPORT const char* fmi3_import_get_unit_name(fmi3_import_unit_t* u);

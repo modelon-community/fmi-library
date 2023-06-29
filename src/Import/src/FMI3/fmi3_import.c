@@ -55,6 +55,13 @@ fmi3_import_t* fmi3_import_allocate(jm_callbacks* cb) {
         return NULL;
     }
 
+    fmu->options = fmi_util_allocate_options(cb);
+    if (!fmu->options) {
+        fmi3_xml_free_model_description(fmu->md);
+        cb->free(fmu);
+        return NULL;
+     }
+
     return fmu;
 }
 
@@ -119,6 +126,7 @@ void fmi3_import_free(fmi3_import_t* fmu) {
 
     fmi3_import_destroy_dllfmu(fmu);
     fmi3_xml_free_model_description(fmu->md);
+    fmi_util_free_options(cb, fmu->options);
     jm_vector_free_data(char)(&fmu->logMessageBufferCoded);
     jm_vector_free_data(char)(&fmu->logMessageBufferExpanded);
 
@@ -486,4 +494,13 @@ int fmi3_import_get_event_indicator_dependencies(fmi3_import_t* fmu, fmi3_import
     assert(ms);
     return fmi3_xml_get_event_indicator_dependencies(ms, variable,
         numDependencies, dependsOnAll, dependencies, dependenciesKind);
+}
+
+fmi_import_options_t* fmi3_import_get_options(fmi3_import_t* fmu) {
+    if (fmu->options) {
+        return fmu->options;
+    } else {
+        /* Options ownership has been moved to CAPI */
+        return fmu->capi->options;
+    }
 }

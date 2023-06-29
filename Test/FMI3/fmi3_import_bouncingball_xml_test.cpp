@@ -236,7 +236,7 @@ void printVariableInfo(fmi3_import_t* fmu,
         }
     }
     // Print aliases:
-    fmi3_import_alias_variables_t* aliases = fmi3_import_get_variable_aliases(v);
+    fmi3_import_alias_variable_list_t* aliases = fmi3_import_get_variable_aliases(v);
     fmi3_import_alias_variable_t* alias;
     for (size_t i = 0; i < fmi3_import_get_alias_variables_number(aliases); i++) {
         if (i == 0) {

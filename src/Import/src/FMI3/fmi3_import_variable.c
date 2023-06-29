@@ -580,15 +580,15 @@ int fmi3_import_get_enum_variable_max(fmi3_import_enum_variable_t* v) {
 // Alias variable
 // -----------------------------------------------------------------------------
 
-fmi3_import_alias_variables_t* fmi3_import_get_variable_aliases(fmi3_import_variable_t* v) {
+fmi3_import_alias_variable_list_t* fmi3_import_get_variable_aliases(fmi3_import_variable_t* v) {
     return fmi3_xml_get_variable_aliases(v);
 }
 
-size_t fmi3_import_get_alias_variables_number(fmi3_import_alias_variables_t* aliases) {
+size_t fmi3_import_get_alias_variables_number(fmi3_import_alias_variable_list_t* aliases) {
     return fmi3_xml_get_alias_variables_number(aliases);
 }
 
-fmi3_import_alias_variable_t* fmi3_import_get_alias(fmi3_import_alias_variables_t* aliases, size_t index) {
+fmi3_import_alias_variable_t* fmi3_import_get_alias(fmi3_import_alias_variable_list_t* aliases, size_t index) {
     return fmi3_xml_get_alias(aliases, index);
 }
 

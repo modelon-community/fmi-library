@@ -90,7 +90,7 @@ typedef struct fmi3_xml_clock_variable_t   fmi3_xml_clock_variable_t;
  * @{
  */
 typedef struct fmi3_xml_alias_variable_t  fmi3_xml_alias_variable_t;
-typedef struct fmi3_xml_alias_variables_t fmi3_xml_alias_variables_t;
+typedef struct fmi3_xml_alias_variable_list_t fmi3_xml_alias_variable_list_t;
 /** @} */
 
 /**\name Structures encapsulating unit information */

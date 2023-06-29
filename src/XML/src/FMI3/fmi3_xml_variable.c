@@ -903,21 +903,21 @@ fmi3_uint64_t fmi3_xml_get_clock_variable_shift_counter(fmi3_xml_clock_variable_
 // Alias variable
 // -----------------------------------------------------------------------------
 
-fmi3_xml_alias_variables_t* fmi3_xml_get_variable_aliases(fmi3_xml_variable_t* v) {
+fmi3_xml_alias_variable_list_t* fmi3_xml_get_variable_aliases(fmi3_xml_variable_t* v) {
     if (v->aliases) {
         return (void*)v->aliases;  // cast to opaque type
     }
     return NULL;
 }
 
-size_t fmi3_xml_get_alias_variables_number(fmi3_xml_alias_variables_t* aliases) {
+size_t fmi3_xml_get_alias_variables_number(fmi3_xml_alias_variable_list_t* aliases) {
     if (aliases) {
         return jm_vector_get_size(jm_voidp)(&aliases->vec);
     }
     return 0;
 }
 
-fmi3_xml_alias_variable_t* fmi3_xml_get_alias(fmi3_xml_alias_variables_t* aliases, size_t index) {
+fmi3_xml_alias_variable_t* fmi3_xml_get_alias(fmi3_xml_alias_variable_list_t* aliases, size_t index) {
     if (!aliases) {
         return NULL;
     }

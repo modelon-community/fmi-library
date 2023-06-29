@@ -392,11 +392,11 @@ TEST_CASE("Invalid structuralParameter - has dimension") {
     fmi3_import_free(xml);
 }
 
-static fmi3_import_alias_variables_t* get_aliases(fmi3_import_t* fmu, const char* baseVarName,
+static fmi3_import_alias_variable_list_t* get_aliases(fmi3_import_t* fmu, const char* baseVarName,
         size_t nAliasExp)
 {
     fmi3_import_variable_t* v;
-    fmi3_import_alias_variables_t* aliases;
+    fmi3_import_alias_variable_list_t* aliases;
     size_t nAlias;
 
     v = fmi3_import_get_variable_by_name(fmu, baseVarName);
@@ -416,7 +416,7 @@ static void check_aliases(fmi3_import_t* fmu, const char* baseVarName, size_t nA
     const char* name;
     fmi3_xml_display_unit_t* displayUnit;
 
-    fmi3_import_alias_variables_t* aliases = get_aliases(fmu, baseVarName, nAliasExp);
+    fmi3_import_alias_variable_list_t* aliases = get_aliases(fmu, baseVarName, nAliasExp);
     fmi3_import_alias_variable_t* alias;
     
     for (size_t i = 0; i < nAliasExp; i++) {
@@ -452,7 +452,7 @@ TEST_CASE("Alias variables") {
     fmi3_import_display_unit_t* degC = fmi3_import_get_unit_display_unit(degK, 0);
     REQUIRE_STREQ(fmi3_import_get_display_unit_name(degC), "degC");
 
-    fmi3_import_alias_variables_t* aliases;
+    fmi3_import_alias_variable_list_t* aliases;
     size_t nAlias;
     
     SECTION("Without alias") {

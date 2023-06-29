@@ -31,19 +31,23 @@ static const char * module = "FMILIB";
 
 
 static void fmi3_import_capi_destroy_dllfmu_and_restore_options(fmi3_import_t* fmu) {
-	if (fmu->capi->options) {
-		/* Take back ownership of Options */
-		fmu->options = fmu->capi->options;
-		fmu->capi->options = NULL;
-	}
+    if (fmu->capi->options) {
+        /* Take back ownership of Options */
+        fmu->options = fmu->capi->options;
+        fmu->capi->options = NULL;
+    }
 
     fmi3_capi_destroy_dllfmu(fmu->capi);
-	fmu->capi = NULL;
+    fmu->capi = NULL;
 }
 
 /* Load and destroy functions */
-jm_status_enu_t fmi3_import_create_dllfmu(fmi3_import_t* fmu, fmi3_fmu_kind_enu_t fmuKind,
-        const fmi3_instance_environment_t instanceEnvironment, const fmi3_log_message_callback_ft logMessage) {
+jm_status_enu_t fmi3_import_create_dllfmu(
+        fmi3_import_t* fmu,
+        fmi3_fmu_kind_enu_t fmuKind,
+        const fmi3_instance_environment_t instanceEnvironment,
+        const fmi3_log_message_callback_ft logMessage)
+{
 
     char curDir[FILENAME_MAX + 2];
     char* dllDirPath = 0;
@@ -116,12 +120,12 @@ jm_status_enu_t fmi3_import_create_dllfmu(fmi3_import_t* fmu, fmi3_fmu_kind_enu_
                 logMessageFinal, fmuKind);
     }
 
-	if (fmu->capi) {
-		/* Replace the CAPI options with the import ones */
+    if (fmu->capi) {
+        /* Replace the CAPI options with the import ones */
         fmi_util_free_options(fmu->callbacks, fmu->capi->options);
-		fmu->capi->options = fmu->options;
-		fmu->options = NULL;
-	}
+        fmu->capi->options = fmu->options;
+        fmu->options = NULL;
+    }
 
     /* Load the DLL handle */
     if (fmu->capi) {

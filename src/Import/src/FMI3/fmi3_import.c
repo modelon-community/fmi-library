@@ -55,12 +55,12 @@ fmi3_import_t* fmi3_import_allocate(jm_callbacks* cb) {
         return NULL;
     }
 
-	fmu->options = fmi_util_allocate_options(cb);
-	if (!fmu->options) {
+    fmu->options = fmi_util_allocate_options(cb);
+    if (!fmu->options) {
         fmi3_xml_free_model_description(fmu->md);
         cb->free(fmu);
         return NULL;
- 	}
+     }
 
     return fmu;
 }

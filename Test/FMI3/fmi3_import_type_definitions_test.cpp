@@ -814,7 +814,7 @@ static int test_variable_intXX(fmi3_import_t *xml, fmi2_string_t varName,
     return CTEST_RETURN_SUCCESS;
 }
 
-static int test_variable_all_attributes_int32(fmi3_import_t *xml, fmi2_string_t varName)
+static int test_variable_all_attributes_int32(fmi3_import_t* xml, fmi2_string_t varName)
 {
     fmi3_import_variable_t* v;
     fmi3_import_variable_typedef_t* t;
@@ -827,7 +827,9 @@ static int test_variable_all_attributes_int32(fmi3_import_t *xml, fmi2_string_t 
     REQUIRE(fmi3_import_get_causality(v) == fmi3_causality_enu_output);
     REQUIRE(fmi3_import_get_variability(v) == fmi3_variability_enu_discrete);
     REQUIRE(fmi3_import_get_initial(v) == fmi3_initial_enu_calculated);
-    /* TODO: quantity getter is missing - this will be fixed when FMIL 2.2 fixes are applied */
+    fmi3_import_int32_variable_t* v32 = fmi3_import_get_variable_as_int32(v);
+    REQUIRE(v32 != nullptr);
+    REQUIRE_STREQ(fmi3_import_get_int32_variable_quantity(v32) , "Frequency");
 
     t = fmi3_import_get_variable_declared_type(v);
     REQUIRE(t != nullptr);

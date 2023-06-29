@@ -1076,8 +1076,6 @@ void fmi3_xml_free_variable(jm_callbacks* callbacks, fmi3_xml_variable_t* var) {
         } else {
             callbacks->free(fmi3_xml_get_variable_start_array(var));
         }
-        callbacks->free(var->dimensionsArray);
-        var->dimensionsArray = NULL;
     } else {
         /* Scalar String variables can have a start value that we need to free.*/
         if (is_string_variable_with_start(var)) {
@@ -1471,16 +1469,6 @@ int fmi3_xml_handle_Variable(fmi3_xml_parser_context_t* context, const char* dat
             jm_log_error(context->callbacks, module, "No variable type element for variable %s. Assuming Float64.", variable->name);
 
             return fmi3_xml_handle_Float64(context, NULL);
-        }
-
-        /* Allocate memory for the resolved dimensions. The main reason to do it here is because we have access to the callbacks. */
-        if (fmi3_xml_variable_is_array(variable)) {
-            size_t nDims = jm_vector_get_size(fmi3_xml_dimension_t)(variable->dimensionsVector);
-            variable->dimensionsArray = context->callbacks->malloc(nDims * sizeof(unsigned int));
-            if (!variable->dimensionsArray) {
-                jm_log_error(context->callbacks, module, "Error: Unable to allocate memory for dimension as array");
-                return -1;
-            }
         }
     }
     return 0;

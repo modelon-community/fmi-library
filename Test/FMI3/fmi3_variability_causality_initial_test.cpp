@@ -48,7 +48,7 @@ TEST_CASE("Default valid variability") {
     REQUIRE(fmi3_get_default_valid_variability(fmi3_causality_enu_input, 0)                == fmi3_variability_enu_discrete);
     REQUIRE(fmi3_get_default_valid_variability(fmi3_causality_enu_output, 0)               == fmi3_variability_enu_discrete);
     REQUIRE(fmi3_get_default_valid_variability(fmi3_causality_enu_local, 0)                == fmi3_variability_enu_discrete);
-    REQUIRE(fmi3_get_default_valid_variability(fmi3_causality_enu_independent, 0)          == fmi3_variability_enu_discrete);
+    REQUIRE(fmi3_get_default_valid_variability(fmi3_causality_enu_independent, 0)          == fmi3_variability_enu_continuous);
 
     REQUIRE(fmi3_get_default_valid_variability(fmi3_causality_enu_unknown, 0)              == fmi3_variability_enu_unknown);
 
@@ -336,4 +336,61 @@ TEST_CASE("Error check bad variability causality combination fallback") {
     REQUIRE(fmi3_import_get_variability(v) == fmi3_variability_enu_discrete);
 
     fmi3_testutil_import_free(tfmu);
+}
+
+TEST_CASE("Test default variabilities") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/variability_causality_initial/valid/default_variabilities";
+
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    REQUIRE(tfmu != nullptr);
+    REQUIRE(tfmu->fmu != nullptr);
+
+    fmi3_import_variable_t* v;
+
+    SECTION("Float64") {
+        v = fmi3_import_get_variable_by_vr(tfmu->fmu, 1);
+        REQUIRE(fmi3_import_get_variability(v) == fmi3_variability_enu_fixed);
+
+        v = fmi3_import_get_variable_by_vr(tfmu->fmu, 2);
+        REQUIRE(fmi3_import_get_variability(v) == fmi3_variability_enu_fixed);
+
+        v = fmi3_import_get_variable_by_vr(tfmu->fmu, 3);
+        REQUIRE(fmi3_import_get_variability(v) == fmi3_variability_enu_fixed);
+
+        v = fmi3_import_get_variable_by_vr(tfmu->fmu, 4);
+        REQUIRE(fmi3_import_get_variability(v) == fmi3_variability_enu_continuous);
+
+        v = fmi3_import_get_variable_by_vr(tfmu->fmu, 5);
+        REQUIRE(fmi3_import_get_variability(v) == fmi3_variability_enu_continuous);
+
+        v = fmi3_import_get_variable_by_vr(tfmu->fmu, 6);
+        REQUIRE(fmi3_import_get_variability(v) == fmi3_variability_enu_continuous);
+
+        v = fmi3_import_get_variable_by_vr(tfmu->fmu, 7);
+        REQUIRE(fmi3_import_get_variability(v) == fmi3_variability_enu_continuous);
+    }
+
+    SECTION("Int64") {
+        v = fmi3_import_get_variable_by_vr(tfmu->fmu, 11);
+        REQUIRE(fmi3_import_get_variability(v) == fmi3_variability_enu_fixed);
+
+        v = fmi3_import_get_variable_by_vr(tfmu->fmu, 12);
+        REQUIRE(fmi3_import_get_variability(v) == fmi3_variability_enu_fixed);
+
+        v = fmi3_import_get_variable_by_vr(tfmu->fmu, 13);
+        REQUIRE(fmi3_import_get_variability(v) == fmi3_variability_enu_fixed);
+
+        v = fmi3_import_get_variable_by_vr(tfmu->fmu, 14);
+        REQUIRE(fmi3_import_get_variability(v) == fmi3_variability_enu_discrete);
+
+        v = fmi3_import_get_variable_by_vr(tfmu->fmu, 15);
+        REQUIRE(fmi3_import_get_variability(v) == fmi3_variability_enu_discrete);
+
+        v = fmi3_import_get_variable_by_vr(tfmu->fmu, 16);
+        REQUIRE(fmi3_import_get_variability(v) == fmi3_variability_enu_discrete);
+
+        v = fmi3_import_get_variable_by_vr(tfmu->fmu, 17);
+        REQUIRE(fmi3_import_get_variability(v) == fmi3_variability_enu_continuous);
+    }
+
 }

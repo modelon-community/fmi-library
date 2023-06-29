@@ -1097,27 +1097,10 @@ void fmi3_xml_free_variable(jm_callbacks* callbacks, fmi3_xml_variable_t* var) {
         var->clocks = NULL;
     }
     if (var->dimensionsVector) {
-        jm_vector_free(fmi3_value_reference_t)(var->dimensionsVector);
+        jm_vector_free(fmi3_xml_dimension_t)(var->dimensionsVector);
         var->dimensionsVector = NULL;
     }
     callbacks->free(var);
-}
-
-/**
- * Returns the default variability of the given Variable base type for the specific causality.
- *
- * Note: Default values were clarified in FMI 3.0.1.
-*/
-static fmi3_variability_enu_t fmi3_xml_variable_get_default_variability(fmi3_xml_elm_enu_t elm_id,
-        fmi3_causality_enu_t causality)
-{
-    bool isFloat = (elm_id == fmi3_xml_elmID_Float32
-                 || elm_id == fmi3_xml_elmID_Float64);
-    // TODO: Also check for structural parameter
-    bool isParam = (causality == fmi3_causality_enu_parameter ||
-                    causality == fmi3_causality_enu_calculated_parameter);
-
-    return (isFloat && !isParam) ? fmi3_variability_enu_continuous : fmi3_variability_enu_discrete;
 }
 
 /**
@@ -1167,16 +1150,16 @@ static int fmi3_xml_variable_process_attr_causality_variability_initial(fmi3_xml
     variable->causality = causality;
 
     // Variability:
-    defaultVariability = fmi3_xml_variable_get_default_variability(elm_id, causality);
+    bool isFloat = (elm_id == fmi3_xml_elmID_Float32) || (elm_id == fmi3_xml_elmID_Float64);
+    defaultVariability = fmi3_get_default_valid_variability(causality, isFloat);
     if (fmi3_xml_parse_attr_as_enum(context, elm_id, fmi_attr_id_variability, 0, &variability,
             defaultVariability, variabilityConventionMap))
     {
-        variability = fmi3_variability_enu_continuous;
+        variability = defaultVariability;
     }
     if (!fmi3_is_valid_variability_causality(variability, causality)) {
         fmi3_variability_enu_t bad_variability = variability;
-        bool isFloat = (elm_id == fmi3_xml_elmID_Float32) || (elm_id == fmi3_xml_elmID_Float64);
-        variability = fmi3_get_default_valid_variability(causality, isFloat);
+        variability = defaultVariability;
         fmi3_xml_parse_error(context,
                 "Invalid combination of variability %s and causality %s for"
                 " variable '%s'. Setting variability to '%s'",

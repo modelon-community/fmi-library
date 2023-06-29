@@ -25,6 +25,7 @@
 #include <JM/jm_callbacks.h>
 #include <FMI/fmi_import_util.h>
 #include <FMI/fmi_import_context.h>
+#include "FMI/fmi_import_options.h"
 /* #include <FMI3/fmi3_xml_model_description.h> */
 
 #include <FMI3/fmi3_types.h>
@@ -409,6 +410,23 @@ FMILIB_EXPORT int fmi3_import_get_event_indicator_dependencies(fmi3_import_t* fm
         size_t* numDependencies, int* dependsOnAll, size_t** dependencies, char** dependenciesKind);
 
 /**@} */
+
+/**
+ * \addtogroup fmi3_import_options
+ * @{
+ */
+
+/**
+ * Returns the fmi_import_options_t:: object.
+ *
+ * \param fmu - an fmu object as returned by fmi3_import_parse_xml().
+ * \return fmi_import_options_t:: opaque object pointer
+ */
+FMILIB_EXPORT fmi_import_options_t* fmi3_import_get_options(fmi3_import_t* fmu);
+
+/**
+ * @}
+ */
 
 #ifdef __cplusplus
 }

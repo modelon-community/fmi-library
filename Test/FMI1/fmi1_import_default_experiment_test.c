@@ -33,7 +33,7 @@ static int test_default_experiment_defined(fmi1_import_t *xml)
     ASSERT_MSG(fmi1_import_get_default_experiment_stop(xml) == 3.55, "test_defined: incorrect stopTime");
     ASSERT_MSG(fmi1_import_get_default_experiment_tolerance(xml) == 1e-6, "test_defined: incorrect tolerance");
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 /* get default values from DefaultExperiment */
@@ -49,7 +49,7 @@ static int test_default_experiment_undefined(fmi1_import_t *xml)
     ASSERT_MSG(fmi1_import_get_default_experiment_stop(xml) == 1.0, "test_undefined: incorrect default stopTime");
     ASSERT_MSG(fmi1_import_get_default_experiment_tolerance(xml) == 1e-4, "test_undefined: incorrect default tolerance");
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 /* get mix of default and user defined values from DefaultExperiment */
@@ -65,7 +65,7 @@ static int test_default_experiment_mixed(fmi1_import_t *xml)
     ASSERT_MSG(fmi1_import_get_default_experiment_stop(xml) == 1.0, "test_mixed: incorrect default stopTime");
     ASSERT_MSG(fmi1_import_get_default_experiment_tolerance(xml) == 1e-6, "test_mixed: incorrect default tolerance");
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 int main(int argc, char **argv)
@@ -107,6 +107,6 @@ int main(int argc, char **argv)
     ret &= test_default_experiment_mixed(xml);
     fmi1_import_free(xml);
 
-    return ret == 0 ? CTEST_RETURN_FAIL : CTEST_RETURN_SUCCESS;
+    return ret;
 #undef PATH_BUF_SIZE
 }

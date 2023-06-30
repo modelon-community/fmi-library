@@ -9,11 +9,6 @@
 
 #include "JM/jm_vector.h"
 
-void fmi_testutil_build_xml_path(char* buf, size_t bufSize, const char* basePath, const char* appendPath) {
-    strncpy(buf, basePath,   bufSize);
-    strncat(buf, appendPath, bufSize);
-}
-
 /**
  * This function is called before a test fails via macro, so you can put a
  * breakpoint on it to make debugging easier

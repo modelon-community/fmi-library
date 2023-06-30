@@ -36,15 +36,6 @@ void importlogger(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_leve
 /* The test file name, displayed during the testing */
 static const char test_file_name[] = "[fmi3_arrays.cpp]";
 
-
-/*
-void fmi_testutil_build_xml_path(char* buf, size_t bufSize, const char* basePath, const char* appendPath) {
-    strncpy(buf, basePath,   bufSize);
-    strncat(buf, appendPath, bufSize);
-}
-*/
-
-
 static fmi3_import_t *parse_xml(const char *model_desc_path)
 {
     jm_callbacks *cb = jm_get_default_callbacks();
@@ -135,10 +126,8 @@ TEST_CASE("Test array parsing and verify retrieved start values are as expected"
     cb.log_level = jm_log_level_all;
     cb.context   = NULL;
     context = fmi_import_allocate_context(&cb);
-    char xmlPath[1000];
-    size_t sizeXmlPath = sizeof(xmlPath) / sizeof(char);
+    const char* xmlPath = FMI3_TEST_XML_DIR "/arrays/valid/base";
 
-    fmi_testutil_build_xml_path(xmlPath, sizeXmlPath, FMI3_TEST_XML_DIR, "/arrays/valid/base");
     fmi3_import_t *xml = parse_xml(xmlPath);
     SECTION("Test boolean start array") {
         REQUIRE(xml != nullptr);

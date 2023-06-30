@@ -27,11 +27,6 @@ typedef struct fmi3_testutil_import_t {
 } fmi3_testutil_import_t;
 
 /**
- * TODO: Remove this function. Instead of using this function, build the path from defines in config_test.h.
- */
-void fmi_testutil_build_xml_path(char* buf, size_t bufSize, const char* basePath, const char* appendPath);
-
-/**
  * This function is called before a test fails via macro, so you can put a
  * breakpoint on it to make debugging easier
  */
@@ -124,12 +119,6 @@ char* concat(char *s1, char *s2);
             goto label;                                                     \
         }                                                                   \
     } while (0)
-
-/**
- * TODO: Align with CTEST_RETURN_SUCCESS etc. Do not use for new code until OK is 0 and FAIL is non-zero.
- */
-#define TEST_OK (1)
-#define TEST_FAIL (0)
 
 #ifdef __cplusplus
 }

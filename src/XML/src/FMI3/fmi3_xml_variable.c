@@ -977,7 +977,7 @@ static void* fmi3_xml_get_variable_start_array(fmi3_xml_variable_t* v) {
  * Scans the first two characters in a hexstring and calculates the byte value.
  */
 static int fmi3_xml_hexstring_to_byte(fmi3_xml_parser_context_t* context, const char* hexstr, uint8_t* byte) {
-    // XXX: Should just use sscanf(pos, "%2hhx", byte), but MinGW-TDM GCC 5.1
+    // Should just use sscanf(pos, "%2hhx", byte), but MinGW-TDM GCC 5.1
     // doesn't understand the format and gives warnings. Ignoring the warning will result
     // in arrays of Binary variable causing heap corruption (maybe due to buffer overflow).
 

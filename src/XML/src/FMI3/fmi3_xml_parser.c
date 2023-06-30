@@ -1465,8 +1465,7 @@ int fmi3_xml_parse_model_description(fmi3_xml_model_description_t* md,
 
 int fmi3_xml_parse_terminals_and_icons(fmi3_xml_model_description_t* md,
                                      const char* filename,
-                                     fmi3_xml_callbacks_t* xml_callbacks,
-                                     int configuration) {
+                                     fmi3_xml_callbacks_t* xml_callbacks) {
     XML_Memory_Handling_Suite memsuite;
     fmi3_xml_parser_context_t* context;
     XML_Parser parser = NULL;

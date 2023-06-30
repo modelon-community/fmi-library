@@ -369,22 +369,13 @@ static void test_array8_32_can_find_index_and_vr_of_dimensions(fmi3_import_t* xm
     for (size_t i = 0; i < nDims; i++) {
         INFO("i = " << i);
         dim = fmi3_import_get_dimension_list_item(dimList, i);
-        if (fmi3_import_get_dimension_has_start(dim)) {
+        int has_start = fmi3_import_get_dimension_has_start(dim);
+        if (has_start) { // get dimension directly
             sizeTot *= fmi3_import_get_dimension_start(dim);
-        }
-        else {
-            /* TODO: this gives start-size, but it might change during runtime.
-                the C API gives the values of an array, but it doesn't specify the arrays runtime size.
-                If I understand the API correctly, WE should give the size of the array that is given to the function, not the reverse,
-                and that requires us to first find the total size of the array (i.e. product of dimension runtime sizes)
-            */
-            /* if (get_from_xml) { */
-            fmi3_value_reference_t dimVr = fmi3_import_get_dimension_vr(dim);
+        } else { // has VR instead of start, resolve
+            fmi3_value_reference_t dimVR = fmi3_import_get_dimension_vr(dim);
             sizeTot *= fmi3_import_get_uint32_variable_start(
-                    (fmi3_import_uint32_variable_t*)fmi3_import_get_variable_by_vr(xml, dimVr));
-            /* } else {  // runtime
-                TODO: sizeTot *= fmi3_import_get_integer(...);
-            */
+                    (fmi3_import_uint32_variable_t*)fmi3_import_get_variable_by_vr(xml, dimVR));
         }
     }
     REQUIRE(sizeTot == 8);

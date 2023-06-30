@@ -171,8 +171,8 @@ FMILIB_EXPORT fmi3_uint16_t* fmi3_import_get_uint16_variable_start_array(fmi3_im
 FMILIB_EXPORT fmi3_uint8_t* fmi3_import_get_uint8_variable_start_array(fmi3_import_uint8_variable_t* v);
 
 
-/** \brief Get a list of the variable's array dimensions. Note that this list must be freed with #fmi3_import_free_dimension_list.
-    @return Dynamically allocated list of array dimensions.
+/** \brief Get a list of the variable's array dimensions.
+    @return list of array dimensions for a variable.
 */
 FMILIB_EXPORT fmi3_import_dimension_list_t* fmi3_import_get_variable_dimension_list(fmi3_import_t* fmu, fmi3_import_variable_t* v);
 

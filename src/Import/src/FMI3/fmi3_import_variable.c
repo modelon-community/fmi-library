@@ -54,8 +54,8 @@ fmi3_base_type_enu_t fmi3_import_get_variable_base_type(fmi3_import_variable_t* 
     return fmi3_xml_get_variable_base_type(v);
 }
 
-fmi3_import_dimension_list_t* fmi3_import_get_variable_dimension_list(fmi3_import_t* fmu, fmi3_import_variable_t* v) {
-    return fmi3_import_alloc_dimension_list(fmu, v);
+fmi3_import_dimension_list_t* fmi3_import_get_variable_dimension_list(fmi3_import_t* fmu, fmi3_import_variable_t* v) { 
+    return fmi3_import_get_dimension_list(v);
 }
 
 int fmi3_import_variable_is_array(fmi3_import_variable_t* v) {

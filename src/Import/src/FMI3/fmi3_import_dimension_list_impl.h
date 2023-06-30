@@ -25,10 +25,7 @@
 extern "C" {
 #endif
 
-struct fmi3_import_dimension_list_t {
-    fmi3_import_t* fmu;
-    jm_vector(fmi3_xml_dimension_t)* vec;
-};
+typedef jm_vector(fmi3_xml_dimension_t)* fmi3_import_dimension_impl_list_t;
 
 #ifdef __cplusplus
 }

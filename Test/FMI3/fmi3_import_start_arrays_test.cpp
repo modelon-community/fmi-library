@@ -70,7 +70,7 @@ static fmi3_import_dimension_list_t* basic_array_checks(fmi3_import_variable_t* 
     fmi3_import_dimension_list_t* dimList = fmi3_import_get_variable_dimension_list(xml, v); /* allocates memory */
     size_t nDims = fmi3_import_get_dimension_list_size(dimList);
     REQUIRE(nDims == nDimsExpected);
-    return dimList; /* has to be freed by the caller. */
+    return dimList;
 }
 
 
@@ -97,7 +97,6 @@ TEST_CASE("Binary array") {
         start++;
         REQUIRE(start[0][0]   == 0xE4U);
         REQUIRE(start[0][1]   == 0xCdU);
-        fmi3_import_free_dimension_list(dimList);
     }
 
     SECTION("Test binary start array length and size") {
@@ -109,7 +108,6 @@ TEST_CASE("Binary array") {
         REQUIRE(sizes[0]   == 8);
         REQUIRE(sizes[1]   == 2);
         REQUIRE(sizes[2]   == 2);
-        fmi3_import_free_dimension_list(dimList);
     }
     fmi3_import_free(xml);
 }
@@ -138,7 +136,7 @@ TEST_CASE("Test array parsing and verify retrieved start values are as expected"
         REQUIRE(start[1] == true);
         REQUIRE(start[2] == true);
         REQUIRE(start[3] == false);
-        fmi3_import_free_dimension_list(dimList);
+        (dimList);
     }
     SECTION("Test float64 array") {
         fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "array4_64");
@@ -149,7 +147,6 @@ TEST_CASE("Test array parsing and verify retrieved start values are as expected"
         REQUIRE(fabs(start[0] - 1.0) < eps);
         REQUIRE(fabs(start[6] - 7.0) < eps);
         REQUIRE(fabs(start[7] - 8.0) < eps);
-        fmi3_import_free_dimension_list(dimList);
     }
 
     SECTION("Test int64 start array") {
@@ -162,7 +159,6 @@ TEST_CASE("Test array parsing and verify retrieved start values are as expected"
         REQUIRE(start[3] == -9223372036854775805);
         REQUIRE(start[4] == 0);
         REQUIRE(start[5] == -9223372036854775807);
-        fmi3_import_free_dimension_list(dimList);
     }
 
     SECTION("Test int32 start array") {
@@ -174,7 +170,6 @@ TEST_CASE("Test array parsing and verify retrieved start values are as expected"
         REQUIRE(start[1] ==  2147483646);
         REQUIRE(start[2] == -2147483648);
         REQUIRE(start[3] == -2147483647);
-        fmi3_import_free_dimension_list(dimList);
     }
 
     SECTION("Test int16 start array") {
@@ -185,7 +180,6 @@ TEST_CASE("Test array parsing and verify retrieved start values are as expected"
         REQUIRE(start[1] ==  32766);
         REQUIRE(start[2] == -32768);
         REQUIRE(start[3] == -32767);
-        fmi3_import_free_dimension_list(dimList);
     }
 
     SECTION("Test int8 start array") {
@@ -196,7 +190,6 @@ TEST_CASE("Test array parsing and verify retrieved start values are as expected"
         REQUIRE(start[1] ==  126);
         REQUIRE(start[2] == -128);
         REQUIRE(start[3] == -127);
-        fmi3_import_free_dimension_list(dimList);
     }
 
 
@@ -208,7 +201,6 @@ TEST_CASE("Test array parsing and verify retrieved start values are as expected"
         REQUIRE(start[1] == 0);
         REQUIRE(start[2] == 1);
         REQUIRE(start[3] == 2);
-        fmi3_import_free_dimension_list(dimList);
     }
 
     SECTION("Test uint32 start array") {
@@ -222,7 +214,6 @@ TEST_CASE("Test array parsing and verify retrieved start values are as expected"
         REQUIRE(start[3] == 1);
         REQUIRE(start[4] == 2);
         REQUIRE(start[5] == 1);
-        fmi3_import_free_dimension_list(dimList);
     }
 
     SECTION("Test uint16 start array") {
@@ -235,7 +226,6 @@ TEST_CASE("Test array parsing and verify retrieved start values are as expected"
         REQUIRE(start[3] == 2);
         REQUIRE(start[4] == 3);
         REQUIRE(start[5] == 4);
-        fmi3_import_free_dimension_list(dimList);
     }
 
     SECTION("Test uint8 start array") {
@@ -249,7 +239,6 @@ TEST_CASE("Test array parsing and verify retrieved start values are as expected"
         REQUIRE(start[5] == 6);
         REQUIRE(start[6] == 255);
         REQUIRE(start[7] == 255);
-        fmi3_import_free_dimension_list(dimList);
     }
 
     SECTION("Test enum start array") {
@@ -263,7 +252,6 @@ TEST_CASE("Test array parsing and verify retrieved start values are as expected"
         REQUIRE(start[4] == 1);
         REQUIRE(start[5] == 9223372036854775807);
         REQUIRE(start[6] == 2);
-        fmi3_import_free_dimension_list(dimList);
     }
 
     SECTION("Test enum start array with only one (negative) value") {
@@ -271,7 +259,6 @@ TEST_CASE("Test array parsing and verify retrieved start values are as expected"
         fmi3_import_dimension_list_t* dimList = basic_array_checks(v, xml, 1);
         fmi3_int64_t* start = fmi3_import_get_enum_variable_start_array(fmi3_import_get_variable_as_enum(v));
         REQUIRE(start[0] == -57);
-        fmi3_import_free_dimension_list(dimList);
     }
 
     SECTION("Test string start array") {
@@ -281,7 +268,6 @@ TEST_CASE("Test array parsing and verify retrieved start values are as expected"
         REQUIRE(strcmp(start[0], "The first string,") == 0);
         REQUIRE(strcmp(start[1], "and the second string!") == 0);
         REQUIRE(strcmp(start[2], "abcd.") == 0);
-        fmi3_import_free_dimension_list(dimList);
     }
 
     SECTION("Test string start no array") {
@@ -308,7 +294,5 @@ TEST_CASE("Test int64 start array with 100 variables") {
         expected_value = (i%5 == 0) ? -i : i;
         REQUIRE(start[i-1] == expected_value);
     }
-    fmi3_import_free_dimension_list(dimList);
-
     fmi3_import_free(xml);
 }

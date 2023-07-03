@@ -24,7 +24,7 @@
 
 static const char* module = "FMI3XML";
 
-fmi3_xml_model_description_t * fmi3_xml_allocate_model_description( jm_callbacks* callbacks) {
+fmi3_xml_model_description_t* fmi3_xml_allocate_model_description(jm_callbacks* callbacks) {
     jm_callbacks* cb;
     fmi3_xml_model_description_t* md;
 
@@ -35,7 +35,7 @@ fmi3_xml_model_description_t * fmi3_xml_allocate_model_description( jm_callbacks
         cb = jm_get_default_callbacks();
     }
     md = (fmi3_xml_model_description_t*)cb->calloc(1, sizeof(fmi3_xml_model_description_t));
-    if(!md) {
+    if (!md) {
         jm_log_fatal(cb, module, "Could not allocate memory");
         return 0;
     }
@@ -106,9 +106,7 @@ fmi3_xml_model_description_t * fmi3_xml_allocate_model_description( jm_callbacks
     return md;
 }
 
-
-
-void fmi3_xml_clear_model_description( fmi3_xml_model_description_t* md) {
+void fmi3_xml_clear_model_description(fmi3_xml_model_description_t* md) {
 
     void(*cb_free)(const char*) = (void(*)(const char*))md->callbacks->free;
     size_t i; /* loop variable */

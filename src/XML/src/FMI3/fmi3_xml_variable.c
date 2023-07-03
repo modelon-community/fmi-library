@@ -2265,9 +2265,9 @@ static int fmi3_xml_compare_vr_and_original_index(const void* first, const void*
     return 0;
 }
 
-int fmi3_xml_handle_ModelVariables(fmi3_xml_parser_context_t *context, const char* data) {
+int fmi3_xml_handle_ModelVariables(fmi3_xml_parser_context_t* context, const char* data) {
     if(!data) {
-        jm_log_verbose(context->callbacks, module,"Parsing XML element ModelVariables");
+        jm_log_verbose(context->callbacks, module, "Parsing XML element ModelVariables");
     }
     else {
          // Post-process variable list

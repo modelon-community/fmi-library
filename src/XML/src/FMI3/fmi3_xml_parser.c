@@ -29,7 +29,7 @@
 #include "fmi3_xml_parser.h"
 #include "JM/jm_portability.h"
 
-static const char * module = "FMI3XML";
+static const char* module = "FMI3XML";
 
 /* type is guaranteed to be at least 64 bits (not by C standard, but we check with CMake) and matches %lf formatter */
 typedef double                  fmi3_float_buf_t;
@@ -122,6 +122,13 @@ const char *fmi3_xmlAttrNames[fmi3_xml_attr_number] = {
 
 #define fmi3_xml_scheme_Annotations               {fmi3_xml_elmID_none,       fmi3_xml_elmID_Variable,             1,       0}
 #define fmi3_xml_scheme_VariableTool              {fmi3_xml_elmID_none,       fmi3_xml_elmID_Annotations,          0,       1}
+
+// Terminals and Icons
+#define fmi3_xml_scheme_fmiTerminalsAndIcons      {fmi3_xml_elmID_none,       fmi3_xml_elmID_none,                 0,       0}
+
+// #define fmi3_xml_scheme_GraphicalRepresentation   {fmi3_xml_elmID_none,       fmi3_xml_elmID_fmiTerminalsAndIcons, 0,       0}
+// #define fmi3_xml_scheme_Terminals                 {fmi3_xml_elmID_none,       fmi3_xml_elmID_fmiTerminalsAndIcons, 1,       0}
+// #define fmi3_xml_scheme_TAI_Annotations           {fmi3_xml_elmID_none,       fmi3_xml_elmID_fmiTerminalsAndIcons, 2,       0}
 
 // Not used except for setting up the element handler framework:
 #define fmi3_xml_scheme_Start                     {fmi3_xml_elmID_none,       fmi3_xml_elmID_none,                 1,       0}
@@ -1461,7 +1468,6 @@ int fmi3_xml_parse_model_description(fmi3_xml_model_description_t* md,
 
     return 0;
 }
-
 
 int fmi3_xml_parse_terminals_and_icons(fmi3_xml_model_description_t* md,
                                        const char* filename,

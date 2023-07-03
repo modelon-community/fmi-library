@@ -26,6 +26,7 @@
 
 #include <FMI3/fmi3_enums.h>
 #include <FMI3/fmi3_xml_model_description.h>
+#include <FMI3/fmi3_xml_terminals_and_icons.h>
 
 
 #ifdef __cplusplus
@@ -179,7 +180,8 @@ typedef enum fmi3_xml_attr_enu_t {
     EXPAND_XML_ELMNAME(Binary) \
     EXPAND_XML_ELMNAME(Clock) \
     EXPAND_XML_ELMNAME(String) \
-    EXPAND_XML_ELMNAME(Enumeration)
+    EXPAND_XML_ELMNAME(Enumeration) \
+    EXPAND_XML_ELMNAME(fmiTerminalsAndIcons) // TODO: Should this and children be in a different list?
 
 /** \brief Element that can be placed under different parents get alternative names from the info struct */
 #define FMI3_XML_ELMLIST_ALT(EXPAND_XML_ELMNAME) \

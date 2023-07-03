@@ -1206,7 +1206,7 @@ static void XMLCALL fmi3_parse_element_start(void *c, const char *elm, const cha
                         module,
                         "Attribute noNamespaceSchemaLocation='%s' is ignored. Using standard fmiModelDescription.xsd.",
                         attr[i+1]);
-                else if((strcmp(localName, "nil") == 0)
+                else if ((strcmp(localName, "nil") == 0)
                     ||  (strcmp(localName, "type") == 0)) {
                         jm_log_warning(context->callbacks, module, "Attribute {" XMLSchema_instance "}%s=%s is ignored",
                             localName, attr[i+1]);
@@ -1464,21 +1464,21 @@ int fmi3_xml_parse_model_description(fmi3_xml_model_description_t* md,
 
 
 int fmi3_xml_parse_terminals_and_icons(fmi3_xml_model_description_t* md,
-                                     const char* filename,
-                                     fmi3_xml_callbacks_t* xml_callbacks) {
+                                       const char* filename,
+                                       fmi3_xml_callbacks_t* xml_callbacks) {
     XML_Memory_Handling_Suite memsuite;
     fmi3_xml_parser_context_t* context;
     XML_Parser parser = NULL;
     FILE* file;
 
     context = (fmi3_xml_parser_context_t*)md->callbacks->calloc(1, sizeof(fmi3_xml_parser_context_t));
-    if(!context) {
+    if (!context) {
         jm_log_fatal(md->callbacks, "FMIXML", "Could not allocate memory for XML parser context");
     }
     context->callbacks = md->callbacks;
     context->modelDescription = md;
-    if(fmi3_xml_alloc_parse_buffer(context, 16)) return -1;
-    if(fmi3_create_attr_map(context) || fmi3_create_elm_map(context)) {
+    if (fmi3_xml_alloc_parse_buffer(context, 16)) return -1;
+    if (fmi3_create_attr_map(context) || fmi3_create_elm_map(context)) {
         fmi3_xml_parse_fatal(context, "Error in parsing initialization");
         fmi3_xml_parse_free_context(context);
         return -1;
@@ -1511,7 +1511,7 @@ int fmi3_xml_parse_terminals_and_icons(fmi3_xml_model_description_t* md,
     memsuite.free_fcn = context->callbacks->free;
     context -> parser = parser = XML_ParserCreate_MM(0, &memsuite, "|");
 
-    if(! parser) {
+    if (!parser) {
         fmi3_xml_parse_fatal(context, "Could not initialize XML parsing library.");
         fmi3_xml_parse_free_context(context);
         return -1;
@@ -1531,9 +1531,9 @@ int fmi3_xml_parse_terminals_and_icons(fmi3_xml_model_description_t* md,
     }
 
     while (!feof(file)) {
-        char * text = jm_vector_get_itemp(char)(fmi3_xml_reserve_parse_buffer(context,0,XML_BLOCK_SIZE),0);
+        char* text = jm_vector_get_itemp(char)(fmi3_xml_reserve_parse_buffer(context, 0, XML_BLOCK_SIZE), 0);
         int n = (int)fread(text, sizeof(char), XML_BLOCK_SIZE, file);
-        if(ferror(file)) {
+        if (ferror(file)) {
             fmi3_xml_parse_fatal(context, "Error reading from file %s", filename);
             fclose(file);
             fmi3_xml_parse_free_context(context);
@@ -1550,7 +1550,7 @@ int fmi3_xml_parse_terminals_and_icons(fmi3_xml_model_description_t* md,
     }
     fclose(file);
     /* done later XML_ParserFree(parser);*/
-    if(!jm_stack_is_empty(int)(&context->elmStack)) {
+    if (!jm_stack_is_empty(int)(&context->elmStack)) {
         fmi3_xml_parse_fatal(context, "Unexpected end of file (not all elements ended) when parsing %s", filename);
         fmi3_xml_parse_free_context(context);
         return -1;

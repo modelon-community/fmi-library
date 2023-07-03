@@ -107,7 +107,7 @@ static int test_modelstructure_valid(fmi2_import_t* xml)
 
     ASSERT_MSG(fmi2_import_get_last_error(xml) != NULL, "Found unexpected error while parsing XML");
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 int main(int argc, char **argv)

@@ -21,7 +21,7 @@ int test_default_valid_variablity()
                 "Default variability for non-constants should be continuous");
     }
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 #define N_VARIABILITIES (6)
@@ -36,7 +36,7 @@ static int validate_initial(fmi2_causality_enu_t c,
         ASSERT_MSG(initial == expected[i], fmi2_variability_to_string(v));
     }
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 int test_default_initial_param()
@@ -147,7 +147,7 @@ int validate_variability_causality(fmi2_causality_enu_t c, int expected[])
         ASSERT_MSG(is_valid == expected[i], fmi2_variability_to_string(v));
     }
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 int test_valid_combination_param()
@@ -196,7 +196,7 @@ int test_valid_combination_unknown()
 
 int main(void)
 {
-    int ret = TEST_OK;
+    int ret = CTEST_RETURN_SUCCESS;
 
     ret &= test_default_valid_variablity();
     ret &= test_default_initial_param();
@@ -215,5 +215,5 @@ int main(void)
     ret &= test_valid_combination_unknown();
 
 
-    return ret == TEST_OK ? CTEST_RETURN_SUCCESS : CTEST_RETURN_FAIL;
+    return ret;
 }

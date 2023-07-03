@@ -259,7 +259,6 @@ struct fmi2_xml_parser_context_t {
      * Contains the latest element text. For an MD without tool specific
      * annotations, this will always be empty. This variable is currently
      * only used as a bool-switch though...
-     * TODO: Refactor to bool
      */
     jm_vector(char) elmData;
 

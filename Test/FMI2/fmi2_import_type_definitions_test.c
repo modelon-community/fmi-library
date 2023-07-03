@@ -50,7 +50,7 @@ static int test_quantity_default(fmi2_import_t *xml)
 
     ASSERT_MSG(nTdsTested == nBaseTypes, "too few typedefs found");
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 /* verify quantity on variable, same for all variables */
@@ -80,7 +80,7 @@ static int test_var_quantity(fmi2_import_t *xml, fmi2_string_t exp, const char* 
     ASSERT_MSG(quantity == exp || /* this allows exp == NULL */
             strcmp(quantity, exp) == 0, "wrong variable attribute value: quantity");
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 /* verify vars with defined quantity */
@@ -116,7 +116,7 @@ static int test_real_var_attributes_exist(fmi2_import_t *xml, fmi2_boolean_t exp
     relativeQuantity = fmi2_import_get_real_variable_relative_quantity(vReal);
     ASSERT_MSG(relativeQuantity == expRelativeQuantity, "wrong variable attribute value: relativeQuantity");
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 static int test_real_var_attributes_defined(fmi2_import_t *xml)
@@ -179,5 +179,5 @@ int main(int argc, char **argv)
     ret &= test_real_var_attributes_defined_in_typedef_partially(xml);
 
     fmi2_import_free(xml);
-    return ret == 0 ? CTEST_RETURN_FAIL : CTEST_RETURN_SUCCESS;
+    return ret;
 }

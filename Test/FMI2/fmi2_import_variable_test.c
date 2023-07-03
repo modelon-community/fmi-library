@@ -59,7 +59,7 @@ static int enum_minimal_test(fmi2_import_t *xml)
     ASSERT_MSG(fmi2_import_get_enum_type_size(et) == 3,
                "Wrong number of enum items");
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 /* Parse enum variable with all information specified */
@@ -101,7 +101,7 @@ static int enum_maximal_test(fmi2_import_t *xml)
     ASSERT_MSG(fmi2_import_get_enum_type_size(et) == 3,
                "Wrong number of enum items");
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 int main(int argc, char **argv)
@@ -124,5 +124,5 @@ int main(int argc, char **argv)
     ret &= enum_maximal_test(xml);
 
     fmi2_import_free(xml);
-    return ret == 0 ? CTEST_RETURN_FAIL : CTEST_RETURN_SUCCESS;
+    return ret;
 }

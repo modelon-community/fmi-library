@@ -16,7 +16,7 @@ static int test_invalid_variability_causality(fmi2_import_t *xml)
     errmsg = fmi2_import_get_last_error(xml);
     ASSERT_MSG(strncmp(expected, errmsg, strlen(expected)) == 0, errmsg);
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 int main(int argc, char **argv)
@@ -46,5 +46,5 @@ int main(int argc, char **argv)
     ret = test_invalid_variability_causality(xml);
 
     fmi2_import_free(xml);
-    return ret == TEST_OK ? CTEST_RETURN_SUCCESS : CTEST_RETURN_FAIL;
+    return ret;
 }

@@ -35,7 +35,7 @@ static int test_default_experiment_defined(fmi2_import_t *xml)
     ASSERT_MSG(fmi2_import_get_default_experiment_tolerance(xml) == 1e-6, "test_defined: incorrect tolerance");
     ASSERT_MSG(fmi2_import_get_default_experiment_step(xml) == 2e-3, "test_defined: incorrect stepSize");
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 /* get default values from DefaultExperiment */
@@ -53,7 +53,7 @@ static int test_default_experiment_undefined(fmi2_import_t *xml)
     ASSERT_MSG(fmi2_import_get_default_experiment_tolerance(xml) == 1e-4, "test_undefined: incorrect default tolerance");
     ASSERT_MSG(fmi2_import_get_default_experiment_step(xml) == 1e-2, "test_undefined: incorrect default stepSize");
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 /* get mix of default and user defined values from DefaultExperiment */
@@ -71,7 +71,7 @@ static int test_default_experiment_mixed(fmi2_import_t *xml)
     ASSERT_MSG(fmi2_import_get_default_experiment_tolerance(xml) == 1e-6, "test_mixed: incorrect default tolerance");
     ASSERT_MSG(fmi2_import_get_default_experiment_step(xml) == 1e-2, "test_mixed: incorrect default stepSize");
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 int main(int argc, char **argv)
@@ -113,6 +113,6 @@ int main(int argc, char **argv)
     ret &= test_default_experiment_mixed(xml);
     fmi2_import_free(xml);
 
-    return ret == 0 ? CTEST_RETURN_FAIL : CTEST_RETURN_SUCCESS;
+    return ret;
 #undef PATH_BUF_SIZE
 }

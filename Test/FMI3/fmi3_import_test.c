@@ -21,6 +21,8 @@
 #include <fmilib.h>
 #include <JM/jm_portability.h>
 
+/* KEEP THIS TEST AS PURE C TEST, DO NOT CONVERT TO C++ */
+
 #define BUFFER 1000
 
 /* Logger function used by the FMU internally */
@@ -35,7 +37,7 @@ int fmi3_test(fmi_import_context_t* context, const char* dirPath)
 {
     const char* modelIdentifier;
     const char* modelName;
-    const char*  instantiationToken;
+    const char* instantiationToken;
     jm_status_enu_t status;
 
     fmi3_import_t* fmu;

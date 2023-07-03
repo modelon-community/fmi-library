@@ -16,7 +16,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 
-#ifdef WIN32
+#if defined WIN32 || defined MSVC
 #include <io.h>
 #define F_OK 0
 #define access _access
@@ -112,7 +112,7 @@ fmi3_import_t* fmi3_import_parse_xml(
     }
     fmu->dirPath = context->callbacks->malloc(strlen(dirPath) + 1);
     if (!fmu->dirPath || !fmu->resourcePath) {
-        jm_log_fatal( context->callbacks, "FMILIB", "Could not allocate memory");
+        jm_log_fatal(context->callbacks, "FMILIB", "Could not allocate memory");
         fmi3_import_free(fmu);
         context->callbacks->free(xmlPath);
         if (!terminalsAndIconsPath) context->callbacks->free(terminalsAndIconsPath);
@@ -151,7 +151,7 @@ void fmi3_import_free(fmi3_import_t* fmu) {
 
     if (!fmu) return;
     cb = fmu->callbacks;
-    jm_log_verbose( fmu->callbacks, "FMILIB", "Releasing allocated library resources");
+    jm_log_verbose(fmu->callbacks, "FMILIB", "Releasing allocated library resources");
 
     fmi3_import_destroy_dllfmu(fmu);
     fmi3_xml_free_model_description(fmu->md);

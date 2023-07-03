@@ -33,12 +33,12 @@ static int validate_variable(fmi2_import_variable_t *v)
     ASSERT_MSG(fmi2_import_get_initial(v) == fmi2_initial_enu_unknown,
                "Default initial should be unknown (undefined for input)");
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 static int missing_type_test(fmi2_import_t *xml)
 {
-    int ret = TEST_OK;
+    int ret = CTEST_RETURN_SUCCESS;
 
     ret &= validate_variable(fmi2_import_get_variable_by_name(xml, "dummy1"));
     ret &= validate_variable(fmi2_import_get_variable_by_name(xml, "dummy2"));
@@ -67,5 +67,5 @@ int main(int argc, char **argv)
 
 
     fmi2_import_free(xml);
-    return ret == TEST_OK ? CTEST_RETURN_SUCCESS : CTEST_RETURN_FAIL;
+    return ret;
 }

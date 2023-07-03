@@ -20,7 +20,7 @@
 #ifndef FMI3_IMPORT_VARIABLELIST_H_
 #define FMI3_IMPORT_VARIABLELIST_H_
 
- #include "fmi3_import_variable.h"
+#include "fmi3_import_variable.h"
 
 #ifdef __cplusplus
 extern "C" {

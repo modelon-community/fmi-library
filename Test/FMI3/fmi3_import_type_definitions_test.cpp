@@ -76,7 +76,7 @@ static int test_type1(fmi3_import_t *xml)
     REQUIRE(fmi3_import_get_float64_type_is_relative_quantity(type) == fmi3_false);
     REQUIRE(fmi3_import_get_float64_type_is_unbounded(type) == fmi3_false);
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 /* Parse small Float32 typedef */
@@ -103,7 +103,7 @@ static int test_type2(fmi3_import_t *xml)
     REQUIRE(fmi3_import_get_float32_type_is_relative_quantity(type) == fmi3_false);
     REQUIRE(fmi3_import_get_float32_type_is_unbounded(type) == fmi3_false);
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 
@@ -139,7 +139,7 @@ static int test_quantity_default(fmi3_import_t* xml)
 
     REQUIRE(nTdsTested == nBaseTypes);
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 /* verify quantity on variable, same for all variables */
@@ -169,7 +169,7 @@ static int test_var_quantity(fmi3_import_t* xml, fmi3_string_t exp, const char* 
     REQUIRE((quantity == exp || /* this allows exp == nullptr */
         strcmp(quantity, exp) == 0));
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 /* verify vars with defined quantity */
@@ -205,7 +205,7 @@ static int test_float64_var_attributes_exist(fmi3_import_t* xml, fmi3_boolean_t 
     relativeQuantity = fmi3_import_get_float64_variable_relative_quantity(vFloat64);
     REQUIRE(relativeQuantity == expRelativeQuantity);
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 static int test_float64_var_attributes_defined(fmi3_import_t* xml)
@@ -251,56 +251,56 @@ static int vcBasicInt64(fmi3_import_int_typedef_t* t) {
     REQUIRE(fmi3_import_get_int64_type_min(t) == INT64_MIN);
     REQUIRE(fmi3_import_get_int64_type_max(t) == INT64_MAX);
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 static int vcBasicInt32(fmi3_import_int_typedef_t* t) {
     REQUIRE(fmi3_import_get_int32_type_min(t) == INT32_MIN);
     REQUIRE(fmi3_import_get_int32_type_max(t) == INT32_MAX);
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 static int vcBasicInt16(fmi3_import_int_typedef_t* t) {
     REQUIRE(fmi3_import_get_int16_type_min(t) == INT16_MIN);
     REQUIRE(fmi3_import_get_int16_type_max(t) == INT16_MAX);
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 static int vcBasicInt8(fmi3_import_int_typedef_t* t) {
     REQUIRE(fmi3_import_get_int8_type_min(t) == INT8_MIN);
     REQUIRE(fmi3_import_get_int8_type_max(t) == INT8_MAX);
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 static int vcBasicUInt64(fmi3_import_int_typedef_t* t) {
     REQUIRE(fmi3_import_get_uint64_type_min(t) == UINTXX_MIN);
     REQUIRE(fmi3_import_get_uint64_type_max(t) == UINT64_MAX);
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 static int vcBasicUInt32(fmi3_import_int_typedef_t* t) {
     REQUIRE(fmi3_import_get_uint32_type_min(t) == UINTXX_MIN);
     REQUIRE(fmi3_import_get_uint32_type_max(t) == UINT32_MAX);
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 static int vcBasicUInt16(fmi3_import_int_typedef_t* t) {
     REQUIRE(fmi3_import_get_uint16_type_min(t) == UINTXX_MIN);
     REQUIRE(fmi3_import_get_uint16_type_max(t) == UINT16_MAX);
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 static int vcBasicUInt8(fmi3_import_int_typedef_t* t) {
     REQUIRE(fmi3_import_get_uint8_type_min(t) == UINTXX_MIN);
     REQUIRE(fmi3_import_get_uint8_type_max(t) == UINT8_MAX);
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 /* 'Override' value checkers: verify that default values from base type can be overriden by the typedef */
@@ -309,56 +309,56 @@ static int vcOverrideInt64(fmi3_import_int_typedef_t* t) {
     REQUIRE(fmi3_import_get_int64_type_min(t) == INT64_MIN + D_TYPE);
     REQUIRE(fmi3_import_get_int64_type_max(t) == INT64_MAX - D_TYPE);
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 static int vcOverrideInt32(fmi3_import_int_typedef_t* t) {
     REQUIRE(fmi3_import_get_int32_type_min(t) == INT32_MIN + D_TYPE);
     REQUIRE(fmi3_import_get_int32_type_max(t) == INT32_MAX - D_TYPE);
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 static int vcOverrideInt16(fmi3_import_int_typedef_t* t) {
     REQUIRE(fmi3_import_get_int16_type_min(t) == INT16_MIN + D_TYPE);
     REQUIRE(fmi3_import_get_int16_type_max(t) == INT16_MAX - D_TYPE);
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 static int vcOverrideInt8(fmi3_import_int_typedef_t* t) {
     REQUIRE(fmi3_import_get_int8_type_min(t) == INT8_MIN + D_TYPE);
     REQUIRE(fmi3_import_get_int8_type_max(t) == INT8_MAX - D_TYPE);
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 static int vcOverrideUInt64(fmi3_import_int_typedef_t* t) {
     REQUIRE(fmi3_import_get_uint64_type_min(t) == UINTXX_MIN + D_TYPE);
     REQUIRE(fmi3_import_get_uint64_type_max(t) == UINT64_MAX - D_TYPE);
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 static int vcOverrideUInt32(fmi3_import_int_typedef_t* t) {
     REQUIRE(fmi3_import_get_uint32_type_min(t) == UINTXX_MIN + D_TYPE);
     REQUIRE(fmi3_import_get_uint32_type_max(t) == UINT32_MAX - D_TYPE);
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 static int vcOverrideUInt16(fmi3_import_int_typedef_t* t) {
     REQUIRE(fmi3_import_get_uint16_type_min(t) == UINTXX_MIN + D_TYPE);
     REQUIRE(fmi3_import_get_uint16_type_max(t) == UINT16_MAX - D_TYPE);
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 static int vcOverrideUInt8(fmi3_import_int_typedef_t* t) {
     REQUIRE(fmi3_import_get_uint8_type_min(t) == UINTXX_MIN + D_TYPE);
     REQUIRE(fmi3_import_get_uint8_type_max(t) == UINT8_MAX - D_TYPE);
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 /* PartialOverride: min should be overridden, but not max */
@@ -367,14 +367,14 @@ static int vcPartialOverrideInt32(fmi3_import_int_typedef_t* t) {
     REQUIRE(fmi3_import_get_uint32_type_min(t) == -1);
     REQUIRE(fmi3_import_get_uint32_type_max(t) == INT32_MAX);
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 static int vcPartialOverrideUInt32(fmi3_import_int_typedef_t* t) {
     REQUIRE(fmi3_import_get_uint32_type_min(t) == 1);
     REQUIRE(fmi3_import_get_uint32_type_max(t) == UINT32_MAX);
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 /* 'basic' variable checkers: verify that default values are inherited */
@@ -385,7 +385,7 @@ static int vcInheritBasicTypedefVariableInt64(fmi3_import_variable_t* v) {
     REQUIRE(fmi3_import_get_int64_variable_min(vt) == INT64_MIN);
     REQUIRE(fmi3_import_get_int64_variable_max(vt) == INT64_MAX);
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 static int vcInheritBasicTypedefVariableInt32(fmi3_import_variable_t* v) {
@@ -394,7 +394,7 @@ static int vcInheritBasicTypedefVariableInt32(fmi3_import_variable_t* v) {
     REQUIRE(fmi3_import_get_int32_variable_min(vt) == INT32_MIN);
     REQUIRE(fmi3_import_get_int32_variable_max(vt) == INT32_MAX);
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 static int vcInheritBasicTypedefVariableInt16(fmi3_import_variable_t* v) {
@@ -403,7 +403,7 @@ static int vcInheritBasicTypedefVariableInt16(fmi3_import_variable_t* v) {
     REQUIRE(fmi3_import_get_int16_variable_min(vt) == INT16_MIN);
     REQUIRE(fmi3_import_get_int16_variable_max(vt) == INT16_MAX);
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 static int vcInheritBasicTypedefVariableInt8(fmi3_import_variable_t* v) {
@@ -412,7 +412,7 @@ static int vcInheritBasicTypedefVariableInt8(fmi3_import_variable_t* v) {
     REQUIRE(fmi3_import_get_int8_variable_min(vt) == INT8_MIN);
     REQUIRE(fmi3_import_get_int8_variable_max(vt) == INT8_MAX);
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 static int vcInheritBasicTypedefVariableUInt64(fmi3_import_variable_t* v) {
@@ -421,7 +421,7 @@ static int vcInheritBasicTypedefVariableUInt64(fmi3_import_variable_t* v) {
     REQUIRE(fmi3_import_get_uint64_variable_min(vt) == UINTXX_MIN);
     REQUIRE(fmi3_import_get_uint64_variable_max(vt) == UINT64_MAX);
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 static int vcInheritBasicTypedefVariableUInt32(fmi3_import_variable_t* v) {
@@ -430,7 +430,7 @@ static int vcInheritBasicTypedefVariableUInt32(fmi3_import_variable_t* v) {
     REQUIRE(fmi3_import_get_uint32_variable_min(vt) == UINTXX_MIN);
     REQUIRE(fmi3_import_get_uint32_variable_max(vt) == UINT32_MAX);
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 static int vcInheritBasicTypedefVariableUInt16(fmi3_import_variable_t* v) {
@@ -439,7 +439,7 @@ static int vcInheritBasicTypedefVariableUInt16(fmi3_import_variable_t* v) {
     REQUIRE(fmi3_import_get_uint16_variable_min(vt) == UINTXX_MIN);
     REQUIRE(fmi3_import_get_uint16_variable_max(vt) == UINT16_MAX);
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 static int vcInheritBasicTypedefVariableUInt8(fmi3_import_variable_t* v) {
@@ -448,7 +448,7 @@ static int vcInheritBasicTypedefVariableUInt8(fmi3_import_variable_t* v) {
     REQUIRE(fmi3_import_get_uint8_variable_min(vt) == UINTXX_MIN);
     REQUIRE(fmi3_import_get_uint8_variable_max(vt) == UINT8_MAX);
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 /* 'InheritOverridingTypedef': verify that variable can inherit typedef that overrides defaults */
@@ -459,7 +459,7 @@ static int vcInheritOverridingTypedefVariableInt64(fmi3_import_variable_t* v) {
     REQUIRE(fmi3_import_get_int64_variable_min(vt) == INT64_MIN + D_TYPE);
     REQUIRE(fmi3_import_get_int64_variable_max(vt) == INT64_MAX - D_TYPE);
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 static int vcInheritOverridingTypedefVariableInt32(fmi3_import_variable_t* v) {
@@ -468,7 +468,7 @@ static int vcInheritOverridingTypedefVariableInt32(fmi3_import_variable_t* v) {
     REQUIRE(fmi3_import_get_int32_variable_min(vt) == INT32_MIN + D_TYPE);
     REQUIRE(fmi3_import_get_int32_variable_max(vt) == INT32_MAX - D_TYPE);
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 static int vcInheritOverridingTypedefVariableInt16(fmi3_import_variable_t* v) {
@@ -477,7 +477,7 @@ static int vcInheritOverridingTypedefVariableInt16(fmi3_import_variable_t* v) {
     REQUIRE(fmi3_import_get_int16_variable_min(vt) == INT16_MIN + D_TYPE);
     REQUIRE(fmi3_import_get_int16_variable_max(vt) == INT16_MAX - D_TYPE);
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 static int vcInheritOverridingTypedefVariableInt8(fmi3_import_variable_t* v) {
@@ -486,7 +486,7 @@ static int vcInheritOverridingTypedefVariableInt8(fmi3_import_variable_t* v) {
     REQUIRE(fmi3_import_get_int8_variable_min(vt) == INT8_MIN + D_TYPE);
     REQUIRE(fmi3_import_get_int8_variable_max(vt) == INT8_MAX - D_TYPE);
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 static int vcInheritOverridingTypedefVariableUInt64(fmi3_import_variable_t* v) {
@@ -495,7 +495,7 @@ static int vcInheritOverridingTypedefVariableUInt64(fmi3_import_variable_t* v) {
     REQUIRE(fmi3_import_get_uint64_variable_min(vt) == UINTXX_MIN + D_TYPE);
     REQUIRE(fmi3_import_get_uint64_variable_max(vt) == UINT64_MAX - D_TYPE);
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 static int vcInheritOverridingTypedefVariableUInt32(fmi3_import_variable_t* v) {
@@ -504,7 +504,7 @@ static int vcInheritOverridingTypedefVariableUInt32(fmi3_import_variable_t* v) {
     REQUIRE(fmi3_import_get_uint32_variable_min(vt) == UINTXX_MIN + D_TYPE);
     REQUIRE(fmi3_import_get_uint32_variable_max(vt) == UINT32_MAX - D_TYPE);
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 static int vcInheritOverridingTypedefVariableUInt16(fmi3_import_variable_t* v) {
@@ -513,7 +513,7 @@ static int vcInheritOverridingTypedefVariableUInt16(fmi3_import_variable_t* v) {
     REQUIRE(fmi3_import_get_uint16_variable_min(vt) == UINTXX_MIN + D_TYPE);
     REQUIRE(fmi3_import_get_uint16_variable_max(vt) == UINT16_MAX - D_TYPE);
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 static int vcInheritOverridingTypedefVariableUInt8(fmi3_import_variable_t* v) {
@@ -522,7 +522,7 @@ static int vcInheritOverridingTypedefVariableUInt8(fmi3_import_variable_t* v) {
     REQUIRE(fmi3_import_get_uint8_variable_min(vt) == UINTXX_MIN + D_TYPE);
     REQUIRE(fmi3_import_get_uint8_variable_max(vt) == UINT8_MAX  - D_TYPE);
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 /* 'Override' variable checkers: verify that values in variable can override defaults/typedef */
@@ -533,7 +533,7 @@ static int vcOverrideVariableInt64(fmi3_import_variable_t* v) {
     REQUIRE(fmi3_import_get_int64_variable_min(vt) == INT64_MIN + D_VAR);
     REQUIRE(fmi3_import_get_int64_variable_max(vt) == INT64_MAX - D_VAR);
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 static int vcOverrideVariableInt32(fmi3_import_variable_t* v) {
@@ -542,7 +542,7 @@ static int vcOverrideVariableInt32(fmi3_import_variable_t* v) {
     REQUIRE(fmi3_import_get_int32_variable_min(vt) == INT32_MIN + D_VAR);
     REQUIRE(fmi3_import_get_int32_variable_max(vt) == INT32_MAX - D_VAR);
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 static int vcOverrideVariableInt16(fmi3_import_variable_t* v) {
@@ -551,7 +551,7 @@ static int vcOverrideVariableInt16(fmi3_import_variable_t* v) {
     REQUIRE(fmi3_import_get_int16_variable_min(vt) == INT16_MIN + D_VAR);
     REQUIRE(fmi3_import_get_int16_variable_max(vt) == INT16_MAX - D_VAR);
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 static int vcOverrideVariableInt8(fmi3_import_variable_t* v) {
@@ -560,7 +560,7 @@ static int vcOverrideVariableInt8(fmi3_import_variable_t* v) {
     REQUIRE(fmi3_import_get_int8_variable_min(vt) == INT8_MIN + D_VAR);
     REQUIRE(fmi3_import_get_int8_variable_max(vt) == INT8_MAX - D_VAR);
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 static int vcOverrideVariableUInt64(fmi3_import_variable_t* v) {
@@ -569,7 +569,7 @@ static int vcOverrideVariableUInt64(fmi3_import_variable_t* v) {
     REQUIRE(fmi3_import_get_uint64_variable_min(vt) == UINTXX_MIN + D_VAR);
     REQUIRE(fmi3_import_get_uint64_variable_max(vt) == UINT64_MAX - D_VAR);
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 static int vcOverrideVariableUInt32(fmi3_import_variable_t* v) {
@@ -578,7 +578,7 @@ static int vcOverrideVariableUInt32(fmi3_import_variable_t* v) {
     REQUIRE(fmi3_import_get_uint32_variable_min(vt) == UINTXX_MIN + D_VAR);
     REQUIRE(fmi3_import_get_uint32_variable_max(vt) == UINT32_MAX - D_VAR);
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 static int vcOverrideVariableUInt16(fmi3_import_variable_t* v) {
@@ -587,7 +587,7 @@ static int vcOverrideVariableUInt16(fmi3_import_variable_t* v) {
     REQUIRE(fmi3_import_get_uint16_variable_min(vt) == UINTXX_MIN + D_VAR);
     REQUIRE(fmi3_import_get_uint16_variable_max(vt) == UINT16_MAX - D_VAR);
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 static int vcOverrideVariableUInt8(fmi3_import_variable_t* v) {
@@ -596,7 +596,7 @@ static int vcOverrideVariableUInt8(fmi3_import_variable_t* v) {
     REQUIRE(fmi3_import_get_uint8_variable_min(vt) == UINTXX_MIN + D_VAR);
     REQUIRE(fmi3_import_get_uint8_variable_max(vt) == UINT8_MAX - D_VAR);
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 /* 'partial override' value checkers: partial overrides of values, i.e. some are inherited others overriden */
@@ -607,7 +607,7 @@ static int vcPartialOverrideTypedefVariableInt32(fmi3_import_variable_t* v) {
     REQUIRE(fmi3_import_get_int32_variable_min(vt) == INT32_MIN + D_VAR);
     REQUIRE(fmi3_import_get_int32_variable_max(vt) == INT32_MAX);
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 static int vcPartialOverrideDefaultVariableInt32(fmi3_import_variable_t* v) {
@@ -616,7 +616,7 @@ static int vcPartialOverrideDefaultVariableInt32(fmi3_import_variable_t* v) {
     REQUIRE(fmi3_import_get_int32_variable_min(vt) == INT32_MIN);
     REQUIRE(fmi3_import_get_int32_variable_max(vt) == INT32_MAX - D_VAR);
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 /* 'default start' value checkers: that default start values are set */
@@ -626,7 +626,7 @@ static int vcDefaultStartVariableInt64(fmi3_import_variable_t* v) {
     REQUIRE(vt != nullptr);
     REQUIRE(fmi3_import_get_int64_variable_start(vt) == 0);
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 static int vcDefaultStartVariableInt32(fmi3_import_variable_t* v) {
@@ -634,7 +634,7 @@ static int vcDefaultStartVariableInt32(fmi3_import_variable_t* v) {
     REQUIRE(vt != nullptr);
     REQUIRE(fmi3_import_get_int32_variable_start(vt) == 0);
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 static int vcDefaultStartVariableInt16(fmi3_import_variable_t* v) {
@@ -642,7 +642,7 @@ static int vcDefaultStartVariableInt16(fmi3_import_variable_t* v) {
     REQUIRE(vt != nullptr);
     REQUIRE(fmi3_import_get_int16_variable_start(vt) == 0);
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 static int vcDefaultStartVariableInt8(fmi3_import_variable_t* v) {
@@ -650,7 +650,7 @@ static int vcDefaultStartVariableInt8(fmi3_import_variable_t* v) {
     REQUIRE(vt != nullptr);
     REQUIRE(fmi3_import_get_int8_variable_start(vt) == 0);
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 static int vcDefaultStartVariableUInt64(fmi3_import_variable_t* v) {
@@ -658,7 +658,7 @@ static int vcDefaultStartVariableUInt64(fmi3_import_variable_t* v) {
     REQUIRE(vt != nullptr);
     REQUIRE(fmi3_import_get_uint64_variable_start(vt) == 0);
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 static int vcDefaultStartVariableUInt32(fmi3_import_variable_t* v) {
@@ -666,7 +666,7 @@ static int vcDefaultStartVariableUInt32(fmi3_import_variable_t* v) {
     REQUIRE(vt != nullptr);
     REQUIRE(fmi3_import_get_uint32_variable_start(vt) == 0);
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 static int vcDefaultStartVariableUInt16(fmi3_import_variable_t* v) {
@@ -674,7 +674,7 @@ static int vcDefaultStartVariableUInt16(fmi3_import_variable_t* v) {
     REQUIRE(vt != nullptr);
     REQUIRE(fmi3_import_get_uint16_variable_start(vt) == 0);
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 static int vcDefaultStartVariableUInt8(fmi3_import_variable_t* v) {
@@ -682,7 +682,7 @@ static int vcDefaultStartVariableUInt8(fmi3_import_variable_t* v) {
     REQUIRE(vt != nullptr);
     REQUIRE(fmi3_import_get_uint8_variable_start(vt) == 0);
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 /* 'with start specified' value checkers: verifies that start values are read as specified in XML */
@@ -692,7 +692,7 @@ static int vcWithStartVariableInt64(fmi3_import_variable_t* v) {
     REQUIRE(vt != nullptr);
     REQUIRE(fmi3_import_get_int64_variable_start(vt) == INT64_MAX - D_START);
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 static int vcWithStartVariableInt32(fmi3_import_variable_t* v) {
@@ -700,7 +700,7 @@ static int vcWithStartVariableInt32(fmi3_import_variable_t* v) {
     REQUIRE(vt != nullptr);
     REQUIRE(fmi3_import_get_int32_variable_start(vt) == INT32_MAX - D_START);
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 static int vcWithStartVariableInt16(fmi3_import_variable_t* v) {
@@ -708,7 +708,7 @@ static int vcWithStartVariableInt16(fmi3_import_variable_t* v) {
     REQUIRE(vt != nullptr);
     REQUIRE(fmi3_import_get_int16_variable_start(vt) == INT16_MAX - D_START);
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 static int vcWithStartVariableInt8(fmi3_import_variable_t* v) {
@@ -716,7 +716,7 @@ static int vcWithStartVariableInt8(fmi3_import_variable_t* v) {
     REQUIRE(vt != nullptr);
     REQUIRE(fmi3_import_get_int8_variable_start(vt) == INT8_MAX - D_START);
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 static int vcWithStartVariableUInt64(fmi3_import_variable_t* v) {
@@ -724,7 +724,7 @@ static int vcWithStartVariableUInt64(fmi3_import_variable_t* v) {
     REQUIRE(vt != nullptr);
     REQUIRE(fmi3_import_get_uint64_variable_start(vt) == UINT64_MAX - D_START);
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 static int vcWithStartVariableUInt32(fmi3_import_variable_t* v) {
@@ -732,7 +732,7 @@ static int vcWithStartVariableUInt32(fmi3_import_variable_t* v) {
     REQUIRE(vt != nullptr);
     REQUIRE(fmi3_import_get_uint32_variable_start(vt) == UINT32_MAX - D_START);
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 static int vcWithStartVariableUInt16(fmi3_import_variable_t* v) {
@@ -740,7 +740,7 @@ static int vcWithStartVariableUInt16(fmi3_import_variable_t* v) {
     REQUIRE(vt != nullptr);
     REQUIRE(fmi3_import_get_uint16_variable_start(vt) == UINT16_MAX - D_START);
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 static int vcWithStartVariableUInt8(fmi3_import_variable_t* v) {
@@ -748,7 +748,7 @@ static int vcWithStartVariableUInt8(fmi3_import_variable_t* v) {
     REQUIRE(vt != nullptr);
     REQUIRE(fmi3_import_get_uint8_variable_start(vt) == UINT8_MAX - D_START);
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 /* return value: exit code */
@@ -763,7 +763,7 @@ static int get_typedef_by_name(fmi3_import_type_definitions_t* tds, fmi2_string_
 
         if (strcmp(fmi3_import_get_type_name(td), name) == 0) {
             *t = td;
-            return TEST_OK;
+            return CTEST_RETURN_SUCCESS;
         }
     }
 
@@ -783,7 +783,7 @@ static int test_typedef_intXX(fmi3_import_t *xml, fmi2_string_t typeName, int (*
     REQUIRE(tds != nullptr);
 
     res = get_typedef_by_name(tds, typeName, &t);
-    if (res != TEST_OK) return res;
+    if (res != CTEST_RETURN_SUCCESS) return res;
 
     REQUIRE(strcmp(fmi3_import_get_type_name(t), typeName) == 0);
     /* testing default case: none specified in MD */
@@ -793,9 +793,9 @@ static int test_typedef_intXX(fmi3_import_t *xml, fmi2_string_t typeName, int (*
     REQUIRE(intType != nullptr);
 
     res = vcIntXX(intType);
-    if (res != TEST_OK) return res;
+    if (res != CTEST_RETURN_SUCCESS) return res;
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 static int test_variable_intXX(fmi3_import_t *xml, fmi2_string_t varName,
@@ -809,9 +809,9 @@ static int test_variable_intXX(fmi3_import_t *xml, fmi2_string_t varName,
 
     /* specific testing for variable's type */
     res = vcVariableIntXX(v);
-    if (res != TEST_OK) return res;
+    if (res != CTEST_RETURN_SUCCESS) return res;
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 static int test_variable_all_attributes_int32(fmi3_import_t *xml, fmi2_string_t varName)
@@ -833,7 +833,7 @@ static int test_variable_all_attributes_int32(fmi3_import_t *xml, fmi2_string_t 
     REQUIRE(t != nullptr);
     REQUIRE(strcmp("typedef_basic_int32", fmi3_import_get_type_name(t)) == 0);
 
-    return TEST_OK;
+    return CTEST_RETURN_SUCCESS;
 }
 
 static void jm_logger_count_errors(jm_callbacks* cb, jm_string module, jm_log_level_enu_t log_level, jm_string message) {
@@ -1052,7 +1052,7 @@ TEST_CASE("TypeDefinitions: FloatXX and IntXX") {
 
     fmi3_import_free(xml);
 
-    REQUIRE(ret == 1);
+    REQUIRE(ret == CTEST_RETURN_SUCCESS);
 }
 
 static void require_variable_has_declared_type(fmi3_import_t* xml, const char* varName, const char* tdName) {

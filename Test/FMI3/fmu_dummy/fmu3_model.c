@@ -124,28 +124,32 @@ fmi3Status fmi_get_float64(fmi3Instance instance, const fmi3ValueReference value
             fmi3ValueReference currentValueReference = valueReferences[k];
             if (currentValueReference < N_STATES) {
                 values[m] = inst->states[currentValueReference];
+                m++;
             }
             else if(currentValueReference == 4) {
                 calc_get_derivatives(inst);
                 values[m] = inst->states_der[1];
+                m++;
             }
             else if (currentValueReference == 12) { /* special case: array */
                 calc_get_derivatives(inst);
-                values[m++] = inst->states[0];
-                values[m++] = inst->states_der[0];
-                values[m++] = inst->states[1];
-                values[m++] = inst->states_der[1];
+                values[m] = inst->states[0];
+                values[m+1] = inst->states_der[0];
+                values[m+2] = inst->states[1];
+                values[m+3] = inst->states_der[1];
+                m+=4;
             }
             else if (currentValueReference == 17) {
                 values[m] = inst->event_indicators[0];
+                m++;
             }
             else {
                 values[m] = inst->reals[currentValueReference];
+                m++;
             }
-            m++;
         }
 
-        if (m - 1 != nValues) {
+        if (m != nValues) {
             return fmi3Fatal;
         }
 

@@ -69,7 +69,7 @@ static fmi3_import_dimension_list_t* basic_array_checks(fmi3_import_variable_t* 
 
     fmi3_import_dimension_list_t* dimList = fmi3_import_get_variable_dimension_list(xml, v); /* allocates memory */
     size_t nDims = fmi3_import_get_dimension_list_size(dimList);
-    REQUIRE(nDims == nDimsExpected);
+    REQUIRE(nDims == nDimsExpected);    
     return dimList;
 }
 
@@ -136,7 +136,6 @@ TEST_CASE("Test array parsing and verify retrieved start values are as expected"
         REQUIRE(start[1] == true);
         REQUIRE(start[2] == true);
         REQUIRE(start[3] == false);
-        (dimList);
     }
     SECTION("Test float64 array") {
         fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "array4_64");

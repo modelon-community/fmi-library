@@ -27,7 +27,7 @@
 #define FMI3_IMPORT_DIMENSION_H_
 
 #include "fmilib_config.h"
-#include "FMI3/fmi3_xml_dimension.h"
+#include "../src/FMI3/fmi3_import_dimension_functions.h"
 
 #ifdef __cplusplus
 extern "C" {

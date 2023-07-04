@@ -19,8 +19,9 @@
 
 #include "fmi3_import_impl.h"
 #include "fmi3_import_dimension_list_impl.h"
-#include "../XML/src/FMI3/fmi3_xml_dimension_impl.h" /* TODO: we need access to jm_vector(fmi3_xml_dimension_t), but we shouldn't include any xml impl. files */
+#include "fmi3_import_dimension_functions.h"
 
+#pragma GCC diagnostic ignored "-Wincompatible-pointer-types"
 fmi3_import_dimension_list_t* fmi3_import_get_dimension_list(fmi3_import_variable_t* v) {
     return fmi3_xml_get_variable_dimension_vector(v);
 }
@@ -33,7 +34,7 @@ size_t fmi3_import_get_dimension_list_size(fmi3_import_dimension_list_t* dl) {
     return jm_vector_get_size(fmi3_xml_dimension_t)(dl);
 }
 
-fmi3_import_dimension_t* fmi3_import_get_dimension_list_item(fmi3_import_dimension_list_t* dl, size_t idx) {
+fmi3_import_dimension_t* fmi3_import_get_dimension(fmi3_import_dimension_list_t* dl, size_t idx) {
     if (!dl)
         return NULL;
 

@@ -46,7 +46,7 @@ fmi3_import_dimension_list_t* fmi3_import_get_dimension_list(fmi3_import_variabl
 FMILIB_EXPORT size_t fmi3_import_get_dimension_list_size(fmi3_import_dimension_list_t* dl);
 
 /** \brief Get a single dimension from a list */
-FMILIB_EXPORT fmi3_import_dimension_t* fmi3_import_get_dimension_list_item(fmi3_import_dimension_list_t* dl, size_t index);
+FMILIB_EXPORT fmi3_import_dimension_t* fmi3_import_get_dimension(fmi3_import_dimension_list_t* dl, size_t index);
 
 /** @} */
 

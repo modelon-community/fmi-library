@@ -264,13 +264,13 @@ FMILIB_EXPORT unsigned int fmi3_import_get_enum_type_max(fmi3_import_enumeration
 FMILIB_EXPORT unsigned int fmi3_import_get_enum_type_size(fmi3_import_enumeration_typedef_t* td);
 
 /** \brief Get an enumeration item name by index */
-FMILIB_EXPORT const char* fmi3_import_get_enum_type_item_name(fmi3_import_enumeration_typedef_t* td, unsigned int item);
+FMILIB_EXPORT const char* fmi3_import_get_enum_item_name(fmi3_import_enumeration_typedef_t* td, unsigned int item);
 
 /** \brief Get an enumeration item value by index */
-FMILIB_EXPORT int fmi3_import_get_enum_type_item_value(fmi3_import_enumeration_typedef_t* td, unsigned int item);
+FMILIB_EXPORT int fmi3_import_get_enum_item_value(fmi3_import_enumeration_typedef_t* td, unsigned int item);
 
 /** \brief Get an enumeration item description by index */
-FMILIB_EXPORT const char* fmi3_import_get_enum_type_item_description(fmi3_import_enumeration_typedef_t* td, unsigned int item);
+FMILIB_EXPORT const char* fmi3_import_get_enum_item_description(fmi3_import_enumeration_typedef_t* td, unsigned int item);
 
 /** \brief Get an enumeration item name for the given value */
 FMILIB_EXPORT const char* fmi3_import_get_enum_type_value_name(fmi3_import_enumeration_typedef_t* t, int value);

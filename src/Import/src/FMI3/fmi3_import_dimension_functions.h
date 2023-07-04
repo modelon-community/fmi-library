@@ -13,14 +13,26 @@
     along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 */
 
-#ifndef FMI3_XML_DIMENSION_IMPL_H_
-#define FMI3_XML_DIMENSION_IMPL_H_
+/** \file fmi3_import_dimension_functions.h
+*  \brief Declares dimension struct and required methods
+*/
+
+#ifndef FMI3_IMPORT_DIMENSION_FUNCTIONS_H_
+#define FMI3_IMPORT_DIMENSION_FUNCTIONS_H_
 
 #include "JM/jm_vector.h"
-#include "FMI3/fmi3_xml_dimension.h"
 
 #ifdef __cplusplus
 extern "C" {
+#endif
+
+// The type fmi3_xml_dimension_t and jm_vector function might already have been declared
+#ifndef FMI3_XML_DIMENSION_DECLARE_STRUCT
+#define FMI3_XML_DIMENSION_DECLARE_STRUCT
+
+typedef struct fmi3_xml_dimension_t fmi3_xml_dimension_t;
+typedef struct jm_vector(fmi3_xml_dimension_t) jm_vector(fmi3_xml_dimension_t); /* TODO: I believe this is causing warnings on gcc when we declare all the functions with the template (redefinition) */
+
 #endif
 
 #ifndef FMI3_XML_DIMENSION_ACTUAL_STRUCT
@@ -40,6 +52,4 @@ jm_vector_declare_template_no_typedef(fmi3_xml_dimension_t)
 #ifdef __cplusplus
 }
 #endif
-
-#endif /* FMI3_XML_DIMENSION_IMPL_H_ */
-
+#endif

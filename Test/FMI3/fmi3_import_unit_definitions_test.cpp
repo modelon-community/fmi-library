@@ -336,22 +336,20 @@ TEST_CASE("Unit and DisplayUnit testing") {
 
 TEST_CASE("Invalid DisplayUnit - inserve = true  + non-zero offset") {
     const char* xmldir = FMI3_TEST_XML_DIR "/unit_display_unit/invalid/inverse_offset";
-
-    fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
-    REQUIRE(xml != nullptr);
-
-    const char* errMsg = fmi3_import_get_last_error(xml);
-    REQUIRE(strcmp(errMsg, "DisplayUnit attribute 'inverse' = true only allowed for 'offset' = 0") == 0);
-    fmi3_import_free(xml);
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu != nullptr);
+    
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "DisplayUnit attribute 'inverse' = true only allowed for 'offset' = 0"));
+    fmi3_testutil_import_free(tfmu);
 }
 
 TEST_CASE("Invalid DisplayUnit - zero factor") {
     const char* xmldir = FMI3_TEST_XML_DIR "/unit_display_unit/invalid/zero_factor";
-
-    fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
-    REQUIRE(xml != nullptr);
-
-    const char* errMsg = fmi3_import_get_last_error(xml);
-    REQUIRE(strcmp(errMsg, "DisplayUnit attribute 'factor' cannot be equal to zero") == 0);
-    fmi3_import_free(xml);
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu != nullptr);
+    
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "DisplayUnit attribute 'factor' cannot be equal to zero"));
+    fmi3_testutil_import_free(tfmu);
 }

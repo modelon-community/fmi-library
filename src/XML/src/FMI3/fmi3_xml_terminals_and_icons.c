@@ -31,6 +31,8 @@ fmi3_xml_terminals_and_icons_t* fmi3_xml_allocate_terminals_and_icons(jm_callbac
         jm_log_fatal(cb, module, "Could not allocate memory");
         return 0;
     }
+    terminalsAndIcons->callbacks = cb;
+    terminalsAndIcons->status = -1; // TODO
 
     return terminalsAndIcons;
 }

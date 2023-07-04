@@ -26,6 +26,7 @@
 #endif
 
 #include "fmi3_xml_model_description_impl.h"
+#include "fmi3_xml_terminals_and_icons_impl.h"
 #include "fmi3_xml_parser.h"
 #include "JM/jm_portability.h"
 
@@ -1469,7 +1470,7 @@ int fmi3_xml_parse_model_description(fmi3_xml_model_description_t* md,
     return 0;
 }
 
-int fmi3_xml_parse_terminals_and_icons(fmi3_xml_model_description_t* md,
+int fmi3_xml_parse_terminals_and_icons(fmi3_xml_terminals_and_icons_t* termIcon,
                                        const char* filename,
                                        fmi3_xml_callbacks_t* xml_callbacks) {
     XML_Memory_Handling_Suite memsuite;
@@ -1477,12 +1478,12 @@ int fmi3_xml_parse_terminals_and_icons(fmi3_xml_model_description_t* md,
     XML_Parser parser = NULL;
     FILE* file;
 
-    context = (fmi3_xml_parser_context_t*)md->callbacks->calloc(1, sizeof(fmi3_xml_parser_context_t));
+    context = (fmi3_xml_parser_context_t*)termIcon->callbacks->calloc(1, sizeof(fmi3_xml_parser_context_t));
     if (!context) {
-        jm_log_fatal(md->callbacks, "FMIXML", "Could not allocate memory for XML parser context");
+        jm_log_fatal(termIcon->callbacks, "FMIXML", "Could not allocate memory for XML parser context");
     }
-    context->callbacks = md->callbacks;
-    context->modelDescription = md;
+    context->callbacks = termIcon->callbacks;
+    context->termIcon = termIcon;
     if (fmi3_xml_alloc_parse_buffer(context, 16)) return -1;
     if (fmi3_create_attr_map(context) || fmi3_create_elm_map(context)) {
         fmi3_xml_parse_fatal(context, "Error in parsing initialization");
@@ -1522,7 +1523,7 @@ int fmi3_xml_parse_terminals_and_icons(fmi3_xml_model_description_t* md,
         return -1;
     }
 
-    XML_SetUserData( parser, context);
+    XML_SetUserData(parser, context);
 
     XML_SetElementHandler(parser, fmi3_parse_element_start, fmi3_parse_element_end);
 
@@ -1530,9 +1531,10 @@ int fmi3_xml_parse_terminals_and_icons(fmi3_xml_model_description_t* md,
 
     file = fopen(filename, "rb");
     if (file == NULL) {
-        fmi3_xml_parse_fatal(context, "Cannot open file '%s' for parsing", filename);
-        fmi3_xml_parse_free_context(context);
-        return -1;
+        jm_log_info(context->callbacks, module, "Could not find or open file '%s' for parsing. Continuing.", filename);
+        termIcon->status = 0; // TODO: Define enumerate for this
+        fmi3_xml_parse_free_context(context); // cleanup
+        return 0; // optional, continue
     }
 
     while (!feof(file)) {
@@ -1561,8 +1563,8 @@ int fmi3_xml_parse_terminals_and_icons(fmi3_xml_model_description_t* md,
         return -1;
     }
 
-    md->status = fmi3_xml_model_description_enu_ok;
-    context->modelDescription = 0;
+    termIcon->status = 0;
+    context->termIcon = 0;
     fmi3_xml_parse_free_context(context);
 
     return 0;

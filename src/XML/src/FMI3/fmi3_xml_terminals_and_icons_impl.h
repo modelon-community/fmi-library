@@ -29,6 +29,10 @@ extern "C" {
 #endif
 
 struct fmi3_xml_terminals_and_icons_t {
+    jm_callbacks* callbacks;
+    // TODO: Use an enum?
+    int status;
+
     jm_vector(char) fmi3_xml_standard_version;
     // TODO: GraphicalRepresentation
     jm_vector(jm_voidp) fmi3_xml_terminals_and_icons_t;

@@ -44,6 +44,20 @@ typedef struct fmi3_xml_terminals_and_icons_t fmi3_xml_terminals_and_icons_t;
 fmi3_xml_terminals_and_icons_t* fmi3_xml_allocate_terminals_and_icons(jm_callbacks* callbacks);
 void fmi3_xml_free_terminals_and_icons(fmi3_xml_terminals_and_icons_t* tai);
 
+/**
+   \brief Parse XML file
+   Repeated calls invalidate the data structures created with the previous call to fmiParseXML,
+   i.e., fmiClearModelDescrition is automatically called before reading in the new file.
+
+    @param termIcon TODO.
+    @param fileName TODO.
+    @param xml_callbacks TODO.
+   @return 0 if parsing was successful. Non-zero value indicates an error.
+*/
+int fmi3_xml_parse_terminals_and_icons(fmi3_xml_terminals_and_icons_t* termIcon,
+                                       const char* fileName,
+                                       fmi3_xml_callbacks_t* xml_callbacks);
+
 
 
 #ifdef __cplusplus

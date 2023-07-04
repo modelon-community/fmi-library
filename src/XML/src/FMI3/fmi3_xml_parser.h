@@ -258,6 +258,9 @@ struct fmi3_xml_parser_context_t {
      */
     fmi3_xml_model_description_t* modelDescription;
 
+    /* Terminals and Icons XML data */
+    fmi3_xml_terminals_and_icons_t* termIcon;
+
     jm_callbacks* callbacks;
 
     XML_Parser parser;

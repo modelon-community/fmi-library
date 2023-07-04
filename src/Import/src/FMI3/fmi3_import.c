@@ -16,13 +16,13 @@
 #include <stdio.h>
 #include <stdarg.h>
 
-#if defined WIN32 || defined MSVC
-#include <io.h>
-#define F_OK 0
-#define access _access
-#else
-#include <unistd.h>
-#endif
+// #if defined WIN32 || defined MSVC
+// #include <io.h>
+// #define F_OK 0
+// #define access _access
+// #else
+// #include <unistd.h>
+// #endif
 
 #include <JM/jm_named_ptr.h>
 #include "FMI/fmi_util.h"
@@ -142,12 +142,18 @@ fmi3_import_t* fmi3_import_parse_xml(
     /*  Verify that the file exists before attempting to parse it, since it is an optional file.
         Note that this might fail if the file exists and is larger than 2GB in size.
     */
-    if (access(terminalsAndIconsPath, F_OK) == 0) {
-        if (fmi3_xml_parse_terminals_and_icons(fmu->md, terminalsAndIconsPath, xml_callbacks)) {
+    if (fmu) { // only if parsing model description did not fail TODO: Better way to do this?
+        if (fmi3_xml_parse_terminals_and_icons(fmu->termIcon, terminalsAndIconsPath, xml_callbacks)) {
             fmi3_import_free(fmu);
             fmu = 0;
         }
     }
+    // if (access(terminalsAndIconsPath, F_OK) == 0) {
+    //     if (fmi3_xml_parse_terminals_and_icons(fmu->md, terminalsAndIconsPath, xml_callbacks)) {
+    //         fmi3_import_free(fmu);
+    //         fmu = 0;
+    //     }
+    // }
     context->callbacks->free(terminalsAndIconsPath);
 
     if (fmu) {

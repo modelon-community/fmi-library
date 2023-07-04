@@ -36,10 +36,9 @@ jm_status_enu_t fmi_import_rmdir(jm_callbacks* cb, const char* dir) {
     return jm_rmdir(cb, dir);
 }
 
-char* fmi_import_get_terminals_and_icons_path(const char* fmu_unzipped_path, jm_callbacks* callbacks)
-{
+char* fmi_import_get_terminals_and_icons_path(const char* fmu_unzipped_path, jm_callbacks* callbacks) {
     char* xmlPath;
-    char* expectedSubDir = "terminalsAndIcons";
+    char* expectedSubDir = "/terminalsAndIcons";
     size_t len = strlen(fmu_unzipped_path) + strlen(FMI_FILE_SEP) + \
             strlen(expectedSubDir) + strlen(FMI_TERMINALS_AND_ICONS_XML) + 1;
 

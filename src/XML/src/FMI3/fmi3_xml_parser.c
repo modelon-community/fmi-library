@@ -271,12 +271,20 @@ void fmi3_xml_parse_free_context(fmi3_xml_parser_context_t *context) {
         jm_vector_free(jm_string)(context->attrMapById);
         context->attrMapById = 0;
     }
-    jm_stack_free_data(int)(&context->elmStack);
-    jm_vector_free_data(char)(&context->elmData);
-    jm_vector_free_data(char)(&context->variableStartAttr);
-    jm_vector_free_data(jm_voidp)(&context->currentStartVariableValues);
+    if (&(context->elmStack) && (context->elmStack.size > 0)) {
+        jm_stack_free_data(int)(&context->elmStack);
+    }
+    if (&(context->elmData) && (context->elmData.size > 0)) {
+        jm_vector_free_data(char)(&context->elmData);
+    }
+    if (&(context->variableStartAttr) && (context->variableStartAttr.items)) {
+        jm_vector_free_data(char)(&context->variableStartAttr);
+    }
+    if (&(context->currentStartVariableValues) && (context->currentStartVariableValues.items)) {
+        jm_vector_free_data(jm_voidp)(&context->currentStartVariableValues);
+    }
 
-    if (jm_resetlocale_numeric(context->callbacks, context->jm_locale)) {
+    if (context->jm_locale && jm_resetlocale_numeric(context->callbacks, context->jm_locale)) {
         jm_log_error(context->callbacks, module, "Failed to reset locale.");
     }
 
@@ -975,11 +983,13 @@ int fmi3_xml_alloc_parse_buffer(fmi3_xml_parser_context_t* context, size_t items
     return 0;
 }
 
-void fmi3_xml_free_parse_buffer(fmi3_xml_parser_context_t *context) {
-    size_t i;
+void fmi3_xml_free_parse_buffer(fmi3_xml_parser_context_t* context) {
     jm_vector(jm_voidp)* parseBuffer = &context->parseBuffer;
+    size_t bufferSize = jm_vector_get_size(jm_voidp)(parseBuffer);
 
-    for (i=0; i < jm_vector_get_size(jm_voidp)(parseBuffer); i++) {
+    if (bufferSize == 0) {return;}
+
+    for (size_t i = 0; i < bufferSize; i++) {
         jm_vector(char)* item = jm_vector_get_item(jm_voidp)(parseBuffer,i);
         if (item) {
             jm_vector_free(char)(item);
@@ -1483,6 +1493,18 @@ int fmi3_xml_parse_terminals_and_icons(fmi3_xml_terminals_and_icons_t* termIcon,
         jm_log_fatal(termIcon->callbacks, "FMIXML", "Could not allocate memory for XML parser context");
     }
     context->callbacks = termIcon->callbacks;
+
+    // try to open file before doing parser initialization
+    file = fopen(filename, "rb");
+    if (file == NULL) {
+        jm_log_info(context->callbacks, module, "Could not find or open file '%s' for parsing. Continuing.", filename);
+        termIcon->status = 0; // TODO: Define enumerate for this
+        fmi3_xml_parse_free_context(context); // cleanup
+        return 0; // Terminals and Icons are optional, continue
+    }
+
+    // else: file at least exists, initialize parser & parse
+
     context->termIcon = termIcon;
     if (fmi3_xml_alloc_parse_buffer(context, 16)) return -1;
     if (fmi3_create_attr_map(context) || fmi3_create_elm_map(context)) {
@@ -1490,12 +1512,9 @@ int fmi3_xml_parse_terminals_and_icons(fmi3_xml_terminals_and_icons_t* termIcon,
         fmi3_xml_parse_free_context(context);
         return -1;
     }
-    context->lastBaseUnit = 0; // remove
     context->skipElementCnt = 0;
-    jm_stack_init(int)(&context->elmStack,  context->callbacks);
+    jm_stack_init(int)(&context->elmStack, context->callbacks);
     jm_vector_init(char)(&context->elmData,           0, context->callbacks);
-    jm_vector_init(char)(&context->variableStartAttr, 0, context->callbacks); // remove
-    jm_vector_init(jm_voidp)(&context->currentStartVariableValues, 0, context->callbacks); // remove
 
     context->lastSiblingElemId = fmi3_xml_elmID_none;
     context->currentElmID = fmi3_xml_elmID_none;
@@ -1528,14 +1547,6 @@ int fmi3_xml_parse_terminals_and_icons(fmi3_xml_terminals_and_icons_t* termIcon,
     XML_SetElementHandler(parser, fmi3_parse_element_start, fmi3_parse_element_end);
 
     XML_SetCharacterDataHandler(parser, fmi3_parse_element_data);
-
-    file = fopen(filename, "rb");
-    if (file == NULL) {
-        jm_log_info(context->callbacks, module, "Could not find or open file '%s' for parsing. Continuing.", filename);
-        termIcon->status = 0; // TODO: Define enumerate for this
-        fmi3_xml_parse_free_context(context); // cleanup
-        return 0; // optional, continue
-    }
 
     while (!feof(file)) {
         char* text = jm_vector_get_itemp(char)(fmi3_xml_reserve_parse_buffer(context, 0, XML_BLOCK_SIZE), 0);

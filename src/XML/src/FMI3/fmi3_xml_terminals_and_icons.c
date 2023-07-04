@@ -38,8 +38,6 @@ fmi3_xml_terminals_and_icons_t* fmi3_xml_allocate_terminals_and_icons(jm_callbac
 }
 
 void fmi3_xml_free_terminals_and_icons(fmi3_xml_terminals_and_icons_t* termIcon) {
-    // void(*cb_free)(const char*) = (void(*)(const char*))md->callbacks->free;
-    // TODO: Use JM functionality?
     free(termIcon);
 }
 

@@ -18,7 +18,7 @@
 
 #include <stdarg.h>
 
-// #include <JM/jm_callbacks.h>
+#include <JM/jm_callbacks.h>
 #include <JM/jm_vector.h>
 // #include <JM/jm_named_ptr.h>
 // #include <JM/jm_string_set.h>

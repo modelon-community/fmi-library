@@ -166,6 +166,7 @@ void fmi3_import_free(fmi3_import_t* fmu) {
 
     fmi3_import_destroy_dllfmu(fmu);
     fmi3_xml_free_model_description(fmu->md);
+    fmi3_xml_free_terminals_and_icons(fmu->termIcon);
     fmi_util_free_options(cb, fmu->options);
     jm_vector_free_data(char)(&fmu->logMessageBufferCoded);
     jm_vector_free_data(char)(&fmu->logMessageBufferExpanded);

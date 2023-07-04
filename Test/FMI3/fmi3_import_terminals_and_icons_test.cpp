@@ -30,4 +30,6 @@ TEST_CASE("Test parse terminals and icons") {
     SECTION("Test binary start array") {
         printf("hello there\n");
     }
+
+    fmi3_import_free(xml);
 }

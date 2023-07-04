@@ -61,17 +61,28 @@ fmi3_import_t* fmi3_import_allocate(jm_callbacks* cb) {
     fmu->instanceName = NULL;
     fmu->callbacks = cb;
     fmu->capi = NULL;
-    fmu->md = fmi3_xml_allocate_model_description(cb);
-    jm_vector_init(char)(&fmu->logMessageBufferExpanded,0,cb);
 
+    // TODO: make something more compact for all these freeing steps
+
+    fmu->md = fmi3_xml_allocate_model_description(cb);
     if (!fmu->md) {
         cb->free(fmu);
         return NULL;
     }
 
+    fmu->termIcon = fmi3_xml_allocate_terminals_and_icons(cb);
+    if (!fmu->termIcon) {
+        fmi3_xml_free_model_description(fmu->md);
+        cb->free(fmu);
+        return NULL;
+    }
+
+    jm_vector_init(char)(&fmu->logMessageBufferExpanded, 0, cb);
+
     fmu->options = fmi_util_allocate_options(cb);
     if (!fmu->options) {
         fmi3_xml_free_model_description(fmu->md);
+        fmi3_xml_free_terminals_and_icons(fmu->termIcon);
         cb->free(fmu);
         return NULL;
      }

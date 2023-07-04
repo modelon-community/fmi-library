@@ -26,9 +26,7 @@ static const char* module = "FMI3XML";
 fmi3_xml_terminals_and_icons_t* fmi3_xml_allocate_terminals_and_icons(jm_callbacks* callbacks) {
     jm_callbacks* cb = callbacks ? callbacks : jm_get_default_callbacks();
 
-    fmi3_xml_terminals_and_icons_t* terminalsAndIcons;
-    terminalsAndIcons = (fmi3_xml_terminals_and_icons_t*)cb->calloc(1, sizeof(fmi3_xml_terminals_and_icons_t));
-
+    fmi3_xml_terminals_and_icons_t* terminalsAndIcons = (fmi3_xml_terminals_and_icons_t*)cb->calloc(1, sizeof(fmi3_xml_terminals_and_icons_t));
     if (!terminalsAndIcons) {
         jm_log_fatal(cb, module, "Could not allocate memory");
         return 0;
@@ -37,7 +35,7 @@ fmi3_xml_terminals_and_icons_t* fmi3_xml_allocate_terminals_and_icons(jm_callbac
     return terminalsAndIcons;
 }
 
-void fmi3_xml_clear_terminals_and_icons(fmi3_xml_terminals_and_icons_t* termIcon) {
+void fmi3_xml_free_terminals_and_icons(fmi3_xml_terminals_and_icons_t* termIcon) {
     // void(*cb_free)(const char*) = (void(*)(const char*))md->callbacks->free;
     // TODO: Use JM functionality?
     free(termIcon);

@@ -42,7 +42,7 @@ typedef struct fmi3_xml_terminals_and_icons_t fmi3_xml_terminals_and_icons_t;
 // };
 
 fmi3_xml_terminals_and_icons_t* fmi3_xml_allocate_terminals_and_icons(jm_callbacks* callbacks);
-void fmi3_xml_clear_terminals_and_icons(fmi3_xml_terminals_and_icons_t* tai);
+void fmi3_xml_free_terminals_and_icons(fmi3_xml_terminals_and_icons_t* tai);
 
 
 

@@ -1490,14 +1490,13 @@ int fmi3_xml_parse_terminals_and_icons(fmi3_xml_model_description_t* md,
         return -1;
     }
     context->lastBaseUnit = 0; // remove
-    context->skipOneVariableFlag = 0; // remove
     context->skipElementCnt = 0;
     jm_stack_init(int)(&context->elmStack,  context->callbacks);
     jm_vector_init(char)(&context->elmData,           0, context->callbacks);
     jm_vector_init(char)(&context->variableStartAttr, 0, context->callbacks); // remove
     jm_vector_init(jm_voidp)(&context->currentStartVariableValues, 0, context->callbacks); // remove
 
-    context->lastElmID = fmi3_xml_elmID_none;
+    context->lastSiblingElemId = fmi3_xml_elmID_none;
     context->currentElmID = fmi3_xml_elmID_none;
     context->anyElmCount = 0;
     context->useAnyHandleFlg = 0;

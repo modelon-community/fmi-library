@@ -33,3 +33,5 @@ TEST_CASE("Test parse terminals and icons") {
 
     fmi3_import_free(xml);
 }
+
+// TODO: Add test for mismatching fmiVersions in XML

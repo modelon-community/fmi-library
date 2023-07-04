@@ -181,7 +181,11 @@ typedef enum fmi3_xml_attr_enu_t {
     EXPAND_XML_ELMNAME(Clock) \
     EXPAND_XML_ELMNAME(String) \
     EXPAND_XML_ELMNAME(Enumeration) \
-    EXPAND_XML_ELMNAME(fmiTerminalsAndIcons) // TODO: Should this and children be in a different list?
+    EXPAND_XML_ELMNAME(fmiTerminalsAndIcons) \
+    EXPAND_XML_ELMNAME(Terminals) \
+    EXPAND_XML_ELMNAME(Terminal)
+
+// TODO: Should terminals and icons have its own list?
 
 /** \brief Element that can be placed under different parents get alternative names from the info struct */
 #define FMI3_XML_ELMLIST_ALT(EXPAND_XML_ELMNAME) \

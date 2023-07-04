@@ -47,8 +47,6 @@ static void test_small_float64(fmi3_import_t* xml) {
     REQUIRE(fmi3_import_get_float64_variable_min(var) == min_ref); // default
     REQUIRE(fmi3_import_get_float64_variable_max(var) == max_ref); // default
     REQUIRE(fmi3_import_get_float64_variable_nominal(var) == nominal_ref); // default
-
-    // TODO: add checks for the type
 }
 
 /* Parse small Float32 variable */

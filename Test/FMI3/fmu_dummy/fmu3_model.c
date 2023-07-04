@@ -242,9 +242,7 @@ fmi3Status fmi_get_binary(fmi3Instance instance, const fmi3ValueReference valueR
     return fmi3OK;
 }
 
-/* TODO: nValues is just used for verification, i.e. to check that sum(lenght(valueReferences[i])) == nValues;
- *
- */
+// nValues is just used for verification, i.e. to check that sum(lenght(valueReferences[i])) == nValues;
 fmi3Status fmi_set_float64(fmi3Instance instance, const fmi3ValueReference valueReferences[],
     size_t nValueReferences, const fmi3Float64 values[], size_t nValues)
 {

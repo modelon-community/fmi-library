@@ -32,8 +32,8 @@ static void test_small_float64(fmi3_import_t* xml) {
     REQUIRE(v != nullptr);
     REQUIRE(fmi3_import_get_variable_vr(v) == 1);
     REQUIRE(fmi3_import_get_variable_description(v) == nullptr);
-    REQUIRE(fmi3_import_get_causality(v) == fmi3_causality_enu_local);
-    REQUIRE(fmi3_import_get_variability(v) == fmi3_variability_enu_continuous);
+    REQUIRE(fmi3_import_get_variable_causality(v) == fmi3_causality_enu_local);
+    REQUIRE(fmi3_import_get_variable_variability(v) == fmi3_variability_enu_continuous);
 
     fmi3_float64_t min_ref =        -DBL_MAX;
     fmi3_float64_t max_ref =        DBL_MAX;
@@ -55,8 +55,8 @@ static void test_small_float32(fmi3_import_t* xml) {
     REQUIRE(v != nullptr);
     REQUIRE(fmi3_import_get_variable_vr(v) == 2);
     REQUIRE(fmi3_import_get_variable_description(v) == nullptr);
-    REQUIRE(fmi3_import_get_causality(v) == fmi3_causality_enu_local);
-    REQUIRE(fmi3_import_get_variability(v) == fmi3_variability_enu_continuous);
+    REQUIRE(fmi3_import_get_variable_causality(v) == fmi3_causality_enu_local);
+    REQUIRE(fmi3_import_get_variable_variability(v) == fmi3_variability_enu_continuous);
 
     fmi3_float32_t min_ref =        -FLT_MAX;
     fmi3_float32_t max_ref =        FLT_MAX;

@@ -61,13 +61,13 @@ int fmi3_xml_variable_is_array(fmi3_xml_variable_t* v);
 
 int fmi3_xml_get_variable_has_start(fmi3_xml_variable_t*);
 
-fmi3_variability_enu_t fmi3_xml_get_variability(fmi3_xml_variable_t*);
-fmi3_causality_enu_t fmi3_xml_get_causality(fmi3_xml_variable_t*);
-fmi3_initial_enu_t fmi3_xml_get_initial(fmi3_xml_variable_t*);
+fmi3_variability_enu_t fmi3_xml_get_variable_variability(fmi3_xml_variable_t*);
+fmi3_causality_enu_t fmi3_xml_get_variable_causality(fmi3_xml_variable_t*);
+fmi3_initial_enu_t fmi3_xml_get_variable_initial(fmi3_xml_variable_t*);
 
-fmi3_xml_variable_t* fmi3_xml_get_previous(fmi3_xml_variable_t* v);
-fmi3_boolean_t fmi3_xml_get_can_handle_multiple_set_per_time_instant(fmi3_xml_variable_t* v);
-fmi3_boolean_t fmi3_xml_get_intermediate_update(fmi3_xml_variable_t* v);
+fmi3_xml_variable_t* fmi3_xml_get_variable_previous(fmi3_xml_variable_t* v);
+fmi3_boolean_t fmi3_xml_get_variable_can_handle_multiple_set_per_time_instant(fmi3_xml_variable_t* v);
+fmi3_boolean_t fmi3_xml_get_variable_intermediate_update(fmi3_xml_variable_t* v);
 int fmi3_xml_variable_is_clocked(fmi3_xml_variable_t* v);
 jm_status_enu_t fmi3_xml_get_variable_clocks(fmi3_xml_model_description_t* md, fmi3_xml_variable_t* v, jm_vector(jm_voidp)* list);
 

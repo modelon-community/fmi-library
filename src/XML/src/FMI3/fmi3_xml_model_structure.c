@@ -84,7 +84,7 @@ jm_vector(jm_voidp)* fmi3_xml_get_clocked_states(fmi3_xml_model_structure_t* ms)
     return &ms->clockedStates;
 }
 
-jm_vector(jm_voidp)* fmi3_xml_get_initial_unknowns(fmi3_xml_model_structure_t* ms) {
+jm_vector(jm_voidp)* fmi3_xml_get_variable_initial_unknowns(fmi3_xml_model_structure_t* ms) {
     return &ms->initialUnknowns;
 }
 
@@ -155,7 +155,7 @@ int fmi3_xml_get_clocked_state_dependencies(fmi3_xml_model_structure_t* ms, fmi3
             numDependencies, dependsOnAll, dependencies, dependenciesKind);
 }
 
-int fmi3_xml_get_initial_unknown_dependencies(fmi3_xml_model_structure_t* ms, fmi3_xml_variable_t* variable,
+int fmi3_xml_get_variable_initial_unknown_dependencies(fmi3_xml_model_structure_t* ms, fmi3_xml_variable_t* variable,
         size_t* numDependencies, int* dependsOnAll, size_t** dependencies, char** dependenciesKind)
 {
     return fmi3_xml_get_dependencies(&(ms->initialUnknowns), ms->initialUnknownDeps, variable,
@@ -559,7 +559,7 @@ int fmi3_xml_handle_EventIndicator(fmi3_xml_parser_context_t *context, const cha
 
         fmi3_xml_variable_t* eventInd = (fmi3_xml_variable_t*)jm_vector_get_last(jm_voidp)(&ms->eventIndicators);
         /* EventIndicator must be continuous */
-        if (fmi3_xml_get_variability(eventInd) != fmi3_variability_enu_continuous) {
+        if (fmi3_xml_get_variable_variability(eventInd) != fmi3_variability_enu_continuous) {
             ms->isValidFlag = 0;
             fmi3_xml_parse_error(context,
                     "The variable '%s' is an EventIndicator, but does not have variability='continuous'.",

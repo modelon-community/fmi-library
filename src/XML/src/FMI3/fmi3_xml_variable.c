@@ -1016,9 +1016,8 @@ static int fmi3_xml_hexstring_to_byte(fmi3_xml_parser_context_t* context, const 
 static int fmi3_xml_hexstring_to_bytearray(fmi3_xml_parser_context_t* context, const char* hexstr, uint8_t* bytearr) {
     size_t len = strlen(hexstr);
     if (len % 2 != 0) {
-        // Note: 2 hexadecimal characters represent 1 byte.
+        // Note: 2 hexadecimal characters represent 1 byte, require even length inputs
         fmi3_xml_parse_error(context, "Hexadecimal string is not of even length: %s", hexstr);
-        // TODO: Or just warning and pad with trailing '0'?
         return -1;
     }
 

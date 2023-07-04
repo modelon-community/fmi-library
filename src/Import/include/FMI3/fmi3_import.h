@@ -65,6 +65,11 @@ extern "C" {
  * @{
  */
 
+/** \brief Given directory name fmu_unzipped_path and model identifier consturct Dll/so name
+    @return Pointer to a string with the file name. Caller is responsible for freeing the memory.
+*/
+FMILIB_EXPORT char* fmi3_import_get_dll_path(const char* fmu_unzipped_path, const char* model_identifier, jm_callbacks* callBackFunctions);
+
 /**
 * \brief Retrieve the last error message.
 *

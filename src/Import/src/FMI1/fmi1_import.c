@@ -21,6 +21,7 @@
 #include "fmi1_import_variable_list_impl.h"
 
 #include "FMI/fmi_util_options.h"
+#include "FMI/fmi_util.h"
 #include <FMI1/fmi1_types.h>
 #include <FMI1/fmi1_functions.h>
 #include <FMI1/fmi1_enums.h>
@@ -28,9 +29,6 @@
 
 static const char* module = "FMILIB";
 
-/*#include "fmi1_import_vendor_annotations_impl.h"
-#include "fmi1_import_parser.h"
-*/
 fmi1_import_t* fmi1_import_allocate(jm_callbacks* cb) {
     fmi1_import_t* fmu = (fmi1_import_t*)cb->calloc(1, sizeof(fmi1_import_t));
     
@@ -122,6 +120,14 @@ fmi1_import_t* fmi1_import_parse_xml( fmi_import_context_t* context, const char*
     jm_log_verbose( cb, "FMILIB", "Parsing finished successfully");
 
     return fmu;
+}
+
+char* fmi1_import_get_dll_path(const char* fmu_unzipped_path, const char* model_identifier, jm_callbacks* callbacks) {
+    char* dllDir = fmi_construct_dll_dir_name(callbacks, fmu_unzipped_path, fmi_version_1_enu);
+    if (!dllDir) {
+        return NULL;
+    }
+    return fmi_construct_dll_file_name(callbacks, dllDir, model_identifier);
 }
 
 void fmi1_import_free(fmi1_import_t* fmu) {

@@ -607,17 +607,19 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_get_number_of_variable_dependencies(
 
 /**
  * \brief Wrapper for the FMI function fmi3GetVariableDependencies(...)
- *  TODO: verify meaning:
  *  For arrays the meaning is (for scalars: ignore the element_indicies_...):
  *    dependent[element_indicies_of_dependent[i]] depends on independents[i][element_indices_of_independents[i]], kind: dependency_kinds[i]
+ *  element_indicies_... are index 1 based and sorted by order of dimension for higher dimension arrays (2D: row first).
+ *  element_indicies_... == 0 means dependency on all indices.
+ *  Output arrays must be allocated by the user.
  *
- * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
- * @param dependent The value reference of a variable for which we want to get dependencies.
- * @param elementIndicesOfDependent Return argument that will hold an array of indices in the array 'dependent'.
- * @param independents Return argument that will hold an array of value references to variables there is a dependency to.
- * @param elementIndicesOfIndependent Return argument that will hold an array of indices in 'independents' array.
- * @param dependencyKinds Return argument that will hold an array of the dependency kinds.
- * @param nDeps Specifies the allocated size of the return arguments. Should equal the size retrieved with #fmi3_import_get_number_of_variable_dependencies.
+ * @param[in] fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
+ * @param[in] dependent The value reference of a variable for which we want to get dependencies.
+ * @param[in,out] elementIndicesOfDependent Return argument that will hold an array of indices in the array 'dependent'.
+ * @param[in,out] independents Return argument that will hold an array of value references to variables there is a dependency to.
+ * @param[in,out] elementIndicesOfIndependent Return argument that will hold an array of indices in 'independents' array.
+ * @param[in,out] dependencyKinds Return argument that will hold an array of the dependency kinds.
+ * @param[in] nDeps Specifies the allocated size for the return arguments. Should equal the size retrieved with #fmi3_import_get_number_of_variable_dependencies.
  * @return FMI status.
  */
 FMILIB_EXPORT fmi3_status_t fmi3_import_get_variable_dependencies(

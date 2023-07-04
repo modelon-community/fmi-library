@@ -72,17 +72,10 @@ struct fmi3_xml_variable_t {
 
     jm_vector(fmi3_value_reference_t)* clocks;   /* Vrs in the clock attribute. NULL if attribute doesn't exist. */
 
-    // TODO: Convert to pointer to save memory - most variables are not arrays
     /* array fields */
-    jm_vector(fmi3_xml_dimension_t) dimensionsVector; /* stores the dimensions and their attributes */
+    jm_vector(fmi3_xml_dimension_t)* dimensionsVector; /* stores the dimensions and their attributes */
 
     jm_vector(jm_voidp)* aliases;
-    /*
-     * Dynamic memory storage for resolved dimensions (i.e. vr's are dereferenced).
-     * This field will be exposed to the user, but FMIL handles memory management,
-     * and this is a convenient place to store it.
-     */
-    unsigned int* dimensionsArray; /* TODO: this var can probably be removed now, since API was restructured (reduced) */
 
     /* temp fields during parsing*/
     jm_string startAttr;

@@ -169,7 +169,7 @@
     <UInt16 name="variable_with_start_uint16" valueReference="8007" initial="exact" start="65532"/>
     <UInt8  name="variable_with_start_uint8"  valueReference="8008" initial="exact" start="252"/>
 
-    <!-- int32 with all common attributes - the common attributes should not be dependent on the type, so just testing int32 - TODO: test NYI 3.0 attributes -->
+    <!-- int32 with all common attributes - the common attributes should not be dependent on the type, so just testing int32 -->
     <Int32 name="variable_common_attributes_int32" valueReference="9001" description="description" causality="output" variability="discrete" initial="calculated" declaredType="typedef_basic_int32" quantity="Frequency"/>
 
 

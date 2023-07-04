@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription fmiVersion="3.0" modelName="" instantiationToken="">
+<ModelExchange modelIdentifier="clock_no_interval_variability" />
+
+<ModelVariables>
+    <Clock name="clock01" valueReference="1"/> <!-- Missing intervalVariability -->
+</ModelVariables>
+
+<ModelStructure/>
+</fmiModelDescription>

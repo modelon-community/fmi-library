@@ -257,8 +257,6 @@ static void test_clock_default_attrs(fmi3_import_t* xml) {
     REQUIRE(fmi3_import_get_clock_variable_interval_counter(cv)     == 0);
     REQUIRE(fmi3_import_get_clock_variable_shift_counter(cv)        == 0);
 
-    // TODO: Test interval_variability not set.
-
     t = fmi3_import_get_variable_declared_type(v);
     REQUIRE(t == nullptr);  // No declared type
 }
@@ -627,7 +625,7 @@ TEST_CASE("Invalid previous - requires clocks") {
 
     fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
     REQUIRE(tfmu != nullptr);
-    REQUIRE(tfmu->fmu == nullptr); // TODO: Currently a fatal error, but maybe shouldn't be?
+    REQUIRE(tfmu->fmu == nullptr);
 
     const char* logMsg = "Only variables with the attribute 'clocks' may have the attribute 'previous'.";
     REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
@@ -640,7 +638,7 @@ TEST_CASE("Invalid previous - requires variability='discrete'") {
 
     fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
     REQUIRE(tfmu != nullptr);
-    REQUIRE(tfmu->fmu == nullptr); // TODO: Currently a fatal error, but maybe shouldn't be?
+    REQUIRE(tfmu->fmu == nullptr);
 
     const char* logMsg = "Only variables with variability='discrete' may have the attribute 'previous'.";
     REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
@@ -691,7 +689,7 @@ TEST_CASE("Invalid previous - self reference") {
 
     fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
     REQUIRE(tfmu != nullptr);
-    REQUIRE(tfmu->fmu == nullptr); // TODO: Currently a fatal error, but maybe shouldn't be?
+    REQUIRE(tfmu->fmu == nullptr);
 
     const char* logMsg = "A variable must not refer to itself in the attribute 'previous'.";
     REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
@@ -707,6 +705,19 @@ TEST_CASE("Invalid; duplicate variable name") {
     REQUIRE(tfmu->fmu == nullptr);
 
     const char* logMsg = "Two variables with the same name 'sameName' found. This is not allowed.";
+    REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
+
+    fmi3_testutil_import_free(tfmu);
+}
+
+TEST_CASE("Invalid; clock without intervalVariability") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/variable_test/invalid/clock_no_interval_variability";
+
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    REQUIRE(tfmu != nullptr);
+    REQUIRE(tfmu->fmu == nullptr);
+
+    const char* logMsg = "Parsing XML element 'Clock': required attribute 'intervalVariability' not found";
     REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
 
     fmi3_testutil_import_free(tfmu);

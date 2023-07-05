@@ -58,6 +58,9 @@ int fmi3_xml_parse_terminals_and_icons(fmi3_xml_terminals_and_icons_t* termIcon,
                                        const char* fileName,
                                        fmi3_xml_callbacks_t* xml_callbacks);
 
+int fmi3_xml_terminals_and_icons_set_model_description(fmi3_xml_terminals_and_icons_t* termIcon,
+                                                       fmi3_xml_model_description_t* md);
+
 
 
 #ifdef __cplusplus

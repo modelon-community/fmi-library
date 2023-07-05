@@ -238,7 +238,6 @@ const char* fmi3_xml_get_model_standard_version(fmi3_xml_model_description_t* md
     return jm_vector_char2string(&md->fmi3_xml_standard_version);
 }
 
-
 const char* fmi3_xml_get_model_version(fmi3_xml_model_description_t* md){
     return jm_vector_char2string(&md->version);
 }

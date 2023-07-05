@@ -133,10 +133,13 @@ fmi3_import_t* fmi3_import_parse_xml(
 
    // Only parse terminals and icons of parsing of model description did not fail
     if (fmu) {
-        if (fmi3_xml_parse_terminals_and_icons(fmu->termIcon, terminalsAndIconsPath, xml_callbacks)) {
+        // terminalsAndIcons uses modelDescription for error checks
+        if (fmi3_xml_terminals_and_icons_set_model_description(fmu->termIcon, fmu->md)) {
             fmi3_import_free(fmu);
             fmu = 0;
         }
+        // failure to parse terminalsAndIcons does not constitute parsing failure
+        fmi3_xml_parse_terminals_and_icons(fmu->termIcon, terminalsAndIconsPath, xml_callbacks);
     }
     context->callbacks->free(terminalsAndIconsPath);
 

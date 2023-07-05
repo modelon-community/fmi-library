@@ -31,7 +31,9 @@ fmi3_xml_terminals_and_icons_t* fmi3_xml_allocate_terminals_and_icons(jm_callbac
         jm_log_fatal(cb, module, "Could not allocate memory");
         return 0;
     }
+    // TODO: tidy up a little here
     termIcon->callbacks = cb;
+    termIcon->md = NULL;
 
     jm_vector_init(char)(&termIcon->fmi3_xml_standard_version, 0, cb);
 
@@ -47,6 +49,16 @@ void fmi3_xml_free_terminals_and_icons(fmi3_xml_terminals_and_icons_t* termIcon)
     free(termIcon);
 }
 
+int fmi3_xml_terminals_and_icons_set_model_description(fmi3_xml_terminals_and_icons_t* termIcon,
+                                                       fmi3_xml_model_description_t* md) {
+    if (!termIcon || !md) {
+        return -1;
+    } else {
+        termIcon->md = md;
+        return 0;
+    }
+}
+
 int fmi3_xml_handle_fmiTerminalsAndIcons(fmi3_xml_parser_context_t* context, const char* data) {
     fmi3_xml_terminals_and_icons_t* termIcon = context->termIcon;
     if (!data) {
@@ -57,11 +69,21 @@ int fmi3_xml_handle_fmiTerminalsAndIcons(fmi3_xml_parser_context_t* context, con
         }
         jm_log_verbose(context->callbacks, module, "Parsing XML element fmiTerminalsAndIcons");
 
-        ret = fmi3_xml_parse_attr_as_string(context, fmi3_xml_elmID_fmiModelDescription, fmi_attr_id_fmiVersion, 1, &(termIcon->fmi3_xml_standard_version));
+        ret = fmi3_xml_parse_attr_as_string(context, fmi3_xml_elmID_fmiTerminalsAndIcons, fmi_attr_id_fmiVersion, 1 /* required */,
+                                            &(termIcon->fmi3_xml_standard_version));
         if (ret) {
             return ret;
         }
-        // TODO: Error check that fmiVersion lines up with the one from ModelDescription
+        // Error check: fmiVersion in terminalsAndIcons and modelDescription must match
+        const char* modelDescrfmiVersion = fmi3_xml_get_model_standard_version(termIcon->md);
+        const char* termIconfmiVersion = jm_vector_char2string(&(termIcon->fmi3_xml_standard_version));
+        if (strcmp(modelDescrfmiVersion, termIconfmiVersion)) {
+            fmi3_xml_parse_fatal(context,
+                                 "Mismatch of attribute 'fmiVersion' in modelDescription.xml: '%s' and terminalsAndIcons.xml: '%s'.", 
+                                 modelDescrfmiVersion,
+                                 termIconfmiVersion);
+            return -1;
+        }
 
         return ret;
     } else { // post process <fmiTerminalsAndIcons>

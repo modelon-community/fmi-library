@@ -21,17 +21,33 @@
 #include "fmi_testutil.h"
 #include "fmilib.h"
 
-
 TEST_CASE("Test parse terminals and icons") {
-    const char* xmldir = FMI3_TEST_XML_DIR "/terminals_and_icons/valid/";
+    const char* xmldir = FMI3_TEST_XML_DIR "/terminals_and_icons/valid/basic";
     fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
     REQUIRE(xml != nullptr);
-
-    SECTION("Test binary start array") {
-        printf("hello there\n");
-    }
 
     fmi3_import_free(xml);
 }
 
-// TODO: Add test for mismatching fmiVersions in XML
+// TODO: How to properly distinguish successful parsing of modelDescription vs terminalsAndIcons?
+TEST_CASE("No Terminals and Icons, test log message") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/terminals_and_icons/valid/no_terminalsAndIcons";
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu != nullptr); // successful parse
+
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "[INFO][FMI3XML] Could not find or open terminalsAndIcons.xmxl:"));
+    fmi3_testutil_import_free(tfmu);
+}
+
+TEST_CASE("Error check; Mismatching fmiVersions of modelDescription.xml and terminalsAndIcons.xml") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/terminals_and_icons/invalid/mismatching_fmiVersion";
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu != nullptr); // successful parse
+    // TODO: Failed parsing of terminalsAndIcons
+
+    const char* logMsg = "Mismatch of attribute 'fmiVersion' in modelDescription.xml: '3.0-alpha' and terminalsAndIcons.xml: '3.0-beta'.";
+    REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
+    fmi3_testutil_import_free(tfmu);
+}

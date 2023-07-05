@@ -30,6 +30,9 @@ extern "C" {
 
 struct fmi3_xml_terminals_and_icons_t {
     jm_callbacks* callbacks;
+
+    /* used for cross-referencing */
+    fmi3_xml_model_description_t* md; 
     // TODO: Use an enum?
     int status;
 

@@ -35,11 +35,7 @@ extern "C" {
 #endif
 
 typedef struct fmi3_xml_terminals_and_icons_t fmi3_xml_terminals_and_icons_t;
-
-// struct fmi3_xml_terminal_t {
-//     // TODO: attributes
-//     jm_vector(char) name;
-// };
+typedef struct fmi3_xml_terminal_t fmi3_xml_terminal_t;
 
 fmi3_xml_terminals_and_icons_t* fmi3_xml_allocate_terminals_and_icons(jm_callbacks* callbacks);
 void fmi3_xml_free_terminals_and_icons(fmi3_xml_terminals_and_icons_t* tai);
@@ -61,7 +57,7 @@ int fmi3_xml_parse_terminals_and_icons(fmi3_xml_terminals_and_icons_t* termIcon,
 int fmi3_xml_terminals_and_icons_set_model_description(fmi3_xml_terminals_and_icons_t* termIcon,
                                                        fmi3_xml_model_description_t* md);
 
-
+int fmi3_xml_get_has_terminals_and_icons(fmi3_xml_terminals_and_icons_t* termIcon);
 
 #ifdef __cplusplus
 }

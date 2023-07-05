@@ -26,7 +26,7 @@ static const char* module = "FMI3XML";
 fmi3_xml_terminals_and_icons_t* fmi3_xml_allocate_terminals_and_icons(jm_callbacks* callbacks) {
     jm_callbacks* cb = callbacks ? callbacks : jm_get_default_callbacks();
 
-    fmi3_xml_terminals_and_icons_t* termIcon = (fmi3_xml_terminals_and_icons_t*)cb->calloc(1, sizeof(fmi3_xml_terminals_and_icons_t));
+    fmi3_xml_terminals_and_icons_t* termIcon = (fmi3_xml_terminals_and_icons_t*)callbacks->calloc(1, sizeof(fmi3_xml_terminals_and_icons_t));
     if (!termIcon) {
         jm_log_fatal(cb, module, "Could not allocate memory");
         return 0;
@@ -37,16 +37,51 @@ fmi3_xml_terminals_and_icons_t* fmi3_xml_allocate_terminals_and_icons(jm_callbac
 
     jm_vector_init(char)(&termIcon->fmi3_xml_standard_version, 0, cb);
 
+    jm_vector_init(jm_voidp)(&termIcon->terminalsOrigOrder, 0, cb);
+    jm_vector_init(jm_named_ptr)(&termIcon->terminalsByName, 0, cb);
+
+    jm_vector_init(jm_string)(&termIcon->names, 0, cb);
+    
+
     termIcon->status = -1; // TODO
 
     return termIcon;
 }
 
-void fmi3_xml_free_terminals_and_icons(fmi3_xml_terminals_and_icons_t* termIcon) {
-    if (termIcon) {
-        jm_vector_free_data(char)(&termIcon->fmi3_xml_standard_version);
+static fmi3_xml_terminal_t* fmi3_xml_alloc_terminal(fmi3_xml_parser_context_t* context) {
+    fmi3_xml_terminal_t* term = (fmi3_xml_terminal_t*)context->callbacks->calloc(1, sizeof(fmi3_xml_terminal_t));
+    if (!term) {
+        fmi3_xml_parse_fatal(context, "Could not allocate memory");
+        return NULL;
     }
-    free(termIcon);
+    return term;
+}
+
+static void fmi3_xml_free_terminal(jm_callbacks* callbacks, fmi3_xml_terminal_t* term) {
+    callbacks->free(term);
+}
+
+void fmi3_xml_free_terminals_and_icons(fmi3_xml_terminals_and_icons_t* termIcon) {
+    if (!termIcon) {return;}
+    jm_callbacks* callbacks = termIcon->callbacks;
+    if (termIcon) {
+        jm_vector_free_data(char)(&(termIcon->fmi3_xml_standard_version));
+
+        // free terminals
+        for (size_t i = 0; i < jm_vector_get_size(jm_voidp)(&(termIcon->terminalsOrigOrder)); i++) {
+            fmi3_xml_terminal_t* term = (fmi3_xml_terminal_t*) jm_vector_get_item(jm_voidp)(&(termIcon->terminalsOrigOrder), i);
+            fmi3_xml_free_terminal(callbacks, term);
+        }
+        jm_vector_free_data(jm_voidp)(&(termIcon->terminalsOrigOrder));
+        jm_vector_free_data(jm_named_ptr)(&termIcon->terminalsByName);
+
+        void(*cb_free)(const char*) = (void(*)(const char*))callbacks->free;
+
+        // free names set
+        jm_vector_foreach(jm_string)(&termIcon->names, cb_free);
+        jm_vector_free_data(jm_string)(&termIcon->names);
+    }
+    callbacks->free(termIcon);
 }
 
 int fmi3_xml_terminals_and_icons_set_model_description(fmi3_xml_terminals_and_icons_t* termIcon,
@@ -93,21 +128,62 @@ int fmi3_xml_handle_fmiTerminalsAndIcons(fmi3_xml_parser_context_t* context, con
 }
 
 int fmi3_xml_handle_Terminals(fmi3_xml_parser_context_t* context, const char* data) {
-    // fmi3_xml_terminals_and_icons_t* termIcon = context->termIcon;
+    fmi3_xml_terminals_and_icons_t* termIcon = context->termIcon;
     if (!data) {
         ;
+    } else { // post process <Terminals>
+        // Create terminalsByName
+        size_t nVars = jm_vector_get_size(jm_voidp)(&termIcon->terminalsOrigOrder);
+
+        jm_vector_resize(jm_named_ptr)(&termIcon->terminalsByName, nVars);  // Allocate a lot of memory to avoid resizing
+        jm_vector_resize(jm_named_ptr)(&termIcon->terminalsByName, 0);      // Make sure we start pushback at index=0
+        for (size_t i = 0; i < nVars; i++) {
+            jm_named_ptr named;
+            fmi3_xml_terminal_t* term = jm_vector_get_item(jm_voidp)(&termIcon->terminalsOrigOrder, i);
+            named.name = term->name;
+            named.ptr = term;
+            jm_vector_push_back(jm_named_ptr)(&termIcon->terminalsByName, named);
+        }
+        jm_vector_qsort(jm_named_ptr)(&termIcon->terminalsByName, jm_compare_named);
+    }
+    return 0;
+}
+
+int fmi3_xml_handle_Terminal(fmi3_xml_parser_context_t* context, const char* data) {
+    fmi3_xml_terminals_and_icons_t* termIcon = context->termIcon;
+    if (!data) {
+        fmi3_xml_terminal_t* term = fmi3_xml_alloc_terminal(context);
+        if (!term) {return -1;}
+
+        /* Add Terminal ptr to terminalAndIcons obj */
+        if (!jm_vector_push_back(jm_voidp)(&termIcon->terminalsOrigOrder, term)) {
+            fmi3_xml_parse_fatal(context, "Could not allocate memory");
+            return -1;
+        }
+        // Parse and set attributes
+
+        size_t bufIdx = 1;
+        // parse name
+        jm_vector(char)* bufName = fmi3_xml_reserve_parse_buffer(context, bufIdx++, 100);
+        if (!bufName) {return -1;}
+        if (fmi3_xml_parse_attr_as_string(context, fmi3_xml_elmID_Terminal, fmi_attr_id_name, 1 /* required */, bufName)) {return -1;}
+
+        /* Add the name to the terminalsAndIcons-wide set and retrieve the pointer */
+        if (jm_vector_get_size(char)(bufName) == 0) {
+            // FIXME: It doesn't work to get empty string from bufName since it's resized to 0
+            term->name = jm_string_set_put(&termIcon->names, "");
+        } else {
+            term->name = jm_string_set_put(&termIcon->names, jm_vector_get_itemp(char)(bufName, 0));
+        }
+
+        // TODO: Parse the remaining attributes
+
     } else { // post process <Terminals>
         ;
     }
     return 0;
 }
 
-int fmi3_xml_handle_Terminal(fmi3_xml_parser_context_t* context, const char* data) {
-    // fmi3_xml_terminals_and_icons_t* termIcon = context->termIcon;
-    if (!data) {
-        ;
-    } else { // post process <Terminals>
-        ;
-    }
-    return 0;
+int fmi3_xml_get_has_terminals_and_icons(fmi3_xml_terminals_and_icons_t* termIcon) {
+    return termIcon ? 1 : 0;
 }

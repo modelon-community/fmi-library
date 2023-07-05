@@ -138,8 +138,11 @@ fmi3_import_t* fmi3_import_parse_xml(
             fmi3_import_free(fmu);
             fmu = 0;
         }
-        // failure to parse terminalsAndIcons does not constitute parsing failure
-        fmi3_xml_parse_terminals_and_icons(fmu->termIcon, terminalsAndIconsPath, xml_callbacks);
+        if (fmi3_xml_parse_terminals_and_icons(fmu->termIcon, terminalsAndIconsPath, xml_callbacks)) {
+            // failure to parse terminalsAndIcons does not constitute parsing failure
+            fmi3_xml_free_terminals_and_icons(fmu->termIcon);
+            fmu->termIcon = NULL;
+        }
     }
     context->callbacks->free(terminalsAndIconsPath);
 

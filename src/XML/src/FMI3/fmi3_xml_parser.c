@@ -1500,11 +1500,10 @@ int fmi3_xml_parse_terminals_and_icons(fmi3_xml_terminals_and_icons_t* termIcon,
     if (file == NULL) {
         jm_log_info(context->callbacks, module, "Could not find or open terminalsAndIcons.xmxl: '%s'. Continuing.", filename);
         termIcon->status = 0; // TODO: Define enumerate for this
-        fmi3_xml_parse_free_context(context); // cleanup
-        return 0; // Terminals and Icons are optional, continue
+        fmi3_xml_parse_free_context(context);
+        return -1;
     }
-
-    // else: file at least exists, initialize parser & parse
+    // else: file exists and can be opened, initialize parser & parse
 
     context->termIcon = termIcon;
     if (fmi3_xml_alloc_parse_buffer(context, 16)) return -1;

@@ -14,7 +14,7 @@
 */
 
 /** \file fmi3_import_dimension_functions.h
-*  \brief Declares dimension struct and required methods
+*  \brief Declares dimension struct and required methods that must be shared between the Import and xml modules.
 */
 
 #ifndef FMI3_IMPORT_DIMENSION_FUNCTIONS_H_
@@ -26,12 +26,14 @@
 extern "C" {
 #endif
 
-// The type fmi3_xml_dimension_t and jm_vector function might already have been declared
+/**
+ * Make sure that the fmi3_xml_dimension_t and the jm_vector functions are declared.
+ */ 
 #ifndef FMI3_XML_DIMENSION_DECLARE_STRUCT
 #define FMI3_XML_DIMENSION_DECLARE_STRUCT
 
 typedef struct fmi3_xml_dimension_t fmi3_xml_dimension_t;
-typedef struct jm_vector(fmi3_xml_dimension_t) jm_vector(fmi3_xml_dimension_t); /* TODO: I believe this is causing warnings on gcc when we declare all the functions with the template (redefinition) */
+typedef struct jm_vector(fmi3_xml_dimension_t) jm_vector(fmi3_xml_dimension_t); 
 
 #endif
 

@@ -817,6 +817,7 @@ jm_vector(jm_voidp)* fmi3_xml_get_variables_vr_order(fmi3_xml_model_description_
 
 
 fmi3_xml_variable_t* fmi3_xml_get_variable_by_name(fmi3_xml_model_description_t* md, const char* name) {
+    if (!name) return NULL;
     jm_named_ptr key, *found;
     key.name = name;
     found = jm_vector_bsearch(jm_named_ptr)(&md->variablesByName, &key, jm_compare_named);

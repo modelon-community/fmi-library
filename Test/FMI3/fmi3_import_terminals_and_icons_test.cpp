@@ -27,10 +27,34 @@ TEST_CASE("Test parse terminals and icons") {
     REQUIRE(xml != nullptr);
     REQUIRE(fmi3_import_get_has_terminals_and_icons(xml) != 0);
 
+    SECTION("Testing getting terminal by name") {
+        fmi3_import_terminal_t* term;
+
+        // test the existing ones
+        term = fmi3_import_get_terminal_by_name(xml, "terminalA");
+        REQUIRE(term != nullptr);
+        REQUIRE_STREQ(fmi3_import_get_terminal_name(term), "terminalA");
+
+        term = fmi3_import_get_terminal_by_name(xml, "terminalB");
+        REQUIRE(term != nullptr);
+        REQUIRE_STREQ(fmi3_import_get_terminal_name(term), "terminalB");
+
+        term = fmi3_import_get_terminal_by_name(xml, "terminalC");
+        REQUIRE(term != nullptr);
+        REQUIRE_STREQ(fmi3_import_get_terminal_name(term), "terminalC");
+    }
+
+    SECTION("Testing edge cases of import functions; should not crash") {
+        REQUIRE(fmi3_import_get_terminal_by_name(xml, "terminalD") == nullptr); // terminal does not exists
+        REQUIRE(fmi3_import_get_terminal_by_name(nullptr, "terminalA") == nullptr); // NULL
+        REQUIRE(fmi3_import_get_terminal_by_name(xml, NULL) == nullptr); // NULL
+
+        REQUIRE(fmi3_import_get_terminal_name(nullptr) == nullptr);
+    }
+
     fmi3_import_free(xml);
 }
 
-// TODO: How to properly distinguish successful parsing of modelDescription vs terminalsAndIcons?
 TEST_CASE("No terminalsAndIcons.xml, test log message") {
     const char* xmldir = FMI3_TEST_XML_DIR "/terminals_and_icons/valid/no_terminalsAndIcons";
     fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);

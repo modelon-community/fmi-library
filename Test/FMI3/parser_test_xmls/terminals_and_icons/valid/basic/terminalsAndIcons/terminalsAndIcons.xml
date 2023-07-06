@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <fmiTerminalsAndIcons fmiVersion="3.0-alpha">
-  <Terminals>
-    <Terminal name="name1" matchingRule="bus" description="some description" terminalKind="abc" >
-    </Terminal>
-  </Terminals>
+    <Terminals>
+        <Terminal name="terminalA" matchingRule="bus" description="some description" terminalKind="abc"/>
+        <Terminal name="terminalC" matchingRule="bus" description="some description" terminalKind="abc"/>
+        <Terminal name="terminalB" matchingRule="bus" description="some description" terminalKind="abc"/>
+    </Terminals>
 </fmiTerminalsAndIcons>

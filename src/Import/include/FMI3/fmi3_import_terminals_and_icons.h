@@ -28,11 +28,25 @@
 extern "C" {
 #endif
 
+/** \brief Opaque Terminal type */
+typedef struct fmi3_xml_terminal_t fmi3_import_terminal_t;
+
 /**
- * \brief Returns non-zero if terminalsAndIcons.xml has been found and successfully parsed
+ * \brief Returns non-zero if terminalsAndIcons.xml has been found and successfully parsed.
  * @param fmu An fmu object as returned by fmi3_import_parse_xml().
  */
 FMILIB_EXPORT int fmi3_import_get_has_terminals_and_icons(fmi3_import_t* fmu);
+
+/**
+    \brief Get terminal by terminal name.
+    @param fmu - An fmu object as returned by fmi3_import_parse_xml().
+    @param name - terminal name
+    @return terminal pointer. NULL if terminal with given name cannot be found.
+ */
+FMILIB_EXPORT fmi3_import_terminal_t* fmi3_import_get_terminal_by_name(fmi3_import_t* fmu, const char* name);
+
+/** \brief Get the variable name */
+FMILIB_EXPORT const char* fmi3_import_get_terminal_name(fmi3_import_terminal_t* term);
 
 
 #ifdef __cplusplus

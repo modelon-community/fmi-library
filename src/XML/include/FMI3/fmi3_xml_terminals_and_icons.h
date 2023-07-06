@@ -58,6 +58,8 @@ int fmi3_xml_terminals_and_icons_set_model_description(fmi3_xml_terminals_and_ic
                                                        fmi3_xml_model_description_t* md);
 
 int fmi3_xml_get_has_terminals_and_icons(fmi3_xml_terminals_and_icons_t* termIcon);
+fmi3_xml_terminal_t* fmi3_xml_get_terminal_by_name(fmi3_xml_terminals_and_icons_t* termIcon, const char* name);
+const char* fmi3_xml_get_terminal_name(fmi3_xml_terminal_t* term);
 
 #ifdef __cplusplus
 }

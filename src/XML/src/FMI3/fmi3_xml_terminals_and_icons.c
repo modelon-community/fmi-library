@@ -187,3 +187,16 @@ int fmi3_xml_handle_Terminal(fmi3_xml_parser_context_t* context, const char* dat
 int fmi3_xml_get_has_terminals_and_icons(fmi3_xml_terminals_and_icons_t* termIcon) {
     return termIcon ? 1 : 0;
 }
+
+fmi3_xml_terminal_t* fmi3_xml_get_terminal_by_name(fmi3_xml_terminals_and_icons_t* termIcon, const char* name){
+    if (!name) return NULL;
+    jm_named_ptr key, *found;
+    key.name = name;
+    found = jm_vector_bsearch(jm_named_ptr)(&termIcon->terminalsByName, &key, jm_compare_named);
+    if (!found) return NULL;
+    return found->ptr;
+}
+
+const char* fmi3_xml_get_terminal_name(fmi3_xml_terminal_t* term) {
+    return term ? term->name : NULL;
+}

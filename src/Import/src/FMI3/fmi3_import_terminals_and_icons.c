@@ -32,3 +32,11 @@
 int fmi3_import_get_has_terminals_and_icons(fmi3_import_t* fmu) {
     return fmu ? fmi3_xml_get_has_terminals_and_icons(fmu->termIcon) : 0;
 }
+
+fmi3_import_terminal_t* fmi3_import_get_terminal_by_name(fmi3_import_t* fmu, const char* name){
+    return fmu ? fmi3_xml_get_terminal_by_name(fmu->termIcon, name) : NULL;
+}
+
+const char* fmi3_import_get_terminal_name(fmi3_import_terminal_t* term){
+    return term ? fmi3_xml_get_terminal_name(term) : NULL;
+}

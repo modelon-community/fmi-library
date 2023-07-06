@@ -183,7 +183,10 @@ typedef enum fmi3_xml_attr_enu_t {
     EXPAND_XML_ELMNAME(Enumeration) \
     EXPAND_XML_ELMNAME(fmiTerminalsAndIcons) \
     EXPAND_XML_ELMNAME(Terminals) \
-    EXPAND_XML_ELMNAME(Terminal)
+    EXPAND_XML_ELMNAME(Terminal) \
+    EXPAND_XML_ELMNAME(TerminalMemberVariable) \
+    EXPAND_XML_ELMNAME(TerminalStreamMemberVariable) \
+    EXPAND_XML_ELMNAME(TerminalGraphicalRepresentation)
 
 // TODO: Should terminals and icons have its own list?
 

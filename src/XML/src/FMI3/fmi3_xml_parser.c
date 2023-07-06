@@ -125,12 +125,15 @@ const char *fmi3_xmlAttrNames[fmi3_xml_attr_number] = {
 #define fmi3_xml_scheme_VariableTool              {fmi3_xml_elmID_none,       fmi3_xml_elmID_Annotations,          0,       1}
 
 // Terminals and Icons
-#define fmi3_xml_scheme_fmiTerminalsAndIcons      {fmi3_xml_elmID_none,       fmi3_xml_elmID_none,                 0,       0}
+#define fmi3_xml_scheme_fmiTerminalsAndIcons            {fmi3_xml_elmID_none,       fmi3_xml_elmID_none,                 0,       0}
 
-#define fmi3_xml_scheme_GraphicalRepresentation   {fmi3_xml_elmID_none,       fmi3_xml_elmID_fmiTerminalsAndIcons, 0,       0} // TODO
-#define fmi3_xml_scheme_Terminals                 {fmi3_xml_elmID_none,       fmi3_xml_elmID_fmiTerminalsAndIcons, 1,       0}
-#define fmi3_xml_scheme_Terminal                  {fmi3_xml_elmID_none,       fmi3_xml_elmID_Terminals,            0,       1}
-#define fmi3_xml_scheme_TAI_Annotations           {fmi3_xml_elmID_none,       fmi3_xml_elmID_fmiTerminalsAndIcons, 2,       0} // TODO
+#define fmi3_xml_scheme_Terminals                       {fmi3_xml_elmID_none,       fmi3_xml_elmID_fmiTerminalsAndIcons, 1,       0}
+#define fmi3_xml_scheme_Terminal                        {fmi3_xml_elmID_none,       fmi3_xml_elmID_Terminals,            0,       1}
+#define fmi3_xml_scheme_TerminalMemberVariable          {fmi3_xml_elmID_none,       fmi3_xml_elmID_Terminal,             0,       1}
+#define fmi3_xml_scheme_TerminalStreamMemberVariable    {fmi3_xml_elmID_none,       fmi3_xml_elmID_Terminal,             1,       1}
+// TODO: How to handle nested Terminals?
+#define fmi3_xml_scheme_TerminalGraphicalRepresentation {fmi3_xml_elmID_none,       fmi3_xml_elmID_Terminal,             3,       0}
+
 
 // Not used except for setting up the element handler framework:
 #define fmi3_xml_scheme_Start                     {fmi3_xml_elmID_none,       fmi3_xml_elmID_none,                 1,       0}

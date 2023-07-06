@@ -192,6 +192,36 @@ int fmi3_xml_handle_Terminal(fmi3_xml_parser_context_t* context, const char* dat
     return 0;
 }
 
+int fmi3_xml_handle_TerminalMemberVariable(fmi3_xml_parser_context_t* context, const char* data) {
+    // TODO: Implement
+    if (!data) {
+        ;
+    } else {
+        ;
+    }
+    return 0;
+}
+
+int fmi3_xml_handle_TerminalStreamMemberVariable(fmi3_xml_parser_context_t* context, const char* data) {
+    // TODO: Implement
+    if (!data) {
+        ;
+    } else {
+        ;
+    }
+    return 0;
+}
+
+int fmi3_xml_handle_TerminalGraphicalRepresentation(fmi3_xml_parser_context_t* context, const char* data) {
+    // TODO: Implement
+    if (!data) {
+        ;
+    } else {
+        ;
+    }
+    return 0;
+}
+
 int fmi3_xml_get_has_terminals_and_icons(fmi3_xml_terminals_and_icons_t* termIcon) {
     return termIcon ? 1 : 0;
 }

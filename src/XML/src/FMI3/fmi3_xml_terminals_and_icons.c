@@ -141,7 +141,18 @@ int fmi3_xml_handle_Terminals(fmi3_xml_parser_context_t* context, const char* da
         }
         jm_vector_qsort(jm_named_ptr)(&termIcon->terminalsByName, jm_compare_named);
 
-        // TODO: Error check, Terminal names are unique
+        // Error check, Terminal names are must be unique
+        if (nVars > 0) {  // nVars=0 would cause integer overflow in the loop condition
+            for (size_t i = 0; i < nVars-1; ++i) {
+                const char* name1 = jm_vector_get_item(jm_named_ptr)(&termIcon->terminalsByName, i).name;
+                const char* name2 = jm_vector_get_item(jm_named_ptr)(&termIcon->terminalsByName, i+1).name;
+                if(strcmp(name1, name2) == 0) {
+                    fmi3_xml_parse_fatal(context, 
+                            "Two terminals with the same name '%s' found. This is not allowed.", name1);
+                    return -1;
+                }
+            }
+        }
     }
     return 0;
 }

@@ -1499,7 +1499,6 @@ int fmi3_xml_parse_terminals_and_icons(fmi3_xml_terminals_and_icons_t* termIcon,
     file = fopen(filename, "rb");
     if (file == NULL) {
         jm_log_info(context->callbacks, module, "Could not find or open terminalsAndIcons.xmxl: '%s'. Continuing.", filename);
-        termIcon->status = 0; // TODO: Define enumerate for this
         fmi3_xml_parse_free_context(context);
         return -1;
     }
@@ -1514,7 +1513,7 @@ int fmi3_xml_parse_terminals_and_icons(fmi3_xml_terminals_and_icons_t* termIcon,
     }
     context->skipElementCnt = 0;
     jm_stack_init(int)(&context->elmStack, context->callbacks);
-    jm_vector_init(char)(&context->elmData,           0, context->callbacks);
+    jm_vector_init(char)(&context->elmData, 0, context->callbacks);
 
     context->lastSiblingElemId = fmi3_xml_elmID_none;
     context->currentElmID = fmi3_xml_elmID_none;
@@ -1574,8 +1573,7 @@ int fmi3_xml_parse_terminals_and_icons(fmi3_xml_terminals_and_icons_t* termIcon,
         return -1;
     }
 
-    termIcon->status = 0;
-    context->termIcon = 0;
+    context->termIcon = NULL;
     fmi3_xml_parse_free_context(context);
 
     return 0;

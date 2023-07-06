@@ -16,18 +16,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 
-// TODO: Cleanup
-// #include <JM/jm_named_ptr.h>
-// #include <FMI3/fmi3_types.h>
-// #include <FMI3/fmi3_function_types.h>
-// #include <FMI3/fmi3_enums.h>
-// #include <FMI3/fmi3_capi.h>
-
 #include "fmi3_import_impl.h"
-// #include "fmi3_import_variable_list_impl.h"
-// #include "fmi3_import_priv.h"
-
-// static const char* module = "FMILIB";
 
 int fmi3_import_get_has_terminals_and_icons(fmi3_import_t* fmu) {
     return fmu ? fmi3_xml_get_has_terminals_and_icons(fmu->termIcon) : 0;

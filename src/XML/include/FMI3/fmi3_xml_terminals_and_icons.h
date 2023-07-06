@@ -26,9 +26,6 @@
 #include <JM/jm_callbacks.h>
 #include <JM/jm_named_ptr.h>
 #include <FMI/fmi_xml_context.h>
-// #include <FMI3/fmi3_types.h>
-// #include <FMI3/fmi3_enums.h>
-// #include <FMI3/fmi3_xml_callbacks.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -38,16 +35,16 @@ typedef struct fmi3_xml_terminals_and_icons_t fmi3_xml_terminals_and_icons_t;
 typedef struct fmi3_xml_terminal_t fmi3_xml_terminal_t;
 
 fmi3_xml_terminals_and_icons_t* fmi3_xml_allocate_terminals_and_icons(jm_callbacks* callbacks);
-void fmi3_xml_free_terminals_and_icons(fmi3_xml_terminals_and_icons_t* tai);
+void fmi3_xml_free_terminals_and_icons(fmi3_xml_terminals_and_icons_t* termIcon);
 
 /**
    \brief Parse XML file
    Repeated calls invalidate the data structures created with the previous call to fmiParseXML,
    i.e., fmiClearModelDescrition is automatically called before reading in the new file.
 
-    @param termIcon TODO.
-    @param fileName TODO.
-    @param xml_callbacks TODO.
+    @param termIcon A terminalsAndIcons object as returned by #fmi3_xml_allocate_terminals_and_icons.
+    @param fileName A name (full path) of the terminalsAndIcons.xml file.
+    @param xml_callbacks Callbacks to use for processing annotations (may be NULL).
    @return 0 if parsing was successful. Non-zero value indicates an error.
 */
 int fmi3_xml_parse_terminals_and_icons(fmi3_xml_terminals_and_icons_t* termIcon,

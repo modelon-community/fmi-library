@@ -22,7 +22,6 @@
 #include <JM/jm_vector.h>
 #include <JM/jm_named_ptr.h>
 #include <JM/jm_string_set.h>
-// #include <FMI3/fmi3_xml_model_description.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -31,16 +30,13 @@ extern "C" {
 struct fmi3_xml_terminals_and_icons_t {
     jm_callbacks* callbacks;
 
-    /* used for cross-referencing */
+    /* used for cross-referencing, should be used as read-only */
     fmi3_xml_model_description_t* md; 
-    // TODO: Use an enum?
-    int status;
 
     jm_vector(char) fmi3_xml_standard_version;
-    // TODO: GraphicalRepresentation
+
     jm_vector(jm_voidp) terminalsOrigOrder;
     jm_vector(jm_named_ptr) terminalsByName;
-    // TODO: Annotations
 
     jm_string_set names; // storage for all terminal names
 };

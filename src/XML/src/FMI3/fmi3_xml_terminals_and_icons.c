@@ -18,7 +18,6 @@
 
 #include "JM/jm_named_ptr.h"
 #include "fmi3_xml_parser.h"
-// #include "fmi3_xml_terminals_and_icons.h"
 #include "fmi3_xml_terminals_and_icons_impl.h"
 
 static const char* module = "FMI3XML";
@@ -31,7 +30,6 @@ fmi3_xml_terminals_and_icons_t* fmi3_xml_allocate_terminals_and_icons(jm_callbac
         jm_log_fatal(cb, module, "Could not allocate memory");
         return 0;
     }
-    // TODO: tidy up a little here
     termIcon->callbacks = cb;
     termIcon->md = NULL;
 
@@ -41,9 +39,6 @@ fmi3_xml_terminals_and_icons_t* fmi3_xml_allocate_terminals_and_icons(jm_callbac
     jm_vector_init(jm_named_ptr)(&termIcon->terminalsByName, 0, cb);
 
     jm_vector_init(jm_string)(&termIcon->names, 0, cb);
-    
-
-    termIcon->status = -1; // TODO
 
     return termIcon;
 }
@@ -145,6 +140,8 @@ int fmi3_xml_handle_Terminals(fmi3_xml_parser_context_t* context, const char* da
             jm_vector_push_back(jm_named_ptr)(&termIcon->terminalsByName, named);
         }
         jm_vector_qsort(jm_named_ptr)(&termIcon->terminalsByName, jm_compare_named);
+
+        // TODO: Error check, Terminal names are unique
     }
     return 0;
 }
@@ -178,7 +175,7 @@ int fmi3_xml_handle_Terminal(fmi3_xml_parser_context_t* context, const char* dat
 
         // TODO: Parse the remaining attributes
 
-    } else { // post process <Terminals>
+    } else { // post process <Terminal>
         ;
     }
     return 0;

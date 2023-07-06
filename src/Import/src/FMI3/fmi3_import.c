@@ -54,8 +54,6 @@ fmi3_import_t* fmi3_import_allocate(jm_callbacks* cb) {
     fmu->callbacks = cb;
     fmu->capi = NULL;
 
-    // TODO: make something more compact for all these freeing steps
-
     fmu->md = fmi3_xml_allocate_model_description(cb);
     if (!fmu->md) {
         cb->free(fmu);

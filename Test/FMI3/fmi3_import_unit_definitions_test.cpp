@@ -29,7 +29,7 @@
 
 static void test_unit_basics(fmi3_import_t* xml) {
     fmi3_import_unit_definition_list_t* udList;
-    udList = fmi3_import_get_unit_definitions(xml);
+    udList = fmi3_import_get_unit_definition_list(xml);
     REQUIRE(udList != nullptr);
     REQUIRE(fmi3_import_get_unit_definitions_number(udList) == 1); // there is exactly one unit definition
 

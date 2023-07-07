@@ -31,7 +31,7 @@
 
 static int G_nErrors; /* global used to count the number of errors reported to the logger during parsing - reset before use! */
 
-static fmi3_import_variable_typedef_t* get_typedef_by_name(fmi3_import_type_definitions_t* tds, const char* name) {
+static fmi3_import_variable_typedef_t* get_typedef_by_name(fmi3_import_type_definition_list_t* tds, const char* name) {
     size_t nTds = fmi3_import_get_type_definition_list_size(tds);
     fmi3_import_variable_typedef_t *td;
     for (size_t i = 0; i < nTds; i++) {
@@ -115,7 +115,7 @@ static int test_type2(fmi3_import_t *xml)
 static int test_quantity_default(fmi3_import_t* xml)
 {
     fmi3_import_variable_typedef_t* td;
-    fmi3_import_type_definitions_t* tds;
+    fmi3_import_type_definition_list_t* tds;
     unsigned int n_tds;
     unsigned int i; /* td_idx */
     const char* tname;
@@ -752,7 +752,7 @@ static int vcWithStartVariableUInt8(fmi3_import_variable_t* v) {
 }
 
 /* return value: exit code */
-static int get_typedef_by_name(fmi3_import_type_definitions_t* tds, fmi2_string_t name, fmi3_import_variable_typedef_t **t) {
+static int get_typedef_by_name(fmi3_import_type_definition_list_t* tds, fmi2_string_t name, fmi3_import_variable_typedef_t **t) {
     unsigned int nTds;
     fmi3_import_variable_typedef_t *td;
     unsigned int i;
@@ -776,7 +776,7 @@ static int test_typedef_intXX(fmi3_import_t *xml, fmi2_string_t typeName, int (*
 {
     fmi3_import_variable_typedef_t *t;
     fmi3_import_int_typedef_t* intType;
-    fmi3_import_type_definitions_t* tds;
+    fmi3_import_type_definition_list_t* tds;
     int res; /* result from test-function */
 
     tds = fmi3_import_get_type_definitions(xml);
@@ -1058,7 +1058,7 @@ TEST_CASE("TypeDefinitions: FloatXX and IntXX") {
 }
 
 static void require_variable_has_declared_type(fmi3_import_t* xml, const char* varName, const char* tdName) {
-    fmi3_import_type_definitions_t* tds; 
+    fmi3_import_type_definition_list_t* tds; 
     fmi3_import_variable_t* v;
     fmi3_import_variable_typedef_t *tdVar, *tdByName;
 
@@ -1133,7 +1133,7 @@ TEST_CASE("TypeDefinitions: Binary") {
     //--------------------------------------------------------------------------
     // Test attributes for TypeDefinitions
     //--------------------------------------------------------------------------
-    fmi3_import_type_definitions_t* tds; 
+    fmi3_import_type_definition_list_t* tds; 
     fmi3_import_binary_typedef_t *tdMinimal, *tdMimeType, *tdAllAttr;
 
     tds = fmi3_import_get_type_definitions(xml);

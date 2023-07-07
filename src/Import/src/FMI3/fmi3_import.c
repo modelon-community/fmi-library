@@ -274,7 +274,7 @@ double fmi3_import_get_default_experiment_step(fmi3_import_t* fmu) {
     return fmi3_xml_get_default_experiment_step(fmu->md);
 }
 
-fmi3_import_unit_definition_list_t* fmi3_import_get_unit_definitions(fmi3_import_t* fmu) {
+fmi3_import_unit_definition_list_t* fmi3_import_get_unit_definition_list(fmi3_import_t* fmu) {
     if (!fmi3_import_check_has_FMU(fmu)) return NULL;
 
     return fmi3_xml_get_unit_definitions(fmu->md);
@@ -284,7 +284,7 @@ unsigned int  fmi3_import_get_unit_definitions_number(fmi3_import_unit_definitio
     return fmi3_xml_get_unit_definitions_number(ud);
 }
 
-fmi3_import_type_definitions_t* fmi3_import_get_type_definitions(fmi3_import_t* fmu) {
+fmi3_import_type_definition_list_t* fmi3_import_get_type_definitions(fmi3_import_t* fmu) {
     if (!fmi3_import_check_has_FMU(fmu)) return NULL;
 
     return fmi3_xml_get_type_definitions(fmu->md);

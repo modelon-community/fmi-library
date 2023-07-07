@@ -447,7 +447,7 @@ TEST_CASE("Alias variables") {
     REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
     
     // Get display unit that we expect some tests will reference:
-    fmi3_import_unit_definition_list_t* uds = fmi3_import_get_unit_definitions(fmu);
+    fmi3_import_unit_definition_list_t* uds = fmi3_import_get_unit_definition_list(fmu);
     fmi3_import_unit_t* degK = fmi3_import_get_unit(uds, 0);
     fmi3_import_display_unit_t* degC = fmi3_import_get_unit_display_unit(degK, 0);
     REQUIRE_STREQ(fmi3_import_get_display_unit_name(degC), "degC");

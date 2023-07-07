@@ -386,7 +386,7 @@ static void test_parse_bouncingball(const char* xmldir, bool expectParseFailure)
         }
     }
     {
-        fmi3_import_unit_definition_list_t* ud = fmi3_import_get_unit_definitions(fmu);
+        fmi3_import_unit_definition_list_t* ud = fmi3_import_get_unit_definition_list(fmu);
         if (ud) {
             unsigned  i, nu = fmi3_import_get_unit_definitions_number(ud);
             printf("There are %d different units used \n", nu);
@@ -411,7 +411,7 @@ static void test_parse_bouncingball(const char* xmldir, bool expectParseFailure)
             printf("Error getting unit definitions (%s)\n", fmi3_import_get_last_error(fmu));
     }
     {
-        fmi3_import_type_definitions_t* td = fmi3_import_get_type_definitions(fmu);
+        fmi3_import_type_definition_list_t* td = fmi3_import_get_type_definitions(fmu);
         if (td) {
             {
                 unsigned i, ntd = fmi3_import_get_type_definition_list_size(td);

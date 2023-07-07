@@ -14,7 +14,7 @@
 # CMake 3.1.3 or later is required to build Expat (as ExternalProject). However,
 # keeping 2.8.6 on the FMIL main project for now since updating causes issues
 # with CMP0026 (and more).
-cmake_minimum_required (VERSION 2.8.6 FATAL_ERROR)
+cmake_minimum_required(VERSION 2.8.6 FATAL_ERROR)
 
 # Prohibit in-source build
 if("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")

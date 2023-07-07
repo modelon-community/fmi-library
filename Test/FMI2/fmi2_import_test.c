@@ -1,7 +1,8 @@
-/*
+ /*
     Copyright (C) 2012 Modelon AB
 
     This program is free software: you can redistribute it and/or modify
+    it under the terms of the BSD style license.
     it under the terms of the BSD style license.
 
     This program is distributed in the hope that it will be useful,
@@ -26,9 +27,11 @@
 /* Logger function used by the FMU internally */
 static void fmi2logger(fmi2_component_environment_t env, fmi2_string_t instanceName, fmi2_status_t status, fmi2_string_t category, fmi2_string_t message, ...)
 {
+    int len;
     char msg[BUFFER];
     va_list argp;    
     va_start(argp, message);
+    len = jm_vsnprintf(msg, BUFFER, message, argp);
     int len = jm_vsnprintf(msg, BUFFER, message, argp);
     printf("fmiStatus = %s;  %s (%s): %s\n", fmi2_status_to_string(status), instanceName, category, msg);
 }

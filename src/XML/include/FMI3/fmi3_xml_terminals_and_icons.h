@@ -17,8 +17,6 @@
 *  \brief Public interface to the FMI XML C-library.
 */
 
-// TODO: Add to doxygen & make it look nice
-
 #ifndef FMI3_XML_TERMINALS_AND_ICONS_H_
 #define FMI3_XML_TERMINALS_AND_ICONS_H_
 
@@ -30,6 +28,13 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/**
+    \addtogroup fmi3_xml
+    @{
+    \addtogroup fmi3_xml_terminals_and_icons Functions for handling terminals and icons
+    @{
+*/
 
 typedef struct fmi3_xml_terminals_and_icons_t fmi3_xml_terminals_and_icons_t;
 typedef struct fmi3_xml_terminal_t fmi3_xml_terminal_t;
@@ -45,7 +50,7 @@ void fmi3_xml_free_terminals_and_icons(fmi3_xml_terminals_and_icons_t* termIcon)
     @param termIcon A terminalsAndIcons object as returned by #fmi3_xml_allocate_terminals_and_icons.
     @param fileName A name (full path) of the terminalsAndIcons.xml file.
     @param xml_callbacks Callbacks to use for processing annotations (may be NULL).
-   @return 0 if parsing was successful. Non-zero value indicates an error.
+    @return 0 if parsing was successful. Non-zero value indicates an error.
 */
 int fmi3_xml_parse_terminals_and_icons(fmi3_xml_terminals_and_icons_t* termIcon,
                                        const char* fileName,
@@ -57,6 +62,8 @@ int fmi3_xml_terminals_and_icons_set_model_description(fmi3_xml_terminals_and_ic
 int fmi3_xml_get_has_terminals_and_icons(fmi3_xml_terminals_and_icons_t* termIcon);
 fmi3_xml_terminal_t* fmi3_xml_get_terminal_by_name(fmi3_xml_terminals_and_icons_t* termIcon, const char* name);
 const char* fmi3_xml_get_terminal_name(fmi3_xml_terminal_t* term);
+
+/** @} */
 
 #ifdef __cplusplus
 }

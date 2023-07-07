@@ -109,7 +109,6 @@ static int test_modelstructure_valid(fmi2_import_t* xml)
 
 int main(int argc, char **argv)
 {
-    char* xml_dir      = NULL;
     int ret = 0;
 
     if (argc != 2) {

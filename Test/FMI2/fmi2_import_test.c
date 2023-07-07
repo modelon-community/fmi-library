@@ -29,7 +29,7 @@ static void fmi2logger(fmi2_component_environment_t env, fmi2_string_t instanceN
     char msg[BUFFER];
     va_list argp;    
     va_start(argp, message);
-    int len = jm_vsnprintf(msg, BUFFER, message, argp);
+    jm_vsnprintf(msg, BUFFER, message, argp);
     printf("fmiStatus = %s;  %s (%s): %s\n", fmi2_status_to_string(status), instanceName, category, msg);
 }
 

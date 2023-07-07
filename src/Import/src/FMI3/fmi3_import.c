@@ -284,7 +284,7 @@ size_t  fmi3_import_get_unit_definition_list_size(fmi3_import_unit_definition_li
     return fmi3_xml_get_unit_definition_list_size(ud);
 }
 
-fmi3_import_type_definition_list_t* fmi3_import_get_type_definitions(fmi3_import_t* fmu) {
+fmi3_import_type_definition_list_t* fmi3_import_get_type_definition_list(fmi3_import_t* fmu) {
     if (!fmi3_import_check_has_FMU(fmu)) return NULL;
 
     return fmi3_xml_get_type_definitions(fmu->md);

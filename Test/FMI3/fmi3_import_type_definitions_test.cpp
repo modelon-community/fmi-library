@@ -116,14 +116,14 @@ static int test_quantity_default(fmi3_import_t* xml)
 {
     fmi3_import_variable_typedef_t* td;
     fmi3_import_type_definition_list_t* tds;
-    unsigned int n_tds;
+    size_t n_tds;
     unsigned int i; /* td_idx */
     const char* tname;
     int nBaseTypes = 13; /* intXX: 8, floatXX: 2, string, boolean, enum */
     int nTdsTested = 0;
     const char* tdPrefix = "td_minimal_";
     
-    tds = fmi3_import_get_type_definitions(xml);
+    tds = fmi3_import_get_type_definition_list(xml);
     REQUIRE(tds != nullptr);
     n_tds = fmi3_import_get_type_definition_list_size(tds);
 
@@ -779,7 +779,7 @@ static int test_typedef_intXX(fmi3_import_t *xml, fmi2_string_t typeName, int (*
     fmi3_import_type_definition_list_t* tds;
     int res; /* result from test-function */
 
-    tds = fmi3_import_get_type_definitions(xml);
+    tds = fmi3_import_get_type_definition_list(xml);
     REQUIRE(tds != nullptr);
 
     res = get_typedef_by_name(tds, typeName, &t);
@@ -1062,7 +1062,7 @@ static void require_variable_has_declared_type(fmi3_import_t* xml, const char* v
     fmi3_import_variable_t* v;
     fmi3_import_variable_typedef_t *tdVar, *tdByName;
 
-    tds = fmi3_import_get_type_definitions(xml);
+    tds = fmi3_import_get_type_definition_list(xml);
     REQUIRE(tds != nullptr);
 
     v = fmi3_import_get_variable_by_name(xml, varName);
@@ -1136,7 +1136,7 @@ TEST_CASE("TypeDefinitions: Binary") {
     fmi3_import_type_definition_list_t* tds; 
     fmi3_import_binary_typedef_t *tdMinimal, *tdMimeType, *tdAllAttr;
 
-    tds = fmi3_import_get_type_definitions(xml);
+    tds = fmi3_import_get_type_definition_list(xml);
     REQUIRE(tds != nullptr);
     
     tdMinimal  = fmi3_import_get_type_as_binary(get_typedef_by_name(tds, "td_minimal"));
@@ -1274,10 +1274,10 @@ TEST_CASE("TypeDefinitions: Clock") {
     //--------------------------------------------------------------------------
     // Test attributes for TypeDefinitions
     //--------------------------------------------------------------------------
-    fmi3_import_type_definitions_t* tds; 
+    fmi3_import_type_definition_list_t* tds; 
     fmi3_import_clock_typedef_t *tdMinimal, *tdResolution, *tdAllAttr;
 
-    tds = fmi3_import_get_type_definitions(xml);
+    tds = fmi3_import_get_type_definition_list(xml);
     REQUIRE(tds != nullptr);
     
     tdMinimal    = fmi3_import_get_type_as_clock(get_typedef_by_name(tds, "td_minimal"));

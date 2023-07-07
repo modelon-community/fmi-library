@@ -341,7 +341,7 @@ fmi3_xml_unit_definition_list_t* fmi3_xml_get_unit_definition_list(fmi3_xml_mode
     return (fmi3_xml_unit_definition_list_t*)(&md->unitDefinitions);
 }
 
-unsigned int  fmi3_xml_get_unit_definition_list_size(fmi3_xml_unit_definition_list_t* ud) {
+size_t fmi3_xml_get_unit_definition_list_size(fmi3_xml_unit_definition_list_t* ud) {
     if(!ud) {
         assert(ud && "Unit definitions cannot be NULL");
         return 0;

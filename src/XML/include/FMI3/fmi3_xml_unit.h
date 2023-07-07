@@ -38,7 +38,7 @@ extern "C" {
 /** \brief Get a list of all the unit definitions */
 fmi3_xml_unit_definition_list_t* fmi3_xml_get_unit_definition_list(fmi3_xml_model_description_t* md);
 size_t fmi3_xml_get_unit_definition_list_size(fmi3_xml_unit_definition_list_t* ud);
-fmi3_xml_unit_t* fmi3_xml_get_unit(fmi3_xml_unit_definition_list_t* ud, unsigned int index);
+fmi3_xml_unit_t* fmi3_xml_get_unit(fmi3_xml_unit_definition_list_t* ud, size_t index);
 
 const char* fmi3_xml_get_unit_name(fmi3_xml_unit_t* u);
 unsigned int fmi3_xml_get_unit_display_unit_number(fmi3_xml_unit_t* u);

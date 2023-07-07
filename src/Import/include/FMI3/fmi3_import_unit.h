@@ -46,16 +46,16 @@ typedef struct fmi3_xml_unit_definition_list_t fmi3_import_unit_definition_list_
 /**@} */
 
 /** \brief Get the number of unit definitions. */
-FMILIB_EXPORT unsigned int fmi3_import_get_unit_definition_list_size(fmi3_import_unit_definition_list_t* ud);
+FMILIB_EXPORT size_t fmi3_import_get_unit_definition_list_size(fmi3_import_unit_definition_list_t* ud);
 
 /** \brief Get a unit definition */
-FMILIB_EXPORT fmi3_import_unit_t* fmi3_import_get_unit(fmi3_import_unit_definition_list_t* ud, unsigned int index);
+FMILIB_EXPORT fmi3_import_unit_t* fmi3_import_get_unit(fmi3_import_unit_definition_list_t* ud, size_t index);
 
 /** \brief Get a unit name */
 FMILIB_EXPORT const char* fmi3_import_get_unit_name(fmi3_import_unit_t* u);
 
 /** \brief Get the number of display units associated with this unit */
-FMILIB_EXPORT unsigned int fmi3_import_get_unit_display_unit_list_size(fmi3_import_unit_t* u);
+FMILIB_EXPORT size_t fmi3_import_get_unit_display_unit_list_size(fmi3_import_unit_t* u);
 
 /**
     \brief Get fmi3_SI_base_units_Num SI base units exponents associated with the unit.

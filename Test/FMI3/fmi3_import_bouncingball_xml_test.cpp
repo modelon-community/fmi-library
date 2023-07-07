@@ -411,7 +411,7 @@ static void test_parse_bouncingball(const char* xmldir, bool expectParseFailure)
             printf("Error getting unit definitions (%s)\n", fmi3_import_get_last_error(fmu));
     }
     {
-        fmi3_import_type_definition_list_t* td = fmi3_import_get_type_definitions(fmu);
+        fmi3_import_type_definition_list_t* td = fmi3_import_get_type_definition_list(fmu);
         if (td) {
             {
                 unsigned i, ntd = fmi3_import_get_type_definition_list_size(td);

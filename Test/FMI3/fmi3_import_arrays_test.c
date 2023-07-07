@@ -119,7 +119,7 @@ static int test_array_ok_64(fmi3_import_t* xml, char* varName, fmi3_float64_t* s
     nDims = fmi3_import_get_dimension_list_size(dimList);
 
     /* check num dimensions */
-    ASSERT_MSG_GOTO(cleanup1, nDims == nDimsExp, "incorrect num of dims, exp: %lu, act: %d", nDimsExp, nDims);
+    ASSERT_MSG_GOTO(cleanup1, nDims == nDimsExp, "incorrect num of dims, exp: %lu, act: %lu", nDimsExp, nDims);
 
     /* check resolved dimension start sizes */
     ASSERT_MSG_GOTO(cleanup1, !get_dimensions_start_sizes(xml, cb, dimList, &dimSizes), "failed to get dimension start sizes"); /* allocates memory */
@@ -237,18 +237,18 @@ static int test_array_ok_32(fmi3_import_t* xml, char* varName, fmi3_float32_t* s
     nDims = fmi3_import_get_dimension_list_size(dimList);
 
     /* check num dimensions */
-    ASSERT_MSG_GOTO(cleanup1, nDims == nDimsExp, "incorrect num of dims, exp: %d, act: %d", nDimsExp, nDims);
+    ASSERT_MSG_GOTO(cleanup1, nDims == nDimsExp, "incorrect num of dims, exp: %lu, act: %lu", nDimsExp, nDims);
 
     /* check resolved dimension start sizes */
     ASSERT_MSG_GOTO(cleanup1, !get_dimensions_start_sizes(xml, cb, dimList, &dimSizes), "failed to get dimension start sizes"); /* allocates memory */
     for (i = 0; i < nDims; i++) {
-        ASSERT_MSG_GOTO(cleanup1, dimSizes[i] == dimSizesExp[i], "incorrect dim size, idx: %d, exp: %d, act: %d", i, dimSizes[i], dimSizesExp[i]);
+        ASSERT_MSG_GOTO(cleanup1, dimSizes[i] == dimSizesExp[i], "incorrect dim size, idx: %d, exp: %lu, act: %lu", i, dimSizes[i], dimSizesExp[i]);
     }
 
     /* check num start values */
     starts = fmi3_import_get_float32_variable_start_array(fmi3_import_get_variable_as_float32(v));
     arrSize = get_array_size(dimSizes, nDims);
-    ASSERT_MSG_GOTO(cleanup1, arrSize == arrSizeExp, "incorrect array size, exp: %d, act: %d", arrSize, arrSizeExp);
+    ASSERT_MSG_GOTO(cleanup1, arrSize == arrSizeExp, "incorrect array size, exp: %lu, act: %lu", arrSize, arrSizeExp);
 
     /* check start values */
     for (i = 0; i < arrSize; i++) {
@@ -375,11 +375,11 @@ static int test_array8_32_can_find_index_and_vr_of_dimensions(fmi3_import_t* xml
     fmi3_import_variable_t* v;
     fmi3_float32_t startsExp[2][2][2] = {{{1.0F, 2.0F}, {3.0F, 4.0F}}, {{5.0F, 6.0F}, {7.0F, 8.0F}}};
     fmi3_float32_t* starts;
-    unsigned int i;
+    unsigned long i;
     int is_array;
     int has_start;
 
-    unsigned int nDimsExp = 3;
+    unsigned long nDimsExp = 3;
     fmi3_uint64_t sizeTot = 1;
 
     fmi3_import_dimension_t* dim;
@@ -400,7 +400,7 @@ static int test_array8_32_can_find_index_and_vr_of_dimensions(fmi3_import_t* xml
     dimList = fmi3_import_get_variable_dimension_list(xml, v); /* allocates memory */
     nDims = fmi3_import_get_dimension_list_size(dimList);
 
-    ASSERT_MSG_GOTO(cleanup, nDims == nDimsExp, "wrong number of dimensions: %lld, expected: %lld", nDims, nDimsExp);
+    ASSERT_MSG_GOTO(cleanup, nDims == nDimsExp, "wrong number of dimensions: %lu, expected: %lu", nDims, nDimsExp);
 
     /* check if vr or start attribute */
     dim = fmi3_import_get_dimension(dimList, 0);
@@ -436,13 +436,13 @@ static int test_array8_32_can_find_index_and_vr_of_dimensions(fmi3_import_t* xml
             */
         }
     }
-    ASSERT_MSG_GOTO(cleanup, sizeTot == 8, "failed to check all array values, stopped at idx: %d", sizeTot);
+    ASSERT_MSG_GOTO(cleanup, sizeTot == 8, "failed to check all array values, stopped at idx: %lu", sizeTot);
 
     starts = fmi3_import_get_float32_variable_start_array(fmi3_import_get_variable_as_float32(v));
     for (i = 0; i < sizeTot; i++) {
         fmi3_float32_t exp = *((fmi3_float32_t*)startsExp + i);
         fmi3_float32_t act = *(starts + i);
-        ASSERT_MSG_GOTO(cleanup, exp == act, "wrong start value of array variable, loop_idx: %d, exp: %f, act: %f", i, exp, act);
+        ASSERT_MSG_GOTO(cleanup, exp == act, "wrong start value of array variable, loop_idx: %lu, exp: %f, act: %f", i, exp, act);
     }
 
     res = TEST_OK;
@@ -488,7 +488,7 @@ int main(int argc, char **argv)
 
 #define INPUT_LEN_MAX (700) /* arbitrarily choosen */
     ASSERT_MSG(strlen(argv[1]) < INPUT_LEN_MAX,
-            "Unreasonably long base path as input for test. Num chars: %d", strlen(argv[1]));
+            "Unreasonably long base path as input for test. Num chars: %lu", strlen(argv[1]));
 
 
     printf("Running fmi3_import_arrays_test\n");

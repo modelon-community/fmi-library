@@ -169,6 +169,7 @@ int fmi3_xml_handle_Terminal(fmi3_xml_parser_context_t* context, const char* dat
             return -1;
         }
         // Parse and set attributes
+        term->name = "";
 
         size_t bufIdx = 1;
         // parse name
@@ -177,10 +178,7 @@ int fmi3_xml_handle_Terminal(fmi3_xml_parser_context_t* context, const char* dat
         if (fmi3_xml_parse_attr_as_string(context, fmi3_xml_elmID_Terminal, fmi_attr_id_name, 1 /* required */, bufName)) {return -1;}
 
         /* Add the name to the terminalsAndIcons-wide set and retrieve the pointer */
-        if (jm_vector_get_size(char)(bufName) == 0) {
-            // FIXME: It doesn't work to get empty string from bufName since it's resized to 0
-            term->name = jm_string_set_put(&termIcon->names, "");
-        } else {
+        if (jm_vector_get_size(char)(bufName)) {
             term->name = jm_string_set_put(&termIcon->names, jm_vector_get_itemp(char)(bufName, 0));
         }
 

@@ -17,5 +17,7 @@
         </Terminal>
         <Terminal name="terminalC" matchingRule="bus" description="some description" terminalKind="abc"/>
         <Terminal name="terminalB" matchingRule="bus" description="some description" terminalKind="abc"/>
+
+        <Terminal name=""/> <!-- Edge case testing, this should be valid -->
     </Terminals>
 </fmiTerminalsAndIcons>

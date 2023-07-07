@@ -42,6 +42,10 @@ TEST_CASE("Test parse terminals and icons") {
         term = fmi3_import_get_terminal_by_name(xml, "terminalC");
         REQUIRE(term != nullptr);
         REQUIRE_STREQ(fmi3_import_get_terminal_name(term), "terminalC");
+
+        term = fmi3_import_get_terminal_by_name(xml, "");
+        REQUIRE(term != nullptr);
+        REQUIRE_STREQ(fmi3_import_get_terminal_name(term), "");
     }
 
     SECTION("Testing edge cases of import functions; should not crash") {
@@ -87,6 +91,18 @@ TEST_CASE("Error check; Terminals with duplicate names") {
     REQUIRE(fmi3_import_get_has_terminals_and_icons(fmu) == 0); // failed parse of terminalsAndIcons
 
     const char* logMsg = "Two terminals with the same name 'terminalA' found. This is not allowed.";
+    REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
+    fmi3_testutil_import_free(tfmu);
+}
+
+TEST_CASE("Error check; Terminals with duplicate names; edge case of empty name") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/terminals_and_icons/invalid/duplicate_terminal_empty_name";
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu != nullptr); // successful parse of modelDescription
+    REQUIRE(fmi3_import_get_has_terminals_and_icons(fmu) == 0); // failed parse of terminalsAndIcons
+
+    const char* logMsg = "Two terminals with the same name '' found. This is not allowed.";
     REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
     fmi3_testutil_import_free(tfmu);
 }

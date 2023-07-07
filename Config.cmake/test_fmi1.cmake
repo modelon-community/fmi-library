@@ -11,13 +11,13 @@
 #    You should have received a copy of the FMILIB_License.txt file
 #    along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 
-include_directories(${FMIL_TEST_DIR}/FMI1)
-
 add_executable(fmi1_capi_cs_test ${FMIL_TEST_DIR}/FMI1/fmi1_capi_cs_test.c)
 target_link_libraries(fmi1_capi_cs_test ${FMICAPI_LIBRARIES})
+target_include_directories(fmi1_capi_cs_test PRIVATE ${FMIL_TEST_INCLUDE_DIRS})
 
 add_executable (fmi1_capi_me_test ${FMIL_TEST_DIR}/FMI1/fmi1_capi_me_test.c)
 target_link_libraries (fmi1_capi_me_test ${FMICAPI_LIBRARIES})
+target_include_directories(fmi1_capi_me_test PRIVATE ${FMIL_TEST_INCLUDE_DIRS})
 
 #Defines for the test FMUs
 set(FMU_DUMMY_ME_MODEL_IDENTIFIER BouncingBall) #This must be the same as in the xml-file
@@ -33,8 +33,17 @@ set(FMU_DUMMY_HEADERS
   ${FMU_DUMMY_FOLDER}/fmu1_model_defines.h
 )
 
+set(FMU_DUMMY_INCLUDE_DIRS
+    ${FMILIB_FMI_STANDARD_HEADERS}
+    ${FMILIB_CONFIG_INCLUDE_DIR}
+    ${FMIL_TEST_DIR}/FMI1
+    ${FMILIB_TESTCONFIG_INCLUDE_DIR}
+)
+
 add_library(fmu1_dll_me SHARED ${FMU_DUMMY_ME_SOURCE} ${FMU_DUMMY_HEADERS})
 add_library(fmu1_dll_cs SHARED ${FMU_DUMMY_CS_SOURCE} ${FMU_DUMMY_HEADERS})
+target_include_directories(fmu1_dll_me PRIVATE ${FMU_DUMMY_INCLUDE_DIRS})
+target_include_directories(fmu1_dll_cs PRIVATE ${FMU_DUMMY_INCLUDE_DIRS})
 
 set(XML_ME_PATH ${FMU_DUMMY_FOLDER}/modelDescription_me.xml)
 set(XML_CS_PATH ${FMU_DUMMY_FOLDER}/modelDescription_cs.xml)
@@ -67,6 +76,7 @@ target_link_libraries(fmi1_import_options_test ${FMILIBFORTEST})
 
 add_executable(fmi1_import_default_experiment_test ${FMIL_TEST_DIR}/FMI1/fmi1_import_default_experiment_test.c)
 target_link_libraries(fmi1_import_default_experiment_test ${FMILIBFORTEST})
+
 add_executable(fmi1_type_definitions_test ${FMIL_TEST_DIR}/FMI1/fmi1_import_type_definitions_test.c)
 target_link_libraries(fmi1_type_definitions_test ${FMILIBFORTEST})
 
@@ -81,6 +91,7 @@ target_link_libraries(fmi_import_xml_test ${FMILIBFORTEST})
 
 add_executable(fmi_import_me_test ${FMIL_TEST_DIR}/FMI1/fmi_import_me_test.c)
 target_link_libraries(fmi_import_me_test ${FMILIBFORTEST})
+
 add_executable(fmi_import_cs_test ${FMIL_TEST_DIR}/FMI1/fmi_import_cs_test.c)
 target_link_libraries(fmi_import_cs_test ${FMILIBFORTEST})
 

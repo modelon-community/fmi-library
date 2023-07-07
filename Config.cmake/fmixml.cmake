@@ -101,7 +101,6 @@ endif()
 
 # set(DOXYFILE_EXTRA_SOURCES "${DOXYFILE_EXTRA_SOURCES} \"${FMIXMLDIR}/include\"")
 
-include_directories("${FMIXMLDIR}/include" "${FMILIB_THIRDPARTYLIBS}/FMI/")
 set(FMIXML_LIBRARIES fmixml)
 set(FMIXML_EXPAT_DIR "${FMILIB_THIRDPARTYLIBS}/Expat/expat-2.4.8")
 
@@ -264,15 +263,6 @@ endif()
 
 set(EXPAT_INCLUDE_DIRS ${CMAKE_BINARY_DIR}/ExpatEx/install/include)
 
-include_directories(
-    "${EXPAT_INCLUDE_DIRS}"
-    "${FMILIB_THIRDPARTYLIBS}/FMI/"
-    "${FMIXMLGENDIR}/FMI1"
-    "${FMIXMLGENDIR}/FMI2"
-    "${FMIXMLGENDIR}/FMI3"
-    ${CMAKE_BINARY_DIR}/src/XML
-)
-
 PREFIXLIST(FMIXMLSOURCE  ${FMIXMLDIR}/)
 PREFIXLIST(FMIXMLHEADERS ${FMIXMLDIR}/)
 
@@ -291,6 +281,21 @@ add_library(fmixml ${FMILIBKIND} ${FMIXMLSOURCE} ${FMIXMLHEADERS})
 if(MSVC)
     target_compile_definitions(fmixml PUBLIC XML_STATIC)
 endif()
-target_link_libraries(fmixml ${JMUTIL_LIBRARIES} expat)
+target_link_libraries(fmixml
+    PRIVATE expat
+    PUBLIC ${JMUTIL_LIBRARIES}
+)
+target_include_directories(fmixml
+    PRIVATE
+        ${EXPAT_INCLUDE_DIRS}
+        ${FMILIB_THIRDPARTYLIBS}/FMI/
+        ${FMIXMLGENDIR}/FMI1
+        ${FMIXMLGENDIR}/FMI2
+        ${FMIXMLGENDIR}/FMI3
+        ${CMAKE_BINARY_DIR}/src/XML
+    PUBLIC
+        ${FMILIB_CONFIG_INCLUDE_DIR}
+        ${FMIXMLDIR}/include
+)
 
 endif(NOT FMIXMLDIR)

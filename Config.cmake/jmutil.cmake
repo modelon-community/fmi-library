@@ -12,10 +12,10 @@
 #    along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 
 if(NOT JMUTILDIR)
-    set(JMUTILDIR ${FMILIBRARYHOME}/src/Util/)
-    set(JMUTIL_LIBRARIES jmutils)
-    include_directories ("${JMUTILDIR}/include" "${FMILIB_FMI_STANDARD_HEADERS}")
-    set(DOXYFILE_EXTRA_SOURCES "${DOXYFILE_EXTRA_SOURCES} \"${JMUTILDIR}/include\"")
+set(JMUTILDIR ${FMILIBRARYHOME}/src/Util/)
+
+set(JMUTIL_LIBRARIES jmutils)
+set(DOXYFILE_EXTRA_SOURCES "${DOXYFILE_EXTRA_SOURCES} \"${JMUTILDIR}/include\"")
 
 set(JMUTILSOURCE
  JM/jm_callbacks.c
@@ -73,23 +73,28 @@ set(JMUTILHEADERS
     ${JMUTIL_PUBHEADERS} ${JMUTIL_PRIVHEADERS}
 )
 
+set(JMUTIL_PUBLIC_INCLUDE_DIR ${JMUTILDIR}/include)
+
+set(JMUTILS_PUBLIC_INCLUDE_DIRS
+    ${FMILIB_FMI_STANDARD_HEADERS}
+    ${FMILIB_CONFIG_INCLUDE_DIR}
+    ${JMUTIL_PUBLIC_INCLUDE_DIR}
+)
+
 add_library(jmutils ${FMILIBKIND} ${JMUTILSOURCE} ${JMUTILHEADERS})
-
-if(CYGWIN) 
-message("not tested")
-endif(CYGWIN)
-
-target_link_libraries(jmutils c99snprintf)
+target_link_libraries(jmutils PRIVATE c99snprintf)
+target_include_directories(jmutils
+    PUBLIC ${JMUTILS_PUBLIC_INCLUDE_DIRS}
+)
 
 if(UNIX AND NOT APPLE)
     target_compile_definitions(jmutils PRIVATE -D_GNU_SOURCE)
 endif()
 
 if(UNIX)
-    target_link_libraries(jmutils dl)
-endif(UNIX)
-if(WIN32)
-    target_link_libraries(jmutils Shlwapi)
+    target_link_libraries(jmutils PRIVATE dl)
+elseif(WIN32)
+    target_link_libraries(jmutils PRIVATE Shlwapi)
 endif(WIN32)
 
 endif(NOT JMUTILDIR)

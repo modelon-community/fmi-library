@@ -18,7 +18,6 @@ set(FMICAPIDIR ${FMILIBRARYHOME}/src/CAPI)
 
 include(jmutil)
 
-include_directories("${FMICAPIDIR}/include" "${FMICAPIDIR}/src")
 set(FMICAPI_LIBRARIES fmicapi)
 
 set(FMICAPISOURCE
@@ -42,17 +41,18 @@ set(FMICAPIHEADERS
     src/FMI3/fmi3_capi_impl.h
 )
 
-include_directories(${FMILIB_FMI_STANDARD_HEADERS})
-
 PREFIXLIST(FMICAPISOURCE  ${FMICAPIDIR}/)
 PREFIXLIST(FMICAPIHEADERS ${FMICAPIDIR}/)
 
 add_library(fmicapi ${FMILIBKIND} ${FMICAPISOURCE} ${FMICAPIHEADERS})
-
-target_link_libraries(fmicapi ${JMUTIL_LIBRARIES})
-
-# install(DIRECTORY ${FMIXMLDIR}/include DESTINATION .)
-# install(DIRECTORY ${FMICAPIDIR}/include DESTINATION .)
-#install(DIRECTORY ${JMRUNTIMEHOME}/FMI/ZIP/include DESTINATION include)
+target_link_libraries(fmicapi PUBLIC ${JMUTIL_LIBRARIES})
+target_include_directories(fmicapi
+    PRIVATE
+        ${FMICAPIDIR}/src
+        ${FMILIB_FMI_STANDARD_HEADERS}
+    PUBLIC
+        ${FMILIB_CONFIG_INCLUDE_DIR}
+        ${FMICAPIDIR}/include
+)
 
 endif(NOT FMICAPIDIR)

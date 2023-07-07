@@ -23,7 +23,6 @@ extern "C" {
 
 #include <stdlib.h>
 #include <JM/jm_types.h>
-#include "miniunz.h"
 /**
  \file fmi_zip_unzip.h
  Declaration of fmi_zip_unzip() function.

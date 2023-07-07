@@ -11,8 +11,6 @@
 #    You should have received a copy of the FMILIB_License.txt file
 #    along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 
-include_directories(${FMIL_TEST_DIR}/FMI2)
-
 
 #Defines for the test FMUs
 set(FMU2_DUMMY_FOLDER ${FMIL_TEST_DIR}/FMI2/fmu_dummy)
@@ -29,8 +27,17 @@ set(FMU2_DUMMY_HEADERS
     ${FMU2_DUMMY_FOLDER}/fmu2_model_defines.h
 )
 
+set(FMU2_DUMMY_INCLUDE_DIRS
+    ${FMILIB_FMI_STANDARD_HEADERS}
+    ${FMILIB_CONFIG_INCLUDE_DIR}
+    ${FMIL_TEST_DIR}/FMI2
+    ${FMILIB_TESTCONFIG_INCLUDE_DIR}
+)
+
 add_library(fmu2_dll_me SHARED ${FMU2_DUMMY_ME_SOURCE} ${FMU2_DUMMY_HEADERS})
 add_library(fmu2_dll_cs SHARED ${FMU2_DUMMY_CS_SOURCE} ${FMU2_DUMMY_HEADERS})
+target_include_directories(fmu2_dll_me PRIVATE ${FMU2_DUMMY_INCLUDE_DIRS})
+target_include_directories(fmu2_dll_cs PRIVATE ${FMU2_DUMMY_INCLUDE_DIRS})
 
 set(XML_ME_PATH ${FMU2_DUMMY_FOLDER}/modelDescription_me.xml)
 set(XML_CS_PATH ${FMU2_DUMMY_FOLDER}/modelDescription_cs.xml)

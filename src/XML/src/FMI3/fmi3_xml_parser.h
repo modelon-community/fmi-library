@@ -188,8 +188,6 @@ typedef enum fmi3_xml_attr_enu_t {
     EXPAND_XML_ELMNAME(TerminalStreamMemberVariable) \
     EXPAND_XML_ELMNAME(TerminalGraphicalRepresentation)
 
-// TODO: Should terminals and icons have its own list?
-
 /** \brief Element that can be placed under different parents get alternative names from the info struct */
 #define FMI3_XML_ELMLIST_ALT(EXPAND_XML_ELMNAME) \
     EXPAND_XML_ELMNAME(BinaryVariableStart) \

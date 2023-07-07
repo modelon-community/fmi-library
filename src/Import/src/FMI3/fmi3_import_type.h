@@ -58,7 +58,7 @@ FMILIB_EXPORT size_t fmi3_import_get_type_definition_list_size(fmi3_import_type_
 /** \brief Get a type definition specified by the index. Parameter 'index' does not reflect the index in the XML, but the
         index in an internal list of type definitions.
     @param td the type definition list object
-    @param index the index of type definition. Must be less than the number returned by # fmi3_import_get_type_definition_list
+    @param index the index of type definition. Must be less than the number returned by #  fmi3_import_get_type_definition_list
     @return A type definition object or NULL if index is out of range.
 */
 FMILIB_EXPORT fmi3_import_variable_typedef_t* fmi3_import_get_typedef(fmi3_import_type_definition_list_t* td, size_t index);

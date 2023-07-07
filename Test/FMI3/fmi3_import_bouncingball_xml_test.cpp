@@ -142,14 +142,14 @@ void printTypeInfo(fmi3_import_variable_typedef_t* vt) {
             ni = fmi3_import_get_enum_type_size(et);
             printf("There are %d items \n",ni);
             for (i = 1; i <= ni; i++) {
-                int val = fmi3_import_get_enum_item_value(et, i);
+                int val = fmi3_import_get_enum_type_item_value(et, i);
                 const char* str = fmi3_import_get_enum_type_value_name(et, val);
-                const char* itnm = fmi3_import_get_enum_item_name(et, i);
+                const char* itnm = fmi3_import_get_enum_type_item_name(et, i);
                 REQUIRE(strcmp(itnm, str) == 0);
                 printf("[%d] %s=%d (%s) \n", i,
                     itnm,
                     val,
-                    fmi3_import_get_enum_item_description(et, i));
+                    fmi3_import_get_enum_type_item_description(et, i));
             }
         }
         break;

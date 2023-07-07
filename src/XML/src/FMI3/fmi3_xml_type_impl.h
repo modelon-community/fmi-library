@@ -255,11 +255,11 @@ typedef struct fmi3_xml_binary_variable_start_t {
 // ----------------------------------------------------------------------------
 
 
-typedef struct fmi3_xml_enum_item_t {
+typedef struct fmi3_xml_enum_type_item_t {
     jm_string itemName;
     int value;
     char itemDescription[1];
-} fmi3_xml_enum_item_t;
+} fmi3_xml_enum_type_item_t;
 
 static fmi3_xml_variable_type_base_t* fmi3_xml_find_type_struct(fmi3_xml_variable_type_base_t* type, fmi3_xml_type_struct_kind_enu_t kind) {
     fmi3_xml_variable_type_base_t* typeBase = type;

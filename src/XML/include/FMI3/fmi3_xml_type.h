@@ -95,9 +95,9 @@ fmi3_uint8_t fmi3_xml_get_uint8_type_max(fmi3_xml_int_typedef_t*);
 int fmi3_xml_get_enum_type_min(fmi3_xml_enumeration_typedef_t*);
 int fmi3_xml_get_enum_type_max(fmi3_xml_enumeration_typedef_t*);
 unsigned int  fmi3_xml_get_enum_type_size(fmi3_xml_enumeration_typedef_t*);
-const char* fmi3_xml_get_enum_item_name(fmi3_xml_enumeration_typedef_t*, unsigned int  item);
-int fmi3_xml_get_enum_item_value(fmi3_xml_enumeration_typedef_t*, unsigned int  item);
-const char* fmi3_xml_get_enum_item_description(fmi3_xml_enumeration_typedef_t*, unsigned int  item);
+const char* fmi3_xml_get_enum_type_item_name(fmi3_xml_enumeration_typedef_t*, unsigned int  item);
+int fmi3_xml_get_enum_type_item_value(fmi3_xml_enumeration_typedef_t*, unsigned int  item);
+const char* fmi3_xml_get_enum_type_item_description(fmi3_xml_enumeration_typedef_t*, unsigned int  item);
 const char* fmi3_xml_get_enum_type_value_name(fmi3_xml_enumeration_typedef_t* t, int value);
 
 fmi3_string_t fmi3_xml_get_binary_type_mime_type(fmi3_xml_binary_typedef_t* t);

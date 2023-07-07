@@ -280,7 +280,7 @@ fmi3_import_unit_definition_list_t* fmi3_import_get_unit_definition_list(fmi3_im
     return fmi3_xml_get_unit_definition_list(fmu->md);
 }
 
-size_t  fmi3_import_get_unit_definition_list_size(fmi3_import_unit_definition_list_t* ud) {
+size_t fmi3_import_get_unit_definition_list_size(fmi3_import_unit_definition_list_t* ud) {
     return fmi3_xml_get_unit_definition_list_size(ud);
 }
 

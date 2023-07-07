@@ -315,8 +315,8 @@ fmi3_uint8_t fmi3_xml_get_uint8_type_max(fmi3_xml_int_typedef_t* t) {
 static int fmi3_xml_compare_enum_val(const void* first, const void* second) {
     const jm_named_ptr* a = first;
     const jm_named_ptr* b = second;
-    fmi3_xml_enum_item_t* ai = a->ptr;
-    fmi3_xml_enum_item_t* bi = b->ptr;
+    fmi3_xml_enum_type_item_t* ai = a->ptr;
+    fmi3_xml_enum_type_item_t* bi = b->ptr;
     return (ai->value - bi->value);
 }
 
@@ -327,7 +327,7 @@ static fmi3_xml_enum_typedef_props_t* fmi3_xml_get_enum_typedef_props(fmi3_xml_e
 
 int fmi3_xml_get_enum_type_min(fmi3_xml_enumeration_typedef_t* t){
     fmi3_xml_enum_typedef_props_t* props = fmi3_xml_get_enum_typedef_props(t);
-    fmi3_xml_enum_item_t* item;
+    fmi3_xml_enum_type_item_t* item;
     if(jm_vector_get_size(jm_named_ptr)(&props->enumItems) == 0) return 0;
     item = jm_vector_get_item(jm_named_ptr)(&props->enumItems, 0).ptr;
     return item->value;
@@ -336,7 +336,7 @@ int fmi3_xml_get_enum_type_min(fmi3_xml_enumeration_typedef_t* t){
 int fmi3_xml_get_enum_type_max(fmi3_xml_enumeration_typedef_t* t){
     fmi3_xml_enum_typedef_props_t* props = fmi3_xml_get_enum_typedef_props(t);
     jm_named_ptr* itemp = jm_vector_get_lastp(jm_named_ptr)(&props->enumItems);
-    fmi3_xml_enum_item_t* item;
+    fmi3_xml_enum_type_item_t* item;
     if(!itemp) return 0;
     item = itemp->ptr;
     return item->value;
@@ -347,15 +347,15 @@ unsigned int fmi3_xml_get_enum_type_size(fmi3_xml_enumeration_typedef_t* t) {
     return (unsigned int)jm_vector_get_size(jm_named_ptr)(&props->enumItems);
 }
 
-const char* fmi3_xml_get_enum_item_name(fmi3_xml_enumeration_typedef_t* t, unsigned int  item) {
+const char* fmi3_xml_get_enum_type_item_name(fmi3_xml_enumeration_typedef_t* t, unsigned int  item) {
     fmi3_xml_enum_typedef_props_t* props = fmi3_xml_get_enum_typedef_props(t);
     if((item == 0) || (item > fmi3_xml_get_enum_type_size(t) )) return  0;
     return jm_vector_get_item(jm_named_ptr)(&props->enumItems,item-1).name;
 }
 
-int fmi3_xml_get_enum_item_value(fmi3_xml_enumeration_typedef_t* t, unsigned int  item) {
+int fmi3_xml_get_enum_type_item_value(fmi3_xml_enumeration_typedef_t* t, unsigned int  item) {
     fmi3_xml_enum_typedef_props_t* props = fmi3_xml_get_enum_typedef_props(t);
-    fmi3_xml_enum_item_t* eitem;
+    fmi3_xml_enum_type_item_t* eitem;
     if((item == 0) || (item > fmi3_xml_get_enum_type_size(t) )) return  0;
     eitem = jm_vector_get_item(jm_named_ptr)(&props->enumItems,item-1).ptr;
     return eitem->value;
@@ -363,7 +363,7 @@ int fmi3_xml_get_enum_item_value(fmi3_xml_enumeration_typedef_t* t, unsigned int
 
 const char* fmi3_xml_get_enum_type_value_name(fmi3_xml_enumeration_typedef_t* t, int value) {
     fmi3_xml_enum_typedef_props_t* props = fmi3_xml_get_enum_typedef_props(t);
-    fmi3_xml_enum_item_t keyitem;
+    fmi3_xml_enum_type_item_t keyitem;
     jm_named_ptr* itemp, key;
     keyitem.value = value;
     key.ptr = &keyitem;
@@ -372,9 +372,9 @@ const char* fmi3_xml_get_enum_type_value_name(fmi3_xml_enumeration_typedef_t* t,
     return itemp->name;
 }
 
-const char* fmi3_xml_get_enum_item_description(fmi3_xml_enumeration_typedef_t* t, unsigned int  item){
+const char* fmi3_xml_get_enum_type_item_description(fmi3_xml_enumeration_typedef_t* t, unsigned int  item){
     fmi3_xml_enum_typedef_props_t* props = fmi3_xml_get_enum_typedef_props(t);
-    fmi3_xml_enum_item_t* e;
+    fmi3_xml_enum_type_item_t* e;
     if(item > fmi3_xml_get_enum_type_size(t) ) return  0;
     e = jm_vector_get_item(jm_named_ptr)(&props->enumItems,item-1).ptr;
     return e->itemDescription;
@@ -1191,7 +1191,7 @@ int fmi3_xml_handle_EnumerationType(fmi3_xml_parser_context_t* context, const ch
         typeDef->super.baseType = fmi3_base_type_enum;
         typeDef->super.nextLayer = &props->base.super;
     } else {
-        fmi3_xml_enum_item_t *min, *max;
+        fmi3_xml_enum_type_item_t *min, *max;
         fmi3_xml_variable_typedef_t* typeDef;
         fmi3_xml_enum_typedef_props_t* props;
         jm_vector(jm_named_ptr)* items;
@@ -1203,8 +1203,8 @@ int fmi3_xml_handle_EnumerationType(fmi3_xml_parser_context_t* context, const ch
         size_t i, n = jm_vector_get_size(jm_named_ptr)(items);
         jm_vector_qsort(jm_named_ptr)(items, fmi3_xml_compare_enum_val);
         for (i = 1; i < n; i++) {
-            fmi3_xml_enum_item_t* a = jm_vector_get_itemp(jm_named_ptr)(items, i-1)->ptr;
-            fmi3_xml_enum_item_t* b = jm_vector_get_itemp(jm_named_ptr)(items, i)->ptr;
+            fmi3_xml_enum_type_item_t* a = jm_vector_get_itemp(jm_named_ptr)(items, i-1)->ptr;
+            fmi3_xml_enum_type_item_t* b = jm_vector_get_itemp(jm_named_ptr)(items, i)->ptr;
             if (a->value == b->value) {
                 jm_log_error(context->callbacks, module, "Enum items '%s' and '%s' within enumeration '%s' have the same value %d",
                     a->itemName, b->itemName, typeDef->typeName, a->value);
@@ -1227,7 +1227,7 @@ int fmi3_xml_handle_Item(fmi3_xml_parser_context_t* context, const char* data) {
         jm_vector(char)* bufDescr = fmi3_xml_reserve_parse_buffer(context,2,100);
         /* this enum item belongs to the last created enum = head of typePropsList */
         fmi3_xml_enum_typedef_props_t * enumProps = (fmi3_xml_enum_typedef_props_t*)md->typeDefinitions.typePropsList;
-        fmi3_xml_enum_item_t * item;
+        fmi3_xml_enum_type_item_t * item;
         jm_named_ptr named, *pnamed;
         size_t descrlen;
         fmi3_int32_t value;
@@ -1246,7 +1246,7 @@ int fmi3_xml_handle_Item(fmi3_xml_parser_context_t* context, const char* data) {
         named.name = 0;
         pnamed = jm_vector_push_back(jm_named_ptr)(&enumProps->enumItems, named);
 
-        if (pnamed) *pnamed = named = jm_named_alloc_v(bufName,sizeof(fmi3_xml_enum_item_t)+descrlen+1,sizeof(fmi3_xml_enum_item_t)+descrlen,context->callbacks);
+        if (pnamed) *pnamed = named = jm_named_alloc_v(bufName,sizeof(fmi3_xml_enum_type_item_t)+descrlen+1,sizeof(fmi3_xml_enum_type_item_t)+descrlen,context->callbacks);
         item = named.ptr;
         if (!pnamed || !item) {
             fmi3_xml_parse_fatal(context, "Could not allocate memory");

@@ -240,16 +240,16 @@ size_t fmi3_import_get_enum_type_size(fmi3_import_enumeration_typedef_t* t) {
     return fmi3_xml_get_enum_type_size(t);
 }
 
-const char* fmi3_import_get_enum_item_name(fmi3_import_enumeration_typedef_t* t, size_t item) {
-    return fmi3_xml_get_enum_item_name(t, item);
+const char* fmi3_import_get_enum_type_item_name(fmi3_import_enumeration_typedef_t* t, size_t item) {
+    return fmi3_xml_get_enum_type_item_name(t, item);
 }
 
-const char* fmi3_import_get_enum_item_description(fmi3_import_enumeration_typedef_t* t, size_t item){
-    return fmi3_xml_get_enum_item_description(t, item);
+const char* fmi3_import_get_enum_type_item_description(fmi3_import_enumeration_typedef_t* t, size_t item){
+    return fmi3_xml_get_enum_type_item_description(t, item);
 }
 
-int fmi3_import_get_enum_item_value(fmi3_import_enumeration_typedef_t* t, size_t item) {
-    return fmi3_xml_get_enum_item_value(t, item);
+int fmi3_import_get_enum_type_item_value(fmi3_import_enumeration_typedef_t* t, size_t item) {
+    return fmi3_xml_get_enum_type_item_value(t, item);
 }
 
 const char* fmi3_import_get_enum_type_value_name(fmi3_import_enumeration_typedef_t* t, int value) {

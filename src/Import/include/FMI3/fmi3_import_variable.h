@@ -537,9 +537,9 @@ FMILIB_EXPORT fmi3_uint64_t fmi3_import_get_clock_variable_shift_counter(fmi3_im
 FMILIB_EXPORT size_t fmi3_import_get_variable_original_order(fmi3_import_variable_t* v);
 
 /** \brief Get the alias variables. */
-FMILIB_EXPORT fmi3_import_alias_variable_list_t* fmi3_import_get_variable_aliases(fmi3_import_variable_t* v);
+FMILIB_EXPORT fmi3_import_alias_variable_list_t* fmi3_import_get_variable_alias_list(fmi3_import_variable_t* v);
 /** \brief Get the number of alias variables. */
-FMILIB_EXPORT size_t fmi3_import_get_alias_variables_number(fmi3_import_alias_variable_list_t* aliases);
+FMILIB_EXPORT size_t fmi3_import_get_alias_variable_list_size(fmi3_import_alias_variable_list_t* aliases);
 /** \brief Get the alias from the list at the given index. */
 FMILIB_EXPORT fmi3_import_alias_variable_t* fmi3_import_get_alias(fmi3_import_alias_variable_list_t* aliases, size_t index);
 

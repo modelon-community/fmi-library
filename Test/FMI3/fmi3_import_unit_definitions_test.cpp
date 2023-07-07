@@ -31,7 +31,7 @@ static void test_unit_basics(fmi3_import_t* xml) {
     fmi3_import_unit_definition_list_t* udList;
     udList = fmi3_import_get_unit_definition_list(xml);
     REQUIRE(udList != nullptr);
-    REQUIRE(fmi3_import_get_unit_definitions_number(udList) == 1); // there is exactly one unit definition
+    REQUIRE(fmi3_import_get_unit_definition_list_size(udList) == 1); // there is exactly one unit definition
 
     // check unit
     fmi3_import_unit_t* u = fmi3_import_get_unit(udList, 0);
@@ -59,7 +59,7 @@ static void test_unit_basics(fmi3_import_t* xml) {
     REQUIRE(fmi3_import_convert_from_SI_base_unit(1., u) == 1.);
 
     // check displayUnit
-    unsigned int duNum = fmi3_import_get_unit_display_unit_number(u);
+    unsigned int duNum = fmi3_import_get_unit_display_unit_list_size(u);
     REQUIRE(duNum == 4);
 
     fmi3_import_display_unit_t* du;

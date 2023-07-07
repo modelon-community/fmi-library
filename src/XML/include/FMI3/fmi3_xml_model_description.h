@@ -97,7 +97,7 @@ typedef struct fmi3_xml_alias_variable_list_t fmi3_xml_alias_variable_list_t;
 /**@{ */
 typedef struct fmi3_xml_unit_t fmi3_xml_unit_t;
 typedef struct fmi3_xml_display_unit_t fmi3_xml_display_unit_t;
-typedef struct fmi3_xml_unit_definitions_t fmi3_xml_unit_definitions_t;
+typedef struct fmi3_xml_unit_definition_list_t fmi3_xml_unit_definition_list_t;
 /**@} */
 
 /**\name FMU capabilities flags */

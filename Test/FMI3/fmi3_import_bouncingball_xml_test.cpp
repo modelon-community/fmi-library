@@ -236,9 +236,9 @@ void printVariableInfo(fmi3_import_t* fmu,
         }
     }
     // Print aliases:
-    fmi3_import_alias_variable_list_t* aliases = fmi3_import_get_variable_aliases(v);
+    fmi3_import_alias_variable_list_t* aliases = fmi3_import_get_variable_alias_list(v);
     fmi3_import_alias_variable_t* alias;
-    for (size_t i = 0; i < fmi3_import_get_alias_variables_number(aliases); i++) {
+    for (size_t i = 0; i < fmi3_import_get_alias_variable_list_size(aliases); i++) {
         if (i == 0) {
             printf("Listing aliases: \n");
         }
@@ -388,7 +388,7 @@ static void test_parse_bouncingball(const char* xmldir, bool expectParseFailure)
     {
         fmi3_import_unit_definition_list_t* ud = fmi3_import_get_unit_definition_list(fmu);
         if (ud) {
-            unsigned  i, nu = fmi3_import_get_unit_definitions_number(ud);
+            unsigned  i, nu = fmi3_import_get_unit_definition_list_size(ud);
             printf("There are %d different units used \n", nu);
 
             for (i = 0; i < nu; i++) {
@@ -404,7 +404,7 @@ static void test_parse_bouncingball(const char* xmldir, bool expectParseFailure)
                     buf,
                     fmi3_import_get_SI_unit_factor(u),
                     fmi3_import_get_SI_unit_offset(u),
-                    fmi3_import_get_unit_display_unit_number(u));
+                    fmi3_import_get_unit_display_unit_list_size(u));
             }
         }
         else

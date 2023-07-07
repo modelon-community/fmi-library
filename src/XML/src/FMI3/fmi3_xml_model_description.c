@@ -337,11 +337,11 @@ unsigned int fmi3_xml_get_capability(fmi3_xml_model_description_t* md, fmi3_capa
     return md->capabilities[id];
 }
 
-fmi3_xml_unit_definitions_t* fmi3_xml_get_unit_definitions(fmi3_xml_model_description_t* md) {
-    return (fmi3_xml_unit_definitions_t*)(&md->unitDefinitions);
+fmi3_xml_unit_definition_list_t* fmi3_xml_get_unit_definition_list(fmi3_xml_model_description_t* md) {
+    return (fmi3_xml_unit_definition_list_t*)(&md->unitDefinitions);
 }
 
-unsigned int  fmi3_xml_get_unit_definitions_number(fmi3_xml_unit_definitions_t* ud) {
+unsigned int  fmi3_xml_get_unit_definition_list_size(fmi3_xml_unit_definition_list_t* ud) {
     if(!ud) {
         assert(ud && "Unit definitions cannot be NULL");
         return 0;

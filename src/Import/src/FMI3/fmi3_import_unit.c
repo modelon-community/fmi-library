@@ -57,7 +57,7 @@ double fmi3_import_convert_from_SI_base_unit(double v, fmi3_import_unit_t* u) {
     return fmi3_xml_convert_from_SI_base_unit( v, u);
 }
 
-unsigned int fmi3_import_get_unit_display_unit_number(fmi3_import_unit_t* u) {
+unsigned int fmi3_import_get_unit_display_unit_list_size(fmi3_import_unit_t* u) {
     return fmi3_xml_get_unit_display_unit_number(u);
 }
 

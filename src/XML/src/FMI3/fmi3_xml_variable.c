@@ -23,7 +23,6 @@
 #include "fmi3_xml_parser.h"
 #include "fmi3_xml_type_impl.h"
 #include "fmi3_xml_model_description_impl.h"
-#include "fmi3_xml_dimension_impl.h"
 
 #include "fmi3_xml_variable_impl.h"
 
@@ -127,12 +126,8 @@ fmi3_base_type_enu_t fmi3_xml_get_variable_base_type(fmi3_xml_variable_t* v) {
     return (type->baseType);
 }
 
-jm_vector(fmi3_xml_dimension_t)* fmi3_xml_get_variable_dimension_vector(fmi3_xml_variable_t* v) {
-    return v->dimensionsVector;
-}
-
 int fmi3_xml_variable_is_array(fmi3_xml_variable_t* v) {
-    return jm_vector_get_size(fmi3_xml_dimension_t)(v->dimensionsVector) > 0;
+    return v->dimensions != NULL && jm_vector_get_size(jm_voidp)(v->dimensions) > 0;
 }
 
 int fmi3_xml_get_variable_has_start(fmi3_xml_variable_t* v) {
@@ -937,6 +932,47 @@ fmi3_xml_display_unit_t* fmi3_xml_get_alias_variable_display_unit(fmi3_xml_alias
 }
 
 // -----------------------------------------------------------------------------
+// Dimensions
+// -----------------------------------------------------------------------------
+
+fmi3_xml_dimension_list_t* fmi3_xml_get_variable_dimension_list(fmi3_xml_variable_t* v) {
+    if (!v) {
+        return NULL;
+    }
+    return (void*)v->dimensions;
+}
+
+size_t fmi3_xml_get_dimension_list_size(fmi3_xml_dimension_list_t* dl) {
+    if (!dl) {
+        return 0;
+    }
+    return jm_vector_get_size(jm_voidp)(&dl->vec);
+}
+
+fmi3_xml_dimension_t* fmi3_xml_get_dimension(fmi3_xml_dimension_list_t* dl, size_t idx) {
+    if (!dl) {
+        return NULL;
+    }
+    return jm_vector_get_item(jm_voidp)(&dl->vec, idx);
+}
+
+int fmi3_xml_get_dimension_has_vr(fmi3_xml_dimension_t* dim) {
+    return dim->has_vr;
+}
+
+int fmi3_xml_get_dimension_has_start(fmi3_xml_dimension_t* dim) {
+    return !dim->has_vr;
+}
+
+fmi3_uint64_t fmi3_xml_get_dimension_start(fmi3_xml_dimension_t* dim) {
+    return dim->start;
+}
+
+fmi3_value_reference_t fmi3_xml_get_dimension_vr(fmi3_xml_dimension_t* dim) {
+    return dim->vr;
+}
+
+// -----------------------------------------------------------------------------
 
 /**
  * Returns the pointer to allocated start values, independent of variable type.
@@ -1092,13 +1128,15 @@ void fmi3_xml_free_variable(jm_callbacks* callbacks, fmi3_xml_variable_t* var) {
         var->aliases = NULL;
     }
 
+    if (var->dimensions) {
+        jm_vector_foreach(jm_voidp)(var->dimensions, callbacks->free);
+        jm_vector_free(jm_voidp)(var->dimensions);
+        var->dimensions = NULL;
+    }
+
     if (var->clocks) {
         jm_vector_free(fmi3_value_reference_t)(var->clocks);
         var->clocks = NULL;
-    }
-    if (var->dimensionsVector) {
-        jm_vector_free(fmi3_xml_dimension_t)(var->dimensionsVector);
-        var->dimensionsVector = NULL;
     }
     callbacks->free(var);
 }
@@ -1427,7 +1465,7 @@ int fmi3_xml_handle_Variable(fmi3_xml_parser_context_t* context, const char* dat
         variable->clocks = NULL;
         variable->reinit = 0;
         variable->canHandleMultipleSetPerTimeInstant = 1;
-        variable->dimensionsVector = jm_vector_alloc(fmi3_xml_dimension_t)(0, 0, context->callbacks);
+        variable->dimensions = NULL;
         variable->aliases = NULL;
 
         /* Save start value for processing after reading all Dimensions */
@@ -1508,10 +1546,16 @@ int fmi3_xml_handle_Dimension(fmi3_xml_parser_context_t* context, const char* da
             return -1;
         }
 
-        fmi3_xml_dimension_t dim;
+        fmi3_xml_dimension_t* dim;
         fmi3_xml_attr_enu_t attrId;
         int hasStart;
         int hasVr;
+        
+        dim = context->callbacks->malloc(sizeof(fmi3_xml_dimension_t));
+        if (!dim) {
+            fmi3_xml_parse_fatal(context, "Could not allocate memory");
+            return -1;
+        }
 
         /* handle attributes*/
         hasStart = fmi3_xml_is_attr_defined(context, fmi_attr_id_start);
@@ -1528,22 +1572,25 @@ int fmi3_xml_handle_Dimension(fmi3_xml_parser_context_t* context, const char* da
 
         /* set data */
         if (hasStart) {
-            dim.has_vr = 0;
+            dim->has_vr = 0;
             attrId = fmi_attr_id_start;
-            if (fmi3_xml_parse_attr_as_uint64(context, fmi3_xml_elmID_Dimension, attrId, 0, &dim.start, 0)) {
+            if (fmi3_xml_parse_attr_as_uint64(context, fmi3_xml_elmID_Dimension, attrId, 0, &dim->start, 0)) {
                 return -1;
             }
         } else if (hasVr) {
-            dim.has_vr = 1;
+            dim->has_vr = 1;
             attrId = fmi_attr_id_valueReference;
-            if (fmi3_xml_parse_attr_as_uint32(context, fmi3_xml_elmID_Dimension, attrId, 0, &dim.vr, 0)) {
+            if (fmi3_xml_parse_attr_as_uint32(context, fmi3_xml_elmID_Dimension, attrId, 0, &dim->vr, 0)) {
                 return -1;
             }
         }
 
         /* update parent variable */
-        if (!jm_vector_push_back(fmi3_xml_dimension_t)(currentVar->dimensionsVector, dim)) {
-            jm_log_error(context->callbacks, module, "Error: Unable to allocate memory for dimension data (vector alloc failed)");
+        if (!currentVar->dimensions) {
+            currentVar->dimensions = jm_vector_alloc(jm_voidp)(0, 0, context->callbacks);
+        }
+        if (!jm_vector_push_back(jm_voidp)(currentVar->dimensions, dim)) {
+            jm_log_error(context->callbacks, module, "Unable to allocate memory");
             return -1;
         }
 

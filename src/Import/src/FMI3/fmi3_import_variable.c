@@ -20,8 +20,6 @@
 #include "FMI3/fmi3_import_variable.h"
 #include "fmi3_import_impl.h"
 #include "fmi3_import_variable_list_impl.h"
-#include "FMI3/fmi3_import_dimension.h"
-#include "FMI3/fmi3_import_dimension_list.h"
 
 fmi3_import_variable_t* fmi3_import_get_variable_by_name(fmi3_import_t* fmu, const char* name) {
     return fmi3_xml_get_variable_by_name(fmu->md, name);
@@ -52,10 +50,6 @@ fmi3_import_variable_typedef_t* fmi3_import_get_variable_declared_type(fmi3_impo
 
 fmi3_base_type_enu_t fmi3_import_get_variable_base_type(fmi3_import_variable_t* v) {
     return fmi3_xml_get_variable_base_type(v);
-}
-
-fmi3_import_dimension_list_t* fmi3_import_get_variable_dimension_list(fmi3_import_t* fmu, fmi3_import_variable_t* v) { 
-    return fmi3_import_get_dimension_list(v);
 }
 
 int fmi3_import_variable_is_array(fmi3_import_variable_t* v) {
@@ -602,6 +596,47 @@ const char* fmi3_import_get_alias_variable_description(fmi3_import_alias_variabl
 
 fmi3_import_display_unit_t* fmi3_import_get_alias_variable_display_unit(fmi3_import_alias_variable_t* alias) {
     return fmi3_xml_get_alias_variable_display_unit(alias);
+}
+
+// -----------------------------------------------------------------------------
+// Dimensions
+// -----------------------------------------------------------------------------
+
+fmi3_import_dimension_list_t* fmi3_import_get_variable_dimension_list(fmi3_import_variable_t* v) {
+    if (!v) {
+        return NULL;
+    }
+    return fmi3_xml_get_variable_dimension_list(v);
+}
+
+size_t fmi3_import_get_dimension_list_size(fmi3_import_dimension_list_t* dl) {
+    if (!dl) {
+        return 0;
+    }
+    return fmi3_xml_get_dimension_list_size(dl);
+}
+
+fmi3_import_dimension_t* fmi3_import_get_dimension(fmi3_import_dimension_list_t* dl, size_t idx) {
+    if (!dl) {
+        return NULL;
+    }
+    return fmi3_xml_get_dimension(dl, idx);
+}
+
+int fmi3_import_get_dimension_has_vr(fmi3_import_dimension_t* dim) {
+    return fmi3_xml_get_dimension_has_vr(dim);
+}
+
+int fmi3_import_get_dimension_has_start(fmi3_import_dimension_t* dim) {
+    return fmi3_xml_get_dimension_has_start(dim);
+}
+
+fmi3_uint64_t fmi3_import_get_dimension_start(fmi3_import_dimension_t* dim) {
+    return fmi3_xml_get_dimension_start(dim);
+}
+
+fmi3_value_reference_t fmi3_import_get_dimension_vr(fmi3_import_dimension_t* dim) {
+    return fmi3_xml_get_dimension_vr(dim);
 }
 
 // -----------------------------------------------------------------------------

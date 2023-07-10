@@ -67,7 +67,7 @@ static fmi3_import_dimension_list_t* basic_array_checks(fmi3_import_variable_t* 
     int is_array = fmi3_import_variable_is_array(v);
     REQUIRE(is_array == 1);
 
-    fmi3_import_dimension_list_t* dimList = fmi3_import_get_variable_dimension_list(xml, v); /* allocates memory */
+    fmi3_import_dimension_list_t* dimList = fmi3_import_get_variable_dimension_list(v);
     size_t nDims = fmi3_import_get_dimension_list_size(dimList);
     REQUIRE(nDims == nDimsExpected);    
     return dimList;

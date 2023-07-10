@@ -25,7 +25,6 @@
 
 #include "fmi3_import_type.h"
 #include "fmi3_import_unit.h"
-#include "fmi3_import_dimension.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -99,6 +98,16 @@ typedef struct fmi3_xml_alias_variable_list_t fmi3_import_alias_variable_list_t;
 typedef struct fmi3_xml_alias_variable_t fmi3_import_alias_variable_t;
 /** @} */
 
+/**
+ * @name Types encapsulating variable dimension information
+ * @{
+ */
+/** \brief Opaque data type for dimension handling */
+typedef struct fmi3_xml_dimension_t fmi3_import_dimension_t;
+/** \brief Opaque data type for dimension list handling*/
+typedef struct fmi3_xml_dimension_list_t fmi3_import_dimension_list_t;
+/** @} */
+
 
 /** \brief Get the variable name */
 FMILIB_EXPORT const char* fmi3_import_get_variable_name(fmi3_import_variable_t*);
@@ -169,12 +178,6 @@ FMILIB_EXPORT fmi3_uint16_t* fmi3_import_get_uint16_variable_start_array(fmi3_im
  * @return Pointer to array with start values. Total length of array is given by array dimensions.
  */
 FMILIB_EXPORT fmi3_uint8_t* fmi3_import_get_uint8_variable_start_array(fmi3_import_uint8_variable_t* v);
-
-
-/** \brief Get a list of the variable's array dimensions.
-    @return list of array dimensions for a variable.
-*/
-FMILIB_EXPORT fmi3_import_dimension_list_t* fmi3_import_get_variable_dimension_list(fmi3_import_t* fmu, fmi3_import_variable_t* v);
 
 /**   \brief Check if the variable is an array.
     @return True if array, false if scalar.
@@ -551,6 +554,45 @@ FMILIB_EXPORT const char* fmi3_import_get_alias_variable_description(fmi3_import
 FMILIB_EXPORT fmi3_import_display_unit_t* fmi3_import_get_alias_variable_display_unit(fmi3_import_alias_variable_t* alias);
 
 /** @} */
+
+/**
+    \addtogroup fmi3_import 
+    @{
+       \defgroup fmi3_import_dim Handling of dimensions
+    @}
+ */
+
+/**
+    \addtogroup fmi3_import_dim
+    \brief Handling of dimensions for array variables.
+    @{ 
+ */
+
+/** \brief Get a list of the variable's array dimensions.
+    @return list of array dimensions for a variable.
+*/
+FMILIB_EXPORT fmi3_import_dimension_list_t* fmi3_import_get_variable_dimension_list(fmi3_import_variable_t* v);
+
+/** \brief  Get number of dimensions in a list */
+FMILIB_EXPORT size_t fmi3_import_get_dimension_list_size(fmi3_import_dimension_list_t* dl);
+
+/** \brief Get a single dimension from a list */
+FMILIB_EXPORT fmi3_import_dimension_t* fmi3_import_get_dimension(fmi3_import_dimension_list_t* dl, size_t index);
+
+/** \brief Checks if the dimension contains the valueReference attribute */
+FMILIB_EXPORT int fmi3_import_get_dimension_has_vr(fmi3_import_dimension_t*);
+
+/** \brief Checks if the dimension contains the start attribute */
+FMILIB_EXPORT int fmi3_import_get_dimension_has_start(fmi3_import_dimension_t*);
+
+/** \brief Get the start value of the dimension */
+FMILIB_EXPORT fmi3_uint64_t fmi3_import_get_dimension_start(fmi3_import_dimension_t*);
+
+/** \brief Get the valueReference of the dimension */
+FMILIB_EXPORT fmi3_value_reference_t fmi3_import_get_dimension_vr(fmi3_import_dimension_t*);
+
+/** @}
+ */
 
 #ifdef __cplusplus
 }

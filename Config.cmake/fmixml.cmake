@@ -146,7 +146,6 @@ set(FMIXMLHEADERS
     src/FMI3/fmi3_xml_unit_impl.h
     include/FMI3/fmi3_xml_variable.h
     src/FMI3/fmi3_xml_variable_impl.h
-    include/FMI3/fmi3_xml_dimension.h
     src/
  )
 
@@ -177,7 +176,6 @@ set(FMIXMLSOURCE
     src/FMI3/fmi3_xml_unit.c
     src/FMI3/fmi3_xml_vendor_annotations.c
     src/FMI3/fmi3_xml_variable.c
-    src/FMI3/fmi3_xml_dimension.c
 )
 
 include(ExternalProject)

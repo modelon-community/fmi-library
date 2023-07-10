@@ -115,7 +115,7 @@ static int test_array_ok_64(fmi3_import_t* xml, char* varName, fmi3_float64_t* s
     is_array = fmi3_import_variable_is_array(v);
     ASSERT_MSG(is_array, "wrong variable type: expected array, but wasn't");
 
-    dimList = fmi3_import_get_variable_dimension_list(xml, v); /* allocates memory */
+    dimList = fmi3_import_get_variable_dimension_list(v);
     nDims = fmi3_import_get_dimension_list_size(dimList);
 
     /* check num dimensions */
@@ -233,7 +233,7 @@ static int test_array_ok_32(fmi3_import_t* xml, char* varName, fmi3_float32_t* s
     is_array = fmi3_import_variable_is_array(v);
     ASSERT_MSG(is_array, "wrong variable type: expected array, but wasn't");
 
-    dimList = fmi3_import_get_variable_dimension_list(xml, v); /* allocates memory */
+    dimList = fmi3_import_get_variable_dimension_list(v); /* allocates memory */
     nDims = fmi3_import_get_dimension_list_size(dimList);
 
     /* check num dimensions */
@@ -397,7 +397,7 @@ static int test_array8_32_can_find_index_and_vr_of_dimensions(fmi3_import_t* xml
     is_array = fmi3_import_variable_is_array(v);
     ASSERT_MSG(is_array, "wrong variable type: expected array, but wasn't");
 
-    dimList = fmi3_import_get_variable_dimension_list(xml, v); /* allocates memory */
+    dimList = fmi3_import_get_variable_dimension_list(v); /* allocates memory */
     nDims = fmi3_import_get_dimension_list_size(dimList);
 
     ASSERT_MSG_GOTO(cleanup, nDims == nDimsExp, "wrong number of dimensions: %lu, expected: %lu", nDims, nDimsExp);

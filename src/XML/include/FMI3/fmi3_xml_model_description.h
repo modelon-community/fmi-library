@@ -93,7 +93,14 @@ typedef struct fmi3_xml_alias_variable_t  fmi3_xml_alias_variable_t;
 typedef struct fmi3_xml_alias_variable_list_t fmi3_xml_alias_variable_list_t;
 /** @} */
 
-/**\name Structures encapsulating unit information */
+/** \name Structure encapsulating variable dimension information
+ * @{
+ */
+typedef struct fmi3_xml_dimension_t fmi3_xml_dimension_t;
+typedef struct fmi3_xml_dimension_list_t fmi3_xml_dimension_list_t;
+/** @} */
+
+/** \name Structures encapsulating unit information */
 /**@{ */
 typedef struct fmi3_xml_unit_t fmi3_xml_unit_t;
 typedef struct fmi3_xml_display_unit_t fmi3_xml_display_unit_t;

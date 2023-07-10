@@ -6,7 +6,19 @@
         {
             "label": "Memcheck",
             "type": "shell",
+            "command": "make install test_unit CONFIG_FILE=build/config/ubuntu64",
+            "problemMatcher": []
+        },
+        {
+            "label": "Test",
+            "type": "shell",
             "command": "make install test CONFIG_FILE=build/config/ubuntu64",
+            "problemMatcher": []
+        },
+        {
+            "label": "Test installation",
+            "type": "shell",
+            "command": "make install test_installation CONFIG_FILE=build/config/ubuntu64",
             "problemMatcher": []
         }
     ]

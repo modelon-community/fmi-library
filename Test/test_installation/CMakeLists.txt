@@ -33,5 +33,7 @@ endif()
 add_executable(main main.c)
 target_link_directories(main PRIVATE ${FMIL_HOME}/lib)
 target_include_directories(main PRIVATE ${FMIL_HOME}/include)
+target_link_libraries(main PRIVATE fmilib dl)
 
-add_test(test_fmil_installation main)
+enable_testing()
+add_test(test_installation main)

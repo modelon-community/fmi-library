@@ -30,10 +30,60 @@ if (FMIL_HOME STREQUAL "unset" OR FMIL_HOME STREQUAL "")
     message(FATAL_ERROR "Unset config variable: FMIL_HOME")
 endif()
 
-add_executable(main main.c)
-target_link_directories(main PRIVATE ${FMIL_HOME}/lib)
-target_include_directories(main PRIVATE ${FMIL_HOME}/include)
-target_link_libraries(main PRIVATE fmilib dl)
-
 enable_testing()
+
+# ==============================================================================
+# Test static installation
+# ==============================================================================
+
+add_library(fmilib STATIC IMPORTED)
+set_property(TARGET fmilib PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${FMIL_HOME}/include")
+if(MSVC)
+    set_property(TARGET fmilib PROPERTY IMPORTED_LOCATION "${FMIL_HOME}/lib/fmilib.lib")
+else()
+    set_property(TARGET fmilib PROPERTY IMPORTED_LOCATION "${FMIL_HOME}/lib/libfmilib.a")
+endif()
+
+add_executable(main main.c)
+target_link_libraries(main PRIVATE fmilib)
+if(WIN32)
+    target_link_libraries(main PRIVATE fmilib Shlwapi)
+else()
+    target_link_libraries(main PRIVATE fmilib dl)
+endif()
+if(MINGW)
+    # Needed for compiling against static libs on MinGW. FIXME: Should not be needed.
+    target_compile_definitions(main PRIVATE FMILIB_STATIC_LIB_ONLY)
+endif()
+
 add_test(test_installation main)
+
+# ==============================================================================
+# Test shared installation
+# ==============================================================================
+
+add_library(fmilib_shared SHARED IMPORTED)
+set_property(TARGET fmilib_shared PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${FMIL_HOME}/include")
+if(MSVC)
+    set_property(TARGET fmilib_shared PROPERTY IMPORTED_LOCATION "${FMIL_HOME}/lib/fmilib_shared.dll")
+    set_property(TARGET fmilib_shared PROPERTY IMPORTED_IMPLIB   "${FMIL_HOME}/lib/fmilib_shared.lib")
+elseif(MINGW)
+    set_property(TARGET fmilib_shared PROPERTY IMPORTED_LOCATION "${FMIL_HOME}/lib/libfmilib_shared.dll")
+    set_property(TARGET fmilib_shared PROPERTY IMPORTED_IMPLIB   "${FMIL_HOME}/lib/libfmilib_shared.dll.a")
+else()
+    set_property(TARGET fmilib_shared PROPERTY IMPORTED_LOCATION "${FMIL_HOME}/lib/fmilib_shared.so")
+endif()
+
+add_executable(main_shared main.c)
+target_link_libraries(main_shared PRIVATE fmilib_shared)
+if(WIN32)
+    target_link_libraries(main_shared PRIVATE fmilib_shared Shlwapi)
+else()
+    target_link_libraries(main_shared PRIVATE fmilib_shared dl)
+endif()
+
+add_test(test_installation_shared main_shared)
+if(WIN32)
+    # NOTE: Just replacing PATH since appending to it is troublesome due to escaping of ; in Windows paths.
+    set_property(TEST test_installation_shared PROPERTY ENVIRONMENT "PATH=${FMIL_HOME}/lib")
+endif()

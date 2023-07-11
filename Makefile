@@ -28,7 +28,6 @@ generate:
 			-DFMILIB_BUILD_TESTS=$(BUILD_TESTS) \
 			-DFMILIB_TEST_LOCALE=$(TEST_LOCALE) \
 			-DCMAKE_BUILD_TYPE=$(BUILD_TYPE) \
-			-DCMAKE_VERBOSE_MAKEFILE=on \
 			$(FMILIB_CMAKE_CUSTOM_FLAGS) \
 			-G $(GENERATOR) \
 			../$(SRC_DIR)
@@ -44,7 +43,7 @@ test_installation: install
 	cd Test/test_installation; \
 	rm -rf build && mkdir -p build; \
 	cd build; \
-	cmake -DFMIL_HOME=$(FMIL_REPO_DIR)/$(INSTALL_DIR) -DCMAKE_VERBOSE_MAKEFILE=on -G $(GENERATOR) ..; \
+	cmake -DFMIL_HOME=$(FMIL_REPO_DIR)/$(INSTALL_DIR) -G $(GENERATOR) ..; \
 	cmake --build .; \
 	ctest $(CTEST_FLAGS_COMMON)
 

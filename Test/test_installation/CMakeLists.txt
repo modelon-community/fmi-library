@@ -30,12 +30,22 @@ if (FMIL_HOME STREQUAL "unset" OR FMIL_HOME STREQUAL "")
     message(FATAL_ERROR "Unset config variable: FMIL_HOME")
 endif()
 
+# Macro that sets MSVC RTL for the target to the same one as FMIL was compiled with.
+macro(target_set_msvcrt TARGET_NAME)
+    if(FMILIB_BUILD_WITH_STATIC_RTLIB)
+        set_property(TARGET ${TARGET_NAME} PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded")
+    else()
+        set_property(TARGET ${TARGET_NAME} PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreadedDLL")
+    endif()
+endmacro()
+
 enable_testing()
 
 # ==============================================================================
 # Test static installation
 # ==============================================================================
 
+# Import FMIL
 add_library(fmilib STATIC IMPORTED)
 set_property(TARGET fmilib PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${FMIL_HOME}/include")
 if(MSVC)
@@ -44,6 +54,7 @@ else()
     set_property(TARGET fmilib PROPERTY IMPORTED_LOCATION "${FMIL_HOME}/lib/libfmilib.a")
 endif()
 
+# Build the test
 add_executable(main main.c)
 target_link_libraries(main PRIVATE fmilib)
 if(WIN32)
@@ -55,6 +66,9 @@ if(WIN32)
     # Needed for compiling against static libs. FIXME: Should not be needed.
     target_compile_definitions(main PRIVATE FMILIB_STATIC_LIB_ONLY)
 endif()
+if(MSVC)
+    target_set_msvcrt(main)
+endif()
 
 add_test(test_installation main)
 
@@ -62,6 +76,7 @@ add_test(test_installation main)
 # Test shared installation
 # ==============================================================================
 
+# Import FMIL
 add_library(fmilib_shared SHARED IMPORTED)
 set_property(TARGET fmilib_shared PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${FMIL_HOME}/include")
 if(MSVC)
@@ -74,6 +89,7 @@ else()
     set_property(TARGET fmilib_shared PROPERTY IMPORTED_LOCATION "${FMIL_HOME}/lib/libfmilib_shared.so")
 endif()
 
+# Build the test
 add_executable(main_shared main.c)
 target_link_libraries(main_shared PRIVATE fmilib_shared)
 if(WIN32)
@@ -81,9 +97,13 @@ if(WIN32)
 else()
     target_link_libraries(main_shared PRIVATE fmilib_shared dl)
 endif()
+if(MSVC)
+    target_set_msvcrt(main_shared)
+endif()
 
 add_test(test_installation_shared main_shared)
 if(WIN32)
-    # NOTE: Just replacing PATH since appending to it is troublesome due to escaping of ; in Windows paths.
+    # NOTE: Just replacing PATH instead of appending since that's troublesome
+    # due to escaping of ';' in Windows paths.
     set_property(TEST test_installation_shared PROPERTY ENVIRONMENT "PATH=${FMIL_HOME}/lib")
 endif()

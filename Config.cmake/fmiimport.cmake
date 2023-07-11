@@ -21,8 +21,6 @@ include(fmicapi)
 ################################################################################
 set(DOXYFILE_EXTRA_SOURCES "${DOXYFILE_EXTRA_SOURCES} \"${FMIIMPORTDIR}/include\"")
 
-set(FMIIMPORT_LIBRARIES fmiimport)
-
 set(FMIIMPORT_PUBHEADERS
     include/FMI1/fmi1_import.h
     include/FMI1/fmi1_import_capi.h
@@ -127,9 +125,9 @@ set(FMIIMPORT_PUBLIC_INCLUDE_DIRS
     ${FMIIMPORT_PUBLIC_INCLUDE_DIR}
 )
 
-add_library(fmiimport ${FMILIBKIND} ${FMIIMPORTSOURCE} ${FMIIMPORTHEADERS})
+add_library(fmiimport STATIC ${FMIIMPORTSOURCE} ${FMIIMPORTHEADERS})
 target_link_libraries(fmiimport
-    PRIVATE ${JMUTIL_LIBRARIES} ${FMIXML_LIBRARIES} ${FMIZIP_LIBRARIES} ${FMICAPI_LIBRARIES}
+    PRIVATE jmutils fmixml fmizip fmicapi
 )
 target_include_directories(fmiimport
     PRIVATE ${FMIIMPORT_PRIVATE_INCLUDE_DIRS}

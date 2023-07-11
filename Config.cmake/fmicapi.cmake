@@ -18,8 +18,6 @@ set(FMICAPIDIR ${FMILIBRARYHOME}/src/CAPI)
 
 include(jmutil)
 
-set(FMICAPI_LIBRARIES fmicapi)
-
 set(FMICAPISOURCE
     src/FMI1/fmi1_capi_cs.c
     src/FMI1/fmi1_capi_me.c
@@ -44,8 +42,8 @@ set(FMICAPIHEADERS
 PREFIXLIST(FMICAPISOURCE  ${FMICAPIDIR}/)
 PREFIXLIST(FMICAPIHEADERS ${FMICAPIDIR}/)
 
-add_library(fmicapi ${FMILIBKIND} ${FMICAPISOURCE} ${FMICAPIHEADERS})
-target_link_libraries(fmicapi PUBLIC ${JMUTIL_LIBRARIES})
+add_library(fmicapi STATIC ${FMICAPISOURCE} ${FMICAPIHEADERS})
+target_link_libraries(fmicapi PUBLIC jmutils)
 target_include_directories(fmicapi
     PRIVATE
         ${FMICAPIDIR}/src

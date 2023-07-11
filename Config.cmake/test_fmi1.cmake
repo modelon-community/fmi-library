@@ -12,12 +12,14 @@
 #    along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 
 add_executable(fmi1_capi_cs_test ${FMIL_TEST_DIR}/FMI1/fmi1_capi_cs_test.c)
-target_link_libraries(fmi1_capi_cs_test ${FMICAPI_LIBRARIES})
+target_link_libraries(fmi1_capi_cs_test fmicapi)
 target_include_directories(fmi1_capi_cs_test PRIVATE ${FMIL_TEST_INCLUDE_DIRS})
+target_compile_definitions(fmi1_capi_cs_test PRIVATE ${FMIL_LINK_WITH_SUBLIBS})
 
-add_executable (fmi1_capi_me_test ${FMIL_TEST_DIR}/FMI1/fmi1_capi_me_test.c)
-target_link_libraries (fmi1_capi_me_test ${FMICAPI_LIBRARIES})
+add_executable(fmi1_capi_me_test ${FMIL_TEST_DIR}/FMI1/fmi1_capi_me_test.c)
+target_link_libraries (fmi1_capi_me_test fmicapi jmutils)
 target_include_directories(fmi1_capi_me_test PRIVATE ${FMIL_TEST_INCLUDE_DIRS})
+target_compile_definitions(fmi1_capi_me_test PRIVATE ${FMIL_LINK_WITH_SUBLIBS})
 
 #Defines for the test FMUs
 set(FMU_DUMMY_ME_MODEL_IDENTIFIER BouncingBall) #This must be the same as in the xml-file

@@ -23,13 +23,23 @@ set(FMIL_TEST_INCLUDE_DIRS
     ${FMIL_TEST_DIR}/FMI3
 )
 
+# Workaround to allow testing with sublibs on MinGW (unclear why it works with MSVC).
+#
+# The problem is that in config_fmilib.h we define FMILIB_EXPORT as __declspec(import),
+# when building the tests. This makes the test expect to link against an import
+# library. This is no problem when testing against fmilib_shared because it's a shared
+# library, but we never compile the sublibs to shared libraries - only static libraries.
+#
+# This workaround makes FMILIB_EXPORT expand to nothing.
+SET(FMIL_LINK_WITH_SUBLIBS FMILIB_STATIC_LIB_ONLY)
+
 # ===============================================================================
 # fmi_testutil
 # ===============================================================================
 
 add_library(fmi_testutil STATIC ${FMIL_TEST_DIR}/fmi_testutil.c)
 
-target_link_libraries(fmi_testutil PRIVATE ${JMUTIL_LIBRARIES})  # Uses jm_vector
+target_link_libraries(fmi_testutil PRIVATE jmutils)  # Uses jm_vector
 if(FMILIB_BUILD_SHARED_LIB AND (FMILIB_LINK_TEST_TO_SHAREDLIB OR NOT FMILIB_BUILD_STATIC_LIB))
     set(FMILIBFORTEST fmilib_shared fmi_testutil)
     target_link_libraries(fmi_testutil PRIVATE fmilib_shared)
@@ -46,20 +56,20 @@ target_include_directories(fmi_testutil PUBLIC ${FMIL_TEST_INCLUDE_DIRS})
 
 # Test: jm_vector
 add_executable(jm_vector_test ${FMIL_TEST_DIR}/jm_vector_test.c)
-target_link_libraries(jm_vector_test PRIVATE ${JMUTIL_LIBRARIES})
+target_link_libraries(jm_vector_test PRIVATE jmutils)
 target_include_directories(jm_vector_test PRIVATE ${FMIL_TEST_INCLUDE_DIRS})
 
 # Test: jm locale
 add_executable(jm_locale_test ${FMIL_TEST_DIR}/jm_locale_test.c)
-target_link_libraries(jm_locale_test ${JMUTIL_LIBRARIES})
+target_link_libraries(jm_locale_test jmutils)
 target_include_directories(jm_locale_test PRIVATE ${FMIL_TEST_INCLUDE_DIRS})
 if(FMILIB_TEST_LOCALE)
-    target_compile_definitions(jm_locale_test PRIVATE -DFMILIB_TEST_LOCALE)
+    target_compile_definitions(jm_locale_test PRIVATE -DFMILIB_TEST_LOCALE ${FMIL_LINK_WITH_SUBLIBS})
 endif()
 
 #Create function that zips the dummy FMUs
 add_executable(compress_test_fmu_zip ${FMIL_TEST_DIR}/compress_test_fmu_zip.c)
-target_link_libraries(compress_test_fmu_zip ${FMIZIP_LIBRARIES})
+target_link_libraries(compress_test_fmu_zip fmizip)
 target_include_directories(compress_test_fmu_zip PRIVATE ${FMIL_TEST_INCLUDE_DIRS})
 
 set_target_properties(
@@ -143,11 +153,11 @@ function(compress_fmu OUTPUT_FOLDER_T MODEL_IDENTIFIER_T FILE_NAME_CS_ME_EXT_T T
 endfunction(compress_fmu)
 
 add_executable(fmi_zip_zip_test ${FMIL_TEST_DIR}/fmi_zip_zip_test.c )
-target_link_libraries(fmi_zip_zip_test ${FMIZIP_LIBRARIES})
+target_link_libraries(fmi_zip_zip_test fmizip)
 target_include_directories(fmi_zip_zip_test PRIVATE ${FMIL_TEST_INCLUDE_DIRS})
 
 add_executable(fmi_zip_unzip_test ${FMIL_TEST_DIR}/fmi_zip_unzip_test.c )
-target_link_libraries(fmi_zip_unzip_test ${FMIZIP_LIBRARIES})
+target_link_libraries(fmi_zip_unzip_test fmizip)
 target_include_directories(fmi_zip_unzip_test PRIVATE ${FMIL_TEST_INCLUDE_DIRS})
 
 add_executable(fmi_import_test

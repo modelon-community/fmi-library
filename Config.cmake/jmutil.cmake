@@ -14,7 +14,6 @@
 if(NOT JMUTILDIR)
 set(JMUTILDIR ${FMILIBRARYHOME}/src/Util/)
 
-set(JMUTIL_LIBRARIES jmutils)
 set(DOXYFILE_EXTRA_SOURCES "${DOXYFILE_EXTRA_SOURCES} \"${JMUTILDIR}/include\"")
 
 set(JMUTILSOURCE
@@ -81,8 +80,14 @@ set(JMUTILS_PUBLIC_INCLUDE_DIRS
     ${JMUTIL_PUBLIC_INCLUDE_DIR}
 )
 
-add_library(jmutils ${FMILIBKIND} ${JMUTILSOURCE} ${JMUTILHEADERS})
-target_link_libraries(jmutils PRIVATE c99snprintf)
+if(UNIX)
+    set(JMUTILS_DEPENDENCY_LIBS c99snprintf dl)
+else()
+    set(JMUTILS_DEPENDENCY_LIBS c99snprintf Shlwapi)
+endif()
+
+add_library(jmutils STATIC ${JMUTILSOURCE} ${JMUTILHEADERS})
+target_link_libraries(jmutils PRIVATE ${JMUTILS_DEPENDENCY_LIBS})
 target_include_directories(jmutils
     PUBLIC ${JMUTILS_PUBLIC_INCLUDE_DIRS}
 )
@@ -90,11 +95,5 @@ target_include_directories(jmutils
 if(UNIX AND NOT APPLE)
     target_compile_definitions(jmutils PRIVATE -D_GNU_SOURCE)
 endif()
-
-if(UNIX)
-    target_link_libraries(jmutils PRIVATE dl)
-elseif(WIN32)
-    target_link_libraries(jmutils PRIVATE Shlwapi)
-endif(WIN32)
 
 endif(NOT JMUTILDIR)

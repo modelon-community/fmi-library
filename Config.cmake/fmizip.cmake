@@ -18,8 +18,6 @@ include(jmutil)
 
 # set(DOXYFILE_EXTRA_SOURCES "${DOXYFILE_EXTRA_SOURCES} \"${FMIZIPDIR}/include\"")
 
-set(FMIZIP_LIBRARIES fmizip)
-
 add_subdirectory(Config.cmake/Minizip)
 
 set(FMIZIPSOURCE
@@ -34,7 +32,7 @@ set(FMIZIPHEADERS
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DZLIB_STATIC")
 
-add_library(fmizip ${FMILIBKIND} ${FMIZIPSOURCE} ${FMIZIPHEADERS})
+add_library(fmizip STATIC ${FMIZIPSOURCE} ${FMIZIPHEADERS})
 target_link_libraries(fmizip
     PRIVATE minizip
     PUBLIC  jmutils

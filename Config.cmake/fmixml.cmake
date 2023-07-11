@@ -101,7 +101,6 @@ endif()
 
 # set(DOXYFILE_EXTRA_SOURCES "${DOXYFILE_EXTRA_SOURCES} \"${FMIXMLDIR}/include\"")
 
-set(FMIXML_LIBRARIES fmixml)
 set(FMIXML_EXPAT_DIR "${FMILIB_THIRDPARTYLIBS}/Expat/expat-2.4.8")
 
 set(FMIXMLHEADERS
@@ -277,13 +276,13 @@ list(APPEND FMIXMLSOURCE
 
 debug_message(STATUS "adding fmixml")
 
-add_library(fmixml ${FMILIBKIND} ${FMIXMLSOURCE} ${FMIXMLHEADERS})
+add_library(fmixml STATIC ${FMIXMLSOURCE} ${FMIXMLHEADERS})
 if(MSVC)
     target_compile_definitions(fmixml PUBLIC XML_STATIC)
 endif()
 target_link_libraries(fmixml
     PRIVATE expat
-    PUBLIC ${JMUTIL_LIBRARIES}
+    PUBLIC  jmutils
 )
 target_include_directories(fmixml
     PRIVATE

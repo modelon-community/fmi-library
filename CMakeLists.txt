@@ -196,7 +196,6 @@ if(MSVC AND (${CMAKE_GENERATOR} MATCHES "Visual Studio 10"))
     source_group("Private headers\\FMI3" REGULAR_EXPRESSION "fmi3_.*impl.h")
 endif()
 
-set(FMILIBKIND STATIC)
 if(NOT FMILIB_STATIC_LIB_ONLY)
     add_definitions(-DFMILIB_BUILDING_LIBRARY)
 endif()
@@ -290,8 +289,8 @@ if(FMILIB_BUILD_TESTS)
     )
 endif()
 
-set(FMILIB_SHARED_SUBLIBS ${FMIXML_LIBRARIES} ${FMIZIP_LIBRARIES} ${FMICAPI_LIBRARIES} expat minizip zlib c99snprintf)
-set(FMILIB_SUBLIBS ${FMIIMPORT_LIBRARIES} ${JMUTIL_LIBRARIES} ${FMILIB_SHARED_SUBLIBS})
+set(FMILIB_SHARED_SUBLIBS fmixml fmizip fmicapi expat minizip zlib c99snprintf)
+set(FMILIB_SUBLIBS fmiimport jmutils ${FMILIB_SHARED_SUBLIBS})
 # XXX: Unclear why we create intermediate sublibs instead of just giving everything as source.
 # Probably also wouldn't get problems with using PRIVATE/PUBLIC on linking sublibs on Windows.
 set(FMILIB_SHARED_SRC ${FMIIMPORTSOURCE} ${FMIIMPORTHEADERS} ${JMUTILSOURCE} ${JMUTIL_PUBHEADERS})
@@ -364,7 +363,13 @@ if(FMILIB_BUILD_SHARED_LIB)
 
     # Must be PRIVATE, or tests will later inherit compile/link properties from sublibs.
     # That is incorrect, and may cause link issues.
-    target_link_libraries(fmilib_shared PRIVATE ${FMILIB_SHARED_SUBLIBS})
+    #
+    # FIXME:
+    # Issue: We link static libraries (fmixml) that depend on other static libraries (jmutils),
+    # which are also compiled from source (jmutils) to a shared library.
+    # One solution is to also package jmutils as a shared lib and to fix proper packaging for
+    # find_package etc. (which would make it easier to get away from merge_static_libs as well).
+    target_link_libraries(fmilib_shared PRIVATE ${FMILIB_SHARED_SUBLIBS} ${JMUTILS_DEPENDENCY_LIBS})
 
     target_include_directories(fmilib_shared
         PRIVATE

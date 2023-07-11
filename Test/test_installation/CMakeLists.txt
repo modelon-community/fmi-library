@@ -11,7 +11,7 @@
 #    You should have received a copy of the FMILIB_License.txt file
 #    along with this program. If not, contact Modelon AB <http://www.modelon.com>.
  
-cmake_minimum_required(VERSION 2.8.6 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.15 FATAL_ERROR)
 
 # Performs a smoke test on the install directory of FMIL. Verifies for example
 # that:
@@ -51,8 +51,8 @@ if(WIN32)
 else()
     target_link_libraries(main PRIVATE fmilib dl)
 endif()
-if(MINGW)
-    # Needed for compiling against static libs on MinGW. FIXME: Should not be needed.
+if(WIN32)
+    # Needed for compiling against static libs. FIXME: Should not be needed.
     target_compile_definitions(main PRIVATE FMILIB_STATIC_LIB_ONLY)
 endif()
 

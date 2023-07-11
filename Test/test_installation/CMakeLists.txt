@@ -71,7 +71,7 @@ elseif(MINGW)
     set_property(TARGET fmilib_shared PROPERTY IMPORTED_LOCATION "${FMIL_HOME}/lib/libfmilib_shared.dll")
     set_property(TARGET fmilib_shared PROPERTY IMPORTED_IMPLIB   "${FMIL_HOME}/lib/libfmilib_shared.dll.a")
 else()
-    set_property(TARGET fmilib_shared PROPERTY IMPORTED_LOCATION "${FMIL_HOME}/lib/fmilib_shared.so")
+    set_property(TARGET fmilib_shared PROPERTY IMPORTED_LOCATION "${FMIL_HOME}/lib/libfmilib_shared.so")
 endif()
 
 add_executable(main_shared main.c)

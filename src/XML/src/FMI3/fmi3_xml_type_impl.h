@@ -279,7 +279,7 @@ static fmi3_xml_variable_type_base_t* fmi3_xml_find_type_props(fmi3_xml_variable
     return 0;
 }
 
-struct fmi3_xml_type_definitions_t {
+struct fmi3_xml_type_definition_list_t {
 
     // All the parsed TypeDefinitions. Type of .ptr: fmi3_xml_variable_typedef_t
     jm_vector(jm_named_ptr) typeDefinitions;
@@ -315,17 +315,17 @@ struct fmi3_xml_type_definitions_t {
     fmi3_xml_clock_type_props_t   defaultClockType;
 };
 
-extern void fmi3_xml_init_type_definitions(fmi3_xml_type_definitions_t* td, jm_callbacks* cb) ;
+extern void fmi3_xml_init_type_definitions(fmi3_xml_type_definition_list_t* td, jm_callbacks* cb) ;
 
-extern void fmi3_xml_free_type_definitions_data(fmi3_xml_type_definitions_t* td);
+extern void fmi3_xml_free_type_definitions_data(fmi3_xml_type_definition_list_t* td);
 
 extern void fmi3_xml_init_enum_typedef(fmi3_xml_enumeration_typedef_t* type, jm_callbacks* cb);
 
 extern void fmi3_xml_free_enum_type(jm_named_ptr named);
 
-fmi3_xml_variable_type_base_t* fmi3_xml_alloc_variable_or_typedef_props(fmi3_xml_type_definitions_t* td, fmi3_xml_variable_type_base_t* base, size_t typeSize);
+fmi3_xml_variable_type_base_t* fmi3_xml_alloc_variable_or_typedef_props(fmi3_xml_type_definition_list_t* td, fmi3_xml_variable_type_base_t* base, size_t typeSize);
 
-fmi3_xml_variable_type_base_t* fmi3_xml_alloc_variable_type_start(fmi3_xml_type_definitions_t* td,fmi3_xml_variable_type_base_t* base, size_t typeSize);
+fmi3_xml_variable_type_base_t* fmi3_xml_alloc_variable_type_start(fmi3_xml_type_definition_list_t* td,fmi3_xml_variable_type_base_t* base, size_t typeSize);
 
 fmi3_xml_float_type_props_t* fmi3_xml_parse_float_type_properties(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID, fmi3_xml_variable_type_base_t* fallbackType, const fmi3_xml_primitive_type_t* primType);
 fmi3_xml_int_type_props_t* fmi3_xml_parse_intXX_type_properties(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID, fmi3_xml_variable_type_base_t* fallbackType, const fmi3_xml_primitive_type_t* primType);

@@ -236,9 +236,9 @@ void printVariableInfo(fmi3_import_t* fmu,
         }
     }
     // Print aliases:
-    fmi3_import_alias_variables_t* aliases = fmi3_import_get_variable_aliases(v);
+    fmi3_import_alias_variable_list_t* aliases = fmi3_import_get_variable_alias_list(v);
     fmi3_import_alias_variable_t* alias;
-    for (size_t i = 0; i < fmi3_import_get_alias_variables_number(aliases); i++) {
+    for (size_t i = 0; i < fmi3_import_get_alias_variable_list_size(aliases); i++) {
         if (i == 0) {
             printf("Listing aliases: \n");
         }
@@ -386,9 +386,9 @@ static void test_parse_bouncingball(const char* xmldir, bool expectParseFailure)
         }
     }
     {
-        fmi3_import_unit_definitions_t* ud = fmi3_import_get_unit_definitions(fmu);
+        fmi3_import_unit_definition_list_t* ud = fmi3_import_get_unit_definition_list(fmu);
         if (ud) {
-            unsigned  i, nu = fmi3_import_get_unit_definitions_number(ud);
+            unsigned  i, nu = fmi3_import_get_unit_definition_list_size(ud);
             printf("There are %d different units used \n", nu);
 
             for (i = 0; i < nu; i++) {
@@ -399,22 +399,22 @@ static void test_parse_bouncingball(const char* xmldir, bool expectParseFailure)
                     break;
                 }
                 fmi3_SI_base_unit_exp_to_string(fmi3_import_get_SI_unit_exponents(u), 1000, buf);
-                printf("Unit [%d] is %s, base unit %s, factor %g, offset %g, it has %d display units\n",
+                printf("Unit [%d] is %s, base unit %s, factor %g, offset %g, it has %zu display units\n",
                     i, fmi3_import_get_unit_name(u),
                     buf,
                     fmi3_import_get_SI_unit_factor(u),
                     fmi3_import_get_SI_unit_offset(u),
-                    fmi3_import_get_unit_display_unit_number(u));
+                    fmi3_import_get_unit_display_unit_list_size(u));
             }
         }
         else
             printf("Error getting unit definitions (%s)\n", fmi3_import_get_last_error(fmu));
     }
     {
-        fmi3_import_type_definitions_t* td = fmi3_import_get_type_definitions(fmu);
+        fmi3_import_type_definition_list_t* td = fmi3_import_get_type_definition_list(fmu);
         if (td) {
             {
-                unsigned i, ntd = fmi3_import_get_type_definition_number(td);
+                unsigned i, ntd = fmi3_import_get_type_definition_list_size(td);
                 printf("There are %d defs\n", ntd);
                 for (i = 0; i < ntd; i++) {
                     fmi3_import_variable_typedef_t* vt = fmi3_import_get_typedef(td, i);

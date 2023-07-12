@@ -23,12 +23,11 @@ extern "C" {
 #include <JM/jm_callbacks.h>
 #include <FMI/fmi_import_util.h>
 #include <FMI/fmi_import_context.h>
-/* #include <FMI3/fmi3_xml_model_description.h>*/
+
 
 #include <FMI3/fmi3_types.h>
 #include <FMI3/fmi3_function_types.h>
 #include <FMI3/fmi3_enums.h>
-/* #include <FMI3/fmi3_capi.h> */
 
 /**
 \file fmi3_import_capi.h

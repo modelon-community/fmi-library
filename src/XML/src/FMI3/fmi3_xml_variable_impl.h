@@ -21,7 +21,6 @@
 #include <FMI3/fmi3_xml_model_description.h>
 
 #include "fmi3_xml_type_impl.h"
-#include "fmi3_xml_dimension_impl.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -36,7 +35,7 @@ typedef union fmi3_xml_valueref_or_variable_union_t {
     fmi3_xml_variable_t* variable;
 } fmi3_xml_valueref_or_variable_union_t;
 
-struct fmi3_xml_alias_variables_t {
+struct fmi3_xml_alias_variable_list_t {
     jm_vector(jm_voidp) vec;
 };
 
@@ -44,6 +43,16 @@ struct fmi3_xml_alias_variable_t {
     const char* description;
     fmi3_xml_display_unit_t* displayUnit;  // Only used for FLoatXX variables.
     char name[1];
+};
+
+struct fmi3_xml_dimension_t {
+    int has_vr;
+    fmi3_uint64_t start;           /* value of the start attribute if 'has_vr' is false, else unassigned */
+    fmi3_uint32_t vr;              /* value of the valueReference attribute if 'has_vr' is true, else unassigned */
+};
+
+struct fmi3_xml_dimension_list_t {
+    jm_vector(jm_voidp) vec;
 };
 
 /* General variable type is convenient to unify all the variable list operations */
@@ -70,14 +79,11 @@ struct fmi3_xml_variable_t {
     char canHandleMultipleSetPerTimeInstant;
     char intermediateUpdate;
 
-    jm_vector(fmi3_value_reference_t)* clocks;   /* Vrs in the clock attribute. NULL if attribute doesn't exist. */
-
-    /* array fields */
-    jm_vector(fmi3_xml_dimension_t)* dimensionsVector; /* stores the dimensions and their attributes */
-
+    jm_vector(fmi3_value_reference_t)* clocks;   /* VRs in the clock attribute. NULL if attribute doesn't exist. */
+    jm_vector(jm_voidp)* dimensions;
     jm_vector(jm_voidp)* aliases;
 
-    /* temp fields during parsing*/
+    /* temp fields during parsing - FIXME: If it's temp it should not be here (waste of memory), but on context */
     jm_string startAttr;
 
     /* 'name' field must be last, because its memory is allocated with jm_named_alloc[_v] */

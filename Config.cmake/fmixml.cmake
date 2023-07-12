@@ -1,13 +1,13 @@
 #    Copyright (C) 2012 Modelon AB
-
+#
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the BSD style license.
-
-# #    This program is distributed in the hope that it will be useful,
+#
+#    This program is distributed in the hope that it will be useful,
 #    but WITHOUT ANY WARRANTY; without even the implied warranty of
 #    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #    FMILIB_License.txt file for more details.
-
+#
 #    You should have received a copy of the FMILIB_License.txt file
 #    along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 
@@ -146,7 +146,6 @@ set(FMIXMLHEADERS
     src/FMI3/fmi3_xml_unit_impl.h
     include/FMI3/fmi3_xml_variable.h
     src/FMI3/fmi3_xml_variable_impl.h
-    include/FMI3/fmi3_xml_dimension.h
     src/
  )
 
@@ -177,7 +176,6 @@ set(FMIXMLSOURCE
     src/FMI3/fmi3_xml_unit.c
     src/FMI3/fmi3_xml_vendor_annotations.c
     src/FMI3/fmi3_xml_variable.c
-    src/FMI3/fmi3_xml_dimension.c
 )
 
 include(ExternalProject)

@@ -392,18 +392,18 @@ TEST_CASE("Invalid structuralParameter - has dimension") {
     fmi3_import_free(xml);
 }
 
-static fmi3_import_alias_variables_t* get_aliases(fmi3_import_t* fmu, const char* baseVarName,
+static fmi3_import_alias_variable_list_t* get_aliases(fmi3_import_t* fmu, const char* baseVarName,
         size_t nAliasExp)
 {
     fmi3_import_variable_t* v;
-    fmi3_import_alias_variables_t* aliases;
+    fmi3_import_alias_variable_list_t* aliases;
     size_t nAlias;
 
     v = fmi3_import_get_variable_by_name(fmu, baseVarName);
     REQUIRE(v != nullptr);
-    aliases = fmi3_import_get_variable_aliases(v);
+    aliases = fmi3_import_get_variable_alias_list(v);
     REQUIRE(aliases != nullptr);
-    nAlias  = fmi3_import_get_alias_variables_number(aliases);
+    nAlias  = fmi3_import_get_alias_variable_list_size(aliases);
     REQUIRE(nAlias == nAliasExp);
 
     return aliases;
@@ -416,7 +416,7 @@ static void check_aliases(fmi3_import_t* fmu, const char* baseVarName, size_t nA
     const char* name;
     fmi3_xml_display_unit_t* displayUnit;
 
-    fmi3_import_alias_variables_t* aliases = get_aliases(fmu, baseVarName, nAliasExp);
+    fmi3_import_alias_variable_list_t* aliases = get_aliases(fmu, baseVarName, nAliasExp);
     fmi3_import_alias_variable_t* alias;
     
     for (size_t i = 0; i < nAliasExp; i++) {
@@ -447,19 +447,19 @@ TEST_CASE("Alias variables") {
     REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
     
     // Get display unit that we expect some tests will reference:
-    fmi3_import_unit_definitions_t* uds = fmi3_import_get_unit_definitions(fmu);
+    fmi3_import_unit_definition_list_t* uds = fmi3_import_get_unit_definition_list(fmu);
     fmi3_import_unit_t* degK = fmi3_import_get_unit(uds, 0);
     fmi3_import_display_unit_t* degC = fmi3_import_get_unit_display_unit(degK, 0);
     REQUIRE_STREQ(fmi3_import_get_display_unit_name(degC), "degC");
 
-    fmi3_import_alias_variables_t* aliases;
+    fmi3_import_alias_variable_list_t* aliases;
     size_t nAlias;
     
     SECTION("Without alias") {
         fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(fmu, "v1");
         REQUIRE(v != nullptr);
-        aliases = fmi3_import_get_variable_aliases(v);
-        nAlias  = fmi3_import_get_alias_variables_number(aliases);
+        aliases = fmi3_import_get_variable_alias_list(v);
+        nAlias  = fmi3_import_get_alias_variable_list_size(aliases);
         REQUIRE(nAlias == 0);
         REQUIRE(aliases == nullptr);
     }

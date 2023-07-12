@@ -19,11 +19,11 @@
 
 #include "fmi3_import_impl.h"
 
-unsigned int fmi3_import_get_type_definition_number(fmi3_import_type_definitions_t* td) {
-    return fmi3_xml_get_type_definition_number(td);
+size_t fmi3_import_get_type_definition_list_size(fmi3_import_type_definition_list_t* td) {
+    return fmi3_xml_get_type_definition_list_size(td);
 }
 
-fmi3_import_variable_typedef_t* fmi3_import_get_typedef(fmi3_import_type_definitions_t* td, unsigned int  index) {
+fmi3_import_variable_typedef_t* fmi3_import_get_typedef(fmi3_import_type_definition_list_t* td, size_t index) {
     return fmi3_xml_get_typedef(td, index);
 }
 
@@ -232,23 +232,23 @@ unsigned int fmi3_import_get_enum_type_min(fmi3_import_enumeration_typedef_t* t)
     return fmi3_xml_get_enum_type_min(t);
 }
 
- unsigned int fmi3_import_get_enum_type_max(fmi3_import_enumeration_typedef_t* t){
+unsigned int fmi3_import_get_enum_type_max(fmi3_import_enumeration_typedef_t* t){
     return fmi3_xml_get_enum_type_max(t);
 }
 
-unsigned int  fmi3_import_get_enum_type_size(fmi3_import_enumeration_typedef_t* t) {
+size_t fmi3_import_get_enum_type_size(fmi3_import_enumeration_typedef_t* t) {
     return fmi3_xml_get_enum_type_size(t);
 }
 
-const char* fmi3_import_get_enum_type_item_name(fmi3_import_enumeration_typedef_t* t, unsigned int  item) {
+const char* fmi3_import_get_enum_type_item_name(fmi3_import_enumeration_typedef_t* t, size_t item) {
     return fmi3_xml_get_enum_type_item_name(t, item);
 }
 
-const char* fmi3_import_get_enum_type_item_description(fmi3_import_enumeration_typedef_t* t, unsigned int  item){
+const char* fmi3_import_get_enum_type_item_description(fmi3_import_enumeration_typedef_t* t, size_t item){
     return fmi3_xml_get_enum_type_item_description(t, item);
 }
 
-int fmi3_import_get_enum_type_item_value(fmi3_import_enumeration_typedef_t* t, unsigned int  item) {
+int fmi3_import_get_enum_type_item_value(fmi3_import_enumeration_typedef_t* t, size_t item) {
     return fmi3_xml_get_enum_type_item_value(t, item);
 }
 

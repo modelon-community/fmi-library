@@ -42,20 +42,20 @@ typedef struct fmi3_xml_unit_t fmi3_import_unit_t;
 /** \brief A display unit. */
 typedef struct fmi3_xml_display_unit_t fmi3_import_display_unit_t;
 /** \brief The list of all the unit definitions in the model */
-typedef struct fmi3_xml_unit_definitions_t fmi3_import_unit_definitions_t;
+typedef struct fmi3_xml_unit_definition_list_t fmi3_import_unit_definition_list_t;
 /**@} */
 
 /** \brief Get the number of unit definitions. */
-FMILIB_EXPORT unsigned int fmi3_import_get_unit_definitions_number(fmi3_import_unit_definitions_t* ud);
+FMILIB_EXPORT size_t fmi3_import_get_unit_definition_list_size(fmi3_import_unit_definition_list_t* ud);
 
 /** \brief Get a unit definition */
-FMILIB_EXPORT fmi3_import_unit_t* fmi3_import_get_unit(fmi3_import_unit_definitions_t* ud, unsigned int index);
+FMILIB_EXPORT fmi3_import_unit_t* fmi3_import_get_unit(fmi3_import_unit_definition_list_t* ud, size_t index);
 
 /** \brief Get a unit name */
 FMILIB_EXPORT const char* fmi3_import_get_unit_name(fmi3_import_unit_t* u);
 
 /** \brief Get the number of display units associated with this unit */
-FMILIB_EXPORT unsigned int fmi3_import_get_unit_display_unit_number(fmi3_import_unit_t* u);
+FMILIB_EXPORT size_t fmi3_import_get_unit_display_unit_list_size(fmi3_import_unit_t* u);
 
 /**
     \brief Get fmi3_SI_base_units_Num SI base units exponents associated with the unit.
@@ -85,7 +85,7 @@ FMILIB_EXPORT double fmi3_import_convert_from_SI_base_unit(double v, fmi3_import
 
 /** \brief Get a display unit object by index.
     @param u unit
-    @param index The index of display unit to be returned. Must be less than the number returned by fmi3_import_get_unit_display_unit_number()
+    @param index The index of display unit to be returned. Must be less than the number returned by fmi3_import_get_unit_display_unit_list_size()
 */
 FMILIB_EXPORT fmi3_import_display_unit_t* fmi3_import_get_unit_display_unit(fmi3_import_unit_t* u, size_t index);
 

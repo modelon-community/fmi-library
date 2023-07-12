@@ -22,7 +22,6 @@
 
 #include "fmi3_xml_model_description.h"
 #include "fmi3_xml_type.h"
-#include "fmi3_xml_dimension.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -48,14 +47,12 @@ fmi3_value_reference_t fmi3_xml_get_variable_vr(fmi3_xml_variable_t*);
 fmi3_xml_variable_typedef_t* fmi3_xml_get_variable_declared_type(fmi3_xml_variable_t*);
 fmi3_base_type_enu_t fmi3_xml_get_variable_base_type(fmi3_xml_variable_t*);
 
-fmi3_xml_alias_variables_t* fmi3_xml_get_variable_aliases(fmi3_xml_variable_t* v);
-size_t fmi3_xml_get_alias_variables_number(fmi3_xml_alias_variables_t* aliases);
-fmi3_xml_alias_variable_t* fmi3_xml_get_alias(fmi3_xml_alias_variables_t* aliases, size_t index);
+fmi3_xml_alias_variable_list_t* fmi3_xml_get_variable_aliases(fmi3_xml_variable_t* v);
+size_t fmi3_xml_get_alias_variables_number(fmi3_xml_alias_variable_list_t* aliases);
+fmi3_xml_alias_variable_t* fmi3_xml_get_alias(fmi3_xml_alias_variable_list_t* aliases, size_t index);
 const char* fmi3_xml_get_alias_variable_name(fmi3_xml_alias_variable_t* alias);
 const char* fmi3_xml_get_alias_variable_description(fmi3_xml_alias_variable_t* alias);
 fmi3_xml_display_unit_t* fmi3_xml_get_alias_variable_display_unit(fmi3_xml_alias_variable_t* alias);
-
-jm_vector(fmi3_xml_dimension_t)* fmi3_xml_get_variable_dimension_vector(fmi3_xml_variable_t* v);
 
 int fmi3_xml_variable_is_array(fmi3_xml_variable_t* v);
 
@@ -189,6 +186,14 @@ fmi3_int64_t fmi3_xml_get_enum_variable_start(fmi3_xml_enum_variable_t* v);
 fmi3_int64_t* fmi3_xml_get_enum_variable_start_array(fmi3_xml_enum_variable_t* v);
 int fmi3_xml_get_enum_variable_min(fmi3_xml_enum_variable_t* v);
 int fmi3_xml_get_enum_variable_max(fmi3_xml_enum_variable_t* v);
+
+fmi3_xml_dimension_list_t* fmi3_xml_get_variable_dimension_list(fmi3_xml_variable_t* v);
+size_t fmi3_xml_get_dimension_list_size(fmi3_xml_dimension_list_t* dl);
+fmi3_xml_dimension_t* fmi3_xml_get_dimension(fmi3_xml_dimension_list_t* dl, size_t idx);
+int fmi3_xml_get_dimension_has_vr(fmi3_xml_dimension_t* dim);
+int fmi3_xml_get_dimension_has_start(fmi3_xml_dimension_t* dim);
+fmi3_uint64_t fmi3_xml_get_dimension_start(fmi3_xml_dimension_t* dim);
+fmi3_value_reference_t fmi3_xml_get_dimension_vr(fmi3_xml_dimension_t* dim);
 
 void fmi3_xml_free_variable(jm_callbacks* callbacks, fmi3_xml_variable_t* var);
 

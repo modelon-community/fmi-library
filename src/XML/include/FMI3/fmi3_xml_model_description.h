@@ -58,7 +58,7 @@ typedef struct fmi3_xml_binary_typedef_t      fmi3_xml_binary_typedef_t;
 typedef struct fmi3_xml_clock_typedef_t       fmi3_xml_clock_typedef_t;
 typedef struct fmi3_xml_variable_typedef_t    fmi3_xml_variable_typedef_t;
 
-typedef struct fmi3_xml_type_definitions_t fmi3_xml_type_definitions_t;
+typedef struct fmi3_xml_type_definition_list_t fmi3_xml_type_definition_list_t;
 /** @} */
 
 /**\name Scalar Variable types */
@@ -90,14 +90,21 @@ typedef struct fmi3_xml_clock_variable_t   fmi3_xml_clock_variable_t;
  * @{
  */
 typedef struct fmi3_xml_alias_variable_t  fmi3_xml_alias_variable_t;
-typedef struct fmi3_xml_alias_variables_t fmi3_xml_alias_variables_t;
+typedef struct fmi3_xml_alias_variable_list_t fmi3_xml_alias_variable_list_t;
 /** @} */
 
-/**\name Structures encapsulating unit information */
+/** \name Structure encapsulating variable dimension information
+ * @{
+ */
+typedef struct fmi3_xml_dimension_t fmi3_xml_dimension_t;
+typedef struct fmi3_xml_dimension_list_t fmi3_xml_dimension_list_t;
+/** @} */
+
+/** \name Structures encapsulating unit information */
 /**@{ */
 typedef struct fmi3_xml_unit_t fmi3_xml_unit_t;
 typedef struct fmi3_xml_display_unit_t fmi3_xml_display_unit_t;
-typedef struct fmi3_xml_unit_definitions_t fmi3_xml_unit_definitions_t;
+typedef struct fmi3_xml_unit_definition_list_t fmi3_xml_unit_definition_list_t;
 /**@} */
 
 /**\name FMU capabilities flags */

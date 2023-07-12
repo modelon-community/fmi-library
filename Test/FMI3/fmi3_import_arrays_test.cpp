@@ -54,7 +54,7 @@ static void get_dimensions_start_sizes(fmi3_import_t* fmu, jm_callbacks* cb, fmi
     /* fill the array */
     for (size_t i = 0; i < nDims; i++) {
         INFO("i = " << i);
-        fmi3_import_dimension_t* d = fmi3_import_get_dimension_list_item(dimList, i);
+        fmi3_import_dimension_t* d = fmi3_import_get_dimension(dimList, i);
 
         if (fmi3_import_get_dimension_has_vr(d)) {
             fmi3_value_reference_t dimVr = fmi3_import_get_dimension_vr(d);
@@ -85,7 +85,7 @@ static void test_array_ok_64(fmi3_import_t* xml, const char* varName, fmi3_float
     REQUIRE(fmi3_import_get_variable_has_start(v) != 0);
     REQUIRE(fmi3_import_variable_is_array(v) != 0);
 
-    dimList = fmi3_import_get_variable_dimension_list(xml, v); /* allocates memory */
+    dimList = fmi3_import_get_variable_dimension_list(v);
     nDims = fmi3_import_get_dimension_list_size(dimList);
 
     /* check num dimensions */
@@ -109,7 +109,6 @@ static void test_array_ok_64(fmi3_import_t* xml, const char* varName, fmi3_float
         REQUIRE(starts[i] == startsExp[i]);
     }
 
-    fmi3_import_free_dimension_list(dimList);
     cb->free(dimSizes);
 }
 
@@ -193,7 +192,7 @@ static void test_array_ok_32(fmi3_import_t* xml, const char* varName, fmi3_float
     REQUIRE(fmi3_import_get_variable_has_start(v) != 0);
     REQUIRE(fmi3_import_variable_is_array(v) != 0);
 
-    dimList = fmi3_import_get_variable_dimension_list(xml, v); /* allocates memory */
+    dimList = fmi3_import_get_variable_dimension_list(v);
     nDims = fmi3_import_get_dimension_list_size(dimList);
 
     /* check num dimensions */
@@ -217,7 +216,6 @@ static void test_array_ok_32(fmi3_import_t* xml, const char* varName, fmi3_float
         REQUIRE(starts[i] == startsExp[i]);
     }
 
-    fmi3_import_free_dimension_list(dimList);
     cb->free(dimSizes);
 }
 
@@ -347,28 +345,28 @@ static void test_array8_32_can_find_index_and_vr_of_dimensions(fmi3_import_t* xm
     REQUIRE(fmi3_import_get_variable_has_start(v) != 0);
     REQUIRE(fmi3_import_variable_is_array(v) != 0);
 
-    dimList = fmi3_import_get_variable_dimension_list(xml, v); /* allocates memory */
+    dimList = fmi3_import_get_variable_dimension_list(v);
     nDims = fmi3_import_get_dimension_list_size(dimList);
 
     REQUIRE(nDims == nDimsExp);
 
     /* check if vr or start attribute */
-    dim = fmi3_import_get_dimension_list_item(dimList, 0);
+    dim = fmi3_import_get_dimension(dimList, 0);
     REQUIRE(fmi3_import_get_dimension_has_start(dim) != 0);
     REQUIRE(fmi3_import_get_dimension_has_vr(dim) == 0);
 
-    dim = fmi3_import_get_dimension_list_item(dimList, 1);
+    dim = fmi3_import_get_dimension(dimList, 1);
     REQUIRE(fmi3_import_get_dimension_has_start(dim) == 0);
     REQUIRE(fmi3_import_get_dimension_has_vr(dim) != 0);
 
-    dim = fmi3_import_get_dimension_list_item(dimList, 2);
+    dim = fmi3_import_get_dimension(dimList, 2);
     REQUIRE(fmi3_import_get_dimension_has_start(dim) != 0);
     REQUIRE(fmi3_import_get_dimension_has_vr(dim) == 0);
 
     /* check values (both start and integer) */
     for (size_t i = 0; i < nDims; i++) {
         INFO("i = " << i);
-        dim = fmi3_import_get_dimension_list_item(dimList, i);
+        dim = fmi3_import_get_dimension(dimList, i);
         int has_start = fmi3_import_get_dimension_has_start(dim);
         if (has_start) { // get dimension directly
             sizeTot *= fmi3_import_get_dimension_start(dim);
@@ -387,8 +385,6 @@ static void test_array8_32_can_find_index_and_vr_of_dimensions(fmi3_import_t* xm
         fmi3_float32_t act = *(starts + i);
         REQUIRE(exp == act);
     }
-
-    fmi3_import_free_dimension_list(dimList);
 }
 
 TEST_CASE("Testing valid arrays") {

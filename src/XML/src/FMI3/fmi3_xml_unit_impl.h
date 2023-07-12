@@ -43,7 +43,7 @@ struct fmi3_xml_unit_t {
         char baseUnit[1];
 };
 
-struct fmi3_xml_unit_definitions_t {
+struct fmi3_xml_unit_definition_list_t {
     jm_vector(jm_named_ptr) definitions;
 };
 

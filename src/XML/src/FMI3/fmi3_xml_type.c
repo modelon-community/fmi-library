@@ -27,12 +27,12 @@ static const char* module = "FMI3XML";
 
 #define UINTXX_MIN (0)
 
-unsigned int fmi3_xml_get_type_definition_number(fmi3_xml_type_definitions_t* td) {
+unsigned int fmi3_xml_get_type_definition_list_size(fmi3_xml_type_definition_list_t* td) {
     return (unsigned int)jm_vector_get_size(jm_named_ptr)(&td->typeDefinitions);
 }
 
-fmi3_xml_variable_typedef_t* fmi3_xml_get_typedef(fmi3_xml_type_definitions_t* td, unsigned int  index) {
-    if(index >= fmi3_xml_get_type_definition_number(td)) return 0;
+fmi3_xml_variable_typedef_t* fmi3_xml_get_typedef(fmi3_xml_type_definition_list_t* td, unsigned int  index) {
+    if(index >= fmi3_xml_get_type_definition_list_size(td)) return 0;
     return (fmi3_xml_variable_typedef_t*)jm_vector_get_item(jm_named_ptr)(&td->typeDefinitions, index).ptr;
 }
 
@@ -562,7 +562,7 @@ void fmi3_xml_free_enumeration_type_props(fmi3_xml_enum_typedef_props_t* type) {
     jm_named_vector_free_data(&type->enumItems);
 }
 
-void fmi3_xml_init_type_definitions(fmi3_xml_type_definitions_t* td, jm_callbacks* cb) {
+void fmi3_xml_init_type_definitions(fmi3_xml_type_definition_list_t* td, jm_callbacks* cb) {
     jm_vector_init(jm_named_ptr)(&td->typeDefinitions,0,cb);
 
     jm_vector_init(jm_string)(&td->quantities, 0, cb);
@@ -588,7 +588,7 @@ void fmi3_xml_init_type_definitions(fmi3_xml_type_definitions_t* td, jm_callback
     td->typePropsList = NULL;
 }
 
-void fmi3_xml_free_type_definitions_data(fmi3_xml_type_definitions_t* td) {
+void fmi3_xml_free_type_definitions_data(fmi3_xml_type_definition_list_t* td) {
     jm_callbacks* cb = td->typeDefinitions.callbacks;
 
     jm_vector_foreach(jm_string)(&td->quantities,(void(*)(const char*))cb->free);
@@ -623,7 +623,7 @@ int fmi3_xml_handle_TypeDefinitions(fmi3_xml_parser_context_t *context, const ch
         jm_log_verbose(context->callbacks, module, "Parsing XML element TypeDefinitions");
     }
     else {
-        fmi3_xml_type_definitions_t* defs =  &context->modelDescription->typeDefinitions;
+        fmi3_xml_type_definition_list_t* defs =  &context->modelDescription->typeDefinitions;
 
         jm_vector_qsort(jm_named_ptr)(&defs->typeDefinitions, jm_compare_named);
         return 0;
@@ -634,7 +634,7 @@ int fmi3_xml_handle_TypeDefinitions(fmi3_xml_parser_context_t *context, const ch
 int fmi3_xml_handle_SimpleType(fmi3_xml_parser_context_t *context, const char* data) {
     if (!data) {
         fmi3_xml_model_description_t* md = context->modelDescription;
-        fmi3_xml_type_definitions_t* td = &md->typeDefinitions;
+        fmi3_xml_type_definition_list_t* td = &md->typeDefinitions;
         jm_named_ptr named, *pnamed;
         fmi3_xml_variable_typedef_t dummy;
         fmi3_xml_variable_typedef_t* typeDef;
@@ -699,7 +699,7 @@ int fmi3_xml_handle_SimpleType(fmi3_xml_parser_context_t *context, const char* d
  * Generic for all struct kinds (float, int, ...), i.e. the caller needs to typecast to the
  * correct type and make sure that enough memory is given via parameter 'typeSize'.
  */
-fmi3_xml_variable_type_base_t* fmi3_xml_alloc_variable_or_typedef_props(fmi3_xml_type_definitions_t* td,
+fmi3_xml_variable_type_base_t* fmi3_xml_alloc_variable_or_typedef_props(fmi3_xml_type_definition_list_t* td,
         fmi3_xml_variable_type_base_t* nextLayer, size_t typeSize)
 {
     jm_callbacks* cb = td->typeDefinitions.callbacks;
@@ -729,7 +729,7 @@ fmi3_xml_variable_type_base_t* fmi3_xml_alloc_variable_or_typedef_props(fmi3_xml
  * @param typeSize The total size of memory for the start_t object. Typically the size of the start_t struct
  *                 plus memory for the actual start value, if the value is variable-size.
  */
-fmi3_xml_variable_type_base_t* fmi3_xml_alloc_variable_type_start(fmi3_xml_type_definitions_t* td,
+fmi3_xml_variable_type_base_t* fmi3_xml_alloc_variable_type_start(fmi3_xml_type_definition_list_t* td,
         fmi3_xml_variable_type_base_t* nextLayer, size_t typeSize)
 {
     jm_callbacks* cb = td->typeDefinitions.callbacks;
@@ -863,7 +863,7 @@ fmi3_xml_int_type_props_t* fmi3_xml_parse_intXX_type_properties(fmi3_xml_parser_
         fmi3_xml_elm_enu_t elmID, fmi3_xml_variable_type_base_t* fallbackType, const fmi3_xml_primitive_type_t* primType)
 {
     fmi3_xml_model_description_t* md = context->modelDescription;
-    fmi3_xml_type_definitions_t* td = &md->typeDefinitions;
+    fmi3_xml_type_definition_list_t* td = &md->typeDefinitions;
     fmi3_xml_int_type_props_t* fallbackProps = NULL;
     fmi3_xml_int_type_props_t* props = NULL;
     const char* quantity = NULL;
@@ -975,7 +975,7 @@ int fmi3_xml_handle_BooleanType(fmi3_xml_parser_context_t* context, const char* 
 fmi3_xml_binary_type_props_t* fmi3_xml_parse_binary_type_properties(fmi3_xml_parser_context_t* context,
         fmi3_xml_elm_enu_t elmID, fmi3_xml_variable_type_base_t* fallbackType)
 {
-    fmi3_xml_type_definitions_t* td = &context->modelDescription->typeDefinitions;
+    fmi3_xml_type_definition_list_t* td = &context->modelDescription->typeDefinitions;
     fmi3_xml_binary_type_props_t* fallbackProps;
     fmi3_xml_binary_type_props_t* props;
 
@@ -1046,7 +1046,7 @@ int fmi3_xml_handle_BinaryType(fmi3_xml_parser_context_t* context, const char* d
 fmi3_xml_clock_type_props_t* fmi3_xml_parse_clock_type_properties(fmi3_xml_parser_context_t* context,
         fmi3_xml_elm_enu_t elmID, fmi3_xml_variable_type_base_t* fallbackType)
 {
-    fmi3_xml_type_definitions_t* td = &context->modelDescription->typeDefinitions;
+    fmi3_xml_type_definition_list_t* td = &context->modelDescription->typeDefinitions;
     fmi3_xml_clock_type_props_t* fallbackProps;
     fmi3_xml_clock_type_props_t* props;
 

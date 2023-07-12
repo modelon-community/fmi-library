@@ -18,8 +18,8 @@
 
 static const char* module = "FMI3XML";
 
-fmi3_xml_unit_t* fmi3_xml_get_unit(fmi3_xml_unit_definitions_t* ud, unsigned int index) {
-    if (index >= fmi3_xml_get_unit_definitions_number(ud)) return NULL;
+fmi3_xml_unit_t* fmi3_xml_get_unit(fmi3_xml_unit_definition_list_t* ud, size_t index) {
+    if (index >= fmi3_xml_get_unit_definition_list_size(ud)) return NULL;
     return jm_vector_get_item(jm_named_ptr)(&ud->definitions, index).ptr;
 }
 

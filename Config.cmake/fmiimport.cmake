@@ -1,13 +1,13 @@
 #    Copyright (C) 2012 Modelon AB
-
+#
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the BSD style license.
-
-# #    This program is distributed in the hope that it will be useful,
+#
+#    This program is distributed in the hope that it will be useful,
 #    but WITHOUT ANY WARRANTY; without even the implied warranty of
 #    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #    FMILIB_License.txt file for more details.
-
+#
 #    You should have received a copy of the FMILIB_License.txt file
 #    along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 
@@ -55,8 +55,6 @@ set(FMIIMPORT_PUBHEADERS
     include/FMI3/fmi3_import_unit.h
     include/FMI3/fmi3_import_variable.h
     include/FMI3/fmi3_import_variable_list.h
-    include/FMI3/fmi3_import_dimension.h
-    include/FMI3/fmi3_import_dimension_list.h
     include/FMI3/fmi3_import_convenience.h
 
     include/FMI/fmi_import_context.h
@@ -74,8 +72,7 @@ set(FMIIMPORT_PRIVHEADERS
     src/FMI3/fmi3_import_impl.h
     src/FMI3/fmi3_import_priv.h
     src/FMI3/fmi3_import_variable_list_impl.h
-    src/FMI3/fmi3_import_dimension_list_impl.h
- )
+)
 
 PREFIXLIST(FMIIMPORT_PRIVHEADERS ${FMIIMPORTDIR}/)
 PREFIXLIST(FMIIMPORT_PUBHEADERS ${FMIIMPORTDIR}/)
@@ -113,8 +110,6 @@ set(FMIIMPORTSOURCE
     src/FMI3/fmi3_import_unit.c
     src/FMI3/fmi3_import_variable.c
     src/FMI3/fmi3_import_variable_list.c
-    src/FMI3/fmi3_import_dimension.c
-    src/FMI3/fmi3_import_dimension_list.c
     src/FMI3/fmi3_import.c
     src/FMI3/fmi3_import_priv.c
     src/FMI3/fmi3_import_convenience.c

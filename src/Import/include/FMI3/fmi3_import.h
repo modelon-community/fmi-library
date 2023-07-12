@@ -26,7 +26,6 @@
 #include <FMI/fmi_import_util.h>
 #include <FMI/fmi_import_context.h>
 #include "FMI/fmi_import_options.h"
-/* #include <FMI3/fmi3_xml_model_description.h> */
 
 #include <FMI3/fmi3_types.h>
 #include <FMI3/fmi3_function_types.h>
@@ -36,8 +35,6 @@
 #include "fmi3_import_unit.h"
 #include "fmi3_import_variable.h"
 #include "fmi3_import_variable_list.h"
-#include "fmi3_import_dimension.h"
-#include "fmi3_import_dimension_list.h"
 
 #include "fmi3_import_capi.h"
 #include "fmi3_import_convenience.h"
@@ -239,10 +236,10 @@ FMILIB_EXPORT double fmi3_import_get_cs_fixed_internal_step_size(fmi3_import_t* 
 FMILIB_EXPORT int fmi3_import_get_cs_recommended_intermediate_input_smoothness(fmi3_import_t* fmu);
 
 /** \brief Get the list of all the type definitions in the model*/
-FMILIB_EXPORT fmi3_import_type_definitions_t* fmi3_import_get_type_definitions(fmi3_import_t* fmu);
+FMILIB_EXPORT fmi3_import_type_definition_list_t* fmi3_import_get_type_definition_list(fmi3_import_t* fmu);
 
 /** \brief Get a list of all the unit definitions in the model. */
-FMILIB_EXPORT fmi3_import_unit_definitions_t* fmi3_import_get_unit_definitions(fmi3_import_t* fmu);
+FMILIB_EXPORT fmi3_import_unit_definition_list_t* fmi3_import_get_unit_definition_list(fmi3_import_t* fmu);
 
 /** \brief Get the list of all the variables in the model.
 * @param fmu An FMU object as returned by fmi3_import_parse_xml().

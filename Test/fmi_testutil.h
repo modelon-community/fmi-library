@@ -5,6 +5,9 @@
 
 #include "fmilib.h"
 
+#include "JM/jm_types.h"
+#include "JM/jm_vector.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif

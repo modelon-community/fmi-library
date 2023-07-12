@@ -7,6 +7,7 @@
 #include "config_test.h"
 #include "fmi_testutil.h"
 
+#include "JM/jm_types.h"
 #include "JM/jm_vector.h"
 
 /**

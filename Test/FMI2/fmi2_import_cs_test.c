@@ -157,7 +157,6 @@ int main(int argc, char *argv[])
     fmi_import_context_t* context;
     fmi_version_enu_t version;
     jm_status_enu_t status;
-    int k;
 
     fmi2_import_t* fmu;    
 

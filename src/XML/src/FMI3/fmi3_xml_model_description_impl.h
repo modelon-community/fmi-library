@@ -112,7 +112,7 @@ struct fmi3_xml_model_description_t {
     jm_vector(jm_named_ptr) unitDefinitions;
     jm_vector(jm_named_ptr) displayUnitDefinitions;
 
-    fmi3_xml_type_definitions_t typeDefinitions;
+    fmi3_xml_type_definition_list_t typeDefinitions;
 
     jm_string_set descriptions;
 

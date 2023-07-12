@@ -56,7 +56,6 @@ endif()
 
 # Build the test
 add_executable(main main.c)
-target_link_libraries(main PRIVATE fmilib)
 if(WIN32)
     target_link_libraries(main PRIVATE fmilib Shlwapi)
 else()
@@ -91,7 +90,6 @@ endif()
 
 # Build the test
 add_executable(main_shared main.c)
-target_link_libraries(main_shared PRIVATE fmilib_shared)
 if(WIN32)
     target_link_libraries(main_shared PRIVATE fmilib_shared Shlwapi)
 else()

@@ -23,6 +23,7 @@ set(FMIL_TEST_INCLUDE_DIRS
     ${FMIL_TEST_DIR}/FMI3
 )
 
+# XXX:
 # Workaround to allow testing with sublibs on MinGW (unclear why it works with MSVC).
 #
 # The problem is that in config_fmilib.h we define FMILIB_EXPORT as __declspec(import),

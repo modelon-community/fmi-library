@@ -52,7 +52,7 @@ jm_vector(jm_voidp)* fmi3_xml_get_clocked_states(fmi3_xml_model_structure_t* ms)
 * @param ms A model structure pointer (returned by fmi3_xml_get_model_structure)
 * @return a variable list with all the initial unknowns in the model.
 */
-jm_vector(jm_voidp)* fmi3_xml_get_initial_unknowns(fmi3_xml_model_structure_t* ms);
+jm_vector(jm_voidp)* fmi3_xml_get_variable_initial_unknowns(fmi3_xml_model_structure_t* ms);
 
 /** \brief Get the list of all the event indicator variables in the model.
 * @param ms A model structure pointer (returned by fmi3_xml_get_model_structure)
@@ -101,7 +101,7 @@ int fmi3_xml_get_clocked_state_dependencies(fmi3_xml_model_structure_t* ms, fmi3
 
 /** \brief Get dependency information for an InitialUnknown.
  * @param ms               - A model structure pointer (returned by fmi3_xml_get_model_structure)
- * @param variable         - A model variable, e.g., from fmi3_xml_get_initial_unknowns() vector.
+ * @param variable         - A model variable, e.g., from fmi3_xml_get_variable_initial_unknowns() vector.
  * @param numDependencies  - outputs number of dependencies; 0 for no dependencies and depends on all, check 'dependsOnAll' output
  * @param dependsOnAll     - outputs 1 if a variable depends on all variables, else 0. Only relevant if numDependencies == 0
  * @param dependencies     - outputs a pointer to the dependencies (valueReferences), NULL if numDependencies == 0
@@ -109,7 +109,7 @@ int fmi3_xml_get_clocked_state_dependencies(fmi3_xml_model_structure_t* ms, fmi3
  *                           NULL if numDependencies == 0
  * @return                 - non-zero if variable cannot be found (e.g., not an InitialUnknown), invalid inputs or unexpected failures
  */
-int fmi3_xml_get_initial_unknown_dependencies(fmi3_xml_model_structure_t* ms, fmi3_xml_variable_t* variable,
+int fmi3_xml_get_variable_initial_unknown_dependencies(fmi3_xml_model_structure_t* ms, fmi3_xml_variable_t* variable,
         size_t* numDependencies, int* dependsOnAll, size_t** dependencies, char** dependenciesKind);
 
 /** \brief Get dependency information for an EventIndicator.

@@ -138,9 +138,9 @@ static void test_fmi3_import_get_clocked_states(fmi3_import_t* fmu) {
     fmi3_import_free_variable_list(varList);
 }
 
-static void test_fmi3_import_get_initial_unknowns(fmi3_import_t* fmu) {
+static void test_fmi3_import_get_variable_initial_unknowns(fmi3_import_t* fmu) {
 
-    fmi3_import_variable_list_t* varList = fmi3_import_get_initial_unknowns_list(fmu);
+    fmi3_import_variable_list_t* varList = fmi3_import_get_variable_initial_unknowns_list(fmu);
     REQUIRE(fmi3_import_get_variable_list_size(varList) == 1);
 
     /* check VRs and dependencies of all InitialUnknowns */
@@ -151,7 +151,7 @@ static void test_fmi3_import_get_initial_unknowns(fmi3_import_t* fmu) {
 
     fmi3_import_variable_t* var = fmi3_import_get_variable(varList, 0);
     REQUIRE(fmi3_import_get_variable_vr(var) == 1);
-    REQUIRE(fmi3_import_get_initial_unknown_dependencies(fmu, var, &numDependencies, &dependsOnAll, &dependencies, &dependenciesKind) == 0);
+    REQUIRE(fmi3_import_get_variable_initial_unknown_dependencies(fmu, var, &numDependencies, &dependsOnAll, &dependencies, &dependenciesKind) == 0);
     REQUIRE(numDependencies == 0);
     REQUIRE(dependsOnAll == 1);
     REQUIRE(dependencies == nullptr);
@@ -228,7 +228,7 @@ TEST_CASE("Valid ModelStructure parsing") {
     }
 
     SECTION("Get InitialUnknowns") {
-        test_fmi3_import_get_initial_unknowns(fmu);
+        test_fmi3_import_get_variable_initial_unknowns(fmu);
     }
 
     SECTION("Get EventIndicators") {

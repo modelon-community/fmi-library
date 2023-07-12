@@ -17,6 +17,7 @@
 #include <stdarg.h>
 
 #include <JM/jm_named_ptr.h>
+#include "FMI/fmi_util.h"
 #include <FMI3/fmi3_types.h>
 #include <FMI3/fmi3_function_types.h>
 #include <FMI3/fmi3_enums.h>
@@ -29,9 +30,14 @@
 
 static const char* module = "FMILIB";
 
-/*#include "fmi3_import_vendor_annotations_impl.h"
-#include "fmi3_import_parser.h"
-*/
+char* fmi3_import_get_dll_path(const char* fmu_unzipped_path, const char* model_identifier, jm_callbacks* callbacks) {
+    char* dllDir = fmi_construct_dll_dir_name(callbacks, fmu_unzipped_path, fmi_version_3_0_enu);
+    if (!dllDir) {
+        return NULL;
+    }
+    return fmi_construct_dll_file_name(callbacks, dllDir, model_identifier);
+}
+
 fmi3_import_t* fmi3_import_allocate(jm_callbacks* cb) {
     fmi3_import_t* fmu = (fmi3_import_t*)cb->calloc(1, sizeof(fmi3_import_t));
 
@@ -426,9 +432,9 @@ fmi3_import_variable_list_t* fmi3_import_get_clocked_states_list(fmi3_import_t* 
     return fmi3_import_vector_to_varlist(fmu, fmi3_xml_get_clocked_states(fmi3_xml_get_model_structure(fmu->md)));
 }
 
-fmi3_import_variable_list_t* fmi3_import_get_initial_unknowns_list(fmi3_import_t* fmu) {
+fmi3_import_variable_list_t* fmi3_import_get_variable_initial_unknowns_list(fmi3_import_t* fmu) {
     if (!fmi3_import_check_has_FMU(fmu)) return NULL;
-    return fmi3_import_vector_to_varlist(fmu, fmi3_xml_get_initial_unknowns(fmi3_xml_get_model_structure(fmu->md)));
+    return fmi3_import_vector_to_varlist(fmu, fmi3_xml_get_variable_initial_unknowns(fmi3_xml_get_model_structure(fmu->md)));
 }
 
 fmi3_import_variable_list_t* fmi3_import_get_event_indicators_list(fmi3_import_t* fmu) {
@@ -472,7 +478,7 @@ int fmi3_import_get_clocked_state_dependencies(fmi3_import_t* fmu, fmi3_import_v
         numDependencies, dependsOnAll, dependencies, dependenciesKind);
 }
 
-int fmi3_import_get_initial_unknown_dependencies(fmi3_import_t* fmu, fmi3_import_variable_t* variable,
+int fmi3_import_get_variable_initial_unknown_dependencies(fmi3_import_t* fmu, fmi3_import_variable_t* variable,
         size_t* numDependencies, int* dependsOnAll, size_t** dependencies, char** dependenciesKind)
 {
     fmi3_xml_model_structure_t* ms;
@@ -480,7 +486,7 @@ int fmi3_import_get_initial_unknown_dependencies(fmi3_import_t* fmu, fmi3_import
 
     ms = fmi3_xml_get_model_structure(fmu->md);
     assert(ms);
-    return fmi3_xml_get_initial_unknown_dependencies(ms, variable,
+    return fmi3_xml_get_variable_initial_unknown_dependencies(ms, variable,
         numDependencies, dependsOnAll, dependencies, dependenciesKind);
 }
 

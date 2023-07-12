@@ -33,9 +33,9 @@ static void test_enum_default_attrs(fmi3_import_t* xml) {
     REQUIRE(v != nullptr);
     REQUIRE(fmi3_import_get_variable_vr(v) == 1);
     REQUIRE(fmi3_import_get_variable_description(v) == nullptr); /* Default description is empty */
-    REQUIRE(fmi3_import_get_causality(v) == fmi3_causality_enu_local);
-    REQUIRE(fmi3_import_get_variability(v) == fmi3_variability_enu_discrete);
-    REQUIRE(fmi3_import_get_initial(v) == fmi3_initial_enu_calculated);
+    REQUIRE(fmi3_import_get_variable_causality(v) == fmi3_causality_enu_local);
+    REQUIRE(fmi3_import_get_variable_variability(v) == fmi3_variability_enu_discrete);
+    REQUIRE(fmi3_import_get_variable_initial(v) == fmi3_initial_enu_calculated);
 
     ev = fmi3_import_get_variable_as_enum(v);
     REQUIRE(ev != nullptr);
@@ -65,9 +65,9 @@ static void test_enum_all_attrs(fmi3_import_t* xml) {
     REQUIRE(v != nullptr);
     REQUIRE(fmi3_import_get_variable_vr(v) == 2);
     REQUIRE_STREQ(fmi3_import_get_variable_description(v), "myDescription");
-    REQUIRE(fmi3_import_get_causality(v) == fmi3_causality_enu_output);
-    REQUIRE(fmi3_import_get_variability(v) == fmi3_variability_enu_discrete);
-    REQUIRE(fmi3_import_get_initial(v) == fmi3_initial_enu_exact);
+    REQUIRE(fmi3_import_get_variable_causality(v) == fmi3_causality_enu_output);
+    REQUIRE(fmi3_import_get_variable_variability(v) == fmi3_variability_enu_discrete);
+    REQUIRE(fmi3_import_get_variable_initial(v) == fmi3_initial_enu_exact);
 
     ev = fmi3_import_get_variable_as_enum(v);
     REQUIRE(ev != nullptr);
@@ -99,11 +99,11 @@ static void test_binary_default_attrs(fmi3_import_t* xml) {
     REQUIRE(v != nullptr);
     REQUIRE(fmi3_import_get_variable_vr(v) == 3);
     REQUIRE(fmi3_import_get_variable_description(v) == nullptr);
-    REQUIRE(fmi3_import_get_causality(v) == fmi3_causality_enu_local);
-    REQUIRE(fmi3_import_get_variability(v) == fmi3_variability_enu_discrete);
-    REQUIRE(fmi3_import_get_initial(v) == fmi3_initial_enu_calculated);  // Depends on causality and variability
-    REQUIRE(fmi3_import_get_can_handle_multiple_set_per_time_instant(v) == true); // default
-    REQUIRE(fmi3_import_get_intermediate_update(v) == false); // default
+    REQUIRE(fmi3_import_get_variable_causality(v) == fmi3_causality_enu_local);
+    REQUIRE(fmi3_import_get_variable_variability(v) == fmi3_variability_enu_discrete);
+    REQUIRE(fmi3_import_get_variable_initial(v) == fmi3_initial_enu_calculated);  // Depends on causality and variability
+    REQUIRE(fmi3_import_get_variable_can_handle_multiple_set_per_time_instant(v) == true); // default
+    REQUIRE(fmi3_import_get_variable_intermediate_update(v) == false); // default
 
     clockVars = fmi3_import_get_variable_clocks(xml, v);
     REQUIRE(fmi3_import_get_variable_list_size(clockVars) == 0);
@@ -133,14 +133,14 @@ static void test_binary_all_attrs(fmi3_import_t* xml) {
 
     REQUIRE(v != nullptr);
     REQUIRE(fmi3_import_get_variable_vr(v) == 4);
-    REQUIRE(fmi3_import_get_causality(v) == fmi3_causality_enu_output);
-    REQUIRE(fmi3_import_get_variability(v) == fmi3_variability_enu_discrete);
-    REQUIRE(fmi3_import_get_initial(v) == fmi3_initial_enu_calculated);
+    REQUIRE(fmi3_import_get_variable_causality(v) == fmi3_causality_enu_output);
+    REQUIRE(fmi3_import_get_variable_variability(v) == fmi3_variability_enu_discrete);
+    REQUIRE(fmi3_import_get_variable_initial(v) == fmi3_initial_enu_calculated);
     REQUIRE_STREQ(fmi3_import_get_variable_description(v), "myDesc");
-    REQUIRE(fmi3_import_get_can_handle_multiple_set_per_time_instant(v) == true); // default
-    REQUIRE(fmi3_import_get_intermediate_update(v) == true);
+    REQUIRE(fmi3_import_get_variable_can_handle_multiple_set_per_time_instant(v) == true); // default
+    REQUIRE(fmi3_import_get_variable_intermediate_update(v) == true);
 
-    preBv = fmi3_import_get_previous(v);
+    preBv = fmi3_import_get_variable_previous(v);
     REQUIRE(preBv != nullptr);
     REQUIRE(fmi3_import_get_variable_vr(preBv) == 4001);
 
@@ -235,9 +235,9 @@ static void test_clock_default_attrs(fmi3_import_t* xml) {
 
     REQUIRE(v != nullptr);
     REQUIRE(fmi3_import_get_variable_description(v) == nullptr);
-    REQUIRE(fmi3_import_get_causality(v) == fmi3_causality_enu_local);
-    REQUIRE(fmi3_import_get_variability(v) == fmi3_variability_enu_discrete);
-    REQUIRE(fmi3_import_get_initial(v) == fmi3_initial_enu_calculated);  // Depends on causality and variability
+    REQUIRE(fmi3_import_get_variable_causality(v) == fmi3_causality_enu_local);
+    REQUIRE(fmi3_import_get_variable_variability(v) == fmi3_variability_enu_discrete);
+    REQUIRE(fmi3_import_get_variable_initial(v) == fmi3_initial_enu_calculated);  // Depends on causality and variability
 
     clockVars = fmi3_import_get_variable_clocks(xml, v);
     REQUIRE(fmi3_import_get_variable_list_size(clockVars) == 0);
@@ -291,7 +291,7 @@ static void test_non_default_canhandlemultiplesetpertimeinstant(fmi3_import_t* x
     fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "cannotHandle");
     REQUIRE(v != nullptr);
 
-    REQUIRE(fmi3_import_get_can_handle_multiple_set_per_time_instant(v) == 0);
+    REQUIRE(fmi3_import_get_variable_can_handle_multiple_set_per_time_instant(v) == 0);
 }
 
 TEST_CASE("Variable parsing") {

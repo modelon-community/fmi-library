@@ -138,27 +138,27 @@ int fmi3_xml_get_variable_has_start(fmi3_xml_variable_t* v) {
     }
 }
 
-fmi3_variability_enu_t fmi3_xml_get_variability(fmi3_xml_variable_t* v) {
+fmi3_variability_enu_t fmi3_xml_get_variable_variability(fmi3_xml_variable_t* v) {
     return (fmi3_variability_enu_t)v->variability;
 }
 
-fmi3_causality_enu_t fmi3_xml_get_causality(fmi3_xml_variable_t* v) {
+fmi3_causality_enu_t fmi3_xml_get_variable_causality(fmi3_xml_variable_t* v) {
     return (fmi3_causality_enu_t)v->causality;
 }
 
-fmi3_initial_enu_t fmi3_xml_get_initial(fmi3_xml_variable_t* v) {
+fmi3_initial_enu_t fmi3_xml_get_variable_initial(fmi3_xml_variable_t* v) {
     return (fmi3_initial_enu_t)v->initial;
 }
 
-fmi3_xml_variable_t* fmi3_xml_get_previous(fmi3_xml_variable_t* v) {
+fmi3_xml_variable_t* fmi3_xml_get_variable_previous(fmi3_xml_variable_t* v) {
     return v->previous.variable;
 }
 
-fmi3_boolean_t fmi3_xml_get_can_handle_multiple_set_per_time_instant(fmi3_xml_variable_t* v) {
+fmi3_boolean_t fmi3_xml_get_variable_can_handle_multiple_set_per_time_instant(fmi3_xml_variable_t* v) {
     return (fmi3_boolean_t)v->canHandleMultipleSetPerTimeInstant;
 }
 
-fmi3_boolean_t fmi3_xml_get_intermediate_update(fmi3_xml_variable_t* v) {
+fmi3_boolean_t fmi3_xml_get_variable_intermediate_update(fmi3_xml_variable_t* v) {
     return (fmi3_boolean_t)v->intermediateUpdate;
 }
 
@@ -1052,9 +1052,8 @@ static int fmi3_xml_hexstring_to_byte(fmi3_xml_parser_context_t* context, const 
 static int fmi3_xml_hexstring_to_bytearray(fmi3_xml_parser_context_t* context, const char* hexstr, uint8_t* bytearr) {
     size_t len = strlen(hexstr);
     if (len % 2 != 0) {
-        // Note: 2 hexadecimal characters represent 1 byte.
+        // Note: 2 hexadecimal characters represent 1 byte, require even length inputs
         fmi3_xml_parse_error(context, "Hexadecimal string is not of even length: %s", hexstr);
-        // TODO: Or just warning and pad with trailing '0'?
         return -1;
     }
 
@@ -1337,7 +1336,7 @@ static int fmi3_xml_variable_process_attr_intermediateupdate(fmi3_xml_parser_con
     variable->intermediateUpdate = (char)intermediateUpdate;
 
     // Spec: "Variables with causality = parameter must not be marked with intermediateUpdate = true"
-    if (intermediateUpdate && (fmi3_xml_get_causality(variable) == fmi3_causality_enu_parameter)) {
+    if (intermediateUpdate && (fmi3_xml_get_variable_causality(variable) == fmi3_causality_enu_parameter)) {
         fmi3_xml_parse_error(context, "Variables with causality='parameter' must not be marked with intermediateUpdate='true'.");
         return -1;
     }

@@ -19,6 +19,7 @@
 #include <JM/jm_named_ptr.h>
 #include "JM/jm_portability.h"
 #include "FMI/fmi_util_options.h"
+#include "FMI/fmi_util.h"
 #include <FMI2/fmi2_types.h>
 #include <FMI2/fmi2_function_types.h>
 #include <FMI2/fmi2_enums.h>
@@ -30,9 +31,14 @@
 
 static const char* module = "FMILIB";
 
-/*#include "fmi2_import_vendor_annotations_impl.h"
-#include "fmi2_import_parser.h"
-*/
+char* fmi2_import_get_dll_path(const char* fmu_unzipped_path, const char* model_identifier, jm_callbacks* callbacks) {
+    char* dllDir = fmi_construct_dll_dir_name(callbacks, fmu_unzipped_path, fmi_version_2_0_enu);
+    if (!dllDir) {
+        return NULL;
+    }
+    return fmi_construct_dll_file_name(callbacks, dllDir, model_identifier);
+}
+
 fmi2_import_t* fmi2_import_allocate(jm_callbacks* cb) {
     fmi2_import_t* fmu = (fmi2_import_t*)cb->calloc(1, sizeof(fmi2_import_t));
 

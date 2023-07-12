@@ -72,7 +72,12 @@ extern "C" {
     @param dirPath A directory name (full path) of a directory where the FMU was unzipped.
     @return The new structure if parsing was successful. 0-pointer is returned on error.
 */
-FMILIB_EXPORT fmi1_import_t* fmi1_import_parse_xml( fmi_import_context_t* context, const char* dirPath);
+FMILIB_EXPORT fmi1_import_t* fmi1_import_parse_xml(fmi_import_context_t* context, const char* dirPath);
+
+/** \brief Given directory name fmu_unzipped_path and model identifier consturct Dll/so name
+    @return Pointer to a string with the file name. Caller is responsible for freeing the memory.
+*/
+FMILIB_EXPORT char* fmi1_import_get_dll_path(const char* fmu_unzipped_path, const char* model_identifier, jm_callbacks* callBackFunctions);
 
 /**
 * \brief Retrieve the last error message.

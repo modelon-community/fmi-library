@@ -36,7 +36,7 @@ void fmi3_import_collect_model_counts(fmi3_import_t* fmu, fmi3_import_model_coun
     nv = jm_vector_get_size(jm_voidp)(vars);
     for (i = 0; i< nv; i++) {
         fmi3_xml_variable_t* var = (fmi3_xml_variable_t*)jm_vector_get_item(jm_voidp)(vars, i);
-        switch (fmi3_xml_get_variability(var)) {
+        switch (fmi3_xml_get_variable_variability(var)) {
         case fmi3_variability_enu_constant:
             counts->num_constants++;
             break;
@@ -55,7 +55,7 @@ void fmi3_import_collect_model_counts(fmi3_import_t* fmu, fmi3_import_model_coun
         default:
             assert(0);
         }
-        switch(fmi3_xml_get_causality(var)) {
+        switch (fmi3_xml_get_variable_causality(var)) {
         case fmi3_causality_enu_parameter:
             counts->num_parameters++;
             break;

@@ -62,6 +62,11 @@ extern "C" {
  * @{
  */
 
+/** \brief Given directory name fmu_unzipped_path and model identifier consturct Dll/so name
+    @return Pointer to a string with the file name. Caller is responsible for freeing the memory.
+*/
+FMILIB_EXPORT char* fmi3_import_get_dll_path(const char* fmu_unzipped_path, const char* model_identifier, jm_callbacks* callBackFunctions);
+
 /**
 * \brief Retrieve the last error message.
 *
@@ -331,7 +336,7 @@ FMILIB_EXPORT fmi3_import_variable_list_t* fmi3_import_get_clocked_states_list(f
 *
 * Note that variable lists are allocated dynamically and must be freed when not needed any longer.
 */
-FMILIB_EXPORT fmi3_import_variable_list_t* fmi3_import_get_initial_unknowns_list(fmi3_import_t* fmu);
+FMILIB_EXPORT fmi3_import_variable_list_t* fmi3_import_get_variable_initial_unknowns_list(fmi3_import_t* fmu);
 
 /** \brief Get the list of all the event indicator variables in the model.
 * @param fmu An FMU object as returned by fmi3_import_parse_xml().
@@ -382,7 +387,7 @@ FMILIB_EXPORT int fmi3_import_get_clocked_state_dependencies(fmi3_import_t* fmu,
 
 /** \brief Get dependency information for an InitialUnknown.
  * @param fmu              - An FMU object as returned by fmi3_import_parse_xml().
- * @param variable         - A model variable in fmi3_import_get_initial_unknowns_list(...)
+ * @param variable         - A model variable in fmi3_import_get_variable_initial_unknowns_list(...)
  * @param numDependencies  - outputs number of dependencies; 0 for no dependencies and depends on all, check 'dependsOnAll' output
  * @param dependsOnAll     - outputs 1 if a variable depends on all variables, else 0. Only relevant if numDependencies == 0
  * @param dependencies     - outputs a pointer to the dependencies (valueReferences), NULL if numDependencies == 0
@@ -390,7 +395,7 @@ FMILIB_EXPORT int fmi3_import_get_clocked_state_dependencies(fmi3_import_t* fmu,
  *                           NULL if numDependencies == 0
  * @return                 - non-zero if variable cannot be found (e.g., not an InitialUnknown), invalid inputs or unexpected failures
  */
-FMILIB_EXPORT int fmi3_import_get_initial_unknown_dependencies(fmi3_import_t* fmu, fmi3_import_variable_t* variable,
+FMILIB_EXPORT int fmi3_import_get_variable_initial_unknown_dependencies(fmi3_import_t* fmu, fmi3_import_variable_t* variable,
         size_t* numDependencies, int* dependsOnAll, size_t** dependencies, char** dependenciesKind);
 
 /** \brief Get dependency information for an EventIndicator.

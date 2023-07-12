@@ -301,39 +301,39 @@ TEST_CASE("Error check bad variability causality combination fallback") {
         "causality 'parameter' for variable 'f32_parameter'. Setting variability to 'fixed'";
     fmi3_testutil_log_contains(tfmu, expectedError);
     v = fmi3_import_get_variable_by_vr(tfmu->fmu, 0);
-    REQUIRE(fmi3_import_get_variability(v) == fmi3_variability_enu_fixed);
+    REQUIRE(fmi3_import_get_variable_variability(v) == fmi3_variability_enu_fixed);
 
     expectedError = "Invalid combination of variability 'fixed' and "
         "causality 'output' for variable 'f32_non_parameter'. Setting variability to 'continuous'";
     fmi3_testutil_log_contains(tfmu, expectedError);
     v = fmi3_import_get_variable_by_vr(tfmu->fmu, 1);
-    REQUIRE(fmi3_import_get_variability(v) == fmi3_variability_enu_continuous);
+    REQUIRE(fmi3_import_get_variable_variability(v) == fmi3_variability_enu_continuous);
 
     // check Float64 type variables
     expectedError = "Invalid combination of variability 'continuous' and "
         "causality 'parameter' for variable 'f64_parameter'. Setting variability to 'fixed'";
     fmi3_testutil_log_contains(tfmu, expectedError);
     v = fmi3_import_get_variable_by_vr(tfmu->fmu, 10);
-    REQUIRE(fmi3_import_get_variability(v) == fmi3_variability_enu_fixed);
+    REQUIRE(fmi3_import_get_variable_variability(v) == fmi3_variability_enu_fixed);
 
     expectedError = "Invalid combination of variability 'fixed' and "
         "causality 'output' for variable 'f64_non_parameter'. Setting variability to 'continuous'";
     fmi3_testutil_log_contains(tfmu, expectedError);
     v = fmi3_import_get_variable_by_vr(tfmu->fmu, 11);
-    REQUIRE(fmi3_import_get_variability(v) == fmi3_variability_enu_continuous);
+    REQUIRE(fmi3_import_get_variable_variability(v) == fmi3_variability_enu_continuous);
 
     // check non-Float type variables
     expectedError = "Invalid combination of variability 'continuous' and "
         "causality 'parameter' for variable 'i64_parameter'. Setting variability to 'fixed'";
     fmi3_testutil_log_contains(tfmu, expectedError);
     v = fmi3_import_get_variable_by_vr(tfmu->fmu, 20);
-    REQUIRE(fmi3_import_get_variability(v) == fmi3_variability_enu_fixed);
+    REQUIRE(fmi3_import_get_variable_variability(v) == fmi3_variability_enu_fixed);
 
     expectedError = "Invalid combination of variability 'fixed' and "
         "causality 'output' for variable 'i64_non_parameter'. Setting variability to 'discrete'";
     fmi3_testutil_log_contains(tfmu, expectedError);
     v = fmi3_import_get_variable_by_vr(tfmu->fmu, 21);
-    REQUIRE(fmi3_import_get_variability(v) == fmi3_variability_enu_discrete);
+    REQUIRE(fmi3_import_get_variable_variability(v) == fmi3_variability_enu_discrete);
 
     fmi3_testutil_import_free(tfmu);
 }
@@ -349,48 +349,48 @@ TEST_CASE("Test default variabilities") {
 
     SECTION("Float64") {
         v = fmi3_import_get_variable_by_vr(tfmu->fmu, 1);
-        REQUIRE(fmi3_import_get_variability(v) == fmi3_variability_enu_fixed);
+        REQUIRE(fmi3_import_get_variable_variability(v) == fmi3_variability_enu_fixed);
 
         v = fmi3_import_get_variable_by_vr(tfmu->fmu, 2);
-        REQUIRE(fmi3_import_get_variability(v) == fmi3_variability_enu_fixed);
+        REQUIRE(fmi3_import_get_variable_variability(v) == fmi3_variability_enu_fixed);
 
         v = fmi3_import_get_variable_by_vr(tfmu->fmu, 3);
-        REQUIRE(fmi3_import_get_variability(v) == fmi3_variability_enu_fixed);
+        REQUIRE(fmi3_import_get_variable_variability(v) == fmi3_variability_enu_fixed);
 
         v = fmi3_import_get_variable_by_vr(tfmu->fmu, 4);
-        REQUIRE(fmi3_import_get_variability(v) == fmi3_variability_enu_continuous);
+        REQUIRE(fmi3_import_get_variable_variability(v) == fmi3_variability_enu_continuous);
 
         v = fmi3_import_get_variable_by_vr(tfmu->fmu, 5);
-        REQUIRE(fmi3_import_get_variability(v) == fmi3_variability_enu_continuous);
+        REQUIRE(fmi3_import_get_variable_variability(v) == fmi3_variability_enu_continuous);
 
         v = fmi3_import_get_variable_by_vr(tfmu->fmu, 6);
-        REQUIRE(fmi3_import_get_variability(v) == fmi3_variability_enu_continuous);
+        REQUIRE(fmi3_import_get_variable_variability(v) == fmi3_variability_enu_continuous);
 
         v = fmi3_import_get_variable_by_vr(tfmu->fmu, 7);
-        REQUIRE(fmi3_import_get_variability(v) == fmi3_variability_enu_continuous);
+        REQUIRE(fmi3_import_get_variable_variability(v) == fmi3_variability_enu_continuous);
     }
 
     SECTION("Int64") {
         v = fmi3_import_get_variable_by_vr(tfmu->fmu, 11);
-        REQUIRE(fmi3_import_get_variability(v) == fmi3_variability_enu_fixed);
+        REQUIRE(fmi3_import_get_variable_variability(v) == fmi3_variability_enu_fixed);
 
         v = fmi3_import_get_variable_by_vr(tfmu->fmu, 12);
-        REQUIRE(fmi3_import_get_variability(v) == fmi3_variability_enu_fixed);
+        REQUIRE(fmi3_import_get_variable_variability(v) == fmi3_variability_enu_fixed);
 
         v = fmi3_import_get_variable_by_vr(tfmu->fmu, 13);
-        REQUIRE(fmi3_import_get_variability(v) == fmi3_variability_enu_fixed);
+        REQUIRE(fmi3_import_get_variable_variability(v) == fmi3_variability_enu_fixed);
 
         v = fmi3_import_get_variable_by_vr(tfmu->fmu, 14);
-        REQUIRE(fmi3_import_get_variability(v) == fmi3_variability_enu_discrete);
+        REQUIRE(fmi3_import_get_variable_variability(v) == fmi3_variability_enu_discrete);
 
         v = fmi3_import_get_variable_by_vr(tfmu->fmu, 15);
-        REQUIRE(fmi3_import_get_variability(v) == fmi3_variability_enu_discrete);
+        REQUIRE(fmi3_import_get_variable_variability(v) == fmi3_variability_enu_discrete);
 
         v = fmi3_import_get_variable_by_vr(tfmu->fmu, 16);
-        REQUIRE(fmi3_import_get_variability(v) == fmi3_variability_enu_discrete);
+        REQUIRE(fmi3_import_get_variable_variability(v) == fmi3_variability_enu_discrete);
 
         v = fmi3_import_get_variable_by_vr(tfmu->fmu, 17);
-        REQUIRE(fmi3_import_get_variability(v) == fmi3_variability_enu_continuous);
+        REQUIRE(fmi3_import_get_variable_variability(v) == fmi3_variability_enu_continuous);
     }
     fmi3_testutil_import_free(tfmu);
 }

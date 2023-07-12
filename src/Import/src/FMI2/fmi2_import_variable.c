@@ -70,7 +70,6 @@ fmi2_initial_enu_t fmi2_import_get_initial(fmi2_import_variable_t* v) {
     return fmi2_xml_get_initial(v);
 }
 
-// XXX: Unclear why we have this in FMI2. It's not added until FMI3.
 fmi2_import_variable_t* fmi2_import_get_previous(fmi2_import_variable_t* v) {
     return fmi2_xml_get_previous(v);    
 }

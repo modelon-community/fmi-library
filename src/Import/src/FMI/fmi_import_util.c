@@ -36,31 +36,6 @@ jm_status_enu_t fmi_import_rmdir(jm_callbacks* cb, const char* dir) {
     return jm_rmdir(cb, dir);
 }
 
-static char* fmi_import_get_dll_path(const char* fmu_unzipped_path, const char* model_identifier,
-        jm_callbacks* callbacks, fmi_version_enu_t fmi_version)
-{
-    char* dllDir = fmi_construct_dll_dir_name(callbacks, fmu_unzipped_path, fmi_version);
-    if (!dllDir) {
-        return NULL;
-    }
-    return fmi_construct_dll_file_name(callbacks, dllDir, model_identifier);
-}
-
-char* fmi1_import_get_dll_path(const char* fmu_unzipped_path, const char* model_identifier, jm_callbacks* callbacks)
-{
-    return fmi_import_get_dll_path(fmu_unzipped_path, model_identifier, callbacks, fmi_version_1_enu);
-}
-
-char* fmi2_import_get_dll_path(const char* fmu_unzipped_path, const char* model_identifier, jm_callbacks* callbacks)
-{
-    return fmi_import_get_dll_path(fmu_unzipped_path, model_identifier, callbacks, fmi_version_2_0_enu);
-}
-
-char* fmi3_import_get_dll_path(const char* fmu_unzipped_path, const char* model_identifier, jm_callbacks* callbacks)
-{
-    return fmi_import_get_dll_path(fmu_unzipped_path, model_identifier, callbacks, fmi_version_3_0_enu);
-}
-
 char* fmi_import_get_model_description_path(const char* fmu_unzipped_path, jm_callbacks* callbacks)
 {
     char* model_description_path;

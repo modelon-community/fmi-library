@@ -191,9 +191,9 @@ void printVariableInfo(fmi3_import_t* fmu,
     printf("Variable name: %s\n", fmi3_import_get_variable_name(v));
     printf("Description: %s\n", fmi3_import_get_variable_description(v));
     printf("VR: %u\n", (unsigned)vr);
-    printf("Variability: %s\n", fmi3_variability_to_string(fmi3_import_get_variability(v)));
-    printf("Causality: %s\n", fmi3_causality_to_string(fmi3_import_get_causality(v)));
-    printf("Initial: %s\n", fmi3_initial_to_string(fmi3_import_get_initial(v)));
+    printf("Variability: %s\n", fmi3_variability_to_string(fmi3_import_get_variable_variability(v)));
+    printf("Causality: %s\n", fmi3_causality_to_string(fmi3_import_get_variable_causality(v)));
+    printf("Initial: %s\n", fmi3_initial_to_string(fmi3_import_get_variable_initial(v)));
 
     bt = fmi3_import_get_variable_base_type(v);
     printf("Base type: %s\n", fmi3_base_type_to_string(bt));

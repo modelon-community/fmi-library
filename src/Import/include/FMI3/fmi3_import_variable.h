@@ -188,13 +188,13 @@ FMILIB_EXPORT int fmi3_import_variable_is_array(fmi3_import_variable_t*);
 FMILIB_EXPORT int fmi3_import_get_variable_has_start(fmi3_import_variable_t*);
 
 /** \brief Get variability attribute */
-FMILIB_EXPORT fmi3_variability_enu_t fmi3_import_get_variability(fmi3_import_variable_t*);
+FMILIB_EXPORT fmi3_variability_enu_t fmi3_import_get_variable_variability(fmi3_import_variable_t*);
 
 /** \brief Get causality attribute */
-FMILIB_EXPORT fmi3_causality_enu_t fmi3_import_get_causality(fmi3_import_variable_t*);
+FMILIB_EXPORT fmi3_causality_enu_t fmi3_import_get_variable_causality(fmi3_import_variable_t*);
 
 /** \brief Get initial attribute */
-FMILIB_EXPORT fmi3_initial_enu_t fmi3_import_get_initial(fmi3_import_variable_t* );
+FMILIB_EXPORT fmi3_initial_enu_t fmi3_import_get_variable_initial(fmi3_import_variable_t* );
 
 /**
     \brief Get the variable that holds the previous value of this variable, if defined.
@@ -202,7 +202,7 @@ FMILIB_EXPORT fmi3_initial_enu_t fmi3_import_get_initial(fmi3_import_variable_t*
     @return If this variable is a discrete-time state, return the variable holds its previous value;
             NULL otherwise.
 */
-FMILIB_EXPORT fmi3_import_variable_t* fmi3_import_get_previous(fmi3_import_variable_t* v);
+FMILIB_EXPORT fmi3_import_variable_t* fmi3_import_get_variable_previous(fmi3_import_variable_t* v);
 
 /** \brief Get the canHandleMultipleSetPerTimeInstant flag for a variable.
 
@@ -210,13 +210,13 @@ FMILIB_EXPORT fmi3_import_variable_t* fmi3_import_get_previous(fmi3_import_varia
     one super dense time instant. In other words, this input is not allowed to
     appear in an algebraic loop.
 */
-FMILIB_EXPORT fmi3_boolean_t fmi3_import_get_can_handle_multiple_set_per_time_instant(fmi3_import_variable_t* v);
+FMILIB_EXPORT fmi3_boolean_t fmi3_import_get_variable_can_handle_multiple_set_per_time_instant(fmi3_import_variable_t* v);
 
 /** \brief Get the intermediateUpdate flag for a variable.
 
     @return If true, the variable can be accessed in Intermediate Update Mode
 */
-FMILIB_EXPORT fmi3_boolean_t fmi3_import_get_intermediate_update(fmi3_import_variable_t* v);
+FMILIB_EXPORT fmi3_boolean_t fmi3_import_get_variable_intermediate_update(fmi3_import_variable_t* v);
 
 /** \brief Get a list of variables referenced in the 'clock' attribute.
  *  Note that the caller is responsible for deallocating the list.

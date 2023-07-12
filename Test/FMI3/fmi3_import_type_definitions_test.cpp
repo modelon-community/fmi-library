@@ -823,10 +823,9 @@ static int test_variable_all_attributes_int32(fmi3_import_t* xml, fmi2_string_t 
     REQUIRE(v != nullptr);
 
     REQUIRE(strcmp("description", fmi3_import_get_variable_description(v)) == 0);
-    /* TODO: it feels a bit odd that 'fmi3_import_get_causality' doesn't include _variable_ in the name - was a bit hard to find... */
-    REQUIRE(fmi3_import_get_causality(v) == fmi3_causality_enu_output);
-    REQUIRE(fmi3_import_get_variability(v) == fmi3_variability_enu_discrete);
-    REQUIRE(fmi3_import_get_initial(v) == fmi3_initial_enu_calculated);
+    REQUIRE(fmi3_import_get_variable_causality(v) == fmi3_causality_enu_output);
+    REQUIRE(fmi3_import_get_variable_variability(v) == fmi3_variability_enu_discrete);
+    REQUIRE(fmi3_import_get_variable_initial(v) == fmi3_initial_enu_calculated);
     fmi3_import_int32_variable_t* v32 = fmi3_import_get_variable_as_int32(v);
     REQUIRE(v32 != nullptr);
     REQUIRE_STREQ(fmi3_import_get_int32_variable_quantity(v32) , "Frequency");

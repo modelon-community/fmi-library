@@ -55,7 +55,7 @@ void fmi3_import_collect_model_counts(fmi3_import_t* fmu, fmi3_import_model_coun
         default:
             assert(0);
         }
-        switch(fmi3_xml_get_variable_causality(var)) {
+        switch (fmi3_xml_get_variable_causality(var)) {
         case fmi3_causality_enu_parameter:
             counts->num_parameters++;
             break;

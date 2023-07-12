@@ -399,7 +399,7 @@ static void test_parse_bouncingball(const char* xmldir, bool expectParseFailure)
                     break;
                 }
                 fmi3_SI_base_unit_exp_to_string(fmi3_import_get_SI_unit_exponents(u), 1000, buf);
-                printf("Unit [%d] is %s, base unit %s, factor %g, offset %g, it has %d display units\n",
+                printf("Unit [%d] is %s, base unit %s, factor %g, offset %g, it has %zu display units\n",
                     i, fmi3_import_get_unit_name(u),
                     buf,
                     fmi3_import_get_SI_unit_factor(u),

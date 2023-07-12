@@ -20,7 +20,7 @@
 #include "fmi3_import_impl.h"
 
 size_t fmi3_import_get_type_definition_list_size(fmi3_import_type_definition_list_t* td) {
-    return fmi3_xml_get_type_definition_number(td);
+    return fmi3_xml_get_type_definition_list_size(td);
 }
 
 fmi3_import_variable_typedef_t* fmi3_import_get_typedef(fmi3_import_type_definition_list_t* td, size_t index) {

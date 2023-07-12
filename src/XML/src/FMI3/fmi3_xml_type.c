@@ -27,12 +27,12 @@ static const char* module = "FMI3XML";
 
 #define UINTXX_MIN (0)
 
-unsigned int fmi3_xml_get_type_definition_number(fmi3_xml_type_definition_list_t* td) {
+unsigned int fmi3_xml_get_type_definition_list_size(fmi3_xml_type_definition_list_t* td) {
     return (unsigned int)jm_vector_get_size(jm_named_ptr)(&td->typeDefinitions);
 }
 
 fmi3_xml_variable_typedef_t* fmi3_xml_get_typedef(fmi3_xml_type_definition_list_t* td, unsigned int  index) {
-    if(index >= fmi3_xml_get_type_definition_number(td)) return 0;
+    if(index >= fmi3_xml_get_type_definition_list_size(td)) return 0;
     return (fmi3_xml_variable_typedef_t*)jm_vector_get_item(jm_named_ptr)(&td->typeDefinitions, index).ptr;
 }
 

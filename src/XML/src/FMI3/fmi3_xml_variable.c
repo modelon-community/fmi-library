@@ -1414,9 +1414,9 @@ int fmi3_xml_handle_Variable(fmi3_xml_parser_context_t* context, const char* dat
 
      /* The real ID of the variable, such as 'Float64Variable' */
     fmi3_xml_elm_enu_t elm_id = atStartTag ? context->currentElemIdStartTag : context->currentElmID;
+    fmi3_xml_model_description_t* md = context->modelDescription;
 
     if (!data) {
-        fmi3_xml_model_description_t* md = context->modelDescription;
         fmi3_xml_variable_t* variable;
         const char* description = NULL;
         jm_vector(char)* bufName = fmi3_xml_reserve_parse_buffer(context, 1, 100);
@@ -1426,8 +1426,14 @@ int fmi3_xml_handle_Variable(fmi3_xml_parser_context_t* context, const char* dat
         if(!bufName || !bufDesc) return -1;
 
         /* Get vr, name and description */
-        if (fmi3_xml_parse_attr_as_uint32(context, elm_id, fmi_attr_id_valueReference, 1, &vr, 0))  return -1;
-        if (fmi3_xml_parse_attr_as_string(context, elm_id, fmi_attr_id_name,           1, bufName)) return -1;
+
+        /* Get required attributes: VR, name */
+        int req = 0;
+        req |= fmi3_xml_parse_attr_as_uint32(context, elm_id, fmi_attr_id_valueReference, 1, &vr, 0);
+        req |= fmi3_xml_parse_attr_as_string(context, elm_id, fmi_attr_id_name,           1, bufName);
+
+        if (req) {return -1;}
+
         if (fmi3_xml_parse_attr_as_string(context, elm_id, fmi_attr_id_description,    0, bufDesc)) return -1;
 
         if (jm_vector_get_size(char)(bufDesc)) {
@@ -1480,7 +1486,7 @@ int fmi3_xml_handle_Variable(fmi3_xml_parser_context_t* context, const char* dat
     }
     else { /* end of xml tag */
         /* Check that the type for the variable is set */
-        fmi3_xml_model_description_t* md = context->modelDescription;
+        if (!md->latestVariableValid) {return 0;} // skip post-processing for invalid variables
         fmi3_xml_variable_t* variable = jm_vector_get_last(jm_voidp)(&md->variablesOrigOrder);
         if(!variable->type) {
             jm_log_error(context->callbacks, module, "No variable type element for variable %s. Assuming Float64.", variable->name);
@@ -1605,7 +1611,7 @@ int fmi3_xml_handle_FloatXX(fmi3_xml_parser_context_t* context, const char* data
         fmi3_xml_elm_enu_t elmID, /* ID of the Type (not the Variable) */  // XXX: Why?
         const fmi3_xml_primitive_type_t* primType) {
 
-    fmi3_xml_model_description_t* md;
+    fmi3_xml_model_description_t* md = context->modelDescription;
     fmi3_xml_variable_t* variable;
     fmi3_xml_type_definition_list_t* td;
     fmi3_xml_float_type_props_t* type;
@@ -1613,9 +1619,17 @@ int fmi3_xml_handle_FloatXX(fmi3_xml_parser_context_t* context, const char* data
 
     /* Extract common Variable info */
     res = fmi3_xml_handle_Variable(context, data);
-    if (res) return res;
+    if (res) { // Parsed variable is not valid
+        md->isValid = 0;
+        md->latestVariableValid = 0;
+        return 0; // TODO: Possibly exit later?
+    }
 
-    md = context->modelDescription;
+    if (!md->latestVariableValid) {
+        md->latestVariableValid = 1;
+        return 0;
+    }
+
     variable = jm_vector_get_last(jm_voidp)(&md->variablesOrigOrder);
     td = &md->typeDefinitions;
 
@@ -2268,8 +2282,7 @@ static int fmi3_xml_compare_vr_and_original_index(const void* first, const void*
 int fmi3_xml_handle_ModelVariables(fmi3_xml_parser_context_t* context, const char* data) {
     if(!data) {
         jm_log_verbose(context->callbacks, module, "Parsing XML element ModelVariables");
-    }
-    else {
+    } else {
          // Post-process variable list
         fmi3_xml_model_description_t* md = context->modelDescription;
 
@@ -2308,9 +2321,9 @@ int fmi3_xml_handle_ModelVariables(fmi3_xml_parser_context_t* context, const cha
                 const char* name1 = jm_vector_get_item(jm_named_ptr)(&md->variablesByName, i).name;
                 const char* name2 = jm_vector_get_item(jm_named_ptr)(&md->variablesByName, i+1).name;
                 if(strcmp(name1, name2) == 0) {
-                    fmi3_xml_parse_fatal(context, 
+                    fmi3_xml_parse_error(context, 
                             "Two variables with the same name '%s' found. This is not allowed.", name1);
-                    return -1;
+                    md->isValid = 0;
                 }
             }
 
@@ -2319,9 +2332,9 @@ int fmi3_xml_handle_ModelVariables(fmi3_xml_parser_context_t* context, const cha
                 fmi3_xml_variable_t* v1 = jm_vector_get_item(jm_voidp)(&md->variablesByVR, i);
                 fmi3_xml_variable_t* v2 = jm_vector_get_item(jm_voidp)(&md->variablesByVR, i+1);
                 if (v1->vr == v2->vr) {
-                    fmi3_xml_parse_fatal(context, "The following variables have the same valueReference: %s, %s",
+                    fmi3_xml_parse_error(context, "The following variables have the same valueReference: %s, %s",
                             v1->name, v2->name);
-                    return -1;
+                    md->isValid = 0;
                 }
             }
         }
@@ -2365,6 +2378,11 @@ int fmi3_xml_handle_ModelVariables(fmi3_xml_parser_context_t* context, const cha
                     return -1;
                 }
             }
+        }
+
+        if (!md->isValid) { 
+            fmi3_xml_parse_fatal(context, "Fatal failure in Parsing ModelVariables, one or more Variables are invalid.");
+            return -1;
         }
 
         md->status = fmi3_xml_model_description_enu_empty;

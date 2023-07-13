@@ -359,7 +359,8 @@ int fmi3_xml_get_attr_str(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t
     if (!value && required) {
         jm_string elmName = fmi3_element_handle_map[elmID].elementName;
         jm_string attrName = fmi3_xmlAttrNames[attrID];
-        fmi3_xml_parse_fatal(context, "Parsing XML element '%s': required attribute '%s' not found", elmName, attrName);
+        //fmi3_xml_parse_fatal(context, "Parsing XML element '%s': required attribute '%s' not found", elmName, attrName);
+        fmi3_xml_parse_error(context, "Parsing XML element '%s': required attribute '%s' not found", elmName, attrName);
         return -1;
     }
 

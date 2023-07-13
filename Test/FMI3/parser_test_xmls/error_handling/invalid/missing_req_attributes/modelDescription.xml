@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription fmiVersion="3.0" modelName="" instantiationToken="">
+<ModelExchange modelIdentifier="id_me"/>
+
+<ModelVariables>
+  <!-- both are missing a required attribute, we should still get an error in both cases -->
+  <Float64 valueReference="VR"/>
+  <Float64 name="floaty"/>
+</ModelVariables>
+
+<ModelStructure/>
+</fmiModelDescription>

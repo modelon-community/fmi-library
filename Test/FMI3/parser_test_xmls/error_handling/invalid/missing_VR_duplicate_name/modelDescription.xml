@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription fmiVersion="3.0" modelName="" instantiationToken="">
+<ModelExchange modelIdentifier="id_me"/>
+
+<ModelVariables>
+  <!-- Valid variables, but duplicate names -->
+  <Float64 valueReference="1" name="floaty"/>
+  <Float64 valueReference="2" name="floaty"/>
+
+  <!-- Valid variables, but duplicate VRs -->
+  <Float64 valueReference="3" name="floaty3"/>
+  <Float64 valueReference="3" name="floaty4"/>
+
+  <Float64 name="floaty"/> <!-- missing a required attribute, but we can still error check the valid ones -->
+</ModelVariables>
+
+<ModelStructure/>
+</fmiModelDescription>

@@ -1473,6 +1473,8 @@ int fmi3_xml_handle_Variable(fmi3_xml_parser_context_t* context, const char* dat
         variable->dimensions = NULL;
         variable->aliases = NULL;
 
+        int res = 0;
+
         /* Save start value for processing after reading all Dimensions */
         if (fmi3_xml_parse_attr_as_string(context, elm_id, fmi_attr_id_start, 0, &context->variableStartAttr)) return -1;
 
@@ -1482,7 +1484,13 @@ int fmi3_xml_handle_Variable(fmi3_xml_parser_context_t* context, const char* dat
         /* clocks required in error check for previous */
         if (fmi3_xml_variable_process_attr_previous(context, variable, elm_id))    return -1;
         if (fmi3_xml_variable_process_attr_multipleset(context, variable, elm_id)) return -1;
-        if (fmi3_xml_variable_process_attr_intermediateupdate(context, variable, elm_id)) return -1;
+        // TODO: Same treatment also for the other functions; with tests
+        res |= fmi3_xml_variable_process_attr_intermediateupdate(context, variable, elm_id);
+
+        if (res) {
+            // TODO: Should this return 0 though
+            return 0;
+        }
     }
     else { /* end of xml tag */
         /* Check that the type for the variable is set */
@@ -1713,9 +1721,20 @@ int fmi3_xml_handle_IntXX(fmi3_xml_parser_context_t* context, const char* data,
         fmi3_xml_elm_enu_t elmID, /* ID of the Type (not the Variable) */
         const fmi3_xml_primitive_type_t* primType)
 {
-    if (fmi3_xml_handle_Variable(context, data)) return -1;
-
     fmi3_xml_model_description_t* md = context->modelDescription;
+
+    int res = fmi3_xml_handle_Variable(context, data);
+    if (res) { // Parsed variable is not valid
+        md->isValid = 0;
+        md->latestVariableValid = 0;
+        return 0; // TODO: Possibly exit later?
+    }
+
+    if (!md->latestVariableValid) {
+        md->latestVariableValid = 1;
+        return 0;
+    }
+
     fmi3_xml_type_definition_list_t* td = &md->typeDefinitions;
     fmi3_xml_variable_t* variable = jm_vector_get_last(jm_voidp)(&md->variablesOrigOrder);
     fmi3_xml_variable_type_base_t* declaredType = NULL;
@@ -1801,12 +1820,20 @@ gen_fmi3_xml_handle_TYPEXX(Int, UInt, uint, 16)
 gen_fmi3_xml_handle_TYPEXX(Int, UInt, uint,  8)
 
 int fmi3_xml_handle_Boolean(fmi3_xml_parser_context_t *context, const char* data) {
-    int res;
-
-    res = fmi3_xml_handle_Variable(context, data);
-    if (res) return res;
-
     fmi3_xml_model_description_t* md = context->modelDescription;
+
+    int res = fmi3_xml_handle_Variable(context, data);
+    if (res) { // Parsed variable is not valid
+        md->isValid = 0;
+        md->latestVariableValid = 0;
+        return 0; // TODO: Possibly exit later?
+    }
+
+    if (!md->latestVariableValid) {
+        md->latestVariableValid = 1;
+        return 0;
+    }
+
     fmi3_xml_type_definition_list_t* td = &md->typeDefinitions;
     fmi3_xml_variable_t* variable = jm_vector_get_last(jm_voidp)(&md->variablesOrigOrder);
     if(!data) {
@@ -1922,7 +1949,19 @@ int fmi3_xml_handle_Binary(fmi3_xml_parser_context_t* context, const char* data)
 }
 
 int fmi3_xml_handle_Clock(fmi3_xml_parser_context_t* context, const char* data) {
-    if (fmi3_xml_handle_Variable(context, data)) return -1;
+    fmi3_xml_model_description_t* md = context->modelDescription;
+
+    int res = fmi3_xml_handle_Variable(context, data);
+    if (res) { // Parsed variable is not valid
+        md->isValid = 0;
+        md->latestVariableValid = 0;
+        return 0; // TODO: Possibly exit later?
+    }
+
+    if (!md->latestVariableValid) {
+        md->latestVariableValid = 1;
+        return 0;
+    }
 
     if (!data) {
         fmi3_xml_elm_enu_t elmID = fmi3_xml_elmID_Clock;  // The ID corresponding to the actual parsed element name
@@ -1942,7 +1981,11 @@ int fmi3_xml_handle_Clock(fmi3_xml_parser_context_t* context, const char* data) 
                 &td->defaultClockType.super);
 
         fmi3_xml_clock_type_props_t* props = fmi3_xml_parse_clock_type_properties(context, elmID, declaredType);
-        if (!props) return -1;
+        if (!props) {
+            md->isValid = 0;
+            md->latestVariableValid = 0;
+            return 0; // TODO: Possibly exit later?
+        }
 
         variable->type = &props->super;
 
@@ -1955,8 +1998,20 @@ int fmi3_xml_handle_Clock(fmi3_xml_parser_context_t* context, const char* data) 
 }
 
 int fmi3_xml_handle_String(fmi3_xml_parser_context_t *context, const char* data) {
-    if (fmi3_xml_handle_Variable(context, data)) return -1;
     fmi3_xml_model_description_t* md = context->modelDescription;
+
+    int res = fmi3_xml_handle_Variable(context, data);
+    if (res) { // Parsed variable is not valid
+        md->isValid = 0;
+        md->latestVariableValid = 0;
+        return 0; // TODO: Possibly exit later?
+    }
+
+    if (!md->latestVariableValid) {
+        md->latestVariableValid = 1;
+        return 0;
+    }
+
     fmi3_xml_type_definition_list_t* td = &md->typeDefinitions;
     fmi3_xml_variable_t* variable = jm_vector_get_last(jm_voidp)(&md->variablesOrigOrder);
 
@@ -2103,11 +2158,20 @@ fmi3_xml_enum_variable_props_t* fmi3_xml_parse_enum_properties(fmi3_xml_parser_c
 }
 
 int fmi3_xml_handle_Enumeration(fmi3_xml_parser_context_t *context, const char* data) {
-    int res;
-
-    res = fmi3_xml_handle_Variable(context, data);
-    if (res) return res;
     fmi3_xml_model_description_t* md = context->modelDescription;
+
+    int res = fmi3_xml_handle_Variable(context, data);
+    if (res) { // Parsed variable is not valid
+        md->isValid = 0;
+        md->latestVariableValid = 0;
+        return 0; // TODO: Possibly exit later?
+    }
+
+    if (!md->latestVariableValid) {
+        md->latestVariableValid = 1;
+        return 0;
+    }
+
     fmi3_xml_type_definition_list_t* td = &md->typeDefinitions;
     fmi3_xml_variable_t* variable = jm_vector_get_last(jm_voidp)(&md->variablesOrigOrder);
     fmi3_xml_variable_type_base_t * declaredType = 0;
@@ -2285,6 +2349,13 @@ int fmi3_xml_handle_ModelVariables(fmi3_xml_parser_context_t* context, const cha
     } else {
          // Post-process variable list
         fmi3_xml_model_description_t* md = context->modelDescription;
+
+        if (!md->isValid) {
+            fmi3_xml_parse_error(context, 
+                "Variables within ModelVariables failed to parse. "
+                "Error checks requiring cross-referencing of variables is thus "
+                "limited to the ones parsed successfully.");
+        }
 
         // Create variablesByName
         size_t nVars = jm_vector_get_size(jm_voidp)(&md->variablesOrigOrder);

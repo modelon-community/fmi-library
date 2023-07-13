@@ -532,9 +532,15 @@ TEST_CASE("Invalid Alias - no name") {
     const char* xmldir = FMI3_TEST_XML_DIR "/variables/invalid/alias_no_name";
     fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
     fmi3_import_t* fmu = tfmu->fmu;
-    REQUIRE(fmu == nullptr);
+    REQUIRE(fmu != nullptr);
+    // TODO: Review this one
     
     REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'Alias': required attribute 'name' not found"));
+
+    fmi3_import_variable_t* var = fmi3_import_get_variable_by_vr(fmu, 1);
+    REQUIRE(var != nullptr);
+    REQUIRE_STREQ(fmi3_import_get_variable_name(var), "v1");
+    REQUIRE(fmi3_import_get_variable_alias_list(var) == nullptr); // has no valid aliases
     
     fmi3_testutil_import_free(tfmu);
 }
@@ -604,12 +610,15 @@ TEST_CASE("Alias with name being the empty string") {
 
 TEST_CASE("Invalid intermediateUpdate - has causality parameter") {
     const char* xmldir = FMI3_TEST_XML_DIR "/variables/invalid/intermediateUpdate_parameter";
+
     fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
     REQUIRE(tfmu != nullptr);
+    // TODO: Review this test
     REQUIRE(tfmu->fmu != nullptr);
 
     const char* logMsg = "Variables with causality='parameter' must not be marked with intermediateUpdate='true'.";
     REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
+
     fmi3_testutil_import_free(tfmu);
 }
 

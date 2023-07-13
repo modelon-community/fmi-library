@@ -28,20 +28,20 @@
 
 // TODO: Possibly move these to variable tests or similar, as appropriate
 
-// TEST_CASE("Invalid VR, missing name") {
-//     const char* xmldir = FMI3_TEST_XML_DIR "/error_handling/invalid/missing_req_attributes";
-//     fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
-//     fmi3_import_t* fmu = tfmu->fmu;
-//     REQUIRE(fmu == nullptr);
+TEST_CASE("Invalid VR, missing name") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/error_handling/invalid/missing_req_attributes";
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu == nullptr);
 
-//     // <Float64 valueReference="VR"/>
-//     REQUIRE(fmi3_testutil_log_contains(tfmu, "XML element 'Float64': failed to parse attribute valueReference='VR'"));
-//     REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'Float64': required attribute 'name' not found"));
+    // <Float64 valueReference="VR"/>
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "XML element 'Float64': failed to parse attribute valueReference='VR'"));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'Float64': required attribute 'name' not found"));
 
-//     // <Float64 name="floaty"/>
-//     REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'Float64': required attribute 'valueReference' not found"));
-//     fmi3_testutil_import_free(tfmu);
-// }
+    // <Float64 name="floaty"/>
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'Float64': required attribute 'valueReference' not found"));
+    fmi3_testutil_import_free(tfmu);
+}
 
 TEST_CASE("Missing VRs, duplicate names") {
     const char* xmldir = FMI3_TEST_XML_DIR "/error_handling/invalid/missing_VR_duplicate_name";

@@ -432,9 +432,9 @@ fmi3_import_variable_list_t* fmi3_import_get_clocked_states_list(fmi3_import_t* 
     return fmi3_import_vector_to_varlist(fmu, fmi3_xml_get_clocked_states(fmi3_xml_get_model_structure(fmu->md)));
 }
 
-fmi3_import_variable_list_t* fmi3_import_get_variable_initial_unknowns_list(fmi3_import_t* fmu) {
+fmi3_import_variable_list_t* fmi3_import_get_initial_unknowns_list(fmi3_import_t* fmu) {
     if (!fmi3_import_check_has_FMU(fmu)) return NULL;
-    return fmi3_import_vector_to_varlist(fmu, fmi3_xml_get_variable_initial_unknowns(fmi3_xml_get_model_structure(fmu->md)));
+    return fmi3_import_vector_to_varlist(fmu, fmi3_xml_get_initial_unknowns(fmi3_xml_get_model_structure(fmu->md)));
 }
 
 fmi3_import_variable_list_t* fmi3_import_get_event_indicators_list(fmi3_import_t* fmu) {
@@ -478,7 +478,7 @@ int fmi3_import_get_clocked_state_dependencies(fmi3_import_t* fmu, fmi3_import_v
         numDependencies, dependsOnAll, dependencies, dependenciesKind);
 }
 
-int fmi3_import_get_variable_initial_unknown_dependencies(fmi3_import_t* fmu, fmi3_import_variable_t* variable,
+int fmi3_import_get_initial_unknown_dependencies(fmi3_import_t* fmu, fmi3_import_variable_t* variable,
         size_t* numDependencies, int* dependsOnAll, size_t** dependencies, char** dependenciesKind)
 {
     fmi3_xml_model_structure_t* ms;
@@ -486,7 +486,7 @@ int fmi3_import_get_variable_initial_unknown_dependencies(fmi3_import_t* fmu, fm
 
     ms = fmi3_xml_get_model_structure(fmu->md);
     assert(ms);
-    return fmi3_xml_get_variable_initial_unknown_dependencies(ms, variable,
+    return fmi3_xml_get_initial_unknown_dependencies(ms, variable,
         numDependencies, dependsOnAll, dependencies, dependenciesKind);
 }
 

@@ -148,7 +148,7 @@ int fmi3_xml_handle_Terminals(fmi3_xml_parser_context_t* context, const char* da
                 const char* name2 = jm_vector_get_item(jm_named_ptr)(&termIcon->terminalsByName, i+1).name;
                 if(strcmp(name1, name2) == 0) {
                     fmi3_xml_parse_fatal(context, 
-                            "Two terminals with the same name '%s' found. This is not allowed.", name1);
+                            "Two terminals with the same name '%s' found. This is not allowed by the specification.", name1);
                     return -1;
                 }
             }

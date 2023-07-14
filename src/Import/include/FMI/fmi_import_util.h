@@ -53,7 +53,8 @@ FMILIB_EXPORT jm_status_enu_t fmi_import_rmdir(jm_callbacks* cb, const char* dir
 */
 FMILIB_EXPORT char* fmi_import_create_URL_from_abs_path(jm_callbacks* cb, const char* absPath);
 
-/** Given directory name fmu_unzipped_path and model identifier consturct XML file name
+/** Given directory name fmu_unzipped_path and the model identifier - construct the XML file name
+
     @return Pointer to a string with the file name. Caller is responsible for freeing the memory.
 */
 FMILIB_EXPORT char* fmi_import_get_terminals_and_icons_path(const char* fmu_unzipped_path, jm_callbacks* callBackFunctions);

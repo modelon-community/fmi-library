@@ -13,7 +13,7 @@ include $(CONFIG_FILE)
 
 install: generate
 	cd $(BUILD_DIR) && \
-		cmake --build . --parallel $(NPROC) --config $(BUILD_TYPE) --target '$@'
+		cmake --build . --parallel $(NPROC) --config $(BUILD_TYPE) --target install
 
 documentation: generate
 	cd $(BUILD_DIR) && \

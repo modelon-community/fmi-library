@@ -274,8 +274,6 @@ list(APPEND FMIXMLSOURCE
     ${FLEX_FMI1_OUT_SRC}
 )
 
-debug_message(STATUS "adding fmixml")
-
 add_library(fmixml STATIC ${FMIXMLSOURCE} ${FMIXMLHEADERS})
 if(MSVC)
     target_compile_definitions(fmixml PUBLIC XML_STATIC)

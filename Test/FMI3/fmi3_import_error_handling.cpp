@@ -34,6 +34,7 @@ TEST_CASE("Invalid VR, missing name") {
     fmi3_import_t* fmu = tfmu->fmu;
     REQUIRE(fmu == nullptr);
 
+    // tODO: skip sections part
     SECTION("Float64") {
         REQUIRE(fmi3_testutil_log_contains(tfmu, "XML element 'Float64': failed to parse attribute valueReference='VR'"));
         REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'Float64': required attribute 'name' not found"));

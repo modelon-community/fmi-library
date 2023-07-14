@@ -617,6 +617,7 @@ TEST_CASE("Invalid intermediateUpdate - has causality parameter") {
     REQUIRE(fmu != nullptr);
 
     // TODO: Improve error message?
+    // TODO: This should be warning instead
     const char* logMsg = "Variables with causality='parameter' must not be marked with intermediateUpdate='true'.";
     REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
 
@@ -666,7 +667,7 @@ TEST_CASE("Invalid Clock variable - has previous") {
     // The one with the error
     fmi3_import_variable_t* var = fmi3_import_get_variable_by_vr(fmu, 20);
     REQUIRE(var != nullptr); // TODO: Should it fail?
-    REQUIRE(fmi3_import_get_variable_previous(var) == nullptr);
+    REQUIRE(fmi3_import_get_variable_previous(var) == nullptr); // TODO: should still work
 
     REQUIRE(fmi3_import_get_variable_by_vr(fmu, 21) != nullptr);
 

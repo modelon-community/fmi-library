@@ -5,18 +5,6 @@
 
 #include "config_test.h"
 
-/* Windows:
- * config_test.h undefines FMILIB_BUILDING_LIBRARY because it's expected that
- * all tests will link with fmilib.dll. In this case we don't.
- * As of writing, the FMILIB_BUILDING_LIBRARY controls whether we define the API
- * as __declspec import or export (Windows at least). If we undef FMILIB_BUILDING_LIBRARY,
- * it will be defined as import since we expect to link with the DLL, but since
- * we don't in this case, linking will fail (it actually doesn't fail for MSVC
- * for some reason, (maybe it has static linking fallback or similar?) but
- * MinGW fails).
- */
-#define FMILIB_BUILDING_LIBRARY
-
 #include <JM/jm_portability.h>
 
 static void fail(const char* fmt, ...) {

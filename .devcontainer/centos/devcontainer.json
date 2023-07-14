@@ -1,0 +1,19 @@
+{
+    "name": "centos",
+    "build": {
+        "dockerfile": "${localWorkspaceFolder}/build/docker/Dockerfile_centos"
+    },
+    "workspaceFolder": "/mnt/fmi-library",
+    "workspaceMount": "source=${localWorkspaceFolder},target=/mnt/fmi-library,type=bind",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "vms-vscode.cpptools",
+                "ms-vscode.cmake-tools",
+                "ms-vscode.makefile-tools",
+                "ms-vscode.cpptools-extension-pack",
+                "matepek.vscode-catch2-test-adapter"
+            ]
+        }
+    }
+}

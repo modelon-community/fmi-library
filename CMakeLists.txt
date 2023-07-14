@@ -14,7 +14,7 @@
 # CMake 3.1.3 or later is required to build Expat (as ExternalProject). However,
 # keeping 2.8.6 on the FMIL main project for now since updating causes issues
 # with CMP0026 (and more).
-cmake_minimum_required (VERSION 2.8.6 FATAL_ERROR)
+cmake_minimum_required(VERSION 2.8.6 FATAL_ERROR)
 
 # Prohibit in-source build
 if("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
@@ -45,6 +45,8 @@ set_property(GLOBAL PROPERTY C_STANDARD_REQUIRED                ON)
 set_property(GLOBAL PROPERTY PROPERTYPREDEFINED_TARGETS_FOLDER  Global)
 set(FMILIBRARYHOME ${FMILibrary_SOURCE_DIR})
 set(FMILIBRARYBUILD ${FMILibrary_BINARY_DIR})
+
+set(CMAKE_MODULE_PATH ${FMILIBRARYHOME}/Config.cmake)
 
 # User configuration options and parameters
 set(FMILIB_INSTALL_PREFIX ${FMILibrary_BINARY_DIR}/../install CACHE PATH "Prefix prepended to install directories")
@@ -160,9 +162,6 @@ if(CMAKE_COMPILER_IS_GNUCC)
     endif()
 endif()
 
-# The config files will end up in the binary dir
-include_directories("${FMILibrary_BINARY_DIR}")
-
 if(FMILIB_BUILD_FOR_SHARED_LIBS)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${CMAKE_SHARED_LIBRARY_C_FLAGS}")
     set(WITH_PIC ON) # this is used in MERGE_LIBRARIES below
@@ -197,7 +196,6 @@ if(MSVC AND (${CMAKE_GENERATOR} MATCHES "Visual Studio 10"))
     source_group("Private headers\\FMI3" REGULAR_EXPRESSION "fmi3_.*impl.h")
 endif()
 
-set(FMILIBKIND STATIC)
 if(NOT FMILIB_STATIC_LIB_ONLY)
     add_definitions(-DFMILIB_BUILDING_LIBRARY)
 endif()
@@ -226,22 +224,12 @@ if(MSVC AND (MSVC_VERSION LESS 1900))
     set(HAVE_VSNPRINTF FALSE)
 endif()
 
-add_subdirectory(ThirdParty/c99_snprintf)
-
-set(CMAKE_MODULE_PATH ${FMILIBRARYHOME}/Config.cmake)
-
-include(jmutil)
-include(fmixml)
-include(fmicapi)
-include(fmizip)
-include(fmiimport)
-
 #Cmake variables set in config files.
 if(WIN32)
     set(FMI_FILE_SEP "\\\\")
-else(WIN32)
+else()
     set(FMI_FILE_SEP "/")
-endif(WIN32)
+endif()
 
 # Sets VARNAME to the user-configured platform name, or auto-detects it based on the
 # current platform and provided FMI version.
@@ -260,13 +248,49 @@ set_fmi_platform(FMI1_PLATFORM 1)
 set_fmi_platform(FMI2_PLATFORM 2)
 set_fmi_platform(FMI3_PLATFORM 3)
 
+# ===============================================================================
+# Generate headers
+# ===============================================================================
+
+# Put the headers in different directories to allow more fine-grained include flags,
+# since we don't want to accidentally include more than we should. That could lead
+# to issues not detected until testing the installation.
+set(FMILIB_CONFIG_INCLUDE_DIR      "${FMILibrary_BINARY_DIR}/fmilib_config_include")
+set(FMILIB_TESTCONFIG_INCLUDE_DIR  "${FMILibrary_BINARY_DIR}/fmilib_test_config_include")
+set(FMILIB_INCLUDE_DIR             "${FMILibrary_BINARY_DIR}/fmilib_include")
+
+file(MAKE_DIRECTORY "${FMILIB_CONFIG_INCLUDE_DIR}")
+file(MAKE_DIRECTORY "${FMILIB_TESTCONFIG_INCLUDE_DIR}")
+file(MAKE_DIRECTORY "${FMILIB_INCLUDE_DIR}")
+
 configure_file (
     "${FMILibrary_SOURCE_DIR}/Config.cmake/config_fmilib.h.cmake"
-    "${FMILibrary_BINARY_DIR}/fmilib_config.h"
+    "${FMILIB_CONFIG_INCLUDE_DIR}/fmilib_config.h"
 )
 
-set(FMILIB_SHARED_SUBLIBS ${FMIXML_LIBRARIES} ${FMIZIP_LIBRARIES} ${FMICAPI_LIBRARIES} expat minizip zlib c99snprintf)
-set(FMILIB_SUBLIBS ${FMIIMPORT_LIBRARIES} ${JMUTIL_LIBRARIES} ${FMILIB_SHARED_SUBLIBS})
+file(COPY "${FMILIBRARYHOME}/Config.cmake/fmilib.h" DESTINATION "${FMILIB_INCLUDE_DIR}")
+
+# ===============================================================================
+
+add_subdirectory(ThirdParty/c99_snprintf)
+
+include(jmutil)
+include(fmixml)
+include(fmicapi)
+include(fmizip)
+include(fmiimport)
+if(FMILIB_BUILD_TESTS)
+    include(runtime_test)
+    # Configuration depends on values set in all the different test*.cmake files,
+    # so can't be done until here.
+    configure_file (
+        "${FMILibrary_SOURCE_DIR}/Config.cmake/config_test.h.cmake"
+        "${FMILIB_TESTCONFIG_INCLUDE_DIR}/config_test.h"
+    )
+endif()
+
+set(FMILIB_SHARED_SUBLIBS fmixml fmizip fmicapi expat minizip zlib c99snprintf)
+set(FMILIB_SUBLIBS fmiimport jmutils ${FMILIB_SHARED_SUBLIBS})
 # XXX: Unclear why we create intermediate sublibs instead of just giving everything as source.
 # Probably also wouldn't get problems with using PRIVATE/PUBLIC on linking sublibs on Windows.
 set(FMILIB_SHARED_SRC ${FMIIMPORTSOURCE} ${FMIIMPORTHEADERS} ${JMUTILSOURCE} ${JMUTIL_PUBHEADERS})
@@ -281,8 +305,8 @@ if(FMILIB_GENERATE_BUILD_STAMP)
         COMMAND ${CMAKE_COMMAND}  -E touch ${FMILibrary_BINARY_DIR}/config_fmilib.c
         DEPENDS ${FMILIB_SUBLIBS}
     )
-    add_library(fmilib_timestamp STATIC ${FMILibrary_BINARY_DIR}/config_fmilib.c "${FMILibrary_BINARY_DIR}/fmilib_config.h")
-#    add_dependencies(fmilib_timestamp ${FMILIB_SUBLIBS} expat minizip zlib ${FMILIBRARYHOME}/Config.cmake/config_stamp.cmake)
+    add_library(fmilib_timestamp STATIC ${FMILibrary_BINARY_DIR}/config_fmilib.c "${FMILIB_CONFIG_INCLUDE_DIR}/fmilib_config.h")
+    target_include_directories(fmilib_timestamp PRIVATE ${FMILIB_CONFIG_INCLUDE_DIR})
 
     set(FMILIB_SUBLIBS ${FMILIB_SUBLIBS} fmilib_timestamp)
     set(FMILIB_SHARED_SRC ${FMILIB_SHARED_SRC} ${FMILibrary_BINARY_DIR}/config_fmilib.c)
@@ -315,6 +339,15 @@ if(FMILIB_BUILD_STATIC_LIB)
         target_link_libraries(fmilib dl)
     endif()
     set(FMILIB_TARGETS ${FMILIB_TARGETS} fmilib)
+    # Set PUBLIC include_directories such that test targets that link with fmilib inherit
+    # the same include dirs as will exist for installation.
+    target_include_directories(fmilib
+        PUBLIC
+            ${JMUTIL_PUBLIC_INCLUDE_DIR}
+            ${FMIIMPORT_PUBLIC_INCLUDE_DIR}
+            ${FMILIB_INCLUDE_DIR}
+            ${FMILIB_CONFIG_INCLUDE_DIR}
+    )
 endif()
 
 if(FMILIB_BUILD_SHARED_LIB)
@@ -328,22 +361,27 @@ if(FMILIB_BUILD_SHARED_LIB)
         target_compile_definitions(fmilib_shared PRIVATE -D_GNU_SOURCE)
     endif()
 
-    # Must be PRIVATE or will cause both fmilib_shared and the sublibs to be linked
-    # with anything that links with fmilib_shared (i.e. tests). This otherwise causes
-    # link errors on Windows.
-    target_link_libraries(fmilib_shared PRIVATE ${FMILIB_SHARED_SUBLIBS})
+    # Must be PRIVATE, or tests will later inherit compile/link properties from sublibs.
+    # That is incorrect, and may cause link issues.
+    #
+    # FIXME:
+    # Issue: We link static libraries (fmixml) that depend on other static libraries (jmutils),
+    # which are also compiled from source (jmutils) to a shared library.
+    # One solution is to also package jmutils as a shared lib and to fix proper packaging for
+    # find_package etc. (which would make it easier to get away from merge_static_libs as well).
+    target_link_libraries(fmilib_shared PRIVATE ${FMILIB_SHARED_SUBLIBS} ${JMUTILS_DEPENDENCY_LIBS})
+
+    target_include_directories(fmilib_shared
+        PRIVATE
+            ${FMIIMPORT_PRIVATE_INCLUDE_DIRS}
+        PUBLIC
+            ${JMUTILS_PUBLIC_INCLUDE_DIRS}
+            ${FMIIMPORT_PUBLIC_INCLUDE_DIRS}
+            ${FMILIB_INCLUDE_DIR}
+            ${FMILIB_CONFIG_INCLUDE_DIR}
+    )
     set(FMILIB_TARGETS ${FMILIB_TARGETS} fmilib_shared)
 endif()
-
-if(FMILIB_BUILD_TESTS)
-    include(runtime_test)
-    configure_file (
-        "${FMILibrary_SOURCE_DIR}/Config.cmake/config_test.h.cmake"
-        "${FMILibrary_BINARY_DIR}/config_test.h"
-    )
-endif()
-
-file(COPY "${FMILIBRARYHOME}/Config.cmake/fmilib.h" DESTINATION "${FMILibrary_BINARY_DIR}")
 
 install(TARGETS ${FMILIB_TARGETS}
     ARCHIVE DESTINATION lib
@@ -357,8 +395,8 @@ install(FILES
     DESTINATION doc)
 
 install(FILES
-    "${FMILibrary_BINARY_DIR}/fmilib_config.h"
-    "${FMILibrary_BINARY_DIR}/fmilib.h"
+    "${FMILIB_CONFIG_INCLUDE_DIR}/fmilib_config.h"
+    "${FMILIB_INCLUDE_DIR}/fmilib.h"
     DESTINATION include)
 
 install(DIRECTORY
@@ -405,7 +443,7 @@ if(FMILIB_GENERATE_DOXYGEN_DOC)
 
     file(COPY
         "${FMILIBRARYHOME}/Config.cmake/fmilib.h"
-        "${FMILibrary_BINARY_DIR}/fmilib_config.h"
+        "${FMILIB_CONFIG_INCLUDE_DIR}/fmilib_config.h"
         DESTINATION ${FMILIBRARYBUILD}/doc)
 
     set(fmilib_mainpage_h "${FMILIBRARYBUILD}/doc/fmilib_mainpage.h")

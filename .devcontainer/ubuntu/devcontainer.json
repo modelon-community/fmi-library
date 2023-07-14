@@ -1,6 +1,7 @@
 {
+    "name": "ubuntu",
     "build": {
-        "dockerfile": "../build/docker/Dockerfile_ubuntu"
+        "dockerfile": "${localWorkspaceFolder}/build/docker/Dockerfile_ubuntu"
     },
     "workspaceFolder": "/mnt/fmi-library",
     "workspaceMount": "source=${localWorkspaceFolder},target=/mnt/fmi-library,type=bind",

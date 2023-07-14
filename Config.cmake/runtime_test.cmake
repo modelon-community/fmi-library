@@ -12,17 +12,35 @@
 #    along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 
 set(FMIL_TEST_DIR ${FMILIBRARYHOME}/Test)
-set(CATCH_INCLUDE_DIR ${FMILIB_THIRDPARTYLIBS}/Catch2/single_include/catch2)
 set(TEST_OUTPUT_FOLDER ${CMAKE_CURRENT_BINARY_DIR}/Testing)
 
-include_directories(
-    ${FMIL_TEST_DIR}
-    ${CATCH_INCLUDE_DIR}
+# Only the directories that are specific to tests.
+set(FMIL_TEST_INCLUDE_DIRS
+    ${FMILIB_TESTCONFIG_INCLUDE_DIR}
+    ${FMIL_TEST_DIR} 
+    ${FMIL_TEST_DIR}/FMI1
+    ${FMIL_TEST_DIR}/FMI2
+    ${FMIL_TEST_DIR}/FMI3
 )
 
+# XXX:
+# Workaround to allow testing with sublibs on MinGW (unclear why it works with MSVC).
+#
+# The problem is that in config_fmilib.h we define FMILIB_EXPORT as __declspec(import),
+# when building the tests. This makes the test expect to link against an import
+# library. This is no problem when testing against fmilib_shared because it's a shared
+# library, but we never compile the sublibs to shared libraries - only static libraries.
+#
+# This workaround makes FMILIB_EXPORT expand to nothing.
+SET(FMIL_LINK_WITH_SUBLIBS FMILIB_STATIC_LIB_ONLY)
+
+# ===============================================================================
+# fmi_testutil
+# ===============================================================================
+
 add_library(fmi_testutil STATIC ${FMIL_TEST_DIR}/fmi_testutil.c)
-target_link_libraries(fmi_testutil PRIVATE ${JMUTIL_LIBRARIES})  # Uses jm_vector
-set(FMILIBFORTEST fmilib fmi_testutil)
+
+target_link_libraries(fmi_testutil PRIVATE jmutils)  # Uses jm_vector
 if(FMILIB_BUILD_SHARED_LIB AND (FMILIB_LINK_TEST_TO_SHAREDLIB OR NOT FMILIB_BUILD_STATIC_LIB))
     set(FMILIBFORTEST fmilib_shared fmi_testutil)
     target_link_libraries(fmi_testutil PRIVATE fmilib_shared)
@@ -30,22 +48,30 @@ else()
     set(FMILIBFORTEST fmilib fmi_testutil)
     target_link_libraries(fmi_testutil PRIVATE fmilib)
 endif()
-message(STATUS "Tests will be linked with ${FMILIBFORTEST}")
+
+# Convenience: By setting this to PUBLIC, all tests that link with fmi_testutil
+# will inherit the include directories.
+target_include_directories(fmi_testutil PUBLIC ${FMIL_TEST_INCLUDE_DIRS})
+
+# ===============================================================================
 
 # Test: jm_vector
 add_executable(jm_vector_test ${FMIL_TEST_DIR}/jm_vector_test.c)
-target_link_libraries(jm_vector_test ${JMUTIL_LIBRARIES})
+target_link_libraries(jm_vector_test PRIVATE jmutils)
+target_include_directories(jm_vector_test PRIVATE ${FMIL_TEST_INCLUDE_DIRS})
 
 # Test: jm locale
 add_executable(jm_locale_test ${FMIL_TEST_DIR}/jm_locale_test.c)
-target_link_libraries(jm_locale_test ${JMUTIL_LIBRARIES})
+target_link_libraries(jm_locale_test jmutils)
+target_include_directories(jm_locale_test PRIVATE ${FMIL_TEST_INCLUDE_DIRS})
 if(FMILIB_TEST_LOCALE)
-    target_compile_definitions(jm_locale_test PRIVATE -DFMILIB_TEST_LOCALE)
+    target_compile_definitions(jm_locale_test PRIVATE -DFMILIB_TEST_LOCALE ${FMIL_LINK_WITH_SUBLIBS})
 endif()
 
 #Create function that zips the dummy FMUs
 add_executable(compress_test_fmu_zip ${FMIL_TEST_DIR}/compress_test_fmu_zip.c)
-target_link_libraries(compress_test_fmu_zip ${FMIZIP_LIBRARIES})
+target_link_libraries(compress_test_fmu_zip fmizip)
+target_include_directories(compress_test_fmu_zip PRIVATE ${FMIL_TEST_INCLUDE_DIRS})
 
 set_target_properties(
     jm_vector_test
@@ -128,17 +154,20 @@ function(compress_fmu OUTPUT_FOLDER_T MODEL_IDENTIFIER_T FILE_NAME_CS_ME_EXT_T T
 endfunction(compress_fmu)
 
 add_executable(fmi_zip_zip_test ${FMIL_TEST_DIR}/fmi_zip_zip_test.c )
-target_link_libraries (fmi_zip_zip_test ${FMIZIP_LIBRARIES})
+target_link_libraries(fmi_zip_zip_test fmizip)
+target_include_directories(fmi_zip_zip_test PRIVATE ${FMIL_TEST_INCLUDE_DIRS})
 
 add_executable(fmi_zip_unzip_test ${FMIL_TEST_DIR}/fmi_zip_unzip_test.c )
-target_link_libraries(fmi_zip_unzip_test ${FMIZIP_LIBRARIES})
+target_link_libraries(fmi_zip_unzip_test fmizip)
+target_include_directories(fmi_zip_unzip_test PRIVATE ${FMIL_TEST_INCLUDE_DIRS})
 
 add_executable(fmi_import_test
                     ${FMIL_TEST_DIR}/fmi_import_test.c
                     ${FMIL_TEST_DIR}/FMI1/fmi1_import_test.c
                     ${FMIL_TEST_DIR}/FMI2/fmi2_import_test.c
                     ${FMIL_TEST_DIR}/FMI3/fmi3_import_test.c)
-target_link_libraries (fmi_import_test ${FMILIBFORTEST})
+target_link_libraries(fmi_import_test ${FMILIBFORTEST})
+target_include_directories(fmi_import_test PRIVATE ${FMIL_TEST_INCLUDE_DIRS})
 
 set_target_properties(
     fmi_zip_zip_test
@@ -177,7 +206,8 @@ add_library(Catch INTERFACE)
 # Catch2 consists of only headers, but we still want to compile its main function
 # in a separate object file so we don't need to do it for each test.
 add_library(catch2_main STATIC ${FMIL_TEST_DIR}/catch2_main.cpp)
-target_link_libraries(catch2_main Catch)
+target_link_libraries(catch2_main PUBLIC Catch)
+target_include_directories(catch2_main PUBLIC ${FMILIB_THIRDPARTYLIBS}/Catch2/single_include/catch2)
 
 # Creates a Catch2 test.
 #
@@ -186,7 +216,7 @@ target_link_libraries(catch2_main Catch)
 function(add_catch2_test TEST_NAME TEST_DIR)
     add_executable(${TEST_NAME} ${FMIL_TEST_DIR}/${TEST_DIR}/${TEST_NAME}.cpp)
     set_source_files_properties(${FMIL_TEST_DIR}/${TEST_DIR}/${TEST_NAME}.cpp PROPERTIES LANGUAGE CXX)
-    target_link_libraries(${TEST_NAME} Catch catch2_main ${FMILIBFORTEST})
+    target_link_libraries(${TEST_NAME} PRIVATE catch2_main ${FMILIBFORTEST})
     add_test(ctest_${TEST_NAME} ${TEST_NAME})
     set_target_properties(${TEST_NAME} PROPERTIES FOLDER "Test/${TEST_DIR}")
     if(FMILIB_BUILD_BEFORE_TESTS)

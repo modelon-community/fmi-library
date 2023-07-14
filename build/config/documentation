@@ -1,9 +1,9 @@
-CONFIG=documentation
+CONFIG_NAME=documentation
 
 # CMake
 SRC_DIR=.
-BUILD_DIR=build_$(CONFIG)
-INSTALL_DIR=install_$(CONFIG)
+BUILD_DIR=build_$(CONFIG_NAME)
+INSTALL_DIR=install_$(CONFIG_NAME)
 GENERATOR="Unix Makefiles"
 FMILIB_CMAKE_CUSTOM_FLAGS=-DCMAKE_C_FLAGS= # N/A
 BUILD_TYPE=Release
@@ -15,8 +15,8 @@ BUILD_WITH_STATIC_RTLIB=0
 BUILD_TESTS=0
 TEST_LOCALE=0
 
-# path used in container for the mounted directories when building via docker
-MOUNTED_DIR=/mnt/fmi-library
 
+MOUNTED_DIR=/mnt/fmi-library
 # Either centos or ubuntu works
-DOCKERFILE_NAME=Dockerfile_centos
+DOCKERFILE_NAME=centos64.Dockerfile
+DOCKER_IMAGE_TAG=fmil_centos64:test

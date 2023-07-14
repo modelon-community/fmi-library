@@ -21,14 +21,6 @@ include(fmicapi)
 ################################################################################
 set(DOXYFILE_EXTRA_SOURCES "${DOXYFILE_EXTRA_SOURCES} \"${FMIIMPORTDIR}/include\"")
 
-include_directories(
-    "${FMIIMPORTDIR}"
-    "${FMIIMPORTDIR}/include"
-    "${FMILIB_THIRDPARTYLIBS}/FMI/"
-    "${CMAKE_BINARY_DIR}/src/Import"
-)
-set(FMIIMPORT_LIBRARIES fmiimport)
-
 set(FMIIMPORT_PUBHEADERS
     include/FMI1/fmi1_import.h
     include/FMI1/fmi1_import_capi.h
@@ -60,7 +52,7 @@ set(FMIIMPORT_PUBHEADERS
     include/FMI/fmi_import_context.h
     include/FMI/fmi_import_options.h
     include/FMI/fmi_import_util.h
- )
+)
 
 set(FMIIMPORT_PRIVHEADERS
     src/FMI1/fmi1_import_impl.h
@@ -75,11 +67,11 @@ set(FMIIMPORT_PRIVHEADERS
 )
 
 PREFIXLIST(FMIIMPORT_PRIVHEADERS ${FMIIMPORTDIR}/)
-PREFIXLIST(FMIIMPORT_PUBHEADERS ${FMIIMPORTDIR}/)
+PREFIXLIST(FMIIMPORT_PUBHEADERS  ${FMIIMPORTDIR}/)
 
 set(FMIIMPORTHEADERS
     ${FMIIMPORT_PUBHEADERS} ${FMIIMPORT_PRIVHEADERS}
- )
+)
 
 set(FMIIMPORTSOURCE
     src/FMI/fmi_import_context.c
@@ -113,19 +105,33 @@ set(FMIIMPORTSOURCE
     src/FMI3/fmi3_import.c
     src/FMI3/fmi3_import_priv.c
     src/FMI3/fmi3_import_convenience.c
-    )
+)
 
 PREFIXLIST(FMIIMPORTSOURCE  ${FMIIMPORTDIR}/)
 
-add_library(fmiimport ${FMILIBKIND} ${FMIIMPORTSOURCE} ${FMIIMPORTHEADERS})
-target_link_libraries(fmiimport ${JMUTIL_LIBRARIES} ${FMIXML_LIBRARIES} ${FMIZIP_LIBRARIES} ${FMICAPI_LIBRARIES})
-#target_link_libraries(fmiimportshared fmiimport)
+set(FMIIMPORT_PUBLIC_INCLUDE_DIR ${FMIIMPORTDIR}/include)
 
-#add_library(fmiimport_shared SHARED ${FMIIMPORTSOURCE} ${FMIIMPORTHEADERS} )
-#target_link_libraries(fmiimport_shared fmiimport ${JMUTIL_LIBRARIES} ${FMIXML_LIBRARIES} ${FMIZIP_LIBRARIES} ${FMICAPI_LIBRARIES})
-#install(TARGETS fmiimport_shared
-#    ARCHIVE DESTINATION lib
-#    LIBRARY DESTINATION lib
-#    RUNTIME DESTINATION lib
-#)
+# XXX:
+# Since target fmilib_shared essentially is fmiimport + jmutils, we need
+# to make all the properties of these sub-libraries available when building
+# that target.
+set(FMIIMPORT_PRIVATE_INCLUDE_DIRS
+    ${FMIIMPORTDIR}/src
+    ${FMILIB_THIRDPARTYLIBS}/FMI
+    ${EXPAT_INCLUDE_DIRS}  # FIXME: XML_Parser is used in fmi_import_context_impl.h
+)
+set(FMIIMPORT_PUBLIC_INCLUDE_DIRS
+    ${FMILIB_CONFIG_INCLUDE_DIR}
+    ${FMIIMPORT_PUBLIC_INCLUDE_DIR}
+)
+
+add_library(fmiimport STATIC ${FMIIMPORTSOURCE} ${FMIIMPORTHEADERS})
+target_link_libraries(fmiimport
+    PRIVATE jmutils fmixml fmizip fmicapi
+)
+target_include_directories(fmiimport
+    PRIVATE ${FMIIMPORT_PRIVATE_INCLUDE_DIRS}
+    PUBLIC  ${FMIIMPORT_PUBLIC_INCLUDE_DIR}
+)
+
 endif(NOT FMIIMPORTDIR)

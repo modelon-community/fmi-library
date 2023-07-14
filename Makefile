@@ -5,18 +5,15 @@
 # NOTE: 'nproc' doesn't exist on Windows, so just hardcoding "some" value for now.
 NPROC=8
 
+FMIL_REPO_DIR:=$(shell pwd)
+
 include $(CONFIG_FILE)
 
 .PHONY: install test documentation generate clean
 
 install: generate
 	cd $(BUILD_DIR) && \
-		cmake --build . --parallel $(NPROC) --config $(BUILD_TYPE) --target '$@'
-
-# Note that this does not execute the test binaries that are using the test framework Catch2
-test: generate
-	cd $(BUILD_DIR) && \
-		$(TEST_COMMAND)
+		cmake --build . --parallel $(NPROC) --config $(BUILD_TYPE) --target install
 
 documentation: generate
 	cd $(BUILD_DIR) && \
@@ -34,6 +31,21 @@ generate:
 			$(FMILIB_CMAKE_CUSTOM_FLAGS) \
 			-G $(GENERATOR) \
 			../$(SRC_DIR)
+	
+test: test_unit test_installation
+
+test_unit: generate
+	cd $(BUILD_DIR) && \
+		$(TEST_COMMAND)
+
+test_installation: install
+	set -eu; \
+	cd Test/test_installation; \
+	rm -rf build && mkdir -p build; \
+	cd build; \
+	cmake -DFMIL_HOME=$(FMIL_REPO_DIR)/$(INSTALL_DIR) -G $(GENERATOR) ..; \
+	cmake --build .; \
+	ctest $(CTEST_FLAGS_COMMON)
 
 clean:
 	rm -rf -v build_* install_*

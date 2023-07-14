@@ -11,7 +11,6 @@
 #    You should have received a copy of the FMILIB_License.txt file
 #    along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 
-include_directories(${FMIL_TEST_DIR}/FMI3)
 set(FMI3_TEST_XML_DIR ${FMIL_TEST_DIR}/FMI3/parser_test_xmls)
 
 set(FMU3_DUMMY_FOLDER ${FMIL_TEST_DIR}/FMI3/fmu_dummy)
@@ -25,9 +24,20 @@ set(FMU3_DUMMY_HEADERS
     ${FMU3_DUMMY_FOLDER}/fmu3_model_defines.h
 )
 
+set(FMU3_DUMMY_INCLUDE_DIRS
+    ${FMILIB_FMI_STANDARD_HEADERS}
+    ${FMILIB_CONFIG_INCLUDE_DIR}
+    ${JMUTIL_PUBLIC_INCLUDE_DIR}
+    ${FMIL_TEST_DIR}/FMI3
+    ${FMILIB_TESTCONFIG_INCLUDE_DIR}
+)
+
 add_library(fmu3_dll_me SHARED ${FMU3_DUMMY_ME_SOURCE} ${FMU3_DUMMY_HEADERS})
 add_library(fmu3_dll_cs SHARED ${FMU3_DUMMY_CS_SOURCE} ${FMU3_DUMMY_HEADERS})
 add_library(fmu3_dll_se SHARED ${FMU3_DUMMY_SE_SOURCE} ${FMU3_DUMMY_HEADERS})
+target_include_directories(fmu3_dll_me PRIVATE ${FMU3_DUMMY_INCLUDE_DIRS})
+target_include_directories(fmu3_dll_cs PRIVATE ${FMU3_DUMMY_INCLUDE_DIRS})
+target_include_directories(fmu3_dll_se PRIVATE ${FMU3_DUMMY_INCLUDE_DIRS})
 
 set(XML_ME_PATH ${FMU3_DUMMY_FOLDER}/modelDescription_me.xml)
 set(XML_CS_PATH ${FMU3_DUMMY_FOLDER}/modelDescription_cs.xml)

@@ -4,7 +4,19 @@ The release notes are typically a highlighting subset of all changes made. For f
 
 Note that version 2.1 is the first version with release notes. Please see the commit history for older versions.
 
-## NEXT_RELEASE
+## 3.0a2
+
+### Improvements
+
+- Minor improvements to build system, documentation and clean-up of obsolete code for FMI 3.0. In general this release contains no significant new user-related improvements compared to 3.0a1.
+- Resolved an issue with missing headers in the FMIL installation, see issue #66.
+
+### Changes
+
+- Renamed several API methods for consistency between the different FMI versions. Primarily this concerns functions of names `fmi3_import_get_*` for retrieving variable properties, these are now named `fmi3_import_get_variable_*`, some examples are:
+    - `fmi3_import_get_variability` has been changed to `fmi3_import_get_variable_variability`.
+    - `fmi3_import_get_causality` has been changed to `fmi3_import_get_variable_causality`.
+- In a similar manner as above, variable related functions of names `fmi3_xml_get_*` now are named according to `fmi3_xml_get_variable_*`.
 
 ## 3.0a1
 

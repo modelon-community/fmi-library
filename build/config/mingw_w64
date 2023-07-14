@@ -1,12 +1,12 @@
-CONFIG=mingw_w64
+CONFIG_NAME=mingw_w64
 
 # This config is for TDM-GCC, which is based on MinGW-w64. This is the MinGW
 # compiler used by OCT.
 
 # CMake
 SRC_DIR=.
-BUILD_DIR=build_$(CONFIG)
-INSTALL_DIR=install_$(CONFIG)
+BUILD_DIR=build_$(CONFIG_NAME)
+INSTALL_DIR=install_$(CONFIG_NAME)
 GENERATOR="MSYS Makefiles"
 # These flags should be the same as what OCT is using (-fPIC is removed though
 # since it's not applicable on Windows).

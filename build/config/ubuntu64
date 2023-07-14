@@ -1,9 +1,9 @@
-CONFIG=ubuntu64
+CONFIG_NAME=ubuntu64
 
 # CMake
 SRC_DIR=.
-BUILD_DIR=build_$(CONFIG)
-INSTALL_DIR=install_$(CONFIG)
+BUILD_DIR=build_$(CONFIG_NAME)
+INSTALL_DIR=install_$(CONFIG_NAME)
 GENERATOR="Unix Makefiles"
 FMILIB_CMAKE_CUSTOM_FLAGS=-DCMAKE_C_FLAGS= # N/A
 BUILD_TYPE=Debug # We need debug symbols, otherwise memcheck will give limited information, and we don't distribute binaries regardless
@@ -32,3 +32,4 @@ TEST_LOCALE=1
 # Path used in container for the mounted directories when building via docker
 MOUNTED_DIR=/mnt/fmi-library
 DOCKERFILE_NAME=Dockerfile_ubuntu
+DOCKER_IMAGE_TAG=fmil_$(CONFIG_NAME):test

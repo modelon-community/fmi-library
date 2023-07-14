@@ -31,5 +31,5 @@ TEST_LOCALE=0
 
 # Path used in container for the mounted directories when building via docker
 MOUNTED_DIR=/mnt/fmi-library
-DOCKERFILE_NAME=Dockerfile_centos
+DOCKERFILE_NAME=$(CONFIG_NAME).Dockerfile
 DOCKER_IMAGE_TAG=fmil_$(CONFIG_NAME):test

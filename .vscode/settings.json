@@ -2,8 +2,8 @@
     "cmake.buildDirectory": "${workspaceFolder}/build_cmake",  // The default ('build') is already used
     "cmake.configureOnOpen": false,
     "cmake.preferredGenerators": [
-        "Unix Makefiles",  // For centos7 - FIXME: You need to move this line to the first entry
         "Ninja",           // NOTE: Jenkins still runs with "Unix Makefiles" since other downstream projects use that
+        "Unix Makefiles",  // For centos7 (This line needs to swapped with the one above to take effect)
     ],
     "testMate.cpp.test.executables": "{build_cmake}/**/*{test,Test,TEST}*",
     "testMate.cpp.log.logpanel": true,

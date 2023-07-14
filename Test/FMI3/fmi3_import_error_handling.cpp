@@ -34,12 +34,41 @@ TEST_CASE("Invalid VR, missing name") {
     fmi3_import_t* fmu = tfmu->fmu;
     REQUIRE(fmu == nullptr);
 
-    // <Float64 valueReference="VR"/>
-    REQUIRE(fmi3_testutil_log_contains(tfmu, "XML element 'Float64': failed to parse attribute valueReference='VR'"));
-    REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'Float64': required attribute 'name' not found"));
+    SECTION("Float64") {
+        REQUIRE(fmi3_testutil_log_contains(tfmu, "XML element 'Float64': failed to parse attribute valueReference='VR'"));
+        REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'Float64': required attribute 'name' not found"));
+        REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'Float64': required attribute 'valueReference' not found"));
+    }
 
-    // <Float64 name="floaty"/>
-    REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'Float64': required attribute 'valueReference' not found"));
+    SECTION("Int64") {
+        REQUIRE(fmi3_testutil_log_contains(tfmu, "XML element 'Int64': failed to parse attribute valueReference='VR'"));
+        REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'Int64': required attribute 'name' not found"));
+        REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'Int64': required attribute 'valueReference' not found"));
+    }
+
+    SECTION("Boolean") {
+        REQUIRE(fmi3_testutil_log_contains(tfmu, "XML element 'Boolean': failed to parse attribute valueReference='VR'"));
+        REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'Boolean': required attribute 'name' not found"));
+        REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'Boolean': required attribute 'valueReference' not found"));
+    }
+
+    SECTION("Binary") {
+        REQUIRE(fmi3_testutil_log_contains(tfmu, "XML element 'Binary': failed to parse attribute valueReference='VR'"));
+        REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'Binary': required attribute 'name' not found"));
+        REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'Binary': required attribute 'valueReference' not found"));
+    }
+
+    SECTION("Clock") {
+        REQUIRE(fmi3_testutil_log_contains(tfmu, "XML element 'Clock': failed to parse attribute valueReference='VR'"));
+        REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'Clock': required attribute 'name' not found"));
+        REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'Clock': required attribute 'valueReference' not found"));
+    }
+
+    SECTION("Enumeration") {
+        REQUIRE(fmi3_testutil_log_contains(tfmu, "XML element 'Enumeration': failed to parse attribute valueReference='VR'"));
+        REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'Enumeration': required attribute 'name' not found"));
+        REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'Enumeration': required attribute 'valueReference' not found"));
+    }
     fmi3_testutil_import_free(tfmu);
 }
 

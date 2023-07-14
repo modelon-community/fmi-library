@@ -151,7 +151,7 @@ fmi3_initial_enu_t fmi3_xml_get_variable_initial(fmi3_xml_variable_t* v) {
 }
 
 fmi3_xml_variable_t* fmi3_xml_get_variable_previous(fmi3_xml_variable_t* v) {
-    return v->previous.variable;
+    return v->hasPrevious ? v->previous.variable : NULL;
 }
 
 fmi3_boolean_t fmi3_xml_get_variable_can_handle_multiple_set_per_time_instant(fmi3_xml_variable_t* v) {
@@ -1256,15 +1256,14 @@ static int fmi3_xml_variable_process_attr_previous(fmi3_xml_parser_context_t* co
     if (!fmi3_xml_is_attr_defined(context, fmi_attr_id_previous)) {
         return 0;
     }
-    else if (fmi3_xml_parse_attr_as_uint32(context, elm_id, fmi_attr_id_previous, 0 /* required */,
+    else if (fmi3_xml_parse_attr_as_uint32(context, elm_id, fmi_attr_id_previous, 0,
             &previous, 0 /* defaultVal */))
     {
         return -1;
     }
 
     /* Store the VR since we cannot access the variable until after parsing all variables. */
-    variable->previous.vr = previous;
-    variable->hasPrevious = true;
+    variable->hasPrevious = false;
 
     // TODO: These should not be fatal
     if (!fmi3_xml_variable_is_clocked(variable)) {
@@ -1281,6 +1280,9 @@ static int fmi3_xml_variable_process_attr_previous(fmi3_xml_parser_context_t* co
         fmi3_xml_parse_fatal(context, "A variable must not refer to itself in the attribute 'previous'.");
         return -1;
     }
+
+    variable->previous.vr = previous;
+    variable->hasPrevious = true;
 
     return 0;
 }
@@ -1333,13 +1335,14 @@ static int fmi3_xml_variable_process_attr_intermediateupdate(fmi3_xml_parser_con
             0 /* required */, &intermediateUpdate, 0 /* defaultVal */)) {
         return -1;
     }
-    variable->intermediateUpdate = (char)intermediateUpdate;
 
     // Spec: "Variables with causality = parameter must not be marked with intermediateUpdate = true"
     if (intermediateUpdate && (fmi3_xml_get_variable_causality(variable) == fmi3_causality_enu_parameter)) {
         fmi3_xml_parse_error(context, "Variables with causality='parameter' must not be marked with intermediateUpdate='true'.");
         return -1;
     }
+    variable->intermediateUpdate = (char)intermediateUpdate;
+
     return 0;
 }
 
@@ -1991,6 +1994,7 @@ int fmi3_xml_handle_Clock(fmi3_xml_parser_context_t* context, const char* data) 
 
         if (variable->hasPrevious) {
             fmi3_xml_parse_error(context, "Variables of type Clock must not have the 'previous' attribute.");
+            variable->hasPrevious = 0;
             return -1;
         }
     }

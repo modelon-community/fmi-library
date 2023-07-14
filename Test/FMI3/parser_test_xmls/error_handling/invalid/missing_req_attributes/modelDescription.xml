@@ -2,10 +2,32 @@
 <fmiModelDescription fmiVersion="3.0" modelName="" instantiationToken="">
 <ModelExchange modelIdentifier="id_me"/>
 
+<TypeDefinitions>
+  <EnumerationType name="MyEnum" quantity="TypeQuantity">
+    <Item name="item1" value="1"/>
+  </EnumerationType>
+</TypeDefinitions>
+
 <ModelVariables>
-  <!-- both are missing a required attribute, we should still get an error in both cases -->
+  <!-- both are missing a required attribute & VR is invalid, we should still get an error in both cases -->
   <Float64 valueReference="VR"/>
   <Float64 name="floaty"/>
+
+  <!-- Same for different variable types -->
+  <Int64 valueReference="VR"/>
+  <Int64 name="int"/>
+
+  <Boolean valueReference="VR"/>
+  <Boolean name="bool"/>
+
+  <Binary valueReference="VR"/>
+  <Binary name="binary"/>
+
+  <Clock valueReference="VR"/>
+  <Clock name="clock"/>
+
+  <Enumeration valueReference="VR" declaredType="MyEnum"/>
+  <Enumeration name="enum" declaredType="MyEnum"/>
 </ModelVariables>
 
 <ModelStructure/>

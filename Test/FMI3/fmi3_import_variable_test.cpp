@@ -529,11 +529,11 @@ TEST_CASE("Invalid Alias - unresolvable displayUnit") {
 }
 
 TEST_CASE("Invalid Alias - no name") {
+    // TODO: Move test to different folder?
     const char* xmldir = FMI3_TEST_XML_DIR "/variables/invalid/alias_no_name";
     fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
     fmi3_import_t* fmu = tfmu->fmu;
     REQUIRE(fmu != nullptr);
-    // TODO: Review this one
     
     REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'Alias': required attribute 'name' not found"));
 
@@ -613,11 +613,17 @@ TEST_CASE("Invalid intermediateUpdate - has causality parameter") {
 
     fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
     REQUIRE(tfmu != nullptr);
-    // TODO: Review this test
-    REQUIRE(tfmu->fmu != nullptr);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu != nullptr);
 
+    // TODO: Improve error message?
     const char* logMsg = "Variables with causality='parameter' must not be marked with intermediateUpdate='true'.";
     REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
+
+    fmi3_import_variable_t* var = fmi3_import_get_variable_by_vr(fmu, 0);
+    REQUIRE(var != nullptr);
+    REQUIRE(fmi3_import_get_variable_causality(var) == fmi3_causality_enu_parameter);
+    REQUIRE(fmi3_import_get_variable_intermediate_update(var) == 0);
 
     fmi3_testutil_import_free(tfmu);
 }
@@ -649,10 +655,20 @@ TEST_CASE("Invalid Clock variable - has previous") {
 
     fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
     REQUIRE(tfmu != nullptr);
-    REQUIRE(tfmu->fmu != nullptr);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu != nullptr);
 
     const char* logMsg = "Variables of type Clock must not have the 'previous' attribute.";
     REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
+
+    REQUIRE(fmi3_import_get_variable_by_vr(fmu, 10) != nullptr);
+
+    // The one with the error
+    fmi3_import_variable_t* var = fmi3_import_get_variable_by_vr(fmu, 20);
+    REQUIRE(var != nullptr); // TODO: Should it fail?
+    REQUIRE(fmi3_import_get_variable_previous(var) == nullptr);
+
+    REQUIRE(fmi3_import_get_variable_by_vr(fmu, 21) != nullptr);
 
     fmi3_testutil_import_free(tfmu);
 }

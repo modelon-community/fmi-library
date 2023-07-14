@@ -89,7 +89,7 @@ typedef struct fmi3_xml_clock_variable_t   fmi3_xml_clock_variable_t;
 /** \name Structure encapsulating alias variable information
  * @{
  */
-typedef struct fmi3_xml_alias_variable_t  fmi3_xml_alias_variable_t;
+typedef struct fmi3_xml_alias_variable_t fmi3_xml_alias_variable_t;
 typedef struct fmi3_xml_alias_variable_list_t fmi3_xml_alias_variable_list_t;
 /** @} */
 

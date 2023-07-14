@@ -44,7 +44,9 @@ struct fmi3_import_t {
     fmi3_xml_model_description_t* md;
     fmi3_xml_terminals_and_icons_t* termIcon;
     fmi3_capi_t* capi;
+    /* log message buffer */
     jm_vector(char) logMessageBufferCoded;
+    /* log message buffer used for expanding ValueReferences*/
     jm_vector(char) logMessageBufferExpanded;
     fmi_util_options_t* options;
 };

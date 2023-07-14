@@ -89,7 +89,7 @@ fmi3_import_t* fmi3_import_parse_xml(
     char* xmlPath;
     char* terminalsAndIconsPath;
     char absPath[FILENAME_MAX + 2];
-    fmi3_import_t* fmu = 0;
+    fmi3_import_t* fmu = NULL;
 
     if (strlen(dirPath) + 20 > FILENAME_MAX) {
         jm_log_fatal(context->callbacks, module, "Directory path for FMU is too long");
@@ -125,7 +125,7 @@ fmi3_import_t* fmi3_import_parse_xml(
 
     if (fmi3_xml_parse_model_description(fmu->md, xmlPath, xml_callbacks)) {
         fmi3_import_free(fmu);
-        fmu = 0;
+        fmu = NULL;
     }
     context->callbacks->free(xmlPath);
 
@@ -134,7 +134,7 @@ fmi3_import_t* fmi3_import_parse_xml(
         // terminalsAndIcons uses modelDescription for error checks
         if (fmi3_xml_terminals_and_icons_set_model_description(fmu->termIcon, fmu->md)) {
             fmi3_import_free(fmu);
-            fmu = 0;
+            fmu = NULL;
         }
         if (fmi3_xml_parse_terminals_and_icons(fmu->termIcon, terminalsAndIconsPath, xml_callbacks)) {
             // failure to parse terminalsAndIcons does not constitute parsing failure

@@ -70,6 +70,7 @@ void fmi3_xml_free_terminals_and_icons(fmi3_xml_terminals_and_icons_t* termIcon)
         jm_vector_free_data(jm_voidp)(&(termIcon->terminalsOrigOrder));
         jm_vector_free_data(jm_named_ptr)(&termIcon->terminalsByName);
 
+        // function pointer to callbacks->free function for usage in jm_vector_foreach calls
         void(*cb_free)(const char*) = (void(*)(const char*))callbacks->free;
 
         // free names set

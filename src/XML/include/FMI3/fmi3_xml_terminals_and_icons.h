@@ -36,7 +36,9 @@ extern "C" {
     @{
 */
 
+/* Structure encapsulating terminals and icons information */
 typedef struct fmi3_xml_terminals_and_icons_t fmi3_xml_terminals_and_icons_t;
+/* Structure encapsulating terminal information */
 typedef struct fmi3_xml_terminal_t fmi3_xml_terminal_t;
 
 fmi3_xml_terminals_and_icons_t* fmi3_xml_allocate_terminals_and_icons(jm_callbacks* callbacks);

@@ -616,7 +616,6 @@ TEST_CASE("Invalid intermediateUpdate - has causality parameter") {
     fmi3_import_t* fmu = tfmu->fmu;
     REQUIRE(fmu != nullptr);
 
-    // TODO: Improve error message?
     // TODO: This should be warning instead
     const char* logMsg = "Variables with causality='parameter' must not be marked with intermediateUpdate='true'.";
     REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
@@ -633,10 +632,19 @@ TEST_CASE("Invalid previous - requires clocks") {
     const char* xmldir = FMI3_TEST_XML_DIR "/variable_test/invalid/previous_no_clocks";
     fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
     REQUIRE(tfmu != nullptr);
-    REQUIRE(tfmu->fmu == nullptr);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu != nullptr);
 
     const char* logMsg = "Only variables with the attribute 'clocks' may have the attribute 'previous'.";
     REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
+
+    // Test that API works regardless
+    fmi3_import_variable_t* var = fmi3_import_get_variable_by_vr(fmu, 11);
+    REQUIRE(var != nullptr);
+    fmi3_import_variable_t* var_prev = fmi3_import_get_variable_previous(var);
+    REQUIRE(var_prev != nullptr);
+    REQUIRE(fmi3_import_get_variable_vr(var_prev) == 10);
+
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -644,10 +652,19 @@ TEST_CASE("Invalid previous - requires variability='discrete'") {
     const char* xmldir = FMI3_TEST_XML_DIR "/variable_test/invalid/previous_not_discrete";
     fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
     REQUIRE(tfmu != nullptr);
-    REQUIRE(tfmu->fmu == nullptr);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu != nullptr);
 
     const char* logMsg = "Only variables with variability='discrete' may have the attribute 'previous'.";
     REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
+
+    // Test that API works regardless
+    fmi3_import_variable_t* var = fmi3_import_get_variable_by_vr(fmu, 11);
+    REQUIRE(var != nullptr);
+    fmi3_import_variable_t* var_prev = fmi3_import_get_variable_previous(var);
+    REQUIRE(var_prev != nullptr);
+    REQUIRE(fmi3_import_get_variable_vr(var_prev) == 10);
+
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -662,14 +679,10 @@ TEST_CASE("Invalid Clock variable - has previous") {
     const char* logMsg = "Variables of type Clock must not have the 'previous' attribute.";
     REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
 
-    REQUIRE(fmi3_import_get_variable_by_vr(fmu, 10) != nullptr);
-
-    // The one with the error
+    // Test that API works regardless
     fmi3_import_variable_t* var = fmi3_import_get_variable_by_vr(fmu, 20);
-    REQUIRE(var != nullptr); // TODO: Should it fail?
+    REQUIRE(var != nullptr);
     REQUIRE(fmi3_import_get_variable_previous(var) == nullptr); // TODO: should still work
-
-    REQUIRE(fmi3_import_get_variable_by_vr(fmu, 21) != nullptr);
 
     fmi3_testutil_import_free(tfmu);
 }
@@ -705,10 +718,17 @@ TEST_CASE("Invalid previous - self reference") {
 
     fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
     REQUIRE(tfmu != nullptr);
-    REQUIRE(tfmu->fmu == nullptr);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu != nullptr);
 
     const char* logMsg = "A variable must not refer to itself in the attribute 'previous'.";
     REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
+
+    // Test that API works regardless
+    fmi3_import_variable_t* var = fmi3_import_get_variable_by_vr(fmu, 11);
+    REQUIRE(var != nullptr);
+    fmi3_import_variable_t* var_prev = fmi3_import_get_variable_previous(var);
+    REQUIRE(var_prev == var);
 
     fmi3_testutil_import_free(tfmu);
 }

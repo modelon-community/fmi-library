@@ -1263,26 +1263,21 @@ static int fmi3_xml_variable_process_attr_previous(fmi3_xml_parser_context_t* co
     }
 
     /* Store the VR since we cannot access the variable until after parsing all variables. */
-    variable->hasPrevious = false;
+    variable->previous.vr = previous;
+    variable->hasPrevious = true;
 
-    // TODO: These should not be fatal
     if (!fmi3_xml_variable_is_clocked(variable)) {
-        fmi3_xml_parse_fatal(context, "Only variables with the attribute 'clocks' may have the attribute 'previous'.");
-        return -1;
+        fmi3_xml_parse_error(context, "Only variables with the attribute 'clocks' may have the attribute 'previous'.");
     }
 
     if (variable->variability != fmi3_variability_enu_discrete) {
-        fmi3_xml_parse_fatal(context, "Only variables with variability='discrete' may have the attribute 'previous'.");
-        return -1;
+        fmi3_xml_parse_error(context, "Only variables with variability='discrete' may have the attribute 'previous'.");
     }
 
     if (previous == fmi3_xml_get_variable_vr(variable)) {
-        fmi3_xml_parse_fatal(context, "A variable must not refer to itself in the attribute 'previous'.");
-        return -1;
+        // TODO: This one could be problematic later on if not fatal?
+        fmi3_xml_parse_error(context, "A variable must not refer to itself in the attribute 'previous'.");
     }
-
-    variable->previous.vr = previous;
-    variable->hasPrevious = true;
 
     return 0;
 }
@@ -1631,7 +1626,7 @@ int fmi3_xml_handle_FloatXX(fmi3_xml_parser_context_t* context, const char* data
     /* Extract common Variable info */
     res = fmi3_xml_handle_Variable(context, data);
     if (res) { // Parsed variable is not valid
-        md->isValid = 0;
+        fmi3_xml_set_model_description_invalid(md);
         md->latestVariableValid = 0;
         return 0; // TODO: Possibly exit later?
     }
@@ -1728,7 +1723,7 @@ int fmi3_xml_handle_IntXX(fmi3_xml_parser_context_t* context, const char* data,
 
     int res = fmi3_xml_handle_Variable(context, data);
     if (res) { // Parsed variable is not valid
-        md->isValid = 0;
+        fmi3_xml_set_model_description_invalid(md);
         md->latestVariableValid = 0;
         return 0; // TODO: Possibly exit later?
     }
@@ -1827,7 +1822,7 @@ int fmi3_xml_handle_Boolean(fmi3_xml_parser_context_t *context, const char* data
 
     int res = fmi3_xml_handle_Variable(context, data);
     if (res) { // Parsed variable is not valid
-        md->isValid = 0;
+        fmi3_xml_set_model_description_invalid(md);
         md->latestVariableValid = 0;
         return 0; // TODO: Possibly exit later?
     }
@@ -1956,7 +1951,7 @@ int fmi3_xml_handle_Clock(fmi3_xml_parser_context_t* context, const char* data) 
 
     int res = fmi3_xml_handle_Variable(context, data);
     if (res) { // Parsed variable is not valid
-        md->isValid = 0;
+        fmi3_xml_set_model_description_invalid(md);
         md->latestVariableValid = 0;
         return 0; // TODO: Possibly exit later?
     }
@@ -1985,7 +1980,7 @@ int fmi3_xml_handle_Clock(fmi3_xml_parser_context_t* context, const char* data) 
 
         fmi3_xml_clock_type_props_t* props = fmi3_xml_parse_clock_type_properties(context, elmID, declaredType);
         if (!props) {
-            md->isValid = 0;
+            fmi3_xml_set_model_description_invalid(md);
             md->latestVariableValid = 0;
             return 0; // TODO: Possibly exit later?
         }
@@ -2006,7 +2001,7 @@ int fmi3_xml_handle_String(fmi3_xml_parser_context_t *context, const char* data)
 
     int res = fmi3_xml_handle_Variable(context, data);
     if (res) { // Parsed variable is not valid
-        md->isValid = 0;
+        fmi3_xml_set_model_description_invalid(md);
         md->latestVariableValid = 0;
         return 0; // TODO: Possibly exit later?
     }
@@ -2166,7 +2161,7 @@ int fmi3_xml_handle_Enumeration(fmi3_xml_parser_context_t *context, const char* 
 
     int res = fmi3_xml_handle_Variable(context, data);
     if (res) { // Parsed variable is not valid
-        md->isValid = 0;
+        fmi3_xml_set_model_description_invalid(md);
         md->latestVariableValid = 0;
         return 0; // TODO: Possibly exit later?
     }
@@ -2354,13 +2349,6 @@ int fmi3_xml_handle_ModelVariables(fmi3_xml_parser_context_t* context, const cha
          // Post-process variable list
         fmi3_xml_model_description_t* md = context->modelDescription;
 
-        if (!md->isValid) {
-            fmi3_xml_parse_error(context, 
-                "Variables within ModelVariables failed to parse. "
-                "Error checks requiring cross-referencing of variables is thus "
-                "limited to the ones parsed successfully.");
-        }
-
         // Create variablesByName
         size_t nVars = jm_vector_get_size(jm_voidp)(&md->variablesOrigOrder);
         jm_vector_resize(jm_named_ptr)(&md->variablesByName, nVars);  // Allocate a lot of memory to avoid resizing
@@ -2398,7 +2386,7 @@ int fmi3_xml_handle_ModelVariables(fmi3_xml_parser_context_t* context, const cha
                 if(strcmp(name1, name2) == 0) {
                     fmi3_xml_parse_error(context, 
                             "Two variables with the same name '%s' found. This is not allowed.", name1);
-                    md->isValid = 0;
+                    fmi3_xml_set_model_description_invalid(md);
                 }
             }
 
@@ -2409,7 +2397,7 @@ int fmi3_xml_handle_ModelVariables(fmi3_xml_parser_context_t* context, const cha
                 if (v1->vr == v2->vr) {
                     fmi3_xml_parse_error(context, "The following variables have the same valueReference: %s, %s",
                             v1->name, v2->name);
-                    md->isValid = 0;
+                    fmi3_xml_set_model_description_invalid(md);
                 }
             }
         }
@@ -2456,7 +2444,7 @@ int fmi3_xml_handle_ModelVariables(fmi3_xml_parser_context_t* context, const cha
         }
 
         if (!md->isValid) { 
-            fmi3_xml_parse_fatal(context, "Fatal failure in Parsing ModelVariables, one or more Variables are invalid.");
+            fmi3_xml_parse_fatal(context, "Fatal failure in parsing ModelVariables, one or more Variables are invalid.");
             return -1;
         }
 

@@ -328,6 +328,10 @@ int fmi3_xml_get_cs_recommended_intermediate_input_smoothness(fmi3_xml_model_des
     return md->coSimulation.recommendedIntermediateInputSmoothness;
 }
 
+void fmi3_xml_set_model_description_invalid(fmi3_xml_model_description_t* md){
+    md->isValid = 0;
+}
+
 unsigned int* fmi3_xml_get_capabilities(fmi3_xml_model_description_t* md) {
     return md->capabilities;
 }

@@ -440,3 +440,14 @@ TEST_CASE("Testing invalid array; is string") {
     REQUIRE(fmi3_testutil_log_contains(tfmu, "XML element 'Float64': could not parse value for Float64 attribute 'start'="));
     fmi3_testutil_import_free(tfmu);
 }
+
+TEST_CASE("Invalid; too many start values") {
+    // TODO: This should give some sort of error
+    const char* xmldir = FMI3_TEST_XML_DIR "/arrays/invalid/string_too_many_start";
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    REQUIRE(tfmu != nullptr);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu != nullptr);
+
+    fmi3_testutil_import_free(tfmu);
+}

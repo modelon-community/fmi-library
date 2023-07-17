@@ -521,10 +521,22 @@ TEST_CASE("Invalid Alias - unresolvable displayUnit") {
     const char* xmldir = FMI3_TEST_XML_DIR "/variables/invalid/alias_unresolvable_displayUnit";
     fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
     fmi3_import_t* fmu = tfmu->fmu;
-    REQUIRE(fmu == nullptr);
+    REQUIRE(fmu != nullptr);
     
     REQUIRE(fmi3_testutil_log_contains(tfmu, "Unknown displayUnit: missing_du"));
+
+    fmi3_import_variable_t* var = fmi3_import_get_variable_by_vr(fmu, 1);
+    REQUIRE(var != nullptr);
+    REQUIRE_STREQ(fmi3_import_get_variable_name(var), "v1");
     
+    // aliasList is non empty
+    fmi3_import_alias_variable_list_t* aliasList = fmi3_import_get_variable_alias_list(var);
+    REQUIRE(fmi3_import_get_alias_variable_list_size(aliasList) == 1);
+    // alias exists, but does not have a display unit
+    fmi3_import_alias_variable_t* alias = fmi3_import_get_alias(aliasList, 0);
+    REQUIRE(alias != nullptr);
+    REQUIRE(fmi3_import_get_alias_variable_display_unit(alias) == nullptr);
+
     fmi3_testutil_import_free(tfmu);
 }
 

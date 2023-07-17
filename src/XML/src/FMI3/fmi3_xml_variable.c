@@ -932,7 +932,7 @@ const char* fmi3_xml_get_alias_variable_description(fmi3_xml_alias_variable_t* a
 }
 
 fmi3_xml_display_unit_t* fmi3_xml_get_alias_variable_display_unit(fmi3_xml_alias_variable_t* alias) {
-    return alias->displayUnit;
+    return alias ? alias->displayUnit : NULL;
 }
 
 // -----------------------------------------------------------------------------
@@ -2044,6 +2044,7 @@ int fmi3_xml_handle_String(fmi3_xml_parser_context_t *context, const char* data)
             // Resize the vector to 0 since we are now done with the previous values.
             jm_vector_resize(jm_voidp)(&context->currentStartVariableValues, 0);
             if (!fmi3_xml_variable_is_array(variable) && (nStart != 1)) {
+                // TODO: This shouldn't be fatal, change & find a test for this
                 fmi3_xml_parse_fatal(context, "Found too many start values for variable %s", variable->name);
                 return -1;
             }
@@ -2294,6 +2295,7 @@ int fmi3_xml_handle_Alias(fmi3_xml_parser_context_t* context, const char* data) 
         }
 
         // Set displayUnit if FloatXX:
+        alias->displayUnit = NULL;
         if (fmi3_base_type_enu_is_float(fmi3_xml_get_variable_base_type(baseVar))) {
             jm_vector(char)* bufDisplayUnit = fmi3_xml_reserve_parse_buffer(context, bufIdx++, 100);
             if (!bufDisplayUnit) return -1;
@@ -2304,11 +2306,11 @@ int fmi3_xml_handle_Alias(fmi3_xml_parser_context_t* context, const char* data) 
                 searchRes = jm_vector_bsearch(jm_named_ptr)(
                             &md->displayUnitDefinitions, &searchKey, jm_compare_named);
                 if (!searchRes) {
-                    fmi3_xml_parse_fatal(context, "Unknown displayUnit: %s",
+                    fmi3_xml_parse_warning(context, "Unknown displayUnit: %s",
                             jm_vector_get_itemp(char)(bufDisplayUnit, 0));
-                    return -1;
+                } else {
+                    alias->displayUnit = searchRes->ptr;
                 }
-                alias->displayUnit = searchRes->ptr;
                 // TODO: Spec requires that displayUnit is only defined if unit is also defined. Check it!
             } else {
                 // XXX: For variables we set the displayUnit to the unit when the displayUnit is not defined.

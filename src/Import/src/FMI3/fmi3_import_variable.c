@@ -595,7 +595,7 @@ const char* fmi3_import_get_alias_variable_description(fmi3_import_alias_variabl
 }
 
 fmi3_import_display_unit_t* fmi3_import_get_alias_variable_display_unit(fmi3_import_alias_variable_t* alias) {
-    return fmi3_xml_get_alias_variable_display_unit(alias);
+    return alias ? fmi3_xml_get_alias_variable_display_unit(alias) : NULL;
 }
 
 // -----------------------------------------------------------------------------

@@ -30,13 +30,13 @@ TEST_CASE("Retrieving default experiment values; values defined") {
     REQUIRE(fmi3_import_get_default_experiment_has_start(xml) == 1);
     REQUIRE(fmi3_import_get_default_experiment_has_stop(xml) == 1);
     REQUIRE(fmi3_import_get_default_experiment_has_tolerance(xml) == 1);
-    REQUIRE(fmi3_import_get_default_experiment_has_step(xml) == 1);
+    REQUIRE(fmi3_import_get_default_experiment_has_step_size(xml) == 1);
 
     /* test value */
     REQUIRE(fmi3_import_get_default_experiment_start(xml) == 2.3);
     REQUIRE(fmi3_import_get_default_experiment_stop(xml) == 3.55);
     REQUIRE(fmi3_import_get_default_experiment_tolerance(xml) == 1e-6);
-    REQUIRE(fmi3_import_get_default_experiment_step(xml) == 2e-3);
+    REQUIRE(fmi3_import_get_default_experiment_step_size(xml) == 2e-3);
 
     fmi3_import_free(xml);
 }
@@ -50,13 +50,13 @@ TEST_CASE("Retrieving default experiment values; values undefined") {
     REQUIRE(fmi3_import_get_default_experiment_has_start(xml) == 0);
     REQUIRE(fmi3_import_get_default_experiment_has_stop(xml) == 0);
     REQUIRE(fmi3_import_get_default_experiment_has_tolerance(xml) == 0);
-    REQUIRE(fmi3_import_get_default_experiment_has_step(xml) == 0);
+    REQUIRE(fmi3_import_get_default_experiment_has_step_size(xml) == 0);
 
     /* test value */
     REQUIRE(fmi3_import_get_default_experiment_start(xml) == 0.0);
     REQUIRE(fmi3_import_get_default_experiment_stop(xml) == 1.0);
     REQUIRE(fmi3_import_get_default_experiment_tolerance(xml) == 1e-4);
-    REQUIRE(fmi3_import_get_default_experiment_step(xml) == 1e-2);
+    REQUIRE(fmi3_import_get_default_experiment_step_size(xml) == 1e-2);
 
     fmi3_import_free(xml);
 }
@@ -70,13 +70,13 @@ TEST_CASE("Retrieving default experiment values; mixed defined/undefined") {
     REQUIRE(fmi3_import_get_default_experiment_has_start(xml) == 1);
     REQUIRE(fmi3_import_get_default_experiment_has_stop(xml) == 0);
     REQUIRE(fmi3_import_get_default_experiment_has_tolerance(xml) == 1);
-    REQUIRE(fmi3_import_get_default_experiment_has_step(xml) == 0);
+    REQUIRE(fmi3_import_get_default_experiment_has_step_size(xml) == 0);
 
     /* test value */
     REQUIRE(fmi3_import_get_default_experiment_start(xml) == 2.3);
     REQUIRE(fmi3_import_get_default_experiment_stop(xml) == 1.0);
     REQUIRE(fmi3_import_get_default_experiment_tolerance(xml) == 1e-6);
-    REQUIRE(fmi3_import_get_default_experiment_step(xml) == 1e-2);
+    REQUIRE(fmi3_import_get_default_experiment_step_size(xml) == 1e-2);
 
     fmi3_import_free(xml);
 }

@@ -278,7 +278,7 @@ int fmi3_xml_get_default_experiment_has_tolerance(fmi3_xml_model_description_t* 
     return md->defaultExperiment.toleranceDefined;
 }
 
-int fmi3_xml_get_default_experiment_has_step(fmi3_xml_model_description_t* md) {
+int fmi3_xml_get_default_experiment_has_step_size(fmi3_xml_model_description_t* md) {
     return md->defaultExperiment.stepSizeDefined;
 }
 
@@ -305,8 +305,8 @@ double fmi3_xml_get_default_experiment_tolerance(fmi3_xml_model_description_t* m
     return md->defaultExperiment.tolerance;
 }
 
-double fmi3_xml_get_default_experiment_step(fmi3_xml_model_description_t* md) {
-    LOG_WARN_IF_ATTR_NOT_DEFINED(step);
+double fmi3_xml_get_default_experiment_step_size(fmi3_xml_model_description_t* md) {
+    LOG_WARN_IF_ATTR_NOT_DEFINED(step_size);
 
     return md->defaultExperiment.stepSize;
 }

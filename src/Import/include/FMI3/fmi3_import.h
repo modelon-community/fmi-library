@@ -194,7 +194,7 @@ FMILIB_EXPORT int fmi3_import_get_default_experiment_has_stop(fmi3_import_t* fmu
 FMILIB_EXPORT int fmi3_import_get_default_experiment_has_tolerance(fmi3_import_t* fmu);
 
 /** \brief Check if the step size time for default experiment is specified in the XML file. */
-FMILIB_EXPORT int fmi3_import_get_default_experiment_has_step(fmi3_import_t* fmu);
+FMILIB_EXPORT int fmi3_import_get_default_experiment_has_step_size(fmi3_import_t* fmu);
 
 /** \brief Get the start time for default experiment as specified in the XML file.
     If it is not specified, a default value of 0.0 is returned.
@@ -216,9 +216,9 @@ FMILIB_EXPORT double fmi3_import_get_default_experiment_tolerance(fmi3_import_t*
 
 /** \brief Get the step size for default experiment as specified in the XML file.
     If it is not specified, a default value of 1e-2 is returned.
-    To determine if it is specified, use the following function: #fmi3_import_get_default_experiment_has_step
+    To determine if it is specified, use the following function: #fmi3_import_get_default_experiment_has_step_size
 */
-FMILIB_EXPORT double fmi3_import_get_default_experiment_step(fmi3_import_t* fmu);
+FMILIB_EXPORT double fmi3_import_get_default_experiment_step_size(fmi3_import_t* fmu);
 
 /** \brief Get the type of the FMU. For multi-kind FMUs. Returned value might not be one of #fmi3_fmu_kind_enu_t
     if it's a multi-kind FMU. See #fmi3_fmu_kind_enu_t for more info. */

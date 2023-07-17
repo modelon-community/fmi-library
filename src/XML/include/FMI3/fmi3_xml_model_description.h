@@ -211,12 +211,12 @@ size_t fmi3_xml_get_number_of_event_indicators(fmi3_xml_model_description_t* md)
 int fmi3_xml_get_default_experiment_has_start(fmi3_xml_model_description_t* md);
 int fmi3_xml_get_default_experiment_has_stop(fmi3_xml_model_description_t* md);
 int fmi3_xml_get_default_experiment_has_tolerance(fmi3_xml_model_description_t* md);
-int fmi3_xml_get_default_experiment_has_step(fmi3_xml_model_description_t* md);
+int fmi3_xml_get_default_experiment_has_step_size(fmi3_xml_model_description_t* md);
 
 double fmi3_xml_get_default_experiment_start(fmi3_xml_model_description_t* md);
 double fmi3_xml_get_default_experiment_stop(fmi3_xml_model_description_t* md);
 double fmi3_xml_get_default_experiment_tolerance(fmi3_xml_model_description_t* md);
-double fmi3_xml_get_default_experiment_step(fmi3_xml_model_description_t* md);
+double fmi3_xml_get_default_experiment_step_size(fmi3_xml_model_description_t* md);
 
 fmi3_fmu_kind_enu_t fmi3_xml_get_fmu_kind(fmi3_xml_model_description_t* md);
 

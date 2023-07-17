@@ -53,17 +53,26 @@ fmi3_import_t* fmi3_import_allocate(jm_callbacks* cb) {
     fmu->instanceName = NULL;
     fmu->callbacks = cb;
     fmu->capi = NULL;
-    fmu->md = fmi3_xml_allocate_model_description(cb);
-    jm_vector_init(char)(&fmu->logMessageBufferExpanded,0,cb);
 
+    fmu->md = fmi3_xml_allocate_model_description(cb);
     if (!fmu->md) {
         cb->free(fmu);
         return NULL;
     }
 
+    fmu->termIcon = fmi3_xml_allocate_terminals_and_icons(cb);
+    if (!fmu->termIcon) {
+        fmi3_xml_free_model_description(fmu->md);
+        cb->free(fmu);
+        return NULL;
+    }
+
+    jm_vector_init(char)(&fmu->logMessageBufferExpanded, 0, cb);
+
     fmu->options = fmi_util_allocate_options(cb);
     if (!fmu->options) {
         fmi3_xml_free_model_description(fmu->md);
+        fmi3_xml_free_terminals_and_icons(fmu->termIcon);
         cb->free(fmu);
         return NULL;
      }
@@ -78,8 +87,9 @@ const char* fmi3_import_get_last_error(fmi3_import_t* fmu) {
 fmi3_import_t* fmi3_import_parse_xml(
         fmi_import_context_t* context, const char* dirPath, fmi3_xml_callbacks_t* xml_callbacks) {
     char* xmlPath;
+    char* terminalsAndIconsPath;
     char absPath[FILENAME_MAX + 2];
-    fmi3_import_t* fmu = 0;
+    fmi3_import_t* fmu = NULL;
 
     if (strlen(dirPath) + 20 > FILENAME_MAX) {
         jm_log_fatal(context->callbacks, module, "Directory path for FMU is too long");
@@ -87,10 +97,12 @@ fmi3_import_t* fmi3_import_parse_xml(
     }
 
     xmlPath =  fmi_import_get_model_description_path(dirPath, context->callbacks);
+    terminalsAndIconsPath = fmi_import_get_terminals_and_icons_path(dirPath, context->callbacks);
     fmu = fmi3_import_allocate(context->callbacks);
 
     if (!fmu) {
         context->callbacks->free(xmlPath);
+        if (!terminalsAndIconsPath) context->callbacks->free(terminalsAndIconsPath);
         return NULL;
     }
 
@@ -101,9 +113,10 @@ fmi3_import_t* fmi3_import_parse_xml(
     }
     fmu->dirPath = context->callbacks->malloc(strlen(dirPath) + 1);
     if (!fmu->dirPath || !fmu->resourcePath) {
-        jm_log_fatal( context->callbacks, "FMILIB", "Could not allocate memory");
+        jm_log_fatal(context->callbacks, "FMILIB", "Could not allocate memory");
         fmi3_import_free(fmu);
         context->callbacks->free(xmlPath);
+        if (!terminalsAndIconsPath) context->callbacks->free(terminalsAndIconsPath);
         return NULL;
     }
     strcpy(fmu->dirPath, dirPath);
@@ -112,9 +125,24 @@ fmi3_import_t* fmi3_import_parse_xml(
 
     if (fmi3_xml_parse_model_description(fmu->md, xmlPath, xml_callbacks)) {
         fmi3_import_free(fmu);
-        fmu = 0;
+        fmu = NULL;
     }
     context->callbacks->free(xmlPath);
+
+   // Only parse terminals and icons if parsing of model description did not fail
+    if (fmu) {
+        // terminalsAndIcons uses modelDescription for error checks
+        if (fmi3_xml_terminals_and_icons_set_model_description(fmu->termIcon, fmu->md)) {
+            fmi3_import_free(fmu);
+            fmu = NULL;
+        }
+        if (fmi3_xml_parse_terminals_and_icons(fmu->termIcon, terminalsAndIconsPath, xml_callbacks)) {
+            // failure to parse terminalsAndIcons does not constitute parsing failure
+            fmi3_xml_free_terminals_and_icons(fmu->termIcon);
+            fmu->termIcon = NULL;
+        }
+    }
+    context->callbacks->free(terminalsAndIconsPath);
 
     if (fmu) {
         jm_log_verbose(context->callbacks, "FMILIB", "Parsing finished successfully");
@@ -128,10 +156,11 @@ void fmi3_import_free(fmi3_import_t* fmu) {
 
     if (!fmu) return;
     cb = fmu->callbacks;
-    jm_log_verbose( fmu->callbacks, "FMILIB", "Releasing allocated library resources");
+    jm_log_verbose(fmu->callbacks, "FMILIB", "Releasing allocated library resources");
 
     fmi3_import_destroy_dllfmu(fmu);
     fmi3_xml_free_model_description(fmu->md);
+    fmi3_xml_free_terminals_and_icons(fmu->termIcon);
     fmi_util_free_options(cb, fmu->options);
     jm_vector_free_data(char)(&fmu->logMessageBufferCoded);
     jm_vector_free_data(char)(&fmu->logMessageBufferExpanded);
@@ -462,7 +491,7 @@ int fmi3_import_get_continuous_state_derivative_dependencies(fmi3_import_t* fmu,
 
     ms = fmi3_xml_get_model_structure(fmu->md);
     assert(ms);
-    return fmi3_xml_get_continuous_state_derivative_dependencies(ms, variable, 
+    return fmi3_xml_get_continuous_state_derivative_dependencies(ms, variable,
         numDependencies, dependsOnAll, dependencies, dependenciesKind);
 }
 

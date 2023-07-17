@@ -24,7 +24,7 @@
 
 static const char* module = "FMI3XML";
 
-fmi3_xml_model_description_t * fmi3_xml_allocate_model_description( jm_callbacks* callbacks) {
+fmi3_xml_model_description_t* fmi3_xml_allocate_model_description(jm_callbacks* callbacks) {
     jm_callbacks* cb;
     fmi3_xml_model_description_t* md;
 
@@ -35,7 +35,7 @@ fmi3_xml_model_description_t * fmi3_xml_allocate_model_description( jm_callbacks
         cb = jm_get_default_callbacks();
     }
     md = (fmi3_xml_model_description_t*)cb->calloc(1, sizeof(fmi3_xml_model_description_t));
-    if(!md) {
+    if (!md) {
         jm_log_fatal(cb, module, "Could not allocate memory");
         return 0;
     }
@@ -106,9 +106,7 @@ fmi3_xml_model_description_t * fmi3_xml_allocate_model_description( jm_callbacks
     return md;
 }
 
-
-
-void fmi3_xml_clear_model_description( fmi3_xml_model_description_t* md) {
+void fmi3_xml_clear_model_description(fmi3_xml_model_description_t* md) {
 
     void(*cb_free)(const char*) = (void(*)(const char*))md->callbacks->free;
     size_t i; /* loop variable */
@@ -239,7 +237,6 @@ const char* fmi3_xml_get_copyright(fmi3_xml_model_description_t* md){
 const char* fmi3_xml_get_model_standard_version(fmi3_xml_model_description_t* md){
     return jm_vector_char2string(&md->fmi3_xml_standard_version);
 }
-
 
 const char* fmi3_xml_get_model_version(fmi3_xml_model_description_t* md){
     return jm_vector_char2string(&md->version);
@@ -820,6 +817,7 @@ jm_vector(jm_voidp)* fmi3_xml_get_variables_vr_order(fmi3_xml_model_description_
 
 
 fmi3_xml_variable_t* fmi3_xml_get_variable_by_name(fmi3_xml_model_description_t* md, const char* name) {
+    if (!name) return NULL;
     jm_named_ptr key, *found;
     key.name = name;
     found = jm_vector_bsearch(jm_named_ptr)(&md->variablesByName, &key, jm_compare_named);

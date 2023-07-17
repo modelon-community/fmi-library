@@ -89,7 +89,7 @@ typedef struct fmi3_xml_clock_variable_t   fmi3_xml_clock_variable_t;
 /** \name Structure encapsulating alias variable information
  * @{
  */
-typedef struct fmi3_xml_alias_variable_t  fmi3_xml_alias_variable_t;
+typedef struct fmi3_xml_alias_variable_t fmi3_xml_alias_variable_t;
 typedef struct fmi3_xml_alias_variable_list_t fmi3_xml_alias_variable_list_t;
 /** @} */
 
@@ -127,7 +127,7 @@ fmi3_xml_model_description_t* fmi3_xml_allocate_model_description(jm_callbacks* 
 
 /**
    \brief Parse XML file
-   Repeaded calls invalidate the data structures created with the previous call to fmiParseXML,
+   Repeated calls invalidate the data structures created with the previous call to fmiParseXML,
    i.e., fmiClearModelDescrition is automatically called before reading in the new file.
 
     @param md A model description object as returned by fmi3_xml_allocate_model_description.

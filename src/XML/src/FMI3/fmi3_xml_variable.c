@@ -248,9 +248,11 @@ static fmi3_xml_float_type_props_t* fmi3_xml_find_type_struct_float_props(fmi3_x
 // -----------------------------------------------------------------------------
 
 fmi3_xml_float64_variable_t* fmi3_xml_get_variable_as_float64(fmi3_xml_variable_t* v) {
-    if (fmi3_xml_get_variable_base_type(v) == fmi3_base_type_float64)
+    if (!v) {return NULL;}
+    if (fmi3_xml_get_variable_base_type(v) == fmi3_base_type_float64) {
         return (void*)v;
-    return 0;
+    }
+    return NULL;
 }
 
 fmi3_xml_float64_variable_t* fmi3_xml_get_float64_variable_derivative_of(fmi3_xml_float64_variable_t* v) {
@@ -320,9 +322,11 @@ fmi3_float64_t* fmi3_xml_get_float64_variable_start_array(fmi3_xml_float64_varia
 // -----------------------------------------------------------------------------
 
 fmi3_xml_float32_variable_t* fmi3_xml_get_variable_as_float32(fmi3_xml_variable_t* v) {
-    if (fmi3_xml_get_variable_base_type(v) == fmi3_base_type_float32)
+    if (!v) {return NULL;}
+    if (fmi3_xml_get_variable_base_type(v) == fmi3_base_type_float32) {
         return (void*)v;
-    return 0;
+    }
+    return NULL;
 }
 
 fmi3_xml_float32_variable_t* fmi3_xml_get_float32_variable_derivative_of(fmi3_xml_float32_variable_t* v) {
@@ -1267,16 +1271,16 @@ static int fmi3_xml_variable_process_attr_previous(fmi3_xml_parser_context_t* co
     variable->hasPrevious = true;
 
     if (!fmi3_xml_variable_is_clocked(variable)) {
-        fmi3_xml_parse_error(context, "Only variables with the attribute 'clocks' may have the attribute 'previous'.");
+        fmi3_xml_parse_warning(context, "Only variables with the attribute 'clocks' may have the attribute 'previous'.");
     }
 
     if (variable->variability != fmi3_variability_enu_discrete) {
-        fmi3_xml_parse_error(context, "Only variables with variability='discrete' may have the attribute 'previous'.");
+        fmi3_xml_parse_warning(context, "Only variables with variability='discrete' may have the attribute 'previous'.");
     }
 
     if (previous == fmi3_xml_get_variable_vr(variable)) {
-        // TODO: This one could be problematic later on if not fatal?
-        fmi3_xml_parse_error(context, "A variable must not refer to itself in the attribute 'previous'.");
+        // TODO: This one could be problematic later on if not fatal/error?
+        fmi3_xml_parse_warning(context, "A variable must not refer to itself in the attribute 'previous'.");
     }
 
     return 0;
@@ -2428,7 +2432,7 @@ int fmi3_xml_handle_ModelVariables(fmi3_xml_parser_context_t* context, const cha
                 if (!variable->derivativeOf.variable) {
                     fmi3_xml_parse_error(context, "The valueReference in derivative=\"%" PRIu32 "\" "
                                                   "did not resolve to any variable.", vr);
-                    return -1;
+                    fmi3_xml_set_model_description_invalid(md);
                 }
             }
             if (variable->hasPrevious) {
@@ -2438,13 +2442,14 @@ int fmi3_xml_handle_ModelVariables(fmi3_xml_parser_context_t* context, const cha
                 if (!variable->previous.variable) {
                     fmi3_xml_parse_error(context, "The valueReference in previous=\"%" PRIu32 "\" "
                                                   "did not resolve to any variable.", vr);
-                    return -1;
+                    fmi3_xml_set_model_description_invalid(md);
                 }
             }
         }
 
+        // TODO: More clean highlighting which errors are critical?
         if (!md->isValid) { 
-            fmi3_xml_parse_fatal(context, "Fatal failure in parsing ModelVariables, one or more Variables are invalid.");
+            fmi3_xml_parse_fatal(context, "Fatal failure in parsing ModelVariables.");
             return -1;
         }
 

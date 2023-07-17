@@ -98,7 +98,7 @@ fmi3_import_variable_list_t* fmi3_import_get_variable_clocks(fmi3_import_t* fmu,
 // -----------------------------------------------------------------------------
 
 fmi3_import_float64_variable_t* fmi3_import_get_variable_as_float64(fmi3_import_variable_t* v) {
-    return fmi3_xml_get_variable_as_float64(v);
+    return v ? fmi3_xml_get_variable_as_float64(v) : NULL;
 }
 
 fmi3_float64_t fmi3_import_get_float64_variable_min(fmi3_import_float64_variable_t* v) {
@@ -154,7 +154,7 @@ fmi3_boolean_t fmi3_import_get_float64_variable_relative_quantity(fmi3_import_fl
 // -----------------------------------------------------------------------------
 
 fmi3_import_float32_variable_t* fmi3_import_get_variable_as_float32(fmi3_import_variable_t* v) {
-    return fmi3_xml_get_variable_as_float32(v);
+    return v ? fmi3_xml_get_variable_as_float32(v) : NULL;
 }
 
 fmi3_float32_t fmi3_import_get_float32_variable_min(fmi3_import_float32_variable_t* v) {

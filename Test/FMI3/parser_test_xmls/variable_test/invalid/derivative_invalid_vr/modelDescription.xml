@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription fmiVersion="3.0" modelName="" instantiationToken="">
+<ModelExchange modelIdentifier="id" />
+
+<ModelVariables>
+    <Float64 name="x" valueReference="0" derivative="1"/> <!-- VR in derivative does not resolve to any variable -->
+</ModelVariables>
+
+<ModelStructure/>
+</fmiModelDescription>

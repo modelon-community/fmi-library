@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription fmiVersion="3.0" modelName="" instantiationToken="">
+<ModelExchange modelIdentifier="id" />
+
+<ModelVariables>
+    <Float32 name="f32"   valueReference="0"/>
+    <Float32 name="f32_d" valueReference="1" derivative="0"/>
+
+    <Float64 name="f64"   valueReference="10"/>
+    <Float64 name="f64_d" valueReference="11" derivative="10"/>
+</ModelVariables>
+
+<ModelStructure/>
+</fmiModelDescription>

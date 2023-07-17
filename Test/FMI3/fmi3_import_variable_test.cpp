@@ -758,3 +758,54 @@ TEST_CASE("Invalid; clock without intervalVariability") {
 
     fmi3_testutil_import_free(tfmu);
 }
+
+TEST_CASE("Invalid derivative; VR does not resolve to any variable") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/variable_test/invalid/derivative_invalid_vr";
+
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    REQUIRE(tfmu != nullptr);
+    REQUIRE(tfmu->fmu == nullptr);
+
+    const char* logMsg = "The valueReference in derivative=\"1\" did not resolve to any variable.";
+    REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
+
+    fmi3_testutil_import_free(tfmu);
+}
+
+TEST_CASE("Test API for getting derivatives of variables") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/variable_test/valid/derivate";
+
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    REQUIRE(tfmu != nullptr);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu != nullptr);
+
+    fmi3_import_variable_t* var;
+
+    // Float32
+    var = fmi3_import_get_variable_by_vr(fmu, 1);
+    REQUIRE(var != nullptr);
+    fmi3_import_float32_variable_t* v32 = fmi3_import_get_variable_as_float32(var);
+    REQUIRE(v32 != nullptr);
+    fmi3_import_float32_variable_t* v32prev = fmi3_import_get_float32_variable_derivative_of(v32);
+    REQUIRE(v32prev != nullptr);
+    REQUIRE(fmi3_import_get_float32_variable_derivative_of(v32prev) == nullptr);
+    REQUIRE(fmi3_import_get_variable_vr((fmi3_import_variable_t*)v32prev) == 0);
+
+    //Float64
+    var = fmi3_import_get_variable_by_vr(fmu, 11);
+    REQUIRE(var != nullptr);
+    fmi3_import_float64_variable_t* v64 = fmi3_import_get_variable_as_float64(var);
+    REQUIRE(v64 != nullptr);
+    fmi3_import_float64_variable_t* v64prev = fmi3_import_get_float64_variable_derivative_of(v64);
+    REQUIRE(v64prev != nullptr);
+    REQUIRE(fmi3_import_get_float64_variable_derivative_of(v64prev) == nullptr);
+    REQUIRE(fmi3_import_get_variable_vr((fmi3_import_variable_t*)v64prev) == 10);
+
+    // Misc API testing
+    // null inputs
+    REQUIRE(fmi3_import_get_variable_as_float32(nullptr) == nullptr);
+    REQUIRE(fmi3_import_get_variable_as_float64(nullptr) == nullptr);
+
+    fmi3_testutil_import_free(tfmu);
+}

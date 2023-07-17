@@ -348,48 +348,42 @@ TEST_CASE("Invalid Clock variable - no intervalVariability attr") {
 
 TEST_CASE("Invalid Binary variable - non-hexadecimal char first in byte tuple") {
     const char* xmldir = FMI3_TEST_XML_DIR "/variables/invalid/binaryStart1";
-
-    fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
-    REQUIRE(xml != nullptr);
-
-    const char* errMsg = fmi3_import_get_last_error(xml);
-    REQUIRE_STREQ(errMsg, "String is not hexadecimal: gf");
-    fmi3_import_free(xml);
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu != nullptr);
+    
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "String is not hexadecimal: gf"));
+    fmi3_testutil_import_free(tfmu);
 }
 
 TEST_CASE("Invalid Binary variable - non-hexadecimal char second in byte tuple") {
     const char* xmldir = FMI3_TEST_XML_DIR "/variables/invalid/binaryStart2";
-
-    fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
-    REQUIRE(xml != nullptr);
-
-    const char* errMsg = fmi3_import_get_last_error(xml);
-    REQUIRE_STREQ(errMsg, "String is not hexadecimal: FG");
-    fmi3_import_free(xml);
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu != nullptr);
+    
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "String is not hexadecimal: FG"));
+    fmi3_testutil_import_free(tfmu);
 }
 
 TEST_CASE("Invalid structuralParameter - requires start attribute") {
     const char* xmldir = FMI3_TEST_XML_DIR "/variables/invalid/structuralParameter_no_start";
-
-    fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
-    REQUIRE(xml != nullptr);
-
-    const char* errMsg = fmi3_import_get_last_error(xml);
-    REQUIRE_STREQ(errMsg, "Variable structVar: start value required for structuralParameter variables");
-
-    fmi3_import_free(xml);
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu != nullptr);
+    
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Variable structVar: start value required for structuralParameter variables"));
+    fmi3_testutil_import_free(tfmu);
 }
 
 TEST_CASE("Invalid structuralParameter - has dimension") {
     const char* xmldir = FMI3_TEST_XML_DIR "/variables/invalid/structuralParameter_with_dimension";
-
-    fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
-    REQUIRE(xml != nullptr);
-
-    const char* errMsg = fmi3_import_get_last_error(xml);
-    REQUIRE_STREQ(errMsg, "Variable structVar: structuralParameters must not have Dimension elements.");
-
-    fmi3_import_free(xml);
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu != nullptr);
+    
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Variable structVar: structuralParameters must not have Dimension elements."));
+    fmi3_testutil_import_free(tfmu);
 }
 
 static fmi3_import_alias_variable_list_t* get_aliases(fmi3_import_t* fmu, const char* baseVarName,
@@ -610,52 +604,48 @@ TEST_CASE("Alias with name being the empty string") {
 
 TEST_CASE("Invalid intermediateUpdate - has causality parameter") {
     const char* xmldir = FMI3_TEST_XML_DIR "/variables/invalid/intermediateUpdate_parameter";
-    
-    fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
-    REQUIRE(xml != nullptr);
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    REQUIRE(tfmu != nullptr);
+    REQUIRE(tfmu->fmu != nullptr);
 
-    const char* errMsg = fmi3_import_get_last_error(xml);
-    REQUIRE_STREQ(errMsg, "Variables with causality='parameter' must not be marked with intermediateUpdate='true'.");
-
-    fmi3_import_free(xml);
+    const char* logMsg = "Variables with causality='parameter' must not be marked with intermediateUpdate='true'.";
+    REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
+    fmi3_testutil_import_free(tfmu);
 }
 
 TEST_CASE("Invalid previous - requires clocks") {
     const char* xmldir = FMI3_TEST_XML_DIR "/variable_test/invalid/previous_no_clocks";
-
     fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
     REQUIRE(tfmu != nullptr);
     REQUIRE(tfmu->fmu == nullptr);
 
     const char* logMsg = "Only variables with the attribute 'clocks' may have the attribute 'previous'.";
     REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
-
     fmi3_testutil_import_free(tfmu);
 }
 
 TEST_CASE("Invalid previous - requires variability='discrete'") {
     const char* xmldir = FMI3_TEST_XML_DIR "/variable_test/invalid/previous_not_discrete";
-
     fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
     REQUIRE(tfmu != nullptr);
     REQUIRE(tfmu->fmu == nullptr);
 
     const char* logMsg = "Only variables with variability='discrete' may have the attribute 'previous'.";
     REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
-
     fmi3_testutil_import_free(tfmu);
 }
 
 TEST_CASE("Invalid Clock variable - has previous") {
     const char* xmldir = FMI3_TEST_XML_DIR "/variable_test/invalid/clock_with_previous";
 
-    fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
-    REQUIRE(xml != nullptr);
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    REQUIRE(tfmu != nullptr);
+    REQUIRE(tfmu->fmu != nullptr);
 
-    const char* errMsg = fmi3_import_get_last_error(xml);
-    REQUIRE_STREQ(errMsg, "Variables of type Clock must not have the 'previous' attribute.");
+    const char* logMsg = "Variables of type Clock must not have the 'previous' attribute.";
+    REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
 
-    fmi3_import_free(xml);
+    fmi3_testutil_import_free(tfmu);
 }
 
 TEST_CASE("Invalid Clock - has attribute intermediateUpdate") {

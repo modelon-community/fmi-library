@@ -411,7 +411,6 @@ TEST_CASE("Testing valid arrays") {
     fmi3_import_free(xml);
 }
 
-// TODO: Add proper checks for log messages
 TEST_CASE("Testing invalid array; enclosed string between doubles") {
     const char* xmldir = FMI3_TEST_XML_DIR "/arrays/invalid/enclosed_string";
     fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);

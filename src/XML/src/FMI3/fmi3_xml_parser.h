@@ -26,6 +26,7 @@
 
 #include <FMI3/fmi3_enums.h>
 #include <FMI3/fmi3_xml_model_description.h>
+#include <FMI3/fmi3_xml_terminals_and_icons.h>
 
 
 #ifdef __cplusplus
@@ -179,7 +180,13 @@ typedef enum fmi3_xml_attr_enu_t {
     EXPAND_XML_ELMNAME(Binary) \
     EXPAND_XML_ELMNAME(Clock) \
     EXPAND_XML_ELMNAME(String) \
-    EXPAND_XML_ELMNAME(Enumeration)
+    EXPAND_XML_ELMNAME(Enumeration) \
+    EXPAND_XML_ELMNAME(fmiTerminalsAndIcons) \
+    EXPAND_XML_ELMNAME(Terminals) \
+    EXPAND_XML_ELMNAME(Terminal) \
+    EXPAND_XML_ELMNAME(TerminalMemberVariable) \
+    EXPAND_XML_ELMNAME(TerminalStreamMemberVariable) \
+    EXPAND_XML_ELMNAME(TerminalGraphicalRepresentation)
 
 /** \brief Element that can be placed under different parents get alternative names from the info struct */
 #define FMI3_XML_ELMLIST_ALT(EXPAND_XML_ELMNAME) \
@@ -255,6 +262,9 @@ struct fmi3_xml_parser_context_t {
      * This is where the parsed XML is saved.
      */
     fmi3_xml_model_description_t* modelDescription;
+
+    /* Terminals and Icons XML data */
+    fmi3_xml_terminals_and_icons_t* termIcon;
 
     jm_callbacks* callbacks;
 

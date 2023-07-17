@@ -26,10 +26,11 @@
 #endif
 
 #include "fmi3_xml_model_description_impl.h"
+#include "fmi3_xml_terminals_and_icons_impl.h"
 #include "fmi3_xml_parser.h"
 #include "JM/jm_portability.h"
 
-static const char * module = "FMI3XML";
+static const char* module = "FMI3XML";
 
 /* type is guaranteed to be at least 64 bits (not by C standard, but we check with CMake) and matches %lf formatter */
 typedef double                  fmi3_float_buf_t;
@@ -122,6 +123,17 @@ const char *fmi3_xmlAttrNames[fmi3_xml_attr_number] = {
 
 #define fmi3_xml_scheme_Annotations               {fmi3_xml_elmID_none,       fmi3_xml_elmID_Variable,             1,       0}
 #define fmi3_xml_scheme_VariableTool              {fmi3_xml_elmID_none,       fmi3_xml_elmID_Annotations,          0,       1}
+
+// Terminals and Icons
+#define fmi3_xml_scheme_fmiTerminalsAndIcons            {fmi3_xml_elmID_none,       fmi3_xml_elmID_none,                 0,       0}
+
+#define fmi3_xml_scheme_Terminals                       {fmi3_xml_elmID_none,       fmi3_xml_elmID_fmiTerminalsAndIcons, 1,       0}
+#define fmi3_xml_scheme_Terminal                        {fmi3_xml_elmID_none,       fmi3_xml_elmID_Terminals,            0,       1}
+#define fmi3_xml_scheme_TerminalMemberVariable          {fmi3_xml_elmID_none,       fmi3_xml_elmID_Terminal,             0,       1}
+#define fmi3_xml_scheme_TerminalStreamMemberVariable    {fmi3_xml_elmID_none,       fmi3_xml_elmID_Terminal,             1,       1}
+// TODO: How to handle nested Terminals?
+#define fmi3_xml_scheme_TerminalGraphicalRepresentation {fmi3_xml_elmID_none,       fmi3_xml_elmID_Terminal,             3,       0}
+
 
 // Not used except for setting up the element handler framework:
 #define fmi3_xml_scheme_Start                     {fmi3_xml_elmID_none,       fmi3_xml_elmID_none,                 1,       0}
@@ -263,12 +275,20 @@ void fmi3_xml_parse_free_context(fmi3_xml_parser_context_t *context) {
         jm_vector_free(jm_string)(context->attrMapById);
         context->attrMapById = 0;
     }
-    jm_stack_free_data(int)(&context->elmStack);
-    jm_vector_free_data(char)(&context->elmData);
-    jm_vector_free_data(char)(&context->variableStartAttr);
-    jm_vector_free_data(jm_voidp)(&context->currentStartVariableValues);
+    if (&(context->elmStack) && (context->elmStack.size > 0)) {
+        jm_stack_free_data(int)(&context->elmStack);
+    }
+    if (&(context->elmData) && (context->elmData.size > 0)) {
+        jm_vector_free_data(char)(&context->elmData);
+    }
+    if (&(context->variableStartAttr) && (context->variableStartAttr.items)) {
+        jm_vector_free_data(char)(&context->variableStartAttr);
+    }
+    if (&(context->currentStartVariableValues) && (context->currentStartVariableValues.items)) {
+        jm_vector_free_data(jm_voidp)(&context->currentStartVariableValues);
+    }
 
-    if (jm_resetlocale_numeric(context->callbacks, context->jm_locale)) {
+    if (context->jm_locale && jm_resetlocale_numeric(context->callbacks, context->jm_locale)) {
         jm_log_error(context->callbacks, module, "Failed to reset locale.");
     }
 
@@ -967,11 +987,13 @@ int fmi3_xml_alloc_parse_buffer(fmi3_xml_parser_context_t* context, size_t items
     return 0;
 }
 
-void fmi3_xml_free_parse_buffer(fmi3_xml_parser_context_t *context) {
-    size_t i;
+void fmi3_xml_free_parse_buffer(fmi3_xml_parser_context_t* context) {
     jm_vector(jm_voidp)* parseBuffer = &context->parseBuffer;
+    size_t bufferSize = jm_vector_get_size(jm_voidp)(parseBuffer);
 
-    for (i=0; i < jm_vector_get_size(jm_voidp)(parseBuffer); i++) {
+    if (bufferSize == 0) {return;}
+
+    for (size_t i = 0; i < bufferSize; i++) {
         jm_vector(char)* item = jm_vector_get_item(jm_voidp)(parseBuffer,i);
         if (item) {
             jm_vector_free(char)(item);
@@ -1198,11 +1220,14 @@ static void XMLCALL fmi3_parse_element_start(void *c, const char *elm, const cha
 #define XMLSchema_instance "http://www.w3.org/2001/XMLSchema-instance"
             const size_t stdNSlen = strlen(XMLSchema_instance);
             const size_t attrStrLen = strlen(attr[i]);
-            if ((attrStrLen > stdNSlen) && (attr[i][stdNSlen] == '|') && (strncmp(attr[i], XMLSchema_instance, stdNSlen) == 0)) {
+            if ((attrStrLen > stdNSlen) && (attr[i][stdNSlen] == '|')
+                && (strncmp(attr[i], XMLSchema_instance, stdNSlen) == 0)) {
                 const char* localName = attr[i] + stdNSlen + 1;
                 if (strcmp(localName, "noNamespaceSchemaLocation") == 0)
-                    jm_log_warning(context->callbacks, module, "Attribute noNamespaceSchemaLocation='%s' is ignored. Using standard fmiModelDescription.xsd.",
-                    attr[i+1]);
+                    jm_log_warning(context->callbacks,
+                        module,
+                        "Attribute noNamespaceSchemaLocation='%s' is ignored. Using standard fmiModelDescription.xsd.",
+                        attr[i+1]);
                 else if ((strcmp(localName, "nil") == 0)
                     ||  (strcmp(localName, "type") == 0)) {
                         jm_log_warning(context->callbacks, module, "Attribute {" XMLSchema_instance "}%s=%s is ignored",
@@ -1237,7 +1262,7 @@ static void XMLCALL fmi3_parse_element_start(void *c, const char *elm, const cha
     }
 
     /* handle the element */
-    if (currentElMap->elementHandle(context, 0) ) {
+    if (currentElMap->elementHandle(context, 0)) {
         /* try to skip and continue anyway */
         if (!context->skipElementCnt) context->skipElementCnt = 1;
     }
@@ -1454,6 +1479,104 @@ int fmi3_xml_parse_model_description(fmi3_xml_model_description_t* md,
 
     md->status = fmi3_xml_model_description_enu_ok;
     context->modelDescription = 0;
+    fmi3_xml_parse_free_context(context);
+
+    return 0;
+}
+
+int fmi3_xml_parse_terminals_and_icons(fmi3_xml_terminals_and_icons_t* termIcon,
+                                       const char* filename,
+                                       fmi3_xml_callbacks_t* xml_callbacks) {
+    XML_Memory_Handling_Suite memsuite;
+    fmi3_xml_parser_context_t* context;
+    XML_Parser parser = NULL;
+    FILE* file;
+
+    context = (fmi3_xml_parser_context_t*)termIcon->callbacks->calloc(1, sizeof(fmi3_xml_parser_context_t));
+    if (!context) {
+        jm_log_fatal(termIcon->callbacks, "FMIXML", "Could not allocate memory for XML parser context");
+    }
+    context->callbacks = termIcon->callbacks;
+
+    // try to open file before doing parser initialization
+    file = fopen(filename, "rb");
+    if (file == NULL) {
+        jm_log_info(context->callbacks, module, "Could not find or open terminalsAndIcons.xmxl: '%s'. Continuing.", filename);
+        fmi3_xml_parse_free_context(context);
+        return -1;
+    }
+    // else: file exists and can be opened, initialize parser & parse
+
+    context->termIcon = termIcon;
+    if (fmi3_xml_alloc_parse_buffer(context, 16)) return -1;
+    if (fmi3_create_attr_map(context) || fmi3_create_elm_map(context)) {
+        fmi3_xml_parse_fatal(context, "Error in parsing initialization");
+        fmi3_xml_parse_free_context(context);
+        return -1;
+    }
+    context->skipElementCnt = 0;
+    jm_stack_init(int)(&context->elmStack, context->callbacks);
+    jm_vector_init(char)(&context->elmData, 0, context->callbacks);
+
+    context->lastSiblingElemId = fmi3_xml_elmID_none;
+    context->currentElmID = fmi3_xml_elmID_none;
+    context->anyElmCount = 0;
+    context->useAnyHandleFlg = 0;
+    context->anyParent = 0;
+    context->anyHandle = xml_callbacks;
+
+    /* Set locale such that parsing does not depend on the environment.
+     * For example, LC_NUMERIC affects what sscanf identifies as the floating
+     * point delimiter. */
+    context->jm_locale = jm_setlocale_numeric(context->callbacks, "C");
+    if (!context->jm_locale) {
+        jm_log_error(context->callbacks, module, "Failed to set locale. Parsing might be incorrect.");
+    }
+
+    memsuite.malloc_fcn = context->callbacks->malloc;
+    memsuite.realloc_fcn = context->callbacks->realloc;
+    memsuite.free_fcn = context->callbacks->free;
+    context -> parser = parser = XML_ParserCreate_MM(0, &memsuite, "|");
+
+    if (!parser) {
+        fmi3_xml_parse_fatal(context, "Could not initialize XML parsing library.");
+        fmi3_xml_parse_free_context(context);
+        return -1;
+    }
+
+    XML_SetUserData(parser, context);
+
+    XML_SetElementHandler(parser, fmi3_parse_element_start, fmi3_parse_element_end);
+
+    XML_SetCharacterDataHandler(parser, fmi3_parse_element_data);
+
+    while (!feof(file)) {
+        char* text = jm_vector_get_itemp(char)(fmi3_xml_reserve_parse_buffer(context, 0, XML_BLOCK_SIZE), 0);
+        int n = (int)fread(text, sizeof(char), XML_BLOCK_SIZE, file);
+        if (ferror(file)) {
+            fmi3_xml_parse_fatal(context, "Error reading from file %s", filename);
+            fclose(file);
+            fmi3_xml_parse_free_context(context);
+            return -1;
+        }
+        if (!XML_Parse(parser, text, n, feof(file))) {
+             fmi3_xml_parse_fatal(context, "Parse error at line %d:\n%s",
+                         (int)XML_GetCurrentLineNumber(parser),
+                         XML_ErrorString(XML_GetErrorCode(parser)));
+             fclose(file);
+             fmi3_xml_parse_free_context(context);
+             return -1; /* failure */
+        }
+    }
+    fclose(file);
+    /* done later XML_ParserFree(parser);*/
+    if (!jm_stack_is_empty(int)(&context->elmStack)) {
+        fmi3_xml_parse_fatal(context, "Unexpected end of file (not all elements ended) when parsing %s", filename);
+        fmi3_xml_parse_free_context(context);
+        return -1;
+    }
+
+    context->termIcon = NULL;
     fmi3_xml_parse_free_context(context);
 
     return 0;

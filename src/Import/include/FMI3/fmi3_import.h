@@ -35,6 +35,7 @@
 #include "fmi3_import_unit.h"
 #include "fmi3_import_variable.h"
 #include "fmi3_import_variable_list.h"
+#include "fmi3_import_terminals_and_icons.h"
 
 #include "fmi3_import_capi.h"
 #include "fmi3_import_convenience.h"

@@ -358,7 +358,7 @@ static void test_parse_bouncingball(const char* xmldir, bool expectParseFailure)
            fmi3_import_get_default_experiment_start(fmu),
            fmi3_import_get_default_experiment_stop(fmu),
            fmi3_import_get_default_experiment_tolerance(fmu),
-           fmi3_import_get_default_experiment_step(fmu));
+           fmi3_import_get_default_experiment_step_size(fmu));
 
     {
         int n_sources = fmi3_import_get_source_files_me_num(fmu);

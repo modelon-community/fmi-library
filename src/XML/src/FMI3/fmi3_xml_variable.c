@@ -1373,7 +1373,7 @@ static int fmi3_xml_variable_process_attr_reinit(fmi3_xml_parser_context_t* cont
     variable->reinit = (char)reinit;
 
     if (reinit && variable->variability != fmi3_variability_enu_continuous) {
-        fmi3_xml_parse_error(context, "The reinit attribute may only be set on continuous-time states.");
+        fmi3_xml_parse_warning(context, "The reinit attribute may only be set on continuous-time states.");
         return -1;
     }
     return 0;
@@ -1434,14 +1434,15 @@ int fmi3_xml_handle_Variable(fmi3_xml_parser_context_t* context, const char* dat
 
         if (req) {return -1;}
 
-        if (fmi3_xml_parse_attr_as_string(context, elm_id, fmi_attr_id_description,    0, bufDesc)) return -1;
+        // optional, failure to parse should only result in missing description
+        fmi3_xml_parse_attr_as_string(context, elm_id, fmi_attr_id_description, 0, bufDesc);
 
         if (jm_vector_get_size(char)(bufDesc)) {
             /* Add the description to the model-wide set and retrieve the pointer */
             description = jm_string_set_put(&md->descriptions, jm_vector_get_itemp(char)(bufDesc, 0));
         }
 
-        // Create the alias and set name at same time:
+        // Create the variable and set name at same time:
         const char* name;
         if (jm_vector_get_size(char)(bufName) == 0) {  // FIXME: Empty string has been resized to 0
             name = "";
@@ -1475,6 +1476,7 @@ int fmi3_xml_handle_Variable(fmi3_xml_parser_context_t* context, const char* dat
 
         int res = 0;
 
+        // TODO: Which ones should cause immediate returns?
         /* Save start value for processing after reading all Dimensions */
         if (fmi3_xml_parse_attr_as_string(context, elm_id, fmi_attr_id_start, 0, &context->variableStartAttr)) return -1;
 
@@ -1488,7 +1490,7 @@ int fmi3_xml_handle_Variable(fmi3_xml_parser_context_t* context, const char* dat
         res |= fmi3_xml_variable_process_attr_intermediateupdate(context, variable, elm_id);
 
         if (res) {
-            // TODO: Should this return 0 though
+            // TODO: Should this return 0 though?
             return 0;
         }
     }
@@ -1509,14 +1511,13 @@ int fmi3_xml_get_has_start(fmi3_xml_parser_context_t *context, fmi3_xml_variable
     int hasStart = fmi3_xml_is_attr_defined(context, fmi_attr_id_start);
     if (!hasStart) {
         if (variable->initial != (char)fmi3_initial_enu_calculated) {
-            fmi3_xml_parse_error(context,
+            fmi3_xml_parse_warning(context,
                     "Start attribute is required for this causality, variability and initial combination");
         }
     } else {
         /* If initial = calculated, it is not allowed to provide a start value. */
         if (variable->initial == (char)fmi3_initial_enu_calculated) {
-            fmi3_xml_parse_error(context, "Start attribute is not allowed for variables with initial='calculated'");
-            hasStart = 0;
+            fmi3_xml_parse_warning(context, "Start attribute is not allowed for variables with initial='calculated'");
         }
     }
     return hasStart;
@@ -1525,24 +1526,24 @@ int fmi3_xml_get_has_start(fmi3_xml_parser_context_t *context, fmi3_xml_variable
 static void fmi3_log_error_if_start_required(fmi3_xml_parser_context_t* context, fmi3_xml_variable_t* variable) {
     // causality checks
     if (variable->causality == fmi3_causality_enu_input) {
-        fmi3_xml_parse_error(context, "Variable %s: start value required for input variables",
+        fmi3_xml_parse_warning(context, "Variable %s: start value required for input variables",
             fmi3_xml_get_variable_name(variable));
     } else if (variable->causality == fmi3_causality_enu_parameter) {
-        fmi3_xml_parse_error(context, "Variable %s: start value required for parameter variables",
+        fmi3_xml_parse_warning(context, "Variable %s: start value required for parameter variables",
             fmi3_xml_get_variable_name(variable));
     } else if (variable->causality == fmi3_causality_enu_structural_parameter) {
-        fmi3_xml_parse_error(context, "Variable %s: start value required for structuralParameter variables",
+        fmi3_xml_parse_warning(context, "Variable %s: start value required for structuralParameter variables",
             fmi3_xml_get_variable_name(variable));
     // variability checks
     } else if (variable->variability == fmi3_variability_enu_constant) {
-        fmi3_xml_parse_error(context, "Variable %s: start value required for variables with constant variability",
+        fmi3_xml_parse_warning(context, "Variable %s: start value required for variables with constant variability",
             fmi3_xml_get_variable_name(variable));
     // initial checks
     } else if (variable->initial == fmi3_initial_enu_exact) {
-        fmi3_xml_parse_error(context, "Variable %s: start value required for variables with initial == \"exact\"",
+        fmi3_xml_parse_warning(context, "Variable %s: start value required for variables with initial == \"exact\"",
             fmi3_xml_get_variable_name(variable));
     } else if (variable->initial == fmi3_initial_enu_approx) {
-        fmi3_xml_parse_error(context, "Variable %s: start value required for variables with initial == \"approx\"",
+        fmi3_xml_parse_warning(context, "Variable %s: start value required for variables with initial == \"approx\"",
             fmi3_xml_get_variable_name(variable));
     }
 }
@@ -1575,15 +1576,17 @@ int fmi3_xml_handle_Dimension(fmi3_xml_parser_context_t* context, const char* da
         hasVr = fmi3_xml_is_attr_defined(context, fmi_attr_id_valueReference);
 
         /* error check */
+        // TODO: change error messages?
         if ( !(hasStart || hasVr) ) {
-            jm_log_error(context->callbacks, "Error parsing Dimension: no attribute 'start' or 'valueReference' found", "");
+            fmi3_xml_parse_error(context, "Error parsing Dimension: no attribute 'start' or 'valueReference' found");
             return -1;
         } else if (hasStart && hasVr) {
-            jm_log_error(context->callbacks, "Error parsing Dimension: mutually exclusive attributes 'start' and 'valueReference' found", "");
+            fmi3_xml_parse_error(context, "Error parsing Dimension: mutually exclusive attributes 'start' and 'valueReference' found");
             return -1;
         }
 
         /* set data */
+        // TODO: Check returns on these
         if (hasStart) {
             dim->has_vr = 0;
             attrId = fmi_attr_id_start;
@@ -1660,6 +1663,7 @@ int fmi3_xml_handle_FloatXX(fmi3_xml_parser_context_t* context, const char* data
         int hasRelQ = fmi3_xml_is_attr_defined(context, fmi_attr_id_relativeQuantity);
         int hasUnb  = fmi3_xml_is_attr_defined(context, fmi_attr_id_unbounded);
 
+        // TODO: Check returns here
         if (hasUnit || hasMin || hasMax || hasNom || hasQuan || hasRelQ || hasUnb) {
             /* create a new type_props that overrides declared type's properties when necessary */
             type = fmi3_xml_parse_float_type_properties(context, elmID, declaredType, primType);
@@ -1990,9 +1994,7 @@ int fmi3_xml_handle_Clock(fmi3_xml_parser_context_t* context, const char* data) 
         variable->type = &props->super;
 
         if (variable->hasPrevious) {
-            fmi3_xml_parse_error(context, "Variables of type Clock must not have the 'previous' attribute.");
-            variable->hasPrevious = 0;
-            return -1;
+            fmi3_xml_parse_warning(context, "Variables of type Clock must not have the 'previous' attribute.");
         }
     }
     return 0;

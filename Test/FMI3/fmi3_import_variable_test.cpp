@@ -383,6 +383,13 @@ TEST_CASE("Invalid structuralParameter - has dimension") {
     REQUIRE(fmu != nullptr);
     
     REQUIRE(fmi3_testutil_log_contains(tfmu, "Variable structVar: structuralParameters must not have Dimension elements."));
+
+    fmi3_import_variable_t* var = fmi3_import_get_variable_by_vr(fmu, 0);
+    REQUIRE(var != nullptr);
+    REQUIRE(fmi3_import_get_variable_causality(var) == fmi3_causality_enu_structural_parameter);
+    REQUIRE(fmi3_import_get_variable_has_start(var) != 0);
+    REQUIRE(fmi3_import_get_variable_dimension_list(var) == nullptr); // Dimension invalid; not set
+
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -693,7 +700,9 @@ TEST_CASE("Invalid Clock variable - has previous") {
     // Test that API works regardless
     fmi3_import_variable_t* var = fmi3_import_get_variable_by_vr(fmu, 20);
     REQUIRE(var != nullptr);
-    REQUIRE(fmi3_import_get_variable_previous(var) == nullptr); // TODO: should still work
+    fmi3_import_variable_t* varPrev = fmi3_import_get_variable_previous(var);
+    REQUIRE(varPrev != nullptr);
+    REQUIRE(fmi3_import_get_variable_vr(varPrev) == 10);
 
     fmi3_testutil_import_free(tfmu);
 }

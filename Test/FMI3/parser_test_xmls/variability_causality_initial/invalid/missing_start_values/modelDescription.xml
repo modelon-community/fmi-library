@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription fmiVersion="3.0" modelName="" instantiationToken="">
+<CoSimulation modelIdentifier="id" />
+
+<ModelVariables>
+	<!-- test various warnings/errors for missing start values that depend on causality/variability -->
+	<Float64 name="f64_structural_parameter"  valueReference="1" causality="structuralParameter"/>
+	<Float64 name="f64_parameter"             valueReference="2" causality="parameter"/>
+	<Float64 name="f64_calculated_parameter"  valueReference="3" causality="calculatedParameter"/>
+	<Float64 name="f64_input"                 valueReference="4" causality="input"/>
+	<Float64 name="f64_output"                valueReference="5" causality="output"/>
+	<Float64 name="f64_local"                 valueReference="6" causality="local"/>
+	<Float64 name="f64_independent"           valueReference="7" causality="independent"/>
+
+	<!-- TOOD: Add one for each causality and initial each, omitting the respective other ones? -->
+</ModelVariables>
+
+<ModelStructure/>
+</fmiModelDescription>

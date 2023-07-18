@@ -394,3 +394,15 @@ TEST_CASE("Test default variabilities") {
     }
     fmi3_testutil_import_free(tfmu);
 }
+
+TEST_CASE("Test missing start values") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/variability_causality_initial/invalid/missing_start_values";
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    REQUIRE(tfmu != nullptr);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu != nullptr);
+
+    // REQUIRE(fmi3_testutil_log_contains(tfmu, "msg"));
+
+    fmi3_testutil_import_free(tfmu);
+}

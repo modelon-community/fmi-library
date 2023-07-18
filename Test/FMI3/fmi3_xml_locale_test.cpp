@@ -95,7 +95,7 @@ TEST_CASE("Test parsing with locale set") {
         REQUIRE(fmi3_import_get_default_experiment_start(xml)     == 2.3 );
         REQUIRE(fmi3_import_get_default_experiment_stop(xml)      == 3.55);
         REQUIRE(fmi3_import_get_default_experiment_tolerance(xml) == 1e-6);
-        REQUIRE(fmi3_import_get_default_experiment_step(xml)      == 2e-3);
+        REQUIRE(fmi3_import_get_default_experiment_step_size(xml)      == 2e-3);
 
         fmi3_import_free(xml);
     }

@@ -628,14 +628,13 @@ TEST_CASE("Invalid intermediateUpdate - has causality parameter") {
     fmi3_import_t* fmu = tfmu->fmu;
     REQUIRE(fmu != nullptr);
 
-    // TODO: This should be warning instead
     const char* logMsg = "Variables with causality='parameter' must not be marked with intermediateUpdate='true'.";
     REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
 
     fmi3_import_variable_t* var = fmi3_import_get_variable_by_vr(fmu, 0);
     REQUIRE(var != nullptr);
     REQUIRE(fmi3_import_get_variable_causality(var) == fmi3_causality_enu_parameter);
-    REQUIRE(fmi3_import_get_variable_intermediate_update(var) == 0);
+    REQUIRE(fmi3_import_get_variable_intermediate_update(var) != 0);
 
     fmi3_testutil_import_free(tfmu);
 }
@@ -704,10 +703,17 @@ TEST_CASE("Invalid Clock - has attribute intermediateUpdate") {
 
     fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
     REQUIRE(tfmu != nullptr);
-    REQUIRE(tfmu->fmu != nullptr);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu != nullptr);
 
     const char* logMsg = "Variables of type 'Clock' must not have the 'intermediateUpdate' attribute.";
-    REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg)); // contains other errors; does not finish parsing all attributes
+    REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
+
+    fmi3_import_variable_t* var = fmi3_import_get_variable_by_vr(fmu, 0);
+    REQUIRE(var != nullptr);
+    fmi3_import_clock_variable_t* clock = fmi3_import_get_variable_as_clock(var);
+    REQUIRE(clock != nullptr);
+    REQUIRE(fmi3_import_get_variable_intermediate_update(var) != 0); // set according to XML
 
     fmi3_testutil_import_free(tfmu);
 }

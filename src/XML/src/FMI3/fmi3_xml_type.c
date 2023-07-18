@@ -705,7 +705,7 @@ fmi3_xml_variable_type_base_t* fmi3_xml_alloc_variable_or_typedef_props(fmi3_xml
     jm_callbacks* cb = td->typeDefinitions.callbacks;
     fmi3_xml_variable_type_base_t* type = cb->malloc(typeSize);
     if (!type) {
-        jm_log_fatal(cb, module, "Could not allocate memory"); // TODO: Change to fmi3_xml_parse_fatal
+        fmi3_xml_parse_fatal(cb->context, "Could not allocate memory");
         return NULL;
     }
     fmi3_xml_init_variable_type_base(type, fmi3_xml_type_struct_enu_props, nextLayer->baseType);
@@ -736,7 +736,7 @@ fmi3_xml_variable_type_base_t* fmi3_xml_alloc_variable_type_start(fmi3_xml_type_
 
     fmi3_xml_variable_type_base_t* start = cb->malloc(typeSize);
     if (!start) {
-        jm_log_fatal(cb, module, "Could not allocate memory"); // TODO: Change to fmi3_xml_parse_fatal
+        fmi3_xml_parse_fatal(cb->context, "Could not allocate memory");
         return NULL;
     }
     fmi3_xml_init_variable_type_base(start, fmi3_xml_type_struct_enu_start, nextLayer->baseType);

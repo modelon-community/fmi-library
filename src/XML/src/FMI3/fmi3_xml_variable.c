@@ -1201,7 +1201,7 @@ static int fmi3_xml_variable_process_attr_causality_variability_initial(fmi3_xml
     if (!fmi3_is_valid_variability_causality(variability, causality)) {
         fmi3_variability_enu_t bad_variability = variability;
         variability = defaultVariability;
-        fmi3_xml_parse_error(context,
+        fmi3_xml_parse_warning(context,
                 "Invalid combination of variability %s and causality %s for"
                 " variable '%s'. Setting variability to '%s'",
                 fmi3_variability_to_string(bad_variability),
@@ -1220,7 +1220,7 @@ static int fmi3_xml_variable_process_attr_causality_variability_initial(fmi3_xml
     }
     validInitial = fmi3_get_valid_initial(variability, causality, initial);
     if (validInitial != initial) {
-        fmi3_xml_parse_error(context,
+        fmi3_xml_parse_warning(context,
                 "Initial '%s' is not allowed for variability '%s' and "
                 "causality '%s'. Setting initial to '%s' for variable '%s'",
                 fmi3_initial_to_string(initial),
@@ -1297,7 +1297,7 @@ static int fmi3_xml_variable_process_attr_multipleset(fmi3_xml_parser_context_t*
     variable->canHandleMultipleSetPerTimeInstant = (char)multipleSet;
 
     if (variable->causality != fmi3_causality_enu_input && !multipleSet) {
-        fmi3_xml_parse_error(context, "Only variables with causality='input' can have canHandleMultipleSetPerTimeInstant=false");
+        fmi3_xml_parse_warning(context, "Only variables with causality='input' can have canHandleMultipleSetPerTimeInstant=false");
         return -1;
     }
     return 0;
@@ -1326,21 +1326,19 @@ static int fmi3_xml_variable_process_attr_intermediateupdate(fmi3_xml_parser_con
 
     // Spec: "Variables of type Clock must not have the intermediateUpdate attribute"
     if (elm_id == fmi3_xml_elmID_Clock) {
-        fmi3_xml_parse_error(context, "Variables of type 'Clock' must not have the 'intermediateUpdate' attribute.");
-        return -1;
+        fmi3_xml_parse_warning(context, "Variables of type 'Clock' must not have the 'intermediateUpdate' attribute.");
     }
 
     if (fmi3_xml_parse_attr_as_boolean(context, elm_id, fmi_attr_id_intermediateUpdate,
             0 /* required */, &intermediateUpdate, 0 /* defaultVal */)) {
         return -1;
     }
+    variable->intermediateUpdate = (char)intermediateUpdate;
 
     // Spec: "Variables with causality = parameter must not be marked with intermediateUpdate = true"
     if (intermediateUpdate && (fmi3_xml_get_variable_causality(variable) == fmi3_causality_enu_parameter)) {
-        fmi3_xml_parse_error(context, "Variables with causality='parameter' must not be marked with intermediateUpdate='true'.");
-        return -1;
+        fmi3_xml_parse_warning(context, "Variables with causality='parameter' must not be marked with intermediateUpdate='true'.");
     }
-    variable->intermediateUpdate = (char)intermediateUpdate;
 
     return 0;
 }

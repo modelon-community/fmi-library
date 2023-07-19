@@ -1510,7 +1510,7 @@ int fmi3_xml_parse_terminals_and_icons(fmi3_xml_terminals_and_icons_t* termIcon,
     // try to open file before doing parser initialization
     file = fopen(filename, "rb");
     if (file == NULL) {
-        jm_log_info(context->callbacks, module, "Could not find or open terminalsAndIcons.xmxl: '%s'. Continuing.", filename);
+        jm_log_info(context->callbacks, module, "Could not find or open terminalsAndIcons.xml: '%s'. Continuing.", filename);
         fmi3_xml_parse_free_context(context);
         return -1;
     }

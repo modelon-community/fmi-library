@@ -1526,24 +1526,24 @@ int fmi3_xml_get_has_start(fmi3_xml_parser_context_t *context, fmi3_xml_variable
 static void fmi3_log_error_if_start_required(fmi3_xml_parser_context_t* context, fmi3_xml_variable_t* variable) {
     // causality checks
     if (variable->causality == fmi3_causality_enu_input) {
-        fmi3_xml_parse_warning(context, "Variable %s: start value required for input variables",
+        fmi3_xml_parse_warning(context, "Variable '%s': start value required for input variables",
             fmi3_xml_get_variable_name(variable));
     } else if (variable->causality == fmi3_causality_enu_parameter) {
-        fmi3_xml_parse_warning(context, "Variable %s: start value required for parameter variables",
+        fmi3_xml_parse_warning(context, "Variable '%s': start value required for parameter variables",
             fmi3_xml_get_variable_name(variable));
     } else if (variable->causality == fmi3_causality_enu_structural_parameter) {
-        fmi3_xml_parse_warning(context, "Variable %s: start value required for structuralParameter variables",
+        fmi3_xml_parse_warning(context, "Variable '%s': start value required for structuralParameter variables",
             fmi3_xml_get_variable_name(variable));
     // variability checks
     } else if (variable->variability == fmi3_variability_enu_constant) {
-        fmi3_xml_parse_warning(context, "Variable %s: start value required for variables with constant variability",
+        fmi3_xml_parse_warning(context, "Variable '%s': start value required for variables with constant variability",
             fmi3_xml_get_variable_name(variable));
     // initial checks
     } else if (variable->initial == fmi3_initial_enu_exact) {
-        fmi3_xml_parse_warning(context, "Variable %s: start value required for variables with initial == \"exact\"",
+        fmi3_xml_parse_warning(context, "Variable '%s': start value required for variables with initial == \"exact\"",
             fmi3_xml_get_variable_name(variable));
     } else if (variable->initial == fmi3_initial_enu_approx) {
-        fmi3_xml_parse_warning(context, "Variable %s: start value required for variables with initial == \"approx\"",
+        fmi3_xml_parse_warning(context, "Variable '%s': start value required for variables with initial == \"approx\"",
             fmi3_xml_get_variable_name(variable));
     }
 }

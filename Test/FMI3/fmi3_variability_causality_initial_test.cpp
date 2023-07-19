@@ -402,7 +402,14 @@ TEST_CASE("Test missing start values") {
     fmi3_import_t* fmu = tfmu->fmu;
     REQUIRE(fmu != nullptr);
 
-    // REQUIRE(fmi3_testutil_log_contains(tfmu, "msg"));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Variable 'f64_input': start value required for input variables"));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Variable 'f64_parameter': start value required for parameter variables"));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Variable 'f64_structural_parameter': start value required for structuralParameter variables"));
+
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Variable 'f64_constant': start value required for variables with constant variability"));
+
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Variable 'f64_exact': start value required for variables with initial == \"exact\""));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Variable 'f64_approx': start value required for variables with initial == \"approx\""));
 
     fmi3_testutil_import_free(tfmu);
 }

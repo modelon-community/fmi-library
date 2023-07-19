@@ -372,7 +372,7 @@ TEST_CASE("Invalid structuralParameter - requires start attribute") {
     fmi3_import_t* fmu = tfmu->fmu;
     REQUIRE(fmu != nullptr);
     
-    REQUIRE(fmi3_testutil_log_contains(tfmu, "Variable structVar: start value required for structuralParameter variables"));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Variable 'structVar': start value required for structuralParameter variables"));
     fmi3_testutil_import_free(tfmu);
 }
 

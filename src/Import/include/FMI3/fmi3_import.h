@@ -110,7 +110,7 @@ FMILIB_EXPORT void fmi3_import_free(fmi3_import_t* fmu);
 FMILIB_EXPORT const char* fmi3_import_get_model_name(fmi3_import_t* fmu);
 
 /** \brief Retrieve capability flags by ID. */
-FMILIB_EXPORT unsigned int fmi3_import_get_capability(fmi3_import_t* , fmi3_capabilities_enu_t id);
+FMILIB_EXPORT unsigned int fmi3_import_get_capability(fmi3_import_t* fmu, fmi3_capabilities_enu_t id);
 
 /**
     \brief Get model identifier for ModelExchange.

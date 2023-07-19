@@ -110,23 +110,23 @@ typedef struct fmi3_xml_dimension_list_t fmi3_import_dimension_list_t;
 
 
 /** \brief Get the variable name */
-FMILIB_EXPORT const char* fmi3_import_get_variable_name(fmi3_import_variable_t*);
+FMILIB_EXPORT const char* fmi3_import_get_variable_name(fmi3_import_variable_t* v);
 
 /** \brief Get variable description.
     @return Description string or empty string ("") if no description in the XML file was given.
 */
-FMILIB_EXPORT const char* fmi3_import_get_variable_description(fmi3_import_variable_t*);
+FMILIB_EXPORT const char* fmi3_import_get_variable_description(fmi3_import_variable_t* v);
 
 /** \brief Get variable value reference */
-FMILIB_EXPORT fmi3_value_reference_t fmi3_import_get_variable_vr(fmi3_import_variable_t*);
+FMILIB_EXPORT fmi3_value_reference_t fmi3_import_get_variable_vr(fmi3_import_variable_t* v);
 
 /** \brief For scalar variable gives the type definition is present
     @return Pointer of a type #fmi3_import_variable_typedef_t object or NULL of not present.
 */
-FMILIB_EXPORT fmi3_import_variable_typedef_t* fmi3_import_get_variable_declared_type(fmi3_import_variable_t*);
+FMILIB_EXPORT fmi3_import_variable_typedef_t* fmi3_import_get_variable_declared_type(fmi3_import_variable_t* v);
 
 /** \brief Get variable base type */
-FMILIB_EXPORT fmi3_base_type_enu_t fmi3_import_get_variable_base_type(fmi3_import_variable_t*);
+FMILIB_EXPORT fmi3_base_type_enu_t fmi3_import_get_variable_base_type(fmi3_import_variable_t* v);
 
 /** \brief Get the start values of an array variable
  * @return Pointer to array with start values. Total length of array is given by array dimensions.
@@ -158,7 +158,6 @@ FMILIB_EXPORT fmi3_int16_t* fmi3_import_get_int16_variable_start_array(fmi3_impo
  */
 FMILIB_EXPORT fmi3_int8_t* fmi3_import_get_int8_variable_start_array(fmi3_import_int8_variable_t* v);
 
-
 /** \brief Get the start values of an array variable
  * @return Pointer to array with start values. Total length of array is given by array dimensions.
  */
@@ -182,16 +181,16 @@ FMILIB_EXPORT fmi3_uint8_t* fmi3_import_get_uint8_variable_start_array(fmi3_impo
 /**   \brief Check if the variable is an array.
     @return True if array, false if scalar.
 */
-FMILIB_EXPORT int fmi3_import_variable_is_array(fmi3_import_variable_t*);
+FMILIB_EXPORT int fmi3_import_variable_is_array(fmi3_import_variable_t* v);
 
 /** \brief Check if the variable has "start" attribute */
-FMILIB_EXPORT int fmi3_import_get_variable_has_start(fmi3_import_variable_t*);
+FMILIB_EXPORT int fmi3_import_get_variable_has_start(fmi3_import_variable_t* v);
 
 /** \brief Get variability attribute */
-FMILIB_EXPORT fmi3_variability_enu_t fmi3_import_get_variable_variability(fmi3_import_variable_t*);
+FMILIB_EXPORT fmi3_variability_enu_t fmi3_import_get_variable_variability(fmi3_import_variable_t* v);
 
 /** \brief Get causality attribute */
-FMILIB_EXPORT fmi3_causality_enu_t fmi3_import_get_variable_causality(fmi3_import_variable_t*);
+FMILIB_EXPORT fmi3_causality_enu_t fmi3_import_get_variable_causality(fmi3_import_variable_t* v);
 
 /** \brief Get initial attribute */
 FMILIB_EXPORT fmi3_initial_enu_t fmi3_import_get_variable_initial(fmi3_import_variable_t* );
@@ -229,79 +228,79 @@ FMILIB_EXPORT fmi3_import_variable_list_t* fmi3_import_get_variable_clocks(fmi3_
 
     @return Typed object or NULL if base type does not match
 */
-FMILIB_EXPORT fmi3_import_float64_variable_t* fmi3_import_get_variable_as_float64(fmi3_import_variable_t*);
+FMILIB_EXPORT fmi3_import_float64_variable_t* fmi3_import_get_variable_as_float64(fmi3_import_variable_t* v);
 
 /** \brief Cast general variable to a one with the specific type
 
     @return Typed object or NULL if base type does not match
 */
-FMILIB_EXPORT fmi3_import_float32_variable_t* fmi3_import_get_variable_as_float32(fmi3_import_variable_t*);
+FMILIB_EXPORT fmi3_import_float32_variable_t* fmi3_import_get_variable_as_float32(fmi3_import_variable_t* v);
 
 /** \brief Cast general variable to a one with the specific type
     @return Typed object or NULL if base type does not match
 */
-FMILIB_EXPORT fmi3_import_int64_variable_t* fmi3_import_get_variable_as_int64(fmi3_import_variable_t*);
+FMILIB_EXPORT fmi3_import_int64_variable_t* fmi3_import_get_variable_as_int64(fmi3_import_variable_t* v);
 
 /** \brief Cast general variable to a one with the specific type
     @return Typed object or NULL if base type does not match
 */
-FMILIB_EXPORT fmi3_import_int32_variable_t* fmi3_import_get_variable_as_int32(fmi3_import_variable_t*);
+FMILIB_EXPORT fmi3_import_int32_variable_t* fmi3_import_get_variable_as_int32(fmi3_import_variable_t* v);
 
 /** \brief Cast general variable to a one with the specific type
     @return Typed object or NULL if base type does not match
 */
-FMILIB_EXPORT fmi3_import_int16_variable_t* fmi3_import_get_variable_as_int16(fmi3_import_variable_t*);
+FMILIB_EXPORT fmi3_import_int16_variable_t* fmi3_import_get_variable_as_int16(fmi3_import_variable_t* v);
 
 /** \brief Cast general variable to a one with the specific type
     @return Typed object or NULL if base type does not match
 */
-FMILIB_EXPORT fmi3_import_int8_variable_t* fmi3_import_get_variable_as_int8(fmi3_import_variable_t*);
+FMILIB_EXPORT fmi3_import_int8_variable_t* fmi3_import_get_variable_as_int8(fmi3_import_variable_t* v);
 
 /** \brief Cast general variable to a one with the specific type
     @return Typed object or NULL if base type does not match
 */
-FMILIB_EXPORT fmi3_import_uint64_variable_t* fmi3_import_get_variable_as_uint64(fmi3_import_variable_t*);
+FMILIB_EXPORT fmi3_import_uint64_variable_t* fmi3_import_get_variable_as_uint64(fmi3_import_variable_t* v);
 
 /** \brief Cast general variable to a one with the specific type
     @return Typed object or NULL if base type does not match
 */
-FMILIB_EXPORT fmi3_import_uint32_variable_t* fmi3_import_get_variable_as_uint32(fmi3_import_variable_t*);
+FMILIB_EXPORT fmi3_import_uint32_variable_t* fmi3_import_get_variable_as_uint32(fmi3_import_variable_t* v);
 
 /** \brief Cast general variable to a one with the specific type
     @return Typed object or NULL if base type does not match
 */
-FMILIB_EXPORT fmi3_import_uint16_variable_t* fmi3_import_get_variable_as_uint16(fmi3_import_variable_t*);
+FMILIB_EXPORT fmi3_import_uint16_variable_t* fmi3_import_get_variable_as_uint16(fmi3_import_variable_t* v);
 
 /** \brief Cast general variable to a one with the specific type
     @return Typed object or NULL if base type does not match
 */
-FMILIB_EXPORT fmi3_import_uint8_variable_t* fmi3_import_get_variable_as_uint8(fmi3_import_variable_t*);
+FMILIB_EXPORT fmi3_import_uint8_variable_t* fmi3_import_get_variable_as_uint8(fmi3_import_variable_t* v);
 
 /** \brief Cast general variable to a one with the specific type
 
     @return Typed object or NULL if base type does not match
 */
-FMILIB_EXPORT fmi3_import_enum_variable_t* fmi3_import_get_variable_as_enum(fmi3_import_variable_t*);
+FMILIB_EXPORT fmi3_import_enum_variable_t* fmi3_import_get_variable_as_enum(fmi3_import_variable_t* v);
 /** \brief Cast general variable to a one with the specific type
 
     @return Typed object or NULL if base type does not match
 */
-FMILIB_EXPORT fmi3_import_string_variable_t* fmi3_import_get_variable_as_string(fmi3_import_variable_t*);
+FMILIB_EXPORT fmi3_import_string_variable_t* fmi3_import_get_variable_as_string(fmi3_import_variable_t* v);
 /** \brief Cast general variable to a one with the specific type
 
     @return Typed object or NULL if base type does not match
 */
-FMILIB_EXPORT fmi3_import_bool_variable_t* fmi3_import_get_variable_as_boolean(fmi3_import_variable_t*);
+FMILIB_EXPORT fmi3_import_bool_variable_t* fmi3_import_get_variable_as_boolean(fmi3_import_variable_t* v);
 /** \brief Cast general variable to a one with the specific type
 
     @return Typed object or NULL if base type does not match
 */
-FMILIB_EXPORT fmi3_import_binary_variable_t* fmi3_import_get_variable_as_binary(fmi3_import_variable_t*);
+FMILIB_EXPORT fmi3_import_binary_variable_t* fmi3_import_get_variable_as_binary(fmi3_import_variable_t* v);
 /** \brief Cast general variable to a one with the specific type
 
     @return Typed object or NULL if base type does not match
 */
-FMILIB_EXPORT fmi3_import_clock_variable_t* fmi3_import_get_variable_as_clock(fmi3_import_variable_t*);
+FMILIB_EXPORT fmi3_import_clock_variable_t* fmi3_import_get_variable_as_clock(fmi3_import_variable_t* v);
 
 /** \brief Get minimal value for the variable.
 
@@ -354,7 +353,6 @@ FMILIB_EXPORT fmi3_boolean_t fmi3_import_get_float32_variable_relative_quantity(
     @return The "unbounded" attribute as specified in the XML file. False if undefined.
 */
 FMILIB_EXPORT fmi3_boolean_t fmi3_import_get_float32_variable_unbounded(fmi3_import_float32_variable_t* v);
-
 
 /** \brief Get minimal value for the variable.
 
@@ -580,16 +578,16 @@ FMILIB_EXPORT size_t fmi3_import_get_dimension_list_size(fmi3_import_dimension_l
 FMILIB_EXPORT fmi3_import_dimension_t* fmi3_import_get_dimension(fmi3_import_dimension_list_t* dl, size_t index);
 
 /** \brief Checks if the dimension contains the valueReference attribute */
-FMILIB_EXPORT int fmi3_import_get_dimension_has_vr(fmi3_import_dimension_t*);
+FMILIB_EXPORT int fmi3_import_get_dimension_has_vr(fmi3_import_dimension_t* dim);
 
 /** \brief Checks if the dimension contains the start attribute */
-FMILIB_EXPORT int fmi3_import_get_dimension_has_start(fmi3_import_dimension_t*);
+FMILIB_EXPORT int fmi3_import_get_dimension_has_start(fmi3_import_dimension_t* dim);
 
 /** \brief Get the start value of the dimension */
-FMILIB_EXPORT fmi3_uint64_t fmi3_import_get_dimension_start(fmi3_import_dimension_t*);
+FMILIB_EXPORT fmi3_uint64_t fmi3_import_get_dimension_start(fmi3_import_dimension_t* dim);
 
 /** \brief Get the valueReference of the dimension */
-FMILIB_EXPORT fmi3_value_reference_t fmi3_import_get_dimension_vr(fmi3_import_dimension_t*);
+FMILIB_EXPORT fmi3_value_reference_t fmi3_import_get_dimension_vr(fmi3_import_dimension_t* dim);
 
 /** @}
  */

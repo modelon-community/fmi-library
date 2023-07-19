@@ -1507,22 +1507,6 @@ int fmi3_xml_handle_Variable(fmi3_xml_parser_context_t* context, const char* dat
     return 0;
 }
 
-int fmi3_xml_get_has_start(fmi3_xml_parser_context_t *context, fmi3_xml_variable_t* variable) {
-    int hasStart = fmi3_xml_is_attr_defined(context, fmi_attr_id_start);
-    if (!hasStart) {
-        if (variable->initial != (char)fmi3_initial_enu_calculated) {
-            fmi3_xml_parse_warning(context,
-                    "Start attribute is required for this causality, variability and initial combination");
-        }
-    } else {
-        /* If initial = calculated, it is not allowed to provide a start value. */
-        if (variable->initial == (char)fmi3_initial_enu_calculated) {
-            fmi3_xml_parse_warning(context, "Start attribute is not allowed for variables with initial='calculated'");
-        }
-    }
-    return hasStart;
-}
-
 static void fmi3_log_error_if_start_required(fmi3_xml_parser_context_t* context, fmi3_xml_variable_t* variable) {
     // causality checks
     if (variable->causality == fmi3_causality_enu_input) {

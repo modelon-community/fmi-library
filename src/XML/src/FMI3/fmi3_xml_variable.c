@@ -1279,7 +1279,6 @@ static int fmi3_xml_variable_process_attr_previous(fmi3_xml_parser_context_t* co
     }
 
     if (previous == fmi3_xml_get_variable_vr(variable)) {
-        // TODO: This one could be problematic later on if not fatal/error?
         fmi3_xml_parse_warning(context, "A variable must not refer to itself in the attribute 'previous'.");
     }
 
@@ -1357,6 +1356,7 @@ static int fmi3_xml_variable_process_attr_clocks(fmi3_xml_parser_context_t* cont
     }
 
     if (fmi3_xml_parse_attr_valueref_list(context, elm_id, fmi_attr_id_clocks, 0 /* required */, variable->clocks)) {
+        // failed to parse
         return -1;
     }
     return 0;
@@ -1476,15 +1476,14 @@ int fmi3_xml_handle_Variable(fmi3_xml_parser_context_t* context, const char* dat
 
         // TODO: Which ones should cause immediate returns?
         /* Save start value for processing after reading all Dimensions */
-        if (fmi3_xml_parse_attr_as_string(context, elm_id, fmi_attr_id_start, 0, &context->variableStartAttr)) return -1;
+        res |= fmi3_xml_parse_attr_as_string(context, elm_id, fmi_attr_id_start, 0, &context->variableStartAttr);
 
         /* Process common attributes */
-        if (fmi3_xml_variable_process_attr_causality_variability_initial(context, variable, elm_id)) return -1;
-        if (fmi3_xml_variable_process_attr_clocks(context, variable, elm_id)) return -1;
+        res |= fmi3_xml_variable_process_attr_causality_variability_initial(context, variable, elm_id);
+        res |= fmi3_xml_variable_process_attr_clocks(context, variable, elm_id);
         /* clocks required in error check for previous */
-        if (fmi3_xml_variable_process_attr_previous(context, variable, elm_id))    return -1;
-        if (fmi3_xml_variable_process_attr_multipleset(context, variable, elm_id)) return -1;
-        // TODO: Same treatment also for the other functions; with tests
+        res |= fmi3_xml_variable_process_attr_previous(context, variable, elm_id);
+        res |= fmi3_xml_variable_process_attr_multipleset(context, variable, elm_id);
         res |= fmi3_xml_variable_process_attr_intermediateupdate(context, variable, elm_id);
 
         if (res) {

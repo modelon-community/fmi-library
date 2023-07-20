@@ -92,8 +92,7 @@ target_include_directories(jmutils
     PUBLIC ${JMUTILS_PUBLIC_INCLUDE_DIRS}
 )
 
-if(UNIX AND NOT APPLE)
-    target_compile_definitions(jmutils PRIVATE -D_GNU_SOURCE)
-endif()
+check_function_exists("uselocale" HAVE_USELOCALE)
+target_compile_definitions(jmutils PRIVATE UNIX_THREAD_LOCALE)
 
 endif(NOT JMUTILDIR)

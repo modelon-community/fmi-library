@@ -19,10 +19,6 @@
 
 #include <locale.h>
 
-#if defined(_GNU_SOURCE) || defined(__APPLE__)
-#define UNIX_THREAD_LOCALE
-#endif
-
 #ifdef __APPLE__
 /* Include thread-specific locale functions for OSX. */
 #include <xlocale.h>

@@ -1298,7 +1298,6 @@ static int fmi3_xml_variable_process_attr_multipleset(fmi3_xml_parser_context_t*
 
     if (variable->causality != fmi3_causality_enu_input && !multipleSet) {
         fmi3_xml_parse_warning(context, "Only variables with causality='input' can have canHandleMultipleSetPerTimeInstant=false");
-        return -1;
     }
     return 0;
 }

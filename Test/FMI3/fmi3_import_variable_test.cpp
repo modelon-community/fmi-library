@@ -857,3 +857,21 @@ TEST_CASE("Invalid reinit for non-continuous state") {
 
     fmi3_testutil_import_free(tfmu);
 }
+
+TEST_CASE("Invalid canHandleMultipleSetPerTimeInstant; set to non-default for causality!=input") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/variable_test/invalid/canHandleMultipleSetPerTimeInstant_false_non_input";
+
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    REQUIRE(tfmu != nullptr);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu != nullptr);
+
+    const char* logMsg = "Only variables with causality='input' can have canHandleMultipleSetPerTimeInstant=false";
+    REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
+
+    fmi3_import_variable_t* var = fmi3_import_get_variable_by_vr(fmu, 0);
+    REQUIRE(var != nullptr);
+    REQUIRE(fmi3_import_get_variable_can_handle_multiple_set_per_time_instant(var) == 0);
+
+    fmi3_testutil_import_free(tfmu);
+}

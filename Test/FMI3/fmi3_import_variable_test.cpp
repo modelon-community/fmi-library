@@ -340,10 +340,14 @@ TEST_CASE("Variable parsing") {
 
 TEST_CASE("Invalid Clock variable - no intervalVariability attr") {
     const char* xmldir = FMI3_TEST_XML_DIR "/variables/invalid/intervalVariability1";
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    REQUIRE(tfmu != nullptr);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu == nullptr);
 
-    /* Disabled the test for now because of memory leak
-     fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
-    REQUIRE(xml == nullptr); */
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'Clock': required attribute 'intervalVariability' not found"));
+
+    fmi3_testutil_import_free(tfmu);
 }
 
 TEST_CASE("Invalid Binary variable - non-hexadecimal char first in byte tuple") {

@@ -362,22 +362,6 @@ TEST_CASE("Error check: ModelStructure; ClockedState without previous attribute"
     fmi3_testutil_import_free(tfmu);
 }
 
-TEST_CASE("Error check: ModelStructure; ClockedState with invalid variability, not discrete") {
-    // Spec: "All clocked states must have variability = discrete, [...]"
-    const char* xmldir = FMI3_TEST_XML_DIR "/model_structure/invalid/clocked_state_not_discrete";
-
-    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
-    REQUIRE(tfmu != nullptr);
-    // TODO: Is this test redudant?
-    // REQUIRE(tfmu->fmu == nullptr);
-
-    // Also tested in TEST_CASE("Invalid previous - requires variability='discrete'")
-    // const char* logMsg = "Only variables with variability='discrete' may have the attribute 'previous'.";
-    // REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
-
-    fmi3_testutil_import_free(tfmu);
-}
-
 TEST_CASE("Error check: ModelStructure; ClockedState has Clock base type") {
     // Spec: "All clocked states [...] must not be of type fmi3Clock."
     const char* xmldir = FMI3_TEST_XML_DIR "/model_structure/invalid/clocked_state_is_clock";

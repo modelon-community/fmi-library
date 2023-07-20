@@ -63,6 +63,8 @@ TEST_CASE("Invalid VR, missing name") {
     REQUIRE(fmi3_testutil_log_contains(tfmu, "XML element 'Enumeration': failed to parse attribute valueReference='VR'"));
     REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'Enumeration': required attribute 'name' not found"));
     REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'Enumeration': required attribute 'valueReference' not found"));
+
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables."));
     fmi3_testutil_import_free(tfmu);
 }
 

@@ -1,7 +1,7 @@
 {
     "name": "centos",
     "build": {
-        "dockerfile": "${localWorkspaceFolder}/build/docker/Dockerfile_centos"
+        "dockerfile": "${localWorkspaceFolder}/build/docker/centos64.Dockerfile"
     },
     "workspaceFolder": "/mnt/fmi-library",
     "workspaceMount": "source=${localWorkspaceFolder},target=/mnt/fmi-library,type=bind",

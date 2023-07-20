@@ -1072,6 +1072,8 @@ fmi3_xml_clock_type_props_t* fmi3_xml_parse_clock_type_properties(fmi3_xml_parse
     // NOTE: The parsing of intervalVariability could maybe be relaxed to not be 'required'
     // for Variables if they have a non-default TypeDefinition, since then they could inherit
     // that attribute. However, the schema files don't allow it.
+
+    // TODO: Failure in parsing the optional ones should be less strict
     if (fmi3_xml_parse_attr_as_enum(context, elmID, fmi_attr_id_intervalVariability, 1 /*required*/,
             &props->intervalVariability, fallbackProps->intervalVariability, intervalVariabilityMap))
     {

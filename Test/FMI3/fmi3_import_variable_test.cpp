@@ -552,7 +552,6 @@ TEST_CASE("Invalid Alias - unresolvable displayUnit") {
 }
 
 TEST_CASE("Invalid Alias - no name") {
-    // TODO: Move test to different folder?
     const char* xmldir = FMI3_TEST_XML_DIR "/variables/invalid/alias_no_name";
     fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
     fmi3_import_t* fmu = tfmu->fmu;
@@ -575,6 +574,8 @@ TEST_CASE("Invalid valueReference - two vars with same VR - basic") {
     REQUIRE(fmu == nullptr);
     
     REQUIRE(fmi3_testutil_log_contains(tfmu, "The following variables have the same valueReference: v1, v2"));
+
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables."));
     
     fmi3_testutil_import_free(tfmu);
 }
@@ -586,6 +587,8 @@ TEST_CASE("Invalid valueReference - two vars with same VR - more vars") {
     REQUIRE(fmu == nullptr);
     
     REQUIRE(fmi3_testutil_log_contains(tfmu, "The following variables have the same valueReference: v3, v8"));
+
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables."));
     
     fmi3_testutil_import_free(tfmu);
 }
@@ -596,8 +599,10 @@ TEST_CASE("Invalid valueReference - three vars with same VR") {
     fmi3_import_t* fmu = tfmu->fmu;
     REQUIRE(fmu == nullptr);
     
-    // Only the first duplicate names are listed. Could be enhanced.
     REQUIRE(fmi3_testutil_log_contains(tfmu, "The following variables have the same valueReference: v3, v4"));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "The following variables have the same valueReference: v4, v6"));
+
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables."));
     
     fmi3_testutil_import_free(tfmu);
 }
@@ -609,6 +614,8 @@ TEST_CASE("Invalid valueReference - same VR but different type") {
     REQUIRE(fmu == nullptr);
     
     REQUIRE(fmi3_testutil_log_contains(tfmu, "The following variables have the same valueReference: v1, v2"));
+
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables."));
     
     fmi3_testutil_import_free(tfmu);
 }
@@ -619,6 +626,15 @@ TEST_CASE("Variable with name being the empty string") {
     fmi3_import_t* fmu = tfmu->fmu;
     REQUIRE(fmu != nullptr);
     REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
+
+    fmi3_import_variable_t* var = fmi3_import_get_variable_by_vr(fmu, 1);
+    REQUIRE(var != nullptr);
+    REQUIRE_STREQ(fmi3_import_get_variable_name(var), "");
+
+    var = fmi3_import_get_variable_by_name(fmu, "");
+    REQUIRE(var != nullptr);
+    REQUIRE(fmi3_import_get_variable_vr(var) == 1);;
+
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -628,6 +644,16 @@ TEST_CASE("Alias with name being the empty string") {
     fmi3_import_t* fmu = tfmu->fmu;
     REQUIRE(fmu != nullptr);
     REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
+
+    fmi3_import_variable_t* var = fmi3_import_get_variable_by_vr(fmu, 1);
+    REQUIRE(var != nullptr);
+    fmi3_import_alias_variable_list_t* aliasList = fmi3_import_get_variable_alias_list(var);
+    REQUIRE(aliasList != nullptr);
+    REQUIRE(fmi3_import_get_alias_variable_list_size(aliasList) == 1);
+    fmi3_import_alias_variable_t* alias = fmi3_import_get_alias(aliasList, 0);
+    REQUIRE(alias != nullptr);
+    REQUIRE_STREQ(fmi3_import_get_alias_variable_name(alias), "");
+
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -736,10 +762,15 @@ TEST_CASE("Info check - intermediateUpdate ignored unless Co-Simulation") {
 
     fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
     REQUIRE(tfmu != nullptr);
-    REQUIRE(tfmu->fmu != nullptr);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu != nullptr);
 
     const char* logMsg = "Attribute 'intermediateUpdate' ignored since FMU kind is not Co-Simulation.";
     REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
+
+    fmi3_import_variable_t* var = fmi3_import_get_variable_by_vr(fmu, 0);
+    REQUIRE(var != nullptr);
+    REQUIRE(fmi3_import_get_variable_intermediate_update(var) == 0); // ingored = default is used
 
     fmi3_testutil_import_free(tfmu);
 }
@@ -771,8 +802,9 @@ TEST_CASE("Invalid; duplicate variable name") {
     REQUIRE(tfmu != nullptr);
     REQUIRE(tfmu->fmu == nullptr);
 
-    const char* logMsg = "Two variables with the same name 'sameName' found. This is not allowed.";
-    REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Two variables with the same name 'sameName' found. This is not allowed."));
+
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables."));
 
     fmi3_testutil_import_free(tfmu);
 }
@@ -784,8 +816,9 @@ TEST_CASE("Invalid; clock without intervalVariability") {
     REQUIRE(tfmu != nullptr);
     REQUIRE(tfmu->fmu == nullptr);
 
-    const char* logMsg = "Parsing XML element 'Clock': required attribute 'intervalVariability' not found";
-    REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'Clock': required attribute 'intervalVariability' not found"));
+
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables."));
 
     fmi3_testutil_import_free(tfmu);
 }
@@ -797,8 +830,9 @@ TEST_CASE("Invalid derivative; VR does not resolve to any variable") {
     REQUIRE(tfmu != nullptr);
     REQUIRE(tfmu->fmu == nullptr);
 
-    const char* logMsg = "The valueReference in derivative=\"1\" did not resolve to any variable.";
-    REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "The valueReference in derivative=\"1\" did not resolve to any variable."));
+
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables."));
 
     fmi3_testutil_import_free(tfmu);
 }

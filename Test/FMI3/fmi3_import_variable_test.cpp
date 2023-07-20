@@ -836,3 +836,24 @@ TEST_CASE("Test API for getting derivatives of variables") {
 
     fmi3_testutil_import_free(tfmu);
 }
+
+TEST_CASE("Invalid reinit for non-continuous state") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/variable_test/invalid/reinit_non_continuous";
+
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    REQUIRE(tfmu != nullptr);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu != nullptr);
+
+    const char* logMsg = "The reinit attribute may only be set on continuous-time states.";
+    REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
+
+    fmi3_import_variable_t* var = fmi3_import_get_variable_by_vr(fmu, 0);
+    REQUIRE(var != nullptr);
+    REQUIRE(fmi3_import_get_variable_variability(var) == fmi3_variability_enu_discrete);
+    fmi3_import_float64_variable_t* f64var = fmi3_import_get_variable_as_float64(var);
+    REQUIRE(f64var != nullptr);
+    REQUIRE(fmi3_import_get_float64_variable_reinit(f64var) == fmi3_true);
+
+    fmi3_testutil_import_free(tfmu);
+}

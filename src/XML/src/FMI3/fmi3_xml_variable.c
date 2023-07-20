@@ -1374,7 +1374,6 @@ static int fmi3_xml_variable_process_attr_reinit(fmi3_xml_parser_context_t* cont
 
     if (reinit && variable->variability != fmi3_variability_enu_continuous) {
         fmi3_xml_parse_warning(context, "The reinit attribute may only be set on continuous-time states.");
-        return -1;
     }
     return 0;
 }

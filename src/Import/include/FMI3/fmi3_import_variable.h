@@ -138,6 +138,12 @@ FMILIB_EXPORT fmi3_float64_t* fmi3_import_get_float64_variable_start_array(fmi3_
  */
 FMILIB_EXPORT fmi3_float32_t* fmi3_import_get_float32_variable_start_array(fmi3_import_float32_variable_t* v);
 
+/** \brief Get the reinit values of a variable. */
+FMILIB_EXPORT fmi3_boolean_t fmi3_import_get_float64_variable_reinit(fmi3_import_float64_variable_t* v);
+
+/** \brief Get the reinit values of a variable. */
+FMILIB_EXPORT fmi3_boolean_t fmi3_import_get_float32_variable_reinit(fmi3_import_float32_variable_t* v);
+
 /** \brief Get the start values of an array variable
  * @return Pointer to array with start values. Total length of array is given by array dimensions.
  */

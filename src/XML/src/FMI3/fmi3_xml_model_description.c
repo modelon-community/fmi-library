@@ -24,7 +24,7 @@
 
 static const char* module = "FMI3XML";
 
-fmi3_xml_model_description_t * fmi3_xml_allocate_model_description(jm_callbacks* callbacks) {
+fmi3_xml_model_description_t* fmi3_xml_allocate_model_description(jm_callbacks* callbacks) {
     jm_callbacks* cb;
     fmi3_xml_model_description_t* md;
 

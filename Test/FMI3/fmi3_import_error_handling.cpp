@@ -122,3 +122,19 @@ TEST_CASE("Test multiple attribute errors in a single variable") {
 
     fmi3_testutil_import_free(tfmu);
 }
+
+TEST_CASE("Test missing required attribute plus other attribute errors/warnings") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/error_handling/invalid/multiple_attribute_issues_req";
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu == nullptr);
+
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'Float64': required attribute 'name' not found"));
+
+    // We do not check attribute errors if name/valueReference are erroneous
+    REQUIRE(!fmi3_testutil_log_contains(tfmu, "A variable must not refer to itself in the attribute 'previous'."));
+
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables."));
+
+    fmi3_testutil_import_free(tfmu);
+}

@@ -1366,8 +1366,9 @@ static int fmi3_xml_variable_process_attr_reinit(fmi3_xml_parser_context_t* cont
 {
     unsigned int reinit;
 
-    if (fmi3_xml_parse_attr_as_boolean(context, elm_id, fmi_attr_id_reinit, 0, &reinit, 0))
+    if (fmi3_xml_parse_attr_as_boolean(context, elm_id, fmi_attr_id_reinit, 0, &reinit, 0)) {
         return -1;
+    }
     variable->reinit = (char)reinit;
 
     if (reinit && variable->variability != fmi3_variability_enu_continuous) {
@@ -1403,16 +1404,17 @@ static int fmi3_xml_handle_Variable_error_check_wrapper(fmi3_xml_parser_context_
     int res = fmi3_xml_handle_Variable(context, data);
     fmi3_xml_model_description_t* md = context->modelDescription;
 
-    if (res) { // Parsed variable is not valid
+    if (res) { 
+        // Variable failed to parse due to 
+        // failure to parse name/valueReference or unexpected (malloc) failure
+        // or latestVariableValid == 0 on closing tag
         fmi3_xml_set_model_description_invalid(md);
-        md->latestVariableValid = 0;
+        md->latestVariableValid = 0; // To skip post-processing in fmi3_xml_handle_Variable
         return -1;
+    } else {
+        md->latestVariableValid = 1;
     }
 
-    if (!md->latestVariableValid) {
-        md->latestVariableValid = 1;
-        return -1;
-    }
     return 0;
 }
 
@@ -1438,7 +1440,7 @@ int fmi3_xml_handle_Variable(fmi3_xml_parser_context_t* context, const char* dat
         jm_vector(char)* bufDesc = fmi3_xml_reserve_parse_buffer(context, 2, 100);
         unsigned int vr;
 
-        if(!bufName || !bufDesc) return -1;
+        if(!bufName || !bufDesc) {return -1;} // failure is allocate buffers
 
         /* Get vr, name and description */
 
@@ -1447,9 +1449,12 @@ int fmi3_xml_handle_Variable(fmi3_xml_parser_context_t* context, const char* dat
         req |= fmi3_xml_parse_attr_as_uint32(context, elm_id, fmi_attr_id_valueReference, 1, &vr, 0);
         req |= fmi3_xml_parse_attr_as_string(context, elm_id, fmi_attr_id_name,           1, bufName);
 
-        if (req) {return -1;}
+        if (req) {
+            // name or valueReference failed to parse
+            // Variable parsing failed, since these are required
+            return -1;
+        }
 
-        // TODO: Can this critically fail?
         // optional, failure to parse should only result in missing description
         fmi3_xml_parse_attr_as_string(context, elm_id, fmi_attr_id_description, 0, bufDesc);
 
@@ -1466,7 +1471,7 @@ int fmi3_xml_handle_Variable(fmi3_xml_parser_context_t* context, const char* dat
             name = jm_vector_get_itemp(char)(bufName, 0);
         }
         variable = fmi3_xml_alloc_variable_with_name(context, name);
-        if (!variable) return -1;
+        if (!variable) {return -1;}
 
         /* Add Variable ptr to modelDescription obj */
         if (!jm_vector_push_back(jm_voidp)(&md->variablesOrigOrder, variable)) {
@@ -1492,6 +1497,7 @@ int fmi3_xml_handle_Variable(fmi3_xml_parser_context_t* context, const char* dat
 
         int res = 0;
         // The following attributes are all optional, failure to parse shall not result in an invalid variable
+        // Unexpected (malloc) failures still force the parser to stop via fmi_xml_parse_fatal(...)
 
         /* Save start value for processing after reading all Dimensions */
         res |= fmi3_xml_parse_attr_as_string(context, elm_id, fmi_attr_id_start, 0, &context->variableStartAttr);
@@ -1506,12 +1512,12 @@ int fmi3_xml_handle_Variable(fmi3_xml_parser_context_t* context, const char* dat
 
         if (res) {
             // Errors&Warnings in optional attributes still yield a valid Variable
-            return 0;
+            return 0; // Variable successfully parsed
         }
     }
     else { /* end of xml tag */
         /* Check that the type for the variable is set */
-        if (!md->latestVariableValid) {return 0;} // skip post-processing for invalid variables
+        if (!md->latestVariableValid) {return -1;} // skip post-processing for invalid variables
         fmi3_xml_variable_t* variable = jm_vector_get_last(jm_voidp)(&md->variablesOrigOrder);
         if(!variable->type) {
             jm_log_error(context->callbacks, module, "No variable type element for variable %s. Assuming Float64.", variable->name);
@@ -1519,7 +1525,7 @@ int fmi3_xml_handle_Variable(fmi3_xml_parser_context_t* context, const char* dat
             return fmi3_xml_handle_Float64(context, NULL);
         }
     }
-    return 0;
+    return 0; // Variable successfully parsed
 }
 
 static void fmi3_log_error_if_start_required(fmi3_xml_parser_context_t* context, fmi3_xml_variable_t* variable) {
@@ -1556,7 +1562,7 @@ int fmi3_xml_handle_Dimension(fmi3_xml_parser_context_t* context, const char* da
         if (currentVar->causality == fmi3_causality_enu_structural_parameter) {
             fmi3_xml_parse_error(context, "Variable %s: structuralParameters must not have Dimension elements.",
                 fmi3_xml_get_variable_name(currentVar));
-            return -1; // Dimension is ignored in this case.
+            return -1; // Dimension invalid; ignored
         }
 
         fmi3_xml_dimension_t* dim;

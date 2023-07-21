@@ -357,6 +357,13 @@ TEST_CASE("Invalid Binary variable - non-hexadecimal char first in byte tuple") 
     REQUIRE(fmu != nullptr);
     
     REQUIRE(fmi3_testutil_log_contains(tfmu, "String is not hexadecimal: gf"));
+
+    fmi3_import_variable_t* var = fmi3_import_get_variable_by_vr(fmu, 1);
+    REQUIRE(var != nullptr);
+    fmi3_import_binary_variable_t* binVar = fmi3_import_get_variable_as_binary(var);
+    REQUIRE(binVar != nullptr);
+    REQUIRE(fmi3_import_get_binary_variable_start_size(binVar) == 0);
+
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -367,6 +374,32 @@ TEST_CASE("Invalid Binary variable - non-hexadecimal char second in byte tuple")
     REQUIRE(fmu != nullptr);
     
     REQUIRE(fmi3_testutil_log_contains(tfmu, "String is not hexadecimal: FG"));
+
+    fmi3_import_variable_t* var = fmi3_import_get_variable_by_vr(fmu, 1);
+    REQUIRE(var != nullptr);
+    fmi3_import_binary_variable_t* binVar = fmi3_import_get_variable_as_binary(var);
+    REQUIRE(binVar != nullptr);
+    REQUIRE(fmi3_import_get_binary_variable_start_size(binVar) == 0);
+
+    fmi3_testutil_import_free(tfmu);
+}
+
+TEST_CASE("Invalid Binary variable - hex string of odd length") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/variables/invalid/binaryStart3";
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu != nullptr);
+
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Hexadecimal string is not of even length: 'abc'. Truncating to even length."));
+
+    fmi3_import_variable_t* var = fmi3_import_get_variable_by_vr(fmu, 1);
+    REQUIRE(var != nullptr);
+    fmi3_import_binary_variable_t* binVar = fmi3_import_get_variable_as_binary(var);
+    REQUIRE(binVar != nullptr);
+    REQUIRE(fmi3_import_get_binary_variable_start_size(binVar) == 1);
+    fmi3_binary_t bin = fmi3_import_get_binary_variable_start(binVar);
+    REQUIRE(*bin == 171); // "ab" = 10*16 + 11 = 171
+
     fmi3_testutil_import_free(tfmu);
 }
 

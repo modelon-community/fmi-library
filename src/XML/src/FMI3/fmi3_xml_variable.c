@@ -1046,7 +1046,6 @@ static int fmi3_xml_hexstring_to_byte(fmi3_xml_parser_context_t* context, const 
     }
     return 0;
 }
-
 /**
  * Scans a hexstring to a bytearray.
  *
@@ -1057,12 +1056,12 @@ static int fmi3_xml_hexstring_to_bytearray(fmi3_xml_parser_context_t* context, c
     size_t len = strlen(hexstr);
     if (len % 2 != 0) {
         // Note: 2 hexadecimal characters represent 1 byte, require even length inputs
-        fmi3_xml_parse_error(context, "Hexadecimal string is not of even length: %s", hexstr);
-        return -1;
+        fmi3_xml_parse_warning(context, "Hexadecimal string is not of even length: '%s'. "
+                                        "Truncating to even length.", hexstr);
     }
 
     const char* pos = hexstr;
-    size_t nByte = len / 2;
+    size_t nByte = len / 2;  // rounds down odd-sized len
     for (size_t i = 0; i < nByte; i++) {
         if (fmi3_xml_hexstring_to_byte(context, pos, &bytearr[i])) {
             return -1;
@@ -1865,7 +1864,10 @@ int fmi3_xml_handle_Boolean(fmi3_xml_parser_context_t *context, const char* data
 }
 
 int fmi3_xml_handle_Binary(fmi3_xml_parser_context_t* context, const char* data) {
-    if (fmi3_xml_handle_Variable(context, data)) return -1;
+    /* Extract common Variable info & handle errors*/
+    if (fmi3_xml_handle_Variable_error_check_wrapper(context, data)) {
+        return 0;
+    }
     fmi3_xml_elm_enu_t elmID = fmi3_xml_elmID_Binary;  // The ID corresponding to the actual parsed element name
     fmi3_xml_model_description_t* md = context->modelDescription;
     fmi3_xml_type_definition_list_t* td = &md->typeDefinitions;
@@ -1899,7 +1901,8 @@ int fmi3_xml_handle_Binary(fmi3_xml_parser_context_t* context, const char* data)
                 fmi3_xml_parse_fatal(context, "Could not allocate memory");
                 return -1;
             }
-            startObj->nStart = nStart;
+            // increment during looping, only for valid elements
+            startObj->nStart = 0;
 
              // number of bytes per element in context->currentStartVariableValues
             jm_vector_init(jm_voidp)(&startObj->binaryStartValues, 0, context->callbacks);
@@ -1914,11 +1917,13 @@ int fmi3_xml_handle_Binary(fmi3_xml_parser_context_t* context, const char* data)
                     return -1;
                 }
                 if (fmi3_xml_hexstring_to_bytearray(context, item, bytes)) {
-                    return -1;
+                    // not valid hexstring or unexpected failure, skip current element
+                    context->callbacks->free(bytes); // not part of free loop over jm_vector
+                } else {
+                    startObj->nStart++;
+                    jm_vector_push_back(jm_voidp)(&startObj->binaryStartValues, bytes);
+                    jm_vector_push_back(size_t)(&startObj->binaryStartValuesSize, sz);
                 }
-                jm_vector_push_back(jm_voidp)(&startObj->binaryStartValues, bytes);
-                jm_vector_push_back(size_t)(&startObj->binaryStartValuesSize, sz);
-
                 // We can now free the string now since we have converted it above
                 context->callbacks->free(item);
             }

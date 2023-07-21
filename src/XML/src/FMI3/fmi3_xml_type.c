@@ -988,7 +988,7 @@ fmi3_xml_binary_type_props_t* fmi3_xml_parse_binary_type_properties(fmi3_xml_par
     // Create props:
     props = (fmi3_xml_binary_type_props_t*)fmi3_xml_alloc_variable_or_typedef_props(td, fallbackType,
             sizeof(fmi3_xml_binary_type_props_t));
-    if (!props) return NULL;
+    if (!props) {return NULL;}
 
     // maxSize:
     if (fmi3_xml_parse_attr_as_sizet(context, elmID, fmi_attr_id_maxSize, 0, &props->maxSize, &fallbackProps->maxSize)) {
@@ -1004,7 +1004,7 @@ fmi3_xml_binary_type_props_t* fmi3_xml_parse_binary_type_properties(fmi3_xml_par
             return NULL;
         }
         if (jm_vector_get_size(char)(mimeType) == 0) {
-            // XXX: Doesn't seem like we proprely store the empty string? Will trigger assertion
+            // XXX: Doesn't seem like we properly store the empty string? Will trigger assertion
             // failures later, and 'quantity' is handled the same way.
             props->mimeType = NULL;
         } else {

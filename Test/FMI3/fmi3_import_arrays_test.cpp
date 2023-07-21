@@ -442,7 +442,7 @@ TEST_CASE("Testing invalid array; is string") {
 }
 
 TEST_CASE("Invalid; too many start values") {
-    // TODO: This should give some sort of error
+    // TODO: This should give some sort of error?
     const char* xmldir = FMI3_TEST_XML_DIR "/arrays/invalid/string_too_many_start";
     fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
     REQUIRE(tfmu != nullptr);

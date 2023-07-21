@@ -182,3 +182,39 @@ TEST_CASE("Test multiple errors in Dimension parsing") {
 
     fmi3_testutil_import_free(tfmu);
 }
+
+TEST_CASE("Test multiple errors in Start elements for Binary") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/error_handling/invalid/binary_multiple_start";
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu != nullptr);
+
+    fmi3_import_variable_t* var = fmi3_import_get_variable_by_vr(fmu, 1);
+    REQUIRE(var != nullptr);
+    fmi3_import_binary_variable_t* binVar = fmi3_import_get_variable_as_binary(var);
+    REQUIRE(binVar != nullptr);
+
+    REQUIRE(fmi3_import_get_binary_variable_start_size(binVar) == 3); // 3 valid ones
+
+    fmi3_binary_t* bins = fmi3_import_get_binary_variable_start_array(binVar);
+    REQUIRE(bins != nullptr);
+    size_t* binSizes = fmi3_import_get_binary_variable_start_array_sizes(binVar);
+    REQUIRE(binSizes != nullptr);
+
+    INFO("<Start value=\"ffff\"/>");
+    REQUIRE(binSizes[0] == 2);
+    REQUIRE(bins[0][0] == 255); // ff = 15*16 + 15 = 255
+    REQUIRE(bins[0][1] == 255); // ff = 15*16 + 15 = 255
+
+    INFO("<Start value=\"abc\"/>");
+    REQUIRE(binSizes[1] == 1);
+    REQUIRE(bins[1][0] == 171); // ab = 10*16 + 11 = 171
+
+    INFO("<Start value=\"abcdef\"/>");
+    REQUIRE(binSizes[2] == 3);
+    REQUIRE(bins[2][0] == 171); // ab = 10*16 + 11 = 171
+    REQUIRE(bins[2][1] == 205); // cd = 12*16 + 13 = 205
+    REQUIRE(bins[2][2] == 239); // ef = 14*16 + 15 = 239
+
+    fmi3_testutil_import_free(tfmu);
+}

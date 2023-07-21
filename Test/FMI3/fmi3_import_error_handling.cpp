@@ -189,6 +189,9 @@ TEST_CASE("Test multiple errors in Start elements for Binary") {
     fmi3_import_t* fmu = tfmu->fmu;
     REQUIRE(fmu != nullptr);
 
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Hexadecimal string is not of even length: 'abc'. Truncating to even length."));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "String is not hexadecimal: gh"));
+
     fmi3_import_variable_t* var = fmi3_import_get_variable_by_vr(fmu, 1);
     REQUIRE(var != nullptr);
     fmi3_import_binary_variable_t* binVar = fmi3_import_get_variable_as_binary(var);

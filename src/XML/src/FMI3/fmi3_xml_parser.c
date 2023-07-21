@@ -345,13 +345,15 @@ static size_t fmi3_xml_string_char_count(const char* str, char ch) {
     return n;
 }
 
-/* Get attribute as string without clearing the buffer entry */
+/* Get attribute as string without clearing the buffer entry 
+* XXX: Be careful with using this, since the buffer entry will still be present in later elements.
+*/
 jm_string fmi3_xml_peek_attr_str(fmi3_xml_parser_context_t* context, fmi3_xml_attr_enu_t attrID) {
     return jm_vector_get_item(jm_string)(context->attrMapById, attrID);
 }
 
 int fmi3_xml_is_attr_defined(fmi3_xml_parser_context_t *context, fmi3_xml_attr_enu_t attrID) {
-    return (fmi3_xml_peek_attr_str(context, attrID) != 0);
+    return (fmi3_xml_peek_attr_str(context, attrID) != NULL);
 }
 
 /**
@@ -1281,7 +1283,7 @@ static void XMLCALL fmi3_parse_element_start(void *c, const char *elm, const cha
         if (jm_vector_get_item(jm_string)(context->attrMapById, i)) {
             // Element has not been processed because no handler exists
             jm_log_warning(context->callbacks,module, "Attribute '%s' not processed by element '%s' handle", fmi3_xmlAttrNames[i], elm);
-            jm_vector_set_item(jm_string)(context->attrMapById, i,0);
+            jm_vector_set_item(jm_string)(context->attrMapById, i, 0);
         }
     }
     if (context -> currentElmID != fmi3_xml_elmID_none) { /* with nested elements: put the parent on the stack */

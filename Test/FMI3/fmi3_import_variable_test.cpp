@@ -392,7 +392,18 @@ TEST_CASE("Invalid structuralParameter - has dimension") {
     REQUIRE(var != nullptr);
     REQUIRE(fmi3_import_get_variable_causality(var) == fmi3_causality_enu_structural_parameter);
     REQUIRE(fmi3_import_get_variable_has_start(var) != 0);
-    REQUIRE(fmi3_import_get_variable_dimension_list(var) == nullptr); // Dimension invalid; not set
+    // Dimension will be parsed and accepted anyways
+
+    fmi3_import_dimension_list_t* dimList = fmi3_import_get_variable_dimension_list(var);
+    REQUIRE(dimList != nullptr);
+    REQUIRE(fmi3_import_get_dimension_list_size(dimList) == 1);
+
+    // <Dimension start="1"/>
+    fmi3_import_dimension_t* dim = fmi3_import_get_dimension(dimList, 0);
+    REQUIRE(dim != nullptr);
+    REQUIRE(fmi3_import_get_dimension_has_start(dim) == 1);
+    REQUIRE(fmi3_import_get_dimension_start(dim) == 1);
+    REQUIRE(fmi3_import_get_dimension_has_vr(dim) == 0);
 
     fmi3_testutil_import_free(tfmu);
 }

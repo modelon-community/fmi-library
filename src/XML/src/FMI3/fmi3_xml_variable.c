@@ -965,7 +965,7 @@ int fmi3_xml_get_dimension_has_vr(fmi3_xml_dimension_t* dim) {
 }
 
 int fmi3_xml_get_dimension_has_start(fmi3_xml_dimension_t* dim) {
-    return !dim->has_vr;
+    return dim->has_start;
 }
 
 fmi3_uint64_t fmi3_xml_get_dimension_start(fmi3_xml_dimension_t* dim) {
@@ -1555,56 +1555,49 @@ static void fmi3_log_error_if_start_required(fmi3_xml_parser_context_t* context,
 
 int fmi3_xml_handle_Dimension(fmi3_xml_parser_context_t* context, const char* data) {
     if (!data) { /* start of tag */
-
         fmi3_xml_variable_t* currentVar = jm_vector_get_last(jm_voidp)(&context->modelDescription->variablesOrigOrder);
 
         // check if dimension is allowed for parent variable
         if (currentVar->causality == fmi3_causality_enu_structural_parameter) {
-            fmi3_xml_parse_error(context, "Variable %s: structuralParameters must not have Dimension elements.",
+            fmi3_xml_parse_warning(context, "Variable %s: structuralParameters must not have Dimension elements.",
                 fmi3_xml_get_variable_name(currentVar));
-            return -1; // Dimension invalid; ignored
+            // Parse them anyways
         }
 
-        fmi3_xml_dimension_t* dim;
-        fmi3_xml_attr_enu_t attrId;
-        int hasStart;
-        int hasVr;
-        
-        dim = context->callbacks->malloc(sizeof(fmi3_xml_dimension_t));
+        fmi3_xml_dimension_t* dim = context->callbacks->malloc(sizeof(fmi3_xml_dimension_t));
         if (!dim) {
             fmi3_xml_parse_fatal(context, "Could not allocate memory");
             return -1;
         }
+        // initialize defaults
+        dim->has_start = 0;
+        dim->has_vr = 0;
+        dim->vr = 0;
+        dim->start = 0;
 
         /* handle attributes*/
-        hasStart = fmi3_xml_is_attr_defined(context, fmi_attr_id_start);
-        hasVr = fmi3_xml_is_attr_defined(context, fmi_attr_id_valueReference);
+        int hasStart = fmi3_xml_is_attr_defined(context, fmi_attr_id_start);
+        int hasVr = fmi3_xml_is_attr_defined(context, fmi_attr_id_valueReference);
 
         /* error check */
-        // TODO: change error messages?
-        // TODO: Test these
         if ( !(hasStart || hasVr) ) {
-            fmi3_xml_parse_error(context, "Error parsing Dimension: no attribute 'start' or 'valueReference' found");
-            return -1;
-        } else if (hasStart && hasVr) {
-            fmi3_xml_parse_error(context, "Error parsing Dimension: mutually exclusive attributes 'start' and 'valueReference' found");
-            return -1;
+            fmi3_xml_parse_warning(context, "Error parsing Dimension: no attribute 'start' or 'valueReference' found");
         }
+        if (hasStart && hasVr) {
+            fmi3_xml_parse_warning(context, "Error parsing Dimension: mutually exclusive attributes 'start' and 'valueReference' found");
+        }
+        // Parse them anyways
 
         /* set data */
-        // TODO: Check returns on these
+        int ret = 0;
         if (hasStart) {
-            dim->has_vr = 0;
-            attrId = fmi_attr_id_start;
-            if (fmi3_xml_parse_attr_as_uint64(context, fmi3_xml_elmID_Dimension, attrId, 0, &dim->start, 0)) {
-                return -1;
-            }
-        } else if (hasVr) {
-            dim->has_vr = 1;
-            attrId = fmi_attr_id_valueReference;
-            if (fmi3_xml_parse_attr_as_uint32(context, fmi3_xml_elmID_Dimension, attrId, 0, &dim->vr, 0)) {
-                return -1;
-            }
+            ret = fmi3_xml_parse_attr_as_uint64(context, fmi3_xml_elmID_Dimension, fmi_attr_id_start, 0, &dim->start, 0);
+            dim->has_start = ret ? 0 : 1;
+        }
+        
+        if (hasVr) {
+            ret = fmi3_xml_parse_attr_as_uint32(context, fmi3_xml_elmID_Dimension, fmi_attr_id_valueReference, 0, &dim->vr, 0);
+            dim->has_vr = ret ? 0 : 1;
         }
 
         /* update parent variable */

@@ -138,3 +138,47 @@ TEST_CASE("Test missing required attribute plus other attribute errors/warnings"
 
     fmi3_testutil_import_free(tfmu);
 }
+
+static void test_dimension(fmi3_import_dimension_t* dim, int hasStart, fmi3_uint64_t start, int hasVR, fmi3_value_reference_t vr) {
+    REQUIRE(dim != nullptr);
+    REQUIRE(fmi3_import_get_dimension_has_start(dim) == hasStart);
+    if (hasStart) {
+        REQUIRE(fmi3_import_get_dimension_start(dim) == start);
+    }
+    REQUIRE(fmi3_import_get_dimension_has_vr(dim) == hasVR);
+    if (hasVR) {
+        REQUIRE(fmi3_import_get_dimension_vr(dim) == vr);
+    }
+}
+
+TEST_CASE("Test multiple errors in Dimension parsing") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/error_handling/invalid/multiple_dimension_errors";
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu != nullptr);
+
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Error parsing Dimension: no attribute 'start' or 'valueReference' found"));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Error parsing Dimension: mutually exclusive attributes 'start' and 'valueReference' found"));
+
+    fmi3_import_variable_t* var = fmi3_import_get_variable_by_name(fmu, "floaty");
+    REQUIRE(var != nullptr);
+    fmi3_import_dimension_list_t* dimList = fmi3_import_get_variable_dimension_list(var);
+    REQUIRE(dimList != nullptr);
+    REQUIRE(fmi3_import_get_dimension_list_size(dimList) == 6);
+    fmi3_import_dimension_t* dim;
+
+    INFO("<Dimension start=\"2\"/>");
+    test_dimension(fmi3_import_get_dimension(dimList, 0), 1, 2, 0, 0);
+    INFO("<Dimension start=\"3\" valueReference=\"1\"/>");
+    test_dimension(fmi3_import_get_dimension(dimList, 1), 1, 3, 1, 1);
+    INFO("<Dimension/>");
+    test_dimension(fmi3_import_get_dimension(dimList, 2), 0, 0, 0, 0);
+    INFO("<Dimension valueReference=\"x\">");
+    test_dimension(fmi3_import_get_dimension(dimList, 3), 0, 0, 0, 0);
+    INFO("<Dimension valueReference=\"1\" start=\"zero\">");
+    test_dimension(fmi3_import_get_dimension(dimList, 4), 0, 0, 1, 1);
+    INFO("<Dimension valueReference=\"1\"/>");
+    test_dimension(fmi3_import_get_dimension(dimList, 5), 0, 0, 1, 1);
+
+    fmi3_testutil_import_free(tfmu);
+}

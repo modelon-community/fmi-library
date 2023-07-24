@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription fmiVersion="3.0" modelName="" instantiationToken="">
+<ModelExchange modelIdentifier="id_me"/>
+
+<TypeDefinitions>
+    <!-- one attribute is invalid -->
+    <ClockType name="myClock" intervalVariability="constant" priority="1" intervalCounter="2" resolution="default"/>
+</TypeDefinitions>
+
+<ModelVariables>
+    <!-- Clock with all invalid OPTIONAL attributes -->
+    <!-- half of the attributes without default have a valid fallback in typedef -->
+    <Clock name="clock1" valueReference="1" intervalVariability="constant" declaredType="myClock"
+        canBeDeactivated="no" priority="low" intervalDecimal="twenty"
+        shiftDecimal="thirty" supportsFraction="yes" resolution="medium"
+        intervalCounter="one" shiftCounter="two"/>
+</ModelVariables>
+
+<ModelStructure/>
+</fmiModelDescription>

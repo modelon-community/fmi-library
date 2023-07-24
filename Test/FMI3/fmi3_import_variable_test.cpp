@@ -248,13 +248,13 @@ static void test_clock_default_attrs(fmi3_import_t* xml) {
 
     // Type specific attributes:
     REQUIRE(fmi3_import_get_clock_variable_can_be_deactivated(cv)   == false);
-    REQUIRE(fmi3_import_get_clock_variable_priority(cv)             == 0);
+    REQUIRE(fmi3_import_get_clock_variable_has_priority(cv)         == false);
     REQUIRE(fmi3_import_get_clock_variable_interval_variability(cv) == fmi3_interval_variability_constant);
-    REQUIRE(fmi3_import_get_clock_variable_interval_decimal(cv)     == 0.0);
+    REQUIRE(fmi3_import_get_clock_variable_has_interval_decimal(cv) == false);
     REQUIRE(fmi3_import_get_clock_variable_shift_decimal(cv)        == 0.0);
     REQUIRE(fmi3_import_get_clock_variable_supports_fraction(cv)    == false);
-    REQUIRE(fmi3_import_get_clock_variable_resolution(cv)           == 0);
-    REQUIRE(fmi3_import_get_clock_variable_interval_counter(cv)     == 0);
+    REQUIRE(fmi3_import_get_clock_variable_has_resolution(cv)       == false);
+    REQUIRE(fmi3_import_get_clock_variable_has_interval_counter(cv) == false);
     REQUIRE(fmi3_import_get_clock_variable_shift_counter(cv)        == 0);
 
     t = fmi3_import_get_variable_declared_type(v);
@@ -274,12 +274,16 @@ static void test_clock_all_attrs(fmi3_import_t* xml) {
 
     // Type specific attributes:
     REQUIRE(fmi3_import_get_clock_variable_can_be_deactivated(cv)   == true);
+    REQUIRE(fmi3_import_get_clock_variable_has_priority(cv)         == true);
     REQUIRE(fmi3_import_get_clock_variable_priority(cv)             == 1);
     REQUIRE(fmi3_import_get_clock_variable_interval_variability(cv) == fmi3_interval_variability_countdown);
+    REQUIRE(fmi3_import_get_clock_variable_has_interval_decimal(cv) == true);
     REQUIRE(fmi3_import_get_clock_variable_interval_decimal(cv)     == 2.0);
     REQUIRE(fmi3_import_get_clock_variable_shift_decimal(cv)        == 3.0);
     REQUIRE(fmi3_import_get_clock_variable_supports_fraction(cv)    == true);
+    REQUIRE(fmi3_import_get_clock_variable_has_resolution(cv)       == true);
     REQUIRE(fmi3_import_get_clock_variable_resolution(cv)           == 4);
+    REQUIRE(fmi3_import_get_clock_variable_has_interval_counter(cv) == true);
     REQUIRE(fmi3_import_get_clock_variable_interval_counter(cv)     == 5);
     REQUIRE(fmi3_import_get_clock_variable_shift_counter(cv)        == 6);
 }

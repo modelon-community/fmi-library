@@ -210,9 +210,16 @@ typedef struct fmi3_xml_binary_type_props_t {
 typedef struct fmi3_xml_clock_type_props_t {
     fmi3_xml_variable_type_base_t super;
 
+    // not all properties have defaults
+    fmi3_boolean_t hasPriority;
+    fmi3_boolean_t hasIntervalDecimal;
+    fmi3_boolean_t hasResolution;
+    fmi3_boolean_t hasIntervalCounter;
+
+    // actual properties
     fmi3_boolean_t canBeDeactivated;
     fmi3_boolean_t supportsFraction;
-    fmi3_interval_variability_enu_t intervalVariability;
+    fmi3_interval_variability_enu_t intervalVariability; // required
     fmi3_uint32_t  priority;
     fmi3_uint64_t  resolution;
     fmi3_uint64_t  intervalCounter;

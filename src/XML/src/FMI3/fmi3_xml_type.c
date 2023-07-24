@@ -535,6 +535,12 @@ void fmi3_xml_init_binary_type_properties(fmi3_xml_binary_type_props_t* type) {
 
 void fmi3_xml_init_clock_type_properties(fmi3_xml_clock_type_props_t* type) {
     fmi3_xml_init_variable_type_base(&type->super, fmi3_xml_type_struct_enu_props, fmi3_base_type_clock);
+
+    type->hasPriority        = false;
+    type->hasIntervalDecimal = false;
+    type->hasResolution      = false;
+    type->hasIntervalCounter = false;
+
     type->canBeDeactivated      = false;
     type->supportsFraction      = false;
     type->resolution            = 0;
@@ -1056,9 +1062,9 @@ fmi3_xml_clock_type_props_t* fmi3_xml_parse_clock_type_properties(fmi3_xml_parse
         fallbackProps = (void*)fallbackType;
     }
 
-    // Create properties:
+    // Create properties, Note: This sets defaults from fmi3_xml_init_clock_type_properties
     props = (void*)fmi3_xml_alloc_variable_or_typedef_props(td, fallbackType, sizeof(fmi3_xml_clock_type_props_t));
-    if (!props) return NULL;
+    if (!props) {return NULL;}
 
     jm_name_ID_map_t intervalVariabilityMap[] = {
             {"constant",   fmi3_interval_variability_constant},
@@ -1072,54 +1078,93 @@ fmi3_xml_clock_type_props_t* fmi3_xml_parse_clock_type_properties(fmi3_xml_parse
     // NOTE: The parsing of intervalVariability could maybe be relaxed to not be 'required'
     // for Variables if they have a non-default TypeDefinition, since then they could inherit
     // that attribute. However, the schema files don't allow it.
-
-    // TODO: Failure in parsing the optional ones should be less strict
-    if (fmi3_xml_parse_attr_as_enum(context, elmID, fmi_attr_id_intervalVariability, 1 /*required*/,
-            &props->intervalVariability, fallbackProps->intervalVariability, intervalVariabilityMap))
-    {
-        return NULL;
-    }
+    int ret = fmi3_xml_parse_attr_as_enum(context, elmID, fmi_attr_id_intervalVariability, 1 /*required*/,
+            &props->intervalVariability, fallbackProps->intervalVariability, intervalVariabilityMap);
+    
+    // The following attributes are optional, failure to parse does not stop parsing of current element
+    // with default values
+    // XXX: fmi3_xml_parse_as_* only considers default if parsing was successful
     if (fmi3_xml_parse_attr_as_bool(context, elmID, fmi_attr_id_canBeDeactivated, 0 /*required*/,
-            &props->canBeDeactivated, fallbackProps->canBeDeactivated))
-    {
-        return NULL;
-    }
-    if (fmi3_xml_parse_attr_as_bool(context, elmID, fmi_attr_id_supportsFraction, 0 /*required*/,
-            &props->supportsFraction, fallbackProps->supportsFraction))
-    {
-        return NULL;
-    }
-    if (fmi3_xml_parse_attr_as_uint32(context, elmID, fmi_attr_id_priority, 0 /*required*/,
-            &props->priority, fallbackProps->priority))
-    {
-        return NULL;
-    }
-    if (fmi3_xml_parse_attr_as_uint64(context, elmID, fmi_attr_id_resolution, 0 /*required*/,
-            &props->resolution, fallbackProps->resolution))
-    {
-        return NULL;
-    }
-    if (fmi3_xml_parse_attr_as_uint64(context, elmID, fmi_attr_id_intervalCounter, 0 /*required*/,
-            &props->intervalCounter, fallbackProps->intervalCounter))
-    {
-        return NULL;
-    }
-    if (fmi3_xml_parse_attr_as_uint64(context, elmID, fmi_attr_id_shiftCounter, 0 /*required*/,
-            &props->shiftCounter, fallbackProps->shiftCounter))
-    {
-        return NULL;
-    }
-    if (fmi3_xml_parse_attr_as_float32(context, elmID, fmi_attr_id_intervalDecimal, 0 /*required*/,
-            &props->intervalDecimal, fallbackProps->intervalDecimal))
-    {
-        return NULL;
+            &props->canBeDeactivated, fallbackProps->canBeDeactivated)) {
+        props->canBeDeactivated = fallbackProps->canBeDeactivated;
     }
     if (fmi3_xml_parse_attr_as_float32(context, elmID, fmi_attr_id_shiftDecimal, 0 /*required*/,
-            &props->shiftDecimal, fallbackProps->shiftDecimal))
-    {
-        return NULL;
+            &props->shiftDecimal, fallbackProps->shiftDecimal)) {
+        props->shiftDecimal = fallbackProps->shiftDecimal;
     }
-    return props;
+    if (fmi3_xml_parse_attr_as_bool(context, elmID, fmi_attr_id_supportsFraction, 0 /*required*/,
+            &props->supportsFraction, fallbackProps->supportsFraction)) {
+        props->supportsFraction = fallbackProps->supportsFraction;
+    }
+    if (fmi3_xml_parse_attr_as_uint64(context, elmID, fmi_attr_id_shiftCounter, 0 /*required*/,
+            &props->shiftCounter, fallbackProps->shiftCounter)) {
+        props->shiftCounter = fallbackProps->shiftCounter;
+    }
+
+    // without default values, needs peeking to correctly set hasAttr flag
+    // priority
+    if (fmi3_xml_peek_attr_str(context, fmi_attr_id_priority)) { // attribute exists
+        props->hasPriority = fmi3_true;
+        if (fmi3_xml_parse_attr_as_uint32(context, elmID, fmi_attr_id_priority, 0 /*required*/,
+                &props->priority, fallbackProps->priority)) {
+            // ClockType: fallbackProps = default; Clock: fallbackProps = declaredType props(or default)
+            props->hasPriority = fallbackProps->hasPriority;
+            props->priority = fallbackProps->priority;
+        }
+    } else { 
+        // attribute does not exist, use default or declaredType as fallback
+        props->hasPriority = fallbackProps->hasPriority;
+        props->priority = fallbackProps->priority;
+    }
+
+    // resolution
+    if (fmi3_xml_peek_attr_str(context, fmi_attr_id_resolution)) { // attribute exists
+        props->hasResolution = fmi3_true;
+        if (fmi3_xml_parse_attr_as_uint64(context, elmID, fmi_attr_id_resolution, 0 /*required*/,
+                &props->resolution, fallbackProps->resolution)) {
+            // ClockType: fallbackProps = default; Clock: fallbackProps = declaredType props(or default)
+            props->hasResolution = fallbackProps->hasResolution;
+            props->resolution = fallbackProps->resolution;
+        }
+    } else { 
+        // attribute does not exist, use default or declaredType as fallback
+        props->hasResolution = fallbackProps->hasResolution;
+        props->resolution = fallbackProps->resolution;
+    }
+
+    // intervalCounter
+    if (fmi3_xml_peek_attr_str(context, fmi_attr_id_intervalCounter)) { // attribute exists
+        props->hasIntervalCounter = fmi3_true;
+        if (fmi3_xml_parse_attr_as_uint64(context, elmID, fmi_attr_id_intervalCounter, 0 /*required*/,
+                &props->intervalCounter, fallbackProps->intervalCounter)) {
+            // ClockType: fallbackProps = default; Clock: fallbackProps = declaredType props(or default)
+            props->hasIntervalCounter = fallbackProps->hasIntervalCounter;
+            props->intervalCounter = fallbackProps->intervalCounter;
+        }
+    } else { 
+        // attribute does not exist, use default or declaredType as fallback
+        props->hasIntervalCounter = fallbackProps->hasIntervalCounter;
+        props->intervalCounter = fallbackProps->intervalCounter;
+    }
+
+    // hasIntervalDecimal
+    if (fmi3_xml_peek_attr_str(context, fmi_attr_id_intervalDecimal)) { // attribute exists
+        props->hasIntervalDecimal = fmi3_true;
+        if (fmi3_xml_parse_attr_as_float32(context, elmID, fmi_attr_id_intervalDecimal, 0 /*required*/,
+                &props->intervalDecimal, fallbackProps->intervalDecimal)) {
+            // ClockType: fallbackProps = default; Clock: fallbackProps = declaredType props(or default)
+            props->hasIntervalDecimal = fallbackProps->hasIntervalDecimal;
+            props->intervalDecimal = fallbackProps->intervalDecimal;
+        }
+    } else { 
+        // attribute does not exist, use default or declaredType as fallback
+        props->hasIntervalDecimal = fallbackProps->hasIntervalDecimal;
+        props->intervalDecimal = fallbackProps->intervalDecimal;
+    }
+
+    // NULL returns will result in variable parsing failure, resulting in ModelVariable parsing failure
+    // No need to worry about freeing memory of props in that case
+    return ret ? NULL : props; 
 }
 
 int fmi3_xml_handle_ClockType(fmi3_xml_parser_context_t* context, const char* data) {

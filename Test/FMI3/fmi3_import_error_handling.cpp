@@ -22,11 +22,14 @@
 
 #include "catch.hpp"
 
-/** 
- * This file contains tests specifically to verify correctness of error handling
- */
+// TODO: Move more of the test cases in here to the valid folder, depending on if parsing is successful?
 
-// TODO: Possibly move these to variable tests or similar, as appropriate
+/** 
+ * This file contains tests specifically to verify correctness of error handling when parsing.
+ * Such as:
+ * Elements with multiple issues raise all appropriate errors warnings.
+ * Invalid elements are discarded, but valid ones are still parsed
+ */
 
 TEST_CASE("Invalid VR, missing name") {
     const char* xmldir = FMI3_TEST_XML_DIR "/error_handling/invalid/missing_req_attributes";
@@ -218,6 +221,103 @@ TEST_CASE("Test multiple errors in Start elements for Binary") {
     REQUIRE(bins[2][0] == 171); // ab = 10*16 + 11 = 171
     REQUIRE(bins[2][1] == 205); // cd = 12*16 + 13 = 205
     REQUIRE(bins[2][2] == 239); // ef = 14*16 + 15 = 239
+
+    fmi3_testutil_import_free(tfmu);
+}
+
+TEST_CASE("Clock with ALL invalid attributes") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/error_handling/invalid/multiple_attribute_issues_clock";
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu == nullptr);
+
+    /*
+    <Clock name="clock0" valueReference="0" intervalVariability="continuous"
+        canBeDeactivated="sometimes" priority="high" intervalDecimal="ten"
+        shiftDecimal="twenty" supportsFraction="hopefully" resolution="low"
+        intervalCounter="zero" shiftCounter="one"/>
+    */
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "XML element 'Clock': failed to parse attribute intervalVariability='continuous'"));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "XML element 'Clock': could not parse value for boolean attribute 'canBeDeactivated'='sometimes'"));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "XML element 'Clock': could not parse value for boolean attribute 'supportsFraction'='hopefully'"));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "XML element 'Clock': failed to parse attribute priority='high'"));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "XML element 'Clock': failed to parse attribute resolution='low'"));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "XML element 'Clock': failed to parse attribute intervalCounter='zero'"));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "XML element 'Clock': failed to parse attribute shiftCounter='one'"));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "XML element 'Clock': failed to parse attribute intervalDecimal='ten'"));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "XML element 'Clock': failed to parse attribute shiftDecimal='twenty'"));
+
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables."));
+
+    fmi3_testutil_import_free(tfmu);
+}
+
+TEST_CASE("Clock with ALL OPTIONAL attributes invalid") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/error_handling/valid/multiple_attribute_issues_clock";
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu != nullptr);
+
+    /*
+    <ClockType name="myClock" intervalVariability="constant" priority="1" intervalCounter="2" resolution="default"/>
+    */
+    INFO("Verify ClockType");
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "XML element 'ClockType': failed to parse attribute resolution='default'"));
+
+    fmi3_import_type_definition_list_t* typeDefList = fmi3_import_get_type_definition_list(fmu);
+    REQUIRE(typeDefList != nullptr);
+    REQUIRE(fmi3_import_get_type_definition_list_size(typeDefList) == 1);
+
+    fmi3_import_variable_typedef_t* typeDefGeneric = fmi3_import_get_typedef(typeDefList, 0);
+    REQUIRE(typeDefGeneric != nullptr);
+    REQUIRE_STREQ(fmi3_import_get_type_name(typeDefGeneric), "myClock");
+
+    fmi3_import_clock_typedef_t* clockDef = fmi3_import_get_type_as_clock(typeDefGeneric);
+    REQUIRE(clockDef != nullptr);
+    REQUIRE(fmi3_import_get_clock_type_priority(clockDef) == 1);
+    REQUIRE(fmi3_import_get_clock_type_interval_counter(clockDef) == 2);
+    REQUIRE(fmi3_import_get_clock_type_resolution(clockDef) == 0); // TODO: Not safe
+    // TODO: We should probably also have hasAttr functions for the optional typedef attributes without default values
+    
+    /*
+    <Clock name="clock1" valueReference="1" intervalVariability="constant"
+        canBeDeactivated="no" priority="low" intervalDecimal="twenty"
+        shiftDecimal="thirty" supportsFraction="yes" resolution="medium"
+        intervalCounter="one" shiftCounter="two"/>
+    */
+
+    INFO("Verify Clock");
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "XML element 'Clock': could not parse value for boolean attribute 'canBeDeactivated'='no'"));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "XML element 'Clock': could not parse value for boolean attribute 'supportsFraction'='yes'"));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "XML element 'Clock': failed to parse attribute priority='low'"));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "XML element 'Clock': failed to parse attribute resolution='medium'"));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "XML element 'Clock': failed to parse attribute intervalCounter='one'"));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "XML element 'Clock': failed to parse attribute shiftCounter='two'"));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "XML element 'Clock': failed to parse attribute intervalDecimal='twenty'"));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "XML element 'Clock': failed to parse attribute shiftDecimal='thirty'"));
+
+    fmi3_import_variable_t* var = fmi3_import_get_variable_by_vr(fmu, 1);
+    REQUIRE(var != nullptr);
+    fmi3_import_clock_variable_t* clockVar = fmi3_import_get_variable_as_clock(var);
+    REQUIRE(clockVar != nullptr);
+
+    REQUIRE(fmi3_import_get_clock_variable_interval_variability(clockVar) == fmi3_interval_variability_constant);
+
+    // defaults, which are used as fallbacks
+    REQUIRE(fmi3_import_get_clock_variable_can_be_deactivated(clockVar) == fmi3_false);
+    REQUIRE(fmi3_import_get_clock_variable_supports_fraction(clockVar)  == fmi3_false);
+    REQUIRE(fmi3_import_get_clock_variable_shift_decimal(clockVar) == 0.0);
+    REQUIRE(fmi3_import_get_clock_variable_shift_counter(clockVar) == 0);
+
+    // defaults from typedef
+    REQUIRE(fmi3_import_get_clock_variable_has_priority(clockVar) == fmi3_true);
+    REQUIRE(fmi3_import_get_clock_variable_priority(clockVar) == 1);
+
+    REQUIRE(fmi3_import_get_clock_variable_has_interval_counter(clockVar) == fmi3_true);
+    REQUIRE(fmi3_import_get_clock_variable_interval_counter(clockVar) == 2);
+    // no defaults
+    REQUIRE(fmi3_import_get_clock_variable_has_resolution(clockVar)       == fmi3_false);
+    REQUIRE(fmi3_import_get_clock_variable_has_interval_decimal(clockVar) == fmi3_false);
 
     fmi3_testutil_import_free(tfmu);
 }

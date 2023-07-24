@@ -1254,11 +1254,11 @@ TEST_CASE("TypeDefinitions: Binary") {
 
 static void require_clock_variable_all_attr_default_except_resolution(fmi3_import_clock_variable_t* cv) {
     REQUIRE(fmi3_import_get_clock_variable_can_be_deactivated(cv)   == false);
-    REQUIRE(fmi3_import_get_clock_variable_priority(cv)             == 0);
-    REQUIRE(fmi3_import_get_clock_variable_interval_decimal(cv)     == 0.0);
+    REQUIRE(fmi3_import_get_clock_variable_has_priority(cv)         == false);
+    REQUIRE(fmi3_import_get_clock_variable_has_interval_decimal(cv) == false);
     REQUIRE(fmi3_import_get_clock_variable_shift_decimal(cv)        == 0.0);
     REQUIRE(fmi3_import_get_clock_variable_supports_fraction(cv)    == false);
-    REQUIRE(fmi3_import_get_clock_variable_interval_counter(cv)     == 0);
+    REQUIRE(fmi3_import_get_clock_variable_has_interval_counter(cv) == false);
     REQUIRE(fmi3_import_get_clock_variable_shift_counter(cv)        == 0);
     REQUIRE(fmi3_import_get_clock_variable_interval_variability(cv) == fmi3_interval_variability_constant);
 }
@@ -1332,20 +1332,21 @@ TEST_CASE("TypeDefinitions: Clock") {
             v = fmi3_import_get_variable_by_name(xml, "var_default_type_1");
             cv = fmi3_import_get_variable_as_clock(v);
             require_clock_variable_all_attr_default_except_resolution(cv);
-            REQUIRE(fmi3_import_get_clock_variable_resolution(cv) == 0);
+            REQUIRE(fmi3_import_get_clock_variable_has_resolution(cv) == false);
             REQUIRE(fmi3_import_get_variable_declared_type(v) == nullptr);
         }
         SECTION("From minimal typedef") {
             v = fmi3_import_get_variable_by_name(xml, "var_inh_minimal_1");
             cv = fmi3_import_get_variable_as_clock(v);
             require_clock_variable_all_attr_default_except_resolution(cv);
-            REQUIRE(fmi3_import_get_clock_variable_resolution(cv) == 0);
+            REQUIRE(fmi3_import_get_clock_variable_has_resolution(cv) == false);
             REQUIRE(fmi3_import_get_variable_declared_type(v) == (void*)tdMinimal);
         }
         SECTION("From typedef defining resolution") {
             v = fmi3_import_get_variable_by_name(xml, "var_inh_resolution_1");
             cv = fmi3_import_get_variable_as_clock(v);
             require_clock_variable_all_attr_default_except_resolution(cv);
+            REQUIRE(fmi3_import_get_clock_variable_has_resolution(cv) == true);
             REQUIRE(fmi3_import_get_clock_variable_resolution(cv) == 99);
             REQUIRE(fmi3_import_get_variable_declared_type(v) == (void*)tdResolution);
         }
@@ -1353,12 +1354,17 @@ TEST_CASE("TypeDefinitions: Clock") {
             v = fmi3_import_get_variable_by_name(xml, "var_inh_allAttr_1");
             cv = fmi3_import_get_variable_as_clock(v);
             REQUIRE(fmi3_import_get_clock_variable_can_be_deactivated(cv)   == true);
+            REQUIRE(fmi3_import_get_clock_variable_has_priority(cv)         == true);
             REQUIRE(fmi3_import_get_clock_variable_priority(cv)             == 99);
+            REQUIRE(fmi3_import_get_clock_variable_has_interval_decimal(cv) == true);
             REQUIRE(fmi3_import_get_clock_variable_interval_decimal(cv)     == 99.0);
             REQUIRE(fmi3_import_get_clock_variable_shift_decimal(cv)        == 99.0);
             REQUIRE(fmi3_import_get_clock_variable_supports_fraction(cv)    == true);
+            REQUIRE(fmi3_import_get_clock_variable_has_interval_counter(cv) == true);
             REQUIRE(fmi3_import_get_clock_variable_interval_counter(cv)     == 99);
             REQUIRE(fmi3_import_get_clock_variable_shift_counter(cv)        == 99);
+            REQUIRE(fmi3_import_get_clock_variable_has_resolution(cv)       == true);
+            REQUIRE(fmi3_import_get_clock_variable_resolution(cv)           == 99);
             REQUIRE(fmi3_import_get_clock_variable_interval_variability(cv) == fmi3_interval_variability_countdown);
             REQUIRE(fmi3_import_get_variable_declared_type(v) == (void*)tdAllAttr);
         }
@@ -1372,33 +1378,41 @@ TEST_CASE("TypeDefinitions: Clock") {
             v = fmi3_import_get_variable_by_name(xml, "var_default_type_2");
             cv = fmi3_import_get_variable_as_clock(v);
             require_clock_variable_all_attr_default_except_resolution(cv);
-            REQUIRE(fmi3_import_get_clock_variable_resolution(cv) == 2);
+            REQUIRE(fmi3_import_get_clock_variable_has_resolution(cv) == true);
+            REQUIRE(fmi3_import_get_clock_variable_resolution(cv)     == 2);
             REQUIRE(fmi3_import_get_variable_declared_type(v) == nullptr);
         }
         SECTION("Typedef: minimal, Variable: resolution") {
             v = fmi3_import_get_variable_by_name(xml, "var_inh_minimal_2");
             cv = fmi3_import_get_variable_as_clock(v);
             require_clock_variable_all_attr_default_except_resolution(cv);
-            REQUIRE(fmi3_import_get_clock_variable_resolution(cv) == 2);
+            REQUIRE(fmi3_import_get_clock_variable_has_resolution(cv) == true);
+            REQUIRE(fmi3_import_get_clock_variable_resolution(cv)     == 2);
             REQUIRE(fmi3_import_get_variable_declared_type(v) == (void*)tdMinimal);
         }
         SECTION("Typedef: resolution, Variable: resolution") {
             v = fmi3_import_get_variable_by_name(xml, "var_inh_resolution_2");
             cv = fmi3_import_get_variable_as_clock(v);
             require_clock_variable_all_attr_default_except_resolution(cv);
-            REQUIRE(fmi3_import_get_clock_variable_resolution(cv) == 2);
+            REQUIRE(fmi3_import_get_clock_variable_has_resolution(cv) == true);
+            REQUIRE(fmi3_import_get_clock_variable_resolution(cv)     == 2);
             REQUIRE(fmi3_import_get_variable_declared_type(v) == (void*)tdResolution);
         }
         SECTION("Typedef: allAttr, Variable: allAttr") {
             v = fmi3_import_get_variable_by_name(xml, "var_inh_allAttr_2");
             cv = fmi3_import_get_variable_as_clock(v);
             REQUIRE(fmi3_import_get_clock_variable_can_be_deactivated(cv)   == false);
+            REQUIRE(fmi3_import_get_clock_variable_has_priority(cv)         == true);
             REQUIRE(fmi3_import_get_clock_variable_priority(cv)             == 2);
+            REQUIRE(fmi3_import_get_clock_variable_has_interval_decimal(cv) == true);
             REQUIRE(fmi3_import_get_clock_variable_interval_decimal(cv)     == 2.0);
             REQUIRE(fmi3_import_get_clock_variable_shift_decimal(cv)        == 2.0);
             REQUIRE(fmi3_import_get_clock_variable_supports_fraction(cv)    == false);
+            REQUIRE(fmi3_import_get_clock_variable_has_interval_counter(cv) == true);
             REQUIRE(fmi3_import_get_clock_variable_interval_counter(cv)     == 2);
             REQUIRE(fmi3_import_get_clock_variable_shift_counter(cv)        == 2);
+            REQUIRE(fmi3_import_get_clock_variable_has_resolution(cv)       == true);
+            REQUIRE(fmi3_import_get_clock_variable_resolution(cv)           == 2);
             REQUIRE(fmi3_import_get_clock_variable_interval_variability(cv) == fmi3_interval_variability_triggered);
             REQUIRE(fmi3_import_get_variable_declared_type(v) == (void*)tdAllAttr);
         }

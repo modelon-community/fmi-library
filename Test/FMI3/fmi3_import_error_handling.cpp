@@ -28,7 +28,7 @@
  * Elements with multiple issues raise all appropriate errors warnings.
  * Invalid elements are discarded, but valid ones are still parsed
  * 
- * NOTE: Tests are not separated into the valid/invalid, since all of them contain errors/warnings
+ * NOTE: No separation into valid/invalid, all tests contain errors/warnings
  */
 
 TEST_CASE("Invalid VR, missing name") {
@@ -121,7 +121,7 @@ TEST_CASE("Test multiple attribute errors in a single variable") {
     fmi3_import_variable_t* varPrev = fmi3_import_get_variable_previous(var);
     REQUIRE(varPrev != nullptr);
     REQUIRE(var == varPrev);
-    REQUIRE(fmi3_import_get_variable_can_handle_multiple_set_per_time_instant(var) == fmi3_false);
+    REQUIRE(fmi3_import_get_variable_can_handle_multiple_set_per_time_instant(var) == false);
 
     fmi3_testutil_import_free(tfmu);
 }
@@ -276,8 +276,7 @@ TEST_CASE("Clock with ALL OPTIONAL attributes invalid") {
     REQUIRE(clockDef != nullptr);
     REQUIRE(fmi3_import_get_clock_type_priority(clockDef) == 1);
     REQUIRE(fmi3_import_get_clock_type_interval_counter(clockDef) == 2);
-    REQUIRE(fmi3_import_get_clock_type_resolution(clockDef) == 0); // TODO: Not safe
-    // TODO: We should probably also have hasAttr functions for the optional typedef attributes without default values
+    REQUIRE(fmi3_import_get_clock_type_has_resolution(clockDef) == false);
     
     /*
     <Clock name="clock1" valueReference="1" intervalVariability="constant"
@@ -304,20 +303,20 @@ TEST_CASE("Clock with ALL OPTIONAL attributes invalid") {
     REQUIRE(fmi3_import_get_clock_variable_interval_variability(clockVar) == fmi3_interval_variability_constant);
 
     // defaults, which are used as fallbacks
-    REQUIRE(fmi3_import_get_clock_variable_can_be_deactivated(clockVar) == fmi3_false);
-    REQUIRE(fmi3_import_get_clock_variable_supports_fraction(clockVar)  == fmi3_false);
+    REQUIRE(fmi3_import_get_clock_variable_can_be_deactivated(clockVar) == false);
+    REQUIRE(fmi3_import_get_clock_variable_supports_fraction(clockVar)  == false);
     REQUIRE(fmi3_import_get_clock_variable_shift_decimal(clockVar) == 0.0);
     REQUIRE(fmi3_import_get_clock_variable_shift_counter(clockVar) == 0);
 
     // defaults from typedef
-    REQUIRE(fmi3_import_get_clock_variable_has_priority(clockVar) == fmi3_true);
+    REQUIRE(fmi3_import_get_clock_variable_has_priority(clockVar) == true);
     REQUIRE(fmi3_import_get_clock_variable_priority(clockVar) == 1);
 
-    REQUIRE(fmi3_import_get_clock_variable_has_interval_counter(clockVar) == fmi3_true);
+    REQUIRE(fmi3_import_get_clock_variable_has_interval_counter(clockVar) == true);
     REQUIRE(fmi3_import_get_clock_variable_interval_counter(clockVar) == 2);
     // no defaults
-    REQUIRE(fmi3_import_get_clock_variable_has_resolution(clockVar)       == fmi3_false);
-    REQUIRE(fmi3_import_get_clock_variable_has_interval_decimal(clockVar) == fmi3_false);
+    REQUIRE(fmi3_import_get_clock_variable_has_resolution(clockVar)       == false);
+    REQUIRE(fmi3_import_get_clock_variable_has_interval_decimal(clockVar) == false);
 
     fmi3_testutil_import_free(tfmu);
 }

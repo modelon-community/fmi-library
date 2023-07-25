@@ -1288,34 +1288,39 @@ TEST_CASE("TypeDefinitions: Clock") {
     
     SECTION("Minimal typedef") {
         REQUIRE(fmi3_import_get_clock_type_can_be_deactivated(tdMinimal)   == false);
-        REQUIRE(fmi3_import_get_clock_type_priority(tdMinimal)             == 0);
-        REQUIRE(fmi3_import_get_clock_type_interval_decimal(tdMinimal)     == 0.0);
+        REQUIRE(fmi3_import_get_clock_type_has_priority(tdMinimal)         == false);
+        REQUIRE(fmi3_import_get_clock_type_has_interval_decimal(tdMinimal) == false);
         REQUIRE(fmi3_import_get_clock_type_shift_decimal(tdMinimal)        == 0.0);
         REQUIRE(fmi3_import_get_clock_type_supports_fraction(tdMinimal)    == false);
-        REQUIRE(fmi3_import_get_clock_type_interval_counter(tdMinimal)     == 0);
+        REQUIRE(fmi3_import_get_clock_type_has_interval_counter(tdMinimal) == false);
         REQUIRE(fmi3_import_get_clock_type_shift_counter(tdMinimal)        == 0);
-        REQUIRE(fmi3_import_get_clock_type_resolution(tdMinimal)           == 0);
+        REQUIRE(fmi3_import_get_clock_type_has_resolution(tdMinimal)       == false);
         REQUIRE(fmi3_import_get_clock_type_interval_variability(tdMinimal) == fmi3_interval_variability_constant);
     }
     SECTION("Typedef that sets resolution - other attributes inherited") {
         REQUIRE(fmi3_import_get_clock_type_can_be_deactivated(tdResolution)   == false);
-        REQUIRE(fmi3_import_get_clock_type_priority(tdResolution)             == 0);
-        REQUIRE(fmi3_import_get_clock_type_interval_decimal(tdResolution)     == 0.0);
+        REQUIRE(fmi3_import_get_clock_type_has_priority(tdResolution)         == false);
+        REQUIRE(fmi3_import_get_clock_type_has_interval_decimal(tdResolution) == false);
         REQUIRE(fmi3_import_get_clock_type_shift_decimal(tdResolution)        == 0.0);
         REQUIRE(fmi3_import_get_clock_type_supports_fraction(tdResolution)    == false);
-        REQUIRE(fmi3_import_get_clock_type_interval_counter(tdResolution)     == 0);
+        REQUIRE(fmi3_import_get_clock_type_has_interval_counter(tdResolution) == false);
         REQUIRE(fmi3_import_get_clock_type_shift_counter(tdResolution)        == 0);
+        REQUIRE(fmi3_import_get_clock_type_has_resolution(tdResolution)       == true);
         REQUIRE(fmi3_import_get_clock_type_resolution(tdResolution)           == 99);
         REQUIRE(fmi3_import_get_clock_type_interval_variability(tdResolution) == fmi3_interval_variability_constant);
     }
     SECTION("Typedef that sets all clock attributes") {
         REQUIRE(fmi3_import_get_clock_type_can_be_deactivated(tdAllAttr)   == true);
+        REQUIRE(fmi3_import_get_clock_type_has_priority(tdAllAttr)         == true);
         REQUIRE(fmi3_import_get_clock_type_priority(tdAllAttr)             == 99);
+        REQUIRE(fmi3_import_get_clock_type_has_interval_decimal(tdAllAttr) == true);
         REQUIRE(fmi3_import_get_clock_type_interval_decimal(tdAllAttr)     == 99.0);
         REQUIRE(fmi3_import_get_clock_type_shift_decimal(tdAllAttr)        == 99.0);
         REQUIRE(fmi3_import_get_clock_type_supports_fraction(tdAllAttr)    == true);
+        REQUIRE(fmi3_import_get_clock_type_has_interval_counter(tdAllAttr) == true);
         REQUIRE(fmi3_import_get_clock_type_interval_counter(tdAllAttr)     == 99);
         REQUIRE(fmi3_import_get_clock_type_shift_counter(tdAllAttr)        == 99);
+        REQUIRE(fmi3_import_get_clock_type_has_resolution(tdAllAttr)       == true);
         REQUIRE(fmi3_import_get_clock_type_resolution(tdAllAttr)           == 99);
         REQUIRE(fmi3_import_get_clock_type_interval_variability(tdAllAttr) == fmi3_interval_variability_countdown);
     }

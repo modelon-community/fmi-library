@@ -410,12 +410,20 @@ fmi3_boolean_t fmi3_xml_get_clock_type_can_be_deactivated(fmi3_xml_clock_typedef
     return fmi3_xml_get_clock_type_props(t)->canBeDeactivated;
 }
 
+fmi3_boolean_t fmi3_xml_get_clock_type_has_priority(fmi3_xml_clock_typedef_t* t) {
+    return fmi3_xml_get_clock_type_props(t)->hasPriority;
+}
+
 fmi3_uint32_t fmi3_xml_get_clock_type_priority(fmi3_xml_clock_typedef_t* t) {
     return fmi3_xml_get_clock_type_props(t)->priority;
 }
 
 fmi3_interval_variability_enu_t fmi3_xml_get_clock_type_interval_variability(fmi3_xml_clock_typedef_t* t) {
     return fmi3_xml_get_clock_type_props(t)->intervalVariability;
+}
+
+fmi3_boolean_t fmi3_xml_get_clock_type_has_interval_decimal(fmi3_xml_clock_typedef_t* t) {
+    return fmi3_xml_get_clock_type_props(t)->hasIntervalDecimal;
 }
 
 fmi3_float32_t fmi3_xml_get_clock_type_interval_decimal(fmi3_xml_clock_typedef_t* t) {
@@ -430,8 +438,16 @@ fmi3_boolean_t fmi3_xml_get_clock_type_supports_fraction(fmi3_xml_clock_typedef_
     return fmi3_xml_get_clock_type_props(t)->supportsFraction;
 }
 
+fmi3_boolean_t fmi3_xml_get_clock_type_has_resolution(fmi3_xml_clock_typedef_t* t) {
+    return fmi3_xml_get_clock_type_props(t)->hasResolution;
+}
+
 fmi3_uint64_t fmi3_xml_get_clock_type_resolution(fmi3_xml_clock_typedef_t* t) {
     return fmi3_xml_get_clock_type_props(t)->resolution;
+}
+
+fmi3_boolean_t fmi3_xml_get_clock_type_has_interval_counter(fmi3_xml_clock_typedef_t* t) {
+    return fmi3_xml_get_clock_type_props(t)->hasIntervalCounter;
 }
 
 fmi3_uint64_t fmi3_xml_get_clock_type_interval_counter(fmi3_xml_clock_typedef_t* t) {

@@ -1722,7 +1722,11 @@ int fmi3_xml_handle_FloatXX(fmi3_xml_parser_context_t* context, const char* data
             if (fmi3_xml_variable_is_array(variable)) {
                 size_t nArr; /* TODO: do something with this, e.g. dimension size verification */
                 if (fmi3_xml_parse_attr_as_array(context, elmID, fmi_attr_id_start, 0, (void**)&start->start, &nArr, startAttr, primType)) {
-                    return -1;
+                    // start failed to parse as array
+                    // TODO: Can one get these from some sort of defaults instead?
+                    start->start.array64s = NULL;
+                    start->start.array32s = NULL;
+                    fmi3_log_error_if_start_required(context, variable);
                 }
             } else { /* is scalar */
                 // TODO:
@@ -1798,7 +1802,17 @@ int fmi3_xml_handle_IntXX(fmi3_xml_parser_context_t* context, const char* data,
                 size_t nArr; /* TODO: do something with this, e.g. dimension size verification */
                 if (fmi3_xml_parse_attr_as_array(context, elmID, fmi_attr_id_start, 0,
                         (void**)&start->start, &nArr, startAttr, primType)) {
-                    return -1;
+                    // start failed to parse as array
+                    // TODO: Can one get these from some sort of defaults instead?
+                    start->start.array64s = NULL;
+                    start->start.array32s = NULL;
+                    start->start.array16s = NULL;
+                    start->start.array8s  = NULL;
+                    start->start.array64u = NULL;
+                    start->start.array32u = NULL;
+                    start->start.array16u = NULL;
+                    start->start.array8u  = NULL;
+                    fmi3_log_error_if_start_required(context, variable);
                 }
             } else { /* is scalar */
                 /* restore the attribute buffer before it's used in set_attr_int */
@@ -1874,7 +1888,18 @@ int fmi3_xml_handle_Boolean(fmi3_xml_parser_context_t *context, const char* data
                 size_t nArr;
                 if (fmi3_xml_parse_attr_as_array(context, fmi3_xml_elmID_Boolean, fmi_attr_id_start,
                         0, (void**)&start->start, &nArr, startAttr, &PRIMITIVE_TYPES.boolean)) {
-                    return -1;
+                    // start failed to parse as array
+                    // TODO: Can one get these from some sort of defaults instead?
+                    // TODO: Should this have the fmi3_xml_int_variable_start_t type?
+                    start->start.array64s = NULL;
+                    start->start.array32s = NULL;
+                    start->start.array16s = NULL;
+                    start->start.array8s  = NULL;
+                    start->start.array64u = NULL;
+                    start->start.array32u = NULL;
+                    start->start.array16u = NULL;
+                    start->start.array8u  = NULL;
+                    fmi3_log_error_if_start_required(context, variable);
                 }
             } else {
                 /* restore the attribute buffer before it's used in set_attr_boolean */
@@ -2227,7 +2252,18 @@ int fmi3_xml_handle_Enumeration(fmi3_xml_parser_context_t *context, const char* 
                 size_t nArr; /* TODO: do something with this, e.g. dimension size verification */
                 if (fmi3_xml_parse_attr_as_array(context, fmi3_xml_elmID_Enumeration, fmi_attr_id_start, 0,
                         (void**)&start->start, &nArr, startAttr, &PRIMITIVE_TYPES.enumeration)) {
-                    return -1;
+                    // start failed to parse as array
+                    // TODO: Can one get these from some sort of defaults instead?
+                    // TODO: Should this have the fmi3_xml_int_variable_start_t type?
+                    start->start.array64s = NULL;
+                    start->start.array32s = NULL;
+                    start->start.array16s = NULL;
+                    start->start.array8s  = NULL;
+                    start->start.array64u = NULL;
+                    start->start.array32u = NULL;
+                    start->start.array16u = NULL;
+                    start->start.array8u  = NULL;
+                    fmi3_log_error_if_start_required(context, variable);
                 }
             } else {
                 /* restore the attribute buffer before it's used in set_attr_int */

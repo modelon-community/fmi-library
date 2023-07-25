@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<fmiModelDescription fmiVersion="3.0-alpha" modelName="name" instantiationToken="">
+<CoSimulation modelIdentifier="id"/>
+
+<ModelVariables>
+<!-- Invalid start values, all types -->
+
+<Float32 name="f32" valueReference="0" initial="exact" start="a"> <Dimension start="1"/> </Float32>
+<Float64 name="f64" valueReference="1" initial="exact" start="a"> <Dimension start="1"/> </Float64>
+
+<Int8  name="i8"  valueReference="10" initial="exact" start="a"> <Dimension start="1"/> </Int8>
+<Int16 name="i16" valueReference="11" initial="exact" start="a"> <Dimension start="1"/> </Int16>
+<Int32 name="i32" valueReference="12" initial="exact" start="a"> <Dimension start="1"/> </Int32>
+<Int64 name="i64" valueReference="13" initial="exact" start="a"> <Dimension start="1"/> </Int64>
+
+<UInt8  name="ui8"  valueReference="20" initial="exact" start="a"> <Dimension start="1"/> </UInt8>
+<UInt16 name="ui16" valueReference="21" initial="exact" start="a"> <Dimension start="1"/> </UInt16>
+<UInt32 name="ui32" valueReference="22" initial="exact" start="a"> <Dimension start="1"/> </UInt32>
+<UInt64 name="ui64" valueReference="23" initial="exact" start="a"> <Dimension start="1"/> </UInt64>
+
+<Boolean name="bool" valueReference="30" initial="exact" start="a"> <Dimension start="1"/> </Boolean>
+
+</ModelVariables>
+
+<ModelStructure/>
+
+</fmiModelDescription>

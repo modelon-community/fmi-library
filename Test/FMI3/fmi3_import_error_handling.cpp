@@ -320,3 +320,20 @@ TEST_CASE("Clock with ALL OPTIONAL attributes invalid") {
 
     fmi3_testutil_import_free(tfmu);
 }
+
+TEST_CASE("Clock with muliple errors in required attributes") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/error_handling/clock_multiple_req_invalid";
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu == nullptr);
+
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "XML element 'Clock': failed to parse attribute valueReference='zero'"));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'Clock': required attribute 'name' not found"));
+
+    // TODO: Current limitation; type specific attributes not be parsed if parsing required common attributes fails
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Attribute 'intervalVariability' not processed by element 'Clock' handle"));
+
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables."));
+
+    fmi3_testutil_import_free(tfmu);
+}

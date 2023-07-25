@@ -2094,9 +2094,14 @@ int fmi3_xml_handle_BinaryVariableStart(fmi3_xml_parser_context_t* context, cons
         if (fmi3_xml_variable_is_array(variable)) {
             /* For each <Start ...>, allocate memory, copy attribute to 'value' and push back to 'vec'. */
             jm_vector(jm_voidp)* vec = &context->currentStartVariableValues;
+
+            if (!fmi3_xml_peek_attr_str(context, fmi_attr_id_value)) {
+                fmi3_xml_parse_error(context, "Start missing the required attribute 'value'");
+                return -1; // Parsing start element failed
+            }
             const char* attr;
-            if (fmi3_xml_get_attr_str(context, fmi3_xml_elmID_BinaryVariableStart, fmi_attr_id_value, 0, &attr)) return -1;
-            int len = strlen(attr);
+            if (fmi3_xml_get_attr_str(context, fmi3_xml_elmID_BinaryVariableStart, fmi_attr_id_value, 0, &attr)) {return -1;}
+            int len = attr ? strlen(attr) : 0;
             if (len == 0) {
                 fmi3_xml_parse_error(context, "Empty value attribute in Start element");
                 return -1;

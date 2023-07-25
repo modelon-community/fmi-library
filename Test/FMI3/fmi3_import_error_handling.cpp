@@ -192,6 +192,8 @@ TEST_CASE("Test multiple errors in Start elements for Binary") {
     fmi3_import_t* fmu = tfmu->fmu;
     REQUIRE(fmu != nullptr);
 
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Start missing the required attribute 'value'"));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Empty value attribute in Start element"));
     REQUIRE(fmi3_testutil_log_contains(tfmu, "Hexadecimal string is not of even length: 'abc'. Truncating to even length."));
     REQUIRE(fmi3_testutil_log_contains(tfmu, "String is not hexadecimal: gh"));
 

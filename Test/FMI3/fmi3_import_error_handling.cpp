@@ -22,17 +22,17 @@
 
 #include "catch.hpp"
 
-// TODO: Move more of the test cases in here to the valid folder, depending on if parsing is successful?
-
 /** 
  * This file contains tests specifically to verify correctness of error handling when parsing.
  * Such as:
  * Elements with multiple issues raise all appropriate errors warnings.
  * Invalid elements are discarded, but valid ones are still parsed
+ * 
+ * NOTE: Tests are not separated into the valid/invalid, since all of them contain errors/warnings
  */
 
 TEST_CASE("Invalid VR, missing name") {
-    const char* xmldir = FMI3_TEST_XML_DIR "/error_handling/invalid/missing_req_attributes";
+    const char* xmldir = FMI3_TEST_XML_DIR "/error_handling/missing_req_attributes";
     fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
     fmi3_import_t* fmu = tfmu->fmu;
     REQUIRE(fmu == nullptr);
@@ -73,7 +73,7 @@ TEST_CASE("Invalid VR, missing name") {
 
 TEST_CASE("Testing all global error checks") {
     // This is for testing that all global errors checks for ModelVariables are tested
-    const char* xmldir = FMI3_TEST_XML_DIR "/error_handling/invalid/global_error_checks";
+    const char* xmldir = FMI3_TEST_XML_DIR "/error_handling/global_error_checks";
     fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
     fmi3_import_t* fmu = tfmu->fmu;
     REQUIRE(fmu == nullptr);
@@ -99,7 +99,7 @@ TEST_CASE("Testing all global error checks") {
 }
 
 TEST_CASE("Test multiple attribute errors in a single variable") {
-    const char* xmldir = FMI3_TEST_XML_DIR "/error_handling/invalid/multiple_attribute_issues";
+    const char* xmldir = FMI3_TEST_XML_DIR "/error_handling/multiple_attribute_issues";
     fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
     fmi3_import_t* fmu = tfmu->fmu;
     REQUIRE(fmu != nullptr);
@@ -127,7 +127,7 @@ TEST_CASE("Test multiple attribute errors in a single variable") {
 }
 
 TEST_CASE("Test missing required attribute plus other attribute errors/warnings") {
-    const char* xmldir = FMI3_TEST_XML_DIR "/error_handling/invalid/multiple_attribute_issues_req";
+    const char* xmldir = FMI3_TEST_XML_DIR "/error_handling/multiple_attribute_issues_req";
     fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
     fmi3_import_t* fmu = tfmu->fmu;
     REQUIRE(fmu == nullptr);
@@ -155,7 +155,7 @@ static void test_dimension(fmi3_import_dimension_t* dim, int hasStart, fmi3_uint
 }
 
 TEST_CASE("Test multiple errors in Dimension parsing") {
-    const char* xmldir = FMI3_TEST_XML_DIR "/error_handling/invalid/multiple_dimension_errors";
+    const char* xmldir = FMI3_TEST_XML_DIR "/error_handling/multiple_dimension_errors";
     fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
     fmi3_import_t* fmu = tfmu->fmu;
     REQUIRE(fmu != nullptr);
@@ -187,7 +187,7 @@ TEST_CASE("Test multiple errors in Dimension parsing") {
 }
 
 TEST_CASE("Test multiple errors in Start elements for Binary") {
-    const char* xmldir = FMI3_TEST_XML_DIR "/error_handling/invalid/binary_multiple_start";
+    const char* xmldir = FMI3_TEST_XML_DIR "/error_handling/binary_multiple_start";
     fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
     fmi3_import_t* fmu = tfmu->fmu;
     REQUIRE(fmu != nullptr);
@@ -226,7 +226,7 @@ TEST_CASE("Test multiple errors in Start elements for Binary") {
 }
 
 TEST_CASE("Clock with ALL invalid attributes") {
-    const char* xmldir = FMI3_TEST_XML_DIR "/error_handling/invalid/multiple_attribute_issues_clock";
+    const char* xmldir = FMI3_TEST_XML_DIR "/error_handling/multiple_attribute_issues_clock_including_req";
     fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
     fmi3_import_t* fmu = tfmu->fmu;
     REQUIRE(fmu == nullptr);
@@ -253,7 +253,7 @@ TEST_CASE("Clock with ALL invalid attributes") {
 }
 
 TEST_CASE("Clock with ALL OPTIONAL attributes invalid") {
-    const char* xmldir = FMI3_TEST_XML_DIR "/error_handling/valid/multiple_attribute_issues_clock";
+    const char* xmldir = FMI3_TEST_XML_DIR "/error_handling/multiple_attribute_issues_clock";
     fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
     fmi3_import_t* fmu = tfmu->fmu;
     REQUIRE(fmu != nullptr);

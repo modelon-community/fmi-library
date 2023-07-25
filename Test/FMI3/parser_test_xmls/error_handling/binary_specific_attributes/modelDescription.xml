@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription fmiVersion="3.0" modelName="" instantiationToken="">
+<ModelExchange modelIdentifier="id"/>
+
+<TypeDefinitions>
+    <BinaryType name="myBin" mimeType="mimeType" maxSize="10"/>
+</TypeDefinitions>
+
+<ModelVariables>
+    <Binary name="binaryVar" valueReference="1" declaredType="myBin" mimeType="mime" maxSize="unlimited"/>
+</ModelVariables>
+
+<ModelStructure/>
+</fmiModelDescription>

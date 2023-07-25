@@ -393,6 +393,10 @@ fmi3_string_t fmi3_xml_get_binary_type_mime_type(fmi3_xml_binary_typedef_t* t) {
     return fmi3_xml_get_binary_type_props(t)->mimeType;
 }
 
+fmi3_boolean_t fmi3_xml_get_binary_type_has_max_size(fmi3_xml_binary_typedef_t* t) {
+    return fmi3_xml_get_binary_type_props(t)->hasMaxSize;
+}
+
 size_t fmi3_xml_get_binary_type_max_size(fmi3_xml_binary_typedef_t* t) {
     return fmi3_xml_get_binary_type_props(t)->maxSize;
 }
@@ -546,6 +550,7 @@ void fmi3_xml_init_uint8_type_properties(fmi3_xml_int_type_props_t* type) {
 void fmi3_xml_init_binary_type_properties(fmi3_xml_binary_type_props_t* type) {
     fmi3_xml_init_variable_type_base(&type->super, fmi3_xml_type_struct_enu_props, fmi3_base_type_binary);
     type->mimeType = "application/octet-stream";
+    type->hasMaxSize = fmi3_false;
     type->maxSize = 0;
 }
 
@@ -1013,24 +1018,35 @@ fmi3_xml_binary_type_props_t* fmi3_xml_parse_binary_type_properties(fmi3_xml_par
     if (!props) {return NULL;}
 
     // maxSize:
-    if (fmi3_xml_parse_attr_as_sizet(context, elmID, fmi_attr_id_maxSize, 0, &props->maxSize, &fallbackProps->maxSize)) {
-        return NULL;
+    // without default values, needs peeking to correctly set hasAttr flag
+    if (fmi3_xml_peek_attr_str(context, fmi_attr_id_maxSize)) { // attribute exists
+        props->hasMaxSize = fmi3_true;
+        if (fmi3_xml_parse_attr_as_sizet(context, elmID, fmi_attr_id_maxSize, 0 /*required*/,
+                &props->maxSize, &fallbackProps->maxSize)) {
+            // BinaryType: fallbackProps = default; Binary: fallbackProps = declaredType props(or default)
+            props->hasMaxSize = fallbackProps->hasMaxSize;
+            props->maxSize = fallbackProps->maxSize;
+        }
+    } else { 
+        // attribute does not exist, use default or declaredType as fallback
+        props->hasMaxSize = fallbackProps->hasMaxSize;
+        props->maxSize = fallbackProps->maxSize;
     }
 
     // mimeType:
-    int hasMimeType = fmi3_xml_is_attr_defined(context, fmi_attr_id_mimeType);
-    if (hasMimeType) {
+    if (fmi3_xml_is_attr_defined(context, fmi_attr_id_mimeType)) {
         jm_vector(char)* mimeType = fmi3_xml_reserve_parse_buffer(context, 1, 100);
-        if (!mimeType) return NULL;
+        if (!mimeType) {return NULL;} // buffer allocation failure
         if (fmi3_xml_parse_attr_as_string(context, elmID, fmi_attr_id_mimeType, 0, mimeType)) {
-            return NULL;
-        }
-        if (jm_vector_get_size(char)(mimeType) == 0) {
-            // XXX: Doesn't seem like we properly store the empty string? Will trigger assertion
-            // failures later, and 'quantity' is handled the same way.
-            props->mimeType = NULL;
-        } else {
-            props->mimeType = jm_string_set_put(&td->mimeTypes, jm_vector_get_itemp(char)(mimeType, 0));
+            props->mimeType = fallbackProps->mimeType; // parsing failure
+        } else { // successful parse
+            if (jm_vector_get_size(char)(mimeType) == 0) {
+                // XXX: Doesn't seem like we properly store the empty string? Will trigger assertion
+                // failures later, and 'quantity' is handled the same way.
+                props->mimeType = NULL;
+            } else {
+                props->mimeType = jm_string_set_put(&td->mimeTypes, jm_vector_get_itemp(char)(mimeType, 0));
+            }
         }
     } else {
         props->mimeType = fallbackProps->mimeType;

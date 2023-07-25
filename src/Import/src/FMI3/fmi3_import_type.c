@@ -264,6 +264,10 @@ fmi3_string_t fmi3_import_get_binary_type_mime_type(fmi3_import_binary_typedef_t
     return fmi3_xml_get_binary_type_mime_type(t);
 }
 
+fmi3_boolean_t fmi3_import_get_binary_type_has_max_size(fmi3_import_binary_typedef_t* t) {
+    return fmi3_xml_get_binary_type_has_max_size(t);
+}
+
 size_t fmi3_import_get_binary_type_max_size(fmi3_import_binary_typedef_t* t) {
     return fmi3_xml_get_binary_type_max_size(t);
 }

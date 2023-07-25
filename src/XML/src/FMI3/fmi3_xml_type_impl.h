@@ -204,6 +204,7 @@ typedef struct fmi3_xml_binary_type_props_t {
     fmi3_xml_variable_type_base_t super;
 
     jm_string mimeType;
+    fmi3_boolean_t hasMaxSize;
     size_t maxSize;
 } fmi3_xml_binary_type_props_t;
 

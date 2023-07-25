@@ -123,7 +123,7 @@ fmi3_xml_variable_typedef_t* fmi3_xml_get_variable_declared_type(fmi3_xml_variab
 
 fmi3_base_type_enu_t fmi3_xml_get_variable_base_type(fmi3_xml_variable_t* v) {
     fmi3_xml_variable_type_base_t* type = v->type;
-    return (type->baseType);
+    return type->baseType;
 }
 
 int fmi3_xml_variable_is_array(fmi3_xml_variable_t* v) {
@@ -826,6 +826,13 @@ fmi3_string_t fmi3_xml_get_binary_variable_mime_type(fmi3_xml_binary_variable_t*
     fmi3_xml_binary_type_props_t* props = (fmi3_xml_binary_type_props_t*)fmi3_xml_find_type_props(vv->type);
     if (!props) return NULL;
     return (fmi3_string_t)props->mimeType;
+}
+
+fmi3_boolean_t fmi3_xml_get_binary_variable_has_max_size(fmi3_xml_binary_variable_t* v) {
+    fmi3_xml_variable_t* vv = (fmi3_xml_variable_t*)v;
+    fmi3_xml_binary_type_props_t* props = (fmi3_xml_binary_type_props_t*)fmi3_xml_find_type_props(vv->type);
+    if (!props) return 0;
+    return props->hasMaxSize;
 }
 
 size_t fmi3_xml_get_binary_variable_max_size(fmi3_xml_binary_variable_t* v) {
@@ -1906,9 +1913,9 @@ int fmi3_xml_handle_Binary(fmi3_xml_parser_context_t* context, const char* data)
         int hasMimeType = fmi3_xml_is_attr_defined(context, fmi_attr_id_mimeType);
         int hasMaxSize  = fmi3_xml_is_attr_defined(context, fmi_attr_id_maxSize);
         if (hasMimeType || hasMaxSize) {
-            // Create variable properties:
+            // Create binary properties:
             vProps = fmi3_xml_parse_binary_type_properties(context, elmID, declaredType);
-            if (!vProps) return -1;
+            if (!vProps) {return -1;} // Can only really fail due to malloc failures
         }
         else {
             vProps = (fmi3_xml_binary_type_props_t*)declaredType;

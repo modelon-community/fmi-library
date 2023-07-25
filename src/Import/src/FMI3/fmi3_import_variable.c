@@ -494,6 +494,10 @@ fmi3_string_t fmi3_import_get_binary_variable_mime_type(fmi3_import_binary_varia
     return fmi3_xml_get_binary_variable_mime_type(v);
 }
 
+fmi3_boolean_t fmi3_import_get_binary_variable_has_max_size(fmi3_import_binary_variable_t* v) {
+    return fmi3_xml_get_binary_variable_has_max_size(v);
+}
+
 size_t fmi3_import_get_binary_variable_max_size(fmi3_import_binary_variable_t* v) {
     return fmi3_xml_get_binary_variable_max_size(v);
 }

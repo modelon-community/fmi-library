@@ -101,6 +101,7 @@ const char* fmi3_xml_get_enum_type_item_description(fmi3_xml_enumeration_typedef
 const char* fmi3_xml_get_enum_type_value_name(fmi3_xml_enumeration_typedef_t* t, int value);
 
 fmi3_string_t fmi3_xml_get_binary_type_mime_type(fmi3_xml_binary_typedef_t* t);
+fmi3_boolean_t fmi3_xml_get_binary_type_has_max_size(fmi3_xml_binary_typedef_t* t);
 size_t fmi3_xml_get_binary_type_max_size(fmi3_xml_binary_typedef_t* t);
 
 fmi3_boolean_t fmi3_xml_get_clock_type_can_be_deactivated(fmi3_xml_clock_typedef_t* t);

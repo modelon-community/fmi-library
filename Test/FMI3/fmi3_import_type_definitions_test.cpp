@@ -1126,8 +1126,6 @@ TEST_CASE("TypeDefinitions: Binary") {
 
     const char* mimeType;
     const char* mimeTypeDefault = "application/octet-stream";
-    size_t maxSize;
-    size_t maxSizeDefault = 0;
 
     //--------------------------------------------------------------------------
     // Test attributes for TypeDefinitions
@@ -1147,21 +1145,19 @@ TEST_CASE("TypeDefinitions: Binary") {
     
     SECTION("Minimal typedef") {
         mimeType = fmi3_import_get_binary_type_mime_type(tdMinimal);
-        maxSize  = fmi3_import_get_binary_type_max_size(tdMinimal);
         REQUIRE(strcmp(mimeType, mimeTypeDefault) == 0);
-        REQUIRE(maxSize == maxSizeDefault);
+        REQUIRE(fmi3_import_get_binary_type_has_max_size(tdMinimal) == false);
     }
     SECTION("Typedef that sets mimeType") {
         mimeType = fmi3_import_get_binary_type_mime_type(tdMimeType);
-        maxSize  = fmi3_import_get_binary_type_max_size(tdMimeType);
         REQUIRE(strcmp(mimeType, "mt0") == 0);
-        REQUIRE(maxSize == maxSizeDefault);
+        REQUIRE(fmi3_import_get_binary_type_has_max_size(tdMimeType) == false);
     }
     SECTION("Typedef that sets both mimeType and maxSize") {
         mimeType = fmi3_import_get_binary_type_mime_type(tdAllAttr);
-        maxSize  = fmi3_import_get_binary_type_max_size(tdAllAttr);
         REQUIRE(strcmp(mimeType, "mt0") == 0);
-        REQUIRE(maxSize == 999);
+        REQUIRE(fmi3_import_get_binary_type_has_max_size(tdAllAttr) == true);
+        REQUIRE(fmi3_import_get_binary_type_max_size(tdAllAttr) == 999);
     }
     
     //---------------------------------------------------------------------------------
@@ -1174,38 +1170,35 @@ TEST_CASE("TypeDefinitions: Binary") {
     SECTION("Variable without typedef") {
         v = fmi3_import_get_variable_by_name(xml, "var_default_type_1");
         bv = fmi3_import_get_variable_as_binary(v);
+        REQUIRE(fmi3_import_get_binary_variable_has_max_size(bv) == false);
         mimeType = fmi3_import_get_binary_variable_mime_type(bv);
-        maxSize  = fmi3_import_get_binary_variable_max_size(bv);
         REQUIRE(fmi3_import_get_variable_declared_type(v) == nullptr);
         REQUIRE(strcmp(mimeType, mimeTypeDefault) == 0);
-        REQUIRE(maxSize == maxSizeDefault);
     }
     SECTION("Variable inheriting minimal typedef") {
         v = fmi3_import_get_variable_by_name(xml, "var_inh_minimal_1");
         bv = fmi3_import_get_variable_as_binary(v);
+        REQUIRE(fmi3_import_get_binary_variable_has_max_size(bv) == false);
         mimeType = fmi3_import_get_binary_variable_mime_type(bv);
-        maxSize  = fmi3_import_get_binary_variable_max_size(bv);
         REQUIRE(fmi3_import_get_variable_declared_type(v) == (void*)tdMinimal);
         REQUIRE(strcmp(mimeType, mimeTypeDefault) == 0);
-        REQUIRE(maxSize == maxSizeDefault);
     }
     SECTION("Variable inheriting typedef that defines mimeType") {
         v = fmi3_import_get_variable_by_name(xml, "var_inh_mimeType_1");
         bv = fmi3_import_get_variable_as_binary(v);
+        REQUIRE(fmi3_import_get_binary_variable_has_max_size(bv) == false);
         mimeType = fmi3_import_get_binary_variable_mime_type(bv);
-        maxSize  = fmi3_import_get_binary_variable_max_size(bv);
         REQUIRE(fmi3_import_get_variable_declared_type(v) == (void*)tdMimeType);
         REQUIRE(strcmp(mimeType, "mt0") == 0);
-        REQUIRE(maxSize == maxSizeDefault);
     }
     SECTION("Variable inheriting typedef that defines mimeType and maxSize") {
         v = fmi3_import_get_variable_by_name(xml, "var_inh_allAttr_1");
         bv = fmi3_import_get_variable_as_binary(v);
+        REQUIRE(fmi3_import_get_binary_variable_has_max_size(bv) == true);
+        REQUIRE(fmi3_import_get_binary_variable_max_size(bv) == 999);
         mimeType = fmi3_import_get_binary_variable_mime_type(bv);
-        maxSize  = fmi3_import_get_binary_variable_max_size(bv);
         REQUIRE(fmi3_import_get_variable_declared_type(v) == (void*)tdAllAttr);
         REQUIRE(strcmp(mimeType, "mt0") == 0);
-        REQUIRE(maxSize == 999);
     }
     
     //------------------------------------------------------------------------------
@@ -1215,38 +1208,35 @@ TEST_CASE("TypeDefinitions: Binary") {
     SECTION("Variable without typedef, and variable overrides mimeType") {
         v = fmi3_import_get_variable_by_name(xml, "var_default_type_2");
         bv = fmi3_import_get_variable_as_binary(v);
+        REQUIRE(fmi3_import_get_binary_variable_has_max_size(bv) == false);
         mimeType = fmi3_import_get_binary_variable_mime_type(bv);
-        maxSize  = fmi3_import_get_binary_variable_max_size(bv);
         REQUIRE(fmi3_import_get_variable_declared_type(v) == nullptr);
         REQUIRE(strcmp(mimeType, "mt2") == 0);
-        REQUIRE(maxSize == maxSizeDefault);
     }
     SECTION("Variable inheriting minimal typedef, and variable overrides mimeType") {
         v = fmi3_import_get_variable_by_name(xml, "var_inh_minimal_2");
         bv = fmi3_import_get_variable_as_binary(v);
+        REQUIRE(fmi3_import_get_binary_variable_has_max_size(bv) == false);
         mimeType = fmi3_import_get_binary_variable_mime_type(bv);
-        maxSize  = fmi3_import_get_binary_variable_max_size(bv);
         REQUIRE(fmi3_import_get_variable_declared_type(v) == (void*)tdMinimal);
         REQUIRE(strcmp(mimeType, "mt2") == 0);
-        REQUIRE(maxSize == maxSizeDefault);
     }
     SECTION("Variable inheriting typedef that defines mimeType, and variable overrides mimeType") {
         v = fmi3_import_get_variable_by_name(xml, "var_inh_mimeType_2");
         bv = fmi3_import_get_variable_as_binary(v);
+        REQUIRE(fmi3_import_get_binary_variable_has_max_size(bv) == false);
         mimeType = fmi3_import_get_binary_variable_mime_type(bv);
-        maxSize  = fmi3_import_get_binary_variable_max_size(bv);
         REQUIRE(fmi3_import_get_variable_declared_type(v) == (void*)tdMimeType);
         REQUIRE(strcmp(mimeType, "mt2") == 0);
-        REQUIRE(maxSize == maxSizeDefault);
     }
     SECTION("Variable inheriting typedef that defines mimeType and maxSize, and variable overrides both") {
         v = fmi3_import_get_variable_by_name(xml, "var_inh_allAttr_2");
         bv = fmi3_import_get_variable_as_binary(v);
+        REQUIRE(fmi3_import_get_binary_variable_has_max_size(bv) == true);
+        REQUIRE(fmi3_import_get_binary_variable_max_size(bv) == 2);
         mimeType = fmi3_import_get_binary_variable_mime_type(bv);
-        maxSize  = fmi3_import_get_binary_variable_max_size(bv);
         REQUIRE(fmi3_import_get_variable_declared_type(v) == (void*)tdAllAttr);
         REQUIRE(strcmp(mimeType, "mt2") == 0);
-        REQUIRE(maxSize == 2);
     }
 
     fmi3_import_free(xml);

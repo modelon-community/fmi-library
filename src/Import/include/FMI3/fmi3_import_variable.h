@@ -518,6 +518,8 @@ FMILIB_EXPORT size_t* fmi3_import_get_binary_variable_start_array_sizes(fmi3_imp
 FMILIB_EXPORT size_t fmi3_import_get_binary_variable_start_array_size(fmi3_import_binary_variable_t* v);
 /** \brief Get mimeType for the variable */
 FMILIB_EXPORT fmi3_string_t fmi3_import_get_binary_variable_mime_type(fmi3_import_binary_variable_t* v);
+/** \brief Check if the variable has the "maxSize" attribute */
+FMILIB_EXPORT fmi3_boolean_t fmi3_import_get_binary_variable_has_max_size(fmi3_import_binary_variable_t* v);
 /** \brief Get maxSize for the variable */
 FMILIB_EXPORT size_t fmi3_import_get_binary_variable_max_size(fmi3_import_binary_variable_t* v);
 

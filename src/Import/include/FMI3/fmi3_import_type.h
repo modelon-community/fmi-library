@@ -277,7 +277,8 @@ FMILIB_EXPORT const char* fmi3_import_get_enum_type_value_name(fmi3_import_enume
 
 /** \brief Get mimeType for the type */
 FMILIB_EXPORT fmi3_string_t fmi3_import_get_binary_type_mime_type(fmi3_import_binary_typedef_t* t);
-
+/** \brief Check if the type has the "maxSize" attribute */
+FMILIB_EXPORT fmi3_boolean_t fmi3_import_get_binary_type_has_max_size(fmi3_import_binary_typedef_t* t);
 /** \brief Get maxSize for the type */
 FMILIB_EXPORT size_t fmi3_import_get_binary_type_max_size(fmi3_import_binary_typedef_t* t);
 

@@ -258,9 +258,7 @@ TEST_CASE("Clock with ALL OPTIONAL attributes invalid") {
     fmi3_import_t* fmu = tfmu->fmu;
     REQUIRE(fmu != nullptr);
 
-    /*
-    <ClockType name="myClock" intervalVariability="constant" priority="1" intervalCounter="2" resolution="default"/>
-    */
+    // <ClockType name="myClock" intervalVariability="constant" priority="1" intervalCounter="2" resolution="default"/>
     INFO("Verify ClockType");
     REQUIRE(fmi3_testutil_log_contains(tfmu, "XML element 'ClockType': failed to parse attribute resolution='default'"));
 
@@ -297,6 +295,7 @@ TEST_CASE("Clock with ALL OPTIONAL attributes invalid") {
 
     fmi3_import_variable_t* var = fmi3_import_get_variable_by_vr(fmu, 1);
     REQUIRE(var != nullptr);
+    REQUIRE(fmi3_import_get_variable_declared_type(var) == typeDefGeneric);
     fmi3_import_clock_variable_t* clockVar = fmi3_import_get_variable_as_clock(var);
     REQUIRE(clockVar != nullptr);
 
@@ -334,6 +333,46 @@ TEST_CASE("Clock with muliple errors in required attributes") {
     REQUIRE(fmi3_testutil_log_contains(tfmu, "Attribute 'intervalVariability' not processed by element 'Clock' handle"));
 
     REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables."));
+
+    fmi3_testutil_import_free(tfmu);
+}
+
+TEST_CASE("Binary variable with errors in binary specific attributes") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/error_handling/binary_specific_attributes";
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu != nullptr);
+
+    // <BinaryType name="myBin" mimeType="mimeType" maxSize="10"/>
+    INFO("Verify BinaryType");
+
+    fmi3_import_type_definition_list_t* typeDefList = fmi3_import_get_type_definition_list(fmu);
+    REQUIRE(typeDefList != nullptr);
+    REQUIRE(fmi3_import_get_type_definition_list_size(typeDefList) == 1);
+
+    fmi3_import_variable_typedef_t* typeDefGeneric = fmi3_import_get_typedef(typeDefList, 0);
+    REQUIRE(typeDefGeneric != nullptr);
+    REQUIRE_STREQ(fmi3_import_get_type_name(typeDefGeneric), "myBin");
+
+    fmi3_import_binary_typedef_t* binaryDef = fmi3_import_get_type_as_binary(typeDefGeneric);
+    REQUIRE(binaryDef != nullptr);
+    REQUIRE(fmi3_import_get_binary_type_has_max_size(binaryDef) == true);
+    REQUIRE(fmi3_import_get_binary_type_max_size(binaryDef) == 10);
+    REQUIRE_STREQ(fmi3_import_get_binary_type_mime_type(binaryDef), "mimeType")
+
+    // <Binary name="binaryVar" valueReference="1" declaredType="myBin" mimeType="mime" maxSize="unlimited"/>
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "XML element 'Binary': failed to parse attribute maxSize='unlimited'"));
+
+    fmi3_import_variable_t* var = fmi3_import_get_variable_by_vr(fmu, 1);
+    REQUIRE(var != nullptr);
+    REQUIRE(fmi3_import_get_variable_declared_type(var) == typeDefGeneric);
+    fmi3_import_binary_variable_t* binVar = fmi3_import_get_variable_as_binary(var);
+    REQUIRE(binVar != nullptr);
+
+    REQUIRE(fmi3_import_get_binary_variable_has_max_size(binVar) == true); // fallback from type
+    REQUIRE(fmi3_import_get_binary_variable_max_size(binVar) == 10);
+
+    REQUIRE_STREQ(fmi3_import_get_binary_variable_mime_type(binVar), "mime");
 
     fmi3_testutil_import_free(tfmu);
 }

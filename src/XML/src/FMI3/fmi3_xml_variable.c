@@ -2043,7 +2043,6 @@ int fmi3_xml_handle_String(fmi3_xml_parser_context_t *context, const char* data)
     fmi3_xml_type_definition_list_t* td = &md->typeDefinitions;
     fmi3_xml_variable_t* variable = jm_vector_get_last(jm_voidp)(&md->variablesOrigOrder);
 
-
     if (!data) {
         fmi3_xml_set_element_handle(context, "Start", fmi3_xml_elmID_StringVariableStart);
         assert(!variable->type);
@@ -2069,9 +2068,7 @@ int fmi3_xml_handle_String(fmi3_xml_parser_context_t *context, const char* data)
             // Resize the vector to 0 since we are now done with the previous values.
             jm_vector_resize(jm_voidp)(&context->currentStartVariableValues, 0);
             if (!fmi3_xml_variable_is_array(variable) && (nStart != 1)) {
-                // TODO: This shouldn't be fatal, change & find a test for this
-                fmi3_xml_parse_fatal(context, "Found too many start values for variable %s", variable->name);
-                return -1;
+                fmi3_xml_parse_warning(context, "Variable %s: Found %zu Start elements for non-array variable", variable->name, nStart);
             }
         } else {
             fmi3_log_error_if_start_required(context, variable);
@@ -2482,9 +2479,8 @@ int fmi3_xml_handle_ModelVariables(fmi3_xml_parser_context_t* context, const cha
             }
         }
 
-        // TODO: More clean highlighting which errors are critical?
         if (!md->isValid) { 
-            fmi3_xml_parse_fatal(context, "Fatal failure in parsing ModelVariables.");
+            fmi3_xml_parse_fatal(context, "Fatal failure in parsing ModelVariables. Variable(s) failed to parse or an essential error check failed.");
             return -1;
         }
 

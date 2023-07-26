@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<fmiModelDescription fmiVersion="3.0-alpha" modelName="model" instantiationToken="">
+<CoSimulation modelIdentifier="id"/>
+
+
+<ModelVariables>
+    <!-- valid -->
+    <String name="s0" valueReference="0" causality="input">
+        <Start value="first"/>
+    </String>
+    <!-- 2 start values, missing dimension, different format -->
+    <String name="s1" valueReference="1" causality="input">
+        <Start value="first"/>
+        <Start value="second"/>
+    </String>
+    <!-- Invalid Dimension element -->
+    <String name="s2" valueReference="2" causality="input">
+        <Dimension/>
+        <Start value="first"/>
+        <Start value="second"/>
+    </String>
+
+</ModelVariables>
+
+<ModelStructure/>
+</fmiModelDescription>

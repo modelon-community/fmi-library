@@ -30,7 +30,7 @@ TEST_CASE("Fatal error test, no VR: boolean") {
     REQUIRE(fmu == nullptr);
     
     REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'Boolean': required attribute 'valueReference' not found"));
-    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables."));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables. Variable(s) failed to parse or an essential error check failed."));
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -41,7 +41,7 @@ TEST_CASE("Fatal error test, no VR: enum") {
     REQUIRE(fmu == nullptr);
     
     REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'Enumeration': required attribute 'valueReference' not found"));
-    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables."));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables. Variable(s) failed to parse or an essential error check failed."));
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -52,7 +52,7 @@ TEST_CASE("Fatal error test, no VR: float64") {
     REQUIRE(fmu == nullptr);
     
     REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'Float64': required attribute 'valueReference' not found"));
-    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables."));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables. Variable(s) failed to parse or an essential error check failed."));
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -63,7 +63,7 @@ TEST_CASE("Fatal error test, no VR: int64") {
     REQUIRE(fmu == nullptr);
     
     REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'Int64': required attribute 'valueReference' not found"));
-    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables."));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables. Variable(s) failed to parse or an essential error check failed."));
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -74,6 +74,6 @@ TEST_CASE("Fatal error test, no VR: string") {
     REQUIRE(fmu == nullptr);
     
     REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'String': required attribute 'valueReference' not found"));
-    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables."));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables. Variable(s) failed to parse or an essential error check failed."));
     fmi3_testutil_import_free(tfmu);
 }

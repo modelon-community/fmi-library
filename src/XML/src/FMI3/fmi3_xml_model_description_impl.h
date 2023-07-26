@@ -73,12 +73,8 @@ typedef struct fmi3_xml_scheduled_execution {
 /*  ModelDescription is the entry point for the package*/
 struct fmi3_xml_model_description_t {
 
-    // TODO: Possibly replace by some error status enumeration=
-    // Could utitlize status, which is largely unused right now
     int isValid;
-    // Flag for skipping the postprocessing of a variable
-    // Used when parsing encounters invalid ModelVariables
-    int latestVariableValid;
+    int latestVariableValid; // for skipping the postprocessing of an invalid variable
 
     jm_callbacks* callbacks;
 

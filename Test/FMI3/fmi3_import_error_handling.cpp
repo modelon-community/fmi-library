@@ -67,7 +67,7 @@ TEST_CASE("Invalid VR, missing name") {
     REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'Enumeration': required attribute 'name' not found"));
     REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'Enumeration': required attribute 'valueReference' not found"));
 
-    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables."));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables. Variable(s) failed to parse or an essential error check failed."));
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -94,7 +94,7 @@ TEST_CASE("Testing all global error checks") {
     REQUIRE(fmi3_testutil_log_contains(tfmu, "The valueReference in previous=\"1000\" did not resolve to any variable."));
 
     // Final failure in ModelVariable parsing
-    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables."));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables. Variable(s) failed to parse or an essential error check failed."));
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -137,7 +137,7 @@ TEST_CASE("Test missing required attribute plus other attribute errors/warnings"
     // We do not check attribute errors if name/valueReference are erroneous
     REQUIRE(!fmi3_testutil_log_contains(tfmu, "A variable must not refer to itself in the attribute 'previous'."));
 
-    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables."));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables. Variable(s) failed to parse or an essential error check failed."));
 
     fmi3_testutil_import_free(tfmu);
 }
@@ -249,7 +249,7 @@ TEST_CASE("Clock with ALL invalid attributes") {
     REQUIRE(fmi3_testutil_log_contains(tfmu, "XML element 'Clock': failed to parse attribute intervalDecimal='ten'"));
     REQUIRE(fmi3_testutil_log_contains(tfmu, "XML element 'Clock': failed to parse attribute shiftDecimal='twenty'"));
 
-    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables."));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables. Variable(s) failed to parse or an essential error check failed."));
 
     fmi3_testutil_import_free(tfmu);
 }
@@ -334,7 +334,7 @@ TEST_CASE("Clock with muliple errors in required attributes") {
     // TODO: Current limitation; type specific attributes not be parsed if parsing required common attributes fails
     REQUIRE(fmi3_testutil_log_contains(tfmu, "Attribute 'intervalVariability' not processed by element 'Clock' handle"));
 
-    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables."));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables. Variable(s) failed to parse or an essential error check failed."));
 
     fmi3_testutil_import_free(tfmu);
 }
@@ -375,6 +375,61 @@ TEST_CASE("Binary variable with errors in binary specific attributes") {
     REQUIRE(fmi3_import_get_binary_variable_max_size(binVar) == 10);
 
     REQUIRE_STREQ(fmi3_import_get_binary_variable_mime_type(binVar), "mime");
+
+    fmi3_testutil_import_free(tfmu);
+}
+
+TEST_CASE("String non-array variable with too many start values") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/error_handling/string_multiple_start";
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    REQUIRE(tfmu != nullptr);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu != nullptr);
+
+    fmi3_import_variable_t* var;
+    fmi3_import_string_variable_t* stringVar;
+    fmi3_string_t* startArray;
+
+    // valid one
+    var = fmi3_import_get_variable_by_vr(fmu, 0);
+    REQUIRE(var != nullptr);
+    stringVar = fmi3_import_get_variable_as_string(var);
+    REQUIRE(stringVar != nullptr);
+    startArray = fmi3_import_get_string_variable_start_array(stringVar);
+    REQUIRE_STREQ(startArray[0], "first")
+
+    // Missing Dimension element
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Variable s1: Found 2 Start elements for non-array variable"));
+
+    var = fmi3_import_get_variable_by_vr(fmu, 1);
+    REQUIRE(var != nullptr);
+    stringVar = fmi3_import_get_variable_as_string(var);
+    REQUIRE(stringVar != nullptr);
+    startArray = fmi3_import_get_string_variable_start_array(stringVar);
+    REQUIRE_STREQ(startArray[0], "first")
+    REQUIRE_STREQ(startArray[1], "second")
+
+    // Invalid Dimension element
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Error parsing Dimension: no attribute 'start' or 'valueReference' found"));
+    // Dimension still parses & Variable is recognized as array
+    REQUIRE(!fmi3_testutil_log_contains(tfmu, "Variable s2: Found 2 Start elements for non-array variable"));
+
+    var = fmi3_import_get_variable_by_vr(fmu, 2);
+    REQUIRE(var != nullptr);
+
+    fmi3_import_dimension_list_t* dimList = fmi3_import_get_variable_dimension_list(var);
+    REQUIRE(dimList != nullptr);
+    REQUIRE(fmi3_import_get_dimension_list_size(dimList) == 1);
+    fmi3_import_dimension_t* dim = fmi3_import_get_dimension(dimList, 0);
+    REQUIRE(dim != nullptr);
+    REQUIRE(fmi3_import_get_dimension_has_start(dim) == false);
+    REQUIRE(fmi3_import_get_dimension_has_vr(dim) == false);
+
+    stringVar = fmi3_import_get_variable_as_string(var);
+    REQUIRE(stringVar != nullptr);
+    startArray = fmi3_import_get_string_variable_start_array(stringVar);
+    REQUIRE_STREQ(startArray[0], "first")
+    REQUIRE_STREQ(startArray[1], "second")
 
     fmi3_testutil_import_free(tfmu);
 }

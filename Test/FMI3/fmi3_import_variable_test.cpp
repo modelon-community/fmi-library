@@ -624,7 +624,7 @@ TEST_CASE("Invalid valueReference - two vars with same VR - basic") {
     
     REQUIRE(fmi3_testutil_log_contains(tfmu, "The following variables have the same valueReference: v1, v2"));
 
-    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables."));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables. Variable(s) failed to parse or an essential error check failed."));
     
     fmi3_testutil_import_free(tfmu);
 }
@@ -637,7 +637,7 @@ TEST_CASE("Invalid valueReference - two vars with same VR - more vars") {
     
     REQUIRE(fmi3_testutil_log_contains(tfmu, "The following variables have the same valueReference: v3, v8"));
 
-    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables."));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables. Variable(s) failed to parse or an essential error check failed."));
     
     fmi3_testutil_import_free(tfmu);
 }
@@ -651,7 +651,7 @@ TEST_CASE("Invalid valueReference - three vars with same VR") {
     REQUIRE(fmi3_testutil_log_contains(tfmu, "The following variables have the same valueReference: v3, v4"));
     REQUIRE(fmi3_testutil_log_contains(tfmu, "The following variables have the same valueReference: v4, v6"));
 
-    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables."));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables. Variable(s) failed to parse or an essential error check failed."));
     
     fmi3_testutil_import_free(tfmu);
 }
@@ -664,7 +664,7 @@ TEST_CASE("Invalid valueReference - same VR but different type") {
     
     REQUIRE(fmi3_testutil_log_contains(tfmu, "The following variables have the same valueReference: v1, v2"));
 
-    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables."));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables. Variable(s) failed to parse or an essential error check failed."));
     
     fmi3_testutil_import_free(tfmu);
 }
@@ -853,7 +853,7 @@ TEST_CASE("Invalid; duplicate variable name") {
 
     REQUIRE(fmi3_testutil_log_contains(tfmu, "Two variables with the same name 'sameName' found. This is not allowed."));
 
-    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables."));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables. Variable(s) failed to parse or an essential error check failed."));
 
     fmi3_testutil_import_free(tfmu);
 }
@@ -867,7 +867,7 @@ TEST_CASE("Invalid; clock without intervalVariability") {
 
     REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'Clock': required attribute 'intervalVariability' not found"));
 
-    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables."));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables. Variable(s) failed to parse or an essential error check failed."));
 
     fmi3_testutil_import_free(tfmu);
 }
@@ -881,7 +881,7 @@ TEST_CASE("Invalid derivative; VR does not resolve to any variable") {
 
     REQUIRE(fmi3_testutil_log_contains(tfmu, "The valueReference in derivative=\"1\" did not resolve to any variable."));
 
-    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables."));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables. Variable(s) failed to parse or an essential error check failed."));
 
     fmi3_testutil_import_free(tfmu);
 }

@@ -465,7 +465,7 @@ TEST_CASE("Testing invalid array; is string") {
     fmi3_testutil_import_free(tfmu);
 }
 
-TEST_CASE("Array with too many start values") {
+TEST_CASE("String array variable with too many start values") {
     const char* xmldir = FMI3_TEST_XML_DIR "/arrays/invalid/string_too_many_start";
     fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
     REQUIRE(tfmu != nullptr);
@@ -488,7 +488,6 @@ TEST_CASE("Array with too many start values") {
 }
 
 TEST_CASE("Testing defaults of array starts in case of parsing error") {
-    // TODO: Add test for Enumeration
     const char* xmldir = FMI3_TEST_XML_DIR "/arrays/invalid/invalid_start_all_cases";
     fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
     REQUIRE(tfmu != nullptr);

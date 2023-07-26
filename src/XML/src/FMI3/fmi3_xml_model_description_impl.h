@@ -32,12 +32,6 @@
 extern "C" {
 #endif
 
-typedef enum fmi3_xml_model_description_status_enu_t {
-    fmi3_xml_model_description_enu_empty,
-    fmi3_xml_model_description_enu_ok,
-    fmi3_xml_model_description_enu_error
-} fmi3_xml_model_description_status_enu_t;
-
 #define FMI3_DEFAULT_EXPERIMENT_TOLERANCE 1e-4
 #define FMI3_DEFAULT_EXPERIMENT_STEPSIZE 1e-2
 typedef struct fmi3_xml_default_experiment {
@@ -77,8 +71,6 @@ struct fmi3_xml_model_description_t {
     int latestVariableValid; // for skipping the postprocessing of an invalid variable
 
     jm_callbacks* callbacks;
-
-    fmi3_xml_model_description_status_enu_t status;
 
     jm_vector(char) fmi3_xml_standard_version;
 

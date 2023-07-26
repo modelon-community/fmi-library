@@ -1488,7 +1488,6 @@ int fmi3_xml_parse_model_description(fmi3_xml_model_description_t* md,
         return -1;
     }
 
-    md->status = fmi3_xml_model_description_enu_ok;
     context->modelDescription = 0;
     fmi3_xml_parse_free_context(context);
 

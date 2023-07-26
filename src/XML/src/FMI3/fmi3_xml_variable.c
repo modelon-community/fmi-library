@@ -2483,9 +2483,6 @@ int fmi3_xml_handle_ModelVariables(fmi3_xml_parser_context_t* context, const cha
             fmi3_xml_parse_fatal(context, "Fatal failure in parsing ModelVariables. Variable(s) failed to parse or an essential error check failed.");
             return -1;
         }
-
-        md->status = fmi3_xml_model_description_enu_empty;
-
         // TODO: Check variables that specify Dimension sizes (must be structuralParameter or constant)
     }
     return 0;

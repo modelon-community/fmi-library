@@ -194,7 +194,7 @@ TEST_CASE("Test multiple errors in Start elements for Binary") {
 
     REQUIRE(fmi3_testutil_log_contains(tfmu, "Start missing the required attribute 'value'"));
     REQUIRE(fmi3_testutil_log_contains(tfmu, "Empty value attribute in Start element"));
-    REQUIRE(fmi3_testutil_log_contains(tfmu, "Hexadecimal string is not of even length: 'abc'. Truncating to even length."));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Hexadecimal string is not of even length: 'abc'."));
     REQUIRE(fmi3_testutil_log_contains(tfmu, "String is not hexadecimal: gh"));
 
     fmi3_import_variable_t* var = fmi3_import_get_variable_by_vr(fmu, 1);
@@ -202,7 +202,7 @@ TEST_CASE("Test multiple errors in Start elements for Binary") {
     fmi3_import_binary_variable_t* binVar = fmi3_import_get_variable_as_binary(var);
     REQUIRE(binVar != nullptr);
 
-    REQUIRE(fmi3_import_get_binary_variable_start_size(binVar) == 3); // 3 valid ones
+    REQUIRE(fmi3_import_get_binary_variable_start_size(binVar) == 2); // 2 valid ones
 
     fmi3_binary_t* bins = fmi3_import_get_binary_variable_start_array(binVar);
     REQUIRE(bins != nullptr);
@@ -214,15 +214,11 @@ TEST_CASE("Test multiple errors in Start elements for Binary") {
     REQUIRE(bins[0][0] == 255); // ff = 15*16 + 15 = 255
     REQUIRE(bins[0][1] == 255); // ff = 15*16 + 15 = 255
 
-    INFO("<Start value=\"abc\"/>");
-    REQUIRE(binSizes[1] == 1);
-    REQUIRE(bins[1][0] == 171); // ab = 10*16 + 11 = 171
-
     INFO("<Start value=\"abcdef\"/>");
-    REQUIRE(binSizes[2] == 3);
-    REQUIRE(bins[2][0] == 171); // ab = 10*16 + 11 = 171
-    REQUIRE(bins[2][1] == 205); // cd = 12*16 + 13 = 205
-    REQUIRE(bins[2][2] == 239); // ef = 14*16 + 15 = 239
+    REQUIRE(binSizes[1] == 3);
+    REQUIRE(bins[1][0] == 171); // ab = 10*16 + 11 = 171
+    REQUIRE(bins[1][1] == 205); // cd = 12*16 + 13 = 205
+    REQUIRE(bins[1][2] == 239); // ef = 14*16 + 15 = 239
 
     fmi3_testutil_import_free(tfmu);
 }

@@ -495,44 +495,45 @@ TEST_CASE("Testing defaults of array starts in case of parsing error") {
     fmi3_import_t* fmu = tfmu->fmu;
     REQUIRE(fmu != nullptr);
 
-    // Checking log entries
+    // Test for all variables that fmi3_import_get_*_variable_start_array defaults to NULL
+    fmi3_import_variable_t* var;
+
+    // Float
     REQUIRE(fmi3_testutil_log_contains(tfmu, "XML element 'Float32': could not parse value for Float32 attribute 'start'="));
     REQUIRE(fmi3_testutil_log_contains(tfmu, "XML element 'Float64': could not parse value for Float64 attribute 'start'="));
 
+    REQUIRE(fmi3_import_get_float32_variable_start_array(fmi3_import_get_variable_as_float32(fmi3_import_get_variable_by_vr(fmu, 0))) == nullptr);
+    REQUIRE(fmi3_import_get_float64_variable_start_array(fmi3_import_get_variable_as_float64(fmi3_import_get_variable_by_vr(fmu, 1))) == nullptr);
+
+    // Int
     REQUIRE(fmi3_testutil_log_contains(tfmu, "XML element 'Int8': could not parse value for Int8 attribute 'start'="));
     REQUIRE(fmi3_testutil_log_contains(tfmu, "XML element 'Int16': could not parse value for Int16 attribute 'start'="));
     REQUIRE(fmi3_testutil_log_contains(tfmu, "XML element 'Int32': could not parse value for Int32 attribute 'start'="));
     REQUIRE(fmi3_testutil_log_contains(tfmu, "XML element 'Int64': could not parse value for Int64 attribute 'start'="));
 
-    REQUIRE(fmi3_testutil_log_contains(tfmu, "XML element 'UInt8': could not parse value for UInt8 attribute 'start'="));
-    REQUIRE(fmi3_testutil_log_contains(tfmu, "XML element 'UInt16': could not parse value for UInt16 attribute 'start'="));
-    REQUIRE(fmi3_testutil_log_contains(tfmu, "XML element 'UInt32': could not parse value for UInt32 attribute 'start'="));
-    REQUIRE(fmi3_testutil_log_contains(tfmu, "XML element 'UInt64': could not parse value for UInt64 attribute 'start'="));
-
-    REQUIRE(fmi3_testutil_log_contains(tfmu, "XML element 'Boolean': could not parse value for Boolean attribute 'start'="));
-
-    
-    // Test for all variables that fmi3_import_get_*_variable_start_array defaults to NULL
-    fmi3_import_variable_t* var;
-
-    // Float
-    REQUIRE(fmi3_import_get_float32_variable_start_array(fmi3_import_get_variable_as_float32(fmi3_import_get_variable_by_vr(fmu, 0))) == nullptr);
-    REQUIRE(fmi3_import_get_float64_variable_start_array(fmi3_import_get_variable_as_float64(fmi3_import_get_variable_by_vr(fmu, 1))) == nullptr);
-
-    // Int
     REQUIRE(fmi3_import_get_int8_variable_start_array( fmi3_import_get_variable_as_int8(fmi3_import_get_variable_by_vr( fmu, 10))) == nullptr);
     REQUIRE(fmi3_import_get_int16_variable_start_array(fmi3_import_get_variable_as_int16(fmi3_import_get_variable_by_vr(fmu, 11))) == nullptr);
     REQUIRE(fmi3_import_get_int32_variable_start_array(fmi3_import_get_variable_as_int32(fmi3_import_get_variable_by_vr(fmu, 12))) == nullptr);
     REQUIRE(fmi3_import_get_int64_variable_start_array(fmi3_import_get_variable_as_int64(fmi3_import_get_variable_by_vr(fmu, 13))) == nullptr);
 
     // UInt
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "XML element 'UInt8': could not parse value for UInt8 attribute 'start'="));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "XML element 'UInt16': could not parse value for UInt16 attribute 'start'="));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "XML element 'UInt32': could not parse value for UInt32 attribute 'start'="));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "XML element 'UInt64': could not parse value for UInt64 attribute 'start'="));
+
     REQUIRE(fmi3_import_get_uint8_variable_start_array( fmi3_import_get_variable_as_uint8(fmi3_import_get_variable_by_vr( fmu, 20))) == nullptr);
     REQUIRE(fmi3_import_get_uint16_variable_start_array(fmi3_import_get_variable_as_uint16(fmi3_import_get_variable_by_vr(fmu, 21))) == nullptr);
     REQUIRE(fmi3_import_get_uint32_variable_start_array(fmi3_import_get_variable_as_uint32(fmi3_import_get_variable_by_vr(fmu, 22))) == nullptr);
     REQUIRE(fmi3_import_get_uint64_variable_start_array(fmi3_import_get_variable_as_uint64(fmi3_import_get_variable_by_vr(fmu, 23))) == nullptr);
 
     // Boolean
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "XML element 'Boolean': could not parse value for Boolean attribute 'start'="));
     REQUIRE(fmi3_import_get_boolean_variable_start_array(fmi3_import_get_variable_as_boolean(fmi3_import_get_variable_by_vr(fmu, 30))) == nullptr);
+
+    // Enumeration
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "XML element 'Enumeration': could not parse value for Enumeration attribute 'start'="));
+    REQUIRE(fmi3_import_get_enum_variable_start_array(fmi3_import_get_variable_as_enum(fmi3_import_get_variable_by_vr(fmu, 40))) == nullptr);
 
     fmi3_testutil_import_free(tfmu);
 }

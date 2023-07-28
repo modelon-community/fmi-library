@@ -40,9 +40,10 @@ fmi3_xml_model_description_t* fmi3_xml_allocate_model_description(jm_callbacks* 
         return 0;
     }
 
-    md->callbacks = cb;
+    md->isValid = 1;
+    md->latestVariableIsValid = 1;
 
-    md->status = fmi3_xml_model_description_enu_empty;
+    md->callbacks = cb;
 
     jm_vector_init(char)(&md->fmi3_xml_standard_version, 0, cb);
     jm_vector_init(char)(&md->modelName,                 0, cb);
@@ -111,7 +112,6 @@ void fmi3_xml_clear_model_description(fmi3_xml_model_description_t* md) {
     void(*cb_free)(const char*) = (void(*)(const char*))md->callbacks->free;
     size_t i; /* loop variable */
 
-    md->status = fmi3_xml_model_description_enu_empty;
     jm_vector_free_data(char)(&md->fmi3_xml_standard_version);
     jm_vector_free_data(char)(&md->modelName);
     jm_vector_free_data(char)(&md->instantiationToken);
@@ -176,18 +176,12 @@ void fmi3_xml_clear_model_description(fmi3_xml_model_description_t* md) {
     md->modelStructure = 0;
 }
 
-int fmi3_xml_is_model_description_empty(fmi3_xml_model_description_t* md) {
-    return (md->status == fmi3_xml_model_description_enu_empty);
-}
-
 const char* fmi3_xml_get_last_error(fmi3_xml_model_description_t* md) {
     return jm_get_last_error(md->callbacks);
 }
 
 void fmi3_xml_clear_last_error(fmi3_xml_model_description_t* md) {
     jm_clear_last_error(md->callbacks);
-
-    /* return (md->status != fmi3_xml_model_description_enu_error); */
 }
 
 void fmi3_xml_free_model_description(fmi3_xml_model_description_t* md) {
@@ -323,6 +317,10 @@ double fmi3_xml_get_cs_fixed_internal_step_size(fmi3_xml_model_description_t* md
 
 int fmi3_xml_get_cs_recommended_intermediate_input_smoothness(fmi3_xml_model_description_t* md) {
     return md->coSimulation.recommendedIntermediateInputSmoothness;
+}
+
+void fmi3_xml_set_model_description_invalid(fmi3_xml_model_description_t* md){
+    md->isValid = 0;
 }
 
 unsigned int* fmi3_xml_get_capabilities(fmi3_xml_model_description_t* md) {

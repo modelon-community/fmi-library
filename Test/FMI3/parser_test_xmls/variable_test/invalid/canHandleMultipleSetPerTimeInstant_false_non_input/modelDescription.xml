@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription fmiVersion="3.0" modelName="" instantiationToken="">
+<ModelExchange modelIdentifier="id" />
+
+<ModelVariables>
+    <!-- canHandleMultipleSetPerTimeInstant, default true; only considered for causaility="input". -->
+    <Float64 name="var" valueReference="0" causality="output" canHandleMultipleSetPerTimeInstant="false"/>
+</ModelVariables>
+
+<ModelStructure/>
+</fmiModelDescription>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription fmiVersion="3.0" modelName="" instantiationToken="">
+<ModelExchange modelIdentifier="id" />
+
+<ModelVariables>
+    <!-- reinit: May only be present for a continuous-time state. -->
+    <Float64 name="var" valueReference="0" variability="discrete" reinit="true"/>
+</ModelVariables>
+
+<ModelStructure/>
+</fmiModelDescription>

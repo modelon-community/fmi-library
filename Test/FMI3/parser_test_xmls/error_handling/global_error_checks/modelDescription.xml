@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription fmiVersion="3.0" modelName="" instantiationToken="">
+<ModelExchange modelIdentifier="id_me"/>
+
+<ModelVariables>
+  <Float64 name="floaty"/> <!-- missing a required attribute, but we can still error check the valid ones -->
+
+  <!-- Valid variables, but duplicate names -->
+  <Float64 valueReference="1" name="floaty"/>
+  <Float64 valueReference="2" name="floaty"/>
+
+  <!-- Valid variables, but duplicate VRs -->
+  <Float64 valueReference="3" name="floaty3"/>
+  <Float64 valueReference="3" name="floaty4"/>
+
+  <!-- Invalid derivative reference -->
+  <Float64 valueReference="4" name="float_deriv" derivative="1000"/>
+
+  <!-- Invalid previous reference -->
+  <Float64 name="clocked_var_previous" valueReference="10" variability="discrete"/>
+  <Float64 valueReference="11" name="float_prev" previous="1000" clocks="12"/>
+  <Clock name="clock" valueReference="12" intervalVariability="constant"/>
+</ModelVariables>
+
+<ModelStructure/>
+</fmiModelDescription>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription fmiVersion="3.0" modelName="" instantiationToken="">
+<CoSimulation modelIdentifier="id" />
+
+<ModelVariables>
+	<!-- test various warnings/errors for missing start values that depend on causality/variability -->
+	<Float64 name="f64_structural_parameter"  valueReference="1" causality="structuralParameter"/>
+	<Float64 name="f64_parameter"             valueReference="2" causality="parameter"/>
+	<Float64 name="f64_input"                 valueReference="3" causality="input"/>
+
+	<Float64 name="f64_constant" valueReference="10" variability="constant"/>
+
+	<Float64 name="f64_exact"  valueReference="20" initial="exact"/>
+	<Float64 name="f64_approx" valueReference="21" initial="approx"/>
+</ModelVariables>
+
+<ModelStructure/>
+</fmiModelDescription>

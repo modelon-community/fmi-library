@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription fmiVersion="3.0" modelName="" instantiationToken="">
+<ModelExchange modelIdentifier="id"/>
+
+<ModelVariables>
+  <Binary name="binaryVar" valueReference="1">
+    <Dimension start="4"/>
+    <Start value="ffff"/>
+    <Start/> <!-- Missing value -->
+    <Start value=""/> <!-- empty value -->
+    <Start value="abc"/> <!-- Odd length -->
+    <Start value="gh"/> <!-- Invalid characters -->
+    <Start value="abcdef"/>
+  </Binary>
+</ModelVariables>
+
+<ModelStructure/>
+</fmiModelDescription>

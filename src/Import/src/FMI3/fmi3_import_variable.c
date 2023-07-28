@@ -85,6 +85,7 @@ fmi3_boolean_t fmi3_import_get_variable_intermediate_update(fmi3_import_variable
 }
 
 fmi3_import_variable_list_t* fmi3_import_get_variable_clocks(fmi3_import_t* fmu, fmi3_import_variable_t* v) {
+    if (!fmu || !v) {return NULL;}
     fmi3_import_variable_list_t* list = fmi3_import_alloc_variable_list(fmu, 0);
     if (fmi3_xml_get_variable_clocks(fmu->md, v, &list->variables) != jm_status_success) {
         fmi3_import_free_variable_list(list);
@@ -98,7 +99,7 @@ fmi3_import_variable_list_t* fmi3_import_get_variable_clocks(fmi3_import_t* fmu,
 // -----------------------------------------------------------------------------
 
 fmi3_import_float64_variable_t* fmi3_import_get_variable_as_float64(fmi3_import_variable_t* v) {
-    return fmi3_xml_get_variable_as_float64(v);
+    return v ? fmi3_xml_get_variable_as_float64(v) : NULL;
 }
 
 fmi3_float64_t fmi3_import_get_float64_variable_min(fmi3_import_float64_variable_t* v) {
@@ -154,7 +155,7 @@ fmi3_boolean_t fmi3_import_get_float64_variable_relative_quantity(fmi3_import_fl
 // -----------------------------------------------------------------------------
 
 fmi3_import_float32_variable_t* fmi3_import_get_variable_as_float32(fmi3_import_variable_t* v) {
-    return fmi3_xml_get_variable_as_float32(v);
+    return v ? fmi3_xml_get_variable_as_float32(v) : NULL;
 }
 
 fmi3_float32_t fmi3_import_get_float32_variable_min(fmi3_import_float32_variable_t* v) {
@@ -493,6 +494,10 @@ fmi3_string_t fmi3_import_get_binary_variable_mime_type(fmi3_import_binary_varia
     return fmi3_xml_get_binary_variable_mime_type(v);
 }
 
+fmi3_boolean_t fmi3_import_get_binary_variable_has_max_size(fmi3_import_binary_variable_t* v) {
+    return fmi3_xml_get_binary_variable_has_max_size(v);
+}
+
 size_t fmi3_import_get_binary_variable_max_size(fmi3_import_binary_variable_t* v) {
     return fmi3_xml_get_binary_variable_max_size(v);
 }
@@ -509,12 +514,20 @@ fmi3_boolean_t fmi3_import_get_clock_variable_can_be_deactivated(fmi3_import_clo
     return fmi3_xml_get_clock_variable_can_be_deactivated(v);
 }
 
+fmi3_boolean_t fmi3_import_get_clock_variable_has_priority(fmi3_import_clock_variable_t* v) {
+    return fmi3_xml_get_clock_variable_has_priority(v);
+}
+
 fmi3_uint32_t fmi3_import_get_clock_variable_priority(fmi3_import_clock_variable_t* v) {
     return fmi3_xml_get_clock_variable_priority(v);
 }
 
 fmi3_interval_variability_enu_t fmi3_import_get_clock_variable_interval_variability(fmi3_import_clock_variable_t* v) {
     return fmi3_xml_get_clock_variable_interval_variability(v);
+}
+
+fmi3_boolean_t fmi3_import_get_clock_variable_has_interval_decimal(fmi3_import_clock_variable_t* v) {
+    return fmi3_xml_get_clock_variable_has_interval_decimal(v);
 }
 
 fmi3_float32_t fmi3_import_get_clock_variable_interval_decimal(fmi3_import_clock_variable_t* v) {
@@ -529,8 +542,16 @@ fmi3_boolean_t fmi3_import_get_clock_variable_supports_fraction(fmi3_import_cloc
     return fmi3_xml_get_clock_variable_supports_fraction(v);
 }
 
+fmi3_boolean_t fmi3_import_get_clock_variable_has_resolution(fmi3_import_clock_variable_t* v) {
+    return fmi3_xml_get_clock_variable_has_resolution(v);
+}
+
 fmi3_uint64_t fmi3_import_get_clock_variable_resolution(fmi3_import_clock_variable_t* v) {
     return fmi3_xml_get_clock_variable_resolution(v);
+}
+
+fmi3_boolean_t fmi3_import_get_clock_variable_has_interval_counter(fmi3_import_clock_variable_t* v) {
+    return fmi3_xml_get_clock_variable_has_interval_counter(v);
 }
 
 fmi3_uint64_t fmi3_import_get_clock_variable_interval_counter(fmi3_import_clock_variable_t* v) {
@@ -595,7 +616,7 @@ const char* fmi3_import_get_alias_variable_description(fmi3_import_alias_variabl
 }
 
 fmi3_import_display_unit_t* fmi3_import_get_alias_variable_display_unit(fmi3_import_alias_variable_t* alias) {
-    return fmi3_xml_get_alias_variable_display_unit(alias);
+    return alias ? fmi3_xml_get_alias_variable_display_unit(alias) : NULL;
 }
 
 // -----------------------------------------------------------------------------

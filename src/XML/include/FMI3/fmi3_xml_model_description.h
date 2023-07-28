@@ -146,12 +146,6 @@ int fmi3_xml_parse_model_description(fmi3_xml_model_description_t* md,
 */
 void fmi3_xml_clear_model_description(fmi3_xml_model_description_t* md);
 
-/*
-*    @param md A model description object as returned by fmi3_xml_allocate_model_description.
-*    @return 1 if model description is empty and 0 if there is some content associated.
-*/
-int fmi3_xml_is_model_description_empty(fmi3_xml_model_description_t* md);
-
 /**Error handling:
 *  Many functions in the library return pointers to struct. An error is indicated by returning NULL/0-pointer.
 *  If error is returned than fmiGetLastError() functions can be used to retrieve the error message.
@@ -225,6 +219,7 @@ int fmi3_xml_get_cs_has_fixed_internal_step_size(fmi3_xml_model_description_t* m
 double fmi3_xml_get_cs_fixed_internal_step_size(fmi3_xml_model_description_t* md);
 int fmi3_xml_get_cs_recommended_intermediate_input_smoothness(fmi3_xml_model_description_t* md);
 
+void fmi3_xml_set_model_description_invalid(fmi3_xml_model_description_t* md); // Use for traceability
 
 /** \brief Get a pointer to the internal capabilities array */
 unsigned int* fmi3_xml_get_capabilities(fmi3_xml_model_description_t* md);

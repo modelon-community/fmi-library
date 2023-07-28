@@ -9,15 +9,12 @@
   variableNamingConvention="structured">
   <ModelExchange modelIdentifier="model_identifier"/>
 
-  <TypeDefinitions>
-  </TypeDefinitions>
+  <TypeDefinitions/>
 
   <ModelVariables>
     <Boolean name="v" />
   </ModelVariables>
 
-  <ModelStructure>
-  </ModelStructure>
-
+  <ModelStructure/>
 </fmiModelDescription>
 

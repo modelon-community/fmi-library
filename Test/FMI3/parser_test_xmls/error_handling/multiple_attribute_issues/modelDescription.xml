@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription fmiVersion="3.0" modelName="" instantiationToken="">
+<ModelExchange modelIdentifier="id_me"/>
+
+<ModelVariables>
+    <Float64 name="floaty" valueReference="0" clocks="yes" variability="continuous" causality="casual" previous="0" canHandleMultipleSetPerTimeInstant="false"/>
+</ModelVariables>
+
+<ModelStructure/>
+</fmiModelDescription>

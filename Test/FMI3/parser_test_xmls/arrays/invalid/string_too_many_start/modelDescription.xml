@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<fmiModelDescription fmiVersion="3.0-alpha" modelName="model" instantiationToken="">
+<CoSimulation modelIdentifier="id"/>
+
+
+<ModelVariables>
+    <String name="string_array" valueReference="0" causality="input">
+        <Dimension start="2"/>
+        <Start value="first"/>
+        <Start value="second"/>
+        <Start value="third"/>
+    </String>
+
+</ModelVariables>
+
+<ModelStructure/>
+</fmiModelDescription>

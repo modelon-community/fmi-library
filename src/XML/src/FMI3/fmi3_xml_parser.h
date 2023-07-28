@@ -421,8 +421,9 @@ int fmi3_xml_alloc_parse_buffer(fmi3_xml_parser_context_t *context, size_t items
 void fmi3_xml_free_variable_start_values(fmi3_xml_parser_context_t *context);
 void fmi3_xml_free_parse_buffer(fmi3_xml_parser_context_t *context);
 
-void fmi3_xml_parse_fatal(fmi3_xml_parser_context_t *context, const char* fmt, ...);
-void fmi3_xml_parse_error(fmi3_xml_parser_context_t *context, const char* fmt, ...);
+void fmi3_xml_parse_fatal  (fmi3_xml_parser_context_t* context, const char* fmt, ...);
+void fmi3_xml_parse_error  (fmi3_xml_parser_context_t* context, const char* fmt, ...);
+void fmi3_xml_parse_warning(fmi3_xml_parser_context_t* context, const char* fmt, ...);
 
 /**
  * Raises generic parse error for given attribute.

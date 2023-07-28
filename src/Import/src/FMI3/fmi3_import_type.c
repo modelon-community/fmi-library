@@ -264,6 +264,10 @@ fmi3_string_t fmi3_import_get_binary_type_mime_type(fmi3_import_binary_typedef_t
     return fmi3_xml_get_binary_type_mime_type(t);
 }
 
+fmi3_boolean_t fmi3_import_get_binary_type_has_max_size(fmi3_import_binary_typedef_t* t) {
+    return fmi3_xml_get_binary_type_has_max_size(t);
+}
+
 size_t fmi3_import_get_binary_type_max_size(fmi3_import_binary_typedef_t* t) {
     return fmi3_xml_get_binary_type_max_size(t);
 }
@@ -276,12 +280,20 @@ fmi3_boolean_t fmi3_import_get_clock_type_can_be_deactivated(fmi3_import_clock_t
     return fmi3_xml_get_clock_type_can_be_deactivated(t);
 }
 
+fmi3_boolean_t fmi3_import_get_clock_type_has_priority(fmi3_import_clock_typedef_t* t) {
+    return fmi3_xml_get_clock_type_has_priority(t);
+}
+
 fmi3_uint32_t fmi3_import_get_clock_type_priority(fmi3_import_clock_typedef_t* t) {
     return fmi3_xml_get_clock_type_priority(t);
 }
 
 fmi3_interval_variability_enu_t fmi3_import_get_clock_type_interval_variability(fmi3_import_clock_typedef_t* t) {
     return fmi3_xml_get_clock_type_interval_variability(t);
+}
+
+fmi3_boolean_t fmi3_import_get_clock_type_has_interval_decimal(fmi3_import_clock_typedef_t* t) {
+    return fmi3_xml_get_clock_type_has_interval_decimal(t);
 }
 
 fmi3_float32_t fmi3_import_get_clock_type_interval_decimal(fmi3_import_clock_typedef_t* t) {
@@ -296,8 +308,16 @@ fmi3_boolean_t fmi3_import_get_clock_type_supports_fraction(fmi3_import_clock_ty
     return fmi3_xml_get_clock_type_supports_fraction(t);
 }
 
+fmi3_boolean_t fmi3_import_get_clock_type_has_resolution(fmi3_import_clock_typedef_t* t) {
+    return fmi3_xml_get_clock_type_has_resolution(t);
+}
+
 fmi3_uint64_t fmi3_import_get_clock_type_resolution(fmi3_import_clock_typedef_t* t) {
     return fmi3_xml_get_clock_type_resolution(t);
+}
+
+fmi3_boolean_t fmi3_import_get_clock_type_has_interval_counter(fmi3_import_clock_typedef_t* t) {
+    return fmi3_xml_get_clock_type_has_interval_counter(t);
 }
 
 fmi3_uint64_t fmi3_import_get_clock_type_interval_counter(fmi3_import_clock_typedef_t* t) {

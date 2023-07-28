@@ -113,7 +113,7 @@ static void test_binary_default_attrs(fmi3_import_t* xml) {
     REQUIRE(bv != nullptr);
     REQUIRE(fmi3_import_get_binary_variable_start_size(bv) == 0);
     REQUIRE(fmi3_import_get_binary_variable_start(bv) == nullptr);
-    REQUIRE(fmi3_import_get_binary_variable_max_size(bv) == 0);
+    REQUIRE(fmi3_import_get_binary_variable_has_max_size(bv) == false);
     REQUIRE_STREQ(fmi3_import_get_binary_variable_mime_type(bv), "application/octet-stream");
 
     t = fmi3_import_get_variable_declared_type(v);
@@ -153,6 +153,7 @@ static void test_binary_all_attrs(fmi3_import_t* xml) {
 
     bv = fmi3_import_get_variable_as_binary(v);
     REQUIRE(bv != nullptr);
+    REQUIRE(fmi3_import_get_binary_variable_has_max_size(bv) == true);
     REQUIRE(fmi3_import_get_binary_variable_max_size(bv) == 444);
     REQUIRE_STREQ(fmi3_import_get_binary_variable_mime_type(bv), "myMimeType");
 
@@ -248,13 +249,13 @@ static void test_clock_default_attrs(fmi3_import_t* xml) {
 
     // Type specific attributes:
     REQUIRE(fmi3_import_get_clock_variable_can_be_deactivated(cv)   == false);
-    REQUIRE(fmi3_import_get_clock_variable_priority(cv)             == 0);
+    REQUIRE(fmi3_import_get_clock_variable_has_priority(cv)         == false);
     REQUIRE(fmi3_import_get_clock_variable_interval_variability(cv) == fmi3_interval_variability_constant);
-    REQUIRE(fmi3_import_get_clock_variable_interval_decimal(cv)     == 0.0);
+    REQUIRE(fmi3_import_get_clock_variable_has_interval_decimal(cv) == false);
     REQUIRE(fmi3_import_get_clock_variable_shift_decimal(cv)        == 0.0);
     REQUIRE(fmi3_import_get_clock_variable_supports_fraction(cv)    == false);
-    REQUIRE(fmi3_import_get_clock_variable_resolution(cv)           == 0);
-    REQUIRE(fmi3_import_get_clock_variable_interval_counter(cv)     == 0);
+    REQUIRE(fmi3_import_get_clock_variable_has_resolution(cv)       == false);
+    REQUIRE(fmi3_import_get_clock_variable_has_interval_counter(cv) == false);
     REQUIRE(fmi3_import_get_clock_variable_shift_counter(cv)        == 0);
 
     t = fmi3_import_get_variable_declared_type(v);
@@ -274,12 +275,16 @@ static void test_clock_all_attrs(fmi3_import_t* xml) {
 
     // Type specific attributes:
     REQUIRE(fmi3_import_get_clock_variable_can_be_deactivated(cv)   == true);
+    REQUIRE(fmi3_import_get_clock_variable_has_priority(cv)         == true);
     REQUIRE(fmi3_import_get_clock_variable_priority(cv)             == 1);
     REQUIRE(fmi3_import_get_clock_variable_interval_variability(cv) == fmi3_interval_variability_countdown);
+    REQUIRE(fmi3_import_get_clock_variable_has_interval_decimal(cv) == true);
     REQUIRE(fmi3_import_get_clock_variable_interval_decimal(cv)     == 2.0);
     REQUIRE(fmi3_import_get_clock_variable_shift_decimal(cv)        == 3.0);
     REQUIRE(fmi3_import_get_clock_variable_supports_fraction(cv)    == true);
+    REQUIRE(fmi3_import_get_clock_variable_has_resolution(cv)       == true);
     REQUIRE(fmi3_import_get_clock_variable_resolution(cv)           == 4);
+    REQUIRE(fmi3_import_get_clock_variable_has_interval_counter(cv) == true);
     REQUIRE(fmi3_import_get_clock_variable_interval_counter(cv)     == 5);
     REQUIRE(fmi3_import_get_clock_variable_shift_counter(cv)        == 6);
 }
@@ -340,10 +345,14 @@ TEST_CASE("Variable parsing") {
 
 TEST_CASE("Invalid Clock variable - no intervalVariability attr") {
     const char* xmldir = FMI3_TEST_XML_DIR "/variables/invalid/intervalVariability1";
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    REQUIRE(tfmu != nullptr);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu == nullptr);
 
-    /* Disabled the test for now because of memory leak
-     fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
-    REQUIRE(xml == nullptr); */
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'Clock': required attribute 'intervalVariability' not found"));
+
+    fmi3_testutil_import_free(tfmu);
 }
 
 TEST_CASE("Invalid Binary variable - non-hexadecimal char first in byte tuple") {
@@ -353,6 +362,13 @@ TEST_CASE("Invalid Binary variable - non-hexadecimal char first in byte tuple") 
     REQUIRE(fmu != nullptr);
     
     REQUIRE(fmi3_testutil_log_contains(tfmu, "String is not hexadecimal: gf"));
+
+    fmi3_import_variable_t* var = fmi3_import_get_variable_by_vr(fmu, 1);
+    REQUIRE(var != nullptr);
+    fmi3_import_binary_variable_t* binVar = fmi3_import_get_variable_as_binary(var);
+    REQUIRE(binVar != nullptr);
+    REQUIRE(fmi3_import_get_binary_variable_start_size(binVar) == 0);
+
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -363,6 +379,32 @@ TEST_CASE("Invalid Binary variable - non-hexadecimal char second in byte tuple")
     REQUIRE(fmu != nullptr);
     
     REQUIRE(fmi3_testutil_log_contains(tfmu, "String is not hexadecimal: FG"));
+
+    fmi3_import_variable_t* var = fmi3_import_get_variable_by_vr(fmu, 1);
+    REQUIRE(var != nullptr);
+    fmi3_import_binary_variable_t* binVar = fmi3_import_get_variable_as_binary(var);
+    REQUIRE(binVar != nullptr);
+    REQUIRE(fmi3_import_get_binary_variable_start_size(binVar) == 0);
+
+    fmi3_testutil_import_free(tfmu);
+}
+
+TEST_CASE("Invalid Binary variable - hex string of odd length") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/variables/invalid/binaryStart3";
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu != nullptr);
+
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Hexadecimal string is not of even length: 'abc'."));
+
+    fmi3_import_variable_t* var = fmi3_import_get_variable_by_vr(fmu, 1);
+    REQUIRE(var != nullptr);
+    fmi3_import_binary_variable_t* binVar = fmi3_import_get_variable_as_binary(var);
+    REQUIRE(binVar != nullptr);
+    REQUIRE(fmi3_import_get_binary_variable_start_size(binVar) == 0); // No valid Start elements
+    fmi3_binary_t bin = fmi3_import_get_binary_variable_start(binVar);
+    REQUIRE(bin == nullptr);
+
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -372,7 +414,7 @@ TEST_CASE("Invalid structuralParameter - requires start attribute") {
     fmi3_import_t* fmu = tfmu->fmu;
     REQUIRE(fmu != nullptr);
     
-    REQUIRE(fmi3_testutil_log_contains(tfmu, "Variable structVar: start value required for structuralParameter variables"));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Variable 'structVar': start value required for structuralParameter variables"));
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -383,6 +425,24 @@ TEST_CASE("Invalid structuralParameter - has dimension") {
     REQUIRE(fmu != nullptr);
     
     REQUIRE(fmi3_testutil_log_contains(tfmu, "Variable structVar: structuralParameters must not have Dimension elements."));
+
+    fmi3_import_variable_t* var = fmi3_import_get_variable_by_vr(fmu, 0);
+    REQUIRE(var != nullptr);
+    REQUIRE(fmi3_import_get_variable_causality(var) == fmi3_causality_enu_structural_parameter);
+    REQUIRE(fmi3_import_get_variable_has_start(var) != 0);
+    // Dimension will be parsed and accepted anyways
+
+    fmi3_import_dimension_list_t* dimList = fmi3_import_get_variable_dimension_list(var);
+    REQUIRE(dimList != nullptr);
+    REQUIRE(fmi3_import_get_dimension_list_size(dimList) == 1);
+
+    // <Dimension start="1"/>
+    fmi3_import_dimension_t* dim = fmi3_import_get_dimension(dimList, 0);
+    REQUIRE(dim != nullptr);
+    REQUIRE(fmi3_import_get_dimension_has_start(dim) == 1);
+    REQUIRE(fmi3_import_get_dimension_start(dim) == 1);
+    REQUIRE(fmi3_import_get_dimension_has_vr(dim) == 0);
+
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -521,10 +581,22 @@ TEST_CASE("Invalid Alias - unresolvable displayUnit") {
     const char* xmldir = FMI3_TEST_XML_DIR "/variables/invalid/alias_unresolvable_displayUnit";
     fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
     fmi3_import_t* fmu = tfmu->fmu;
-    REQUIRE(fmu == nullptr);
+    REQUIRE(fmu != nullptr);
     
     REQUIRE(fmi3_testutil_log_contains(tfmu, "Unknown displayUnit: missing_du"));
+
+    fmi3_import_variable_t* var = fmi3_import_get_variable_by_vr(fmu, 1);
+    REQUIRE(var != nullptr);
+    REQUIRE_STREQ(fmi3_import_get_variable_name(var), "v1");
     
+    // aliasList is non empty
+    fmi3_import_alias_variable_list_t* aliasList = fmi3_import_get_variable_alias_list(var);
+    REQUIRE(fmi3_import_get_alias_variable_list_size(aliasList) == 1);
+    // alias exists, but does not have a display unit
+    fmi3_import_alias_variable_t* alias = fmi3_import_get_alias(aliasList, 0);
+    REQUIRE(alias != nullptr);
+    REQUIRE(fmi3_import_get_alias_variable_display_unit(alias) == nullptr);
+
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -532,9 +604,14 @@ TEST_CASE("Invalid Alias - no name") {
     const char* xmldir = FMI3_TEST_XML_DIR "/variables/invalid/alias_no_name";
     fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
     fmi3_import_t* fmu = tfmu->fmu;
-    REQUIRE(fmu == nullptr);
+    REQUIRE(fmu != nullptr);
     
     REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'Alias': required attribute 'name' not found"));
+
+    fmi3_import_variable_t* var = fmi3_import_get_variable_by_vr(fmu, 1);
+    REQUIRE(var != nullptr);
+    REQUIRE_STREQ(fmi3_import_get_variable_name(var), "v1");
+    REQUIRE(fmi3_import_get_variable_alias_list(var) == nullptr); // has no valid aliases
     
     fmi3_testutil_import_free(tfmu);
 }
@@ -546,6 +623,8 @@ TEST_CASE("Invalid valueReference - two vars with same VR - basic") {
     REQUIRE(fmu == nullptr);
     
     REQUIRE(fmi3_testutil_log_contains(tfmu, "The following variables have the same valueReference: v1, v2"));
+
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables. Variable(s) failed to parse or an essential error check failed."));
     
     fmi3_testutil_import_free(tfmu);
 }
@@ -557,6 +636,8 @@ TEST_CASE("Invalid valueReference - two vars with same VR - more vars") {
     REQUIRE(fmu == nullptr);
     
     REQUIRE(fmi3_testutil_log_contains(tfmu, "The following variables have the same valueReference: v3, v8"));
+
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables. Variable(s) failed to parse or an essential error check failed."));
     
     fmi3_testutil_import_free(tfmu);
 }
@@ -567,8 +648,10 @@ TEST_CASE("Invalid valueReference - three vars with same VR") {
     fmi3_import_t* fmu = tfmu->fmu;
     REQUIRE(fmu == nullptr);
     
-    // Only the first duplicate names are listed. Could be enhanced.
     REQUIRE(fmi3_testutil_log_contains(tfmu, "The following variables have the same valueReference: v3, v4"));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "The following variables have the same valueReference: v4, v6"));
+
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables. Variable(s) failed to parse or an essential error check failed."));
     
     fmi3_testutil_import_free(tfmu);
 }
@@ -580,6 +663,8 @@ TEST_CASE("Invalid valueReference - same VR but different type") {
     REQUIRE(fmu == nullptr);
     
     REQUIRE(fmi3_testutil_log_contains(tfmu, "The following variables have the same valueReference: v1, v2"));
+
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables. Variable(s) failed to parse or an essential error check failed."));
     
     fmi3_testutil_import_free(tfmu);
 }
@@ -590,6 +675,15 @@ TEST_CASE("Variable with name being the empty string") {
     fmi3_import_t* fmu = tfmu->fmu;
     REQUIRE(fmu != nullptr);
     REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
+
+    fmi3_import_variable_t* var = fmi3_import_get_variable_by_vr(fmu, 1);
+    REQUIRE(var != nullptr);
+    REQUIRE_STREQ(fmi3_import_get_variable_name(var), "");
+
+    var = fmi3_import_get_variable_by_name(fmu, "");
+    REQUIRE(var != nullptr);
+    REQUIRE(fmi3_import_get_variable_vr(var) == 1);;
+
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -599,17 +693,35 @@ TEST_CASE("Alias with name being the empty string") {
     fmi3_import_t* fmu = tfmu->fmu;
     REQUIRE(fmu != nullptr);
     REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
+
+    fmi3_import_variable_t* var = fmi3_import_get_variable_by_vr(fmu, 1);
+    REQUIRE(var != nullptr);
+    fmi3_import_alias_variable_list_t* aliasList = fmi3_import_get_variable_alias_list(var);
+    REQUIRE(aliasList != nullptr);
+    REQUIRE(fmi3_import_get_alias_variable_list_size(aliasList) == 1);
+    fmi3_import_alias_variable_t* alias = fmi3_import_get_alias(aliasList, 0);
+    REQUIRE(alias != nullptr);
+    REQUIRE_STREQ(fmi3_import_get_alias_variable_name(alias), "");
+
     fmi3_testutil_import_free(tfmu);
 }
 
 TEST_CASE("Invalid intermediateUpdate - has causality parameter") {
     const char* xmldir = FMI3_TEST_XML_DIR "/variables/invalid/intermediateUpdate_parameter";
+
     fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
     REQUIRE(tfmu != nullptr);
-    REQUIRE(tfmu->fmu != nullptr);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu != nullptr);
 
-    const char* logMsg = "Variables with causality='parameter' must not be marked with intermediateUpdate='true'.";
+    const char* logMsg = "Variables with causality 'parameter' must not be marked with intermediateUpdate='true'.";
     REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
+
+    fmi3_import_variable_t* var = fmi3_import_get_variable_by_vr(fmu, 0);
+    REQUIRE(var != nullptr);
+    REQUIRE(fmi3_import_get_variable_causality(var) == fmi3_causality_enu_parameter);
+    REQUIRE(fmi3_import_get_variable_intermediate_update(var) != 0);
+
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -617,10 +729,19 @@ TEST_CASE("Invalid previous - requires clocks") {
     const char* xmldir = FMI3_TEST_XML_DIR "/variable_test/invalid/previous_no_clocks";
     fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
     REQUIRE(tfmu != nullptr);
-    REQUIRE(tfmu->fmu == nullptr);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu != nullptr);
 
     const char* logMsg = "Only variables with the attribute 'clocks' may have the attribute 'previous'.";
     REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
+
+    // Test that API works regardless
+    fmi3_import_variable_t* var = fmi3_import_get_variable_by_vr(fmu, 11);
+    REQUIRE(var != nullptr);
+    fmi3_import_variable_t* var_prev = fmi3_import_get_variable_previous(var);
+    REQUIRE(var_prev != nullptr);
+    REQUIRE(fmi3_import_get_variable_vr(var_prev) == 10);
+
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -628,10 +749,19 @@ TEST_CASE("Invalid previous - requires variability='discrete'") {
     const char* xmldir = FMI3_TEST_XML_DIR "/variable_test/invalid/previous_not_discrete";
     fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
     REQUIRE(tfmu != nullptr);
-    REQUIRE(tfmu->fmu == nullptr);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu != nullptr);
 
-    const char* logMsg = "Only variables with variability='discrete' may have the attribute 'previous'.";
+    const char* logMsg = "Only variables with variability 'discrete' may have the attribute 'previous'.";
     REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
+
+    // Test that API works regardless
+    fmi3_import_variable_t* var = fmi3_import_get_variable_by_vr(fmu, 11);
+    REQUIRE(var != nullptr);
+    fmi3_import_variable_t* var_prev = fmi3_import_get_variable_previous(var);
+    REQUIRE(var_prev != nullptr);
+    REQUIRE(fmi3_import_get_variable_vr(var_prev) == 10);
+
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -640,10 +770,18 @@ TEST_CASE("Invalid Clock variable - has previous") {
 
     fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
     REQUIRE(tfmu != nullptr);
-    REQUIRE(tfmu->fmu != nullptr);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu != nullptr);
 
     const char* logMsg = "Variables of type Clock must not have the 'previous' attribute.";
     REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
+
+    // Test that API works regardless
+    fmi3_import_variable_t* var = fmi3_import_get_variable_by_vr(fmu, 20);
+    REQUIRE(var != nullptr);
+    fmi3_import_variable_t* varPrev = fmi3_import_get_variable_previous(var);
+    REQUIRE(varPrev != nullptr);
+    REQUIRE(fmi3_import_get_variable_vr(varPrev) == 10);
 
     fmi3_testutil_import_free(tfmu);
 }
@@ -653,10 +791,17 @@ TEST_CASE("Invalid Clock - has attribute intermediateUpdate") {
 
     fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
     REQUIRE(tfmu != nullptr);
-    REQUIRE(tfmu->fmu != nullptr);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu != nullptr);
 
     const char* logMsg = "Variables of type 'Clock' must not have the 'intermediateUpdate' attribute.";
-    REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg)); // contains other errors; does not finish parsing all attributes
+    REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
+
+    fmi3_import_variable_t* var = fmi3_import_get_variable_by_vr(fmu, 0);
+    REQUIRE(var != nullptr);
+    fmi3_import_clock_variable_t* clock = fmi3_import_get_variable_as_clock(var);
+    REQUIRE(clock != nullptr);
+    REQUIRE(fmi3_import_get_variable_intermediate_update(var) != 0); // set according to XML
 
     fmi3_testutil_import_free(tfmu);
 }
@@ -666,10 +811,15 @@ TEST_CASE("Info check - intermediateUpdate ignored unless Co-Simulation") {
 
     fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
     REQUIRE(tfmu != nullptr);
-    REQUIRE(tfmu->fmu != nullptr);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu != nullptr);
 
     const char* logMsg = "Attribute 'intermediateUpdate' ignored since FMU kind is not Co-Simulation.";
     REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
+
+    fmi3_import_variable_t* var = fmi3_import_get_variable_by_vr(fmu, 0);
+    REQUIRE(var != nullptr);
+    REQUIRE(fmi3_import_get_variable_intermediate_update(var) == 0); // ingored = default is used
 
     fmi3_testutil_import_free(tfmu);
 }
@@ -679,10 +829,17 @@ TEST_CASE("Invalid previous - self reference") {
 
     fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
     REQUIRE(tfmu != nullptr);
-    REQUIRE(tfmu->fmu == nullptr);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu != nullptr);
 
     const char* logMsg = "A variable must not refer to itself in the attribute 'previous'.";
     REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
+
+    // Test that API works regardless
+    fmi3_import_variable_t* var = fmi3_import_get_variable_by_vr(fmu, 11);
+    REQUIRE(var != nullptr);
+    fmi3_import_variable_t* var_prev = fmi3_import_get_variable_previous(var);
+    REQUIRE(var_prev == var);
 
     fmi3_testutil_import_free(tfmu);
 }
@@ -694,8 +851,9 @@ TEST_CASE("Invalid; duplicate variable name") {
     REQUIRE(tfmu != nullptr);
     REQUIRE(tfmu->fmu == nullptr);
 
-    const char* logMsg = "Two variables with the same name 'sameName' found. This is not allowed.";
-    REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Two variables with the same name 'sameName' found. This is not allowed."));
+
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables. Variable(s) failed to parse or an essential error check failed."));
 
     fmi3_testutil_import_free(tfmu);
 }
@@ -707,8 +865,99 @@ TEST_CASE("Invalid; clock without intervalVariability") {
     REQUIRE(tfmu != nullptr);
     REQUIRE(tfmu->fmu == nullptr);
 
-    const char* logMsg = "Parsing XML element 'Clock': required attribute 'intervalVariability' not found";
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'Clock': required attribute 'intervalVariability' not found"));
+
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables. Variable(s) failed to parse or an essential error check failed."));
+
+    fmi3_testutil_import_free(tfmu);
+}
+
+TEST_CASE("Invalid derivative; VR does not resolve to any variable") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/variable_test/invalid/derivative_invalid_vr";
+
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    REQUIRE(tfmu != nullptr);
+    REQUIRE(tfmu->fmu == nullptr);
+
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "The valueReference in derivative=\"1\" did not resolve to any variable."));
+
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables. Variable(s) failed to parse or an essential error check failed."));
+
+    fmi3_testutil_import_free(tfmu);
+}
+
+TEST_CASE("Test API for getting derivatives of variables") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/variable_test/valid/derivate";
+
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    REQUIRE(tfmu != nullptr);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu != nullptr);
+
+    fmi3_import_variable_t* var;
+
+    // Float32
+    var = fmi3_import_get_variable_by_vr(fmu, 1);
+    REQUIRE(var != nullptr);
+    fmi3_import_float32_variable_t* v32 = fmi3_import_get_variable_as_float32(var);
+    REQUIRE(v32 != nullptr);
+    fmi3_import_float32_variable_t* v32prev = fmi3_import_get_float32_variable_derivative_of(v32);
+    REQUIRE(v32prev != nullptr);
+    REQUIRE(fmi3_import_get_float32_variable_derivative_of(v32prev) == nullptr);
+    REQUIRE(fmi3_import_get_variable_vr((fmi3_import_variable_t*)v32prev) == 0);
+
+    //Float64
+    var = fmi3_import_get_variable_by_vr(fmu, 11);
+    REQUIRE(var != nullptr);
+    fmi3_import_float64_variable_t* v64 = fmi3_import_get_variable_as_float64(var);
+    REQUIRE(v64 != nullptr);
+    fmi3_import_float64_variable_t* v64prev = fmi3_import_get_float64_variable_derivative_of(v64);
+    REQUIRE(v64prev != nullptr);
+    REQUIRE(fmi3_import_get_float64_variable_derivative_of(v64prev) == nullptr);
+    REQUIRE(fmi3_import_get_variable_vr((fmi3_import_variable_t*)v64prev) == 10);
+
+    // Misc API testing
+    // null inputs
+    REQUIRE(fmi3_import_get_variable_as_float32(nullptr) == nullptr);
+    REQUIRE(fmi3_import_get_variable_as_float64(nullptr) == nullptr);
+
+    fmi3_testutil_import_free(tfmu);
+}
+
+TEST_CASE("Invalid reinit for non-continuous state") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/variable_test/invalid/reinit_non_continuous";
+
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    REQUIRE(tfmu != nullptr);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu != nullptr);
+
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Variable 'var', the reinit attribute may only be set on continuous-time states."));
+
+    fmi3_import_variable_t* var = fmi3_import_get_variable_by_vr(fmu, 0);
+    REQUIRE(var != nullptr);
+    REQUIRE(fmi3_import_get_variable_variability(var) == fmi3_variability_enu_discrete);
+    fmi3_import_float64_variable_t* f64var = fmi3_import_get_variable_as_float64(var);
+    REQUIRE(f64var != nullptr);
+    REQUIRE(fmi3_import_get_float64_variable_reinit(f64var) == fmi3_true);
+
+    fmi3_testutil_import_free(tfmu);
+}
+
+TEST_CASE("Invalid canHandleMultipleSetPerTimeInstant; set to non-default for causality!=input") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/variable_test/invalid/canHandleMultipleSetPerTimeInstant_false_non_input";
+
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    REQUIRE(tfmu != nullptr);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu != nullptr);
+
+    const char* logMsg = "Only variables with causality 'input' can have canHandleMultipleSetPerTimeInstant=false";
     REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
+
+    fmi3_import_variable_t* var = fmi3_import_get_variable_by_vr(fmu, 0);
+    REQUIRE(var != nullptr);
+    REQUIRE(fmi3_import_get_variable_can_handle_multiple_set_per_time_instant(var) == 0);
 
     fmi3_testutil_import_free(tfmu);
 }

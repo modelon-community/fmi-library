@@ -312,6 +312,15 @@ void fmi3_xml_parse_error(fmi3_xml_parser_context_t *context, const char* fmt, .
     va_end (args);
 }
 
+void fmi3_xml_parse_warning(fmi3_xml_parser_context_t *context, const char* fmt, ...) {
+    va_list args;
+    va_start (args, fmt);
+    if (context->parser)
+        jm_log_info(context->callbacks, module, "[Line:%u] Detected during parsing:", XML_GetCurrentLineNumber(context->parser));
+    jm_log_warning_v(context->callbacks, module, fmt, args);
+    va_end (args);
+}
+
 /**
  * Raises a generic parse error for the given attribute.
  */
@@ -336,13 +345,15 @@ static size_t fmi3_xml_string_char_count(const char* str, char ch) {
     return n;
 }
 
-/* Get attribute as string without clearing the buffer entry */
+/* Get attribute as string without clearing the buffer entry 
+* XXX: Be careful with using this, since the buffer entry will still be present in later elements.
+*/
 jm_string fmi3_xml_peek_attr_str(fmi3_xml_parser_context_t* context, fmi3_xml_attr_enu_t attrID) {
     return jm_vector_get_item(jm_string)(context->attrMapById, attrID);
 }
 
 int fmi3_xml_is_attr_defined(fmi3_xml_parser_context_t *context, fmi3_xml_attr_enu_t attrID) {
-    return (fmi3_xml_peek_attr_str(context, attrID) != 0);
+    return (fmi3_xml_peek_attr_str(context, attrID) != NULL);
 }
 
 /**
@@ -359,7 +370,7 @@ int fmi3_xml_get_attr_str(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t
     if (!value && required) {
         jm_string elmName = fmi3_element_handle_map[elmID].elementName;
         jm_string attrName = fmi3_xmlAttrNames[attrID];
-        fmi3_xml_parse_fatal(context, "Parsing XML element '%s': required attribute '%s' not found", elmName, attrName);
+        fmi3_xml_parse_error(context, "Parsing XML element '%s': required attribute '%s' not found", elmName, attrName);
         return -1;
     }
 
@@ -1272,7 +1283,7 @@ static void XMLCALL fmi3_parse_element_start(void *c, const char *elm, const cha
         if (jm_vector_get_item(jm_string)(context->attrMapById, i)) {
             // Element has not been processed because no handler exists
             jm_log_warning(context->callbacks,module, "Attribute '%s' not processed by element '%s' handle", fmi3_xmlAttrNames[i], elm);
-            jm_vector_set_item(jm_string)(context->attrMapById, i,0);
+            jm_vector_set_item(jm_string)(context->attrMapById, i, 0);
         }
     }
     if (context -> currentElmID != fmi3_xml_elmID_none) { /* with nested elements: put the parent on the stack */
@@ -1477,7 +1488,6 @@ int fmi3_xml_parse_model_description(fmi3_xml_model_description_t* md,
         return -1;
     }
 
-    md->status = fmi3_xml_model_description_enu_ok;
     context->modelDescription = 0;
     fmi3_xml_parse_free_context(context);
 
@@ -1501,7 +1511,7 @@ int fmi3_xml_parse_terminals_and_icons(fmi3_xml_terminals_and_icons_t* termIcon,
     // try to open file before doing parser initialization
     file = fopen(filename, "rb");
     if (file == NULL) {
-        jm_log_info(context->callbacks, module, "Could not find or open terminalsAndIcons.xmxl: '%s'. Continuing.", filename);
+        jm_log_info(context->callbacks, module, "Could not find or open terminalsAndIcons.xml: '%s'. Continuing.", filename);
         fmi3_xml_parse_free_context(context);
         return -1;
     }

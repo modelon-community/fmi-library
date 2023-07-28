@@ -67,7 +67,7 @@ TEST_CASE("No terminalsAndIcons.xml, test log message") {
     int ret = fmi3_import_get_has_terminals_and_icons(fmu);
     REQUIRE(fmi3_import_get_has_terminals_and_icons(fmu) == 0); // failed parse of terminalsAndIcons
 
-    REQUIRE(fmi3_testutil_log_contains(tfmu, "[INFO][FMI3XML] Could not find or open terminalsAndIcons.xmxl:"));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "[INFO][FMI3XML] Could not find or open terminalsAndIcons.xml:"));
     fmi3_testutil_import_free(tfmu);
 }
 

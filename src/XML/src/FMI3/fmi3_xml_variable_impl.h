@@ -47,8 +47,9 @@ struct fmi3_xml_alias_variable_t {
 
 struct fmi3_xml_dimension_t {
     int has_vr;
-    fmi3_uint64_t start;           /* value of the start attribute if 'has_vr' is false, else unassigned */
-    fmi3_uint32_t vr;              /* value of the valueReference attribute if 'has_vr' is true, else unassigned */
+    fmi3_uint32_t vr;              /* value of the valueReference attribute*/
+    int has_start;
+    fmi3_uint64_t start;           /* value of the start attribute*/
 };
 
 struct fmi3_xml_dimension_list_t {

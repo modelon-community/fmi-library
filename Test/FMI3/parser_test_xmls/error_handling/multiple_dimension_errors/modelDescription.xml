@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription fmiVersion="3.0" modelName="" instantiationToken="">
+<ModelExchange modelIdentifier="id_me"/>
+
+<ModelVariables>
+    <Float64 valueReference="0" name="floaty">
+        <Dimension start="2"/>
+        <Dimension start="3" valueReference="1"/> <!-- Has both start or valueReference -->
+        <Dimension/> <!-- Missing both start or valueReference -->
+        <Dimension valueReference="x"/> <!-- Invalid valueReference -->
+        <Dimension valueReference="1" start="zero"/> <!-- Invalid start -->
+        <Dimension valueReference="1"/>
+    </Float64>
+</ModelVariables>
+
+<ModelStructure/>
+</fmiModelDescription>

@@ -36,7 +36,7 @@ fmi3_xml_model_structure_t* fmi3_xml_allocate_model_structure(jm_callbacks* cb) 
     jm_vector_init(jm_voidp)(&ms->initialUnknowns,0,cb);
     jm_vector_init(jm_voidp)(&ms->eventIndicators,0,cb);
 
-    ms->isValidFlag = 1;
+    ms->isValid = 1;
 
     ms->outputDeps = fmi3_xml_allocate_dependencies(cb);
     ms->continuousStateDerivativeDeps = fmi3_xml_allocate_dependencies(cb);
@@ -70,6 +70,11 @@ void fmi3_xml_free_model_structure(fmi3_xml_model_structure_t* ms) {
     fmi3_xml_free_dependencies(ms->initialUnknownDeps);
     fmi3_xml_free_dependencies(ms->eventIndicatorDeps);
     cb->free(ms);
+}
+
+// Fore trace-ability, in case we want to attach an error message to first call
+static void fmi3_xml_set_model_structure_invalid(fmi3_xml_model_structure_t* ms) {
+    if (ms) {ms->isValid = 0;}
 }
 
 jm_vector(jm_voidp)* fmi3_xml_get_outputs(fmi3_xml_model_structure_t* ms) {
@@ -197,9 +202,9 @@ void fmi3_xml_free_dependencies(fmi3_xml_dependencies_t* dep) {
 int fmi3_xml_check_model_structure(fmi3_xml_model_description_t* md) {
     fmi3_xml_model_structure_t* ms = md->modelStructure;
 
-    if (!ms || !ms->isValidFlag) return 0;
+    if (!ms || !ms->isValid) {return 0;}
 
-    return ms->isValidFlag;
+    return ms->isValid;
 }
 
 int fmi3_xml_handle_ModelStructure(fmi3_xml_parser_context_t *context, const char* data) {
@@ -248,7 +253,7 @@ static int fmi3_xml_parse_dependencies(fmi3_xml_parser_context_t *context,
             </xs:simpleType>
         </xs:attribute> */
     if (fmi3_xml_get_attr_str(context, elmID, fmi_attr_id_dependencies, 0, &listInd)) {
-        ms->isValidFlag = 0;
+        fmi3_xml_set_model_structure_invalid(ms);
         return 0;
     }
     if (listInd) {
@@ -264,13 +269,13 @@ static int fmi3_xml_parse_dependencies(fmi3_xml_parser_context_t *context,
             if (sscanf(cur, "%d", &ind) != 1) {
                 fmi3_xml_parse_error(context, "XML element '%s': could not parse item %d, character '%c' in the list for attribute 'dependencies'",
                     fmi3_xml_elmid_to_name(elmID), numDepInd, ch);
-               ms->isValidFlag = 0;
+               fmi3_xml_set_model_structure_invalid(ms);
                return 0;
             }
             if (ind < 0) {
                 fmi3_xml_parse_error(context, "XML element '%s': Attribute 'dependencies' contains invalid value: %d.", 
                     fmi3_xml_elmid_to_name(elmID), ind);
-               ms->isValidFlag = 0;
+               fmi3_xml_set_model_structure_invalid(ms);
                return 0;
             }
             if (!jm_vector_push_back(size_t)(&deps->dependenciesVRs, (size_t)ind)) {
@@ -300,7 +305,7 @@ static int fmi3_xml_parse_dependencies(fmi3_xml_parser_context_t *context,
         </xs:attribute>
         */
     if (fmi3_xml_get_attr_str(context, elmID, fmi_attr_id_dependenciesKind, 0, &listKind)) {
-        ms->isValidFlag = 0;
+        fmi3_xml_set_model_structure_invalid(ms);
         return 0;
     }
     if (listKind) {
@@ -335,7 +340,7 @@ static int fmi3_xml_parse_dependencies(fmi3_xml_parser_context_t *context,
              else {
                  fmi3_xml_parse_error(context, "XML element '%s': could not parse item %d in the list for attribute 'dependenciesKind'",
                     fmi3_xml_elmid_to_name(elmID), numDepKind);
-                 ms->isValidFlag = 0;
+                 fmi3_xml_set_model_structure_invalid(ms);
                  return 0;
              }
              if (elmID == fmi3_xml_elmID_InitialUnknown) {
@@ -345,7 +350,7 @@ static int fmi3_xml_parse_dependencies(fmi3_xml_parser_context_t *context,
                 }
                 else if (!(kind == fmi3_dependencies_kind_dependent || kind == fmi3_dependencies_kind_constant)) {
                     fmi3_xml_parse_error(context, "XML element 'InitialUnknown': only 'dependent' and 'constant' allowed in list for attribute 'dependenciesKind'");
-                    ms->isValidFlag = 0;
+                    fmi3_xml_set_model_structure_invalid(ms);
                     return 0;
                 }
              }
@@ -361,7 +366,7 @@ static int fmi3_xml_parse_dependencies(fmi3_xml_parser_context_t *context,
         if (numDepInd != numDepKind) {
             fmi3_xml_parse_error(context, "XML element '%s': different number of items (%u and %u) in the lists for 'dependencies' and 'dependenciesKind'",
                                  fmi3_xml_elmid_to_name(elmID), numDepInd, numDepKind);
-            ms->isValidFlag = 0;
+            fmi3_xml_set_model_structure_invalid(ms);
             return 0;
         }
         jm_vector_push_back(size_t)(&deps->startIndex, totNumDep + numDepInd);
@@ -384,7 +389,7 @@ static int fmi3_xml_parse_dependencies(fmi3_xml_parser_context_t *context,
     else if (listKind) {
         fmi3_xml_parse_error(context, "XML element '%s': if `dependenciesKind` attribute is present then the `dependencies` attribute must also be present.",
             fmi3_xml_elmid_to_name(elmID));
-        ms->isValidFlag = 0;
+        fmi3_xml_set_model_structure_invalid(ms);
         return 0;
     }
     else {
@@ -416,12 +421,12 @@ int fmi3_xml_parse_unknown(fmi3_xml_parser_context_t *context,
     variable = fmi3_xml_get_variable_by_vr(md, vr);
     if (!variable) {
         fmi3_xml_parse_error(context, "Failed to find variable for valueReference=%" PRId32 ".");
-        ms->isValidFlag = 0;
+        fmi3_xml_set_model_structure_invalid(ms);
         return -1;
     }
     if (!jm_vector_push_back(jm_voidp)(destVarList, variable)) {
         fmi3_xml_parse_fatal(context, "Could not allocate memory");
-        ms->isValidFlag = 0;
+        fmi3_xml_set_model_structure_invalid(ms);
         return -1;
     }
 
@@ -440,7 +445,7 @@ int fmi3_xml_handle_Output(fmi3_xml_parser_context_t *context, const char* data)
         // Check for correct causality
         fmi3_xml_variable_t* var = (fmi3_xml_variable_t*)jm_vector_get_last(jm_voidp)(&ms->outputs);
         if (var->causality != fmi3_causality_enu_output) {
-            ms->isValidFlag = 0;
+            fmi3_xml_set_model_structure_invalid(ms);
             fmi3_xml_parse_error(context,
                     "The variable '%s' is an Output, but does not have causality='output'.",
                     fmi3_xml_get_variable_name(var));
@@ -477,7 +482,7 @@ int fmi3_xml_handle_ContinuousStateDerivative(fmi3_xml_parser_context_t *context
             validDeriv = fmi3_xml_get_float32_variable_derivative_of(der) != NULL;
         }
         if (!validDeriv) {
-            ms->isValidFlag = 0;
+            fmi3_xml_set_model_structure_invalid(ms);
             fmi3_xml_parse_error(context,
                     "The variable '%s' is a ContinuousStateDerivative, but does not specify the state variable it is a derivative of.",
                     fmi3_xml_get_variable_name(derXX));
@@ -503,7 +508,7 @@ int fmi3_xml_handle_ClockedState(fmi3_xml_parser_context_t *context, const char*
 
         // previous attribute is required, spec: "If present, this variable is a <ClockedState>" */
         if (!clockVar->hasPrevious) {
-            ms->isValidFlag = 0;
+            fmi3_xml_set_model_structure_invalid(ms);
             fmi3_xml_parse_error(context,
                     "The variable '%s' is a ClockedState, but does not define the attribute 'previous'.",
                     fmi3_xml_get_variable_name(clockVar));
@@ -516,7 +521,7 @@ int fmi3_xml_handle_ClockedState(fmi3_xml_parser_context_t *context, const char*
 
         /* must not be of base type fmi3Clock */
         if (fmi3_xml_get_variable_base_type(clockVar) == fmi3_base_type_clock) {
-            ms->isValidFlag = 0;
+            fmi3_xml_set_model_structure_invalid(ms);
             fmi3_xml_parse_error(context,
                     "The variable '%s' is a ClockedState, but has the base type 'fmi3Clock'.",
                     fmi3_xml_get_variable_name(clockVar));
@@ -560,7 +565,7 @@ int fmi3_xml_handle_EventIndicator(fmi3_xml_parser_context_t *context, const cha
         fmi3_xml_variable_t* eventInd = (fmi3_xml_variable_t*)jm_vector_get_last(jm_voidp)(&ms->eventIndicators);
         /* EventIndicator must be continuous */
         if (fmi3_xml_get_variable_variability(eventInd) != fmi3_variability_enu_continuous) {
-            ms->isValidFlag = 0;
+            fmi3_xml_set_model_structure_invalid(ms);
             fmi3_xml_parse_error(context,
                     "The variable '%s' is an EventIndicator, but does not have variability='continuous'.",
                     fmi3_xml_get_variable_name(eventInd));
@@ -569,7 +574,7 @@ int fmi3_xml_handle_EventIndicator(fmi3_xml_parser_context_t *context, const cha
 
         fmi3_base_type_enu_t baseType = fmi3_xml_get_variable_base_type(eventInd);
         if ((baseType != fmi3_base_type_float64) && (baseType != fmi3_base_type_float32)) {
-            ms->isValidFlag = 0;
+            fmi3_xml_set_model_structure_invalid(ms);
             fmi3_xml_parse_error(context,
                     "The variable '%s' is an EventIndicator, but does not have the base type 'Float32' or 'Float64'.",
                     fmi3_xml_get_variable_name(eventInd));

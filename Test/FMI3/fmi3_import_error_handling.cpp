@@ -106,9 +106,9 @@ TEST_CASE("Test multiple attribute errors in a single variable") {
 
     REQUIRE(fmi3_testutil_log_contains(tfmu, "XML element 'Float64': failed to parse attribute causality='casual'"));
     REQUIRE(fmi3_testutil_log_contains(tfmu, "XML element 'Float64': failed to parse attribute clocks='yes'"));
-    REQUIRE(fmi3_testutil_log_contains(tfmu, "Only variables with variability='discrete' may have the attribute 'previous'."));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Only variables with variability 'discrete' may have the attribute 'previous'."));
     REQUIRE(fmi3_testutil_log_contains(tfmu, "A variable must not refer to itself in the attribute 'previous'."));
-    REQUIRE(fmi3_testutil_log_contains(tfmu, "Only variables with causality='input' can have canHandleMultipleSetPerTimeInstant=false"));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Only variables with causality 'input' can have canHandleMultipleSetPerTimeInstant=false"));
 
     fmi3_import_variable_t* var = fmi3_import_get_variable_by_vr(fmu, 0);
     REQUIRE(var != nullptr);

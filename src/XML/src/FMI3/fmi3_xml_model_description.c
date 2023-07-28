@@ -41,7 +41,7 @@ fmi3_xml_model_description_t* fmi3_xml_allocate_model_description(jm_callbacks* 
     }
 
     md->isValid = 1;
-    md->latestVariableValid = 1;
+    md->latestVariableIsValid = 1;
 
     md->callbacks = cb;
 

@@ -1305,7 +1305,7 @@ static int fmi3_xml_variable_process_attr_previous(fmi3_xml_parser_context_t* co
     }
 
     if (variable->variability != fmi3_variability_enu_discrete) {
-        fmi3_xml_parse_warning(context, "Only variables with variability='discrete' may have the attribute 'previous'.");
+        fmi3_xml_parse_warning(context, "Only variables with variability 'discrete' may have the attribute 'previous'.");
     }
 
     if (previous == fmi3_xml_get_variable_vr(variable)) {
@@ -1326,7 +1326,7 @@ static int fmi3_xml_variable_process_attr_multipleset(fmi3_xml_parser_context_t*
     variable->canHandleMultipleSetPerTimeInstant = (char)multipleSet;
 
     if (variable->causality != fmi3_causality_enu_input && !multipleSet) {
-        fmi3_xml_parse_warning(context, "Only variables with causality='input' can have canHandleMultipleSetPerTimeInstant=false");
+        fmi3_xml_parse_warning(context, "Only variables with causality 'input' can have canHandleMultipleSetPerTimeInstant=false");
     }
     return 0;
 }
@@ -1365,7 +1365,7 @@ static int fmi3_xml_variable_process_attr_intermediateupdate(fmi3_xml_parser_con
 
     // Spec: "Variables with causality = parameter must not be marked with intermediateUpdate = true"
     if (intermediateUpdate && (fmi3_xml_get_variable_causality(variable) == fmi3_causality_enu_parameter)) {
-        fmi3_xml_parse_warning(context, "Variables with causality='parameter' must not be marked with intermediateUpdate='true'.");
+        fmi3_xml_parse_warning(context, "Variables with causality 'parameter' must not be marked with intermediateUpdate='true'.");
     }
 
     return 0;
@@ -1402,7 +1402,7 @@ static int fmi3_xml_variable_process_attr_reinit(fmi3_xml_parser_context_t* cont
     variable->reinit = (char)reinit;
 
     if (reinit && variable->variability != fmi3_variability_enu_continuous) {
-        fmi3_xml_parse_warning(context, "The reinit attribute may only be set on continuous-time states.");
+        fmi3_xml_parse_warning(context, "Variable '%s', the reinit attribute may only be set on continuous-time states.", variable->name);
     }
     return 0;
 }
@@ -1437,12 +1437,12 @@ static int fmi3_xml_handle_Variable_error_check_wrapper(fmi3_xml_parser_context_
     if (res) { 
         // Variable failed to parse due to 
         // failure to parse name/valueReference or unexpected (malloc) failure
-        // or latestVariableValid == 0, if called on closing tag
+        // or latestVariableIsValid == 0, if called on closing tag
         fmi3_xml_set_model_description_invalid(md);
-        md->latestVariableValid = 0; // To skip post-processing in fmi3_xml_handle_Variable
+        md->latestVariableIsValid = 0; // To skip post-processing in fmi3_xml_handle_Variable
         return -1;
     } else {
-        md->latestVariableValid = 1;
+        md->latestVariableIsValid = 1;
     }
 
     return 0;
@@ -1476,6 +1476,7 @@ int fmi3_xml_handle_Variable(fmi3_xml_parser_context_t* context, const char* dat
 
         /* Get required attributes: VR, name */
         int req = 0;
+        // |= rather than instant returns assure all attributes are parsed.
         req |= fmi3_xml_parse_attr_as_uint32(context, elm_id, fmi_attr_id_valueReference, 1, &vr, 0);
         req |= fmi3_xml_parse_attr_as_string(context, elm_id, fmi_attr_id_name,           1, bufName);
 
@@ -1547,7 +1548,7 @@ int fmi3_xml_handle_Variable(fmi3_xml_parser_context_t* context, const char* dat
     }
     else { /* end of xml tag */
         /* Check that the type for the variable is set */
-        if (!md->latestVariableValid) {return -1;} // skip post-processing for invalid variables
+        if (!md->latestVariableIsValid) {return -1;} // skip post-processing for invalid variables
         fmi3_xml_variable_t* variable = jm_vector_get_last(jm_voidp)(&md->variablesOrigOrder);
         if (!variable->type) {
             jm_log_error(context->callbacks, module, "No variable type element for variable %s. Assuming Float64.", variable->name);
@@ -1620,6 +1621,8 @@ int fmi3_xml_handle_Dimension(fmi3_xml_parser_context_t* context, const char* da
 
         /* set data */
         int ret = 0;
+        // Gating behing hasStart/Vr from peeking is necessary,
+        // since fmi3_xml_parse_attr_as_* returns 0 if attribute does not exists (since it is not required)
         if (hasStart) {
             ret = fmi3_xml_parse_attr_as_uint64(context, fmi3_xml_elmID_Dimension, fmi_attr_id_start, 0, &dim->start, 0);
             dim->has_start = ret ? 0 : 1;
@@ -2025,7 +2028,7 @@ int fmi3_xml_handle_Clock(fmi3_xml_parser_context_t* context, const char* data) 
         fmi3_xml_clock_type_props_t* props = fmi3_xml_parse_clock_type_properties(context, elmID, declaredType);
         if (!props) {
             fmi3_xml_set_model_description_invalid(md);
-            md->latestVariableValid = 0;
+            md->latestVariableIsValid = 0;
             return 0;
         }
 

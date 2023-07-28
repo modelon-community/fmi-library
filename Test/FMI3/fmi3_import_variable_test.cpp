@@ -714,7 +714,7 @@ TEST_CASE("Invalid intermediateUpdate - has causality parameter") {
     fmi3_import_t* fmu = tfmu->fmu;
     REQUIRE(fmu != nullptr);
 
-    const char* logMsg = "Variables with causality='parameter' must not be marked with intermediateUpdate='true'.";
+    const char* logMsg = "Variables with causality 'parameter' must not be marked with intermediateUpdate='true'.";
     REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
 
     fmi3_import_variable_t* var = fmi3_import_get_variable_by_vr(fmu, 0);
@@ -752,7 +752,7 @@ TEST_CASE("Invalid previous - requires variability='discrete'") {
     fmi3_import_t* fmu = tfmu->fmu;
     REQUIRE(fmu != nullptr);
 
-    const char* logMsg = "Only variables with variability='discrete' may have the attribute 'previous'.";
+    const char* logMsg = "Only variables with variability 'discrete' may have the attribute 'previous'.";
     REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
 
     // Test that API works regardless
@@ -932,8 +932,7 @@ TEST_CASE("Invalid reinit for non-continuous state") {
     fmi3_import_t* fmu = tfmu->fmu;
     REQUIRE(fmu != nullptr);
 
-    const char* logMsg = "The reinit attribute may only be set on continuous-time states.";
-    REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Variable 'var', the reinit attribute may only be set on continuous-time states."));
 
     fmi3_import_variable_t* var = fmi3_import_get_variable_by_vr(fmu, 0);
     REQUIRE(var != nullptr);
@@ -953,7 +952,7 @@ TEST_CASE("Invalid canHandleMultipleSetPerTimeInstant; set to non-default for ca
     fmi3_import_t* fmu = tfmu->fmu;
     REQUIRE(fmu != nullptr);
 
-    const char* logMsg = "Only variables with causality='input' can have canHandleMultipleSetPerTimeInstant=false";
+    const char* logMsg = "Only variables with causality 'input' can have canHandleMultipleSetPerTimeInstant=false";
     REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
 
     fmi3_import_variable_t* var = fmi3_import_get_variable_by_vr(fmu, 0);

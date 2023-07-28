@@ -68,7 +68,7 @@ typedef struct fmi3_xml_scheduled_execution {
 struct fmi3_xml_model_description_t {
 
     int isValid;
-    int latestVariableValid; // for skipping the postprocessing of an invalid variable
+    int latestVariableIsValid; // for skipping the postprocessing of an invalid variable
 
     jm_callbacks* callbacks;
 

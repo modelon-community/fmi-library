@@ -3,7 +3,7 @@
 <ModelExchange modelIdentifier="id_me"/>
 
 <ModelVariables>
-    <!-- Clock with multiple invalid require attributes -->
+    <!-- Clock with multiple invalid required attributes -->
     <Clock valueReference="zero" intervalVariability="local"/>
 </ModelVariables>
 

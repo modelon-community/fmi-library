@@ -199,14 +199,6 @@ void fmi3_xml_free_dependencies(fmi3_xml_dependencies_t* dep) {
     cb->free(dep);
 }
 
-int fmi3_xml_check_model_structure(fmi3_xml_model_description_t* md) {
-    fmi3_xml_model_structure_t* ms = md->modelStructure;
-
-    if (!ms || !ms->isValid) {return 0;}
-
-    return ms->isValid;
-}
-
 int fmi3_xml_handle_ModelStructure(fmi3_xml_parser_context_t* context, const char* data) {
     fmi3_xml_model_description_t* md = context->modelDescription;
     if (!data) {
@@ -214,16 +206,16 @@ int fmi3_xml_handle_ModelStructure(fmi3_xml_parser_context_t* context, const cha
         /** allocate model structure */
         md->modelStructure = fmi3_xml_allocate_model_structure(md->callbacks);
         if (!md->modelStructure) {
-                fmi3_xml_parse_fatal(context, module, "Could not allocate memory");
-                return -1;
+            fmi3_xml_parse_fatal(context, module, "Could not allocate memory");
+            return -1;
         }
     }
     else {
+        fmi3_xml_model_structure_t* ms = md->modelStructure;
         /** make sure model structure information is consistent */
 
         // TODO: Check that all ModelVariables with causality="output" are Outputs
-
-        if (!fmi3_xml_check_model_structure(md)) {
+        if (!ms->isValid) {
             fmi3_xml_parse_fatal(context, "Model structure is not valid due to detected errors. Cannot continue.");
             return -1;
         }

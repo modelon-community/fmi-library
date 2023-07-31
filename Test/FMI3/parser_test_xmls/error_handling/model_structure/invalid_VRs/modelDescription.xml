@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription fmiVersion="3.0" modelName="" instantiationToken="">
+<ModelExchange modelIdentifier="id"/>
+
+<ModelVariables>
+    <Float64 name="floaty" valueReference="0"/>
+</ModelVariables>
+
+<ModelStructure>
+    <!-- One of each type, all with invalid VRs -->
+    <Output                    valueReference="1"/>
+    <ContinuousStateDerivative valueReference="2"/>
+    <ClockedState              valueReference="3"/>
+    <InitialUnknown            valueReference="4"/>
+    <EventIndicator            valueReference="5"/>
+</ModelStructure>
+</fmiModelDescription>

@@ -416,11 +416,14 @@ int fmi3_xml_parse_unknown(fmi3_xml_parser_context_t* context,
     fmi3_value_reference_t vr;
     fmi3_xml_variable_t* variable;
 
-    if (fmi3_xml_parse_attr_as_uint32(context, elmID, fmi_attr_id_valueReference, 1, &vr, 0)) return -1;
+    if (fmi3_xml_parse_attr_as_uint32(context, elmID, fmi_attr_id_valueReference, 1, &vr, 0)){
+        fmi3_xml_set_model_structure_invalid(ms);
+        return -1;
+    }
 
     variable = fmi3_xml_get_variable_by_vr(md, vr);
     if (!variable) {
-        fmi3_xml_parse_error(context, "Failed to find variable for valueReference=%" PRId32 ".");
+        fmi3_xml_parse_error(context, "Failed to find variable for valueReference=%" PRId32 ".", vr);
         fmi3_xml_set_model_structure_invalid(ms);
         return -1;
     }

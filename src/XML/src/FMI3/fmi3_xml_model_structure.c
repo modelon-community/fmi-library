@@ -207,10 +207,10 @@ int fmi3_xml_check_model_structure(fmi3_xml_model_description_t* md) {
     return ms->isValid;
 }
 
-int fmi3_xml_handle_ModelStructure(fmi3_xml_parser_context_t *context, const char* data) {
+int fmi3_xml_handle_ModelStructure(fmi3_xml_parser_context_t* context, const char* data) {
     fmi3_xml_model_description_t* md = context->modelDescription;
     if (!data) {
-        jm_log_verbose(context->callbacks, module,"Parsing XML element ModelStructure");
+        jm_log_verbose(context->callbacks, module, "Parsing XML element ModelStructure");
         /** allocate model structure */
         md->modelStructure = fmi3_xml_allocate_model_structure(md->callbacks);
         if (!md->modelStructure) {
@@ -234,7 +234,7 @@ int fmi3_xml_handle_ModelStructure(fmi3_xml_parser_context_t *context, const cha
 /**
  * Parse the dependencies of an element in ModelStructure
  */
-static int fmi3_xml_parse_dependencies(fmi3_xml_parser_context_t *context,
+static int fmi3_xml_parse_dependencies(fmi3_xml_parser_context_t* context,
                                 fmi3_xml_elm_enu_t elmID,
                                 fmi3_xml_dependencies_t* deps)
 {
@@ -405,7 +405,7 @@ static int fmi3_xml_parse_dependencies(fmi3_xml_parser_context_t *context,
  * After successful call, the variable will be put on the destVarList stack,
  * and the dependencies are stored in return-arg 'deps'.
  */
-int fmi3_xml_parse_unknown(fmi3_xml_parser_context_t *context,
+int fmi3_xml_parse_unknown(fmi3_xml_parser_context_t* context,
                            fmi3_xml_elm_enu_t elmID,
                            jm_vector(jm_voidp) *destVarList,
                            fmi3_xml_dependencies_t* deps)
@@ -433,7 +433,7 @@ int fmi3_xml_parse_unknown(fmi3_xml_parser_context_t *context,
     return fmi3_xml_parse_dependencies(context, elmID, deps);
 }
 
-int fmi3_xml_handle_Output(fmi3_xml_parser_context_t *context, const char* data) {
+int fmi3_xml_handle_Output(fmi3_xml_parser_context_t* context, const char* data) {
     if (!data) {
         fmi3_xml_model_description_t* md = context->modelDescription;
         fmi3_xml_model_structure_t* ms = md->modelStructure;
@@ -455,7 +455,7 @@ int fmi3_xml_handle_Output(fmi3_xml_parser_context_t *context, const char* data)
     return 0;
 }
 
-int fmi3_xml_handle_ContinuousStateDerivative(fmi3_xml_parser_context_t *context, const char* data) {
+int fmi3_xml_handle_ContinuousStateDerivative(fmi3_xml_parser_context_t* context, const char* data) {
     if (!data) {
 
         fmi3_xml_model_description_t* md = context->modelDescription;
@@ -492,7 +492,7 @@ int fmi3_xml_handle_ContinuousStateDerivative(fmi3_xml_parser_context_t *context
     return 0;
 }
 
-int fmi3_xml_handle_ClockedState(fmi3_xml_parser_context_t *context, const char* data) {
+int fmi3_xml_handle_ClockedState(fmi3_xml_parser_context_t* context, const char* data) {
     if (!data) {
         fmi3_xml_model_description_t* md = context->modelDescription;
         fmi3_xml_model_structure_t* ms = md->modelStructure;
@@ -531,7 +531,7 @@ int fmi3_xml_handle_ClockedState(fmi3_xml_parser_context_t *context, const char*
     return 0;
 }
 
-int fmi3_xml_handle_InitialUnknown(fmi3_xml_parser_context_t *context, const char* data) {
+int fmi3_xml_handle_InitialUnknown(fmi3_xml_parser_context_t* context, const char* data) {
     if (!data) {
         fmi3_xml_model_description_t* md = context->modelDescription;
         fmi3_xml_model_structure_t* ms = md->modelStructure;
@@ -541,7 +541,7 @@ int fmi3_xml_handle_InitialUnknown(fmi3_xml_parser_context_t *context, const cha
     return 0;
 }
 
-int fmi3_xml_handle_EventIndicator(fmi3_xml_parser_context_t *context, const char* data) {
+int fmi3_xml_handle_EventIndicator(fmi3_xml_parser_context_t* context, const char* data) {
     if (!data) {
         fmi3_xml_model_description_t* md = context->modelDescription;
         fmi3_xml_model_structure_t* ms = md->modelStructure;

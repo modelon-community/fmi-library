@@ -452,3 +452,46 @@ TEST_CASE("Error check: ModelStructure; dependencies missing but dependenciesKin
 
     fmi3_testutil_import_free(tfmu);
 }
+
+TEST_CASE("Error check: ModelStructure; invalid dependenciesKind for InitialUnknown") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/model_structure/invalid/dependenciesKind_initialUnknown";
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    REQUIRE(tfmu != nullptr);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu != nullptr);
+
+    // not allowed ones
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "'InitialUnknown': 'fixed' is not allowed in list for attribute 'dependenciesKind'."));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "'InitialUnknown': 'tunable' is not allowed in list for attribute 'dependenciesKind'."));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "'InitialUnknown': 'discrete' is not allowed in list for attribute 'dependenciesKind'."));
+
+    fmi3_import_variable_list_t* varList = fmi3_import_get_initial_unknowns_list(fmu);
+    REQUIRE(fmi3_import_get_variable_list_size(varList) == 1);
+    fmi3_import_variable_t* var = fmi3_import_get_variable(varList, 0);
+    REQUIRE(var != nullptr);
+
+    // Dependencies should still be as defined in XML
+    size_t numDependencies;
+    int dependsOnAll;
+    size_t* dependencies;
+    char* dependenciesKind;
+
+    REQUIRE(fmi3_import_get_initial_unknown_dependencies(fmu, var, &numDependencies, &dependsOnAll, &dependencies, &dependenciesKind) == 0);
+    REQUIRE(numDependencies == 5);
+
+    REQUIRE(dependencies[0] == 1);
+    REQUIRE(dependencies[1] == 2);
+    REQUIRE(dependencies[2] == 3);
+    REQUIRE(dependencies[3] == 4);
+    REQUIRE(dependencies[4] == 5);
+
+    REQUIRE(dependenciesKind[0] == fmi3_dependencies_kind_dependent);
+    REQUIRE(dependenciesKind[1] == fmi3_dependencies_kind_constant);
+    REQUIRE(dependenciesKind[2] == fmi3_dependencies_kind_fixed);
+    REQUIRE(dependenciesKind[3] == fmi3_dependencies_kind_tunable);
+    REQUIRE(dependenciesKind[4] == fmi3_dependencies_kind_discrete);
+
+    fmi3_import_free_variable_list(varList);
+
+    fmi3_testutil_import_free(tfmu);
+}

@@ -335,17 +335,11 @@ static int fmi3_xml_parse_dependencies(fmi3_xml_parser_context_t* context,
                     fmi3_xml_elmid_to_name(elmID), *numDepKind);
                 return -1;
             }
-            if (elmID == fmi3_xml_elmID_InitialUnknown) {
-                if (kind == fmi3_dependencies_kind_fixed) {
-                    // TODO: Should not be corrected; test
-                    fmi3_xml_parse_error(context, "XML element 'InitialUnknown': 'fixed' is not allowed in list for attribute 'dependenciesKind'; setting to 'dependent'");
-                    kind = fmi3_dependencies_kind_dependent;
-                }
-                // TODO: Test both at same time
-                else if (!(kind == fmi3_dependencies_kind_dependent || kind == fmi3_dependencies_kind_constant)) {
-                    fmi3_xml_parse_error(context, "XML element 'InitialUnknown': only 'dependent' and 'constant' allowed in list for attribute 'dependenciesKind'");
-                    return 0;
-                }
+            if ((elmID == fmi3_xml_elmID_InitialUnknown) && 
+                ((kind == fmi3_dependencies_kind_fixed) || (kind == fmi3_dependencies_kind_tunable) || (kind == fmi3_dependencies_kind_discrete))) 
+            {
+                fmi3_xml_parse_warning(context, "XML element 'InitialUnknown': '%s' is not allowed in list for attribute 'dependenciesKind'.",
+                        fmi3_dependencies_kind_to_string(kind));
             }
             if (!jm_vector_push_back(char)(&deps->dependenciesKind, kind)) {
                 fmi3_xml_parse_fatal(context, "Could not allocate memory");

@@ -173,8 +173,35 @@ TEST_CASE("Test multiple invalid dependencies") {
         REQUIRE(dependenciesKind[2] == fmi3_dependencies_kind_tunable);
     }
 
-
     fmi3_import_free_variable_list(varList);
 
     fmi3_testutil_import_free(tfmu);
 }
+
+TEST_CASE("Clocked States; multiple attribute issues") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/error_handling/model_structure/clocked_state_multiple_issues";
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu != nullptr);
+
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "The variable 'clock' is a ClockedState, but does not define the attribute 'previous'"));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "The variable 'clock' is a ClockedState, but has the base type 'fmi3Clock'"));
+
+    fmi3_import_variable_list_t* varList = fmi3_import_get_clocked_states_list(fmu);
+    REQUIRE(fmi3_import_get_variable_list_size(varList) == 1);
+    fmi3_import_variable_t* var = fmi3_import_get_variable(varList, 0);
+    REQUIRE(var != nullptr);
+
+    // does not have previous
+    REQUIRE(fmi3_import_get_variable_previous(var) == nullptr);
+
+    // is Clock
+    fmi3_import_clock_variable_t* clockVar = fmi3_import_get_variable_as_clock(var);
+    REQUIRE(clockVar != nullptr);
+
+    fmi3_import_free_variable_list(varList);  
+
+    fmi3_testutil_import_free(tfmu);
+}
+
+// TODO: Test both EventIndicator errors at the same time

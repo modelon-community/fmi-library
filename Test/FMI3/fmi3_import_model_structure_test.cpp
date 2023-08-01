@@ -373,10 +373,15 @@ TEST_CASE("Error check: ModelStructure; ClockedState without previous attribute"
     fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
     REQUIRE(tfmu != nullptr);
     fmi3_import_t* fmu = tfmu->fmu;
-    REQUIRE(fmu == nullptr);
+    REQUIRE(fmu != nullptr);
 
     REQUIRE(fmi3_testutil_log_contains(tfmu, "The variable 'clocked_var' is a ClockedState, but does not define the attribute 'previous'."));
-    REQUIRE(fmi3_testutil_log_contains(tfmu, "Model structure is not valid due to detected errors. Cannot continue."));
+
+    fmi3_import_variable_list_t* varList = fmi3_import_get_clocked_states_list(fmu);
+    REQUIRE(fmi3_import_get_variable_list_size(varList) == 1);
+    fmi3_import_variable_t* var = fmi3_import_get_variable(varList, 0);
+    REQUIRE(var != nullptr);
+    REQUIRE(fmi3_import_get_variable_previous(var) == nullptr); // no previous defined
 
     fmi3_testutil_import_free(tfmu);
 }
@@ -387,11 +392,19 @@ TEST_CASE("Error check: ModelStructure; ClockedState has Clock base type") {
     fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
     REQUIRE(tfmu != nullptr);
     fmi3_import_t* fmu = tfmu->fmu;
-    REQUIRE(fmu == nullptr);
+    REQUIRE(fmu != nullptr);
 
     // Also tested in TEST_CASE("Invalid Clock variable - has previous")
     REQUIRE(fmi3_testutil_log_contains(tfmu, "Variables of type Clock must not have the 'previous' attribute."));
-    REQUIRE(fmi3_testutil_log_contains(tfmu, "Model structure is not valid due to detected errors. Cannot continue."));
+
+    fmi3_import_variable_list_t* varList = fmi3_import_get_clocked_states_list(fmu);
+    REQUIRE(fmi3_import_get_variable_list_size(varList) == 1);
+    fmi3_import_variable_t* var = fmi3_import_get_variable(varList, 0);
+    REQUIRE(var != nullptr);
+    fmi3_import_clock_variable_t* clockVar = fmi3_import_get_variable_as_clock(var);
+    REQUIRE(clockVar != nullptr);
+
+    fmi3_import_free_variable_list(varList);    
 
     fmi3_testutil_import_free(tfmu);
 }

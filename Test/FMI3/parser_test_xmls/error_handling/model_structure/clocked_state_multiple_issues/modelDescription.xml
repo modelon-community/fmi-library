@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription fmiVersion="3.0" modelName="" instantiationToken="">
+<ModelExchange modelIdentifier="id" />
+
+<ModelVariables>
+    <Clock name="clock" valueReference="0" intervalVariability="constant"/>
+</ModelVariables>
+
+<ModelStructure>
+    <!-- must not be Clock -->
+    <!-- must have previous attribute -->
+    <ClockedState valueReference="0"/>
+</ModelStructure>
+</fmiModelDescription>

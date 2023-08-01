@@ -204,4 +204,28 @@ TEST_CASE("Clocked States; multiple attribute issues") {
     fmi3_testutil_import_free(tfmu);
 }
 
-// TODO: Test both EventIndicator errors at the same time
+TEST_CASE("EventIndicators; multiple attribute issues") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/error_handling/model_structure/event_indicators_multiple_issues";
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu != nullptr);
+
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "The variable 'event_ind' is an EventIndicator, but does not have variability='continuous'"));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "The variable 'event_ind' is an EventIndicator, but does not have the base type 'Float32' or 'Float64'"));
+
+    fmi3_import_variable_list_t* varList = fmi3_import_get_event_indicators_list(fmu);
+    REQUIRE(fmi3_import_get_variable_list_size(varList) == 1);
+    fmi3_import_variable_t* var = fmi3_import_get_variable(varList, 0);
+    REQUIRE(var != nullptr);
+
+    // not continuous
+    REQUIRE(fmi3_import_get_variable_variability(var) == fmi3_variability_enu_discrete);
+
+    // not float
+    fmi3_import_int64_variable_t* i64Var = fmi3_import_get_variable_as_int64(var);
+    REQUIRE(i64Var != nullptr);
+
+    fmi3_import_free_variable_list(varList);  
+
+    fmi3_testutil_import_free(tfmu);
+}

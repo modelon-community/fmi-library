@@ -569,20 +569,16 @@ int fmi3_xml_handle_EventIndicator(fmi3_xml_parser_context_t* context, const cha
         fmi3_xml_variable_t* eventInd = (fmi3_xml_variable_t*)jm_vector_get_last(jm_voidp)(&ms->eventIndicators);
         /* EventIndicator must be continuous */
         if (fmi3_xml_get_variable_variability(eventInd) != fmi3_variability_enu_continuous) {
-            fmi3_xml_set_model_structure_invalid(ms);
-            fmi3_xml_parse_error(context,
+            fmi3_xml_parse_warning(context,
                     "The variable '%s' is an EventIndicator, but does not have variability='continuous'.",
                     fmi3_xml_get_variable_name(eventInd));
-            return -1;
         }
 
         fmi3_base_type_enu_t baseType = fmi3_xml_get_variable_base_type(eventInd);
         if ((baseType != fmi3_base_type_float64) && (baseType != fmi3_base_type_float32)) {
-            fmi3_xml_set_model_structure_invalid(ms);
-            fmi3_xml_parse_error(context,
+            fmi3_xml_parse_warning(context,
                     "The variable '%s' is an EventIndicator, but does not have the base type 'Float32' or 'Float64'.",
                     fmi3_xml_get_variable_name(eventInd));
-            return -1;
         }
     }
     return 0;

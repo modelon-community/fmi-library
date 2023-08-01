@@ -7,6 +7,6 @@
 </ModelVariables>
 
 <ModelStructure>
-  <EventIndicator valueReference="0"/> <!-- all event indicators must have variability="continuous" -->
+    <EventIndicator valueReference="0"/> <!-- all event indicators must have variability="continuous" -->
 </ModelStructure>
 </fmiModelDescription>

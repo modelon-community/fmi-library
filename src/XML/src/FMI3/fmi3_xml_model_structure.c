@@ -209,8 +209,7 @@ int fmi3_xml_handle_ModelStructure(fmi3_xml_parser_context_t* context, const cha
             fmi3_xml_parse_fatal(context, module, "Could not allocate memory");
             return -1;
         }
-    }
-    else {
+    } else {
         fmi3_xml_model_structure_t* ms = md->modelStructure;
         /** make sure model structure information is consistent */
 
@@ -446,13 +445,14 @@ int fmi3_xml_parse_unknown(fmi3_xml_parser_context_t* context,
 }
 
 int fmi3_xml_handle_Output(fmi3_xml_parser_context_t* context, const char* data) {
+    fmi3_xml_model_description_t* md = context->modelDescription;
+    fmi3_xml_model_structure_t* ms = md->modelStructure;
     if (!data) {
-        fmi3_xml_model_description_t* md = context->modelDescription;
-        fmi3_xml_model_structure_t* ms = md->modelStructure;
-
-        int status =  fmi3_xml_parse_unknown(context, fmi3_xml_elmID_Output, &ms->outputs, ms->outputDeps);
-        if (status)
-            return status;
+        if (fmi3_xml_parse_unknown(context, fmi3_xml_elmID_Output, &ms->outputs, ms->outputDeps)) {
+            return -1;
+        }
+    } else {
+        // post-processing
 
         // Check for correct causality
         fmi3_xml_variable_t* var = (fmi3_xml_variable_t*)jm_vector_get_last(jm_voidp)(&ms->outputs);
@@ -466,21 +466,18 @@ int fmi3_xml_handle_Output(fmi3_xml_parser_context_t* context, const char* data)
 }
 
 int fmi3_xml_handle_ContinuousStateDerivative(fmi3_xml_parser_context_t* context, const char* data) {
+    fmi3_xml_model_description_t* md = context->modelDescription;
+    fmi3_xml_model_structure_t* ms = md->modelStructure;
     if (!data) {
-
-        fmi3_xml_model_description_t* md = context->modelDescription;
-        fmi3_xml_model_structure_t* ms = md->modelStructure;
-        fmi3_xml_variable_t* derXX; /* float64 or float32 variable */
-        int validDeriv; /* valid derivative found */
-
         /* perform the parsing */
         if (fmi3_xml_parse_unknown(context, fmi3_xml_elmID_ContinuousStateDerivative,
                                    &ms->continuousStateDerivatives, ms->continuousStateDerivativeDeps)) {
             return -1;
         }
-
-        /* validate return values */
-
+    } else {
+        // post-processing
+        fmi3_xml_variable_t* derXX; /* float64 or float32 variable */
+        int validDeriv; /* valid derivative found */
         /* continuosStateDerivatives can be any of floatXX */
         derXX = (fmi3_xml_variable_t*)jm_vector_get_last(jm_voidp)(&ms->continuousStateDerivatives);
         if (derXX->type->baseType == fmi3_base_type_float64) {
@@ -501,17 +498,15 @@ int fmi3_xml_handle_ContinuousStateDerivative(fmi3_xml_parser_context_t* context
 }
 
 int fmi3_xml_handle_ClockedState(fmi3_xml_parser_context_t* context, const char* data) {
+    fmi3_xml_model_description_t* md = context->modelDescription;
+    fmi3_xml_model_structure_t* ms = md->modelStructure;
     if (!data) {
-        fmi3_xml_model_description_t* md = context->modelDescription;
-        fmi3_xml_model_structure_t* ms = md->modelStructure;
-
-        /* perform the parsing */
         if (fmi3_xml_parse_unknown(context, fmi3_xml_elmID_ClockedState,
                                    &ms->clockedStates, ms->clockedStateDeps)) {
             return -1;
         }
-
-        /* validate return values */
+    } else {
+        // post-processing
         fmi3_xml_variable_t* clockVar = (fmi3_xml_variable_t*)jm_vector_get_last(jm_voidp)(&ms->clockedStates);
 
         // previous attribute is required, spec: "If present, this variable is a <ClockedState>" */
@@ -536,36 +531,41 @@ int fmi3_xml_handle_ClockedState(fmi3_xml_parser_context_t* context, const char*
 }
 
 int fmi3_xml_handle_InitialUnknown(fmi3_xml_parser_context_t* context, const char* data) {
+    fmi3_xml_model_description_t* md = context->modelDescription;
+    fmi3_xml_model_structure_t* ms = md->modelStructure;
     if (!data) {
-        fmi3_xml_model_description_t* md = context->modelDescription;
-        fmi3_xml_model_structure_t* ms = md->modelStructure;
-
-        return fmi3_xml_parse_unknown(context, fmi3_xml_elmID_InitialUnknown, &ms->initialUnknowns, ms->initialUnknownDeps);
+        if (fmi3_xml_parse_unknown(context, fmi3_xml_elmID_InitialUnknown, &ms->initialUnknowns, ms->initialUnknownDeps)) {
+            return -1;
+        }
+    } else {
+        // post-processing
+        ;
     }
     return 0;
 }
 
 int fmi3_xml_handle_EventIndicator(fmi3_xml_parser_context_t* context, const char* data) {
-    if (!data) {
-        fmi3_xml_model_description_t* md = context->modelDescription;
-        fmi3_xml_model_structure_t* ms = md->modelStructure;
+    fmi3_xml_model_description_t* md = context->modelDescription;
+    fmi3_xml_model_structure_t* ms = md->modelStructure;
 
-        // Ignored if Co-simulation & scheduled execution
-        fmi3_fmu_kind_enu_t fmuKind = fmi3_xml_get_fmu_kind(md);
-        // Multiple types can be defined, check for: not ME and (CS or SE)
-        if (!(fmuKind & fmi3_fmu_kind_me) && ((fmuKind & fmi3_fmu_kind_cs) || (fmuKind & fmi3_fmu_kind_se))) {
+    // Ignored if Co-simulation & scheduled execution
+    fmi3_fmu_kind_enu_t fmuKind = fmi3_xml_get_fmu_kind(md);
+    // Multiple types can be defined, check for: not ME and (CS or SE)
+    if (!(fmuKind & fmi3_fmu_kind_me) && ((fmuKind & fmi3_fmu_kind_cs) || (fmuKind & fmi3_fmu_kind_se))) {
+        if (!data) {
+            // Only show log message once, upon start of <EventIndicator>
             jm_log_info(md->callbacks, "FMI3XML", "EventIndicator ignored since FMU kind is Co-Simulation or Scheduled Excecution.");
-            return 0;
         }
+        return 0;
+    }
 
-        /* perform the parsing */
+    if (!data) {
         if (fmi3_xml_parse_unknown(context, fmi3_xml_elmID_EventIndicator,
                                    &ms->eventIndicators, ms->eventIndicatorDeps)) {
             return -1;
         }
-
-        /* validate return values */
-
+    } else {
+        // post-processing
         fmi3_xml_variable_t* eventInd = (fmi3_xml_variable_t*)jm_vector_get_last(jm_voidp)(&ms->eventIndicators);
         /* EventIndicator must be continuous */
         if (fmi3_xml_get_variable_variability(eventInd) != fmi3_variability_enu_continuous) {

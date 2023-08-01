@@ -368,22 +368,6 @@ TEST_CASE("Info check: ModelStructure; EventIndicator ignored for Co-Simulation"
     fmi3_testutil_import_free(tfmu);
 }
 
-TEST_CASE("Error check: ModelStructure; ClockedState without clocks attribute") {
-    // Spec: "All clocked states [...], must have the attribute clocks, [...]"
-    const char* xmldir = FMI3_TEST_XML_DIR "/model_structure/invalid/clocked_state_no_clocks";
-    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
-    REQUIRE(tfmu != nullptr);
-    // fmi3_import_t* fmu = tfmu->fmu;
-    // REQUIRE(fmu != nullptr);
-    // TODO: Is this test redudant?
-
-    // Also tested by TEST_CASE("Invalid previous - requires clocks")
-    // const char* logMsg = "Only variables with the attribute 'clocks' may have the attribute 'previous'.";
-    // REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
-
-    fmi3_testutil_import_free(tfmu);
-}
-
 TEST_CASE("Error check: ModelStructure; ClockedState without previous attribute") {
     const char* xmldir = FMI3_TEST_XML_DIR "/model_structure/invalid/clocked_state_no_previous";
     fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);

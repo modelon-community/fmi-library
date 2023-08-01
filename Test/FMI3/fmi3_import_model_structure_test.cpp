@@ -240,10 +240,31 @@ TEST_CASE("Error check: ModelStructure; ContinuousStateDerivative missing deriva
     fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
     REQUIRE(tfmu != nullptr);
     fmi3_import_t* fmu = tfmu->fmu;
-    REQUIRE(fmu == nullptr);
+    REQUIRE(fmu != nullptr);
 
     REQUIRE(fmi3_testutil_log_contains(tfmu, "The variable 'state_var' is a ContinuousStateDerivative, but does not specify the state variable it is a derivative of."));
-    REQUIRE(fmi3_testutil_log_contains(tfmu, "Model structure is not valid due to detected errors. Cannot continue."));
+
+    fmi3_import_variable_t* var;
+    fmi3_import_float64_variable_t* f64Var;
+    fmi3_import_variable_list_t* varList = fmi3_import_get_continuous_state_derivatives_list(fmu);
+    REQUIRE(fmi3_import_get_variable_list_size(varList) == 2);
+
+    var = fmi3_import_get_variable(varList, 0);
+    REQUIRE(var != nullptr);
+    REQUIRE(fmi3_import_get_variable_vr(var) == 0);
+    f64Var = fmi3_import_get_variable_as_float64(var);
+    REQUIRE(f64Var != nullptr);
+    REQUIRE(fmi3_import_get_float64_variable_derivative_of(f64Var) == nullptr);
+
+    var = fmi3_import_get_variable(varList, 1);
+    REQUIRE(var != nullptr);
+    REQUIRE(fmi3_import_get_variable_vr(var) == 1);
+    f64Var = fmi3_import_get_variable_as_float64(var);
+    REQUIRE(f64Var != nullptr);
+    // Not really a sensible reference, but parsed according to XML
+    REQUIRE(fmi3_import_get_float64_variable_derivative_of(f64Var) == f64Var);
+
+    fmi3_import_free_variable_list(varList);
 
     fmi3_testutil_import_free(tfmu);
 }

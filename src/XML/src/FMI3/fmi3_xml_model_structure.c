@@ -492,11 +492,9 @@ int fmi3_xml_handle_ContinuousStateDerivative(fmi3_xml_parser_context_t* context
             validDeriv = fmi3_xml_get_float32_variable_derivative_of(der) != NULL;
         }
         if (!validDeriv) {
-            fmi3_xml_set_model_structure_invalid(ms);
-            fmi3_xml_parse_error(context,
+            fmi3_xml_parse_warning(context,
                     "The variable '%s' is a ContinuousStateDerivative, but does not specify the state variable it is a derivative of.",
                     fmi3_xml_get_variable_name(derXX));
-            return -1;
         }
     }
     return 0;

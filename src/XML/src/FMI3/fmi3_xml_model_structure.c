@@ -72,7 +72,7 @@ void fmi3_xml_free_model_structure(fmi3_xml_model_structure_t* ms) {
     cb->free(ms);
 }
 
-// Fore trace-ability, in case we want to attach an error message to first call
+// For trace-ability, in case we want to attach an error message to first call
 static void fmi3_xml_set_model_structure_invalid(fmi3_xml_model_structure_t* ms) {
     if (ms) {ms->isValid = 0;}
 }

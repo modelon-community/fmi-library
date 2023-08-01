@@ -335,6 +335,7 @@ static int fmi3_xml_parse_dependencies(fmi3_xml_parser_context_t* context,
                     fmi3_xml_elmid_to_name(elmID), *numDepKind);
                 return -1;
             }
+            // Check possible invalid combinations of elmID & dependenciesKind entries
             if ((elmID == fmi3_xml_elmID_InitialUnknown) && 
                 ((kind == fmi3_dependencies_kind_fixed) || (kind == fmi3_dependencies_kind_tunable) || (kind == fmi3_dependencies_kind_discrete))) 
             {
@@ -387,7 +388,7 @@ static int fmi3_xml_parse_dependencies(fmi3_xml_parser_context_t* context,
 /* Wrapper for #fmi3_xml_parse_dependencies, handling failed states */
 static void fmi3_xml_parse_dependencies_error_wrapper(fmi3_xml_parser_context_t* context,
         fmi3_xml_elm_enu_t elmID, fmi3_xml_dependencies_t* deps) {
-    // number of added dependecy(kind) entries, these need to be cleaned up in case of failure to parse
+    // number of added dependecies(Kind) entries, these are needed to clean dependencies in case of failure to parse
     size_t numDepInd = 0;
     size_t numDepKind = 0;
     size_t totNumDep = jm_vector_get_size(size_t)(&deps->dependenciesVRs); // original size, before parsing dependencies
@@ -440,7 +441,7 @@ int fmi3_xml_parse_unknown(fmi3_xml_parser_context_t* context,
         return -1;
     }
 
-    fmi3_xml_parse_dependencies_error_wrapper(context, elmID, deps);
+    fmi3_xml_parse_dependencies_error_wrapper(context, elmID, deps); // handle possible parsing errors
     return 0;
 }
 
@@ -456,11 +457,9 @@ int fmi3_xml_handle_Output(fmi3_xml_parser_context_t* context, const char* data)
         // Check for correct causality
         fmi3_xml_variable_t* var = (fmi3_xml_variable_t*)jm_vector_get_last(jm_voidp)(&ms->outputs);
         if (var->causality != fmi3_causality_enu_output) {
-            fmi3_xml_set_model_structure_invalid(ms);
-            fmi3_xml_parse_error(context,
+            fmi3_xml_parse_warning(context,
                     "The variable '%s' is an Output, but does not have causality='output'.",
                     fmi3_xml_get_variable_name(var));
-            return -1;
         }
     }
     return 0;

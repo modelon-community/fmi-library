@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription fmiVersion="3.0" modelName="" instantiationToken="">
+<ModelExchange modelIdentifier="id"/>
+
+<ModelVariables>
+    <!-- basic float variables -->
+    <Float64 name="f0"  valueReference="0"  variability="continuous"/>
+    <Float64 name="f1"  valueReference="1"  variability="continuous"/>
+    <Float64 name="f2"  valueReference="2"  variability="continuous"/>
+
+    <Float64 name="f10" valueReference="10" variability="continuous"/>
+    <Float64 name="f11" valueReference="11" variability="continuous"/>
+    <Float64 name="f12" valueReference="12" variability="continuous"/>
+    <Float64 name="f13" valueReference="13" variability="continuous"/>
+    <Float64 name="f14" valueReference="14" variability="continuous"/>
+
+    <Float64 name="f20" valueReference="20" variability="continuous"/>
+    <Float64 name="f21" valueReference="21" variability="continuous"/>
+    <Float64 name="f22" valueReference="22" variability="continuous"/>
+
+    <!-- corresponding derivatives, VR+=100 -->
+    <Float64 name="der(f0)"  valueReference="100" variability="continuous" derivative="0"  start="0"/>
+    <Float64 name="der(f1)"  valueReference="101" variability="continuous" derivative="1"  start="0"/>
+    <Float64 name="der(f2)"  valueReference="102" variability="continuous" derivative="2"  start="0"/>
+
+    <Float64 name="der(f10)" valueReference="110" variability="continuous" derivative="10" start="0"/>
+    <Float64 name="der(f11)" valueReference="111" variability="continuous" derivative="11" start="0"/>
+    <Float64 name="der(f12)" valueReference="112" variability="continuous" derivative="12" start="0"/>
+    <Float64 name="der(f13)" valueReference="113" variability="continuous" derivative="13" start="0"/>
+    <Float64 name="der(f14)" valueReference="114" variability="continuous" derivative="14" start="0"/>
+
+    <Float64 name="der(f20)" valueReference="120" variability="continuous" derivative="20" start="0"/>
+    <Float64 name="der(f21)" valueReference="121" variability="continuous" derivative="21" start="0"/>
+    <Float64 name="der(f22)" valueReference="122" variability="continuous" derivative="22" start="0"/>
+</ModelVariables>
+
+<ModelStructure>
+    <!-- valid -->
+    <ContinuousStateDerivative valueReference="100"/>
+    <ContinuousStateDerivative valueReference="101" dependencies="" dependenciesKind=""/>
+    <ContinuousStateDerivative valueReference="102" dependencies="0 1 2" dependenciesKind="fixed constant tunable"/>
+
+    <!-- invalid ones -->
+    <ContinuousStateDerivative valueReference="110" dependencies="0 0 0" dependenciesKind="variable"/> <!-- 'variable' not valid dependenciesKind -->
+    <ContinuousStateDerivative valueReference="111" dependencies="-1 -2 -3"/> <!-- VRs are non-negative -->
+    <ContinuousStateDerivative valueReference="112" dependencies="all some full"/> <!-- VRs are numbers -->
+    <ContinuousStateDerivative valueReference="113" dependencies="0 1 2" dependenciesKind="fixed fixed fixed fixed"/> <!-- mismatching lengths -->
+    <ContinuousStateDerivative valueReference="114" dependenciesKind="fixed"/> <!-- dependenciesKind requires dependencies attribute -->
+
+    <!-- valid -->
+    <ContinuousStateDerivative valueReference="120"/>
+    <ContinuousStateDerivative valueReference="121" dependencies="" dependenciesKind=""/>
+    <ContinuousStateDerivative valueReference="122" dependencies="20 21 22" dependenciesKind="fixed constant tunable"/>
+</ModelStructure>
+</fmiModelDescription>

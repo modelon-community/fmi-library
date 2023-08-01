@@ -64,3 +64,117 @@ TEST_CASE("Test invalid VRs") {
 
     fmi3_testutil_import_free(tfmu);
 }
+
+// Default dependency setup
+static void test_fmi3_default_dependency(size_t numDependencies, int dependsOnAll, size_t* dependencies, char* dependenciesKind) {
+    REQUIRE(numDependencies == 0);
+    REQUIRE(dependsOnAll == 1);
+    REQUIRE(dependencies == nullptr);
+    REQUIRE(dependenciesKind == nullptr);
+}
+
+TEST_CASE("Test multiple invalid dependencies") {
+    // Failed dependency parsing requires some cleanup in the parser
+    // Test all invalid variants together with valid ones
+    const char* xmldir = FMI3_TEST_XML_DIR "/error_handling/model_structure/invalid_dependencies";
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu != nullptr);
+
+    // Test all dependencies
+    size_t numDependencies;
+    int dependsOnAll;
+    size_t* dependencies;
+    char* dependenciesKind;
+    fmi3_import_variable_t* var;
+
+    // number of test cases
+    int numFirstValid = 3;
+    int numInvalid = 5;
+    int numSecondValid = 3;
+
+    // Get ContinuousStateDerivative list, all ones should be valid
+    fmi3_import_variable_list_t* varList = fmi3_import_get_continuous_state_derivatives_list(fmu);
+    REQUIRE(fmi3_import_get_variable_list_size(varList) == numFirstValid + numInvalid + numSecondValid);
+
+    SECTION("First set of valid ones") {
+        size_t idx = 0;
+
+        var = fmi3_import_get_variable(varList, 0);
+        REQUIRE(fmi3_import_get_variable_vr(var) == 100);
+        REQUIRE(fmi3_import_get_continuous_state_derivative_dependencies(fmu, var, &numDependencies, &dependsOnAll, &dependencies, &dependenciesKind) == 0);
+        test_fmi3_default_dependency(numDependencies, dependsOnAll, dependencies, dependenciesKind);
+
+        var = fmi3_import_get_variable(varList, 1);
+        REQUIRE(fmi3_import_get_variable_vr(var) == 101);
+        REQUIRE(fmi3_import_get_continuous_state_derivative_dependencies(fmu, var, &numDependencies, &dependsOnAll, &dependencies, &dependenciesKind) == 0);
+        REQUIRE(numDependencies == 0);
+        REQUIRE(dependsOnAll == 0); // no dependencies
+        REQUIRE(dependencies == nullptr);
+        REQUIRE(dependenciesKind == nullptr);
+
+        var = fmi3_import_get_variable(varList, 2);
+        REQUIRE(fmi3_import_get_variable_vr(var) == 102);
+        REQUIRE(fmi3_import_get_continuous_state_derivative_dependencies(fmu, var, &numDependencies, &dependsOnAll, &dependencies, &dependenciesKind) == 0);
+        REQUIRE(numDependencies == 3);
+        REQUIRE(dependencies[0] == 0);
+        REQUIRE(dependencies[1] == 1);
+        REQUIRE(dependencies[2] == 2);
+        REQUIRE(dependenciesKind[0] == fmi3_dependencies_kind_fixed);
+        REQUIRE(dependenciesKind[1] == fmi3_dependencies_kind_constant);
+        REQUIRE(dependenciesKind[2] == fmi3_dependencies_kind_tunable);
+    }
+
+    SECTION("Invalid ones") {
+        size_t idx = numFirstValid;
+        REQUIRE(fmi3_testutil_log_contains(tfmu, "'ContinuousStateDerivative': could not parse item 0 in the list for attribute 'dependenciesKind'"));
+        REQUIRE(fmi3_testutil_log_contains(tfmu, "'ContinuousStateDerivative': Attribute 'dependencies' contains invalid value: -1."));
+        REQUIRE(fmi3_testutil_log_contains(tfmu, "'ContinuousStateDerivative': could not parse item 0, character 'a' in the list for attribute 'dependencies'"));
+        REQUIRE(fmi3_testutil_log_contains(tfmu, "'ContinuousStateDerivative': different number of items (3 and 4) in the lists for 'dependencies' and 'dependenciesKind'"));
+        REQUIRE(fmi3_testutil_log_contains(tfmu, "'ContinuousStateDerivative': if `dependenciesKind` attribute is present then the `dependencies` attribute must also be present."));
+
+        // loop since all should result in default dependencies
+        for (size_t i = 0; i < numInvalid; i++) {
+            fmi3_value_reference_t vr = 110 + i;
+            INFO("Testing invalid dependencies for valueReference = " << vr);
+            var = fmi3_import_get_variable(varList, idx++);
+            REQUIRE(fmi3_import_get_variable_vr(var) == vr);
+            REQUIRE(fmi3_import_get_continuous_state_derivative_dependencies(fmu, var, &numDependencies, &dependsOnAll, &dependencies, &dependenciesKind) == 0);
+            test_fmi3_default_dependency(numDependencies, dependsOnAll, dependencies, dependenciesKind);
+        }
+    }
+
+    // These are the essential ones, the invalid ones should not corrupt the internal data storage
+    SECTION("Second set of valid ones") {
+        size_t idx = numFirstValid + numInvalid;
+
+        var = fmi3_import_get_variable(varList, idx++);
+        REQUIRE(fmi3_import_get_variable_vr(var) == 120);
+        REQUIRE(fmi3_import_get_continuous_state_derivative_dependencies(fmu, var, &numDependencies, &dependsOnAll, &dependencies, &dependenciesKind) == 0);
+        test_fmi3_default_dependency(numDependencies, dependsOnAll, dependencies, dependenciesKind);
+
+        var = fmi3_import_get_variable(varList, idx++);
+        REQUIRE(fmi3_import_get_variable_vr(var) == 121);
+        REQUIRE(fmi3_import_get_continuous_state_derivative_dependencies(fmu, var, &numDependencies, &dependsOnAll, &dependencies, &dependenciesKind) == 0);
+        REQUIRE(numDependencies == 0);
+        REQUIRE(dependsOnAll == 0); // no dependencies
+        REQUIRE(dependencies == nullptr);
+        REQUIRE(dependenciesKind == nullptr);
+
+        var = fmi3_import_get_variable(varList, idx++);
+        REQUIRE(fmi3_import_get_variable_vr(var) == 122);
+        REQUIRE(fmi3_import_get_continuous_state_derivative_dependencies(fmu, var, &numDependencies, &dependsOnAll, &dependencies, &dependenciesKind) == 0);
+        REQUIRE(numDependencies == 3);
+        REQUIRE(dependencies[0] == 20);
+        REQUIRE(dependencies[1] == 21);
+        REQUIRE(dependencies[2] == 22);
+        REQUIRE(dependenciesKind[0] == fmi3_dependencies_kind_fixed);
+        REQUIRE(dependenciesKind[1] == fmi3_dependencies_kind_constant);
+        REQUIRE(dependenciesKind[2] == fmi3_dependencies_kind_tunable);
+    }
+
+
+    fmi3_import_free_variable_list(varList);
+
+    fmi3_testutil_import_free(tfmu);
+}

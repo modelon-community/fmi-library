@@ -401,7 +401,8 @@ static void fmi3_xml_parse_dependencies_error_wrapper(fmi3_xml_parser_context_t*
             jm_vector_remove_item(char)(&deps->dependenciesKind, totNumDep);
         }
 
-        // Fallback to default dependency, required for functioning API
+        // Fallback to default dependency (still requires some data entries)
+        // API #fmi3_xml_get_dependencies requires consistent dependency data to retreive
         jm_vector_push_back(size_t)(&deps->startIndex, totNumDep);
         jm_vector_push_back(char)(&deps->dependencyOnAll, 1);
     }

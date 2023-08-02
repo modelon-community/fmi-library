@@ -227,7 +227,7 @@ TEST_CASE("Clock with ALL invalid attributes") {
     const char* xmldir = FMI3_TEST_XML_DIR "/error_handling/model_variables/multiple_attribute_issues_clock_including_req";
     fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
     fmi3_import_t* fmu = tfmu->fmu;
-    REQUIRE(fmu == nullptr);
+    REQUIRE(fmu != nullptr);
 
     /*
     <Clock name="clock0" valueReference="0" intervalVariability="continuous"
@@ -245,7 +245,20 @@ TEST_CASE("Clock with ALL invalid attributes") {
     REQUIRE(fmi3_testutil_log_contains(tfmu, "XML element 'Clock': failed to parse attribute intervalDecimal='ten'"));
     REQUIRE(fmi3_testutil_log_contains(tfmu, "XML element 'Clock': failed to parse attribute shiftDecimal='twenty'"));
 
-    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables. Variable(s) failed to parse or an essential error check failed."));
+    fmi3_import_variable_t* var = fmi3_import_get_variable_by_vr(fmu, 0);
+    REQUIRE(var != nullptr);
+    fmi3_import_clock_variable_t* clockVar = fmi3_import_get_variable_as_clock(var);
+    REQUIRE(clockVar != nullptr);
+
+    REQUIRE(fmi3_import_get_clock_variable_can_be_deactivated(clockVar)   == false);
+    REQUIRE(fmi3_import_get_clock_variable_has_priority(clockVar)         == false);
+    REQUIRE(fmi3_import_get_clock_variable_interval_variability(clockVar) == fmi3_interval_variability_unknown);
+    REQUIRE(fmi3_import_get_clock_variable_has_interval_decimal(clockVar) == false);
+    REQUIRE(fmi3_import_get_clock_variable_shift_decimal(clockVar)        == 0.0f);
+    REQUIRE(fmi3_import_get_clock_variable_supports_fraction(clockVar)    == false);
+    REQUIRE(fmi3_import_get_clock_variable_has_resolution(clockVar)       == false);
+    REQUIRE(fmi3_import_get_clock_variable_has_interval_counter(clockVar) == false);
+    REQUIRE(fmi3_import_get_clock_variable_shift_counter(clockVar)        == 0);
 
     fmi3_testutil_import_free(tfmu);
 }
@@ -426,6 +439,24 @@ TEST_CASE("String non-array variable with too many start values") {
     startArray = fmi3_import_get_string_variable_start_array(stringVar);
     REQUIRE_STREQ(startArray[0], "first")
     REQUIRE_STREQ(startArray[1], "second")
+
+    fmi3_testutil_import_free(tfmu);
+}
+
+TEST_CASE("Secondary error test; Derivate/previous reference on invalid variable") {
+    // This is a limitation
+    const char* xmldir = FMI3_TEST_XML_DIR "/error_handling/model_variables/invalid_reference_resolve";
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    REQUIRE(tfmu != nullptr);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu == nullptr);
+
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'Float64': required attribute 'name' not found"));
+    // Secondary errors
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "The valueReference in derivative=\"0\" did not resolve to any variable."));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "The valueReference in previous=\"0\" did not resolve to any variable."));
+
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables. Variable(s) failed to parse or an essential error check failed."));
 
     fmi3_testutil_import_free(tfmu);
 }

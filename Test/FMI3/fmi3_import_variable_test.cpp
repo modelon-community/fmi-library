@@ -348,9 +348,13 @@ TEST_CASE("Invalid Clock variable - no intervalVariability attr") {
     fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
     REQUIRE(tfmu != nullptr);
     fmi3_import_t* fmu = tfmu->fmu;
-    REQUIRE(fmu == nullptr);
+    REQUIRE(fmu != nullptr);
 
-    REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'Clock': required attribute 'intervalVariability' not found"));
+    fmi3_import_variable_t* var = fmi3_import_get_variable_by_vr(fmu, 1);
+    REQUIRE(var != nullptr);
+    fmi3_import_clock_variable_t* clockVar = fmi3_import_get_variable_as_clock(var);
+    REQUIRE(clockVar != nullptr);
+    REQUIRE(fmi3_import_get_clock_variable_interval_variability(clockVar) == fmi3_interval_variability_unknown);
 
     fmi3_testutil_import_free(tfmu);
 }
@@ -863,11 +867,16 @@ TEST_CASE("Invalid; clock without intervalVariability") {
 
     fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
     REQUIRE(tfmu != nullptr);
-    REQUIRE(tfmu->fmu == nullptr);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu != nullptr);
 
     REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'Clock': required attribute 'intervalVariability' not found"));
 
-    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables. Variable(s) failed to parse or an essential error check failed."));
+    fmi3_import_variable_t* var = fmi3_import_get_variable_by_vr(fmu, 1);
+    REQUIRE(var != nullptr);
+    fmi3_import_clock_variable_t* clockVar = fmi3_import_get_variable_as_clock(var);
+    REQUIRE(clockVar != nullptr);
+    REQUIRE(fmi3_import_get_clock_variable_interval_variability(clockVar) == fmi3_interval_variability_unknown);
 
     fmi3_testutil_import_free(tfmu);
 }

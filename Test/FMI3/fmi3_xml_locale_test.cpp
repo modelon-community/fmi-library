@@ -86,8 +86,7 @@ TEST_CASE("Test parsing with locale set") {
          * the result. */
 
         const char* xmldir = FMI3_TEST_XML_DIR "/env/locale";
-        
-        fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xml_dir);
+        fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
         fmi3_import_t* xml = tfmu->fmu;
         REQUIRE(xml != nullptr);
 

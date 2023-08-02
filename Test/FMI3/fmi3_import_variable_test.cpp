@@ -301,8 +301,8 @@ static void test_non_default_canhandlemultiplesetpertimeinstant(fmi3_import_t* x
 
 TEST_CASE("Variable parsing") {
     const char* xmldir = FMI3_TEST_XML_DIR "/variables/valid/basic1";
-
-    fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* xml = tfmu->fmu;
     REQUIRE(xml != nullptr);
 
     SECTION("Enum: parse default attributes") {
@@ -340,7 +340,8 @@ TEST_CASE("Variable parsing") {
         test_non_default_canhandlemultiplesetpertimeinstant(xml);
     }
 
-    fmi3_import_free(xml);
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
+    fmi3_testutil_import_free(tfmu);
 }
 
 TEST_CASE("Invalid Clock variable - no intervalVariability attr") {
@@ -350,12 +351,15 @@ TEST_CASE("Invalid Clock variable - no intervalVariability attr") {
     fmi3_import_t* fmu = tfmu->fmu;
     REQUIRE(fmu != nullptr);
 
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'Clock': required attribute 'intervalVariability' not found"));
+
     fmi3_import_variable_t* var = fmi3_import_get_variable_by_vr(fmu, 1);
     REQUIRE(var != nullptr);
     fmi3_import_clock_variable_t* clockVar = fmi3_import_get_variable_as_clock(var);
     REQUIRE(clockVar != nullptr);
     REQUIRE(fmi3_import_get_clock_variable_interval_variability(clockVar) == fmi3_interval_variability_unknown);
 
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 1);
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -373,6 +377,7 @@ TEST_CASE("Invalid Binary variable - non-hexadecimal char first in byte tuple") 
     REQUIRE(binVar != nullptr);
     REQUIRE(fmi3_import_get_binary_variable_start_size(binVar) == 0);
 
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 1);
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -390,6 +395,7 @@ TEST_CASE("Invalid Binary variable - non-hexadecimal char second in byte tuple")
     REQUIRE(binVar != nullptr);
     REQUIRE(fmi3_import_get_binary_variable_start_size(binVar) == 0);
 
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 1);
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -409,6 +415,7 @@ TEST_CASE("Invalid Binary variable - hex string of odd length") {
     fmi3_binary_t bin = fmi3_import_get_binary_variable_start(binVar);
     REQUIRE(bin == nullptr);
 
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 1);
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -419,6 +426,8 @@ TEST_CASE("Invalid structuralParameter - requires start attribute") {
     REQUIRE(fmu != nullptr);
     
     REQUIRE(fmi3_testutil_log_contains(tfmu, "Variable 'structVar': start value required for structuralParameter variables"));
+
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 1);
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -447,6 +456,7 @@ TEST_CASE("Invalid structuralParameter - has dimension") {
     REQUIRE(fmi3_import_get_dimension_start(dim) == 1);
     REQUIRE(fmi3_import_get_dimension_has_vr(dim) == 0);
 
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 1);
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -578,6 +588,7 @@ TEST_CASE("Alias variables") {
         check_aliases(fmu, "v9", 1, namesExp, descExp, duExp);
     }
     
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -601,6 +612,7 @@ TEST_CASE("Invalid Alias - unresolvable displayUnit") {
     REQUIRE(alias != nullptr);
     REQUIRE(fmi3_import_get_alias_variable_display_unit(alias) == nullptr);
 
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 1);
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -616,7 +628,9 @@ TEST_CASE("Invalid Alias - no name") {
     REQUIRE(var != nullptr);
     REQUIRE_STREQ(fmi3_import_get_variable_name(var), "v1");
     REQUIRE(fmi3_import_get_variable_alias_list(var) == nullptr); // has no valid aliases
-    
+
+    // + 1 since Alias->description is ignored
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 2);
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -627,9 +641,10 @@ TEST_CASE("Invalid valueReference - two vars with same VR - basic") {
     REQUIRE(fmu == nullptr);
     
     REQUIRE(fmi3_testutil_log_contains(tfmu, "The following variables have the same valueReference: v1, v2"));
-
-    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables. Variable(s) failed to parse or an essential error check failed."));
+ 
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables. Variable(s) failed to parse or an essential error check failed.")); // counts as 2
     
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 3);
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -641,8 +656,9 @@ TEST_CASE("Invalid valueReference - two vars with same VR - more vars") {
     
     REQUIRE(fmi3_testutil_log_contains(tfmu, "The following variables have the same valueReference: v3, v8"));
 
-    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables. Variable(s) failed to parse or an essential error check failed."));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables. Variable(s) failed to parse or an essential error check failed.")); // counts as 2
     
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 3);
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -655,8 +671,9 @@ TEST_CASE("Invalid valueReference - three vars with same VR") {
     REQUIRE(fmi3_testutil_log_contains(tfmu, "The following variables have the same valueReference: v3, v4"));
     REQUIRE(fmi3_testutil_log_contains(tfmu, "The following variables have the same valueReference: v4, v6"));
 
-    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables. Variable(s) failed to parse or an essential error check failed."));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables. Variable(s) failed to parse or an essential error check failed.")); // counts as 2
     
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 4);
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -668,8 +685,9 @@ TEST_CASE("Invalid valueReference - same VR but different type") {
     
     REQUIRE(fmi3_testutil_log_contains(tfmu, "The following variables have the same valueReference: v1, v2"));
 
-    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables. Variable(s) failed to parse or an essential error check failed."));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables. Variable(s) failed to parse or an essential error check failed.")); // counts as 2
     
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 3);
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -688,6 +706,7 @@ TEST_CASE("Variable with name being the empty string") {
     REQUIRE(var != nullptr);
     REQUIRE(fmi3_import_get_variable_vr(var) == 1);;
 
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -707,6 +726,7 @@ TEST_CASE("Alias with name being the empty string") {
     REQUIRE(alias != nullptr);
     REQUIRE_STREQ(fmi3_import_get_alias_variable_name(alias), "");
 
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -726,6 +746,7 @@ TEST_CASE("Invalid intermediateUpdate - has causality parameter") {
     REQUIRE(fmi3_import_get_variable_causality(var) == fmi3_causality_enu_parameter);
     REQUIRE(fmi3_import_get_variable_intermediate_update(var) != 0);
 
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 1);
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -746,6 +767,7 @@ TEST_CASE("Invalid previous - requires clocks") {
     REQUIRE(var_prev != nullptr);
     REQUIRE(fmi3_import_get_variable_vr(var_prev) == 10);
 
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 1);
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -766,6 +788,7 @@ TEST_CASE("Invalid previous - requires variability='discrete'") {
     REQUIRE(var_prev != nullptr);
     REQUIRE(fmi3_import_get_variable_vr(var_prev) == 10);
 
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 1);
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -787,6 +810,7 @@ TEST_CASE("Invalid Clock variable - has previous") {
     REQUIRE(varPrev != nullptr);
     REQUIRE(fmi3_import_get_variable_vr(varPrev) == 10);
 
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 1);
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -807,6 +831,7 @@ TEST_CASE("Invalid Clock - has attribute intermediateUpdate") {
     REQUIRE(clock != nullptr);
     REQUIRE(fmi3_import_get_variable_intermediate_update(var) != 0); // set according to XML
 
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 1);
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -825,6 +850,7 @@ TEST_CASE("Info check - intermediateUpdate ignored unless Co-Simulation") {
     REQUIRE(var != nullptr);
     REQUIRE(fmi3_import_get_variable_intermediate_update(var) == 0); // ingored = default is used
 
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 1);
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -845,6 +871,7 @@ TEST_CASE("Invalid previous - self reference") {
     fmi3_import_variable_t* var_prev = fmi3_import_get_variable_previous(var);
     REQUIRE(var_prev == var);
 
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 1);
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -857,8 +884,9 @@ TEST_CASE("Invalid; duplicate variable name") {
 
     REQUIRE(fmi3_testutil_log_contains(tfmu, "Two variables with the same name 'sameName' found. This is not allowed."));
 
-    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables. Variable(s) failed to parse or an essential error check failed."));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables. Variable(s) failed to parse or an essential error check failed.")); // counts as 2
 
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 3);
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -878,6 +906,7 @@ TEST_CASE("Invalid; clock without intervalVariability") {
     REQUIRE(clockVar != nullptr);
     REQUIRE(fmi3_import_get_clock_variable_interval_variability(clockVar) == fmi3_interval_variability_unknown);
 
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 1);
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -890,8 +919,9 @@ TEST_CASE("Invalid derivative; VR does not resolve to any variable") {
 
     REQUIRE(fmi3_testutil_log_contains(tfmu, "The valueReference in derivative=\"1\" did not resolve to any variable."));
 
-    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables. Variable(s) failed to parse or an essential error check failed."));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables. Variable(s) failed to parse or an essential error check failed.")); // counts as 2
 
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 3);
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -930,6 +960,7 @@ TEST_CASE("Test API for getting derivatives of variables") {
     REQUIRE(fmi3_import_get_variable_as_float32(nullptr) == nullptr);
     REQUIRE(fmi3_import_get_variable_as_float64(nullptr) == nullptr);
 
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -950,6 +981,7 @@ TEST_CASE("Invalid reinit for non-continuous state") {
     REQUIRE(f64var != nullptr);
     REQUIRE(fmi3_import_get_float64_variable_reinit(f64var) == fmi3_true);
 
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 1);
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -968,5 +1000,6 @@ TEST_CASE("Invalid canHandleMultipleSetPerTimeInstant; set to non-default for ca
     REQUIRE(var != nullptr);
     REQUIRE(fmi3_import_get_variable_can_handle_multiple_set_per_time_instant(var) == 0);
 
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 1);
     fmi3_testutil_import_free(tfmu);
 }

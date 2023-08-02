@@ -112,20 +112,16 @@ static void test_full_float_32(fmi3_import_t* xml) {
 
 TEST_CASE("Varibles types testing") {
     const char* xmldir = FMI3_TEST_XML_DIR "/variable_types/float";
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu != nullptr);
 
-    jm_callbacks* cb = jm_get_default_callbacks();
-    fmi_import_context_t* ctx = fmi_import_allocate_context(cb);
-    fmi3_import_t* xml = fmi3_import_parse_xml(ctx, xmldir, nullptr);
+    test_small_float64(fmu);
+    test_small_float32(fmu);
 
-    REQUIRE(ctx != nullptr);
-    REQUIRE(xml != nullptr);
+    test_full_float64(fmu);
+    test_full_float_32(fmu);
 
-    test_small_float64(xml);
-    test_small_float32(xml);
-
-    test_full_float64(xml);
-    test_full_float_32(xml);
-
-    fmi_import_free_context(ctx);
-    fmi3_import_free(xml);
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
+    fmi3_testutil_import_free(tfmu);
 }

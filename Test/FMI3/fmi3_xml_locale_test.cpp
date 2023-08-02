@@ -87,7 +87,8 @@ TEST_CASE("Test parsing with locale set") {
 
         const char* xmldir = FMI3_TEST_XML_DIR "/env/locale";
         
-        fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
+        fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xml_dir);
+        fmi3_import_t* xml = tfmu->fmu;
         REQUIRE(xml != nullptr);
 
         /* If the decimal delimiter is comma, sscanf will only parse
@@ -95,9 +96,10 @@ TEST_CASE("Test parsing with locale set") {
         REQUIRE(fmi3_import_get_default_experiment_start(xml)     == 2.3 );
         REQUIRE(fmi3_import_get_default_experiment_stop(xml)      == 3.55);
         REQUIRE(fmi3_import_get_default_experiment_tolerance(xml) == 1e-6);
-        REQUIRE(fmi3_import_get_default_experiment_step_size(xml)      == 2e-3);
+        REQUIRE(fmi3_import_get_default_experiment_step_size(xml) == 2e-3);
 
-        fmi3_import_free(xml);
+        REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
+        fmi3_testutil_import_free(tfmu);
     }
 
     /* Cleanup and verify that locale is properly restored.

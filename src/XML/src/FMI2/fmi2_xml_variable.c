@@ -105,7 +105,7 @@ jm_status_enu_t fmi2_xml_get_variable_aliases(fmi2_xml_model_description_t* md,f
 
 
 fmi2_xml_variable_typedef_t* fmi2_xml_get_variable_declared_type(fmi2_xml_variable_t* v) {
-    return (fmi2_xml_variable_typedef_t*)(fmi2_xml_find_type_struct(v->type, fmi2_xml_type_struct_enu_typedef));
+    return v ? (fmi2_xml_variable_typedef_t*)(fmi2_xml_find_type_struct(v->type, fmi2_xml_type_struct_enu_typedef)) : NULL;
 }
 
 fmi2_base_type_enu_t fmi2_xml_get_variable_base_type(fmi2_xml_variable_t* v) {
@@ -114,7 +114,7 @@ fmi2_base_type_enu_t fmi2_xml_get_variable_base_type(fmi2_xml_variable_t* v) {
 }
 
 int fmi2_xml_get_variable_has_start(fmi2_xml_variable_t* v) {
-    return (v->type->structKind == fmi2_xml_type_struct_enu_start);
+    return v ? (v->type->structKind == fmi2_xml_type_struct_enu_start) : 0;
 }
 
 fmi2_variability_enu_t fmi2_xml_get_variability(fmi2_xml_variable_t* v) {
@@ -254,6 +254,7 @@ fmi2_string_t fmi2_xml_get_enum_variable_quantity(fmi2_xml_enum_variable_t* v) {
 int fmi2_xml_get_enum_variable_min(fmi2_xml_enum_variable_t* v){
     fmi2_xml_variable_t* vv = (fmi2_xml_variable_t*)v;
     fmi2_xml_variable_type_base_t* props = fmi2_xml_find_type_props(vv->type);
+    assert(props);
     return ((fmi2_xml_enum_variable_props_t*)props)->typeMin;
 }
 
@@ -280,7 +281,7 @@ int fmi2_xml_get_enum_variable_start(fmi2_xml_enum_variable_t* v) {
         fmi2_xml_variable_start_integer_t* start = (fmi2_xml_variable_start_integer_t*)(vv->type);
         return start->start;
     }
-        return 0;
+    return 0;
 }
 
 fmi2_boolean_t fmi2_xml_get_boolean_variable_start(fmi2_xml_bool_variable_t* v) {
@@ -289,7 +290,7 @@ fmi2_boolean_t fmi2_xml_get_boolean_variable_start(fmi2_xml_bool_variable_t* v) 
         fmi2_xml_variable_start_integer_t* start = (fmi2_xml_variable_start_integer_t*)(vv->type);
         return start->start;
     }
-        return 0;
+    return 0;
 }
 
 fmi2_xml_real_variable_t* fmi2_xml_get_variable_as_real(fmi2_xml_variable_t* v) {
@@ -469,6 +470,7 @@ int fmi2_xml_handle_ScalarVariable(fmi2_xml_parser_context_t *context, const cha
 
                 return fmi2_xml_handle_RealVariable(context, NULL);
             }
+            assert(variable->type); // extra safety to assure variable->type is never NULL
         }
         /* might give out a warning if(data[0] != 0) */
     }

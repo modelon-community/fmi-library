@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription fmiVersion="3.0" modelName="" instantiationToken="">
+<ModelExchange modelIdentifier="id" />
+
+<ModelVariables>
+    <Int64 name="event_ind" valueReference="0" variability="discrete"/>
+</ModelVariables>
+
+<ModelStructure>
+    <!-- must be continuous -->
+    <!-- must be float32/64 -->
+    <EventIndicator valueReference="0"/>
+</ModelStructure>
+</fmiModelDescription>

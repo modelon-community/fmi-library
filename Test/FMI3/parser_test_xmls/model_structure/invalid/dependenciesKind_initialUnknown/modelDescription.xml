@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription fmiVersion="3.0" modelName="" instantiationToken="">
+<ModelExchange modelIdentifier="id" />
+
+<ModelVariables>
+    <Float64 name="f0" valueReference="0" variability="continuous"/>
+    <Float64 name="f1" valueReference="1" variability="continuous"/>
+    <Float64 name="f2" valueReference="2" variability="continuous"/>
+    <Float64 name="f3" valueReference="3" variability="continuous"/>
+    <Float64 name="f4" valueReference="4" variability="continuous"/>
+    <Float64 name="f5" valueReference="5" variability="continuous"/>
+</ModelVariables>
+
+<ModelStructure>
+    <!-- Test all dependenciesKind for InitialUnknown -->
+    <InitialUnknown valueReference="0" dependencies="1 2 3 4 5" dependenciesKind="dependent constant fixed tunable discrete"/> 
+</ModelStructure>
+</fmiModelDescription>

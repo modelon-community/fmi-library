@@ -59,7 +59,7 @@ struct fmi3_xml_model_structure_t {
     fmi3_xml_dependencies_t* initialUnknownDeps;
     fmi3_xml_dependencies_t* eventIndicatorDeps;
 
-    int isValidFlag;  /**\ brief The flag is used to signal if an error was discovered and the model structure is not usable */
+    int isValid;  /** \brief If an error was discovered and the model structure is not usable */
 };
 
 #ifdef __cplusplus

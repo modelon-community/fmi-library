@@ -7,6 +7,6 @@
 </ModelVariables>
 
 <ModelStructure>
-  <EventIndicator valueReference="0"/> <!-- all event indicators must have base type "Float32" or "Float64" -->
+    <EventIndicator valueReference="0"/> <!-- all event indicators must have base type "Float32" or "Float64" -->
 </ModelStructure>
 </fmiModelDescription>

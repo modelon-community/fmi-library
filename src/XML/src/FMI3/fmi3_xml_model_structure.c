@@ -36,7 +36,7 @@ fmi3_xml_model_structure_t* fmi3_xml_allocate_model_structure(jm_callbacks* cb) 
     jm_vector_init(jm_voidp)(&ms->initialUnknowns,0,cb);
     jm_vector_init(jm_voidp)(&ms->eventIndicators,0,cb);
 
-    ms->isValidFlag = 1;
+    ms->isValid = 1;
 
     ms->outputDeps = fmi3_xml_allocate_dependencies(cb);
     ms->continuousStateDerivativeDeps = fmi3_xml_allocate_dependencies(cb);
@@ -70,6 +70,11 @@ void fmi3_xml_free_model_structure(fmi3_xml_model_structure_t* ms) {
     fmi3_xml_free_dependencies(ms->initialUnknownDeps);
     fmi3_xml_free_dependencies(ms->eventIndicatorDeps);
     cb->free(ms);
+}
+
+// For trace-ability, in case we want to attach an error message to first call
+static void fmi3_xml_set_model_structure_invalid(fmi3_xml_model_structure_t* ms) {
+    if (ms) {ms->isValid = 0;}
 }
 
 jm_vector(jm_voidp)* fmi3_xml_get_outputs(fmi3_xml_model_structure_t* ms) {
@@ -194,31 +199,22 @@ void fmi3_xml_free_dependencies(fmi3_xml_dependencies_t* dep) {
     cb->free(dep);
 }
 
-int fmi3_xml_check_model_structure(fmi3_xml_model_description_t* md) {
-    fmi3_xml_model_structure_t* ms = md->modelStructure;
-
-    if (!ms || !ms->isValidFlag) return 0;
-
-    return ms->isValidFlag;
-}
-
-int fmi3_xml_handle_ModelStructure(fmi3_xml_parser_context_t *context, const char* data) {
+int fmi3_xml_handle_ModelStructure(fmi3_xml_parser_context_t* context, const char* data) {
     fmi3_xml_model_description_t* md = context->modelDescription;
     if (!data) {
-        jm_log_verbose(context->callbacks, module,"Parsing XML element ModelStructure");
+        jm_log_verbose(context->callbacks, module, "Parsing XML element ModelStructure");
         /** allocate model structure */
         md->modelStructure = fmi3_xml_allocate_model_structure(md->callbacks);
         if (!md->modelStructure) {
-                fmi3_xml_parse_fatal(context, module, "Could not allocate memory");
-                return -1;
+            fmi3_xml_parse_fatal(context, module, "Could not allocate memory");
+            return -1;
         }
-    }
-    else {
+    } else {
+        fmi3_xml_model_structure_t* ms = md->modelStructure;
         /** make sure model structure information is consistent */
 
         // TODO: Check that all ModelVariables with causality="output" are Outputs
-
-        if (!fmi3_xml_check_model_structure(md)) {
+        if (!ms->isValid) {
             fmi3_xml_parse_fatal(context, "Model structure is not valid due to detected errors. Cannot continue.");
             return -1;
         }
@@ -228,18 +224,23 @@ int fmi3_xml_handle_ModelStructure(fmi3_xml_parser_context_t *context, const cha
 
 /**
  * Parse the dependencies of an element in ModelStructure
+ * Any errors when parsings will result in default dependencies = depends on everyhing
  */
-static int fmi3_xml_parse_dependencies(fmi3_xml_parser_context_t *context,
-                                fmi3_xml_elm_enu_t elmID,
-                                fmi3_xml_dependencies_t* deps)
+static int fmi3_xml_parse_dependencies(fmi3_xml_parser_context_t* context,
+        fmi3_xml_elm_enu_t elmID, fmi3_xml_dependencies_t* deps,
+        size_t* numDepInd, size_t* numDepKind)
 {
-    fmi3_xml_model_description_t* md = context->modelDescription;
-    fmi3_xml_model_structure_t* ms = md->modelStructure;
-
+    /**
+     * Failure to parse results in default dependencies.
+     * However, a number of 'dependencies' or 'dependenciesKind' may have already been parsed,
+     * and added to the corresponding vectors.
+     * These need to be removed again, hence numDepInd and numDepKind are outputs
+     * Note: This approach incurs no extra cost for valid parsing.
+    */
     const char* listInd;
     const char* listKind;
-    size_t numDepInd = 0;
-    size_t numDepKind = 0;
+    *numDepInd = 0;
+    *numDepKind = 0;
     size_t totNumDep = jm_vector_get_size(size_t)(&deps->dependenciesVRs);
 
     /*  <xs:attribute name="dependencies">
@@ -248,8 +249,7 @@ static int fmi3_xml_parse_dependencies(fmi3_xml_parser_context_t *context,
             </xs:simpleType>
         </xs:attribute> */
     if (fmi3_xml_get_attr_str(context, elmID, fmi_attr_id_dependencies, 0, &listInd)) {
-        ms->isValidFlag = 0;
-        return 0;
+        return -1;
     }
     if (listInd) {
         const char* cur = listInd;
@@ -263,22 +263,20 @@ static int fmi3_xml_parse_dependencies(fmi3_xml_parser_context_t *context,
             if (!ch) break;
             if (sscanf(cur, "%d", &ind) != 1) {
                 fmi3_xml_parse_error(context, "XML element '%s': could not parse item %d, character '%c' in the list for attribute 'dependencies'",
-                    fmi3_xml_elmid_to_name(elmID), numDepInd, ch);
-               ms->isValidFlag = 0;
-               return 0;
+                    fmi3_xml_elmid_to_name(elmID), *numDepInd, ch);
+                return -1;
             }
             if (ind < 0) {
                 fmi3_xml_parse_error(context, "XML element '%s': Attribute 'dependencies' contains invalid value: %d.", 
                     fmi3_xml_elmid_to_name(elmID), ind);
-               ms->isValidFlag = 0;
-               return 0;
+                return -1;
             }
             if (!jm_vector_push_back(size_t)(&deps->dependenciesVRs, (size_t)ind)) {
-               fmi3_xml_parse_fatal(context, "Could not allocate memory");
-               return -1;
+                fmi3_xml_parse_fatal(context, "Could not allocate memory");
+                return -1;
             }
             while ((*cur >= '0') && (*cur <= '9')) cur++;
-            numDepInd++;
+            (*numDepInd)++;
         }
     }
 
@@ -300,99 +298,114 @@ static int fmi3_xml_parse_dependencies(fmi3_xml_parser_context_t *context,
         </xs:attribute>
         */
     if (fmi3_xml_get_attr_str(context, elmID, fmi_attr_id_dependenciesKind, 0, &listKind)) {
-        ms->isValidFlag = 0;
-        return 0;
+        return -1;
     }
     if (listKind) {
-         const char* cur = listKind;
-         char kind;
-         while (*cur) {
-             char ch = *cur;
-             while (ch && ((ch ==' ') || (ch == '\t') || (ch =='\n') || (ch == '\r'))) {
-                 cur++; ch = *cur;
-             }
-             if (!ch) break;
-             if (strncmp("dependent", cur, 9) == 0) {
-                 kind = fmi3_dependencies_kind_dependent;
-                 cur+=9;
-             }
-             else if (strncmp("constant", cur, 8) == 0) {
-                 kind = fmi3_dependencies_kind_constant;
-                 cur+=8;
-             }
-             else if (strncmp("fixed", cur, 5) == 0) {
-                 kind = fmi3_dependencies_kind_fixed;
-                 cur+=5;
-             }
-             else if (strncmp("tunable", cur, 7) == 0) {
-                 kind = fmi3_dependencies_kind_tunable;
-                 cur+=7;
-             }
-             else if (strncmp("discrete", cur, 8) == 0) {
-                  kind = fmi3_dependencies_kind_discrete;
-                 cur+=8;
-             }
-             else {
-                 fmi3_xml_parse_error(context, "XML element '%s': could not parse item %d in the list for attribute 'dependenciesKind'",
-                    fmi3_xml_elmid_to_name(elmID), numDepKind);
-                 ms->isValidFlag = 0;
-                 return 0;
-             }
-             if (elmID == fmi3_xml_elmID_InitialUnknown) {
-                if (kind == fmi3_dependencies_kind_fixed) {
-                    fmi3_xml_parse_error(context, "XML element 'InitialUnknown': 'fixed' is not allowed in list for attribute 'dependenciesKind'; setting to 'dependent'");
-                    kind = fmi3_dependencies_kind_dependent;
-                }
-                else if (!(kind == fmi3_dependencies_kind_dependent || kind == fmi3_dependencies_kind_constant)) {
-                    fmi3_xml_parse_error(context, "XML element 'InitialUnknown': only 'dependent' and 'constant' allowed in list for attribute 'dependenciesKind'");
-                    ms->isValidFlag = 0;
-                    return 0;
-                }
-             }
-             if (!jm_vector_push_back(char)(&deps->dependenciesKind, kind)) {
+        const char* cur = listKind;
+        char kind;
+        while (*cur) {
+            char ch = *cur;
+            while (ch && ((ch ==' ') || (ch == '\t') || (ch =='\n') || (ch == '\r'))) {
+                cur++; ch = *cur;
+            }
+            if (!ch) break;
+            if (strncmp("dependent", cur, 9) == 0) {
+                kind = fmi3_dependencies_kind_dependent;
+                cur+=9;
+            }
+            else if (strncmp("constant", cur, 8) == 0) {
+                kind = fmi3_dependencies_kind_constant;
+                cur+=8;
+            }
+            else if (strncmp("fixed", cur, 5) == 0) {
+                kind = fmi3_dependencies_kind_fixed;
+                cur+=5;
+            }
+            else if (strncmp("tunable", cur, 7) == 0) {
+                kind = fmi3_dependencies_kind_tunable;
+                cur+=7;
+            }
+            else if (strncmp("discrete", cur, 8) == 0) {
+                kind = fmi3_dependencies_kind_discrete;
+                cur+=8;
+            }
+            else {
+                fmi3_xml_parse_error(context, "XML element '%s': could not parse item %d in the list for attribute 'dependenciesKind'",
+                    fmi3_xml_elmid_to_name(elmID), *numDepKind);
+                return -1;
+            }
+            // Check possible invalid combinations of elmID & dependenciesKind entries
+            if ((elmID == fmi3_xml_elmID_InitialUnknown) && 
+                ((kind == fmi3_dependencies_kind_fixed) || (kind == fmi3_dependencies_kind_tunable) || (kind == fmi3_dependencies_kind_discrete))) 
+            {
+                fmi3_xml_parse_warning(context, "XML element 'InitialUnknown': '%s' is not allowed in list for attribute 'dependenciesKind'.",
+                        fmi3_dependencies_kind_to_string(kind));
+            }
+            if (!jm_vector_push_back(char)(&deps->dependenciesKind, kind)) {
                 fmi3_xml_parse_fatal(context, "Could not allocate memory");
                 return -1;
             }
-             numDepKind++;
-         }
+            (*numDepKind)++;
+        }
     }
     if (listInd && listKind) {
         /* both lists are present - the number of items must match */
-        if (numDepInd != numDepKind) {
+        if (*numDepInd != *numDepKind) {
             fmi3_xml_parse_error(context, "XML element '%s': different number of items (%u and %u) in the lists for 'dependencies' and 'dependenciesKind'",
-                                 fmi3_xml_elmid_to_name(elmID), numDepInd, numDepKind);
-            ms->isValidFlag = 0;
-            return 0;
+                    fmi3_xml_elmid_to_name(elmID), *numDepInd, *numDepKind);
+            return -1;
         }
-        jm_vector_push_back(size_t)(&deps->startIndex, totNumDep + numDepInd);
+        jm_vector_push_back(size_t)(&deps->startIndex, totNumDep + *numDepInd);
         jm_vector_push_back(char)(&deps->dependencyOnAll, 0);
     }
     else if (listInd) {
         /* only Dependencies are present, set all kinds to dependent */
         /* this includes the case of empty dependencies */
         char kind = fmi3_dependencies_kind_dependent;
-        if (jm_vector_reserve(char)(&deps->dependenciesKind, totNumDep + numDepInd) < totNumDep + numDepInd) {
+        if (jm_vector_reserve(char)(&deps->dependenciesKind, totNumDep + *numDepInd) < totNumDep + *numDepInd) {
             fmi3_xml_parse_fatal(context, "Could not allocate memory");
             return -1;
         }
-        for (;numDepKind < numDepInd; numDepKind++) {
+        for (size_t k = 0; k < *numDepInd; k++) {
             jm_vector_push_back(char)(&deps->dependenciesKind, kind);
         }
-        jm_vector_push_back(size_t)(&deps->startIndex, totNumDep + numDepInd);
+        jm_vector_push_back(size_t)(&deps->startIndex, totNumDep + *numDepInd);
         jm_vector_push_back(char)(&deps->dependencyOnAll, 0); // not dependent on all
     }
     else if (listKind) {
         fmi3_xml_parse_error(context, "XML element '%s': if `dependenciesKind` attribute is present then the `dependencies` attribute must also be present.",
             fmi3_xml_elmid_to_name(elmID));
-        ms->isValidFlag = 0;
-        return 0;
-    }
-    else {
-        /* Dependencies attribute is missing*/
+        return -1;
+    } else {
+        /* Dependencies attribute is missing, set default dependencies */
         jm_vector_push_back(size_t)(&deps->startIndex, totNumDep);
         jm_vector_push_back(char)(&deps->dependencyOnAll, 1);
     }
     return 0;
+}
+
+/* Wrapper for #fmi3_xml_parse_dependencies, handling failed states */
+static void fmi3_xml_parse_dependencies_error_wrapper(fmi3_xml_parser_context_t* context,
+        fmi3_xml_elm_enu_t elmID, fmi3_xml_dependencies_t* deps) {
+    // number of added dependecies(Kind) entries, these are needed to clean dependencies in case of failure to parse
+    size_t numDepInd = 0;
+    size_t numDepKind = 0;
+    size_t totNumDep = jm_vector_get_size(size_t)(&deps->dependenciesVRs); // original size, before parsing dependencies
+
+    if (fmi3_xml_parse_dependencies(context, elmID, deps, &numDepInd, &numDepKind)) {
+        // Dependecy parsing failed, cleanup of already parsed entries
+        for (size_t k = 0; k < numDepInd; k++) {
+            jm_vector_remove_item(size_t)(&deps->dependenciesVRs, totNumDep);
+        }
+        for (size_t k = 0; k < numDepKind; k++) {
+            jm_vector_remove_item(char)(&deps->dependenciesKind, totNumDep);
+        }
+
+        // Fallback to default dependency (still requires some data entries)
+        // API #fmi3_xml_get_dependencies requires consistent dependency data to retreive
+        jm_vector_push_back(size_t)(&deps->startIndex, totNumDep);
+        jm_vector_push_back(char)(&deps->dependencyOnAll, 1);
+    }
 }
 
 /**
@@ -400,7 +413,7 @@ static int fmi3_xml_parse_dependencies(fmi3_xml_parser_context_t *context,
  * After successful call, the variable will be put on the destVarList stack,
  * and the dependencies are stored in return-arg 'deps'.
  */
-int fmi3_xml_parse_unknown(fmi3_xml_parser_context_t *context,
+int fmi3_xml_parse_unknown(fmi3_xml_parser_context_t* context,
                            fmi3_xml_elm_enu_t elmID,
                            jm_vector(jm_voidp) *destVarList,
                            fmi3_xml_dependencies_t* deps)
@@ -411,61 +424,61 @@ int fmi3_xml_parse_unknown(fmi3_xml_parser_context_t *context,
     fmi3_value_reference_t vr;
     fmi3_xml_variable_t* variable;
 
-    if (fmi3_xml_parse_attr_as_uint32(context, elmID, fmi_attr_id_valueReference, 1, &vr, 0)) return -1;
+    if (fmi3_xml_parse_attr_as_uint32(context, elmID, fmi_attr_id_valueReference, 1, &vr, 0)){
+        fmi3_xml_set_model_structure_invalid(ms);
+        return -1;
+    }
 
     variable = fmi3_xml_get_variable_by_vr(md, vr);
     if (!variable) {
-        fmi3_xml_parse_error(context, "Failed to find variable for valueReference=%" PRId32 ".");
-        ms->isValidFlag = 0;
+        fmi3_xml_parse_error(context, "Failed to find variable for valueReference=%" PRId32 ".", vr);
+        fmi3_xml_set_model_structure_invalid(ms);
         return -1;
     }
     if (!jm_vector_push_back(jm_voidp)(destVarList, variable)) {
         fmi3_xml_parse_fatal(context, "Could not allocate memory");
-        ms->isValidFlag = 0;
+        fmi3_xml_set_model_structure_invalid(ms);
         return -1;
     }
 
-    return fmi3_xml_parse_dependencies(context, elmID, deps);
+    fmi3_xml_parse_dependencies_error_wrapper(context, elmID, deps); // handle possible parsing errors
+    return 0;
 }
 
-int fmi3_xml_handle_Output(fmi3_xml_parser_context_t *context, const char* data) {
+int fmi3_xml_handle_Output(fmi3_xml_parser_context_t* context, const char* data) {
+    fmi3_xml_model_description_t* md = context->modelDescription;
+    fmi3_xml_model_structure_t* ms = md->modelStructure;
     if (!data) {
-        fmi3_xml_model_description_t* md = context->modelDescription;
-        fmi3_xml_model_structure_t* ms = md->modelStructure;
-
-        int status =  fmi3_xml_parse_unknown(context, fmi3_xml_elmID_Output, &ms->outputs, ms->outputDeps);
-        if (status)
-            return status;
+        if (fmi3_xml_parse_unknown(context, fmi3_xml_elmID_Output, &ms->outputs, ms->outputDeps)) {
+            return -1;
+        }
+    } else {
+        // post-processing
 
         // Check for correct causality
         fmi3_xml_variable_t* var = (fmi3_xml_variable_t*)jm_vector_get_last(jm_voidp)(&ms->outputs);
         if (var->causality != fmi3_causality_enu_output) {
-            ms->isValidFlag = 0;
-            fmi3_xml_parse_error(context,
+            fmi3_xml_parse_warning(context,
                     "The variable '%s' is an Output, but does not have causality='output'.",
                     fmi3_xml_get_variable_name(var));
-            return -1;
         }
     }
     return 0;
 }
 
-int fmi3_xml_handle_ContinuousStateDerivative(fmi3_xml_parser_context_t *context, const char* data) {
+int fmi3_xml_handle_ContinuousStateDerivative(fmi3_xml_parser_context_t* context, const char* data) {
+    fmi3_xml_model_description_t* md = context->modelDescription;
+    fmi3_xml_model_structure_t* ms = md->modelStructure;
     if (!data) {
-
-        fmi3_xml_model_description_t* md = context->modelDescription;
-        fmi3_xml_model_structure_t* ms = md->modelStructure;
-        fmi3_xml_variable_t* derXX; /* float64 or float32 variable */
-        int validDeriv; /* valid derivative found */
-
         /* perform the parsing */
         if (fmi3_xml_parse_unknown(context, fmi3_xml_elmID_ContinuousStateDerivative,
                                    &ms->continuousStateDerivatives, ms->continuousStateDerivativeDeps)) {
             return -1;
         }
-
-        /* validate return values */
-
+    } else {
+        // post-processing
+        fmi3_xml_variable_t* derXX; /* float64 or float32 variable */
+        int validDeriv; /* valid derivative found */
         /* continuosStateDerivatives can be any of floatXX */
         derXX = (fmi3_xml_variable_t*)jm_vector_get_last(jm_voidp)(&ms->continuousStateDerivatives);
         if (derXX->type->baseType == fmi3_base_type_float64) {
@@ -477,103 +490,96 @@ int fmi3_xml_handle_ContinuousStateDerivative(fmi3_xml_parser_context_t *context
             validDeriv = fmi3_xml_get_float32_variable_derivative_of(der) != NULL;
         }
         if (!validDeriv) {
-            ms->isValidFlag = 0;
-            fmi3_xml_parse_error(context,
+            fmi3_xml_parse_warning(context,
                     "The variable '%s' is a ContinuousStateDerivative, but does not specify the state variable it is a derivative of.",
                     fmi3_xml_get_variable_name(derXX));
-            return -1;
         }
     }
     return 0;
 }
 
-int fmi3_xml_handle_ClockedState(fmi3_xml_parser_context_t *context, const char* data) {
+int fmi3_xml_handle_ClockedState(fmi3_xml_parser_context_t* context, const char* data) {
+    fmi3_xml_model_description_t* md = context->modelDescription;
+    fmi3_xml_model_structure_t* ms = md->modelStructure;
     if (!data) {
-        fmi3_xml_model_description_t* md = context->modelDescription;
-        fmi3_xml_model_structure_t* ms = md->modelStructure;
-
-        /* perform the parsing */
         if (fmi3_xml_parse_unknown(context, fmi3_xml_elmID_ClockedState,
                                    &ms->clockedStates, ms->clockedStateDeps)) {
             return -1;
         }
-
-        /* validate return values */
+    } else {
+        // post-processing
         fmi3_xml_variable_t* clockVar = (fmi3_xml_variable_t*)jm_vector_get_last(jm_voidp)(&ms->clockedStates);
 
         // previous attribute is required, spec: "If present, this variable is a <ClockedState>" */
         if (!clockVar->hasPrevious) {
-            ms->isValidFlag = 0;
-            fmi3_xml_parse_error(context,
+            fmi3_xml_parse_warning(context,
                     "The variable '%s' is a ClockedState, but does not define the attribute 'previous'.",
                     fmi3_xml_get_variable_name(clockVar));
-            return -1;
         }
 
         // ClockedStates must also have variability='discrete', and the attribute 'clocks'.
         // The same applies for variables with the attribute 'previous'.
-        // ClockedStates require the attribute 'previous' , so this is already checked.
+        // ClockedStates require the attribute 'previous', so this is already checked.
 
         /* must not be of base type fmi3Clock */
         if (fmi3_xml_get_variable_base_type(clockVar) == fmi3_base_type_clock) {
-            ms->isValidFlag = 0;
-            fmi3_xml_parse_error(context,
+            fmi3_xml_parse_warning(context,
                     "The variable '%s' is a ClockedState, but has the base type 'fmi3Clock'.",
                     fmi3_xml_get_variable_name(clockVar));
+        }
+    }
+    return 0;
+}
+
+int fmi3_xml_handle_InitialUnknown(fmi3_xml_parser_context_t* context, const char* data) {
+    fmi3_xml_model_description_t* md = context->modelDescription;
+    fmi3_xml_model_structure_t* ms = md->modelStructure;
+    if (!data) {
+        if (fmi3_xml_parse_unknown(context, fmi3_xml_elmID_InitialUnknown, &ms->initialUnknowns, ms->initialUnknownDeps)) {
             return -1;
         }
+    } else {
+        // post-processing
+        ;
     }
     return 0;
 }
 
-int fmi3_xml_handle_InitialUnknown(fmi3_xml_parser_context_t *context, const char* data) {
-    if (!data) {
-        fmi3_xml_model_description_t* md = context->modelDescription;
-        fmi3_xml_model_structure_t* ms = md->modelStructure;
+int fmi3_xml_handle_EventIndicator(fmi3_xml_parser_context_t* context, const char* data) {
+    fmi3_xml_model_description_t* md = context->modelDescription;
+    fmi3_xml_model_structure_t* ms = md->modelStructure;
 
-        return fmi3_xml_parse_unknown(context, fmi3_xml_elmID_InitialUnknown, &ms->initialUnknowns, ms->initialUnknownDeps);
-    }
-    return 0;
-}
-
-int fmi3_xml_handle_EventIndicator(fmi3_xml_parser_context_t *context, const char* data) {
-    if (!data) {
-        fmi3_xml_model_description_t* md = context->modelDescription;
-        fmi3_xml_model_structure_t* ms = md->modelStructure;
-
-        // Ignored if Co-simulation & scheduled execution
-        fmi3_fmu_kind_enu_t fmuKind = fmi3_xml_get_fmu_kind(md);
-        // Multiple types can be defined, check for: not ME and (CS or SE)
-        if (!(fmuKind & fmi3_fmu_kind_me) && ((fmuKind & fmi3_fmu_kind_cs) || (fmuKind & fmi3_fmu_kind_se))) {
+    // Ignored if Co-simulation & scheduled execution
+    fmi3_fmu_kind_enu_t fmuKind = fmi3_xml_get_fmu_kind(md);
+    // Multiple types can be defined, check for: not ME and (CS or SE)
+    if (!(fmuKind & fmi3_fmu_kind_me) && ((fmuKind & fmi3_fmu_kind_cs) || (fmuKind & fmi3_fmu_kind_se))) {
+        if (!data) {
+            // Only show log message once, upon start of <EventIndicator>
             jm_log_info(md->callbacks, "FMI3XML", "EventIndicator ignored since FMU kind is Co-Simulation or Scheduled Excecution.");
-            return 0;
         }
+        return 0;
+    }
 
-        /* perform the parsing */
+    if (!data) {
         if (fmi3_xml_parse_unknown(context, fmi3_xml_elmID_EventIndicator,
                                    &ms->eventIndicators, ms->eventIndicatorDeps)) {
             return -1;
         }
-
-        /* validate return values */
-
+    } else {
+        // post-processing
         fmi3_xml_variable_t* eventInd = (fmi3_xml_variable_t*)jm_vector_get_last(jm_voidp)(&ms->eventIndicators);
         /* EventIndicator must be continuous */
         if (fmi3_xml_get_variable_variability(eventInd) != fmi3_variability_enu_continuous) {
-            ms->isValidFlag = 0;
-            fmi3_xml_parse_error(context,
+            fmi3_xml_parse_warning(context,
                     "The variable '%s' is an EventIndicator, but does not have variability='continuous'.",
                     fmi3_xml_get_variable_name(eventInd));
-            return -1;
         }
 
         fmi3_base_type_enu_t baseType = fmi3_xml_get_variable_base_type(eventInd);
         if ((baseType != fmi3_base_type_float64) && (baseType != fmi3_base_type_float32)) {
-            ms->isValidFlag = 0;
-            fmi3_xml_parse_error(context,
+            fmi3_xml_parse_warning(context,
                     "The variable '%s' is an EventIndicator, but does not have the base type 'Float32' or 'Float64'.",
                     fmi3_xml_get_variable_name(eventInd));
-            return -1;
         }
     }
     return 0;

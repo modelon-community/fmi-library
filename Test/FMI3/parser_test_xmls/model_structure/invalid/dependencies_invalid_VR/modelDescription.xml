@@ -8,6 +8,6 @@
 </ModelVariables>
 
 <ModelStructure>
-  <ContinuousStateDerivative valueReference="1" dependencies="-1"/> <!-- Invalid dependency, must be non-negative -->
+    <ContinuousStateDerivative valueReference="1" dependencies="-1"/> <!-- Invalid dependency, must be non-negative -->
 </ModelStructure>
 </fmiModelDescription>

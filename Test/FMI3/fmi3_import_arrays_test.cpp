@@ -420,6 +420,7 @@ TEST_CASE("Testing invalid array; enclosed string between doubles") {
     REQUIRE(fmu != nullptr);
 
     REQUIRE(fmi3_testutil_log_contains(tfmu, "XML element 'Float64': could not parse value for Float64 attribute 'start'="));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Unable to parse to Float64: x"));
     REQUIRE(fmi3_testutil_log_contains(tfmu, "Variable 'array': start value required for variables with initial == \"exact\"")); // start is required
 
     fmi3_import_variable_t* var = fmi3_import_get_variable_by_vr(fmu, 1);
@@ -428,7 +429,7 @@ TEST_CASE("Testing invalid array; enclosed string between doubles") {
     REQUIRE(float64Var != nullptr);
     REQUIRE(fmi3_import_get_float64_variable_start_array(float64Var) == nullptr); // since it failed to correctly parse
 
-    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 3); // TODO: Too many errors
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 3);
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -439,6 +440,7 @@ TEST_CASE("Testing invalid array; contains both doubles and string") {
     REQUIRE(fmu != nullptr);
 
     REQUIRE(fmi3_testutil_log_contains(tfmu, "XML element 'Float64': could not parse value for Float64 attribute 'start'="));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Unable to parse to Float64: a"));
     REQUIRE(fmi3_testutil_log_contains(tfmu, "Variable 'array': start value required for variables with initial == \"exact\"")); // start is required
 
     fmi3_import_variable_t* var = fmi3_import_get_variable_by_vr(fmu, 1);
@@ -447,7 +449,7 @@ TEST_CASE("Testing invalid array; contains both doubles and string") {
     REQUIRE(float64Var != nullptr);
     REQUIRE(fmi3_import_get_float64_variable_start_array(float64Var) == nullptr); // since it failed to correctly parse
 
-    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 3); // Too many errors
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 3);
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -458,6 +460,7 @@ TEST_CASE("Testing invalid array; is string") {
     REQUIRE(fmu != nullptr);
 
     REQUIRE(fmi3_testutil_log_contains(tfmu, "XML element 'Float64': could not parse value for Float64 attribute 'start'="));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Unable to parse to Float64: a"));
     REQUIRE(fmi3_testutil_log_contains(tfmu, "Variable 'array': start value required for variables with initial == \"exact\"")); // start is required
 
     fmi3_import_variable_t* var = fmi3_import_get_variable_by_vr(fmu, 1);
@@ -466,7 +469,7 @@ TEST_CASE("Testing invalid array; is string") {
     REQUIRE(float64Var != nullptr);
     REQUIRE(fmi3_import_get_float64_variable_start_array(float64Var) == nullptr); // since it failed to correctly parse
 
-    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 3); // TODO: Too many errors
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 3);
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -540,7 +543,8 @@ TEST_CASE("Testing defaults of array starts in case of parsing error") {
     REQUIRE(fmi3_testutil_log_contains(tfmu, "XML element 'Enumeration': could not parse value for Enumeration attribute 'start'="));
     REQUIRE(fmi3_import_get_enum_variable_start_array(fmi3_import_get_variable_as_enum(fmi3_import_get_variable_by_vr(fmu, 40))) == nullptr);
 
-    // TODO: This one gives way too many errors
+    // Each error we check is also accompanied by an error giving the exact string that failed to covert to float/int/...
+    // + warning on start value being required
     REQUIRE(fmi3_testutil_get_num_problems(tfmu) == (2+4+4+1+1)*3);
     fmi3_testutil_import_free(tfmu);
 }

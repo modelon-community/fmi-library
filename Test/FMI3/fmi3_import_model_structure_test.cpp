@@ -276,12 +276,12 @@ TEST_CASE("Error check: ModelStructure; Incorrect order of elements") {
     fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
     REQUIRE(tfmu != nullptr);
     fmi3_import_t* fmu = tfmu->fmu;
-    REQUIRE(fmu == nullptr);
+    REQUIRE(fmu != nullptr);
 
     // basic Model-structure invalid, violates order requirements
     REQUIRE(fmi3_testutil_log_contains(tfmu, "'Output' cannot be placed after element 'ContinuousStateDerivative', skipping"));
-    // TODO: This should not be fatal, skipping means skipping
-    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 2);
+
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 1);
     fmi3_testutil_import_free(tfmu);
 }
 

@@ -114,8 +114,6 @@ TEST_CASE("Import option testing") {
     fmi_import_context_t* context;
     fmi_version_enu_t version;
 
-    fmi3_import_t* fmu;    
-
     callbacks.malloc = malloc;
     callbacks.calloc = calloc;
     callbacks.realloc = realloc;
@@ -135,15 +133,19 @@ TEST_CASE("Import option testing") {
     version = fmi_import_get_fmi_version(context, FMU3_ME_PATH, tmpPath);
     REQUIRE(version == fmi_version_3_0_enu);
 
-    fmu = fmi3_import_parse_xml(context, tmpPath, nullptr);
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(tmpPath);
+    fmi3_import_t* fmu = tfmu->fmu;
     REQUIRE(fmu != nullptr);
 
     /* Tests (they will exit early on failure): */
     test_option_memory_management(fmu);
-    test_loadlibrary_flag(fmu);
+    test_loadlibrary_flag(fmu); // fails
 
     /* Clean up: */
-    fmi3_import_free(fmu);
+    // TODO: Various issues related to parsing of Annotations; see sim_me_test
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 6);
+    fmi3_testutil_import_free(tfmu);
+
     fmi_import_free_context(context);
     REQUIRE(fmi_import_rmdir(&callbacks, tmpPath) == jm_status_success);
     callbacks.free((void*)tmpPath);

@@ -316,6 +316,8 @@ static void test_parse_bouncingball(const char* xmldir, bool expectParseFailure)
 
     /* time the parsing */
     start = clock();
+    // TODO: Re-factor this one and use fmi3_testutil_get_num_problems
+    // XXX: Requires fmi3_testutil_parse_xml_with_log equivalent with annotations_callbacks support
     fmu = fmi3_import_parse_xml(context, xmldir, &annotation_callbacks);
     stop = clock();
     t = (double)(stop - start) / CLOCKS_PER_SEC;

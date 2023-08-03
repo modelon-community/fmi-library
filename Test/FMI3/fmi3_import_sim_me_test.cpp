@@ -272,9 +272,7 @@ TEST_CASE("Model-Exchange FMU example") {
     jm_callbacks callbacks;
     fmi_import_context_t* context;
     fmi_version_enu_t version;
-    jm_status_enu_t status;
 
-    fmi3_import_t* fmu;
     const char* FMUPath = FMU3_ME_PATH;
 
     callbacks.malloc = malloc;
@@ -296,7 +294,8 @@ TEST_CASE("Model-Exchange FMU example") {
     REQUIRE(context != nullptr);
     REQUIRE(fmi_import_get_fmi_version(context, FMU3_ME_PATH, tmpPath) == fmi_version_3_0_enu);
 
-    fmu = fmi3_import_parse_xml(context, tmpPath, 0);
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(tmpPath);
+    fmi3_import_t* fmu = tfmu->fmu;
     REQUIRE(fmu != nullptr);
 
     REQUIRE((fmi3_import_get_fmu_kind(fmu) & fmi3_fmu_kind_me) == fmi3_fmu_kind_me);
@@ -307,7 +306,11 @@ TEST_CASE("Model-Exchange FMU example") {
     test_simulate_me(fmu);
 
     fmi3_import_destroy_dllfmu(fmu);
-    fmi3_import_free(fmu);
+
+    // TODO: Various issues related to parsing of Annotations
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 5);
+    fmi3_testutil_import_free(tfmu);
+
     fmi_import_free_context(context);
     REQUIRE(fmi_import_rmdir(&callbacks, tmpPath) == jm_status_success);
     callbacks.free((void*)tmpPath);

@@ -46,16 +46,16 @@ static int calc_initialize(instance_ptr_t inst)
 
         inst->cb.logMessage(inst->cb.instanceEnvironment, fmi3OK, "INFO", "###### Initializing instance ######");
 
-        snprintf(msg, msg_sz, "Init #r%d#=%g", VAR_R_HEIGHT, inst->states[VAR_R_HEIGHT]);
+        snprintf(msg, msg_sz, "Init #%d#=%g", VAR_R_HEIGHT, inst->states[VAR_R_HEIGHT]);
         inst->cb.logMessage(inst->cb.instanceEnvironment, fmi3OK, "INFO", msg);
 
-        snprintf(msg, msg_sz, "Init #r%d#=%g", VAR_R_HEIGHT, "Init #r%d#=%g",VAR_R_HEIGHT_SPEED, inst->states[VAR_R_HEIGHT_SPEED]);
+        snprintf(msg, msg_sz, "Init #%d#=%g", VAR_R_HEIGHT, "Init #%d#=%g",VAR_R_HEIGHT_SPEED, inst->states[VAR_R_HEIGHT_SPEED]);
         inst->cb.logMessage(inst->cb.instanceEnvironment, fmi3OK, "INFO", msg);
 
-        snprintf(msg, msg_sz, "Init #r%d#=%g", VAR_R_HEIGHT, "Init #r%d#=%g",VAR_R_HEIGHT_SPEED, "Init #r%d#=%g",VAR_R_GRATIVY, inst->reals[VAR_R_GRATIVY]);
+        snprintf(msg, msg_sz, "Init #%d#=%g", VAR_R_HEIGHT, "Init #%d#=%g",VAR_R_HEIGHT_SPEED, "Init #%d#=%g",VAR_R_GRATIVY, inst->reals[VAR_R_GRATIVY]);
         inst->cb.logMessage(inst->cb.instanceEnvironment, fmi3OK, "INFO", msg);
 
-        snprintf(msg, msg_sz, "Init #r%d#=%g", VAR_R_HEIGHT, "Init #r%d#=%g",VAR_R_HEIGHT_SPEED, "Init #r%d#=%g",VAR_R_BOUNCE_CONF, inst->reals[VAR_R_BOUNCE_CONF]);
+        snprintf(msg, msg_sz, "Init #%d#=%g", VAR_R_HEIGHT, "Init #%d#=%g",VAR_R_HEIGHT_SPEED, "Init #%d#=%g",VAR_R_BOUNCE_CONF, inst->reals[VAR_R_BOUNCE_CONF]);
         inst->cb.logMessage(inst->cb.instanceEnvironment, fmi3OK, "INFO", msg);
     }
     return 0;

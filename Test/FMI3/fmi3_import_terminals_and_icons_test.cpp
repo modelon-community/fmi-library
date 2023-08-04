@@ -23,7 +23,8 @@
 
 TEST_CASE("Test parse terminals and icons") {
     const char* xmldir = FMI3_TEST_XML_DIR "/terminals_and_icons/valid/basic";
-    fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* xml = tfmu->fmu;
     REQUIRE(xml != nullptr);
     REQUIRE(fmi3_import_get_has_terminals_and_icons(xml) != 0);
 
@@ -56,7 +57,9 @@ TEST_CASE("Test parse terminals and icons") {
         REQUIRE(fmi3_import_get_terminal_name(nullptr) == nullptr);
     }
 
-    fmi3_import_free(xml);
+    // TODO: Current example xml includes elements/attributes not yet parsed
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 11); 
+    fmi3_testutil_import_free(tfmu);
 }
 
 TEST_CASE("No terminalsAndIcons.xml, test log message") {
@@ -68,6 +71,7 @@ TEST_CASE("No terminalsAndIcons.xml, test log message") {
     REQUIRE(fmi3_import_get_has_terminals_and_icons(fmu) == 0); // failed parse of terminalsAndIcons
 
     REQUIRE(fmi3_testutil_log_contains(tfmu, "[INFO][FMI3XML] Could not find or open terminalsAndIcons.xml:"));
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -79,7 +83,9 @@ TEST_CASE("Error check; Mismatching fmiVersions of modelDescription.xml and term
     REQUIRE(fmi3_import_get_has_terminals_and_icons(fmu) == 0); // failed parse of terminalsAndIcons
 
     const char* logMsg = "Mismatch of attribute 'fmiVersion' in modelDescription.xml: '3.0-alpha' and terminalsAndIcons.xml: '3.0-beta'.";
-    REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg)); // fatal, counts as 2
+
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 2);
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -91,7 +97,9 @@ TEST_CASE("Error check; Terminals with duplicate names") {
     REQUIRE(fmi3_import_get_has_terminals_and_icons(fmu) == 0); // failed parse of terminalsAndIcons
 
     const char* logMsg = "Two terminals with the same name 'terminalA' found. This is not allowed by the specification.";
-    REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg)); // fatal, counts as 2
+
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 2);
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -103,6 +111,8 @@ TEST_CASE("Error check; Terminals with duplicate names; edge case of empty name"
     REQUIRE(fmi3_import_get_has_terminals_and_icons(fmu) == 0); // failed parse of terminalsAndIcons
 
     const char* logMsg = "Two terminals with the same name '' found. This is not allowed by the specification.";
-    REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, logMsg)); // fatal, counts as 2
+
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 2);
     fmi3_testutil_import_free(tfmu);
 }

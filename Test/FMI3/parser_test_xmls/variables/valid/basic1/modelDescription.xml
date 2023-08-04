@@ -56,7 +56,7 @@
   =================================================================================== -->
 
     <!-- Variable with non-default canHandleMultipleSetPerTimeInstant -->
-  <Float64 name="cannotHandle" valueReference="20" causality="input" canHandleMultipleSetPerTimeInstant="false" />
+  <Float64 name="cannotHandle" valueReference="20" causality="input" canHandleMultipleSetPerTimeInstant="false" start="0"/>
 
   <!-- Binary with empty mimeType-->
   <Binary name="binaryEmptyMimeType" valueReference="998" mimeType=""/>

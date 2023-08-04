@@ -315,8 +315,8 @@ static void test_float32(fmi3_import_t* xml) {
 
 TEST_CASE("Unit and DisplayUnit testing") {
     const char* xmldir = FMI3_TEST_XML_DIR "/unit_display_unit/valid";
-
-    fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* xml = tfmu->fmu;
     REQUIRE(xml != nullptr);
 
     SECTION("Basic Unit verification") {
@@ -331,7 +331,8 @@ TEST_CASE("Unit and DisplayUnit testing") {
         test_float32(xml);
     }
 
-    fmi3_import_free(xml);   
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
+    fmi3_testutil_import_free(tfmu);
 }
 
 TEST_CASE("Invalid DisplayUnit - inserve = true  + non-zero offset") {
@@ -341,6 +342,8 @@ TEST_CASE("Invalid DisplayUnit - inserve = true  + non-zero offset") {
     REQUIRE(fmu != nullptr);
     
     REQUIRE(fmi3_testutil_log_contains(tfmu, "DisplayUnit attribute 'inverse' = true only allowed for 'offset' = 0"));
+
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 1);
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -351,5 +354,7 @@ TEST_CASE("Invalid DisplayUnit - zero factor") {
     REQUIRE(fmu != nullptr);
     
     REQUIRE(fmi3_testutil_log_contains(tfmu, "DisplayUnit attribute 'factor' cannot be equal to zero"));
+
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 1);
     fmi3_testutil_import_free(tfmu);
 }

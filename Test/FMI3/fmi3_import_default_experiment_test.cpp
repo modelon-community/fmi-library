@@ -23,7 +23,8 @@
 
 TEST_CASE("Retrieving default experiment values; values defined") {
     const char* xmldir = FMI3_TEST_XML_DIR "/default_experiment/defined";
-    fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* xml = tfmu->fmu;
     REQUIRE(xml != nullptr);
 
     /* test defined */
@@ -38,12 +39,14 @@ TEST_CASE("Retrieving default experiment values; values defined") {
     REQUIRE(fmi3_import_get_default_experiment_tolerance(xml) == 1e-6);
     REQUIRE(fmi3_import_get_default_experiment_step_size(xml) == 2e-3);
 
-    fmi3_import_free(xml);
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
+    fmi3_testutil_import_free(tfmu);
 }
 
 TEST_CASE("Retrieving default experiment values; values undefined") {
     const char* xmldir = FMI3_TEST_XML_DIR "/default_experiment/undefined";
-    fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* xml = tfmu->fmu;
     REQUIRE(xml != nullptr);
 
     /* test defined */
@@ -58,12 +61,20 @@ TEST_CASE("Retrieving default experiment values; values undefined") {
     REQUIRE(fmi3_import_get_default_experiment_tolerance(xml) == 1e-4);
     REQUIRE(fmi3_import_get_default_experiment_step_size(xml) == 1e-2);
 
-    fmi3_import_free(xml);
+    // These will give warnings, since attributes are not set; TODO: Is this the intended behavior?
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "fmi3_xml_get_default_experiment_start: returning default value, since no attribute was defined in modelDescription"));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "fmi3_xml_get_default_experiment_stop: returning default value, since no attribute was defined in modelDescription"));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "fmi3_xml_get_default_experiment_tolerance: returning default value, since no attribute was defined in modelDescription"));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "fmi3_xml_get_default_experiment_step_size: returning default value, since no attribute was defined in modelDescription"));
+
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 4);
+    fmi3_testutil_import_free(tfmu);
 }
 
 TEST_CASE("Retrieving default experiment values; mixed defined/undefined") {
     const char* xmldir = FMI3_TEST_XML_DIR "/default_experiment/mixed";
-    fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* xml = tfmu->fmu;
     REQUIRE(xml != nullptr);
 
     /* test defined */
@@ -78,5 +89,10 @@ TEST_CASE("Retrieving default experiment values; mixed defined/undefined") {
     REQUIRE(fmi3_import_get_default_experiment_tolerance(xml) == 1e-6);
     REQUIRE(fmi3_import_get_default_experiment_step_size(xml) == 1e-2);
 
-    fmi3_import_free(xml);
+    // These will give warnings, since attributes are not set; TODO: Is this the intended behavior?
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "fmi3_xml_get_default_experiment_stop: returning default value, since no attribute was defined in modelDescription"));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "fmi3_xml_get_default_experiment_step_size: returning default value, since no attribute was defined in modelDescription"));
+
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 2);
+    fmi3_testutil_import_free(tfmu);
 }

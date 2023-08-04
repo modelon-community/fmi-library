@@ -141,9 +141,6 @@ TEST_CASE("main") {
     jm_callbacks callbacks;
     fmi_import_context_t* context;
     fmi_version_enu_t version;
-    jm_status_enu_t status;
-
-    fmi3_import_t* fmu;
 
     callbacks.malloc = malloc;
     callbacks.calloc = calloc;
@@ -164,7 +161,8 @@ TEST_CASE("main") {
     REQUIRE(context != nullptr);
     REQUIRE(fmi_import_get_fmi_version(context, FMU3_SE_PATH, tmpPath) == fmi_version_3_0_enu);
 
-    fmu = fmi3_import_parse_xml(context, tmpPath, 0);
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(tmpPath);
+    fmi3_import_t* fmu = tfmu->fmu;
     REQUIRE(fmu != nullptr);
 
     REQUIRE((fmi3_import_get_fmu_kind(fmu) & fmi3_fmu_kind_se) == fmi3_fmu_kind_se);
@@ -178,7 +176,10 @@ TEST_CASE("main") {
     /* TODO: add simulation */
 
     fmi3_import_destroy_dllfmu(fmu);
-    fmi3_import_free(fmu);
+
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
+    fmi3_testutil_import_free(tfmu);
+
     fmi_import_free_context(context);
     REQUIRE(fmi_import_rmdir(&callbacks, tmpPath) == jm_status_success);
     callbacks.free((void*)tmpPath);

@@ -109,8 +109,8 @@ static void require_name_expansion(fmi3_import_t* xml, const char* msgIn, const 
 
 TEST_CASE("Variable parsing") {
     const char* xmldir = FMI3_TEST_XML_DIR "/convenience/valid/notSortedByVR";
-
-    fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* xml = tfmu->fmu;
     REQUIRE(xml != nullptr);
     
     SECTION("Get variable by VR") {
@@ -123,13 +123,14 @@ TEST_CASE("Variable parsing") {
         test_fmi3_import_get_variable_list_order_by_vr(xml);
     }
 
-    fmi3_import_free(xml);
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
+    fmi3_testutil_import_free(tfmu);
 }
 
 TEST_CASE("Variable name expansion") {
     const char* xmldir = FMI3_TEST_XML_DIR "/convenience/valid/nameExpansion";
-
-    fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* xml = tfmu->fmu;
     REQUIRE(xml != nullptr);
 
     // No escape chars:
@@ -140,10 +141,13 @@ TEST_CASE("Variable name expansion") {
     require_name_expansion(xml, "##", "#");
     
     // Some cases that should give warnings (for now only tests that output is not modified):
+    // +4 problems
     require_name_expansion(xml, "#x", "#x");
     require_name_expansion(xml, "#x#", "#x#");
     require_name_expansion(xml, "#", "#");
     require_name_expansion(xml, "#99#", "#99#");  // Referenced variable doesn't exist
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Expected value reference in log message here: ''"));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Could not find variable referenced in log message here: '99'"));
     
     // Different types:
     require_name_expansion(xml, "#0#", "vInt32");
@@ -158,7 +162,8 @@ TEST_CASE("Variable name expansion") {
     require_name_expansion(xml, "$^/\\", "$^/\\");
     require_name_expansion(xml, "#5#", " Special chars: $^/\\ ");
 
-    fmi3_import_free(xml);
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 4);
+    fmi3_testutil_import_free(tfmu);
 }
 
 TEST_CASE("Variable name expansion via logger") {
@@ -169,20 +174,21 @@ TEST_CASE("Variable name expansion via logger") {
     REQUIRE(tfmu->fmu != nullptr);
 
     fmi3_log_forwarding(tfmu->fmu, fmi3_status_ok, "Test", "Variable name: #1#");
-    REQUIRE(fmi3_testutil_log_contains(tfmu, "Variable name: vFloat64") == true);
-    REQUIRE(fmi3_testutil_log_contains(tfmu, "Variable name: vFloat32") == false);
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Variable name: vFloat64"));
+    REQUIRE(!fmi3_testutil_log_contains(tfmu, "Variable name: vFloat32"));
 
     fmi3_log_forwarding(tfmu->fmu, fmi3_status_ok, "Test", "Variable name: #2#");
-    REQUIRE(fmi3_testutil_log_contains(tfmu, "Variable name: vFloat64") == true);
-    REQUIRE(fmi3_testutil_log_contains(tfmu, "Variable name: vFloat32") == true);
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Variable name: vFloat64"));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Variable name: vFloat32"));
 
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
     fmi3_testutil_import_free(tfmu);
 }
 
 TEST_CASE("Test model counts variability") {
     const char* xmldir = FMI3_TEST_XML_DIR "/convenience/valid/modelCountsVariability";
-
-    fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* xml = tfmu->fmu;
     REQUIRE(xml != nullptr);
 
     fmi3_import_model_counts_t counts;
@@ -194,13 +200,14 @@ TEST_CASE("Test model counts variability") {
     REQUIRE(counts.num_discrete   == 4);
     REQUIRE(counts.num_continuous == 5);
 
-    fmi3_import_free(xml);
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
+    fmi3_testutil_import_free(tfmu);
 }
 
 TEST_CASE("Test model counts causality") {
     const char* xmldir = FMI3_TEST_XML_DIR "/convenience/valid/modelCountsCausality";
-
-    fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* xml = tfmu->fmu;
     REQUIRE(xml != nullptr);
 
     fmi3_import_model_counts_t counts;
@@ -214,12 +221,14 @@ TEST_CASE("Test model counts causality") {
     REQUIRE(counts.num_independent           == 6);
     REQUIRE(counts.num_structural_parameters == 7);
 
-    fmi3_import_free(xml);
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
+    fmi3_testutil_import_free(tfmu);
 }
 
 TEST_CASE("Get variable from alias name") {
     const char* xmldir = FMI3_TEST_XML_DIR "/convenience/valid/get_variable_by_alias_name1";
-    fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* xml = tfmu->fmu;
     REQUIRE(xml != nullptr);
     
     fmi3_import_variable_t* baseVar    = fmi3_import_get_variable_by_name(xml, "v1");
@@ -230,12 +239,14 @@ TEST_CASE("Get variable from alias name") {
     REQUIRE(missingVar == nullptr);
     REQUIRE_STREQ(fmi3_import_get_variable_name(baseVar), "v1");
 
-    fmi3_import_free(xml);
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
+    fmi3_testutil_import_free(tfmu);
 }
 
 TEST_CASE("Get variable from alias name - mixed alphabetical order") {
     const char* xmldir = FMI3_TEST_XML_DIR "/convenience/valid/get_variable_by_alias_name2";
-    fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* xml = tfmu->fmu;
     REQUIRE(xml != nullptr);
     
     fmi3_import_variable_t* baseVar   = fmi3_import_get_variable_by_name(xml, "a");
@@ -250,5 +261,6 @@ TEST_CASE("Get variable from alias name - mixed alphabetical order") {
     REQUIRE_STREQ(fmi3_import_get_variable_name(otherVar1), "b");
     REQUIRE_STREQ(fmi3_import_get_variable_name(otherVar2), "d");
 
-    fmi3_import_free(xml);
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
+    fmi3_testutil_import_free(tfmu);
 }

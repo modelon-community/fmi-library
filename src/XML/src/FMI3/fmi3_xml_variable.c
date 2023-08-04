@@ -2467,6 +2467,8 @@ int fmi3_xml_handle_ModelVariables(fmi3_xml_parser_context_t* context, const cha
         for (size_t i = 0; i < nVars; i++) {
             fmi3_xml_variable_t *variable = jm_vector_get_item(jm_voidp)(&md->variablesOrigOrder, i);
 
+            // These 2 checks can cause secondary errors, if the variable with the given valueReference was invalid
+
             if (variable->hasDerivativeOf) {
                 // Resolve VR to variable.
                 fmi3_value_reference_t vr = variable->derivativeOf.vr;

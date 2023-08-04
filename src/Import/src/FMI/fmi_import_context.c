@@ -26,7 +26,7 @@
 #define MODULE "FMILIB"
 
 fmi_import_context_t* fmi_import_allocate_context(jm_callbacks* callbacks) {
-    jm_log_verbose(callbacks, MODULE, "Allocating FMIL context");
+    if (callbacks) {jm_log_verbose(callbacks, MODULE, "Allocating FMIL context");}
     return fmi_xml_allocate_context(callbacks);
 }
 

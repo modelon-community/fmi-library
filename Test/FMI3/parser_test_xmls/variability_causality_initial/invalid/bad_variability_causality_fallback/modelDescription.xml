@@ -4,13 +4,13 @@
 
 <ModelVariables>
 	<!-- test various invalid causility & variablity combinations for their errors and fallbacks -->
-	<Float32 name="f32_parameter" valueReference="0" causality="parameter" variability="continuous"/>
+	<Float32 name="f32_parameter" valueReference="0" causality="parameter" variability="continuous" start="0"/>
 	<Float32 name="f32_non_parameter" valueReference="1" causality="output" variability="fixed"/>
 
-	<Float64 name="f64_parameter" valueReference="10" causality="parameter" variability="continuous"/>
+	<Float64 name="f64_parameter" valueReference="10" causality="parameter" variability="continuous" start="0"/>
 	<Float64 name="f64_non_parameter" valueReference="11" causality="output" variability="fixed"/>
 
-	<Int64 name="i64_parameter" valueReference="20" causality="parameter" variability="continuous"/>
+	<Int64 name="i64_parameter" valueReference="20" causality="parameter" variability="continuous" start="0"/>
 	<Int64 name="i64_non_parameter" valueReference="21" causality="output" variability="fixed"/>
 </ModelVariables>
 

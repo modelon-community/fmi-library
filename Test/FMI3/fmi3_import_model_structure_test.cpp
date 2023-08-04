@@ -204,8 +204,8 @@ static void test_fmi3_import_get_dependencies_invalid_api_calls(fmi3_import_t* f
 
 TEST_CASE("Valid ModelStructure parsing") {
     const char* xmldir = FMI3_TEST_XML_DIR "/model_structure/valid/basic";
-
-    fmi3_import_t* fmu = fmi3_testutil_parse_xml(xmldir);
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* fmu = tfmu->fmu;
     REQUIRE(fmu != nullptr);
 
     SECTION("Get Outputs") {
@@ -232,7 +232,8 @@ TEST_CASE("Valid ModelStructure parsing") {
         test_fmi3_import_get_dependencies_invalid_api_calls(fmu);
     }
     
-    fmi3_import_free(fmu);
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
+    fmi3_testutil_import_free(tfmu);
 }
 
 TEST_CASE("Error check: ModelStructure; ContinuousStateDerivative missing derivative reference") {
@@ -266,6 +267,7 @@ TEST_CASE("Error check: ModelStructure; ContinuousStateDerivative missing deriva
 
     fmi3_import_free_variable_list(varList);
 
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 1);
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -274,11 +276,12 @@ TEST_CASE("Error check: ModelStructure; Incorrect order of elements") {
     fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
     REQUIRE(tfmu != nullptr);
     fmi3_import_t* fmu = tfmu->fmu;
-    REQUIRE(fmu == nullptr);
+    REQUIRE(fmu != nullptr);
 
     // basic Model-structure invalid, violates order requirements
     REQUIRE(fmi3_testutil_log_contains(tfmu, "'Output' cannot be placed after element 'ContinuousStateDerivative', skipping"));
 
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 1);
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -290,7 +293,9 @@ TEST_CASE("Warning check: ModelStructure; FMI2 style lists") {
     REQUIRE(fmu != nullptr); // Parsing is successful
 
     REQUIRE(fmi3_testutil_log_contains(tfmu, "Unknown element 'Derivatives' in XML, skipping"));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Skipping nested XML element 'ContinuousStateDerivative'"));
 
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 2);
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -312,6 +317,7 @@ TEST_CASE("Error check: ModelStructure; Output incorrect causality") {
 
     fmi3_import_free_variable_list(varList);
 
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 1);
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -332,6 +338,7 @@ TEST_CASE("Error check: ModelStructure; EventIndicator variability") {
 
     fmi3_import_free_variable_list(varList);
 
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 1);
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -353,6 +360,7 @@ TEST_CASE("Error check: ModelStructure; EventIndicator base type") {
 
     fmi3_import_free_variable_list(varList);
 
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 1);
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -363,8 +371,9 @@ TEST_CASE("Info check: ModelStructure; EventIndicator ignored for Co-Simulation"
     fmi3_import_t* fmu = tfmu->fmu;
     REQUIRE(fmu != nullptr); // Parsing successful
 
-    REQUIRE(fmi3_testutil_log_contains(tfmu, "EventIndicator ignored since FMU kind is Co-Simulation or Scheduled Excecution."));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "EventIndicator ignored since FMU kind is Co-Simulation or Scheduled Excecution.")); // warning
 
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 1);
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -385,6 +394,7 @@ TEST_CASE("Error check: ModelStructure; ClockedState without previous attribute"
 
     fmi3_import_free_variable_list(varList);
 
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 1);
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -398,6 +408,7 @@ TEST_CASE("Error check: ModelStructure; ClockedState has Clock base type") {
 
     // Also tested in TEST_CASE("Invalid Clock variable - has previous")
     REQUIRE(fmi3_testutil_log_contains(tfmu, "Variables of type Clock must not have the 'previous' attribute."));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "The variable 'clock_01' is a ClockedState, but has the base type 'fmi3Clock'."));
 
     fmi3_import_variable_list_t* varList = fmi3_import_get_clocked_states_list(fmu);
     REQUIRE(fmi3_import_get_variable_list_size(varList) == 1);
@@ -408,6 +419,7 @@ TEST_CASE("Error check: ModelStructure; ClockedState has Clock base type") {
 
     fmi3_import_free_variable_list(varList);    
 
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 2);
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -442,6 +454,7 @@ TEST_CASE("Error check: ModelStructure; Negative dependency value") {
     REQUIRE(fmi3_testutil_log_contains(tfmu, "'ContinuousStateDerivative': Attribute 'dependencies' contains invalid value: -1."));
     test_default_depedencies_cont_state_derivative(fmu);
 
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 1);
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -455,6 +468,7 @@ TEST_CASE("Error check: ModelStructure; Invalid dependency value; not a number")
     REQUIRE(fmi3_testutil_log_contains(tfmu, "'ContinuousStateDerivative': could not parse item 0, character 'a' in the list for attribute 'dependencies'"));
     test_default_depedencies_cont_state_derivative(fmu);
 
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 1);
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -468,6 +482,7 @@ TEST_CASE("Error check: ModelStructure; Mismatched number of dependencies and de
     REQUIRE(fmi3_testutil_log_contains(tfmu, "'ContinuousStateDerivative': different number of items (1 and 2) in the lists for 'dependencies' and 'dependenciesKind'"));
     test_default_depedencies_cont_state_derivative(fmu);
 
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 1);
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -481,6 +496,7 @@ TEST_CASE("Error check: ModelStructure; Invalid dependenciesKind item in list") 
     REQUIRE(fmi3_testutil_log_contains(tfmu, "'ContinuousStateDerivative': could not parse item 0 in the list for attribute 'dependenciesKind'"));
     test_default_depedencies_cont_state_derivative(fmu);
 
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 1);
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -494,6 +510,7 @@ TEST_CASE("Error check: ModelStructure; dependencies missing but dependenciesKin
     REQUIRE(fmi3_testutil_log_contains(tfmu, "'ContinuousStateDerivative': if `dependenciesKind` attribute is present then the `dependencies` attribute must also be present."));
     test_default_depedencies_cont_state_derivative(fmu);
 
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 1);
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -537,5 +554,6 @@ TEST_CASE("Error check: ModelStructure; invalid dependenciesKind for InitialUnkn
 
     fmi3_import_free_variable_list(varList);
 
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 3);
     fmi3_testutil_import_free(tfmu);
 }

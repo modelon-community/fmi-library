@@ -335,6 +335,7 @@ TEST_CASE("Error check bad variability causality combination fallback") {
     v = fmi3_import_get_variable_by_vr(tfmu->fmu, 21);
     REQUIRE(fmi3_import_get_variable_variability(v) == fmi3_variability_enu_discrete);
 
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 6);
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -392,6 +393,9 @@ TEST_CASE("Test default variabilities") {
         v = fmi3_import_get_variable_by_vr(tfmu->fmu, 17);
         REQUIRE(fmi3_import_get_variable_variability(v) == fmi3_variability_enu_continuous);
     }
+
+    // Taking default does not have any warnings or similar
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -411,5 +415,6 @@ TEST_CASE("Test missing start values") {
     REQUIRE(fmi3_testutil_log_contains(tfmu, "Variable 'f64_exact': start value required for variables with initial == \"exact\""));
     REQUIRE(fmi3_testutil_log_contains(tfmu, "Variable 'f64_approx': start value required for variables with initial == \"approx\""));
 
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 6);
     fmi3_testutil_import_free(tfmu);
 }

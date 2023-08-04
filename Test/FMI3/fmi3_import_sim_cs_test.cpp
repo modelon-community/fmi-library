@@ -226,7 +226,8 @@ TEST_CASE("Co-Simulation FMU example") {
     fmi_import_context_t* context = fmi_import_allocate_context(&callbacks);
     REQUIRE(fmi_import_get_fmi_version(context, FMU3_CS_PATH, tmpPath) == fmi_version_3_0_enu);
 
-    fmi3_import_t* fmu = fmi3_import_parse_xml(context, tmpPath, 0);
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(tmpPath);
+    fmi3_import_t* fmu = tfmu->fmu;
     REQUIRE(fmu != nullptr);
     REQUIRE((fmi3_import_get_fmu_kind(fmu) & fmi3_fmu_kind_cs) == fmi3_fmu_kind_cs); // is CS FMU
 
@@ -238,7 +239,10 @@ TEST_CASE("Co-Simulation FMU example") {
     test_simulate_cs(fmu);
 
     fmi3_import_destroy_dllfmu(fmu);
-    fmi3_import_free(fmu);
+
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
+    fmi3_testutil_import_free(tfmu);
+
     fmi_import_free_context(context);
     REQUIRE(fmi_import_rmdir(&callbacks, tmpPath) == jm_status_success);
     callbacks.free((void*)tmpPath);

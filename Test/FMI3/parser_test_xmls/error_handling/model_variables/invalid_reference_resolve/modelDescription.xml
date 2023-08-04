@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription fmiVersion="3.0" modelName="" instantiationToken="">
+<ModelExchange modelIdentifier="id_me"/>
+
+<ModelVariables>
+  <Float64 valueReference="0"/> <!-- missing name, invalid variable -->
+
+  <Float64 name="f1" valueReference="1" derivative="0"/>
+  <Float64 name="f2" valueReference="2" clocks="3" previous="0" variability="discrete"/>
+  <Clock   name="c"  valueReference="3" intervalVariability="constant"/>
+</ModelVariables>
+
+<ModelStructure/>
+</fmiModelDescription>

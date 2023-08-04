@@ -23,20 +23,24 @@
 #include "catch.hpp"
 
 void parse_exclude_msg(const char* xml_dir, const char* log_msg) {
+    INFO("Testing " << xml_dir);
     fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xml_dir);
     fmi3_import_t* fmu = tfmu->fmu;
     REQUIRE(fmu != nullptr);
     
     REQUIRE(!fmi3_testutil_log_contains(tfmu, log_msg));
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
     fmi3_testutil_import_free(tfmu);
 }
 
 void parse_include_msg(const char* xml_dir, const char* log_msg) {
+    INFO("Testing " << xml_dir);
     fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xml_dir);
     fmi3_import_t* fmu = tfmu->fmu;
     REQUIRE(fmu != nullptr);
     
     REQUIRE(fmi3_testutil_log_contains(tfmu, log_msg));
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 1);
     fmi3_testutil_import_free(tfmu);
 }
 

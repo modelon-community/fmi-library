@@ -37,6 +37,7 @@ TEST_CASE("fmiModelDescription: FMI3 with FMI2 attribute numberOfEventIndicators
     fmi3_import_get_number_of_event_indicators(fmu, &nEvInd);
     REQUIRE(nEvInd == 0);
 
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 1);
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -52,5 +53,6 @@ TEST_CASE("fmiModelDescription: Get num event indicators from ModelStructure") {
     fmi3_import_get_number_of_event_indicators(fmu, &nEvInd);
     REQUIRE(nEvInd == 2);
 
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
     fmi3_testutil_import_free(tfmu);
 }

@@ -4,7 +4,7 @@
 
 <ModelVariables>
     <!-- Variables with causality='parameter' must not be marked with intermediateUpdate='true' -->
-    <Float64 name="var" valueReference="0" causality="parameter" intermediateUpdate="true"/> 
+    <Float64 name="var" valueReference="0" causality="parameter" intermediateUpdate="true" start="0"/> 
 </ModelVariables>
 
 <ModelStructure/>

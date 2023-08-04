@@ -76,7 +76,8 @@ static fmi3_import_dimension_list_t* basic_array_checks(fmi3_import_variable_t* 
 
 TEST_CASE("Binary array") {
     const char* xmldir = FMI3_TEST_XML_DIR "/arrays/valid/binary_array";
-    fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* xml = tfmu->fmu;
     REQUIRE(xml != nullptr);
 
     SECTION("Test binary start array") {
@@ -109,24 +110,16 @@ TEST_CASE("Binary array") {
         REQUIRE(sizes[1]   == 2);
         REQUIRE(sizes[2]   == 2);
     }
-    fmi3_import_free(xml);
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
+    fmi3_testutil_import_free(tfmu);
 }
 
 TEST_CASE("Test array parsing and verify retrieved start values are as expected"){
-    jm_callbacks cb;
-    fmi_import_context_t *context;
+    const char* xmldir = FMI3_TEST_XML_DIR "/arrays/valid/base";
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* xml = tfmu->fmu;
+    REQUIRE(xml != nullptr);
 
-    cb.malloc    = malloc;
-    cb.calloc    = calloc;
-    cb.realloc   = realloc;
-    cb.free      = free;
-    cb.logger    = importlogger;
-    cb.log_level = jm_log_level_all;
-    cb.context   = NULL;
-    context = fmi_import_allocate_context(&cb);
-    const char* xmlPath = FMI3_TEST_XML_DIR "/arrays/valid/base";
-
-    fmi3_import_t *xml = parse_xml(xmlPath);
     SECTION("Test boolean start array") {
         REQUIRE(xml != nullptr);
         fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "bool_array");
@@ -274,13 +267,14 @@ TEST_CASE("Test array parsing and verify retrieved start values are as expected"
         fmi3_string_t start = fmi3_import_get_string_variable_start(fmi3_import_get_variable_as_string(v));
         REQUIRE(strcmp(start, "A sTring value") == 0);
     }
-    fmi_import_free_context(context);
-    fmi3_import_free(xml);
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
+    fmi3_testutil_import_free(tfmu);
 }
 
 TEST_CASE("Test int64 start array with 100 variables") {
     const char* xmldir = FMI3_TEST_XML_DIR "/arrays/valid/big1";
-    fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* xml = tfmu->fmu;
     REQUIRE(xml != nullptr);
 
     fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "int64_array_100");
@@ -293,5 +287,7 @@ TEST_CASE("Test int64 start array with 100 variables") {
         expected_value = (i%5 == 0) ? -i : i;
         REQUIRE(start[i-1] == expected_value);
     }
-    fmi3_import_free(xml);
+    
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
+    fmi3_testutil_import_free(tfmu);
 }

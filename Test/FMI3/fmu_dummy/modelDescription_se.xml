@@ -5,10 +5,8 @@
   generationTool="None"
   description="A bouncing ball model"
   instantiationToken="123">
-  <ScheduledExecution
-  modelIdentifier="BouncingBall3"
-  canHandleVariableCommunicationStepSize="true"
-  />
+  <ScheduledExecution modelIdentifier="BouncingBall3"/>
+
 <ModelVariables>
   <Float64 name="HEIGHT" valueReference="0" initial="exact" causality="output" description="Height of the ball" start="1.0"/>
   <Float64 name="HEIGHT_SPEED" valueReference="1" initial="exact" description="Velocity of the ball" start="4.0">

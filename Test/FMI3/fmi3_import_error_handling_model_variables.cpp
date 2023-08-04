@@ -67,7 +67,12 @@ TEST_CASE("Invalid VR, missing name") {
     REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'Enumeration': required attribute 'name' not found"));
     REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'Enumeration': required attribute 'valueReference' not found"));
 
-    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables. Variable(s) failed to parse or an essential error check failed."));
+    // Limitation; type specific attributes will not be parsed if common ones (name, valueReference) fail
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Attribute 'declaredType' not processed by element 'Enumeration' handle")); // 2 times
+
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables. Variable(s) failed to parse or an essential error check failed.")); // counts as 2
+
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 6*3 + 2 + 2);
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -94,7 +99,9 @@ TEST_CASE("Testing all global error checks") {
     REQUIRE(fmi3_testutil_log_contains(tfmu, "The valueReference in previous=\"1000\" did not resolve to any variable."));
 
     // Final failure in ModelVariable parsing
-    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables. Variable(s) failed to parse or an essential error check failed."));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables. Variable(s) failed to parse or an essential error check failed.")); // counts as 2
+
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 7);
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -123,6 +130,8 @@ TEST_CASE("Test multiple attribute errors in a single variable") {
     REQUIRE(var == varPrev);
     REQUIRE(fmi3_import_get_variable_can_handle_multiple_set_per_time_instant(var) == false);
 
+
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 5);
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -137,8 +146,9 @@ TEST_CASE("Test missing required attribute plus other attribute errors/warnings"
     // We do not check attribute errors if name/valueReference are erroneous
     REQUIRE(!fmi3_testutil_log_contains(tfmu, "A variable must not refer to itself in the attribute 'previous'."));
 
-    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables. Variable(s) failed to parse or an essential error check failed."));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables. Variable(s) failed to parse or an essential error check failed.")); // counts as 2
 
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 4);
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -172,17 +182,18 @@ TEST_CASE("Test multiple errors in Dimension parsing") {
 
     INFO("<Dimension start=\"2\"/>");
     test_dimension(fmi3_import_get_dimension(dimList, 0), 1, 2, 0, 0);
-    INFO("<Dimension start=\"3\" valueReference=\"1\"/>");
+    INFO("<Dimension start=\"3\" valueReference=\"1\"/>"); // +1 problem
     test_dimension(fmi3_import_get_dimension(dimList, 1), 1, 3, 1, 1);
-    INFO("<Dimension/>");
+    INFO("<Dimension/>"); // +1 problem
     test_dimension(fmi3_import_get_dimension(dimList, 2), 0, 0, 0, 0);
-    INFO("<Dimension valueReference=\"x\">");
+    INFO("<Dimension valueReference=\"x\">"); // +1 problem
     test_dimension(fmi3_import_get_dimension(dimList, 3), 0, 0, 0, 0);
-    INFO("<Dimension valueReference=\"1\" start=\"zero\">");
+    INFO("<Dimension valueReference=\"1\" start=\"zero\">"); // +2 problems, mutually exclusive + invalid type
     test_dimension(fmi3_import_get_dimension(dimList, 4), 0, 0, 1, 1);
     INFO("<Dimension valueReference=\"1\"/>");
     test_dimension(fmi3_import_get_dimension(dimList, 5), 0, 0, 1, 1);
 
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 5);
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -220,6 +231,7 @@ TEST_CASE("Test multiple errors in Start elements for Binary") {
     REQUIRE(bins[1][1] == 205); // cd = 12*16 + 13 = 205
     REQUIRE(bins[1][2] == 239); // ef = 14*16 + 15 = 239
 
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 4);
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -227,7 +239,7 @@ TEST_CASE("Clock with ALL invalid attributes") {
     const char* xmldir = FMI3_TEST_XML_DIR "/error_handling/model_variables/multiple_attribute_issues_clock_including_req";
     fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
     fmi3_import_t* fmu = tfmu->fmu;
-    REQUIRE(fmu == nullptr);
+    REQUIRE(fmu != nullptr);
 
     /*
     <Clock name="clock0" valueReference="0" intervalVariability="continuous"
@@ -245,8 +257,22 @@ TEST_CASE("Clock with ALL invalid attributes") {
     REQUIRE(fmi3_testutil_log_contains(tfmu, "XML element 'Clock': failed to parse attribute intervalDecimal='ten'"));
     REQUIRE(fmi3_testutil_log_contains(tfmu, "XML element 'Clock': failed to parse attribute shiftDecimal='twenty'"));
 
-    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables. Variable(s) failed to parse or an essential error check failed."));
+    fmi3_import_variable_t* var = fmi3_import_get_variable_by_vr(fmu, 0);
+    REQUIRE(var != nullptr);
+    fmi3_import_clock_variable_t* clockVar = fmi3_import_get_variable_as_clock(var);
+    REQUIRE(clockVar != nullptr);
 
+    REQUIRE(fmi3_import_get_clock_variable_can_be_deactivated(clockVar)   == false);
+    REQUIRE(fmi3_import_get_clock_variable_has_priority(clockVar)         == false);
+    REQUIRE(fmi3_import_get_clock_variable_interval_variability(clockVar) == fmi3_interval_variability_unknown);
+    REQUIRE(fmi3_import_get_clock_variable_has_interval_decimal(clockVar) == false);
+    REQUIRE(fmi3_import_get_clock_variable_shift_decimal(clockVar)        == 0.0f);
+    REQUIRE(fmi3_import_get_clock_variable_supports_fraction(clockVar)    == false);
+    REQUIRE(fmi3_import_get_clock_variable_has_resolution(clockVar)       == false);
+    REQUIRE(fmi3_import_get_clock_variable_has_interval_counter(clockVar) == false);
+    REQUIRE(fmi3_import_get_clock_variable_shift_counter(clockVar)        == 0);
+
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 9);    
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -315,6 +341,7 @@ TEST_CASE("Clock with ALL OPTIONAL attributes invalid") {
     REQUIRE(fmi3_import_get_clock_variable_has_resolution(clockVar)       == false);
     REQUIRE(fmi3_import_get_clock_variable_has_interval_decimal(clockVar) == false);
 
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 9);
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -330,8 +357,9 @@ TEST_CASE("Clock with muliple errors in required attributes") {
     // TODO: Current limitation; type specific attributes not be parsed if parsing required common attributes fails
     REQUIRE(fmi3_testutil_log_contains(tfmu, "Attribute 'intervalVariability' not processed by element 'Clock' handle"));
 
-    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables. Variable(s) failed to parse or an essential error check failed."));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables. Variable(s) failed to parse or an essential error check failed.")); // counts as 2
 
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 5);
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -372,6 +400,7 @@ TEST_CASE("Binary variable with errors in binary specific attributes") {
 
     REQUIRE_STREQ(fmi3_import_get_binary_variable_mime_type(binVar), "mime");
 
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 1);
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -427,5 +456,25 @@ TEST_CASE("String non-array variable with too many start values") {
     REQUIRE_STREQ(startArray[0], "first")
     REQUIRE_STREQ(startArray[1], "second")
 
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 2);
+    fmi3_testutil_import_free(tfmu);
+}
+
+TEST_CASE("Secondary error test; Derivate/previous reference on invalid variable") {
+    // This is a limitation
+    const char* xmldir = FMI3_TEST_XML_DIR "/error_handling/model_variables/invalid_reference_resolve";
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    REQUIRE(tfmu != nullptr);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu == nullptr);
+
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'Float64': required attribute 'name' not found"));
+    // Secondary errors
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "The valueReference in derivative=\"0\" did not resolve to any variable."));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "The valueReference in previous=\"0\" did not resolve to any variable."));
+
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables. Variable(s) failed to parse or an essential error check failed.")); // counts as 2
+
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 5);
     fmi3_testutil_import_free(tfmu);
 }

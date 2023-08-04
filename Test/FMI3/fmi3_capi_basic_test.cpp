@@ -17,9 +17,11 @@
 #include <cstdlib>
 #include <cstdarg>
 
-#include "catch.hpp"
-#include "config_test.h"
 #include "fmilib.h"
+#include "config_test.h"
+#include "fmi_testutil.h"
+
+#include "catch.hpp"
 
 void dummy_log_message_callback(
     fmi3_instance_environment_t* env,
@@ -44,13 +46,6 @@ void importlogger(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_leve
 
 /* The test file name, displayed during the testing */
 static const char test_file_name[] = "[fmi3_basic_capi_test.cpp]";
-
-/* Function used only to deallocate resources that were allocated during the testing.  */
-void clean_up(fmi3_import_t* fmu, fmi_import_context_t* context) {
-    fmi3_import_free_instance(fmu);
-    fmi3_import_free(fmu);
-    fmi_import_free_context(context);
-}
 
 /* Helper function to verify get/set for int64 works as expected.
     The input arguments are:
@@ -102,8 +97,18 @@ TEST_CASE("Test CAPI methods using a Model Exchange FMU", test_file_name)
     callbacks.log_level = jm_log_level_debug;
     callbacks.context = 0;
     context = fmi_import_allocate_context(&callbacks);
-    fmi_version_enu_t version = fmi_import_get_fmi_version(context, FMU3_ME_PATH, FMU_UNPACK_DIR);
-    fmi3_import_t* fmu = fmi3_import_parse_xml(context, FMU_UNPACK_DIR, 0);
+
+    const char* tmpPath = fmi_import_mk_temp_dir(&callbacks, FMU_UNPACK_DIR, NULL);
+    REQUIRE(tmpPath != nullptr);
+
+    fmi_version_enu_t version = fmi_import_get_fmi_version(context, FMU3_ME_PATH, tmpPath);
+    REQUIRE(version == fmi_version_3_0_enu);
+
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(tmpPath);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu != nullptr);
+
+    REQUIRE((fmi3_import_get_fmu_kind(fmu) & fmi3_fmu_kind_me) == fmi3_fmu_kind_me);
 
     /* Create C-API struct and instantiate FMU, necessary for some test cases that follows. */
     jm_status_enu_t status = fmi3_import_create_dllfmu(fmu, fmi3_fmu_kind_me, nullptr, nullptr);
@@ -123,25 +128,14 @@ TEST_CASE("Test CAPI methods using a Model Exchange FMU", test_file_name)
         (fmi3_log_message_callback_ft)dummy_log_message_callback
     );
 
-    SECTION("Verifying returned result from fmi_import_get_fmi_version") {
-        REQUIRE(version == fmi_version_3_0_enu);
-    }
+    test_int_get_set(fmu, instantiate_status);
 
-    SECTION("Verifying FMU kind"){
-        fmi3_fmu_kind_enu_t fmu_kind = fmi3_import_get_fmu_kind(fmu);
-        REQUIRE(fmi3_fmu_kind_me == fmu_kind);
-    }
-
-    SECTION("Verifying FMU version returns '3.0'") {
-        jm_status_enu_t status = fmi3_import_create_dllfmu(fmu, fmi3_fmu_kind_me, nullptr, nullptr);
-        REQUIRE(status == 0);
-        REQUIRE(strcmp(fmi3_import_get_version(fmu), "3.0") == 0);
-    }
-
-    SECTION("Test instantiation status and set values on int64 array") {
-        test_int_get_set(fmu, instantiate_status);
-    }
-    clean_up(fmu, context);
+    // TODO: Various issues related to parsing of Annotations, see also _sim_me_test
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 5);
+    fmi3_import_free_instance(fmu);
+    fmi3_testutil_import_free(tfmu);
+    fmi_import_free_context(context);
+    callbacks.free((void*)tmpPath);
 }
 
 TEST_CASE("Test CAPI methods using a Co-Simulation FMU", test_file_name)
@@ -156,8 +150,18 @@ TEST_CASE("Test CAPI methods using a Co-Simulation FMU", test_file_name)
     callbacks.log_level = jm_log_level_debug;
     callbacks.context = 0;
     context = fmi_import_allocate_context(&callbacks);
-    fmi_version_enu_t version = fmi_import_get_fmi_version(context, FMU3_CS_PATH, FMU_UNPACK_DIR);
-    fmi3_import_t* fmu = fmi3_import_parse_xml(context, FMU_UNPACK_DIR, 0);
+
+    const char* tmpPath = fmi_import_mk_temp_dir(&callbacks, FMU_UNPACK_DIR, NULL);
+    REQUIRE(tmpPath != nullptr);
+
+    fmi_version_enu_t version = fmi_import_get_fmi_version(context, FMU3_CS_PATH, tmpPath);
+    REQUIRE(version == fmi_version_3_0_enu);
+
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(tmpPath);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu != nullptr);
+
+    REQUIRE((fmi3_import_get_fmu_kind(fmu) & fmi3_fmu_kind_cs) == fmi3_fmu_kind_cs);
 
     jm_status_enu_t status = fmi3_import_create_dllfmu(fmu, fmi3_fmu_kind_cs, nullptr, nullptr);
     REQUIRE(status == 0);
@@ -184,25 +188,14 @@ TEST_CASE("Test CAPI methods using a Co-Simulation FMU", test_file_name)
         NULL
     );
 
-    SECTION("Verifying returned result from fmi_import_get_fmi_version") {
-        REQUIRE(version == fmi_version_3_0_enu);
-    }
 
-    SECTION("Verifying FMU kind"){
-        fmi3_fmu_kind_enu_t fmu_kind = fmi3_import_get_fmu_kind(fmu);
-        REQUIRE(fmi3_fmu_kind_cs == fmu_kind);
-    }
+    test_int_get_set(fmu, instantiate_status);
 
-    SECTION("Verifying FMU version returns '3.0'") {
-        jm_status_enu_t status = fmi3_import_create_dllfmu(fmu, fmi3_fmu_kind_cs, nullptr, nullptr);
-        REQUIRE(status == 0);
-        REQUIRE(strcmp(fmi3_import_get_version(fmu), "3.0") == 0);
-    }
-
-    SECTION("Test instantiation status and set values on int64 array") {
-        test_int_get_set(fmu, instantiate_status);
-    }
-    clean_up(fmu, context);
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
+    fmi3_import_free_instance(fmu);
+    fmi3_testutil_import_free(tfmu);
+    fmi_import_free_context(context);
+    callbacks.free((void*)tmpPath);
 }
 
 TEST_CASE("Test CAPI methods using a Scheduled-Execution FMU", test_file_name)
@@ -217,8 +210,18 @@ TEST_CASE("Test CAPI methods using a Scheduled-Execution FMU", test_file_name)
     callbacks.log_level = jm_log_level_debug;
     callbacks.context = 0;
     context = fmi_import_allocate_context(&callbacks);
-    fmi_version_enu_t version = fmi_import_get_fmi_version(context, FMU3_SE_PATH, FMU_UNPACK_DIR);
-    fmi3_import_t* fmu = fmi3_import_parse_xml(context, FMU_UNPACK_DIR, 0);
+
+    const char* tmpPath = fmi_import_mk_temp_dir(&callbacks, FMU_UNPACK_DIR, NULL);
+    REQUIRE(tmpPath != nullptr);
+
+    fmi_version_enu_t version = fmi_import_get_fmi_version(context, FMU3_SE_PATH, tmpPath);
+    REQUIRE(version == fmi_version_3_0_enu);
+
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(tmpPath);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu != nullptr);
+
+    REQUIRE((fmi3_import_get_fmu_kind(fmu) & fmi3_fmu_kind_se) == fmi3_fmu_kind_se);
 
     jm_status_enu_t status = fmi3_import_create_dllfmu(fmu, fmi3_fmu_kind_se, nullptr, nullptr);
     REQUIRE(status == 0);
@@ -240,23 +243,11 @@ TEST_CASE("Test CAPI methods using a Scheduled-Execution FMU", test_file_name)
             (fmi3_unlock_preemption_callback_ft)dummy_unlock_preemption_callback
     );
 
-    SECTION("Verifying returned result from fmi_import_get_fmi_version") {
-        REQUIRE(version == fmi_version_3_0_enu);
-    }
+    test_int_get_set(fmu, instantiate_status);
 
-    SECTION("Verifying FMU kind"){
-        fmi3_fmu_kind_enu_t fmu_kind = fmi3_import_get_fmu_kind(fmu);
-        REQUIRE(fmi3_fmu_kind_se == fmu_kind);
-    }
-
-    SECTION("Verifying FMU version returns '3.0'") {
-        jm_status_enu_t status = fmi3_import_create_dllfmu(fmu, fmi3_fmu_kind_se, nullptr, nullptr);
-        REQUIRE(status == 0);
-        REQUIRE(strcmp(fmi3_import_get_version(fmu), "3.0") == 0);
-    }
-
-    SECTION("Test instantiation status and set values on int64 array") {
-        test_int_get_set(fmu, instantiate_status);
-    }
-    clean_up(fmu, context);
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
+    fmi3_import_free_instance(fmu);
+    fmi3_testutil_import_free(tfmu);
+    fmi_import_free_context(context);
+    callbacks.free((void*)tmpPath);
 }

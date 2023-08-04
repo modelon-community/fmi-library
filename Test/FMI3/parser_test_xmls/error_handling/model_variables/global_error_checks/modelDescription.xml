@@ -18,7 +18,7 @@
 
   <!-- Invalid previous reference -->
   <Float64 name="clocked_var_previous" valueReference="10" variability="discrete"/>
-  <Float64 valueReference="11" name="float_prev" previous="1000" clocks="12"/>
+  <Float64 valueReference="11" name="float_prev" previous="1000" clocks="12" variability="discrete"/>
   <Clock name="clock" valueReference="12" intervalVariability="constant"/>
 </ModelVariables>
 

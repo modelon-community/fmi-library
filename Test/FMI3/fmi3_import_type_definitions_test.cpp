@@ -29,8 +29,6 @@
 #define D_VAR   (2)  /* for variables when overriding defaults/typedefs */
 #define D_START (3)  /* for variable start values when overriding defaults */
 
-static int G_nErrors; /* global used to count the number of errors reported to the logger during parsing - reset before use! */
-
 static fmi3_import_variable_typedef_t* get_typedef_by_name(fmi3_import_type_definition_list_t* tds, const char* name) {
     size_t nTds = fmi3_import_get_type_definition_list_size(tds);
     fmi3_import_variable_typedef_t *td;
@@ -837,73 +835,11 @@ static int test_variable_all_attributes_int32(fmi3_import_t* xml, fmi2_string_t 
     return CTEST_RETURN_SUCCESS;
 }
 
-static void jm_logger_count_errors(jm_callbacks* cb, jm_string module, jm_log_level_enu_t log_level, jm_string message) {
-    jm_default_logger(cb, module, log_level, message);
-    if (log_level == jm_log_level_error) {
-        G_nErrors++;
-    }
-}
-
-static void shallow_copy_jm_callbacks(jm_callbacks* cb_from, jm_callbacks* cb_to) {
-    cb_to->calloc            =  cb_from->calloc;
-    cb_to->context           =  cb_from->context;
-    cb_to->free              =  cb_from->free;
-    cb_to->logger            =  cb_from->logger;
-    cb_to->log_level         =  cb_from->log_level;
-    cb_to->malloc            =  cb_from->malloc;
-    cb_to->realloc           =  cb_from->realloc;
-    *cb_to->errMessageBuffer = *cb_from->errMessageBuffer;
-}
-
-/* test that we get correct number of errors */
-static int test_value_boundary_check(const char* xmldir) {
-    fmi3_import_t* xml;
-    jm_callbacks cb;
-    fmi_import_context_t* ctx;
-    int res = -1;
-
-    /* update these if you change xml: */
-    int nBadTds = 20;
-    int nBadVars = 21;
-
-    /* create shallow copy, but change logger so we can count errors */
-    shallow_copy_jm_callbacks(jm_get_default_callbacks(), &cb);
-    cb.logger = jm_logger_count_errors;
-
-    ctx = fmi_import_allocate_context(&cb);
-    if (ctx == nullptr) {
-        return -1;
-    }
-
-    /* parse the XML */
-    G_nErrors = 0;
-    xml = fmi3_import_parse_xml(ctx, xmldir, nullptr);
-    fmi_import_free_context(ctx);
-    if (xml == nullptr) {
-        return -1;
-    }
-
-    /* check num logger error reports */
-    if (G_nErrors != 2 * (nBadTds + nBadVars)) { /* x2 because we currently log more than once for each ... */
-        printf("  ERROR: unexpected number of parsing errors\n");
-        res = -1;
-        goto err1;
-    }
-    
-    res = 0;
-
-err1:
-    fmi3_import_free(xml);
-
-    return res;
-}
-
 TEST_CASE("TypeDefinitions: FloatXX and IntXX") {
-    fmi3_import_t* xml;
     int ret = 1;
     const char* xmldir = FMI3_TEST_XML_DIR "/type_definitions/valid";
-
-    xml = fmi3_testutil_parse_xml(xmldir);
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* xml = tfmu->fmu;
     REQUIRE(xml != nullptr);
 
     ret &= test_type1(xml);
@@ -1051,9 +987,9 @@ TEST_CASE("TypeDefinitions: FloatXX and IntXX") {
     /* --- variable with common attributes --- */
     ret &= test_variable_all_attributes_int32(xml, "variable_common_attributes_int32");
 
-    fmi3_import_free(xml);
-
     REQUIRE(ret == CTEST_RETURN_SUCCESS);
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
+    fmi3_testutil_import_free(tfmu);
 }
 
 static void require_variable_has_declared_type(fmi3_import_t* xml, const char* varName, const char* tdName) {
@@ -1076,8 +1012,8 @@ static void require_variable_has_declared_type(fmi3_import_t* xml, const char* v
 
 TEST_CASE("TypeDefinitions: FloatXX and IntXX - declaredType") {
     const char* xmldir = FMI3_TEST_XML_DIR "/type_definitions/valid";
-
-    fmi3_import_t* xml = fmi3_testutil_parse_xml(xmldir);
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* xml = tfmu->fmu;
     REQUIRE(xml != nullptr);
     
     SECTION("IntXX") {
@@ -1105,23 +1041,29 @@ TEST_CASE("TypeDefinitions: FloatXX and IntXX - declaredType") {
         require_variable_has_declared_type(xml, "float64_with_typedef_override", "float64_type_with_attributes");
     }
     
-    fmi3_import_free(xml);
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
+    fmi3_testutil_import_free(tfmu);
 }
 
 TEST_CASE("TypeDefinitions: value_boundary_check") {
+    /* test that we get correct number of errors */
     const char* xmldir = FMI3_TEST_XML_DIR "/type_definitions/value_boundary_check";
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu != nullptr);
 
-    printf("\nThe next tests are expected to fail...\n");
-    printf("---------------------------------------------------------------------------\n");
-    REQUIRE(test_value_boundary_check(xmldir) == 0);
-    printf("---------------------------------------------------------------------------\n");
+    /* update these if you change xml: */
+    int nBadTds = 20;
+    int nBadVars = 21;
+
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 2 * (nBadTds + nBadVars));
+    fmi3_testutil_import_free(tfmu);
 }
 
 TEST_CASE("TypeDefinitions: Binary") {
-    fmi3_import_t* xml;
     const char* xmldir = FMI3_TEST_XML_DIR "/type_definitions/valid/binary";
-
-    xml = fmi3_testutil_parse_xml(xmldir);
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* xml = tfmu->fmu;
     REQUIRE(xml != nullptr);
 
     const char* mimeType;
@@ -1239,7 +1181,8 @@ TEST_CASE("TypeDefinitions: Binary") {
         REQUIRE(strcmp(mimeType, "mt2") == 0);
     }
 
-    fmi3_import_free(xml);
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
+    fmi3_testutil_import_free(tfmu);
 }
 
 static void require_clock_variable_all_attr_default_except_resolution(fmi3_import_clock_variable_t* cv) {
@@ -1254,10 +1197,9 @@ static void require_clock_variable_all_attr_default_except_resolution(fmi3_impor
 }
 
 TEST_CASE("TypeDefinitions: Clock") {
-    fmi3_import_t* xml;
     const char* xmldir = FMI3_TEST_XML_DIR "/type_definitions/valid/clock";
-
-    xml = fmi3_testutil_parse_xml(xmldir);
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* xml = tfmu->fmu;
     REQUIRE(xml != nullptr);
 
     //--------------------------------------------------------------------------
@@ -1413,5 +1355,6 @@ TEST_CASE("TypeDefinitions: Clock") {
         }
     }
 
-    fmi3_import_free(xml);
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
+    fmi3_testutil_import_free(tfmu);
 }

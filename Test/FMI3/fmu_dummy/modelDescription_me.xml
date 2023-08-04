@@ -9,20 +9,15 @@
   <TypeDefinitions>
       <Float64Type name="Modelica.Blocks.Interfaces.RealOutput" />
   </TypeDefinitions>
-  <VendorAnnotations>
-    <Tool name ="JModelica">
-      <JModelica name="model annotations">Test data</JModelica>
-    </Tool>
-  </VendorAnnotations>
 <ModelVariables>
   <Float64 name="HEIGHT" valueReference="0" initial="exact" causality="output" description="Height of the ball" start="1.0" reinit="true" />
   <Float64 name="HEIGHT_SPEED" valueReference="1" initial="exact" description="Speed of the ball" start="4.0" derivative="0" reinit="true">
-    <Alias name="HEIGHT_SPEED alias" description="Velocity of the ball"/>
     <Annotations>
       <Tool name ="JModelica">
         <JModelica name="HEIGHT_SPEED variable annotations">Test data</JModelica>
       </Tool>
     </Annotations>
+    <Alias name="HEIGHT_SPEED alias" description="Velocity of the ball"/>
   </Float64>
   <Float64 name="HEIGHT_ACC" valueReference="2" description="Acceleration of the ball" derivative="1" />
   <Float64 name="GRAVITY" valueReference="3" description="Gravity constant" initial="exact" start="-9.81"/>
@@ -41,10 +36,17 @@
   </Float64>
   <Float64 name="event_indicator_1" valueReference="17" description="HEIGHT &lt; 0"/>
 </ModelVariables>
+
 <ModelStructure>
   <Output valueReference="0"/>
   <ContinuousStateDerivative valueReference="1"/>
   <ContinuousStateDerivative valueReference="2" dependencies="3" dependenciesKind="constant"/>
   <EventIndicator valueReference="17" dependencies="0" dependenciesKind="constant"/>
 </ModelStructure>
+
+<Annotations>
+  <Tool name ="JModelica">
+    <JModelica name="model annotations">Test data</JModelica>
+  </Tool>
+</Annotations>
 </fmiModelDescription>

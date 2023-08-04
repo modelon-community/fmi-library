@@ -25,7 +25,7 @@ fmi_xml_context_t* fmi_xml_allocate_context(jm_callbacks* callbacks) {
     jm_callbacks* cb;
     fmi_xml_context_t* c;
 
-    if(callbacks) {
+    if (callbacks) {
         cb = callbacks;
     } else {
         cb = jm_get_default_callbacks();
@@ -33,7 +33,7 @@ fmi_xml_context_t* fmi_xml_allocate_context(jm_callbacks* callbacks) {
     jm_log_debug(callbacks, MODULE, "Allocating context for XML parsing module");
 
     c = cb->malloc(sizeof(fmi_xml_context_t));
-    if(!c) {
+    if (!c) {
         jm_log_fatal(callbacks, MODULE, "Could not allocate memory");
         return 0;
     }

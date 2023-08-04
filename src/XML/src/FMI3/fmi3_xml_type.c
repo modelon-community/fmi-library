@@ -1113,7 +1113,7 @@ fmi3_xml_clock_type_props_t* fmi3_xml_parse_clock_type_properties(fmi3_xml_parse
     int ret = fmi3_xml_parse_attr_as_enum(context, elmID, fmi_attr_id_intervalVariability, 1 /*required*/,
             &props->intervalVariability, fallbackProps->intervalVariability, intervalVariabilityMap);
     if (ret) {
-        // Note: Eventhough this attribute is required, this does not break the API
+        // Note: Even though this attribute is required, this does not break the API (by design)
         // accept it anyways
         props->intervalVariability = fmi3_interval_variability_unknown;
     }

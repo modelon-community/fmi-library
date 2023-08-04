@@ -199,7 +199,8 @@ jm_status_enu_t jm_mkdir(jm_callbacks* cb, const char* dir) {
 
 
 jm_status_enu_t jm_rmdir(jm_callbacks* cb, const char* dir) {
-    if(!cb) {
+    if (!cb) {
+
         cb = jm_get_default_callbacks();
     }
 #ifdef WIN32

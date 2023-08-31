@@ -478,3 +478,37 @@ TEST_CASE("Secondary error test; Derivate/previous reference on invalid variable
     REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 5);
     fmi3_testutil_import_free(tfmu);
 }
+
+TEST_CASE("Buffer clearing of non parsed attributes; Model variables") {
+    // Test that XML parser clears buffer for ignored attributes when failing to parse an element
+    const char* xmldir = FMI3_TEST_XML_DIR "/error_handling/model_variables/buffer_clearing_variable";
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    REQUIRE(tfmu != nullptr);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu == nullptr);
+
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'Float64': required attribute 'valueReference' not found"));
+    // attribute cleared from buffer after common attributes fail to parse
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Attribute 'variability' not processed by element 'Float64' handle"));
+    // no error for an invalid value variability value
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables. Variable(s) failed to parse or an essential error check failed.")); // count as 2
+
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 4);
+    fmi3_testutil_import_free(tfmu);
+}
+
+TEST_CASE("Buffer clearing of non parsed attributes; Alias") {
+    // Test that XML parser clears buffer for ignored attributes when failing to parse an Alias element
+    const char* xmldir = FMI3_TEST_XML_DIR "/error_handling/model_variables/buffer_clearing_alias";
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    REQUIRE(tfmu != nullptr);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu != nullptr);
+
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'Alias': required attribute 'name' not found")); // twice
+    // TODO: Is this due to cancelling before-hand or because it is skipped?
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Attribute 'variability' not processed by element 'Alias' handle"));
+    
+    // REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 4);
+    fmi3_testutil_import_free(tfmu);
+}

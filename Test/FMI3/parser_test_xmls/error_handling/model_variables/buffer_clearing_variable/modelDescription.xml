@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription fmiVersion="3.0" modelName="" instantiationToken="">
+<ModelExchange modelIdentifier="id_me"/>
+
+<ModelVariables>
+  <!-- invalid variable with float specific attribute that will not be read -->
+  <Float64 name="floaty1" variability="variable"/>
+  <!-- Valid variables, but duplicate names -->
+  <Float64 valueReference="1" name="floaty2"/>
+</ModelVariables>
+
+<ModelStructure/>
+</fmiModelDescription>

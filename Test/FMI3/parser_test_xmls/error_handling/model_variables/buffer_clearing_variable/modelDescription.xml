@@ -5,7 +5,7 @@
 <ModelVariables>
   <!-- invalid variable with float specific attribute that will not be read -->
   <Float64 name="floaty1" variability="variable"/>
-  <!-- Valid variables, but duplicate names -->
+  <!-- Valid variable, testing that variability from previous variable is correctly cleared from buffer -->
   <Float64 valueReference="1" name="floaty2"/>
 </ModelVariables>
 

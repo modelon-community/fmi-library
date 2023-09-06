@@ -1320,6 +1320,13 @@ static void XMLCALL fmi3_parse_element_end(void* c, const char *elm) {
 
     if (context->skipElementCnt) {
         context->skipElementCnt--;
+        // Need to clear buffer
+        // else: non-parsed attributes of elements that failed to parse will be parsed with next element
+        for (int i = 0; i < fmi3_xml_attr_number; i++) {
+            if (jm_vector_get_item(jm_string)(context->attrMapById, i)) {
+                jm_vector_set_item(jm_string)(context->attrMapById, i, 0);
+            }
+        }
         return;
     }
 

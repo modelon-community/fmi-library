@@ -1662,7 +1662,7 @@ int fmi3_xml_handle_FloatXX(fmi3_xml_parser_context_t* context, const char* data
     /* Extract common Variable info & handle errors*/
     if (fmi3_xml_handle_Variable_error_check_wrapper(context, data)) {
         // No Variable was created
-        return 0; // continue parsing
+        return -1; // continue parsing, skips nested elements
     }
 
     variable = jm_vector_get_last(jm_voidp)(&md->variablesOrigOrder);
@@ -1763,7 +1763,7 @@ int fmi3_xml_handle_IntXX(fmi3_xml_parser_context_t* context, const char* data,
     /* Extract common Variable info & handle errors*/
     if (fmi3_xml_handle_Variable_error_check_wrapper(context, data)) {
         // No Variable was created
-        return 0; // continue parsing
+        return -1; // continue parsing, skips nested elements
     }
 
     fmi3_xml_model_description_t* md = context->modelDescription;
@@ -1865,7 +1865,7 @@ int fmi3_xml_handle_Boolean(fmi3_xml_parser_context_t *context, const char* data
     /* Extract common Variable info & handle errors*/
     if (fmi3_xml_handle_Variable_error_check_wrapper(context, data)) {
         // No Variable was created
-        return 0; // continue parsing
+        return -1; // continue parsing, skips nested elements
     }
 
     fmi3_xml_model_description_t* md = context->modelDescription;
@@ -1929,7 +1929,7 @@ int fmi3_xml_handle_Binary(fmi3_xml_parser_context_t* context, const char* data)
     /* Extract common Variable info & handle errors*/
     if (fmi3_xml_handle_Variable_error_check_wrapper(context, data)) {
         // No Variable was created
-        return 0; // continue parsing
+        return -1; // continue parsing, skips nested elements
     }
     fmi3_xml_elm_enu_t elmID = fmi3_xml_elmID_Binary;  // The ID corresponding to the actual parsed element name
     fmi3_xml_model_description_t* md = context->modelDescription;
@@ -2005,7 +2005,7 @@ int fmi3_xml_handle_Clock(fmi3_xml_parser_context_t* context, const char* data) 
     /* Extract common Variable info & handle errors*/
     if (fmi3_xml_handle_Variable_error_check_wrapper(context, data)) {
         // No Variable was created
-        return 0; // continue parsing
+        return -1; // continue parsing, skips nested elements
     }
 
     if (!data) {
@@ -2045,7 +2045,7 @@ int fmi3_xml_handle_String(fmi3_xml_parser_context_t *context, const char* data)
     /* Extract common Variable info & handle errors*/
     if (fmi3_xml_handle_Variable_error_check_wrapper(context, data)) {
         // No Variable was created
-        return 0; // continue parsing
+        return -1; // continue parsing, skips nested elements
     }
 
     fmi3_xml_model_description_t* md = context->modelDescription;
@@ -2201,7 +2201,7 @@ int fmi3_xml_handle_Enumeration(fmi3_xml_parser_context_t *context, const char* 
     /* Extract common Variable info & handle errors*/
     if (fmi3_xml_handle_Variable_error_check_wrapper(context, data)) {
         // No Variable was created
-        return 0; // continue parsing
+        return -1; // continue parsing, skips nested elements
     }
 
     fmi3_xml_model_description_t* md = context->modelDescription;

@@ -479,11 +479,15 @@ TEST_CASE("Buffer clearing of non parsed attributes; Model variables") {
     REQUIRE(fmu == nullptr);
 
     REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'Float64': required attribute 'valueReference' not found"));
-    // "variability" cleared from buffer after common attribute fails to parse
-    // no error for an invalid variability value
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'Int64': required attribute 'valueReference' not found"));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'Binary': required attribute 'valueReference' not found"));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'Clock': required attribute 'valueReference' not found"));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'String': required attribute 'valueReference' not found"));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'Enumeration': required attribute 'valueReference' not found"));
+    // "variability" cleared from buffers after common attribute fails to parse; no error for an invalid variability value
     REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables. Variable(s) failed to parse or an essential error check failed.")); // count as 2
 
-    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 3);
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 8);
     fmi3_testutil_import_free(tfmu);
 }
 

@@ -7,6 +7,22 @@
   <Float64 name="floaty1" variability="variable"/>
   <!-- Valid variable, testing that variability from previous variable is correctly cleared from buffer -->
   <Float64 valueReference="1" name="floaty2"/>
+
+  <!-- Same test for other Variable types -->
+  <Int64 name="int" variability="variable"/>
+  <Int64 name="int" valueReference="2"/>
+
+  <Binary name="bin" variability="variable"/>
+  <Binary name="bin" valueReference="3"/>
+
+  <Clock name="clocky" variability="variable"/>
+  <Clock name="clocky" valueReference="4" intervalVariability="constant"/>
+
+  <String name="str" variability="variable"/>
+  <String name="str" valueReference="5"/>
+
+  <Enumeration name="enu" variability="variable"/>
+  <Enumeration name="enu" valueReference="6"/>
 </ModelVariables>
 
 <ModelStructure/>

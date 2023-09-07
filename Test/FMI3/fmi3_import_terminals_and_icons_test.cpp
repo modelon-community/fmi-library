@@ -116,3 +116,35 @@ TEST_CASE("Error check; Terminals with duplicate names; edge case of empty name"
     REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 2);
     fmi3_testutil_import_free(tfmu);
 }
+
+TEST_CASE("Error test; terminal with missing name") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/terminals_and_icons/invalid/missing_terminal_name";
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu != nullptr); // successful parse of modelDescription
+    REQUIRE(fmi3_import_get_has_terminals_and_icons(fmu) == 1); // successful parse of terminalsAndIcons
+
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'Terminal': required attribute 'name' not found"));
+
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 1);
+    fmi3_testutil_import_free(tfmu);
+}
+
+TEST_CASE("Test clearing of attribute buffer with invalid elements") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/terminals_and_icons/invalid/buffer_clearing";
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu != nullptr); // successful parse of modelDescription
+    REQUIRE(fmi3_import_get_has_terminals_and_icons(fmu) == 1);
+
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'Terminal': required attribute 'name' not found"));
+
+    fmi3_import_terminal_t* term = fmi3_import_get_terminal_by_name(fmu, "terminalA");
+    REQUIRE(term != nullptr);
+    REQUIRE_STREQ(fmi3_import_get_terminal_name(term), "terminalA");
+    // TODO: Check that optional attributes from Terminal without name are not present in this one
+
+    // TODO: Current example xml includes elements/attributes not yet parsed  
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 3);
+    fmi3_testutil_import_free(tfmu);
+}

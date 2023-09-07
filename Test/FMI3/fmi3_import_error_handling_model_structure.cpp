@@ -234,3 +234,17 @@ TEST_CASE("EventIndicators; multiple attribute issues") {
     REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 2);
     fmi3_testutil_import_free(tfmu);
 }
+
+TEST_CASE("Buffer clearing; attributes from invalid elements need to be cleared") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/error_handling/model_structure/buffer_clearing";
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu == nullptr); // contains an invalid ContinuousStateDerivative
+
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "'ContinuousStateDerivative': required attribute 'valueReference' not found"));
+    // No errors on invalid dependencies attribute values
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Model structure is not valid due to detected errors. Cannot continue.")); // counts as 2  
+
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 3);
+    fmi3_testutil_import_free(tfmu);
+}

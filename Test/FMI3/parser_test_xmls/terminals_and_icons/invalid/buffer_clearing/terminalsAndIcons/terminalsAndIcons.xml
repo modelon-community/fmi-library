@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<fmiTerminalsAndIcons fmiVersion="3.0-alpha">
+    <Terminals>
+        <!-- missing name -->
+        <Terminal matchingRule="bus" description="some description" terminalKind="abc"/>
+        <!-- Attributes from previous failed element should be cleared from buffer -->
+        <Terminal name="terminalA"/>
+    </Terminals>
+</fmiTerminalsAndIcons>

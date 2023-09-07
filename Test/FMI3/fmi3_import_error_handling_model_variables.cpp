@@ -140,6 +140,9 @@ TEST_CASE("Test missing required attribute plus other attribute errors/warnings"
 
     REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'Float64': required attribute 'name' not found"));
 
+    // We do not check attribute errors if name/valueReference are erroneous; test absence of error message
+    REQUIRE(!fmi3_testutil_log_contains(tfmu, "A variable must not refer to itself in the attribute 'previous'."));
+
     REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables. Variable(s) failed to parse or an essential error check failed.")); // counts as 2
 
     REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 3);

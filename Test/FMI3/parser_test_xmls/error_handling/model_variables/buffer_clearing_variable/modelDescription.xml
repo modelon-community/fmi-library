@@ -12,17 +12,20 @@
   <Int64 name="int" variability="variable"/>
   <Int64 name="int" valueReference="2"/>
 
+  <Boolean name="bool" variability="variable"/>
+  <Boolean name="bool" valueReference="3"/>
+
   <Binary name="bin" variability="variable"/>
-  <Binary name="bin" valueReference="3"/>
+  <Binary name="bin" valueReference="4"/>
 
   <Clock name="clocky" variability="variable"/>
-  <Clock name="clocky" valueReference="4" intervalVariability="constant"/>
+  <Clock name="clocky" valueReference="5" intervalVariability="constant"/>
 
   <String name="str" variability="variable"/>
-  <String name="str" valueReference="5"/>
+  <String name="str" valueReference="6"/>
 
   <Enumeration name="enu" variability="variable"/>
-  <Enumeration name="enu" valueReference="6"/>
+  <Enumeration name="enu" valueReference="7"/>
 </ModelVariables>
 
 <ModelStructure/>

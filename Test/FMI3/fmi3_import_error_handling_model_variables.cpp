@@ -473,9 +473,9 @@ TEST_CASE("Secondary error test; Derivate/previous reference on invalid variable
     fmi3_testutil_import_free(tfmu);
 }
 
-TEST_CASE("Buffer clearing of non parsed attributes; Model variables") {
+TEST_CASE("Attribute buffer clearing of non parsed attributes; Model variables") {
     // Test that XML parser clears buffer for ignored attributes when failing to parse an element
-    const char* xmldir = FMI3_TEST_XML_DIR "/error_handling/model_variables/buffer_clearing_variable";
+    const char* xmldir = FMI3_TEST_XML_DIR "/error_handling/model_variables/attr_buffer_clearing_variable";
     fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
     REQUIRE(tfmu != nullptr);
     fmi3_import_t* fmu = tfmu->fmu;
@@ -495,9 +495,9 @@ TEST_CASE("Buffer clearing of non parsed attributes; Model variables") {
     fmi3_testutil_import_free(tfmu);
 }
 
-TEST_CASE("Buffer clearing of non parsed attributes; Alias") {
+TEST_CASE("Attribute fuffer clearing of non parsed attributes; Alias") {
     // Test that XML parser clears buffer for ignored attributes when failing to parse an Alias element
-    const char* xmldir = FMI3_TEST_XML_DIR "/error_handling/model_variables/buffer_clearing_alias";
+    const char* xmldir = FMI3_TEST_XML_DIR "/error_handling/model_variables/attr_buffer_clearing_alias";
     fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
     REQUIRE(tfmu != nullptr);
     fmi3_import_t* fmu = tfmu->fmu;

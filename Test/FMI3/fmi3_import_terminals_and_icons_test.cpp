@@ -131,7 +131,7 @@ TEST_CASE("Error test; terminal with missing name") {
 }
 
 TEST_CASE("Test clearing of attribute buffer with invalid elements") {
-    const char* xmldir = FMI3_TEST_XML_DIR "/terminals_and_icons/invalid/buffer_clearing";
+    const char* xmldir = FMI3_TEST_XML_DIR "/terminals_and_icons/invalid/attr_buffer_clearing";
     fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
     fmi3_import_t* fmu = tfmu->fmu;
     REQUIRE(fmu != nullptr); // successful parse of modelDescription

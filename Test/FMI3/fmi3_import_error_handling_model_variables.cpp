@@ -67,12 +67,9 @@ TEST_CASE("Invalid VR, missing name") {
     REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'Enumeration': required attribute 'name' not found"));
     REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'Enumeration': required attribute 'valueReference' not found"));
 
-    // Limitation; type specific attributes will not be parsed if common ones (name, valueReference) fail
-    REQUIRE(fmi3_testutil_log_contains(tfmu, "Attribute 'declaredType' not processed by element 'Enumeration' handle")); // 2 times
-
     REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables. Variable(s) failed to parse or an essential error check failed.")); // counts as 2
 
-    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 6*3 + 2 + 2);
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 6*3 + 2);
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -143,12 +140,12 @@ TEST_CASE("Test missing required attribute plus other attribute errors/warnings"
 
     REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'Float64': required attribute 'name' not found"));
 
-    // We do not check attribute errors if name/valueReference are erroneous
+    // We do not check attribute errors if name/valueReference are erroneous; test absence of error message
     REQUIRE(!fmi3_testutil_log_contains(tfmu, "A variable must not refer to itself in the attribute 'previous'."));
 
     REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables. Variable(s) failed to parse or an essential error check failed.")); // counts as 2
 
-    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 4);
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 3);
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -354,12 +351,9 @@ TEST_CASE("Clock with muliple errors in required attributes") {
     REQUIRE(fmi3_testutil_log_contains(tfmu, "XML element 'Clock': failed to parse attribute valueReference='zero'"));
     REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'Clock': required attribute 'name' not found"));
 
-    // TODO: Current limitation; type specific attributes not be parsed if parsing required common attributes fails
-    REQUIRE(fmi3_testutil_log_contains(tfmu, "Attribute 'intervalVariability' not processed by element 'Clock' handle"));
-
     REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables. Variable(s) failed to parse or an essential error check failed.")); // counts as 2
 
-    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 5);
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 4);
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -476,5 +470,78 @@ TEST_CASE("Secondary error test; Derivate/previous reference on invalid variable
     REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables. Variable(s) failed to parse or an essential error check failed.")); // counts as 2
 
     REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 5);
+    fmi3_testutil_import_free(tfmu);
+}
+
+TEST_CASE("Attribute buffer clearing of non parsed attributes; Model variables") {
+    // Test that XML parser clears buffer for ignored attributes when failing to parse an element
+    const char* xmldir = FMI3_TEST_XML_DIR "/error_handling/model_variables/attr_buffer_clearing_variable";
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    REQUIRE(tfmu != nullptr);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu == nullptr);
+
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'Float64': required attribute 'valueReference' not found"));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'Int64': required attribute 'valueReference' not found"));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'Boolean': required attribute 'valueReference' not found"));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'Binary': required attribute 'valueReference' not found"));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'Clock': required attribute 'valueReference' not found"));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'String': required attribute 'valueReference' not found"));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'Enumeration': required attribute 'valueReference' not found"));
+    // "variability" cleared from buffers after common attribute fails to parse; no error for an invalid variability value
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables. Variable(s) failed to parse or an essential error check failed.")); // count as 2
+
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 9);
+    fmi3_testutil_import_free(tfmu);
+}
+
+TEST_CASE("Attribute fuffer clearing of non parsed attributes; Alias") {
+    // Test that XML parser clears buffer for ignored attributes when failing to parse an Alias element
+    const char* xmldir = FMI3_TEST_XML_DIR "/error_handling/model_variables/attr_buffer_clearing_alias";
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    REQUIRE(tfmu != nullptr);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu != nullptr);
+
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'Alias': required attribute 'name' not found")); // twice
+
+    // check that all aliases are correct
+    fmi3_import_variable_t* var = fmi3_import_get_variable_by_vr(fmu, 0);
+    REQUIRE(var != nullptr);
+    fmi3_import_alias_variable_list_t* aliasList = fmi3_import_get_variable_alias_list(var);
+    REQUIRE(aliasList != nullptr);
+    REQUIRE(fmi3_import_get_alias_variable_list_size(aliasList) == 2);
+    fmi3_import_alias_variable_t* alias;
+
+    // <Alias name="flo"/>
+    alias = fmi3_import_get_alias(aliasList, 0);
+    REQUIRE(alias != nullptr);
+    REQUIRE_STREQ(fmi3_import_get_alias_variable_name(alias), "flo");
+
+    // <Alias name="double"/>
+    alias = fmi3_import_get_alias(aliasList, 1);
+    REQUIRE(alias != nullptr);
+    REQUIRE_STREQ(fmi3_import_get_alias_variable_name(alias), "double");
+    // test that displayUnit from previous variable did not "leak" through
+    REQUIRE(fmi3_import_get_alias_variable_display_unit(alias) == nullptr);
+    
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 2);
+    fmi3_testutil_import_free(tfmu);
+}
+
+TEST_CASE("Invalid variable with aliases") {
+    // Test that appropriate error messages are given for nested elements of invalid elements
+    const char* xmldir = FMI3_TEST_XML_DIR "/error_handling/model_variables/invalid_variable_with_alias";
+
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    REQUIRE(tfmu != nullptr);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu == nullptr);
+
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'Float64': required attribute 'name' not found"));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Skipping nested XML element 'Alias'"));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables. Variable(s) failed to parse or an essential error check failed.")); // count as 2
+
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 4);
     fmi3_testutil_import_free(tfmu);
 }

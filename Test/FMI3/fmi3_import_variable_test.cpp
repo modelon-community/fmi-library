@@ -629,8 +629,7 @@ TEST_CASE("Invalid Alias - no name") {
     REQUIRE_STREQ(fmi3_import_get_variable_name(var), "v1");
     REQUIRE(fmi3_import_get_variable_alias_list(var) == nullptr); // has no valid aliases
 
-    // + 1 since Alias->description is ignored
-    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 2);
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 1);
     fmi3_testutil_import_free(tfmu);
 }
 

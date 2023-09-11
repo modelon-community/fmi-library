@@ -44,9 +44,8 @@ TEST_CASE("Fatal error test, no VR: enum") {
     
     REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'Enumeration': required attribute 'valueReference' not found"));
     REQUIRE(fmi3_testutil_log_contains(tfmu, "Fatal failure in parsing ModelVariables. Variable(s) failed to parse or an essential error check failed.")); // counts as 2
-    // +1; declaredType will not be parsed
 
-    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 4);
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 3);
     fmi3_testutil_import_free(tfmu);
 }
 

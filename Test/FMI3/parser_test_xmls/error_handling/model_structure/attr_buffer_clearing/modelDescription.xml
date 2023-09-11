@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription fmiVersion="3.0" modelName="" instantiationToken="">
+<ModelExchange modelIdentifier="id"/>
+
+<ModelVariables>
+    <Float64 name="f0"  valueReference="0"  variability="continuous"/>
+    <Float64 name="der(f0)"  valueReference="100" variability="continuous" derivative="0"  start="0"/>
+</ModelVariables>
+
+<ModelStructure>
+    <!-- missing valueReference + invalid values for dependencies -->
+    <ContinuousStateDerivative dependencies="2" dependenciesKind="veryDependent"/>
+    <!-- valid, test that attributes from previous element are cleared from buffer -->
+    <ContinuousStateDerivative valueReference="100"/>
+</ModelStructure>
+</fmiModelDescription>

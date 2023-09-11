@@ -1274,6 +1274,13 @@ static void XMLCALL fmi3_parse_element_start(void *c, const char *elm, const cha
 
     /* handle the element */
     if (currentElMap->elementHandle(context, 0)) {
+        // Need to clear buffer, otherwise non-parsed attributes of elements that failed
+        // to parse will be parsed with next element
+        for (int i = 0; i < fmi3_xml_attr_number; i++) {
+            if (jm_vector_get_item(jm_string)(context->attrMapById, i)) {
+                jm_vector_set_item(jm_string)(context->attrMapById, i, NULL);
+            }
+        }
         /* try to skip and continue anyway */
         if (!context->skipElementCnt) context->skipElementCnt = 1;
     }
@@ -1283,7 +1290,7 @@ static void XMLCALL fmi3_parse_element_start(void *c, const char *elm, const cha
         if (jm_vector_get_item(jm_string)(context->attrMapById, i)) {
             // Element has not been processed because no handler exists
             jm_log_warning(context->callbacks,module, "Attribute '%s' not processed by element '%s' handle", fmi3_xmlAttrNames[i], elm);
-            jm_vector_set_item(jm_string)(context->attrMapById, i, 0);
+            jm_vector_set_item(jm_string)(context->attrMapById, i, NULL);
         }
     }
     if (context -> currentElmID != fmi3_xml_elmID_none) { /* with nested elements: put the parent on the stack */

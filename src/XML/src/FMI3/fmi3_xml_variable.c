@@ -1429,34 +1429,10 @@ static fmi3_xml_alias_variable_t* fmi3_xml_alloc_alias_with_name(fmi3_xml_parser
     return alias;
 }
 
-// Wrapping #fmi3_xml_handle_Variable with shared error handling functionality
-static int fmi3_xml_handle_Variable_error_check_wrapper(fmi3_xml_parser_context_t* context, const char* data) {
-    int res = fmi3_xml_handle_Variable(context, data);
-    fmi3_xml_model_description_t* md = context->modelDescription;
-
-    if (res) { 
-        // Variable failed to parse due to 
-        // failure to parse name/valueReference or unexpected (malloc) failure
-        // or latestVariableIsValid == 0, if called on closing tag
-        fmi3_xml_set_model_description_invalid(md);
-        md->latestVariableIsValid = 0; // To skip post-processing in fmi3_xml_handle_Variable
-        return -1;
-    } else {
-        md->latestVariableIsValid = 1;
-    }
-
-    return 0;
-}
-
 /**
- * Common handler for Variables.
- *
- * Creates a new variable and adds it to the parsed context. Common attributes
- * are processed and error checked.
- *
- * Type-specific default attribute values are also handled here.
+ * Core functionality for parsing common attributes
  */
-int fmi3_xml_handle_Variable(fmi3_xml_parser_context_t* context, const char* data) {
+static int fmi3_xml_handle_Variable_unchecked(fmi3_xml_parser_context_t* context, const char* data) {
     int atStartTag = !data;
 
      /* The real ID of the variable, such as 'Float64Variable' */
@@ -1557,6 +1533,30 @@ int fmi3_xml_handle_Variable(fmi3_xml_parser_context_t* context, const char* dat
         }
     }
     return 0; // Variable successfully parsed
+}
+
+/**
+ * Common handler for Variables.
+ *
+ * Creates a new variable and adds it to the parsed context. Common attributes
+ * are processed and error checked.
+ *
+ * Type-specific default attribute values are also handled here.
+ */
+int fmi3_xml_handle_Variable(fmi3_xml_parser_context_t* context, const char* data) {
+    fmi3_xml_model_description_t* md = context->modelDescription;
+    if (fmi3_xml_handle_Variable_unchecked(context, data)) { 
+        // Variable failed to parse due to 
+        // failure to parse name/valueReference or unexpected (malloc) failure
+        // or latestVariableIsValid == 0, if called on closing tag
+        fmi3_xml_set_model_description_invalid(md);
+        md->latestVariableIsValid = 0; // To skip post-processing in fmi3_xml_handle_Variable_unchecked
+        return -1;
+    } else {
+        md->latestVariableIsValid = 1;
+    }
+
+    return 0;
 }
 
 static void fmi3_log_error_if_start_required(fmi3_xml_parser_context_t* context, fmi3_xml_variable_t* variable) {
@@ -1660,9 +1660,9 @@ int fmi3_xml_handle_FloatXX(fmi3_xml_parser_context_t* context, const char* data
     fmi3_xml_float_type_props_t* type;
 
     /* Extract common Variable info & handle errors*/
-    if (fmi3_xml_handle_Variable_error_check_wrapper(context, data)) {
+    if (fmi3_xml_handle_Variable(context, data)) {
         // No Variable was created
-        return 0; // continue parsing
+        return -1; // continue parsing, skips nested elements
     }
 
     variable = jm_vector_get_last(jm_voidp)(&md->variablesOrigOrder);
@@ -1761,9 +1761,9 @@ int fmi3_xml_handle_IntXX(fmi3_xml_parser_context_t* context, const char* data,
         const fmi3_xml_primitive_type_t* primType)
 {
     /* Extract common Variable info & handle errors*/
-    if (fmi3_xml_handle_Variable_error_check_wrapper(context, data)) {
+    if (fmi3_xml_handle_Variable(context, data)) {
         // No Variable was created
-        return 0; // continue parsing
+        return -1; // continue parsing, skips nested elements
     }
 
     fmi3_xml_model_description_t* md = context->modelDescription;
@@ -1863,9 +1863,9 @@ gen_fmi3_xml_handle_TYPEXX(Int, UInt, uint,  8)
 
 int fmi3_xml_handle_Boolean(fmi3_xml_parser_context_t *context, const char* data) {
     /* Extract common Variable info & handle errors*/
-    if (fmi3_xml_handle_Variable_error_check_wrapper(context, data)) {
+    if (fmi3_xml_handle_Variable(context, data)) {
         // No Variable was created
-        return 0; // continue parsing
+        return -1; // continue parsing, skips nested elements
     }
 
     fmi3_xml_model_description_t* md = context->modelDescription;
@@ -1927,9 +1927,9 @@ int fmi3_xml_handle_Boolean(fmi3_xml_parser_context_t *context, const char* data
 
 int fmi3_xml_handle_Binary(fmi3_xml_parser_context_t* context, const char* data) {
     /* Extract common Variable info & handle errors*/
-    if (fmi3_xml_handle_Variable_error_check_wrapper(context, data)) {
+    if (fmi3_xml_handle_Variable(context, data)) {
         // No Variable was created
-        return 0; // continue parsing
+        return -1; // continue parsing, skips nested elements
     }
     fmi3_xml_elm_enu_t elmID = fmi3_xml_elmID_Binary;  // The ID corresponding to the actual parsed element name
     fmi3_xml_model_description_t* md = context->modelDescription;
@@ -2003,9 +2003,9 @@ int fmi3_xml_handle_Binary(fmi3_xml_parser_context_t* context, const char* data)
 
 int fmi3_xml_handle_Clock(fmi3_xml_parser_context_t* context, const char* data) {
     /* Extract common Variable info & handle errors*/
-    if (fmi3_xml_handle_Variable_error_check_wrapper(context, data)) {
+    if (fmi3_xml_handle_Variable(context, data)) {
         // No Variable was created
-        return 0; // continue parsing
+        return -1; // continue parsing, skips nested elements
     }
 
     if (!data) {
@@ -2043,9 +2043,9 @@ int fmi3_xml_handle_Clock(fmi3_xml_parser_context_t* context, const char* data) 
 
 int fmi3_xml_handle_String(fmi3_xml_parser_context_t *context, const char* data) {
     /* Extract common Variable info & handle errors*/
-    if (fmi3_xml_handle_Variable_error_check_wrapper(context, data)) {
+    if (fmi3_xml_handle_Variable(context, data)) {
         // No Variable was created
-        return 0; // continue parsing
+        return -1; // continue parsing, skips nested elements
     }
 
     fmi3_xml_model_description_t* md = context->modelDescription;
@@ -2199,9 +2199,9 @@ fmi3_xml_enum_variable_props_t* fmi3_xml_parse_enum_properties(fmi3_xml_parser_c
 
 int fmi3_xml_handle_Enumeration(fmi3_xml_parser_context_t *context, const char* data) {
     /* Extract common Variable info & handle errors*/
-    if (fmi3_xml_handle_Variable_error_check_wrapper(context, data)) {
+    if (fmi3_xml_handle_Variable(context, data)) {
         // No Variable was created
-        return 0; // continue parsing
+        return -1; // continue parsing, skips nested elements
     }
 
     fmi3_xml_model_description_t* md = context->modelDescription;

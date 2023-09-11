@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription fmiVersion="3.0" modelName="" instantiationToken="">
+<ModelExchange modelIdentifier="id_me"/>
+
+<UnitDefinitions>
+    <Unit name="K">
+        <BaseUnit K="1" />
+        <DisplayUnit name="degC" offset="-273.15" />
+    </Unit>
+</UnitDefinitions>
+
+<ModelVariables>
+  <Float64 valueReference="0" name="floaty">
+    <Alias variability="discrete"/> <!-- Not a valid attribute for Alias element -->
+    <Alias name="flo"/>
+    <Alias displayUnit="degC"/> <!-- valid optional attribute for Alias -->
+    <Alias name="double"/>
+  </Float64>
+</ModelVariables>
+
+<ModelStructure/>
+</fmiModelDescription>

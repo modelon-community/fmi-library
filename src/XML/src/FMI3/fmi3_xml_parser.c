@@ -254,7 +254,7 @@ const fmi3_xml_primitive_types_t PRIMITIVE_TYPES = {
     }
 };
 
-void fmi3_xml_parse_free_context(fmi3_xml_parser_context_t *context) {
+void fmi3_xml_parse_free_context(fmi3_xml_parser_context_t* context) {
     if (!context) return;
     if (context->modelDescription)
         fmi3_xml_clear_model_description(context->modelDescription);
@@ -295,7 +295,7 @@ void fmi3_xml_parse_free_context(fmi3_xml_parser_context_t *context) {
     context->callbacks->free(context);
 }
 
-void fmi3_xml_parse_fatal(fmi3_xml_parser_context_t *context, const char* fmt, ...) {
+void fmi3_xml_parse_fatal(fmi3_xml_parser_context_t* context, const char* fmt, ...) {
     va_list args;
     va_start (args, fmt);
     jm_log_fatal_v(context->callbacks, module, fmt, args);
@@ -303,7 +303,7 @@ void fmi3_xml_parse_fatal(fmi3_xml_parser_context_t *context, const char* fmt, .
     XML_StopParser(context->parser,0);
 }
 
-void fmi3_xml_parse_error(fmi3_xml_parser_context_t *context, const char* fmt, ...) {
+void fmi3_xml_parse_error(fmi3_xml_parser_context_t* context, const char* fmt, ...) {
     va_list args;
     va_start (args, fmt);
     if (context->parser)
@@ -312,7 +312,7 @@ void fmi3_xml_parse_error(fmi3_xml_parser_context_t *context, const char* fmt, .
     va_end (args);
 }
 
-void fmi3_xml_parse_warning(fmi3_xml_parser_context_t *context, const char* fmt, ...) {
+void fmi3_xml_parse_warning(fmi3_xml_parser_context_t* context, const char* fmt, ...) {
     va_list args;
     va_start (args, fmt);
     if (context->parser)
@@ -324,7 +324,7 @@ void fmi3_xml_parse_warning(fmi3_xml_parser_context_t *context, const char* fmt,
 /**
  * Raises a generic parse error for the given attribute.
  */
-void fmi3_xml_parse_attr_error(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID,
+void fmi3_xml_parse_attr_error(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID,
         const char* attrStr) {
     jm_string elmName = fmi3_element_handle_map[elmID].elementName;
     jm_string attrName = fmi3_xmlAttrNames[attrID];
@@ -352,7 +352,7 @@ jm_string fmi3_xml_peek_attr_str(fmi3_xml_parser_context_t* context, fmi3_xml_at
     return jm_vector_get_item(jm_string)(context->attrMapById, attrID);
 }
 
-int fmi3_xml_is_attr_defined(fmi3_xml_parser_context_t *context, fmi3_xml_attr_enu_t attrID) {
+int fmi3_xml_is_attr_defined(fmi3_xml_parser_context_t* context, fmi3_xml_attr_enu_t attrID) {
     return (fmi3_xml_peek_attr_str(context, attrID) != NULL);
 }
 
@@ -360,7 +360,7 @@ int fmi3_xml_is_attr_defined(fmi3_xml_parser_context_t *context, fmi3_xml_attr_e
  * Read value from parse buffer and clear the buffer entry.
  * @param[out] valp : pointer to attribute value (memory still owned by expat)
  */
-int fmi3_xml_get_attr_str(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID,
+int fmi3_xml_get_attr_str(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID,
         int required, const char** valp)
 {
     /* Read and clear attribute */
@@ -382,7 +382,7 @@ int fmi3_xml_get_attr_str(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t
  * Reads the attribute from attribute buffer as jm_vector(char). This will clear the attribute from the buffer.
  * @param field (return arg): Attribute value (memory owned by this vector)
  */
-int fmi3_xml_parse_attr_as_string(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID,
+int fmi3_xml_parse_attr_as_string(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID,
         int required, jm_vector(char)* field)
 {
     jm_string val;
@@ -417,7 +417,7 @@ int fmi3_xml_parse_attr_as_string(fmi3_xml_parser_context_t *context, fmi3_xml_e
     return 0;
 }
 
-int fmi3_xml_parse_attr_as_enum(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID,
+int fmi3_xml_parse_attr_as_enum(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID,
         int required, unsigned int* field, unsigned int defaultVal, jm_name_ID_map_t* nameMap)
 {
     int i = 0;
@@ -445,7 +445,7 @@ int fmi3_xml_parse_attr_as_enum(fmi3_xml_parser_context_t *context, fmi3_xml_elm
     return 0;
 }
 
-int fmi3_xml_parse_attr_as_boolean(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID,
+int fmi3_xml_parse_attr_as_boolean(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID,
         fmi3_xml_attr_enu_t attrID, int required, unsigned int* field, unsigned int defaultVal)
 {
     jm_name_ID_map_t fmi_boolean_i_dMap[] = {{"true", 1}, {"false", 0}, {"1", 1}, {"0", 0}, {0, 0}};
@@ -453,7 +453,7 @@ int fmi3_xml_parse_attr_as_boolean(fmi3_xml_parser_context_t *context, fmi3_xml_
 }
 
 // TODO: For FMI3, do we want to use bool in the getters for boolean attributes, or keep using unsigned int?
-int fmi3_xml_parse_attr_as_bool(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID,
+int fmi3_xml_parse_attr_as_bool(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID,
         int required, bool* field, bool defaultVal)
 {
     jm_string strVal;
@@ -590,7 +590,7 @@ static int fmi3_xml_value_boundary_check_strcmp(jm_string strVal, const char* fo
     return strcmp(strVal + idx_start, wbBuf) == 0 ? 0 : 1;
 }
 
-static int fmi3_xml_str_to_bool(fmi3_xml_parser_context_t *context, int required, bool* field, bool* defaultVal,
+static int fmi3_xml_str_to_bool(fmi3_xml_parser_context_t* context, int required, bool* field, bool* defaultVal,
         jm_string strVal) {
     if (!strVal) {
         if (required) {
@@ -746,7 +746,7 @@ int fmi3_xml_parse_attr_as_intXX(fmi3_xml_parser_context_t* context, fmi3_xml_el
     return ret;
 }
 
-static int fmi3_xml_str_to_floatXX(fmi3_xml_parser_context_t *context, int required, void* field, void* defaultVal,
+static int fmi3_xml_str_to_floatXX(fmi3_xml_parser_context_t* context, int required, void* field, void* defaultVal,
         jm_string strVal, const fmi3_xml_primitive_type_t* primType) {
     /*
         Using same approach as for reading intXX, but there is one difference:
@@ -804,7 +804,7 @@ static int fmi3_xml_str_to_floatXX(fmi3_xml_parser_context_t *context, int requi
     field: where the float value will be stored (return arg)
     defaultVal: pointer to default value that will be used if attribute wasn't defined
  */
-int fmi3_xml_parse_attr_as_floatXX(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID,
+int fmi3_xml_parse_attr_as_floatXX(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID,
         int required, void* field, void* defaultVal, const fmi3_xml_primitive_type_t* primType) {
     int ret;
     jm_string strVal;
@@ -824,7 +824,7 @@ int fmi3_xml_parse_attr_as_floatXX(fmi3_xml_parser_context_t *context, fmi3_xml_
 
 /* Creates a wrapper for when the type to parse is known */
 #define gen_fmi3_xml_parse_attr_as_TYPEXX(TYPE, TYPEXX)                                                                         \
-    int fmi3_xml_parse_attr_as_##TYPE(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, \
+    int fmi3_xml_parse_attr_as_##TYPE(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, \
             int required, fmi3_##TYPE##_t* field, fmi3_##TYPE##_t defaultVal) {                                            \
         return fmi3_xml_parse_attr_as_##TYPEXX(context, elmID, attrID, required, field, &defaultVal, &PRIMITIVE_TYPES.TYPE);    \
     }
@@ -840,7 +840,7 @@ gen_fmi3_xml_parse_attr_as_TYPEXX(uint32,  intXX)
         jm_log_error(context->callbacks, module, "Unable to allocate memory. File: %s, Line: %d", __FILE__, __LINE__);      \
     } while (0);
 
-static int fmi3_xml_str_to_primitive(fmi3_xml_parser_context_t *context,
+static int fmi3_xml_str_to_primitive(fmi3_xml_parser_context_t* context,
         int required, void* field, void* defaultVal, jm_string strVal,
         const fmi3_xml_primitive_type_t* primType) {
     if (fmi3_base_type_enu_is_int(primType->baseType) || fmi3_base_type_enu_is_enum(primType->baseType)) {
@@ -967,7 +967,7 @@ clean:
  * @param arrPtr (return arg): where the array will be stored
  * @param arrSize (return arg): size of 'arrPtr'
  */
-int fmi3_xml_parse_attr_as_array(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID,
+int fmi3_xml_parse_attr_as_array(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID,
         int required, void** arrPtr, size_t* arrSize, jm_string str, const fmi3_xml_primitive_type_t* primType) {
 
     if (!str) {
@@ -1082,7 +1082,7 @@ int fmi3_create_elm_map(fmi3_xml_parser_context_t* context) {
  *      get the handle and ID corresponding to the main or alternative XML
  *      element
  */
-void fmi3_xml_set_element_handle(fmi3_xml_parser_context_t *context, const char* elm, fmi3_xml_elm_enu_t id) {
+void fmi3_xml_set_element_handle(fmi3_xml_parser_context_t* context, const char* elm, fmi3_xml_elm_enu_t id) {
     fmi3_xml_element_handle_map_t keyEl;
     fmi3_xml_element_handle_map_t* currentElMap;
     keyEl.elementName = elm;
@@ -1140,7 +1140,7 @@ static void XMLCALL fmi3_parse_element_start(void *c, const char *elm, const cha
     fmi3_xml_element_handle_map_t* currentElMap;
     fmi3_xml_elm_enu_t currentID;
     int i;
-    fmi3_xml_parser_context_t *context = c;
+    fmi3_xml_parser_context_t* context = c;
     context->has_produced_data_warning = 0;
 
     if (context->useAnyHandleFlg) {
@@ -1311,7 +1311,7 @@ static void XMLCALL fmi3_parse_element_end(void* c, const char *elm) {
     fmi3_xml_element_handle_map_t keyEl;
     fmi3_xml_element_handle_map_t* currentElMap;
     fmi3_xml_elm_enu_t currentID;
-    fmi3_xml_parser_context_t *context = c;
+    fmi3_xml_parser_context_t* context = c;
 
     if (context->useAnyHandleFlg && (context->anyElmCount > 0)) {
         fmi3_xml_callbacks_t* anyH = context->anyHandle;
@@ -1375,7 +1375,7 @@ static void XMLCALL fmi3_parse_element_end(void* c, const char *elm) {
 */
 static void XMLCALL fmi3_parse_element_data(void* c, const XML_Char *s, int len) {
         int i;
-        fmi3_xml_parser_context_t *context = c;
+        fmi3_xml_parser_context_t* context = c;
         if (context->useAnyHandleFlg && (context->anyElmCount > 0)) {
             fmi3_xml_callbacks_t* anyH = context->anyHandle;
             if (anyH && anyH->dataHandle) {

@@ -19,7 +19,7 @@ function(merge_static_libs outlib)
     # Create a dummy file that the target will depend on
     set(dummyfile ${CMAKE_CURRENT_BINARY_DIR}/${outlib}_dummy.c)
     file(WRITE ${dummyfile} "const char* dummy = \"${dummyfile}\";")
-    
+
     add_library(${outlib} STATIC ${dummyfile})
 
     if("${CMAKE_CFG_INTDIR}" STREQUAL ".")
@@ -27,12 +27,12 @@ function(merge_static_libs outlib)
     else()
         set(multiconfig TRUE)
     endif()
-    
-    # First get the file names of the libraries to be merged    
+
+    # First get the file names of the libraries to be merged
     foreach(lib ${libs})
         get_target_property(libtype ${lib} TYPE)
         if(NOT libtype STREQUAL "STATIC_LIBRARY")
-            message(FATAL_ERROR "Merge_static_libs can only process static libraries")
+            message(FATAL_ERROR "Merge_static_libs can only process static\n\tlibraries: ${lib}\n\tlibtype ${libtype}")
         endif()
         if(multiconfig)
             foreach(CONFIG_TYPE ${CMAKE_CONFIGURATION_TYPES})
@@ -46,7 +46,7 @@ function(merge_static_libs outlib)
     endforeach()
     message(STATUS "will be merging ${libfiles}")
     # Just to be sure: cleanup from duplicates
-    if(multiconfig)    
+    if(multiconfig)
         foreach(CONFIG_TYPE ${CMAKE_CONFIGURATION_TYPES})
             list(REMOVE_DUPLICATES libfiles_${CONFIG_TYPE})
             set(libfiles ${libfiles} ${libfiles_${CONFIG_TYPE}})
@@ -70,10 +70,10 @@ function(merge_static_libs outlib)
         if(multiconfig)
             message(FATAL_ERROR "Multiple configurations are not supported")
         endif()
-        get_target_property(outfile ${outlib} LOCATION)  
+        get_target_property(outfile ${outlib} LOCATION)
         add_custom_command(TARGET ${outlib} POST_BUILD
             COMMAND rm ${outfile}
-            COMMAND /usr/bin/libtool -static -o ${outfile} 
+            COMMAND /usr/bin/libtool -static -o ${outfile}
             ${libfiles}
         )
     else() # general UNIX - need to "ar -x" and then "ar -ru"
@@ -84,7 +84,7 @@ function(merge_static_libs outlib)
             set(objlistfile  ${CMAKE_CURRENT_BINARY_DIR}/${libtarget}.objlist)  # Contains a list of the object files
             set(objdir       ${CMAKE_CURRENT_BINARY_DIR}/${libtarget}.objdir)   # Directory where to extract object files
             set(objlistcmake ${objlistfile}.cmake)                              # Script that extracts object files and creates the listing file
-            # we only need to extract files once 
+            # we only need to extract files once
             if(${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/cmake.check_cache IS_NEWER_THAN ${objlistcmake})
 #-------------------------------------------------------------------------------
                 file(WRITE ${objlistcmake}
@@ -109,7 +109,7 @@ EXECUTE_PROCESS(COMMAND ls .
             add_custom_command(TARGET ${outlib} POST_BUILD
                 COMMAND ${CMAKE_COMMAND} -E echo "Running: ${CMAKE_AR} cruU $<TARGET_FILE:${outlib}> @${objlistfilerpath}"
                 COMMAND ${CMAKE_AR} cruU "$<TARGET_FILE:${outlib}>" @"${objlistfilerpath}"
-                WORKING_DIRECTORY ${objdir})        
+                WORKING_DIRECTORY ${objdir})
         endforeach()
         add_custom_command(TARGET ${outlib} POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E echo "Running: ${CMAKE_RANLIB} $<TARGET_FILE:${outlib}>"
@@ -119,7 +119,7 @@ EXECUTE_PROCESS(COMMAND ls .
             COMMAND ${CMAKE_RANLIB} $<TARGET_FILE:${outlib}>)
     endif()
     file(WRITE ${dummyfile}.base "const char* ${outlib}_sublibs=\"${libs}\";")
-    add_custom_command( 
+    add_custom_command(
         OUTPUT  ${dummyfile}
         COMMAND ${CMAKE_COMMAND} -E copy ${dummyfile}.base ${dummyfile}
         DEPENDS ${libs} ${extrafiles})

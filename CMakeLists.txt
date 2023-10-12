@@ -10,8 +10,8 @@
 #
 #    You should have received a copy of the FMILIB_License.txt file
 #    along with this program. If not, contact Modelon AB <http://www.modelon.com>.
- 
-# CMake 3.1.3 or later is required to build Expat (as ExternalProject). However,
+
+# CMake 3.1.3 or later is required to build Expat & zlib (as ExternalProject). However,
 # keeping 2.8.6 on the FMIL main project for now since updating causes issues
 # with CMP0026 (and more).
 cmake_minimum_required(VERSION 2.8.6 FATAL_ERROR)
@@ -27,7 +27,7 @@ project(FMILibrary)
 if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.3")
     # Require that we specify when using "byproducts" (i.e. files in the build tree without any explicit target)
     # to prevent problems with Ninja.
-    cmake_policy(SET CMP0058 NEW)  
+    cmake_policy(SET CMP0058 NEW)
 endif()
 
 # Avoid warnings in mergestaticlibs.cmake. TODO: Fix the warnings.
@@ -49,8 +49,8 @@ set(FMILIBRARYBUILD ${FMILibrary_BINARY_DIR})
 set(CMAKE_MODULE_PATH ${FMILIBRARYHOME}/Config.cmake)
 
 # User configuration options and parameters
-set(FMILIB_INSTALL_PREFIX ${FMILibrary_BINARY_DIR}/../install CACHE PATH "Prefix prepended to install directories")
-set(FMILIB_THIRDPARTYLIBS  ${FMILibrary_SOURCE_DIR}/ThirdParty CACHE PATH "Path to the ThirdParty library dir" )
+set(FMILIB_INSTALL_PREFIX ${FMILIBRARYBUILD}/../install CACHE PATH "Prefix prepended to install directories")
+set(FMILIB_THIRDPARTYLIBS  ${FMILIBRARYHOME}/ThirdParty CACHE PATH "Path to the ThirdParty library dir" )
 set(FMILIB_FMI_STANDARD_HEADERS  ${FMILIB_THIRDPARTYLIBS}/FMI/default CACHE PATH "Path to the FMI standard headers dir" )
 
 option(FMILIB_DEFAULT_BUILD_TYPE_RELEASE "Default build-type used for Makefile generation is 'Release'. Can be overwritten by CMAKE_BUILD_TYPE command line switch." ON)
@@ -59,10 +59,11 @@ if(MSVC)
     option (FMILIB_BUILD_WITH_STATIC_RTLIB "Use static run-time libraries (/MT or /MTd linker flags)" OFF)
 endif()
 
-option(FMILIB_BUILD_STATIC_LIB     "Build the library as static." ON)
-option(FMILIB_BUILD_SHARED_LIB     "Build the library as shared (dll/so/dylib)." ON)
-option(FMILIB_INSTALL_SUBLIBS     "Install sub-libraries (fmicapi. fmixml, jmutil, fmiimport, fmizip)" OFF)
-
+option(FMILIB_BUILD_STATIC_LIB "Build the library as static." ON)
+option(FMILIB_BUILD_SHARED_LIB "Build the library as shared (dll/so/dylib)." ON)
+option(FMILIB_INSTALL_SUBLIBS  "Install sub-libraries (fmicapi. fmixml, jmutil, fmiimport, fmizip)" OFF)
+option(FMILIB_USE_NATIVE_ZLIB  "Use native installation of zlib, possibly requires setting ZLIB_LIBRARY & ZLIB_INCLUDE_DIR to locate installation." OFF)
+mark_as_advanced(FMILIB_USE_NATIVE_ZLIB)
 
 if(NOT (WIN32 OR CYGWIN OR APPLE))
 # On LINUX position independent code (-fPIC) must be used on all files to be linked into .so
@@ -255,16 +256,16 @@ set_fmi_platform(FMI3_PLATFORM 3)
 # Put the headers in different directories to allow more fine-grained include flags,
 # since we don't want to accidentally include more than we should. That could lead
 # to issues not detected until testing the installation.
-set(FMILIB_CONFIG_INCLUDE_DIR      "${FMILibrary_BINARY_DIR}/fmilib_config_include")
-set(FMILIB_TESTCONFIG_INCLUDE_DIR  "${FMILibrary_BINARY_DIR}/fmilib_test_config_include")
-set(FMILIB_INCLUDE_DIR             "${FMILibrary_BINARY_DIR}/fmilib_include")
+set(FMILIB_CONFIG_INCLUDE_DIR      "${FMILIBRARYBUILD}/fmilib_config_include")
+set(FMILIB_TESTCONFIG_INCLUDE_DIR  "${FMILIBRARYBUILD}/fmilib_test_config_include")
+set(FMILIB_INCLUDE_DIR             "${FMILIBRARYBUILD}/fmilib_include")
 
 file(MAKE_DIRECTORY "${FMILIB_CONFIG_INCLUDE_DIR}")
 file(MAKE_DIRECTORY "${FMILIB_TESTCONFIG_INCLUDE_DIR}")
 file(MAKE_DIRECTORY "${FMILIB_INCLUDE_DIR}")
 
 configure_file (
-    "${FMILibrary_SOURCE_DIR}/Config.cmake/config_fmilib.h.cmake"
+    "${FMILIBRARYHOME}/Config.cmake/config_fmilib.h.cmake"
     "${FMILIB_CONFIG_INCLUDE_DIR}/fmilib_config.h"
 )
 
@@ -277,6 +278,7 @@ add_subdirectory(ThirdParty/c99_snprintf)
 include(jmutil)
 include(fmixml)
 include(fmicapi)
+include(fmizlib)
 include(fmizip)
 include(fmiimport)
 if(FMILIB_BUILD_TESTS)
@@ -284,7 +286,7 @@ if(FMILIB_BUILD_TESTS)
     # Configuration depends on values set in all the different test*.cmake files,
     # so can't be done until here.
     configure_file (
-        "${FMILibrary_SOURCE_DIR}/Config.cmake/config_test.h.cmake"
+        "${FMILIBRARYHOME}/Config.cmake/config_test.h.cmake"
         "${FMILIB_TESTCONFIG_INCLUDE_DIR}/config_test.h"
     )
 endif()
@@ -298,18 +300,18 @@ set(FMILIB_SHARED_SRC ${FMIIMPORTSOURCE} ${FMIIMPORTHEADERS} ${JMUTILSOURCE} ${J
 if(FMILIB_GENERATE_BUILD_STAMP)
     debug_message("FMILIB_SUBLIBS= ${FMILIB_SUBLIBS}")
     add_custom_command(
-        OUTPUT ${FMILibrary_BINARY_DIR}/config_fmilib.c
+        OUTPUT ${FMILIBRARYBUILD}/config_fmilib.c
         COMMAND    "${CMAKE_COMMAND}"
             -D FMILIBRARYHOME="${FMILIBRARYHOME}" -D FMILIBRARYBUILD="${FMILIBRARYBUILD}"
             -P ${FMILIBRARYHOME}/Config.cmake/config_stamp.cmake
-        COMMAND ${CMAKE_COMMAND}  -E touch ${FMILibrary_BINARY_DIR}/config_fmilib.c
+        COMMAND ${CMAKE_COMMAND}  -E touch ${FMILIBRARYBUILD}/config_fmilib.c
         DEPENDS ${FMILIB_SUBLIBS}
     )
-    add_library(fmilib_timestamp STATIC ${FMILibrary_BINARY_DIR}/config_fmilib.c "${FMILIB_CONFIG_INCLUDE_DIR}/fmilib_config.h")
+    add_library(fmilib_timestamp STATIC ${FMILIBRARYBUILD}/config_fmilib.c "${FMILIB_CONFIG_INCLUDE_DIR}/fmilib_config.h")
     target_include_directories(fmilib_timestamp PRIVATE ${FMILIB_CONFIG_INCLUDE_DIR})
 
     set(FMILIB_SUBLIBS ${FMILIB_SUBLIBS} fmilib_timestamp)
-    set(FMILIB_SHARED_SRC ${FMILIB_SHARED_SRC} ${FMILibrary_BINARY_DIR}/config_fmilib.c)
+    set(FMILIB_SHARED_SRC ${FMILIB_SHARED_SRC} ${FMILIBRARYBUILD}/config_fmilib.c)
 endif()
 
 set_target_properties(

@@ -8,20 +8,19 @@ set(SKIP_INSTALL_FILES ON)
 if(NOT FMILIB_INSTALL_SUBLIBS)
     set(SKIP_INSTALL_LIBRARIES ON)
 endif()
-add_subdirectory("${FMILIB_THIRDPARTYLIBS}/Zlib/zlib-1.2.6" "${FMILibrary_BINARY_DIR}/zlib")
 
 if(CMAKE_CL_64)
     set_target_properties(zlib PROPERTIES STATIC_LIBRARY_FLAGS "/machine:x64")
 endif()
 
 if(CMAKE_HOST_APPLE)
-set(PLATFORM __APPLE__)
+    set(PLATFORM __APPLE__)
 elseif(CMAKE_HOST_UNIX)
-set(PLATFORM unix)
+    set(PLATFORM unix)
 elseif(CMAKE_HOST_WIN32)
-set(PLATFORM _WIN32)
+    set(PLATFORM _WIN32)
 else(CMAKE_HOST_APPLE)
-message(FATAL_ERROR "Not supported Platform")
+    message(FATAL_ERROR "Not supported Platform")
 endif(CMAKE_HOST_APPLE)
 
 add_definitions(-D${PLATFORM})
@@ -30,7 +29,6 @@ if(CMAKE_COMPILER_IS_GNUCC)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")
 endif()
 
-include_directories("${FMILIB_THIRDPARTYLIBS}/Zlib/zlib-1.2.6" "${FMILibrary_BINARY_DIR}/zlib")
 set(SOURCE
     ${FMILIB_THIRDPARTYLIBS}/Minizip/minizip/ioapi.c
     ${FMILIB_THIRDPARTYLIBS}/Minizip/minizip/miniunz.c
@@ -58,7 +56,11 @@ endif(WIN32)
 
 add_library(minizip ${SOURCE} ${HEADERS})
 
-target_link_libraries(minizip zlib)
+target_link_libraries(minizip PRIVATE zlib)
+
+target_include_directories(minizip 
+    PRIVATE ${ZLIB_INCLUDE_DIRS}
+)
 
 if(FMILIB_INSTALL_SUBLIBS)
     install(TARGETS minizip

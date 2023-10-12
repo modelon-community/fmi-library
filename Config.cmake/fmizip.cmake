@@ -30,8 +30,6 @@ set(FMIZIPHEADERS
     ${FMIZIPDIR}/include/FMI/fmi_zip_zip.h
 )
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DZLIB_STATIC")
-
 add_library(fmizip STATIC ${FMIZIPSOURCE} ${FMIZIPHEADERS})
 target_link_libraries(fmizip
     PRIVATE minizip
@@ -41,8 +39,6 @@ target_include_directories(fmizip
     PRIVATE
         ${FMILIB_THIRDPARTYLIBS}/Minizip/minizip
         ${FMILIB_THIRDPARTYLIBS}/FMI
-        ${FMILIB_THIRDPARTYLIBS}/Zlib/zlib-1.2.6
-        ${FMILibrary_BINARY_DIR}/zlib
     PUBLIC
         ${FMILIB_CONFIG_INCLUDE_DIR}
         ${FMIZIPDIR}/include

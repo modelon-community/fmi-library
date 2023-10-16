@@ -29,70 +29,13 @@
 #include <FMI3/fmi3_xml_terminals_and_icons.h>
 #include "fmi3_xml_model_description_parser.h"
 #include "fmi3_xml_terminals_and_icons_parser.h"
-
+#include "fmi3_xml_parser_lists.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-
 jm_vector_declare_template(fmi3_value_reference_t)
-
-/** \brief Attributes names common to modelDescription.xml & terminalsAndIcons.xml */
-#define FMI3_XML_ATTRLIST_COMMON(EXPAND_XML_ATTRNAME) \
-    EXPAND_XML_ATTRNAME(fmiVersion) \
-    EXPAND_XML_ATTRNAME(name) \
-    EXPAND_XML_ATTRNAME(description)
-
-/** \brief Attribute names used in XML */
-#define FMI3_XML_ATTRLIST(EXPAND_XML_ATTRNAME) \
-    FMI3_XML_ATTRLIST_COMMON     (EXPAND_XML_ATTRNAME) \
-    FMI3_XML_ATTRLIST_MODEL_DESCR(EXPAND_XML_ATTRNAME) \
-    FMI3_XML_ATTRLIST_TERM_ICON  (EXPAND_XML_ATTRNAME)
-
-#define FMI3_XML_ATTR_ID(attr) fmi_attr_id_##attr,
-typedef enum fmi3_xml_attr_enu_t {
-    FMI3_XML_ATTRLIST(FMI3_XML_ATTR_ID)
-    fmi3_xml_attr_number
-} fmi3_xml_attr_enu_t;
-
-/** \brief Element names used in XML */
-#define FMI3_XML_ELMLIST(EXPAND_XML_ELMNAME) \
-    FMI3_XML_ELMLIST_MODEL_DESCR(EXPAND_XML_ELMNAME) \
-    FMI3_XML_ELMLIST_TERM_ICON  (EXPAND_XML_ELMNAME)
-
-/** \brief Element that can be placed under different parents get alternative names from the info struct */
-#define FMI3_XML_ELMLIST_ALT(EXPAND_XML_ELMNAME) \
-    FMI3_XML_ELMLIST_ALT_MODEL_DESCR(EXPAND_XML_ELMNAME) \
-    FMI3_XML_ELMLIST_ALT_TERM_ICON  (EXPAND_XML_ELMNAME)
-
-/** \brief Abstract elements that are only used in the scheme verification */
-#define FMI3_XML_ELMLIST_ABSTRACT(EXPAND_XML_ELMNAME) \
-    FMI3_XML_ELMLIST_ABSTRACT_MODEL_DESCR(EXPAND_XML_ELMNAME)
-
-/* Build prototypes for all elm_handle_* functions */
-typedef struct fmi3_xml_parser_context_t fmi3_xml_parser_context_t;
-#define EXPAND_ELM_HANDLE(elm) extern int fmi3_xml_handle_##elm(fmi3_xml_parser_context_t* context, const char* data);
-FMI3_XML_ELMLIST(EXPAND_ELM_HANDLE)
-FMI3_XML_ELMLIST_ALT(EXPAND_ELM_HANDLE)
-FMI3_XML_ELMLIST_ABSTRACT(EXPAND_ELM_HANDLE)
-
-/**
- * Create an enum over all XML elements. This enum can be used to index
- * the following arrays:
- *      - fmi3_xml_scheme_info
- *      - fmi3_element_handle_map
- */
-#define FMI3_XML_ELM_ID(elm) fmi3_xml_elmID_##elm
-#define FMI3_XML_LIST_ELM_ID(elm) ,FMI3_XML_ELM_ID(elm)
-typedef enum fmi3_xml_elm_enu_t {
-    fmi3_xml_elmID_none = -1
-    FMI3_XML_ELMLIST(FMI3_XML_LIST_ELM_ID)
-    ,fmi3_xml_elm_actual_number
-    FMI3_XML_ELMLIST_ALT(FMI3_XML_LIST_ELM_ID)
-    FMI3_XML_ELMLIST_ABSTRACT(FMI3_XML_LIST_ELM_ID)
-    ,fmi3_xml_elm_number
-} fmi3_xml_elm_enu_t;
 
 typedef int (*fmi3_xml_element_handle_ft)(fmi3_xml_parser_context_t* context, const char* data);
 
@@ -286,10 +229,10 @@ typedef struct fmi3_xml_primitive_types_t {
 
 extern const fmi3_xml_primitive_types_t PRIMITIVE_TYPES;
 
-jm_vector(char) * fmi3_xml_reserve_parse_buffer(fmi3_xml_parser_context_t *context, size_t index, size_t size);
-int fmi3_xml_alloc_parse_buffer(fmi3_xml_parser_context_t *context, size_t items);
-void fmi3_xml_free_variable_start_values(fmi3_xml_parser_context_t *context);
-void fmi3_xml_free_parse_buffer(fmi3_xml_parser_context_t *context);
+jm_vector(char) * fmi3_xml_reserve_parse_buffer(fmi3_xml_parser_context_t* context, size_t index, size_t size);
+int fmi3_xml_alloc_parse_buffer(fmi3_xml_parser_context_t* context, size_t items);
+void fmi3_xml_free_variable_start_values(fmi3_xml_parser_context_t* context);
+void fmi3_xml_free_parse_buffer(fmi3_xml_parser_context_t* context);
 
 void fmi3_xml_parse_fatal  (fmi3_xml_parser_context_t* context, const char* fmt, ...);
 void fmi3_xml_parse_error  (fmi3_xml_parser_context_t* context, const char* fmt, ...);
@@ -298,7 +241,7 @@ void fmi3_xml_parse_warning(fmi3_xml_parser_context_t* context, const char* fmt,
 /**
  * Raises generic parse error for given attribute.
  */
-void fmi3_xml_parse_attr_error(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, const char* attrStr);
+void fmi3_xml_parse_attr_error(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, const char* attrStr);
 
 int fmi3_xml_parse_attr_as_string (fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, int required, jm_vector(char)* field);
 int fmi3_xml_parse_attr_as_enum   (fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, int required, unsigned int*    field, unsigned int   defaultVal, jm_name_ID_map_t* nameMap);
@@ -316,11 +259,11 @@ int fmi3_xml_parse_attr_as_array  (fmi3_xml_parser_context_t* context, fmi3_xml_
 
 int fmi3_xml_parse_attr_valueref_list(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, int required, jm_vector(fmi3_value_reference_t)* vrs);
 
-int fmi3_xml_is_attr_defined( fmi3_xml_parser_context_t *context, fmi3_xml_attr_enu_t attrID);
+int fmi3_xml_is_attr_defined( fmi3_xml_parser_context_t* context, fmi3_xml_attr_enu_t attrID);
 jm_string fmi3_xml_peek_attr_str(fmi3_xml_parser_context_t* context, fmi3_xml_attr_enu_t attrID);
-int fmi3_xml_get_attr_str(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, int required,const char** valp);
+int fmi3_xml_get_attr_str(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, int required,const char** valp);
 
-void fmi3_xml_set_element_handle(fmi3_xml_parser_context_t *context, const char* elm, fmi3_xml_elm_enu_t id);
+void fmi3_xml_set_element_handle(fmi3_xml_parser_context_t* context, const char* elm, fmi3_xml_elm_enu_t id);
 
 int fmi3_xml_is_valid_parent(fmi3_xml_elm_enu_t child_id, fmi3_xml_elm_enu_t parent_id);
 int fmi3_xml_get_super_type_rec(fmi3_xml_elm_enu_t id);

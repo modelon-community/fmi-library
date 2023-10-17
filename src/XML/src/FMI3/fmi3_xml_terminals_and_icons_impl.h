@@ -27,6 +27,9 @@
 extern "C" {
 #endif
 
+/* Structure encapsulating terminals and icons information */
+typedef struct fmi3_xml_terminals_and_icons_t fmi3_xml_terminals_and_icons_t;
+
 struct fmi3_xml_terminals_and_icons_t {
     jm_callbacks* callbacks;
 

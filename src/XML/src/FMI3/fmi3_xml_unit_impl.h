@@ -18,36 +18,14 @@
 
 #include <JM/jm_vector.h>
 #include <JM/jm_named_ptr.h>
-#include "FMI3/fmi3_xml_model_description.h"
-#include "fmi3_xml_parser.h"
+#include "fmi3_xml_unit_struct_defs.h"
+#include "fmi3_xml_parser_handler.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/* Structure encapsulating base unit information */
-
-struct fmi3_xml_display_unit_t {
-    double factor;
-    double offset;
-    unsigned int inverse;
-    fmi3_xml_unit_t* baseUnit;
-    char displayUnit[1];
-};
-
-struct fmi3_xml_unit_t {
-        jm_vector(jm_voidp) displayUnits;
-        int SI_base_unit_exp[fmi3_SI_base_units_Num];
-        double factor;
-        double offset;
-        fmi3_xml_display_unit_t defaultDisplay;
-        char baseUnit[1];
-};
-
-struct fmi3_xml_unit_definition_list_t {
-    jm_vector(jm_named_ptr) definitions;
-};
-
-fmi3_xml_display_unit_t* fmi3_xml_get_parsed_unit(fmi3_xml_parser_context_t *context, jm_vector(char)* name, int sorted);
+fmi3_xml_display_unit_t* fmi3_xml_get_parsed_unit(fmi3_xml_parser_context_t* context, jm_vector(char)* name, int sorted);
 
 #ifdef __cplusplus
 }

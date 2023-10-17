@@ -24,6 +24,7 @@
 #include <JM/jm_callbacks.h>
 #include <JM/jm_named_ptr.h>
 #include <FMI/fmi_xml_context.h>
+// #include "fmi3_xml_terminals_and_icons_impl.h"
 
 #ifdef __cplusplus
 extern "C" {

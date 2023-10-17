@@ -22,11 +22,14 @@
 #include <JM/jm_vector.h>
 #include <JM/jm_named_ptr.h>
 #include <JM/jm_string_set.h>
-#include <FMI3/fmi3_xml_model_description.h>
+// #include <FMI3/fmi3_xml_model_description.h>
 
-#include "fmi3_xml_unit_impl.h"
-#include "fmi3_xml_type_impl.h"
-#include "fmi3_xml_variable_impl.h"
+// #include "fmi3_xml_unit_impl.h"
+// #include "fmi3_xml_type_impl.h"
+// #include "fmi3_xml_variable_impl.h"
+#include "fmi3_xml_type_struct_defs.h"
+#include "fmi3_xml_unit_struct_defs.h"
+#include "fmi3_xml_model_structure_impl.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -34,6 +37,10 @@ extern "C" {
 
 #define FMI3_DEFAULT_EXPERIMENT_TOLERANCE 1e-4
 #define FMI3_DEFAULT_EXPERIMENT_STEPSIZE 1e-2
+
+typedef struct fmi3_xml_type_definition_list_t fmi3_xml_type_definition_list_t;
+
+
 typedef struct fmi3_xml_default_experiment {
     double  startTime;
     int     startTimeDefined;

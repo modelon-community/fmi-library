@@ -138,11 +138,16 @@ set(FMIXMLHEADERS
     include/FMI3/fmi3_xml_model_structure.h
     src/FMI3/fmi3_xml_model_structure_impl.h
     include/FMI3/fmi3_xml_terminals_and_icons.h
+    ## TODO: Sort these a bit
     src/FMI3/fmi3_xml_terminals_and_icons_impl.h
     src/FMI3/fmi3_xml_model_description_parser.h
     src/FMI3/fmi3_xml_terminals_and_icons_parser.h
+    src/FMI3/fmi3_xml_parser_lists.h
     src/FMI3/fmi3_xml_parser_util.h
     src/FMI3/fmi3_xml_parser.h
+    src/FMI3/fmi3_xml_parser_handler.h
+    src/FMI3/fmi3_xml_type_struct_defs.h
+    src/FMI3/fmi3_xml_unit_struct_defs.h
     include/FMI3/fmi3_xml_type.h
     src/FMI3/fmi3_xml_type_impl.h
     include/FMI3/fmi3_xml_unit.h

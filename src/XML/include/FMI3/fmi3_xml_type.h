@@ -41,25 +41,25 @@ fmi3_xml_type_definition_list_t* fmi3_xml_get_type_definitions(fmi3_xml_model_de
 
 unsigned int fmi3_xml_get_type_definition_list_size(fmi3_xml_type_definition_list_t* td);
 
-fmi3_xml_variable_typedef_t* fmi3_xml_get_typedef(fmi3_xml_type_definition_list_t* td, unsigned int  index);
+fmi3_xml_variable_typedef_t* fmi3_xml_get_typedef(fmi3_xml_type_definition_list_t* td, unsigned int index);
 
-const char* fmi3_xml_get_type_name(fmi3_xml_variable_typedef_t*);
+const char* fmi3_xml_get_type_name(fmi3_xml_variable_typedef_t* td);
 
 /* Note that NULL pointer is returned if the attribute is not present in the XML.*/
-const char* fmi3_xml_get_type_description(fmi3_xml_variable_typedef_t*);
+const char* fmi3_xml_get_type_description(fmi3_xml_variable_typedef_t* td);
 
-fmi3_base_type_enu_t fmi3_xml_get_base_type(fmi3_xml_variable_typedef_t*);
+fmi3_base_type_enu_t fmi3_xml_get_base_type(fmi3_xml_variable_typedef_t* td);
 
 /* Boolean and String has no extra attributes -> not needed*/
 
-fmi3_xml_float_typedef_t* fmi3_xml_get_type_as_float(fmi3_xml_variable_typedef_t* t);
-fmi3_xml_int_typedef_t* fmi3_xml_get_type_as_int(fmi3_xml_variable_typedef_t*);
-fmi3_xml_enumeration_typedef_t* fmi3_xml_get_type_as_enum(fmi3_xml_variable_typedef_t*);
-fmi3_xml_binary_typedef_t* fmi3_xml_get_type_as_binary(fmi3_xml_variable_typedef_t*);
-fmi3_xml_clock_typedef_t* fmi3_xml_get_type_as_clock(fmi3_xml_variable_typedef_t*);
+fmi3_xml_float_typedef_t* fmi3_xml_get_type_as_float(fmi3_xml_variable_typedef_t* td);
+fmi3_xml_int_typedef_t* fmi3_xml_get_type_as_int(fmi3_xml_variable_typedef_t* td);
+fmi3_xml_enumeration_typedef_t* fmi3_xml_get_type_as_enum(fmi3_xml_variable_typedef_t* td);
+fmi3_xml_binary_typedef_t* fmi3_xml_get_type_as_binary(fmi3_xml_variable_typedef_t* td);
+fmi3_xml_clock_typedef_t* fmi3_xml_get_type_as_clock(fmi3_xml_variable_typedef_t* td);
 
 /* Note that NULL-pointer is always returned for strings and booleans */
-const char* fmi3_xml_get_type_quantity(fmi3_xml_variable_typedef_t*);
+const char* fmi3_xml_get_type_quantity(fmi3_xml_variable_typedef_t* td);
 
 int fmi3_xml_get_float64_type_is_relative_quantity(fmi3_xml_float_typedef_t*);
 int fmi3_xml_get_float64_type_is_unbounded(fmi3_xml_float_typedef_t*);

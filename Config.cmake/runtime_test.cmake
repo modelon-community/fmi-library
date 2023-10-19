@@ -61,23 +61,19 @@ target_link_libraries(jm_vector_test PRIVATE jmutils)
 target_include_directories(jm_vector_test PRIVATE ${FMIL_TEST_INCLUDE_DIRS})
 
 # Test: jm locale
-add_executable(jm_locale_test ${FMIL_TEST_DIR}/jm_locale_test.c)
-target_link_libraries(jm_locale_test jmutils)
-target_include_directories(jm_locale_test PRIVATE ${FMIL_TEST_INCLUDE_DIRS})
 if(FMILIB_TEST_LOCALE)
-    target_compile_definitions(jm_locale_test PRIVATE -DFMILIB_TEST_LOCALE ${FMIL_LINK_WITH_SUBLIBS})
+    add_executable(jm_locale_test ${FMIL_TEST_DIR}/jm_locale_test.c)
+    target_link_libraries(jm_locale_test jmutils)
+    target_include_directories(jm_locale_test PRIVATE ${FMIL_TEST_INCLUDE_DIRS})
+    target_compile_definitions(jm_locale_test PRIVATE ${FMIL_LINK_WITH_SUBLIBS})
+    add_test(ctest_jm_locale_test jm_locale_test)
+    set_tests_properties(ctest_jm_locale_test PROPERTIES DEPENDS ctest_build_all)
 endif()
 
 #Create function that zips the dummy FMUs
 add_executable(compress_test_fmu_zip ${FMIL_TEST_DIR}/compress_test_fmu_zip.c)
 target_link_libraries(compress_test_fmu_zip fmizip)
 target_include_directories(compress_test_fmu_zip PRIVATE ${FMIL_TEST_INCLUDE_DIRS})
-
-set_target_properties(
-    jm_vector_test
-    jm_locale_test
-    compress_test_fmu_zip
-    PROPERTIES FOLDER "Test")
 
 #Path to the executable
 get_property(COMPRESS_EXECUTABLE TARGET compress_test_fmu_zip PROPERTY LOCATION)
@@ -190,8 +186,6 @@ if(FMILIB_BUILD_BEFORE_TESTS)
         COMMAND "${CMAKE_COMMAND}" --build ${FMILIBRARYBUILD} --config $<CONFIGURATION>)
 endif()
 
-add_test(ctest_jm_locale_test jm_locale_test)
-
 add_test(ctest_fmi_zip_unzip_test fmi_zip_unzip_test)
 add_test(ctest_fmi_zip_zip_test fmi_zip_zip_test)
 
@@ -260,7 +254,6 @@ if(FMILIB_BUILD_BEFORE_TESTS)
         ctest_fmi_import_test_cs_3
         ctest_fmi_zip_unzip_test
         ctest_fmi_zip_zip_test
-        ctest_jm_locale_test
         PROPERTIES DEPENDS ctest_build_all)
 endif()
 set_tests_properties(ctest_fmi_import_test_no_xml PROPERTIES DEPENDS ctest_fmi_zip_unzip_test)

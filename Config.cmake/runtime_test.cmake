@@ -61,11 +61,11 @@ target_link_libraries(jm_vector_test PRIVATE jmutils)
 target_include_directories(jm_vector_test PRIVATE ${FMIL_TEST_INCLUDE_DIRS})
 
 # Test: jm locale
-add_executable(jm_locale_test ${FMIL_TEST_DIR}/jm_locale_test.c)
-target_link_libraries(jm_locale_test jmutils)
-target_include_directories(jm_locale_test PRIVATE ${FMIL_TEST_INCLUDE_DIRS})
 if(FMILIB_TEST_LOCALE)
-    target_compile_definitions(jm_locale_test PRIVATE -DFMILIB_TEST_LOCALE ${FMIL_LINK_WITH_SUBLIBS})
+    add_executable(jm_locale_test ${FMIL_TEST_DIR}/jm_locale_test.c)
+    target_link_libraries(jm_locale_test jmutils)
+    target_include_directories(jm_locale_test PRIVATE ${FMIL_TEST_INCLUDE_DIRS})
+    target_compile_definitions(jm_locale_test PRIVATE ${FMIL_LINK_WITH_SUBLIBS})
 endif()
 
 #Create function that zips the dummy FMUs

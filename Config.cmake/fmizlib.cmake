@@ -33,17 +33,17 @@ else() # build zlib from ThirdParty/zlib
 
     set(ZLIB_PREFIX "${FMILIB_THIRDPARTYLIBS}/Zlib/zlib-1.2.13")
     set(ZLIB_SOURCE_DIR "${FMILIB_THIRDPARTYLIBS}/Zlib/zlib-1.2.13")
-    set(ZLIB_INSTALL_DIR "${FMILIBRARYBUILD}/zlibext/install")
+    set(ZLIB_INSTALL_DIR "${CMAKE_BINARY_DIR}/zlibext/install")
 
     include(ExternalProject)
     ExternalProject_Add(
         zlibext
         PREFIX      "${ZLIB_PREFIX}"
         SOURCE_DIR  "${ZLIB_SOURCE_DIR}"
-        BINARY_DIR  "${FMILIBRARYBUILD}/zlibext"
+        BINARY_DIR  "${CMAKE_BINARY_DIR}/zlibext"
         INSTALL_DIR "${ZLIB_INSTALL_DIR}"
-        TMP_DIR     "${FMILIBRARYBUILD}/zlibext/temp"
-        STAMP_DIR   "${FMILIBRARYBUILD}/zlibext/stamp"
+        TMP_DIR     "${CMAKE_BINARY_DIR}/zlibext/temp"
+        STAMP_DIR   "${CMAKE_BINARY_DIR}/zlibext/stamp"
     )
 
     set(ZLIB_SETTINGS
@@ -53,7 +53,7 @@ else() # build zlib from ThirdParty/zlib
         -DSKIP_INSTALL_FILES:BOOLEAN=ON
         -DSKIP_INSTALL_HEADERS:BOOLEAN=OFF
         -DSKIP_INSTALL_ALL:BOOLEAN=OFF
-        -DCMAKE_INSTALL_PREFIX:PATH=${FMILIBRARYBUILD}/zlibext/install
+        -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_BINARY_DIR}/zlibext/install
     )
 
     ExternalProject_Add_Step(

@@ -12,7 +12,7 @@
 #    along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 
 if(NOT FMIZIPDIR)
-set(FMIZIPDIR ${FMILIBRARYHOME}/src/ZIP)
+set(FMIZIPDIR ${CMAKE_SOURCE_DIR}/src/ZIP)
 
 include(jmutil)
 

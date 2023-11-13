@@ -43,14 +43,14 @@ endif()
 set_property(GLOBAL PROPERTY C_STANDARD                         99)
 set_property(GLOBAL PROPERTY C_STANDARD_REQUIRED                ON)
 set_property(GLOBAL PROPERTY PROPERTYPREDEFINED_TARGETS_FOLDER  Global)
-set(FMILIBRARYHOME ${FMILibrary_SOURCE_DIR})
-set(FMILIBRARYBUILD ${FMILibrary_BINARY_DIR})
+set(CMAKE_SOURCE_DIR ${FMILibrary_SOURCE_DIR})
+set(CMAKE_BINARY_DIR ${FMILibrary_BINARY_DIR})
 
-set(CMAKE_MODULE_PATH ${FMILIBRARYHOME}/Config.cmake)
+set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/Config.cmake)
 
 # User configuration options and parameters
-set(FMILIB_INSTALL_PREFIX ${FMILIBRARYBUILD}/../install CACHE PATH "Prefix prepended to install directories")
-set(FMILIB_THIRDPARTYLIBS  ${FMILIBRARYHOME}/ThirdParty CACHE PATH "Path to the ThirdParty library dir" )
+set(FMILIB_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/../install CACHE PATH "Prefix prepended to install directories")
+set(FMILIB_THIRDPARTYLIBS  ${CMAKE_SOURCE_DIR}/ThirdParty CACHE PATH "Path to the ThirdParty library dir" )
 set(FMILIB_FMI_STANDARD_HEADERS  ${FMILIB_THIRDPARTYLIBS}/FMI/default CACHE PATH "Path to the FMI standard headers dir" )
 
 option(FMILIB_DEFAULT_BUILD_TYPE_RELEASE "Default build-type used for Makefile generation is 'Release'. Can be overwritten by CMAKE_BUILD_TYPE command line switch." ON)
@@ -256,20 +256,20 @@ set_fmi_platform(FMI3_PLATFORM 3)
 # Put the headers in different directories to allow more fine-grained include flags,
 # since we don't want to accidentally include more than we should. That could lead
 # to issues not detected until testing the installation.
-set(FMILIB_CONFIG_INCLUDE_DIR      "${FMILIBRARYBUILD}/fmilib_config_include")
-set(FMILIB_TESTCONFIG_INCLUDE_DIR  "${FMILIBRARYBUILD}/fmilib_test_config_include")
-set(FMILIB_INCLUDE_DIR             "${FMILIBRARYBUILD}/fmilib_include")
+set(FMILIB_CONFIG_INCLUDE_DIR      "${CMAKE_BINARY_DIR}/fmilib_config_include")
+set(FMILIB_TESTCONFIG_INCLUDE_DIR  "${CMAKE_BINARY_DIR}/fmilib_test_config_include")
+set(FMILIB_INCLUDE_DIR             "${CMAKE_BINARY_DIR}/fmilib_include")
 
 file(MAKE_DIRECTORY "${FMILIB_CONFIG_INCLUDE_DIR}")
 file(MAKE_DIRECTORY "${FMILIB_TESTCONFIG_INCLUDE_DIR}")
 file(MAKE_DIRECTORY "${FMILIB_INCLUDE_DIR}")
 
 configure_file (
-    "${FMILIBRARYHOME}/Config.cmake/config_fmilib.h.cmake"
+    "${CMAKE_SOURCE_DIR}/Config.cmake/config_fmilib.h.cmake"
     "${FMILIB_CONFIG_INCLUDE_DIR}/fmilib_config.h"
 )
 
-file(COPY "${FMILIBRARYHOME}/Config.cmake/fmilib.h" DESTINATION "${FMILIB_INCLUDE_DIR}")
+file(COPY "${CMAKE_SOURCE_DIR}/Config.cmake/fmilib.h" DESTINATION "${FMILIB_INCLUDE_DIR}")
 
 # ===============================================================================
 
@@ -286,7 +286,7 @@ if(FMILIB_BUILD_TESTS)
     # Configuration depends on values set in all the different test*.cmake files,
     # so can't be done until here.
     configure_file (
-        "${FMILIBRARYHOME}/Config.cmake/config_test.h.cmake"
+        "${CMAKE_SOURCE_DIR}/Config.cmake/config_test.h.cmake"
         "${FMILIB_TESTCONFIG_INCLUDE_DIR}/config_test.h"
     )
 endif()
@@ -300,18 +300,18 @@ set(FMILIB_SHARED_SRC ${FMIIMPORTSOURCE} ${FMIIMPORTHEADERS} ${JMUTILSOURCE} ${J
 if(FMILIB_GENERATE_BUILD_STAMP)
     debug_message("FMILIB_SUBLIBS= ${FMILIB_SUBLIBS}")
     add_custom_command(
-        OUTPUT ${FMILIBRARYBUILD}/config_fmilib.c
+        OUTPUT ${CMAKE_BINARY_DIR}/config_fmilib.c
         COMMAND    "${CMAKE_COMMAND}"
-            -D FMILIBRARYHOME="${FMILIBRARYHOME}" -D FMILIBRARYBUILD="${FMILIBRARYBUILD}"
-            -P ${FMILIBRARYHOME}/Config.cmake/config_stamp.cmake
-        COMMAND ${CMAKE_COMMAND}  -E touch ${FMILIBRARYBUILD}/config_fmilib.c
+            -D CMAKE_SOURCE_DIR="${CMAKE_SOURCE_DIR}" -D CMAKE_BINARY_DIR="${CMAKE_BINARY_DIR}"
+            -P ${CMAKE_SOURCE_DIR}/Config.cmake/config_stamp.cmake
+        COMMAND ${CMAKE_COMMAND}  -E touch ${CMAKE_BINARY_DIR}/config_fmilib.c
         DEPENDS ${FMILIB_SUBLIBS}
     )
-    add_library(fmilib_timestamp STATIC ${FMILIBRARYBUILD}/config_fmilib.c "${FMILIB_CONFIG_INCLUDE_DIR}/fmilib_config.h")
+    add_library(fmilib_timestamp STATIC ${CMAKE_BINARY_DIR}/config_fmilib.c "${FMILIB_CONFIG_INCLUDE_DIR}/fmilib_config.h")
     target_include_directories(fmilib_timestamp PRIVATE ${FMILIB_CONFIG_INCLUDE_DIR})
 
     set(FMILIB_SUBLIBS ${FMILIB_SUBLIBS} fmilib_timestamp)
-    set(FMILIB_SHARED_SRC ${FMILIB_SHARED_SRC} ${FMILIBRARYBUILD}/config_fmilib.c)
+    set(FMILIB_SHARED_SRC ${FMILIB_SHARED_SRC} ${CMAKE_BINARY_DIR}/config_fmilib.c)
 endif()
 
 set_target_properties(
@@ -391,9 +391,9 @@ install(TARGETS ${FMILIB_TARGETS}
     RUNTIME DESTINATION lib
 )
 install(FILES
-    "${FMILIBRARYHOME}/FMILIB_Readme.txt"
-    "${FMILIBRARYHOME}/FMILIB_License.txt"
-    "${FMILIBRARYHOME}/FMILIB_Acknowledgements.txt"
+    "${CMAKE_SOURCE_DIR}/FMILIB_Readme.txt"
+    "${CMAKE_SOURCE_DIR}/FMILIB_License.txt"
+    "${CMAKE_SOURCE_DIR}/FMILIB_Acknowledgements.txt"
     DESTINATION doc)
 
 install(FILES
@@ -438,29 +438,29 @@ if(FMILIB_GENERATE_DOXYGEN_DOC)
 
     file(MAKE_DIRECTORY "${FMILIB_INSTALL_PREFIX}/doc")
 
-    set(DOXYFILE_IN ${FMILIBRARYHOME}/Config.cmake/fmilib_doxydoc.conf CACHE INTERNAL "Doxygen config file")
-    set(DOXYFILE_IMAGE_DIR "${FMILIBRARYHOME}/images" CACHE INTERNAL "Doxygen images" FORCE)
+    set(DOXYFILE_IN ${CMAKE_SOURCE_DIR}/Config.cmake/fmilib_doxydoc.conf CACHE INTERNAL "Doxygen config file")
+    set(DOXYFILE_IMAGE_DIR "${CMAKE_SOURCE_DIR}/images" CACHE INTERNAL "Doxygen images" FORCE)
 
-    file(MAKE_DIRECTORY ${FMILIBRARYBUILD}/doc)
+    file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/doc)
 
     file(COPY
-        "${FMILIBRARYHOME}/Config.cmake/fmilib.h"
+        "${CMAKE_SOURCE_DIR}/Config.cmake/fmilib.h"
         "${FMILIB_CONFIG_INCLUDE_DIR}/fmilib_config.h"
-        DESTINATION ${FMILIBRARYBUILD}/doc)
+        DESTINATION ${CMAKE_BINARY_DIR}/doc)
 
-    set(fmilib_mainpage_h "${FMILIBRARYBUILD}/doc/fmilib_mainpage.h")
+    set(fmilib_mainpage_h "${CMAKE_BINARY_DIR}/doc/fmilib_mainpage.h")
     file(WRITE ${fmilib_mainpage_h} "/** @file fmilib_mainpage.h \n @brief Autogenerated file with documentation. \n ")
-    append_file_context(${fmilib_mainpage_h} "${FMILIBRARYHOME}/FMILIB_Readme.txt" )
-    append_file_context(${fmilib_mainpage_h} "${FMILIBRARYHOME}/FMILIB_License.txt" )
-    append_file_context(${fmilib_mainpage_h} "${FMILIBRARYHOME}/FMILIB_Acknowledgements.txt" )
+    append_file_context(${fmilib_mainpage_h} "${CMAKE_SOURCE_DIR}/FMILIB_Readme.txt" )
+    append_file_context(${fmilib_mainpage_h} "${CMAKE_SOURCE_DIR}/FMILIB_License.txt" )
+    append_file_context(${fmilib_mainpage_h} "${CMAKE_SOURCE_DIR}/FMILIB_Acknowledgements.txt" )
     file(APPEND ${fmilib_mainpage_h} "*/")
 
-    set(DOXYFILE_SOURCE_DIR "${FMILIBRARYBUILD}/doc" CACHE INTERNAL "Doxygen default source dir" FORCE)
-    set(DOXYFILE_EXTRA_SOURCES "${DOXYFILE_EXTRA_SOURCES} \"${FMILIBRARYHOME}/Test\"")
+    set(DOXYFILE_SOURCE_DIR "${CMAKE_BINARY_DIR}/doc" CACHE INTERNAL "Doxygen default source dir" FORCE)
+    set(DOXYFILE_EXTRA_SOURCES "${DOXYFILE_EXTRA_SOURCES} \"${CMAKE_SOURCE_DIR}/Test\"")
 
     set(DOXYFILE_OUTPUT_DIR "${FMILIB_INSTALL_PREFIX}/doc")
 
-    set(DOXYFILE_STRIP_FROM_PATH "${FMILIBRARYHOME}")
+    set(DOXYFILE_STRIP_FROM_PATH "${CMAKE_SOURCE_DIR}")
 
     set(CMAKE_MODULE_PATH ${FMILIB_THIRDPARTYLIBS}/CMakeModules)
 

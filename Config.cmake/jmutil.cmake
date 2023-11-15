@@ -92,4 +92,7 @@ target_include_directories(jmutils
     PUBLIC ${JMUTILS_PUBLIC_INCLUDE_DIRS}
 )
 
+check_function_exists("uselocale" HAVE_USELOCALE)
+target_compile_definitions(jmutils PRIVATE UNIX_THREAD_LOCALE)
+
 endif(NOT JMUTILDIR)

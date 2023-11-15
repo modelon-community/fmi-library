@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2012 Modelon AB
+    Copyright (C) 2012-2023 Modelon AB
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the BSD style license.
@@ -18,10 +18,6 @@
 #include <string.h>
 
 #include <locale.h>
-
-#if defined(_GNU_SOURCE) || defined(__APPLE__)
-#define UNIX_THREAD_LOCALE
-#endif
 
 #ifdef __APPLE__
 /* Include thread-specific locale functions for OSX. */

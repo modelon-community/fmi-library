@@ -12,7 +12,7 @@
 #    along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 
 if(NOT FMIIMPORTDIR)
-set(FMIIMPORTDIR ${FMILIBRARYHOME}/src/Import)
+set(FMIIMPORTDIR ${CMAKE_SOURCE_DIR}/src/Import)
 include(jmutil)
 include(fmixml)
 include(fmicapi)

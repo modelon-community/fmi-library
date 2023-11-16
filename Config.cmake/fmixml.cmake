@@ -12,7 +12,7 @@
 #    along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 
 if(NOT FMIXMLDIR)
-set(FMIXMLDIR ${FMILIBRARYHOME}/src/XML/)
+set(FMIXMLDIR ${CMAKE_SOURCE_DIR}/src/XML/)
 include(jmutil)
 
 ################################################################################

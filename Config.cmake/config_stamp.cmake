@@ -1,8 +1,8 @@
 FIND_PACKAGE(Subversion REQUIRED)
-Subversion_WC_INFO(${FMILIBRARYHOME} FMILibrary)
+Subversion_WC_INFO(${CMAKE_SOURCE_DIR} FMILibrary)
 
-message(STATUS "Generating build timestamp in ${FMILIBRARYBUILD}/config_fmilib.c")
+message(STATUS "Generating build timestamp in ${CMAKE_BINARY_DIR}/config_fmilib.c")
 configure_file (
-    "${FMILIBRARYHOME}/Config.cmake/config_fmilib.c.cmake"
-    "${FMILIBRARYBUILD}/config_fmilib.c"
+    "${CMAKE_SOURCE_DIR}/Config.cmake/config_fmilib.c.cmake"
+    "${CMAKE_BINARY_DIR}/config_fmilib.c"
 )

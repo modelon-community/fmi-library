@@ -1,5 +1,5 @@
 ZLIB_BUILD_DIR=$(abs_builddir)/../../zlib_build
-ZLIB_SRC_DIR=ThirdParty/Zlib/zlib-1.2.6
+ZLIB_SRC_DIR=ThirdParty/Zlib/zlib-1.2.13
 ZLIB_INSTALL_DIR=$(abs_top_builddir)/zlib_install
 
 $(ZLIB_BUILD_DIR):
@@ -24,4 +24,3 @@ check-local:
 
 clean-local:
 	cd $(ZLIB_BUILD_DIR) && $(MAKE) $(AM_MAKEFLAGS) clean
-

@@ -12,7 +12,7 @@
 #    along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 
 if(NOT JMUTILDIR)
-set(JMUTILDIR ${FMILIBRARYHOME}/src/Util/)
+set(JMUTILDIR ${CMAKE_SOURCE_DIR}/src/Util/)
 
 set(DOXYFILE_EXTRA_SOURCES "${DOXYFILE_EXTRA_SOURCES} \"${JMUTILDIR}/include\"")
 

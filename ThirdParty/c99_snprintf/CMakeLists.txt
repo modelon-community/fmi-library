@@ -12,7 +12,7 @@
 #    along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 
 if(NOT C99SNPRINTFDIR)
-    set(C99SNPRINTFDIR ${FMILIBRARYHOME}/ThirdParty/c99_snprintf)
+    set(C99SNPRINTFDIR ${CMAKE_SOURCE_DIR}/ThirdParty/c99_snprintf)
     set(C99SNPRINTF_LIBRARIES c99snprintf)    
 
 INCLUDE (CheckIncludeFiles) 

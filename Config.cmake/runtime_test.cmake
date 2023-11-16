@@ -11,7 +11,7 @@
 #    You should have received a copy of the FMILIB_License.txt file
 #    along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 
-set(FMIL_TEST_DIR ${FMILIBRARYHOME}/Test)
+set(FMIL_TEST_DIR ${CMAKE_SOURCE_DIR}/Test)
 set(TEST_OUTPUT_FOLDER ${CMAKE_CURRENT_BINARY_DIR}/Testing)
 
 # Only the directories that are specific to tests.
@@ -183,7 +183,7 @@ file(MAKE_DIRECTORY ${TEST_RESULTS_DIR})
 if(FMILIB_BUILD_BEFORE_TESTS)
     add_test(
         NAME ctest_build_all
-        COMMAND "${CMAKE_COMMAND}" --build ${FMILIBRARYBUILD} --config $<CONFIGURATION>)
+        COMMAND "${CMAKE_COMMAND}" --build ${CMAKE_BINARY_DIR} --config $<CONFIGURATION>)
 endif()
 
 add_test(ctest_fmi_zip_unzip_test fmi_zip_unzip_test)

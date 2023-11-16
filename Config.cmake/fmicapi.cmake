@@ -12,7 +12,7 @@
 #    along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 
 if(NOT FMICAPIDIR)
-set(FMICAPIDIR ${FMILIBRARYHOME}/src/CAPI)
+set(FMICAPIDIR ${CMAKE_SOURCE_DIR}/src/CAPI)
 
 # set(DOXYFILE_EXTRA_SOURCES "${DOXYFILE_EXTRA_SOURCES} \"${FMICAPIDIR}/include\"")
 

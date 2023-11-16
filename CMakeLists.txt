@@ -62,7 +62,7 @@ endif()
 option(FMILIB_BUILD_STATIC_LIB "Build the library as static." ON)
 option(FMILIB_BUILD_SHARED_LIB "Build the library as shared (dll/so/dylib)." ON)
 option(FMILIB_INSTALL_SUBLIBS  "Install sub-libraries (fmicapi. fmixml, jmutil, fmiimport, fmizip)" OFF)
-option(FMILIB_FIND_PACKAGE_ZLIB  "Use find_package for zlib, instead of version in FMILibrary/Thirdparty, possibly requires setting ZLIB_LIBRARY & ZLIB_INCLUDE_DIR." OFF)
+option(FMILIB_FIND_PACKAGE_ZLIB  "Use find_package for zlib, instead of version in FMILibrary/Thirdparty." OFF)
 mark_as_advanced(FMILIB_FIND_PACKAGE_ZLIB)
 
 if(NOT (WIN32 OR CYGWIN OR APPLE))

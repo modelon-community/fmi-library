@@ -15,9 +15,9 @@ RUN adduser baseuser && \
 # Install development tools
 # curl is used by certain VSCode extensions
 RUN yum install -yq \
-    vim     tmux    which   wget \
-    doxygen make    gcc-c++ git  \
-    curl    valgrind
+    vim     tmux     which   wget \
+    doxygen make     gcc-c++ git  \
+    curl    valgrind sudo
 
 # Install CMake 3 as an alternative with higher priority, by default CentOS 7 installs CMake 2.
 RUN wget -q https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/${CMAKE_TAR} && \

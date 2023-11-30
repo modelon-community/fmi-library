@@ -62,6 +62,8 @@ else() # build zlib from ThirdParty/zlib
         DEPENDERS build
         COMMAND ${CMAKE_COMMAND} -E echo "Running:  ${CMAKE_COMMAND} -G \"${CMAKE_GENERATOR}\"  ${ZLIB_SETTINGS} ${ZLIB_SOURCE_DIR}"
         COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" ${ZLIB_SETTINGS} "${ZLIB_SOURCE_DIR}"
+         # COMMAND: Cleans up changes to the source dir made by the zlib build system.
+        COMMAND ${CMAKE_COMMAND} -E rename ${ZLIB_SOURCE_DIR}/zconf.h.included ${ZLIB_SOURCE_DIR}/zconf.h
         DEPENDS ${CMAKE_BINARY_DIR}/CMakeCache.txt
         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/zlibext
     )
@@ -79,6 +81,7 @@ else() # build zlib from ThirdParty/zlib
     endif()
 
     add_custom_command(
+        # OUTPUT: Workaround to make it explicit that target 'zlib' produces 'zlib_lib'. (Ninja complains otherwise.)
         OUTPUT "${zlib_lib}"
         DEPENDS zlibext
     )

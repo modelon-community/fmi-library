@@ -4,6 +4,21 @@ The release notes are typically a highlighting subset of all changes made. For f
 
 Note that version 2.1 is the first version with release notes. Please see the commit history for older versions.
 
+## 3.0a3
+
+### Improvements
+
+- Improved error handling.
+- Attribute buffers are now properly cleared if an elements fail to parse.
+- Disabled jm_locale_test if locale testing is disabled.
+### Changes
+
+- Resolved reported vulnerability issues by:
+    - Updated to expat 2.5.0 up from version 2.8.0.
+    - Updated to zlib 1.2.13 up from version 1.2.6.
+- Renamed `default_experiment_step` to `_step_size`.
+
+
 ## 3.0a2
 
 ### Improvements

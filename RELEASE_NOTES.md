@@ -9,14 +9,17 @@ Note that version 2.1 is the first version with release notes. Please see the co
 ### Improvements
 
 - Improved error handling.
-- Attribute buffers are now properly cleared if an elements fail to parse.
+- Attribute buffers are now properly cleared if an element fails to parse.
 - Disabled jm_locale_test if locale testing is disabled.
+
 ### Changes
 
-- Resolved reported vulnerability issues by:
-    - Updated to expat 2.5.0 up from version 2.8.0.
-    - Updated to zlib 1.2.13 up from version 1.2.6.
-- Renamed `default_experiment_step` to `_step_size`.
+- Resolved reported vulnerability issues:
+    - Updated to expat 2.5.0 (from version 2.8.0).
+    - Updated to zlib 1.2.13 (from version 1.2.6).
+- The following functions have been renamed:
+    - `fmi3_xml_get_default_experiment_step` to `fmi3_xml_get_default_experiment_step_size`
+    - `fmi3_import_get_default_experiment_has_step` to `fmi3_import_get_default_experiment_has_step_size`
 
 
 ## 3.0a2

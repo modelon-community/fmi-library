@@ -15,7 +15,7 @@ Note that version 2.1 is the first version with release notes. Please see the co
 ### Changes
 
 - Resolved reported vulnerability issues:
-    - Updated to expat 2.5.0 (from version 2.8.0).
+    - Updated to expat 2.5.0 (from version 2.4.8).
     - Updated to zlib 1.2.13 (from version 1.2.6).
 - The following functions have been renamed:
     - `fmi3_xml_get_default_experiment_step` to `fmi3_xml_get_default_experiment_step_size`

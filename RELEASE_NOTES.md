@@ -4,6 +4,24 @@ The release notes are typically a highlighting subset of all changes made. For f
 
 Note that version 2.1 is the first version with release notes. Please see the commit history for older versions.
 
+## 3.0a3
+
+### Improvements
+
+- Improved error handling.
+- Attribute buffers are now properly cleared if an element fails to parse.
+- Disabled jm_locale_test if locale testing is disabled.
+
+### Changes
+
+- Resolved reported vulnerability issues:
+    - Updated to expat 2.5.0 (from version 2.4.8).
+    - Updated to zlib 1.2.13 (from version 1.2.6).
+- The following functions have been renamed:
+    - `fmi3_xml_get_default_experiment_step` to `fmi3_xml_get_default_experiment_step_size`
+    - `fmi3_import_get_default_experiment_has_step` to `fmi3_import_get_default_experiment_has_step_size`
+
+
 ## 3.0a2
 
 ### Improvements

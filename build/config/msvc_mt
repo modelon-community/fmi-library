@@ -1,0 +1,5 @@
+include build/config/msvc_md
+
+# Override
+CONFIG_NAME=msvc_mt
+BUILD_WITH_STATIC_RTLIB=1

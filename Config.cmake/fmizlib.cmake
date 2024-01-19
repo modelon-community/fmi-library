@@ -19,7 +19,7 @@ if(FMILIB_FIND_PACKAGE_ZLIB)
     find_package(ZLIB)
     if(NOT ZLIB_FOUND)
         message(FATAL_ERROR "Could not locate ZLIB using find_package.")
-    endif(NOT ZLIB_FOUND)
+    endif()
 
     add_library(zlib STATIC IMPORTED ZLIB::ZLIB)
     ## ZLIB_INCLUDE_DIRS set by FindZLIB
@@ -75,10 +75,12 @@ else() # build zlib from ThirdParty/zlib
     set(ZLIB_LIB_PREFIX ${CMAKE_STATIC_LIBRARY_PREFIX})
 
     if("${CMAKE_CFG_INTDIR}" STREQUAL ".")
-        set(zlib_lib "${CMAKE_BINARY_DIR}/zlibext/${ZLIB_LIB_PREFIX}z${ZLIB_LIB_SUFFIX}${CMAKE_STATIC_LIBRARY_SUFFIX}")
+        set(ZLIB_LIBDIR "${CMAKE_BINARY_DIR}/zlibext")
     else()
-        set(zlib_lib "${CMAKE_BINARY_DIR}/zlibext/${CMAKE_CFG_INTDIR}/${ZLIB_LIB_PREFIX}z${ZLIB_LIB_SUFFIX}${CMAKE_STATIC_LIBRARY_SUFFIX}")
+        set(ZLIB_LIBDIR "${CMAKE_BINARY_DIR}/zlibext/${CMAKE_CFG_INTDIR}")
     endif()
+    set(zlib_lib       "${ZLIB_LIBDIR}/${ZLIB_LIB_PREFIX}z${ZLIB_LIB_SUFFIX}${CMAKE_STATIC_LIBRARY_SUFFIX}")
+    set(zlib_lib_debug "${ZLIB_LIBDIR}/${ZLIB_LIB_PREFIX}z${ZLIB_LIB_SUFFIX}${CMAKE_DEBUG_POSTFIX}${CMAKE_STATIC_LIBRARY_SUFFIX}")
 
     add_custom_command(
         # OUTPUT: Workaround to make it explicit that target 'zlib' produces 'zlib_lib'. (Ninja complains otherwise.)
@@ -92,8 +94,9 @@ else() # build zlib from ThirdParty/zlib
     set_target_properties(
         zlib PROPERTIES
         IMPORTED_LOCATION "${zlib_lib}"
+        IMPORTED_LOCATION_DEBUG "${zlib_lib_debug}"
         INCLUDE_DIRECTORIES "${ZLIB_INCLUDE_DIRS}"
-        )
+    )
 
     add_dependencies(zlib tmp_zlib)
         

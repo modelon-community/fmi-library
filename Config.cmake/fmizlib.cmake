@@ -74,12 +74,13 @@ else() # build zlib from ThirdParty/zlib
     endif()
     set(ZLIB_LIB_PREFIX ${CMAKE_STATIC_LIBRARY_PREFIX})
 
-    set(ZLIB_DEBUG_POSTFIX d)  # Using CMAKE_DEBUG_POSTFIX doesn't seem to work reliably
 
     if("${CMAKE_CFG_INTDIR}" STREQUAL ".")
         set(ZLIB_LIBDIR "${CMAKE_BINARY_DIR}/zlibext")
+        set(ZLIB_DEBUG_POSTFIX "")  # Using CMAKE_DEBUG_POSTFIX doesn't seem to work reliably
     else()
         set(ZLIB_LIBDIR "${CMAKE_BINARY_DIR}/zlibext/${CMAKE_CFG_INTDIR}")
+        set(ZLIB_DEBUG_POSTFIX d)
     endif()
     set(zlib_lib       "${ZLIB_LIBDIR}/${ZLIB_LIB_PREFIX}z${ZLIB_LIB_SUFFIX}${CMAKE_STATIC_LIBRARY_SUFFIX}")
     set(zlib_lib_debug "${ZLIB_LIBDIR}/${ZLIB_LIB_PREFIX}z${ZLIB_LIB_SUFFIX}${ZLIB_DEBUG_POSTFIX}${CMAKE_STATIC_LIBRARY_SUFFIX}")

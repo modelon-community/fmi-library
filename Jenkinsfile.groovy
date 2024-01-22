@@ -4,15 +4,22 @@
 //  docker: docker
 
 def Configs = [
-    'win64': [
-        name: 'win64',
+    'msvc_md': [
+        name: 'msvc_md',
         os: 'windows',
         node: 'VisualStudio2017 && OCT-SDK-1.6.2',
         target_install: 'install',
         target_test: 'test'
     ],
-    'win64_static_runtime': [
-        name: 'win64_static_runtime',
+    'msvc_md_debug': [
+        name: 'msvc_md_debug',
+        os: 'windows',
+        node: 'VisualStudio2017 && OCT-SDK-1.6.2',
+        target_install: 'install',
+        target_test: 'test'
+    ],
+    'msvc_mt': [
+        name: 'msvc_mt',
         os: 'windows',
         node: 'VisualStudio2017 && OCT-SDK-1.6.2',
         target_install: 'install',
@@ -102,17 +109,18 @@ tasks[conf.name] = {
     }
 }
 
-// Currently getting cygwin heap error when parallellizing win64 and win64_static_runtime, so not doing that for now
+// Currently getting cygwin heap error when parallellizing msvc_md and msvc_mt, so not doing that for now
 def parallellTasks = [
-    'centos64': tasks.centos64,
-    'ubuntu64': tasks.ubuntu64,
-    'mingw_w64': tasks.mingw_w64,
-    'win64': tasks.win64,
+    'centos64':      tasks.centos64,
+    'ubuntu64':      tasks.ubuntu64,
+    'mingw_w64':     tasks.mingw_w64,
+    'msvc_md':       tasks.msvc_md,
+    'msvc_md_debug': tasks.msvc_md_debug,
     'documentation': tasks.documentation,
 ]
 parallel parallellTasks
 
-tasks.win64_static_runtime()
+tasks.msvc_mt()
 
 
 def clean(conf) {
@@ -128,7 +136,6 @@ def clean(conf) {
     } else {
         error(message: "Invalid configuration operating system: ${conf.os}")
     }
-
 }
 
 def build(conf) {

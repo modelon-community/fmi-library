@@ -1,0 +1,8 @@
+# MSVC is a multi-configuration CMake build type, so it's easy to miss to handle the Debug configuration.
+# This file provides the config for testing it on Jenkins.
+
+include build/config/msvc_md
+
+# Override
+CONFIG_NAME=msvc_md_debug
+BUILD_TYPE=Debug

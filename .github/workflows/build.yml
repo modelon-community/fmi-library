@@ -1,0 +1,21 @@
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  linux:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install system
+      run: sudo apt-get update -y && sudo apt-get -y install cmake
+    - name: Build
+      run: |
+        cmake -DCMAKE_INSTALL_PREFIX=~/.local -B build .
+        cmake --build build --target install --parallel 3
+    - name: Test
+      run: ctest --test-dir build --output-on-failure
+

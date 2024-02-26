@@ -253,7 +253,7 @@ static int fmi3_xml_parse_dependencies(fmi3_xml_parser_context_t* context,
     }
     if (listInd) {
         const char* cur = listInd;
-        int ind;
+        long ind;
         while (*cur) {
             char ch = *cur;
             while ((ch ==' ') || (ch == '\t') || (ch =='\n') || (ch == '\r')) {
@@ -261,13 +261,13 @@ static int fmi3_xml_parse_dependencies(fmi3_xml_parser_context_t* context,
                 if (!ch) break;
             }
             if (!ch) break;
-            if (sscanf(cur, "%d", &ind) != 1) {
+            if (sscanf(cur, "%ld", &ind) != 1) {
                 fmi3_xml_parse_error(context, "XML element '%s': could not parse item %d, character '%c' in the list for attribute 'dependencies'",
                     fmi3_xml_elmid_to_name(elmID), *numDepInd, ch);
                 return -1;
             }
             if (ind < 0) {
-                fmi3_xml_parse_error(context, "XML element '%s': Attribute 'dependencies' contains invalid value: %d.", 
+                fmi3_xml_parse_error(context, "XML element '%s': Attribute 'dependencies' contains invalid value: %ld.", 
                     fmi3_xml_elmid_to_name(elmID), ind);
                 return -1;
             }

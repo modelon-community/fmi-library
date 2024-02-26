@@ -22,31 +22,26 @@ function(merge_static_libs outlib)
 
     add_library(${outlib} STATIC ${dummyfile})
 
-    if("${CMAKE_CFG_INTDIR}" STREQUAL ".")
-        set(multiconfig FALSE)
-    else()
-        set(multiconfig TRUE)
-    endif()
-
     # First get the file names of the libraries to be merged
     foreach(lib ${libs})
         get_target_property(libtype ${lib} TYPE)
         if(NOT libtype STREQUAL "STATIC_LIBRARY")
             message(FATAL_ERROR "Merge_static_libs can only process static libraries\n\tlibraries: ${lib}\n\tlibtype ${libtype}")
         endif()
-        if(multiconfig)
+        if(DEFINED CMAKE_CONFIGURATION_TYPES)
             foreach(CONFIG_TYPE ${CMAKE_CONFIGURATION_TYPES})
-                get_target_property("libfile_${CONFIG_TYPE}" ${lib} "LOCATION_${CONFIG_TYPE}")
-                list(APPEND libfiles_${CONFIG_TYPE} ${libfile_${CONFIG_TYPE}})
+                get_target_property(libfile_${CONFIG_TYPE} ${lib} "IMPORTED_LOCATION_${CONFIG_TYPE}")
+                if (${libfile_${CONFIG_TYPE}})
+                    list(APPEND libfiles_${CONFIG_TYPE} ${libfile_${CONFIG_TYPE}})
+                endif ()
             endforeach()
         else()
-            get_target_property(libfile ${lib} LOCATION)
-            list(APPEND libfiles "${libfile}")
-        endif(multiconfig)
+            list(APPEND libfiles "$<TARGET_FILE:${lib}>")
+        endif()
     endforeach()
     message(STATUS "will be merging ${libfiles}")
     # Just to be sure: cleanup from duplicates
-    if(multiconfig)
+    if(DEFINED CMAKE_CONFIGURATION_TYPES)
         foreach(CONFIG_TYPE ${CMAKE_CONFIGURATION_TYPES})
             list(REMOVE_DUPLICATES libfiles_${CONFIG_TYPE})
             set(libfiles ${libfiles} ${libfiles_${CONFIG_TYPE}})
@@ -67,17 +62,16 @@ function(merge_static_libs outlib)
         endforeach()
     elseif(APPLE)
         # Use OSX's libtool to merge archives
-        if(multiconfig)
+        if(DEFINED CMAKE_CONFIGURATION_TYPES)
             message(FATAL_ERROR "Multiple configurations are not supported")
         endif()
-        get_target_property(outfile ${outlib} LOCATION)
         add_custom_command(TARGET ${outlib} POST_BUILD
-            COMMAND rm ${outfile}
-            COMMAND /usr/bin/libtool -static -o ${outfile}
+            COMMAND rm $<TARGET_FILE:${outlib}>
+            COMMAND /usr/bin/libtool -static -o $<TARGET_FILE:${outlib}>
             ${libfiles}
         )
     else() # general UNIX - need to "ar -x" and then "ar -ru"
-        if(multiconfig)
+        if(DEFINED CMAKE_CONFIGURATION_TYPES)
             message(FATAL_ERROR "Multiple configurations are not supported")
         endif()
         foreach(libtarget ${libs})

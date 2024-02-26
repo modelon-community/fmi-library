@@ -75,9 +75,6 @@ add_executable(compress_test_fmu_zip ${FMIL_TEST_DIR}/compress_test_fmu_zip.c)
 target_link_libraries(compress_test_fmu_zip fmizip)
 target_include_directories(compress_test_fmu_zip PRIVATE ${FMIL_TEST_INCLUDE_DIRS})
 
-#Path to the executable
-get_property(COMPRESS_EXECUTABLE TARGET compress_test_fmu_zip PROPERTY LOCATION)
-
 if(MSVC)
     # default in MSVC for Debug build is incremental linking,
     # but dlls linked with this flag cannot be loaded with LoadLibrary
@@ -134,7 +131,7 @@ function(compress_fmu OUTPUT_FOLDER_T MODEL_IDENTIFIER_T FILE_NAME_CS_ME_EXT_T T
         COMMAND "${CMAKE_COMMAND}" -E remove -f "${OUTPUT_FOLDER_T}/${FMU_FILE_NAME_T}.fmu"
         COMMAND "${CMAKE_COMMAND}" -E copy "${XML_PATH_T}" "${FMU_OUTPUT_FOLDER_T}/modelDescription.xml"
         COMMAND "${CMAKE_COMMAND}" -E copy "${SHARED_LIBRARY_PATH_T}" "${FMU_OUTPUT_SHARED_LIBRARY_PATH_T}"
-        COMMAND "${COMPRESS_EXECUTABLE}" "${MODEL_IDENTIFIER_T}.fmu" "modelDescription.xml" "${FMU_OUTPUT_SHARED_LIBRARY_PATH_OUT_T}" WORKING_DIRECTORY "${FMU_OUTPUT_FOLDER_T}"
+        COMMAND "$<TARGET_FILE:compress_test_fmu_zip>" "${MODEL_IDENTIFIER_T}.fmu" "modelDescription.xml" "${FMU_OUTPUT_SHARED_LIBRARY_PATH_OUT_T}" WORKING_DIRECTORY "${FMU_OUTPUT_FOLDER_T}"
         COMMAND "${CMAKE_COMMAND}" -E copy "${FMU_OUTPUT_FOLDER_T}/${MODEL_IDENTIFIER_T}.fmu" "${OUTPUT_FOLDER_T}/${FMU_FILE_NAME_T}.fmu"
     )
 

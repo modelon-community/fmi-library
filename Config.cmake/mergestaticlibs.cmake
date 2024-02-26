@@ -36,12 +36,10 @@ function(merge_static_libs outlib)
         endif()
         if(multiconfig)
             foreach(CONFIG_TYPE ${CMAKE_CONFIGURATION_TYPES})
-                get_target_property("libfile_${CONFIG_TYPE}" ${lib} "LOCATION_${CONFIG_TYPE}")
-                list(APPEND libfiles_${CONFIG_TYPE} ${libfile_${CONFIG_TYPE}})
+                list(APPEND libfiles_${CONFIG_TYPE} "$<TARGET_FILE:libfile_${CONFIG_TYPE}>")
             endforeach()
         else()
-            get_target_property(libfile ${lib} LOCATION)
-            list(APPEND libfiles "${libfile}")
+            list(APPEND libfiles "$<TARGET_FILE:lib>")
         endif(multiconfig)
     endforeach()
     message(STATUS "will be merging ${libfiles}")
@@ -70,10 +68,9 @@ function(merge_static_libs outlib)
         if(multiconfig)
             message(FATAL_ERROR "Multiple configurations are not supported")
         endif()
-        get_target_property(outfile ${outlib} LOCATION)
         add_custom_command(TARGET ${outlib} POST_BUILD
-            COMMAND rm ${outfile}
-            COMMAND /usr/bin/libtool -static -o ${outfile}
+            COMMAND rm $<TARGET_FILE:${outlib}>
+            COMMAND /usr/bin/libtool -static -o $<TARGET_FILE:${outlib}>
             ${libfiles}
         )
     else() # general UNIX - need to "ar -x" and then "ar -ru"

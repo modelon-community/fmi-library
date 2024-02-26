@@ -11,10 +11,8 @@
 #    You should have received a copy of the FMILIB_License.txt file
 #    along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 
-# CMake 3.1.3 or later is required to build Expat & zlib (as ExternalProject). However,
-# keeping 2.8.6 on the FMIL main project for now since updating causes issues
-# with CMP0026 (and more).
-cmake_minimum_required(VERSION 2.8.6 FATAL_ERROR)
+# CMake 3.1.3 or later is required to build Expat & zlib (as ExternalProject).
+cmake_minimum_required(VERSION 3.1.3 FATAL_ERROR)
 
 # Prohibit in-source build
 if("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
@@ -29,9 +27,6 @@ if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.3")
     # to prevent problems with Ninja.
     cmake_policy(SET CMP0058 NEW)
 endif()
-
-# Avoid warnings in mergestaticlibs.cmake. TODO: Fix the warnings.
-cmake_policy(SET CMP0026 OLD)
 
 # Verify that float parsing will work for the platform/compiler config. Ignoring CHAR_BIT for exotic platforms.
 include(CheckTypeSize)

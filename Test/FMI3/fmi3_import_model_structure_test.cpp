@@ -52,7 +52,7 @@ static void test_fmi3_import_get_outputs(fmi3_import_t* fmu) {
 static void test_fmi3_import_get_continuous_state_derivatives(fmi3_import_t* fmu) {
 
     fmi3_import_variable_list_t* varList = fmi3_import_get_continuous_state_derivatives_list(fmu);
-    REQUIRE(fmi3_import_get_variable_list_size(varList) == 6);
+    REQUIRE(fmi3_import_get_variable_list_size(varList) == 7);
 
     /* check VRs and dependencies of all continuousStateDerivatives */
     size_t numDependencies;
@@ -114,6 +114,14 @@ static void test_fmi3_import_get_continuous_state_derivatives(fmi3_import_t* fmu
     REQUIRE(dependsOnAll == 0); // no dependencies
     REQUIRE(dependencies == nullptr);
     REQUIRE(dependenciesKind == nullptr);
+
+    idx = 6; // <ContinuousStateDerivative valueReference="4294967290" dependencies="4294967291" dependenciesKind="fixed"/>
+    var = fmi3_import_get_variable(varList, idx);
+    REQUIRE(fmi3_import_get_variable_vr(var) == 4294967290);
+    REQUIRE(fmi3_import_get_continuous_state_derivative_dependencies(fmu, var, &numDependencies, &dependsOnAll, &dependencies, &dependenciesKind) == 0);
+    REQUIRE(numDependencies == 1);
+    REQUIRE(dependencies[0] == 4294967291);
+    REQUIRE(dependenciesKind[0] == fmi3_dependencies_kind_fixed);
 
     fmi3_import_free_variable_list(varList);
 }

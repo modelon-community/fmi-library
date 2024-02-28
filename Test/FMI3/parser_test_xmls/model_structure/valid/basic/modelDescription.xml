@@ -32,6 +32,9 @@
 
     <Float64 name="der(state_depend_on_all)" valueReference="303" variability="continuous" derivative="203" start="1.0"/>
     <Float64 name="der(state_independent)"   valueReference="304" variability="continuous" derivative="204" start="1.0"/>
+
+    <Float64 name="der(state_large_VR)" valueReference="4294967290" variability="continuous" derivative="4294967291"/>
+    <Float64 name="state_large_VR" valueReference="4294967291" variability="continuous"/>
 </ModelVariables>
 
 <ModelStructure>
@@ -44,6 +47,8 @@
 
   <ContinuousStateDerivative valueReference="303"/>
   <ContinuousStateDerivative valueReference="304" dependencies="" dependenciesKind=""/>
+
+  <ContinuousStateDerivative valueReference="4294967290" dependencies="4294967291" dependenciesKind="fixed"/>
 
   <ClockedState valueReference="11"/>
   <InitialUnknown valueReference="1"/>

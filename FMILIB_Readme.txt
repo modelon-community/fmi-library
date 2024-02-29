@@ -31,19 +31,19 @@ CMake 3.1.3 or later is required in order to build expat.
 To build from a terminal command line on Linux or Mac with default settings use:
 \code
 	mkdir build-fmil; cd build-fmil
-	cmake -DFMILIB_INSTALL_PREFIX=<prefix> <path to FMIL source>
+	cmake -DCMAKE_INSTALL_PREFIX=<prefix> <path to FMIL source>
 	make install test
 \endcode
 To build in MSYS terminal with g++/gcc on Windows:
 \code
 	mkdir build-fmil; cd build-fmil
-	cmake -DFMILIB_INSTALL_PREFIX=<prefix> -G "MSYS Makefiles" <path to FMIL source>
+	cmake -DCMAKE_INSTALL_PREFIX=<prefix> -G "MSYS Makefiles" <path to FMIL source>
 	make install test
 \endcode
 To build from command line with Microsoft Visual Studio compilers on Windows:
 \code
 	mkdir build-fmil; cd build-fmil
-	cmake -DFMILIB_INSTALL_PREFIX=<prefix> -G "Visual Studio 10" <path to FMIL source>
+	cmake -DCMAKE_INSTALL_PREFIX=<prefix> -G "Visual Studio 10" <path to FMIL source>
 	cmake --build . --config MinSizeRel --target install
 \endcode
 
@@ -62,7 +62,7 @@ The primary targets of the library build script are:
   the project in Visual Studio.
 
 The following build configuration options are provided:
-- \b FMILIB_INSTALL_PREFIX - prefix prepended to install directories.\n
+- \b CMAKE_INSTALL_PREFIX - prefix prepended to install directories.\n
    Default: "../install" \n
    This is the main install directory name. Include files will be located in
    the "include" subdirectory and library files in the "lib" subdirectory.

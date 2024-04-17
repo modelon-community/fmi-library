@@ -181,7 +181,7 @@ void fmi2_import_destroy_dllfmu(fmi2_import_t* fmu) {
 /* FMI 2.0 Common functions */
 const char* fmi2_import_get_version(fmi2_import_t* fmu) {
     if(!fmu->capi) {
-        jm_log_error(fmu->callbacks, module,"FMU CAPI is not loaded");
+        jm_log_error(fmu->callbacks, module, "FMU CAPI is not loaded");
         return 0;
     }
     return fmi2_capi_get_version(fmu -> capi);
@@ -189,7 +189,7 @@ const char* fmi2_import_get_version(fmi2_import_t* fmu) {
 
 fmi2_status_t fmi2_import_set_debug_logging(fmi2_import_t* fmu, fmi2_boolean_t loggingOn, size_t nCategories, fmi2_string_t categories[]) {
     if(!fmu->capi) {
-        jm_log_error(fmu->callbacks, module,"FMU CAPI is not loaded");
+        jm_log_error(fmu->callbacks, module, "FMU CAPI is not loaded");
         return fmi2_status_fatal;
     }
     return fmi2_capi_set_debug_logging(fmu -> capi, loggingOn, nCategories, categories);
@@ -204,6 +204,10 @@ jm_status_enu_t fmi2_import_instantiate(fmi2_import_t* fmu,
     fmi2_component_t c;
     if(!fmuResourceLocation) 
         fmuResourceLocation = fmu->resourceLocation;
+    if(!fmu->capi) {
+        jm_log_error(fmu->callbacks, module, "FMU CAPI is not loaded");
+        return jm_status_error;
+    }
     c = fmi2_capi_instantiate(fmu -> capi, instanceName, fmuType, fmuGUID,
                               fmuResourceLocation, visible, loggingOn);
     if (c == NULL) {

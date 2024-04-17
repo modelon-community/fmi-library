@@ -186,7 +186,7 @@ void fmi3_import_destroy_dllfmu(fmi3_import_t* fmu) {
 /* FMI 3.0 Common functions */
 const char* fmi3_import_get_version(fmi3_import_t* fmu) {
     if(!fmu->capi) {
-        jm_log_error(fmu->callbacks, module,"FMU CAPI is not loaded");
+        jm_log_error(fmu->callbacks, module ,"FMU CAPI is not loaded");
         return 0;
     }
     return fmi3_capi_get_version(fmu->capi);
@@ -194,7 +194,7 @@ const char* fmi3_import_get_version(fmi3_import_t* fmu) {
 
 fmi3_status_t fmi3_import_set_debug_logging(fmi3_import_t* fmu, fmi3_boolean_t loggingOn, size_t nCategories, fmi3_string_t categories[]) {
     if(!fmu->capi) {
-        jm_log_error(fmu->callbacks, module,"FMU CAPI is not loaded");
+        jm_log_error(fmu->callbacks, module, "FMU CAPI is not loaded");
         return fmi3_status_fatal;
     }
     return fmi3_capi_set_debug_logging(fmu->capi, loggingOn, nCategories, categories);
@@ -221,6 +221,10 @@ jm_status_enu_t fmi3_import_instantiate_model_exchange(fmi3_import_t* fmu,
     }
     strcpy(fmu->instanceName, instanceName);
 
+    if(!fmu->capi) {
+        jm_log_error(fmu->callbacks, module, "FMU CAPI is not loaded");
+        return jm_status_error;
+    }
     c = fmi3_capi_instantiate_model_exchange(
             fmu->capi,
             instanceName,
@@ -263,6 +267,10 @@ jm_status_enu_t fmi3_import_instantiate_co_simulation(
     }
     strcpy(fmu->instanceName, instanceName);
 
+    if(!fmu->capi) {
+        jm_log_error(fmu->callbacks, module, "FMU CAPI is not loaded");
+        return jm_status_error;
+    }
     c = fmi3_capi_instantiate_co_simulation(
            fmu->capi,
            instanceName,
@@ -308,6 +316,10 @@ jm_status_enu_t fmi3_import_instantiate_scheduled_execution(
     }
     strcpy(fmu->instanceName, instanceName);
 
+    if(!fmu->capi) {
+        jm_log_error(fmu->callbacks, module, "FMU CAPI is not loaded");
+        return jm_status_error;
+    }
     c = fmi3_capi_instantiate_scheduled_execution(
            fmu->capi,
            instanceName,

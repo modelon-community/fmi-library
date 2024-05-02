@@ -42,42 +42,21 @@ typedef struct fmi_xml_context_t fmi_xml_context_t;
     @param callbacks - the callbacks to be used for memory allocation and logging. Can be NULL if default callbacks are to be used.
     @return A pointer to the newly allocated ::fmi_xml_context_t or NULL if memory allocation failed.
 */
-fmi_xml_context_t* fmi_xml_allocate_context( jm_callbacks* callbacks);
+fmi_xml_context_t* fmi_xml_allocate_context(jm_callbacks* callbacks);
 
 /** \brief Free library context */
-void fmi_xml_free_context(fmi_xml_context_t *context);
+void fmi_xml_free_context(fmi_xml_context_t* context);
 
-void fmi_xml_set_configuration( fmi_xml_context_t* context, int configuration);
+void fmi_xml_set_configuration(fmi_xml_context_t* context, int configuration);
 
 /** \brief Parse XML file to identify FMI standard version (only beginning of the file is parsed). */
-fmi_version_enu_t fmi_xml_get_fmi_version( fmi_xml_context_t*, const char* fileName);
+fmi_version_enu_t fmi_xml_get_fmi_version(fmi_xml_context_t*, const char* fileName);
 
 /** ModelDescription is the entry point for the package*/
 typedef struct fmi1_xml_model_description_t fmi1_xml_model_description_t;
 typedef struct fmi2_xml_model_description_t fmi2_xml_model_description_t;
 typedef struct fmi3_xml_model_description_t fmi3_xml_model_description_t;
 
-/** \brief Parse FMI 1.0 XML file and create model description object.
-
-    Errors are reported via the ::jm_callbacks object passed to fmi_xml_allocate_context().
-    @return Model description object or NULL if parsing failed.
-*/
-fmi1_xml_model_description_t* fmi1_xml_parse( fmi_xml_context_t* c, const char* fileName);
-
-
-/** \brief Parse FMI 2.0 XML file and create model description object.
-
-    Errors are reported via the ::jm_callbacks object passed to fmi_xml_allocate_context().
-    @return Model description object or NULL if parsing failed.
-*/
-fmi2_xml_model_description_t* fmi2_xml_parse( fmi_xml_context_t* c, const char* fileName);
-
-/** \brief Parse FMI 3.0 XML file and create model description object.
-
-    Errors are reported via the ::jm_callbacks object passed to fmi_xml_allocate_context().
-    @return Model description object or NULL if parsing failed.
-*/
-fmi3_xml_model_description_t* fmi3_xml_parse( fmi_xml_context_t* c, const char* fileName);
 /** @} 
 */
 #ifdef __cplusplus

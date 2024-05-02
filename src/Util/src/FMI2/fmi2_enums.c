@@ -118,7 +118,7 @@ fmi2_initial_enu_t fmi2InitialDefaultsTable[fmi2_variability_enu_unknown][fmi2_c
     /* fixed   */   {fmi2_initial_enu_exact,   fmi2_initial_enu_calculated, fmi2_initial_enu_unknown,  fmi2_initial_enu_unknown,    fmi2_initial_enu_calculated, fmi2_initial_enu_unknown},
     /* tunable */   {fmi2_initial_enu_exact,   fmi2_initial_enu_calculated, fmi2_initial_enu_unknown,  fmi2_initial_enu_unknown,    fmi2_initial_enu_calculated, fmi2_initial_enu_unknown},
     /* discrete */  {fmi2_initial_enu_unknown, fmi2_initial_enu_unknown,    fmi2_initial_enu_unknown,  fmi2_initial_enu_calculated, fmi2_initial_enu_calculated, fmi2_initial_enu_unknown},
-    /* continuous */{fmi2_initial_enu_unknown, fmi2_initial_enu_unknown,    fmi2_initial_enu_unknown,  fmi2_initial_enu_calculated, fmi2_initial_enu_calculated, fmi2_initial_enu_unknown}
+    /* continuous */{fmi2_initial_enu_unknown, fmi2_initial_enu_unknown,    fmi2_initial_enu_unknown,  fmi2_initial_enu_calculated, fmi2_initial_enu_calculated, fmi2_initial_enu_calculated}
 };
 
 FMILIB_EXPORT fmi2_variability_enu_t fmi2_get_default_valid_variability(fmi2_causality_enu_t c)

@@ -32,13 +32,6 @@ def Configs = [
         target_install: 'install',
         target_test: 'test'
     ],
-    'centos64': [
-        name: 'centos64',
-        os: 'linux',
-        node: 'docker',
-        target_install: '-C . -f build/docker/Makefile install',
-        target_test: '-C . -f build/docker/Makefile test'
-    ],
     'ubuntu64': [
         name: 'ubuntu64',
         os: 'linux',
@@ -111,7 +104,6 @@ tasks[conf.name] = {
 
 // Currently getting cygwin heap error when parallellizing msvc_md and msvc_mt, so not doing that for now
 def parallellTasks = [
-    'centos64':      tasks.centos64,
     'ubuntu64':      tasks.ubuntu64,
     'mingw_w64':     tasks.mingw_w64,
     'msvc_md':       tasks.msvc_md,

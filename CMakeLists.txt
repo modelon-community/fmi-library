@@ -49,7 +49,6 @@ set(CMAKE_BINARY_DIR ${FMILibrary_BINARY_DIR})
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/Config.cmake)
 
 # User configuration options and parameters
-set(FMILIB_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/../install CACHE PATH "Prefix prepended to install directories")
 set(FMILIB_THIRDPARTYLIBS  ${CMAKE_SOURCE_DIR}/ThirdParty CACHE PATH "Path to the ThirdParty library dir" )
 set(FMILIB_FMI_STANDARD_HEADERS  ${FMILIB_THIRDPARTYLIBS}/FMI/default CACHE PATH "Path to the FMI standard headers dir" )
 
@@ -108,8 +107,6 @@ endif()
 if(NOT CMAKE_BUILD_TYPE)
     SET(CMAKE_BUILD_TYPE ${FMILIB_DEFAULT_BUILD_TYPE})
 endif()
-
-set(CMAKE_INSTALL_PREFIX ${FMILIB_INSTALL_PREFIX} CACHE INTERNAL "Prefix prepended to install directories" FORCE)
 
 # debug_message is used to trace the build script
 function(debug_message)
@@ -436,8 +433,6 @@ endfunction()
 
 if(FMILIB_GENERATE_DOXYGEN_DOC)
 
-    file(MAKE_DIRECTORY "${FMILIB_INSTALL_PREFIX}/doc")
-
     set(DOXYFILE_IN ${CMAKE_SOURCE_DIR}/Config.cmake/fmilib_doxydoc.conf CACHE INTERNAL "Doxygen config file")
     set(DOXYFILE_IMAGE_DIR "${CMAKE_SOURCE_DIR}/images" CACHE INTERNAL "Doxygen images" FORCE)
 
@@ -458,7 +453,7 @@ if(FMILIB_GENERATE_DOXYGEN_DOC)
     set(DOXYFILE_SOURCE_DIR "${CMAKE_BINARY_DIR}/doc" CACHE INTERNAL "Doxygen default source dir" FORCE)
     set(DOXYFILE_EXTRA_SOURCES "${DOXYFILE_EXTRA_SOURCES} \"${CMAKE_SOURCE_DIR}/Test\"")
 
-    set(DOXYFILE_OUTPUT_DIR "${FMILIB_INSTALL_PREFIX}/doc")
+    set(DOXYFILE_OUTPUT_DIR "${CMAKE_BINARY_DIR}/doc")
 
     set(DOXYFILE_STRIP_FROM_PATH "${CMAKE_SOURCE_DIR}")
 

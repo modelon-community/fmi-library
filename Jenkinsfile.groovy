@@ -97,7 +97,7 @@ tasks[conf.name] = {
         }
 
         stage("Archive: ${conf.name}") {
-            archiveArtifacts(artifacts: "install_${conf.name}/doc/html/**")
+            archiveArtifacts(artifacts: "build_${conf.name}/doc/html/**")
         }
     }
 }

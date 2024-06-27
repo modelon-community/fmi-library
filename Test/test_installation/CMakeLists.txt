@@ -1,4 +1,4 @@
-#    Copyright (C) 2023 Modelon AB
+#    Copyright (C) 2023-2024 Modelon AB
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the BSD style license.
@@ -10,7 +10,7 @@
 #
 #    You should have received a copy of the FMILIB_License.txt file
 #    along with this program. If not, contact Modelon AB <http://www.modelon.com>.
- 
+
 cmake_minimum_required(VERSION 3.15 FATAL_ERROR)
 
 # Performs a smoke test on the install directory of FMIL. Verifies for example
@@ -103,5 +103,5 @@ add_test(test_installation_shared main_shared)
 if(WIN32)
     # NOTE: Just replacing PATH instead of appending since that's troublesome
     # due to escaping of ';' in Windows paths.
-    set_property(TEST test_installation_shared PROPERTY ENVIRONMENT "PATH=${FMIL_HOME}/lib")
+    set_property(TEST test_installation_shared PROPERTY ENVIRONMENT "PATH=${FMIL_HOME}/bin")
 endif()

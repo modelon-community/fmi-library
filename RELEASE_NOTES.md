@@ -4,6 +4,17 @@ The release notes are typically a highlighting subset of all changes made. For f
 
 Note that version 2.1 is the first version with release notes. Please see the commit history for older versions.
 
+## Future
+
+### Improvements
+
+- Added include of `GNUInstallDirs`.
+
+### Changes
+
+- The CMAKE variable `CMAKE_INSTALL_PREFIX` is now utilized instead of `FMILIB_INSTALL_PREFIX`.
+- Removed the build configuration for CentOS.
+
 ## 3.0a3
 
 ### Improvements
@@ -43,7 +54,7 @@ Note that version 2.1 is the first version with release notes. Please see the co
 - Added initial support for FMI 3.0. Limitations:
     - XML elements `Annotations`, `TerminalsAndIcons`, and `BuildConfiguration` are not yet supported.
     - Many error checks are missing.
-    
+
 ### Changes
 
 - `fmi_construct_dll_dir_name` and `fmi_construct_dll_file_name` have been removed.
@@ -100,6 +111,5 @@ Note that version 2.1 is the first version with release notes. Please see the co
 ## 2.1
 
 - Added functions to API for determining if DefaultExperiment values are defined in the XML (typically used to check if a default value will be returned by the getters for DefaultExperiment attributes)
-- Clarified that license is 3-Clause BSD 
+- Clarified that license is 3-Clause BSD
 - FMI Library moved to GitHub
-

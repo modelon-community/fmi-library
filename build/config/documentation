@@ -17,6 +17,5 @@ TEST_LOCALE=0
 
 
 MOUNTED_DIR=/mnt/fmi-library
-# Either centos or ubuntu works
-DOCKERFILE_NAME=centos64.Dockerfile
-DOCKER_IMAGE_TAG=fmil_centos64:test
+DOCKERFILE_NAME=ubuntu64.Dockerfile
+DOCKER_IMAGE_TAG=fmil_ubuntu64:test

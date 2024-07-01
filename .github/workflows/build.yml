@@ -1,0 +1,24 @@
+# Basic compilation and unit testing via GitHub Actions.
+# Full CI testing is also run internally by Modelon (via Jenkinsfile.groovy).
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  linux:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install system
+      run: sudo apt-get update -y && sudo apt-get -y install cmake
+    - name: Build
+      run: |
+        cmake -DCMAKE_INSTALL_PREFIX=~/.local -DFMILIB_GENERATE_DOXYGEN_DOC=0 -B build_cmake .
+        cmake --build build_cmake --target install --parallel 4
+    - name: Test
+      run: ctest --test-dir build_cmake --output-on-failure
+

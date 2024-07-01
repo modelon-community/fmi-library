@@ -12,13 +12,24 @@ jobs:
   linux:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - name: Install system
-      run: sudo apt-get update -y && sudo apt-get -y install cmake
-    - name: Build
-      run: |
-        cmake -DCMAKE_INSTALL_PREFIX=~/.local -DFMILIB_GENERATE_DOXYGEN_DOC=0 -B build_cmake .
-        cmake --build build_cmake --target install --parallel 4
-    - name: Test
-      run: ctest --test-dir build_cmake --output-on-failure
+      - uses: actions/checkout@v4
+      - name: Install system
+        run: sudo apt-get update -y && sudo apt-get -y install cmake
+      - name: Build
+        run: |
+          cmake -DCMAKE_INSTALL_PREFIX=~/.local -DFMILIB_GENERATE_DOXYGEN_DOC=0 -B build_cmake .
+          cmake --build build_cmake --target install --parallel 4
+      - name: Test
+        run: ctest --test-dir build_cmake --output-on-failure
 
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build
+        shell: cmd
+        run: |
+          cmake -DCMAKE_INSTALL_PREFIX=%CWD\=/%/build_cmake/install -DFMILIB_GENERATE_DOXYGEN_DOC=0 -B build_cmake . || exit 1
+          cmake --build build_cmake --target install --parallel 4 || exit 1
+      - name: Test
+        run: ctest --test-dir build_cmake --output-on-failure -C Release --timeout 200

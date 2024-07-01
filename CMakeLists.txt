@@ -12,7 +12,7 @@
 #    along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 
 # CMake 3.1.3 or later is required to build Expat & zlib (as ExternalProject).
-cmake_minimum_required(VERSION 3.1.3 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 
 # Prohibit in-source build
 if("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
@@ -21,12 +21,9 @@ endif()
 
 project(FMILibrary)
 
-# Only check this when developing. (Project minimum required is less.)
-if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.3")
-    # Require that we specify when using "byproducts" (i.e. files in the build tree without any explicit target)
-    # to prevent problems with Ninja.
-    cmake_policy(SET CMP0058 NEW)
-endif()
+# Require that we specify when using "byproducts" (i.e. files in the build tree without any explicit target)
+# to prevent problems with Ninja.
+cmake_policy(SET CMP0058 NEW)
 
 # Verify that float parsing will work for the platform/compiler config. Ignoring CHAR_BIT for exotic platforms.
 include(CheckTypeSize)

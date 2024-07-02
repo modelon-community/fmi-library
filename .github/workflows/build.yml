@@ -21,6 +21,12 @@ jobs:
           cmake --build build_cmake --target install --parallel 4
       - name: Test
         run: ctest --test-dir build_cmake --output-on-failure
+      - name: External test
+        run: |
+          cd Test/test_installation
+          cmake -DFMIL_HOME=~/.local .
+          cmake --build .
+          ctest --output-on-failure
 
   windows:
     runs-on: windows-latest
@@ -29,7 +35,14 @@ jobs:
       - name: Build
         shell: cmd
         run: |
-          cmake -DCMAKE_INSTALL_PREFIX=%CWD\=/%/build_cmake/install -DFMILIB_GENERATE_DOXYGEN_DOC=0 -B build_cmake . || exit 1
+          cmake -DCMAKE_INSTALL_PREFIX=%CD:\=/%/build_cmake/install -DFMILIB_GENERATE_DOXYGEN_DOC=0 -B build_cmake . || exit 1
           cmake --build build_cmake --target install --parallel 4 || exit 1
       - name: Test
         run: ctest --test-dir build_cmake --output-on-failure -C Release --timeout 200
+      - name: External test
+        shell: cmd
+        run: |
+          cd Test/test_installation
+          cmake -DFMIL_HOME=%CD:\=/%/../../build_cmake/install .
+          cmake --build .
+          ctest --output-on-failure

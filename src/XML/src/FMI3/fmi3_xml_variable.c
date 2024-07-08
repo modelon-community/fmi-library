@@ -1559,7 +1559,7 @@ int fmi3_xml_handle_Variable(fmi3_xml_parser_context_t* context, const char* dat
     return 0;
 }
 
-static void fmi3_log_error_if_start_required(fmi3_xml_parser_context_t* context, fmi3_xml_variable_t* variable) {
+static void fmi3_log_warning_if_start_required(fmi3_xml_parser_context_t* context, fmi3_xml_variable_t* variable) {
     // causality checks
     if (variable->causality == fmi3_causality_enu_input) {
         fmi3_xml_parse_warning(context, "Variable '%s': start value required for input variables",
@@ -1580,6 +1580,24 @@ static void fmi3_log_error_if_start_required(fmi3_xml_parser_context_t* context,
             fmi3_xml_get_variable_name(variable));
     } else if (variable->initial == fmi3_initial_enu_approx) {
         fmi3_xml_parse_warning(context, "Variable '%s': start value required for variables with initial == \"approx\"",
+            fmi3_xml_get_variable_name(variable));
+    }
+}
+
+static void fmi3_log_warnings_start_exists(fmi3_xml_parser_context_t* context, fmi3_xml_variable_t* variable) {
+    /* If initial = calculated or causality = independent, it is not allowed to provide a start attribute. */
+    /* The variable is calculated by the FMU from other variables during initialization. For calculated variables a start attribute must not be provided. */
+    // TODO: This one is quite a bit more delicate to properly implement, since the default inferred initial may cause issues here.
+    // E.g., Float with causality = output + start values
+    // variability = continuous is inferred, default initial for coninuous outputs is 'calculated', would need to choose non-default, but valid initial
+    /* 
+    if (variable->initial == fmi3_initial_enu_calculated) {
+        fmi3_xml_parse_warning(context, "Variable '%s': Variables with initial == \"calculated\" are not allowed to have a start attribute.",
+            fmi3_xml_get_variable_name(variable));
+    }
+    */
+    if (variable->causality == fmi3_causality_enu_independent) {
+        fmi3_xml_parse_warning(context, "Variable '%s': The independent variable is not allowed to have a start attribute.",
             fmi3_xml_get_variable_name(variable));
     }
 }
@@ -1730,7 +1748,7 @@ int fmi3_xml_handle_FloatXX(fmi3_xml_parser_context_t* context, const char* data
                     // TODO: Can one get these from some sort of defaults instead?
                     start->start.array64s = NULL;
                     start->start.array32s = NULL;
-                    fmi3_log_error_if_start_required(context, variable);
+                    fmi3_log_warning_if_start_required(context, variable);
                 }
             } else { /* is scalar */
                 // TODO:
@@ -1746,8 +1764,9 @@ int fmi3_xml_handle_FloatXX(fmi3_xml_parser_context_t* context, const char* data
                 }
             }
             variable->type = &start->super;
+            fmi3_log_warnings_start_exists(context, variable);
         } else {
-            fmi3_log_error_if_start_required(context, variable);
+            fmi3_log_warning_if_start_required(context, variable);
         }
 
         /* TODO: verify that dimension size == number of array start attribute values */
@@ -1817,7 +1836,7 @@ int fmi3_xml_handle_IntXX(fmi3_xml_parser_context_t* context, const char* data,
                     start->start.array32u = NULL;
                     start->start.array16u = NULL;
                     start->start.array8u  = NULL;
-                    fmi3_log_error_if_start_required(context, variable);
+                    fmi3_log_warning_if_start_required(context, variable);
                 }
             } else { /* is scalar */
                 /* restore the attribute buffer before it's used in set_attr_int */
@@ -1834,8 +1853,9 @@ int fmi3_xml_handle_IntXX(fmi3_xml_parser_context_t* context, const char* data,
                 }
             }
             variable->type = &start->super;
+            fmi3_log_warnings_start_exists(context, variable);
         } else {
-            fmi3_log_error_if_start_required(context, variable);
+            fmi3_log_warning_if_start_required(context, variable);
         }
     }
     return 0;
@@ -1905,7 +1925,7 @@ int fmi3_xml_handle_Boolean(fmi3_xml_parser_context_t *context, const char* data
                     start->start.array32u = NULL;
                     start->start.array16u = NULL;
                     start->start.array8u  = NULL;
-                    fmi3_log_error_if_start_required(context, variable);
+                    fmi3_log_warning_if_start_required(context, variable);
                 }
             } else {
                 /* restore the attribute buffer before it's used in set_attr_boolean */
@@ -1917,8 +1937,9 @@ int fmi3_xml_handle_Boolean(fmi3_xml_parser_context_t *context, const char* data
                 }
             }
             variable->type = &start->super;
+            fmi3_log_warnings_start_exists(context, variable);
         } else {
-            fmi3_log_error_if_start_required(context, variable);
+            fmi3_log_warning_if_start_required(context, variable);
         }
         return 0;
     }
@@ -1992,10 +2013,11 @@ int fmi3_xml_handle_Binary(fmi3_xml_parser_context_t* context, const char* data)
             }
 
             variable->type = &startObj->super;
+            fmi3_log_warnings_start_exists(context, variable);
             // Resize the vector to 0 since we are now done with the current variable.
             jm_vector_resize(jm_voidp)(&context->currentStartVariableValues, 0);
         } else {
-            fmi3_log_error_if_start_required(context, variable);
+            fmi3_log_warning_if_start_required(context, variable);
         }
     }
     return 0;
@@ -2079,8 +2101,9 @@ int fmi3_xml_handle_String(fmi3_xml_parser_context_t *context, const char* data)
             if (!fmi3_xml_variable_is_array(variable) && (nStart != 1)) {
                 fmi3_xml_parse_warning(context, "Variable %s: Found %" PRIu64 " Start elements for non-array variable", variable->name, nStart);
             }
+            fmi3_log_warnings_start_exists(context, variable); // only captures binary arrays
         } else {
-            fmi3_log_error_if_start_required(context, variable);
+            fmi3_log_warning_if_start_required(context, variable);
         }
     }
     return 0;
@@ -2165,6 +2188,7 @@ int fmi3_xml_handle_BinaryVariableStart(fmi3_xml_parser_context_t* context, cons
                 return -1;
             }
             variable->type = &startObj->super;
+            fmi3_log_warnings_start_exists(context, variable); // binary non-array
         }
     }
     return 0;
@@ -2270,7 +2294,7 @@ int fmi3_xml_handle_Enumeration(fmi3_xml_parser_context_t *context, const char* 
                     start->start.array32u = NULL;
                     start->start.array16u = NULL;
                     start->start.array8u  = NULL;
-                    fmi3_log_error_if_start_required(context, variable);
+                    fmi3_log_warning_if_start_required(context, variable);
                 }
             } else {
                 /* restore the attribute buffer before it's used in set_attr_int */
@@ -2282,8 +2306,9 @@ int fmi3_xml_handle_Enumeration(fmi3_xml_parser_context_t *context, const char* 
                 }
             }
             variable->type = &start->super;
+            fmi3_log_warnings_start_exists(context, variable);
         } else {
-            fmi3_log_error_if_start_required(context, variable);
+            fmi3_log_warning_if_start_required(context, variable);
         }
     }
     return 0;

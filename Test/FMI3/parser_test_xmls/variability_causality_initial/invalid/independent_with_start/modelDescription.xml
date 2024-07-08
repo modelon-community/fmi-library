@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription fmiVersion="3.0" modelName="" instantiationToken="">
+<CoSimulation modelIdentifier="id" />
+
+<ModelVariables>
+	<!-- "If initial = calculated or causality = independent, it is not allowed to provide a start attribute." -->
+	<Float64 name="f64_indep" valueReference="1" causality="independent" start="0"/>
+</ModelVariables>
+
+<ModelStructure/>
+</fmiModelDescription>

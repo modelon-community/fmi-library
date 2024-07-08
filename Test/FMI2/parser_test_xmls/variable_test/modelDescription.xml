@@ -70,6 +70,9 @@
     <ScalarVariable name="derivative"  causality="output" variability="continuous" valueReference="10" initial="approx" description="myDescription">
         <Real derivative="1" start="1.0"/>
     </ScalarVariable>
+    <ScalarVariable causality="independent" description="time" name="time" valueReference="100" variability="continuous">
+      <Real/>
+    </ScalarVariable>
 </ModelVariables>
 
 <ModelStructure>

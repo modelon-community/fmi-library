@@ -491,6 +491,11 @@ int fmi2_xml_get_has_start(fmi2_xml_parser_context_t *context, fmi2_xml_variable
             fmi2_xml_parse_error(context, "Start attribute is not allowed for variables with initial='calculated'");
             hasStart = 0;
         }
+        /* If causality = independent, it is not allowed to provide a start value. */
+        if(variable->causality == (char)fmi2_causality_enu_independent) {
+            fmi2_xml_parse_error(context, "Start attribute is not allowed for variables with causality='independent'");
+            hasStart = 0;
+        }
     }
     return hasStart;
 }

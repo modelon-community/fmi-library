@@ -48,7 +48,7 @@ TEST_CASE("Default valid variability") {
     REQUIRE(fmi3_get_default_valid_variability(fmi3_causality_enu_input, 0)                == fmi3_variability_enu_discrete);
     REQUIRE(fmi3_get_default_valid_variability(fmi3_causality_enu_output, 0)               == fmi3_variability_enu_discrete);
     REQUIRE(fmi3_get_default_valid_variability(fmi3_causality_enu_local, 0)                == fmi3_variability_enu_discrete);
-    REQUIRE(fmi3_get_default_valid_variability(fmi3_causality_enu_independent, 0)          == fmi3_variability_enu_continuous);
+    REQUIRE(fmi3_get_default_valid_variability(fmi3_causality_enu_independent, 0)          == fmi3_variability_enu_unknown);
 
     REQUIRE(fmi3_get_default_valid_variability(fmi3_causality_enu_unknown, 0)              == fmi3_variability_enu_unknown);
 
@@ -389,9 +389,6 @@ TEST_CASE("Test default variabilities") {
 
         v = fmi3_import_get_variable_by_vr(tfmu->fmu, 16);
         REQUIRE(fmi3_import_get_variable_variability(v) == fmi3_variability_enu_discrete);
-
-        v = fmi3_import_get_variable_by_vr(tfmu->fmu, 17);
-        REQUIRE(fmi3_import_get_variable_variability(v) == fmi3_variability_enu_continuous);
     }
 
     // Taking default does not have any warnings or similar

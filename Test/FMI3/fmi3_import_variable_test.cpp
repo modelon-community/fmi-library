@@ -1002,3 +1002,27 @@ TEST_CASE("Invalid canHandleMultipleSetPerTimeInstant; set to non-default for ca
     REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 1);
     fmi3_testutil_import_free(tfmu);
 }
+
+TEST_CASE("Causality independent on non float") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/variables/invalid/nonfloat_independent";
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    REQUIRE(tfmu != nullptr);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu != nullptr);
+
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Causality 'independent' is only allowed for float type variables.")); // 6 times
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Invalid combination of variability Unknown and causality independent for variable 'i32'. Setting variability to 'Unknown'"));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Invalid combination of variability Unknown and causality independent for variable 'i64'. Setting variability to 'Unknown'"));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Invalid combination of variability Unknown and causality independent for variable 'enum'. Setting variability to 'Unknown'"));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Invalid combination of variability Unknown and causality independent for variable 'binary'. Setting variability to 'Unknown'"));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Invalid combination of variability Unknown and causality independent for variable 'clock'. Setting variability to 'Unknown'"));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Invalid combination of variability Unknown and causality independent for variable 'bool'. Setting variability to 'Unknown'"));
+    for (int i = 1; i <= 6; i++) {
+        fmi3_import_variable_t* var = fmi3_import_get_variable_by_vr(fmu, i);
+        REQUIRE(var != nullptr);
+        REQUIRE(fmi3_import_get_variable_causality(var) == fmi3_causality_enu_independent);
+    }
+
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 12);
+    fmi3_testutil_import_free(tfmu);
+}

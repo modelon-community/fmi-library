@@ -455,6 +455,11 @@ int fmi2_xml_handle_ScalarVariable(fmi2_xml_parser_context_t *context, const cha
                 fmi2_xml_parse_error(context, "Only variables with causality 'input' can have canHandleMultipleSetPerTimeInstant=false");
                 return -1;
             }
+
+            if ((variable->type != fmi2_base_type_real) && (variable->causality == fmi2_causality_enu_independent)) {
+                fmi2_xml_parse_error(context, "Causality 'independent' is only allowed for float type variables.");
+                return -1;
+            }
         }
     }
     else {

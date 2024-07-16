@@ -1212,6 +1212,8 @@ static int fmi3_xml_variable_process_attr_causality_variability_initial(fmi3_xml
     unsigned int variability, defaultVariability;
     unsigned int initial, defaultInitial, validInitial;
 
+    bool isFloat = (elm_id == fmi3_xml_elmID_Float32) || (elm_id == fmi3_xml_elmID_Float64);
+
     // Causality:
     if (fmi3_xml_parse_attr_as_enum(context, elm_id, fmi_attr_id_causality, 0, &causality,
             fmi3_causality_enu_local, causalityConventionMap))
@@ -1220,8 +1222,12 @@ static int fmi3_xml_variable_process_attr_causality_variability_initial(fmi3_xml
     }
     variable->causality = causality;
 
+    /* Specification: "The independent variable must be defined as a floating point type ..." */
+    if ((!isFloat) && (causality == fmi3_causality_enu_independent)) {
+        fmi3_xml_parse_warning(context, "Causality 'independent' is only allowed for float type variables.");
+    }
+
     // Variability:
-    bool isFloat = (elm_id == fmi3_xml_elmID_Float32) || (elm_id == fmi3_xml_elmID_Float64);
     defaultVariability = fmi3_get_default_valid_variability(causality, isFloat);
     if (fmi3_xml_parse_attr_as_enum(context, elm_id, fmi_attr_id_variability, 0, &variability,
             defaultVariability, variabilityConventionMap))

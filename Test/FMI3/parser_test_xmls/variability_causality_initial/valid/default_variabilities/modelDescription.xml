@@ -18,7 +18,6 @@
 	<Int64 name="i64_input"                 valueReference="14" start="0" causality="input"/>
 	<Int64 name="i64_output"                valueReference="15" start="0" causality="output"/>
 	<Int64 name="i64_local"                 valueReference="16" start="0" causality="local"/>
-	<Int64 name="i64_independent"           valueReference="17" causality="independent"/>
 </ModelVariables>
 
 <ModelStructure/>

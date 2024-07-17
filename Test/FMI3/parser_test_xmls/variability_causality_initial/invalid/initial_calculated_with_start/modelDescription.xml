@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription fmiVersion="3.0" modelName="" instantiationToken="">
+<CoSimulation modelIdentifier="id" />
+
+<TypeDefinitions>
+    <EnumerationType name="MyEnum" quantity="TypeQuantity">
+        <Item name="item1" value="1"/>
+    </EnumerationType>
+</TypeDefinitions>
+
+<ModelVariables>
+	<!-- "If initial = calculated or causality = independent, it is not allowed to provide a start attribute." -->
+	<Float64 name="f64" valueReference="1" initial="calculated" start="0"/>
+	<Int64 name="i64" valueReference="2" initial="calculated" start="0"/>
+	<Boolean name="bool" valueReference="3" initial="calculated" start="true"/>
+	<Binary name="binary" valueReference="4" initial="calculated">
+		<Start value="0011BBff029eE4Cd"/>
+	</Binary>
+	<Binary name="binary_arr" valueReference="5" initial="calculated">
+		<Dimension start="1"/>
+		<Start value="0011BBff029eE4Cd"/>
+	</Binary>
+	<String name="string" valueReference="6" initial="calculated">
+		<Start value="abc"/>
+	</String>
+	<Enumeration name="enumDefault"  valueReference="7" declaredType="MyEnum" initial="calculated" start="1"/>
+</ModelVariables>
+
+<ModelStructure/>
+</fmiModelDescription>

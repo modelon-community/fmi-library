@@ -455,6 +455,11 @@ int fmi2_xml_handle_ScalarVariable(fmi2_xml_parser_context_t *context, const cha
                 fmi2_xml_parse_error(context, "Only variables with causality 'input' can have canHandleMultipleSetPerTimeInstant=false");
                 return -1;
             }
+
+            if ((variable->type != fmi2_base_type_real) && (variable->causality == fmi2_causality_enu_independent)) {
+                fmi2_xml_parse_error(context, "Causality 'independent' is only allowed for float type variables.");
+                return -1;
+            }
         }
     }
     else {
@@ -479,8 +484,8 @@ int fmi2_xml_handle_ScalarVariable(fmi2_xml_parser_context_t *context, const cha
 
 int fmi2_xml_get_has_start(fmi2_xml_parser_context_t *context, fmi2_xml_variable_t* variable) {
     int hasStart = fmi2_xml_is_attr_defined(context, fmi_attr_id_start);
-    if(!hasStart)  {
-        if (variable->initial != (char)fmi2_initial_enu_calculated) {
+    if (!hasStart) {
+        if ((variable->initial != (char)fmi2_initial_enu_calculated) && (variable->causality != (char)fmi2_causality_enu_independent)) {
             fmi2_xml_parse_error(context,
                     "Start attribute is required for this causality, variability and initial combination");
             hasStart = 1;
@@ -489,6 +494,11 @@ int fmi2_xml_get_has_start(fmi2_xml_parser_context_t *context, fmi2_xml_variable
         /* If initial = calculated, it is not allowed to provide a start value. */
         if(variable->initial == (char)fmi2_initial_enu_calculated) {
             fmi2_xml_parse_error(context, "Start attribute is not allowed for variables with initial='calculated'");
+            hasStart = 0;
+        }
+        /* If causality = independent, it is not allowed to provide a start value. */
+        if(variable->causality == (char)fmi2_causality_enu_independent) {
+            fmi2_xml_parse_error(context, "Start attribute is not allowed for variables with causality='independent'");
             hasStart = 0;
         }
     }

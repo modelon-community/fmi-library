@@ -48,7 +48,7 @@ TEST_CASE("Default valid variability") {
     REQUIRE(fmi3_get_default_valid_variability(fmi3_causality_enu_input, 0)                == fmi3_variability_enu_discrete);
     REQUIRE(fmi3_get_default_valid_variability(fmi3_causality_enu_output, 0)               == fmi3_variability_enu_discrete);
     REQUIRE(fmi3_get_default_valid_variability(fmi3_causality_enu_local, 0)                == fmi3_variability_enu_discrete);
-    REQUIRE(fmi3_get_default_valid_variability(fmi3_causality_enu_independent, 0)          == fmi3_variability_enu_continuous);
+    REQUIRE(fmi3_get_default_valid_variability(fmi3_causality_enu_independent, 0)          == fmi3_variability_enu_unknown);
 
     REQUIRE(fmi3_get_default_valid_variability(fmi3_causality_enu_unknown, 0)              == fmi3_variability_enu_unknown);
 
@@ -389,9 +389,6 @@ TEST_CASE("Test default variabilities") {
 
         v = fmi3_import_get_variable_by_vr(tfmu->fmu, 16);
         REQUIRE(fmi3_import_get_variable_variability(v) == fmi3_variability_enu_discrete);
-
-        v = fmi3_import_get_variable_by_vr(tfmu->fmu, 17);
-        REQUIRE(fmi3_import_get_variable_variability(v) == fmi3_variability_enu_continuous);
     }
 
     // Taking default does not have any warnings or similar
@@ -418,3 +415,38 @@ TEST_CASE("Test missing start values") {
     REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 6);
     fmi3_testutil_import_free(tfmu);
 }
+
+TEST_CASE("Test independent variable with start value") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/variability_causality_initial/invalid/independent_with_start";
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    REQUIRE(tfmu != nullptr);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu != nullptr);
+
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Variable 'f64_indep': The independent variable is not allowed to have a start attribute."));
+
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 1);
+    fmi3_testutil_import_free(tfmu);
+}
+
+// TODO: See comments in fmi3_log_warnings_start_exists function
+/*
+TEST_CASE("Test initial == 'calculated' with start value") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/variability_causality_initial/invalid/initial_calculated_with_start";
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    REQUIRE(tfmu != nullptr);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu != nullptr);
+
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Variable 'f64': Variables with initial == \"calculated\" are not allowed to have a start attribute."));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Variable 'i64': Variables with initial == \"calculated\" are not allowed to have a start attribute."));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Variable 'bool': Variables with initial == \"calculated\" are not allowed to have a start attribute."));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Variable 'binary': Variables with initial == \"calculated\" are not allowed to have a start attribute."));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Variable 'binary_arr': Variables with initial == \"calculated\" are not allowed to have a start attribute."));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Variable 'string': Variables with initial == \"calculated\" are not allowed to have a start attribute."));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Variable 'enumDefault': Variables with initial == \"calculated\" are not allowed to have a start attribute."));
+
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 7);
+    fmi3_testutil_import_free(tfmu);
+}
+*/

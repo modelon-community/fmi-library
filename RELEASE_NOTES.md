@@ -14,6 +14,7 @@ Note that version 2.1 is the first version with release notes. Please see the co
 
 - The CMAKE variable `CMAKE_INSTALL_PREFIX` is now utilized instead of `FMILIB_INSTALL_PREFIX`.
 - Removed the build configuration for CentOS.
+- Fixed an incorrect error check that required a start attribute for variables with causality='independent'.
 
 ## 3.0a3
 

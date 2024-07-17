@@ -10,7 +10,7 @@
 	<Float64 name="f64_input"                 valueReference="4" start="0" causality="input"/>
 	<Float64 name="f64_output"                valueReference="5" start="0" causality="output"/>
 	<Float64 name="f64_local"                 valueReference="6" start="0" causality="local"/>
-	<Float64 name="f64_independent"           valueReference="7" start="0" causality="independent"/>
+	<Float64 name="f64_independent"           valueReference="7" causality="independent"/>
 
 	<Int64 name="i64_structural_parameter"  valueReference="11" start="0" causality="structuralParameter"/>
 	<Int64 name="i64_parameter"             valueReference="12" start="0" causality="parameter"/>
@@ -18,7 +18,6 @@
 	<Int64 name="i64_input"                 valueReference="14" start="0" causality="input"/>
 	<Int64 name="i64_output"                valueReference="15" start="0" causality="output"/>
 	<Int64 name="i64_local"                 valueReference="16" start="0" causality="local"/>
-	<Int64 name="i64_independent"           valueReference="17" start="0" causality="independent"/>
 </ModelVariables>
 
 <ModelStructure/>

@@ -164,7 +164,11 @@ fmi3_variability_enu_t fmi3_get_default_valid_variability(fmi3_causality_enu_t c
         return fmi3_variability_enu_unknown;
     }
     if (c == fmi3_causality_enu_independent) {
-        return fmi3_variability_enu_continuous; // only valid one
+        if (isFloat) {
+            return fmi3_variability_enu_continuous; // only valid one
+        } else {
+            return fmi3_variability_enu_unknown; // no valid combination
+        }
     }
 
     // Spec: "The default for variables of causality `parameter`, `structural parameter` or `calculated parameter` is `fixed`"

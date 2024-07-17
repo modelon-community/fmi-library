@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription fmiVersion="3.0" modelName="" instantiationToken="">
+<ModelExchange modelIdentifier="modelIdentifier"/>
+
+<TypeDefinitions>
+    <EnumerationType name="MyEnum">
+        <Item name="item1" value="1"/>
+    </EnumerationType>
+</TypeDefinitions>
+
+<ModelVariables>
+    <!-- The independent variable must be defined as a floating point type -->
+    <Int32 name="i32" valueReference="1" causality="independent"/>
+    <Int64 name="i64" valueReference="2" causality="independent"/>
+    <Enumeration name="enum" valueReference="3" declaredType="MyEnum" causality="independent"/>
+    <Binary name="binary" valueReference="4" causality="independent"/>
+    <Clock name="clock" valueReference="5" intervalVariability="constant" causality="independent"/>
+    <Boolean name="bool" valueReference="6" causality="independent"/>
+</ModelVariables>
+
+<ModelStructure/>
+</fmiModelDescription>

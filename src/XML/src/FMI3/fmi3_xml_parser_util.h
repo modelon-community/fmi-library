@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2023 Modelon AB
+    Copyright (C) 2024 Modelon AB
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the BSD style license.
@@ -16,9 +16,15 @@
 #ifndef FMI3_XML_XMLPARSER_UTIL_H
 #define FMI3_XML_XMLPARSER_UTIL_H
 
+#include "fmi3_xml_parser_context_impl.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+void fmi3_xml_parse_fatal  (fmi3_xml_parser_context_t* context, const char* fmt, ...);
+void fmi3_xml_parse_error  (fmi3_xml_parser_context_t* context, const char* fmt, ...);
+void fmi3_xml_parse_warning(fmi3_xml_parser_context_t* context, const char* fmt, ...);
 
 #ifdef __cplusplus
 }

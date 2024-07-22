@@ -149,6 +149,7 @@ set(FMIXMLHEADERS
     src/FMI3/fmi3_xml_unit_impl.h
     include/FMI3/fmi3_xml_variable.h
     src/FMI3/fmi3_xml_variable_impl.h
+    src/FMI3/fmi3_xml_parser_lists.h
     src/
  )
 

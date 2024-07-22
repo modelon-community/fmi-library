@@ -29,6 +29,7 @@
 #include <FMI3/fmi3_xml_terminals_and_icons.h>
 #include "fmi3_xml_model_description_parser.h"
 #include "fmi3_xml_terminals_and_icons_parser.h"
+#include "fmi3_xml_parser_lists.h"
 
 
 #ifdef __cplusplus
@@ -37,38 +38,6 @@ extern "C" {
 
 
 jm_vector_declare_template(fmi3_value_reference_t)
-
-/** \brief Attributes names common to modelDescription.xml & terminalsAndIcons.xml */
-#define FMI3_XML_ATTRLIST_COMMON(EXPAND_XML_ATTRNAME) \
-    EXPAND_XML_ATTRNAME(fmiVersion) \
-    EXPAND_XML_ATTRNAME(name) \
-    EXPAND_XML_ATTRNAME(description)
-
-/** \brief Attribute names used in XML */
-#define FMI3_XML_ATTRLIST(EXPAND_XML_ATTRNAME) \
-    FMI3_XML_ATTRLIST_COMMON     (EXPAND_XML_ATTRNAME) \
-    FMI3_XML_ATTRLIST_MODEL_DESCR(EXPAND_XML_ATTRNAME) \
-    FMI3_XML_ATTRLIST_TERM_ICON  (EXPAND_XML_ATTRNAME)
-
-#define FMI3_XML_ATTR_ID(attr) fmi_attr_id_##attr,
-typedef enum fmi3_xml_attr_enu_t {
-    FMI3_XML_ATTRLIST(FMI3_XML_ATTR_ID)
-    fmi3_xml_attr_number
-} fmi3_xml_attr_enu_t;
-
-/** \brief Element names used in XML */
-#define FMI3_XML_ELMLIST(EXPAND_XML_ELMNAME) \
-    FMI3_XML_ELMLIST_MODEL_DESCR(EXPAND_XML_ELMNAME) \
-    FMI3_XML_ELMLIST_TERM_ICON  (EXPAND_XML_ELMNAME)
-
-/** \brief Element that can be placed under different parents get alternative names from the info struct */
-#define FMI3_XML_ELMLIST_ALT(EXPAND_XML_ELMNAME) \
-    FMI3_XML_ELMLIST_ALT_MODEL_DESCR(EXPAND_XML_ELMNAME) \
-    FMI3_XML_ELMLIST_ALT_TERM_ICON  (EXPAND_XML_ELMNAME)
-
-/** \brief Abstract elements that are only used in the scheme verification */
-#define FMI3_XML_ELMLIST_ABSTRACT(EXPAND_XML_ELMNAME) \
-    FMI3_XML_ELMLIST_ABSTRACT_MODEL_DESCR(EXPAND_XML_ELMNAME)
 
 /* Build prototypes for all elm_handle_* functions */
 typedef struct fmi3_xml_parser_context_t fmi3_xml_parser_context_t;

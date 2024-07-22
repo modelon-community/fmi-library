@@ -15,7 +15,6 @@
 
 #include <stdio.h>
 
-
 #include "JM/jm_named_ptr.h"
 #include "fmi3_xml_parser.h"
 #include "fmi3_xml_terminals_and_icons_impl.h"

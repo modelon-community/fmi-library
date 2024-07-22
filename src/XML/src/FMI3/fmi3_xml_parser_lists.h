@@ -61,6 +61,30 @@ typedef enum fmi3_xml_attr_enu_t {
 #define FMI3_XML_ELMLIST_ABSTRACT(EXPAND_XML_ELMNAME) \
     FMI3_XML_ELMLIST_ABSTRACT_MODEL_DESCR(EXPAND_XML_ELMNAME)
 
+/* Build prototypes for all elm_handle_* functions */
+typedef struct fmi3_xml_parser_context_t fmi3_xml_parser_context_t;
+#define EXPAND_ELM_HANDLE(elm) extern int fmi3_xml_handle_##elm(fmi3_xml_parser_context_t* context, const char* data);
+FMI3_XML_ELMLIST(EXPAND_ELM_HANDLE)
+FMI3_XML_ELMLIST_ALT(EXPAND_ELM_HANDLE)
+FMI3_XML_ELMLIST_ABSTRACT(EXPAND_ELM_HANDLE)
+
+/**
+ * Create an enum over all XML elements. This enum can be used to index
+ * the following arrays:
+ *      - fmi3_xml_scheme_info
+ *      - fmi3_element_handle_map
+ */
+#define FMI3_XML_ELM_ID(elm) fmi3_xml_elmID_##elm
+#define FMI3_XML_LIST_ELM_ID(elm) ,FMI3_XML_ELM_ID(elm)
+typedef enum fmi3_xml_elm_enu_t {
+    fmi3_xml_elmID_none = -1
+    FMI3_XML_ELMLIST(FMI3_XML_LIST_ELM_ID)
+    ,fmi3_xml_elm_actual_number
+    FMI3_XML_ELMLIST_ALT(FMI3_XML_LIST_ELM_ID)
+    FMI3_XML_ELMLIST_ABSTRACT(FMI3_XML_LIST_ELM_ID)
+    ,fmi3_xml_elm_number
+} fmi3_xml_elm_enu_t;
+
 #ifdef __cplusplus
 }
 #endif

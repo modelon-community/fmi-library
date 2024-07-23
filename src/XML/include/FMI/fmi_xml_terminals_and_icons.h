@@ -62,8 +62,7 @@ int fmi2_xml_terminals_and_icons_set_model_description(fmi_xml_terminals_and_ico
 int fmi3_xml_terminals_and_icons_set_model_description(fmi_xml_terminals_and_icons_t* termIcon,
                                                        fmi3_xml_model_description_t* md);
 
-int fmi2_xml_get_has_terminals_and_icons(fmi_xml_terminals_and_icons_t* termIcon);
-int fmi3_xml_get_has_terminals_and_icons(fmi_xml_terminals_and_icons_t* termIcon);
+int fmi_xml_get_has_terminals_and_icons(fmi_xml_terminals_and_icons_t* termIcon);
 fmi_xml_terminal_t* fmi_xml_get_terminal_by_name(fmi_xml_terminals_and_icons_t* termIcon, const char* name);
 const char* fmi_xml_get_terminal_name(fmi_xml_terminal_t* term);
 

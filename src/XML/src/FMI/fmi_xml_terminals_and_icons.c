@@ -238,11 +238,7 @@ int fmi3_xml_handle_TerminalGraphicalRepresentation(fmi3_xml_parser_context_t* c
     return 0;
 }
 
-int fmi2_xml_get_has_terminals_and_icons(fmi_xml_terminals_and_icons_t* termIcon) {
-    return termIcon ? 1 : 0;
-}
-
-int fmi3_xml_get_has_terminals_and_icons(fmi_xml_terminals_and_icons_t* termIcon) {
+int fmi_xml_get_has_terminals_and_icons(fmi_xml_terminals_and_icons_t* termIcon) {
     return termIcon ? 1 : 0;
 }
 

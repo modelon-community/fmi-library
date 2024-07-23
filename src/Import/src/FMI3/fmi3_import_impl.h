@@ -42,7 +42,7 @@ struct fmi3_import_t {
     char* instanceName;
     jm_callbacks* callbacks;
     fmi3_xml_model_description_t* md;
-    fmi3_xml_terminals_and_icons_t* termIcon;
+    fmi_xml_terminals_and_icons_t* termIcon;
     fmi3_capi_t* capi;
     /* log message buffer */
     jm_vector(char) logMessageBufferCoded;

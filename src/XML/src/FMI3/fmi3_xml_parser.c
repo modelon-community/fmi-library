@@ -1385,7 +1385,7 @@ int fmi3_xml_parse_model_description(fmi3_xml_model_description_t* md,
     return 0;
 }
 
-int fmi3_xml_parse_terminals_and_icons(fmi3_xml_terminals_and_icons_t* termIcon,
+int fmi3_xml_parse_terminals_and_icons(fmi_xml_terminals_and_icons_t* termIcon,
                                        const char* filename,
                                        fmi_termicon_xml_callbacks_t* xml_callbacks) {
     XML_Memory_Handling_Suite memsuite;

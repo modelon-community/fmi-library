@@ -47,7 +47,7 @@ extern "C" {
  */
 
 /** \brief Opaque Terminal type */
-typedef struct fmi3_xml_terminal_t fmi3_import_terminal_t;
+typedef struct fmi_xml_terminal_t fmi_import_terminal_t;
 
 /**
  * \brief Returns non-zero if terminalsAndIcons.xml has been found and successfully parsed.
@@ -67,7 +67,7 @@ FMILIB_EXPORT int fmi3_import_get_has_terminals_and_icons(fmi3_import_t* fmu);
     @param name terminal name
     @return terminal pointer. NULL if terminal with given name does not exist.
  */
-FMILIB_EXPORT fmi3_import_terminal_t* fmi2_import_get_terminal_by_name(fmi2_import_t* fmu, const char* name);
+FMILIB_EXPORT fmi_import_terminal_t* fmi2_import_get_terminal_by_name(fmi2_import_t* fmu, const char* name);
 
 /**
     \brief Get terminal by terminal name.
@@ -75,14 +75,14 @@ FMILIB_EXPORT fmi3_import_terminal_t* fmi2_import_get_terminal_by_name(fmi2_impo
     @param name terminal name
     @return terminal pointer. NULL if terminal with given name does not exist.
  */
-FMILIB_EXPORT fmi3_import_terminal_t* fmi3_import_get_terminal_by_name(fmi3_import_t* fmu, const char* name);
+FMILIB_EXPORT fmi_import_terminal_t* fmi3_import_get_terminal_by_name(fmi3_import_t* fmu, const char* name);
 
 /** 
     \brief Get the variable name
-    @param term An #fmi3_import_terminal_t pointer
+    @param term An #fmi_import_terminal_t pointer
     @return name
 */ 
-FMILIB_EXPORT const char* fmi3_import_get_terminal_name(fmi3_import_terminal_t* term);
+FMILIB_EXPORT const char* fmi3_import_get_terminal_name(fmi_import_terminal_t* term);
 
 /** @} */
 

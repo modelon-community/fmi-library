@@ -29,7 +29,7 @@ TEST_CASE("Test parse terminals and icons") {
     REQUIRE(fmi2_import_get_has_terminals_and_icons(xml) != 0);
 
     SECTION("Testing getting terminal by name") {
-        fmi3_import_terminal_t* term;
+        fmi_import_terminal_t* term;
 
         // test the existing ones
         term = fmi2_import_get_terminal_by_name(xml, "terminalA");

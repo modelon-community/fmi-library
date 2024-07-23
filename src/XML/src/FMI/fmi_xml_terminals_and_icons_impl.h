@@ -27,7 +27,7 @@
 extern "C" {
 #endif
 
-struct fmi3_xml_terminals_and_icons_t {
+struct fmi_xml_terminals_and_icons_t {
     jm_callbacks* callbacks;
 
     /* used for cross-referencing, should be used as read-only */
@@ -42,7 +42,7 @@ struct fmi3_xml_terminals_and_icons_t {
     jm_string_set names; // storage for all terminal names
 };
 
-struct fmi3_xml_terminal_t {
+struct fmi_xml_terminal_t {
     const char* name;
     // TODO: Currently only supports name; add remaining attributes.
 };

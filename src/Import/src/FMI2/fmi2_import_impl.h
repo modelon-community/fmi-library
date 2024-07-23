@@ -41,7 +41,7 @@ struct fmi2_import_t {
     char* resourceLocation;
     jm_callbacks* callbacks;
     fmi2_xml_model_description_t* md;
-    fmi3_xml_terminals_and_icons_t* termIcon;
+    fmi_xml_terminals_and_icons_t* termIcon;
     fmi2_capi_t* capi;
     jm_vector(char) logMessageBufferCoded;
     jm_vector(char) logMessageBufferExpanded;

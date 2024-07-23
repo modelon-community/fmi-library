@@ -29,7 +29,7 @@ TEST_CASE("Test parse terminals and icons") {
     REQUIRE(fmi3_import_get_has_terminals_and_icons(xml) != 0);
 
     SECTION("Testing getting terminal by name") {
-        fmi3_import_terminal_t* term;
+        fmi_import_terminal_t* term;
 
         // test the existing ones
         term = fmi3_import_get_terminal_by_name(xml, "terminalA");
@@ -139,7 +139,7 @@ TEST_CASE("Test clearing of attribute buffer with invalid elements") {
 
     REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'Terminal': required attribute 'name' not found"));
 
-    fmi3_import_terminal_t* term = fmi3_import_get_terminal_by_name(fmu, "terminalA");
+    fmi_import_terminal_t* term = fmi3_import_get_terminal_by_name(fmu, "terminalA");
     REQUIRE(term != nullptr);
     REQUIRE_STREQ(fmi3_import_get_terminal_name(term), "terminalA");
     // TODO: Check that optional attributes from Terminal without name are not present in this one

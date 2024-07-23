@@ -60,7 +60,7 @@ fmi3_import_t* fmi3_import_allocate(jm_callbacks* cb) {
         return NULL;
     }
 
-    fmu->termIcon = fmi3_xml_allocate_terminals_and_icons(cb);
+    fmu->termIcon = fmi_xml_allocate_terminals_and_icons(cb);
     if (!fmu->termIcon) {
         fmi3_xml_free_model_description(fmu->md);
         cb->free(fmu);
@@ -72,7 +72,7 @@ fmi3_import_t* fmi3_import_allocate(jm_callbacks* cb) {
     fmu->options = fmi_util_allocate_options(cb);
     if (!fmu->options) {
         fmi3_xml_free_model_description(fmu->md);
-        fmi3_xml_free_terminals_and_icons(fmu->termIcon);
+        fmi_xml_free_terminals_and_icons(fmu->termIcon);
         cb->free(fmu);
         return NULL;
      }
@@ -143,7 +143,7 @@ fmi3_import_t* fmi3_import_parse_xml(
         // TODO: Callbacks
         if (fmi3_xml_parse_terminals_and_icons(fmu->termIcon, terminalsAndIconsPath, NULL)) {
             // failure to parse terminalsAndIcons does not constitute parsing failure
-            fmi3_xml_free_terminals_and_icons(fmu->termIcon);
+            fmi_xml_free_terminals_and_icons(fmu->termIcon);
             fmu->termIcon = NULL;
         }
     }
@@ -165,7 +165,7 @@ void fmi3_import_free(fmi3_import_t* fmu) {
 
     fmi3_import_destroy_dllfmu(fmu);
     fmi3_xml_free_model_description(fmu->md);
-    fmi3_xml_free_terminals_and_icons(fmu->termIcon);
+    fmi_xml_free_terminals_and_icons(fmu->termIcon);
     fmi_util_free_options(cb, fmu->options);
     jm_vector_free_data(char)(&fmu->logMessageBufferCoded);
     jm_vector_free_data(char)(&fmu->logMessageBufferExpanded);

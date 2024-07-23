@@ -17,7 +17,7 @@
 #include <stdarg.h>
 
 #include <FMI2/fmi2_import_impl.h>
-#include "fmi3_import_impl.h"
+#include <FMI3/fmi3_import_impl.h>
 
 int fmi2_import_get_has_terminals_and_icons(fmi2_import_t* fmu) {
     return fmu ? fmi2_xml_get_has_terminals_and_icons(fmu->termIcon) : 0;

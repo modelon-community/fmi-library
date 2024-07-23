@@ -22,7 +22,7 @@ related to parsing XML elements and their attributes
 
 #include <expat.h>
 
-#include "fmi3_xml_terminals_and_icons_parser.h"
+#include "../FMI/fmi_xml_terminals_and_icons_parser.h"
 #include "fmi3_xml_model_description_parser.h"
 
 #ifdef __cplusplus

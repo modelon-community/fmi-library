@@ -17,8 +17,8 @@
 
 #include "JM/jm_named_ptr.h"
 #include <FMI2/fmi2_xml_model_description.h>
-#include "fmi3_xml_parser.h"
-#include "fmi3_xml_terminals_and_icons_impl.h"
+#include "../FMI3/fmi3_xml_parser.h"
+#include "fmi_xml_terminals_and_icons_impl.h"
 
 static const char* module = "FMI3XML";
 

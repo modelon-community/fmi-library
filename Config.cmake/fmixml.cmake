@@ -106,7 +106,10 @@ set(FMIXML_EXPAT_DIR "${FMILIB_THIRDPARTYLIBS}/Expat/expat-2.5.0")
 set(FMIXMLHEADERS
     include/FMI/fmi_xml_context.h
     src/FMI/fmi_xml_context_impl.h
-
+    include/FMI/fmi_xml_terminals_and_icons.h
+    src/FMI/fmi_xml_terminals_and_icons_impl.h
+    src/FMI/fmi_xml_terminals_and_icons_parser.h
+    
     include/FMI1/fmi1_xml_model_description.h
     src/FMI1/fmi1_xml_model_description_impl.h
     src/FMI1/fmi1_xml_parser.h
@@ -120,7 +123,7 @@ set(FMIXMLHEADERS
     src/FMI1/fmi1_xml_variable_impl.h
     include/FMI1/fmi1_xml_capabilities.h
     src/FMI1/fmi1_xml_capabilities_impl.h
-
+    
     include/FMI2/fmi2_xml_model_description.h
     src/FMI2/fmi2_xml_model_description_impl.h
     include/FMI2/fmi2_xml_model_structure.h
@@ -132,15 +135,12 @@ set(FMIXMLHEADERS
     src/FMI2/fmi2_xml_unit_impl.h
     include/FMI2/fmi2_xml_variable.h
     src/FMI2/fmi2_xml_variable_impl.h
-
+    
     include/FMI3/fmi3_xml_model_description.h
     src/FMI3/fmi3_xml_model_description_impl.h
     include/FMI3/fmi3_xml_model_structure.h
     src/FMI3/fmi3_xml_model_structure_impl.h
-    include/FMI3/fmi3_xml_terminals_and_icons.h
-    src/FMI3/fmi3_xml_terminals_and_icons_impl.h
     src/FMI3/fmi3_xml_model_description_parser.h
-    src/FMI3/fmi3_xml_terminals_and_icons_parser.h
     src/FMI3/fmi3_xml_parser_util.h
     src/FMI3/fmi3_xml_parser.h
     include/FMI3/fmi3_xml_type.h
@@ -152,10 +152,11 @@ set(FMIXMLHEADERS
     src/FMI3/fmi3_xml_parser_lists.h
     src/FMI3/fmi3_xml_parser_context_impl.h
     src/
- )
-
-set(FMIXMLSOURCE
+    )
+    
+    set(FMIXMLSOURCE
     src/FMI/fmi_xml_context.c
+    src/FMI/fmi_xml_terminals_and_icons.c
 
     src/FMI1/fmi1_xml_parser.c
     src/FMI1/fmi1_xml_model_description.c
@@ -182,7 +183,6 @@ set(FMIXMLSOURCE
     src/FMI3/fmi3_xml_unit.c
     src/FMI3/fmi3_xml_vendor_annotations.c
     src/FMI3/fmi3_xml_variable.c
-    src/FMI3/fmi3_xml_terminals_and_icons.c
 )
 
 include(ExternalProject)

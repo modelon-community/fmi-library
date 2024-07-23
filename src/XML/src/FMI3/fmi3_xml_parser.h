@@ -26,9 +26,9 @@
 
 #include <FMI3/fmi3_enums.h>
 #include <FMI3/fmi3_xml_model_description.h>
-#include <FMI3/fmi3_xml_terminals_and_icons.h>
+#include <FMI/fmi_xml_terminals_and_icons.h>
 #include "fmi3_xml_model_description_parser.h"
-#include "fmi3_xml_terminals_and_icons_parser.h"
+#include "../FMI/fmi_xml_terminals_and_icons_parser.h"
 #include "fmi3_xml_parser_context_impl.h"
 #include "fmi3_xml_parser_util.h"
 

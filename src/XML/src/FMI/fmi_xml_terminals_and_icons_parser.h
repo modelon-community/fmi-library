@@ -15,8 +15,8 @@
 
 // TODO: Possibly rename file to *_scheme?
 
-#ifndef FMI3_XML_TERMINALS_AND_ICONS_PARSER_H
-#define FMI3_XML_TERMINALS_AND_ICONS_PARSER_H
+#ifndef FMI_XML_TERMINALS_AND_ICONS_PARSER_H
+#define FMI_XML_TERMINALS_AND_ICONS_PARSER_H
 
 #include <expat.h>
 
@@ -63,4 +63,4 @@ extern "C" {
 }
 #endif
 
-#endif /* FMI3_XML_TERMINALS_AND_ICONS_PARSER_H */
+#endif /* FMI_XML_TERMINALS_AND_ICONS_PARSER_H */

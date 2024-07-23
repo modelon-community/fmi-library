@@ -26,7 +26,7 @@
 #endif
 
 #include "fmi3_xml_model_description_impl.h"
-#include "fmi3_xml_terminals_and_icons_impl.h"
+#include "../FMI/fmi_xml_terminals_and_icons_impl.h"
 #include "fmi3_xml_parser.h"
 #include "JM/jm_portability.h"
 

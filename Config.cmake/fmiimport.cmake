@@ -48,11 +48,11 @@ set(FMIIMPORT_PUBHEADERS
     include/FMI3/fmi3_import_variable.h
     include/FMI3/fmi3_import_variable_list.h
     include/FMI3/fmi3_import_convenience.h
-    include/FMI3/fmi3_import_terminals_and_icons.h
-
+    
     include/FMI/fmi_import_context.h
     include/FMI/fmi_import_options.h
     include/FMI/fmi_import_util.h
+    include/FMI/fmi_import_terminals_and_icons.h
 )
 
 set(FMIIMPORT_PRIVHEADERS
@@ -78,6 +78,7 @@ set(FMIIMPORTSOURCE
     src/FMI/fmi_import_context.c
     src/FMI/fmi_import_options.c
     src/FMI/fmi_import_util.c
+    src/FMI/fmi_import_terminals_and_icons.c
 
     src/FMI1/fmi1_import_cosim.c
     src/FMI1/fmi1_import_capi.c
@@ -106,7 +107,6 @@ set(FMIIMPORTSOURCE
     src/FMI3/fmi3_import.c
     src/FMI3/fmi3_import_priv.c
     src/FMI3/fmi3_import_convenience.c
-    src/FMI3/fmi3_import_terminals_and_icons.c
     )
 
 PREFIXLIST(FMIIMPORTSOURCE  ${FMIIMPORTDIR}/)

@@ -22,7 +22,7 @@
 
 #include "FMI3/fmi3_import.h"
 #include "FMI3/fmi3_xml_model_description.h"
-#include "FMI3/fmi3_xml_terminals_and_icons.h"
+#include <FMI/fmi_xml_terminals_and_icons.h>
 
 #include "../FMI/fmi_import_context_impl.h"
 #include "../src/FMI3/fmi3_capi_impl.h"

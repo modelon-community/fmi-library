@@ -13,18 +13,21 @@
     along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 */
 
-/** \file fmi3_import_terminals_and_icons.h
+/** \file fmi_import_terminals_and_icons.h
 *  \brief Public interface to the FMI XML C-library. Handling of terminals and icons.
 */
 
-#ifndef FMI3_IMPORT_TERMINALS_AND_ICONS_H_
-#define FMI3_IMPORT_TERMINALS_AND_ICONS_H_
+#ifndef FMI_IMPORT_TERMINALS_AND_ICONS_H_
+#define FMI_IMPORT_TERMINALS_AND_ICONS_H_
 
 #include <stddef.h>
 #include <fmilib_config.h>
 #include <JM/jm_callbacks.h>
 
-#include "fmi3_import.h"
+#include <FMI2/fmi2_import.h>
+#include <FMI3/fmi3_import.h>
+
+// TODO: Some functions are FMI2/3 specific, should these be in fmi2/3_....h files?
 
 #ifdef __cplusplus
 extern "C" {
@@ -33,12 +36,12 @@ extern "C" {
 /**
     \addtogroup fmi3_import 
     @{
-       \defgroup fmi3_import_terminals_and_icons Handling of terminals and icons
+       \defgroup fmi_import_terminals_and_icons Handling of terminals and icons
     @}
  */
 
 /**
-    \addtogroup fmi3_import_terminals_and_icons
+    \addtogroup fmi_import_terminals_and_icons
     \brief Handling of terminals and icons.
     @{ 
  */
@@ -87,4 +90,4 @@ FMILIB_EXPORT const char* fmi3_import_get_terminal_name(fmi3_import_terminal_t* 
 }
 #endif
 
-#endif // FMI3_IMPORT_TERMINALS_AND_ICONS_H_
+#endif // FMI_IMPORT_TERMINALS_AND_ICONS_H_

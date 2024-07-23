@@ -13,8 +13,8 @@
     along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 */
 
-#ifndef fmi3_xml_terminals_and_icons_impl_h_
-#define fmi3_xml_terminals_and_icons_impl_h_
+#ifndef FMI_XML_TERMINALS_AND_ICONS_IMPL_H_
+#define FMI_XML_TERMINALS_AND_ICONS_IMPL_H_
 
 #include <stdarg.h>
 
@@ -52,4 +52,4 @@ struct fmi3_xml_terminal_t {
 }
 #endif
 
-#endif // fmi3_xml_terminals_and_icons_impl_h_
+#endif // FMI_XML_TERMINALS_AND_ICONS_IMPL_H_

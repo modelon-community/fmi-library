@@ -20,7 +20,7 @@
 #include "../FMI3/fmi3_xml_parser.h"
 #include "fmi_xml_terminals_and_icons_impl.h"
 
-static const char* module = "FMI3XML";
+static const char* module = "FMIXML";
 
 fmi_xml_terminals_and_icons_t* fmi_xml_allocate_terminals_and_icons(jm_callbacks* callbacks) {
     jm_callbacks* cb = callbacks ? callbacks : jm_get_default_callbacks();

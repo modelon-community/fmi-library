@@ -13,6 +13,8 @@
 
 
 #Defines for the test FMUs
+set(FMI2_TEST_XML_DIR ${FMIL_TEST_DIR}/FMI2/parser_test_xmls)
+
 set(FMU2_DUMMY_FOLDER ${FMIL_TEST_DIR}/FMI2/fmu_dummy)
 to_native_c_path(${TEST_OUTPUT_FOLDER}/tempfolder/FMI2 FMU2_TEMPFOLDER)
 
@@ -43,20 +45,13 @@ set(XML_ME_PATH ${FMU2_DUMMY_FOLDER}/modelDescription_me.xml)
 set(XML_CS_PATH ${FMU2_DUMMY_FOLDER}/modelDescription_cs.xml)
 set(XML_MF_PATH ${FMU2_DUMMY_FOLDER}/modelDescription_malformed.xml)
 
-set(VARIALBE_TEST_MODEL_DESC_DIR
-    ${FMIL_TEST_DIR}/FMI2/parser_test_xmls/variable_test)
-set(FMI2_PARSER_TEST_XMLS_DIR
-    ${FMIL_TEST_DIR}/FMI2/parser_test_xmls)
-set(DEFAULT_EXPERIMENT_MODEL_DESC_DIR
-    ${FMIL_TEST_DIR}/FMI2/parser_test_xmls/default_experiment/) # Trailing '/' necessary (for building system independent path)
-set(VARIABLE_NO_TYPE_MODEL_DESC_DIR
-    ${FMIL_TEST_DIR}/FMI2/parser_test_xmls/variable_no_type)
-set(VARIABLE_BAD_VARIABILITY_CAUSALITY_MODEL_DESC_DIR
-    ${FMIL_TEST_DIR}/FMI2/parser_test_xmls/variable_bad_variability_causality)
-set(VARIABLE_BAD_TYPE_VARIABILITY_MODEL_DESC_DIR
-    ${FMIL_TEST_DIR}/FMI2/parser_test_xmls/variable_bad_type_variability)
-set(TYPE_DEFINITIONS_MODEL_DESC_DIR
-    ${FMIL_TEST_DIR}/FMI2/parser_test_xmls/type_definitions)
+set(VARIALBE_TEST_MODEL_DESC_DIR ${FMI2_TEST_XML_DIR}/variable_test)
+set(FMI2_PARSER_TEST_XMLS_DIR ${FMI2_TEST_XML_DIR})
+set(DEFAULT_EXPERIMENT_MODEL_DESC_DIR ${FMI2_TEST_XML_DIR}/default_experiment/) # Trailing '/' necessary (for building system independent path)
+set(VARIABLE_NO_TYPE_MODEL_DESC_DIR ${FMI2_TEST_XML_DIR}/variable_no_type)
+set(VARIABLE_BAD_VARIABILITY_CAUSALITY_MODEL_DESC_DIR ${FMI2_TEST_XML_DIR}/variable_bad_variability_causality)
+set(VARIABLE_BAD_TYPE_VARIABILITY_MODEL_DESC_DIR ${FMI2_TEST_XML_DIR}/variable_bad_type_variability)
+set(TYPE_DEFINITIONS_MODEL_DESC_DIR ${FMI2_TEST_XML_DIR}/type_definitions)
 
 set(SHARED_LIBRARY_ME_PATH ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${CMAKE_SHARED_LIBRARY_PREFIX}fmu2_dll_me${CMAKE_SHARED_LIBRARY_SUFFIX})
 set(SHARED_LIBRARY_CS_PATH ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${CMAKE_SHARED_LIBRARY_PREFIX}fmu2_dll_cs${CMAKE_SHARED_LIBRARY_SUFFIX})
@@ -118,7 +113,7 @@ set_target_properties(
 set(FAIL_NAME_CHECK 0)
 set(PASS_NAME_CHECK 1)
 
-add_test(ctest_fmi2_xml_parsing_test fmi2_xml_parsing_test ${FMIL_TEST_DIR}/FMI2/parser_test_xmls/)
+add_test(ctest_fmi2_xml_parsing_test fmi2_xml_parsing_test ${FMI2_TEST_XML_DIR}/)
 add_test(ctest_fmi2_import_xml_test_brief fmi2_import_xml_test ${FMU2_DUMMY_FOLDER}) # 'brief' as in close to minimal XML
 add_test(ctest_fmi2_import_xml_test_me    fmi2_import_xml_test ${TEST_OUTPUT_FOLDER}/BouncingBall2_me)
 add_test(ctest_fmi2_import_xml_test_cs    fmi2_import_xml_test ${TEST_OUTPUT_FOLDER}/BouncingBall2_cs)
@@ -170,3 +165,5 @@ if(FMILIB_BUILD_BEFORE_TESTS)
         ctest_fmi2_variable_bad_type_variability_test
         PROPERTIES DEPENDS ctest_build_all)
 endif()
+
+add_catch2_test(fmi2_import_terminals_and_icons_test FMI2)

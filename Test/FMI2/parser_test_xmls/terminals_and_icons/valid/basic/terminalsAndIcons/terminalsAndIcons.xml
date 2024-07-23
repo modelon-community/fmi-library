@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<fmiTerminalsAndIcons fmiVersion="2.0-alpha">
+    <Terminals>
+        <Terminal name="terminalA" matchingRule="bus" description="some description" terminalKind="abc">
+            <!-- These are all dummys for now -->
+            <TerminalMemberVariable/>
+            <TerminalMemberVariable/>
+
+            <TerminalStreamMemberVariable/>
+            <TerminalStreamMemberVariable/>
+            
+            <!-- These are currently skipped when parsing -->
+            <Terminal name="nestedTerminalA1"/> 
+            <Terminal name="nestedTerminalA2"/>
+
+            <TerminalGraphicalRepresentation/>
+        </Terminal>
+        <Terminal name="terminalC" matchingRule="bus" description="some description" terminalKind="abc"/>
+        <Terminal name="terminalB" matchingRule="bus" description="some description" terminalKind="abc"/>
+
+        <Terminal name=""/> <!-- Edge case testing, this should be valid -->
+    </Terminals>
+</fmiTerminalsAndIcons>

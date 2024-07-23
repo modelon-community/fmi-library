@@ -16,6 +16,7 @@
 #include <stdio.h>
 
 #include "JM/jm_named_ptr.h"
+#include <FMI2/fmi2_xml_model_description.h>
 #include "fmi3_xml_parser.h"
 #include "fmi3_xml_terminals_and_icons_impl.h"
 
@@ -30,7 +31,8 @@ fmi3_xml_terminals_and_icons_t* fmi3_xml_allocate_terminals_and_icons(jm_callbac
         return 0;
     }
     termIcon->callbacks = cb;
-    termIcon->md = NULL;
+    termIcon->md2 = NULL;
+    termIcon->md3 = NULL;
 
     jm_vector_init(char)(&termIcon->fmi3_xml_standard_version, 0, cb);
 
@@ -79,12 +81,22 @@ void fmi3_xml_free_terminals_and_icons(fmi3_xml_terminals_and_icons_t* termIcon)
     callbacks->free(termIcon);
 }
 
-int fmi3_xml_terminals_and_icons_set_model_description(fmi3_xml_terminals_and_icons_t* termIcon,
-                                                       fmi3_xml_model_description_t* md) {
-    if (!termIcon || !md) {
+int fmi2_xml_terminals_and_icons_set_model_description(fmi3_xml_terminals_and_icons_t* termIcon,
+                                                       fmi2_xml_model_description_t* md) {
+    if (!termIcon || !md || termIcon->md3) {
         return -1;
     } else {
-        termIcon->md = md;
+        termIcon->md2 = md;
+        return 0;
+    }
+}
+
+int fmi3_xml_terminals_and_icons_set_model_description(fmi3_xml_terminals_and_icons_t* termIcon,
+                                                       fmi3_xml_model_description_t* md) {
+    if (!termIcon || !md || termIcon->md2) {
+        return -1;
+    } else {
+        termIcon->md3 = md;
         return 0;
     }
 }
@@ -105,7 +117,13 @@ int fmi3_xml_handle_fmiTerminalsAndIcons(fmi3_xml_parser_context_t* context, con
             return ret;
         }
         // Error check: fmiVersion in terminalsAndIcons and modelDescription must match
-        const char* modelDescrfmiVersion = fmi3_xml_get_model_standard_version(termIcon->md);
+        const char* modelDescrfmiVersion = NULL;
+        if (termIcon->md2 && !(termIcon->md3)) {
+            modelDescrfmiVersion = fmi2_xml_get_model_standard_version(termIcon->md2);
+        }
+        if (termIcon->md3 && !(termIcon->md2)) {
+            modelDescrfmiVersion = fmi3_xml_get_model_standard_version(termIcon->md3);
+        } 
         const char* termIconfmiVersion = jm_vector_char2string(&(termIcon->fmi3_xml_standard_version));
         if (strcmp(modelDescrfmiVersion, termIconfmiVersion)) {
             fmi3_xml_parse_fatal(context,
@@ -218,6 +236,10 @@ int fmi3_xml_handle_TerminalGraphicalRepresentation(fmi3_xml_parser_context_t* c
         ;
     }
     return 0;
+}
+
+int fmi2_xml_get_has_terminals_and_icons(fmi3_xml_terminals_and_icons_t* termIcon) {
+    return termIcon ? 1 : 0;
 }
 
 int fmi3_xml_get_has_terminals_and_icons(fmi3_xml_terminals_and_icons_t* termIcon) {

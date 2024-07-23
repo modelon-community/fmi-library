@@ -1316,8 +1316,10 @@ int fmi3_xml_parse_model_description(fmi3_xml_model_description_t* md,
     context->currentElmID = fmi3_xml_elmID_none;
     context->anyElmCount = 0;
     context->useAnyHandleFlg = 0;
+    context->useAnyHandleFlgTermIcon = 0;
     context->anyParent = 0;
     context->anyHandle = xml_callbacks;
+    context->anyHandleTermIcon = NULL; // TODO
 
     /* Set locale such that parsing does not depend on the environment.
      * For example, LC_NUMERIC affects what sscanf identifies as the floating
@@ -1385,7 +1387,7 @@ int fmi3_xml_parse_model_description(fmi3_xml_model_description_t* md,
 
 int fmi3_xml_parse_terminals_and_icons(fmi3_xml_terminals_and_icons_t* termIcon,
                                        const char* filename,
-                                       fmi3_xml_callbacks_t* xml_callbacks) {
+                                       fmi_termicon_xml_callbacks_t* xml_callbacks) {
     XML_Memory_Handling_Suite memsuite;
     fmi3_xml_parser_context_t* context;
     XML_Parser parser = NULL;
@@ -1421,8 +1423,10 @@ int fmi3_xml_parse_terminals_and_icons(fmi3_xml_terminals_and_icons_t* termIcon,
     context->currentElmID = fmi3_xml_elmID_none;
     context->anyElmCount = 0;
     context->useAnyHandleFlg = 0;
+    context->useAnyHandleFlgTermIcon = 0;
     context->anyParent = 0;
-    context->anyHandle = xml_callbacks;
+    context->anyHandle = NULL;
+    context->anyHandleTermIcon = xml_callbacks;
 
     /* Set locale such that parsing does not depend on the environment.
      * For example, LC_NUMERIC affects what sscanf identifies as the floating

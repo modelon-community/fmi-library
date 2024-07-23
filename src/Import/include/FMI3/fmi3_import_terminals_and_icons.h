@@ -50,7 +50,21 @@ typedef struct fmi3_xml_terminal_t fmi3_import_terminal_t;
  * \brief Returns non-zero if terminalsAndIcons.xml has been found and successfully parsed.
  * @param fmu An #fmi3_import_t object as returned by #fmi3_import_parse_xml().
  */
+FMILIB_EXPORT int fmi2_import_get_has_terminals_and_icons(fmi2_import_t* fmu);
+
+/**
+ * \brief Returns non-zero if terminalsAndIcons.xml has been found and successfully parsed.
+ * @param fmu An #fmi3_import_t object as returned by #fmi3_import_parse_xml().
+ */
 FMILIB_EXPORT int fmi3_import_get_has_terminals_and_icons(fmi3_import_t* fmu);
+
+/**
+    \brief Get terminal by terminal name.
+    @param fmu An #fmi2_import_t object as returned by #fmi2_import_parse_xml().
+    @param name terminal name
+    @return terminal pointer. NULL if terminal with given name does not exist.
+ */
+FMILIB_EXPORT fmi3_import_terminal_t* fmi2_import_get_terminal_by_name(fmi2_import_t* fmu, const char* name);
 
 /**
     \brief Get terminal by terminal name.

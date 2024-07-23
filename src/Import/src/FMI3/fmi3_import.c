@@ -102,7 +102,9 @@ fmi3_import_t* fmi3_import_parse_xml(
 
     if (!fmu) {
         context->callbacks->free(xmlPath);
-        if (!terminalsAndIconsPath) context->callbacks->free(terminalsAndIconsPath);
+        if (terminalsAndIconsPath) {
+            context->callbacks->free(terminalsAndIconsPath);
+        }
         return NULL;
     }
 
@@ -116,7 +118,9 @@ fmi3_import_t* fmi3_import_parse_xml(
         jm_log_fatal(context->callbacks, "FMILIB", "Could not allocate memory");
         fmi3_import_free(fmu);
         context->callbacks->free(xmlPath);
-        if (!terminalsAndIconsPath) context->callbacks->free(terminalsAndIconsPath);
+        if (terminalsAndIconsPath) {
+            context->callbacks->free(terminalsAndIconsPath);
+        }
         return NULL;
     }
     strcpy(fmu->dirPath, dirPath);
@@ -129,14 +133,15 @@ fmi3_import_t* fmi3_import_parse_xml(
     }
     context->callbacks->free(xmlPath);
 
-   // Only parse terminals and icons if parsing of model description did not fail
+    // Only parse terminals and icons if parsing of model description did not fail
     if (fmu) {
         // terminalsAndIcons uses modelDescription for error checks
         if (fmi3_xml_terminals_and_icons_set_model_description(fmu->termIcon, fmu->md)) {
             fmi3_import_free(fmu);
             fmu = NULL;
         }
-        if (fmi3_xml_parse_terminals_and_icons(fmu->termIcon, terminalsAndIconsPath, xml_callbacks)) {
+        // TODO: Callbacks
+        if (fmi3_xml_parse_terminals_and_icons(fmu->termIcon, terminalsAndIconsPath, NULL)) {
             // failure to parse terminalsAndIcons does not constitute parsing failure
             fmi3_xml_free_terminals_and_icons(fmu->termIcon);
             fmu->termIcon = NULL;

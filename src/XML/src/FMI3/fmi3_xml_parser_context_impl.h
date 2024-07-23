@@ -169,9 +169,11 @@ struct fmi3_xml_parser_context_t {
     /* Variables for handling tool-specific XML elements */
     int anyElmCount;
     int useAnyHandleFlg;
+    int useAnyHandleFlgTermIcon;
     char* anyToolName;
     void* anyParent;
     fmi3_xml_callbacks_t* anyHandle;
+    fmi_termicon_xml_callbacks_t* anyHandleTermIcon;
 
     /* Data for restoring locale after parsing */
     jm_locale_t* jm_locale;

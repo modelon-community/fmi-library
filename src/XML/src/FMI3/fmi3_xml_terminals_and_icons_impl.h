@@ -31,7 +31,8 @@ struct fmi3_xml_terminals_and_icons_t {
     jm_callbacks* callbacks;
 
     /* used for cross-referencing, should be used as read-only */
-    fmi3_xml_model_description_t* md; 
+    fmi2_xml_model_description_t* md2; 
+    fmi3_xml_model_description_t* md3; 
 
     jm_vector(char) fmi3_xml_standard_version;
 

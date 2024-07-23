@@ -54,13 +54,16 @@ const char *fmi3_xmlAttrNames[fmi3_xml_attr_number] = {
 
 /* Global array of all scheme_info_t. Index it with fmi3_xml_elm_enu_t entries. */
 fmi3_xml_scheme_info_t fmi3_xml_scheme_info[fmi3_xml_elm_number] = {
-    FMI3_XML_ELMLIST(EXPAND_ELM_SCHEME)
+    FMI3_XML_ELMLIST_MODEL_DESCR(EXPAND_ELM_SCHEME)
+    FMI_XML_ELMLIST_TERM_ICON   (EXPAND_ELM_SCHEME)
     {fmi3_xml_elm_actual_number,0,0},
-    FMI3_XML_ELMLIST_ALT(EXPAND_ELM_SCHEME)
-    FMI3_XML_ELMLIST_ABSTRACT(EXPAND_ELM_SCHEME)
+    FMI3_XML_ELMLIST_ALT_MODEL_DESCR     (EXPAND_ELM_SCHEME)
+    FMI_XML_ELMLIST_ALT_TERM_ICON        (EXPAND_ELM_SCHEME)
+    FMI3_XML_ELMLIST_ABSTRACT_MODEL_DESCR(EXPAND_ELM_SCHEME)
 };
 
-#define EXPAND_ELM_NAME(elm) { #elm, fmi3_xml_handle_##elm, fmi3_xml_elmID_##elm},
+#define EXPAND_ELM_NAME_FMI3(elm) { #elm, fmi3_xml_handle_##elm, fmi3_xml_elmID_##elm},
+#define EXPAND_ELM_NAME_FMI_TERM_ICON(elm) { #elm, fmi_xml_handle_##elm, fmi3_xml_elmID_##elm},
 
 /**
  * Global array of all defined fmi3_xml_element_handle_map_t structs.
@@ -69,10 +72,12 @@ fmi3_xml_scheme_info_t fmi3_xml_scheme_info[fmi3_xml_elm_number] = {
  *      array.
  */
 fmi3_xml_element_handle_map_t fmi3_element_handle_map[fmi3_xml_elm_number] = {
-    FMI3_XML_ELMLIST(EXPAND_ELM_NAME)
+    FMI3_XML_ELMLIST_MODEL_DESCR(EXPAND_ELM_NAME_FMI3)
+    FMI_XML_ELMLIST_TERM_ICON   (EXPAND_ELM_NAME_FMI_TERM_ICON)
     { NULL, NULL, fmi3_xml_elm_actual_number},
-    FMI3_XML_ELMLIST_ALT(EXPAND_ELM_NAME)
-    FMI3_XML_ELMLIST_ABSTRACT(EXPAND_ELM_NAME)
+    FMI3_XML_ELMLIST_ALT_MODEL_DESCR     (EXPAND_ELM_NAME_FMI3)
+    FMI_XML_ELMLIST_ALT_TERM_ICON        (EXPAND_ELM_NAME_FMI_TERM_ICON)
+    FMI3_XML_ELMLIST_ABSTRACT_MODEL_DESCR(EXPAND_ELM_NAME_FMI3)
 };
 
 const fmi3_xml_primitive_types_t PRIMITIVE_TYPES = {

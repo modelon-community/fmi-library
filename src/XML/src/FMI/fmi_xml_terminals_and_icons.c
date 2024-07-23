@@ -101,7 +101,7 @@ int fmi3_xml_terminals_and_icons_set_model_description(fmi_xml_terminals_and_ico
     }
 }
 
-int fmi3_xml_handle_fmiTerminalsAndIcons(fmi3_xml_parser_context_t* context, const char* data) {
+int fmi_xml_handle_fmiTerminalsAndIcons(fmi3_xml_parser_context_t* context, const char* data) {
     fmi_xml_terminals_and_icons_t* termIcon = context->termIcon;
     if (!data) {
         int ret;
@@ -140,7 +140,7 @@ int fmi3_xml_handle_fmiTerminalsAndIcons(fmi3_xml_parser_context_t* context, con
     return 0;
 }
 
-int fmi3_xml_handle_Terminals(fmi3_xml_parser_context_t* context, const char* data) {
+int fmi_xml_handle_Terminals(fmi3_xml_parser_context_t* context, const char* data) {
     fmi_xml_terminals_and_icons_t* termIcon = context->termIcon;
     if (!data) {
         ;
@@ -175,7 +175,7 @@ int fmi3_xml_handle_Terminals(fmi3_xml_parser_context_t* context, const char* da
     return 0;
 }
 
-int fmi3_xml_handle_Terminal(fmi3_xml_parser_context_t* context, const char* data) {
+int fmi_xml_handle_Terminal(fmi3_xml_parser_context_t* context, const char* data) {
     fmi_xml_terminals_and_icons_t* termIcon = context->termIcon;
     if (!data) {
         fmi_xml_terminal_t* term = fmi_xml_alloc_terminal(context);
@@ -208,7 +208,7 @@ int fmi3_xml_handle_Terminal(fmi3_xml_parser_context_t* context, const char* dat
     return 0;
 }
 
-int fmi3_xml_handle_TerminalMemberVariable(fmi3_xml_parser_context_t* context, const char* data) {
+int fmi_xml_handle_TerminalMemberVariable(fmi3_xml_parser_context_t* context, const char* data) {
     // TODO: Implement
     if (!data) {
         ;
@@ -218,7 +218,7 @@ int fmi3_xml_handle_TerminalMemberVariable(fmi3_xml_parser_context_t* context, c
     return 0;
 }
 
-int fmi3_xml_handle_TerminalStreamMemberVariable(fmi3_xml_parser_context_t* context, const char* data) {
+int fmi_xml_handle_TerminalStreamMemberVariable(fmi3_xml_parser_context_t* context, const char* data) {
     // TODO: Implement
     if (!data) {
         ;
@@ -228,7 +228,7 @@ int fmi3_xml_handle_TerminalStreamMemberVariable(fmi3_xml_parser_context_t* cont
     return 0;
 }
 
-int fmi3_xml_handle_TerminalGraphicalRepresentation(fmi3_xml_parser_context_t* context, const char* data) {
+int fmi_xml_handle_TerminalGraphicalRepresentation(fmi3_xml_parser_context_t* context, const char* data) {
     // TODO: Implement
     if (!data) {
         ;

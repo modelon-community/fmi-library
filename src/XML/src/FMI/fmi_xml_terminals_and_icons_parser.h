@@ -27,9 +27,9 @@ extern "C" {
 /* Attributes common to modelDescription.xml & terminalsAndIcons.xml
  * are listed in FMI3_XML_ATTRLIST_COMMON in fmi3_xml_parser.h
  */
-#define FMI3_XML_ATTRLIST_TERM_ICON(EXPAND_XML_ATTRNAME)  // XXX: Currently empty, but will be filled
+#define FMI_XML_ATTRLIST_TERM_ICON(EXPAND_XML_ATTRNAME)  // XXX: Currently empty, but will be filled
 
-#define FMI3_XML_ELMLIST_TERM_ICON(EXPAND_XML_ELMNAME) \
+#define FMI_XML_ELMLIST_TERM_ICON(EXPAND_XML_ELMNAME) \
     EXPAND_XML_ELMNAME(fmiTerminalsAndIcons) \
     EXPAND_XML_ELMNAME(Terminals) \
     EXPAND_XML_ELMNAME(Terminal) \
@@ -38,9 +38,9 @@ extern "C" {
     EXPAND_XML_ELMNAME(TerminalGraphicalRepresentation)
 
 /** \brief Element that can be placed under different parents get alternative names from the info struct */
-#define FMI3_XML_ELMLIST_ALT_TERM_ICON(EXPAND_XML_ELMNAME)  // TODO: Terminal should go here?
+#define FMI_XML_ELMLIST_ALT_TERM_ICON(EXPAND_XML_ELMNAME)  // TODO: Terminal should go here?
 
-// XXX: fmi3_xml_elmID_none is defined in fmi3_xml_parser.h, got good style
+// XXX: fmi3_xml_elmID_none is defined in fmi3_xml_parser.h, not good style
 /*
     Define XML schema structure. Used to build the 'fmi3_xml_scheme_info_t' type (in fmi3_xml_parser.c).
 

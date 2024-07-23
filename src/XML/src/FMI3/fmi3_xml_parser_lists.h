@@ -39,7 +39,7 @@ extern "C" {
 #define FMI3_XML_ATTRLIST(EXPAND_XML_ATTRNAME) \
     FMI3_XML_ATTRLIST_COMMON     (EXPAND_XML_ATTRNAME) \
     FMI3_XML_ATTRLIST_MODEL_DESCR(EXPAND_XML_ATTRNAME) \
-    FMI3_XML_ATTRLIST_TERM_ICON  (EXPAND_XML_ATTRNAME)
+    FMI_XML_ATTRLIST_TERM_ICON  (EXPAND_XML_ATTRNAME)
 
 #define FMI3_XML_ATTR_ID(attr) fmi_attr_id_##attr,
 typedef enum fmi3_xml_attr_enu_t {
@@ -47,26 +47,16 @@ typedef enum fmi3_xml_attr_enu_t {
     fmi3_xml_attr_number
 } fmi3_xml_attr_enu_t;
 
-/** \brief Element names used in XML */
-#define FMI3_XML_ELMLIST(EXPAND_XML_ELMNAME) \
-    FMI3_XML_ELMLIST_MODEL_DESCR(EXPAND_XML_ELMNAME) \
-    FMI3_XML_ELMLIST_TERM_ICON  (EXPAND_XML_ELMNAME)
-
-/** \brief Element that can be placed under different parents get alternative names from the info struct */
-#define FMI3_XML_ELMLIST_ALT(EXPAND_XML_ELMNAME) \
-    FMI3_XML_ELMLIST_ALT_MODEL_DESCR(EXPAND_XML_ELMNAME) \
-    FMI3_XML_ELMLIST_ALT_TERM_ICON  (EXPAND_XML_ELMNAME)
-
-/** \brief Abstract elements that are only used in the scheme verification */
-#define FMI3_XML_ELMLIST_ABSTRACT(EXPAND_XML_ELMNAME) \
-    FMI3_XML_ELMLIST_ABSTRACT_MODEL_DESCR(EXPAND_XML_ELMNAME)
-
 /* Build prototypes for all elm_handle_* functions */
 typedef struct fmi3_xml_parser_context_t fmi3_xml_parser_context_t;
-#define EXPAND_ELM_HANDLE(elm) extern int fmi3_xml_handle_##elm(fmi3_xml_parser_context_t* context, const char* data);
-FMI3_XML_ELMLIST(EXPAND_ELM_HANDLE)
-FMI3_XML_ELMLIST_ALT(EXPAND_ELM_HANDLE)
-FMI3_XML_ELMLIST_ABSTRACT(EXPAND_ELM_HANDLE)
+#define EXPAND_ELM_HANDLE_FMI3(elm) extern int fmi3_xml_handle_##elm(fmi3_xml_parser_context_t* context, const char* data);
+FMI3_XML_ELMLIST_MODEL_DESCR         (EXPAND_ELM_HANDLE_FMI3)
+FMI3_XML_ELMLIST_ALT_MODEL_DESCR     (EXPAND_ELM_HANDLE_FMI3)
+FMI3_XML_ELMLIST_ABSTRACT_MODEL_DESCR(EXPAND_ELM_HANDLE_FMI3)
+
+#define EXPAND_ELM_HANDLE_FMI_TERM_ICON(elm) extern int fmi_xml_handle_##elm(fmi3_xml_parser_context_t* context, const char* data);
+FMI_XML_ELMLIST_TERM_ICON    (EXPAND_ELM_HANDLE_FMI_TERM_ICON)
+FMI_XML_ELMLIST_ALT_TERM_ICON(EXPAND_ELM_HANDLE_FMI_TERM_ICON)
 
 /**
  * Create an enum over all XML elements. This enum can be used to index
@@ -78,10 +68,12 @@ FMI3_XML_ELMLIST_ABSTRACT(EXPAND_ELM_HANDLE)
 #define FMI3_XML_LIST_ELM_ID(elm) ,FMI3_XML_ELM_ID(elm)
 typedef enum fmi3_xml_elm_enu_t {
     fmi3_xml_elmID_none = -1
-    FMI3_XML_ELMLIST(FMI3_XML_LIST_ELM_ID)
+    FMI3_XML_ELMLIST_MODEL_DESCR(FMI3_XML_LIST_ELM_ID)
+    FMI_XML_ELMLIST_TERM_ICON   (FMI3_XML_LIST_ELM_ID)
     ,fmi3_xml_elm_actual_number
-    FMI3_XML_ELMLIST_ALT(FMI3_XML_LIST_ELM_ID)
-    FMI3_XML_ELMLIST_ABSTRACT(FMI3_XML_LIST_ELM_ID)
+    FMI3_XML_ELMLIST_ALT_MODEL_DESCR     (FMI3_XML_LIST_ELM_ID)
+    FMI_XML_ELMLIST_ALT_TERM_ICON        (FMI3_XML_LIST_ELM_ID)
+    FMI3_XML_ELMLIST_ABSTRACT_MODEL_DESCR(FMI3_XML_LIST_ELM_ID)
     ,fmi3_xml_elm_number
 } fmi3_xml_elm_enu_t;
 

@@ -1407,7 +1407,7 @@ int fmi3_xml_parse_terminals_and_icons(fmi_xml_terminals_and_icons_t* termIcon,
     // try to open file before doing parser initialization
     file = fopen(filename, "rb");
     if (file == NULL) {
-        jm_log_info(context->callbacks, module, "Could not find or open terminalsAndIcons.xml: '%s'. Continuing.", filename);
+        jm_log_info(context->callbacks, "FMIXML", "Could not find or open terminalsAndIcons.xml: '%s'. Continuing.", filename);
         fmi3_xml_parse_free_context(context);
         return -1;
     }
@@ -1438,7 +1438,7 @@ int fmi3_xml_parse_terminals_and_icons(fmi_xml_terminals_and_icons_t* termIcon,
      * point delimiter. */
     context->jm_locale = jm_setlocale_numeric(context->callbacks, "C");
     if (!context->jm_locale) {
-        jm_log_error(context->callbacks, module, "Failed to set locale. Parsing might be incorrect.");
+        jm_log_error(context->callbacks, "FMIXML", "Failed to set locale. Parsing might be incorrect.");
     }
 
     memsuite.malloc_fcn = context->callbacks->malloc;

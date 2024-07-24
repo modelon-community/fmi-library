@@ -13,12 +13,8 @@
     along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 */
 
-// TODO: Possibly rename file to *_scheme?
-
-#ifndef FMI_XML_TERMINALS_AND_ICONS_PARSER_H
-#define FMI_XML_TERMINALS_AND_ICONS_PARSER_H
-
-#include <expat.h>
+#ifndef FMI_XML_TERMINALS_AND_ICONS_SCEHEME_H
+#define FMI_XML_TERMINALS_AND_ICONS_SCEHEME_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -63,4 +59,4 @@ extern "C" {
 }
 #endif
 
-#endif /* FMI_XML_TERMINALS_AND_ICONS_PARSER_H */
+#endif /* FMI_XML_TERMINALS_AND_ICONS_SCEHEME_H */

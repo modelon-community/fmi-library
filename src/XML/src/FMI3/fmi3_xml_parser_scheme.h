@@ -15,15 +15,11 @@ This file contains all parsing related lists and structs
 related to parsing XML elements and their attributes
 */
 
-// TODO: Rename to something like *_scheme.h?
+#ifndef FMI3_XML_XMLPARSER_SCHEME_H
+#define FMI3_XML_XMLPARSER_SCHEME_H
 
-#ifndef FMI3_XML_XMLPARSER_LISTS_H
-#define FMI3_XML_XMLPARSER_LISTS_H
-
-#include <expat.h>
-
-#include "../FMI/fmi_xml_terminals_and_icons_parser.h"
-#include "fmi3_xml_model_description_parser.h"
+#include "../FMI/fmi_xml_terminals_and_icons_scheme.h"
+#include "fmi3_xml_model_description_scheme.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -39,7 +35,7 @@ extern "C" {
 #define FMI3_XML_ATTRLIST(EXPAND_XML_ATTRNAME) \
     FMI3_XML_ATTRLIST_COMMON     (EXPAND_XML_ATTRNAME) \
     FMI3_XML_ATTRLIST_MODEL_DESCR(EXPAND_XML_ATTRNAME) \
-    FMI_XML_ATTRLIST_TERM_ICON  (EXPAND_XML_ATTRNAME)
+    FMI_XML_ATTRLIST_TERM_ICON   (EXPAND_XML_ATTRNAME)
 
 #define FMI3_XML_ATTR_ID(attr) fmi_attr_id_##attr,
 typedef enum fmi3_xml_attr_enu_t {
@@ -81,4 +77,4 @@ typedef enum fmi3_xml_elm_enu_t {
 }
 #endif
 
-#endif /* FMI3_XML_XMLPARSER_LISTS_H */
+#endif /* FMI3_XML_XMLPARSER_SCHEME_H */

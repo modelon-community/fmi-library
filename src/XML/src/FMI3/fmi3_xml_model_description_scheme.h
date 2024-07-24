@@ -13,12 +13,8 @@
     along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 */
 
-// TODO: Possibly rename file to *_scheme?
-
-#ifndef FMI3_XML_MODEL_DESCRIPTION_PARSER_H
-#define FMI3_XML_MODEL_DESCRIPTION_PARSER_H
-
-#include <expat.h>
+#ifndef FMI3_XML_MODEL_DESCRIPTION_SCHEME_H
+#define FMI3_XML_MODEL_DESCRIPTION_SCHEME_H
 
 #include <FMI3/fmi3_enums.h>
 
@@ -262,4 +258,4 @@ extern "C" {
 }
 #endif
 
-#endif /* FMI3_XML_MODEL_DESCRIPTION_PARSER_H */
+#endif /* FMI3_XML_MODEL_DESCRIPTION_SCHEME_H */

@@ -108,7 +108,7 @@ set(FMIXMLHEADERS
     src/FMI/fmi_xml_context_impl.h
     include/FMI/fmi_xml_terminals_and_icons.h
     src/FMI/fmi_xml_terminals_and_icons_impl.h
-    src/FMI/fmi_xml_terminals_and_icons_parser.h
+    src/FMI/fmi_xml_terminals_and_icons_scheme.h
     
     include/FMI1/fmi1_xml_model_description.h
     src/FMI1/fmi1_xml_model_description_impl.h
@@ -140,7 +140,7 @@ set(FMIXMLHEADERS
     src/FMI3/fmi3_xml_model_description_impl.h
     include/FMI3/fmi3_xml_model_structure.h
     src/FMI3/fmi3_xml_model_structure_impl.h
-    src/FMI3/fmi3_xml_model_description_parser.h
+    src/FMI3/fmi3_xml_model_description_scheme.h
     src/FMI3/fmi3_xml_parser_util.h
     src/FMI3/fmi3_xml_parser.h
     include/FMI3/fmi3_xml_type.h
@@ -149,7 +149,7 @@ set(FMIXMLHEADERS
     src/FMI3/fmi3_xml_unit_impl.h
     include/FMI3/fmi3_xml_variable.h
     src/FMI3/fmi3_xml_variable_impl.h
-    src/FMI3/fmi3_xml_parser_lists.h
+    src/FMI3/fmi3_xml_parser_scheme.h
     src/FMI3/fmi3_xml_parser_context_impl.h
     src/
     )

@@ -21,8 +21,6 @@
 #define FMI_IMPORT_TERMINALS_AND_ICONS_H_
 
 #include <stddef.h>
-#include <fmilib_config.h>
-#include <JM/jm_callbacks.h>
 
 #include <FMI2/fmi2_import.h>
 #include <FMI3/fmi3_import.h>
@@ -34,7 +32,7 @@ extern "C" {
 #endif
 
 /**
-    \addtogroup fmi3_import 
+    \addtogroup fmi_import_terminals_and_icons 
     @{
        \defgroup fmi_import_terminals_and_icons Handling of terminals and icons
     @}
@@ -51,7 +49,7 @@ typedef struct fmi_xml_terminal_t fmi_import_terminal_t;
 
 /**
  * \brief Returns non-zero if terminalsAndIcons.xml has been found and successfully parsed.
- * @param fmu An #fmi3_import_t object as returned by #fmi3_import_parse_xml().
+ * @param fmu An #fmi2_import_t object as returned by #fmi2_import_parse_xml().
  */
 FMILIB_EXPORT int fmi2_import_get_has_terminals_and_icons(fmi2_import_t* fmu);
 

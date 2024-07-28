@@ -180,10 +180,8 @@ set(FMIXMLSOURCE
 )
 
 if(FMILIB_SYSTEM_EXPAT)
-    find_package(EXPAT CONFIG REQUIRED)
-    add_library(expat ALIAS ${expat_LIBRARIES})
-    # set(expat ${expat_LIBRARIES})
-    message(STATUS "******** expat_LIBRARIES: ${expat_LIBRARIES}")
+    find_package(EXPAT REQUIRED)
+    set(expat ${EXPAT_LIBRARIES})
 else()
     include(ExternalProject)
 

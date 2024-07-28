@@ -62,6 +62,7 @@ option(FMILIB_BUILD_STATIC_LIB "Build the library as static." ON)
 option(FMILIB_BUILD_SHARED_LIB "Build the library as shared (dll/so/dylib)." ON)
 option(FMILIB_INSTALL_SUBLIBS  "Install sub-libraries (fmicapi. fmixml, jmutil, fmiimport, fmizip)" OFF)
 option(FMILIB_FIND_PACKAGE_ZLIB  "Use find_package for zlib, instead of version in FMILibrary/Thirdparty." OFF)
+option(FMILIB_SYSTEM_EXPAT "Use system expat library instead of the one in FMILibrary/Thirdparty." OFF)
 mark_as_advanced(FMILIB_FIND_PACKAGE_ZLIB)
 
 if(NOT (WIN32 OR CYGWIN OR APPLE))
@@ -288,7 +289,10 @@ if(FMILIB_BUILD_TESTS)
     )
 endif()
 
-set(FMILIB_SHARED_SUBLIBS fmixml fmizip fmicapi expat minizip zlib c99snprintf)
+set(FMILIB_SHARED_SUBLIBS fmixml fmizip fmicapi minizip zlib c99snprintf)
+if (NOT FMILIB_SYSTEM_EXPAT)
+    list(APPEND FMILIB_SHARED_SUBLIBS expat)
+endif()
 set(FMILIB_SUBLIBS fmiimport jmutils ${FMILIB_SHARED_SUBLIBS})
 # XXX: Unclear why we create intermediate sublibs instead of just giving everything as source.
 # Probably also wouldn't get problems with using PRIVATE/PUBLIC on linking sublibs on Windows.

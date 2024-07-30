@@ -35,6 +35,6 @@ fmi_import_terminal_t* fmi3_import_get_terminal_by_name(fmi3_import_t* fmu, cons
     return fmu ? fmi_xml_get_terminal_by_name(fmu->termIcon, name) : NULL;
 }
 
-const char* fmi3_import_get_terminal_name(fmi_import_terminal_t* term){
+const char* fmi_import_get_terminal_name(fmi_import_terminal_t* term){
     return term ? fmi_xml_get_terminal_name(term) : NULL;
 }

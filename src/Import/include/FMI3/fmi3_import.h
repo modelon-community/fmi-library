@@ -55,6 +55,7 @@ extern "C" {
  *      @{
  *           \brief Convenient functions for calling the FMI functions. This interface wraps the "C" API.
  *      @}
+ *      \addtogroup fmi3_import_options Functions for handling FMI Library options
  * @}
  */
 

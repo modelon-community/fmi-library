@@ -25,39 +25,53 @@
 #include <FMI2/fmi2_import.h>
 #include <FMI3/fmi3_import.h>
 
-// TODO: Some functions are FMI2/3 specific, should these be in fmi2/3_....h files?
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 /**
-    \addtogroup fmi_import_terminals_and_icons 
+    \defgroup fmi_termicon_import FMI Terminals and Icons import interface
     @{
-       \defgroup fmi_import_terminals_and_icons Handling of terminals and icons
+        \defgroup fmi_import_terminals_and_icons General Handling of Terminals and Icons
+        \addtogroup  fmi_import_terminals_and_icons
+        \addtogroup  fmi2_import_terminals_and_icons
+        \addtogroup  fmi3_import_terminals_and_icons
     @}
- */
+*/
 
 /**
     \addtogroup fmi_import_terminals_and_icons
-    \brief Handling of terminals and icons.
+    \brief Common API for Terminals and Icons.
+    
+    Functionality and API common to FMI 2 and FMI 3 import.
     @{ 
- */
+*/
 
 /** \brief Opaque Terminal type */
 typedef struct fmi_xml_terminal_t fmi_import_terminal_t;
+
+/** 
+    \brief Get the variable name
+    @param term An #fmi_import_terminal_t pointer
+    @return name
+*/ 
+FMILIB_EXPORT const char* fmi_import_get_terminal_name(fmi_import_terminal_t* term);
+
+/** @} */
+
+// TODO: Should one move the FMI 2/3 specific content to separate files?
+
+/**
+    \addtogroup fmi2_import_terminals_and_icons Terminals and Icons in FMI2
+    \brief FMI2 specific API for Terminals and Icons.
+    @{ 
+*/
 
 /**
  * \brief Returns non-zero if terminalsAndIcons.xml has been found and successfully parsed.
  * @param fmu An #fmi2_import_t object as returned by #fmi2_import_parse_xml().
  */
 FMILIB_EXPORT int fmi2_import_get_has_terminals_and_icons(fmi2_import_t* fmu);
-
-/**
- * \brief Returns non-zero if terminalsAndIcons.xml has been found and successfully parsed.
- * @param fmu An #fmi3_import_t object as returned by #fmi3_import_parse_xml().
- */
-FMILIB_EXPORT int fmi3_import_get_has_terminals_and_icons(fmi3_import_t* fmu);
 
 /**
     \brief Get terminal by terminal name.
@@ -67,6 +81,22 @@ FMILIB_EXPORT int fmi3_import_get_has_terminals_and_icons(fmi3_import_t* fmu);
  */
 FMILIB_EXPORT fmi_import_terminal_t* fmi2_import_get_terminal_by_name(fmi2_import_t* fmu, const char* name);
 
+/** @} */
+
+
+
+/**
+    \addtogroup fmi3_import_terminals_and_icons Terminals and Icons in FMI3
+    \brief FMI3 specific API for Terminals and Icons.
+    @{ 
+*/
+
+/**
+ * \brief Returns non-zero if terminalsAndIcons.xml has been found and successfully parsed.
+ * @param fmu An #fmi3_import_t object as returned by #fmi3_import_parse_xml().
+ */
+FMILIB_EXPORT int fmi3_import_get_has_terminals_and_icons(fmi3_import_t* fmu);
+
 /**
     \brief Get terminal by terminal name.
     @param fmu An #fmi3_import_t object as returned by #fmi3_import_parse_xml().
@@ -75,14 +105,8 @@ FMILIB_EXPORT fmi_import_terminal_t* fmi2_import_get_terminal_by_name(fmi2_impor
  */
 FMILIB_EXPORT fmi_import_terminal_t* fmi3_import_get_terminal_by_name(fmi3_import_t* fmu, const char* name);
 
-/** 
-    \brief Get the variable name
-    @param term An #fmi_import_terminal_t pointer
-    @return name
-*/ 
-FMILIB_EXPORT const char* fmi3_import_get_terminal_name(fmi_import_terminal_t* term);
-
 /** @} */
+
 
 #ifdef __cplusplus
 }

@@ -34,19 +34,19 @@ TEST_CASE("Test parse terminals and icons") {
         // test the existing ones
         term = fmi2_import_get_terminal_by_name(xml, "terminalA");
         REQUIRE(term != nullptr);
-        REQUIRE_STREQ(fmi3_import_get_terminal_name(term), "terminalA");
+        REQUIRE_STREQ(fmi_import_get_terminal_name(term), "terminalA");
 
         term = fmi2_import_get_terminal_by_name(xml, "terminalB");
         REQUIRE(term != nullptr);
-        REQUIRE_STREQ(fmi3_import_get_terminal_name(term), "terminalB");
+        REQUIRE_STREQ(fmi_import_get_terminal_name(term), "terminalB");
 
         term = fmi2_import_get_terminal_by_name(xml, "terminalC");
         REQUIRE(term != nullptr);
-        REQUIRE_STREQ(fmi3_import_get_terminal_name(term), "terminalC");
+        REQUIRE_STREQ(fmi_import_get_terminal_name(term), "terminalC");
 
         term = fmi2_import_get_terminal_by_name(xml, "");
         REQUIRE(term != nullptr);
-        REQUIRE_STREQ(fmi3_import_get_terminal_name(term), "");
+        REQUIRE_STREQ(fmi_import_get_terminal_name(term), "");
     }
 
     SECTION("Testing edge cases of import functions; should not crash") {
@@ -54,7 +54,7 @@ TEST_CASE("Test parse terminals and icons") {
         REQUIRE(fmi2_import_get_terminal_by_name(nullptr, "terminalA") == nullptr); // NULL
         REQUIRE(fmi2_import_get_terminal_by_name(xml, NULL) == nullptr); // NULL
 
-        REQUIRE(fmi3_import_get_terminal_name(nullptr) == nullptr);
+        REQUIRE(fmi_import_get_terminal_name(nullptr) == nullptr);
     }
 
     // TODO: Current example xml includes elements/attributes not yet parsed

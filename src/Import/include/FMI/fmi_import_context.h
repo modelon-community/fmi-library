@@ -57,6 +57,7 @@ in \ref fmi1_import_capi, \ref fmi2_import_capi and \ref fmi3_import_capi.
 \addtogroup  fmi1_import
 \addtogroup  fmi2_import
 \addtogroup  fmi3_import
+\addtogroup  fmi_termicon_import
 \addtogroup  fmi_import_utils
 @}
 \addtogroup fmi_import_context

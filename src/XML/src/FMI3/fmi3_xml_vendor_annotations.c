@@ -84,15 +84,15 @@ int fmi3_xml_handle_Tool(fmi3_xml_parser_context_t *context, const char* data) {
         jm_string *pvendor;
         char* vendor = 0;
 
-        if(!bufName) return -1;
+        if (!bufName) return -1;
         /* <xs:attribute name="name" type="xs:normalizedString" use="required"> */
-        if( fmi3_xml_parse_attr_as_string(context, fmi3_xml_elmID_Tool, fmi_attr_id_name, 1, bufName))
+        if (fmi3_xml_parse_attr_as_string(context, fmi3_xml_elmID_Tool, fmi_attr_id_name, 1, bufName))
             return -1;
         pvendor = jm_vector_push_back(jm_string)(&md->vendorList, vendor);
         len = jm_vector_get_size(char)(bufName);
-        if(pvendor )
+        if (pvendor)
             *pvendor = vendor = (char*)(context->callbacks->malloc(len + 1));
-        if(!pvendor || !vendor) {
+        if (!pvendor || !vendor) {
             fmi3_xml_parse_fatal(context, "Could not allocate memory");
             return -1;
         }

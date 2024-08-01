@@ -67,7 +67,7 @@ fmi2_import_t* fmi2_import_allocate(jm_callbacks* cb) {
     jm_vector_init(char)(&fmu->logMessageBufferExpanded,0,cb);
 
     fmu->options = fmi_util_allocate_options(cb);
-    if(!fmu->options) {
+    if (!fmu->options) {
         goto err3;
     }
 

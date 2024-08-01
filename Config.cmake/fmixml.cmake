@@ -154,7 +154,7 @@ set(FMIXMLHEADERS
     src/
     )
     
-    set(FMIXMLSOURCE
+set(FMIXMLSOURCE
     src/FMI/fmi_xml_context.c
     src/FMI/fmi_xml_terminals_and_icons.c
 

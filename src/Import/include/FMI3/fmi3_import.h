@@ -35,7 +35,7 @@
 #include "fmi3_import_unit.h"
 #include "fmi3_import_variable.h"
 #include "fmi3_import_variable_list.h"
-#include "fmi3_import_terminals_and_icons.h"
+#include <FMI/fmi_import_terminals_and_icons.h>
 
 #include "fmi3_import_capi.h"
 #include "fmi3_import_convenience.h"
@@ -55,6 +55,7 @@ extern "C" {
  *      @{
  *           \brief Convenient functions for calling the FMI functions. This interface wraps the "C" API.
  *      @}
+ *      \addtogroup fmi3_import_options Functions for handling FMI Library options
  * @}
  */
 

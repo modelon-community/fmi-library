@@ -21,6 +21,17 @@ extern "C" {
         else if (strcmp(S1, S2) != 0) { FAIL(S1 << " != " << S2); }                                    \
     } while (0);
 
+// XXX: Currently cotains duplicated code for FMI 2 & 3 (also in fmi_testutil.c)
+// Could replace via macros
+
+typedef struct fmi2_testutil_import_t {
+    fmi2_import_t* fmu;
+    jm_vector(jm_voidp) log;      // All logged messages
+    jm_vector(jm_voidp) warnLog;  // List of warning messages
+    jm_vector(jm_voidp) errLog;   // List of error and fatal messages
+    jm_callbacks cb;              // Holds the test-logger and its context
+} fmi2_testutil_import_t;
+
 typedef struct fmi3_testutil_import_t {
     fmi3_import_t* fmu;
     jm_vector(jm_voidp) log;      // All logged messages
@@ -37,9 +48,20 @@ void fmi_testutil_enter_breakpoint();
 
 /**
  * Parses the modelDescription.xml which is located in 'xmldir'.
+ * The returned pointer must be freed with 'fmi2_import_free'.
+ */
+fmi2_import_t* fmi2_testutil_parse_xml(const char* xmldir);
+
+/**
+ * Parses the modelDescription.xml which is located in 'xmldir'.
  * The returned pointer must be freed with 'fmi3_import_free'.
  */
 fmi3_import_t* fmi3_testutil_parse_xml(const char* xmldir);
+
+/**
+ * Parse an XML and save the log.
+ */
+fmi2_testutil_import_t* fmi2_testutil_parse_xml_with_log(const char* xmldir);
 
 /**
  * Parse an XML and save the log.
@@ -49,7 +71,17 @@ fmi3_testutil_import_t* fmi3_testutil_parse_xml_with_log(const char* xmldir);
 /**
  * Free the object.
  */
+void fmi2_testutil_import_free(fmi2_testutil_import_t* testfmu);
+
+/**
+ * Free the object.
+ */
 void fmi3_testutil_import_free(fmi3_testutil_import_t* testfmu);
+
+/**
+ * Returns the number of logged errors.
+ */
+size_t fmi2_testutil_get_num_errors(fmi2_testutil_import_t* testfmu);
 
 /**
  * Returns the number of logged errors.
@@ -59,7 +91,17 @@ size_t fmi3_testutil_get_num_errors(fmi3_testutil_import_t* testfmu);
 /**
  * Returns the number of logged problems, i.e. log-level warning or lower.
  */
+size_t fmi2_testutil_get_num_problems(fmi2_testutil_import_t* testfmu);
+
+/**
+ * Returns the number of logged problems, i.e. log-level warning or lower.
+ */
 size_t fmi3_testutil_get_num_problems(fmi3_testutil_import_t* testfmu);
+
+/**
+ * Returns true if any logged message constains the given message substring.
+ */
+bool fmi2_testutil_log_contains(fmi2_testutil_import_t* testfmu, const char* msgSubstr);
 
 /**
  * Returns true if any logged message constains the given message substring.

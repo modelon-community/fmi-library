@@ -22,7 +22,7 @@
 
 #include "FMI3/fmi3_import.h"
 #include "FMI3/fmi3_xml_model_description.h"
-#include "FMI3/fmi3_xml_terminals_and_icons.h"
+#include <FMI/fmi_xml_terminals_and_icons.h>
 
 #include "../FMI/fmi_import_context_impl.h"
 #include "../src/FMI3/fmi3_capi_impl.h"
@@ -42,7 +42,7 @@ struct fmi3_import_t {
     char* instanceName;
     jm_callbacks* callbacks;
     fmi3_xml_model_description_t* md;
-    fmi3_xml_terminals_and_icons_t* termIcon;
+    fmi_xml_terminals_and_icons_t* termIcon;
     fmi3_capi_t* capi;
     /* log message buffer */
     jm_vector(char) logMessageBufferCoded;

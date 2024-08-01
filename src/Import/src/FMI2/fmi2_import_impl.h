@@ -24,10 +24,12 @@
 
 #include <FMI2/fmi2_import.h>
 #include <FMI2/fmi2_xml_model_description.h>
+#include <FMI/fmi_xml_terminals_and_icons.h>
 
 #include "../FMI/fmi_import_context_impl.h"
 #include "../src/FMI2/fmi2_capi_impl.h"
 #include "../src/FMI/fmi_util_options_impl.h"
+
 
 
 #ifdef __cplusplus
@@ -39,6 +41,7 @@ struct fmi2_import_t {
     char* resourceLocation;
     jm_callbacks* callbacks;
     fmi2_xml_model_description_t* md;
+    fmi_xml_terminals_and_icons_t* termIcon;
     fmi2_capi_t* capi;
     jm_vector(char) logMessageBufferCoded;
     jm_vector(char) logMessageBufferExpanded;

@@ -26,207 +26,17 @@
 
 #include <FMI3/fmi3_enums.h>
 #include <FMI3/fmi3_xml_model_description.h>
-#include <FMI3/fmi3_xml_terminals_and_icons.h>
-
+#include <FMI/fmi_xml_terminals_and_icons.h>
+#include "fmi3_xml_model_description_scheme.h"
+#include "../FMI/fmi_xml_terminals_and_icons_scheme.h"
+#include "fmi3_xml_parser_context_impl.h"
+#include "fmi3_xml_parser_util.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-
 jm_vector_declare_template(fmi3_value_reference_t)
-
-#define FMI3_XML_ATTRLIST(EXPAND_XML_ATTRNAME) \
-    EXPAND_XML_ATTRNAME(fmiVersion) \
-    EXPAND_XML_ATTRNAME(factor) \
-    EXPAND_XML_ATTRNAME(offset) \
-    EXPAND_XML_ATTRNAME(inverse) \
-    FMI3_SI_BASE_UNITS(EXPAND_XML_ATTRNAME) \
-    EXPAND_XML_ATTRNAME(name) \
-    EXPAND_XML_ATTRNAME(description) \
-    EXPAND_XML_ATTRNAME(quantity) \
-    EXPAND_XML_ATTRNAME(unit) \
-    EXPAND_XML_ATTRNAME(displayUnit) \
-    EXPAND_XML_ATTRNAME(relativeQuantity) \
-    EXPAND_XML_ATTRNAME(unbounded) \
-    EXPAND_XML_ATTRNAME(min) \
-    EXPAND_XML_ATTRNAME(max) \
-    EXPAND_XML_ATTRNAME(nominal) \
-    EXPAND_XML_ATTRNAME(declaredType) \
-    EXPAND_XML_ATTRNAME(start) \
-    EXPAND_XML_ATTRNAME(derivative) \
-    EXPAND_XML_ATTRNAME(reinit) \
-    EXPAND_XML_ATTRNAME(startTime) \
-    EXPAND_XML_ATTRNAME(stopTime) \
-    EXPAND_XML_ATTRNAME(tolerance) \
-    EXPAND_XML_ATTRNAME(stepSize) \
-    EXPAND_XML_ATTRNAME(value) \
-    EXPAND_XML_ATTRNAME(valueReference) \
-    EXPAND_XML_ATTRNAME(variability) \
-    EXPAND_XML_ATTRNAME(causality) \
-    EXPAND_XML_ATTRNAME(initial) \
-    EXPAND_XML_ATTRNAME(previous) \
-    EXPAND_XML_ATTRNAME(clocks) \
-    EXPAND_XML_ATTRNAME(canHandleMultipleSetPerTimeInstant) \
-    EXPAND_XML_ATTRNAME(intermediateUpdate) \
-    EXPAND_XML_ATTRNAME(mimeType) \
-    EXPAND_XML_ATTRNAME(maxSize) \
-    EXPAND_XML_ATTRNAME(intervalVariability) \
-    EXPAND_XML_ATTRNAME(canBeDeactivated) \
-    EXPAND_XML_ATTRNAME(priority) \
-    EXPAND_XML_ATTRNAME(intervalDecimal) \
-    EXPAND_XML_ATTRNAME(shiftDecimal) \
-    EXPAND_XML_ATTRNAME(supportsFraction) \
-    EXPAND_XML_ATTRNAME(resolution) \
-    EXPAND_XML_ATTRNAME(intervalCounter) \
-    EXPAND_XML_ATTRNAME(shiftCounter) \
-    EXPAND_XML_ATTRNAME(dependencies) \
-    EXPAND_XML_ATTRNAME(dependenciesKind) \
-    EXPAND_XML_ATTRNAME(modelName) \
-    EXPAND_XML_ATTRNAME(modelIdentifier) \
-    EXPAND_XML_ATTRNAME(instantiationToken) \
-    EXPAND_XML_ATTRNAME(author) \
-    EXPAND_XML_ATTRNAME(copyright) \
-    EXPAND_XML_ATTRNAME(license) \
-    EXPAND_XML_ATTRNAME(version) \
-    EXPAND_XML_ATTRNAME(generationTool) \
-    EXPAND_XML_ATTRNAME(generationDateAndTime) \
-    EXPAND_XML_ATTRNAME(variableNamingConvention) \
-    EXPAND_XML_ATTRNAME(numberOfEventIndicators) \
-    EXPAND_XML_ATTRNAME(input) \
-    EXPAND_XML_ATTRNAME(needsExecutionTool) \
-    EXPAND_XML_ATTRNAME(canBeInstantiatedOnlyOncePerProcess) \
-    EXPAND_XML_ATTRNAME(canGetAndSetFMUState) \
-    EXPAND_XML_ATTRNAME(canSerializeFMUState) \
-    EXPAND_XML_ATTRNAME(providesDirectionalDerivatives) \
-    EXPAND_XML_ATTRNAME(providesDirectionalDerivative) /* Removed in FMI3. Used in error checking. */ \
-    EXPAND_XML_ATTRNAME(providesAdjointDerivatives) \
-    EXPAND_XML_ATTRNAME(providesPerElementDependencies) \
-    EXPAND_XML_ATTRNAME(providesEvaluateDiscreteStates) \
-    EXPAND_XML_ATTRNAME(needsCompletedIntegratorStep) \
-    EXPAND_XML_ATTRNAME(canHandleVariableCommunicationStepSize) \
-    EXPAND_XML_ATTRNAME(fixedInternalStepSize) \
-    EXPAND_XML_ATTRNAME(maxOutputDerivativeOrder) \
-    EXPAND_XML_ATTRNAME(recommendedIntermediateInputSmoothness) \
-    EXPAND_XML_ATTRNAME(providesIntermediateUpdate) \
-    EXPAND_XML_ATTRNAME(mightReturnEarlyFromDoStep) \
-    EXPAND_XML_ATTRNAME(canReturnEarlyAfterIntermediateUpdate) \
-    EXPAND_XML_ATTRNAME(hasEventMode)
-
-
-#define FMI3_XML_ATTR_ID(attr) fmi_attr_id_##attr,
-typedef enum fmi3_xml_attr_enu_t {
-    FMI3_XML_ATTRLIST(FMI3_XML_ATTR_ID)
-    fmi3_xml_attr_number
-} fmi3_xml_attr_enu_t;
-
-/** \brief Element names used in XML */
-#define FMI3_XML_ELMLIST(EXPAND_XML_ELMNAME) \
-    EXPAND_XML_ELMNAME(fmiModelDescription) \
-    EXPAND_XML_ELMNAME(ModelExchange) \
-    EXPAND_XML_ELMNAME(CoSimulation) \
-    EXPAND_XML_ELMNAME(ScheduledExecution) \
-    EXPAND_XML_ELMNAME(SourceFiles) \
-    EXPAND_XML_ELMNAME(File) \
-    EXPAND_XML_ELMNAME(UnitDefinitions) \
-    EXPAND_XML_ELMNAME(Unit) \
-    EXPAND_XML_ELMNAME(BaseUnit) \
-    EXPAND_XML_ELMNAME(DisplayUnit) \
-    EXPAND_XML_ELMNAME(TypeDefinitions) \
-    EXPAND_XML_ELMNAME(SimpleType) \
-    EXPAND_XML_ELMNAME(Item) \
-    EXPAND_XML_ELMNAME(DefaultExperiment) \
-    EXPAND_XML_ELMNAME(VendorAnnotations) \
-    EXPAND_XML_ELMNAME(Tool) \
-    EXPAND_XML_ELMNAME(ModelVariables) \
-    EXPAND_XML_ELMNAME(Dimension) \
-    EXPAND_XML_ELMNAME(Start) \
-    EXPAND_XML_ELMNAME(Alias) \
-    EXPAND_XML_ELMNAME(Annotations) \
-    EXPAND_XML_ELMNAME(LogCategories) \
-    EXPAND_XML_ELMNAME(Category) \
-    EXPAND_XML_ELMNAME(Float64Type) \
-    EXPAND_XML_ELMNAME(Float32Type) \
-    EXPAND_XML_ELMNAME(Int64Type) \
-    EXPAND_XML_ELMNAME(Int32Type) \
-    EXPAND_XML_ELMNAME(Int16Type) \
-    EXPAND_XML_ELMNAME(Int8Type) \
-    EXPAND_XML_ELMNAME(UInt64Type) \
-    EXPAND_XML_ELMNAME(UInt32Type) \
-    EXPAND_XML_ELMNAME(UInt16Type) \
-    EXPAND_XML_ELMNAME(UInt8Type) \
-    EXPAND_XML_ELMNAME(BooleanType) \
-    EXPAND_XML_ELMNAME(BinaryType) \
-    EXPAND_XML_ELMNAME(ClockType) \
-    EXPAND_XML_ELMNAME(StringType) \
-    EXPAND_XML_ELMNAME(EnumerationType) \
-    EXPAND_XML_ELMNAME(ModelStructure) \
-    EXPAND_XML_ELMNAME(Output) \
-    EXPAND_XML_ELMNAME(ContinuousStateDerivative) \
-    EXPAND_XML_ELMNAME(ClockedState) \
-    EXPAND_XML_ELMNAME(InitialUnknown) \
-    EXPAND_XML_ELMNAME(EventIndicator) \
-    EXPAND_XML_ELMNAME(Float64) \
-    EXPAND_XML_ELMNAME(Float32) \
-    EXPAND_XML_ELMNAME(Int64) \
-    EXPAND_XML_ELMNAME(Int32) \
-    EXPAND_XML_ELMNAME(Int16) \
-    EXPAND_XML_ELMNAME(Int8) \
-    EXPAND_XML_ELMNAME(UInt64) \
-    EXPAND_XML_ELMNAME(UInt32) \
-    EXPAND_XML_ELMNAME(UInt16) \
-    EXPAND_XML_ELMNAME(UInt8) \
-    EXPAND_XML_ELMNAME(Boolean) \
-    EXPAND_XML_ELMNAME(Binary) \
-    EXPAND_XML_ELMNAME(Clock) \
-    EXPAND_XML_ELMNAME(String) \
-    EXPAND_XML_ELMNAME(Enumeration) \
-    EXPAND_XML_ELMNAME(fmiTerminalsAndIcons) \
-    EXPAND_XML_ELMNAME(Terminals) \
-    EXPAND_XML_ELMNAME(Terminal) \
-    EXPAND_XML_ELMNAME(TerminalMemberVariable) \
-    EXPAND_XML_ELMNAME(TerminalStreamMemberVariable) \
-    EXPAND_XML_ELMNAME(TerminalGraphicalRepresentation)
-
-/** \brief Element that can be placed under different parents get alternative names from the info struct */
-#define FMI3_XML_ELMLIST_ALT(EXPAND_XML_ELMNAME) \
-    EXPAND_XML_ELMNAME(BinaryVariableStart) \
-    EXPAND_XML_ELMNAME(StringVariableStart) \
-    EXPAND_XML_ELMNAME(VariableTool) \
-    EXPAND_XML_ELMNAME(SourceFilesCS) \
-    EXPAND_XML_ELMNAME(FileCS)
-
-/** \brief Abstract elements that are only used in the scheme verification */
-#define FMI3_XML_ELMLIST_ABSTRACT(EXPAND_XML_ELMNAME) \
-    EXPAND_XML_ELMNAME(Variable)
-
-/* Build prototypes for all elm_handle_* functions */
-typedef struct fmi3_xml_parser_context_t fmi3_xml_parser_context_t;
-#define EXPAND_ELM_HANDLE(elm) extern int fmi3_xml_handle_##elm(fmi3_xml_parser_context_t *context, const char* data);
-FMI3_XML_ELMLIST(EXPAND_ELM_HANDLE)
-FMI3_XML_ELMLIST_ALT(EXPAND_ELM_HANDLE)
-FMI3_XML_ELMLIST_ABSTRACT(EXPAND_ELM_HANDLE)
-
-/**
- * Create an enum over all XML elements. This enum can be used to index
- * the following arrays:
- *      - fmi3_xml_scheme_info
- *      - fmi3_element_handle_map
- */
-#define FMI3_XML_ELM_ID(elm) fmi3_xml_elmID_##elm
-#define FMI3_XML_LIST_ELM_ID(elm) ,FMI3_XML_ELM_ID(elm)
-typedef enum fmi3_xml_elm_enu_t {
-    fmi3_xml_elmID_none = -1
-    FMI3_XML_ELMLIST(FMI3_XML_LIST_ELM_ID)
-    ,fmi3_xml_elm_actual_number
-    FMI3_XML_ELMLIST_ALT(FMI3_XML_LIST_ELM_ID)
-    FMI3_XML_ELMLIST_ABSTRACT(FMI3_XML_LIST_ELM_ID)
-    ,fmi3_xml_elm_number
-} fmi3_xml_elm_enu_t;
-
-typedef int (*fmi3_xml_element_handle_ft)(fmi3_xml_parser_context_t *context, const char* data);
-
-typedef struct fmi3_xml_element_handle_map_t fmi3_xml_element_handle_map_t;
 
 /** Keeps information about the allowed parent element ID, index among siblings in a sequence and if
     multiple elements of this type are allowed in a sequence.
@@ -238,156 +48,12 @@ typedef struct {
     int multipleAllowed;    /* multiple elements of this kind kan come in a sequence as siblings*/
 } fmi3_xml_scheme_info_t;
 
-struct fmi3_xml_element_handle_map_t {
-    const char* elementName;
-    fmi3_xml_element_handle_ft elementHandle;
-    fmi3_xml_elm_enu_t elemID;
-};
-
-
-jm_vector_declare_template(fmi3_xml_element_handle_map_t)
 
 #define fmi3_xml_diff_elmName(a, b) strcmp(a.elementName,b.elementName)
 
 jm_define_comp_f(fmi3_xml_compare_elmName, fmi3_xml_element_handle_map_t, fmi3_xml_diff_elmName)
 
 #define XML_BLOCK_SIZE 16000
-
-/**
- * Struct for saving and accessing data between element handlers.
- */
-struct fmi3_xml_parser_context_t {
-
-    /**
-     * This is where the parsed XML is saved.
-     */
-    fmi3_xml_model_description_t* modelDescription;
-
-    /* Terminals and Icons XML data */
-    fmi3_xml_terminals_and_icons_t* termIcon;
-
-    jm_callbacks* callbacks;
-
-    XML_Parser parser;
-
-    /* Temporary storage of start values for String and Binary variables. */
-    jm_vector(jm_voidp) currentStartVariableValues;
-
-    /**
-     * Actual type: jm_vector of jm_vector(char).
-     *
-     * Purpose seems to be to reduce the cost of converting char* to jm_vector(char)
-     * by using an object pool. Typically for attributes.
-     *
-     * This should be used to keep values between elements.
-     */
-    jm_vector(jm_voidp) parseBuffer;
-
-    /**
-     * Used for writing to attrMapById. Uses lookup by attribute name instead
-     * of attribute ID. The .ptr field points to attrMapById[id(attr_name)].
-     * Currently used ONLY for writing.
-     */
-    jm_vector(jm_named_ptr)* attrMapByName;
-
-    /**
-     * Vector with a slot for every attribute for every element to allow constant lookup:
-     *     attrMapById[<attr_id>] = <attr_value>
-     *
-     * Is populated with all parsed attributes for the current element before that element
-     * handler is invoked.
-     *
-     * Typically attributes values are cleared when they are read, such that at the end of
-     * parsing an element all attributes should be cleared.
-     *
-     * NOTE:
-     * The pointers point to expat's internal memory. It's not allowed to save references
-     * to this memory between element handle calls.
-     */
-    jm_vector(jm_string)* attrMapById;
-
-    /**
-     * A vector that only contains mappings from element names to element
-     * handlers. Remember that there can be several mappings for the same
-     * element name, but with "alternative names".
-     * The mapping for an XML name therefore depends on the context. For
-     * example, when the ModelVariable element is found, the mapping for
-     * 'Int32' must change the handler for the "alternative name":
-     * 'fmi3_xml_handle_Int32Variable'.
-     */
-    jm_vector(fmi3_xml_element_handle_map_t)* elmMap;
-
-    fmi3_xml_unit_t* lastBaseUnit;
-
-    /**
-     * Incremented when an invalid element(or nested elements of invalid root
-     * element) is found. Decremented when invalid element end tags are parsed.
-     */
-    int skipElementCnt;
-
-    /**
-     * There is no guarantee that all text will be handled in one call to the
-     * function implementing the XML_CharacterDataHandler, and this variable
-     * saves if a warning has already been generated.
-     */
-    int has_produced_data_warning;
-
-    /**
-     * Used to get parent element.
-     * Top of stack:
-     *   XML_StartElementHandler:
-     *     on enter: grandparent or empty
-     *     on exit: parent or empty (push)
-     *   XML_EndElementHandler:
-     *     on enter: parent or empty
-     *     on exit: grandparent or empty (pop)
-     */
-    jm_stack(int) elmStack;
-
-    /**
-     * Contains the latest element text. For an MD without tool specific
-     * annotations, this will always be empty. This variable is currently
-     * only used as a bool-switch though...
-     * TODO: Refactor to bool
-     */
-    jm_vector(char) elmData;
-
-    /**
-     * Contains a Variable's start attribute. Purpose is to allow it to be
-     * processed in the Variable's end-handler.
-     */
-    jm_vector(char) variableStartAttr;
-
-    /**
-     * Element ID of the last processed sibling, or fmi3_xml_elmID_none if
-     * no siblings have been processed.
-     */
-    fmi3_xml_elm_enu_t lastSiblingElemId;
-
-    /**
-     * Used for error checking and scheme verification.
-     * Values:
-     *   XML_StartElementHandler:
-     *     on enter: parent
-     *     on exit: self
-     *   XML_EndElementHandler:
-     *     on enter: self
-     *     on exit: parent
-     */
-    fmi3_xml_elm_enu_t currentElmID;
-
-    fmi3_xml_elm_enu_t currentElemIdStartTag;
-
-    /* Variables for handling tool-specific XML elements */
-    int anyElmCount;
-    int useAnyHandleFlg;
-    char* anyToolName;
-    void* anyParent;
-    fmi3_xml_callbacks_t* anyHandle;
-
-    /* Data for restoring locale after parsing */
-    jm_locale_t* jm_locale;
-};
 
 /* Meta data about primitive types */
 /* NOTE: elemID is should not be included because it's different during parsing of TypeDef / Variable */
@@ -416,19 +82,15 @@ typedef struct fmi3_xml_primitive_types_t {
 
 extern const fmi3_xml_primitive_types_t PRIMITIVE_TYPES;
 
-jm_vector(char) * fmi3_xml_reserve_parse_buffer(fmi3_xml_parser_context_t *context, size_t index, size_t size);
-int fmi3_xml_alloc_parse_buffer(fmi3_xml_parser_context_t *context, size_t items);
-void fmi3_xml_free_variable_start_values(fmi3_xml_parser_context_t *context);
-void fmi3_xml_free_parse_buffer(fmi3_xml_parser_context_t *context);
-
-void fmi3_xml_parse_fatal  (fmi3_xml_parser_context_t* context, const char* fmt, ...);
-void fmi3_xml_parse_error  (fmi3_xml_parser_context_t* context, const char* fmt, ...);
-void fmi3_xml_parse_warning(fmi3_xml_parser_context_t* context, const char* fmt, ...);
+jm_vector(char) * fmi3_xml_reserve_parse_buffer(fmi3_xml_parser_context_t* context, size_t index, size_t size);
+int fmi3_xml_alloc_parse_buffer(fmi3_xml_parser_context_t* context, size_t items);
+void fmi3_xml_free_variable_start_values(fmi3_xml_parser_context_t* context);
+void fmi3_xml_free_parse_buffer(fmi3_xml_parser_context_t* context);
 
 /**
  * Raises generic parse error for given attribute.
  */
-void fmi3_xml_parse_attr_error(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, const char* attrStr);
+void fmi3_xml_parse_attr_error(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, const char* attrStr);
 
 int fmi3_xml_parse_attr_as_string (fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, int required, jm_vector(char)* field);
 int fmi3_xml_parse_attr_as_enum   (fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, int required, unsigned int*    field, unsigned int   defaultVal, jm_name_ID_map_t* nameMap);
@@ -446,11 +108,11 @@ int fmi3_xml_parse_attr_as_array  (fmi3_xml_parser_context_t* context, fmi3_xml_
 
 int fmi3_xml_parse_attr_valueref_list(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, int required, jm_vector(fmi3_value_reference_t)* vrs);
 
-int fmi3_xml_is_attr_defined( fmi3_xml_parser_context_t *context, fmi3_xml_attr_enu_t attrID);
+int fmi3_xml_is_attr_defined( fmi3_xml_parser_context_t* context, fmi3_xml_attr_enu_t attrID);
 jm_string fmi3_xml_peek_attr_str(fmi3_xml_parser_context_t* context, fmi3_xml_attr_enu_t attrID);
-int fmi3_xml_get_attr_str(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, int required,const char** valp);
+int fmi3_xml_get_attr_str(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, int required,const char** valp);
 
-void fmi3_xml_set_element_handle(fmi3_xml_parser_context_t *context, const char* elm, fmi3_xml_elm_enu_t id);
+void fmi3_xml_set_element_handle(fmi3_xml_parser_context_t* context, const char* elm, fmi3_xml_elm_enu_t id);
 
 int fmi3_xml_is_valid_parent(fmi3_xml_elm_enu_t child_id, fmi3_xml_elm_enu_t parent_id);
 int fmi3_xml_get_super_type_rec(fmi3_xml_elm_enu_t id);

@@ -29,24 +29,24 @@ TEST_CASE("Test parse terminals and icons") {
     REQUIRE(fmi3_import_get_has_terminals_and_icons(xml) != 0);
 
     SECTION("Testing getting terminal by name") {
-        fmi3_import_terminal_t* term;
+        fmi_import_terminal_t* term;
 
         // test the existing ones
         term = fmi3_import_get_terminal_by_name(xml, "terminalA");
         REQUIRE(term != nullptr);
-        REQUIRE_STREQ(fmi3_import_get_terminal_name(term), "terminalA");
+        REQUIRE_STREQ(fmi_import_get_terminal_name(term), "terminalA");
 
         term = fmi3_import_get_terminal_by_name(xml, "terminalB");
         REQUIRE(term != nullptr);
-        REQUIRE_STREQ(fmi3_import_get_terminal_name(term), "terminalB");
+        REQUIRE_STREQ(fmi_import_get_terminal_name(term), "terminalB");
 
         term = fmi3_import_get_terminal_by_name(xml, "terminalC");
         REQUIRE(term != nullptr);
-        REQUIRE_STREQ(fmi3_import_get_terminal_name(term), "terminalC");
+        REQUIRE_STREQ(fmi_import_get_terminal_name(term), "terminalC");
 
         term = fmi3_import_get_terminal_by_name(xml, "");
         REQUIRE(term != nullptr);
-        REQUIRE_STREQ(fmi3_import_get_terminal_name(term), "");
+        REQUIRE_STREQ(fmi_import_get_terminal_name(term), "");
     }
 
     SECTION("Testing edge cases of import functions; should not crash") {
@@ -54,7 +54,7 @@ TEST_CASE("Test parse terminals and icons") {
         REQUIRE(fmi3_import_get_terminal_by_name(nullptr, "terminalA") == nullptr); // NULL
         REQUIRE(fmi3_import_get_terminal_by_name(xml, NULL) == nullptr); // NULL
 
-        REQUIRE(fmi3_import_get_terminal_name(nullptr) == nullptr);
+        REQUIRE(fmi_import_get_terminal_name(nullptr) == nullptr);
     }
 
     // TODO: Current example xml includes elements/attributes not yet parsed
@@ -70,7 +70,7 @@ TEST_CASE("No terminalsAndIcons.xml, test log message") {
     int ret = fmi3_import_get_has_terminals_and_icons(fmu);
     REQUIRE(fmi3_import_get_has_terminals_and_icons(fmu) == 0); // failed parse of terminalsAndIcons
 
-    REQUIRE(fmi3_testutil_log_contains(tfmu, "[INFO][FMI3XML] Could not find or open terminalsAndIcons.xml:"));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Could not find or open terminalsAndIcons.xml:"));
     REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
     fmi3_testutil_import_free(tfmu);
 }
@@ -139,9 +139,9 @@ TEST_CASE("Test clearing of attribute buffer with invalid elements") {
 
     REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'Terminal': required attribute 'name' not found"));
 
-    fmi3_import_terminal_t* term = fmi3_import_get_terminal_by_name(fmu, "terminalA");
+    fmi_import_terminal_t* term = fmi3_import_get_terminal_by_name(fmu, "terminalA");
     REQUIRE(term != nullptr);
-    REQUIRE_STREQ(fmi3_import_get_terminal_name(term), "terminalA");
+    REQUIRE_STREQ(fmi_import_get_terminal_name(term), "terminalA");
     // TODO: Check that optional attributes from Terminal without name are not present in this one
 
     // TODO: Current example xml includes elements/attributes not yet parsed  

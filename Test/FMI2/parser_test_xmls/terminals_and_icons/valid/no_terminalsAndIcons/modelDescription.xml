@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<fmiModelDescription fmiVersion="2.0-alpha" modelName="terminalsAndIcons_testing" guid="myGuid">
+<ModelExchange modelIdentifier="id"/>
+
+<ModelVariables>
+    <ScalarVariable name="f64_var" valueReference="0">
+        <Real/>
+    </ScalarVariable>
+</ModelVariables>
+
+<ModelStructure/>
+</fmiModelDescription>

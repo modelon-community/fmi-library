@@ -54,19 +54,27 @@ fmi2_import_t* fmi2_import_allocate(jm_callbacks* cb) {
     fmu->callbacks = cb;
     fmu->capi = 0;
     fmu->md = fmi2_xml_allocate_model_description(cb);
-    jm_vector_init(char)(&fmu->logMessageBufferExpanded,0,cb);
 
     if(!fmu->md) {
         goto err1;
     }
 
-    fmu->options = fmi_util_allocate_options(cb);
-    if(!fmu->options) {
+    fmu->termIcon = fmi_xml_allocate_terminals_and_icons(cb);
+    if (!fmu->termIcon) {
         goto err2;
+    }
+
+    jm_vector_init(char)(&fmu->logMessageBufferExpanded,0,cb);
+
+    fmu->options = fmi_util_allocate_options(cb);
+    if (!fmu->options) {
+        goto err3;
     }
 
     return fmu;
 
+err3:
+    fmi_xml_free_terminals_and_icons(fmu->termIcon);
 err2:
     fmi2_xml_free_model_description(fmu->md);
 err1:
@@ -78,8 +86,9 @@ const char* fmi2_import_get_last_error(fmi2_import_t* fmu) {
     return jm_get_last_error(fmu->callbacks);
 }
 
-fmi2_import_t* fmi2_import_parse_xml( fmi_import_context_t* context, const char* dirPath, fmi2_xml_callbacks_t* xml_callbacks) {
+fmi2_import_t* fmi2_import_parse_xml(fmi_import_context_t* context, const char* dirPath, fmi2_xml_callbacks_t* xml_callbacks) {
     char* xmlPath;
+    char* terminalsAndIconsPath;
     char absPath[FILENAME_MAX + 2];
     fmi2_import_t* fmu = 0;
     int configuration = 0;
@@ -90,10 +99,14 @@ fmi2_import_t* fmi2_import_parse_xml( fmi_import_context_t* context, const char*
     }
 
     xmlPath =  fmi_import_get_model_description_path(dirPath, context->callbacks);
+    terminalsAndIconsPath = fmi_import_get_terminals_and_icons_path(dirPath, context->callbacks);
     fmu = fmi2_import_allocate(context->callbacks);
 
-    if(!fmu) {
+    if (!fmu) {
         context->callbacks->free(xmlPath);
+        if (terminalsAndIconsPath) {
+            context->callbacks->free(terminalsAndIconsPath);
+        }
         return 0;
     }
 
@@ -107,25 +120,45 @@ fmi2_import_t* fmi2_import_parse_xml( fmi_import_context_t* context, const char*
         jm_log_fatal( context->callbacks, "FMILIB", "Could not allocated memory");
         fmi2_import_free(fmu);
         context->callbacks->free(xmlPath);
+        if (terminalsAndIconsPath) {
+            context->callbacks->free(terminalsAndIconsPath);
+        }
         return 0;
     }
     strcpy(fmu->dirPath, dirPath);
 
-    jm_log_verbose( context->callbacks, "FMILIB", "Parsing model description XML");
+    jm_log_verbose(context->callbacks, "FMILIB", "Parsing model description XML");
 
     /* convert the import configuration to the xml configuration */
     if (context->configuration & FMI_IMPORT_NAME_CHECK) {
         configuration |= FMI2_XML_NAME_CHECK;
     }
 
-    if (fmi2_xml_parse_model_description( fmu->md, xmlPath, xml_callbacks, configuration)) {
+    if (fmi2_xml_parse_model_description(fmu->md, xmlPath, xml_callbacks, configuration)) {
         fmi2_import_free(fmu);
         fmu = 0;
     }
     context->callbacks->free(xmlPath);
 
-    if(fmu)
-        jm_log_verbose( context->callbacks, "FMILIB", "Parsing finished successfully");
+    // Only parse terminals and icons if parsing of model description did not fail
+    if (fmu) {
+        // terminalsAndIcons uses modelDescription for error checks
+        if (fmi2_xml_terminals_and_icons_set_model_description(fmu->termIcon, fmu->md)) {
+            fmi2_import_free(fmu);
+            fmu = NULL;
+        }
+        // TODO: Callbacks
+        if (fmi3_xml_parse_terminals_and_icons(fmu->termIcon, terminalsAndIconsPath, NULL)) {
+            // failure to parse terminalsAndIcons does not constitute parsing failure
+            fmi_xml_free_terminals_and_icons(fmu->termIcon);
+            fmu->termIcon = NULL;
+        }
+    }
+    context->callbacks->free(terminalsAndIconsPath);
+
+    if (fmu) {
+        jm_log_verbose(context->callbacks, "FMILIB", "Parsing finished successfully");
+    }
 
     return fmu;
 }
@@ -135,10 +168,11 @@ void fmi2_import_free(fmi2_import_t* fmu) {
 
     if(!fmu) return;
     cb = fmu->callbacks;
-    jm_log_verbose( fmu->callbacks, "FMILIB", "Releasing allocated library resources");
+    jm_log_verbose(fmu->callbacks, "FMILIB", "Releasing allocated library resources");
 
     fmi2_import_destroy_dllfmu(fmu);
     fmi2_xml_free_model_description(fmu->md);
+    fmi_xml_free_terminals_and_icons(fmu->termIcon);
     fmi_util_free_options(cb, fmu->options);
     jm_vector_free_data(char)(&fmu->logMessageBufferCoded);
     jm_vector_free_data(char)(&fmu->logMessageBufferExpanded);

@@ -26,7 +26,7 @@
 #endif
 
 #include "fmi3_xml_model_description_impl.h"
-#include "fmi3_xml_terminals_and_icons_impl.h"
+#include "../FMI/fmi_xml_terminals_and_icons_impl.h"
 #include "fmi3_xml_parser.h"
 #include "JM/jm_portability.h"
 
@@ -46,98 +46,6 @@ const char *fmi3_xmlAttrNames[fmi3_xml_attr_number] = {
     FMI3_XML_ATTRLIST(ATTR_STR)
 };
 
-/*
-    Define XML schema structure. Used to build the 'fmi3_xml_scheme_info_t' type.
-
-    @sib_idx:
-        the index in a sequence among siblings
-    @multi_elem:
-        if the parent can have multiple elements of this type
-*/
-/*      scheme_ID,                                super_type,                 parent_ID,                          sib_idx, multi_elem */
-#define fmi3_xml_scheme_fmiModelDescription       {fmi3_xml_elmID_none,       fmi3_xml_elmID_none,                 0,       0}
-#define fmi3_xml_scheme_ModelExchange             {fmi3_xml_elmID_none,       fmi3_xml_elmID_fmiModelDescription,  0,       0}
-#define fmi3_xml_scheme_SourceFiles               {fmi3_xml_elmID_none,       fmi3_xml_elmID_ModelExchange,        0,       0}
-#define fmi3_xml_scheme_File                      {fmi3_xml_elmID_none,       fmi3_xml_elmID_SourceFiles,          0,       1}
-#define fmi3_xml_scheme_CoSimulation              {fmi3_xml_elmID_none,       fmi3_xml_elmID_fmiModelDescription,  1,       0}
-#define fmi3_xml_scheme_ScheduledExecution        {fmi3_xml_elmID_none,       fmi3_xml_elmID_fmiModelDescription,  2,       0}
-#define fmi3_xml_scheme_SourceFilesCS             {fmi3_xml_elmID_none,       fmi3_xml_elmID_CoSimulation,         0,       0}
-#define fmi3_xml_scheme_FileCS                    {fmi3_xml_elmID_none,       fmi3_xml_elmID_SourceFilesCS,        0,       1}
-#define fmi3_xml_scheme_UnitDefinitions           {fmi3_xml_elmID_none,       fmi3_xml_elmID_fmiModelDescription,  2,       0}
-#define fmi3_xml_scheme_Unit                      {fmi3_xml_elmID_none,       fmi3_xml_elmID_UnitDefinitions,      0,       1}
-#define fmi3_xml_scheme_BaseUnit                  {fmi3_xml_elmID_none,       fmi3_xml_elmID_Unit,                 0,       0}
-#define fmi3_xml_scheme_DisplayUnit               {fmi3_xml_elmID_none,       fmi3_xml_elmID_Unit,                 1,       1}
-#define fmi3_xml_scheme_TypeDefinitions           {fmi3_xml_elmID_none,       fmi3_xml_elmID_fmiModelDescription,  3,       0}
-#define fmi3_xml_scheme_SimpleType                {fmi3_xml_elmID_none,       fmi3_xml_elmID_TypeDefinitions,      0,       1}
-#define fmi3_xml_scheme_Float64Type               {fmi3_xml_elmID_SimpleType, fmi3_xml_elmID_TypeDefinitions,      0,       1}
-#define fmi3_xml_scheme_Float32Type               {fmi3_xml_elmID_SimpleType, fmi3_xml_elmID_TypeDefinitions,      0,       1}
-#define fmi3_xml_scheme_Int64Type                 {fmi3_xml_elmID_SimpleType, fmi3_xml_elmID_TypeDefinitions,      0,       1}
-#define fmi3_xml_scheme_Int32Type                 {fmi3_xml_elmID_SimpleType, fmi3_xml_elmID_TypeDefinitions,      0,       1}
-#define fmi3_xml_scheme_Int16Type                 {fmi3_xml_elmID_SimpleType, fmi3_xml_elmID_TypeDefinitions,      0,       1}
-#define fmi3_xml_scheme_Int8Type                  {fmi3_xml_elmID_SimpleType, fmi3_xml_elmID_TypeDefinitions,      0,       1}
-#define fmi3_xml_scheme_UInt64Type                {fmi3_xml_elmID_SimpleType, fmi3_xml_elmID_TypeDefinitions,      0,       1}
-#define fmi3_xml_scheme_UInt32Type                {fmi3_xml_elmID_SimpleType, fmi3_xml_elmID_TypeDefinitions,      0,       1}
-#define fmi3_xml_scheme_UInt16Type                {fmi3_xml_elmID_SimpleType, fmi3_xml_elmID_TypeDefinitions,      0,       1}
-#define fmi3_xml_scheme_UInt8Type                 {fmi3_xml_elmID_SimpleType, fmi3_xml_elmID_TypeDefinitions,      0,       1}
-#define fmi3_xml_scheme_BooleanType               {fmi3_xml_elmID_SimpleType, fmi3_xml_elmID_TypeDefinitions,      0,       1}
-#define fmi3_xml_scheme_BinaryType                {fmi3_xml_elmID_SimpleType, fmi3_xml_elmID_TypeDefinitions,      0,       1}
-#define fmi3_xml_scheme_ClockType                 {fmi3_xml_elmID_SimpleType, fmi3_xml_elmID_TypeDefinitions,      0,       1}
-#define fmi3_xml_scheme_StringType                {fmi3_xml_elmID_SimpleType, fmi3_xml_elmID_TypeDefinitions,      0,       1}
-#define fmi3_xml_scheme_EnumerationType           {fmi3_xml_elmID_SimpleType, fmi3_xml_elmID_TypeDefinitions,      0,       1}
-#define fmi3_xml_scheme_Item                      {fmi3_xml_elmID_none,       fmi3_xml_elmID_EnumerationType,      0,       1}
-#define fmi3_xml_scheme_LogCategories             {fmi3_xml_elmID_none,       fmi3_xml_elmID_fmiModelDescription,  4,       0}
-#define fmi3_xml_scheme_Category                  {fmi3_xml_elmID_none,       fmi3_xml_elmID_LogCategories,        0,       1}
-#define fmi3_xml_scheme_DefaultExperiment         {fmi3_xml_elmID_none,       fmi3_xml_elmID_fmiModelDescription,  5,       0}
-#define fmi3_xml_scheme_VendorAnnotations         {fmi3_xml_elmID_none,       fmi3_xml_elmID_fmiModelDescription,  6,       0}
-#define fmi3_xml_scheme_Tool                      {fmi3_xml_elmID_none,       fmi3_xml_elmID_VendorAnnotations,    0,       1}
-#define fmi3_xml_scheme_ModelVariables            {fmi3_xml_elmID_none,       fmi3_xml_elmID_fmiModelDescription,  7,       0}
-
-#define fmi3_xml_scheme_ModelStructure            {fmi3_xml_elmID_none,       fmi3_xml_elmID_fmiModelDescription,  8,       0}
-#define fmi3_xml_scheme_Output                    {fmi3_xml_elmID_none,       fmi3_xml_elmID_ModelStructure,       0,       1}
-#define fmi3_xml_scheme_ContinuousStateDerivative {fmi3_xml_elmID_none,       fmi3_xml_elmID_ModelStructure,       1,       1}
-#define fmi3_xml_scheme_ClockedState              {fmi3_xml_elmID_none,       fmi3_xml_elmID_ModelStructure,       2,       1}
-#define fmi3_xml_scheme_InitialUnknown            {fmi3_xml_elmID_none,       fmi3_xml_elmID_ModelStructure,       3,       1}
-#define fmi3_xml_scheme_EventIndicator            {fmi3_xml_elmID_none,       fmi3_xml_elmID_ModelStructure,       4,       1}
-
-#define fmi3_xml_scheme_Variable                  {fmi3_xml_elmID_none,       fmi3_xml_elmID_ModelVariables,       0,       1}
-#define fmi3_xml_scheme_Float64                   {fmi3_xml_elmID_Variable,   fmi3_xml_elmID_ModelVariables,       0,       1}
-#define fmi3_xml_scheme_Float32                   {fmi3_xml_elmID_Variable,   fmi3_xml_elmID_ModelVariables,       0,       1}
-#define fmi3_xml_scheme_Int64                     {fmi3_xml_elmID_Variable,   fmi3_xml_elmID_ModelVariables,       0,       1}
-#define fmi3_xml_scheme_Int32                     {fmi3_xml_elmID_Variable,   fmi3_xml_elmID_ModelVariables,       0,       1}
-#define fmi3_xml_scheme_Int16                     {fmi3_xml_elmID_Variable,   fmi3_xml_elmID_ModelVariables,       0,       1}
-#define fmi3_xml_scheme_Int8                      {fmi3_xml_elmID_Variable,   fmi3_xml_elmID_ModelVariables,       0,       1}
-#define fmi3_xml_scheme_UInt64                    {fmi3_xml_elmID_Variable,   fmi3_xml_elmID_ModelVariables,       0,       1}
-#define fmi3_xml_scheme_UInt32                    {fmi3_xml_elmID_Variable,   fmi3_xml_elmID_ModelVariables,       0,       1}
-#define fmi3_xml_scheme_UInt16                    {fmi3_xml_elmID_Variable,   fmi3_xml_elmID_ModelVariables,       0,       1}
-#define fmi3_xml_scheme_UInt8                     {fmi3_xml_elmID_Variable,   fmi3_xml_elmID_ModelVariables,       0,       1}
-#define fmi3_xml_scheme_Boolean                   {fmi3_xml_elmID_Variable,   fmi3_xml_elmID_ModelVariables,       0,       1}
-#define fmi3_xml_scheme_Binary                    {fmi3_xml_elmID_Variable,   fmi3_xml_elmID_ModelVariables,       0,       1}
-#define fmi3_xml_scheme_Clock                     {fmi3_xml_elmID_Variable,   fmi3_xml_elmID_ModelVariables,       0,       1}
-#define fmi3_xml_scheme_String                    {fmi3_xml_elmID_Variable,   fmi3_xml_elmID_ModelVariables,       0,       1}
-#define fmi3_xml_scheme_Enumeration               {fmi3_xml_elmID_Variable,   fmi3_xml_elmID_ModelVariables,       0,       1}
-
-#define fmi3_xml_scheme_Dimension                 {fmi3_xml_elmID_none,       fmi3_xml_elmID_Variable,             0,       1}
-#define fmi3_xml_scheme_BinaryVariableStart       {fmi3_xml_elmID_Start,      fmi3_xml_elmID_Binary,               1,       1}
-#define fmi3_xml_scheme_StringVariableStart       {fmi3_xml_elmID_Start,      fmi3_xml_elmID_String,               1,       1}
-#define fmi3_xml_scheme_Alias                     {fmi3_xml_elmID_none,       fmi3_xml_elmID_Variable,             2,       1}
-
-#define fmi3_xml_scheme_Annotations               {fmi3_xml_elmID_none,       fmi3_xml_elmID_Variable,             1,       0}
-#define fmi3_xml_scheme_VariableTool              {fmi3_xml_elmID_none,       fmi3_xml_elmID_Annotations,          0,       1}
-
-// Terminals and Icons
-#define fmi3_xml_scheme_fmiTerminalsAndIcons            {fmi3_xml_elmID_none,       fmi3_xml_elmID_none,                 0,       0}
-
-#define fmi3_xml_scheme_Terminals                       {fmi3_xml_elmID_none,       fmi3_xml_elmID_fmiTerminalsAndIcons, 1,       0}
-#define fmi3_xml_scheme_Terminal                        {fmi3_xml_elmID_none,       fmi3_xml_elmID_Terminals,            0,       1}
-#define fmi3_xml_scheme_TerminalMemberVariable          {fmi3_xml_elmID_none,       fmi3_xml_elmID_Terminal,             0,       1}
-#define fmi3_xml_scheme_TerminalStreamMemberVariable    {fmi3_xml_elmID_none,       fmi3_xml_elmID_Terminal,             1,       1}
-// TODO: How to handle nested Terminals?
-#define fmi3_xml_scheme_TerminalGraphicalRepresentation {fmi3_xml_elmID_none,       fmi3_xml_elmID_Terminal,             3,       0}
-
-
-// Not used except for setting up the element handler framework:
-#define fmi3_xml_scheme_Start                     {fmi3_xml_elmID_none,       fmi3_xml_elmID_none,                 1,       0}
-
 /**
  * The expansion of below macro is also a macro. Example:
  * EXPAND_ELM_SCHEME(Float64) -> fmi3_xml_scheme_Float64 -> {fmi3_xml_elmID_SimpleType, fmi3_xml_elmID_TypeDefinitions, 0, 1}
@@ -146,13 +54,16 @@ const char *fmi3_xmlAttrNames[fmi3_xml_attr_number] = {
 
 /* Global array of all scheme_info_t. Index it with fmi3_xml_elm_enu_t entries. */
 fmi3_xml_scheme_info_t fmi3_xml_scheme_info[fmi3_xml_elm_number] = {
-    FMI3_XML_ELMLIST(EXPAND_ELM_SCHEME)
+    FMI3_XML_ELMLIST_MODEL_DESCR(EXPAND_ELM_SCHEME)
+    FMI_XML_ELMLIST_TERM_ICON   (EXPAND_ELM_SCHEME)
     {fmi3_xml_elm_actual_number,0,0},
-    FMI3_XML_ELMLIST_ALT(EXPAND_ELM_SCHEME)
-    FMI3_XML_ELMLIST_ABSTRACT(EXPAND_ELM_SCHEME)
+    FMI3_XML_ELMLIST_ALT_MODEL_DESCR     (EXPAND_ELM_SCHEME)
+    FMI_XML_ELMLIST_ALT_TERM_ICON        (EXPAND_ELM_SCHEME)
+    FMI3_XML_ELMLIST_ABSTRACT_MODEL_DESCR(EXPAND_ELM_SCHEME)
 };
 
-#define EXPAND_ELM_NAME(elm) { #elm, fmi3_xml_handle_##elm, fmi3_xml_elmID_##elm},
+#define EXPAND_ELM_NAME_FMI3(elm) { #elm, fmi3_xml_handle_##elm, fmi3_xml_elmID_##elm},
+#define EXPAND_ELM_NAME_FMI_TERM_ICON(elm) { #elm, fmi_xml_handle_##elm, fmi3_xml_elmID_##elm},
 
 /**
  * Global array of all defined fmi3_xml_element_handle_map_t structs.
@@ -161,10 +72,12 @@ fmi3_xml_scheme_info_t fmi3_xml_scheme_info[fmi3_xml_elm_number] = {
  *      array.
  */
 fmi3_xml_element_handle_map_t fmi3_element_handle_map[fmi3_xml_elm_number] = {
-    FMI3_XML_ELMLIST(EXPAND_ELM_NAME)
+    FMI3_XML_ELMLIST_MODEL_DESCR(EXPAND_ELM_NAME_FMI3)
+    FMI_XML_ELMLIST_TERM_ICON   (EXPAND_ELM_NAME_FMI_TERM_ICON)
     { NULL, NULL, fmi3_xml_elm_actual_number},
-    FMI3_XML_ELMLIST_ALT(EXPAND_ELM_NAME)
-    FMI3_XML_ELMLIST_ABSTRACT(EXPAND_ELM_NAME)
+    FMI3_XML_ELMLIST_ALT_MODEL_DESCR     (EXPAND_ELM_NAME_FMI3)
+    FMI_XML_ELMLIST_ALT_TERM_ICON        (EXPAND_ELM_NAME_FMI_TERM_ICON)
+    FMI3_XML_ELMLIST_ABSTRACT_MODEL_DESCR(EXPAND_ELM_NAME_FMI3)
 };
 
 const fmi3_xml_primitive_types_t PRIMITIVE_TYPES = {
@@ -254,7 +167,7 @@ const fmi3_xml_primitive_types_t PRIMITIVE_TYPES = {
     }
 };
 
-void fmi3_xml_parse_free_context(fmi3_xml_parser_context_t *context) {
+void fmi3_xml_parse_free_context(fmi3_xml_parser_context_t* context) {
     if (!context) return;
     if (context->modelDescription)
         fmi3_xml_clear_model_description(context->modelDescription);
@@ -295,36 +208,10 @@ void fmi3_xml_parse_free_context(fmi3_xml_parser_context_t *context) {
     context->callbacks->free(context);
 }
 
-void fmi3_xml_parse_fatal(fmi3_xml_parser_context_t *context, const char* fmt, ...) {
-    va_list args;
-    va_start (args, fmt);
-    jm_log_fatal_v(context->callbacks, module, fmt, args);
-    va_end (args);
-    XML_StopParser(context->parser,0);
-}
-
-void fmi3_xml_parse_error(fmi3_xml_parser_context_t *context, const char* fmt, ...) {
-    va_list args;
-    va_start (args, fmt);
-    if (context->parser)
-        jm_log_info(context->callbacks, module, "[Line:%u] Detected during parsing:", XML_GetCurrentLineNumber(context->parser));
-    jm_log_error_v(context->callbacks, module, fmt, args);
-    va_end (args);
-}
-
-void fmi3_xml_parse_warning(fmi3_xml_parser_context_t *context, const char* fmt, ...) {
-    va_list args;
-    va_start (args, fmt);
-    if (context->parser)
-        jm_log_info(context->callbacks, module, "[Line:%u] Detected during parsing:", XML_GetCurrentLineNumber(context->parser));
-    jm_log_warning_v(context->callbacks, module, fmt, args);
-    va_end (args);
-}
-
 /**
  * Raises a generic parse error for the given attribute.
  */
-void fmi3_xml_parse_attr_error(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID,
+void fmi3_xml_parse_attr_error(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID,
         const char* attrStr) {
     jm_string elmName = fmi3_element_handle_map[elmID].elementName;
     jm_string attrName = fmi3_xmlAttrNames[attrID];
@@ -352,7 +239,7 @@ jm_string fmi3_xml_peek_attr_str(fmi3_xml_parser_context_t* context, fmi3_xml_at
     return jm_vector_get_item(jm_string)(context->attrMapById, attrID);
 }
 
-int fmi3_xml_is_attr_defined(fmi3_xml_parser_context_t *context, fmi3_xml_attr_enu_t attrID) {
+int fmi3_xml_is_attr_defined(fmi3_xml_parser_context_t* context, fmi3_xml_attr_enu_t attrID) {
     return (fmi3_xml_peek_attr_str(context, attrID) != NULL);
 }
 
@@ -360,7 +247,7 @@ int fmi3_xml_is_attr_defined(fmi3_xml_parser_context_t *context, fmi3_xml_attr_e
  * Read value from parse buffer and clear the buffer entry.
  * @param[out] valp : pointer to attribute value (memory still owned by expat)
  */
-int fmi3_xml_get_attr_str(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID,
+int fmi3_xml_get_attr_str(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID,
         int required, const char** valp)
 {
     /* Read and clear attribute */
@@ -382,7 +269,7 @@ int fmi3_xml_get_attr_str(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t
  * Reads the attribute from attribute buffer as jm_vector(char). This will clear the attribute from the buffer.
  * @param field (return arg): Attribute value (memory owned by this vector)
  */
-int fmi3_xml_parse_attr_as_string(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID,
+int fmi3_xml_parse_attr_as_string(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID,
         int required, jm_vector(char)* field)
 {
     jm_string val;
@@ -417,7 +304,7 @@ int fmi3_xml_parse_attr_as_string(fmi3_xml_parser_context_t *context, fmi3_xml_e
     return 0;
 }
 
-int fmi3_xml_parse_attr_as_enum(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID,
+int fmi3_xml_parse_attr_as_enum(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID,
         int required, unsigned int* field, unsigned int defaultVal, jm_name_ID_map_t* nameMap)
 {
     int i = 0;
@@ -445,7 +332,7 @@ int fmi3_xml_parse_attr_as_enum(fmi3_xml_parser_context_t *context, fmi3_xml_elm
     return 0;
 }
 
-int fmi3_xml_parse_attr_as_boolean(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID,
+int fmi3_xml_parse_attr_as_boolean(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID,
         fmi3_xml_attr_enu_t attrID, int required, unsigned int* field, unsigned int defaultVal)
 {
     jm_name_ID_map_t fmi_boolean_i_dMap[] = {{"true", 1}, {"false", 0}, {"1", 1}, {"0", 0}, {0, 0}};
@@ -453,7 +340,7 @@ int fmi3_xml_parse_attr_as_boolean(fmi3_xml_parser_context_t *context, fmi3_xml_
 }
 
 // TODO: For FMI3, do we want to use bool in the getters for boolean attributes, or keep using unsigned int?
-int fmi3_xml_parse_attr_as_bool(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID,
+int fmi3_xml_parse_attr_as_bool(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID,
         int required, bool* field, bool defaultVal)
 {
     jm_string strVal;
@@ -590,7 +477,7 @@ static int fmi3_xml_value_boundary_check_strcmp(jm_string strVal, const char* fo
     return strcmp(strVal + idx_start, wbBuf) == 0 ? 0 : 1;
 }
 
-static int fmi3_xml_str_to_bool(fmi3_xml_parser_context_t *context, int required, bool* field, bool* defaultVal,
+static int fmi3_xml_str_to_bool(fmi3_xml_parser_context_t* context, int required, bool* field, bool* defaultVal,
         jm_string strVal) {
     if (!strVal) {
         if (required) {
@@ -746,7 +633,7 @@ int fmi3_xml_parse_attr_as_intXX(fmi3_xml_parser_context_t* context, fmi3_xml_el
     return ret;
 }
 
-static int fmi3_xml_str_to_floatXX(fmi3_xml_parser_context_t *context, int required, void* field, void* defaultVal,
+static int fmi3_xml_str_to_floatXX(fmi3_xml_parser_context_t* context, int required, void* field, void* defaultVal,
         jm_string strVal, const fmi3_xml_primitive_type_t* primType) {
     /*
         Using same approach as for reading intXX, but there is one difference:
@@ -804,7 +691,7 @@ static int fmi3_xml_str_to_floatXX(fmi3_xml_parser_context_t *context, int requi
     field: where the float value will be stored (return arg)
     defaultVal: pointer to default value that will be used if attribute wasn't defined
  */
-int fmi3_xml_parse_attr_as_floatXX(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID,
+int fmi3_xml_parse_attr_as_floatXX(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID,
         int required, void* field, void* defaultVal, const fmi3_xml_primitive_type_t* primType) {
     int ret;
     jm_string strVal;
@@ -824,7 +711,7 @@ int fmi3_xml_parse_attr_as_floatXX(fmi3_xml_parser_context_t *context, fmi3_xml_
 
 /* Creates a wrapper for when the type to parse is known */
 #define gen_fmi3_xml_parse_attr_as_TYPEXX(TYPE, TYPEXX)                                                                         \
-    int fmi3_xml_parse_attr_as_##TYPE(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, \
+    int fmi3_xml_parse_attr_as_##TYPE(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID, \
             int required, fmi3_##TYPE##_t* field, fmi3_##TYPE##_t defaultVal) {                                            \
         return fmi3_xml_parse_attr_as_##TYPEXX(context, elmID, attrID, required, field, &defaultVal, &PRIMITIVE_TYPES.TYPE);    \
     }
@@ -840,7 +727,7 @@ gen_fmi3_xml_parse_attr_as_TYPEXX(uint32,  intXX)
         jm_log_error(context->callbacks, module, "Unable to allocate memory. File: %s, Line: %d", __FILE__, __LINE__);      \
     } while (0);
 
-static int fmi3_xml_str_to_primitive(fmi3_xml_parser_context_t *context,
+static int fmi3_xml_str_to_primitive(fmi3_xml_parser_context_t* context,
         int required, void* field, void* defaultVal, jm_string strVal,
         const fmi3_xml_primitive_type_t* primType) {
     if (fmi3_base_type_enu_is_int(primType->baseType) || fmi3_base_type_enu_is_enum(primType->baseType)) {
@@ -967,7 +854,7 @@ clean:
  * @param arrPtr (return arg): where the array will be stored
  * @param arrSize (return arg): size of 'arrPtr'
  */
-int fmi3_xml_parse_attr_as_array(fmi3_xml_parser_context_t *context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID,
+int fmi3_xml_parse_attr_as_array(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t elmID, fmi3_xml_attr_enu_t attrID,
         int required, void** arrPtr, size_t* arrSize, jm_string str, const fmi3_xml_primitive_type_t* primType) {
 
     if (!str) {
@@ -1082,7 +969,7 @@ int fmi3_create_elm_map(fmi3_xml_parser_context_t* context) {
  *      get the handle and ID corresponding to the main or alternative XML
  *      element
  */
-void fmi3_xml_set_element_handle(fmi3_xml_parser_context_t *context, const char* elm, fmi3_xml_elm_enu_t id) {
+void fmi3_xml_set_element_handle(fmi3_xml_parser_context_t* context, const char* elm, fmi3_xml_elm_enu_t id) {
     fmi3_xml_element_handle_map_t keyEl;
     fmi3_xml_element_handle_map_t* currentElMap;
     keyEl.elementName = elm;
@@ -1140,7 +1027,7 @@ static void XMLCALL fmi3_parse_element_start(void *c, const char *elm, const cha
     fmi3_xml_element_handle_map_t* currentElMap;
     fmi3_xml_elm_enu_t currentID;
     int i;
-    fmi3_xml_parser_context_t *context = c;
+    fmi3_xml_parser_context_t* context = c;
     context->has_produced_data_warning = 0;
 
     if (context->useAnyHandleFlg) {
@@ -1311,7 +1198,7 @@ static void XMLCALL fmi3_parse_element_end(void* c, const char *elm) {
     fmi3_xml_element_handle_map_t keyEl;
     fmi3_xml_element_handle_map_t* currentElMap;
     fmi3_xml_elm_enu_t currentID;
-    fmi3_xml_parser_context_t *context = c;
+    fmi3_xml_parser_context_t* context = c;
 
     if (context->useAnyHandleFlg && (context->anyElmCount > 0)) {
         fmi3_xml_callbacks_t* anyH = context->anyHandle;
@@ -1375,7 +1262,7 @@ static void XMLCALL fmi3_parse_element_end(void* c, const char *elm) {
 */
 static void XMLCALL fmi3_parse_element_data(void* c, const XML_Char *s, int len) {
         int i;
-        fmi3_xml_parser_context_t *context = c;
+        fmi3_xml_parser_context_t* context = c;
         if (context->useAnyHandleFlg && (context->anyElmCount > 0)) {
             fmi3_xml_callbacks_t* anyH = context->anyHandle;
             if (anyH && anyH->dataHandle) {
@@ -1434,8 +1321,10 @@ int fmi3_xml_parse_model_description(fmi3_xml_model_description_t* md,
     context->currentElmID = fmi3_xml_elmID_none;
     context->anyElmCount = 0;
     context->useAnyHandleFlg = 0;
+    context->useAnyHandleFlgTermIcon = 0;
     context->anyParent = 0;
     context->anyHandle = xml_callbacks;
+    context->anyHandleTermIcon = NULL; // TODO
 
     /* Set locale such that parsing does not depend on the environment.
      * For example, LC_NUMERIC affects what sscanf identifies as the floating
@@ -1501,9 +1390,9 @@ int fmi3_xml_parse_model_description(fmi3_xml_model_description_t* md,
     return 0;
 }
 
-int fmi3_xml_parse_terminals_and_icons(fmi3_xml_terminals_and_icons_t* termIcon,
+int fmi3_xml_parse_terminals_and_icons(fmi_xml_terminals_and_icons_t* termIcon,
                                        const char* filename,
-                                       fmi3_xml_callbacks_t* xml_callbacks) {
+                                       fmi_termicon_xml_callbacks_t* xml_callbacks) {
     XML_Memory_Handling_Suite memsuite;
     fmi3_xml_parser_context_t* context;
     XML_Parser parser = NULL;
@@ -1518,7 +1407,7 @@ int fmi3_xml_parse_terminals_and_icons(fmi3_xml_terminals_and_icons_t* termIcon,
     // try to open file before doing parser initialization
     file = fopen(filename, "rb");
     if (file == NULL) {
-        jm_log_info(context->callbacks, module, "Could not find or open terminalsAndIcons.xml: '%s'. Continuing.", filename);
+        jm_log_info(context->callbacks, "FMIXML", "Could not find or open terminalsAndIcons.xml: '%s'. Continuing.", filename);
         fmi3_xml_parse_free_context(context);
         return -1;
     }
@@ -1539,15 +1428,17 @@ int fmi3_xml_parse_terminals_and_icons(fmi3_xml_terminals_and_icons_t* termIcon,
     context->currentElmID = fmi3_xml_elmID_none;
     context->anyElmCount = 0;
     context->useAnyHandleFlg = 0;
+    context->useAnyHandleFlgTermIcon = 0;
     context->anyParent = 0;
-    context->anyHandle = xml_callbacks;
+    context->anyHandle = NULL;
+    context->anyHandleTermIcon = xml_callbacks;
 
     /* Set locale such that parsing does not depend on the environment.
      * For example, LC_NUMERIC affects what sscanf identifies as the floating
      * point delimiter. */
     context->jm_locale = jm_setlocale_numeric(context->callbacks, "C");
     if (!context->jm_locale) {
-        jm_log_error(context->callbacks, module, "Failed to set locale. Parsing might be incorrect.");
+        jm_log_error(context->callbacks, "FMIXML", "Failed to set locale. Parsing might be incorrect.");
     }
 
     memsuite.malloc_fcn = context->callbacks->malloc;

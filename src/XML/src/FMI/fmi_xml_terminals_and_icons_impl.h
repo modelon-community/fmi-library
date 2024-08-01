@@ -13,10 +13,8 @@
     along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 */
 
-#ifndef fmi3_xml_terminals_and_icons_impl_h_
-#define fmi3_xml_terminals_and_icons_impl_h_
-
-#include <stdarg.h>
+#ifndef FMI_XML_TERMINALS_AND_ICONS_IMPL_H_
+#define FMI_XML_TERMINALS_AND_ICONS_IMPL_H_
 
 #include <JM/jm_callbacks.h>
 #include <JM/jm_vector.h>
@@ -27,11 +25,12 @@
 extern "C" {
 #endif
 
-struct fmi3_xml_terminals_and_icons_t {
+struct fmi_xml_terminals_and_icons_t {
     jm_callbacks* callbacks;
 
     /* used for cross-referencing, should be used as read-only */
-    fmi3_xml_model_description_t* md; 
+    fmi2_xml_model_description_t* md2; 
+    fmi3_xml_model_description_t* md3; 
 
     jm_vector(char) fmi3_xml_standard_version;
 
@@ -41,7 +40,7 @@ struct fmi3_xml_terminals_and_icons_t {
     jm_string_set names; // storage for all terminal names
 };
 
-struct fmi3_xml_terminal_t {
+struct fmi_xml_terminal_t {
     const char* name;
     // TODO: Currently only supports name; add remaining attributes.
 };
@@ -51,4 +50,4 @@ struct fmi3_xml_terminal_t {
 }
 #endif
 
-#endif // fmi3_xml_terminals_and_icons_impl_h_
+#endif // FMI_XML_TERMINALS_AND_ICONS_IMPL_H_

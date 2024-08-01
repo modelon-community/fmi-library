@@ -46,11 +46,17 @@ const char *fmi3_xmlAttrNames[fmi3_xml_attr_number] = {
     FMI3_XML_ATTRLIST(ATTR_STR)
 };
 
+const char *fmi_termIcon_xmlAttrNames[fmi_termIcon_xml_attr_number] = {
+    FMI3_XML_ATTRLIST_COMMON(ATTR_STR) \
+    FMI_XML_ATTRLIST_TERM_ICON(ATTR_STR)
+};
+
 /**
  * The expansion of below macro is also a macro. Example:
  * EXPAND_ELM_SCHEME(Float64) -> fmi3_xml_scheme_Float64 -> {fmi3_xml_elmID_SimpleType, fmi3_xml_elmID_TypeDefinitions, 0, 1}
  */
 #define EXPAND_ELM_SCHEME(elm) fmi3_xml_scheme_##elm ,
+#define EXPAND_ELM_SCHEME_TERMICON(elm) fmi_termIcon_xml_scheme_##elm ,
 
 /* Global array of all scheme_info_t. Index it with fmi3_xml_elm_enu_t entries. */
 fmi3_xml_scheme_info_t fmi3_xml_scheme_info[fmi3_xml_elm_number] = {
@@ -61,6 +67,14 @@ fmi3_xml_scheme_info_t fmi3_xml_scheme_info[fmi3_xml_elm_number] = {
     FMI_XML_ELMLIST_ALT_TERM_ICON        (EXPAND_ELM_SCHEME)
     FMI3_XML_ELMLIST_ABSTRACT_MODEL_DESCR(EXPAND_ELM_SCHEME)
 };
+
+// TODO: This requires different handler functions
+// XXX: For proper refactoring: Possibly generate these + forward to original ones?
+// fmi_termIcon_xml_scheme_info_t fmi_termIcon_xml_scheme_info[fmi_termIcon_xml_elm_number] = {
+//     FMI_XML_ELMLIST_TERM_ICON(EXPAND_ELM_SCHEME_TERMICON)
+//     {fmi_termIcon_xml_elm_actual_number,0,0},
+//     FMI_XML_ELMLIST_ALT_TERM_ICON(EXPAND_ELM_SCHEME_TERMICON)
+// };
 
 #define EXPAND_ELM_NAME_FMI3(elm) { #elm, fmi3_xml_handle_##elm, fmi3_xml_elmID_##elm},
 #define EXPAND_ELM_NAME_FMI_TERM_ICON(elm) { #elm, fmi_xml_handle_##elm, fmi3_xml_elmID_##elm},
@@ -78,6 +92,12 @@ fmi3_xml_element_handle_map_t fmi3_element_handle_map[fmi3_xml_elm_number] = {
     FMI3_XML_ELMLIST_ALT_MODEL_DESCR     (EXPAND_ELM_NAME_FMI3)
     FMI_XML_ELMLIST_ALT_TERM_ICON        (EXPAND_ELM_NAME_FMI_TERM_ICON)
     FMI3_XML_ELMLIST_ABSTRACT_MODEL_DESCR(EXPAND_ELM_NAME_FMI3)
+};
+
+fmi_termIcon_xml_element_handle_map_t fmi_termIcon_element_handle_map[fmi_termIcon_xml_elm_number] = {
+    FMI_XML_ELMLIST_TERM_ICON   (EXPAND_ELM_NAME_FMI_TERM_ICON)
+    { NULL, NULL, fmi_termIcon_xml_elm_actual_number},
+    FMI_XML_ELMLIST_ALT_TERM_ICON        (EXPAND_ELM_NAME_FMI_TERM_ICON)
 };
 
 const fmi3_xml_primitive_types_t PRIMITIVE_TYPES = {
@@ -1070,7 +1090,7 @@ static void XMLCALL fmi3_parse_element_start(void *c, const char *elm, const cha
     /* Check that parent-child & siblings are fine */
     {
         fmi3_xml_elm_enu_t parentID = context->currentElmID;
-        fmi3_xml_elm_enu_t siblingID =  context->lastSiblingElemId;
+        fmi3_xml_elm_enu_t siblingID = context->lastSiblingElemId;
 
         if (!fmi3_xml_is_valid_parent(currentID, parentID)) {
                 jm_log_error(context->callbacks, module,

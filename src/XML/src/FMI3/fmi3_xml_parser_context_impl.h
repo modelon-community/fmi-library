@@ -29,8 +29,10 @@ extern "C" {
 #endif
 
 typedef struct fmi3_xml_element_handle_map_t fmi3_xml_element_handle_map_t;
+typedef struct fmi_termIcon_xml_element_handle_map_t fmi_termIcon_xml_element_handle_map_t;
 
 typedef int (*fmi3_xml_element_handle_ft)(fmi3_xml_parser_context_t* context, const char* data);
+typedef int (*fmi_termIcon_xml_element_handle_ft)(fmi3_xml_parser_context_t* context, const char* data);
 
 struct fmi3_xml_element_handle_map_t {
     const char* elementName;
@@ -38,7 +40,14 @@ struct fmi3_xml_element_handle_map_t {
     fmi3_xml_elm_enu_t elemID;
 };
 
+struct fmi_termIcon_xml_element_handle_map_t {
+    const char* elementName;
+    fmi_termIcon_xml_element_handle_ft elementHandle;
+    fmi_termIcon_xml_elm_enu_t elemID;
+};
+
 jm_vector_declare_template(fmi3_xml_element_handle_map_t)
+jm_vector_declare_template(fmi_termIcon_xml_element_handle_map_t)
 
 /**
  * Struct for saving and accessing data between element handlers.

@@ -25,12 +25,14 @@ related to parsing XML elements and their attributes
 extern "C" {
 #endif
 
+// TODO: Duplicate the common ones, for simplicity
 /** \brief Attributes names common to modelDescription.xml & terminalsAndIcons.xml */
 #define FMI3_XML_ATTRLIST_COMMON(EXPAND_XML_ATTRNAME) \
     EXPAND_XML_ATTRNAME(fmiVersion) \
     EXPAND_XML_ATTRNAME(name) \
     EXPAND_XML_ATTRNAME(description)
 
+// TODO: Eliminate this list, once terminalsAndIcons has been properly separated
 /** \brief Attribute names used in XML */
 #define FMI3_XML_ATTRLIST(EXPAND_XML_ATTRNAME) \
     FMI3_XML_ATTRLIST_COMMON     (EXPAND_XML_ATTRNAME) \
@@ -42,6 +44,13 @@ typedef enum fmi3_xml_attr_enu_t {
     FMI3_XML_ATTRLIST(FMI3_XML_ATTR_ID)
     fmi3_xml_attr_number
 } fmi3_xml_attr_enu_t;
+
+#define FMI_TERMICON_XML_ATTR_ID(attr) fmi_termIcon_attr_id_##attr,
+typedef enum fmi_termIcon_xml_attr_enu_t {
+    FMI3_XML_ATTRLIST_COMMON(FMI_TERMICON_XML_ATTR_ID) \
+    FMI_XML_ATTRLIST_TERM_ICON(FMI_TERMICON_XML_ATTR_ID)
+    fmi_termIcon_xml_attr_number
+} fmi_termIcon_xml_attr_enu_t;
 
 /* Build prototypes for all elm_handle_* functions */
 typedef struct fmi3_xml_parser_context_t fmi3_xml_parser_context_t;
@@ -72,6 +81,16 @@ typedef enum fmi3_xml_elm_enu_t {
     FMI3_XML_ELMLIST_ABSTRACT_MODEL_DESCR(FMI3_XML_LIST_ELM_ID)
     ,fmi3_xml_elm_number
 } fmi3_xml_elm_enu_t;
+
+#define FMI_TERMICON_XML_ELM_ID(elm) fmi_termIcon_xml_elmID_##elm
+#define FMI_TERMICON_XML_LIST_ELM_ID(elm) ,FMI_TERMICON_XML_ELM_ID(elm)
+typedef enum fmi_termIcon_xml_elm_enu_t {
+    fmi_termIcon_xml_elmID_none = -1
+    FMI_XML_ELMLIST_TERM_ICON(FMI_TERMICON_XML_LIST_ELM_ID)
+    ,fmi_termIcon_xml_elm_actual_number
+    FMI_XML_ELMLIST_ALT_TERM_ICON(FMI_TERMICON_XML_LIST_ELM_ID)
+    ,fmi_termIcon_xml_elm_number
+} fmi_termIcon_xml_elm_enu_t;
 
 #ifdef __cplusplus
 }

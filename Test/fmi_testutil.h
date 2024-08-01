@@ -21,6 +21,9 @@ extern "C" {
         else if (strcmp(S1, S2) != 0) { FAIL(S1 << " != " << S2); }                                    \
     } while (0);
 
+// XXX: Currently cotains duplicated code for FMI 2 & 3 (also in fmi_testutil.c)
+// Could replace via macros
+
 typedef struct fmi2_testutil_import_t {
     fmi2_import_t* fmu;
     jm_vector(jm_voidp) log;      // All logged messages

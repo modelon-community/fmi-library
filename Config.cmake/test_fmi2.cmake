@@ -113,7 +113,7 @@ set_target_properties(
 set(FAIL_NAME_CHECK 0)
 set(PASS_NAME_CHECK 1)
 
-add_test(ctest_fmi2_xml_parsing_test fmi2_xml_parsing_test ${FMI2_TEST_XML_DIR}/)
+add_test(ctest_fmi2_xml_parsing_test fmi2_xml_parsing_test ${FMI2_TEST_XML_DIR}/) # Trailing '/' necessary (for building system independent path)
 add_test(ctest_fmi2_import_xml_test_brief fmi2_import_xml_test ${FMU2_DUMMY_FOLDER}) # 'brief' as in close to minimal XML
 add_test(ctest_fmi2_import_xml_test_me    fmi2_import_xml_test ${TEST_OUTPUT_FOLDER}/BouncingBall2_me)
 add_test(ctest_fmi2_import_xml_test_cs    fmi2_import_xml_test ${TEST_OUTPUT_FOLDER}/BouncingBall2_cs)

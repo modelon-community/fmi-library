@@ -30,7 +30,7 @@ extern "C" {
 
 /** Flag for current XML file being handled. */
 // TODO: Might be more suited in parser.h?
-typedef enum fmi_xml_type_t {
+typedef enum fmi3_xml_type_t {
     fmi3_xml_type_modelDescription,
     fmi3_xml_type_terminalAndIcons
 } fmi3_xml_type_t;

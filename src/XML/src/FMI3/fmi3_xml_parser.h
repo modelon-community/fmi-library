@@ -126,7 +126,7 @@ int fmi3_xml_is_valid_parent(fmi3_xml_modelDescription_elm_enu_t child_id, fmi3_
 int fmi3_xml_get_super_type_rec(fmi3_xml_modelDescription_elm_enu_t id);
 int fmi3_xml_are_same_type(fmi3_xml_modelDescription_elm_enu_t id1, fmi3_xml_modelDescription_elm_enu_t id2);
 
-const char* fmi3_xml_elmid_to_name(fmi3_xml_modelDescription_elm_enu_t id);
+const char* fmi3_xml_elmid_to_name(fmi3_xml_parser_context_t* context, fmi3_xml_modelDescription_elm_enu_t id);
 
 #ifdef __cplusplus
 }

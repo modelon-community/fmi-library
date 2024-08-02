@@ -263,12 +263,12 @@ static int fmi3_xml_parse_dependencies(fmi3_xml_parser_context_t* context,
             if (!ch) break;
             if (sscanf(cur, "%lld", &ind) != 1) {
                 fmi3_xml_parse_error(context, "XML element '%s': could not parse item %d, character '%c' in the list for attribute 'dependencies'",
-                    fmi3_xml_elmid_to_name(elmID), *numDepInd, ch);
+                    fmi3_xml_elmid_to_name(context, elmID), *numDepInd, ch);
                 return -1;
             }
             if (ind < 0) {
                 fmi3_xml_parse_error(context, "XML element '%s': Attribute 'dependencies' contains invalid value: %lld.", 
-                    fmi3_xml_elmid_to_name(elmID), ind);
+                    fmi3_xml_elmid_to_name(context, elmID), ind);
                 return -1;
             }
             if (!jm_vector_push_back(size_t)(&deps->dependenciesVRs, (size_t)ind)) {
@@ -331,7 +331,7 @@ static int fmi3_xml_parse_dependencies(fmi3_xml_parser_context_t* context,
             }
             else {
                 fmi3_xml_parse_error(context, "XML element '%s': could not parse item %d in the list for attribute 'dependenciesKind'",
-                    fmi3_xml_elmid_to_name(elmID), *numDepKind);
+                    fmi3_xml_elmid_to_name(context, elmID), *numDepKind);
                 return -1;
             }
             // Check possible invalid combinations of elmID & dependenciesKind entries
@@ -352,7 +352,7 @@ static int fmi3_xml_parse_dependencies(fmi3_xml_parser_context_t* context,
         /* both lists are present - the number of items must match */
         if (*numDepInd != *numDepKind) {
             fmi3_xml_parse_error(context, "XML element '%s': different number of items (%u and %u) in the lists for 'dependencies' and 'dependenciesKind'",
-                    fmi3_xml_elmid_to_name(elmID), *numDepInd, *numDepKind);
+                    fmi3_xml_elmid_to_name(context, elmID), *numDepInd, *numDepKind);
             return -1;
         }
         jm_vector_push_back(size_t)(&deps->startIndex, totNumDep + *numDepInd);
@@ -374,7 +374,7 @@ static int fmi3_xml_parse_dependencies(fmi3_xml_parser_context_t* context,
     }
     else if (listKind) {
         fmi3_xml_parse_error(context, "XML element '%s': if `dependenciesKind` attribute is present then the `dependencies` attribute must also be present.",
-            fmi3_xml_elmid_to_name(elmID));
+            fmi3_xml_elmid_to_name(context, elmID));
         return -1;
     } else {
         /* Dependencies attribute is missing, set default dependencies */

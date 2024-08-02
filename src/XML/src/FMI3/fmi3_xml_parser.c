@@ -29,6 +29,7 @@
 #include "../FMI/fmi_xml_terminals_and_icons_impl.h"
 #include "fmi3_xml_parser.h"
 #include "JM/jm_portability.h"
+#include "fmi3_xml_parser_context_impl.h" // TODO: Really needed here?
 
 static const char* module = "FMI3XML";
 
@@ -41,15 +42,39 @@ typedef unsigned long long int  fmi3_uint_buf_t; /* same size as fmi3_int_buf_t 
 #define UINTXX_MIN (0)
 #define FMI3_FLOAT32_MAX (3.402823466e+38F) /* FLT_MAX from float.h is platform-dependent (doesn't have to be 32 bit) */
 
+// TODO: Possibly have these as variables in the context struct?
+// TODO: Move these + access functions into the parser_scheme file?
 #define ATTR_STR(attr) #attr,
-const char *fmi3_modelDescription_xmlAttrNames[fmi3_modelDescription_xml_attr_number] = {
+jm_string fmi3_modelDescription_xmlAttrNames[fmi3_modelDescription_xml_attr_number] = {
     FMI3_XML_ATTRLIST(ATTR_STR)
 };
 
-const char *fmi_termIcon_xmlAttrNames[fmi3_xml_termIcon_attr_number] = {
+jm_string fmi3_termIcon_xmlAttrNames[fmi3_xml_termIcon_attr_number] = {
     FMI3_XML_ATTRLIST_COMMON(ATTR_STR) \
     FMI_XML_ATTRLIST_TERM_ICON(ATTR_STR)
 };
+
+typedef union fmi3_xmlAttrNames {
+    jm_string modelDescription[fmi3_modelDescription_xml_attr_number];
+    jm_string termIcon[fmi3_xml_termIcon_attr_number];
+} fmi3_xmlAttrNames;
+
+
+// TODO: Use fmi3_xml_attr_enu_t union here instead
+static jm_string fmi3_xml_get_xml_attr_name(fmi3_xml_parser_context_t* context, fmi3_xml_modelDescription_attr_enu_t enu) {
+    const fmi3_xml_type_t xmlType = context->xmlType;
+    // TODO: remove quick return
+    return fmi3_modelDescription_xmlAttrNames[enu];
+    switch (xmlType) {
+        case fmi3_xml_type_modelDescription:
+            return fmi3_modelDescription_xmlAttrNames[enu];
+            //return fmi3_modelDescription_xmlAttrNames[enu.modelDescription];
+        case fmi3_xml_type_terminalAndIcons:
+            return fmi3_termIcon_xmlAttrNames[enu];
+            //return fmi3_termIcon_xmlAttrNames[enu.termIcon];
+    }
+    return "unknown";
+}
 
 /**
  * The expansion of below macro is also a macro. Example:
@@ -100,7 +125,30 @@ fmi3_xml_termIcon_element_handle_map_t fmi3_termIcon_element_handle_map[fmi3_xml
     FMI_XML_ELMLIST_ALT_TERM_ICON        (EXPAND_ELM_NAME_FMI_TERM_ICON)
 };
 
-fmi3_xml_element_handle_map_t fmi_element_handle_map;
+// TODO: Move to more suitable place?
+// TODO: use unions
+// TODO: possibly non-static
+static fmi3_xml_modelDescription_element_handle_map_t fmi3_xml_get_element_handle(fmi3_xml_parser_context_t* context, fmi3_xml_modelDescription_elm_enu_t enu) {
+    // const fmi3_xml_type_t xmlType = context->xmlType;
+    // TODO: remove quick return
+    return fmi3_modelDescription_element_handle_map[enu];
+    // switch (xmlType) {
+    //     case fmi3_xml_type_modelDescription:
+    //         return fmi3_modelDescription_xmlAttrNames[enu];
+    //         //return fmi3_modelDescription_xmlAttrNames[enu.modelDescription];
+    //     case fmi3_xml_type_terminalAndIcons:
+    //         return fmi3_termIcon_xmlAttrNames[enu];
+    //         //return fmi3_termIcon_xmlAttrNames[enu.termIcon];
+    // }
+    // return "unknown"; // TODO: Some suitable default/error
+}
+
+// TODO: Move to better place?
+// TODO: rename to include modelDescription?
+const char* fmi3_xml_elmid_to_name(fmi3_xml_parser_context_t* context, fmi3_xml_modelDescription_elm_enu_t id){
+    fmi3_xml_modelDescription_element_handle_map_t item = fmi3_xml_get_element_handle(context, id);
+    return item.elementName;
+}
 
 const fmi3_xml_primitive_types_t PRIMITIVE_TYPES = {
     {
@@ -235,8 +283,8 @@ void fmi3_xml_parse_free_context(fmi3_xml_parser_context_t* context) {
  */
 void fmi3_xml_parse_attr_error(fmi3_xml_parser_context_t* context, fmi3_xml_modelDescription_elm_enu_t elmID, fmi3_xml_modelDescription_attr_enu_t attrID,
         const char* attrStr) {
-    jm_string elmName = fmi3_modelDescription_element_handle_map[elmID].elementName;
-    jm_string attrName = fmi3_modelDescription_xmlAttrNames[attrID];
+    jm_string elmName = fmi3_xml_elmid_to_name(context, elmID);
+    jm_string attrName = fmi3_xml_get_xml_attr_name(context, attrID);
     fmi3_xml_parse_error(context, "XML element '%s': failed to parse attribute %s='%s'",
             elmName, attrName, attrStr);
 }
@@ -277,8 +325,8 @@ int fmi3_xml_get_attr_str(fmi3_xml_parser_context_t* context, fmi3_xml_modelDesc
     jm_vector_set_item(jm_string)(context->attrMapById, attrID, 0);
 
     if (!value && required) {
-        jm_string elmName = fmi3_modelDescription_element_handle_map[elmID].elementName;
-        jm_string attrName = fmi3_modelDescription_xmlAttrNames[attrID];
+        jm_string elmName = fmi3_xml_elmid_to_name(context, elmID);
+        jm_string attrName = fmi3_xml_get_xml_attr_name(context, attrID);
         fmi3_xml_parse_error(context, "Parsing XML element '%s': required attribute '%s' not found", elmName, attrName);
         return -1;
     }
@@ -314,8 +362,8 @@ int fmi3_xml_parse_attr_as_string(fmi3_xml_parser_context_t* context, fmi3_xml_m
 
     /* Error check */
     if (jm_vector_resize(char)(field, len) < len) {
-        jm_string elmName = fmi3_modelDescription_element_handle_map[elmID].elementName;
-        jm_string attrName = fmi3_modelDescription_xmlAttrNames[attrID];
+        jm_string elmName = fmi3_xml_elmid_to_name(context, elmID);
+        jm_string attrName = fmi3_xml_get_xml_attr_name(context, attrID);
         fmi3_xml_parse_fatal(context, "XML element '%s': could not allocate memory for setting '%s'='%s'", elmName, attrName, val);
         return -1;
     }
@@ -385,8 +433,8 @@ int fmi3_xml_parse_attr_as_bool(fmi3_xml_parser_context_t* context, fmi3_xml_mod
     } else if (strcmp(strVal, "false") == 0 || strcmp(strVal, "0") == 0) {
         *field = false;
     } else {
-        jm_string elmName = fmi3_modelDescription_element_handle_map[elmID].elementName;
-        jm_string attrName = fmi3_modelDescription_xmlAttrNames[attrID];
+        jm_string elmName = fmi3_xml_elmid_to_name(context, elmID);
+        jm_string attrName = fmi3_xml_get_xml_attr_name(context, attrID);
         fmi3_xml_parse_error(context, "XML element '%s': could not parse value for boolean attribute '%s'='%s'",
                 elmName, attrName, strVal);
         return -1;
@@ -887,8 +935,8 @@ int fmi3_xml_parse_attr_as_array(fmi3_xml_parser_context_t* context, fmi3_xml_mo
 
     /* write all attributes to array of correct type */
     if (fmi3_xml_str_to_array(context, str, arrPtr, arrSize, primType)) {
-        jm_string elmName = fmi3_modelDescription_element_handle_map[elmID].elementName;
-        jm_string attrName = fmi3_modelDescription_xmlAttrNames[attrID];
+        jm_string elmName = fmi3_xml_elmid_to_name(context, elmID);
+        jm_string attrName = fmi3_xml_get_xml_attr_name(context, attrID);
         fmi3_xml_parse_error(context, "XML element '%s': could not parse value for %s attribute '%s'='%s'",
             elmName, primType->name, attrName, str);
         return -1;
@@ -945,7 +993,7 @@ jm_vector(char)* fmi3_xml_reserve_parse_buffer(fmi3_xml_parser_context_t* contex
     return item;
 }
 
-int fmi3_create_attr_map(fmi3_xml_parser_context_t* context) {
+static int fmi3_create_attr_map(fmi3_xml_parser_context_t* context) {
     int i;
     context->attrMapById = jm_vector_alloc(jm_string)(fmi3_modelDescription_xml_attr_number, fmi3_modelDescription_xml_attr_number, context->callbacks);
     if (!context->attrMapById) return -1;
@@ -954,7 +1002,7 @@ int fmi3_create_attr_map(fmi3_xml_parser_context_t* context) {
     for(i = 0; i < fmi3_modelDescription_xml_attr_number; i++) {
         jm_named_ptr map;
         jm_vector_set_item(jm_string)(context->attrMapById, i, 0);
-        map.name = fmi3_modelDescription_xmlAttrNames[i];
+        map.name = fmi3_xml_get_xml_attr_name(context, i);
         map.ptr = (void*)(jm_vector_get_itemp(jm_string)(context->attrMapById, i));
         jm_vector_set_item(jm_named_ptr)(context->attrMapByName, i, map);
     }
@@ -962,12 +1010,12 @@ int fmi3_create_attr_map(fmi3_xml_parser_context_t* context) {
     return 0;
 }
 
-int fmi3_create_elm_map(fmi3_xml_parser_context_t* context) {
+static int fmi3_create_elm_map(fmi3_xml_parser_context_t* context) {
     size_t i;
     context->elmMap = jm_vector_alloc(fmi3_xml_modelDescription_element_handle_map_t)(fmi3_xml_modelDescription_elm_actual_number, fmi3_xml_modelDescription_elm_number, context->callbacks);
     if (!context->elmMap) return -1;
     for(i = 0; i < fmi3_xml_modelDescription_elm_actual_number; i++) {
-        fmi3_xml_modelDescription_element_handle_map_t item = fmi3_modelDescription_element_handle_map[i];
+        fmi3_xml_modelDescription_element_handle_map_t item = fmi3_xml_get_element_handle(context, i);
         jm_vector_set_item(fmi3_xml_modelDescription_element_handle_map_t)(context->elmMap, i, item);
     }
     jm_vector_qsort(fmi3_xml_modelDescription_element_handle_map_t)(context->elmMap, fmi3_xml_compare_elmName);
@@ -997,7 +1045,7 @@ void fmi3_xml_set_element_handle(fmi3_xml_parser_context_t* context, const char*
     keyEl.elementName = elm;
     currentElMap = jm_vector_bsearch(fmi3_xml_modelDescription_element_handle_map_t)(context->elmMap, &keyEl, fmi3_xml_compare_elmName);
 
-    currentElMap->elementHandle = fmi3_modelDescription_element_handle_map[id].elementHandle;;
+    currentElMap->elementHandle = fmi3_xml_get_element_handle(context, id).elementHandle;;
     currentElMap->elemID = id;
 }
 
@@ -1097,7 +1145,7 @@ static void XMLCALL fmi3_parse_element_start(void *c, const char *elm, const cha
         if (!fmi3_xml_is_valid_parent(currentID, parentID)) {
                 jm_log_error(context->callbacks, module,
                     "[Line:%u] XML element '%s' cannot be placed inside '%s', skipping",
-                    XML_GetCurrentLineNumber(context->parser), elm, fmi3_modelDescription_element_handle_map[parentID].elementName);
+                    XML_GetCurrentLineNumber(context->parser), elm, fmi3_xml_elmid_to_name(context, parentID));
                 context->skipElementCnt = 1;
                 return;
         }
@@ -1117,7 +1165,7 @@ static void XMLCALL fmi3_parse_element_start(void *c, const char *elm, const cha
                 if (lastSiblingIndex >= curSiblingIndex) {
                     jm_log_error(context->callbacks, module,
                         "[Line:%u] XML element '%s' cannot be placed after element '%s', skipping",
-                        XML_GetCurrentLineNumber(context->parser), elm, fmi3_modelDescription_element_handle_map[siblingID].elementName);
+                        XML_GetCurrentLineNumber(context->parser), elm, fmi3_xml_elmid_to_name(context, siblingID));
                     context->skipElementCnt = 1;
                     return;
                 }
@@ -1198,7 +1246,7 @@ static void XMLCALL fmi3_parse_element_start(void *c, const char *elm, const cha
     for (i = 0; i < fmi3_modelDescription_xml_attr_number; i++) {
         if (jm_vector_get_item(jm_string)(context->attrMapById, i)) {
             // Element has not been processed because no handler exists
-            jm_log_warning(context->callbacks,module, "Attribute '%s' not processed by element '%s' handle", fmi3_modelDescription_xmlAttrNames[i], elm);
+            jm_log_warning(context->callbacks, module, "Attribute '%s' not processed by element '%s' handle", fmi3_xml_get_xml_attr_name(context, i), elm);
             jm_vector_set_item(jm_string)(context->attrMapById, i, NULL);
         }
     }
@@ -1251,7 +1299,7 @@ static void XMLCALL fmi3_parse_element_end(void* c, const char *elm) {
     if (currentID != context -> currentElmID) {
         /* missmatch error */
         fmi3_xml_parse_fatal(context, "Element end '%s' does not match element start '%s' in XML", elm,
-            fmi3_modelDescription_element_handle_map[context -> currentElmID].elementName);
+            fmi3_xml_elmid_to_name(context, context -> currentElmID));
         return;
     }
 
@@ -1521,10 +1569,6 @@ int fmi3_xml_parse_terminals_and_icons(fmi_xml_terminals_and_icons_t* termIcon,
     fmi3_xml_parse_free_context(context);
 
     return 0;
-}
-
-const char* fmi3_xml_elmid_to_name(fmi3_xml_modelDescription_elm_enu_t id){
-    return fmi3_modelDescription_element_handle_map[id].elementName;
 }
 
 #define JM_TEMPLATE_INSTANCE_TYPE fmi3_xml_modelDescription_element_handle_map_t

@@ -172,9 +172,9 @@ extern "C" {
 #define FMI3_XML_ELMLIST_ABSTRACT_MODEL_DESCR(EXPAND_XML_ELMNAME) \
     EXPAND_XML_ELMNAME(Variable)
 
-// XXX: fmi3_xml_elmID_none & fmi3_xml_elmID_Start are defined in fmi3_xml_parser.h, got good style
+// XXX: fmi3_xml_modelDescription_elmID_none & fmi3_xml_elmID_Start are defined in fmi3_xml_parser.h, got good style
 /*
-    Define XML schema structure. Used to build the 'fmi3_xml_scheme_info_t' type (in fmi3_xml_parser.c).
+    Define XML schema structure. Used to build the 'fmi3_xml_modelDescription_scheme_info_t' type (in fmi3_xml_parser.c).
 
     @sib_idx:
         the index in a sequence among siblings
@@ -182,20 +182,20 @@ extern "C" {
         if the parent can have multiple elements of this type
 */
 /*      scheme_ID,                                super_type,                 parent_ID,                          sib_idx, multi_elem */
-#define fmi3_xml_scheme_fmiModelDescription       {fmi3_xml_elmID_none,       fmi3_xml_elmID_none,                 0,       0}
-#define fmi3_xml_scheme_ModelExchange             {fmi3_xml_elmID_none,       fmi3_xml_elmID_fmiModelDescription,  0,       0}
-#define fmi3_xml_scheme_SourceFiles               {fmi3_xml_elmID_none,       fmi3_xml_elmID_ModelExchange,        0,       0}
-#define fmi3_xml_scheme_File                      {fmi3_xml_elmID_none,       fmi3_xml_elmID_SourceFiles,          0,       1}
-#define fmi3_xml_scheme_CoSimulation              {fmi3_xml_elmID_none,       fmi3_xml_elmID_fmiModelDescription,  1,       0}
-#define fmi3_xml_scheme_ScheduledExecution        {fmi3_xml_elmID_none,       fmi3_xml_elmID_fmiModelDescription,  2,       0}
-#define fmi3_xml_scheme_SourceFilesCS             {fmi3_xml_elmID_none,       fmi3_xml_elmID_CoSimulation,         0,       0}
-#define fmi3_xml_scheme_FileCS                    {fmi3_xml_elmID_none,       fmi3_xml_elmID_SourceFilesCS,        0,       1}
-#define fmi3_xml_scheme_UnitDefinitions           {fmi3_xml_elmID_none,       fmi3_xml_elmID_fmiModelDescription,  2,       0}
-#define fmi3_xml_scheme_Unit                      {fmi3_xml_elmID_none,       fmi3_xml_elmID_UnitDefinitions,      0,       1}
-#define fmi3_xml_scheme_BaseUnit                  {fmi3_xml_elmID_none,       fmi3_xml_elmID_Unit,                 0,       0}
-#define fmi3_xml_scheme_DisplayUnit               {fmi3_xml_elmID_none,       fmi3_xml_elmID_Unit,                 1,       1}
-#define fmi3_xml_scheme_TypeDefinitions           {fmi3_xml_elmID_none,       fmi3_xml_elmID_fmiModelDescription,  3,       0}
-#define fmi3_xml_scheme_SimpleType                {fmi3_xml_elmID_none,       fmi3_xml_elmID_TypeDefinitions,      0,       1}
+#define fmi3_xml_scheme_fmiModelDescription       {fmi3_xml_modelDescription_elmID_none,       fmi3_xml_modelDescription_elmID_none,                 0,       0}
+#define fmi3_xml_scheme_ModelExchange             {fmi3_xml_modelDescription_elmID_none,       fmi3_xml_elmID_fmiModelDescription,  0,       0}
+#define fmi3_xml_scheme_SourceFiles               {fmi3_xml_modelDescription_elmID_none,       fmi3_xml_elmID_ModelExchange,        0,       0}
+#define fmi3_xml_scheme_File                      {fmi3_xml_modelDescription_elmID_none,       fmi3_xml_elmID_SourceFiles,          0,       1}
+#define fmi3_xml_scheme_CoSimulation              {fmi3_xml_modelDescription_elmID_none,       fmi3_xml_elmID_fmiModelDescription,  1,       0}
+#define fmi3_xml_scheme_ScheduledExecution        {fmi3_xml_modelDescription_elmID_none,       fmi3_xml_elmID_fmiModelDescription,  2,       0}
+#define fmi3_xml_scheme_SourceFilesCS             {fmi3_xml_modelDescription_elmID_none,       fmi3_xml_elmID_CoSimulation,         0,       0}
+#define fmi3_xml_scheme_FileCS                    {fmi3_xml_modelDescription_elmID_none,       fmi3_xml_elmID_SourceFilesCS,        0,       1}
+#define fmi3_xml_scheme_UnitDefinitions           {fmi3_xml_modelDescription_elmID_none,       fmi3_xml_elmID_fmiModelDescription,  2,       0}
+#define fmi3_xml_scheme_Unit                      {fmi3_xml_modelDescription_elmID_none,       fmi3_xml_elmID_UnitDefinitions,      0,       1}
+#define fmi3_xml_scheme_BaseUnit                  {fmi3_xml_modelDescription_elmID_none,       fmi3_xml_elmID_Unit,                 0,       0}
+#define fmi3_xml_scheme_DisplayUnit               {fmi3_xml_modelDescription_elmID_none,       fmi3_xml_elmID_Unit,                 1,       1}
+#define fmi3_xml_scheme_TypeDefinitions           {fmi3_xml_modelDescription_elmID_none,       fmi3_xml_elmID_fmiModelDescription,  3,       0}
+#define fmi3_xml_scheme_SimpleType                {fmi3_xml_modelDescription_elmID_none,       fmi3_xml_elmID_TypeDefinitions,      0,       1}
 #define fmi3_xml_scheme_Float64Type               {fmi3_xml_elmID_SimpleType, fmi3_xml_elmID_TypeDefinitions,      0,       1}
 #define fmi3_xml_scheme_Float32Type               {fmi3_xml_elmID_SimpleType, fmi3_xml_elmID_TypeDefinitions,      0,       1}
 #define fmi3_xml_scheme_Int64Type                 {fmi3_xml_elmID_SimpleType, fmi3_xml_elmID_TypeDefinitions,      0,       1}
@@ -211,22 +211,22 @@ extern "C" {
 #define fmi3_xml_scheme_ClockType                 {fmi3_xml_elmID_SimpleType, fmi3_xml_elmID_TypeDefinitions,      0,       1}
 #define fmi3_xml_scheme_StringType                {fmi3_xml_elmID_SimpleType, fmi3_xml_elmID_TypeDefinitions,      0,       1}
 #define fmi3_xml_scheme_EnumerationType           {fmi3_xml_elmID_SimpleType, fmi3_xml_elmID_TypeDefinitions,      0,       1}
-#define fmi3_xml_scheme_Item                      {fmi3_xml_elmID_none,       fmi3_xml_elmID_EnumerationType,      0,       1}
-#define fmi3_xml_scheme_LogCategories             {fmi3_xml_elmID_none,       fmi3_xml_elmID_fmiModelDescription,  4,       0}
-#define fmi3_xml_scheme_Category                  {fmi3_xml_elmID_none,       fmi3_xml_elmID_LogCategories,        0,       1}
-#define fmi3_xml_scheme_DefaultExperiment         {fmi3_xml_elmID_none,       fmi3_xml_elmID_fmiModelDescription,  5,       0}
-#define fmi3_xml_scheme_VendorAnnotations         {fmi3_xml_elmID_none,       fmi3_xml_elmID_fmiModelDescription,  6,       0}
-#define fmi3_xml_scheme_Tool                      {fmi3_xml_elmID_none,       fmi3_xml_elmID_VendorAnnotations,    0,       1}
-#define fmi3_xml_scheme_ModelVariables            {fmi3_xml_elmID_none,       fmi3_xml_elmID_fmiModelDescription,  7,       0}
+#define fmi3_xml_scheme_Item                      {fmi3_xml_modelDescription_elmID_none,       fmi3_xml_elmID_EnumerationType,      0,       1}
+#define fmi3_xml_scheme_LogCategories             {fmi3_xml_modelDescription_elmID_none,       fmi3_xml_elmID_fmiModelDescription,  4,       0}
+#define fmi3_xml_scheme_Category                  {fmi3_xml_modelDescription_elmID_none,       fmi3_xml_elmID_LogCategories,        0,       1}
+#define fmi3_xml_scheme_DefaultExperiment         {fmi3_xml_modelDescription_elmID_none,       fmi3_xml_elmID_fmiModelDescription,  5,       0}
+#define fmi3_xml_scheme_VendorAnnotations         {fmi3_xml_modelDescription_elmID_none,       fmi3_xml_elmID_fmiModelDescription,  6,       0}
+#define fmi3_xml_scheme_Tool                      {fmi3_xml_modelDescription_elmID_none,       fmi3_xml_elmID_VendorAnnotations,    0,       1}
+#define fmi3_xml_scheme_ModelVariables            {fmi3_xml_modelDescription_elmID_none,       fmi3_xml_elmID_fmiModelDescription,  7,       0}
 
-#define fmi3_xml_scheme_ModelStructure            {fmi3_xml_elmID_none,       fmi3_xml_elmID_fmiModelDescription,  8,       0}
-#define fmi3_xml_scheme_Output                    {fmi3_xml_elmID_none,       fmi3_xml_elmID_ModelStructure,       0,       1}
-#define fmi3_xml_scheme_ContinuousStateDerivative {fmi3_xml_elmID_none,       fmi3_xml_elmID_ModelStructure,       1,       1}
-#define fmi3_xml_scheme_ClockedState              {fmi3_xml_elmID_none,       fmi3_xml_elmID_ModelStructure,       2,       1}
-#define fmi3_xml_scheme_InitialUnknown            {fmi3_xml_elmID_none,       fmi3_xml_elmID_ModelStructure,       3,       1}
-#define fmi3_xml_scheme_EventIndicator            {fmi3_xml_elmID_none,       fmi3_xml_elmID_ModelStructure,       4,       1}
+#define fmi3_xml_scheme_ModelStructure            {fmi3_xml_modelDescription_elmID_none,       fmi3_xml_elmID_fmiModelDescription,  8,       0}
+#define fmi3_xml_scheme_Output                    {fmi3_xml_modelDescription_elmID_none,       fmi3_xml_elmID_ModelStructure,       0,       1}
+#define fmi3_xml_scheme_ContinuousStateDerivative {fmi3_xml_modelDescription_elmID_none,       fmi3_xml_elmID_ModelStructure,       1,       1}
+#define fmi3_xml_scheme_ClockedState              {fmi3_xml_modelDescription_elmID_none,       fmi3_xml_elmID_ModelStructure,       2,       1}
+#define fmi3_xml_scheme_InitialUnknown            {fmi3_xml_modelDescription_elmID_none,       fmi3_xml_elmID_ModelStructure,       3,       1}
+#define fmi3_xml_scheme_EventIndicator            {fmi3_xml_modelDescription_elmID_none,       fmi3_xml_elmID_ModelStructure,       4,       1}
 
-#define fmi3_xml_scheme_Variable                  {fmi3_xml_elmID_none,       fmi3_xml_elmID_ModelVariables,       0,       1}
+#define fmi3_xml_scheme_Variable                  {fmi3_xml_modelDescription_elmID_none,       fmi3_xml_elmID_ModelVariables,       0,       1}
 #define fmi3_xml_scheme_Float64                   {fmi3_xml_elmID_Variable,   fmi3_xml_elmID_ModelVariables,       0,       1}
 #define fmi3_xml_scheme_Float32                   {fmi3_xml_elmID_Variable,   fmi3_xml_elmID_ModelVariables,       0,       1}
 #define fmi3_xml_scheme_Int64                     {fmi3_xml_elmID_Variable,   fmi3_xml_elmID_ModelVariables,       0,       1}
@@ -243,16 +243,19 @@ extern "C" {
 #define fmi3_xml_scheme_String                    {fmi3_xml_elmID_Variable,   fmi3_xml_elmID_ModelVariables,       0,       1}
 #define fmi3_xml_scheme_Enumeration               {fmi3_xml_elmID_Variable,   fmi3_xml_elmID_ModelVariables,       0,       1}
 
-#define fmi3_xml_scheme_Dimension                 {fmi3_xml_elmID_none,       fmi3_xml_elmID_Variable,             0,       1}
+#define fmi3_xml_scheme_Dimension                 {fmi3_xml_modelDescription_elmID_none,       fmi3_xml_elmID_Variable,             0,       1}
 #define fmi3_xml_scheme_BinaryVariableStart       {fmi3_xml_elmID_Start,      fmi3_xml_elmID_Binary,               1,       1}
 #define fmi3_xml_scheme_StringVariableStart       {fmi3_xml_elmID_Start,      fmi3_xml_elmID_String,               1,       1}
-#define fmi3_xml_scheme_Alias                     {fmi3_xml_elmID_none,       fmi3_xml_elmID_Variable,             2,       1}
+#define fmi3_xml_scheme_Alias                     {fmi3_xml_modelDescription_elmID_none,       fmi3_xml_elmID_Variable,             2,       1}
 
-#define fmi3_xml_scheme_Annotations               {fmi3_xml_elmID_none,       fmi3_xml_elmID_Variable,             1,       0}
-#define fmi3_xml_scheme_VariableTool              {fmi3_xml_elmID_none,       fmi3_xml_elmID_Annotations,          0,       1}
+#define fmi3_xml_scheme_Annotations               {fmi3_xml_modelDescription_elmID_none,       fmi3_xml_elmID_Variable,             1,       0}
+#define fmi3_xml_scheme_VariableTool              {fmi3_xml_modelDescription_elmID_none,       fmi3_xml_elmID_Annotations,          0,       1}
 
 // Not used except for setting up the element handler framework:
-#define fmi3_xml_scheme_Start                     {fmi3_xml_elmID_none,       fmi3_xml_elmID_none,                 1,       0}
+#define fmi3_xml_scheme_Start                     {fmi3_xml_modelDescription_elmID_none,       fmi3_xml_modelDescription_elmID_none,                 1,       0}
+
+// TODO: List formatting + use terminals and Icons type
+// TODO: rename to include modelDescription in name?
 
 #ifdef __cplusplus
 }

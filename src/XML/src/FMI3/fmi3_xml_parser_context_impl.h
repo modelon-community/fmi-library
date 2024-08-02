@@ -28,31 +28,46 @@
 extern "C" {
 #endif
 
-typedef struct fmi3_xml_element_handle_map_t fmi3_xml_element_handle_map_t;
-typedef struct fmi_termIcon_xml_element_handle_map_t fmi_termIcon_xml_element_handle_map_t;
+/** Flag for current XML file being handled. */
+// TODO: Might be more suited in parser.h?
+typedef enum fmi_xml_type_t {
+    fmi3_xml_type_modelDescription,
+    fmi3_xml_type_terminalAndIcons
+} fmi3_xml_type_t;
 
-typedef int (*fmi3_xml_element_handle_ft)(fmi3_xml_parser_context_t* context, const char* data);
-typedef int (*fmi_termIcon_xml_element_handle_ft)(fmi3_xml_parser_context_t* context, const char* data);
+typedef struct fmi3_xml_modelDescription_element_handle_map_t fmi3_xml_modelDescription_element_handle_map_t;
+typedef struct fmi3_xml_termIcon_element_handle_map_t fmi3_xml_termIcon_element_handle_map_t;
 
-struct fmi3_xml_element_handle_map_t {
+typedef int (*fmi3_xml_modelDescription_element_handle_ft)(fmi3_xml_parser_context_t* context, const char* data);
+typedef int (*fmi3_xml_termIcon_element_handle_ft)(fmi3_xml_parser_context_t* context, const char* data);
+
+struct fmi3_xml_modelDescription_element_handle_map_t {
     const char* elementName;
-    fmi3_xml_element_handle_ft elementHandle;
-    fmi3_xml_elm_enu_t elemID;
+    fmi3_xml_modelDescription_element_handle_ft elementHandle;
+    fmi3_xml_modelDescription_elm_enu_t elemID;
 };
 
-struct fmi_termIcon_xml_element_handle_map_t {
+struct fmi3_xml_termIcon_element_handle_map_t {
     const char* elementName;
-    fmi_termIcon_xml_element_handle_ft elementHandle;
-    fmi_termIcon_xml_elm_enu_t elemID;
+    fmi3_xml_termIcon_element_handle_ft elementHandle;
+    fmi3_xml_termIcon_elm_enu_t elemID;
 };
 
-jm_vector_declare_template(fmi3_xml_element_handle_map_t)
-jm_vector_declare_template(fmi_termIcon_xml_element_handle_map_t)
+typedef union fmi3_xml_element_handle_map_t {
+    fmi3_xml_modelDescription_element_handle_map_t modelDescription;
+    fmi3_xml_termIcon_element_handle_map_t termIcon;
+} fmi3_xml_element_handle_map_t;
+
+jm_vector_declare_template(fmi3_xml_modelDescription_element_handle_map_t)
+jm_vector_declare_template(fmi3_xml_termIcon_element_handle_map_t)
 
 /**
  * Struct for saving and accessing data between element handlers.
  */
 struct fmi3_xml_parser_context_t {
+
+    /* Flag for XML being handled, NEEDS TO BE FIRST */
+    const fmi3_xml_type_t xmlType;
 
     /**
      * This is where the parsed XML is saved.
@@ -111,7 +126,7 @@ struct fmi3_xml_parser_context_t {
      * 'Int32' must change the handler for the "alternative name":
      * 'fmi3_xml_handle_Int32Variable'.
      */
-    jm_vector(fmi3_xml_element_handle_map_t)* elmMap;
+    jm_vector(fmi3_xml_modelDescription_element_handle_map_t)* elmMap;
 
     fmi3_xml_unit_t* lastBaseUnit;
 
@@ -155,10 +170,10 @@ struct fmi3_xml_parser_context_t {
     jm_vector(char) variableStartAttr;
 
     /**
-     * Element ID of the last processed sibling, or fmi3_xml_elmID_none if
+     * Element ID of the last processed sibling, or fmi3_xml_modelDescription_elmID_none if
      * no siblings have been processed.
      */
-    fmi3_xml_elm_enu_t lastSiblingElemId;
+    fmi3_xml_modelDescription_elm_enu_t lastSiblingElemId;
 
     /**
      * Used for error checking and scheme verification.
@@ -170,9 +185,9 @@ struct fmi3_xml_parser_context_t {
      *     on enter: self
      *     on exit: parent
      */
-    fmi3_xml_elm_enu_t currentElmID;
+    fmi3_xml_modelDescription_elm_enu_t currentElmID;
 
-    fmi3_xml_elm_enu_t currentElemIdStartTag;
+    fmi3_xml_modelDescription_elm_enu_t currentElemIdStartTag;
 
     /* Variables for handling tool-specific XML elements */
     int anyElmCount;

@@ -40,17 +40,22 @@ extern "C" {
     FMI_XML_ATTRLIST_TERM_ICON   (EXPAND_XML_ATTRNAME)
 
 #define FMI3_XML_ATTR_ID(attr) fmi_attr_id_##attr,
-typedef enum fmi3_xml_attr_enu_t {
+typedef enum fmi3_xml_modelDescription_attr_enu_t {
     FMI3_XML_ATTRLIST(FMI3_XML_ATTR_ID)
-    fmi3_xml_attr_number
-} fmi3_xml_attr_enu_t;
+    fmi3_modelDescription_xml_attr_number
+} fmi3_xml_modelDescription_attr_enu_t;
 
 #define FMI_TERMICON_XML_ATTR_ID(attr) fmi_termIcon_attr_id_##attr,
-typedef enum fmi_termIcon_xml_attr_enu_t {
+typedef enum fmi3_xml_termIcon_attr_enu_t {
     FMI3_XML_ATTRLIST_COMMON(FMI_TERMICON_XML_ATTR_ID) \
     FMI_XML_ATTRLIST_TERM_ICON(FMI_TERMICON_XML_ATTR_ID)
-    fmi_termIcon_xml_attr_number
-} fmi_termIcon_xml_attr_enu_t;
+    fmi3_xml_termIcon_attr_number
+} fmi3_xml_termIcon_attr_enu_t;
+
+typedef union fmi3_xml_attr_enu_t {
+    fmi3_xml_modelDescription_attr_enu_t modelDescription;
+    fmi3_xml_termIcon_attr_enu_t termIcon;
+} fmi3_xml_attr_enu_t;
 
 /* Build prototypes for all elm_handle_* functions */
 typedef struct fmi3_xml_parser_context_t fmi3_xml_parser_context_t;
@@ -66,31 +71,36 @@ FMI_XML_ELMLIST_ALT_TERM_ICON(EXPAND_ELM_HANDLE_FMI_TERM_ICON)
 /**
  * Create an enum over all XML elements. This enum can be used to index
  * the following arrays:
- *      - fmi3_xml_scheme_info
- *      - fmi3_element_handle_map
+ *      - fmi3_xml_modelDescription_scheme_info
+ *      - fmi3_modelDescription_element_handle_map
  */
 #define FMI3_XML_ELM_ID(elm) fmi3_xml_elmID_##elm
 #define FMI3_XML_LIST_ELM_ID(elm) ,FMI3_XML_ELM_ID(elm)
-typedef enum fmi3_xml_elm_enu_t {
-    fmi3_xml_elmID_none = -1
+typedef enum fmi3_xml_modelDescription_elm_enu_t {
+    fmi3_xml_modelDescription_elmID_none = -1
     FMI3_XML_ELMLIST_MODEL_DESCR(FMI3_XML_LIST_ELM_ID)
     FMI_XML_ELMLIST_TERM_ICON   (FMI3_XML_LIST_ELM_ID)
-    ,fmi3_xml_elm_actual_number
+    ,fmi3_xml_modelDescription_elm_actual_number
     FMI3_XML_ELMLIST_ALT_MODEL_DESCR     (FMI3_XML_LIST_ELM_ID)
     FMI_XML_ELMLIST_ALT_TERM_ICON        (FMI3_XML_LIST_ELM_ID)
     FMI3_XML_ELMLIST_ABSTRACT_MODEL_DESCR(FMI3_XML_LIST_ELM_ID)
-    ,fmi3_xml_elm_number
-} fmi3_xml_elm_enu_t;
+    ,fmi3_xml_modelDescription_elm_number
+} fmi3_xml_modelDescription_elm_enu_t;
 
 #define FMI_TERMICON_XML_ELM_ID(elm) fmi_termIcon_xml_elmID_##elm
 #define FMI_TERMICON_XML_LIST_ELM_ID(elm) ,FMI_TERMICON_XML_ELM_ID(elm)
-typedef enum fmi_termIcon_xml_elm_enu_t {
-    fmi_termIcon_xml_elmID_none = -1
+typedef enum fmi3_xml_termIcon_elm_enu_t {
+    fmi3_xml_termIcon_elmID_none = -1
     FMI_XML_ELMLIST_TERM_ICON(FMI_TERMICON_XML_LIST_ELM_ID)
-    ,fmi_termIcon_xml_elm_actual_number
+    ,fmi3_xml_termIcon_elm_actual_number
     FMI_XML_ELMLIST_ALT_TERM_ICON(FMI_TERMICON_XML_LIST_ELM_ID)
-    ,fmi_termIcon_xml_elm_number
-} fmi_termIcon_xml_elm_enu_t;
+    ,fmi3_xml_termIcon_elm_number
+} fmi3_xml_termIcon_elm_enu_t;
+
+typedef union fmi3_xml_elm_enu_t {
+    fmi3_xml_modelDescription_elm_enu_t modelDescription;
+    fmi3_xml_termIcon_elm_enu_t termIcon;
+} fmi3_xml_elm_enu_t;
 
 #ifdef __cplusplus
 }

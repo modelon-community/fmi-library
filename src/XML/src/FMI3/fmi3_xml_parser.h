@@ -59,6 +59,7 @@ typedef struct {
 
 #define fmi3_xml_diff_elmName(a, b) strcmp(a.elementName,b.elementName)
 
+// TODO
 jm_define_comp_f(fmi3_xml_compare_elmName, fmi3_xml_modelDescription_element_handle_map_t, fmi3_xml_diff_elmName)
 
 #define XML_BLOCK_SIZE 16000
@@ -122,9 +123,10 @@ int fmi3_xml_get_attr_str(fmi3_xml_parser_context_t* context, fmi3_xml_modelDesc
 
 void fmi3_xml_set_element_handle(fmi3_xml_parser_context_t* context, const char* elm, fmi3_xml_modelDescription_elm_enu_t id);
 
-int fmi3_xml_is_valid_parent(fmi3_xml_modelDescription_elm_enu_t child_id, fmi3_xml_modelDescription_elm_enu_t parent_id);
-int fmi3_xml_get_super_type_rec(fmi3_xml_modelDescription_elm_enu_t id);
-int fmi3_xml_are_same_type(fmi3_xml_modelDescription_elm_enu_t id1, fmi3_xml_modelDescription_elm_enu_t id2);
+// TODO: These last 3 should probably go to a scheme file
+int fmi3_xml_is_valid_parent(fmi3_xml_parser_context_t* context, fmi3_xml_modelDescription_elm_enu_t child_id, fmi3_xml_modelDescription_elm_enu_t parent_id);
+int fmi3_xml_get_super_type_rec(fmi3_xml_parser_context_t* context, fmi3_xml_modelDescription_elm_enu_t id);
+int fmi3_xml_are_same_type(fmi3_xml_parser_context_t* context, fmi3_xml_modelDescription_elm_enu_t id1, fmi3_xml_modelDescription_elm_enu_t id2);
 
 const char* fmi3_xml_elmid_to_name(fmi3_xml_parser_context_t* context, fmi3_xml_modelDescription_elm_enu_t id);
 

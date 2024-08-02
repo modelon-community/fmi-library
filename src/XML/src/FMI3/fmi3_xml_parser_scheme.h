@@ -76,6 +76,8 @@ FMI_XML_ELMLIST_ALT_TERM_ICON(EXPAND_ELM_HANDLE_FMI_TERM_ICON)
  */
 #define FMI3_XML_ELM_ID(elm) fmi3_xml_elmID_##elm
 #define FMI3_XML_LIST_ELM_ID(elm) ,FMI3_XML_ELM_ID(elm)
+// TODO: The none value is used in a couple of places for iteration purposes
+// might make sense to use the same for both modelDescription & terminalAndIcons
 typedef enum fmi3_xml_modelDescription_elm_enu_t {
     fmi3_xml_modelDescription_elmID_none = -1
     FMI3_XML_ELMLIST_MODEL_DESCR(FMI3_XML_LIST_ELM_ID)

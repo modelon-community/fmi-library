@@ -45,11 +45,11 @@ typedef unsigned long long int  fmi3_uint_buf_t; /* same size as fmi3_int_buf_t 
 // TODO: Possibly have these as variables in the context struct?
 // TODO: Move these + access functions into the parser_scheme file?
 #define ATTR_STR(attr) #attr,
-jm_string fmi3_modelDescription_xmlAttrNames[fmi3_modelDescription_xml_attr_number] = {
+const jm_string fmi3_modelDescription_xmlAttrNames[fmi3_modelDescription_xml_attr_number] = {
     FMI3_XML_ATTRLIST(ATTR_STR)
 };
 
-jm_string fmi3_termIcon_xmlAttrNames[fmi3_xml_termIcon_attr_number] = {
+const jm_string fmi3_termIcon_xmlAttrNames[fmi3_xml_termIcon_attr_number] = {
     FMI3_XML_ATTRLIST_COMMON(ATTR_STR) \
     FMI_XML_ATTRLIST_TERM_ICON(ATTR_STR)
 };
@@ -84,7 +84,7 @@ static jm_string fmi3_xml_get_xml_attr_name(fmi3_xml_parser_context_t* context, 
 #define EXPAND_ELM_SCHEME_TERMICON(elm) fmi_termIcon_xml_scheme_##elm ,
 
 /* Global array of all scheme_info_t. Index it with fmi3_xml_modelDescription_elm_enu_t entries. */
-fmi3_xml_modelDescription_scheme_info_t fmi3_xml_modelDescription_scheme_info[fmi3_xml_modelDescription_elm_number] = {
+const fmi3_xml_modelDescription_scheme_info_t fmi3_xml_modelDescription_scheme_info[fmi3_xml_modelDescription_elm_number] = {
     FMI3_XML_ELMLIST_MODEL_DESCR(EXPAND_ELM_SCHEME)
     FMI_XML_ELMLIST_TERM_ICON   (EXPAND_ELM_SCHEME)
     {fmi3_xml_modelDescription_elm_actual_number,0,0},
@@ -101,6 +101,13 @@ fmi3_xml_modelDescription_scheme_info_t fmi3_xml_modelDescription_scheme_info[fm
 //     FMI_XML_ELMLIST_ALT_TERM_ICON(EXPAND_ELM_SCHEME_TERMICON)
 // };
 
+// TODO: Move to more suitable place?
+// TODO: use unions
+// TODO: possibly non-static
+static fmi3_xml_modelDescription_scheme_info_t fmi3_xml_get_scheme_info(fmi3_xml_parser_context_t* context, fmi3_xml_modelDescription_elm_enu_t enu) {
+    return fmi3_xml_modelDescription_scheme_info[enu];
+}
+
 #define EXPAND_ELM_NAME_FMI3(elm) { #elm, fmi3_xml_handle_##elm, fmi3_xml_elmID_##elm},
 #define EXPAND_ELM_NAME_FMI_TERM_ICON(elm) { #elm, fmi_xml_handle_##elm, fmi3_xml_elmID_##elm},
 
@@ -110,7 +117,7 @@ fmi3_xml_modelDescription_scheme_info_t fmi3_xml_modelDescription_scheme_info[fm
  *      Parse element name, from element name find ID, use ID to index this
  *      array.
  */
-fmi3_xml_modelDescription_element_handle_map_t fmi3_modelDescription_element_handle_map[fmi3_xml_modelDescription_elm_number] = {
+const fmi3_xml_modelDescription_element_handle_map_t fmi3_modelDescription_element_handle_map[fmi3_xml_modelDescription_elm_number] = {
     FMI3_XML_ELMLIST_MODEL_DESCR(EXPAND_ELM_NAME_FMI3)
     FMI_XML_ELMLIST_TERM_ICON   (EXPAND_ELM_NAME_FMI_TERM_ICON)
     { NULL, NULL, fmi3_xml_modelDescription_elm_actual_number},
@@ -119,7 +126,7 @@ fmi3_xml_modelDescription_element_handle_map_t fmi3_modelDescription_element_han
     FMI3_XML_ELMLIST_ABSTRACT_MODEL_DESCR(EXPAND_ELM_NAME_FMI3)
 };
 
-fmi3_xml_termIcon_element_handle_map_t fmi3_termIcon_element_handle_map[fmi3_xml_termIcon_elm_number] = {
+const fmi3_xml_termIcon_element_handle_map_t fmi3_termIcon_element_handle_map[fmi3_xml_termIcon_elm_number] = {
     FMI_XML_ELMLIST_TERM_ICON   (EXPAND_ELM_NAME_FMI_TERM_ICON)
     { NULL, NULL, fmi3_xml_termIcon_elm_actual_number},
     FMI_XML_ELMLIST_ALT_TERM_ICON        (EXPAND_ELM_NAME_FMI_TERM_ICON)
@@ -993,7 +1000,9 @@ jm_vector(char)* fmi3_xml_reserve_parse_buffer(fmi3_xml_parser_context_t* contex
     return item;
 }
 
-static int fmi3_create_attr_map(fmi3_xml_parser_context_t* context) {
+// TODO: Will need a 2nd one for terminalsAndIcons
+
+static int fmi3_create_modelDescription_attr_map(fmi3_xml_parser_context_t* context) {
     int i;
     context->attrMapById = jm_vector_alloc(jm_string)(fmi3_modelDescription_xml_attr_number, fmi3_modelDescription_xml_attr_number, context->callbacks);
     if (!context->attrMapById) return -1;
@@ -1010,7 +1019,9 @@ static int fmi3_create_attr_map(fmi3_xml_parser_context_t* context) {
     return 0;
 }
 
-static int fmi3_create_elm_map(fmi3_xml_parser_context_t* context) {
+// TODO: Will need a 2nd one for terminalsAndIcons
+
+static int fmi3_create_modelDescription_elm_map(fmi3_xml_parser_context_t* context) {
     size_t i;
     context->elmMap = jm_vector_alloc(fmi3_xml_modelDescription_element_handle_map_t)(fmi3_xml_modelDescription_elm_actual_number, fmi3_xml_modelDescription_elm_number, context->callbacks);
     if (!context->elmMap) return -1;
@@ -1053,11 +1064,11 @@ void fmi3_xml_set_element_handle(fmi3_xml_parser_context_t* context, const char*
  * Returns true if parent element's type or super type (recursively) matches
  * the expected type.
  */
-int fmi3_xml_is_valid_parent(fmi3_xml_modelDescription_elm_enu_t child_id, fmi3_xml_modelDescription_elm_enu_t parent_id) {
-    fmi3_xml_modelDescription_elm_enu_t p_id_expected = fmi3_xml_modelDescription_scheme_info[child_id].parentID;
+int fmi3_xml_is_valid_parent(fmi3_xml_parser_context_t* context, fmi3_xml_modelDescription_elm_enu_t child_id, fmi3_xml_modelDescription_elm_enu_t parent_id) {
+    fmi3_xml_modelDescription_elm_enu_t p_id_expected = fmi3_xml_get_scheme_info(context, child_id).parentID;
 
     while (parent_id != p_id_expected && parent_id != fmi3_xml_modelDescription_elmID_none) {
-        parent_id = fmi3_xml_modelDescription_scheme_info[parent_id].superID;
+        parent_id = fmi3_xml_get_scheme_info(context, parent_id).superID;
     }
     return parent_id == p_id_expected;
 }
@@ -1065,10 +1076,10 @@ int fmi3_xml_is_valid_parent(fmi3_xml_modelDescription_elm_enu_t child_id, fmi3_
 /**
  * Returns top level super type of the element.
  */
-int fmi3_xml_get_super_type_rec(fmi3_xml_modelDescription_elm_enu_t id) {
+int fmi3_xml_get_super_type_rec(fmi3_xml_parser_context_t* context, fmi3_xml_modelDescription_elm_enu_t id) {
     fmi3_xml_modelDescription_elm_enu_t id_top = id;
-    while (fmi3_xml_modelDescription_scheme_info[id_top].superID != fmi3_xml_modelDescription_elmID_none) {
-        id_top = fmi3_xml_modelDescription_scheme_info[id_top].superID;
+    while (fmi3_xml_get_scheme_info(context, id_top).superID != fmi3_xml_modelDescription_elmID_none) { // TODO
+        id_top = fmi3_xml_get_scheme_info(context, id_top).superID;
     }
     return id_top;
 }
@@ -1076,8 +1087,8 @@ int fmi3_xml_get_super_type_rec(fmi3_xml_modelDescription_elm_enu_t id) {
 /**
  * Returns true if the top-level super types are the same.
  */
-int fmi3_xml_are_same_type(fmi3_xml_modelDescription_elm_enu_t id1, fmi3_xml_modelDescription_elm_enu_t id2) {
-    return fmi3_xml_get_super_type_rec(id1) == fmi3_xml_get_super_type_rec(id2);
+int fmi3_xml_are_same_type(fmi3_xml_parser_context_t* context, fmi3_xml_modelDescription_elm_enu_t id1, fmi3_xml_modelDescription_elm_enu_t id2) {
+    return fmi3_xml_get_super_type_rec(context, id1) == fmi3_xml_get_super_type_rec(context, id2);
 }
 
 /**
@@ -1142,16 +1153,16 @@ static void XMLCALL fmi3_parse_element_start(void *c, const char *elm, const cha
         fmi3_xml_modelDescription_elm_enu_t parentID = context->currentElmID;
         fmi3_xml_modelDescription_elm_enu_t siblingID = context->lastSiblingElemId;
 
-        if (!fmi3_xml_is_valid_parent(currentID, parentID)) {
+        if (!fmi3_xml_is_valid_parent(context, currentID, parentID)) {
                 jm_log_error(context->callbacks, module,
                     "[Line:%u] XML element '%s' cannot be placed inside '%s', skipping",
                     XML_GetCurrentLineNumber(context->parser), elm, fmi3_xml_elmid_to_name(context, parentID));
                 context->skipElementCnt = 1;
                 return;
         }
-        if (siblingID != fmi3_xml_modelDescription_elmID_none) {
-            if (fmi3_xml_are_same_type(currentID, siblingID)) {
-                if (!(fmi3_xml_modelDescription_scheme_info[currentID].multipleAllowed && fmi3_xml_modelDescription_scheme_info[siblingID].multipleAllowed)) {
+        if (siblingID != fmi3_xml_modelDescription_elmID_none) { // TODO
+            if (fmi3_xml_are_same_type(context, currentID, siblingID)) {
+                if (!(fmi3_xml_get_scheme_info(context, currentID).multipleAllowed && fmi3_xml_get_scheme_info(context, siblingID).multipleAllowed)) {
                     jm_log_error(context->callbacks, module,
                         "[Line:%u] Multiple instances of XML element '%s' are not allowed, skipping",
                         XML_GetCurrentLineNumber(context->parser), elm);
@@ -1159,8 +1170,8 @@ static void XMLCALL fmi3_parse_element_start(void *c, const char *elm, const cha
                     return;
                 }
             } else {
-                int lastSiblingIndex = fmi3_xml_modelDescription_scheme_info[siblingID].siblingIndex;
-                int curSiblingIndex = fmi3_xml_modelDescription_scheme_info[currentID].siblingIndex;
+                int lastSiblingIndex = fmi3_xml_get_scheme_info(context, siblingID).siblingIndex;
+                int curSiblingIndex = fmi3_xml_get_scheme_info(context, currentID).siblingIndex;
 
                 if (lastSiblingIndex >= curSiblingIndex) {
                     jm_log_error(context->callbacks, module,
@@ -1306,7 +1317,6 @@ static void XMLCALL fmi3_parse_element_end(void* c, const char *elm) {
     jm_vector_push_back(char)(&context->elmData, 0);
 
     if (currentElMap->elementHandle(context, jm_vector_get_itemp(char)(&context->elmData, 0) )) {
-        /* context->modelDescription->hasParsingError = 1;*/
         return;
     }
     jm_vector_resize(char)(&context->elmData, 0);
@@ -1390,7 +1400,7 @@ int fmi3_xml_parse_model_description(fmi3_xml_model_description_t* md,
 
     context->modelDescription = md;
     if (fmi3_xml_alloc_parse_buffer(context, 16)) return -1;
-    if (fmi3_create_attr_map(context) || fmi3_create_elm_map(context)) {
+    if (fmi3_create_modelDescription_attr_map(context) || fmi3_create_modelDescription_elm_map(context)) {
         fmi3_xml_parse_fatal(context, "Error in parsing initialization");
         fmi3_xml_parse_free_context(context);
         return -1;
@@ -1496,7 +1506,7 @@ int fmi3_xml_parse_terminals_and_icons(fmi_xml_terminals_and_icons_t* termIcon,
 
     context->termIcon = termIcon;
     if (fmi3_xml_alloc_parse_buffer(context, 16)) return -1;
-    if (fmi3_create_attr_map(context) || fmi3_create_elm_map(context)) {
+    if (fmi3_create_modelDescription_attr_map(context) || fmi3_create_modelDescription_elm_map(context)) {
         fmi3_xml_parse_fatal(context, "Error in parsing initialization");
         fmi3_xml_parse_free_context(context);
         return -1;

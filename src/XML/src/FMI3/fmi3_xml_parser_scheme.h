@@ -52,10 +52,14 @@ typedef enum fmi3_xml_termIcon_attr_enu_t {
     fmi3_xml_termIcon_attr_number
 } fmi3_xml_termIcon_attr_enu_t;
 
-typedef union fmi3_xml_attr_enu_t {
-    fmi3_xml_modelDescription_attr_enu_t modelDescription;
-    fmi3_xml_termIcon_attr_enu_t termIcon;
-} fmi3_xml_attr_enu_t;
+typedef int fmi3_xml_attr_enu_t;
+// typedef union fmi3_xml_attr_enu_t {
+//     fmi3_xml_modelDescription_attr_enu_t modelDescription;
+//     fmi3_xml_termIcon_attr_enu_t termIcon;
+// } fmi3_xml_attr_enu_t;
+
+// #define FMI3_MODELDESCRIPTION_ATTR(attr) (const fmi3_xml_attr_enu_t){.modelDescription = attr}
+// #define FMI_TERMICON_ATTR(attr) (const fmi3_xml_attr_enu_t){.termIcon = attr}
 
 /* Build prototypes for all elm_handle_* functions */
 typedef struct fmi3_xml_parser_context_t fmi3_xml_parser_context_t;

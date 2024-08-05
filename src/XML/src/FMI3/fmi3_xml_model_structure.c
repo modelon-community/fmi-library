@@ -227,7 +227,7 @@ int fmi3_xml_handle_ModelStructure(fmi3_xml_parser_context_t* context, const cha
  * Any errors when parsings will result in default dependencies = depends on everyhing
  */
 static int fmi3_xml_parse_dependencies(fmi3_xml_parser_context_t* context,
-        fmi3_xml_modelDescription_elm_enu_t elmID, fmi3_xml_dependencies_t* deps,
+        fmi3_xml_elm_enu_t elmID, fmi3_xml_dependencies_t* deps,
         size_t* numDepInd, size_t* numDepKind)
 {
     /**
@@ -386,7 +386,7 @@ static int fmi3_xml_parse_dependencies(fmi3_xml_parser_context_t* context,
 
 /* Wrapper for #fmi3_xml_parse_dependencies, handling failed states */
 static void fmi3_xml_parse_dependencies_error_wrapper(fmi3_xml_parser_context_t* context,
-        fmi3_xml_modelDescription_elm_enu_t elmID, fmi3_xml_dependencies_t* deps) {
+        fmi3_xml_elm_enu_t elmID, fmi3_xml_dependencies_t* deps) {
     // number of added dependecies(Kind) entries, these are needed to clean dependencies in case of failure to parse
     size_t numDepInd = 0;
     size_t numDepKind = 0;
@@ -414,7 +414,7 @@ static void fmi3_xml_parse_dependencies_error_wrapper(fmi3_xml_parser_context_t*
  * and the dependencies are stored in return-arg 'deps'.
  */
 int fmi3_xml_parse_unknown(fmi3_xml_parser_context_t* context,
-                           fmi3_xml_modelDescription_elm_enu_t elmID,
+                           fmi3_xml_elm_enu_t elmID,
                            jm_vector(jm_voidp) *destVarList,
                            fmi3_xml_dependencies_t* deps)
 {

@@ -1179,8 +1179,9 @@ void fmi3_xml_free_variable(jm_callbacks* callbacks, fmi3_xml_variable_t* var) {
  *
  * The attributes are error checked. On success, the parsed variable is updated with them.
  */
+// TODO: These are deeply rooted in modelDescription territory; use modelDescription_elm_enu_t here?
 static int fmi3_xml_variable_process_attr_causality_variability_initial(fmi3_xml_parser_context_t* context,
-        fmi3_xml_variable_t* variable, fmi3_xml_modelDescription_elm_enu_t elm_id)
+        fmi3_xml_variable_t* variable, fmi3_xml_elm_enu_t elm_id)
 {
     jm_name_ID_map_t causalityConventionMap[] = {
             {"parameter",           fmi3_causality_enu_parameter},
@@ -1272,7 +1273,7 @@ static int fmi3_xml_variable_process_attr_causality_variability_initial(fmi3_xml
 }
 
 static int fmi3_xml_variable_process_attr_derivative(fmi3_xml_parser_context_t* context,
-        fmi3_xml_variable_t* variable, fmi3_xml_modelDescription_elm_enu_t elm_id)
+        fmi3_xml_variable_t* variable, fmi3_xml_elm_enu_t elm_id)
 {
     uint32_t derivative;
     if (!fmi3_xml_is_attr_defined(context, fmi_attr_id_derivative)) {
@@ -1290,7 +1291,7 @@ static int fmi3_xml_variable_process_attr_derivative(fmi3_xml_parser_context_t* 
 }
 
 static int fmi3_xml_variable_process_attr_previous(fmi3_xml_parser_context_t* context,
-        fmi3_xml_variable_t* variable, fmi3_xml_modelDescription_elm_enu_t elm_id)
+        fmi3_xml_variable_t* variable, fmi3_xml_elm_enu_t elm_id)
 {
     uint32_t previous;
     if (!fmi3_xml_is_attr_defined(context, fmi_attr_id_previous)) {
@@ -1322,7 +1323,7 @@ static int fmi3_xml_variable_process_attr_previous(fmi3_xml_parser_context_t* co
 }
 
 static int fmi3_xml_variable_process_attr_multipleset(fmi3_xml_parser_context_t* context,
-        fmi3_xml_variable_t* variable, fmi3_xml_modelDescription_elm_enu_t elm_id)
+        fmi3_xml_variable_t* variable, fmi3_xml_elm_enu_t elm_id)
 {
     unsigned int multipleSet;
     if (fmi3_xml_parse_attr_as_boolean(context, elm_id, fmi_attr_id_canHandleMultipleSetPerTimeInstant,
@@ -1338,7 +1339,7 @@ static int fmi3_xml_variable_process_attr_multipleset(fmi3_xml_parser_context_t*
 }
 
 static int fmi3_xml_variable_process_attr_intermediateupdate(fmi3_xml_parser_context_t* context,
-        fmi3_xml_variable_t* variable, fmi3_xml_modelDescription_elm_enu_t elm_id)
+        fmi3_xml_variable_t* variable, fmi3_xml_elm_enu_t elm_id)
 {
     unsigned int intermediateUpdate;
 
@@ -1378,7 +1379,7 @@ static int fmi3_xml_variable_process_attr_intermediateupdate(fmi3_xml_parser_con
 }
 
 static int fmi3_xml_variable_process_attr_clocks(fmi3_xml_parser_context_t* context,
-        fmi3_xml_variable_t* variable, fmi3_xml_modelDescription_elm_enu_t elm_id)
+        fmi3_xml_variable_t* variable, fmi3_xml_elm_enu_t elm_id)
 {
     // Attribute is optional. Avoid allocating vector unless necessary.
     if (fmi3_xml_peek_attr_str(context, fmi_attr_id_clocks) == NULL) {
@@ -1398,7 +1399,7 @@ static int fmi3_xml_variable_process_attr_clocks(fmi3_xml_parser_context_t* cont
 }
 
 static int fmi3_xml_variable_process_attr_reinit(fmi3_xml_parser_context_t* context,
-        fmi3_xml_variable_t* variable, fmi3_xml_modelDescription_elm_enu_t elm_id)
+        fmi3_xml_variable_t* variable, fmi3_xml_elm_enu_t elm_id)
 {
     unsigned int reinit;
 
@@ -1442,7 +1443,7 @@ static int fmi3_xml_handle_Variable_unchecked(fmi3_xml_parser_context_t* context
     int atStartTag = !data;
 
      /* The real ID of the variable, such as 'Float64Variable' */
-    fmi3_xml_modelDescription_elm_enu_t elm_id = atStartTag ? context->currentElemIdStartTag : context->currentElmID;
+    fmi3_xml_elm_enu_t elm_id = atStartTag ? context->currentElemIdStartTag : context->currentElmID;
     fmi3_xml_model_description_t* md = context->modelDescription;
 
     if (!data) {
@@ -1675,7 +1676,7 @@ int fmi3_xml_handle_Dimension(fmi3_xml_parser_context_t* context, const char* da
 
 int fmi3_xml_handle_FloatXX(fmi3_xml_parser_context_t* context, const char* data,
         fmi3_xml_float_type_props_t* defaultType,
-        fmi3_xml_modelDescription_elm_enu_t elmID, /* ID of the Type (not the Variable) */  // XXX: Why?
+        fmi3_xml_elm_enu_t elmID, /* ID of the Type (not the Variable) */  // XXX: Why?
         const fmi3_xml_primitive_type_t* primType) {
 
     fmi3_xml_model_description_t* md = context->modelDescription;
@@ -1782,7 +1783,7 @@ int fmi3_xml_handle_FloatXX(fmi3_xml_parser_context_t* context, const char* data
 
 int fmi3_xml_handle_IntXX(fmi3_xml_parser_context_t* context, const char* data,
         fmi3_xml_int_type_props_t* defaultType,
-        fmi3_xml_modelDescription_elm_enu_t elmID, /* ID of the Type (not the Variable) */
+        fmi3_xml_elm_enu_t elmID, /* ID of the Type (not the Variable) */
         const fmi3_xml_primitive_type_t* primType)
 {
     /* Extract common Variable info & handle errors*/
@@ -1958,7 +1959,7 @@ int fmi3_xml_handle_Binary(fmi3_xml_parser_context_t* context, const char* data)
         // No Variable was created
         return -1; // continue parsing, skips nested elements
     }
-    fmi3_xml_modelDescription_elm_enu_t elmID = fmi3_xml_elmID_Binary;  // The ID corresponding to the actual parsed element name
+    fmi3_xml_elm_enu_t elmID = fmi3_xml_elmID_Binary;  // The ID corresponding to the actual parsed element name
     fmi3_xml_model_description_t* md = context->modelDescription;
     fmi3_xml_type_definition_list_t* td = &md->typeDefinitions;
     fmi3_xml_variable_t* variable = jm_vector_get_last(jm_voidp)(&md->variablesOrigOrder);
@@ -2037,7 +2038,7 @@ int fmi3_xml_handle_Clock(fmi3_xml_parser_context_t* context, const char* data) 
     }
 
     if (!data) {
-        fmi3_xml_modelDescription_elm_enu_t elmID = fmi3_xml_elmID_Clock;  // The ID corresponding to the actual parsed element name
+        fmi3_xml_elm_enu_t elmID = fmi3_xml_elmID_Clock;  // The ID corresponding to the actual parsed element name
         fmi3_xml_model_description_t* md = context->modelDescription;
         fmi3_xml_type_definition_list_t* td = &md->typeDefinitions;
         fmi3_xml_variable_t* variable = jm_vector_get_last(jm_voidp)(&md->variablesOrigOrder);
@@ -2204,7 +2205,7 @@ fmi3_xml_enum_variable_props_t* fmi3_xml_parse_enum_properties(fmi3_xml_parser_c
 
     fmi3_xml_model_description_t* md = context->modelDescription;
     fmi3_xml_enum_variable_props_t* props = 0;
-    fmi3_xml_modelDescription_elm_enu_t elmID = fmi3_xml_elmID_Enumeration;
+    fmi3_xml_elm_enu_t elmID = fmi3_xml_elmID_Enumeration;
     const char* quantity = 0;
 
     jm_vector(char)* bufQuantity = fmi3_xml_reserve_parse_buffer(context,3,100);
@@ -2322,7 +2323,7 @@ int fmi3_xml_handle_Enumeration(fmi3_xml_parser_context_t *context, const char* 
 
 int fmi3_xml_handle_Alias(fmi3_xml_parser_context_t* context, const char* data) {
     if (!data) {
-        fmi3_xml_modelDescription_elm_enu_t elmID = fmi3_xml_elmID_Alias;
+        fmi3_xml_elm_enu_t elmID = fmi3_xml_elmID_Alias;
         fmi3_xml_model_description_t* md = context->modelDescription;
         fmi3_xml_variable_t* baseVar = jm_vector_get_last(jm_voidp)(&md->variablesOrigOrder);
         size_t bufIdx = 1;

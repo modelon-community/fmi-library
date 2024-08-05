@@ -103,10 +103,7 @@ typedef enum fmi3_xml_termIcon_elm_enu_t {
     ,fmi3_xml_termIcon_elm_number
 } fmi3_xml_termIcon_elm_enu_t;
 
-typedef union fmi3_xml_elm_enu_t {
-    fmi3_xml_modelDescription_elm_enu_t modelDescription;
-    fmi3_xml_termIcon_elm_enu_t termIcon;
-} fmi3_xml_elm_enu_t;
+typedef int fmi3_xml_elm_enu_t;
 
 #ifdef __cplusplus
 }

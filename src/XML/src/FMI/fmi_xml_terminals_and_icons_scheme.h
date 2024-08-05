@@ -38,7 +38,7 @@ extern "C" {
 
 // XXX: fmi3_xml_modelDescription_elmID_none is defined in fmi3_xml_parser.h, not good style
 /*
-    Define XML schema structure. Used to build the 'fmi3_xml_modelDescription_scheme_info_t' type (in fmi3_xml_parser.c).
+    Define XML schema structure. Used to build the 'fmi3_xml_termIcon_scheme_info_t' type (in fmi3_xml_parser.c).
 
     @sib_idx:
         the index in a sequence among siblings

@@ -78,10 +78,8 @@ static jm_string fmi3_xml_get_xml_attr_name(fmi3_xml_parser_context_t* context, 
 /* Global array of all modelDescription scheme_info_t. Index it with fmi3_xml_modelDescription_elm_enu_t entries. */
 const fmi3_xml_modelDescription_scheme_info_t fmi3_xml_modelDescription_scheme_info[fmi3_xml_modelDescription_elm_number] = {
     FMI3_XML_ELMLIST_MODEL_DESCR(EXPAND_ELM_SCHEME)
-    FMI_XML_ELMLIST_TERM_ICON   (EXPAND_ELM_SCHEME)
-    {fmi3_xml_modelDescription_elm_actual_number,0,0},
+    {fmi3_xml_modelDescription_elm_actual_number, 0, 0},
     FMI3_XML_ELMLIST_ALT_MODEL_DESCR     (EXPAND_ELM_SCHEME)
-    FMI_XML_ELMLIST_ALT_TERM_ICON        (EXPAND_ELM_SCHEME)
     FMI3_XML_ELMLIST_ABSTRACT_MODEL_DESCR(EXPAND_ELM_SCHEME)
 };
 
@@ -91,7 +89,7 @@ const fmi3_xml_modelDescription_scheme_info_t fmi3_xml_modelDescription_scheme_i
 /* Global array of all termIcon scheme_info_t. Index it with fmi3_xml_termIcon_elm_enu_t entries. */
 fmi3_xml_termIcon_scheme_info_t fmi_termIcon_xml_scheme_info[fmi3_xml_termIcon_elm_number] = {
     FMI_XML_ELMLIST_TERM_ICON(EXPAND_ELM_SCHEME_TERMICON)
-    {fmi3_xml_termIcon_elm_actual_number,0,0},
+    {fmi3_xml_termIcon_elm_actual_number, 0, 0},
     FMI_XML_ELMLIST_ALT_TERM_ICON(EXPAND_ELM_SCHEME_TERMICON)
 };
 
@@ -136,7 +134,7 @@ static fmi3_xml_scheme_info_t fmi3_xml_get_scheme_info(fmi3_xml_parser_context_t
 }
 
 #define EXPAND_ELM_NAME_FMI3(elm) { #elm, fmi3_xml_handle_##elm, fmi3_xml_elmID_##elm},
-#define EXPAND_ELM_NAME_FMI_TERM_ICON(elm) { #elm, fmi_xml_handle_##elm, fmi3_xml_elmID_##elm},
+#define EXPAND_ELM_NAME_FMI_TERM_ICON(elm) { #elm, fmi_xml_handle_##elm, fmi_termIcon_xml_elmID_##elm},
 
 /**
  * Global array of all defined fmi3_xml_modelDescription_element_handle_map_t structs.
@@ -146,17 +144,15 @@ static fmi3_xml_scheme_info_t fmi3_xml_get_scheme_info(fmi3_xml_parser_context_t
  */
 const fmi3_xml_modelDescription_element_handle_map_t fmi3_modelDescription_element_handle_map[fmi3_xml_modelDescription_elm_number] = {
     FMI3_XML_ELMLIST_MODEL_DESCR(EXPAND_ELM_NAME_FMI3)
-    FMI_XML_ELMLIST_TERM_ICON   (EXPAND_ELM_NAME_FMI_TERM_ICON)
     { NULL, NULL, fmi3_xml_modelDescription_elm_actual_number},
     FMI3_XML_ELMLIST_ALT_MODEL_DESCR     (EXPAND_ELM_NAME_FMI3)
-    FMI_XML_ELMLIST_ALT_TERM_ICON        (EXPAND_ELM_NAME_FMI_TERM_ICON)
     FMI3_XML_ELMLIST_ABSTRACT_MODEL_DESCR(EXPAND_ELM_NAME_FMI3)
 };
 
 const fmi3_xml_termIcon_element_handle_map_t fmi3_termIcon_element_handle_map[fmi3_xml_termIcon_elm_number] = {
-    FMI_XML_ELMLIST_TERM_ICON   (EXPAND_ELM_NAME_FMI_TERM_ICON)
+    FMI_XML_ELMLIST_TERM_ICON(EXPAND_ELM_NAME_FMI_TERM_ICON)
     { NULL, NULL, fmi3_xml_termIcon_elm_actual_number},
-    FMI_XML_ELMLIST_ALT_TERM_ICON        (EXPAND_ELM_NAME_FMI_TERM_ICON)
+    FMI_XML_ELMLIST_ALT_TERM_ICON(EXPAND_ELM_NAME_FMI_TERM_ICON)
 };
 
 // TODO: Move to more suitable place?
@@ -1220,6 +1216,7 @@ static void XMLCALL fmi3_parse_element_start(void *c, const char *elm, const cha
     int i;
     fmi3_xml_parser_context_t* context = c;
     context->has_produced_data_warning = 0;
+    size_t mapSize = fmi3_get_map_size(context);
 
     if (context->useAnyHandleFlg) {
         fmi3_xml_callbacks_t* anyH = context->anyHandle;
@@ -1354,7 +1351,7 @@ static void XMLCALL fmi3_parse_element_start(void *c, const char *elm, const cha
     if (currentElMap->elementHandle(context, 0)) {
         // Need to clear buffer, otherwise non-parsed attributes of elements that failed
         // to parse will be parsed with next element
-        for (int i = 0; i < fmi3_modelDescription_xml_attr_number; i++) {
+        for (int i = 0; i < mapSize; i++) {
             if (jm_vector_get_item(jm_string)(context->attrMapById, i)) {
                 jm_vector_set_item(jm_string)(context->attrMapById, i, NULL);
             }
@@ -1364,7 +1361,7 @@ static void XMLCALL fmi3_parse_element_start(void *c, const char *elm, const cha
     }
     if (context->skipElementCnt) return;
     /* check that the element handler has processed all the attributes */
-    for (i = 0; i < fmi3_modelDescription_xml_attr_number; i++) {
+    for (i = 0; i < mapSize; i++) {
         if (jm_vector_get_item(jm_string)(context->attrMapById, i)) {
             // Element has not been processed because no handler exists
             jm_log_warning(context->callbacks, module, "Attribute '%s' not processed by element '%s' handle", fmi3_xml_get_xml_attr_name(context, i), elm);
@@ -1605,8 +1602,8 @@ int fmi3_xml_parse_terminals_and_icons(fmi_xml_terminals_and_icons_t* termIcon,
     FILE* file;
 
     // TODO
-    context = fmi3_xml_allocate_parser_context(termIcon->callbacks, fmi3_xml_type_modelDescription);
-    // context = fmi3_xml_allocate_parser_context(termIcon->callbacks, fmi3_xml_type_terminalAndIcons);
+    // context = fmi3_xml_allocate_parser_context(termIcon->callbacks, fmi3_xml_type_modelDescription);
+    context = fmi3_xml_allocate_parser_context(termIcon->callbacks, fmi3_xml_type_terminalAndIcons);
 
     // try to open file before doing parser initialization
     file = fopen(filename, "rb");

@@ -36,8 +36,7 @@ extern "C" {
 /** \brief Attribute names used in XML */
 #define FMI3_XML_ATTRLIST(EXPAND_XML_ATTRNAME) \
     FMI3_XML_ATTRLIST_COMMON     (EXPAND_XML_ATTRNAME) \
-    FMI3_XML_ATTRLIST_MODEL_DESCR(EXPAND_XML_ATTRNAME) \
-    FMI_XML_ATTRLIST_TERM_ICON   (EXPAND_XML_ATTRNAME)
+    FMI3_XML_ATTRLIST_MODEL_DESCR(EXPAND_XML_ATTRNAME)
 
 #define FMI3_XML_ATTR_ID(attr) fmi_attr_id_##attr,
 typedef enum fmi3_xml_modelDescription_attr_enu_t {
@@ -53,13 +52,6 @@ typedef enum fmi3_xml_termIcon_attr_enu_t {
 } fmi3_xml_termIcon_attr_enu_t;
 
 typedef int fmi3_xml_attr_enu_t;
-// typedef union fmi3_xml_attr_enu_t {
-//     fmi3_xml_modelDescription_attr_enu_t modelDescription;
-//     fmi3_xml_termIcon_attr_enu_t termIcon;
-// } fmi3_xml_attr_enu_t;
-
-// #define FMI3_MODELDESCRIPTION_ATTR(attr) (const fmi3_xml_attr_enu_t){.modelDescription = attr}
-// #define FMI_TERMICON_ATTR(attr) (const fmi3_xml_attr_enu_t){.termIcon = attr}
 
 /* Build prototypes for all elm_handle_* functions */
 typedef struct fmi3_xml_parser_context_t fmi3_xml_parser_context_t;
@@ -85,10 +77,8 @@ FMI_XML_ELMLIST_ALT_TERM_ICON(EXPAND_ELM_HANDLE_FMI_TERM_ICON)
 typedef enum fmi3_xml_modelDescription_elm_enu_t {
     fmi3_xml_modelDescription_elmID_none = -1
     FMI3_XML_ELMLIST_MODEL_DESCR(FMI3_XML_LIST_ELM_ID)
-    FMI_XML_ELMLIST_TERM_ICON   (FMI3_XML_LIST_ELM_ID)
     ,fmi3_xml_modelDescription_elm_actual_number
     FMI3_XML_ELMLIST_ALT_MODEL_DESCR     (FMI3_XML_LIST_ELM_ID)
-    FMI_XML_ELMLIST_ALT_TERM_ICON        (FMI3_XML_LIST_ELM_ID)
     FMI3_XML_ELMLIST_ABSTRACT_MODEL_DESCR(FMI3_XML_LIST_ELM_ID)
     ,fmi3_xml_modelDescription_elm_number
 } fmi3_xml_modelDescription_elm_enu_t;

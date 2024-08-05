@@ -71,7 +71,7 @@ jm_vector_declare_template(fmi3_xml_element_handle_map_t)
  */
 struct fmi3_xml_parser_context_t {
 
-    /* Flag for XML being handled, NEEDS TO BE FIRST */
+    /* Flag for XML being handled, MUST BE FIRST */
     const fmi3_xml_type_t xmlType;
 
     /**

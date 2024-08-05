@@ -1047,8 +1047,57 @@ jm_vector(char)* fmi3_xml_reserve_parse_buffer(fmi3_xml_parser_context_t* contex
     return item;
 }
 
-// TODO: Will need a 2nd one for terminalsAndIcons
+// TODO: Docs
+static size_t fmi3_get_map_size(fmi3_xml_parser_context_t* context) {
+    // 1. Determine size based on xmlType
+    const fmi3_xml_type_t xmlType = context->xmlType;
+    switch (xmlType) {
+        case fmi3_xml_type_modelDescription:
+            return (size_t) fmi3_modelDescription_xml_attr_number;
+        case fmi3_xml_type_terminalAndIcons:
+            return (size_t) fmi3_xml_termIcon_attr_number;
+        default:
+            // erroneous
+            return 0;
+    }
+}
 
+// TODO: Docs
+static size_t fmi3_get_map_size_actual(fmi3_xml_parser_context_t* context) {
+    // 1. Determine size based on xmlType
+    const fmi3_xml_type_t xmlType = context->xmlType;
+    switch (xmlType) {
+        case fmi3_xml_type_modelDescription:
+            return (size_t) fmi3_xml_modelDescription_elm_actual_number;
+        case fmi3_xml_type_terminalAndIcons:
+            return (size_t) fmi3_xml_termIcon_elm_actual_number;
+        default:
+            // erroneous
+            return 0;
+    }
+}
+
+// TODO: Will need a 2nd one for terminalsAndIcons
+// TODO: Move to better place?
+static int fmi3_create_attr_map(fmi3_xml_parser_context_t* context) {
+    int i;
+    size_t mapSize = fmi3_get_map_size(context);
+    context->attrMapById = jm_vector_alloc(jm_string)(mapSize, mapSize, context->callbacks);
+    if (!context->attrMapById) return -1;
+    context->attrMapByName = jm_vector_alloc(jm_named_ptr)(mapSize, mapSize, context->callbacks);
+    if (!context->attrMapByName) return -1;
+    for(i = 0; i < mapSize; i++) {
+        jm_named_ptr map;
+        jm_vector_set_item(jm_string)(context->attrMapById, i, 0);
+        map.name = fmi3_xml_get_xml_attr_name(context, i);
+        map.ptr = (void*)(jm_vector_get_itemp(jm_string)(context->attrMapById, i));
+        jm_vector_set_item(jm_named_ptr)(context->attrMapByName, i, map);
+    }
+    jm_vector_qsort(jm_named_ptr)(context->attrMapByName, jm_compare_named);
+    return 0;
+}
+
+// TODO: remove
 static int fmi3_create_modelDescription_attr_map(fmi3_xml_parser_context_t* context) {
     int i;
     context->attrMapById = jm_vector_alloc(jm_string)(fmi3_modelDescription_xml_attr_number, fmi3_modelDescription_xml_attr_number, context->callbacks);
@@ -1066,8 +1115,22 @@ static int fmi3_create_modelDescription_attr_map(fmi3_xml_parser_context_t* cont
     return 0;
 }
 
-// TODO: Will need a 2nd one for terminalsAndIcons
 
+static int fmi3_create_elm_map(fmi3_xml_parser_context_t* context) {
+    int i;
+    size_t mapSize = fmi3_get_map_size(context);
+    size_t mapSizeActual = fmi3_get_map_size_actual(context);
+    context->elmMap = jm_vector_alloc(fmi3_xml_element_handle_map_t)(mapSizeActual, mapSize, context->callbacks);
+    if (!context->elmMap) return -1;
+    for(i = 0; i < mapSizeActual; i++) {
+        fmi3_xml_element_handle_map_t item = fmi3_xml_get_element_handle(context, i);
+        jm_vector_set_item(fmi3_xml_element_handle_map_t)(context->elmMap, i, item);
+    }
+    jm_vector_qsort(fmi3_xml_element_handle_map_t)(context->elmMap, fmi3_xml_compare_elmName);
+    return 0;
+}
+
+// TODO: Remove
 static int fmi3_create_modelDescription_elm_map(fmi3_xml_parser_context_t* context) {
     size_t i;
     context->elmMap = jm_vector_alloc(fmi3_xml_element_handle_map_t)(fmi3_xml_modelDescription_elm_actual_number, fmi3_xml_modelDescription_elm_number, context->callbacks);
@@ -1447,7 +1510,8 @@ int fmi3_xml_parse_model_description(fmi3_xml_model_description_t* md,
 
     context->modelDescription = md;
     if (fmi3_xml_alloc_parse_buffer(context, 16)) return -1;
-    if (fmi3_create_modelDescription_attr_map(context) || fmi3_create_modelDescription_elm_map(context)) {
+    // if (fmi3_create_modelDescription_attr_map(context) || fmi3_create_modelDescription_elm_map(context)) {
+    if (fmi3_create_attr_map(context) || fmi3_create_elm_map(context)) {
         fmi3_xml_parse_fatal(context, "Error in parsing initialization");
         fmi3_xml_parse_free_context(context);
         return -1;
@@ -1542,7 +1606,7 @@ int fmi3_xml_parse_terminals_and_icons(fmi_xml_terminals_and_icons_t* termIcon,
 
     // TODO
     context = fmi3_xml_allocate_parser_context(termIcon->callbacks, fmi3_xml_type_modelDescription);
-    //context = fmi3_xml_allocate_parser_context(termIcon->callbacks, fmi3_xml_type_terminalAndIcons);
+    // context = fmi3_xml_allocate_parser_context(termIcon->callbacks, fmi3_xml_type_terminalAndIcons);
 
     // try to open file before doing parser initialization
     file = fopen(filename, "rb");
@@ -1555,7 +1619,7 @@ int fmi3_xml_parse_terminals_and_icons(fmi_xml_terminals_and_icons_t* termIcon,
 
     context->termIcon = termIcon;
     if (fmi3_xml_alloc_parse_buffer(context, 16)) return -1;
-    if (fmi3_create_modelDescription_attr_map(context) || fmi3_create_modelDescription_elm_map(context)) {
+    if (fmi3_create_attr_map(context) || fmi3_create_elm_map(context)) {
         fmi3_xml_parse_fatal(context, "Error in parsing initialization");
         fmi3_xml_parse_free_context(context);
         return -1;

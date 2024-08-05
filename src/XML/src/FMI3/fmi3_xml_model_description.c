@@ -406,7 +406,7 @@ int fmi3_xml_is_valid_model_ID(const char* str) {
 }
 
 int fmi3_xml_handle_fmiModelDescription(fmi3_xml_parser_context_t* context, const char* data) {
-    jm_name_ID_map_t namingConventionMap[] = {{"flat",fmi3_naming_enu_flat}, {"structured",fmi3_naming_enu_structured}, {NULL,0}};
+    jm_name_ID_map_t namingConventionMap[] = {{"flat", fmi3_naming_enu_flat}, {"structured", fmi3_naming_enu_structured}, {NULL, 0}};
     fmi3_xml_model_description_t* md = context->modelDescription;
     if (!data) {
         int ret;
@@ -429,7 +429,7 @@ int fmi3_xml_handle_fmiModelDescription(fmi3_xml_parser_context_t* context, cons
                 fmi3_xml_parse_attr_as_string(context, fmi3_xml_elmID_fmiModelDescription, fmi_attr_id_generationDateAndTime, 0, &(md->generationDateAndTime)) ||
                 fmi3_xml_parse_attr_as_enum(context, fmi3_xml_elmID_fmiModelDescription, fmi_attr_id_variableNamingConvention, 0, (unsigned*)&(md->namingConvension),
                                        fmi3_naming_enu_flat, namingConventionMap);
-        return (ret);
+        return ret;
     }
     else {
         /* check that fmuKind is defined and that model identifiers are valid */

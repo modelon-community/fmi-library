@@ -57,6 +57,18 @@ extern "C" {
 // TODO: List formatting + use terminals and Icons type
 // TODO: rename to include termIcon in name?
 
+// TODO: Remove duplication
+// TOOD: Better NONE value
+// TODO: Right hand side: fmi_termIcon rename
+#define fmi_termIcon_xml_scheme_fmiTerminalsAndIcons            {fmi3_xml_modelDescription_elmID_none,       fmi3_xml_modelDescription_elmID_none,                 0,       0}
+
+#define fmi_termIcon_xml_scheme_Terminals                       {fmi3_xml_modelDescription_elmID_none,       fmi3_xml_elmID_fmiTerminalsAndIcons, 1,       0}
+#define fmi_termIcon_xml_scheme_Terminal                        {fmi3_xml_modelDescription_elmID_none,       fmi3_xml_elmID_Terminals,            0,       1}
+#define fmi_termIcon_xml_scheme_TerminalMemberVariable          {fmi3_xml_modelDescription_elmID_none,       fmi3_xml_elmID_Terminal,             0,       1}
+#define fmi_termIcon_xml_scheme_TerminalStreamMemberVariable    {fmi3_xml_modelDescription_elmID_none,       fmi3_xml_elmID_Terminal,             1,       1}
+// TODO: How to handle nested Terminals?
+#define fmi_termIcon_xml_scheme_TerminalGraphicalRepresentation {fmi3_xml_modelDescription_elmID_none,       fmi3_xml_elmID_Terminal,             3,       0}
+
 #ifdef __cplusplus
 }
 #endif

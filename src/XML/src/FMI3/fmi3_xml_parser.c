@@ -64,7 +64,7 @@ typedef union fmi3_xmlAttrNames {
 static jm_string fmi3_xml_get_xml_attr_name(fmi3_xml_parser_context_t* context, fmi3_xml_modelDescription_attr_enu_t enu) {
     const fmi3_xml_type_t xmlType = context->xmlType;
     // TODO: remove quick return
-    return fmi3_modelDescription_xmlAttrNames[enu];
+    // return fmi3_modelDescription_xmlAttrNames[enu];
     switch (xmlType) {
         case fmi3_xml_type_modelDescription:
             return fmi3_modelDescription_xmlAttrNames[enu];
@@ -81,7 +81,6 @@ static jm_string fmi3_xml_get_xml_attr_name(fmi3_xml_parser_context_t* context, 
  * EXPAND_ELM_SCHEME(Float64) -> fmi3_xml_scheme_Float64 -> {fmi3_xml_elmID_SimpleType, fmi3_xml_elmID_TypeDefinitions, 0, 1}
  */
 #define EXPAND_ELM_SCHEME(elm) fmi3_xml_scheme_##elm ,
-#define EXPAND_ELM_SCHEME_TERMICON(elm) fmi_termIcon_xml_scheme_##elm ,
 
 /* Global array of all scheme_info_t. Index it with fmi3_xml_modelDescription_elm_enu_t entries. */
 const fmi3_xml_modelDescription_scheme_info_t fmi3_xml_modelDescription_scheme_info[fmi3_xml_modelDescription_elm_number] = {
@@ -93,19 +92,32 @@ const fmi3_xml_modelDescription_scheme_info_t fmi3_xml_modelDescription_scheme_i
     FMI3_XML_ELMLIST_ABSTRACT_MODEL_DESCR(EXPAND_ELM_SCHEME)
 };
 
+#define EXPAND_ELM_SCHEME_TERMICON(elm) fmi_termIcon_xml_scheme_##elm ,
 // TODO: This requires different handler functions
 // XXX: For proper refactoring: Possibly generate these + forward to original ones?
-// fmi3_xml_termIcon_scheme_info_t fmi_termIcon_xml_scheme_info[fmi3_xml_termIcon_elm_number] = {
-//     FMI_XML_ELMLIST_TERM_ICON(EXPAND_ELM_SCHEME_TERMICON)
-//     {fmi3_xml_termIcon_elm_actual_number,0,0},
-//     FMI_XML_ELMLIST_ALT_TERM_ICON(EXPAND_ELM_SCHEME_TERMICON)
-// };
+fmi3_xml_termIcon_scheme_info_t fmi_termIcon_xml_scheme_info[fmi3_xml_termIcon_elm_number] = {
+    FMI_XML_ELMLIST_TERM_ICON(EXPAND_ELM_SCHEME_TERMICON)
+    {fmi3_xml_termIcon_elm_actual_number,0,0},
+    FMI_XML_ELMLIST_ALT_TERM_ICON(EXPAND_ELM_SCHEME_TERMICON)
+};
 
 // TODO: Move to more suitable place?
 // TODO: use unions
 // TODO: possibly non-static
 static fmi3_xml_modelDescription_scheme_info_t fmi3_xml_get_scheme_info(fmi3_xml_parser_context_t* context, fmi3_xml_modelDescription_elm_enu_t enu) {
-    return fmi3_xml_modelDescription_scheme_info[enu];
+    const fmi3_xml_type_t xmlType = context->xmlType;
+    // // TODO: remove quick return
+    // return fmi3_xml_modelDescription_scheme_info[enu];
+    switch (xmlType) {
+        case fmi3_xml_type_modelDescription:
+            return fmi3_xml_modelDescription_scheme_info[enu];
+        case fmi3_xml_type_terminalAndIcons:
+            // TODO: Need union return type here
+            return fmi3_xml_modelDescription_scheme_info[enu];
+    }
+    // TODO: Union type
+    // TODO: Better default for enum?
+    return (fmi3_xml_modelDescription_scheme_info_t) {-2, -2, -2};
 }
 
 #define EXPAND_ELM_NAME_FMI3(elm) { #elm, fmi3_xml_handle_##elm, fmi3_xml_elmID_##elm},
@@ -136,18 +148,22 @@ const fmi3_xml_termIcon_element_handle_map_t fmi3_termIcon_element_handle_map[fm
 // TODO: use unions
 // TODO: possibly non-static
 static fmi3_xml_modelDescription_element_handle_map_t fmi3_xml_get_element_handle(fmi3_xml_parser_context_t* context, fmi3_xml_modelDescription_elm_enu_t enu) {
-    // const fmi3_xml_type_t xmlType = context->xmlType;
-    // TODO: remove quick return
-    return fmi3_modelDescription_element_handle_map[enu];
-    // switch (xmlType) {
-    //     case fmi3_xml_type_modelDescription:
-    //         return fmi3_modelDescription_xmlAttrNames[enu];
-    //         //return fmi3_modelDescription_xmlAttrNames[enu.modelDescription];
-    //     case fmi3_xml_type_terminalAndIcons:
-    //         return fmi3_termIcon_xmlAttrNames[enu];
-    //         //return fmi3_termIcon_xmlAttrNames[enu.termIcon];
-    // }
-    // return "unknown"; // TODO: Some suitable default/error
+    const fmi3_xml_type_t xmlType = context->xmlType;
+    // // TODO: remove quick return
+    // return fmi3_modelDescription_element_handle_map[enu];
+    switch (xmlType) {
+        case fmi3_xml_type_modelDescription:
+            return fmi3_modelDescription_element_handle_map[enu];
+            //return fmi3_modelDescription_element_handle_map[enu].modelDescription;
+        case fmi3_xml_type_terminalAndIcons:
+            // TODO: Need union return type here
+            return fmi3_modelDescription_element_handle_map[enu];
+            //return fmi3_termIcon_element_handle_map[enu];
+            //return fmi3_termIcon_element_handle_map[enu].termIcon;
+    }
+    // TODO: Union type
+    // TODO: Better default for enum?
+    return (fmi3_xml_modelDescription_element_handle_map_t) {"unknown", NULL, -2};
 }
 
 // TODO: Move to better place?
@@ -1493,7 +1509,9 @@ int fmi3_xml_parse_terminals_and_icons(fmi_xml_terminals_and_icons_t* termIcon,
     XML_Parser parser = NULL;
     FILE* file;
 
-    context = fmi3_xml_allocate_parser_context(termIcon->callbacks, fmi3_xml_type_terminalAndIcons);
+    // TODO
+    context = fmi3_xml_allocate_parser_context(termIcon->callbacks, fmi3_xml_type_modelDescription);
+    //context = fmi3_xml_allocate_parser_context(termIcon->callbacks, fmi3_xml_type_terminalAndIcons);
 
     // try to open file before doing parser initialization
     file = fopen(filename, "rb");

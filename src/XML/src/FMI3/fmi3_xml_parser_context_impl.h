@@ -37,14 +37,16 @@ typedef enum fmi3_xml_type_t {
 
 typedef struct fmi3_xml_modelDescription_element_handle_map_t fmi3_xml_modelDescription_element_handle_map_t;
 typedef struct fmi3_xml_termIcon_element_handle_map_t fmi3_xml_termIcon_element_handle_map_t;
+typedef struct fmi3_xml_element_handle_map_t fmi3_xml_element_handle_map_t;
 
 typedef int (*fmi3_xml_modelDescription_element_handle_ft)(fmi3_xml_parser_context_t* context, const char* data);
 typedef int (*fmi3_xml_termIcon_element_handle_ft)(fmi3_xml_parser_context_t* context, const char* data);
+typedef int (*fmi3_xml_element_handle_ft)(fmi3_xml_parser_context_t* context, const char* data);
 
 struct fmi3_xml_modelDescription_element_handle_map_t {
     const char* elementName;
     fmi3_xml_modelDescription_element_handle_ft elementHandle;
-    fmi3_xml_elm_enu_t elemID;
+    fmi3_xml_modelDescription_elm_enu_t elemID;
 };
 
 struct fmi3_xml_termIcon_element_handle_map_t {
@@ -53,13 +55,16 @@ struct fmi3_xml_termIcon_element_handle_map_t {
     fmi3_xml_termIcon_elm_enu_t elemID;
 };
 
-typedef union fmi3_xml_element_handle_map_t {
-    fmi3_xml_modelDescription_element_handle_map_t modelDescription;
-    fmi3_xml_termIcon_element_handle_map_t termIcon;
-} fmi3_xml_element_handle_map_t;
+struct fmi3_xml_element_handle_map_t {
+    const char* elementName;
+    fmi3_xml_element_handle_ft elementHandle;
+    fmi3_xml_elm_enu_t elemID;
+};
 
-jm_vector_declare_template(fmi3_xml_modelDescription_element_handle_map_t)
-jm_vector_declare_template(fmi3_xml_termIcon_element_handle_map_t)
+
+// jm_vector_declare_template(fmi3_xml_modelDescription_element_handle_map_t)
+// jm_vector_declare_template(fmi3_xml_termIcon_element_handle_map_t)
+jm_vector_declare_template(fmi3_xml_element_handle_map_t)
 
 /**
  * Struct for saving and accessing data between element handlers.
@@ -126,7 +131,7 @@ struct fmi3_xml_parser_context_t {
      * 'Int32' must change the handler for the "alternative name":
      * 'fmi3_xml_handle_Int32Variable'.
      */
-    jm_vector(fmi3_xml_modelDescription_element_handle_map_t)* elmMap;
+    jm_vector(fmi3_xml_element_handle_map_t)* elmMap;
 
     fmi3_xml_unit_t* lastBaseUnit;
 

@@ -160,31 +160,46 @@ const fmi3_xml_termIcon_element_handle_map_t fmi3_termIcon_element_handle_map[fm
 };
 
 // TODO: Move to more suitable place?
-// TODO: use unions
 // TODO: possibly non-static
-static fmi3_xml_modelDescription_element_handle_map_t fmi3_xml_get_element_handle(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t enu) {
+static fmi3_xml_element_handle_map_t fmi3_xml_get_element_handle(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t enu) {
     const fmi3_xml_type_t xmlType = context->xmlType;
-    // // TODO: remove quick return
-    // return fmi3_modelDescription_element_handle_map[enu];
+    fmi3_xml_modelDescription_elm_enu_t enu_modelDescription;
+    fmi3_xml_termIcon_elm_enu_t enu_termIcon;
+
+    fmi3_xml_modelDescription_element_handle_map_t map_modelDescription;
+    fmi3_xml_termIcon_element_handle_map_t map_termIcon;
+
+    fmi3_xml_element_handle_map_t ret;
     switch (xmlType) {
         case fmi3_xml_type_modelDescription:
-            return fmi3_modelDescription_element_handle_map[enu];
-            //return fmi3_modelDescription_element_handle_map[enu].modelDescription;
+            enu_modelDescription = (fmi3_xml_modelDescription_elm_enu_t) enu;
+            map_modelDescription = fmi3_modelDescription_element_handle_map[enu_modelDescription];
+
+            ret.elementName = map_modelDescription.elementName;
+            ret.elementHandle = (fmi3_xml_element_handle_ft) map_modelDescription.elementHandle;
+            ret.elemID = (fmi3_xml_elm_enu_t) map_modelDescription.elemID;
+            break;
         case fmi3_xml_type_terminalAndIcons:
-            // TODO: Need union return type here
-            return fmi3_modelDescription_element_handle_map[enu];
-            //return fmi3_termIcon_element_handle_map[enu];
-            //return fmi3_termIcon_element_handle_map[enu].termIcon;
+            enu_termIcon = (fmi3_xml_termIcon_elm_enu_t) enu;
+            map_termIcon = fmi3_termIcon_element_handle_map[enu_termIcon];
+
+            ret.elementName = map_termIcon.elementName;
+            ret.elementHandle = (fmi3_xml_element_handle_ft) map_termIcon.elementHandle;
+            ret.elemID = (fmi3_xml_elm_enu_t) map_termIcon.elemID;
+            break;
+        default:
+            // erroneous output
+            ret.elementName = "unknown";
+            ret.elementHandle = NULL;
+            ret.elemID = -2;
     }
-    // TODO: Union type
-    // TODO: Better default for enum?
-    return (fmi3_xml_modelDescription_element_handle_map_t) {"unknown", NULL, -2};
+    return ret;
 }
 
 // TODO: Move to better place?
 // TODO: rename to include modelDescription?
 const char* fmi3_xml_elmid_to_name(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_t id){
-    fmi3_xml_modelDescription_element_handle_map_t item = fmi3_xml_get_element_handle(context, id);
+    fmi3_xml_element_handle_map_t item = fmi3_xml_get_element_handle(context, id);
     return item.elementName;
 }
 
@@ -289,7 +304,7 @@ void fmi3_xml_parse_free_context(fmi3_xml_parser_context_t* context) {
         context->attrMapByName = 0;
     }
     if (context->elmMap) {
-        jm_vector_free(fmi3_xml_modelDescription_element_handle_map_t)(context->elmMap);
+        jm_vector_free(fmi3_xml_element_handle_map_t)(context->elmMap);
         context->elmMap = 0;
     }
     if (context->attrMapById) {
@@ -1055,13 +1070,13 @@ static int fmi3_create_modelDescription_attr_map(fmi3_xml_parser_context_t* cont
 
 static int fmi3_create_modelDescription_elm_map(fmi3_xml_parser_context_t* context) {
     size_t i;
-    context->elmMap = jm_vector_alloc(fmi3_xml_modelDescription_element_handle_map_t)(fmi3_xml_modelDescription_elm_actual_number, fmi3_xml_modelDescription_elm_number, context->callbacks);
+    context->elmMap = jm_vector_alloc(fmi3_xml_element_handle_map_t)(fmi3_xml_modelDescription_elm_actual_number, fmi3_xml_modelDescription_elm_number, context->callbacks);
     if (!context->elmMap) return -1;
     for(i = 0; i < fmi3_xml_modelDescription_elm_actual_number; i++) {
-        fmi3_xml_modelDescription_element_handle_map_t item = fmi3_xml_get_element_handle(context, i);
-        jm_vector_set_item(fmi3_xml_modelDescription_element_handle_map_t)(context->elmMap, i, item);
+        fmi3_xml_element_handle_map_t item = fmi3_xml_get_element_handle(context, i);
+        jm_vector_set_item(fmi3_xml_element_handle_map_t)(context->elmMap, i, item);
     }
-    jm_vector_qsort(fmi3_xml_modelDescription_element_handle_map_t)(context->elmMap, fmi3_xml_compare_elmName);
+    jm_vector_qsort(fmi3_xml_element_handle_map_t)(context->elmMap, fmi3_xml_compare_elmName);
     return 0;
 }
 
@@ -1083,10 +1098,10 @@ static int fmi3_create_modelDescription_elm_map(fmi3_xml_parser_context_t* conte
  *      element
  */
 void fmi3_xml_set_element_handle(fmi3_xml_parser_context_t* context, const char* elm, fmi3_xml_elm_enu_t id) {
-    fmi3_xml_modelDescription_element_handle_map_t keyEl;
-    fmi3_xml_modelDescription_element_handle_map_t* currentElMap;
+    fmi3_xml_element_handle_map_t keyEl;
+    fmi3_xml_element_handle_map_t* currentElMap;
     keyEl.elementName = elm;
-    currentElMap = jm_vector_bsearch(fmi3_xml_modelDescription_element_handle_map_t)(context->elmMap, &keyEl, fmi3_xml_compare_elmName);
+    currentElMap = jm_vector_bsearch(fmi3_xml_element_handle_map_t)(context->elmMap, &keyEl, fmi3_xml_compare_elmName);
 
     currentElMap->elementHandle = fmi3_xml_get_element_handle(context, id).elementHandle;;
     currentElMap->elemID = id;
@@ -1136,8 +1151,8 @@ int fmi3_xml_are_same_type(fmi3_xml_parser_context_t* context, fmi3_xml_elm_enu_
  * @param attr The attributes, given as: name=attr[i], value=attr[i+1].
  */
 static void XMLCALL fmi3_parse_element_start(void *c, const char *elm, const char **attr) {
-    fmi3_xml_modelDescription_element_handle_map_t keyEl;
-    fmi3_xml_modelDescription_element_handle_map_t* currentElMap;
+    fmi3_xml_element_handle_map_t keyEl;
+    fmi3_xml_element_handle_map_t* currentElMap;
     fmi3_xml_elm_enu_t currentID;
     int i;
     fmi3_xml_parser_context_t* context = c;
@@ -1164,7 +1179,7 @@ static void XMLCALL fmi3_parse_element_start(void *c, const char *elm, const cha
 
     keyEl.elementName = elm;
     /* find the element handle by name */
-    currentElMap = jm_vector_bsearch(fmi3_xml_modelDescription_element_handle_map_t)(context->elmMap, &keyEl, fmi3_xml_compare_elmName);
+    currentElMap = jm_vector_bsearch(fmi3_xml_element_handle_map_t)(context->elmMap, &keyEl, fmi3_xml_compare_elmName);
     if (!currentElMap) {
         /* not found error*/
         jm_log_error(context->callbacks, module, "[Line:%u] Unknown element '%s' in XML, skipping",
@@ -1308,8 +1323,8 @@ static void XMLCALL fmi3_parse_element_start(void *c, const char *elm, const cha
  *  - Delegatation to the handler for the read element
  */
 static void XMLCALL fmi3_parse_element_end(void* c, const char *elm) {
-    fmi3_xml_modelDescription_element_handle_map_t keyEl;
-    fmi3_xml_modelDescription_element_handle_map_t* currentElMap;
+    fmi3_xml_element_handle_map_t keyEl;
+    fmi3_xml_element_handle_map_t* currentElMap;
     fmi3_xml_elm_enu_t currentID;
     fmi3_xml_parser_context_t* context = c;
 
@@ -1331,7 +1346,7 @@ static void XMLCALL fmi3_parse_element_end(void* c, const char *elm) {
     }
 
     keyEl.elementName = elm;
-    currentElMap = jm_vector_bsearch(fmi3_xml_modelDescription_element_handle_map_t)(context->elmMap, &keyEl, fmi3_xml_compare_elmName);
+    currentElMap = jm_vector_bsearch(fmi3_xml_element_handle_map_t)(context->elmMap, &keyEl, fmi3_xml_compare_elmName);
     if (!currentElMap) {
         /* not found error*/
         fmi3_xml_parse_fatal(context, "Unknown element end in XML (element: %s)", elm);
@@ -1615,7 +1630,7 @@ int fmi3_xml_parse_terminals_and_icons(fmi_xml_terminals_and_icons_t* termIcon,
     return 0;
 }
 
-#define JM_TEMPLATE_INSTANCE_TYPE fmi3_xml_modelDescription_element_handle_map_t
+#define JM_TEMPLATE_INSTANCE_TYPE fmi3_xml_element_handle_map_t
 #include "JM/jm_vector_template.h"
 
 #undef UINTXX_MIN

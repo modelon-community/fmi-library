@@ -67,7 +67,7 @@ typedef struct {
 #define fmi3_xml_diff_elmName(a, b) strcmp(a.elementName,b.elementName)
 
 // TODO
-jm_define_comp_f(fmi3_xml_compare_elmName, fmi3_xml_modelDescription_element_handle_map_t, fmi3_xml_diff_elmName)
+jm_define_comp_f(fmi3_xml_compare_elmName, fmi3_xml_element_handle_map_t, fmi3_xml_diff_elmName)
 
 #define XML_BLOCK_SIZE 16000
 

@@ -329,7 +329,20 @@ static size_t fmi3_xml_string_char_count(const char* str, char ch) {
 * XXX: Be careful with using this, since the buffer entry will still be present in later elements.
 */
 jm_string fmi3_xml_peek_attr_str(fmi3_xml_parser_context_t* context, fmi3_xml_modelDescription_attr_enu_t attrID) {
-    return jm_vector_get_item(jm_string)(context->attrMapById, attrID);
+    // TODO: Move this somewhere else??; attrMapByID access
+    const fmi3_xml_type_t xmlType = context->xmlType;
+    // // TODO: remove quick return
+    // return fmi3_xml_modelDescription_scheme_info[enu];
+    switch (xmlType) {
+        case fmi3_xml_type_modelDescription:
+            return jm_vector_get_item(jm_string)(context->attrMapById, attrID);
+            //return fmi3_xml_modelDescription_scheme_info[enu];
+        case fmi3_xml_type_terminalAndIcons:
+            // TODO: Need union return type here
+            return jm_vector_get_item(jm_string)(context->attrMapById, attrID);
+            //return fmi3_xml_modelDescription_scheme_info[enu];
+    }
+    return jm_vector_get_item(jm_string)(context->attrMapById, -2); // error
 }
 
 int fmi3_xml_is_attr_defined(fmi3_xml_parser_context_t* context, fmi3_xml_modelDescription_attr_enu_t attrID) {

@@ -248,7 +248,7 @@ static int fmi3_xml_parse_dependencies(fmi3_xml_parser_context_t* context,
                 <xs:list itemType="xs:unsignedInt"/>
             </xs:simpleType>
         </xs:attribute> */
-    if (fmi3_xml_get_attr_str(context, elmID, FMI3_MODELDESCRIPTION_ATTR(fmi_attr_id_dependencies), 0, &listInd)) {
+    if (fmi3_xml_get_attr_str(context, elmID, FMI3_ATTR(fmi_attr_id_dependencies), 0, &listInd)) {
         return -1;
     }
     if (listInd) {
@@ -297,7 +297,7 @@ static int fmi3_xml_parse_dependencies(fmi3_xml_parser_context_t* context,
             </xs:simpleType>
         </xs:attribute>
         */
-    if (fmi3_xml_get_attr_str(context, elmID, FMI3_MODELDESCRIPTION_ATTR(fmi_attr_id_dependenciesKind), 0, &listKind)) {
+    if (fmi3_xml_get_attr_str(context, elmID, FMI3_ATTR(fmi_attr_id_dependenciesKind), 0, &listKind)) {
         return -1;
     }
     if (listKind) {
@@ -424,7 +424,7 @@ int fmi3_xml_parse_unknown(fmi3_xml_parser_context_t* context,
     fmi3_value_reference_t vr;
     fmi3_xml_variable_t* variable;
 
-    if (fmi3_xml_parse_attr_as_uint32(context, elmID, FMI3_MODELDESCRIPTION_ATTR(fmi_attr_id_valueReference), 1, &vr, 0)){
+    if (fmi3_xml_parse_attr_as_uint32(context, elmID, FMI3_ATTR(fmi_attr_id_valueReference), 1, &vr, 0)){
         fmi3_xml_set_model_structure_invalid(ms);
         return -1;
     }
@@ -449,7 +449,7 @@ int fmi3_xml_handle_Output(fmi3_xml_parser_context_t* context, const char* data)
     fmi3_xml_model_description_t* md = context->modelDescription;
     fmi3_xml_model_structure_t* ms = md->modelStructure;
     if (!data) {
-        if (fmi3_xml_parse_unknown(context, FMI3_MODELDESCRIPTION_ELM(fmi3_xml_elmID_Output), &ms->outputs, ms->outputDeps)) {
+        if (fmi3_xml_parse_unknown(context, FMI3_ELM(fmi3_xml_elmID_Output), &ms->outputs, ms->outputDeps)) {
             return -1;
         }
     } else {
@@ -471,7 +471,7 @@ int fmi3_xml_handle_ContinuousStateDerivative(fmi3_xml_parser_context_t* context
     fmi3_xml_model_structure_t* ms = md->modelStructure;
     if (!data) {
         /* perform the parsing */
-        if (fmi3_xml_parse_unknown(context, FMI3_MODELDESCRIPTION_ELM(fmi3_xml_elmID_ContinuousStateDerivative),
+        if (fmi3_xml_parse_unknown(context, FMI3_ELM(fmi3_xml_elmID_ContinuousStateDerivative),
                                    &ms->continuousStateDerivatives, ms->continuousStateDerivativeDeps)) {
             return -1;
         }
@@ -502,7 +502,7 @@ int fmi3_xml_handle_ClockedState(fmi3_xml_parser_context_t* context, const char*
     fmi3_xml_model_description_t* md = context->modelDescription;
     fmi3_xml_model_structure_t* ms = md->modelStructure;
     if (!data) {
-        if (fmi3_xml_parse_unknown(context, FMI3_MODELDESCRIPTION_ELM(fmi3_xml_elmID_ClockedState),
+        if (fmi3_xml_parse_unknown(context, FMI3_ELM(fmi3_xml_elmID_ClockedState),
                                    &ms->clockedStates, ms->clockedStateDeps)) {
             return -1;
         }
@@ -535,7 +535,7 @@ int fmi3_xml_handle_InitialUnknown(fmi3_xml_parser_context_t* context, const cha
     fmi3_xml_model_description_t* md = context->modelDescription;
     fmi3_xml_model_structure_t* ms = md->modelStructure;
     if (!data) {
-        if (fmi3_xml_parse_unknown(context, FMI3_MODELDESCRIPTION_ELM(fmi3_xml_elmID_InitialUnknown), &ms->initialUnknowns, ms->initialUnknownDeps)) {
+        if (fmi3_xml_parse_unknown(context, FMI3_ELM(fmi3_xml_elmID_InitialUnknown), &ms->initialUnknowns, ms->initialUnknownDeps)) {
             return -1;
         }
     } else {
@@ -561,7 +561,7 @@ int fmi3_xml_handle_EventIndicator(fmi3_xml_parser_context_t* context, const cha
     }
 
     if (!data) {
-        if (fmi3_xml_parse_unknown(context, FMI3_MODELDESCRIPTION_ELM(fmi3_xml_elmID_EventIndicator),
+        if (fmi3_xml_parse_unknown(context, FMI3_ELM(fmi3_xml_elmID_EventIndicator),
                                    &ms->eventIndicators, ms->eventIndicatorDeps)) {
             return -1;
         }

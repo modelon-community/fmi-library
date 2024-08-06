@@ -69,16 +69,16 @@ static jm_string fmi3_xml_get_xml_attr_name(fmi3_xml_parser_context_t* context, 
  */
 #define EXPAND_ELM_SCHEME(elm) fmi3_xml_scheme_##elm ,
 
-/* Global array of all modelDescription scheme_info_t. Index it with fmi3_xml_modelDescription_elm_enu_t entries. */
-const fmi3_xml_modelDescription_scheme_info_t fmi3_xml_modelDescription_scheme_info[fmi3_xml_modelDescription_elm_number] = {
+/* Global array of all modelDescription scheme_info_t. Index it with fmi3_xml_elm_modelDescription_enu_t entries. */
+const fmi3_xml_modelDescription_scheme_info_t fmi3_xml_modelDescription_scheme_info[fmi3_xml_elm_number] = {
     FMI3_XML_ELMLIST_MODEL_DESCR(EXPAND_ELM_SCHEME)
-    {fmi3_xml_modelDescription_elm_actual_number, 0, 0},
+    {fmi3_xml_elm_actual_number, 0, 0},
     FMI3_XML_ELMLIST_ALT_MODEL_DESCR     (EXPAND_ELM_SCHEME)
     FMI3_XML_ELMLIST_ABSTRACT_MODEL_DESCR(EXPAND_ELM_SCHEME)
 };
 
 #define EXPAND_ELM_SCHEME_TERMICON(elm) fmi_xml_scheme_termIcon_##elm ,
-/* Global array of all termIcon scheme_info_t. Index it with fmi3_xml_termIcon_elm_enu_t entries. */
+/* Global array of all termIcon scheme_info_t. Index it with fmi_xml_elm_termIcon_enu_t entries. */
 fmi3_xml_termIcon_scheme_info_t fmi_xml_scheme_termIcon_info[fmi_xml_elm_termIcon_number] = {
     FMI_XML_ELMLIST_TERM_ICON(EXPAND_ELM_SCHEME_TERMICON)
     {fmi_xml_elm_termIcon_actual_number, 0, 0},
@@ -98,23 +98,23 @@ static fmi3_xml_scheme_info_t fmi3_xml_get_scheme_info(fmi3_xml_parser_context_t
         case fmi3_xml_type_modelDescription:
             info_modelDescription = fmi3_xml_modelDescription_scheme_info[enu.modelDescription];
 
-            ret.superID = FMI3_MODELDESCRIPTION_ELM(info_modelDescription.superID);
-            ret.parentID = FMI3_MODELDESCRIPTION_ELM(info_modelDescription.parentID);
+            ret.superID = FMI3_ELM(info_modelDescription.superID);
+            ret.parentID = FMI3_ELM(info_modelDescription.parentID);
             ret.siblingIndex = info_modelDescription.siblingIndex;
             ret.multipleAllowed = info_modelDescription.multipleAllowed;
             break;
         case fmi3_xml_type_terminalAndIcons:
             info_termIcon = fmi_xml_scheme_termIcon_info[enu.termIcon];
 
-            ret.superID = FMI_TERMICON_ELM(info_termIcon.superID);
-            ret.parentID = FMI_TERMICON_ELM(info_termIcon.parentID);
+            ret.superID = FMI_ELM_TERMICON(info_termIcon.superID);
+            ret.parentID = FMI_ELM_TERMICON(info_termIcon.parentID);
             ret.siblingIndex = info_termIcon.siblingIndex;
             ret.multipleAllowed = info_termIcon.multipleAllowed;
             break;
         default: 
             // erroneous output
-            ret.superID = FMI3_ANY_ELM(-2);
-            ret.parentID = FMI3_ANY_ELM(-2);
+            ret.superID = FMI3_ELM_ANY(-2);
+            ret.parentID = FMI3_ELM_ANY(-2);
             ret.siblingIndex = -2;
             ret.multipleAllowed = -2;
     }
@@ -130,9 +130,9 @@ static fmi3_xml_scheme_info_t fmi3_xml_get_scheme_info(fmi3_xml_parser_context_t
  *      Parse element name, from element name find ID, use ID to index this
  *      array.
  */
-const fmi3_xml_modelDescription_element_handle_map_t fmi3_modelDescription_element_handle_map[fmi3_xml_modelDescription_elm_number] = {
+const fmi3_xml_modelDescription_element_handle_map_t fmi3_modelDescription_element_handle_map[fmi3_xml_elm_number] = {
     FMI3_XML_ELMLIST_MODEL_DESCR(EXPAND_ELM_NAME_FMI3)
-    { NULL, NULL, fmi3_xml_modelDescription_elm_actual_number},
+    { NULL, NULL, fmi3_xml_elm_actual_number},
     FMI3_XML_ELMLIST_ALT_MODEL_DESCR     (EXPAND_ELM_NAME_FMI3)
     FMI3_XML_ELMLIST_ABSTRACT_MODEL_DESCR(EXPAND_ELM_NAME_FMI3)
 };
@@ -158,20 +158,20 @@ static fmi3_xml_element_handle_map_t fmi3_xml_get_element_handle(fmi3_xml_parser
 
             ret.elementName = map_modelDescription.elementName;
             ret.elementHandle = (fmi3_xml_element_handle_ft) map_modelDescription.elementHandle;
-            ret.elemID = FMI3_MODELDESCRIPTION_ELM(map_modelDescription.elemID);
+            ret.elemID = FMI3_ELM(map_modelDescription.elemID);
             break;
         case fmi3_xml_type_terminalAndIcons:
             map_termIcon = fmi3_termIcon_element_handle_map[enu.termIcon];
 
             ret.elementName = map_termIcon.elementName;
             ret.elementHandle = (fmi3_xml_element_handle_ft) map_termIcon.elementHandle;
-            ret.elemID = FMI_TERMICON_ELM(map_termIcon.elemID);
+            ret.elemID = FMI_ELM_TERMICON(map_termIcon.elemID);
             break;
         default:
             // erroneous output
             ret.elementName = "unknown";
             ret.elementHandle = NULL;
-            ret.elemID = FMI3_ANY_ELM(-2);
+            ret.elemID = FMI3_ELM_ANY(-2);
     }
     return ret;
 }
@@ -1033,7 +1033,7 @@ jm_vector(char)* fmi3_xml_reserve_parse_buffer(fmi3_xml_parser_context_t* contex
     return item;
 }
 
-// Get fmi3_xml_*_elm_number based on xmlType
+// Get fmi3_xml_elm_*_number based on xmlType
 static size_t fmi3_get_enum_size(fmi3_xml_parser_context_t* context) {
     const fmi3_xml_type_t xmlType = context->xmlType;
     switch (xmlType) {
@@ -1047,12 +1047,12 @@ static size_t fmi3_get_enum_size(fmi3_xml_parser_context_t* context) {
     }
 }
 
-// Get fmi3_xml_*_elm_actual_number based on xmlType
+// Get fmi3_xml_elm_*_actual_number based on xmlType
 static size_t fmi3_get_enum_size_actual(fmi3_xml_parser_context_t* context) {
     const fmi3_xml_type_t xmlType = context->xmlType;
     switch (xmlType) {
         case fmi3_xml_type_modelDescription:
-            return (size_t) fmi3_xml_modelDescription_elm_actual_number;
+            return (size_t) fmi3_xml_elm_actual_number;
         case fmi3_xml_type_terminalAndIcons:
             return (size_t) fmi_xml_elm_termIcon_actual_number;
         default:
@@ -1072,7 +1072,7 @@ static int fmi3_create_attr_map(fmi3_xml_parser_context_t* context) {
     for(i = 0; i < mapSize; i++) {
         jm_named_ptr map;
         jm_vector_set_item(jm_string)(context->attrMapById, i, 0);
-        map.name = fmi3_xml_get_xml_attr_name(context, FMI3_ANY_ATTR(i));
+        map.name = fmi3_xml_get_xml_attr_name(context, FMI3_ATTR_ANY(i));
         map.ptr = (void*)(jm_vector_get_itemp(jm_string)(context->attrMapById, i));
         jm_vector_set_item(jm_named_ptr)(context->attrMapByName, i, map);
     }
@@ -1088,7 +1088,7 @@ static int fmi3_create_elm_map(fmi3_xml_parser_context_t* context) {
     context->elmMap = jm_vector_alloc(fmi3_xml_element_handle_map_t)(mapSizeActual, mapSize, context->callbacks);
     if (!context->elmMap) return -1;
     for(i = 0; i < mapSizeActual; i++) {
-        fmi3_xml_element_handle_map_t item = fmi3_xml_get_element_handle(context, FMI3_ANY_ELM(i));
+        fmi3_xml_element_handle_map_t item = fmi3_xml_get_element_handle(context, FMI3_ELM_ANY(i));
         jm_vector_set_item(fmi3_xml_element_handle_map_t)(context->elmMap, i, item);
     }
     jm_vector_qsort(fmi3_xml_element_handle_map_t)(context->elmMap, fmi3_xml_compare_elmName);
@@ -1321,7 +1321,7 @@ static void XMLCALL fmi3_parse_element_start(void *c, const char *elm, const cha
         if (jm_vector_get_item(jm_string)(context->attrMapById, i)) {
             // Element has not been processed because no handler exists
             jm_log_warning(context->callbacks, module, "Attribute '%s' not processed by element '%s' handle", 
-                    fmi3_xml_get_xml_attr_name(context, FMI3_ANY_ATTR(i)), elm);
+                    fmi3_xml_get_xml_attr_name(context, FMI3_ATTR_ANY(i)), elm);
             jm_vector_set_item(jm_string)(context->attrMapById, i, NULL);
         }
     }
@@ -1391,7 +1391,7 @@ static void XMLCALL fmi3_parse_element_end(void* c, const char *elm) {
     if (jm_stack_is_empty(int)(&context->elmStack)) {
         context->currentElmID.any = FMI_XML_ELMID_NONE;
     } else {
-        context->currentElmID = FMI3_ANY_ELM(jm_stack_pop(int)(&context->elmStack));
+        context->currentElmID = FMI3_ELM_ANY(jm_stack_pop(int)(&context->elmStack));
     }
 }
 
@@ -1476,8 +1476,8 @@ int fmi3_xml_parse_model_description(fmi3_xml_model_description_t* md,
     jm_vector_init(char)(&context->variableStartAttr, 0, context->callbacks);
     jm_vector_init(jm_voidp)(&context->currentStartVariableValues, 0, context->callbacks);
 
-    context->lastSiblingElemId.modelDescription = fmi3_xml_modelDescription_elmID_none;
-    context->currentElmID.modelDescription = fmi3_xml_modelDescription_elmID_none;
+    context->lastSiblingElemId.modelDescription = fmi3_xml_elmID_none;
+    context->currentElmID.modelDescription = fmi3_xml_elmID_none;
     context->anyElmCount = 0;
     context->useAnyHandleFlg = 0;
     context->useAnyHandleFlgTermIcon = 0;

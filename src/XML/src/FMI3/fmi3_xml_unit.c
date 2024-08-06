@@ -202,13 +202,13 @@ int fmi3_xml_handle_BaseUnit(fmi3_xml_parser_context_t *context, const char* dat
 
             /* <xs:attribute name="xxx" type="xs:int" default="0"> */
 #define FMI3_PARSE_SI_BASE_UNIT_ENU(c) \
-    fmi3_xml_parse_attr_as_int32(context, FMI3_MODELDESCRIPTION_ELM(fmi3_xml_elmID_BaseUnit), FMI3_MODELDESCRIPTION_ATTR(fmi_attr_id_ ## c), 0, &(unit->SI_base_unit_exp[fmi3_SI_base_unit_ ## c]), 0) ||
+    fmi3_xml_parse_attr_as_int32(context, FMI3_ELM(fmi3_xml_elmID_BaseUnit), FMI3_ATTR(fmi_attr_id_ ## c), 0, &(unit->SI_base_unit_exp[fmi3_SI_base_unit_ ## c]), 0) ||
             ret =
                 FMI3_SI_BASE_UNITS(FMI3_PARSE_SI_BASE_UNIT_ENU) 
                 /* <xs:attribute name="factor" type="xs:double" default="1"/> */
-                fmi3_xml_parse_attr_as_float64(context, FMI3_MODELDESCRIPTION_ELM(fmi3_xml_elmID_BaseUnit), FMI3_MODELDESCRIPTION_ATTR(fmi_attr_id_factor), 0, &unit->factor, 1) ||
+                fmi3_xml_parse_attr_as_float64(context, FMI3_ELM(fmi3_xml_elmID_BaseUnit), FMI3_ATTR(fmi_attr_id_factor), 0, &unit->factor, 1) ||
                 /* <xs:attribute name="offset" type="xs:double" default="0"/> */
-                fmi3_xml_parse_attr_as_float64(context, FMI3_MODELDESCRIPTION_ELM(fmi3_xml_elmID_BaseUnit), FMI3_MODELDESCRIPTION_ATTR(fmi_attr_id_offset), 0, &unit->offset, 0);
+                fmi3_xml_parse_attr_as_float64(context, FMI3_ELM(fmi3_xml_elmID_BaseUnit), FMI3_ATTR(fmi_attr_id_offset), 0, &unit->offset, 0);
 
             if (unit->factor == 0) {
                 unit->factor = 1.0;
@@ -233,7 +233,7 @@ int fmi3_xml_handle_Unit(fmi3_xml_parser_context_t *context, const char* data) {
             if (!buf) return -1;
             if ( 
                 /*  <xs:attribute name="name" type="xs:normalizedString" use="required"> */
-                fmi3_xml_parse_attr_as_string(context, FMI3_MODELDESCRIPTION_ELM(fmi3_xml_elmID_BaseUnit), FMI3_MODELDESCRIPTION_ATTR(fmi_attr_id_name), 1, buf) ||
+                fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_BaseUnit), FMI3_ATTR(fmi_attr_id_name), 1, buf) ||
                 !(unit = fmi3_xml_get_parsed_unit(context, buf, 0))
                ) return -1;
             context->lastBaseUnit = unit->baseUnit;
@@ -258,7 +258,7 @@ int fmi3_xml_handle_DisplayUnit(fmi3_xml_parser_context_t *context, const char* 
             if (!buf) return -1;
             /* first read the required name attribute */
             /*  <xs:attribute name="name" type="xs:normalizedString" use="required"/> */
-            ret = fmi3_xml_parse_attr_as_string(context, FMI3_MODELDESCRIPTION_ELM(fmi3_xml_elmID_DisplayUnit), FMI3_MODELDESCRIPTION_ATTR(fmi_attr_id_name), 1, buf);
+            ret = fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_DisplayUnit), FMI3_ATTR(fmi_attr_id_name), 1, buf);
             if (ret) return ret;
             /* alloc memory to the correct size and put display unit on the list for the base unit */
             named.ptr = 0;
@@ -274,11 +274,11 @@ int fmi3_xml_handle_DisplayUnit(fmi3_xml_parser_context_t *context, const char* 
             /* finally process the attributes */
             ret = 
                 /* <xs:attribute name="factor" type="xs:double" default="1"/> */
-                fmi3_xml_parse_attr_as_float64(context, FMI3_MODELDESCRIPTION_ELM(fmi3_xml_elmID_DisplayUnit), FMI3_MODELDESCRIPTION_ATTR(fmi_attr_id_factor), 0, &dispUnit->factor, 1) ||
+                fmi3_xml_parse_attr_as_float64(context, FMI3_ELM(fmi3_xml_elmID_DisplayUnit), FMI3_ATTR(fmi_attr_id_factor), 0, &dispUnit->factor, 1) ||
                 /* <xs:attribute name="offset" type="xs:double" default="0"/> */
-                fmi3_xml_parse_attr_as_float64(context, FMI3_MODELDESCRIPTION_ELM(fmi3_xml_elmID_DisplayUnit), FMI3_MODELDESCRIPTION_ATTR(fmi_attr_id_offset), 0, &dispUnit->offset, 0) || 
+                fmi3_xml_parse_attr_as_float64(context, FMI3_ELM(fmi3_xml_elmID_DisplayUnit), FMI3_ATTR(fmi_attr_id_offset), 0, &dispUnit->offset, 0) || 
                 /* <xs:attribute name="inverse" type="xs:boolean" default="false"/> */
-                fmi3_xml_parse_attr_as_boolean(context, FMI3_MODELDESCRIPTION_ELM(fmi3_xml_elmID_DisplayUnit), FMI3_MODELDESCRIPTION_ATTR(fmi_attr_id_inverse), 0, &dispUnit->inverse, 0);
+                fmi3_xml_parse_attr_as_boolean(context, FMI3_ELM(fmi3_xml_elmID_DisplayUnit), FMI3_ATTR(fmi_attr_id_inverse), 0, &dispUnit->inverse, 0);
             if (dispUnit->factor == 0) {
                 dispUnit->factor = 1.0;
                 if (!ret) {

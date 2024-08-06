@@ -46,13 +46,13 @@ typedef int (*fmi3_xml_element_handle_ft)(fmi3_xml_parser_context_t* context, co
 struct fmi3_xml_modelDescription_element_handle_map_t {
     const char* elementName;
     fmi3_xml_modelDescription_element_handle_ft elementHandle;
-    fmi3_xml_modelDescription_elm_enu_t elemID;
+    fmi3_xml_elm_modelDescription_enu_t elemID;
 };
 
 struct fmi3_xml_termIcon_element_handle_map_t {
     const char* elementName;
     fmi3_xml_termIcon_element_handle_ft elementHandle;
-    fmi3_xml_termIcon_elm_enu_t elemID;
+    fmi_xml_elm_termIcon_enu_t elemID;
 };
 
 struct fmi3_xml_element_handle_map_t {

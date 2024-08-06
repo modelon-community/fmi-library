@@ -1129,7 +1129,7 @@ void fmi3_xml_set_element_handle(fmi3_xml_parser_context_t* context, const char*
 int fmi3_xml_is_valid_parent(fmi3_xml_parser_context_t* context, fmi3_xml_elm_t child_id, fmi3_xml_elm_t parent_id) {
     fmi3_xml_elm_t p_id_expected = fmi3_xml_get_scheme_info(context, child_id).parentID;
 
-    while (parent_id.any != p_id_expected.any && parent_id.any != fmi3_xml_modelDescription_elmID_none) {
+    while (parent_id.any != p_id_expected.any && parent_id.any != FMI_XML_ELMID_NONE) {
         parent_id = fmi3_xml_get_scheme_info(context, parent_id).superID;
     }
     return parent_id.any == p_id_expected.any;
@@ -1140,7 +1140,7 @@ int fmi3_xml_is_valid_parent(fmi3_xml_parser_context_t* context, fmi3_xml_elm_t 
  */
 int fmi3_xml_get_super_type_rec(fmi3_xml_parser_context_t* context, fmi3_xml_elm_t id) {
     fmi3_xml_elm_t id_top = id;
-    while ((fmi3_xml_get_scheme_info(context, id_top).superID).any != fmi3_xml_modelDescription_elmID_none) { // TODO
+    while ((fmi3_xml_get_scheme_info(context, id_top).superID).any != FMI_XML_ELMID_NONE) {
         id_top = fmi3_xml_get_scheme_info(context, id_top).superID;
     }
     return id_top.any;
@@ -1223,7 +1223,7 @@ static void XMLCALL fmi3_parse_element_start(void *c, const char *elm, const cha
                 context->skipElementCnt = 1;
                 return;
         }
-        if (siblingID.any != fmi3_xml_modelDescription_elmID_none) { // TODO
+        if (siblingID.any != FMI_XML_ELMID_NONE) {
             if (fmi3_xml_are_same_type(context, currentID, siblingID)) {
                 if (!(fmi3_xml_get_scheme_info(context, currentID).multipleAllowed && fmi3_xml_get_scheme_info(context, siblingID).multipleAllowed)) {
                     jm_log_error(context->callbacks, module,
@@ -1246,7 +1246,7 @@ static void XMLCALL fmi3_parse_element_start(void *c, const char *elm, const cha
             }
         }
         /* lastSiblingElemId references the previous sibling-element's id - set it to 'none' before handling children. */
-        context->lastSiblingElemId.any = fmi3_xml_modelDescription_elmID_none;
+        context->lastSiblingElemId.any = FMI_XML_ELMID_NONE;
     }
 
     /* process the attributes  */
@@ -1325,7 +1325,7 @@ static void XMLCALL fmi3_parse_element_start(void *c, const char *elm, const cha
             jm_vector_set_item(jm_string)(context->attrMapById, i, NULL);
         }
     }
-    if (context->currentElmID.any != fmi3_xml_modelDescription_elmID_none) { /* with nested elements: put the parent on the stack */
+    if (context->currentElmID.any != FMI_XML_ELMID_NONE) { /* with nested elements: put the parent on the stack */
         jm_stack_push(int)(&context->elmStack, context->currentElmID.any);
     }
     context -> currentElmID = currentID;
@@ -1389,7 +1389,7 @@ static void XMLCALL fmi3_parse_element_end(void* c, const char *elm) {
     context->lastSiblingElemId = currentID;
 
     if (jm_stack_is_empty(int)(&context->elmStack)) {
-        context->currentElmID.any = fmi3_xml_modelDescription_elmID_none;
+        context->currentElmID.any = FMI_XML_ELMID_NONE;
     } else {
         context->currentElmID = FMI3_ANY_ELM(jm_stack_pop(int)(&context->elmStack));
     }
@@ -1579,8 +1579,8 @@ int fmi3_xml_parse_terminals_and_icons(fmi_xml_terminals_and_icons_t* termIcon,
     jm_stack_init(int)(&context->elmStack, context->callbacks);
     jm_vector_init(char)(&context->elmData, 0, context->callbacks);
 
-    context->lastSiblingElemId.termIcon = fmi3_xml_modelDescription_elmID_none;
-    context->currentElmID.termIcon = fmi3_xml_modelDescription_elmID_none;
+    context->lastSiblingElemId.termIcon = fmi3_xml_termIcon_elmID_none;
+    context->currentElmID.termIcon = fmi3_xml_termIcon_elmID_none;
     context->anyElmCount = 0;
     context->useAnyHandleFlg = 0;
     context->useAnyHandleFlgTermIcon = 0;

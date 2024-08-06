@@ -105,7 +105,7 @@ int fmi_xml_handle_fmiTerminalsAndIcons(fmi3_xml_parser_context_t* context, cons
     fmi_xml_terminals_and_icons_t* termIcon = context->termIcon;
     if (!data) {
         int ret;
-        if (context->currentElmID.termIcon != fmi3_xml_modelDescription_elmID_none) {
+        if (context->currentElmID.termIcon != fmi3_xml_termIcon_elmID_none) {
             fmi3_xml_parse_fatal(context, "fmiTerminalsAndIcons must be the root XML element");
             return -1;
         }

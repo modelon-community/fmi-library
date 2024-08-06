@@ -22,9 +22,7 @@
 extern "C" {
 #endif
 
-/* Attributes common to modelDescription.xml & terminalsAndIcons.xml
- * are listed in FMI3_XML_ATTRLIST_COMMON in fmi3_xml_parser.h
- */
+/* Attribute names found in modelDescription.xml */
 #define FMI3_XML_ATTRLIST_MODEL_DESCR(EXPAND_XML_ATTRNAME) \
     EXPAND_XML_ATTRNAME(fmiVersion) \
     EXPAND_XML_ATTRNAME(name) \
@@ -102,6 +100,7 @@ extern "C" {
     EXPAND_XML_ATTRNAME(canReturnEarlyAfterIntermediateUpdate) \
     EXPAND_XML_ATTRNAME(hasEventMode)
 
+/* Element names found in modelDescription.xml */
 #define FMI3_XML_ELMLIST_MODEL_DESCR(EXPAND_XML_ELMNAME) \
     EXPAND_XML_ELMNAME(fmiModelDescription) \
     EXPAND_XML_ELMNAME(ModelExchange) \

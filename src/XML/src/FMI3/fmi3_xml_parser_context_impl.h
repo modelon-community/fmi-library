@@ -175,7 +175,7 @@ struct fmi3_xml_parser_context_t {
     jm_vector(char) variableStartAttr;
 
     /**
-     * Element ID of the last processed sibling, or fmi3_xml_modelDescription_elmID_none if
+     * Element ID of the last processed sibling, or FMI_XML_ELMID_NONE if
      * no siblings have been processed.
      */
     fmi3_xml_elm_t lastSiblingElemId;

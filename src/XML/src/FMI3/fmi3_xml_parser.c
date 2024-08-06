@@ -77,11 +77,11 @@ const fmi3_xml_modelDescription_scheme_info_t fmi3_xml_modelDescription_scheme_i
     FMI3_XML_ELMLIST_ABSTRACT_MODEL_DESCR(EXPAND_ELM_SCHEME)
 };
 
-#define EXPAND_ELM_SCHEME_TERMICON(elm) fmi_termIcon_xml_scheme_##elm ,
+#define EXPAND_ELM_SCHEME_TERMICON(elm) fmi_xml_scheme_termIcon_##elm ,
 /* Global array of all termIcon scheme_info_t. Index it with fmi3_xml_termIcon_elm_enu_t entries. */
-fmi3_xml_termIcon_scheme_info_t fmi_termIcon_xml_scheme_info[fmi3_xml_termIcon_elm_number] = {
+fmi3_xml_termIcon_scheme_info_t fmi_xml_scheme_termIcon_info[fmi_xml_elm_termIcon_number] = {
     FMI_XML_ELMLIST_TERM_ICON(EXPAND_ELM_SCHEME_TERMICON)
-    {fmi3_xml_termIcon_elm_actual_number, 0, 0},
+    {fmi_xml_elm_termIcon_actual_number, 0, 0},
     FMI_XML_ELMLIST_ALT_TERM_ICON(EXPAND_ELM_SCHEME_TERMICON)
 };
 
@@ -104,7 +104,7 @@ static fmi3_xml_scheme_info_t fmi3_xml_get_scheme_info(fmi3_xml_parser_context_t
             ret.multipleAllowed = info_modelDescription.multipleAllowed;
             break;
         case fmi3_xml_type_terminalAndIcons:
-            info_termIcon = fmi_termIcon_xml_scheme_info[enu.termIcon];
+            info_termIcon = fmi_xml_scheme_termIcon_info[enu.termIcon];
 
             ret.superID = FMI_TERMICON_ELM(info_termIcon.superID);
             ret.parentID = FMI_TERMICON_ELM(info_termIcon.parentID);
@@ -122,7 +122,7 @@ static fmi3_xml_scheme_info_t fmi3_xml_get_scheme_info(fmi3_xml_parser_context_t
 }
 
 #define EXPAND_ELM_NAME_FMI3(elm) { #elm, fmi3_xml_handle_##elm, fmi3_xml_elmID_##elm},
-#define EXPAND_ELM_NAME_FMI_TERM_ICON(elm) { #elm, fmi_xml_handle_##elm, fmi_termIcon_xml_elmID_##elm},
+#define EXPAND_ELM_NAME_FMI_TERM_ICON(elm) { #elm, fmi_xml_handle_##elm, fmi_xml_elmID_termIcon_##elm},
 
 /**
  * Global array of all defined fmi3_xml_modelDescription_element_handle_map_t structs.
@@ -137,9 +137,9 @@ const fmi3_xml_modelDescription_element_handle_map_t fmi3_modelDescription_eleme
     FMI3_XML_ELMLIST_ABSTRACT_MODEL_DESCR(EXPAND_ELM_NAME_FMI3)
 };
 
-const fmi3_xml_termIcon_element_handle_map_t fmi3_termIcon_element_handle_map[fmi3_xml_termIcon_elm_number] = {
+const fmi3_xml_termIcon_element_handle_map_t fmi3_termIcon_element_handle_map[fmi_xml_elm_termIcon_number] = {
     FMI_XML_ELMLIST_TERM_ICON(EXPAND_ELM_NAME_FMI_TERM_ICON)
-    { NULL, NULL, fmi3_xml_termIcon_elm_actual_number},
+    { NULL, NULL, fmi_xml_elm_termIcon_actual_number},
     FMI_XML_ELMLIST_ALT_TERM_ICON(EXPAND_ELM_NAME_FMI_TERM_ICON)
 };
 
@@ -1054,7 +1054,7 @@ static size_t fmi3_get_enum_size_actual(fmi3_xml_parser_context_t* context) {
         case fmi3_xml_type_modelDescription:
             return (size_t) fmi3_xml_modelDescription_elm_actual_number;
         case fmi3_xml_type_terminalAndIcons:
-            return (size_t) fmi3_xml_termIcon_elm_actual_number;
+            return (size_t) fmi_xml_elm_termIcon_actual_number;
         default:
             // erroneous
             return 0;
@@ -1579,8 +1579,8 @@ int fmi3_xml_parse_terminals_and_icons(fmi_xml_terminals_and_icons_t* termIcon,
     jm_stack_init(int)(&context->elmStack, context->callbacks);
     jm_vector_init(char)(&context->elmData, 0, context->callbacks);
 
-    context->lastSiblingElemId.termIcon = fmi3_xml_termIcon_elmID_none;
-    context->currentElmID.termIcon = fmi3_xml_termIcon_elmID_none;
+    context->lastSiblingElemId.termIcon = fmi_xml_elmID_termIcon_none;
+    context->currentElmID.termIcon = fmi_xml_elmID_termIcon_none;
     context->anyElmCount = 0;
     context->useAnyHandleFlg = 0;
     context->useAnyHandleFlgTermIcon = 0;

@@ -105,13 +105,13 @@ int fmi_xml_handle_fmiTerminalsAndIcons(fmi3_xml_parser_context_t* context, cons
     fmi_xml_terminals_and_icons_t* termIcon = context->termIcon;
     if (!data) {
         int ret;
-        if (context->currentElmID.termIcon != fmi3_xml_termIcon_elmID_none) {
+        if (context->currentElmID.termIcon != fmi_xml_elmID_termIcon_none) {
             fmi3_xml_parse_fatal(context, "fmiTerminalsAndIcons must be the root XML element");
             return -1;
         }
         jm_log_verbose(context->callbacks, module, "Parsing XML element fmiTerminalsAndIcons");
 
-        ret = fmi3_xml_parse_attr_as_string(context, FMI_TERMICON_ELM(fmi_termIcon_xml_elmID_fmiTerminalsAndIcons), FMI_TERMICON_ATTR(fmi_attr_id_fmiVersion), 1 /* required */,
+        ret = fmi3_xml_parse_attr_as_string(context, FMI_TERMICON_ELM(fmi_xml_elmID_termIcon_fmiTerminalsAndIcons), FMI_TERMICON_ATTR(fmi_attr_id_fmiVersion), 1 /* required */,
                                             &(termIcon->fmi3_xml_standard_version));
         if (ret) {
             return ret;
@@ -193,7 +193,7 @@ int fmi_xml_handle_Terminal(fmi3_xml_parser_context_t* context, const char* data
         // parse name
         jm_vector(char)* bufName = fmi3_xml_reserve_parse_buffer(context, bufIdx++, 100);
         if (!bufName) {return -1;}
-        if (fmi3_xml_parse_attr_as_string(context, FMI_TERMICON_ELM(fmi_termIcon_xml_elmID_Terminal), FMI_TERMICON_ATTR(fmi_attr_id_name), 1 /* required */, bufName)) {return -1;}
+        if (fmi3_xml_parse_attr_as_string(context, FMI_TERMICON_ELM(fmi_xml_elmID_termIcon_Terminal), FMI_TERMICON_ATTR(fmi_attr_id_name), 1 /* required */, bufName)) {return -1;}
 
         /* Add the name to the terminalsAndIcons-wide set and retrieve the pointer */
         if (jm_vector_get_size(char)(bufName)) {

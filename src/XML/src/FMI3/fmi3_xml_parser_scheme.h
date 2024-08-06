@@ -85,14 +85,14 @@ typedef enum fmi3_xml_modelDescription_elm_enu_t {
     ,fmi3_xml_modelDescription_elm_number
 } fmi3_xml_modelDescription_elm_enu_t;
 
-#define FMI_TERMICON_XML_ELM_ID(elm) fmi_termIcon_xml_elmID_##elm
+#define FMI_TERMICON_XML_ELM_ID(elm) fmi_xml_elmID_termIcon_##elm
 #define FMI_TERMICON_XML_LIST_ELM_ID(elm) ,FMI_TERMICON_XML_ELM_ID(elm)
 typedef enum fmi3_xml_termIcon_elm_enu_t {
-    fmi3_xml_termIcon_elmID_none = FMI_XML_ELMID_NONE
+    fmi_xml_elmID_termIcon_none = FMI_XML_ELMID_NONE
     FMI_XML_ELMLIST_TERM_ICON(FMI_TERMICON_XML_LIST_ELM_ID)
-    ,fmi3_xml_termIcon_elm_actual_number
+    ,fmi_xml_elm_termIcon_actual_number
     FMI_XML_ELMLIST_ALT_TERM_ICON(FMI_TERMICON_XML_LIST_ELM_ID)
-    ,fmi3_xml_termIcon_elm_number
+    ,fmi_xml_elm_termIcon_number
 } fmi3_xml_termIcon_elm_enu_t;
 
 typedef union fmi3_xml_elm_t {

@@ -45,16 +45,16 @@ typedef enum fmi3_xml_termIcon_attr_enu_t {
     fmi3_xml_termIcon_attr_number
 } fmi3_xml_termIcon_attr_enu_t;
 
-typedef union fmi3_xml_attr_union_t {
-    int any;
+typedef union fmi3_xml_attr_t {
+    int any; // when used in generic parser/handling context
     fmi3_xml_modelDescription_attr_enu_t modelDescription;
     fmi3_xml_termIcon_attr_enu_t termIcon;
-} fmi3_xml_attr_union_t;
+} fmi3_xml_attr_t;
 
-// TODO: doc
-#define FMI3_ANY_ATTR(enu) (const fmi3_xml_attr_union_t){.any = enu}
-#define FMI3_MODELDESCRIPTION_ATTR(enu) (const fmi3_xml_attr_union_t){.modelDescription = enu}
-#define FMI_TERMICON_ATTR(enu) (const fmi3_xml_attr_union_t){.termIcon = enu}
+// Shortcuts for defining fmi3_xml_attr_t for a given enum value
+#define FMI3_ANY_ATTR(enu)              (fmi3_xml_attr_t){.any = enu}
+#define FMI3_MODELDESCRIPTION_ATTR(enu) (fmi3_xml_attr_t){.modelDescription = enu}
+#define FMI_TERMICON_ATTR(enu)          (fmi3_xml_attr_t){.termIcon = enu}
 
 /* Build prototypes for all elm_handle_* functions */
 typedef struct fmi3_xml_parser_context_t fmi3_xml_parser_context_t;
@@ -96,18 +96,16 @@ typedef enum fmi3_xml_termIcon_elm_enu_t {
     ,fmi3_xml_termIcon_elm_number
 } fmi3_xml_termIcon_elm_enu_t;
 
-typedef int fmi3_xml_elm_enu_t; // TODO: Not an enum
-
-typedef union fmi3_xml_elm_union_t {
-    int any;
+typedef union fmi3_xml_elm_t {
+    int any; // when used in generic parser/handling context
     fmi3_xml_modelDescription_elm_enu_t modelDescription;
     fmi3_xml_termIcon_elm_enu_t termIcon;
-} fmi3_xml_elm_union_t;
+} fmi3_xml_elm_t;
 
-// TODO: doc
-#define FMI3_ANY_ELM(enu) (const fmi3_xml_elm_union_t){.any = enu}
-#define FMI3_MODELDESCRIPTION_ELM(enu) (const fmi3_xml_elm_union_t){.modelDescription = enu}
-#define FMI_TERMICON_ELM(enu) (const fmi3_xml_elm_union_t){.termIcon = enu}
+// Shortcuts for defining fmi3_xml_elm_t for a given enum value
+#define FMI3_ANY_ELM(enu)              (fmi3_xml_elm_t){.any = enu}
+#define FMI3_MODELDESCRIPTION_ELM(enu) (fmi3_xml_elm_t){.modelDescription = enu}
+#define FMI_TERMICON_ELM(enu)          (fmi3_xml_elm_t){.termIcon = enu}
 
 #ifdef __cplusplus
 }

@@ -491,7 +491,7 @@ static int fmi3_xml_process_interface_type_common_attrs(fmi3_xml_parser_context_
     size_t nCapME = sizeof(capArrME);
     size_t nCapCS = sizeof(capArrCS);
 
-    fmi3_xml_elm_union_t elmID;
+    fmi3_xml_elm_t elmID;
     jm_vector(char)* modelIdentifierPtr;
     switch (fmuKind) {
         case fmi3_fmu_kind_me:
@@ -565,7 +565,7 @@ int fmi3_xml_handle_ModelExchange(fmi3_xml_parser_context_t *context, const char
             return -1;
         }
 
-        fmi3_xml_elm_union_t elmID = FMI3_MODELDESCRIPTION_ELM(fmi3_xml_elmID_ModelExchange);
+        fmi3_xml_elm_t elmID = FMI3_MODELDESCRIPTION_ELM(fmi3_xml_elmID_ModelExchange);
         if (fmi3_xml_parse_attr_as_boolean(context, elmID, FMI3_MODELDESCRIPTION_ATTR(fmi_attr_id_needsCompletedIntegratorStep), 0,
                     &md->capabilities[fmi3_me_needsCompletedIntegratorStep], 0)
             ||
@@ -601,7 +601,7 @@ int fmi3_xml_handle_CoSimulation(fmi3_xml_parser_context_t *context, const char*
             return -1;
         }
 
-        fmi3_xml_elm_union_t elmID = FMI3_MODELDESCRIPTION_ELM(fmi3_xml_elmID_CoSimulation);
+        fmi3_xml_elm_t elmID = FMI3_MODELDESCRIPTION_ELM(fmi3_xml_elmID_CoSimulation);
         if (fmi3_xml_parse_attr_as_boolean(context, elmID, FMI3_MODELDESCRIPTION_ATTR(fmi_attr_id_canHandleVariableCommunicationStepSize), 0,
                     &md->capabilities[fmi3_cs_canHandleVariableCommunicationStepSize], 0)
             ||

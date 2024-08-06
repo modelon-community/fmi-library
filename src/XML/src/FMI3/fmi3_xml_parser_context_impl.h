@@ -58,7 +58,7 @@ struct fmi3_xml_termIcon_element_handle_map_t {
 struct fmi3_xml_element_handle_map_t {
     const char* elementName;
     fmi3_xml_element_handle_ft elementHandle;
-    fmi3_xml_elm_union_t elemID;
+    fmi3_xml_elm_t elemID;
 };
 
 
@@ -178,7 +178,7 @@ struct fmi3_xml_parser_context_t {
      * Element ID of the last processed sibling, or fmi3_xml_modelDescription_elmID_none if
      * no siblings have been processed.
      */
-    fmi3_xml_elm_union_t lastSiblingElemId;
+    fmi3_xml_elm_t lastSiblingElemId;
 
     /**
      * Used for error checking and scheme verification.
@@ -190,9 +190,9 @@ struct fmi3_xml_parser_context_t {
      *     on enter: self
      *     on exit: parent
      */
-    fmi3_xml_elm_union_t currentElmID;
+    fmi3_xml_elm_t currentElmID;
 
-    fmi3_xml_elm_union_t currentElemIdStartTag;
+    fmi3_xml_elm_t currentElemIdStartTag;
 
     /* Variables for handling tool-specific XML elements */
     int anyElmCount;

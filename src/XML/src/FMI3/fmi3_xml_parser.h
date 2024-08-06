@@ -57,8 +57,8 @@ typedef struct {
 } fmi3_xml_termIcon_scheme_info_t;
 
 typedef struct {
-    fmi3_xml_elm_union_t superID; /* ID of super type or NULL if none */
-    fmi3_xml_elm_union_t parentID; /* expected parent ID for an element */
+    fmi3_xml_elm_t superID; /* ID of super type or NULL if none */
+    fmi3_xml_elm_t parentID; /* expected parent ID for an element */
     int siblingIndex;       /* index among siblings */
     int multipleAllowed;    /* multiple elements of this kind kan come in a sequence as siblings*/
 } fmi3_xml_scheme_info_t;
@@ -106,36 +106,36 @@ void fmi3_xml_free_parse_buffer(fmi3_xml_parser_context_t* context);
 /**
  * Raises generic parse error for given attribute.
  */
-void fmi3_xml_parse_attr_error(fmi3_xml_parser_context_t* context, fmi3_xml_elm_union_t elmID, const fmi3_xml_attr_union_t attrID, const char* attrStr);
+void fmi3_xml_parse_attr_error(fmi3_xml_parser_context_t* context, fmi3_xml_elm_t elmID, const fmi3_xml_attr_t attrID, const char* attrStr);
 
-int fmi3_xml_parse_attr_as_string (fmi3_xml_parser_context_t* context, fmi3_xml_elm_union_t elmID, const fmi3_xml_attr_union_t attrID, int required, jm_vector(char)* field);
-int fmi3_xml_parse_attr_as_enum   (fmi3_xml_parser_context_t* context, fmi3_xml_elm_union_t elmID, const fmi3_xml_attr_union_t attrID, int required, unsigned int*    field, unsigned int   defaultVal, jm_name_ID_map_t* nameMap);
-int fmi3_xml_parse_attr_as_bool   (fmi3_xml_parser_context_t* context, fmi3_xml_elm_union_t elmID, const fmi3_xml_attr_union_t attrID, int required, bool*            field, bool           defaultVal);
-int fmi3_xml_parse_attr_as_boolean(fmi3_xml_parser_context_t* context, fmi3_xml_elm_union_t elmID, const fmi3_xml_attr_union_t attrID, int required, unsigned int*    field, unsigned int   defaultVal);
-int fmi3_xml_parse_attr_as_intXX  (fmi3_xml_parser_context_t* context, fmi3_xml_elm_union_t elmID, const fmi3_xml_attr_union_t attrID, int required, void*            field, void*          defaultVal, const fmi3_xml_primitive_type_t* primType);
-int fmi3_xml_parse_attr_as_int32  (fmi3_xml_parser_context_t* context, fmi3_xml_elm_union_t elmID, const fmi3_xml_attr_union_t attrID, int required, fmi3_int32_t*    field, fmi3_int32_t   defaultVal);
-int fmi3_xml_parse_attr_as_uint64 (fmi3_xml_parser_context_t* context, fmi3_xml_elm_union_t elmID, const fmi3_xml_attr_union_t attrID, int required, fmi3_uint64_t*   field, fmi3_uint64_t  defaultVal);
-int fmi3_xml_parse_attr_as_uint32 (fmi3_xml_parser_context_t* context, fmi3_xml_elm_union_t elmID, const fmi3_xml_attr_union_t attrID, int required, fmi3_uint32_t*   field, fmi3_uint32_t  defaultVal);
-int fmi3_xml_parse_attr_as_floatXX(fmi3_xml_parser_context_t* context, fmi3_xml_elm_union_t elmID, const fmi3_xml_attr_union_t attrID, int required, void*            field, void*          defaultVal, const fmi3_xml_primitive_type_t* primType);
-int fmi3_xml_parse_attr_as_float64(fmi3_xml_parser_context_t* context, fmi3_xml_elm_union_t elmID, const fmi3_xml_attr_union_t attrID, int required, fmi3_float64_t*  field, fmi3_float64_t defaultVal);
-int fmi3_xml_parse_attr_as_float32(fmi3_xml_parser_context_t* context, fmi3_xml_elm_union_t elmID, const fmi3_xml_attr_union_t attrID, int required, fmi3_float32_t*  field, fmi3_float32_t defaultVal);
-int fmi3_xml_parse_attr_as_sizet  (fmi3_xml_parser_context_t* context, fmi3_xml_elm_union_t elmID, const fmi3_xml_attr_union_t attrID, int required, size_t*          field, size_t*        defaultVal);
-int fmi3_xml_parse_attr_as_array  (fmi3_xml_parser_context_t* context, fmi3_xml_elm_union_t elmID, const fmi3_xml_attr_union_t attrID, int required, void** arrPtr, size_t* arrSize, jm_string str, const fmi3_xml_primitive_type_t* primType);
+int fmi3_xml_parse_attr_as_string (fmi3_xml_parser_context_t* context, fmi3_xml_elm_t elmID, const fmi3_xml_attr_t attrID, int required, jm_vector(char)* field);
+int fmi3_xml_parse_attr_as_enum   (fmi3_xml_parser_context_t* context, fmi3_xml_elm_t elmID, const fmi3_xml_attr_t attrID, int required, unsigned int*    field, unsigned int   defaultVal, jm_name_ID_map_t* nameMap);
+int fmi3_xml_parse_attr_as_bool   (fmi3_xml_parser_context_t* context, fmi3_xml_elm_t elmID, const fmi3_xml_attr_t attrID, int required, bool*            field, bool           defaultVal);
+int fmi3_xml_parse_attr_as_boolean(fmi3_xml_parser_context_t* context, fmi3_xml_elm_t elmID, const fmi3_xml_attr_t attrID, int required, unsigned int*    field, unsigned int   defaultVal);
+int fmi3_xml_parse_attr_as_intXX  (fmi3_xml_parser_context_t* context, fmi3_xml_elm_t elmID, const fmi3_xml_attr_t attrID, int required, void*            field, void*          defaultVal, const fmi3_xml_primitive_type_t* primType);
+int fmi3_xml_parse_attr_as_int32  (fmi3_xml_parser_context_t* context, fmi3_xml_elm_t elmID, const fmi3_xml_attr_t attrID, int required, fmi3_int32_t*    field, fmi3_int32_t   defaultVal);
+int fmi3_xml_parse_attr_as_uint64 (fmi3_xml_parser_context_t* context, fmi3_xml_elm_t elmID, const fmi3_xml_attr_t attrID, int required, fmi3_uint64_t*   field, fmi3_uint64_t  defaultVal);
+int fmi3_xml_parse_attr_as_uint32 (fmi3_xml_parser_context_t* context, fmi3_xml_elm_t elmID, const fmi3_xml_attr_t attrID, int required, fmi3_uint32_t*   field, fmi3_uint32_t  defaultVal);
+int fmi3_xml_parse_attr_as_floatXX(fmi3_xml_parser_context_t* context, fmi3_xml_elm_t elmID, const fmi3_xml_attr_t attrID, int required, void*            field, void*          defaultVal, const fmi3_xml_primitive_type_t* primType);
+int fmi3_xml_parse_attr_as_float64(fmi3_xml_parser_context_t* context, fmi3_xml_elm_t elmID, const fmi3_xml_attr_t attrID, int required, fmi3_float64_t*  field, fmi3_float64_t defaultVal);
+int fmi3_xml_parse_attr_as_float32(fmi3_xml_parser_context_t* context, fmi3_xml_elm_t elmID, const fmi3_xml_attr_t attrID, int required, fmi3_float32_t*  field, fmi3_float32_t defaultVal);
+int fmi3_xml_parse_attr_as_sizet  (fmi3_xml_parser_context_t* context, fmi3_xml_elm_t elmID, const fmi3_xml_attr_t attrID, int required, size_t*          field, size_t*        defaultVal);
+int fmi3_xml_parse_attr_as_array  (fmi3_xml_parser_context_t* context, fmi3_xml_elm_t elmID, const fmi3_xml_attr_t attrID, int required, void** arrPtr, size_t* arrSize, jm_string str, const fmi3_xml_primitive_type_t* primType);
 
-int fmi3_xml_parse_attr_valueref_list(fmi3_xml_parser_context_t* context, fmi3_xml_elm_union_t elmID, const fmi3_xml_attr_union_t attrID, int required, jm_vector(fmi3_value_reference_t)* vrs);
+int fmi3_xml_parse_attr_valueref_list(fmi3_xml_parser_context_t* context, fmi3_xml_elm_t elmID, const fmi3_xml_attr_t attrID, int required, jm_vector(fmi3_value_reference_t)* vrs);
 
-int fmi3_xml_is_attr_defined( fmi3_xml_parser_context_t* context, const fmi3_xml_attr_union_t attrID);
-jm_string fmi3_xml_peek_attr_str(fmi3_xml_parser_context_t* context, const fmi3_xml_attr_union_t attrID);
-int fmi3_xml_get_attr_str(fmi3_xml_parser_context_t* context, fmi3_xml_elm_union_t elmID, const fmi3_xml_attr_union_t attrID, int required,const char** valp);
+int fmi3_xml_is_attr_defined( fmi3_xml_parser_context_t* context, const fmi3_xml_attr_t attrID);
+jm_string fmi3_xml_peek_attr_str(fmi3_xml_parser_context_t* context, const fmi3_xml_attr_t attrID);
+int fmi3_xml_get_attr_str(fmi3_xml_parser_context_t* context, fmi3_xml_elm_t elmID, const fmi3_xml_attr_t attrID, int required,const char** valp);
 
-void fmi3_xml_set_element_handle(fmi3_xml_parser_context_t* context, const char* elm, fmi3_xml_elm_union_t id);
+void fmi3_xml_set_element_handle(fmi3_xml_parser_context_t* context, const char* elm, fmi3_xml_elm_t id);
 
 // TODO: These last 3 should probably go to a scheme file
-int fmi3_xml_is_valid_parent(fmi3_xml_parser_context_t* context, fmi3_xml_elm_union_t child_id, fmi3_xml_elm_union_t parent_id);
-int fmi3_xml_get_super_type_rec(fmi3_xml_parser_context_t* context, fmi3_xml_elm_union_t id);
-int fmi3_xml_are_same_type(fmi3_xml_parser_context_t* context, fmi3_xml_elm_union_t id1, fmi3_xml_elm_union_t id2);
+int fmi3_xml_is_valid_parent(fmi3_xml_parser_context_t* context, fmi3_xml_elm_t child_id, fmi3_xml_elm_t parent_id);
+int fmi3_xml_get_super_type_rec(fmi3_xml_parser_context_t* context, fmi3_xml_elm_t id);
+int fmi3_xml_are_same_type(fmi3_xml_parser_context_t* context, fmi3_xml_elm_t id1, fmi3_xml_elm_t id2);
 
-const char* fmi3_xml_elmid_to_name(fmi3_xml_parser_context_t* context, fmi3_xml_elm_union_t id);
+const char* fmi3_xml_elmid_to_name(fmi3_xml_parser_context_t* context, fmi3_xml_elm_t id);
 
 #ifdef __cplusplus
 }

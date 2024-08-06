@@ -98,6 +98,17 @@ typedef enum fmi3_xml_termIcon_elm_enu_t {
 
 typedef int fmi3_xml_elm_enu_t; // TODO: Not an enum
 
+typedef union fmi3_xml_elm_union_t {
+    int any;
+    fmi3_xml_modelDescription_elm_enu_t modelDescription;
+    fmi3_xml_termIcon_elm_enu_t termIcon;
+} fmi3_xml_elm_union_t;
+
+// TODO: doc
+#define FMI3_ANY_ELM(enu) (const fmi3_xml_elm_union_t){.any = enu}
+#define FMI3_MODELDESCRIPTION_ELM(enu) (const fmi3_xml_elm_union_t){.modelDescription = enu}
+#define FMI_TERMICON_ELM(enu) (const fmi3_xml_elm_union_t){.termIcon = enu}
+
 #ifdef __cplusplus
 }
 #endif

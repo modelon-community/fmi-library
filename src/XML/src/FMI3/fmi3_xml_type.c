@@ -675,8 +675,8 @@ int fmi3_xml_handle_SimpleType(fmi3_xml_parser_context_t *context, const char* d
             return -1;
 
         /* read attributes to buffers */
-        if (fmi3_xml_parse_attr_as_string(context, fmi3_xml_elmID_SimpleType, FMI3_MODELDESCRIPTION_ATTR(fmi_attr_id_name), 1, bufName) ||
-            fmi3_xml_parse_attr_as_string(context, fmi3_xml_elmID_SimpleType, FMI3_MODELDESCRIPTION_ATTR(fmi_attr_id_description), 0, bufDescr)) {
+        if (fmi3_xml_parse_attr_as_string(context, FMI3_MODELDESCRIPTION_ELM(fmi3_xml_elmID_SimpleType), FMI3_MODELDESCRIPTION_ATTR(fmi_attr_id_name), 1, bufName) ||
+            fmi3_xml_parse_attr_as_string(context, FMI3_MODELDESCRIPTION_ELM(fmi3_xml_elmID_SimpleType), FMI3_MODELDESCRIPTION_ATTR(fmi_attr_id_description), 0, bufDescr)) {
             return -1;
         }
 
@@ -784,7 +784,7 @@ fmi3_xml_variable_type_base_t* fmi3_xml_alloc_variable_type_start(fmi3_xml_type_
  *      For TypeDefinitions: The props_t of the default type.
  */
 fmi3_xml_float_type_props_t* fmi3_xml_parse_float_type_properties(fmi3_xml_parser_context_t* context,
-        fmi3_xml_elm_enu_t elmID, fmi3_xml_variable_type_base_t* fallbackType, const fmi3_xml_primitive_type_t* primType)
+        fmi3_xml_elm_union_t elmID, fmi3_xml_variable_type_base_t* fallbackType, const fmi3_xml_primitive_type_t* primType)
 {
     jm_named_ptr named, *pnamed;
     fmi3_xml_model_description_t* md = context->modelDescription;
@@ -850,7 +850,7 @@ fmi3_xml_float_type_props_t* fmi3_xml_parse_float_type_properties(fmi3_xml_parse
     return props;
 }
 
-int fmi3_xml_handle_FloatType(fmi3_xml_parser_context_t* context, const char* data, fmi3_xml_elm_enu_t elmID,
+int fmi3_xml_handle_FloatType(fmi3_xml_parser_context_t* context, const char* data, fmi3_xml_elm_union_t elmID,
         fmi3_xml_float_type_props_t* defaultType, const fmi3_xml_primitive_type_t* primType)
 {
     if (fmi3_xml_handle_SimpleType(context, data)) return -1;
@@ -872,11 +872,11 @@ int fmi3_xml_handle_FloatType(fmi3_xml_parser_context_t* context, const char* da
 }
 
 int fmi3_xml_handle_Float64Type(fmi3_xml_parser_context_t* context, const char* data) {
-    return fmi3_xml_handle_FloatType(context, data, fmi3_xml_elmID_Float64Type, &context->modelDescription->typeDefinitions.defaultFloat64Type, &PRIMITIVE_TYPES.float64);
+    return fmi3_xml_handle_FloatType(context, data, FMI3_MODELDESCRIPTION_ELM(fmi3_xml_elmID_Float64Type), &context->modelDescription->typeDefinitions.defaultFloat64Type, &PRIMITIVE_TYPES.float64);
 }
 
 int fmi3_xml_handle_Float32Type(fmi3_xml_parser_context_t* context, const char* data) {
-    return fmi3_xml_handle_FloatType(context, data, fmi3_xml_elmID_Float32Type, &context->modelDescription->typeDefinitions.defaultFloat32Type, &PRIMITIVE_TYPES.float32);
+    return fmi3_xml_handle_FloatType(context, data, FMI3_MODELDESCRIPTION_ELM(fmi3_xml_elmID_Float32Type), &context->modelDescription->typeDefinitions.defaultFloat32Type, &PRIMITIVE_TYPES.float32);
 }
 
 /**
@@ -887,7 +887,7 @@ int fmi3_xml_handle_Float32Type(fmi3_xml_parser_context_t* context, const char* 
  *      For TypeDefinitions: The props_t of the default type.
  */
 fmi3_xml_int_type_props_t* fmi3_xml_parse_intXX_type_properties(fmi3_xml_parser_context_t* context,
-        fmi3_xml_elm_enu_t elmID, fmi3_xml_variable_type_base_t* fallbackType, const fmi3_xml_primitive_type_t* primType)
+        fmi3_xml_elm_union_t elmID, fmi3_xml_variable_type_base_t* fallbackType, const fmi3_xml_primitive_type_t* primType)
 {
     fmi3_xml_model_description_t* md = context->modelDescription;
     fmi3_xml_type_definition_list_t* td = &md->typeDefinitions;
@@ -924,7 +924,7 @@ fmi3_xml_int_type_props_t* fmi3_xml_parse_intXX_type_properties(fmi3_xml_parser_
     return props;
 }
 
-int fmi3_xml_handle_IntXXType(fmi3_xml_parser_context_t *context, const char* data, fmi3_xml_elm_enu_t elemID,
+int fmi3_xml_handle_IntXXType(fmi3_xml_parser_context_t *context, const char* data, fmi3_xml_elm_union_t elemID,
         fmi3_xml_int_type_props_t* defaultType, const fmi3_xml_primitive_type_t* primType)
 {
     if (fmi3_xml_handle_SimpleType(context, data)) return -1;
@@ -946,35 +946,35 @@ int fmi3_xml_handle_IntXXType(fmi3_xml_parser_context_t *context, const char* da
 }
 
 int fmi3_xml_handle_Int64Type(fmi3_xml_parser_context_t* context, const char* data) {
-    return fmi3_xml_handle_IntXXType(context, data, fmi3_xml_elmID_Int64Type, &context->modelDescription->typeDefinitions.defaultInt64Type, &PRIMITIVE_TYPES.int64);
+    return fmi3_xml_handle_IntXXType(context, data, FMI3_MODELDESCRIPTION_ELM(fmi3_xml_elmID_Int64Type), &context->modelDescription->typeDefinitions.defaultInt64Type, &PRIMITIVE_TYPES.int64);
 }
 
 int fmi3_xml_handle_Int32Type(fmi3_xml_parser_context_t* context, const char* data) {
-    return fmi3_xml_handle_IntXXType(context, data, fmi3_xml_elmID_Int32Type, &context->modelDescription->typeDefinitions.defaultInt32Type, &PRIMITIVE_TYPES.int32);
+    return fmi3_xml_handle_IntXXType(context, data, FMI3_MODELDESCRIPTION_ELM(fmi3_xml_elmID_Int32Type), &context->modelDescription->typeDefinitions.defaultInt32Type, &PRIMITIVE_TYPES.int32);
 }
 
 int fmi3_xml_handle_Int16Type(fmi3_xml_parser_context_t* context, const char* data) {
-    return fmi3_xml_handle_IntXXType(context, data, fmi3_xml_elmID_Int16Type, &context->modelDescription->typeDefinitions.defaultInt16Type, &PRIMITIVE_TYPES.int16);
+    return fmi3_xml_handle_IntXXType(context, data, FMI3_MODELDESCRIPTION_ELM(fmi3_xml_elmID_Int16Type), &context->modelDescription->typeDefinitions.defaultInt16Type, &PRIMITIVE_TYPES.int16);
 }
 
 int fmi3_xml_handle_Int8Type(fmi3_xml_parser_context_t* context, const char* data) {
-    return fmi3_xml_handle_IntXXType(context, data, fmi3_xml_elmID_Int8Type, &context->modelDescription->typeDefinitions.defaultInt8Type, &PRIMITIVE_TYPES.int8);
+    return fmi3_xml_handle_IntXXType(context, data, FMI3_MODELDESCRIPTION_ELM(fmi3_xml_elmID_Int8Type), &context->modelDescription->typeDefinitions.defaultInt8Type, &PRIMITIVE_TYPES.int8);
 }
 
 int fmi3_xml_handle_UInt64Type(fmi3_xml_parser_context_t* context, const char* data) {
-    return fmi3_xml_handle_IntXXType(context, data, fmi3_xml_elmID_UInt64Type, &context->modelDescription->typeDefinitions.defaultUInt64Type, &PRIMITIVE_TYPES.uint64);
+    return fmi3_xml_handle_IntXXType(context, data, FMI3_MODELDESCRIPTION_ELM(fmi3_xml_elmID_UInt64Type), &context->modelDescription->typeDefinitions.defaultUInt64Type, &PRIMITIVE_TYPES.uint64);
 }
 
 int fmi3_xml_handle_UInt32Type(fmi3_xml_parser_context_t* context, const char* data) {
-    return fmi3_xml_handle_IntXXType(context, data, fmi3_xml_elmID_UInt32Type, &context->modelDescription->typeDefinitions.defaultUInt32Type, &PRIMITIVE_TYPES.uint32);
+    return fmi3_xml_handle_IntXXType(context, data, FMI3_MODELDESCRIPTION_ELM(fmi3_xml_elmID_UInt32Type), &context->modelDescription->typeDefinitions.defaultUInt32Type, &PRIMITIVE_TYPES.uint32);
 }
 
 int fmi3_xml_handle_UInt16Type(fmi3_xml_parser_context_t* context, const char* data) {
-    return fmi3_xml_handle_IntXXType(context, data, fmi3_xml_elmID_UInt16Type, &context->modelDescription->typeDefinitions.defaultUInt16Type, &PRIMITIVE_TYPES.uint16);
+    return fmi3_xml_handle_IntXXType(context, data, FMI3_MODELDESCRIPTION_ELM(fmi3_xml_elmID_UInt16Type), &context->modelDescription->typeDefinitions.defaultUInt16Type, &PRIMITIVE_TYPES.uint16);
 }
 
 int fmi3_xml_handle_UInt8Type(fmi3_xml_parser_context_t* context, const char* data) {
-    return fmi3_xml_handle_IntXXType(context, data, fmi3_xml_elmID_UInt8Type, &context->modelDescription->typeDefinitions.defaultUInt8Type, &PRIMITIVE_TYPES.uint8);
+    return fmi3_xml_handle_IntXXType(context, data, FMI3_MODELDESCRIPTION_ELM(fmi3_xml_elmID_UInt8Type), &context->modelDescription->typeDefinitions.defaultUInt8Type, &PRIMITIVE_TYPES.uint8);
 }
 
 int fmi3_xml_handle_BooleanType(fmi3_xml_parser_context_t* context, const char* data) {
@@ -1000,7 +1000,7 @@ int fmi3_xml_handle_BooleanType(fmi3_xml_parser_context_t* context, const char* 
  *      For TypeDefinitions: The props_t of the default type.
  */
 fmi3_xml_binary_type_props_t* fmi3_xml_parse_binary_type_properties(fmi3_xml_parser_context_t* context,
-        fmi3_xml_elm_enu_t elmID, fmi3_xml_variable_type_base_t* fallbackType)
+        fmi3_xml_elm_union_t elmID, fmi3_xml_variable_type_base_t* fallbackType)
 {
     fmi3_xml_type_definition_list_t* td = &context->modelDescription->typeDefinitions;
     fmi3_xml_binary_type_props_t* fallbackProps;
@@ -1063,7 +1063,7 @@ int fmi3_xml_handle_BinaryType(fmi3_xml_parser_context_t* context, const char* d
         fmi3_xml_binary_type_props_t* props;
         fmi3_xml_binary_type_props_t* defaultType = &context->modelDescription->typeDefinitions.defaultBinaryType;
 
-        props = fmi3_xml_parse_binary_type_properties(context, fmi3_xml_elmID_BinaryType, &defaultType->super);
+        props = fmi3_xml_parse_binary_type_properties(context, FMI3_MODELDESCRIPTION_ELM(fmi3_xml_elmID_BinaryType), &defaultType->super);
         if (!props) return -1;
 
         // Get the typedef already created for SimpleType and set props
@@ -1082,7 +1082,7 @@ int fmi3_xml_handle_BinaryType(fmi3_xml_parser_context_t* context, const char* d
  *      For TypeDefinitions: The props_t of the default type.
  */
 fmi3_xml_clock_type_props_t* fmi3_xml_parse_clock_type_properties(fmi3_xml_parser_context_t* context,
-        fmi3_xml_elm_enu_t elmID, fmi3_xml_variable_type_base_t* fallbackType)
+        fmi3_xml_elm_union_t elmID, fmi3_xml_variable_type_base_t* fallbackType)
 {
     fmi3_xml_type_definition_list_t* td = &context->modelDescription->typeDefinitions;
     fmi3_xml_clock_type_props_t* fallbackProps;
@@ -1211,7 +1211,7 @@ int fmi3_xml_handle_ClockType(fmi3_xml_parser_context_t* context, const char* da
         fmi3_xml_clock_type_props_t* props;
         fmi3_xml_clock_type_props_t* defaultType = &context->modelDescription->typeDefinitions.defaultClockType;
 
-        props = fmi3_xml_parse_clock_type_properties(context, fmi3_xml_elmID_ClockType, &defaultType->super);
+        props = fmi3_xml_parse_clock_type_properties(context, FMI3_MODELDESCRIPTION_ELM(fmi3_xml_elmID_ClockType), &defaultType->super);
         if (!props) return -1;
 
         // Get the typedef already created for SimpleType and set props
@@ -1260,7 +1260,7 @@ int fmi3_xml_handle_EnumerationType(fmi3_xml_parser_context_t* context, const ch
             props->base.super.next = nextTmp;
         }
         if (!bufQuantity || !props ||
-                fmi3_xml_parse_attr_as_string(context, fmi3_xml_elmID_Int32Type, FMI3_MODELDESCRIPTION_ATTR(fmi_attr_id_quantity), 0, bufQuantity)
+                fmi3_xml_parse_attr_as_string(context, FMI3_MODELDESCRIPTION_ELM(fmi3_xml_elmID_Int32Type), FMI3_MODELDESCRIPTION_ATTR(fmi_attr_id_quantity), 0, bufQuantity)
                 )
             return -1;
         if (jm_vector_get_size(char)(bufQuantity))
@@ -1318,9 +1318,9 @@ int fmi3_xml_handle_Item(fmi3_xml_parser_context_t* context, const char* data) {
             && (enumProps->base.super.baseType == fmi3_base_type_enum));
 
         if (!bufName || !bufDescr ||
-                fmi3_xml_parse_attr_as_string(context, fmi3_xml_elmID_Item, FMI3_MODELDESCRIPTION_ATTR(fmi_attr_id_name), 1, bufName) ||
-                fmi3_xml_parse_attr_as_string(context, fmi3_xml_elmID_Item, FMI3_MODELDESCRIPTION_ATTR(fmi_attr_id_description), 0, bufDescr) ||
-                fmi3_xml_parse_attr_as_int32( context, fmi3_xml_elmID_Item, FMI3_MODELDESCRIPTION_ATTR(fmi_attr_id_value), 1, &value, 0)) {
+                fmi3_xml_parse_attr_as_string(context, FMI3_MODELDESCRIPTION_ELM(fmi3_xml_elmID_Item), FMI3_MODELDESCRIPTION_ATTR(fmi_attr_id_name), 1, bufName) ||
+                fmi3_xml_parse_attr_as_string(context, FMI3_MODELDESCRIPTION_ELM(fmi3_xml_elmID_Item), FMI3_MODELDESCRIPTION_ATTR(fmi_attr_id_description), 0, bufDescr) ||
+                fmi3_xml_parse_attr_as_int32( context, FMI3_MODELDESCRIPTION_ELM(fmi3_xml_elmID_Item), FMI3_MODELDESCRIPTION_ATTR(fmi_attr_id_value), 1, &value, 0)) {
             return -1;
         }
         descrlen = jm_vector_get_size(char)(bufDescr);
@@ -1348,7 +1348,7 @@ int fmi3_xml_handle_Item(fmi3_xml_parser_context_t* context, const char* data) {
  * and could be found, otherwise the _props for the default type.
  */
 fmi3_xml_variable_type_base_t* fmi3_parse_declared_type_attr(fmi3_xml_parser_context_t* context,
-        fmi3_xml_elm_enu_t elmID, fmi3_xml_variable_type_base_t* defaultType)
+        fmi3_xml_elm_union_t elmID, fmi3_xml_variable_type_base_t* defaultType)
 {
     jm_named_ptr key, *found;
     jm_vector(char)* bufDeclaredType = fmi3_xml_reserve_parse_buffer(context, 1, 100);

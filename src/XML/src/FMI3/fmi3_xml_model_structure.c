@@ -227,7 +227,7 @@ int fmi3_xml_handle_ModelStructure(fmi3_xml_parser_context_t* context, const cha
  * Any errors when parsings will result in default dependencies = depends on everyhing
  */
 static int fmi3_xml_parse_dependencies(fmi3_xml_parser_context_t* context,
-        fmi3_xml_elm_enu_t elmID, fmi3_xml_dependencies_t* deps,
+        fmi3_xml_elm_union_t elmID, fmi3_xml_dependencies_t* deps,
         size_t* numDepInd, size_t* numDepKind)
 {
     /**
@@ -335,7 +335,7 @@ static int fmi3_xml_parse_dependencies(fmi3_xml_parser_context_t* context,
                 return -1;
             }
             // Check possible invalid combinations of elmID & dependenciesKind entries
-            if ((elmID == fmi3_xml_elmID_InitialUnknown) && 
+            if ((elmID.modelDescription == fmi3_xml_elmID_InitialUnknown) && 
                 ((kind == fmi3_dependencies_kind_fixed) || (kind == fmi3_dependencies_kind_tunable) || (kind == fmi3_dependencies_kind_discrete))) 
             {
                 fmi3_xml_parse_warning(context, "XML element 'InitialUnknown': '%s' is not allowed in list for attribute 'dependenciesKind'.",
@@ -386,7 +386,7 @@ static int fmi3_xml_parse_dependencies(fmi3_xml_parser_context_t* context,
 
 /* Wrapper for #fmi3_xml_parse_dependencies, handling failed states */
 static void fmi3_xml_parse_dependencies_error_wrapper(fmi3_xml_parser_context_t* context,
-        fmi3_xml_elm_enu_t elmID, fmi3_xml_dependencies_t* deps) {
+        fmi3_xml_elm_union_t elmID, fmi3_xml_dependencies_t* deps) {
     // number of added dependecies(Kind) entries, these are needed to clean dependencies in case of failure to parse
     size_t numDepInd = 0;
     size_t numDepKind = 0;
@@ -414,7 +414,7 @@ static void fmi3_xml_parse_dependencies_error_wrapper(fmi3_xml_parser_context_t*
  * and the dependencies are stored in return-arg 'deps'.
  */
 int fmi3_xml_parse_unknown(fmi3_xml_parser_context_t* context,
-                           fmi3_xml_elm_enu_t elmID,
+                           fmi3_xml_elm_union_t elmID,
                            jm_vector(jm_voidp) *destVarList,
                            fmi3_xml_dependencies_t* deps)
 {
@@ -449,7 +449,7 @@ int fmi3_xml_handle_Output(fmi3_xml_parser_context_t* context, const char* data)
     fmi3_xml_model_description_t* md = context->modelDescription;
     fmi3_xml_model_structure_t* ms = md->modelStructure;
     if (!data) {
-        if (fmi3_xml_parse_unknown(context, fmi3_xml_elmID_Output, &ms->outputs, ms->outputDeps)) {
+        if (fmi3_xml_parse_unknown(context, FMI3_MODELDESCRIPTION_ELM(fmi3_xml_elmID_Output), &ms->outputs, ms->outputDeps)) {
             return -1;
         }
     } else {
@@ -471,7 +471,7 @@ int fmi3_xml_handle_ContinuousStateDerivative(fmi3_xml_parser_context_t* context
     fmi3_xml_model_structure_t* ms = md->modelStructure;
     if (!data) {
         /* perform the parsing */
-        if (fmi3_xml_parse_unknown(context, fmi3_xml_elmID_ContinuousStateDerivative,
+        if (fmi3_xml_parse_unknown(context, FMI3_MODELDESCRIPTION_ELM(fmi3_xml_elmID_ContinuousStateDerivative),
                                    &ms->continuousStateDerivatives, ms->continuousStateDerivativeDeps)) {
             return -1;
         }
@@ -502,7 +502,7 @@ int fmi3_xml_handle_ClockedState(fmi3_xml_parser_context_t* context, const char*
     fmi3_xml_model_description_t* md = context->modelDescription;
     fmi3_xml_model_structure_t* ms = md->modelStructure;
     if (!data) {
-        if (fmi3_xml_parse_unknown(context, fmi3_xml_elmID_ClockedState,
+        if (fmi3_xml_parse_unknown(context, FMI3_MODELDESCRIPTION_ELM(fmi3_xml_elmID_ClockedState),
                                    &ms->clockedStates, ms->clockedStateDeps)) {
             return -1;
         }
@@ -535,7 +535,7 @@ int fmi3_xml_handle_InitialUnknown(fmi3_xml_parser_context_t* context, const cha
     fmi3_xml_model_description_t* md = context->modelDescription;
     fmi3_xml_model_structure_t* ms = md->modelStructure;
     if (!data) {
-        if (fmi3_xml_parse_unknown(context, fmi3_xml_elmID_InitialUnknown, &ms->initialUnknowns, ms->initialUnknownDeps)) {
+        if (fmi3_xml_parse_unknown(context, FMI3_MODELDESCRIPTION_ELM(fmi3_xml_elmID_InitialUnknown), &ms->initialUnknowns, ms->initialUnknownDeps)) {
             return -1;
         }
     } else {
@@ -561,7 +561,7 @@ int fmi3_xml_handle_EventIndicator(fmi3_xml_parser_context_t* context, const cha
     }
 
     if (!data) {
-        if (fmi3_xml_parse_unknown(context, fmi3_xml_elmID_EventIndicator,
+        if (fmi3_xml_parse_unknown(context, FMI3_MODELDESCRIPTION_ELM(fmi3_xml_elmID_EventIndicator),
                                    &ms->eventIndicators, ms->eventIndicatorDeps)) {
             return -1;
         }

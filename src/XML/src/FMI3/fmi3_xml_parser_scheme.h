@@ -27,15 +27,10 @@ extern "C" {
 
 // TODO: Duplicate the common ones, for simplicity
 /** \brief Attributes names common to modelDescription.xml & terminalsAndIcons.xml */
-#define FMI3_XML_ATTRLIST_COMMON(EXPAND_XML_ATTRNAME) \
-    EXPAND_XML_ATTRNAME(fmiVersion) \
-    EXPAND_XML_ATTRNAME(name) \
-    EXPAND_XML_ATTRNAME(description)
 
 // TODO: Eliminate this list, once terminalsAndIcons has been properly separated
 /** \brief Attribute names used in XML */
 #define FMI3_XML_ATTRLIST(EXPAND_XML_ATTRNAME) \
-    FMI3_XML_ATTRLIST_COMMON     (EXPAND_XML_ATTRNAME) \
     FMI3_XML_ATTRLIST_MODEL_DESCR(EXPAND_XML_ATTRNAME)
 
 #define FMI3_XML_ATTR_ID(attr) fmi_attr_id_##attr,
@@ -46,7 +41,6 @@ typedef enum fmi3_xml_modelDescription_attr_enu_t {
 
 #define FMI_TERMICON_XML_ATTR_ID(attr) fmi_termIcon_attr_id_##attr,
 typedef enum fmi3_xml_termIcon_attr_enu_t {
-    FMI3_XML_ATTRLIST_COMMON(FMI_TERMICON_XML_ATTR_ID) \
     FMI_XML_ATTRLIST_TERM_ICON(FMI_TERMICON_XML_ATTR_ID)
     fmi3_xml_termIcon_attr_number
 } fmi3_xml_termIcon_attr_enu_t;

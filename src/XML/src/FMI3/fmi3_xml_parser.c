@@ -50,7 +50,6 @@ const jm_string fmi3_modelDescription_xmlAttrNames[fmi3_modelDescription_xml_att
 };
 
 const jm_string fmi3_termIcon_xmlAttrNames[fmi3_xml_termIcon_attr_number] = {
-    FMI3_XML_ATTRLIST_COMMON(ATTR_STR) \
     FMI_XML_ATTRLIST_TERM_ICON(ATTR_STR)
 };
 

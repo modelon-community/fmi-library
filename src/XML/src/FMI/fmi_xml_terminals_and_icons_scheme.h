@@ -23,7 +23,10 @@ extern "C" {
 /* Attributes common to modelDescription.xml & terminalsAndIcons.xml
  * are listed in FMI3_XML_ATTRLIST_COMMON in fmi3_xml_parser.h
  */
-#define FMI_XML_ATTRLIST_TERM_ICON(EXPAND_XML_ATTRNAME)  // XXX: Currently empty, but will be filled
+#define FMI_XML_ATTRLIST_TERM_ICON(EXPAND_XML_ATTRNAME) \
+    EXPAND_XML_ATTRNAME(fmiVersion) \
+    EXPAND_XML_ATTRNAME(name) \
+    EXPAND_XML_ATTRNAME(description)
 
 #define FMI_XML_ELMLIST_TERM_ICON(EXPAND_XML_ELMNAME) \
     EXPAND_XML_ELMNAME(fmiTerminalsAndIcons) \

@@ -26,6 +26,9 @@ extern "C" {
  * are listed in FMI3_XML_ATTRLIST_COMMON in fmi3_xml_parser.h
  */
 #define FMI3_XML_ATTRLIST_MODEL_DESCR(EXPAND_XML_ATTRNAME) \
+    EXPAND_XML_ATTRNAME(fmiVersion) \
+    EXPAND_XML_ATTRNAME(name) \
+    EXPAND_XML_ATTRNAME(description) \
     EXPAND_XML_ATTRNAME(factor) \
     EXPAND_XML_ATTRNAME(offset) \
     EXPAND_XML_ATTRNAME(inverse) \

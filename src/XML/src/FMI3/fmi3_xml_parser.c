@@ -42,7 +42,6 @@ typedef unsigned long long int  fmi3_uint_buf_t; /* same size as fmi3_int_buf_t 
 #define UINTXX_MIN (0)
 #define FMI3_FLOAT32_MAX (3.402823466e+38F) /* FLT_MAX from float.h is platform-dependent (doesn't have to be 32 bit) */
 
-// TODO: Possibly have these as variables in the context struct?
 // TODO: Move these + access functions into the parser_scheme file?
 #define ATTR_STR(attr) #attr,
 const jm_string fmi3_modelDescription_xmlAttrNames[fmi3_modelDescription_xml_attr_number] = {
@@ -79,8 +78,6 @@ const fmi3_xml_modelDescription_scheme_info_t fmi3_xml_modelDescription_scheme_i
 };
 
 #define EXPAND_ELM_SCHEME_TERMICON(elm) fmi_termIcon_xml_scheme_##elm ,
-// TODO: This requires different handler functions
-// XXX: For proper refactoring: Possibly generate these + forward to original ones?
 /* Global array of all termIcon scheme_info_t. Index it with fmi3_xml_termIcon_elm_enu_t entries. */
 fmi3_xml_termIcon_scheme_info_t fmi_termIcon_xml_scheme_info[fmi3_xml_termIcon_elm_number] = {
     FMI_XML_ELMLIST_TERM_ICON(EXPAND_ELM_SCHEME_TERMICON)
@@ -180,7 +177,6 @@ static fmi3_xml_element_handle_map_t fmi3_xml_get_element_handle(fmi3_xml_parser
 }
 
 // TODO: Move to better place?
-// TODO: rename to include modelDescription?
 const char* fmi3_xml_elmid_to_name(fmi3_xml_parser_context_t* context, fmi3_xml_elm_t id){
     fmi3_xml_element_handle_map_t item = fmi3_xml_get_element_handle(context, id);
     return item.elementName;
@@ -342,7 +338,6 @@ static size_t fmi3_xml_string_char_count(const char* str, char ch) {
 * XXX: Be careful with using this, since the buffer entry will still be present in later elements.
 */
 jm_string fmi3_xml_peek_attr_str(fmi3_xml_parser_context_t* context, const fmi3_xml_attr_t attrID) {
-    // XXX: attrMapById will differ for modelDescription vs terminalsAndIcons
     const fmi3_xml_type_t xmlType = context->xmlType;
     switch (xmlType) {
         case fmi3_xml_type_modelDescription:
@@ -1038,9 +1033,8 @@ jm_vector(char)* fmi3_xml_reserve_parse_buffer(fmi3_xml_parser_context_t* contex
     return item;
 }
 
-// TODO: Docs
-static size_t fmi3_get_map_size(fmi3_xml_parser_context_t* context) {
-    // 1. Determine size based on xmlType
+// Get fmi3_xml_*_elm_number based on xmlType
+static size_t fmi3_get_enum_size(fmi3_xml_parser_context_t* context) {
     const fmi3_xml_type_t xmlType = context->xmlType;
     switch (xmlType) {
         case fmi3_xml_type_modelDescription:
@@ -1053,9 +1047,8 @@ static size_t fmi3_get_map_size(fmi3_xml_parser_context_t* context) {
     }
 }
 
-// TODO: Docs
-static size_t fmi3_get_map_size_actual(fmi3_xml_parser_context_t* context) {
-    // 1. Determine size based on xmlType
+// Get fmi3_xml_*_elm_actual_number based on xmlType
+static size_t fmi3_get_enum_size_actual(fmi3_xml_parser_context_t* context) {
     const fmi3_xml_type_t xmlType = context->xmlType;
     switch (xmlType) {
         case fmi3_xml_type_modelDescription:
@@ -1068,11 +1061,10 @@ static size_t fmi3_get_map_size_actual(fmi3_xml_parser_context_t* context) {
     }
 }
 
-// TODO: Will need a 2nd one for terminalsAndIcons
 // TODO: Move to better place?
 static int fmi3_create_attr_map(fmi3_xml_parser_context_t* context) {
     int i;
-    size_t mapSize = fmi3_get_map_size(context);
+    size_t mapSize = fmi3_get_enum_size(context);
     context->attrMapById = jm_vector_alloc(jm_string)(mapSize, mapSize, context->callbacks);
     if (!context->attrMapById) return -1;
     context->attrMapByName = jm_vector_alloc(jm_named_ptr)(mapSize, mapSize, context->callbacks);
@@ -1088,45 +1080,14 @@ static int fmi3_create_attr_map(fmi3_xml_parser_context_t* context) {
     return 0;
 }
 
-// TODO: remove
-static int fmi3_create_modelDescription_attr_map(fmi3_xml_parser_context_t* context) {
-    int i;
-    context->attrMapById = jm_vector_alloc(jm_string)(fmi3_modelDescription_xml_attr_number, fmi3_modelDescription_xml_attr_number, context->callbacks);
-    if (!context->attrMapById) return -1;
-    context->attrMapByName = jm_vector_alloc(jm_named_ptr)(fmi3_modelDescription_xml_attr_number, fmi3_modelDescription_xml_attr_number, context->callbacks);
-    if (!context->attrMapByName) return -1;
-    for(i = 0; i < fmi3_modelDescription_xml_attr_number; i++) {
-        jm_named_ptr map;
-        jm_vector_set_item(jm_string)(context->attrMapById, i, 0);
-        map.name = fmi3_xml_get_xml_attr_name(context, FMI3_ANY_ATTR(i));
-        map.ptr = (void*)(jm_vector_get_itemp(jm_string)(context->attrMapById, i));
-        jm_vector_set_item(jm_named_ptr)(context->attrMapByName, i, map);
-    }
-    jm_vector_qsort(jm_named_ptr)(context->attrMapByName, jm_compare_named);
-    return 0;
-}
-
-
+// TODO: Move to better place?
 static int fmi3_create_elm_map(fmi3_xml_parser_context_t* context) {
     int i;
-    size_t mapSize = fmi3_get_map_size(context);
-    size_t mapSizeActual = fmi3_get_map_size_actual(context);
+    size_t mapSize = fmi3_get_enum_size(context);
+    size_t mapSizeActual = fmi3_get_enum_size_actual(context);
     context->elmMap = jm_vector_alloc(fmi3_xml_element_handle_map_t)(mapSizeActual, mapSize, context->callbacks);
     if (!context->elmMap) return -1;
     for(i = 0; i < mapSizeActual; i++) {
-        fmi3_xml_element_handle_map_t item = fmi3_xml_get_element_handle(context, FMI3_ANY_ELM(i));
-        jm_vector_set_item(fmi3_xml_element_handle_map_t)(context->elmMap, i, item);
-    }
-    jm_vector_qsort(fmi3_xml_element_handle_map_t)(context->elmMap, fmi3_xml_compare_elmName);
-    return 0;
-}
-
-// TODO: Remove
-static int fmi3_create_modelDescription_elm_map(fmi3_xml_parser_context_t* context) {
-    size_t i;
-    context->elmMap = jm_vector_alloc(fmi3_xml_element_handle_map_t)(fmi3_xml_modelDescription_elm_actual_number, fmi3_xml_modelDescription_elm_number, context->callbacks);
-    if (!context->elmMap) return -1;
-    for(i = 0; i < fmi3_xml_modelDescription_elm_actual_number; i++) {
         fmi3_xml_element_handle_map_t item = fmi3_xml_get_element_handle(context, FMI3_ANY_ELM(i));
         jm_vector_set_item(fmi3_xml_element_handle_map_t)(context->elmMap, i, item);
     }
@@ -1211,7 +1172,7 @@ static void XMLCALL fmi3_parse_element_start(void *c, const char *elm, const cha
     int i;
     fmi3_xml_parser_context_t* context = c;
     context->has_produced_data_warning = 0;
-    size_t mapSize = fmi3_get_map_size(context);
+    size_t mapSize = fmi3_get_enum_size(context);
 
     if (context->useAnyHandleFlg) {
         fmi3_xml_callbacks_t* anyH = context->anyHandle;
@@ -1596,8 +1557,6 @@ int fmi3_xml_parse_terminals_and_icons(fmi_xml_terminals_and_icons_t* termIcon,
     XML_Parser parser = NULL;
     FILE* file;
 
-    // TODO
-    // context = fmi3_xml_allocate_parser_context(termIcon->callbacks, fmi3_xml_type_modelDescription);
     context = fmi3_xml_allocate_parser_context(termIcon->callbacks, fmi3_xml_type_terminalAndIcons);
 
     // try to open file before doing parser initialization

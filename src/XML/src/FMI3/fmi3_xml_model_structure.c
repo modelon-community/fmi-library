@@ -248,7 +248,7 @@ static int fmi3_xml_parse_dependencies(fmi3_xml_parser_context_t* context,
                 <xs:list itemType="xs:unsignedInt"/>
             </xs:simpleType>
         </xs:attribute> */
-    if (fmi3_xml_get_attr_str(context, elmID, fmi_attr_id_dependencies, 0, &listInd)) {
+    if (fmi3_xml_get_attr_str(context, elmID, FMI3_MODELDESCRIPTION_ATTR(fmi_attr_id_dependencies), 0, &listInd)) {
         return -1;
     }
     if (listInd) {
@@ -297,7 +297,7 @@ static int fmi3_xml_parse_dependencies(fmi3_xml_parser_context_t* context,
             </xs:simpleType>
         </xs:attribute>
         */
-    if (fmi3_xml_get_attr_str(context, elmID, fmi_attr_id_dependenciesKind, 0, &listKind)) {
+    if (fmi3_xml_get_attr_str(context, elmID, FMI3_MODELDESCRIPTION_ATTR(fmi_attr_id_dependenciesKind), 0, &listKind)) {
         return -1;
     }
     if (listKind) {
@@ -424,7 +424,7 @@ int fmi3_xml_parse_unknown(fmi3_xml_parser_context_t* context,
     fmi3_value_reference_t vr;
     fmi3_xml_variable_t* variable;
 
-    if (fmi3_xml_parse_attr_as_uint32(context, elmID, fmi_attr_id_valueReference, 1, &vr, 0)){
+    if (fmi3_xml_parse_attr_as_uint32(context, elmID, FMI3_MODELDESCRIPTION_ATTR(fmi_attr_id_valueReference), 1, &vr, 0)){
         fmi3_xml_set_model_structure_invalid(ms);
         return -1;
     }

@@ -675,8 +675,8 @@ int fmi3_xml_handle_SimpleType(fmi3_xml_parser_context_t *context, const char* d
             return -1;
 
         /* read attributes to buffers */
-        if (fmi3_xml_parse_attr_as_string(context, fmi3_xml_elmID_SimpleType, fmi_attr_id_name, 1, bufName) ||
-            fmi3_xml_parse_attr_as_string(context, fmi3_xml_elmID_SimpleType, fmi_attr_id_description, 0, bufDescr)) {
+        if (fmi3_xml_parse_attr_as_string(context, fmi3_xml_elmID_SimpleType, FMI3_MODELDESCRIPTION_ATTR(fmi_attr_id_name), 1, bufName) ||
+            fmi3_xml_parse_attr_as_string(context, fmi3_xml_elmID_SimpleType, FMI3_MODELDESCRIPTION_ATTR(fmi_attr_id_description), 0, bufDescr)) {
             return -1;
         }
 
@@ -807,9 +807,9 @@ fmi3_xml_float_type_props_t* fmi3_xml_parse_float_type_properties(fmi3_xml_parse
             &md->typeDefinitions, fallbackType, sizeof(fmi3_xml_float_type_props_t));
 
     if (!bufQuantity || !bufUnit || !bufDispUnit || !props ||
-            fmi3_xml_parse_attr_as_string(context, elmID, fmi_attr_id_quantity, 0, bufQuantity) ||
-            fmi3_xml_parse_attr_as_string(context, elmID, fmi_attr_id_unit, 0, bufUnit) ||
-            fmi3_xml_parse_attr_as_string(context, elmID, fmi_attr_id_displayUnit, 0, bufDispUnit))
+            fmi3_xml_parse_attr_as_string(context, elmID, FMI3_MODELDESCRIPTION_ATTR(fmi_attr_id_quantity), 0, bufQuantity) ||
+            fmi3_xml_parse_attr_as_string(context, elmID, FMI3_MODELDESCRIPTION_ATTR(fmi_attr_id_unit), 0, bufUnit) ||
+            fmi3_xml_parse_attr_as_string(context, elmID, FMI3_MODELDESCRIPTION_ATTR(fmi_attr_id_displayUnit), 0, bufDispUnit))
     {
         fmi3_xml_parse_fatal(context, "Error parsing float type properties");
         return NULL;
@@ -834,11 +834,11 @@ fmi3_xml_float_type_props_t* fmi3_xml_parse_float_type_properties(fmi3_xml_parse
         }
     }
 
-    if (fmi3_xml_parse_attr_as_boolean(context, elmID, fmi_attr_id_relativeQuantity, 0, &relQuanBuf, fallbackProps->super.isRelativeQuantity) ||
-        fmi3_xml_parse_attr_as_boolean(context, elmID, fmi_attr_id_unbounded, 0, &unboundedBuf, fallbackProps->super.isUnbounded) ||
-        fmi3_xml_parse_attr_as_floatXX(context, elmID, fmi_attr_id_min, 0, &props->typeMin, &fallbackProps->typeMin, primType) ||
-        fmi3_xml_parse_attr_as_floatXX(context, elmID, fmi_attr_id_max, 0, &props->typeMax, &fallbackProps->typeMax, primType) ||
-        fmi3_xml_parse_attr_as_floatXX(context, elmID, fmi_attr_id_nominal, 0, &props->typeNominal, &fallbackProps->typeNominal, primType))
+    if (fmi3_xml_parse_attr_as_boolean(context, elmID, FMI3_MODELDESCRIPTION_ATTR(fmi_attr_id_relativeQuantity), 0, &relQuanBuf, fallbackProps->super.isRelativeQuantity) ||
+        fmi3_xml_parse_attr_as_boolean(context, elmID, FMI3_MODELDESCRIPTION_ATTR(fmi_attr_id_unbounded), 0, &unboundedBuf, fallbackProps->super.isUnbounded) ||
+        fmi3_xml_parse_attr_as_floatXX(context, elmID, FMI3_MODELDESCRIPTION_ATTR(fmi_attr_id_min), 0, &props->typeMin, &fallbackProps->typeMin, primType) ||
+        fmi3_xml_parse_attr_as_floatXX(context, elmID, FMI3_MODELDESCRIPTION_ATTR(fmi_attr_id_max), 0, &props->typeMax, &fallbackProps->typeMax, primType) ||
+        fmi3_xml_parse_attr_as_floatXX(context, elmID, FMI3_MODELDESCRIPTION_ATTR(fmi_attr_id_nominal), 0, &props->typeNominal, &fallbackProps->typeNominal, primType))
     {
         // NOTE: Should not need fatal error here since none of these attributes are used to
         // reference other parts of the XML.
@@ -909,7 +909,7 @@ fmi3_xml_int_type_props_t* fmi3_xml_parse_intXX_type_properties(fmi3_xml_parser_
     props = (fmi3_xml_int_type_props_t*)fmi3_xml_alloc_variable_or_typedef_props(td, fallbackType, sizeof(fmi3_xml_int_type_props_t));
     if (!props) return NULL;
 
-    if (fmi3_xml_parse_attr_as_string(context, elmID, fmi_attr_id_quantity, 0, bufQuantity))
+    if (fmi3_xml_parse_attr_as_string(context, elmID, FMI3_MODELDESCRIPTION_ATTR(fmi_attr_id_quantity), 0, bufQuantity))
         return NULL;
 
     if (jm_vector_get_size(char)(bufQuantity))
@@ -917,8 +917,8 @@ fmi3_xml_int_type_props_t* fmi3_xml_parse_intXX_type_properties(fmi3_xml_parser_
 
     props->quantity = quantity;
 
-    if (    fmi3_xml_parse_attr_as_intXX(context, elmID, fmi_attr_id_min, 0, &props->typeMin, &fallbackProps->typeMin, primType) ||
-            fmi3_xml_parse_attr_as_intXX(context, elmID, fmi_attr_id_max, 0, &props->typeMax, &fallbackProps->typeMax, primType))
+    if (    fmi3_xml_parse_attr_as_intXX(context, elmID, FMI3_MODELDESCRIPTION_ATTR(fmi_attr_id_min), 0, &props->typeMin, &fallbackProps->typeMin, primType) ||
+            fmi3_xml_parse_attr_as_intXX(context, elmID, FMI3_MODELDESCRIPTION_ATTR(fmi_attr_id_max), 0, &props->typeMax, &fallbackProps->typeMax, primType))
         return NULL;
 
     return props;
@@ -1019,9 +1019,9 @@ fmi3_xml_binary_type_props_t* fmi3_xml_parse_binary_type_properties(fmi3_xml_par
 
     // maxSize:
     // without default values, needs peeking to correctly set hasAttr flag
-    if (fmi3_xml_peek_attr_str(context, fmi_attr_id_maxSize)) { // attribute exists
+    if (fmi3_xml_peek_attr_str(context, FMI3_MODELDESCRIPTION_ATTR(fmi_attr_id_maxSize))) { // attribute exists
         props->hasMaxSize = fmi3_true;
-        if (fmi3_xml_parse_attr_as_sizet(context, elmID, fmi_attr_id_maxSize, 0 /*required*/,
+        if (fmi3_xml_parse_attr_as_sizet(context, elmID, FMI3_MODELDESCRIPTION_ATTR(fmi_attr_id_maxSize), 0 /*required*/,
                 &props->maxSize, &fallbackProps->maxSize)) {
             // BinaryType: fallbackProps = default; Binary: fallbackProps = declaredType props(or default)
             props->hasMaxSize = fallbackProps->hasMaxSize;
@@ -1034,10 +1034,10 @@ fmi3_xml_binary_type_props_t* fmi3_xml_parse_binary_type_properties(fmi3_xml_par
     }
 
     // mimeType:
-    if (fmi3_xml_is_attr_defined(context, fmi_attr_id_mimeType)) {
+    if (fmi3_xml_is_attr_defined(context, FMI3_MODELDESCRIPTION_ATTR(fmi_attr_id_mimeType))) {
         jm_vector(char)* mimeType = fmi3_xml_reserve_parse_buffer(context, 1, 100);
         if (!mimeType) {return NULL;} // buffer allocation failure
-        if (fmi3_xml_parse_attr_as_string(context, elmID, fmi_attr_id_mimeType, 0, mimeType)) {
+        if (fmi3_xml_parse_attr_as_string(context, elmID, FMI3_MODELDESCRIPTION_ATTR(fmi_attr_id_mimeType), 0, mimeType)) {
             props->mimeType = fallbackProps->mimeType; // parsing failure
         } else { // successful parse
             if (jm_vector_get_size(char)(mimeType) == 0) {
@@ -1110,7 +1110,7 @@ fmi3_xml_clock_type_props_t* fmi3_xml_parse_clock_type_properties(fmi3_xml_parse
     // NOTE: The parsing of intervalVariability could maybe be relaxed to not be 'required'
     // for Variables if they have a non-default TypeDefinition, since then they could inherit
     // that attribute. However, the schema files don't allow it.
-    int ret = fmi3_xml_parse_attr_as_enum(context, elmID, fmi_attr_id_intervalVariability, 1 /*required*/,
+    int ret = fmi3_xml_parse_attr_as_enum(context, elmID, FMI3_MODELDESCRIPTION_ATTR(fmi_attr_id_intervalVariability), 1 /*required*/,
             &props->intervalVariability, fallbackProps->intervalVariability, intervalVariabilityMap);
     if (ret) {
         // Note: Even though this attribute is required, this does not break the API (by design)
@@ -1121,28 +1121,28 @@ fmi3_xml_clock_type_props_t* fmi3_xml_parse_clock_type_properties(fmi3_xml_parse
     // The following attributes are optional, failure to parse does not stop parsing of current element
     // with default values
     // XXX: fmi3_xml_parse_as_* only considers default if parsing was successful
-    if (fmi3_xml_parse_attr_as_bool(context, elmID, fmi_attr_id_canBeDeactivated, 0 /*required*/,
+    if (fmi3_xml_parse_attr_as_bool(context, elmID, FMI3_MODELDESCRIPTION_ATTR(fmi_attr_id_canBeDeactivated), 0 /*required*/,
             &props->canBeDeactivated, fallbackProps->canBeDeactivated)) {
         props->canBeDeactivated = fallbackProps->canBeDeactivated;
     }
-    if (fmi3_xml_parse_attr_as_float32(context, elmID, fmi_attr_id_shiftDecimal, 0 /*required*/,
+    if (fmi3_xml_parse_attr_as_float32(context, elmID, FMI3_MODELDESCRIPTION_ATTR(fmi_attr_id_shiftDecimal), 0 /*required*/,
             &props->shiftDecimal, fallbackProps->shiftDecimal)) {
         props->shiftDecimal = fallbackProps->shiftDecimal;
     }
-    if (fmi3_xml_parse_attr_as_bool(context, elmID, fmi_attr_id_supportsFraction, 0 /*required*/,
+    if (fmi3_xml_parse_attr_as_bool(context, elmID, FMI3_MODELDESCRIPTION_ATTR(fmi_attr_id_supportsFraction), 0 /*required*/,
             &props->supportsFraction, fallbackProps->supportsFraction)) {
         props->supportsFraction = fallbackProps->supportsFraction;
     }
-    if (fmi3_xml_parse_attr_as_uint64(context, elmID, fmi_attr_id_shiftCounter, 0 /*required*/,
+    if (fmi3_xml_parse_attr_as_uint64(context, elmID, FMI3_MODELDESCRIPTION_ATTR(fmi_attr_id_shiftCounter), 0 /*required*/,
             &props->shiftCounter, fallbackProps->shiftCounter)) {
         props->shiftCounter = fallbackProps->shiftCounter;
     }
 
     // without default values, needs peeking to correctly set hasAttr flag
     // priority
-    if (fmi3_xml_peek_attr_str(context, fmi_attr_id_priority)) { // attribute exists
+    if (fmi3_xml_peek_attr_str(context, FMI3_MODELDESCRIPTION_ATTR(fmi_attr_id_priority))) { // attribute exists
         props->hasPriority = fmi3_true;
-        if (fmi3_xml_parse_attr_as_uint32(context, elmID, fmi_attr_id_priority, 0 /*required*/,
+        if (fmi3_xml_parse_attr_as_uint32(context, elmID, FMI3_MODELDESCRIPTION_ATTR(fmi_attr_id_priority), 0 /*required*/,
                 &props->priority, fallbackProps->priority)) {
             // ClockType: fallbackProps = default; Clock: fallbackProps = declaredType props(or default)
             props->hasPriority = fallbackProps->hasPriority;
@@ -1155,9 +1155,9 @@ fmi3_xml_clock_type_props_t* fmi3_xml_parse_clock_type_properties(fmi3_xml_parse
     }
 
     // resolution
-    if (fmi3_xml_peek_attr_str(context, fmi_attr_id_resolution)) { // attribute exists
+    if (fmi3_xml_peek_attr_str(context, FMI3_MODELDESCRIPTION_ATTR(fmi_attr_id_resolution))) { // attribute exists
         props->hasResolution = fmi3_true;
-        if (fmi3_xml_parse_attr_as_uint64(context, elmID, fmi_attr_id_resolution, 0 /*required*/,
+        if (fmi3_xml_parse_attr_as_uint64(context, elmID, FMI3_MODELDESCRIPTION_ATTR(fmi_attr_id_resolution), 0 /*required*/,
                 &props->resolution, fallbackProps->resolution)) {
             // ClockType: fallbackProps = default; Clock: fallbackProps = declaredType props(or default)
             props->hasResolution = fallbackProps->hasResolution;
@@ -1170,9 +1170,9 @@ fmi3_xml_clock_type_props_t* fmi3_xml_parse_clock_type_properties(fmi3_xml_parse
     }
 
     // intervalCounter
-    if (fmi3_xml_peek_attr_str(context, fmi_attr_id_intervalCounter)) { // attribute exists
+    if (fmi3_xml_peek_attr_str(context, FMI3_MODELDESCRIPTION_ATTR(fmi_attr_id_intervalCounter))) { // attribute exists
         props->hasIntervalCounter = fmi3_true;
-        if (fmi3_xml_parse_attr_as_uint64(context, elmID, fmi_attr_id_intervalCounter, 0 /*required*/,
+        if (fmi3_xml_parse_attr_as_uint64(context, elmID, FMI3_MODELDESCRIPTION_ATTR(fmi_attr_id_intervalCounter), 0 /*required*/,
                 &props->intervalCounter, fallbackProps->intervalCounter)) {
             // ClockType: fallbackProps = default; Clock: fallbackProps = declaredType props(or default)
             props->hasIntervalCounter = fallbackProps->hasIntervalCounter;
@@ -1185,9 +1185,9 @@ fmi3_xml_clock_type_props_t* fmi3_xml_parse_clock_type_properties(fmi3_xml_parse
     }
 
     // hasIntervalDecimal
-    if (fmi3_xml_peek_attr_str(context, fmi_attr_id_intervalDecimal)) { // attribute exists
+    if (fmi3_xml_peek_attr_str(context, FMI3_MODELDESCRIPTION_ATTR(fmi_attr_id_intervalDecimal))) { // attribute exists
         props->hasIntervalDecimal = fmi3_true;
-        if (fmi3_xml_parse_attr_as_float32(context, elmID, fmi_attr_id_intervalDecimal, 0 /*required*/,
+        if (fmi3_xml_parse_attr_as_float32(context, elmID, FMI3_MODELDESCRIPTION_ATTR(fmi_attr_id_intervalDecimal), 0 /*required*/,
                 &props->intervalDecimal, fallbackProps->intervalDecimal)) {
             // ClockType: fallbackProps = default; Clock: fallbackProps = declaredType props(or default)
             props->hasIntervalDecimal = fallbackProps->hasIntervalDecimal;
@@ -1260,7 +1260,7 @@ int fmi3_xml_handle_EnumerationType(fmi3_xml_parser_context_t* context, const ch
             props->base.super.next = nextTmp;
         }
         if (!bufQuantity || !props ||
-                fmi3_xml_parse_attr_as_string(context, fmi3_xml_elmID_Int32Type, fmi_attr_id_quantity, 0, bufQuantity)
+                fmi3_xml_parse_attr_as_string(context, fmi3_xml_elmID_Int32Type, FMI3_MODELDESCRIPTION_ATTR(fmi_attr_id_quantity), 0, bufQuantity)
                 )
             return -1;
         if (jm_vector_get_size(char)(bufQuantity))
@@ -1318,9 +1318,9 @@ int fmi3_xml_handle_Item(fmi3_xml_parser_context_t* context, const char* data) {
             && (enumProps->base.super.baseType == fmi3_base_type_enum));
 
         if (!bufName || !bufDescr ||
-                fmi3_xml_parse_attr_as_string(context, fmi3_xml_elmID_Item, fmi_attr_id_name, 1, bufName) ||
-                fmi3_xml_parse_attr_as_string(context, fmi3_xml_elmID_Item, fmi_attr_id_description, 0, bufDescr) ||
-                fmi3_xml_parse_attr_as_int32( context, fmi3_xml_elmID_Item, fmi_attr_id_value, 1, &value, 0)) {
+                fmi3_xml_parse_attr_as_string(context, fmi3_xml_elmID_Item, FMI3_MODELDESCRIPTION_ATTR(fmi_attr_id_name), 1, bufName) ||
+                fmi3_xml_parse_attr_as_string(context, fmi3_xml_elmID_Item, FMI3_MODELDESCRIPTION_ATTR(fmi_attr_id_description), 0, bufDescr) ||
+                fmi3_xml_parse_attr_as_int32( context, fmi3_xml_elmID_Item, FMI3_MODELDESCRIPTION_ATTR(fmi_attr_id_value), 1, &value, 0)) {
             return -1;
         }
         descrlen = jm_vector_get_size(char)(bufDescr);
@@ -1353,7 +1353,7 @@ fmi3_xml_variable_type_base_t* fmi3_parse_declared_type_attr(fmi3_xml_parser_con
     jm_named_ptr key, *found;
     jm_vector(char)* bufDeclaredType = fmi3_xml_reserve_parse_buffer(context, 1, 100);
 
-    fmi3_xml_parse_attr_as_string(context, elmID, fmi_attr_id_declaredType, 0, bufDeclaredType);
+    fmi3_xml_parse_attr_as_string(context, elmID, FMI3_MODELDESCRIPTION_ATTR(fmi_attr_id_declaredType), 0, bufDeclaredType);
     if ( !jm_vector_get_size(char)(bufDeclaredType) )
         return defaultType;
 

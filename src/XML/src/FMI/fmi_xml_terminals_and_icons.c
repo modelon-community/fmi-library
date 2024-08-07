@@ -202,8 +202,32 @@ int fmi_xml_handle_Terminal(fmi3_xml_parser_context_t* context, const char* data
 
         // TODO: Parse the remaining attributes
 
+        context->currentTerminalLevel++;
     } else { // post process <Terminal>
-        ;
+        context->currentTerminalLevel--;
+    }
+    if (context->currentTerminalLevel > 0) {
+        // Update such that Terminal is its own parent
+        if (fmi3_xml_update_scheme_info(context, FMI_ELM_TERMICON(fmi_xml_elmID_termIcon_Terminal),
+                (fmi3_xml_scheme_info_t){
+                    .superID = FMI_ELM_TERMICON(fmi_xml_elmID_termIcon_none),
+                    .parentID = FMI_ELM_TERMICON(fmi_xml_elmID_termIcon_Terminal),
+                    .siblingIndex = 2,
+                    .multipleAllowed = 1})
+                ) {
+            return -1;
+        }
+    } else { // currentTerminalLevel == 0
+        // Update such that Terminal parent is Terminals
+        if (fmi3_xml_update_scheme_info(context, FMI_ELM_TERMICON(fmi_xml_elmID_termIcon_Terminal),
+                    (fmi3_xml_scheme_info_t){
+                        .superID = FMI_ELM_TERMICON(fmi_xml_elmID_termIcon_none),
+                        .parentID = FMI_ELM_TERMICON(fmi_xml_elmID_termIcon_Terminals),
+                        .siblingIndex = 0,
+                        .multipleAllowed = 1})
+                    ) {
+                return -1;
+            }
     }
     return 0;
 }

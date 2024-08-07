@@ -10,7 +10,9 @@
             <TerminalStreamMemberVariable/>
             
             <!-- These are currently skipped when parsing -->
-            <Terminal name="nestedTerminalA1"/> 
+            <Terminal name="nestedTerminalA1">
+                <Terminal name="level3Terminal"/>
+            </Terminal> 
             <Terminal name="nestedTerminalA2"/>
 
             <TerminalGraphicalRepresentation/>

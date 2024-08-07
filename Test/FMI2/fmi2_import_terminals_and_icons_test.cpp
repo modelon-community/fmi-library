@@ -58,7 +58,7 @@ TEST_CASE("Test parse terminals and icons") {
     }
 
     // TODO: Current example xml includes elements/attributes not yet parsed
-    REQUIRE(fmi2_testutil_get_num_problems(tfmu) == 11);
+    REQUIRE(fmi2_testutil_get_num_problems(tfmu) == 9);
     fmi2_testutil_import_free(tfmu);
 }
 

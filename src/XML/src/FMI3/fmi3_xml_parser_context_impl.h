@@ -203,6 +203,7 @@ struct fmi3_xml_parser_context_t {
 
     /* Data for restoring locale after parsing */
     jm_locale_t* jm_locale;
+    unsigned int currentTerminalLevel;
 };
 
 #ifdef __cplusplus

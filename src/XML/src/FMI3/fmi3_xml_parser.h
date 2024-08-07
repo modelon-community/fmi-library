@@ -96,6 +96,8 @@ typedef struct fmi3_xml_primitive_types_t {
 
 extern const fmi3_xml_primitive_types_t PRIMITIVE_TYPES;
 
+int fmi3_xml_update_scheme_info(fmi3_xml_parser_context_t* context, fmi3_xml_elm_t enu, fmi3_xml_scheme_info_t new_info);
+
 jm_vector(char) * fmi3_xml_reserve_parse_buffer(fmi3_xml_parser_context_t* context, size_t index, size_t size);
 int fmi3_xml_alloc_parse_buffer(fmi3_xml_parser_context_t* context, size_t items);
 void fmi3_xml_free_variable_start_values(fmi3_xml_parser_context_t* context);

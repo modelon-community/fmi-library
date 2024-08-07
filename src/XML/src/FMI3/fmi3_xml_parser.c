@@ -84,6 +84,26 @@ fmi_xml_scheme_termIcon_info_t fmi_xml_scheme_termIcon_info[fmi_xml_elm_termIcon
     FMI_XML_ELMLIST_ALT_TERM_ICON(EXPAND_ELM_SCHEME_TERMICON)
 };
 
+int fmi3_xml_update_scheme_info(fmi3_xml_parser_context_t* context, fmi3_xml_elm_t enu, fmi3_xml_scheme_info_t new_info) {
+    const fmi3_xml_type_t xmlType = context->xmlType;
+
+    // currently only allowed for terminalsAndIcons
+    // used to enable Terminals recursion by updating valid parent
+    fmi_xml_scheme_termIcon_info_t info_termIcon;
+    switch (xmlType) {
+        case fmi3_xml_type_terminalAndIcons:
+            info_termIcon.superID = new_info.superID.termIcon;
+            info_termIcon.parentID = new_info.parentID.termIcon;
+            info_termIcon.siblingIndex = new_info.siblingIndex;
+            info_termIcon.multipleAllowed = new_info.multipleAllowed;
+
+            fmi_xml_scheme_termIcon_info[enu.termIcon] = info_termIcon;
+            return 0;
+        default:
+            return 1;
+    }
+}
+
 // TODO: Move to more suitable place?
 static fmi3_xml_scheme_info_t fmi3_xml_get_scheme_info(fmi3_xml_parser_context_t* context, fmi3_xml_elm_t enu) {
     const fmi3_xml_type_t xmlType = context->xmlType;
@@ -1584,6 +1604,7 @@ int fmi3_xml_parse_terminals_and_icons(fmi_xml_terminals_and_icons_t* termIcon,
     context->anyParent = 0;
     context->anyHandle = NULL;
     context->anyHandleTermIcon = xml_callbacks;
+    context->currentTerminalLevel = 0;
 
     /* Set locale such that parsing does not depend on the environment.
      * For example, LC_NUMERIC affects what sscanf identifies as the floating

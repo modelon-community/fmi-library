@@ -36,7 +36,7 @@ extern "C" {
     EXPAND_XML_ELMNAME(TerminalGraphicalRepresentation)
 
 /** \brief Element that can be placed under different parents get alternative names from the info struct */
-#define FMI_XML_ELMLIST_ALT_TERM_ICON(EXPAND_XML_ELMNAME)  // TODO: Terminal should go here?
+#define FMI_XML_ELMLIST_ALT_TERM_ICON(EXPAND_XML_ELMNAME)
 
 /*
     Define XML schema structure. Used to build the 'fmi_xml_scheme_termIcon_info_t' type (in fmi3_xml_parser.c).
@@ -53,7 +53,7 @@ extern "C" {
 #define fmi_xml_scheme_termIcon_Terminal                        {fmi_xml_elmID_termIcon_none, fmi_xml_elmID_termIcon_Terminals,            0,       1}
 #define fmi_xml_scheme_termIcon_TerminalMemberVariable          {fmi_xml_elmID_termIcon_none, fmi_xml_elmID_termIcon_Terminal,             0,       1}
 #define fmi_xml_scheme_termIcon_TerminalStreamMemberVariable    {fmi_xml_elmID_termIcon_none, fmi_xml_elmID_termIcon_Terminal,             1,       1}
-// TODO: How to handle nested Terminals?
+//#define fmi_xml_scheme_termIcon_Terminal(switching)           {fmi_xml_elmID_termIcon_none, fmi_xml_elmID_termIcon_Terminal ,            2,       1}
 #define fmi_xml_scheme_termIcon_TerminalGraphicalRepresentation {fmi_xml_elmID_termIcon_none, fmi_xml_elmID_termIcon_Terminal,             3,       0}
 
 #ifdef __cplusplus

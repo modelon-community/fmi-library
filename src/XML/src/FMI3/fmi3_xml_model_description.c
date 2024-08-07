@@ -548,7 +548,6 @@ int fmi3_xml_handle_ModelExchange(fmi3_xml_parser_context_t *context, const char
         jm_log_verbose(context->callbacks, module, "Parsing XML element ModelExchange");
 
         // Reset handles for the elements that are specific under ModelExchange
-        // TODO: Expand the FMI3_XML_ELM_ID macro
         fmi3_xml_set_element_handle(context, "SourceFiles", FMI3_ELM(FMI3_XML_ELM_ID(SourceFiles)));
         fmi3_xml_set_element_handle(context, "File", FMI3_ELM(FMI3_XML_ELM_ID(File)));
 
@@ -584,7 +583,6 @@ int fmi3_xml_handle_CoSimulation(fmi3_xml_parser_context_t *context, const char*
         jm_log_verbose(context->callbacks, module, "Parsing XML element CoSimulation");
 
         //  Reset handles for the elements that are specific under CoSimulation
-        // TODO: Expand the FMI3_XML_ELM_ID macro
         fmi3_xml_set_element_handle(context, "SourceFiles", FMI3_ELM(FMI3_XML_ELM_ID(SourceFilesCS)));
         fmi3_xml_set_element_handle(context, "File", FMI3_ELM(FMI3_XML_ELM_ID(FileCS)));
 

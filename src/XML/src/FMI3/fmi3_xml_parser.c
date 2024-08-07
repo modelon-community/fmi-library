@@ -45,7 +45,7 @@ typedef unsigned long long int  fmi3_uint_buf_t; /* same size as fmi3_int_buf_t 
 // TODO: Move these + access functions into the parser_scheme file?
 #define ATTR_STR(attr) #attr,
 const jm_string fmi3_modelDescription_xmlAttrNames[fmi3_modelDescription_xml_attr_number] = {
-    FMI3_XML_ATTRLIST(ATTR_STR)
+    FMI3_XML_ATTRLIST_MODEL_DESCR(ATTR_STR)
 };
 
 const jm_string fmi3_termIcon_xmlAttrNames[fmi3_xml_termIcon_attr_number] = {
@@ -86,7 +86,6 @@ fmi3_xml_termIcon_scheme_info_t fmi_xml_scheme_termIcon_info[fmi_xml_elm_termIco
 };
 
 // TODO: Move to more suitable place?
-// TODO: possibly non-static
 static fmi3_xml_scheme_info_t fmi3_xml_get_scheme_info(fmi3_xml_parser_context_t* context, fmi3_xml_elm_t enu) {
     const fmi3_xml_type_t xmlType = context->xmlType;
 
@@ -144,7 +143,6 @@ const fmi3_xml_termIcon_element_handle_map_t fmi3_termIcon_element_handle_map[fm
 };
 
 // TODO: Move to more suitable place?
-// TODO: possibly non-static
 static fmi3_xml_element_handle_map_t fmi3_xml_get_element_handle(fmi3_xml_parser_context_t* context, fmi3_xml_elm_t enu) {
     const fmi3_xml_type_t xmlType = context->xmlType;
 

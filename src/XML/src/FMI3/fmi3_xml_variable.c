@@ -1179,7 +1179,6 @@ void fmi3_xml_free_variable(jm_callbacks* callbacks, fmi3_xml_variable_t* var) {
  *
  * The attributes are error checked. On success, the parsed variable is updated with them.
  */
-// TODO: These are deeply rooted in modelDescription territory; use modelDescription_elm_enu_t here?
 static int fmi3_xml_variable_process_attr_causality_variability_initial(fmi3_xml_parser_context_t* context,
         fmi3_xml_variable_t* variable, fmi3_xml_elm_t elm_id)
 {

@@ -25,17 +25,9 @@ related to parsing XML elements and their attributes
 extern "C" {
 #endif
 
-// TODO: Duplicate the common ones, for simplicity
-/** \brief Attributes names common to modelDescription.xml & terminalsAndIcons.xml */
-
-// TODO: Eliminate this list, once terminalsAndIcons has been properly separated
-/** \brief Attribute names used in XML */
-#define FMI3_XML_ATTRLIST(EXPAND_XML_ATTRNAME) \
-    FMI3_XML_ATTRLIST_MODEL_DESCR(EXPAND_XML_ATTRNAME)
-
 #define FMI3_XML_ATTR_ID(attr) fmi_attr_id_##attr,
 typedef enum fmi3_xml_attr_modelDescription_enu_t {
-    FMI3_XML_ATTRLIST(FMI3_XML_ATTR_ID)
+    FMI3_XML_ATTRLIST_MODEL_DESCR(FMI3_XML_ATTR_ID)
     fmi3_modelDescription_xml_attr_number
 } fmi3_xml_attr_modelDescription_enu_t;
 

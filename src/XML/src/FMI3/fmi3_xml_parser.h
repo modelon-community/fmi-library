@@ -48,7 +48,6 @@ typedef struct {
     int multipleAllowed;    /* multiple elements of this kind kan come in a sequence as siblings*/
 } fmi3_xml_modelDescription_scheme_info_t;
 
-// TODO
 typedef struct {
     fmi_xml_elm_termIcon_enu_t superID; /* ID of super type or NULL if none */
     fmi_xml_elm_termIcon_enu_t parentID; /* expected parent ID for an element */
@@ -66,7 +65,6 @@ typedef struct {
 
 #define fmi3_xml_diff_elmName(a, b) strcmp(a.elementName,b.elementName)
 
-// TODO
 jm_define_comp_f(fmi3_xml_compare_elmName, fmi3_xml_element_handle_map_t, fmi3_xml_diff_elmName)
 
 #define XML_BLOCK_SIZE 16000

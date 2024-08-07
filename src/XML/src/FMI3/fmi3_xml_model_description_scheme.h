@@ -183,7 +183,7 @@ extern "C" {
     @multi_elem:
         if the parent can have multiple elements of this type
 */
-/*      scheme_ID,                                super_type,                 parent_ID,                          sib_idx, multi_elem */
+/*      scheme_ID,                                super_type,                 parent_ID,                           sib_idx, multi_elem */
 #define fmi3_xml_scheme_fmiModelDescription       {fmi3_xml_elmID_none,       fmi3_xml_elmID_none,                 0,       0}
 #define fmi3_xml_scheme_ModelExchange             {fmi3_xml_elmID_none,       fmi3_xml_elmID_fmiModelDescription,  0,       0}
 #define fmi3_xml_scheme_SourceFiles               {fmi3_xml_elmID_none,       fmi3_xml_elmID_ModelExchange,        0,       0}
@@ -255,9 +255,6 @@ extern "C" {
 
 // Not used except for setting up the element handler framework:
 #define fmi3_xml_scheme_Start                     {fmi3_xml_elmID_none,       fmi3_xml_elmID_none,                 1,       0}
-
-// TODO: List formatting
-// TODO: rename to include modelDescription in name?
 
 #ifdef __cplusplus
 }

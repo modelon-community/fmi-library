@@ -68,7 +68,6 @@ static jm_string fmi3_xml_get_xml_attr_name(fmi3_xml_parser_context_t* context, 
  * EXPAND_ELM_SCHEME(Float64) -> fmi3_xml_scheme_Float64 -> {fmi3_xml_elmID_SimpleType, fmi3_xml_elmID_TypeDefinitions, 0, 1}
  */
 #define EXPAND_ELM_SCHEME(elm) fmi3_xml_scheme_##elm ,
-
 /* Global array of all modelDescription scheme_info_t. Index it with fmi3_xml_elm_modelDescription_enu_t entries. */
 const fmi3_xml_scheme_modelDescription_info_t fmi3_xml_scheme_modelDescription_info[fmi3_xml_elm_number] = {
     FMI3_XML_ELMLIST_MODEL_DESCR(EXPAND_ELM_SCHEME)
@@ -78,7 +77,7 @@ const fmi3_xml_scheme_modelDescription_info_t fmi3_xml_scheme_modelDescription_i
 };
 
 #define EXPAND_ELM_SCHEME_TERMICON(elm) fmi_xml_scheme_termIcon_##elm ,
-/* Global array of all termIcon scheme_info_t. Index it with fmi_xml_elm_termIcon_enu_t entries. */
+/* Global array of all terminalsAndIcons scheme_info_t. Index it with fmi_xml_elm_termIcon_enu_t entries. */
 fmi_xml_scheme_termIcon_info_t fmi_xml_scheme_termIcon_info[fmi_xml_elm_termIcon_number] = {
     FMI_XML_ELMLIST_TERM_ICON(EXPAND_ELM_SCHEME_TERMICON)
     {fmi_xml_elm_termIcon_actual_number, 0, 0},

@@ -42,21 +42,21 @@ jm_vector_declare_template(fmi3_value_reference_t)
     multiple elements of this type are allowed in a sequence.
 */
 typedef struct {
-    fmi3_xml_elm_modelDescription_enu_t superID; /* ID of super type or NULL if none */
+    fmi3_xml_elm_modelDescription_enu_t superID;  /* ID of super type or NULL if none */
     fmi3_xml_elm_modelDescription_enu_t parentID; /* expected parent ID for an element */
     int siblingIndex;       /* index among siblings */
     int multipleAllowed;    /* multiple elements of this kind kan come in a sequence as siblings*/
 } fmi3_xml_scheme_modelDescription_info_t;
 
 typedef struct {
-    fmi_xml_elm_termIcon_enu_t superID; /* ID of super type or NULL if none */
+    fmi_xml_elm_termIcon_enu_t superID;  /* ID of super type or NULL if none */
     fmi_xml_elm_termIcon_enu_t parentID; /* expected parent ID for an element */
     int siblingIndex;       /* index among siblings */
     int multipleAllowed;    /* multiple elements of this kind kan come in a sequence as siblings*/
 } fmi_xml_scheme_termIcon_info_t;
 
 typedef struct {
-    fmi3_xml_elm_t superID; /* ID of super type or NULL if none */
+    fmi3_xml_elm_t superID;  /* ID of super type or NULL if none */
     fmi3_xml_elm_t parentID; /* expected parent ID for an element */
     int siblingIndex;       /* index among siblings */
     int multipleAllowed;    /* multiple elements of this kind kan come in a sequence as siblings*/
@@ -124,7 +124,7 @@ int fmi3_xml_parse_attr_valueref_list(fmi3_xml_parser_context_t* context, fmi3_x
 
 int fmi3_xml_is_attr_defined( fmi3_xml_parser_context_t* context, const fmi3_xml_attr_t attrID);
 jm_string fmi3_xml_peek_attr_str(fmi3_xml_parser_context_t* context, const fmi3_xml_attr_t attrID);
-int fmi3_xml_get_attr_str(fmi3_xml_parser_context_t* context, fmi3_xml_elm_t elmID, const fmi3_xml_attr_t attrID, int required,const char** valp);
+int fmi3_xml_get_attr_str(fmi3_xml_parser_context_t* context, fmi3_xml_elm_t elmID, const fmi3_xml_attr_t attrID, int required, const char** valp);
 
 void fmi3_xml_set_element_handle(fmi3_xml_parser_context_t* context, const char* elm, fmi3_xml_elm_t id);
 

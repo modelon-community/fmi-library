@@ -39,7 +39,7 @@ extern "C" {
 #define FMI_XML_ELMLIST_ALT_TERM_ICON(EXPAND_XML_ELMNAME)  // TODO: Terminal should go here?
 
 /*
-    Define XML schema structure. Used to build the 'fmi3_xml_termIcon_scheme_info_t' type (in fmi3_xml_parser.c).
+    Define XML schema structure. Used to build the 'fmi_xml_scheme_termIcon_info_t' type (in fmi3_xml_parser.c).
 
     @sib_idx:
         the index in a sequence among siblings

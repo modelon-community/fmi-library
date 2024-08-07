@@ -60,9 +60,9 @@ FMI_XML_ELMLIST_TERM_ICON    (EXPAND_ELM_HANDLE_FMI_TERM_ICON)
 FMI_XML_ELMLIST_ALT_TERM_ICON(EXPAND_ELM_HANDLE_FMI_TERM_ICON)
 
 /**
- * Create an enum over all XML elements. This enum can be used to index
+ * Create an enum over all modelDescription XML elements. This enum can be used to index
  * the following arrays:
- *      - fmi3_xml_modelDescription_scheme_info
+ *      - fmi3_xml_scheme_modelDescription_info
  *      - fmi3_modelDescription_element_handle_map
  */
 #define FMI3_XML_ELM_ID(elm) fmi3_xml_elmID_##elm
@@ -77,6 +77,12 @@ typedef enum fmi3_xml_elm_modelDescription_enu_t {
     ,fmi3_xml_elm_number
 } fmi3_xml_elm_modelDescription_enu_t;
 
+/**
+ * Create an enum over all terminalsAndIcons XML elements. This enum can be used to index
+ * the following arrays:
+ *      - fmi_xml_scheme_termIcon_info
+ *      - fmi_termIcon_element_handle_map
+ */
 #define FMI_TERMICON_XML_ELM_ID(elm) fmi_xml_elmID_termIcon_##elm
 #define FMI_TERMICON_XML_LIST_ELM_ID(elm) ,FMI_TERMICON_XML_ELM_ID(elm)
 typedef enum fmi_xml_elm_termIcon_enu_t {

@@ -46,14 +46,14 @@ typedef struct {
     fmi3_xml_elm_modelDescription_enu_t parentID; /* expected parent ID for an element */
     int siblingIndex;       /* index among siblings */
     int multipleAllowed;    /* multiple elements of this kind kan come in a sequence as siblings*/
-} fmi3_xml_modelDescription_scheme_info_t;
+} fmi3_xml_scheme_modelDescription_info_t;
 
 typedef struct {
     fmi_xml_elm_termIcon_enu_t superID; /* ID of super type or NULL if none */
     fmi_xml_elm_termIcon_enu_t parentID; /* expected parent ID for an element */
     int siblingIndex;       /* index among siblings */
     int multipleAllowed;    /* multiple elements of this kind kan come in a sequence as siblings*/
-} fmi3_xml_termIcon_scheme_info_t;
+} fmi_xml_scheme_termIcon_info_t;
 
 typedef struct {
     fmi3_xml_elm_t superID; /* ID of super type or NULL if none */

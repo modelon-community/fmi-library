@@ -70,7 +70,7 @@ static jm_string fmi3_xml_get_xml_attr_name(fmi3_xml_parser_context_t* context, 
 #define EXPAND_ELM_SCHEME(elm) fmi3_xml_scheme_##elm ,
 
 /* Global array of all modelDescription scheme_info_t. Index it with fmi3_xml_elm_modelDescription_enu_t entries. */
-const fmi3_xml_modelDescription_scheme_info_t fmi3_xml_modelDescription_scheme_info[fmi3_xml_elm_number] = {
+const fmi3_xml_scheme_modelDescription_info_t fmi3_xml_scheme_modelDescription_info[fmi3_xml_elm_number] = {
     FMI3_XML_ELMLIST_MODEL_DESCR(EXPAND_ELM_SCHEME)
     {fmi3_xml_elm_actual_number, 0, 0},
     FMI3_XML_ELMLIST_ALT_MODEL_DESCR     (EXPAND_ELM_SCHEME)
@@ -79,7 +79,7 @@ const fmi3_xml_modelDescription_scheme_info_t fmi3_xml_modelDescription_scheme_i
 
 #define EXPAND_ELM_SCHEME_TERMICON(elm) fmi_xml_scheme_termIcon_##elm ,
 /* Global array of all termIcon scheme_info_t. Index it with fmi_xml_elm_termIcon_enu_t entries. */
-fmi3_xml_termIcon_scheme_info_t fmi_xml_scheme_termIcon_info[fmi_xml_elm_termIcon_number] = {
+fmi_xml_scheme_termIcon_info_t fmi_xml_scheme_termIcon_info[fmi_xml_elm_termIcon_number] = {
     FMI_XML_ELMLIST_TERM_ICON(EXPAND_ELM_SCHEME_TERMICON)
     {fmi_xml_elm_termIcon_actual_number, 0, 0},
     FMI_XML_ELMLIST_ALT_TERM_ICON(EXPAND_ELM_SCHEME_TERMICON)
@@ -89,13 +89,13 @@ fmi3_xml_termIcon_scheme_info_t fmi_xml_scheme_termIcon_info[fmi_xml_elm_termIco
 static fmi3_xml_scheme_info_t fmi3_xml_get_scheme_info(fmi3_xml_parser_context_t* context, fmi3_xml_elm_t enu) {
     const fmi3_xml_type_t xmlType = context->xmlType;
 
-    fmi3_xml_modelDescription_scheme_info_t info_modelDescription;
-    fmi3_xml_termIcon_scheme_info_t info_termIcon;
+    fmi3_xml_scheme_modelDescription_info_t info_modelDescription;
+    fmi_xml_scheme_termIcon_info_t info_termIcon;
 
     fmi3_xml_scheme_info_t ret; 
     switch (xmlType) {
         case fmi3_xml_type_modelDescription:
-            info_modelDescription = fmi3_xml_modelDescription_scheme_info[enu.modelDescription];
+            info_modelDescription = fmi3_xml_scheme_modelDescription_info[enu.modelDescription];
 
             ret.superID = FMI3_ELM(info_modelDescription.superID);
             ret.parentID = FMI3_ELM(info_modelDescription.parentID);
@@ -112,10 +112,10 @@ static fmi3_xml_scheme_info_t fmi3_xml_get_scheme_info(fmi3_xml_parser_context_t
             break;
         default: 
             // erroneous output
-            ret.superID = FMI3_ELM_ANY(-2);
-            ret.parentID = FMI3_ELM_ANY(-2);
-            ret.siblingIndex = -2;
-            ret.multipleAllowed = -2;
+            ret.superID = FMI3_ELM_ANY(FMI_XML_ELMID_NONE);
+            ret.parentID = FMI3_ELM_ANY(FMI_XML_ELMID_NONE);
+            ret.siblingIndex = -1;
+            ret.multipleAllowed = -1;
     }
     return ret;
 }
@@ -136,7 +136,7 @@ const fmi3_xml_modelDescription_element_handle_map_t fmi3_modelDescription_eleme
     FMI3_XML_ELMLIST_ABSTRACT_MODEL_DESCR(EXPAND_ELM_NAME_FMI3)
 };
 
-const fmi3_xml_termIcon_element_handle_map_t fmi3_termIcon_element_handle_map[fmi_xml_elm_termIcon_number] = {
+const fmi_xml_termIcon_element_handle_map_t fmi_termIcon_element_handle_map[fmi_xml_elm_termIcon_number] = {
     FMI_XML_ELMLIST_TERM_ICON(EXPAND_ELM_NAME_FMI_TERM_ICON)
     { NULL, NULL, fmi_xml_elm_termIcon_actual_number},
     FMI_XML_ELMLIST_ALT_TERM_ICON(EXPAND_ELM_NAME_FMI_TERM_ICON)
@@ -147,7 +147,7 @@ static fmi3_xml_element_handle_map_t fmi3_xml_get_element_handle(fmi3_xml_parser
     const fmi3_xml_type_t xmlType = context->xmlType;
 
     fmi3_xml_modelDescription_element_handle_map_t map_modelDescription;
-    fmi3_xml_termIcon_element_handle_map_t map_termIcon;
+    fmi_xml_termIcon_element_handle_map_t map_termIcon;
 
     fmi3_xml_element_handle_map_t ret;
     switch (xmlType) {
@@ -159,7 +159,7 @@ static fmi3_xml_element_handle_map_t fmi3_xml_get_element_handle(fmi3_xml_parser
             ret.elemID = FMI3_ELM(map_modelDescription.elemID);
             break;
         case fmi3_xml_type_terminalAndIcons:
-            map_termIcon = fmi3_termIcon_element_handle_map[enu.termIcon];
+            map_termIcon = fmi_termIcon_element_handle_map[enu.termIcon];
 
             ret.elementName = map_termIcon.elementName;
             ret.elementHandle = (fmi3_xml_element_handle_ft) map_termIcon.elementHandle;
@@ -1094,7 +1094,7 @@ static int fmi3_create_elm_map(fmi3_xml_parser_context_t* context) {
 }
 
 /**
- * Sets the elementHandle and elemID for an item in the'fmi3_modelDescription_element_handle_map'
+ * Sets the elementHandle and elemID for an item in the 'fmi3_xml_element_handle_map_t'
  * array.
  * Sample use case:
  *      When we parse an XML element name, we must know its context. For example,
@@ -1442,7 +1442,7 @@ static fmi3_xml_parser_context_t* fmi3_xml_allocate_parser_context(
     if (!context) {
         jm_log_fatal(callbacks, "FMIXML", "Could not allocate memory for XML parser context");
     }
-    // hacky way of getting around being able to set a const variable when using calloc/malloc
+    // hacky way of getting around not being able to set a const variable when using calloc/malloc
     memcpy(context, &typedContext, sizeof(struct fmi3_xml_parser_context_t));
 
     context->callbacks = callbacks;

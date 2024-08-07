@@ -168,7 +168,7 @@ static fmi3_xml_element_handle_map_t fmi3_xml_get_element_handle(fmi3_xml_parser
             // erroneous output
             ret.elementName = "unknown";
             ret.elementHandle = NULL;
-            ret.elemID = FMI3_ELM_ANY(-2);
+            ret.elemID = FMI3_ELM_ANY(FMI_XML_ELMID_NONE);
     }
     return ret;
 }

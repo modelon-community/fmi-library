@@ -1460,7 +1460,6 @@ int fmi3_xml_parse_model_description(fmi3_xml_model_description_t* md,
 
     context->modelDescription = md;
     if (fmi3_xml_alloc_parse_buffer(context, 16)) return -1;
-    // if (fmi3_create_modelDescription_attr_map(context) || fmi3_create_modelDescription_elm_map(context)) {
     if (fmi3_create_attr_map(context) || fmi3_create_elm_map(context)) {
         fmi3_xml_parse_fatal(context, "Error in parsing initialization");
         fmi3_xml_parse_free_context(context);

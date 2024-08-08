@@ -42,47 +42,16 @@ typedef unsigned long long int  fmi3_uint_buf_t; /* same size as fmi3_int_buf_t 
 #define UINTXX_MIN (0)
 #define FMI3_FLOAT32_MAX (3.402823466e+38F) /* FLT_MAX from float.h is platform-dependent (doesn't have to be 32 bit) */
 
-// TODO: Move these + access functions into the parser_scheme file?
-#define ATTR_STR(attr) #attr,
-const jm_string fmi3_modelDescription_xmlAttrNames[fmi3_xml_modelDescription_attr_number] = {
-    FMI3_XML_ATTRLIST_MODEL_DESCR(ATTR_STR)
-};
-
-const jm_string fmi3_termIcon_xmlAttrNames[fmi_xml_termIcon_attr_number] = {
-    FMI_XML_ATTRLIST_TERM_ICON(ATTR_STR)
-};
-
 static jm_string fmi3_xml_get_xml_attr_name(fmi3_xml_parser_context_t* context, const fmi3_xml_attr_t enu) {
     const fmi3_xml_type_t xmlType = context->xmlType;
     switch (xmlType) {
         case fmi3_xml_type_modelDescription:
-            return fmi3_modelDescription_xmlAttrNames[enu.modelDescription];
+            return fmi3_xml_scheme_get_modelDescription_attrName(enu.modelDescription);
         case fmi3_xml_type_terminalAndIcons:
-            return fmi3_termIcon_xmlAttrNames[enu.termIcon];
+            return fmi_xml_scheme_get_termIcon_attrName(enu.termIcon);
     }
     return "unknown";
 }
-
-/**
- * The expansion of below macro is also a macro. Example:
- * EXPAND_ELM_SCHEME(Float64) -> fmi3_xml_scheme_Float64 -> {fmi3_xml_elmID_SimpleType, fmi3_xml_elmID_TypeDefinitions, 0, 1}
- */
-#define EXPAND_ELM_SCHEME(elm) fmi3_xml_scheme_##elm ,
-/* Global array of all modelDescription scheme_info_t. Index it with fmi3_xml_elm_modelDescription_enu_t entries. */
-const fmi3_xml_scheme_modelDescription_info_t fmi3_xml_scheme_modelDescription_info[fmi3_xml_elm_number] = {
-    FMI3_XML_ELMLIST_MODEL_DESCR(EXPAND_ELM_SCHEME)
-    {fmi3_xml_elm_actual_number, 0, 0},
-    FMI3_XML_ELMLIST_ALT_MODEL_DESCR     (EXPAND_ELM_SCHEME)
-    FMI3_XML_ELMLIST_ABSTRACT_MODEL_DESCR(EXPAND_ELM_SCHEME)
-};
-
-#define EXPAND_ELM_SCHEME_TERMICON(elm) fmi_xml_scheme_termIcon_##elm ,
-/* Global array of all terminalsAndIcons scheme_info_t. Index it with fmi_xml_elm_termIcon_enu_t entries. */
-fmi_xml_scheme_termIcon_info_t fmi_xml_scheme_termIcon_info[fmi_xml_elm_termIcon_number] = {
-    FMI_XML_ELMLIST_TERM_ICON(EXPAND_ELM_SCHEME_TERMICON)
-    {fmi_xml_elm_termIcon_actual_number, 0, 0},
-    FMI_XML_ELMLIST_ALT_TERM_ICON(EXPAND_ELM_SCHEME_TERMICON)
-};
 
 // TODO: Move to more suitable place?
 static fmi3_xml_scheme_info_t fmi3_xml_get_scheme_info(fmi3_xml_parser_context_t* context, fmi3_xml_elm_t enu) {
@@ -94,7 +63,7 @@ static fmi3_xml_scheme_info_t fmi3_xml_get_scheme_info(fmi3_xml_parser_context_t
     fmi3_xml_scheme_info_t ret; 
     switch (xmlType) {
         case fmi3_xml_type_modelDescription:
-            info_modelDescription = fmi3_xml_scheme_modelDescription_info[enu.modelDescription];
+            info_modelDescription = fmi3_xml_scheme_get_modelDescription_info(enu.modelDescription);
 
             ret.superID = FMI3_ELM(info_modelDescription.superID);
             ret.parentID = FMI3_ELM(info_modelDescription.parentID);
@@ -102,7 +71,7 @@ static fmi3_xml_scheme_info_t fmi3_xml_get_scheme_info(fmi3_xml_parser_context_t
             ret.multipleAllowed = info_modelDescription.multipleAllowed;
             break;
         case fmi3_xml_type_terminalAndIcons:
-            info_termIcon = fmi_xml_scheme_termIcon_info[enu.termIcon];
+            info_termIcon = fmi_xml_scheme_get_termIcon_info(enu.termIcon);
 
             ret.superID = FMI_ELM_TERMICON(info_termIcon.superID);
             ret.parentID = FMI_ELM_TERMICON(info_termIcon.parentID);
@@ -119,28 +88,6 @@ static fmi3_xml_scheme_info_t fmi3_xml_get_scheme_info(fmi3_xml_parser_context_t
     return ret;
 }
 
-#define EXPAND_ELM_NAME_FMI3(elm) { #elm, fmi3_xml_handle_##elm, fmi3_xml_elmID_##elm},
-#define EXPAND_ELM_NAME_FMI_TERM_ICON(elm) { #elm, fmi_xml_handle_##elm, fmi_xml_elmID_termIcon_##elm},
-
-/**
- * Global array of all defined fmi3_xml_modelDescription_element_handle_map_t structs.
- * Typical use:
- *      Parse element name, from element name find ID, use ID to index this
- *      array.
- */
-const fmi3_xml_modelDescription_element_handle_map_t fmi3_modelDescription_element_handle_map[fmi3_xml_elm_number] = {
-    FMI3_XML_ELMLIST_MODEL_DESCR(EXPAND_ELM_NAME_FMI3)
-    { NULL, NULL, fmi3_xml_elm_actual_number},
-    FMI3_XML_ELMLIST_ALT_MODEL_DESCR     (EXPAND_ELM_NAME_FMI3)
-    FMI3_XML_ELMLIST_ABSTRACT_MODEL_DESCR(EXPAND_ELM_NAME_FMI3)
-};
-
-const fmi_xml_termIcon_element_handle_map_t fmi_termIcon_element_handle_map[fmi_xml_elm_termIcon_number] = {
-    FMI_XML_ELMLIST_TERM_ICON(EXPAND_ELM_NAME_FMI_TERM_ICON)
-    { NULL, NULL, fmi_xml_elm_termIcon_actual_number},
-    FMI_XML_ELMLIST_ALT_TERM_ICON(EXPAND_ELM_NAME_FMI_TERM_ICON)
-};
-
 // TODO: Move to more suitable place?
 static fmi3_xml_element_handle_map_t fmi3_xml_get_element_handle(fmi3_xml_parser_context_t* context, fmi3_xml_elm_t enu) {
     const fmi3_xml_type_t xmlType = context->xmlType;
@@ -151,14 +98,14 @@ static fmi3_xml_element_handle_map_t fmi3_xml_get_element_handle(fmi3_xml_parser
     fmi3_xml_element_handle_map_t ret;
     switch (xmlType) {
         case fmi3_xml_type_modelDescription:
-            map_modelDescription = fmi3_modelDescription_element_handle_map[enu.modelDescription];
+            map_modelDescription = fmi3_xml_scheme_get_modelDescription_handle(enu.modelDescription);
 
             ret.elementName = map_modelDescription.elementName;
             ret.elementHandle = (fmi3_xml_element_handle_ft) map_modelDescription.elementHandle;
             ret.elemID = FMI3_ELM(map_modelDescription.elemID);
             break;
         case fmi3_xml_type_terminalAndIcons:
-            map_termIcon = fmi_termIcon_element_handle_map[enu.termIcon];
+            map_termIcon = fmi_xml_scheme_get_termIcon_handle(enu.termIcon);
 
             ret.elementName = map_termIcon.elementName;
             ret.elementHandle = (fmi3_xml_element_handle_ft) map_termIcon.elementHandle;

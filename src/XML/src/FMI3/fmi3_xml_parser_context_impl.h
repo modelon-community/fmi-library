@@ -35,32 +35,13 @@ typedef enum fmi3_xml_type_t {
     fmi3_xml_type_terminalAndIcons
 } fmi3_xml_type_t;
 
-typedef struct fmi3_xml_modelDescription_element_handle_map_t fmi3_xml_modelDescription_element_handle_map_t;
-typedef struct fmi_xml_termIcon_element_handle_map_t fmi_xml_termIcon_element_handle_map_t;
 typedef struct fmi3_xml_element_handle_map_t fmi3_xml_element_handle_map_t;
-
-typedef int (*fmi3_xml_modelDescription_element_handle_ft)(fmi3_xml_parser_context_t* context, const char* data);
-typedef int (*fmi3_xml_termIcon_element_handle_ft)(fmi3_xml_parser_context_t* context, const char* data);
 typedef int (*fmi3_xml_element_handle_ft)(fmi3_xml_parser_context_t* context, const char* data);
-
-struct fmi3_xml_modelDescription_element_handle_map_t {
-    const char* elementName;
-    fmi3_xml_modelDescription_element_handle_ft elementHandle;
-    fmi3_xml_elm_modelDescription_enu_t elemID;
-};
-
-struct fmi_xml_termIcon_element_handle_map_t {
-    const char* elementName;
-    fmi3_xml_termIcon_element_handle_ft elementHandle;
-    fmi_xml_elm_termIcon_enu_t elemID;
-};
-
 struct fmi3_xml_element_handle_map_t {
     const char* elementName;
     fmi3_xml_element_handle_ft elementHandle;
     fmi3_xml_elm_t elemID;
 };
-
 
 jm_vector_declare_template(fmi3_xml_element_handle_map_t)
 

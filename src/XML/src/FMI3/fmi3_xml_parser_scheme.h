@@ -11,8 +11,7 @@
 */
 
 /*
-This file contains all parsing related lists and structs
-related to parsing XML elements and their attributes
+This file collects and unifies the XML schemes to be used for parsing.
 */
 
 #ifndef FMI3_XML_XMLPARSER_SCHEME_H

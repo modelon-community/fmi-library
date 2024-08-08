@@ -290,6 +290,29 @@ typedef enum fmi3_xml_elm_modelDescription_enu_t {
     ,fmi3_xml_elm_number
 } fmi3_xml_elm_modelDescription_enu_t;
 
+/** Keeps information about the allowed parent element ID, index among siblings in a sequence and if
+    multiple elements of this type are allowed in a sequence.
+*/
+typedef struct {
+    fmi3_xml_elm_modelDescription_enu_t superID;  /* ID of super type or NULL if none */
+    fmi3_xml_elm_modelDescription_enu_t parentID; /* expected parent ID for an element */
+    int siblingIndex;       /* index among siblings */
+    int multipleAllowed;    /* multiple elements of this kind kan come in a sequence as siblings*/
+} fmi3_xml_scheme_modelDescription_info_t;
+
+typedef int (*fmi3_xml_modelDescription_element_handle_ft)(fmi3_xml_parser_context_t* context, const char* data);
+
+typedef struct fmi3_xml_modelDescription_element_handle_map_t fmi3_xml_modelDescription_element_handle_map_t;
+struct fmi3_xml_modelDescription_element_handle_map_t {
+    const char* elementName;
+    fmi3_xml_modelDescription_element_handle_ft elementHandle;
+    fmi3_xml_elm_modelDescription_enu_t elemID;
+};
+
+jm_string fmi3_xml_scheme_get_modelDescription_attrName(fmi3_xml_attr_modelDescription_enu_t enu);
+fmi3_xml_scheme_modelDescription_info_t fmi3_xml_scheme_get_modelDescription_info(fmi3_xml_elm_modelDescription_enu_t enu);
+fmi3_xml_modelDescription_element_handle_map_t fmi3_xml_scheme_get_modelDescription_handle(fmi3_xml_elm_modelDescription_enu_t enu);
+
 #ifdef __cplusplus
 }
 #endif

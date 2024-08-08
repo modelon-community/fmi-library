@@ -158,6 +158,7 @@ set(FMIXMLHEADERS
 set(FMIXMLSOURCE
     src/FMI/fmi_xml_context.c
     src/FMI/fmi_xml_terminals_and_icons.c
+    src/FMI/fmi_xml_terminals_and_icons_scheme.c
 
     src/FMI1/fmi1_xml_parser.c
     src/FMI1/fmi1_xml_model_description.c
@@ -184,6 +185,7 @@ set(FMIXMLSOURCE
     src/FMI3/fmi3_xml_unit.c
     src/FMI3/fmi3_xml_vendor_annotations.c
     src/FMI3/fmi3_xml_variable.c
+    src/FMI3/fmi3_xml_model_description_scheme.c
 )
 
 include(ExternalProject)

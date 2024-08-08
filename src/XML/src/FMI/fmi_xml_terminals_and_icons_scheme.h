@@ -88,6 +88,25 @@ typedef enum fmi_xml_elm_termIcon_enu_t {
     ,fmi_xml_elm_termIcon_number
 } fmi_xml_elm_termIcon_enu_t;
 
+typedef struct {
+    fmi_xml_elm_termIcon_enu_t superID;  /* ID of super type or NULL if none */
+    fmi_xml_elm_termIcon_enu_t parentID; /* expected parent ID for an element */
+    int siblingIndex;       /* index among siblings */
+    int multipleAllowed;    /* multiple elements of this kind kan come in a sequence as siblings*/
+} fmi_xml_scheme_termIcon_info_t;
+
+typedef struct fmi_xml_termIcon_element_handle_map_t fmi_xml_termIcon_element_handle_map_t;
+typedef int (*fmi3_xml_termIcon_element_handle_ft)(fmi3_xml_parser_context_t* context, const char* data);
+struct fmi_xml_termIcon_element_handle_map_t {
+    const char* elementName;
+    fmi3_xml_termIcon_element_handle_ft elementHandle;
+    fmi_xml_elm_termIcon_enu_t elemID;
+};
+
+jm_string fmi_xml_scheme_get_termIcon_attrName(fmi_xml_attr_termIcon_enu_t enu);
+fmi_xml_scheme_termIcon_info_t fmi_xml_scheme_get_termIcon_info(fmi_xml_elm_termIcon_enu_t enu);
+fmi_xml_termIcon_element_handle_map_t fmi_xml_scheme_get_termIcon_handle(fmi_xml_elm_termIcon_enu_t enu);
+
 #ifdef __cplusplus
 }
 #endif

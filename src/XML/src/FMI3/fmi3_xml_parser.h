@@ -38,23 +38,9 @@ extern "C" {
 
 jm_vector_declare_template(fmi3_value_reference_t)
 
-/** Keeps information about the allowed parent element ID, index among siblings in a sequence and if
-    multiple elements of this type are allowed in a sequence.
-*/
-typedef struct {
-    fmi3_xml_elm_modelDescription_enu_t superID;  /* ID of super type or NULL if none */
-    fmi3_xml_elm_modelDescription_enu_t parentID; /* expected parent ID for an element */
-    int siblingIndex;       /* index among siblings */
-    int multipleAllowed;    /* multiple elements of this kind kan come in a sequence as siblings*/
-} fmi3_xml_scheme_modelDescription_info_t;
-
-typedef struct {
-    fmi_xml_elm_termIcon_enu_t superID;  /* ID of super type or NULL if none */
-    fmi_xml_elm_termIcon_enu_t parentID; /* expected parent ID for an element */
-    int siblingIndex;       /* index among siblings */
-    int multipleAllowed;    /* multiple elements of this kind kan come in a sequence as siblings*/
-} fmi_xml_scheme_termIcon_info_t;
-
+// /** Keeps information about the allowed parent element ID, index among siblings in a sequence and if
+//     multiple elements of this type are allowed in a sequence.
+// */
 typedef struct {
     fmi3_xml_elm_t superID;  /* ID of super type or NULL if none */
     fmi3_xml_elm_t parentID; /* expected parent ID for an element */

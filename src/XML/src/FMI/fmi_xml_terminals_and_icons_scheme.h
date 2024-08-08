@@ -16,6 +16,8 @@
 #ifndef FMI_XML_TERMINALS_AND_ICONS_SCEHEME_H
 #define FMI_XML_TERMINALS_AND_ICONS_SCEHEME_H
 
+#include "../FMI3/fmi3_xml_parser_scheme_base.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -55,6 +57,36 @@ extern "C" {
 #define fmi_xml_scheme_termIcon_TerminalStreamMemberVariable    {fmi_xml_elmID_termIcon_none, fmi_xml_elmID_termIcon_Terminal,             1,       1}
 // TODO: How to handle nested Terminals?
 #define fmi_xml_scheme_termIcon_TerminalGraphicalRepresentation {fmi_xml_elmID_termIcon_none, fmi_xml_elmID_termIcon_Terminal,             3,       0}
+
+// Attribute enum
+#define FMI_TERMICON_XML_ATTR_ID(attr) fmi_termIcon_attr_id_##attr,
+typedef enum fmi_xml_attr_termIcon_enu_t {
+    FMI_XML_ATTRLIST_TERM_ICON(FMI_TERMICON_XML_ATTR_ID)
+    fmi_xml_termIcon_attr_number
+} fmi_xml_attr_termIcon_enu_t;
+
+
+/* Build prototypes for all elm_handle_* functions */
+#define EXPAND_ELM_HANDLE_FMI_TERMICON(elm) extern int fmi_xml_handle_##elm(fmi3_xml_parser_context_t* context, const char* data);
+FMI_XML_ELMLIST_TERM_ICON    (EXPAND_ELM_HANDLE_FMI_TERMICON)
+FMI_XML_ELMLIST_ALT_TERM_ICON(EXPAND_ELM_HANDLE_FMI_TERMICON)
+
+
+/**
+ * Create an enum over all terminalsAndIcons XML elements. This enum can be used to index
+ * the following arrays:
+ *      - fmi_xml_scheme_termIcon_info
+ *      - fmi_termIcon_element_handle_map
+ */
+#define FMI_TERMICON_XML_ELM_ID(elm) fmi_xml_elmID_termIcon_##elm
+#define FMI_TERMICON_XML_LIST_ELM_ID(elm) ,FMI_TERMICON_XML_ELM_ID(elm)
+typedef enum fmi_xml_elm_termIcon_enu_t {
+    fmi_xml_elmID_termIcon_none = FMI_XML_ELMID_NONE
+    FMI_XML_ELMLIST_TERM_ICON(FMI_TERMICON_XML_LIST_ELM_ID)
+    ,fmi_xml_elm_termIcon_actual_number
+    FMI_XML_ELMLIST_ALT_TERM_ICON(FMI_TERMICON_XML_LIST_ELM_ID)
+    ,fmi_xml_elm_termIcon_number
+} fmi_xml_elm_termIcon_enu_t;
 
 #ifdef __cplusplus
 }

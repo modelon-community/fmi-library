@@ -982,9 +982,9 @@ static size_t fmi3_xml_get_attr_enum_size(fmi3_xml_parser_context_t* context) {
     const fmi3_xml_type_t xmlType = context->xmlType;
     switch (xmlType) {
         case fmi3_xml_type_modelDescription:
-            return (size_t) fmi3_xml_modelDescription_attr_number;
+            return fmi3_xml_get_modelDescription_attr_enum_size();
         case fmi3_xml_type_terminalAndIcons:
-            return (size_t) fmi_xml_termIcon_attr_number;
+            return fmi_xml_get_termIcon_attr_enum_size();
         default:
             // erroneous
             return 0;
@@ -996,9 +996,9 @@ static size_t fmi3_xml_get_elm_enum_size_actual(fmi3_xml_parser_context_t* conte
     const fmi3_xml_type_t xmlType = context->xmlType;
     switch (xmlType) {
         case fmi3_xml_type_modelDescription:
-            return (size_t) fmi3_xml_elm_actual_number;
+            return fmi3_xml_get_modelDescription_elm_enum_size_actual();
         case fmi3_xml_type_terminalAndIcons:
-            return (size_t) fmi_xml_elm_termIcon_actual_number;
+            return fmi_xml_get_termIcon_elm_enum_size_actual();
         default:
             // erroneous
             return 0;

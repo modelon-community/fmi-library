@@ -312,6 +312,8 @@ struct fmi3_xml_modelDescription_element_handle_map_t {
 jm_string fmi3_xml_scheme_get_modelDescription_attrName(fmi3_xml_attr_modelDescription_enu_t enu);
 fmi3_xml_scheme_modelDescription_info_t fmi3_xml_scheme_get_modelDescription_info(fmi3_xml_elm_modelDescription_enu_t enu);
 fmi3_xml_modelDescription_element_handle_map_t fmi3_xml_scheme_get_modelDescription_handle(fmi3_xml_elm_modelDescription_enu_t enu);
+size_t fmi3_xml_get_modelDescription_attr_enum_size();
+size_t fmi3_xml_get_modelDescription_elm_enum_size_actual();
 
 #ifdef __cplusplus
 }

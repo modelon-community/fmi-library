@@ -57,3 +57,11 @@ fmi_xml_scheme_termIcon_info_t fmi_xml_scheme_get_termIcon_info(fmi_xml_elm_term
 fmi_xml_termIcon_element_handle_map_t fmi_xml_scheme_get_termIcon_handle(fmi_xml_elm_termIcon_enu_t enu) {
     return fmi_termIcon_element_handle_map[enu];
 }
+
+size_t fmi_xml_get_termIcon_attr_enum_size() {
+    return fmi_xml_termIcon_attr_number;
+}
+
+size_t fmi_xml_get_termIcon_elm_enum_size_actual() {
+    return fmi_xml_elm_termIcon_actual_number;
+}

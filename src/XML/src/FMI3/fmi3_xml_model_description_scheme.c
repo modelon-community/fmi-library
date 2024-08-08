@@ -59,3 +59,11 @@ fmi3_xml_scheme_modelDescription_info_t fmi3_xml_scheme_get_modelDescription_inf
 fmi3_xml_modelDescription_element_handle_map_t fmi3_xml_scheme_get_modelDescription_handle(fmi3_xml_elm_modelDescription_enu_t enu) {
     return fmi3_modelDescription_element_handle_map[enu];
 }
+
+size_t fmi3_xml_get_modelDescription_attr_enum_size() {
+    return fmi3_xml_modelDescription_attr_number;
+}
+
+size_t fmi3_xml_get_modelDescription_elm_enum_size_actual() {
+    return fmi3_xml_elm_actual_number;
+}

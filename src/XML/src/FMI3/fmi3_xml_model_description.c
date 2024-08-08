@@ -406,30 +406,30 @@ int fmi3_xml_is_valid_model_ID(const char* str) {
 }
 
 int fmi3_xml_handle_fmiModelDescription(fmi3_xml_parser_context_t* context, const char* data) {
-    jm_name_ID_map_t namingConventionMap[] = {{"flat",fmi3_naming_enu_flat}, {"structured",fmi3_naming_enu_structured}, {NULL,0}};
+    jm_name_ID_map_t namingConventionMap[] = {{"flat", fmi3_naming_enu_flat}, {"structured", fmi3_naming_enu_structured}, {NULL, 0}};
     fmi3_xml_model_description_t* md = context->modelDescription;
     if (!data) {
         int ret;
-        if (context->currentElmID != fmi3_xml_elmID_none) {
+        if (context->currentElmID.modelDescription != fmi3_xml_elmID_none) {
             fmi3_xml_parse_fatal(context, "fmi3_xml_model_description must be the root XML element");
             return -1;
         }
         jm_log_verbose(context->callbacks, module, "Parsing XML element fmiModelDescription");
         md->fmuKind = fmi3_fmu_kind_unknown;
         /* process the attributes */
-        ret =   fmi3_xml_parse_attr_as_string(context, fmi3_xml_elmID_fmiModelDescription, fmi_attr_id_fmiVersion, 1, &(md->fmi3_xml_standard_version)) ||
-                fmi3_xml_parse_attr_as_string(context, fmi3_xml_elmID_fmiModelDescription, fmi_attr_id_modelName, 1, &(md->modelName)) ||
-                fmi3_xml_parse_attr_as_string(context, fmi3_xml_elmID_fmiModelDescription, fmi_attr_id_instantiationToken, 1, &(md->instantiationToken)) ||
-                fmi3_xml_parse_attr_as_string(context, fmi3_xml_elmID_fmiModelDescription, fmi_attr_id_description, 0, &(md->description)) ||
-                fmi3_xml_parse_attr_as_string(context, fmi3_xml_elmID_fmiModelDescription, fmi_attr_id_author, 0, &(md->author)) ||
-                fmi3_xml_parse_attr_as_string(context, fmi3_xml_elmID_fmiModelDescription, fmi_attr_id_version, 0, &(md->version)) ||
-                fmi3_xml_parse_attr_as_string(context, fmi3_xml_elmID_fmiModelDescription, fmi_attr_id_copyright, 0, &(md->copyright)) ||
-                fmi3_xml_parse_attr_as_string(context, fmi3_xml_elmID_fmiModelDescription, fmi_attr_id_license, 0, &(md->license)) ||
-                fmi3_xml_parse_attr_as_string(context, fmi3_xml_elmID_fmiModelDescription, fmi_attr_id_generationTool, 0, &(md->generationTool)) ||
-                fmi3_xml_parse_attr_as_string(context, fmi3_xml_elmID_fmiModelDescription, fmi_attr_id_generationDateAndTime, 0, &(md->generationDateAndTime)) ||
-                fmi3_xml_parse_attr_as_enum(context, fmi3_xml_elmID_fmiModelDescription, fmi_attr_id_variableNamingConvention, 0, (unsigned*)&(md->namingConvension),
+        ret =   fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_fmiModelDescription), FMI3_ATTR(fmi_attr_id_fmiVersion), 1, &(md->fmi3_xml_standard_version)) ||
+                fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_fmiModelDescription), FMI3_ATTR(fmi_attr_id_modelName), 1, &(md->modelName)) ||
+                fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_fmiModelDescription), FMI3_ATTR(fmi_attr_id_instantiationToken), 1, &(md->instantiationToken)) ||
+                fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_fmiModelDescription), FMI3_ATTR(fmi_attr_id_description), 0, &(md->description)) ||
+                fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_fmiModelDescription), FMI3_ATTR(fmi_attr_id_author), 0, &(md->author)) ||
+                fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_fmiModelDescription), FMI3_ATTR(fmi_attr_id_version), 0, &(md->version)) ||
+                fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_fmiModelDescription), FMI3_ATTR(fmi_attr_id_copyright), 0, &(md->copyright)) ||
+                fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_fmiModelDescription), FMI3_ATTR(fmi_attr_id_license), 0, &(md->license)) ||
+                fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_fmiModelDescription), FMI3_ATTR(fmi_attr_id_generationTool), 0, &(md->generationTool)) ||
+                fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_fmiModelDescription), FMI3_ATTR(fmi_attr_id_generationDateAndTime), 0, &(md->generationDateAndTime)) ||
+                fmi3_xml_parse_attr_as_enum  (context, FMI3_ELM(fmi3_xml_elmID_fmiModelDescription), FMI3_ATTR(fmi_attr_id_variableNamingConvention), 0, (unsigned*)&(md->namingConvension),
                                        fmi3_naming_enu_flat, namingConventionMap);
-        return (ret);
+        return ret;
     }
     else {
         /* check that fmuKind is defined and that model identifiers are valid */
@@ -475,7 +475,7 @@ static int fmi3_xml_process_interface_type_common_attrs(fmi3_xml_parser_context_
 
     fmi3_capabilities_enu_t providesDirDerId    = fmi_attr_id_providesDirectionalDerivatives;
     fmi3_capabilities_enu_t providesDirDerIdOld = fmi_attr_id_providesDirectionalDerivative;
-    if (fmi3_xml_is_attr_defined(context, providesDirDerIdOld)) {
+    if (fmi3_xml_is_attr_defined(context, FMI3_ATTR(providesDirDerIdOld))) {
         fmi3_xml_parse_error(context,
                 "Attribute 'providesDirectionalDerivative' has been renamed to 'providesDirectionalDerivatives'.");
         providesDirDerId = providesDirDerIdOld;
@@ -491,50 +491,50 @@ static int fmi3_xml_process_interface_type_common_attrs(fmi3_xml_parser_context_
     size_t nCapME = sizeof(capArrME);
     size_t nCapCS = sizeof(capArrCS);
 
-    fmi3_xml_elm_enu_t elmID;
+    fmi3_xml_elm_t elmID;
     jm_vector(char)* modelIdentifierPtr;
     switch (fmuKind) {
-    case fmi3_fmu_kind_me:
-        elmID = fmi3_xml_elmID_ModelExchange;
-        modelIdentifierPtr = &md->modelExchange.modelIdentifier;
-        offset = 0;
-        break;
-    case fmi3_fmu_kind_cs:
-        elmID = fmi3_xml_elmID_CoSimulation;
-        modelIdentifierPtr = &md->coSimulation.modelIdentifier;
-        offset = nCapME;  // CS comes after ME
-        break;
-    case fmi3_fmu_kind_se:
-        elmID = fmi3_xml_elmID_ScheduledExecution;
-        modelIdentifierPtr = &md->scheduledExecution.modelIdentifier;
-        offset = nCapME + nCapCS;  // SE comes after CS
-        break;
-    default:
-        fmi3_xml_parse_fatal(context, "Invalid FMU kind");
-        return -1;
+        case fmi3_fmu_kind_me:
+            elmID = FMI3_ELM(fmi3_xml_elmID_ModelExchange);
+            modelIdentifierPtr = &md->modelExchange.modelIdentifier;
+            offset = 0;
+            break;
+        case fmi3_fmu_kind_cs:
+            elmID = FMI3_ELM(fmi3_xml_elmID_CoSimulation);
+            modelIdentifierPtr = &md->coSimulation.modelIdentifier;
+            offset = nCapME;  // CS comes after ME
+            break;
+        case fmi3_fmu_kind_se:
+            elmID = FMI3_ELM(fmi3_xml_elmID_ScheduledExecution);
+            modelIdentifierPtr = &md->scheduledExecution.modelIdentifier;
+            offset = nCapME + nCapCS;  // SE comes after CS
+            break;
+        default:
+            fmi3_xml_parse_fatal(context, "Invalid FMU kind");
+            return -1;
     }
 
-    if (fmi3_xml_parse_attr_as_string(context, elmID, fmi_attr_id_modelIdentifier, 1, modelIdentifierPtr)
+    if (fmi3_xml_parse_attr_as_string(context, elmID, FMI3_ATTR(fmi_attr_id_modelIdentifier), 1, modelIdentifierPtr)
         ||
-        fmi3_xml_parse_attr_as_boolean(context, elmID, fmi_attr_id_needsExecutionTool, 0,
+        fmi3_xml_parse_attr_as_boolean(context, elmID, FMI3_ATTR(fmi_attr_id_needsExecutionTool), 0,
                 &md->capabilities[fmi3_me_needsExecutionTool + offset], 0)
         ||
-        fmi3_xml_parse_attr_as_boolean(context, elmID, fmi_attr_id_canBeInstantiatedOnlyOncePerProcess, 0,
+        fmi3_xml_parse_attr_as_boolean(context, elmID, FMI3_ATTR(fmi_attr_id_canBeInstantiatedOnlyOncePerProcess), 0,
                 &md->capabilities[fmi3_me_canBeInstantiatedOnlyOncePerProcess + offset], 0)
         ||
-        fmi3_xml_parse_attr_as_boolean(context, elmID, fmi_attr_id_canGetAndSetFMUState, 0,
+        fmi3_xml_parse_attr_as_boolean(context, elmID, FMI3_ATTR(fmi_attr_id_canGetAndSetFMUState), 0,
                 &md->capabilities[fmi3_me_canGetAndSetFMUState + offset], 0)
         ||
-        fmi3_xml_parse_attr_as_boolean(context, elmID, fmi_attr_id_canSerializeFMUState, 0,
+        fmi3_xml_parse_attr_as_boolean(context, elmID, FMI3_ATTR(fmi_attr_id_canSerializeFMUState), 0,
                 &md->capabilities[fmi3_me_canSerializeFMUState + offset], 0)
         ||
-        fmi3_xml_parse_attr_as_boolean(context, elmID, providesDirDerId, 0,
+        fmi3_xml_parse_attr_as_boolean(context, elmID, FMI3_ATTR(providesDirDerId), 0,
                 &md->capabilities[fmi3_me_providesDirectionalDerivatives + offset], 0)
         ||
-        fmi3_xml_parse_attr_as_boolean(context, elmID, fmi_attr_id_providesAdjointDerivatives, 0,
+        fmi3_xml_parse_attr_as_boolean(context, elmID, FMI3_ATTR(fmi_attr_id_providesAdjointDerivatives), 0,
                 &md->capabilities[fmi3_me_providesAdjointDerivatives + offset], 0)
         ||
-        fmi3_xml_parse_attr_as_boolean(context, elmID, fmi_attr_id_providesPerElementDependencies, 0,
+        fmi3_xml_parse_attr_as_boolean(context, elmID, FMI3_ATTR(fmi_attr_id_providesPerElementDependencies), 0,
                 &md->capabilities[fmi3_me_providesPerElementDependencies + offset], 0))
     {
         return -1;
@@ -548,8 +548,8 @@ int fmi3_xml_handle_ModelExchange(fmi3_xml_parser_context_t *context, const char
         jm_log_verbose(context->callbacks, module, "Parsing XML element ModelExchange");
 
         // Reset handles for the elements that are specific under ModelExchange
-        fmi3_xml_set_element_handle(context, "SourceFiles", FMI3_XML_ELM_ID(SourceFiles));
-        fmi3_xml_set_element_handle(context, "File", FMI3_XML_ELM_ID(File));
+        fmi3_xml_set_element_handle(context, "SourceFiles", FMI3_ELM(FMI3_XML_ELM_ID(SourceFiles)));
+        fmi3_xml_set_element_handle(context, "File", FMI3_ELM(FMI3_XML_ELM_ID(File)));
 
         // Update fmuKind
         if (md->fmuKind == fmi3_fmu_kind_unknown) {
@@ -564,11 +564,11 @@ int fmi3_xml_handle_ModelExchange(fmi3_xml_parser_context_t *context, const char
             return -1;
         }
 
-        fmi3_xml_elm_enu_t elmID  = fmi3_xml_elmID_ModelExchange;
-        if (fmi3_xml_parse_attr_as_boolean(context, elmID, fmi_attr_id_needsCompletedIntegratorStep, 0,
+        fmi3_xml_elm_t elmID = FMI3_ELM(fmi3_xml_elmID_ModelExchange);
+        if (fmi3_xml_parse_attr_as_boolean(context, elmID, FMI3_ATTR(fmi_attr_id_needsCompletedIntegratorStep), 0,
                     &md->capabilities[fmi3_me_needsCompletedIntegratorStep], 0)
             ||
-            fmi3_xml_parse_attr_as_boolean(context, elmID, fmi_attr_id_providesEvaluateDiscreteStates, 0,
+            fmi3_xml_parse_attr_as_boolean(context, elmID, FMI3_ATTR(fmi_attr_id_providesEvaluateDiscreteStates), 0,
                     &md->capabilities[fmi3_me_providesEvaluateDiscreteStates], 0))
         {
             return -1;
@@ -583,8 +583,8 @@ int fmi3_xml_handle_CoSimulation(fmi3_xml_parser_context_t *context, const char*
         jm_log_verbose(context->callbacks, module, "Parsing XML element CoSimulation");
 
         //  Reset handles for the elements that are specific under CoSimulation
-        fmi3_xml_set_element_handle(context, "SourceFiles", FMI3_XML_ELM_ID(SourceFilesCS));
-        fmi3_xml_set_element_handle(context, "File", FMI3_XML_ELM_ID(FileCS));
+        fmi3_xml_set_element_handle(context, "SourceFiles", FMI3_ELM(FMI3_XML_ELM_ID(SourceFilesCS)));
+        fmi3_xml_set_element_handle(context, "File", FMI3_ELM(FMI3_XML_ELM_ID(FileCS)));
 
         // Update fmuKind
         if (md->fmuKind == fmi3_fmu_kind_unknown) {
@@ -599,23 +599,23 @@ int fmi3_xml_handle_CoSimulation(fmi3_xml_parser_context_t *context, const char*
             return -1;
         }
 
-        fmi3_xml_elm_enu_t elmID  = fmi3_xml_elmID_CoSimulation;
-        if (fmi3_xml_parse_attr_as_boolean(context, elmID, fmi_attr_id_canHandleVariableCommunicationStepSize, 0,
+        fmi3_xml_elm_t elmID = FMI3_ELM(fmi3_xml_elmID_CoSimulation);
+        if (fmi3_xml_parse_attr_as_boolean(context, elmID, FMI3_ATTR(fmi_attr_id_canHandleVariableCommunicationStepSize), 0,
                     &md->capabilities[fmi3_cs_canHandleVariableCommunicationStepSize], 0)
             ||
-            fmi3_xml_parse_attr_as_boolean(context, elmID, fmi_attr_id_providesIntermediateUpdate, 0,
+            fmi3_xml_parse_attr_as_boolean(context, elmID, FMI3_ATTR(fmi_attr_id_providesIntermediateUpdate), 0,
                     &md->capabilities[fmi3_cs_providesIntermediateUpdate], 0)
             ||
-            fmi3_xml_parse_attr_as_boolean(context, elmID, fmi_attr_id_mightReturnEarlyFromDoStep, 0,
+            fmi3_xml_parse_attr_as_boolean(context, elmID, FMI3_ATTR(fmi_attr_id_mightReturnEarlyFromDoStep), 0,
                     &md->capabilities[fmi3_cs_mightReturnEarlyFromDoStep], 0)
             ||
-            fmi3_xml_parse_attr_as_boolean(context, elmID, fmi_attr_id_canReturnEarlyAfterIntermediateUpdate, 0,
+            fmi3_xml_parse_attr_as_boolean(context, elmID, FMI3_ATTR(fmi_attr_id_canReturnEarlyAfterIntermediateUpdate), 0,
                     &md->capabilities[fmi3_cs_canReturnEarlyAfterIntermediateUpdate], 0)
             ||
-            fmi3_xml_parse_attr_as_boolean(context, elmID, fmi_attr_id_hasEventMode, 0,
+            fmi3_xml_parse_attr_as_boolean(context, elmID, FMI3_ATTR(fmi_attr_id_hasEventMode), 0,
                     &md->capabilities[fmi3_cs_hasEventMode], 0)
             ||
-            fmi3_xml_parse_attr_as_boolean(context, elmID, fmi_attr_id_providesEvaluateDiscreteStates, 0,
+            fmi3_xml_parse_attr_as_boolean(context, elmID, FMI3_ATTR(fmi_attr_id_providesEvaluateDiscreteStates), 0,
                     &md->capabilities[fmi3_cs_providesEvaluateDiscreteStates], 0))
         {
             return -1;
@@ -624,24 +624,24 @@ int fmi3_xml_handle_CoSimulation(fmi3_xml_parser_context_t *context, const char*
 
         // NOTE: This attribute is unsigned int, so not really a capability. However, in
         // FMI2 it's part of the capabilities enum, so keeping it the same for FMI3.
-        if (fmi3_xml_parse_attr_as_uint32(context, elmID, fmi_attr_id_maxOutputDerivativeOrder, 0,
+        if (fmi3_xml_parse_attr_as_uint32(context, elmID, FMI3_ATTR(fmi_attr_id_maxOutputDerivativeOrder), 0,
                 &md->capabilities[fmi3_cs_maxOutputDerivativeOrder], 0))
         {
             return -1;
         }
 
         // Other non-capability attributes:
-        if (fmi3_xml_is_attr_defined(context, fmi_attr_id_fixedInternalStepSize)) {
+        if (fmi3_xml_is_attr_defined(context, FMI3_ATTR(fmi_attr_id_fixedInternalStepSize))) {
             md->coSimulation.hasFixedInternalStepSize = 1;
-            if (fmi3_xml_parse_attr_as_float64(context, elmID, fmi_attr_id_fixedInternalStepSize, 0,
+            if (fmi3_xml_parse_attr_as_float64(context, elmID, FMI3_ATTR(fmi_attr_id_fixedInternalStepSize), 0,
                     &md->coSimulation.fixedInternalStepSize, 0))
             {
                 return -1;
             }
         }
-        if (fmi3_xml_is_attr_defined(context, fmi_attr_id_recommendedIntermediateInputSmoothness)) {
+        if (fmi3_xml_is_attr_defined(context, FMI3_ATTR(fmi_attr_id_recommendedIntermediateInputSmoothness))) {
             md->coSimulation.hasRecommendedIntermediateInputSmoothness = 1;
-            if (fmi3_xml_parse_attr_as_int32(context, elmID, fmi_attr_id_recommendedIntermediateInputSmoothness, 0,
+            if (fmi3_xml_parse_attr_as_int32(context, elmID, FMI3_ATTR(fmi_attr_id_recommendedIntermediateInputSmoothness), 0,
                     &md->coSimulation.recommendedIntermediateInputSmoothness, 0))
             {
                 return -1;
@@ -709,7 +709,7 @@ int fmi3_xml_handle_File(fmi3_xml_parser_context_t *context, const char* data) {
 
         if(!bufName) return -1;
         /* <xs:attribute name="name" type="xs:normalizedString" use="required"> */
-        if( fmi3_xml_parse_attr_as_string(context, fmi3_xml_elmID_File, fmi_attr_id_name, 1, bufName))
+        if( fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_File), FMI3_ATTR(fmi_attr_id_name), 1, bufName))
             return -1;
         return push_back_jm_string(context, &md->sourceFilesME, bufName);
     }
@@ -729,7 +729,7 @@ int fmi3_xml_handle_FileCS(fmi3_xml_parser_context_t *context, const char* data)
 
         if(!bufName) return -1;
         /* <xs:attribute name="name" type="xs:normalizedString" use="required"> */
-        if( fmi3_xml_parse_attr_as_string(context, fmi3_xml_elmID_File, fmi_attr_id_name, 1, bufName))
+        if( fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_File), FMI3_ATTR(fmi_attr_id_name), 1, bufName))
             return -1;
         return push_back_jm_string(context, &md->sourceFilesCS, bufName);
     }
@@ -759,11 +759,11 @@ int fmi3_xml_handle_Category(fmi3_xml_parser_context_t *context, const char* dat
 
         if (!bufName) return -1;
         /* <xs:attribute name="name" type="xs:normalizedString"> */
-        if (fmi3_xml_parse_attr_as_string(context, fmi3_xml_elmID_Category, fmi_attr_id_name, 1, bufName))
+        if (fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_Category), FMI3_ATTR(fmi_attr_id_name), 1, bufName))
             return -1;
         if (push_back_jm_string(context, &md->logCategories, bufName) < 0) return -1;
 
-        if (fmi3_xml_parse_attr_as_string(context, fmi3_xml_elmID_Category, fmi_attr_id_description, 0, bufName) < 0) return -1;
+        if (fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_Category), FMI3_ATTR(fmi_attr_id_description), 0, bufName) < 0) return -1;
         if (push_back_jm_string(context, &md->logCategoryDescriptions, bufName) < 0) return -1;
         return 0;
     }
@@ -780,18 +780,18 @@ int fmi3_xml_handle_DefaultExperiment(fmi3_xml_parser_context_t *context, const 
         /* process the attributes */
 
         /* save if attributes are defined */
-        md->defaultExperiment.startTimeDefined  = fmi3_xml_is_attr_defined(context, fmi_attr_id_startTime);
-        md->defaultExperiment.stopTimeDefined   = fmi3_xml_is_attr_defined(context, fmi_attr_id_stopTime);
-        md->defaultExperiment.toleranceDefined  = fmi3_xml_is_attr_defined(context, fmi_attr_id_tolerance);
-        md->defaultExperiment.stepSizeDefined   = fmi3_xml_is_attr_defined(context, fmi_attr_id_stepSize);
+        md->defaultExperiment.startTimeDefined  = fmi3_xml_is_attr_defined(context, FMI3_ATTR(fmi_attr_id_startTime));
+        md->defaultExperiment.stopTimeDefined   = fmi3_xml_is_attr_defined(context, FMI3_ATTR(fmi_attr_id_stopTime));
+        md->defaultExperiment.toleranceDefined  = fmi3_xml_is_attr_defined(context, FMI3_ATTR(fmi_attr_id_tolerance));
+        md->defaultExperiment.stepSizeDefined   = fmi3_xml_is_attr_defined(context, FMI3_ATTR(fmi_attr_id_stepSize));
 
         /* save attribute values: from XML if exists else defaults */
         /* NOTE: the default values are hard-coded in the API documentation as well */
         return (
-                fmi3_xml_parse_attr_as_float64(context, fmi3_xml_elmID_DefaultExperiment, fmi_attr_id_startTime, 0, &md->defaultExperiment.startTime, 0)                                 ||
-                fmi3_xml_parse_attr_as_float64(context, fmi3_xml_elmID_DefaultExperiment, fmi_attr_id_stopTime,  0, &md->defaultExperiment.stopTime,  1)                                 ||
-                fmi3_xml_parse_attr_as_float64(context, fmi3_xml_elmID_DefaultExperiment, fmi_attr_id_tolerance, 0, &md->defaultExperiment.tolerance, FMI3_DEFAULT_EXPERIMENT_TOLERANCE) ||
-                fmi3_xml_parse_attr_as_float64(context, fmi3_xml_elmID_DefaultExperiment, fmi_attr_id_stepSize,  0, &md->defaultExperiment.stepSize,  FMI3_DEFAULT_EXPERIMENT_STEPSIZE)
+                fmi3_xml_parse_attr_as_float64(context, FMI3_ELM(fmi3_xml_elmID_DefaultExperiment), FMI3_ATTR(fmi_attr_id_startTime), 0, &md->defaultExperiment.startTime, 0)                                 ||
+                fmi3_xml_parse_attr_as_float64(context, FMI3_ELM(fmi3_xml_elmID_DefaultExperiment), FMI3_ATTR(fmi_attr_id_stopTime),  0, &md->defaultExperiment.stopTime,  1)                                 ||
+                fmi3_xml_parse_attr_as_float64(context, FMI3_ELM(fmi3_xml_elmID_DefaultExperiment), FMI3_ATTR(fmi_attr_id_tolerance), 0, &md->defaultExperiment.tolerance, FMI3_DEFAULT_EXPERIMENT_TOLERANCE) ||
+                fmi3_xml_parse_attr_as_float64(context, FMI3_ELM(fmi3_xml_elmID_DefaultExperiment), FMI3_ATTR(fmi_attr_id_stepSize),  0, &md->defaultExperiment.stepSize,  FMI3_DEFAULT_EXPERIMENT_STEPSIZE)
         );
     }
     else {

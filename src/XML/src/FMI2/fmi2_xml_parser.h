@@ -263,7 +263,7 @@ struct fmi2_xml_parser_context_t {
     jm_vector(char) elmData;
 
     /**
-     * Element ID of the last processed sibling, or fmi3_xml_elmID_none if
+     * Element ID of the last processed sibling, or fmi2_xml_elmID_none if
      * no siblings have been processed.
      */
     fmi2_xml_elm_enu_t lastElmID;

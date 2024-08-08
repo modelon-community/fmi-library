@@ -22,10 +22,11 @@
 extern "C" {
 #endif
 
-/* Attributes common to modelDescription.xml & terminalsAndIcons.xml
- * are listed in FMI3_XML_ATTRLIST_COMMON in fmi3_xml_parser.h
- */
+/* Attribute names found in modelDescription.xml */
 #define FMI3_XML_ATTRLIST_MODEL_DESCR(EXPAND_XML_ATTRNAME) \
+    EXPAND_XML_ATTRNAME(fmiVersion) \
+    EXPAND_XML_ATTRNAME(name) \
+    EXPAND_XML_ATTRNAME(description) \
     EXPAND_XML_ATTRNAME(factor) \
     EXPAND_XML_ATTRNAME(offset) \
     EXPAND_XML_ATTRNAME(inverse) \
@@ -99,6 +100,7 @@ extern "C" {
     EXPAND_XML_ATTRNAME(canReturnEarlyAfterIntermediateUpdate) \
     EXPAND_XML_ATTRNAME(hasEventMode)
 
+/* Element names found in modelDescription.xml */
 #define FMI3_XML_ELMLIST_MODEL_DESCR(EXPAND_XML_ELMNAME) \
     EXPAND_XML_ELMNAME(fmiModelDescription) \
     EXPAND_XML_ELMNAME(ModelExchange) \
@@ -174,14 +176,14 @@ extern "C" {
 
 // XXX: fmi3_xml_elmID_none & fmi3_xml_elmID_Start are defined in fmi3_xml_parser.h, got good style
 /*
-    Define XML schema structure. Used to build the 'fmi3_xml_scheme_info_t' type (in fmi3_xml_parser.c).
+    Define XML schema structure. Used to build the 'fmi3_xml_scheme_modelDescription_info_t' type (in fmi3_xml_parser.c).
 
     @sib_idx:
         the index in a sequence among siblings
     @multi_elem:
         if the parent can have multiple elements of this type
 */
-/*      scheme_ID,                                super_type,                 parent_ID,                          sib_idx, multi_elem */
+/*      scheme_ID,                                super_type,                 parent_ID,                           sib_idx, multi_elem */
 #define fmi3_xml_scheme_fmiModelDescription       {fmi3_xml_elmID_none,       fmi3_xml_elmID_none,                 0,       0}
 #define fmi3_xml_scheme_ModelExchange             {fmi3_xml_elmID_none,       fmi3_xml_elmID_fmiModelDescription,  0,       0}
 #define fmi3_xml_scheme_SourceFiles               {fmi3_xml_elmID_none,       fmi3_xml_elmID_ModelExchange,        0,       0}

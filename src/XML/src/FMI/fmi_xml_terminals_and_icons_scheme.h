@@ -20,11 +20,13 @@
 extern "C" {
 #endif
 
-/* Attributes common to modelDescription.xml & terminalsAndIcons.xml
- * are listed in FMI3_XML_ATTRLIST_COMMON in fmi3_xml_parser.h
- */
-#define FMI_XML_ATTRLIST_TERM_ICON(EXPAND_XML_ATTRNAME)  // XXX: Currently empty, but will be filled
+/* Attribute names found in terminalsAndIcons.xml */
+#define FMI_XML_ATTRLIST_TERM_ICON(EXPAND_XML_ATTRNAME) \
+    EXPAND_XML_ATTRNAME(fmiVersion) \
+    EXPAND_XML_ATTRNAME(name) \
+    EXPAND_XML_ATTRNAME(description)
 
+/* Element names found in terminalsAndIcons.xml */
 #define FMI_XML_ELMLIST_TERM_ICON(EXPAND_XML_ELMNAME) \
     EXPAND_XML_ELMNAME(fmiTerminalsAndIcons) \
     EXPAND_XML_ELMNAME(Terminals) \
@@ -36,24 +38,23 @@ extern "C" {
 /** \brief Element that can be placed under different parents get alternative names from the info struct */
 #define FMI_XML_ELMLIST_ALT_TERM_ICON(EXPAND_XML_ELMNAME)  // TODO: Terminal should go here?
 
-// XXX: fmi3_xml_elmID_none is defined in fmi3_xml_parser.h, not good style
 /*
-    Define XML schema structure. Used to build the 'fmi3_xml_scheme_info_t' type (in fmi3_xml_parser.c).
+    Define XML schema structure. Used to build the 'fmi_xml_scheme_termIcon_info_t' type (in fmi3_xml_parser.c).
 
     @sib_idx:
         the index in a sequence among siblings
     @multi_elem:
         if the parent can have multiple elements of this type
 */
-/*      scheme_ID,                                      super_type,                 parent_ID,                          sib_idx, multi_elem */
-#define fmi3_xml_scheme_fmiTerminalsAndIcons            {fmi3_xml_elmID_none,       fmi3_xml_elmID_none,                 0,       0}
+/*      scheme_ID,                                              super_type,                   parent_ID,                                   sib_idx, multi_elem */
+#define fmi_xml_scheme_termIcon_fmiTerminalsAndIcons            {fmi_xml_elmID_termIcon_none, fmi_xml_elmID_termIcon_none,                 0,       0}
 
-#define fmi3_xml_scheme_Terminals                       {fmi3_xml_elmID_none,       fmi3_xml_elmID_fmiTerminalsAndIcons, 1,       0}
-#define fmi3_xml_scheme_Terminal                        {fmi3_xml_elmID_none,       fmi3_xml_elmID_Terminals,            0,       1}
-#define fmi3_xml_scheme_TerminalMemberVariable          {fmi3_xml_elmID_none,       fmi3_xml_elmID_Terminal,             0,       1}
-#define fmi3_xml_scheme_TerminalStreamMemberVariable    {fmi3_xml_elmID_none,       fmi3_xml_elmID_Terminal,             1,       1}
+#define fmi_xml_scheme_termIcon_Terminals                       {fmi_xml_elmID_termIcon_none, fmi_xml_elmID_termIcon_fmiTerminalsAndIcons, 1,       0}
+#define fmi_xml_scheme_termIcon_Terminal                        {fmi_xml_elmID_termIcon_none, fmi_xml_elmID_termIcon_Terminals,            0,       1}
+#define fmi_xml_scheme_termIcon_TerminalMemberVariable          {fmi_xml_elmID_termIcon_none, fmi_xml_elmID_termIcon_Terminal,             0,       1}
+#define fmi_xml_scheme_termIcon_TerminalStreamMemberVariable    {fmi_xml_elmID_termIcon_none, fmi_xml_elmID_termIcon_Terminal,             1,       1}
 // TODO: How to handle nested Terminals?
-#define fmi3_xml_scheme_TerminalGraphicalRepresentation {fmi3_xml_elmID_none,       fmi3_xml_elmID_Terminal,             3,       0}
+#define fmi_xml_scheme_termIcon_TerminalGraphicalRepresentation {fmi_xml_elmID_termIcon_none, fmi_xml_elmID_termIcon_Terminal,             3,       0}
 
 #ifdef __cplusplus
 }

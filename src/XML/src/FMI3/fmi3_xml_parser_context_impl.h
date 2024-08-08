@@ -28,15 +28,39 @@
 extern "C" {
 #endif
 
+/** Flag for current XML file being handled. */
+// TODO: Might be more suited in parser.h?
+typedef enum fmi3_xml_type_t {
+    fmi3_xml_type_modelDescription,
+    fmi3_xml_type_terminalAndIcons
+} fmi3_xml_type_t;
+
+typedef struct fmi3_xml_modelDescription_element_handle_map_t fmi3_xml_modelDescription_element_handle_map_t;
+typedef struct fmi_xml_termIcon_element_handle_map_t fmi_xml_termIcon_element_handle_map_t;
 typedef struct fmi3_xml_element_handle_map_t fmi3_xml_element_handle_map_t;
 
+typedef int (*fmi3_xml_modelDescription_element_handle_ft)(fmi3_xml_parser_context_t* context, const char* data);
+typedef int (*fmi3_xml_termIcon_element_handle_ft)(fmi3_xml_parser_context_t* context, const char* data);
 typedef int (*fmi3_xml_element_handle_ft)(fmi3_xml_parser_context_t* context, const char* data);
+
+struct fmi3_xml_modelDescription_element_handle_map_t {
+    const char* elementName;
+    fmi3_xml_modelDescription_element_handle_ft elementHandle;
+    fmi3_xml_elm_modelDescription_enu_t elemID;
+};
+
+struct fmi_xml_termIcon_element_handle_map_t {
+    const char* elementName;
+    fmi3_xml_termIcon_element_handle_ft elementHandle;
+    fmi_xml_elm_termIcon_enu_t elemID;
+};
 
 struct fmi3_xml_element_handle_map_t {
     const char* elementName;
     fmi3_xml_element_handle_ft elementHandle;
-    fmi3_xml_elm_enu_t elemID;
+    fmi3_xml_elm_t elemID;
 };
+
 
 jm_vector_declare_template(fmi3_xml_element_handle_map_t)
 
@@ -44,6 +68,10 @@ jm_vector_declare_template(fmi3_xml_element_handle_map_t)
  * Struct for saving and accessing data between element handlers.
  */
 struct fmi3_xml_parser_context_t {
+
+    /* Flag for XML being handled, e.g., modelDescription, terminalsAndIcons...
+    MUST BE FIRST due setting as const in fmi3_xml_allocate_parser_context */
+    const fmi3_xml_type_t xmlType;
 
     /**
      * This is where the parsed XML is saved.
@@ -146,10 +174,10 @@ struct fmi3_xml_parser_context_t {
     jm_vector(char) variableStartAttr;
 
     /**
-     * Element ID of the last processed sibling, or fmi3_xml_elmID_none if
+     * Element ID of the last processed sibling, or FMI_XML_ELMID_NONE if
      * no siblings have been processed.
      */
-    fmi3_xml_elm_enu_t lastSiblingElemId;
+    fmi3_xml_elm_t lastSiblingElemId;
 
     /**
      * Used for error checking and scheme verification.
@@ -161,9 +189,9 @@ struct fmi3_xml_parser_context_t {
      *     on enter: self
      *     on exit: parent
      */
-    fmi3_xml_elm_enu_t currentElmID;
+    fmi3_xml_elm_t currentElmID;
 
-    fmi3_xml_elm_enu_t currentElemIdStartTag;
+    fmi3_xml_elm_t currentElemIdStartTag;
 
     /* Variables for handling tool-specific XML elements */
     int anyElmCount;

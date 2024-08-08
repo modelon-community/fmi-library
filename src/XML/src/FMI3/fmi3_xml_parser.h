@@ -25,10 +25,6 @@
 #include <FMI3/fmi3_xml_callbacks.h>
 
 #include <FMI3/fmi3_enums.h>
-#include <FMI3/fmi3_xml_model_description.h>
-#include <FMI/fmi_xml_terminals_and_icons.h>
-#include "fmi3_xml_model_description_scheme.h"
-#include "../FMI/fmi_xml_terminals_and_icons_scheme.h"
 #include "fmi3_xml_parser_context_impl.h"
 #include "fmi3_xml_parser_util.h"
 
@@ -37,17 +33,6 @@ extern "C" {
 #endif
 
 jm_vector_declare_template(fmi3_value_reference_t)
-
-// /** Keeps information about the allowed parent element ID, index among siblings in a sequence and if
-//     multiple elements of this type are allowed in a sequence.
-// */
-typedef struct {
-    fmi3_xml_elm_t superID;  /* ID of super type or NULL if none */
-    fmi3_xml_elm_t parentID; /* expected parent ID for an element */
-    int siblingIndex;       /* index among siblings */
-    int multipleAllowed;    /* multiple elements of this kind kan come in a sequence as siblings*/
-} fmi3_xml_scheme_info_t;
-
 
 #define fmi3_xml_diff_elmName(a, b) strcmp(a.elementName,b.elementName)
 
@@ -113,12 +98,6 @@ jm_string fmi3_xml_peek_attr_str(fmi3_xml_parser_context_t* context, const fmi3_
 int fmi3_xml_get_attr_str(fmi3_xml_parser_context_t* context, fmi3_xml_elm_t elmID, const fmi3_xml_attr_t attrID, int required, const char** valp);
 
 void fmi3_xml_set_element_handle(fmi3_xml_parser_context_t* context, const char* elm, fmi3_xml_elm_t id);
-
-// TODO: These last 3 should probably go to a scheme file
-int fmi3_xml_is_valid_parent(fmi3_xml_parser_context_t* context, fmi3_xml_elm_t child_id, fmi3_xml_elm_t parent_id);
-int fmi3_xml_get_super_type_rec(fmi3_xml_parser_context_t* context, fmi3_xml_elm_t id);
-int fmi3_xml_are_same_type(fmi3_xml_parser_context_t* context, fmi3_xml_elm_t id1, fmi3_xml_elm_t id2);
-
 const char* fmi3_xml_elmid_to_name(fmi3_xml_parser_context_t* context, fmi3_xml_elm_t id);
 
 #ifdef __cplusplus

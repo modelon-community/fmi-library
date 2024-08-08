@@ -186,6 +186,7 @@ set(FMIXMLSOURCE
     src/FMI3/fmi3_xml_vendor_annotations.c
     src/FMI3/fmi3_xml_variable.c
     src/FMI3/fmi3_xml_model_description_scheme.c
+    src/FMI3/fmi3_xml_parser_scheme.c
 )
 
 include(ExternalProject)

@@ -28,21 +28,6 @@
 extern "C" {
 #endif
 
-/** Flag for current XML file being handled. */
-// TODO: Might be more suited in parser.h?
-typedef enum fmi3_xml_type_t {
-    fmi3_xml_type_modelDescription,
-    fmi3_xml_type_terminalAndIcons
-} fmi3_xml_type_t;
-
-typedef struct fmi3_xml_element_handle_map_t fmi3_xml_element_handle_map_t;
-typedef int (*fmi3_xml_element_handle_ft)(fmi3_xml_parser_context_t* context, const char* data);
-struct fmi3_xml_element_handle_map_t {
-    const char* elementName;
-    fmi3_xml_element_handle_ft elementHandle;
-    fmi3_xml_elm_t elemID;
-};
-
 jm_vector_declare_template(fmi3_xml_element_handle_map_t)
 
 /**

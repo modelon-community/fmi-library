@@ -1066,7 +1066,7 @@ static int fmi3_create_attr_map(fmi3_xml_parser_context_t* context) {
     if (!context->attrMapById) return -1;
     context->attrMapByName = jm_vector_alloc(jm_named_ptr)(mapSize, mapSize, context->callbacks);
     if (!context->attrMapByName) return -1;
-    for(i = 0; i < mapSize; i++) {
+    for (i = 0; i < mapSize; i++) {
         jm_named_ptr map;
         jm_vector_set_item(jm_string)(context->attrMapById, i, 0);
         map.name = fmi3_xml_get_xml_attr_name(context, FMI3_ATTR_ANY(i));
@@ -1084,7 +1084,7 @@ static int fmi3_create_elm_map(fmi3_xml_parser_context_t* context) {
     size_t mapSizeActual = fmi3_get_enum_size_actual(context);
     context->elmMap = jm_vector_alloc(fmi3_xml_element_handle_map_t)(mapSizeActual, mapSize, context->callbacks);
     if (!context->elmMap) return -1;
-    for(i = 0; i < mapSizeActual; i++) {
+    for (i = 0; i < mapSizeActual; i++) {
         fmi3_xml_element_handle_map_t item = fmi3_xml_get_element_handle(context, FMI3_ELM_ANY(i));
         jm_vector_set_item(fmi3_xml_element_handle_map_t)(context->elmMap, i, item);
     }

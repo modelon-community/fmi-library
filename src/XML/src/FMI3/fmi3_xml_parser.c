@@ -44,11 +44,11 @@ typedef unsigned long long int  fmi3_uint_buf_t; /* same size as fmi3_int_buf_t 
 
 // TODO: Move these + access functions into the parser_scheme file?
 #define ATTR_STR(attr) #attr,
-const jm_string fmi3_modelDescription_xmlAttrNames[fmi3_modelDescription_xml_attr_number] = {
+const jm_string fmi3_modelDescription_xmlAttrNames[fmi3_xml_modelDescription_attr_number] = {
     FMI3_XML_ATTRLIST_MODEL_DESCR(ATTR_STR)
 };
 
-const jm_string fmi3_termIcon_xmlAttrNames[fmi3_xml_termIcon_attr_number] = {
+const jm_string fmi3_termIcon_xmlAttrNames[fmi_xml_termIcon_attr_number] = {
     FMI_XML_ATTRLIST_TERM_ICON(ATTR_STR)
 };
 
@@ -1030,22 +1030,22 @@ jm_vector(char)* fmi3_xml_reserve_parse_buffer(fmi3_xml_parser_context_t* contex
     return item;
 }
 
-// Get fmi3_xml_elm_*_number based on xmlType
-static size_t fmi3_get_enum_size(fmi3_xml_parser_context_t* context) {
+// Get size of ATTRIBUTE enum based on xmlType
+static size_t fmi3_xml_get_attr_enum_size(fmi3_xml_parser_context_t* context) {
     const fmi3_xml_type_t xmlType = context->xmlType;
     switch (xmlType) {
         case fmi3_xml_type_modelDescription:
-            return (size_t) fmi3_modelDescription_xml_attr_number;
+            return (size_t) fmi3_xml_modelDescription_attr_number;
         case fmi3_xml_type_terminalAndIcons:
-            return (size_t) fmi3_xml_termIcon_attr_number;
+            return (size_t) fmi_xml_termIcon_attr_number;
         default:
             // erroneous
             return 0;
     }
 }
 
-// Get fmi3_xml_elm_*_actual_number based on xmlType
-static size_t fmi3_get_enum_size_actual(fmi3_xml_parser_context_t* context) {
+// Get size of ELEMENT enum based on xmlType
+static size_t fmi3_xml_get_elm_enum_size_actual(fmi3_xml_parser_context_t* context) {
     const fmi3_xml_type_t xmlType = context->xmlType;
     switch (xmlType) {
         case fmi3_xml_type_modelDescription:
@@ -1061,12 +1061,12 @@ static size_t fmi3_get_enum_size_actual(fmi3_xml_parser_context_t* context) {
 // TODO: Move to better place?
 static int fmi3_create_attr_map(fmi3_xml_parser_context_t* context) {
     int i;
-    size_t mapSize = fmi3_get_enum_size(context);
-    context->attrMapById = jm_vector_alloc(jm_string)(mapSize, mapSize, context->callbacks);
+    size_t attrEnumSize = fmi3_xml_get_attr_enum_size(context);
+    context->attrMapById = jm_vector_alloc(jm_string)(attrEnumSize, attrEnumSize, context->callbacks);
     if (!context->attrMapById) return -1;
-    context->attrMapByName = jm_vector_alloc(jm_named_ptr)(mapSize, mapSize, context->callbacks);
+    context->attrMapByName = jm_vector_alloc(jm_named_ptr)(attrEnumSize, attrEnumSize, context->callbacks);
     if (!context->attrMapByName) return -1;
-    for (i = 0; i < mapSize; i++) {
+    for (i = 0; i < attrEnumSize; i++) {
         jm_named_ptr map;
         jm_vector_set_item(jm_string)(context->attrMapById, i, 0);
         map.name = fmi3_xml_get_xml_attr_name(context, FMI3_ATTR_ANY(i));
@@ -1080,11 +1080,11 @@ static int fmi3_create_attr_map(fmi3_xml_parser_context_t* context) {
 // TODO: Move to better place?
 static int fmi3_create_elm_map(fmi3_xml_parser_context_t* context) {
     int i;
-    size_t mapSize = fmi3_get_enum_size(context);
-    size_t mapSizeActual = fmi3_get_enum_size_actual(context);
-    context->elmMap = jm_vector_alloc(fmi3_xml_element_handle_map_t)(mapSizeActual, mapSize, context->callbacks);
+    size_t attrEnumSize = fmi3_xml_get_attr_enum_size(context);
+    size_t elmEnumSizeActual = fmi3_xml_get_elm_enum_size_actual(context);
+    context->elmMap = jm_vector_alloc(fmi3_xml_element_handle_map_t)(elmEnumSizeActual, attrEnumSize, context->callbacks);
     if (!context->elmMap) return -1;
-    for (i = 0; i < mapSizeActual; i++) {
+    for (i = 0; i < elmEnumSizeActual; i++) {
         fmi3_xml_element_handle_map_t item = fmi3_xml_get_element_handle(context, FMI3_ELM_ANY(i));
         jm_vector_set_item(fmi3_xml_element_handle_map_t)(context->elmMap, i, item);
     }
@@ -1169,7 +1169,7 @@ static void XMLCALL fmi3_parse_element_start(void *c, const char *elm, const cha
     int i;
     fmi3_xml_parser_context_t* context = c;
     context->has_produced_data_warning = 0;
-    size_t mapSize = fmi3_get_enum_size(context);
+    size_t attrEnumSize = fmi3_xml_get_attr_enum_size(context);
 
     if (context->useAnyHandleFlg) {
         fmi3_xml_callbacks_t* anyH = context->anyHandle;
@@ -1304,7 +1304,7 @@ static void XMLCALL fmi3_parse_element_start(void *c, const char *elm, const cha
     if (currentElMap->elementHandle(context, 0)) {
         // Need to clear buffer, otherwise non-parsed attributes of elements that failed
         // to parse will be parsed with next element
-        for (int i = 0; i < mapSize; i++) {
+        for (int i = 0; i < attrEnumSize; i++) {
             if (jm_vector_get_item(jm_string)(context->attrMapById, i)) {
                 jm_vector_set_item(jm_string)(context->attrMapById, i, NULL);
             }
@@ -1314,7 +1314,7 @@ static void XMLCALL fmi3_parse_element_start(void *c, const char *elm, const cha
     }
     if (context->skipElementCnt) return;
     /* check that the element handler has processed all the attributes */
-    for (i = 0; i < mapSize; i++) {
+    for (i = 0; i < attrEnumSize; i++) {
         if (jm_vector_get_item(jm_string)(context->attrMapById, i)) {
             // Element has not been processed because no handler exists
             jm_log_warning(context->callbacks, module, "Attribute '%s' not processed by element '%s' handle", 

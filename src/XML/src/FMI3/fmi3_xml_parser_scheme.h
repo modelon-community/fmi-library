@@ -28,13 +28,13 @@ extern "C" {
 #define FMI3_XML_ATTR_ID(attr) fmi_attr_id_##attr,
 typedef enum fmi3_xml_attr_modelDescription_enu_t {
     FMI3_XML_ATTRLIST_MODEL_DESCR(FMI3_XML_ATTR_ID)
-    fmi3_modelDescription_xml_attr_number
+    fmi3_xml_modelDescription_attr_number
 } fmi3_xml_attr_modelDescription_enu_t;
 
 #define FMI_TERMICON_XML_ATTR_ID(attr) fmi_termIcon_attr_id_##attr,
 typedef enum fmi_xml_attr_termIcon_enu_t {
     FMI_XML_ATTRLIST_TERM_ICON(FMI_TERMICON_XML_ATTR_ID)
-    fmi3_xml_termIcon_attr_number
+    fmi_xml_termIcon_attr_number
 } fmi_xml_attr_termIcon_enu_t;
 
 typedef union fmi3_xml_attr_t {

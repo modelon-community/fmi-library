@@ -38,6 +38,12 @@ extern "C" {
 
 /* Structure encapsulating terminals and icons information */
 typedef struct fmi_xml_terminals_and_icons_t fmi_xml_terminals_and_icons_t;
+/* Structure encapsulating graphicalRepresentation information */
+typedef struct fmi_xml_graphicalRepresentation_t fmi_xml_graphicalRepresentation_t;
+/* Structure encapsulating coordinateSystem information */
+typedef struct fmi_xml_coordinateSystem_t fmi_xml_coordinateSystem_t;
+/* Structure encapsulating icon information */
+typedef struct fmi_xml_icon_t fmi_xml_icon_t;
 /* Structure encapsulating terminal information */
 typedef struct fmi_xml_terminal_t fmi_xml_terminal_t;
 

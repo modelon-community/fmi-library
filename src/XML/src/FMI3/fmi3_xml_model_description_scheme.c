@@ -14,7 +14,7 @@
 */
 
 #include "JM/jm_portability.h"
-#include "fmi3_xml_model_description_scheme.h"
+#include <FMI3/fmi3_xml_model_description_scheme.h>
 
 #define ATTR_STR(attr) #attr,
 const jm_string fmi3_modelDescription_xmlAttrNames[fmi3_xml_modelDescription_attr_number] = {

@@ -25,10 +25,10 @@
 #define snprintf _snprintf
 #endif
 
+#include "JM/jm_portability.h"
+#include "fmi3_xml_parser.h"
 #include "fmi3_xml_model_description_impl.h"
 #include "../FMI/fmi_xml_terminals_and_icons_impl.h"
-#include "fmi3_xml_parser.h"
-#include "JM/jm_portability.h"
 #include "fmi3_xml_parser_context_impl.h"
 
 static const char* module = "FMI3XML";
@@ -898,35 +898,6 @@ jm_vector(char)* fmi3_xml_reserve_parse_buffer(fmi3_xml_parser_context_t* contex
     return item;
 }
 
-// Get size of ATTRIBUTE enum based on xmlType
-static size_t fmi3_xml_get_attr_enum_size(fmi3_xml_parser_context_t* context) {
-    const fmi3_xml_type_t xmlType = context->xmlType;
-    switch (xmlType) {
-        case fmi3_xml_type_modelDescription:
-            return fmi3_xml_get_modelDescription_attr_enum_size();
-        case fmi3_xml_type_terminalAndIcons:
-            return fmi_xml_get_termIcon_attr_enum_size();
-        default:
-            // erroneous
-            return 0;
-    }
-}
-
-// Get size of ELEMENT enum based on xmlType
-static size_t fmi3_xml_get_elm_enum_size_actual(fmi3_xml_parser_context_t* context) {
-    const fmi3_xml_type_t xmlType = context->xmlType;
-    switch (xmlType) {
-        case fmi3_xml_type_modelDescription:
-            return fmi3_xml_get_modelDescription_elm_enum_size_actual();
-        case fmi3_xml_type_terminalAndIcons:
-            return fmi_xml_get_termIcon_elm_enum_size_actual();
-        default:
-            // erroneous
-            return 0;
-    }
-}
-
-// TODO: Move to better place?
 static int fmi3_create_attr_map(fmi3_xml_parser_context_t* context) {
     int i;
     size_t attrEnumSize = fmi3_xml_get_attr_enum_size(context);
@@ -945,7 +916,6 @@ static int fmi3_create_attr_map(fmi3_xml_parser_context_t* context) {
     return 0;
 }
 
-// TODO: Move to better place?
 static int fmi3_create_elm_map(fmi3_xml_parser_context_t* context) {
     int i;
     size_t attrEnumSize = fmi3_xml_get_attr_enum_size(context);

@@ -14,7 +14,7 @@
 */
 
 #include "JM/jm_portability.h"
-#include "fmi_xml_terminals_and_icons_scheme.h"
+#include <FMI/fmi_xml_terminals_and_icons_scheme.h>
 
 #define ATTR_STR(attr) #attr,
 const jm_string fmi_termIcon_xmlAttrNames[fmi_xml_termIcon_attr_number] = {

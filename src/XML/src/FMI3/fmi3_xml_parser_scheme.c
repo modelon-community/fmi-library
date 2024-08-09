@@ -14,7 +14,7 @@
 */
 
 #include "JM/jm_portability.h"
-#include "fmi3_xml_parser_scheme.h"
+#include <FMI3/fmi3_xml_parser_scheme.h>
 #include "fmi3_xml_parser_context_impl.h"
 
 jm_string fmi3_xml_get_xml_attr_name(fmi3_xml_parser_context_t* context, const fmi3_xml_attr_t enu) {
@@ -91,6 +91,34 @@ fmi3_xml_element_handle_map_t fmi3_xml_get_element_handle(fmi3_xml_parser_contex
             ret.elemID = FMI3_ELM_ANY(FMI_XML_ELMID_NONE);
     }
     return ret;
+}
+
+/* Get size of ATTRIBUTE enum based on xmlType */
+size_t fmi3_xml_get_attr_enum_size(fmi3_xml_parser_context_t* context) {
+    const fmi3_xml_type_t xmlType = context->xmlType;
+    switch (xmlType) {
+        case fmi3_xml_type_modelDescription:
+            return fmi3_xml_get_modelDescription_attr_enum_size();
+        case fmi3_xml_type_terminalAndIcons:
+            return fmi_xml_get_termIcon_attr_enum_size();
+        default:
+            // erroneous
+            return 0;
+    }
+}
+
+/* Get size of ELEMENT enum based on xmlType */
+size_t fmi3_xml_get_elm_enum_size_actual(fmi3_xml_parser_context_t* context) {
+    const fmi3_xml_type_t xmlType = context->xmlType;
+    switch (xmlType) {
+        case fmi3_xml_type_modelDescription:
+            return fmi3_xml_get_modelDescription_elm_enum_size_actual();
+        case fmi3_xml_type_terminalAndIcons:
+            return fmi_xml_get_termIcon_elm_enum_size_actual();
+        default:
+            // erroneous
+            return 0;
+    }
 }
 
 /**

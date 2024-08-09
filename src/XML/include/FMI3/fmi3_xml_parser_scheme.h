@@ -11,18 +11,24 @@
 */
 
 /*
-This file collects and unifies the XML schemes to be used for parsing.
+XML scheme interaction via unified types and APIs.
 */
 
 #ifndef FMI3_XML_XMLPARSER_SCHEME_H
 #define FMI3_XML_XMLPARSER_SCHEME_H
 
-#include "../FMI/fmi_xml_terminals_and_icons_scheme.h"
-#include "fmi3_xml_model_description_scheme.h"
+#include <FMI/fmi_xml_terminals_and_icons_scheme.h>
+#include <FMI3/fmi3_xml_model_description_scheme.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/** Flag for current XML file being handled. */
+typedef enum fmi3_xml_type_t {
+    fmi3_xml_type_modelDescription,
+    fmi3_xml_type_terminalAndIcons
+} fmi3_xml_type_t;
 
 typedef union fmi3_xml_attr_t {
     int any; // when used in generic parser/handling context
@@ -46,21 +52,15 @@ typedef union fmi3_xml_elm_t {
 #define FMI3_ELM(enu)         (fmi3_xml_elm_t){.modelDescription = enu}
 #define FMI_ELM_TERMICON(enu) (fmi3_xml_elm_t){.termIcon = enu}
 
-// /** Keeps information about the allowed parent element ID, index among siblings in a sequence and if
-//     multiple elements of this type are allowed in a sequence.
-// */
+/** Keeps information about the allowed parent element ID, index among siblings in a sequence and if
+    multiple elements of this type are allowed in a sequence.
+*/
 typedef struct {
     fmi3_xml_elm_t superID;  /* ID of super type or NULL if none */
     fmi3_xml_elm_t parentID; /* expected parent ID for an element */
     int siblingIndex;       /* index among siblings */
     int multipleAllowed;    /* multiple elements of this kind kan come in a sequence as siblings*/
 } fmi3_xml_scheme_info_t;
-
-/** Flag for current XML file being handled. */
-typedef enum fmi3_xml_type_t {
-    fmi3_xml_type_modelDescription,
-    fmi3_xml_type_terminalAndIcons
-} fmi3_xml_type_t;
 
 typedef struct fmi3_xml_element_handle_map_t fmi3_xml_element_handle_map_t;
 typedef int (*fmi3_xml_element_handle_ft)(fmi3_xml_parser_context_t* context, const char* data);
@@ -73,6 +73,9 @@ struct fmi3_xml_element_handle_map_t {
 jm_string fmi3_xml_get_xml_attr_name(fmi3_xml_parser_context_t* context, const fmi3_xml_attr_t enu);
 fmi3_xml_scheme_info_t fmi3_xml_get_scheme_info(fmi3_xml_parser_context_t* context, fmi3_xml_elm_t enu);
 fmi3_xml_element_handle_map_t fmi3_xml_get_element_handle(fmi3_xml_parser_context_t* context, fmi3_xml_elm_t enu);
+
+size_t fmi3_xml_get_attr_enum_size(fmi3_xml_parser_context_t* context);
+size_t fmi3_xml_get_elm_enum_size_actual(fmi3_xml_parser_context_t* context);
 
 int fmi3_xml_is_valid_parent(fmi3_xml_parser_context_t* context, fmi3_xml_elm_t child_id, fmi3_xml_elm_t parent_id);
 int fmi3_xml_get_super_type_rec(fmi3_xml_parser_context_t* context, fmi3_xml_elm_t id);

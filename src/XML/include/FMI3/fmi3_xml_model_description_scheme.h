@@ -16,7 +16,7 @@
 #ifndef FMI3_XML_MODEL_DESCRIPTION_SCHEME_H
 #define FMI3_XML_MODEL_DESCRIPTION_SCHEME_H
 
-#include "fmi3_xml_parser_scheme_base.h"
+#include <FMI3/fmi3_xml_parser_scheme_base.h>
 #include <FMI3/fmi3_enums.h>
 
 #ifdef __cplusplus

@@ -20,9 +20,9 @@
 #include <JM/jm_vector.h>
 #include <JM/jm_stack.h>
 
-#include <FMI/fmi_xml_terminals_and_icons.h>
+#include <FMI3/fmi3_xml_parser_scheme.h>
 #include <FMI3/fmi3_xml_model_description.h>
-#include "fmi3_xml_parser_scheme.h"
+#include <FMI/fmi_xml_terminals_and_icons.h>
 
 #ifdef __cplusplus
 extern "C" {

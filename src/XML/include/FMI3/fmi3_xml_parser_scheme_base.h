@@ -11,7 +11,7 @@
 */
 
 /*
-TODO
+Common base functionality for defining a parser scheme, e.g., modelDescription, terminalsAndIcons
 */
 
 #ifndef FMI3_XML_XMLPARSER_SCHEME_BASE_H

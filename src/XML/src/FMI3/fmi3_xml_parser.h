@@ -22,7 +22,6 @@
 #include <JM/jm_stack.h>
 #include <JM/jm_named_ptr.h>
 #include <JM/jm_portability.h>
-#include <FMI3/fmi3_xml_callbacks.h>
 
 #include <FMI3/fmi3_enums.h>
 #include "fmi3_xml_parser_context_impl.h"

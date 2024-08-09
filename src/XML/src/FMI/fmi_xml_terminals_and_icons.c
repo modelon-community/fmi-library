@@ -13,12 +13,11 @@
     along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 */
 
-#include <stdio.h>
-
 #include "JM/jm_named_ptr.h"
-#include <FMI2/fmi2_xml_model_description.h>
-#include "../FMI3/fmi3_xml_parser.h"
+#include <FMI/fmi_xml_terminals_and_icons.h>
 #include "fmi_xml_terminals_and_icons_impl.h"
+#include "../FMI3/fmi3_xml_parser_context_impl.h"
+#include "../FMI3/fmi3_xml_parser.h"
 
 static const char* module = "FMIXML";
 

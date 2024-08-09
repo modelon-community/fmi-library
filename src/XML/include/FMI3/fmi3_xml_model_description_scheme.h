@@ -16,6 +16,7 @@
 #ifndef FMI3_XML_MODEL_DESCRIPTION_SCHEME_H
 #define FMI3_XML_MODEL_DESCRIPTION_SCHEME_H
 
+#include <FMI3/fmi3_xml_parser_scheme_base.h>
 #include <FMI3/fmi3_enums.h>
 
 #ifdef __cplusplus
@@ -255,6 +256,64 @@ extern "C" {
 
 // Not used except for setting up the element handler framework:
 #define fmi3_xml_scheme_Start                     {fmi3_xml_elmID_none,       fmi3_xml_elmID_none,                 1,       0}
+
+// Attribute enum
+#define FMI3_XML_ATTR_ID(attr) fmi_attr_id_##attr,
+typedef enum fmi3_xml_attr_modelDescription_enu_t {
+    FMI3_XML_ATTRLIST_MODEL_DESCR(FMI3_XML_ATTR_ID)
+    fmi3_xml_modelDescription_attr_number
+} fmi3_xml_attr_modelDescription_enu_t;
+
+
+/* Build prototypes for all elm_handle_* functions */
+#define EXPAND_ELM_HANDLE_FMI3(elm) extern int fmi3_xml_handle_##elm(fmi3_xml_parser_context_t* context, const char* data);
+FMI3_XML_ELMLIST_MODEL_DESCR         (EXPAND_ELM_HANDLE_FMI3)
+FMI3_XML_ELMLIST_ALT_MODEL_DESCR     (EXPAND_ELM_HANDLE_FMI3)
+FMI3_XML_ELMLIST_ABSTRACT_MODEL_DESCR(EXPAND_ELM_HANDLE_FMI3)
+
+
+/**
+ * Create an enum over all modelDescription XML elements. This enum can be used to index
+ * the following arrays:
+ *      - fmi3_xml_scheme_modelDescription_info
+ *      - fmi3_modelDescription_element_handle_map
+ */
+#define FMI3_XML_ELM_ID(elm) fmi3_xml_elmID_##elm
+#define FMI3_XML_LIST_ELM_ID(elm) ,FMI3_XML_ELM_ID(elm)
+#define FMI_XML_ELMID_NONE (-1)
+typedef enum fmi3_xml_elm_modelDescription_enu_t {
+    fmi3_xml_elmID_none = FMI_XML_ELMID_NONE
+    FMI3_XML_ELMLIST_MODEL_DESCR(FMI3_XML_LIST_ELM_ID)
+    ,fmi3_xml_elm_actual_number
+    FMI3_XML_ELMLIST_ALT_MODEL_DESCR     (FMI3_XML_LIST_ELM_ID)
+    FMI3_XML_ELMLIST_ABSTRACT_MODEL_DESCR(FMI3_XML_LIST_ELM_ID)
+    ,fmi3_xml_elm_number
+} fmi3_xml_elm_modelDescription_enu_t;
+
+/** Keeps information about the allowed parent element ID, index among siblings in a sequence and if
+    multiple elements of this type are allowed in a sequence.
+*/
+typedef struct {
+    fmi3_xml_elm_modelDescription_enu_t superID;  /* ID of super type or NULL if none */
+    fmi3_xml_elm_modelDescription_enu_t parentID; /* expected parent ID for an element */
+    int siblingIndex;       /* index among siblings */
+    int multipleAllowed;    /* multiple elements of this kind kan come in a sequence as siblings*/
+} fmi3_xml_scheme_modelDescription_info_t;
+
+typedef int (*fmi3_xml_modelDescription_element_handle_ft)(fmi3_xml_parser_context_t* context, const char* data);
+
+typedef struct fmi3_xml_modelDescription_element_handle_map_t fmi3_xml_modelDescription_element_handle_map_t;
+struct fmi3_xml_modelDescription_element_handle_map_t {
+    const char* elementName;
+    fmi3_xml_modelDescription_element_handle_ft elementHandle;
+    fmi3_xml_elm_modelDescription_enu_t elemID;
+};
+
+jm_string fmi3_xml_scheme_get_modelDescription_attrName(fmi3_xml_attr_modelDescription_enu_t enu);
+fmi3_xml_scheme_modelDescription_info_t fmi3_xml_scheme_get_modelDescription_info(fmi3_xml_elm_modelDescription_enu_t enu);
+fmi3_xml_modelDescription_element_handle_map_t fmi3_xml_scheme_get_modelDescription_handle(fmi3_xml_elm_modelDescription_enu_t enu);
+size_t fmi3_xml_get_modelDescription_attr_enum_size();
+size_t fmi3_xml_get_modelDescription_elm_enum_size_actual();
 
 #ifdef __cplusplus
 }

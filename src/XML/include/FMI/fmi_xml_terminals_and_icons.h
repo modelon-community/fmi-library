@@ -21,7 +21,6 @@
 #define FMI_XML_TERMINALS_AND_ICONS_H_
 
 #include <JM/jm_callbacks.h>
-#include <JM/jm_named_ptr.h>
 #include <FMI3/fmi3_xml_callbacks.h>
 #include <FMI2/fmi2_xml_model_description.h>
 #include <FMI3/fmi3_xml_model_description.h>

@@ -48,18 +48,12 @@ struct fmi_xml_graphicalRepresentation_t {
 };
 
 struct fmi_xml_coordinateSystem_t {
-    double x1;
-    double y1;
-    double x2;
-    double y2;
+    double x1, y1, x2, y2;
     double suggestedScalingFactorTo_mm;
 };
 
 struct fmi_xml_icon_t {
-    double x1;
-    double y1;
-    double x2;
-    double y2;
+    double x1, y1, x2, y2;
 };
 
 struct fmi_xml_terminal_t {

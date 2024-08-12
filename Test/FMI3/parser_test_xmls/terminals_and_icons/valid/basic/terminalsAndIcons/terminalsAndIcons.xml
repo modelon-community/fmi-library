@@ -2,7 +2,7 @@
 <fmiTerminalsAndIcons fmiVersion="3.0-alpha">
     <GraphicalRepresentation>
         <CoordinateSystem x1="0.1" y1="2.3" x2="4.5" y2="6.7" suggestedScalingFactorTo_mm="0.2"/>
-        <Icon x1="-0.1" y1="-2.3" x2="-4.5" y2="-6.7"/>
+        <Icon x1="-0.1" y1="-2.3" x2="-4.5" y2="-6.7"/>  <!-- flipped: OK-->
     </GraphicalRepresentation>
     <Terminals>
         <Terminal name="terminalA" matchingRule="bus" description="some description" terminalKind="abc">

@@ -9,7 +9,7 @@ The documentation for the latest version of FMI Library can be downloaded from t
 
 Please report issues related to FMI Library to the [GitHub issues page](https://github.com/modelon-community/fmi-library/issues).
 
-For information about contributing, see [here](https://github.com/modelon/contributing).
+For information about contributing, see [here](https://github.com/modelon-community/contributing).
 
 # Building
 Instructions on how to build FMI Library can be found in the HTML documentation for each release. [See the release page.](https://github.com/modelon-community/fmi-library/releases)

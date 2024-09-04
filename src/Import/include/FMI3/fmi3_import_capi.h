@@ -119,7 +119,6 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_set_debug_logging(fmi3_import_t* fmu, fm
  * \brief Wrapper for the FMI function fmi3InstantiateModelExchange(...)
  *
  * Arguments 'instanceEnvironment' and 'logMessage' are reused from #fmi3_import_create_dllfmu.
- * Argument 'loggingOn' is reused from #fmi3_import_parse_xml().
  *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see
  *   fmi3_import_create_dllfmu().
@@ -128,8 +127,6 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_set_debug_logging(fmi3_import_t* fmu, fm
  *   path to the unzipped location.
  * @param visible Indicates whether or not the simulator application window shoule be visible.
  * @param loggingOn Enable or disable the debug logger.
- * @param instanceEnvironment The instance environment that is used during callbacks.
- * @param logMessage The logging function the FMU will use.
  * @return Error status. Returnes jm_status_error if FMI function returned NULL, otherwise jm_status_success.
  */
 FMILIB_EXPORT jm_status_enu_t fmi3_import_instantiate_model_exchange(
@@ -137,15 +134,12 @@ FMILIB_EXPORT jm_status_enu_t fmi3_import_instantiate_model_exchange(
         fmi3_string_t  instanceName,
         fmi3_string_t  resourcePath,
         fmi3_boolean_t visible,
-        fmi3_boolean_t loggingOn,
-        fmi3_instance_environment_t instanceEnvironment,
-        fmi3_log_message_callback_ft logMessage);
+        fmi3_boolean_t loggingOn);
 
 /**
  * \brief Wrapper for the FMI function fmi3InstantiateCoSimulation(...)
  *
  * Arguments 'instanceEnvironment' and 'logMessage' are reused from #fmi3_import_create_dllfmu.
- * Argument 'loggingOn' is reused from #fmi3_import_parse_xml().
  *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see
  *   fmi3_import_create_dllfmu().
@@ -160,8 +154,6 @@ FMILIB_EXPORT jm_status_enu_t fmi3_import_instantiate_model_exchange(
  *        that the simulation algorithm intends to set/get during intermediate updates.
  * @param nRequiredIntermediateVariables Specifies the number of entries in array
  *        'requiredIntermediateVariables'.
- * @param instanceEnvironment The instance environment that is used during callbacks.
- * @param logMessage The logging function the FMU will use.
  * @param intermediateUpdate Callback for performing intermediate updates.
  * @return Error status. Returnes jm_status_error if FMI function returned NULL, otherwise jm_status_success.
  */
@@ -175,15 +167,12 @@ FMILIB_EXPORT jm_status_enu_t fmi3_import_instantiate_co_simulation(
         fmi3_boolean_t                       earlyReturnAllowed,
         const fmi3_value_reference_t         requiredIntermediateVariables[],
         size_t                               nRequiredIntermediateVariables,
-        fmi3_instance_environment_t          instanceEnvironment,
-        fmi3_log_message_callback_ft         logMessage,
         fmi3_intermediate_update_callback_ft intermediateUpdate);
 
 /**
  * \brief Wrapper for the FMI function fmi3InstantiateScheduledExecution(...)
  *
  * Arguments 'instanceEnvironment' and 'logMessage' are reused from #fmi3_import_create_dllfmu.
- * Argument 'loggingOn' is reused from #fmi3_import_parse_xml().
  *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see
  *   fmi3_import_create_dllfmu().
@@ -192,8 +181,6 @@ FMILIB_EXPORT jm_status_enu_t fmi3_import_instantiate_co_simulation(
  *   path to the unzipped location.
  * @param visible Indicates whether or not the simulator application window shoule be visible.
  * @param loggingOn Enable or disable the debug logger.
- * @param instanceEnvironment The instance environment that is used during callbacks.
- * @param logMessage The logging function the FMU will use.
  * @param clockUpdate Callback for clock update.
  * @param lockPreemption Callback for locking preemption.
  * @param unlockPreemption Callback for unlocking preemption.
@@ -205,8 +192,6 @@ FMILIB_EXPORT jm_status_enu_t fmi3_import_instantiate_scheduled_execution(
         fmi3_string_t                        resourcePath,
         fmi3_boolean_t                       visible,
         fmi3_boolean_t                       loggingOn,
-        fmi3_instance_environment_t          instanceEnvironment,
-        fmi3_log_message_callback_ft         logMessage,
         fmi3_clock_update_callback_ft        clockUpdate,
         fmi3_lock_preemption_callback_ft     lockPreemption,
         fmi3_unlock_preemption_callback_ft   unlockPreemption);

@@ -205,9 +205,7 @@ jm_status_enu_t fmi3_import_instantiate_model_exchange(fmi3_import_t* fmu,
                                                        fmi3_string_t  instanceName,
                                                        fmi3_string_t  resourcePath,
                                                        fmi3_boolean_t visible,
-                                                       fmi3_boolean_t loggingOn,
-                                                       fmi3_instance_environment_t instanceEnvironment,
-                                                       fmi3_log_message_callback_ft logMessage)
+                                                       fmi3_boolean_t loggingOn)
 {
     fmi3_string_t instantiationToken = fmi3_import_get_instantiation_token(fmu);
     fmi3_instance_t c;
@@ -231,9 +229,7 @@ jm_status_enu_t fmi3_import_instantiate_model_exchange(fmi3_import_t* fmu,
             instantiationToken,
             resourcePath,
             visible,
-            loggingOn,
-            instanceEnvironment,
-            logMessage);
+            loggingOn);
     if (c == NULL) {
         return jm_status_error;
     } else {
@@ -251,8 +247,6 @@ jm_status_enu_t fmi3_import_instantiate_co_simulation(
         fmi3_boolean_t                       earlyReturnAllowed,
         const fmi3_value_reference_t         requiredIntermediateVariables[],
         size_t                               nRequiredIntermediateVariables,
-        fmi3_instance_environment_t          instanceEnvironment,
-        fmi3_log_message_callback_ft         logMessage,
         fmi3_intermediate_update_callback_ft intermediateUpdate)
 {
     fmi3_string_t instantiationToken = fmi3_import_get_instantiation_token(fmu);
@@ -282,8 +276,6 @@ jm_status_enu_t fmi3_import_instantiate_co_simulation(
            earlyReturnAllowed,
            requiredIntermediateVariables,
            nRequiredIntermediateVariables,
-           instanceEnvironment,
-           logMessage,
            intermediateUpdate);
     if (c == NULL) {
         return jm_status_error;
@@ -298,8 +290,6 @@ jm_status_enu_t fmi3_import_instantiate_scheduled_execution(
         fmi3_string_t                        resourcePath,
         fmi3_boolean_t                       visible,
         fmi3_boolean_t                       loggingOn,
-        fmi3_instance_environment_t          instanceEnvironment,
-        fmi3_log_message_callback_ft         logMessage,
         fmi3_clock_update_callback_ft        clockUpdate,
         fmi3_lock_preemption_callback_ft     lockPreemption,
         fmi3_unlock_preemption_callback_ft   unlockPreemption)
@@ -327,8 +317,6 @@ jm_status_enu_t fmi3_import_instantiate_scheduled_execution(
            resourcePath,
            visible,
            loggingOn,
-           instanceEnvironment,
-           logMessage,
            clockUpdate,
            lockPreemption,
            unlockPreemption);

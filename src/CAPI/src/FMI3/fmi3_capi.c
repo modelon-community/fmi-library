@@ -375,9 +375,7 @@ fmi3_instance_t fmi3_capi_instantiate_model_exchange(fmi3_capi_t*   fmu,
                                                      fmi3_string_t  instantiationToken,
                                                      fmi3_string_t  resourcePath,
                                                      fmi3_boolean_t visible,
-                                                     fmi3_boolean_t loggingOn,
-                                                     fmi3_instance_environment_t instanceEnvironment,
-                                                     fmi3_log_message_callback_ft logMessage)
+                                                     fmi3_boolean_t loggingOn)
 {
     return fmu->inst = fmu->fmi3InstantiateModelExchange(instanceName,
                                                          instantiationToken,
@@ -399,8 +397,6 @@ fmi3_instance_t fmi3_capi_instantiate_co_simulation(
         fmi3_boolean_t                       earlyReturnAllowed,
         const fmi3_value_reference_t         requiredIntermediateVariables[],
         size_t                               nRequiredIntermediateVariables,
-        fmi3_instance_environment_t          instanceEnvironment,
-        fmi3_log_message_callback_ft         logMessage,
         fmi3_intermediate_update_callback_ft intermediateUpdate)
 {
     return fmu->inst = fmu->fmi3InstantiateCoSimulation(
@@ -425,8 +421,6 @@ fmi3_instance_t fmi3_capi_instantiate_scheduled_execution(
     fmi3_string_t                        resourcePath,
     fmi3_boolean_t                       visible,
     fmi3_boolean_t                       loggingOn,
-    fmi3_instance_environment_t          instanceEnvironment,
-    fmi3_log_message_callback_ft         logMessage,
     fmi3_clock_update_callback_ft        clockUpdate,
     fmi3_lock_preemption_callback_ft     lockPreemption,
     fmi3_unlock_preemption_callback_ft   unlockPreemption)
@@ -437,8 +431,8 @@ fmi3_instance_t fmi3_capi_instantiate_scheduled_execution(
             resourcePath,
             visible,
             loggingOn,
-            instanceEnvironment,
-            logMessage,
+            fmu->instanceEnvironment,
+            fmu->logMessage,
             clockUpdate,
             lockPreemption,
             unlockPreemption);

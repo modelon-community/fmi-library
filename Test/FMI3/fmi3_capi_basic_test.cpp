@@ -23,13 +23,6 @@
 
 #include "catch.hpp"
 
-void dummy_log_message_callback(
-    fmi3_instance_environment_t* env,
-    fmi3_status_t status,
-    fmi3_string_t category,
-    fmi3_string_t message) {
-    /* Empty by design */
-}
 void dummy_clock_update_callback(fmi3_instance_environment_t* env) { /* Empty by design */}
 void dummy_lock_preemption_callback() { /* Empty by design */}
 void dummy_unlock_preemption_callback() { /* Empty by design */}
@@ -123,9 +116,7 @@ TEST_CASE("Test CAPI methods using a Model Exchange FMU", test_file_name)
         instanceName,
         resourcePath,
         visible,
-        loggingOn,
-        ((fmi3_instance_environment_t)&instance_env),
-        (fmi3_log_message_callback_ft)dummy_log_message_callback
+        loggingOn
     );
 
     test_int_get_set(fmu, instantiate_status);
@@ -183,8 +174,6 @@ TEST_CASE("Test CAPI methods using a Co-Simulation FMU", test_file_name)
         earlyReturnAllowed,
         requiredIntermediateVariables,
         nRequiredIntermediateVariables,
-        NULL,
-        NULL,
         NULL
     );
 
@@ -236,8 +225,6 @@ TEST_CASE("Test CAPI methods using a Scheduled-Execution FMU", test_file_name)
             resourcePath,
             visible,
             loggingOn,
-            ((fmi3_instance_environment_t)&instance_env),
-            (fmi3_log_message_callback_ft)dummy_log_message_callback,
             (fmi3_clock_update_callback_ft)dummy_clock_update_callback,
             (fmi3_lock_preemption_callback_ft)dummy_lock_preemption_callback,
             (fmi3_unlock_preemption_callback_ft)dummy_unlock_preemption_callback

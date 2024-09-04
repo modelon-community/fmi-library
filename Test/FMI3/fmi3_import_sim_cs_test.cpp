@@ -118,8 +118,6 @@ void test_simulate_cs(fmi3_import_t* fmu) {
             earlyReturnAllowed,
             requiredIntermediateVariables,
             nRequiredIntermediateVariables,
-            NULL,
-            NULL,
             NULL);
 
     REQUIRE(jmstatus == jm_status_success);

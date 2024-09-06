@@ -35,21 +35,11 @@ static int g_dummy_clock_callbacks;
 
 typedef struct {
     fmi3_boolean_t clock_update_callback_called; /* Boolean used to test the call to fmi3ClockUpdateCallback */
-    fmi3_boolean_t log_message_callback_called;  /* Boolean used to test the call to fmi3LogMessageCallback  */
 } dummy_fmi3_instance_environment_t;
 
 void importlogger(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_level, jm_string message)
 {
         printf("module = %s, log level = %s: %s\n", module, jm_log_level_to_string(log_level), message);
-}
-
-void dummy_log_message_callback(
-    fmi3_instance_environment_t env,
-    fmi3_status_t status,
-    fmi3_string_t category,
-    fmi3_string_t message)
-{
-    ((dummy_fmi3_instance_environment_t*)env)->log_message_callback_called = fmi3_true;
 }
 
 void dummy_clock_update_callback() {
@@ -75,7 +65,6 @@ void test_capi_wrappers_se(fmi3_import_t* fmu) {
     fmi3_boolean_t loggingOn = fmi3_false;
     dummy_fmi3_instance_environment_t instance_env;
     instance_env.clock_update_callback_called = fmi3_false;
-    instance_env.log_message_callback_called = fmi3_false;
 
     g_dummy_clock_callbacks = 0;
 
@@ -93,8 +82,6 @@ void test_capi_wrappers_se(fmi3_import_t* fmu) {
         resourcePath,
         visible,
         loggingOn,
-        ((fmi3_instance_environment_t)&instance_env),
-        &dummy_log_message_callback,
         &dummy_clock_update_callback,
         &dummy_lock_preemption_callback,
         &dummy_unlock_preemption_callback
@@ -102,8 +89,6 @@ void test_capi_wrappers_se(fmi3_import_t* fmu) {
     REQUIRE(jmstatus == jm_status_success);
 
     INFO("Verify callbacks");
-    REQUIRE(instance_env.log_message_callback_called == fmi3_true);
-
     REQUIRE(g_dummy_clock_callbacks > 0);
     REQUIRE(G_dummy_lock_preemption_callback_called == fmi3_true);
     REQUIRE(G_dummy_unlock_preemption_callback_called == fmi3_true);

@@ -4,6 +4,13 @@ The release notes are typically a highlighting subset of all changes made. For f
 
 Note that version 2.1 is the first version with release notes. Please see the commit history for older versions.
 
+## Future
+
+### Changes
+
+- [BREAKING] Removed unused `instanceEnvironment` and `logMessage` inputs from `fmi3_import_instantiate_*` functions.
+    - The corresponding CAPI calls use `instanceEnvironment` and `logMessage` from `fmi3_import_create_dllfmu`.
+
 ## 3.0a4
 
 ### Improvements

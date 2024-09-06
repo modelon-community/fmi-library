@@ -162,8 +162,6 @@ fmi3_status_t fmi3_capi_set_debug_logging(fmi3_capi_t* fmu, fmi3_boolean_t loggi
  * @param resourcePath Absolute path to the FMU archive resources.
  * @param visible Indicates whether or not the simulator application window shoule be visible.
  * @param loggingOn Enable or disable the debug logger.
- * @param instanceEnvironment The instance environment that is used during callbacks.
- * @param logMessage The logging function the FMU will use.
  * @return An instance of a model, or NULL if call failed.
  */
 fmi3_instance_t fmi3_capi_instantiate_model_exchange(fmi3_capi_t*   fmu,
@@ -171,9 +169,7 @@ fmi3_instance_t fmi3_capi_instantiate_model_exchange(fmi3_capi_t*   fmu,
                                                      fmi3_string_t  instantiationToken,
                                                      fmi3_string_t  resourcePath,
                                                      fmi3_boolean_t visible,
-                                                     fmi3_boolean_t loggingOn,
-                                                     fmi3_instance_environment_t instanceEnvironment,
-                                                     fmi3_log_message_callback_ft logMessage);
+                                                     fmi3_boolean_t loggingOn);
 
 
 /**
@@ -193,8 +189,6 @@ fmi3_instance_t fmi3_capi_instantiate_model_exchange(fmi3_capi_t*   fmu,
  *        that the simulation algorithm intends to set/get during intermediate updates.
  * @param nRequiredIntermediateVariables Specifies the number of entries in array
  *        'requiredIntermediateVariables'.
- * @param instanceEnvironment The instance environment that is used during callbacks.
- * @param logMessage The logging function the FMU will use.
  * @param intermediateUpdate Callback for performing intermediate updates.
  * @return An instance of a model, or NULL if call failed.
  */
@@ -209,8 +203,6 @@ fmi3_instance_t fmi3_capi_instantiate_co_simulation(
         fmi3_boolean_t                       earlyReturnAllowed,
         const fmi3_value_reference_t         requiredIntermediateVariables[],
         size_t                               nRequiredIntermediateVariables,
-        fmi3_instance_environment_t          instanceEnvironment,
-        fmi3_log_message_callback_ft         logMessage,
         fmi3_intermediate_update_callback_ft intermediateUpdate);
 
 /**
@@ -224,8 +216,6 @@ fmi3_instance_t fmi3_capi_instantiate_co_simulation(
  * @param resourcePath Absolute path to the FMU archive resources.
  * @param visible Indicates whether or not the simulator application window shoule be visible.
  * @param loggingOn Enable or disable the debug logger.
- * @param instanceEnvironment The instance environment that is used during callbacks.
- * @param logMessage The logging function the FMU will use.
  * @param clockUpdate Callback for clock update.
  * @param lockPreemption Callback for locking preemption.
  * @param unlockPreemption Callback for unlocking preemption.
@@ -238,8 +228,6 @@ fmi3_instance_t fmi3_capi_instantiate_scheduled_execution(
         fmi3_string_t                        resourcePath,
         fmi3_boolean_t                       visible,
         fmi3_boolean_t                       loggingOn,
-        fmi3_instance_environment_t          instanceEnvironment,
-        fmi3_log_message_callback_ft         logMessage,
         fmi3_clock_update_callback_ft        clockUpdate,
         fmi3_lock_preemption_callback_ft     lockPreemption,
         fmi3_unlock_preemption_callback_ft   unlockPreemption);

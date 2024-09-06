@@ -68,9 +68,7 @@ void test_capi_wrappers_me(fmi3_import_t* fmu) {
         "Test ME model instance",
         NULL,
         fmi3_false,
-        fmi3_false,
-        NULL,
-        NULL
+        fmi3_false
     );
     REQUIRE(jmstatus == jm_status_success);
 
@@ -128,9 +126,7 @@ void test_simulate_me(fmi3_import_t* fmu) {
         "Test ME model instance",
         NULL,
         fmi3_false,
-        fmi3_false,
-        NULL,
-        NULL
+        fmi3_false
     );
     REQUIRE(jmstatus == jm_status_success);
 

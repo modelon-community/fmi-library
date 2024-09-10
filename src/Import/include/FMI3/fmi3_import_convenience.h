@@ -98,6 +98,10 @@ typedef struct {
     unsigned int num_bool_vars;
     /** \brief  Number of string variables*/
     unsigned int num_string_vars;
+    /** \brief  Number of binary variables*/
+    unsigned int num_binary_vars;
+    /** \brief  Number of clock variables*/
+    unsigned int num_clock_vars;
 } fmi3_import_model_counts_t;
 
 /**

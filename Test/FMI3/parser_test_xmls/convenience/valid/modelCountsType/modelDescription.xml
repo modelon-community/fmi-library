@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription fmiVersion="3.0" modelName="" instantiationToken="">
+<ModelExchange modelIdentifier="modelCountsType"/>
+
+<TypeDefinitions>
+    <EnumerationType name="MyEnum">
+        <Item name="enum0" value="0"/>
+    </EnumerationType>
+</TypeDefinitions>
+
+<ModelVariables>
+  <!-- Variables with different types to test model counts -->
+
+  <Float64 name="f64_1" valueReference="1"/>
+
+  <Float32 name="f32_1" valueReference="2"/>
+  <Float32 name="f32_2" valueReference="3"/>
+
+  <Int64 name="i64_1" valueReference="4"/>
+  <Int64 name="i64_2" valueReference="5"/>
+  <Int64 name="i64_3" valueReference="6"/>
+
+  <Int32 name="i32_1" valueReference="7"/>
+  <Int32 name="i32_3" valueReference="8"/>
+  <Int32 name="i32_4" valueReference="9"/>
+  <Int32 name="i32_5" valueReference="10"/>
+
+  <Int16 name="i16_1" valueReference="11"/>
+  <Int16 name="i16_2" valueReference="12"/>
+  <Int16 name="i16_3" valueReference="13"/>
+  <Int16 name="i16_4" valueReference="14"/>
+  <Int16 name="i16_5" valueReference="15"/>
+
+  <Int8 name="i8_1" valueReference="16"/>
+  <Int8 name="i8_2" valueReference="17"/>
+  <Int8 name="i8_3" valueReference="18"/>
+  <Int8 name="i8_4" valueReference="19"/>
+  <Int8 name="i8_5" valueReference="20"/>
+  <Int8 name="i8_6" valueReference="21"/>
+
+  <UInt64 name="u64_1" valueReference="22"/>
+  <UInt64 name="u64_2" valueReference="23"/>
+  <UInt64 name="u64_3" valueReference="24"/>
+  <UInt64 name="u64_4" valueReference="25"/>
+  <UInt64 name="u64_5" valueReference="26"/>
+  <UInt64 name="u64_6" valueReference="27"/>
+  <UInt64 name="u64_7" valueReference="28"/>
+
+  <UInt32 name="u32_1" valueReference="29"/>
+  <UInt32 name="u32_2" valueReference="30"/>
+  <UInt32 name="u32_3" valueReference="31"/>
+  <UInt32 name="u32_4" valueReference="32"/>
+  <UInt32 name="u32_5" valueReference="33"/>
+  <UInt32 name="u32_6" valueReference="34"/>
+  <UInt32 name="u32_7" valueReference="35"/>
+  <UInt32 name="u32_8" valueReference="36"/>
+
+  <UInt16 name="u16_1"  valueReference="37"/>
+  <UInt16 name="u16_2"  valueReference="38"/>
+  <UInt16 name="u16_3"  valueReference="39"/>
+  <UInt16 name="u16_4"  valueReference="40"/>
+  <UInt16 name="u16_5"  valueReference="41"/>
+  <UInt16 name="u16_6"  valueReference="42"/>
+  <UInt16 name="u16_7"  valueReference="43"/>
+  <UInt16 name="u16_8"  valueReference="44"/>
+  <UInt16 name="u16_9"  valueReference="45"/>
+
+  <UInt8 name="u8_1"  valueReference="46"/>
+  <UInt8 name="u8_2"  valueReference="47"/>
+  <UInt8 name="u8_3"  valueReference="48"/>
+  <UInt8 name="u8_4"  valueReference="49"/>
+  <UInt8 name="u8_5"  valueReference="50"/>
+  <UInt8 name="u8_6"  valueReference="51"/>
+  <UInt8 name="u8_7"  valueReference="52"/>
+  <UInt8 name="u8_8"  valueReference="53"/>
+  <UInt8 name="u8_9"  valueReference="54"/>
+  <UInt8 name="u8_10" valueReference="55"/>
+
+  <Enumeration name="enum_1"  valueReference="56" declaredType="MyEnum"/>
+  <Enumeration name="enum_2"  valueReference="57" declaredType="MyEnum"/>
+  <Enumeration name="enum_3"  valueReference="58" declaredType="MyEnum"/>
+  <Enumeration name="enum_4"  valueReference="59" declaredType="MyEnum"/>
+  <Enumeration name="enum_5"  valueReference="60" declaredType="MyEnum"/>
+  <Enumeration name="enum_6"  valueReference="61" declaredType="MyEnum"/>
+  <Enumeration name="enum_7"  valueReference="62" declaredType="MyEnum"/>
+  <Enumeration name="enum_8"  valueReference="63" declaredType="MyEnum"/>
+  <Enumeration name="enum_9"  valueReference="64" declaredType="MyEnum"/>
+  <Enumeration name="enum_10" valueReference="65" declaredType="MyEnum"/>
+  <Enumeration name="enum_11" valueReference="66" declaredType="MyEnum"/>
+
+  <Boolean name="boolean_1"  valueReference="67"/>
+  <Boolean name="boolean_2"  valueReference="68"/>
+  <Boolean name="boolean_3"  valueReference="69"/>
+  <Boolean name="boolean_4"  valueReference="70"/>
+  <Boolean name="boolean_5"  valueReference="71"/>
+  <Boolean name="boolean_6"  valueReference="72"/>
+  <Boolean name="boolean_7"  valueReference="73"/>
+  <Boolean name="boolean_8"  valueReference="74"/>
+  <Boolean name="boolean_9"  valueReference="75"/>
+  <Boolean name="boolean_10" valueReference="76"/>
+  <Boolean name="boolean_11" valueReference="77"/>
+  <Boolean name="boolean_12" valueReference="78"/>
+
+  <String name="string_1"  valueReference="79"/>
+  <String name="string_2"  valueReference="80"/>
+  <String name="string_3"  valueReference="81"/>
+  <String name="string_4"  valueReference="82"/>
+  <String name="string_5"  valueReference="83"/>
+  <String name="string_6"  valueReference="84"/>
+  <String name="string_7"  valueReference="85"/>
+  <String name="string_8"  valueReference="86"/>
+  <String name="string_9"  valueReference="87"/>
+  <String name="string_10" valueReference="88"/>
+  <String name="string_11" valueReference="89"/>
+  <String name="string_12" valueReference="90"/>
+  <String name="string_13" valueReference="91"/>
+
+  <Binary name="binary_1"  valueReference="92"/>
+  <Binary name="binary_2"  valueReference="93"/>
+  <Binary name="binary_3"  valueReference="94"/>
+  <Binary name="binary_4"  valueReference="95"/>
+  <Binary name="binary_5"  valueReference="96"/>
+  <Binary name="binary_6"  valueReference="97"/>
+  <Binary name="binary_7"  valueReference="98"/>
+  <Binary name="binary_8"  valueReference="99"/>
+  <Binary name="binary_9"  valueReference="100"/>
+  <Binary name="binary_10" valueReference="101"/>
+  <Binary name="binary_11" valueReference="102"/>
+  <Binary name="binary_12" valueReference="103"/>
+  <Binary name="binary_13" valueReference="104"/>
+  <Binary name="binary_14" valueReference="105"/>
+
+  <Clock name="clock_1"  valueReference="106" intervalVariability="constant"/>
+  <Clock name="clock_2"  valueReference="107" intervalVariability="constant"/>
+  <Clock name="clock_3"  valueReference="108" intervalVariability="constant"/>
+  <Clock name="clock_4"  valueReference="109" intervalVariability="constant"/>
+  <Clock name="clock_5"  valueReference="110" intervalVariability="constant"/>
+  <Clock name="clock_6"  valueReference="111" intervalVariability="constant"/>
+  <Clock name="clock_7"  valueReference="112" intervalVariability="constant"/>
+  <Clock name="clock_8"  valueReference="113" intervalVariability="constant"/>
+  <Clock name="clock_9"  valueReference="114" intervalVariability="constant"/>
+  <Clock name="clock_10" valueReference="115" intervalVariability="constant"/>
+  <Clock name="clock_11" valueReference="116" intervalVariability="constant"/>
+  <Clock name="clock_12" valueReference="117" intervalVariability="constant"/>
+  <Clock name="clock_13" valueReference="118" intervalVariability="constant"/>
+  <Clock name="clock_14" valueReference="119" intervalVariability="constant"/>
+  <Clock name="clock_15" valueReference="120" intervalVariability="constant"/>
+</ModelVariables>
+
+<ModelStructure/>
+
+</fmiModelDescription>

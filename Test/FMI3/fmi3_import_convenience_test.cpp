@@ -225,6 +225,35 @@ TEST_CASE("Test model counts causality") {
     fmi3_testutil_import_free(tfmu);
 }
 
+TEST_CASE("Test model counts type") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/convenience/valid/modelCountsType";
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* xml = tfmu->fmu;
+    REQUIRE(xml != nullptr);
+
+    fmi3_import_model_counts_t counts;
+    fmi3_import_collect_model_counts(xml, &counts);
+
+    REQUIRE(counts.num_float64_vars == 1);
+    REQUIRE(counts.num_float32_vars == 2);
+    REQUIRE(counts.num_int64_vars   == 3);
+    REQUIRE(counts.num_int32_vars   == 4);
+    REQUIRE(counts.num_int16_vars   == 5);
+    REQUIRE(counts.num_int8_vars    == 6);
+    REQUIRE(counts.num_uint64_vars  == 7);
+    REQUIRE(counts.num_uint32_vars  == 8);
+    REQUIRE(counts.num_uint16_vars  == 9);
+    REQUIRE(counts.num_uint8_vars   == 10);
+    REQUIRE(counts.num_enum_vars    == 11);
+    REQUIRE(counts.num_bool_vars    == 12);
+    REQUIRE(counts.num_string_vars  == 13);
+    REQUIRE(counts.num_binary_vars  == 14);
+    REQUIRE(counts.num_clock_vars   == 15);
+
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
+    fmi3_testutil_import_free(tfmu);
+}
+
 TEST_CASE("Get variable from alias name") {
     const char* xmldir = FMI3_TEST_XML_DIR "/convenience/valid/get_variable_by_alias_name1";
     fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);

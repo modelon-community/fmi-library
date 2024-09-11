@@ -119,6 +119,12 @@ void fmi3_import_collect_model_counts(fmi3_import_t* fmu, fmi3_import_model_coun
         case fmi3_base_type_enum:
             counts->num_enum_vars++;
             break;
+        case fmi3_base_type_binary:
+            counts->num_binary_vars++;
+            break;
+        case fmi3_base_type_clock:
+            counts->num_clock_vars++;
+            break;
         default:
             assert(0);
         }

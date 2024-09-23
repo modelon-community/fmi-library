@@ -11,6 +11,9 @@ Note that version 2.1 is the first version with release notes. Please see the co
 - [BREAKING] Removed unused `instanceEnvironment` and `logMessage` inputs from `fmi3_import_instantiate_*` functions.
     - The corresponding CAPI calls use `instanceEnvironment` and `logMessage` from `fmi3_import_create_dllfmu`.
 
+### Bug fixes
+- Fixed an issue where enum variables min/max attributes were incorrectly handled as int32, instead of int64.
+
 ### Improvements
 
 - Fixed crash when calling `fmi3_import_collect_model_counts` and the model contained Binary or Clock variables.

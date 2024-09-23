@@ -502,9 +502,9 @@ FMILIB_EXPORT fmi3_int64_t fmi3_import_get_enum_variable_start(fmi3_import_enum_
 /** \brief Get start value for the array variable*/
 FMILIB_EXPORT fmi3_int64_t* fmi3_import_get_enum_variable_start_array(fmi3_import_enum_variable_t* v);
 /** \brief Get minimal value for the variable */
-FMILIB_EXPORT int fmi3_import_get_enum_variable_min(fmi3_import_enum_variable_t* v);
+FMILIB_EXPORT fmi3_int64_t fmi3_import_get_enum_variable_min(fmi3_import_enum_variable_t* v);
 /** \brief Get max value for the variable */
-FMILIB_EXPORT int fmi3_import_get_enum_variable_max(fmi3_import_enum_variable_t* v);
+FMILIB_EXPORT fmi3_int64_t fmi3_import_get_enum_variable_max(fmi3_import_enum_variable_t* v);
 
 /** \brief Get the length of the binary variable's start value (which is an array). */
 FMILIB_EXPORT size_t fmi3_import_get_binary_variable_start_size(fmi3_import_binary_variable_t* v);

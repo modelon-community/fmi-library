@@ -82,6 +82,7 @@ int fmi3_xml_parse_attr_as_bool   (fmi3_xml_parser_context_t* context, fmi3_xml_
 int fmi3_xml_parse_attr_as_boolean(fmi3_xml_parser_context_t* context, fmi3_xml_elm_t elmID, const fmi3_xml_attr_t attrID, int required, unsigned int*    field, unsigned int   defaultVal);
 int fmi3_xml_parse_attr_as_intXX  (fmi3_xml_parser_context_t* context, fmi3_xml_elm_t elmID, const fmi3_xml_attr_t attrID, int required, void*            field, void*          defaultVal, const fmi3_xml_primitive_type_t* primType);
 int fmi3_xml_parse_attr_as_int32  (fmi3_xml_parser_context_t* context, fmi3_xml_elm_t elmID, const fmi3_xml_attr_t attrID, int required, fmi3_int32_t*    field, fmi3_int32_t   defaultVal);
+int fmi3_xml_parse_attr_as_int64  (fmi3_xml_parser_context_t* context, fmi3_xml_elm_t elmID, const fmi3_xml_attr_t attrID, int required, fmi3_int64_t*    field, fmi3_int64_t   defaultVal);
 int fmi3_xml_parse_attr_as_uint64 (fmi3_xml_parser_context_t* context, fmi3_xml_elm_t elmID, const fmi3_xml_attr_t attrID, int required, fmi3_uint64_t*   field, fmi3_uint64_t  defaultVal);
 int fmi3_xml_parse_attr_as_uint32 (fmi3_xml_parser_context_t* context, fmi3_xml_elm_t elmID, const fmi3_xml_attr_t attrID, int required, fmi3_uint32_t*   field, fmi3_uint32_t  defaultVal);
 int fmi3_xml_parse_attr_as_floatXX(fmi3_xml_parser_context_t* context, fmi3_xml_elm_t elmID, const fmi3_xml_attr_t attrID, int required, void*            field, void*          defaultVal, const fmi3_xml_primitive_type_t* primType);

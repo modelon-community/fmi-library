@@ -26,6 +26,8 @@
                declaredType="MyEnum" causality="output" initial="exact"
                description="myDescription" quantity="enumerationQuantity"
                min="1" max="2" start="2"/>
+  <Enumeration name="enumLargeMinMax" valueReference="200" declaredType="MyEnum"
+               min="-21474836470" max="21474836470"/>
 
   <!-- Binary variables -->
   <Binary name="binaryDefault" valueReference="3"/>

@@ -34,10 +34,26 @@ struct fmi_xml_terminals_and_icons_t {
 
     jm_vector(char) fmi3_xml_standard_version;
 
+    fmi_xml_graphicalRepresentation_t* graphicalRepresentation;
+
     jm_vector(jm_voidp) terminalsOrigOrder;
     jm_vector(jm_named_ptr) terminalsByName;
 
     jm_string_set names; // storage for all terminal names
+};
+
+struct fmi_xml_graphicalRepresentation_t {
+    fmi_xml_coordinateSystem_t* coordinateSystem;
+    fmi_xml_icon_t* icon;
+};
+
+struct fmi_xml_coordinateSystem_t {
+    double x1, y1, x2, y2;
+    double suggestedScalingFactorTo_mm;
+};
+
+struct fmi_xml_icon_t {
+    double x1, y1, x2, y2;
 };
 
 struct fmi_xml_terminal_t {

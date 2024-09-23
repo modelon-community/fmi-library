@@ -35,6 +35,8 @@ fmi_xml_terminals_and_icons_t* fmi_xml_allocate_terminals_and_icons(jm_callbacks
 
     jm_vector_init(char)(&termIcon->fmi3_xml_standard_version, 0, cb);
 
+    termIcon->graphicalRepresentation = NULL;
+
     jm_vector_init(jm_voidp)(&termIcon->terminalsOrigOrder, 0, cb);
     jm_vector_init(jm_named_ptr)(&termIcon->terminalsByName, 0, cb);
 
@@ -61,6 +63,13 @@ void fmi_xml_free_terminals_and_icons(fmi_xml_terminals_and_icons_t* termIcon) {
     jm_callbacks* callbacks = termIcon->callbacks;
     if (termIcon) {
         jm_vector_free_data(char)(&(termIcon->fmi3_xml_standard_version));
+        
+        // free graphicalDescription
+        if (termIcon->graphicalRepresentation) {
+            callbacks->free(termIcon->graphicalRepresentation->coordinateSystem);
+            callbacks->free(termIcon->graphicalRepresentation->icon);
+        }
+        callbacks->free(termIcon->graphicalRepresentation);
 
         // free terminals
         for (size_t i = 0; i < jm_vector_get_size(jm_voidp)(&(termIcon->terminalsOrigOrder)); i++) {
@@ -139,6 +148,102 @@ int fmi_xml_handle_fmiTerminalsAndIcons(fmi3_xml_parser_context_t* context, cons
     return 0;
 }
 
+int fmi_xml_handle_GraphicalRepresentation(fmi3_xml_parser_context_t* context, const char* data) {
+    fmi_xml_terminals_and_icons_t* termIcon = context->termIcon;
+    if (!data) {
+        termIcon->graphicalRepresentation = (fmi_xml_graphicalRepresentation_t*)context->callbacks->calloc(1, sizeof(fmi_xml_graphicalRepresentation_t));
+        if (!termIcon->graphicalRepresentation) {
+            fmi3_xml_parse_fatal(context, "Could not allocate memory");
+            return 1;
+        }
+        // GraphicalRepresentation has a default coordinateSystem, allocate here directly
+        termIcon->graphicalRepresentation->coordinateSystem = (fmi_xml_coordinateSystem_t*)context->callbacks->calloc(1, sizeof(fmi_xml_coordinateSystem_t));
+        if (!termIcon->graphicalRepresentation->coordinateSystem) {
+            fmi3_xml_parse_fatal(context, "Could not allocate memory");
+            return 1;
+        }
+        termIcon->graphicalRepresentation->coordinateSystem->x1 = -100;
+        termIcon->graphicalRepresentation->coordinateSystem->y1 = -100;
+        termIcon->graphicalRepresentation->coordinateSystem->x2 = 100;
+        termIcon->graphicalRepresentation->coordinateSystem->y2 = 100;
+        termIcon->graphicalRepresentation->coordinateSystem->suggestedScalingFactorTo_mm = 0.1;
+    } else {
+        ;
+    }
+    return 0;
+}
+
+int fmi_xml_handle_CoordinateSystem(fmi3_xml_parser_context_t* context, const char* data) {
+    fmi_xml_terminals_and_icons_t* termIcon = context->termIcon;
+    fmi_xml_coordinateSystem_t* coordSys = termIcon->graphicalRepresentation->coordinateSystem;
+    if (!data) {
+        // Allocation in GraphicalRepresentation
+        int ret = 0;
+
+        ret |= fmi3_xml_parse_attr_as_float64(context, FMI_ELM_TERMICON(fmi_xml_elmID_termIcon_CoordinateSystem), 
+                FMI_ATTR_TERMICON(fmi_termIcon_attr_id_x1), 1, &(coordSys->x1), -100);
+        ret |= fmi3_xml_parse_attr_as_float64(context, FMI_ELM_TERMICON(fmi_xml_elmID_termIcon_CoordinateSystem), 
+                FMI_ATTR_TERMICON(fmi_termIcon_attr_id_y1), 1, &(coordSys->y1), -100);
+        ret |= fmi3_xml_parse_attr_as_float64(context, FMI_ELM_TERMICON(fmi_xml_elmID_termIcon_CoordinateSystem), 
+                FMI_ATTR_TERMICON(fmi_termIcon_attr_id_x2), 1, &(coordSys->x2), 100);
+        ret |= fmi3_xml_parse_attr_as_float64(context, FMI_ELM_TERMICON(fmi_xml_elmID_termIcon_CoordinateSystem), 
+                FMI_ATTR_TERMICON(fmi_termIcon_attr_id_y2), 1, &(coordSys->y2), 100);
+        ret |= fmi3_xml_parse_attr_as_float64(context, FMI_ELM_TERMICON(fmi_xml_elmID_termIcon_CoordinateSystem), 
+                FMI_ATTR_TERMICON(fmi_termIcon_attr_id_suggestedScalingFactorTo_mm), 1, &(coordSys->suggestedScalingFactorTo_mm), 0.1);
+        if (ret) {
+            fmi3_xml_parse_error(context, "Failed to parse complete CoordinateSystem, using default system (-100, -100), (100, 100).");
+            coordSys->x1 = -100;
+            coordSys->y1 = -100;
+            coordSys->x2 = 100;
+            coordSys->y2 = 100;
+            coordSys->suggestedScalingFactorTo_mm = 0.1;
+            return 1;
+        }
+    } else {
+        /* SPEC: [...] where the coordinates of the first point shall be less than the coordinates of the second point. */
+        if (coordSys->x1 >= coordSys->x2) {
+            fmi3_xml_parse_warning(context, "'CoordinateSystem' not well-defined, requires x1 = %f < x2 = %f.",
+                coordSys->x1, coordSys->x2);
+        }
+        if (coordSys->y1 >= coordSys->y2) {
+            fmi3_xml_parse_warning(context, "'CoordinateSystem' not well-defined, requires y1 = %f < y2 = %f.",
+                coordSys->y1, coordSys->y2);
+        }
+    }
+    return 0;
+}
+
+int fmi_xml_handle_Icon(fmi3_xml_parser_context_t* context, const char* data) {
+    fmi_xml_terminals_and_icons_t* termIcon = context->termIcon;
+    fmi_xml_graphicalRepresentation_t* graphRepr = termIcon->graphicalRepresentation;
+    if (!data) {
+        int ret;
+        fmi_xml_icon_t* icon = (fmi_xml_icon_t*)context->callbacks->calloc(1, sizeof(fmi_xml_icon_t));
+        if (!icon) {
+            fmi3_xml_parse_fatal(context, "Could not allocate memory");
+            return 1;
+        }
+        ret = 0;
+        ret |= fmi3_xml_parse_attr_as_float64(context, FMI_ELM_TERMICON(fmi_xml_elmID_termIcon_Icon), 
+                FMI_ATTR_TERMICON(fmi_termIcon_attr_id_x1), 1, &(icon->x1), 0);
+        ret |= fmi3_xml_parse_attr_as_float64(context, FMI_ELM_TERMICON(fmi_xml_elmID_termIcon_Icon), 
+                FMI_ATTR_TERMICON(fmi_termIcon_attr_id_y1), 1, &(icon->y1), 0);
+        ret |= fmi3_xml_parse_attr_as_float64(context, FMI_ELM_TERMICON(fmi_xml_elmID_termIcon_Icon), 
+                FMI_ATTR_TERMICON(fmi_termIcon_attr_id_x2), 1, &(icon->x2), 0);
+        ret |= fmi3_xml_parse_attr_as_float64(context, FMI_ELM_TERMICON(fmi_xml_elmID_termIcon_Icon), 
+                FMI_ATTR_TERMICON(fmi_termIcon_attr_id_y2), 1, &(icon->y2), 0);
+        if (ret) {
+            fmi3_xml_parse_error(context, "Failed to parse complete Icon.");
+            context->callbacks->free(icon); // Discard element
+            return 1;
+        }
+        graphRepr->icon = icon;
+    } else {
+        ;
+    }
+    return 0;
+}
+
 int fmi_xml_handle_Terminals(fmi3_xml_parser_context_t* context, const char* data) {
     fmi_xml_terminals_and_icons_t* termIcon = context->termIcon;
     if (!data) {
@@ -192,7 +297,7 @@ int fmi_xml_handle_Terminal(fmi3_xml_parser_context_t* context, const char* data
         // parse name
         jm_vector(char)* bufName = fmi3_xml_reserve_parse_buffer(context, bufIdx++, 100);
         if (!bufName) {return -1;}
-        if (fmi3_xml_parse_attr_as_string(context, FMI_ELM_TERMICON(fmi_xml_elmID_termIcon_Terminal), FMI_ATTR_TERMICON(fmi_attr_id_name), 1 /* required */, bufName)) {return -1;}
+        if (fmi3_xml_parse_attr_as_string(context, FMI_ELM_TERMICON(fmi_xml_elmID_termIcon_Terminal), FMI_ATTR_TERMICON(fmi_termIcon_attr_id_name), 1 /* required */, bufName)) {return -1;}
 
         /* Add the name to the terminalsAndIcons-wide set and retrieve the pointer */
         if (jm_vector_get_size(char)(bufName)) {
@@ -237,17 +342,69 @@ int fmi_xml_handle_TerminalGraphicalRepresentation(fmi3_xml_parser_context_t* co
     return 0;
 }
 
+
+/* Top level*/
 int fmi_xml_get_has_terminals_and_icons(fmi_xml_terminals_and_icons_t* termIcon) {
     return termIcon ? 1 : 0;
 }
 
-fmi_xml_terminal_t* fmi_xml_get_terminal_by_name(fmi_xml_terminals_and_icons_t* termIcon, const char* name){
-    if (!name) return NULL;
+/* Graphical Representation */
+int fmi_xml_get_has_graphical_representation(fmi_xml_terminals_and_icons_t* termIcon) {
+    if (!termIcon) {
+        return 0;
+    }
+    return termIcon->graphicalRepresentation ? 1 : 0;
+}
+
+int fmi_xml_get_graphical_representation_system_coordinates(fmi_xml_graphicalRepresentation_t* graphRepr, 
+        double* x1, double* y1, double* x2, double* y2) {
+    if (!graphRepr || (!graphRepr->coordinateSystem)) {
+        return 1;
+    }
+    *x1 = graphRepr->coordinateSystem->x1;
+    *y1 = graphRepr->coordinateSystem->y1;
+    *x2 = graphRepr->coordinateSystem->x2;
+    *y2 = graphRepr->coordinateSystem->y2;
+    return 0;
+}
+
+int fmi_xml_get_graphical_representation_suggested_scaling(fmi_xml_graphicalRepresentation_t* graphRepr, 
+        double* suggested_scaling) {
+    if (!graphRepr || (!graphRepr->coordinateSystem)) {
+        return 1;
+    }
+    *suggested_scaling = graphRepr->coordinateSystem->suggestedScalingFactorTo_mm;
+    return 0;
+}
+
+int fmi_xml_get_graphical_representation_has_icon(fmi_xml_graphicalRepresentation_t* graphRepr) {
+    if (!graphRepr) {
+        return 0;
+    }
+    return graphRepr->icon ? 1 : 0;
+}
+
+int fmi_xml_get_graphical_representation_icon_coordinates(fmi_xml_graphicalRepresentation_t* graphRepr, 
+        double* x1, double* y1, double* x2, double* y2) {
+    if (!graphRepr || (!graphRepr->icon)) {
+        return 1;
+    }
+    *x1 = graphRepr->icon->x1;
+    *y1 = graphRepr->icon->y1;
+    *x2 = graphRepr->icon->x2;
+    *y2 = graphRepr->icon->y2;
+    return 0;
+}
+
+/* Terminals*/
+fmi_xml_terminal_t* fmi_xml_get_terminal_by_name(fmi_xml_terminals_and_icons_t* termIcon, const char* name) {
+    if (!name) {
+        return NULL;
+    }
     jm_named_ptr key, *found;
     key.name = name;
     found = jm_vector_bsearch(jm_named_ptr)(&termIcon->terminalsByName, &key, jm_compare_named);
-    if (!found) return NULL;
-    return found->ptr;
+    return found ? found->ptr : NULL;
 }
 
 const char* fmi_xml_get_terminal_name(fmi_xml_terminal_t* term) {

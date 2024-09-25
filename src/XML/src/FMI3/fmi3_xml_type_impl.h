@@ -191,8 +191,8 @@ typedef struct fmi3_xml_enum_variable_props_t {
 
     jm_string  quantity;
 
-    fmi3_int32_t typeMin;
-    fmi3_int32_t typeMax;
+    fmi3_int64_t typeMin;
+    fmi3_int64_t typeMax;
 } fmi3_xml_enum_variable_props_t;
 
 typedef struct fmi3_xml_enum_typedef_props_t {

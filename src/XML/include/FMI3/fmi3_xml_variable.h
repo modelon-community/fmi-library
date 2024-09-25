@@ -189,8 +189,8 @@ fmi3_xml_enum_variable_t* fmi3_xml_get_variable_as_enum(fmi3_xml_variable_t*);
 fmi3_string_t fmi3_xml_get_enum_variable_quantity(fmi3_xml_enum_variable_t* v);
 fmi3_int64_t fmi3_xml_get_enum_variable_start(fmi3_xml_enum_variable_t* v);
 fmi3_int64_t* fmi3_xml_get_enum_variable_start_array(fmi3_xml_enum_variable_t* v);
-int fmi3_xml_get_enum_variable_min(fmi3_xml_enum_variable_t* v);
-int fmi3_xml_get_enum_variable_max(fmi3_xml_enum_variable_t* v);
+fmi3_int64_t fmi3_xml_get_enum_variable_min(fmi3_xml_enum_variable_t* v);
+fmi3_int64_t fmi3_xml_get_enum_variable_max(fmi3_xml_enum_variable_t* v);
 
 fmi3_xml_dimension_list_t* fmi3_xml_get_variable_dimension_list(fmi3_xml_variable_t* v);
 size_t fmi3_xml_get_dimension_list_size(fmi3_xml_dimension_list_t* dl);

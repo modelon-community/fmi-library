@@ -87,6 +87,20 @@ static void test_enum_all_attrs(fmi3_import_t* xml) {
     REQUIRE(fmi3_import_get_enum_type_size(et) == 3);
 }
 
+/* Parse enum variable with min/max of magnitude exceeding int; requiring long */
+static void test_enum_large_min_max(fmi3_import_t* xml) {
+    fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "enumLargeMinMax");
+    fmi3_import_enum_variable_t* ev;
+
+    REQUIRE(v != nullptr);
+    REQUIRE(fmi3_import_get_variable_vr(v) == 200);
+
+    ev = fmi3_import_get_variable_as_enum(v);
+    REQUIRE(ev != nullptr);
+    REQUIRE(fmi3_import_get_enum_variable_min(ev) == -21474836470);
+    REQUIRE(fmi3_import_get_enum_variable_max(ev) == 21474836470);
+}
+
 /**
  * Tests parsing a Binary variable with default attributes.
  */
@@ -310,6 +324,9 @@ TEST_CASE("Variable parsing") {
     }
     SECTION("Enum: parse all attributes") {
         test_enum_all_attrs(xml);
+    }
+    SECTION("Enum: parse large min/max values") {
+        test_enum_large_min_max(xml);
     }
 
     SECTION("Binary: parse default attributes") {

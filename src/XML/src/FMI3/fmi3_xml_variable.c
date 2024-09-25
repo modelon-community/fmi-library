@@ -679,13 +679,13 @@ fmi3_string_t fmi3_xml_get_enum_variable_quantity(fmi3_xml_enum_variable_t* v) {
     return (fmi3_string_t)props->quantity;
 }
 
-int fmi3_xml_get_enum_variable_min(fmi3_xml_enum_variable_t* v){
+fmi3_int64_t fmi3_xml_get_enum_variable_min(fmi3_xml_enum_variable_t* v){
     fmi3_xml_variable_t* vv = (fmi3_xml_variable_t*)v;
     fmi3_xml_variable_type_base_t* props = fmi3_xml_find_type_props(vv->type);
     return ((fmi3_xml_enum_variable_props_t*)props)->typeMin;
 }
 
-int fmi3_xml_get_enum_variable_max(fmi3_xml_enum_variable_t* v){
+fmi3_int64_t fmi3_xml_get_enum_variable_max(fmi3_xml_enum_variable_t* v){
     fmi3_xml_variable_t* vv = (fmi3_xml_variable_t*)v;
     fmi3_xml_enum_variable_props_t* props =
         (fmi3_xml_enum_variable_props_t*)(fmi3_xml_find_type_props(vv->type));
@@ -2220,8 +2220,8 @@ fmi3_xml_enum_variable_props_t* fmi3_xml_parse_enum_properties(fmi3_xml_parser_c
 
     props->quantity = (quantity == 0) ? declaredType->quantity : quantity;
 
-    if (    fmi3_xml_parse_attr_as_int32(context, elmID, FMI3_ATTR(fmi_attr_id_min), 0, &props->typeMin, declaredType->typeMin) ||
-            fmi3_xml_parse_attr_as_int32(context, elmID, FMI3_ATTR(fmi_attr_id_max), 0, &props->typeMax, declaredType->typeMax)) {
+    if (fmi3_xml_parse_attr_as_int64(context, elmID, FMI3_ATTR(fmi_attr_id_min), 0, &props->typeMin, declaredType->typeMin) ||
+        fmi3_xml_parse_attr_as_int64(context, elmID, FMI3_ATTR(fmi_attr_id_max), 0, &props->typeMax, declaredType->typeMax)) {
         return 0;
     }
 

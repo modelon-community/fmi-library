@@ -693,6 +693,7 @@ int fmi3_xml_parse_attr_as_floatXX(fmi3_xml_parser_context_t* context, fmi3_xml_
 gen_fmi3_xml_parse_attr_as_TYPEXX(float32, floatXX)
 gen_fmi3_xml_parse_attr_as_TYPEXX(float64, floatXX)
 gen_fmi3_xml_parse_attr_as_TYPEXX(int32,   intXX)
+gen_fmi3_xml_parse_attr_as_TYPEXX(int64,   intXX)
 gen_fmi3_xml_parse_attr_as_TYPEXX(uint64,  intXX)
 gen_fmi3_xml_parse_attr_as_TYPEXX(uint32,  intXX)
 

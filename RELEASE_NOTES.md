@@ -12,7 +12,8 @@ Note that version 2.1 is the first version with release notes. Please see the co
     - The corresponding CAPI calls use `instanceEnvironment` and `logMessage` from `fmi3_import_create_dllfmu`.
 
 ### Bug fixes
-- Fixed an issue where enum variables min/max attributes were incorrectly handled as int32, instead of int64.
+- Fixed an issue where enum variables min/max attributes were incorrectly handled as `int32`, instead of `int64`.
+    - [BREAKING] Changed return types of `fmi3_import_get_enum_variable_min` and `fmi3_import_get_enum_variable_max` from `int` to `fmi3_int64_t`.
 
 ### Improvements
 

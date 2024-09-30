@@ -604,6 +604,38 @@ fmi3_status_t fmi3_capi_get_interval_fraction(
         fmi3_interval_qualifier_t qualifiers[]);
 
 /**
+ * \brief Calls the FMI function fmiGetShiftDecimal(...)
+ *
+ * @param fmu C-API struct that has succesfully loaded the FMI function.
+ * @param valueReferences Array of value references to clock variables.
+ * @param nValueReferences Number of elements in 'valueReferences' array.
+ * @param shifts Array of size nValueReferences to retrieve the Clock shifts.
+ * @return FMI status.
+ */
+fmi3_status_t fmi3_capi_get_shift_decimal(
+        fmi3_capi_t* fmu,
+        const fmi3_value_reference_t valueReferences[],
+        size_t nValueReferences,
+        fmi3_float64_t shifts[]);
+
+/**
+ * \brief Calls the FMI function fmiGetShiftFraction(...)
+ *
+ * @param fmu C-API struct that has succesfully loaded the FMI function.
+ * @param valueReferences Array of value references to clock variables.
+ * @param nValueReferences Number of elements in 'valueReferences' array.
+ * @param counters Array of size nValueReferences to retrieve the Clock shifts as fraction counters.
+ * @param resolutions Array of size nValueReferences to retrieve the Clock shifts as fraction resolutions.
+ * @return FMI status.
+ */
+fmi3_status_t fmi3_capi_get_shift_fraction(
+        fmi3_capi_t* fmu,
+        const fmi3_value_reference_t valueReferences[],
+        size_t nValueReferences,
+        fmi3_uint64_t counters[],
+        fmi3_uint64_t resolutions[]);
+
+/**
  * \brief Calls the FMI function fmiSetIntervalDecimal(...)
  *
  * @param fmu C-API struct that has succesfully loaded the FMI function.
@@ -629,6 +661,38 @@ fmi3_status_t fmi3_capi_set_interval_decimal(
  * @return FMI status.
  */
 fmi3_status_t fmi3_capi_set_interval_fraction(
+        fmi3_capi_t* fmu,
+        const fmi3_value_reference_t valueReferences[],
+        size_t nValueReferences,
+        const fmi3_uint64_t counters[],
+        const fmi3_uint64_t resolutions[]);
+
+/**
+ * \brief Calls the FMI function fmiSetShiftDecimal(...)
+ *
+ * @param fmu C-API struct that has succesfully loaded the FMI function.
+ * @param valueReferences Array of value references to clock variables.
+ * @param nValueReferences Number of elements in 'valueReferences' array.
+ * @param shifts Array of size nValueReferences holding the Clock shifts to be set.
+ * @return FMI status.
+ */
+fmi3_status_t fmi3_capi_set_shift_decimal(
+        fmi3_capi_t* fmu,
+        const fmi3_value_reference_t valueReferences[],
+        size_t nValueReferences,
+        const fmi3_float64_t shifts[]);
+
+/**
+ * \brief Calls the FMI function fmiSetShiftFraction(...)
+ *
+ * @param fmu C-API struct that has succesfully loaded the FMI function.
+ * @param valueReferences Array of value references to clock variables.
+ * @param nValueReferences Number of elements in 'valueReferences' array.
+ * @param counters Array of size nValueReferences that holds the Clock shift counters to be set.
+ * @param resolutions Array of size nValueReferences that holds the Clock shift resolutions to be set.
+ * @return FMI status.
+ */
+fmi3_status_t fmi3_capi_set_shift_fraction(
         fmi3_capi_t* fmu,
         const fmi3_value_reference_t valueReferences[],
         size_t nValueReferences,

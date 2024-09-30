@@ -624,6 +624,25 @@ fmi3_status_t fmi3_import_get_interval_fraction(
     return fmi3_capi_get_interval_fraction(fmu->capi, valueReferences, nValueReferences, counters, resolutions, qualifiers);
 }
 
+fmi3_status_t fmi3_import_get_shift_decimal(
+        fmi3_import_t* fmu,
+        const fmi3_value_reference_t valueReferences[],
+        size_t nValueReferences,
+        fmi3_float64_t shifts[])
+{
+    return fmi3_capi_get_shift_decimal(fmu->capi, valueReferences, nValueReferences, shifts);
+}
+
+fmi3_status_t fmi3_import_get_shift_fraction(
+        fmi3_import_t* fmu,
+        const fmi3_value_reference_t valueReferences[],
+        size_t nValueReferences,
+        fmi3_uint64_t counters[],
+        fmi3_uint64_t resolutions[])
+{
+    return fmi3_capi_get_shift_fraction(fmu->capi, valueReferences, nValueReferences, counters, resolutions);
+}
+
 fmi3_status_t fmi3_import_set_interval_decimal(
         fmi3_import_t* fmu,
         const fmi3_value_reference_t valueReferences[],
@@ -641,6 +660,25 @@ fmi3_status_t fmi3_import_set_interval_fraction(
         const fmi3_uint64_t resolutions[])
 {
     return fmi3_capi_set_interval_fraction(fmu->capi, valueReferences, nValueReferences, counters, resolutions);
+}
+
+fmi3_status_t fmi3_import_set_shift_decimal(
+        fmi3_import_t* fmu,
+        const fmi3_value_reference_t valueReferences[],
+        size_t nValueReferences,
+        const fmi3_float64_t shifts[])
+{
+    return fmi3_capi_set_shift_decimal(fmu->capi, valueReferences, nValueReferences, shifts);
+}
+
+fmi3_status_t fmi3_import_set_shift_fraction(
+        fmi3_import_t* fmu,
+        const fmi3_value_reference_t valueReferences[],
+        size_t nValueReferences,
+        const fmi3_uint64_t counters[],
+        const fmi3_uint64_t resolutions[])
+{
+    return fmi3_capi_set_shift_fraction(fmu->capi, valueReferences, nValueReferences, counters, resolutions);
 }
 
 fmi3_status_t fmi3_import_evaluate_discrete_states(

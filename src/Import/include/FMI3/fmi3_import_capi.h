@@ -810,12 +810,44 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_get_interval_fraction(
         fmi3_interval_qualifier_t qualifiers[]);
 
 /**
+ * \brief Wrapper for the FMI function fmi3GetShiftDecimal(...)
+ *
+ * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
+ * @param valueReferences Array of value references to clock variables.
+ * @param nValueReferences Number of elements in 'valueReferences' array.
+ * @param shifts Array of size nValueReferences to retrieve the Clock shifts.
+ * @return FMI status.
+ */
+FMILIB_EXPORT fmi3_status_t fmi3_import_get_shift_decimal(
+        fmi3_import_t* fmu,
+        const fmi3_value_reference_t valueReferences[],
+        size_t nValueReferences,
+        fmi3_float64_t shifts[]);
+
+/**
+ * \brief Wrapper for the FMI function fmi3GetShiftFraction(...)
+ *
+ * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
+ * @param valueReferences Array of value references to clock variables.
+ * @param nValueReferences Number of elements in 'valueReferences' array.
+ * @param counters Array of size nValueReferences to retrieve the Clock shifts as fraction counters.
+ * @param resolutions Array of size nValueReferences to retrieve the Clock shifts as fraction resolutions.
+ * @return FMI status.
+ */
+FMILIB_EXPORT fmi3_status_t fmi3_import_get_shift_fraction(
+        fmi3_import_t* fmu,
+        const fmi3_value_reference_t valueReferences[],
+        size_t nValueReferences,
+        fmi3_uint64_t counters[],
+        fmi3_uint64_t resolutions[]);
+
+/**
  * \brief Wrapper for the FMI function fmiSetIntervalDecimal(...)
  *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
  * @param valueReferences Array of value references to clock variables.
  * @param nValueReferences Number of elements in 'valueReferences' array.
-  * @param intervals Array of size nValueReferences holding the Clock intervals to be set.
+ * @param intervals Array of size nValueReferences holding the Clock intervals to be set.
  * @return FMI status.
  */
 FMILIB_EXPORT fmi3_status_t fmi3_import_set_interval_decimal(
@@ -825,7 +857,7 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_set_interval_decimal(
         const fmi3_float64_t intervals[]);
 
 /**
- * \brief Wrapper for the FMI function fmiGetIntervalFraction(...)
+ * \brief Wrapper for the FMI function fmiSetIntervalFraction(...)
  *
  * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
  * @param valueReferences Array of value references to clock variables.
@@ -841,6 +873,37 @@ FMILIB_EXPORT fmi3_status_t fmi3_import_set_interval_fraction(
         const fmi3_uint64_t counters[],
         const fmi3_uint64_t resolutions[]);
 
+/**
+ * \brief Wrapper for the FMI function fmiSetShiftDecimal(...)
+ *
+ * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
+ * @param valueReferences Array of value references to clock variables.
+ * @param nValueReferences Number of elements in 'valueReferences' array.
+ * @param shifts Array of size nValueReferences holding the Clock shifts to be set.
+ * @return FMI status.
+ */
+FMILIB_EXPORT fmi3_status_t fmi3_import_set_shift_decimal(
+        fmi3_import_t* fmu,
+        const fmi3_value_reference_t valueReferences[],
+        size_t nValueReferences,
+        const fmi3_float64_t shifts[]);
+
+/**
+ * \brief Wrapper for the FMI function fmiSetShiftFraction(...)
+ *
+ * @param fmu A model description object returned by fmi3_import_parse_xml() that has loaded the FMI functions, see fmi3_import_create_dllfmu().
+ * @param valueReferences Array of value references to clock variables.
+ * @param nValueReferences Number of elements in 'valueReferences' array.
+ * @param counters Array of size nValueReferences that holds the Clock shift counters to be set.
+ * @param resolutions Array of size nValueReferences that holds the Clock shift resolutions to be set.
+ * @return FMI status.
+ */
+FMILIB_EXPORT fmi3_status_t fmi3_import_set_shift_fraction(
+        fmi3_import_t* fmu,
+        const fmi3_value_reference_t valueReferences[],
+        size_t nValueReferences,
+        const fmi3_uint64_t counters[],
+        const fmi3_uint64_t resolutions[]);
 
 /**
  * \brief Wrapper for the FMI function fmiEvaluateDiscreteStates(...)

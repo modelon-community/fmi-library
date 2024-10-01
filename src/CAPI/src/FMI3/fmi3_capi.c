@@ -613,7 +613,6 @@ fmi3_status_t fmi3_capi_get_shift_fraction(
     return fmu->fmi3GetShiftFraction(fmu->inst, valueReferences, nValueReferences, counters, resolutions);
 }
 
-
 fmi3_status_t fmi3_capi_get_interval_fraction(
         fmi3_capi_t* fmu,
         const fmi3_value_reference_t valueReferences[],

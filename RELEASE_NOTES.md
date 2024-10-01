@@ -6,6 +6,13 @@ Note that version 2.1 is the first version with release notes. Please see the co
 
 ## Future
 
+### Improvements
+- Added missing fmi3 import functions for CAPI calls:
+    - `fmi3_import_get_shift_decimal` for `fmi3GetShiftDecimal`.
+    - `fmi3_import_get_shift_fraction` for `fmi3GetShiftFraction`.
+    - `fmi3_import_set_shift_decimal` for `fmiSetShiftDecimal`.
+    - `fmi3_import_set_shift_fraction` for `fmiSetShiftFraction`.
+
 ### Changes
 
 - [BREAKING] Removed unused `instanceEnvironment` and `logMessage` inputs from `fmi3_import_instantiate_*` functions.

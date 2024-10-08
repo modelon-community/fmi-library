@@ -110,7 +110,8 @@ fmi3_import_t* fmi3_import_parse_xml(
 
     if (jm_get_dir_abspath(context->callbacks, dirPath, absPath, FILENAME_MAX + 2)) {
         size_t len = strlen(absPath);
-        strcpy(absPath + len, FMI_FILE_SEP "resources");
+        // Compared to FMI2, in FMI3 we need to add a trailing file separator below
+        strcpy(absPath + len, FMI_FILE_SEP "resources" FMI_FILE_SEP);
         fmu->resourcePath = fmi_import_create_URL_from_abs_path(context->callbacks, absPath);
     }
     fmu->dirPath = context->callbacks->malloc(strlen(dirPath) + 1);

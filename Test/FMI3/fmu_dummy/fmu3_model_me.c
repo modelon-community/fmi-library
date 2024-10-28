@@ -49,6 +49,11 @@ FMI3_Export fmi3Instance fmi3InstantiateModelExchange(
         fmi3InstanceEnvironment instanceEnvironment,
         fmi3LogMessageCallback  logMessage)
 {
+    // For testing:
+    char msg[4096] = "TEST_RESOURCE_PATH=";
+    strcpy(msg + strlen(msg), resourcePath);
+    logMessage(instanceEnvironment, fmi3OK, "Debug", msg);
+
     return fmi_instantiate(fmu_type_me,
                            instanceName,
                            instantiationToken,

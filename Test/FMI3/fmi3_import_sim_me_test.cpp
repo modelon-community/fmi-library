@@ -311,3 +311,76 @@ TEST_CASE("Model-Exchange FMU example") {
     REQUIRE(fmi_import_rmdir(&callbacks, tmpPath) == jm_status_success);
     callbacks.free((void*)tmpPath);
 }
+
+static char loggedResourcePath[4096];
+
+// If a log message is output on this format: <PREFIX>=<VALUE>, then copy value to testedResourcePath.
+static void test_logger_fmi3Instantiate (fmi3_instance_environment_t instanceEnvironment,
+        fmi3_status_t status, fmi3_string_t category, fmi3_string_t message)
+{
+    char prefix[20] = "TEST_RESOURCE_PATH=";
+    if (strncmp(message, "TEST_RESOURCE_PATH=", strlen(prefix)) == 0) {
+        strcpy(loggedResourcePath, message + strlen(prefix));        
+    }
+}
+
+TEST_CASE("Test fallback/default value(s) passed to fmi3Instantiate") {
+    const char* tmpPath;
+    jm_callbacks callbacks;
+    fmi_import_context_t* context;
+    fmi_version_enu_t version;
+    jm_status_enu_t jmstatus;
+
+    const char* FMUPath = FMU3_ME_PATH;
+
+    callbacks.malloc = malloc;
+    callbacks.calloc = calloc;
+    callbacks.realloc = realloc;
+    callbacks.free = free;
+    callbacks.logger = jm_default_logger;
+    callbacks.log_level = jm_log_level_debug;
+    callbacks.context = 0;
+
+#ifdef FMILIB_GENERATE_BUILD_STAMP
+    printf("Library build stamp:\n%s\n", fmilib_get_build_stamp());
+#endif
+
+    tmpPath = fmi_import_mk_temp_dir(&callbacks, FMU_UNPACK_DIR, NULL);
+    REQUIRE(tmpPath != nullptr);
+
+    context = fmi_import_allocate_context(&callbacks);
+    REQUIRE(context != nullptr);
+    REQUIRE(fmi_import_get_fmi_version(context, FMU3_ME_PATH, tmpPath) == fmi_version_3_0_enu);
+
+    fmi3_import_t* fmu = fmi3_import_parse_xml(context, tmpPath, NULL);
+    REQUIRE(fmu != nullptr);
+
+    REQUIRE((fmi3_import_get_fmu_kind(fmu) & fmi3_fmu_kind_me) == fmi3_fmu_kind_me);
+
+    // Set logger:
+    REQUIRE(fmi3_import_create_dllfmu(fmu, fmi3_fmu_kind_me, NULL, test_logger_fmi3Instantiate) == jm_status_success);
+
+    jmstatus = fmi3_import_instantiate_model_exchange(
+        fmu,
+        "InstanceName",
+        NULL,
+        fmi3_false,
+        fmi3_false
+    );
+    REQUIRE(jmstatus == jm_status_success);
+
+    // Main part of this test:
+    char expected[4096];
+    strcpy(expected, tmpPath);
+#ifdef WIN32
+    strcpy(expected + strlen(expected), "\\resources\\");
+#else
+    strcpy(expected + strlen(expected), "/resources/");
+#endif
+    REQUIRE(strcmp(expected, loggedResourcePath) == 0);
+
+    fmi3_import_destroy_dllfmu(fmu);
+    fmi_import_free_context(context);
+    REQUIRE(fmi_import_rmdir(&callbacks, tmpPath) == jm_status_success);
+    callbacks.free((void*)tmpPath);
+}

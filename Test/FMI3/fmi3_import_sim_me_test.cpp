@@ -379,7 +379,10 @@ TEST_CASE("Test fallback/default value(s) passed to fmi3Instantiate") {
 #endif
     REQUIRE(strcmp(expected, loggedResourcePath) == 0);
 
-    fmi3_import_destroy_dllfmu(fmu);
+    // Clean up
+    REQUIRE(fmi3_import_terminate(fmu) == fmi3_status_ok);
+    fmi3_import_free_instance(fmu);
+    fmi3_import_free(fmu);
     fmi_import_free_context(context);
     REQUIRE(fmi_import_rmdir(&callbacks, tmpPath) == jm_status_success);
     callbacks.free((void*)tmpPath);

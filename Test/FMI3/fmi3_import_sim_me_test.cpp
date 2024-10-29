@@ -352,7 +352,8 @@ TEST_CASE("Test fallback/default value(s) passed to fmi3Instantiate") {
     REQUIRE(context != nullptr);
     REQUIRE(fmi_import_get_fmi_version(context, FMU3_ME_PATH, tmpPath) == fmi_version_3_0_enu);
 
-    fmi3_import_t* fmu = fmi3_import_parse_xml(context, tmpPath, NULL);
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(tmpPath);
+    fmi3_import_t* fmu = tfmu->fmu;
     REQUIRE(fmu != nullptr);
 
     REQUIRE((fmi3_import_get_fmu_kind(fmu) & fmi3_fmu_kind_me) == fmi3_fmu_kind_me);
@@ -382,7 +383,7 @@ TEST_CASE("Test fallback/default value(s) passed to fmi3Instantiate") {
     // Clean up
     REQUIRE(fmi3_import_terminate(fmu) == fmi3_status_ok);
     fmi3_import_free_instance(fmu);
-    fmi3_import_free(fmu);
+    fmi3_testutil_import_free(tfmu);
     fmi_import_free_context(context);
     REQUIRE(fmi_import_rmdir(&callbacks, tmpPath) == jm_status_success);
     callbacks.free((void*)tmpPath);

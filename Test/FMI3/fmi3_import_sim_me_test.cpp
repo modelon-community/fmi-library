@@ -356,6 +356,9 @@ TEST_CASE("Test fallback/default value(s) passed to fmi3Instantiate") {
     fmi3_import_t* fmu = tfmu->fmu;
     REQUIRE(fmu != nullptr);
 
+    // TODO: Various issues related to parsing of Annotations
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 5);
+
     REQUIRE((fmi3_import_get_fmu_kind(fmu) & fmi3_fmu_kind_me) == fmi3_fmu_kind_me);
 
     // Set logger:

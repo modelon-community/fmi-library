@@ -88,7 +88,7 @@ fmi3_import_t* fmi3_import_parse_xml(
         fmi_import_context_t* context, const char* dirPath, fmi3_xml_callbacks_t* xml_callbacks) {
     char* xmlPath;
     char* terminalsAndIconsPath;
-    char absPath[FILENAME_MAX + 2];
+    size_t resourcePathLen;
     fmi3_import_t* fmu = NULL;
 
     if (strlen(dirPath) + 20 > FILENAME_MAX) {
@@ -96,38 +96,42 @@ fmi3_import_t* fmi3_import_parse_xml(
         return NULL;
     }
 
-    xmlPath =  fmi_import_get_model_description_path(dirPath, context->callbacks);
+    xmlPath = fmi_import_get_model_description_path(dirPath, context->callbacks);
     terminalsAndIconsPath = fmi_import_get_terminals_and_icons_path(dirPath, context->callbacks);
     fmu = fmi3_import_allocate(context->callbacks);
-
     if (!fmu) {
-        context->callbacks->free(xmlPath);
-        if (terminalsAndIconsPath) {
-            context->callbacks->free(terminalsAndIconsPath);
-        }
-        return NULL;
+        goto err1;
     }
-
-    if (jm_get_dir_abspath(context->callbacks, dirPath, absPath, FILENAME_MAX + 2)) {
-        size_t len = strlen(absPath);
-        // Compared to FMI2, in FMI3 we need to add a trailing file separator below
-        strcpy(absPath + len, FMI_FILE_SEP "resources" FMI_FILE_SEP);
-        fmu->resourcePath = fmi_import_create_URL_from_abs_path(context->callbacks, absPath);
-    }
-    fmu->dirPath = context->callbacks->malloc(strlen(dirPath) + 1);
-    if (!fmu->dirPath || !fmu->resourcePath) {
+    
+    // Create the resourcePath
+    fmu->resourcePath = context->callbacks->malloc(FILENAME_MAX + 2);
+    if (!fmu->resourcePath) {
         jm_log_fatal(context->callbacks, "FMILIB", "Could not allocate memory");
-        fmi3_import_free(fmu);
-        context->callbacks->free(xmlPath);
-        if (terminalsAndIconsPath) {
-            context->callbacks->free(terminalsAndIconsPath);
-        }
-        return NULL;
+        goto err2;
+    }
+    // Set fmu->resourcePath to abspath of dirPath
+    if (!jm_get_dir_abspath(context->callbacks, dirPath, fmu->resourcePath, FILENAME_MAX + 2)) {
+        goto err2;
+    }
+    // Append the resource dir. Compared to FMI 2, in FMI 3 the resourcePath:
+    // - Is an absolute path (not a URI)
+    // - Needs a trailing file separator
+    resourcePathLen = strlen(fmu->resourcePath);
+    if (resourcePathLen + 20 > FILENAME_MAX) {
+        jm_log_fatal(context->callbacks, module, "Resource directory path for FMU is too long");
+        goto err2;
+    }
+    strcpy(fmu->resourcePath + resourcePathLen, FMI_FILE_SEP "resources" FMI_FILE_SEP);
+
+    // Create dirPath
+    fmu->dirPath = context->callbacks->malloc(strlen(dirPath) + 1);
+    if (!fmu->dirPath) {
+        jm_log_fatal(context->callbacks, "FMILIB", "Could not allocate memory");
+        goto err2;
     }
     strcpy(fmu->dirPath, dirPath);
 
     jm_log_verbose(context->callbacks, "FMILIB", "Parsing model description XML");
-
     if (fmi3_xml_parse_model_description(fmu->md, xmlPath, xml_callbacks)) {
         fmi3_import_free(fmu);
         fmu = NULL;
@@ -155,6 +159,18 @@ fmi3_import_t* fmi3_import_parse_xml(
     }
 
     return fmu;
+    
+    // Error handling
+err2:
+    fmi3_import_free(fmu);
+    fmu = NULL;
+err1:
+    context->callbacks->free(xmlPath);
+    if (terminalsAndIconsPath) {
+        context->callbacks->free(terminalsAndIconsPath);
+    }
+    return NULL;
+        
 }
 
 void fmi3_import_free(fmi3_import_t* fmu) {

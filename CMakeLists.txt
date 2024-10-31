@@ -1,4 +1,4 @@
-#    Copyright (C) 2012 Modelon AB
+#    Copyright (C) 2012-2024 Modelon AB
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the BSD style license.
@@ -24,7 +24,9 @@ endif()
 project(FMILibrary)
 
 # Only check this when developing. (Project minimum required is less.)
-if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.3")
+# Also use "version > 3.3 or version == 3.3", instead of VERSION_GREATER_EQUAL
+# since that requires CMake 3.7 or newer.
+if(${CMAKE_VERSION} VERSION_GREATER "3.3" OR ${CMAKE_VERSION} VERSION_EQUAL "3.3")
     # Require that we specify when using "byproducts" (i.e. files in the build tree without any explicit target)
     # to prevent problems with Ninja.
     cmake_policy(SET CMP0058 NEW)

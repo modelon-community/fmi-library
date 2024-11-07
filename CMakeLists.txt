@@ -290,7 +290,7 @@ if(FMILIB_BUILD_TESTS)
 endif()
 
 set(FMILIB_SHARED_SUBLIBS fmixml fmizip fmicapi minizip zlib c99snprintf)
-if (NOT FMILIB_SYSTEM_EXPAT)
+if(NOT FMILIB_SYSTEM_EXPAT)
     list(APPEND FMILIB_SHARED_SUBLIBS expat)
 endif()
 set(FMILIB_SUBLIBS fmiimport jmutils ${FMILIB_SHARED_SUBLIBS})

@@ -186,7 +186,6 @@ if(FMILIB_SYSTEM_EXPAT)
     # And the following target:
     #   - expat
     find_package(EXPAT REQUIRED)
-    set(expat ${EXPAT_LIBRARIES})
 else()
     include(ExternalProject)
 

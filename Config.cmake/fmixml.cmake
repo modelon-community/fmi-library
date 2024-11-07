@@ -101,8 +101,6 @@ endif()
 
 # set(DOXYFILE_EXTRA_SOURCES "${DOXYFILE_EXTRA_SOURCES} \"${FMIXMLDIR}/include\"")
 
-set(FMIXML_EXPAT_DIR "${FMILIB_THIRDPARTYLIBS}/Expat/expat-2.5.0")
-
 set(FMIXMLHEADERS
     include/FMI/fmi_xml_context.h
     src/FMI/fmi_xml_context_impl.h
@@ -212,6 +210,8 @@ else()
         -DCMAKE_SHARED_LINKER_FLAGS:STRING=${CMAKE_SHARED_LINKER_FLAGS}
         -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_BINARY_DIR}/ExpatEx/install
     )
+
+    set(FMIXML_EXPAT_DIR "${FMILIB_THIRDPARTYLIBS}/Expat/expat-2.5.0")
 
     ExternalProject_Add(
         expatex

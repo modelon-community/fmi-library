@@ -181,7 +181,6 @@ set(FMIXMLSOURCE
 
 if(FMILIB_SYSTEM_EXPAT)
     find_package(EXPAT REQUIRED)
-    set(expat ${EXPAT_LIBRARIES})
 else()
     include(ExternalProject)
 

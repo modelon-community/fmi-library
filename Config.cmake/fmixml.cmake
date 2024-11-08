@@ -101,8 +101,6 @@ endif()
 
 # set(DOXYFILE_EXTRA_SOURCES "${DOXYFILE_EXTRA_SOURCES} \"${FMIXMLDIR}/include\"")
 
-set(FMIXML_EXPAT_DIR "${FMILIB_THIRDPARTYLIBS}/Expat/expat-2.5.0")
-
 set(FMIXMLHEADERS
     include/FMI/fmi_xml_context.h
     src/FMI/fmi_xml_context_impl.h
@@ -189,91 +187,102 @@ set(FMIXMLSOURCE
     src/FMI3/fmi3_xml_parser_scheme.c
 )
 
-include(ExternalProject)
-
-# The *_POSTFIX variables are set because it makes it easier to determine the name of
-# the lib expat will produce at configure time. Note that Expat has some special handling
-# for it for MSVC which this in effect negates. https://github.com/libexpat/libexpat/pull/316
-set(EXPAT_SETTINGS
-    -DEXPAT_BUILD_TOOLS:BOOLEAN=OFF
-    -DEXPAT_BUILD_EXAMPLES:BOOLEAN=OFF
-    -DEXPAT_BUILD_TESTS:BOOLEAN=OFF
-    -DEXPAT_SHARED_LIBS:BOOLEAN=OFF
-    -DEXPAT_DTD:BOOLEAN=OFF
-    -DEXPAT_NS:BOOLEAN=OFF
-    -DEXPAT_MSVC_STATIC_CRT:BOOLEAN=${FMILIB_BUILD_WITH_STATIC_RTLIB}
-    -DEXPAT_DEBUG_POSTFIX:STRING=
-    -DEXPAT_RELEASE_POSTFIX:STRING=
-    -DEXPAT_MINSIZEREL_POSTFIX:STRING=
-    -DEXPAT_RELWITHDEBINFO_POSTFIX:STRING=
-    -DCMAKE_POSITION_INDEPENDENT_CODE:BOOLEAN=ON
-    -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
-    -DCMAKE_EXE_LINKER_FLAGS:STRING=${CMAKE_EXE_LINKER_FLAGS}
-    -DCMAKE_LINK_LIBRARY_FLAG:STRING=${CMAKE_LINK_LIBRARY_FLAG}
-    -DCMAKE_MODULE_LINKER_FLAGS:STRING=${CMAKE_MODULE_LINKER_FLAGS}
-    -DCMAKE_SHARED_LINKER_FLAGS:STRING=${CMAKE_SHARED_LINKER_FLAGS}
-    -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_BINARY_DIR}/ExpatEx/install
-)
-
-ExternalProject_Add(
-    expatex
-    PREFIX "${FMIXML_EXPAT_DIR}"
-    SOURCE_DIR "${FMIXML_EXPAT_DIR}"
-    CMAKE_CACHE_ARGS ${EXPAT_SETTINGS}
-    BINARY_DIR ${CMAKE_BINARY_DIR}/ExpatEx
-    INSTALL_DIR ${CMAKE_BINARY_DIR}/ExpatEx/install
-    TMP_DIR     ${CMAKE_BINARY_DIR}/ExpatEx/tmp
-    STAMP_DIR   ${CMAKE_BINARY_DIR}/ExpatEx/stamp
-)
-
-ExternalProject_Add_Step(
-    expatex dependent_reconfigure
-    DEPENDEES configure
-    DEPENDERS build
-    COMMAND ${CMAKE_COMMAND} -E echo "Running:  ${CMAKE_COMMAND} -G \"${CMAKE_GENERATOR}\"  ${EXPAT_SETTINGS} ${FMIXML_EXPAT_DIR}"
-    COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" ${EXPAT_SETTINGS} "${FMIXML_EXPAT_DIR}"
-    DEPENDS ${CMAKE_BINARY_DIR}/CMakeCache.txt
-    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/ExpatEx
-)
-
-# XXX: Maybe we could use FetchContent to find targets of expat? Then we hopefully
-# wouldn't need below workarounds for guessing expatlib's location and name.
-# Requires CMake 3.16 though.
-
-if(MSVC)
-    # Expat uses special naming with MSVC, which is mirrored here.
-    set(EXPAT_LIB_PREFIX lib)
+if(FMILIB_SYSTEM_EXPAT)
+    # On success defines (at least) the following variables:
+    #   - EXPAT_INCLUDE_DIRS
+    #   - EXPAT_LIBRARIES
+    # And the following target:
+    #   - expat
+    find_package(EXPAT REQUIRED)
 else()
-    set(EXPAT_LIB_PREFIX ${CMAKE_STATIC_LIBRARY_PREFIX})
+    include(ExternalProject)
+
+    # The *_POSTFIX variables are set because it makes it easier to determine the name of
+    # the lib expat will produce at configure time. Note that Expat has some special handling
+    # for it for MSVC which this in effect negates. https://github.com/libexpat/libexpat/pull/316
+    set(EXPAT_SETTINGS
+        -DEXPAT_BUILD_TOOLS:BOOLEAN=OFF
+        -DEXPAT_BUILD_EXAMPLES:BOOLEAN=OFF
+        -DEXPAT_BUILD_TESTS:BOOLEAN=OFF
+        -DEXPAT_SHARED_LIBS:BOOLEAN=OFF
+        -DEXPAT_DTD:BOOLEAN=OFF
+        -DEXPAT_NS:BOOLEAN=OFF
+        -DEXPAT_MSVC_STATIC_CRT:BOOLEAN=${FMILIB_BUILD_WITH_STATIC_RTLIB}
+        -DEXPAT_DEBUG_POSTFIX:STRING=
+        -DEXPAT_RELEASE_POSTFIX:STRING=
+        -DEXPAT_MINSIZEREL_POSTFIX:STRING=
+        -DEXPAT_RELWITHDEBINFO_POSTFIX:STRING=
+        -DCMAKE_POSITION_INDEPENDENT_CODE:BOOLEAN=ON
+        -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
+        -DCMAKE_EXE_LINKER_FLAGS:STRING=${CMAKE_EXE_LINKER_FLAGS}
+        -DCMAKE_LINK_LIBRARY_FLAG:STRING=${CMAKE_LINK_LIBRARY_FLAG}
+        -DCMAKE_MODULE_LINKER_FLAGS:STRING=${CMAKE_MODULE_LINKER_FLAGS}
+        -DCMAKE_SHARED_LINKER_FLAGS:STRING=${CMAKE_SHARED_LINKER_FLAGS}
+        -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_BINARY_DIR}/ExpatEx/install
+    )
+
+    set(FMIXML_EXPAT_DIR "${FMILIB_THIRDPARTYLIBS}/Expat/expat-2.5.0")
+
+    ExternalProject_Add(
+        expatex
+        PREFIX "${FMIXML_EXPAT_DIR}"
+        SOURCE_DIR "${FMIXML_EXPAT_DIR}"
+        CMAKE_CACHE_ARGS ${EXPAT_SETTINGS}
+        BINARY_DIR ${CMAKE_BINARY_DIR}/ExpatEx
+        INSTALL_DIR ${CMAKE_BINARY_DIR}/ExpatEx/install
+        TMP_DIR     ${CMAKE_BINARY_DIR}/ExpatEx/tmp
+        STAMP_DIR   ${CMAKE_BINARY_DIR}/ExpatEx/stamp
+    )
+
+    ExternalProject_Add_Step(
+        expatex dependent_reconfigure
+        DEPENDEES configure
+        DEPENDERS build
+        COMMAND ${CMAKE_COMMAND} -E echo "Running:  ${CMAKE_COMMAND} -G \"${CMAKE_GENERATOR}\"  ${EXPAT_SETTINGS} ${FMIXML_EXPAT_DIR}"
+        COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" ${EXPAT_SETTINGS} "${FMIXML_EXPAT_DIR}"
+        DEPENDS ${CMAKE_BINARY_DIR}/CMakeCache.txt
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/ExpatEx
+    )
+
+    # XXX: Maybe we could use FetchContent to find targets of expat? Then we hopefully
+    # wouldn't need below workarounds for guessing expatlib's location and name.
+    # Requires CMake 3.16 though.
+
+    if(MSVC)
+        # Expat uses special naming with MSVC, which is mirrored here.
+        set(EXPAT_LIB_PREFIX lib)
+    else()
+        set(EXPAT_LIB_PREFIX ${CMAKE_STATIC_LIBRARY_PREFIX})
+    endif()
+
+    if("${CMAKE_CFG_INTDIR}" STREQUAL ".")
+        # Ninja complains about 'ExpatEx/./libexpat.a' otherwise. Probably because
+        # generator expressions in mergestaticlibs give slighlty different paths.
+        set(expatlib "${CMAKE_BINARY_DIR}/ExpatEx/${EXPAT_LIB_PREFIX}expat${CMAKE_STATIC_LIBRARY_SUFFIX}")
+    else()
+        set(expatlib "${CMAKE_BINARY_DIR}/ExpatEx/${CMAKE_CFG_INTDIR}/${EXPAT_LIB_PREFIX}expat${CMAKE_STATIC_LIBRARY_SUFFIX}")
+    endif()
+
+    # Workaround to make it explicit that target 'expatex' produces 'expatlib'. (Ninja complains otherwise.)
+    add_custom_command(
+        OUTPUT "${expatlib}"
+        DEPENDS expatex
+    )
+    add_custom_target(tmp_expatlib DEPENDS ${expatlib})
+
+    add_library(expat STATIC IMPORTED)
+    set_target_properties(
+        expat PROPERTIES
+            IMPORTED_LOCATION "${expatlib}"
+    )
+    add_dependencies(expat tmp_expatlib)
+
+    if(FMILIB_INSTALL_SUBLIBS)
+        install(FILES "${expatlib}" DESTINATION lib)
+    endif()
+
+    set(EXPAT_INCLUDE_DIRS ${CMAKE_BINARY_DIR}/ExpatEx/install/include)
 endif()
-
-if("${CMAKE_CFG_INTDIR}" STREQUAL ".")
-    # Ninja complains about 'ExpatEx/./libexpat.a' otherwise. Probably because
-    # generator expressions in mergestaticlibs give slighlty different paths.
-    set(expatlib "${CMAKE_BINARY_DIR}/ExpatEx/${EXPAT_LIB_PREFIX}expat${CMAKE_STATIC_LIBRARY_SUFFIX}")
-else()
-    set(expatlib "${CMAKE_BINARY_DIR}/ExpatEx/${CMAKE_CFG_INTDIR}/${EXPAT_LIB_PREFIX}expat${CMAKE_STATIC_LIBRARY_SUFFIX}")
-endif()
-
-# Workaround to make it explicit that target 'expatex' produces 'expatlib'. (Ninja complains otherwise.)
-add_custom_command(
-    OUTPUT "${expatlib}"
-    DEPENDS expatex
-)
-add_custom_target(tmp_expatlib DEPENDS ${expatlib})
-
-add_library(expat STATIC IMPORTED)
-set_target_properties(
-    expat PROPERTIES
-        IMPORTED_LOCATION "${expatlib}"
-)
-add_dependencies(expat tmp_expatlib)
-
-if(FMILIB_INSTALL_SUBLIBS)
-    install(FILES "${expatlib}" DESTINATION lib)
-endif()
-
-set(EXPAT_INCLUDE_DIRS ${CMAKE_BINARY_DIR}/ExpatEx/install/include)
 
 PREFIXLIST(FMIXMLSOURCE  ${FMIXMLDIR}/)
 PREFIXLIST(FMIXMLHEADERS ${FMIXMLDIR}/)

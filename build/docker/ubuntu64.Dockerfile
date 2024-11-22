@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 
 # DEBIAN_FRONTEND is used to deal with dependency 'tzdata' that is installed
 # when 'cmake' is installed.

@@ -28,6 +28,20 @@ TEST_CASE("Test parse terminals and icons") {
     REQUIRE(xml != nullptr);
     REQUIRE(fmi3_import_get_has_terminals_and_icons(xml) != 0);
 
+    SECTION("Testing graphicalRepresentation") {
+        // TODO: FMI2
+        // TODO
+        ;
+        SECTION("Testing coordinateSystem") {
+            // TODO:
+            ;
+        }
+        SECTION("Testing Icon") {
+            // TODO:
+            ;
+        }
+    }
+
     SECTION("Testing getting terminal by name") {
         fmi_import_terminal_t* term;
 
@@ -145,6 +159,70 @@ TEST_CASE("Test clearing of attribute buffer with invalid elements") {
     // TODO: Check that optional attributes from Terminal without name are not present in this one
 
     // TODO: Current example xml includes elements/attributes not yet parsed  
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 3);
+    fmi3_testutil_import_free(tfmu);
+}
+
+TEST_CASE("Empty graphical representation: Takes default") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/terminals_and_icons/valid/empty_graphicalRepresentation";
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu != nullptr); // successful parse of modelDescription
+    REQUIRE(fmi3_import_get_has_terminals_and_icons(fmu) == 1);
+
+    // TODO: Verify default coordinate system + scaling + no icon
+
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
+    fmi3_testutil_import_free(tfmu);
+}
+
+TEST_CASE("Incomplete graphicaRepresentation->coordinateSystem: Takes default") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/terminals_and_icons/invalid/incomplete_coordinateSystem";
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu != nullptr); // successful parse of modelDescription
+    REQUIRE(fmi3_import_get_has_terminals_and_icons(fmu) == 1);
+
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'CoordinateSystem': required attribute 'x2' not found"));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'CoordinateSystem': required attribute 'y2' not found"));
+
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Failed to parse complete CoordinateSystem, using default system (-100, -100), (100, 100)."));
+    
+    // TODO: Verify default coordinate system + no icon
+
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 3);
+    fmi3_testutil_import_free(tfmu);
+}
+
+TEST_CASE("Not well-defined graphicaRepresentation->coordinateSystem") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/terminals_and_icons/invalid/flipped_coordinateSystem";
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu != nullptr); // successful parse of modelDescription
+    REQUIRE(fmi3_import_get_has_terminals_and_icons(fmu) == 1);
+
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "'CoordinateSystem' not well-defined, requires x1 = 100.000000 < x2 = -100.000000."));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "'CoordinateSystem' not well-defined, requires y1 = 100.000000 < y2 = -100.000000."));
+    
+    // TODO: Verify coordinates are stored anyways
+
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 2);
+    fmi3_testutil_import_free(tfmu);
+}
+
+TEST_CASE("Incomplete graphicalRepresentation->Icon") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/terminals_and_icons/invalid/incomplete_icon";
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu != nullptr); // successful parse of modelDescription
+    REQUIRE(fmi3_import_get_has_terminals_and_icons(fmu) == 1);
+
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'Icon': required attribute 'x2' not found"));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Parsing XML element 'Icon': required attribute 'y2' not found"));
+    REQUIRE(fmi3_testutil_log_contains(tfmu, "Failed to parse complete Icon."));
+    
+    // TODO: Verify there is no icon
+
     REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 3);
     fmi3_testutil_import_free(tfmu);
 }

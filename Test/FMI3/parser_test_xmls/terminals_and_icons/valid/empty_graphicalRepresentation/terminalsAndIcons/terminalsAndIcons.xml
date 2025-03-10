@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<fmiTerminalsAndIcons fmiVersion="3.0-alpha">
+    <GraphicalRepresentation>
+        <!-- takes default coordinate system -->
+    </GraphicalRepresentation>
+</fmiTerminalsAndIcons>

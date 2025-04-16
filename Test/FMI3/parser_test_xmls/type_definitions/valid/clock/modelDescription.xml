@@ -11,8 +11,8 @@
   <ClockType name="td_minimal"    intervalVariability="constant"/>
   <ClockType name="td_resolution" intervalVariability="constant"  resolution="99"/>
   <ClockType name="td_allAttr"    intervalVariability="countdown" resolution="99"
-             canBeDeactivated="true" priority="99" intervalDecimal="99.0"
-             shiftDecimal="99.0" supportsFraction="true" intervalCounter="99"
+             canBeDeactivated="true" priority="99" intervalDecimal="99.1"
+             shiftDecimal="99.1" supportsFraction="true" intervalCounter="99"
              shiftCounter="99"/>
 </TypeDefinitions>
 
@@ -28,8 +28,8 @@
   <Clock name="var_inh_minimal_2"    declaredType="td_minimal"    valueReference="5" intervalVariability="constant"  resolution="2"/>
   <Clock name="var_inh_resolution_2" declaredType="td_resolution" valueReference="6" intervalVariability="constant"  resolution="2"/>
   <Clock name="var_inh_allAttr_2"    declaredType="td_allAttr"    valueReference="7" intervalVariability="triggered" resolution="2"
-         canBeDeactivated="false" priority="2" intervalDecimal="2.0"
-         shiftDecimal="2.0" supportsFraction="false" intervalCounter="2"
+         canBeDeactivated="false" priority="2" intervalDecimal="2.1"
+         shiftDecimal="2.1" supportsFraction="false" intervalCounter="2"
          shiftCounter="2"/>
 </ModelVariables>
 

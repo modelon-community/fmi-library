@@ -42,7 +42,7 @@ void importlogger(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_leve
         printf("module = %s, log level = %s: %s\n", module, jm_log_level_to_string(log_level), message);
 }
 
-void dummy_clock_update_callback() {
+void dummy_clock_update_callback(fmi3_instance_environment_t inst_env) {
     g_dummy_clock_callbacks++;
 }
 

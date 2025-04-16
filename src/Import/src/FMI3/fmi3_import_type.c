@@ -296,11 +296,11 @@ fmi3_boolean_t fmi3_import_get_clock_type_has_interval_decimal(fmi3_import_clock
     return fmi3_xml_get_clock_type_has_interval_decimal(t);
 }
 
-fmi3_float32_t fmi3_import_get_clock_type_interval_decimal(fmi3_import_clock_typedef_t* t) {
+fmi3_float64_t fmi3_import_get_clock_type_interval_decimal(fmi3_import_clock_typedef_t* t) {
     return fmi3_xml_get_clock_type_interval_decimal(t);
 }
 
-fmi3_float32_t fmi3_import_get_clock_type_shift_decimal(fmi3_import_clock_typedef_t* t) {
+fmi3_float64_t fmi3_import_get_clock_type_shift_decimal(fmi3_import_clock_typedef_t* t) {
     return fmi3_xml_get_clock_type_shift_decimal(t);
 }
 

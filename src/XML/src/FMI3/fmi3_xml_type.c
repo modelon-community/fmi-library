@@ -430,11 +430,11 @@ fmi3_boolean_t fmi3_xml_get_clock_type_has_interval_decimal(fmi3_xml_clock_typed
     return fmi3_xml_get_clock_type_props(t)->hasIntervalDecimal;
 }
 
-fmi3_float32_t fmi3_xml_get_clock_type_interval_decimal(fmi3_xml_clock_typedef_t* t) {
+fmi3_float64_t fmi3_xml_get_clock_type_interval_decimal(fmi3_xml_clock_typedef_t* t) {
     return fmi3_xml_get_clock_type_props(t)->intervalDecimal;
 }
 
-fmi3_float32_t fmi3_xml_get_clock_type_shift_decimal(fmi3_xml_clock_typedef_t* t) {
+fmi3_float64_t fmi3_xml_get_clock_type_shift_decimal(fmi3_xml_clock_typedef_t* t) {
     return fmi3_xml_get_clock_type_props(t)->shiftDecimal;
 }
 
@@ -1125,7 +1125,7 @@ fmi3_xml_clock_type_props_t* fmi3_xml_parse_clock_type_properties(fmi3_xml_parse
             &props->canBeDeactivated, fallbackProps->canBeDeactivated)) {
         props->canBeDeactivated = fallbackProps->canBeDeactivated;
     }
-    if (fmi3_xml_parse_attr_as_float32(context, elmID, FMI3_ATTR(fmi_attr_id_shiftDecimal), 0 /*required*/,
+    if (fmi3_xml_parse_attr_as_float64(context, elmID, FMI3_ATTR(fmi_attr_id_shiftDecimal), 0 /*required*/,
             &props->shiftDecimal, fallbackProps->shiftDecimal)) {
         props->shiftDecimal = fallbackProps->shiftDecimal;
     }
@@ -1187,7 +1187,7 @@ fmi3_xml_clock_type_props_t* fmi3_xml_parse_clock_type_properties(fmi3_xml_parse
     // hasIntervalDecimal
     if (fmi3_xml_peek_attr_str(context, FMI3_ATTR(fmi_attr_id_intervalDecimal))) { // attribute exists
         props->hasIntervalDecimal = fmi3_true;
-        if (fmi3_xml_parse_attr_as_float32(context, elmID, FMI3_ATTR(fmi_attr_id_intervalDecimal), 0 /*required*/,
+        if (fmi3_xml_parse_attr_as_float64(context, elmID, FMI3_ATTR(fmi_attr_id_intervalDecimal), 0 /*required*/,
                 &props->intervalDecimal, fallbackProps->intervalDecimal)) {
             // ClockType: fallbackProps = default; Clock: fallbackProps = declaredType props(or default)
             props->hasIntervalDecimal = fallbackProps->hasIntervalDecimal;

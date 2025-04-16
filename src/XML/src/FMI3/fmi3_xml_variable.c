@@ -881,13 +881,13 @@ fmi3_boolean_t fmi3_xml_get_clock_variable_has_interval_decimal(fmi3_xml_clock_v
     return props->hasIntervalDecimal;
 }
 
-fmi3_float32_t fmi3_xml_get_clock_variable_interval_decimal(fmi3_xml_clock_variable_t* v) {
+fmi3_float64_t fmi3_xml_get_clock_variable_interval_decimal(fmi3_xml_clock_variable_t* v) {
     fmi3_xml_variable_t* vv = (fmi3_xml_variable_t*)v;
     fmi3_xml_clock_type_props_t* props = (fmi3_xml_clock_type_props_t*)fmi3_xml_find_type_props(vv->type);
     return props->intervalDecimal;
 }
 
-fmi3_float32_t fmi3_xml_get_clock_variable_shift_decimal(fmi3_xml_clock_variable_t* v) {
+fmi3_float64_t fmi3_xml_get_clock_variable_shift_decimal(fmi3_xml_clock_variable_t* v) {
     fmi3_xml_variable_t* vv = (fmi3_xml_variable_t*)v;
     fmi3_xml_clock_type_props_t* props = (fmi3_xml_clock_type_props_t*)fmi3_xml_find_type_props(vv->type);
     return props->shiftDecimal;

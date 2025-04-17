@@ -8,6 +8,11 @@ Note that version 2.1 is the first version with release notes. Please see the co
 
 ### Bug fixes
 - Fixed `fmi3_clock_update_callback_ft` definition, was missing `fmi3_instance_environment_t`.
+- Changed the return of the following functions from `fmi3_float32_t` to `fmi3_float64_t` in accordance to bugfix in FMI specification v3.0.2:
+    - `fmi3_import_get_clock_variable_interval_decimal`
+    - `fmi3_import_get_clock_variable_shift_decimal`
+    - `fmi3_import_get_clock_type_interval_decimal`
+    - `fmi3_import_get_clock_type_shift_decimal`
 
 ## 3.0a5
 

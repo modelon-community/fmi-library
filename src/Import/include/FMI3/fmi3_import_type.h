@@ -294,9 +294,9 @@ FMILIB_EXPORT fmi3_interval_variability_enu_t fmi3_import_get_clock_type_interva
 /** \brief Check if the type has the "intervalDecimal" attribute */
 FMILIB_EXPORT fmi3_boolean_t fmi3_import_get_clock_type_has_interval_decimal(fmi3_import_clock_typedef_t* t);
 /** \brief Get intervalDecimal for the type */
-FMILIB_EXPORT fmi3_float32_t fmi3_import_get_clock_type_interval_decimal(fmi3_import_clock_typedef_t* t);
+FMILIB_EXPORT fmi3_float64_t fmi3_import_get_clock_type_interval_decimal(fmi3_import_clock_typedef_t* t);
 /** \brief Get shiftDecimal for the type */
-FMILIB_EXPORT fmi3_float32_t fmi3_import_get_clock_type_shift_decimal(fmi3_import_clock_typedef_t* t);
+FMILIB_EXPORT fmi3_float64_t fmi3_import_get_clock_type_shift_decimal(fmi3_import_clock_typedef_t* t);
 /** \brief Get supportsFraction for the type */
 FMILIB_EXPORT fmi3_boolean_t fmi3_import_get_clock_type_supports_fraction(fmi3_import_clock_typedef_t* t);
 /** \brief Check if the type has the "resolution" attribute */

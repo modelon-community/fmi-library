@@ -1246,8 +1246,8 @@ TEST_CASE("TypeDefinitions: Clock") {
         REQUIRE(fmi3_import_get_clock_type_has_priority(tdAllAttr)         == true);
         REQUIRE(fmi3_import_get_clock_type_priority(tdAllAttr)             == 99);
         REQUIRE(fmi3_import_get_clock_type_has_interval_decimal(tdAllAttr) == true);
-        REQUIRE(fmi3_import_get_clock_type_interval_decimal(tdAllAttr)     == 99.0);
-        REQUIRE(fmi3_import_get_clock_type_shift_decimal(tdAllAttr)        == 99.0);
+        REQUIRE(fmi3_import_get_clock_type_interval_decimal(tdAllAttr)     == 99.1);
+        REQUIRE(fmi3_import_get_clock_type_shift_decimal(tdAllAttr)        == 99.1);
         REQUIRE(fmi3_import_get_clock_type_supports_fraction(tdAllAttr)    == true);
         REQUIRE(fmi3_import_get_clock_type_has_interval_counter(tdAllAttr) == true);
         REQUIRE(fmi3_import_get_clock_type_interval_counter(tdAllAttr)     == 99);
@@ -1294,8 +1294,8 @@ TEST_CASE("TypeDefinitions: Clock") {
             REQUIRE(fmi3_import_get_clock_variable_has_priority(cv)         == true);
             REQUIRE(fmi3_import_get_clock_variable_priority(cv)             == 99);
             REQUIRE(fmi3_import_get_clock_variable_has_interval_decimal(cv) == true);
-            REQUIRE(fmi3_import_get_clock_variable_interval_decimal(cv)     == 99.0);
-            REQUIRE(fmi3_import_get_clock_variable_shift_decimal(cv)        == 99.0);
+            REQUIRE(fmi3_import_get_clock_variable_interval_decimal(cv)     == 99.1);
+            REQUIRE(fmi3_import_get_clock_variable_shift_decimal(cv)        == 99.1);
             REQUIRE(fmi3_import_get_clock_variable_supports_fraction(cv)    == true);
             REQUIRE(fmi3_import_get_clock_variable_has_interval_counter(cv) == true);
             REQUIRE(fmi3_import_get_clock_variable_interval_counter(cv)     == 99);
@@ -1342,8 +1342,8 @@ TEST_CASE("TypeDefinitions: Clock") {
             REQUIRE(fmi3_import_get_clock_variable_has_priority(cv)         == true);
             REQUIRE(fmi3_import_get_clock_variable_priority(cv)             == 2);
             REQUIRE(fmi3_import_get_clock_variable_has_interval_decimal(cv) == true);
-            REQUIRE(fmi3_import_get_clock_variable_interval_decimal(cv)     == 2.0);
-            REQUIRE(fmi3_import_get_clock_variable_shift_decimal(cv)        == 2.0);
+            REQUIRE(fmi3_import_get_clock_variable_interval_decimal(cv)     == 2.1);
+            REQUIRE(fmi3_import_get_clock_variable_shift_decimal(cv)        == 2.1);
             REQUIRE(fmi3_import_get_clock_variable_supports_fraction(cv)    == false);
             REQUIRE(fmi3_import_get_clock_variable_has_interval_counter(cv) == true);
             REQUIRE(fmi3_import_get_clock_variable_interval_counter(cv)     == 2);

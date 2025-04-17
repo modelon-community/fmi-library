@@ -530,11 +530,11 @@ fmi3_boolean_t fmi3_import_get_clock_variable_has_interval_decimal(fmi3_import_c
     return fmi3_xml_get_clock_variable_has_interval_decimal(v);
 }
 
-fmi3_float32_t fmi3_import_get_clock_variable_interval_decimal(fmi3_import_clock_variable_t* v) {
+fmi3_float64_t fmi3_import_get_clock_variable_interval_decimal(fmi3_import_clock_variable_t* v) {
     return fmi3_xml_get_clock_variable_interval_decimal(v);
 }
 
-fmi3_float32_t fmi3_import_get_clock_variable_shift_decimal(fmi3_import_clock_variable_t* v) {
+fmi3_float64_t fmi3_import_get_clock_variable_shift_decimal(fmi3_import_clock_variable_t* v) {
     return fmi3_xml_get_clock_variable_shift_decimal(v);
 }
 

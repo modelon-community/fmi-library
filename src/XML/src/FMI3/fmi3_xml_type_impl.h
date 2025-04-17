@@ -225,8 +225,8 @@ typedef struct fmi3_xml_clock_type_props_t {
     fmi3_uint64_t  resolution;
     fmi3_uint64_t  intervalCounter;
     fmi3_uint64_t  shiftCounter;
-    fmi3_float32_t intervalDecimal;
-    fmi3_float32_t shiftDecimal;
+    fmi3_float64_t intervalDecimal;
+    fmi3_float64_t shiftDecimal;
 } fmi3_xml_clock_type_props_t;
 
 typedef fmi3_xml_variable_type_base_t fmi3_xml_string_type_props_t;

@@ -47,8 +47,8 @@
   <!-- Clock variables -->
   <Clock name="clockDefault" valueReference="6" intervalVariability="constant"/>
   <Clock name="clockAllAttrs" valueReference="7" intervalVariability="countdown"
-         canBeDeactivated="true" priority="1" intervalDecimal="2.0"
-         shiftDecimal="3.0" supportsFraction="true" resolution="4"
+         canBeDeactivated="true" priority="1" intervalDecimal="2.1"
+         shiftDecimal="3.1" supportsFraction="true" resolution="4"
          intervalCounter="5" shiftCounter="6"/>
 
 

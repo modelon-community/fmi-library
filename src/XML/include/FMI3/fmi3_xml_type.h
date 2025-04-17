@@ -109,8 +109,8 @@ fmi3_boolean_t fmi3_xml_get_clock_type_has_priority(fmi3_xml_clock_typedef_t* t)
 fmi3_uint32_t fmi3_xml_get_clock_type_priority(fmi3_xml_clock_typedef_t* t);
 fmi3_interval_variability_enu_t fmi3_xml_get_clock_type_interval_variability(fmi3_xml_clock_typedef_t* t);
 fmi3_boolean_t fmi3_xml_get_clock_type_has_interval_decimal(fmi3_xml_clock_typedef_t* t);
-fmi3_float32_t fmi3_xml_get_clock_type_interval_decimal(fmi3_xml_clock_typedef_t* t);
-fmi3_float32_t fmi3_xml_get_clock_type_shift_decimal(fmi3_xml_clock_typedef_t* t);
+fmi3_float64_t fmi3_xml_get_clock_type_interval_decimal(fmi3_xml_clock_typedef_t* t);
+fmi3_float64_t fmi3_xml_get_clock_type_shift_decimal(fmi3_xml_clock_typedef_t* t);
 fmi3_boolean_t fmi3_xml_get_clock_type_supports_fraction(fmi3_xml_clock_typedef_t* t);
 fmi3_boolean_t fmi3_xml_get_clock_type_has_resolution(fmi3_xml_clock_typedef_t* t);
 fmi3_uint64_t fmi3_xml_get_clock_type_resolution(fmi3_xml_clock_typedef_t* t);

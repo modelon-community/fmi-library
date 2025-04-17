@@ -4,6 +4,11 @@ The release notes are typically a highlighting subset of all changes made. For f
 
 Note that version 2.1 is the first version with release notes. Please see the commit history for older versions.
 
+## FUTURE
+
+### Bug fixes
+- Fixed `fmi3_clock_update_callback_ft` definition, was missing `fmi3_instance_environment_t`.
+
 ## 3.0a5
 
 ### Improvements

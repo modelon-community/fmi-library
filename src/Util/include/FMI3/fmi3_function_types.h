@@ -83,7 +83,9 @@ typedef void (*fmi3_intermediate_update_callback_ft) (
         fmi3_boolean_t* earlyReturnRequested,
         fmi3_float64_t* earlyReturnTime);
 
-typedef void (*fmi3_clock_update_callback_ft)      ();
+typedef void (*fmi3_clock_update_callback_ft) (
+        fmi3_instance_environment_t instanceEnvironment
+);
 typedef void (*fmi3_lock_preemption_callback_ft)   ();
 typedef void (*fmi3_unlock_preemption_callback_ft) ();
 

@@ -30,9 +30,6 @@ if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.3")
     cmake_policy(SET CMP0058 NEW)
 endif()
 
-# Avoid warnings in mergestaticlibs.cmake. TODO: Fix the warnings.
-cmake_policy(SET CMP0026 OLD)
-
 # Verify that float parsing will work for the platform/compiler config. Ignoring CHAR_BIT for exotic platforms.
 include(CheckTypeSize)
 check_type_size("double" SIZEOF_DOUBLE BUILTIN_TYPES_ONLY LANGUAGE "C")
@@ -325,6 +322,8 @@ if(FMILIB_INSTALL_SUBLIBS)
 endif()
 
 if(FMILIB_BUILD_STATIC_LIB)
+    # Avoid warnings in mergestaticlibs.cmake. TODO: Fix the warnings.
+    cmake_policy(SET CMP0026 OLD)
     include(mergestaticlibs)
     if(WIN32)
         merge_static_libs(fmilib ${FMILIB_SUBLIBS})

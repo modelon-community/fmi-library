@@ -10,7 +10,7 @@ This is the first official release with support for FMI 3.0. Please note that su
 
 We would like to thank all users who provided feedback and reported issues during development, your contributions are greatly appreciated.
 
-Below is a list of fixes compared to the most recent release which was 3.0a5.
+Below is a list of fixes compared to the most recent release, which was 3.0a5.
 
 ### Bug fixes
 - Fixed `fmi3_clock_update_callback_ft` definition, was missing `fmi3_instance_environment_t`.

@@ -13,13 +13,36 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-    - uses: actions/checkout@v4
-    - name: Install system
-      run: sudo apt-get update -y && sudo apt-get -y install cmake
-    - name: Build
-      run: |
-        cmake -DCMAKE_INSTALL_PREFIX=~/.local -DFMILIB_GENERATE_DOXYGEN_DOC=0 -B build_cmake .
-        cmake --build build_cmake --target install --parallel 4
-    - name: Test
-      run: ctest --test-dir build_cmake --output-on-failure
+      - uses: actions/checkout@v4
+      - name: Install system
+        run: sudo apt-get update -y && sudo apt-get -y install cmake
+      - name: Build
+        run: |
+          cmake -DCMAKE_INSTALL_PREFIX=~/.local -DFMILIB_GENERATE_DOXYGEN_DOC=0 -B build_cmake .
+          cmake --build build_cmake --target install --parallel 4
+      - name: Test
+        run: ctest --test-dir build_cmake --output-on-failure
 
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build
+        run: |
+          cmake -DCMAKE_INSTALL_PREFIX=C:/Users/runneradmin/fmilib -DFMILIB_GENERATE_DOXYGEN_DOC=0 -B build_cmake -G Ninja -LAH .
+          cmake --build build_cmake --target install --parallel 4
+      - name: Test
+        run: ctest --test-dir build_cmake --output-on-failure
+
+  macos:
+    runs-on: macos-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build
+        run: |
+          cmake -DCMAKE_INSTALL_PREFIX=~/.local -DFMILIB_GENERATE_DOXYGEN_DOC=0 -B build_cmake .
+          cmake --build build_cmake --target install --parallel 4
+      - name: Test
+        run: ctest --test-dir build_cmake --output-on-failure

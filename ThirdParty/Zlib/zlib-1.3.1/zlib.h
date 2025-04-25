@@ -37,8 +37,8 @@
 extern "C" {
 #endif
 
-#define ZLIB_VERSION "1.3.1"
-#define ZLIB_VERNUM 0x1310
+#define ZLIB_VERSION "1.3.1.f-cmake-mod"
+#define ZLIB_VERNUM 0x131f
 #define ZLIB_VER_MAJOR 1
 #define ZLIB_VER_MINOR 3
 #define ZLIB_VER_REVISION 1

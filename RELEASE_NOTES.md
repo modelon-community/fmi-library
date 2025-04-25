@@ -4,6 +4,9 @@ The release notes are typically a highlighting subset of all changes made. For f
 
 Note that version 2.1 is the first version with release notes. Please see the commit history for older versions.
 
+## Future
+- Upgraded expat up to version 2.6.4 to include security related fixes.
+
 ## 3.0
 
 This is the first official release with support for FMI 3.0. Please note that support for terminals and icons is still experimental and subject to change.

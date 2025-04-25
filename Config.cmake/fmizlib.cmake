@@ -54,6 +54,7 @@ else() # build zlib from ThirdParty/zlib
         -DSKIP_INSTALL_HEADERS:BOOLEAN=OFF
         -DSKIP_INSTALL_ALL:BOOLEAN=OFF
         -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_BINARY_DIR}/zlibext/install
+	-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
     )
 
     ExternalProject_Add_Step(

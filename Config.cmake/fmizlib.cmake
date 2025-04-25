@@ -31,8 +31,8 @@ if(FMILIB_FIND_PACKAGE_ZLIB)
 
 else() # build zlib from ThirdParty/zlib
 
-    set(ZLIB_PREFIX "${FMILIB_THIRDPARTYLIBS}/Zlib/zlib-1.2.13")
-    set(ZLIB_SOURCE_DIR "${FMILIB_THIRDPARTYLIBS}/Zlib/zlib-1.2.13")
+    set(ZLIB_PREFIX "${FMILIB_THIRDPARTYLIBS}/Zlib/zlib-1.3.1")
+    set(ZLIB_SOURCE_DIR "${FMILIB_THIRDPARTYLIBS}/Zlib/zlib-1.3.1")
     set(ZLIB_INSTALL_DIR "${CMAKE_BINARY_DIR}/zlibext/install")
 
     include(ExternalProject)
@@ -102,7 +102,7 @@ else() # build zlib from ThirdParty/zlib
     )
 
     add_dependencies(zlib tmp_zlib)
-        
+
     if(FMILIB_INSTALL_SUBLIBS)
         install(FILES "${zlib_lib}" DESTINATION lib)
     endif()

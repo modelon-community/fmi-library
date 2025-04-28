@@ -8,6 +8,7 @@ Note that version 2.1 is the first version with release notes. Please see the co
 - Resolved reported vulnerability issues:
     - Updated to expat 2.6.4 (from version 2.5.0).
     - Updated to zlib 1.3.1 (from version 1.2.13).
+    - Updated to minizip 1.3.1 (from version 1.1).
 
 ## 3.0
 

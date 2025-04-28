@@ -521,7 +521,7 @@ static int do_extract_onefile(unzFile uf, const char* filename, int opt_extract_
 }
 
 
-int main(int argc, char *argv[]) {
+int miniunz(int argc, char *argv[]) {
     const char *zipfilename=NULL;
     const char *filename_to_extract=NULL;
     const char *password=NULL;

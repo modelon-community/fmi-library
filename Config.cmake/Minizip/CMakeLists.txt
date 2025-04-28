@@ -58,7 +58,7 @@ add_library(minizip ${SOURCE} ${HEADERS})
 
 target_link_libraries(minizip PRIVATE zlib)
 
-target_include_directories(minizip 
+target_include_directories(minizip
     PRIVATE ${ZLIB_INCLUDE_DIRS}
 )
 

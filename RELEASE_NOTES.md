@@ -4,7 +4,7 @@ The release notes are typically a highlighting subset of all changes made. For f
 
 Note that version 2.1 is the first version with release notes. Please see the commit history for older versions.
 
-## Future
+## 3.0.1
 - Resolved reported vulnerability issues:
     - Updated to expat 2.6.4 (from version 2.5.0).
     - Updated to zlib 1.3.1 (from version 1.2.13).

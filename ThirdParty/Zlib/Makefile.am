@@ -1,5 +1,5 @@
 ZLIB_BUILD_DIR=$(abs_builddir)/../../zlib_build
-ZLIB_SRC_DIR=ThirdParty/Zlib/zlib-1.2.13
+ZLIB_SRC_DIR=ThirdParty/Zlib/zlib-1.3.1
 ZLIB_INSTALL_DIR=$(abs_top_builddir)/zlib_install
 
 $(ZLIB_BUILD_DIR):

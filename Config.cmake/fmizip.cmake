@@ -18,11 +18,21 @@ include(jmutil)
 
 # set(DOXYFILE_EXTRA_SOURCES "${DOXYFILE_EXTRA_SOURCES} \"${FMIZIPDIR}/include\"")
 
-add_subdirectory(Config.cmake/Minizip)
+if(FMILIB_SYSTEM_MINIZIP)
+    find_package(MiniZip REQUIRED)
+    add_library(minizip UNKNOWN IMPORTED)
+    target_link_libraries(minizip INTERFACE ${MINIZIP_LIBRARY})
+    target_include_directories(minizip INTERFACE ${MINIZIP_INCLUDE_DIR})
+    set_target_properties(minizip PROPERTIES IMPORTED_LOCATION ${MINIZIP_LIBRARY})
+else ()
+    add_subdirectory(Config.cmake/Minizip)
+endif ()
 
 set(FMIZIPSOURCE
     ${FMIZIPDIR}/src/fmi_zip_unzip.c
     ${FMIZIPDIR}/src/fmi_zip_zip.c
+    ${FMIZIPDIR}/src/fmi_miniunz.c
+    ${FMIZIPDIR}/src/fmi_minizip.c
 )
 
 set(FMIZIPHEADERS
@@ -37,11 +47,17 @@ target_link_libraries(fmizip
 )
 target_include_directories(fmizip
     PRIVATE
-        ${FMILIB_THIRDPARTYLIBS}/Minizip/minizip
+        ${ZLIB_INCLUDE_DIRS}
         ${FMILIB_THIRDPARTYLIBS}/FMI
     PUBLIC
         ${FMILIB_CONFIG_INCLUDE_DIR}
         ${FMIZIPDIR}/include
 )
+
+if(FMILIB_SYSTEM_MINIZIP AND TARGET zlib)
+    target_link_libraries(fmizip PRIVATE zlib)
+else ()
+    target_include_directories(fmizip PRIVATE ${FMILIB_THIRDPARTYLIBS}/Minizip/minizip)
+endif ()
 
 endif(NOT FMIZIPDIR)

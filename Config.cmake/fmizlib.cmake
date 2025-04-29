@@ -13,7 +13,6 @@
 
 if(FMILIB_FIND_PACKAGE_ZLIB)
 
-    set(ZLIB_USE_STATIC_LIBS ON)
     include(FindZLIB)
 
     find_package(ZLIB)

@@ -20,7 +20,7 @@ extern "C" {
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <miniunz.h>
+#include "FMI/fmi_miniunz.h"
 
 #include <JM/jm_types.h>
 #include <JM/jm_callbacks.h>
@@ -65,7 +65,7 @@ jm_status_enu_t fmi_zip_unzip(const char* zip_file_path, const char* output_fold
     }
 
     /* Unzip */
-    status = miniunz(argc, (char**)argv);
+    status = fmi_miniunz(argc, (char**)argv);
 
     /* Reset the current directory */
     if (jm_portability_set_current_working_directory(cd) == jm_status_error) {

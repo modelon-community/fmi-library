@@ -88,6 +88,7 @@
 /* First, we deal with  platform-specific or compiler-specific issues. */
 
 /* begin standard C headers. */
+#define _POSIX_C_SOURCE 200809L
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
@@ -530,6 +531,11 @@ static const flex_int16_t yy_chk[81] =
  * The user has a chance to override it with an option.
  */
 #include <unistd.h>
+#else
+/*windows compatibility case*/
+#include <io.h>
+#define isatty _isatty
+#define fileno _fileno
 #endif
     
 #ifndef YY_EXTRA_TYPE

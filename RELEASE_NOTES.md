@@ -4,6 +4,12 @@ The release notes are typically a highlighting subset of all changes made. For f
 
 Note that version 2.1 is the first version with release notes. Please see the commit history for older versions.
 
+## 3.0.2
+
+- Restored `minizip_printf` afer minizip 1.3.1 bump in v3.0.1 to avoid printing to stdout
+- Fixed various compilation issues for all major platforms
+- Add ARM architecture tags
+
 ## 3.0.1
 - Resolved reported vulnerability issues:
     - Updated to expat 2.6.4 (from version 2.5.0).

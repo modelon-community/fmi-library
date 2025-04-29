@@ -25,12 +25,13 @@
 
 #define BUFFER 1000
 
+
 /* Logger function used by the FMU internally */
-static void fmi3logger(fmi3_instance_environment_t env, fmi3_string_t instanceName, fmi3_status_t status, fmi3_string_t category, fmi3_string_t message)
+static void fmi3logger(fmi3_instance_environment_t env, fmi3_status_t status, fmi3_string_t category, fmi3_string_t message)
 {
     char msg[BUFFER];
     jm_snprintf(msg, BUFFER, message);
-    printf("fmiStatus = %s;  %s (%s): %s\n", fmi3_status_to_string(status), instanceName, category, msg);
+    printf("fmiStatus = %s;  %s: %s\n", fmi3_status_to_string(status), category, msg);
 }
 
 int fmi3_test(fmi_import_context_t* context, const char* dirPath)

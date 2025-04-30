@@ -81,9 +81,13 @@ set(JMUTILS_PUBLIC_INCLUDE_DIRS
 )
 
 if(UNIX)
-    set(JMUTILS_DEPENDENCY_LIBS c99snprintf dl)
+    set(JMUTILS_DEPENDENCY_LIBS dl)
 else()
-    set(JMUTILS_DEPENDENCY_LIBS c99snprintf shlwapi)
+    set(JMUTILS_DEPENDENCY_LIBS shlwapi)
+endif()
+
+if(MSVC AND (MSVC_VERSION LESS 1900))
+    list(APPEND JMUTILS_DEPENDENCY_LIBS c99snprintf)
 endif()
 
 add_library(jmutils STATIC ${JMUTILSOURCE} ${JMUTILHEADERS})

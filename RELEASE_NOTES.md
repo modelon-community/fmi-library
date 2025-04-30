@@ -4,6 +4,10 @@ The release notes are typically a highlighting subset of all changes made. For f
 
 Note that version 2.1 is the first version with release notes. Please see the commit history for older versions.
 
+## 3.0.3
+
+- Use `c99_snprintf` third-party dependency only when compiling with MSVC 2015 and lower
+
 ## 3.0.2
 
 - Restored `minizip_printf` afer minizip 1.3.1 bump in v3.0.1 to avoid printing to stdout

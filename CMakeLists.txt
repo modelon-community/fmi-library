@@ -271,7 +271,9 @@ file(COPY "${CMAKE_SOURCE_DIR}/Config.cmake/fmilib.h" DESTINATION "${FMILIB_INCL
 
 # ===============================================================================
 
-add_subdirectory(ThirdParty/c99_snprintf)
+if(MSVC AND (MSVC_VERSION LESS 1900))
+    add_subdirectory(ThirdParty/c99_snprintf)
+endif()
 
 include(jmutil)
 include(fmixml)
@@ -289,9 +291,12 @@ if(FMILIB_BUILD_TESTS)
     )
 endif()
 
-set(FMILIB_SHARED_SUBLIBS fmixml fmizip fmicapi minizip zlib c99snprintf)
+set(FMILIB_SHARED_SUBLIBS fmixml fmizip fmicapi minizip zlib)
 if(NOT FMILIB_SYSTEM_EXPAT)
     list(APPEND FMILIB_SHARED_SUBLIBS expat)
+endif()
+if(MSVC AND (MSVC_VERSION LESS 1900))
+    list(APPEND FMILIB_SHARED_SUBLIBS c99snprintf)
 endif()
 set(FMILIB_SUBLIBS fmiimport jmutils ${FMILIB_SHARED_SUBLIBS})
 # XXX: Unclear why we create intermediate sublibs instead of just giving everything as source.

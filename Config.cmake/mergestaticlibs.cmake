@@ -22,68 +22,37 @@ function(merge_static_libs outlib)
 
     add_library(${outlib} STATIC ${dummyfile})
 
-    if("${CMAKE_CFG_INTDIR}" STREQUAL ".")
-        set(multiconfig FALSE)
-    else()
-        set(multiconfig TRUE)
-    endif()
-
     # First get the file names of the libraries to be merged
     foreach(lib ${libs})
         get_target_property(libtype ${lib} TYPE)
         if(NOT libtype STREQUAL "STATIC_LIBRARY")
             message(FATAL_ERROR "Merge_static_libs can only process static libraries\n\tlibraries: ${lib}\n\tlibtype ${libtype}")
         endif()
-        if(multiconfig)
-            foreach(CONFIG_TYPE ${CMAKE_CONFIGURATION_TYPES})
-                get_target_property("libfile_${CONFIG_TYPE}" ${lib} "LOCATION_${CONFIG_TYPE}")
-                list(APPEND libfiles_${CONFIG_TYPE} ${libfile_${CONFIG_TYPE}})
-            endforeach()
-        else()
-            get_target_property(libfile ${lib} LOCATION)
-            list(APPEND libfiles "${libfile}")
-        endif(multiconfig)
+        list(APPEND libfiles $<TARGET_FILE:${lib}>)
     endforeach()
     message(STATUS "will be merging ${libfiles}")
-    # Just to be sure: cleanup from duplicates
-    if(multiconfig)
-        foreach(CONFIG_TYPE ${CMAKE_CONFIGURATION_TYPES})
-            list(REMOVE_DUPLICATES libfiles_${CONFIG_TYPE})
-            set(libfiles ${libfiles} ${libfiles_${CONFIG_TYPE}})
-        endforeach()
-    endif()
     list(REMOVE_DUPLICATES libfiles)
 
     # Now the easy part for MSVC and for MAC
     if(MSVC)
         # lib.exe does the merging of libraries just need to conver the list into string
-        foreach(CONFIG_TYPE ${CMAKE_CONFIGURATION_TYPES})
-            set(flags "")
-            foreach(lib ${libfiles_${CONFIG_TYPE}})
-                set(flags "${flags} ${lib}")
-            endforeach()
-            string(TOUPPER "STATIC_LIBRARY_FLAGS_${CONFIG_TYPE}" PROPNAME)
-            set_target_properties(${outlib} PROPERTIES ${PROPNAME} "${flags}")
-        endforeach()
+        set_target_properties(${outlib} PROPERTIES STATIC_LIBRARY_OPTIONS "${libfiles}")
     elseif(APPLE)
         # Use OSX's libtool to merge archives
-        if(multiconfig)
-            message(FATAL_ERROR "Multiple configurations are not supported")
-        endif()
-	find_program(CMAKE_LIBTOOL NAMES libtool)
-	if (NOT CMAKE_LIBTOOL)
-	    message(FATAL_ERROR "Cannot find libtool")
-	endif ()
-        get_target_property(outfile ${outlib} LOCATION)
+        find_program(CMAKE_LIBTOOL NAMES libtool)
+        if (NOT CMAKE_LIBTOOL)
+            message(FATAL_ERROR "Cannot find libtool")
+        endif ()
         add_custom_command(TARGET ${outlib} POST_BUILD
-            COMMAND rm ${outfile}
-	    COMMAND ${CMAKE_LIBTOOL} -static -o ${outfile}
-            ${libfiles}
+            COMMAND rm
+                    "$<TARGET_FILE:${outlib}>"
+            COMMAND ${CMAKE_LIBTOOL} -static -o
+                    "$<TARGET_FILE:${outlib}>"
+                    ${libfiles}
+            COMMAND_EXPAND_LISTS
+            VERBATIM
         )
     else() # general UNIX - need to "ar -x" and then "ar -ru"
-        if(multiconfig)
-            message(FATAL_ERROR "Multiple configurations are not supported")
-        endif()
         foreach(libtarget ${libs})
             set(objlistfile  ${CMAKE_CURRENT_BINARY_DIR}/${libtarget}.objlist)  # Contains a list of the object files
             set(objdir       ${CMAKE_CURRENT_BINARY_DIR}/${libtarget}.objdir)   # Directory where to extract object files

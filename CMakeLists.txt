@@ -51,6 +51,12 @@ option(FMILIB_INSTALL_SUBLIBS  "Install sub-libraries (fmicapi. fmixml, jmutil, 
 option(FMILIB_SYSTEM_ZLIB  "Use find_package for zlib, instead of version in FMILibrary/Thirdparty." OFF)
 option(FMILIB_SYSTEM_MINIZIP "Use system minizp library instead of the one in FMILibrary/Thirdparty. Static builds of FMI Library will not bundle minizip." OFF)
 option(FMILIB_SYSTEM_EXPAT "Use system expat library instead of the one in FMILibrary/Thirdparty. Static builds of FMI Library will not bundle expat." OFF)
+option(FMILIB_EXTERNAL_LIBS "Use system libraries" OFF)
+if (FMILIB_EXTERNAL_LIBS)
+    set(FMILIB_SYSTEM_ZLIB ON CACHE BOOL "Use system zlib library" FORCE)
+    set(FMILIB_SYSTEM_MINIZIP ON CACHE BOOL "Use system minizp library" FORCE)
+    set(FMILIB_SYSTEM_EXPAT ON CACHE BOOL "Use system expat library" FORCE)
+endif()
 
 if(NOT (WIN32 OR CYGWIN OR APPLE))
 # On LINUX position independent code (-fPIC) must be used on all files to be linked into .so

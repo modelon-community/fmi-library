@@ -65,17 +65,7 @@ option(FMILIB_FIND_PACKAGE_ZLIB  "Use find_package for zlib, instead of version 
 option(FMILIB_SYSTEM_EXPAT "Use system expat library instead of the one in FMILibrary/Thirdparty. Static builds of FMI Library will not bundle expat." OFF)
 mark_as_advanced(FMILIB_FIND_PACKAGE_ZLIB)
 
-if(NOT (WIN32 OR CYGWIN OR APPLE))
-# On LINUX position independent code (-fPIC) must be used on all files to be linked into .so
-# On other systems this is not needed (either is default or relocation is done)
-    if(NOT FMILIB_BUILD_SHARED_LIB)
-        option(FMILIB_BUILD_FOR_SHARED_LIBS  "The static library 'fmilib' can be linked into shared libraries. Mostly needed on Linux." ON)
-    else()
-        set(FMILIB_BUILD_FOR_SHARED_LIBS ON CACHE INTERNAL "The static library 'fmilib' can be linked into shared libraries. Mostly needed on Linux." FORCE)
-    endif()
-else()
-    set(FMILIB_BUILD_FOR_SHARED_LIBS OFF CACHE INTERNAL "The static library 'fmilib' can be linked into shared libraries. Mostly needed on Linux." FORCE)
-endif()
+option(FMILIB_BUILD_FOR_SHARED_LIBS  "The static library 'fmilib' can be linked into shared libraries. Mostly needed on Linux." ON)
 
 option(FMILIB_GENERATE_DOXYGEN_DOC "Generate doxygen doc target" ON)
 
@@ -159,11 +149,6 @@ if(CMAKE_COMPILER_IS_GNUCC)
             set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fvisibility=hidden")
         endif()
     endif()
-endif()
-
-if(FMILIB_BUILD_FOR_SHARED_LIBS)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${CMAKE_SHARED_LIBRARY_C_FLAGS}")
-    set(WITH_PIC ON) # this is used in MERGE_LIBRARIES below
 endif()
 
 # prefix each element of list by ${prefix}element
@@ -340,6 +325,11 @@ if(FMILIB_BUILD_STATIC_LIB)
     if(UNIX)
         target_link_libraries(fmilib dl)
     endif()
+    if (FMILIB_BUILD_FOR_SHARED_LIBS)
+        foreach(lib ${FMILIB_SUBLIBS})
+            set_target_properties (${lib} PROPERTIES POSITION_INDEPENDENT_CODE ON)
+        endforeach()
+    endif ()
     set(FMILIB_TARGETS ${FMILIB_TARGETS} fmilib)
     # Set PUBLIC include_directories such that test targets that link with fmilib inherit
     # the same include dirs as will exist for installation.

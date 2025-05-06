@@ -73,7 +73,7 @@ if(FMILIB_TEST_LOCALE)
     target_compile_definitions(fmi2_xml_parsing_test PRIVATE -DFMILIB_TEST_LOCALE)
 endif()
 
-add_executable(fmi2_import_xml_test ${FMIL_TEST_DIR}/FMI2/fmi2_import_xml_test.cc)
+add_executable(fmi2_import_xml_test ${FMIL_TEST_DIR}/FMI2/fmi2_import_xml_test.c)
 target_link_libraries(fmi2_import_xml_test ${FMILIBFORTEST})
 add_executable(fmi2_import_me_test ${FMIL_TEST_DIR}/FMI2/fmi2_import_me_test.c)
 target_link_libraries(fmi2_import_me_test ${FMILIBFORTEST})

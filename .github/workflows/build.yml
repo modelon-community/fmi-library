@@ -35,17 +35,17 @@ jobs:
       - uses: actions/checkout@v4
       - name: Build Ninja
         run: |
-          cmake -DCMAKE_INSTALL_PREFIX=C:/Users/runneradmin/fmilib -DFMILIB_GENERATE_DOXYGEN_DOC=0 -B build_ninja -G Ninja -LAH . &&
+          cmake -DCMAKE_INSTALL_PREFIX="$($HOME -replace '\\', '/')/fmilib" -DFMILIB_GENERATE_DOXYGEN_DOC=0 -B build_ninja -G Ninja -LAH . &&
           cmake --build build_ninja --target install --parallel 4
       - name: Test
         run: ctest --test-dir build_ninja --output-on-failure
       - name: Build VS
         run: |
-          cmake -DCMAKE_INSTALL_PREFIX=C:/Users/runneradmin/fmilib_install_vs -DFMILIB_GENERATE_DOXYGEN_DOC=0 -DFMILIB_BUILD_TESTS=OFF -B build_vs -LAH . &&
+          cmake -DCMAKE_INSTALL_PREFIX="$($HOME -replace '\\', '/')/fmilib_install_vs" -DFMILIB_GENERATE_DOXYGEN_DOC=0 -DFMILIB_BUILD_TESTS=OFF -B build_vs -LAH . &&
           cmake --build build_vs --target install --parallel 4
       - name: Test Installation
         run: |
-          cmake -DFMIL_HOME=C:/Users/runneradmin/fmilib_install_vs -B build_test_install_vs -LAH Test/test_installation/ &&
+          cmake -DFMIL_HOME="$($HOME -replace '\\', '/')/fmilib_install_vs" -B build_test_install_vs -LAH Test/test_installation/ &&
           cmake --build build_test_install_vs --target ALL_BUILD &&
           ctest --test-dir build_test_install_vs --output-on-failure
 

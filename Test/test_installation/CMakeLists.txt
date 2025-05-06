@@ -11,14 +11,14 @@
 #    You should have received a copy of the FMILIB_License.txt file
 #    along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 
-cmake_minimum_required(VERSION 3.15 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.15)
 
 # Performs a smoke test on the install directory of FMIL. Verifies for example
 # that:
 #   - All include files have been installed
 #   - No XML headers etc. are included in the import headers
 #   - That libraries are present and functions can be called
-project(TestInstallation)
+project(TestInstallation C)
 
 set_property(GLOBAL PROPERTY C_STANDARD          99)
 set_property(GLOBAL PROPERTY C_STANDARD_REQUIRED ON)
@@ -48,11 +48,7 @@ enable_testing()
 # Import FMIL
 add_library(fmilib STATIC IMPORTED)
 set_property(TARGET fmilib PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${FMIL_HOME}/include")
-if(MSVC)
-    set_property(TARGET fmilib PROPERTY IMPORTED_LOCATION "${FMIL_HOME}/lib/fmilib.lib")
-else()
-    set_property(TARGET fmilib PROPERTY IMPORTED_LOCATION "${FMIL_HOME}/lib/libfmilib.a")
-endif()
+set_property(TARGET fmilib PROPERTY IMPORTED_LOCATION "${FMIL_HOME}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}fmilib${CMAKE_STATIC_LIBRARY_SUFFIX}")
 
 # Build the test
 add_executable(main main.c)
@@ -78,20 +74,13 @@ add_test(test_installation main)
 # Import FMIL
 add_library(fmilib_shared SHARED IMPORTED)
 set_property(TARGET fmilib_shared PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${FMIL_HOME}/include")
-if(MSVC)
-    set_property(TARGET fmilib_shared PROPERTY IMPORTED_LOCATION "${FMIL_HOME}/lib/fmilib_shared.dll")
-    set_property(TARGET fmilib_shared PROPERTY IMPORTED_IMPLIB   "${FMIL_HOME}/lib/fmilib_shared.lib")
-elseif(MINGW)
-    set_property(TARGET fmilib_shared PROPERTY IMPORTED_LOCATION "${FMIL_HOME}/lib/libfmilib_shared.dll")
-    set_property(TARGET fmilib_shared PROPERTY IMPORTED_IMPLIB   "${FMIL_HOME}/lib/libfmilib_shared.dll.a")
-else()
-    set_property(TARGET fmilib_shared PROPERTY IMPORTED_LOCATION "${FMIL_HOME}/lib/libfmilib_shared.so")
-endif()
+set_property(TARGET fmilib_shared PROPERTY IMPORTED_LOCATION "${FMIL_HOME}/lib/${CMAKE_SHARED_LIBRARY_PREFIX}fmilib_shared${CMAKE_SHARED_LIBRARY_SUFFIX}")
+set_property(TARGET fmilib_shared PROPERTY IMPORTED_IMPLIB "${FMIL_HOME}/lib/${CMAKE_IMPORT_LIBRARY_PREFIX}fmilib_shared${CMAKE_IMPORT_LIBRARY_SUFFIX}")
 
 # Build the test
 add_executable(main_shared main.c)
 if(WIN32)
-    target_link_libraries(main_shared PRIVATE fmilib_shared Shlwapi)
+    target_link_libraries(main_shared PRIVATE fmilib_shared shlwapi)
 else()
     target_link_libraries(main_shared PRIVATE fmilib_shared dl)
 endif()

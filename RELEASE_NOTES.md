@@ -7,6 +7,7 @@ Note that version 2.1 is the first version with release notes. Please see the co
 ## 3.0.3
 
 - Use `c99_snprintf` third-party dependency only when compiling with MSVC 2015 and lower
+- Bump minimum cmake version 3.15 and enable compatibility with 4.x.
 
 ## 3.0.2
 

@@ -22,18 +22,32 @@ jobs:
           cmake --build build_cmake --target install --parallel 4
       - name: Test
         run: ctest --test-dir build_cmake --output-on-failure
+      - name: Test Installation
+        run: |
+          cmake -DFMIL_HOME=~/.local -B build_test_install -LAH Test/test_installation/
+          cmake --build build_test_install --target all
+          ctest --test-dir build_test_install --output-on-failure
 
   windows:
     runs-on: windows-latest
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-      - name: Build
+      - name: Build Ninja
         run: |
-          cmake -DCMAKE_INSTALL_PREFIX=C:/Users/runneradmin/fmilib -DFMILIB_GENERATE_DOXYGEN_DOC=0 -B build_cmake -G Ninja -LAH .
-          cmake --build build_cmake --target install --parallel 4
+          cmake -DCMAKE_INSTALL_PREFIX="$($HOME -replace '\\', '/')/fmilib" -DFMILIB_GENERATE_DOXYGEN_DOC=0 -B build_ninja -G Ninja -LAH . &&
+          cmake --build build_ninja --target install --parallel 4
       - name: Test
-        run: ctest --test-dir build_cmake --output-on-failure
+        run: ctest --test-dir build_ninja --output-on-failure
+      - name: Build VS
+        run: |
+          cmake -DCMAKE_INSTALL_PREFIX="$($HOME -replace '\\', '/')/fmilib_install_vs" -DFMILIB_GENERATE_DOXYGEN_DOC=0 -DFMILIB_BUILD_TESTS=OFF -B build_vs -LAH . &&
+          cmake --build build_vs --target install --parallel 4
+      - name: Test Installation
+        run: |
+          cmake -DFMIL_HOME="$($HOME -replace '\\', '/')/fmilib_install_vs" -B build_test_install_vs -LAH Test/test_installation/ &&
+          cmake --build build_test_install_vs --target ALL_BUILD &&
+          ctest --test-dir build_test_install_vs --output-on-failure
 
   macos:
     runs-on: macos-latest
@@ -43,6 +57,11 @@ jobs:
       - name: Build
         run: |
           cmake -DCMAKE_INSTALL_PREFIX=~/.local -DFMILIB_GENERATE_DOXYGEN_DOC=0 -B build_cmake .
-          cmake --build build_cmake --target install --parallel 4
+          cmake --build build_cmake --target install --parallel 3
       - name: Test
         run: ctest --test-dir build_cmake --output-on-failure
+      - name: Test Installation
+        run: |
+          cmake -DFMIL_HOME=~/.local -B build_test_install -LAH Test/test_installation/
+          cmake --build build_test_install --target all
+          ctest --test-dir build_test_install --output-on-failure

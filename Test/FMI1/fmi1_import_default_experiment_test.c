@@ -71,7 +71,7 @@ static int test_default_experiment_mixed(fmi1_import_t *xml)
 int main(int argc, char **argv)
 {
 #define PATH_BUF_SIZE 1000
-    char path_buf[PATH_BUF_SIZE]; /* buffer for path to md */
+    char path_buf[PATH_BUF_SIZE + 1]; /* buffer for path to md */
     fmi1_import_t *xml;
     int ret = 1;
     if (argc != 2) {

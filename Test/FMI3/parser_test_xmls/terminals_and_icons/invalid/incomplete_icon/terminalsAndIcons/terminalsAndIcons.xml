@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<fmiTerminalsAndIcons fmiVersion="3.0-alpha">
+    <GraphicalRepresentation>
+        <!-- Incomplete set of attributes -->
+        <Icon x1="200" y1="300"/>
+    </GraphicalRepresentation>
+</fmiTerminalsAndIcons>

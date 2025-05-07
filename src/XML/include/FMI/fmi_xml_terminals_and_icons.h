@@ -38,6 +38,12 @@ extern "C" {
 
 /* Structure encapsulating terminals and icons information */
 typedef struct fmi_xml_terminals_and_icons_t fmi_xml_terminals_and_icons_t;
+/* Structure encapsulating graphicalRepresentation information */
+typedef struct fmi_xml_graphicalRepresentation_t fmi_xml_graphicalRepresentation_t;
+/* Structure encapsulating coordinateSystem information */
+typedef struct fmi_xml_coordinateSystem_t fmi_xml_coordinateSystem_t;
+/* Structure encapsulating icon information */
+typedef struct fmi_xml_icon_t fmi_xml_icon_t;
 /* Structure encapsulating terminal information */
 typedef struct fmi_xml_terminal_t fmi_xml_terminal_t;
 
@@ -62,7 +68,22 @@ int fmi2_xml_terminals_and_icons_set_model_description(fmi_xml_terminals_and_ico
 int fmi3_xml_terminals_and_icons_set_model_description(fmi_xml_terminals_and_icons_t* termIcon,
                                                        fmi3_xml_model_description_t* md);
 
+/* Top level */
 int fmi_xml_get_has_terminals_and_icons(fmi_xml_terminals_and_icons_t* termIcon);
+
+/* Graphical Representation */
+int fmi_xml_get_has_graphical_representation(fmi_xml_terminals_and_icons_t* termIcon);
+/* coordinateSystem*/
+int fmi_xml_get_graphical_representation_system_coordinates(fmi_xml_graphicalRepresentation_t* graphRepr, 
+        double* x1, double* y1, double* x2, double* y2);
+int fmi_xml_get_graphical_representation_suggested_scaling(fmi_xml_graphicalRepresentation_t* graphRepr, 
+        double* suggested_scaling);
+/* icon */
+int fmi_xml_get_graphical_representation_has_icon(fmi_xml_graphicalRepresentation_t* graphRepr);
+int fmi_xml_get_graphical_representation_icon_coordinates(fmi_xml_graphicalRepresentation_t* graphRepr, 
+        double* x1, double* y1, double* x2, double* y2);
+
+/* Terminals */
 fmi_xml_terminal_t* fmi_xml_get_terminal_by_name(fmi_xml_terminals_and_icons_t* termIcon, const char* name);
 const char* fmi_xml_get_terminal_name(fmi_xml_terminal_t* term);
 

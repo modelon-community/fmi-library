@@ -4,8 +4,10 @@ The release notes are typically a highlighting subset of all changes made. For f
 
 Note that version 2.1 is the first version with release notes. Please see the commit history for older versions.
 
-## 3.0.2
+## 3.0.3
+- Resolved an issue in a test case where a variable was not initialized, causing an error for certain compilers.
 
+## 3.0.2
 - Restored `minizip_printf` afer minizip 1.3.1 bump in v3.0.1 to avoid printing to stdout
 - Fixed various compilation issues for all major platforms
 - Add ARM architecture tags
@@ -17,7 +19,6 @@ Note that version 2.1 is the first version with release notes. Please see the co
     - Updated to minizip 1.3.1 (from version 1.1).
 
 ## 3.0
-
 This is the first official release with support for FMI 3.0. Please note that support for terminals and icons is still experimental and subject to change.
 
 We would like to thank all users who provided feedback and reported issues during development, your contributions are greatly appreciated.

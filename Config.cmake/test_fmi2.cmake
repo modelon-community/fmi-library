@@ -113,38 +113,38 @@ set_target_properties(
 set(FAIL_NAME_CHECK 0)
 set(PASS_NAME_CHECK 1)
 
-add_test(ctest_fmi2_xml_parsing_test fmi2_xml_parsing_test ${FMI2_TEST_XML_DIR}/) # Trailing '/' necessary (for building system independent path)
-add_test(ctest_fmi2_import_xml_test_brief fmi2_import_xml_test ${FMU2_DUMMY_FOLDER}) # 'brief' as in close to minimal XML
-add_test(ctest_fmi2_import_xml_test_me    fmi2_import_xml_test ${TEST_OUTPUT_FOLDER}/BouncingBall2_me)
-add_test(ctest_fmi2_import_xml_test_cs    fmi2_import_xml_test ${TEST_OUTPUT_FOLDER}/BouncingBall2_cs)
-add_test(ctest_fmi2_import_xml_test_mf    fmi2_import_xml_test ${TEST_OUTPUT_FOLDER}/BouncingBall2_mf)
+add_test(NAME ctest_fmi2_xml_parsing_test COMMAND fmi2_xml_parsing_test ${FMI2_TEST_XML_DIR}/) # Trailing '/' necessary (for building system independent path)
+add_test(NAME ctest_fmi2_import_xml_test_brief COMMAND fmi2_import_xml_test ${FMU2_DUMMY_FOLDER}) # 'brief' as in close to minimal XML
+add_test(NAME ctest_fmi2_import_xml_test_me    COMMAND fmi2_import_xml_test ${TEST_OUTPUT_FOLDER}/BouncingBall2_me)
+add_test(NAME ctest_fmi2_import_xml_test_cs    COMMAND fmi2_import_xml_test ${TEST_OUTPUT_FOLDER}/BouncingBall2_cs)
+add_test(NAME ctest_fmi2_import_xml_test_mf    COMMAND fmi2_import_xml_test ${TEST_OUTPUT_FOLDER}/BouncingBall2_mf)
 set_tests_properties(ctest_fmi2_import_xml_test_mf PROPERTIES WILL_FAIL TRUE)
-add_test(ctest_fmi2_import_test_me fmi2_import_me_test)
-add_test(ctest_fmi2_import_test_cs fmi2_import_cs_test)
-add_test(ctest_fmi2_import_test_options fmi2_import_options_test)
-add_test(ctest_fmi2_import_variable_test
-         fmi2_import_variable_test
+add_test(NAME ctest_fmi2_import_test_me COMMAND fmi2_import_me_test)
+add_test(NAME ctest_fmi2_import_test_cs COMMAND fmi2_import_cs_test)
+add_test(NAME ctest_fmi2_import_test_options COMMAND fmi2_import_options_test)
+add_test(NAME ctest_fmi2_import_variable_test
+         COMMAND fmi2_import_variable_test
          ${VARIALBE_TEST_MODEL_DESC_DIR})
-add_test(ctest_fmi2_import_model_structure_test
-         fmi2_import_model_structure_test
+add_test(NAME ctest_fmi2_import_model_structure_test
+         COMMAND fmi2_import_model_structure_test
          ${FMI2_PARSER_TEST_XMLS_DIR})
-add_test(ctest_fmi2_import_default_experiment_test
-         fmi2_import_default_experiment_test
+add_test(NAME ctest_fmi2_import_default_experiment_test
+         COMMAND fmi2_import_default_experiment_test
          ${DEFAULT_EXPERIMENT_MODEL_DESC_DIR})
-add_test(ctest_fmi2_variable_no_type_test
-         fmi2_variable_no_type_test
+add_test(NAME ctest_fmi2_variable_no_type_test
+         COMMAND fmi2_variable_no_type_test
          ${VARIABLE_NO_TYPE_MODEL_DESC_DIR})
-add_test(ctest_fmi2_variable_bad_variability_causality_test
-         fmi2_variable_bad_variability_causality_test
+add_test(NAME ctest_fmi2_variable_bad_variability_causality_test
+         COMMAND fmi2_variable_bad_variability_causality_test
          ${VARIABLE_BAD_VARIABILITY_CAUSALITY_MODEL_DESC_DIR})
-add_test(ctest_fmi2_variable_bad_type_variability_test
-         fmi2_variable_bad_type_variability_test
+add_test(NAME ctest_fmi2_variable_bad_type_variability_test
+         COMMAND fmi2_variable_bad_type_variability_test
          ${VARIABLE_BAD_TYPE_VARIABILITY_MODEL_DESC_DIR})
-add_test(ctest_fmi2_type_definitions_test
-         fmi2_type_definitions_test
+add_test(NAME ctest_fmi2_type_definitions_test
+         COMMAND fmi2_type_definitions_test
          ${TYPE_DEFINITIONS_MODEL_DESC_DIR})
-add_test(ctest_fmi2_enum_test
-         fmi2_enum_test)
+add_test(NAME ctest_fmi2_enum_test
+         COMMAND fmi2_enum_test)
 
 if(FMILIB_BUILD_BEFORE_TESTS)
     set_tests_properties(

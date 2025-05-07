@@ -66,7 +66,7 @@ if(FMILIB_TEST_LOCALE)
     target_link_libraries(jm_locale_test jmutils)
     target_include_directories(jm_locale_test PRIVATE ${FMIL_TEST_INCLUDE_DIRS})
     target_compile_definitions(jm_locale_test PRIVATE ${FMIL_LINK_WITH_SUBLIBS})
-    add_test(ctest_jm_locale_test jm_locale_test)
+    add_test(NAME ctest_jm_locale_test COMMAND jm_locale_test)
     set_tests_properties(ctest_jm_locale_test PROPERTIES DEPENDS ctest_build_all)
 endif()
 
@@ -131,7 +131,7 @@ function(compress_fmu OUTPUT_FOLDER_T MODEL_IDENTIFIER_T FILE_NAME_CS_ME_EXT_T T
         COMMAND "${CMAKE_COMMAND}" -E remove -f "${OUTPUT_FOLDER_T}/${FMU_FILE_NAME_T}.fmu"
         COMMAND "${CMAKE_COMMAND}" -E copy "${XML_PATH_T}" "${FMU_OUTPUT_FOLDER_T}/modelDescription.xml"
         COMMAND "${CMAKE_COMMAND}" -E copy "${SHARED_LIBRARY_PATH_T}" "${FMU_OUTPUT_SHARED_LIBRARY_PATH_T}"
-        COMMAND $<TARGET_FILE:compress_test_fmu_zip> "${MODEL_IDENTIFIER_T}.fmu" "modelDescription.xml" "${FMU_OUTPUT_SHARED_LIBRARY_PATH_OUT_T}" WORKING_DIRECTORY "${FMU_OUTPUT_FOLDER_T}"
+        COMMAND ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:compress_test_fmu_zip> "${MODEL_IDENTIFIER_T}.fmu" "modelDescription.xml" "${FMU_OUTPUT_SHARED_LIBRARY_PATH_OUT_T}" WORKING_DIRECTORY "${FMU_OUTPUT_FOLDER_T}"
         COMMAND "${CMAKE_COMMAND}" -E copy "${FMU_OUTPUT_FOLDER_T}/${MODEL_IDENTIFIER_T}.fmu" "${OUTPUT_FOLDER_T}/${FMU_FILE_NAME_T}.fmu"
     )
 
@@ -183,8 +183,8 @@ if(FMILIB_BUILD_BEFORE_TESTS)
         COMMAND "${CMAKE_COMMAND}" --build ${CMAKE_BINARY_DIR} --config $<CONFIGURATION>)
 endif()
 
-add_test(ctest_fmi_zip_unzip_test fmi_zip_unzip_test)
-add_test(ctest_fmi_zip_zip_test fmi_zip_zip_test)
+add_test(NAME ctest_fmi_zip_unzip_test COMMAND fmi_zip_unzip_test)
+add_test(NAME ctest_fmi_zip_zip_test COMMAND fmi_zip_zip_test)
 
 
 # ------------------------------------------------------------------------------
@@ -208,7 +208,7 @@ function(add_catch2_test TEST_NAME TEST_DIR)
     add_executable(${TEST_NAME} ${FMIL_TEST_DIR}/${TEST_DIR}/${TEST_NAME}.cpp)
     set_source_files_properties(${FMIL_TEST_DIR}/${TEST_DIR}/${TEST_NAME}.cpp PROPERTIES LANGUAGE CXX)
     target_link_libraries(${TEST_NAME} PRIVATE catch2_main ${FMILIBFORTEST})
-    add_test(ctest_${TEST_NAME} ${TEST_NAME})
+    add_test(NAME ctest_${TEST_NAME} COMMAND ${TEST_NAME})
     set_target_properties(${TEST_NAME} PROPERTIES FOLDER "Test/${TEST_DIR}")
     if(FMILIB_BUILD_BEFORE_TESTS)
         set_tests_properties(ctest_${TEST_NAME} PROPERTIES DEPENDS ctest_build_all)
@@ -231,14 +231,14 @@ include(test_fmi1)
 include(test_fmi2)
 include(test_fmi3)
 
-add_test(ctest_fmi_import_test_no_xml fmi_import_test ${UNCOMPRESSED_DUMMY_FILE_PATH_SRC})
+add_test(NAME ctest_fmi_import_test_no_xml COMMAND fmi_import_test ${UNCOMPRESSED_DUMMY_FILE_PATH_SRC})
   set_tests_properties(ctest_fmi_import_test_no_xml PROPERTIES WILL_FAIL TRUE)
-add_test(ctest_fmi_import_test_me_1 fmi_import_test ${FMU1_ME_PATH})
-add_test(ctest_fmi_import_test_cs_1 fmi_import_test ${FMU1_CS_PATH})
-add_test(ctest_fmi_import_test_me_2 fmi_import_test ${FMU2_ME_PATH})
-add_test(ctest_fmi_import_test_cs_2 fmi_import_test ${FMU2_CS_PATH})
-add_test(ctest_fmi_import_test_me_3 fmi_import_test ${FMU3_ME_PATH})
-add_test(ctest_fmi_import_test_cs_3 fmi_import_test ${FMU3_CS_PATH})
+add_test(NAME ctest_fmi_import_test_me_1 COMMAND fmi_import_test ${FMU1_ME_PATH})
+add_test(NAME ctest_fmi_import_test_cs_1 COMMAND fmi_import_test ${FMU1_CS_PATH})
+add_test(NAME ctest_fmi_import_test_me_2 COMMAND fmi_import_test ${FMU2_ME_PATH})
+add_test(NAME ctest_fmi_import_test_cs_2 COMMAND fmi_import_test ${FMU2_CS_PATH})
+add_test(NAME ctest_fmi_import_test_me_3 COMMAND fmi_import_test ${FMU3_ME_PATH})
+add_test(NAME ctest_fmi_import_test_cs_3 COMMAND fmi_import_test ${FMU3_CS_PATH})
 
 if(FMILIB_BUILD_BEFORE_TESTS)
     set_tests_properties(

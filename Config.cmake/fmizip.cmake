@@ -56,8 +56,8 @@ target_include_directories(fmizip
 
 if(FMILIB_SYSTEM_MINIZIP AND TARGET zlib)
     target_link_libraries(fmizip PRIVATE zlib)
-else ()
+else()
     target_include_directories(fmizip PRIVATE ${FMILIB_THIRDPARTYLIBS}/Minizip/minizip)
-endif ()
+endif()
 
 endif(NOT FMIZIPDIR)

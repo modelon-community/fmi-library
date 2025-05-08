@@ -10,6 +10,10 @@
 
          Modifications for Zip64 support on both zip and unzip
          Copyright (C) 2009-2010 Mathias Svensson ( http://result42.com )
+
+    Modifications for FMI-Library:
+        1. Changed all uses of printf to a new function minizip_printf
+        2. Renamed main function to fmi_miniunz
 */
 
 #if (!defined(_WIN32)) && (!defined(WIN32)) && (!defined(__APPLE__))

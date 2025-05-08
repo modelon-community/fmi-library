@@ -31,8 +31,6 @@ endif()
 
 set(SOURCE
     ${FMILIB_THIRDPARTYLIBS}/Minizip/minizip/ioapi.c
-    ${FMILIB_THIRDPARTYLIBS}/Minizip/minizip/miniunz.c
-    ${FMILIB_THIRDPARTYLIBS}/Minizip/minizip/minizip.c
     #${FMILIB_THIRDPARTYLIBS}/Minizip/minizip/mztools.c
     ${FMILIB_THIRDPARTYLIBS}/Minizip/minizip/unzip.c
     ${FMILIB_THIRDPARTYLIBS}/Minizip/minizip/zip.c
@@ -45,7 +43,6 @@ endif(WIN32)
 set(HEADERS
     ${FMILIB_THIRDPARTYLIBS}/Minizip/minizip/crypt.h
     ${FMILIB_THIRDPARTYLIBS}/Minizip/minizip/ioapi.h
-    ${FMILIB_THIRDPARTYLIBS}/Minizip/minizip/miniunz.h
     #${FMILIB_THIRDPARTYLIBS}/Minizip/minizip/mztools.h
     ${FMILIB_THIRDPARTYLIBS}/Minizip/minizip/unzip.h
 )
@@ -56,7 +53,7 @@ endif(WIN32)
 
 add_library(minizip ${SOURCE} ${HEADERS})
 
-target_link_libraries(minizip PRIVATE zlib)
+target_link_libraries(minizip PUBLIC zlib)
 
 target_include_directories(minizip
     PRIVATE ${ZLIB_INCLUDE_DIRS}

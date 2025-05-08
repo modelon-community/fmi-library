@@ -15,7 +15,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <minizip.h>
+
+#include "FMI/fmi_minizip.h"
 
 #include <JM/jm_types.h>
 #include <JM/jm_callbacks.h>
@@ -71,7 +72,7 @@ jm_status_enu_t fmi_zip_zip(const char* zip_file_path, int n_files_to_zip, const
     }
 
     /* Zip */
-    status = minizip(argc, (char**)argv);
+    status = fmi_minizip(argc, (char**)argv);
 
     /* Free allocated memory */
     callbacks->free(argv);

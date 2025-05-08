@@ -11,9 +11,8 @@
 #    You should have received a copy of the FMILIB_License.txt file
 #    along with this program. If not, contact Modelon AB <http://www.modelon.com>.
 
-if(FMILIB_FIND_PACKAGE_ZLIB)
+if(FMILIB_SYSTEM_ZLIB)
 
-    set(ZLIB_USE_STATIC_LIBS ON)
     include(FindZLIB)
 
     find_package(ZLIB)

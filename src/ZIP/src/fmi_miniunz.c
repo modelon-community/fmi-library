@@ -196,21 +196,6 @@ static int makedir(const char *newdir) {
   return 1;
 }
 
-static void do_banner(void) {
-    minizip_printf("MiniUnz 1.1, demo of zLib + Unz package written by Gilles Vollant\n");
-    minizip_printf("more info at http://www.winimage.com/zLibDll/unzip.html\n\n");
-}
-
-static void do_help(void) {
-    minizip_printf("Usage : miniunz [-e] [-x] [-v] [-l] [-o] [-p password] file.zip [file_to_extr.] [-d extractdir]\n\n" \
-           "  -e  Extract without pathname (junk paths)\n" \
-           "  -x  Extract with pathname\n" \
-           "  -v  list files\n" \
-           "  -l  list files\n" \
-           "  -d  directory to extract into\n" \
-           "  -o  overwrite files without prompting\n" \
-           "  -p  extract encrypted file using password\n\n");
-}
 
 static void Display64BitsSize(ZPOS64_T n, int size_char) {
   /* to avoid compatibility problem , we do here the conversion */

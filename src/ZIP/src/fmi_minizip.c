@@ -169,21 +169,6 @@ static int check_exist_file(const char* filename) {
     return ret;
 }
 
-static void do_banner(void) {
-    minizip_printf("MiniZip 1.1, demo of zLib + MiniZip64 package, written by Gilles Vollant\n");
-    minizip_printf("more info on MiniZip at http://www.winimage.com/zLibDll/minizip.html\n\n");
-}
-
-static void do_help(void) {
-    minizip_printf("Usage : minizip [-o] [-a] [-0 to -9] [-p password] [-j] file.zip [files_to_add]\n\n" \
-           "  -o  Overwrite existing file.zip\n" \
-           "  -a  Append to existing file.zip\n" \
-           "  -0  Store only\n" \
-           "  -1  Compress faster\n" \
-           "  -9  Compress better\n\n" \
-           "  -j  exclude path. store only the file name.\n\n");
-}
-
 /* calculate the CRC32 of a file,
    because to encrypt a file, we need known the CRC32 of the file before */
 static int getFileCrc(const char* filenameinzip, void* buf, unsigned long size_buf, unsigned long* result_crc) {
@@ -245,62 +230,16 @@ static int isLargeFile(const char* filename) {
  return largeFile;
 }
 
-int fmi_minizip(int argc, char *argv[]) {
+int fmi_minizip(const char* zip_file_path, int n_files_to_zip, const char** files_to_zip) {
     int i;
-    int opt_overwrite=0;
-    int opt_compress_level=Z_DEFAULT_COMPRESSION;
-    int opt_exclude_path=0;
-    int zipfilenamearg = 0;
+    int opt_overwrite=1;
+    int opt_compress_level=1;
     char filename_try[MAXFILENAME+16];
-    int zipok;
+    int zipok = 1;
     int err=0;
     size_t size_buf=0;
     void* buf=NULL;
     const char* password=NULL;
-
-
-    do_banner();
-    if (argc==1)
-    {
-        do_help();
-        return 0;
-    }
-    else
-    {
-        for (i=1;i<argc;i++)
-        {
-            if ((*argv[i])=='-')
-            {
-                const char *p=argv[i]+1;
-
-                while ((*p)!='\0')
-                {
-                    char c=*(p++);
-                    if ((c=='o') || (c=='O'))
-                        opt_overwrite = 1;
-                    if ((c=='a') || (c=='A'))
-                        opt_overwrite = 2;
-                    if ((c>='0') && (c<='9'))
-                        opt_compress_level = c-'0';
-                    if ((c=='j') || (c=='J'))
-                        opt_exclude_path = 1;
-
-                    if (((c=='p') || (c=='P')) && (i+1<argc))
-                    {
-                        password=argv[i+1];
-                        i++;
-                    }
-                }
-            }
-            else
-            {
-                if (zipfilenamearg == 0)
-                {
-                    zipfilenamearg = i ;
-                }
-            }
-        }
-    }
 
     size_buf = WRITEBUFFERSIZE;
     buf = (void*)malloc(size_buf);
@@ -310,60 +249,53 @@ int fmi_minizip(int argc, char *argv[]) {
         return ZIP_INTERNALERROR;
     }
 
-    if (zipfilenamearg==0)
+
+    int len;
+    int dot_found=0;
+
+    strncpy(filename_try, zip_file_path, MAXFILENAME-1);
+    /* strncpy doesn't append the trailing NULL, of the string is too long. */
+    filename_try[ MAXFILENAME ] = '\0';
+
+    len=(int)strlen(filename_try);
+    for (i=0;i<len;i++)
+        if (filename_try[i]=='.')
+            dot_found=1;
+
+    if (dot_found==0)
+        strcat(filename_try,".zip");
+
+    if (opt_overwrite==2)
     {
-        zipok=0;
+        /* if the file don't exist, we not append file */
+        if (check_exist_file(filename_try)==0)
+            opt_overwrite=1;
     }
     else
-    {
-        int i,len;
-        int dot_found=0;
-
-        zipok = 1 ;
-        strncpy(filename_try, argv[zipfilenamearg],MAXFILENAME-1);
-        /* strncpy doesn't append the trailing NULL, of the string is too long. */
-        filename_try[ MAXFILENAME ] = '\0';
-
-        len=(int)strlen(filename_try);
-        for (i=0;i<len;i++)
-            if (filename_try[i]=='.')
-                dot_found=1;
-
-        if (dot_found==0)
-            strcat(filename_try,".zip");
-
-        if (opt_overwrite==2)
+    if (opt_overwrite==0)
+        if (check_exist_file(filename_try)!=0)
         {
-            /* if the file don't exist, we not append file */
-            if (check_exist_file(filename_try)==0)
-                opt_overwrite=1;
-        }
-        else
-        if (opt_overwrite==0)
-            if (check_exist_file(filename_try)!=0)
+            char rep=0;
+            do
             {
-                char rep=0;
-                do
+                char answer[128];
+                int ret;
+                minizip_printf("The file %s exists. Overwrite ? [y]es, [n]o, [a]ppend : ",filename_try);
+                ret = scanf("%1s",answer);
+                if (ret != 1)
                 {
-                    char answer[128];
-                    int ret;
-                    minizip_printf("The file %s exists. Overwrite ? [y]es, [n]o, [a]ppend : ",filename_try);
-                    ret = scanf("%1s",answer);
-                    if (ret != 1)
-                    {
-                       exit(EXIT_FAILURE);
-                    }
-                    rep = answer[0] ;
-                    if ((rep>='a') && (rep<='z'))
-                        rep -= 0x20;
+                    exit(EXIT_FAILURE);
                 }
-                while ((rep!='Y') && (rep!='N') && (rep!='A'));
-                if (rep=='N')
-                    zipok = 0;
-                if (rep=='A')
-                    opt_overwrite = 2;
+                rep = answer[0] ;
+                if ((rep>='a') && (rep<='z'))
+                    rep -= 0x20;
             }
-    }
+            while ((rep!='Y') && (rep!='N') && (rep!='A'));
+            if (rep=='N')
+                zipok = 0;
+            if (rep=='A')
+                opt_overwrite = 2;
+        }
 
     if (zipok==1)
     {
@@ -385,18 +317,12 @@ int fmi_minizip(int argc, char *argv[]) {
         else
             minizip_printf("creating %s\n",filename_try);
 
-        for (i=zipfilenamearg+1;(i<argc) && (err==ZIP_OK);i++)
+        for (i=0;(i<n_files_to_zip) && (err==ZIP_OK);i++)
         {
-            if (!((((*(argv[i]))=='-') || ((*(argv[i]))=='/')) &&
-                  ((argv[i][1]=='o') || (argv[i][1]=='O') ||
-                   (argv[i][1]=='a') || (argv[i][1]=='A') ||
-                   (argv[i][1]=='p') || (argv[i][1]=='P') ||
-                   ((argv[i][1]>='0') && (argv[i][1]<='9'))) &&
-                  (strlen(argv[i]) == 2)))
             {
                 FILE * fin = NULL;
                 size_t size_read;
-                const char* filenameinzip = argv[i];
+                const char* filenameinzip = files_to_zip[i];
                 const char *savefilenameinzip;
                 zip_fileinfo zi;
                 unsigned long crcFile=0;
@@ -426,24 +352,6 @@ int fmi_minizip(int argc, char *argv[]) {
                  while( savefilenameinzip[0] == '\\' || savefilenameinzip[0] == '/' )
                  {
                      savefilenameinzip++;
-                 }
-
-                 /*should the zip file contain any path at all?*/
-                 if( opt_exclude_path )
-                 {
-                     const char *tmpptr;
-                     const char *lastslash = 0;
-                     for( tmpptr = savefilenameinzip; *tmpptr; tmpptr++)
-                     {
-                         if( *tmpptr == '\\' || *tmpptr == '/')
-                         {
-                             lastslash = tmpptr;
-                         }
-                     }
-                     if( lastslash != NULL )
-                     {
-                         savefilenameinzip = lastslash+1; // base filename follows last slash.
-                     }
                  }
 
                  /**/
@@ -509,10 +417,7 @@ int fmi_minizip(int argc, char *argv[]) {
         if (errclose != ZIP_OK)
             minizip_printf("error in closing %s\n",filename_try);
     }
-    else
-    {
-       do_help();
-    }
+
 
     free(buf);
     return 0;

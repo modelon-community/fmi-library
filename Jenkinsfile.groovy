@@ -14,7 +14,7 @@ def Configs = [
     'msvc_md_debug': [
         name: 'msvc_md_debug',
         os: 'windows',
-        node: 'VisualStudio2022 && OCT-SDK-1.6.2',
+        node: 'VisualStudio2017 && OCT-SDK-1.6.2',
         target_install: 'install',
         target_test: 'test'
     ],

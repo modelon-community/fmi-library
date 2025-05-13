@@ -242,7 +242,7 @@ static void fmi3_import_expand_variable_references_impl(fmi3_import_t* fmu, cons
 
 void fmi3_import_expand_variable_references(fmi3_import_t* fmu, const char* msgIn, char* msgOut, size_t maxMsgSize) {
     fmi3_import_expand_variable_references_impl(fmu, msgIn);
-    strncpy(msgOut, jm_vector_get_itemp(char)(&fmu->logMessageBufferExpanded,0), maxMsgSize);
+    strncpy(msgOut, jm_vector_get_itemp(char)(&fmu->logMessageBufferExpanded,0), maxMsgSize-1);
     msgOut[maxMsgSize - 1] = '\0';
 }
 

@@ -6,6 +6,8 @@ Note that version 2.1 is the first version with release notes. Please see the co
 
 ## FUTURE
 
+- Add FMILIB_EXTERNAL_LIBS option to enable external zlib/minizip/expat dependencies
+- CMake option FMILIB_FIND_PACKAGE_ZLIB is now obsolete, use FMILIB_SYSTEM_ZLIB instead
 - Use `c99_snprintf` third-party dependency only when compiling with MSVC 2015 and lower
 - Bump minimum cmake version 3.15 and enable compatibility with 4.x.
 

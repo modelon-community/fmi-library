@@ -15,7 +15,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <minizip.h>
+
+#include "FMI/fmi_minizip.h"
 
 #include <JM/jm_types.h>
 #include <JM/jm_callbacks.h>
@@ -25,11 +26,6 @@ jm_status_enu_t fmi_zip_zip(const char* zip_file_path, int n_files_to_zip, const
 {
     /* A call to minizip may change the current directory and therefore we must change it back */
     char cd[FILENAME_MAX];
-
-#define N_BASIC_ARGS 4
-    int argc;
-    char** argv;
-    int k;
     int status;
 
     /* Temporary save the current directory */
@@ -38,43 +34,8 @@ jm_status_enu_t fmi_zip_zip(const char* zip_file_path, int n_files_to_zip, const
         return jm_status_error;
     }
 
-    argc = N_BASIC_ARGS + n_files_to_zip;
-    argv = callbacks->calloc(sizeof(char*), argc);
-    /* Failed to allocate memory, return error */
-    if (argv == NULL) {
-        callbacks->logger(NULL, "FMIZIP", jm_log_level_error, "Failed to allocate memory.");
-        return jm_status_error;
-    }
-
-    /* Input arguments to the corresponding minizip main() function call */
-    /*
-    Usage : minizip [-o] [-a] [-0 to -9] [-p password] [-j] file.zip [files_to_add]
-
-    -o  Overwrite existing file.zip
-    -a  Append to existing file.zip
-    -0  Store only
-    -1  Compress faster
-    -9  Compress better
-
-    -j  exclude path. store only the file name.
-    */
-    argv[0]="minizip";
-    argv[1]="-o";
-    argv[2]="-1";
-    argv[3]=(char*)zip_file_path;
-
-    /* Append the input argument list with the files to unzip */
-    jm_log_info(callbacks, "FMIZIP", "Will compress following files: \n");
-    for (k = 0; k < n_files_to_zip; k++) {
-        jm_log_info(callbacks, "FMIZIP", "\t%s\n", files_to_zip[k]);
-        argv[N_BASIC_ARGS + k] = (char*)files_to_zip[k];
-    }
-
     /* Zip */
-    status = minizip(argc, (char**)argv);
-
-    /* Free allocated memory */
-    callbacks->free(argv);
+    status = fmi_minizip(zip_file_path, n_files_to_zip, files_to_zip);
 
     /* Reset the current directory */
     if (jm_portability_set_current_working_directory(cd) == jm_status_error) {

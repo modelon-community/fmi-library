@@ -27,6 +27,14 @@ jobs:
           cmake -DFMIL_HOME=~/.local -B build_test_install -LAH Test/test_installation/
           cmake --build build_test_install --target all
           ctest --test-dir build_test_install --output-on-failure
+      - name: Install third-party libs
+        run: sudo apt-get -y install libminizip-dev libexpat1-dev
+      - name: Build external
+        run: |
+          cmake -DCMAKE_INSTALL_PREFIX=~/.local -DFMILIB_GENERATE_DOXYGEN_DOC=0 -DFMILIB_EXTERNAL_LIBS=ON -DFMILIB_BUILD_STATIC_LIB=OFF -B build_external .
+          cmake --build build_external --target install --parallel 4
+      - name: Test external
+        run: ctest --test-dir build_external --output-on-failure
 
   windows:
     runs-on: windows-latest
@@ -42,7 +50,7 @@ jobs:
       - name: Build VS
         run: |
           cmake -DCMAKE_INSTALL_PREFIX="$($HOME -replace '\\', '/')/fmilib_install_vs" -DFMILIB_GENERATE_DOXYGEN_DOC=0 -DFMILIB_BUILD_TESTS=OFF -B build_vs -LAH . &&
-          cmake --build build_vs --target install --parallel 4
+          cmake --build build_vs --target install --config Release --parallel 4
       - name: Test Installation
         run: |
           cmake -DFMIL_HOME="$($HOME -replace '\\', '/')/fmilib_install_vs" -B build_test_install_vs -LAH Test/test_installation/ &&

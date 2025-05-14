@@ -1,5 +1,6 @@
-include build/config/msvc_md
+include build/config/msvc_base
 
 # Override
 CONFIG_NAME=msvc_mt
+GENERATOR="Visual Studio 15 2017 Win64"
 BUILD_WITH_STATIC_RTLIB=1

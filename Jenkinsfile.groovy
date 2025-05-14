@@ -7,21 +7,21 @@ def Configs = [
     'msvc_md': [
         name: 'msvc_md',
         os: 'windows',
-        node: 'VisualStudio2017 && OCT-SDK-1.6.2',
+        node: 'VisualStudio2022 && OCT-SDK-1.6.2', // Test later MSVC
         target_install: 'install',
         target_test: 'test'
     ],
     'msvc_md_debug': [
         name: 'msvc_md_debug',
         os: 'windows',
-        node: 'VisualStudio2017 && OCT-SDK-1.6.2',
+        node: 'VisualStudio2022 && OCT-SDK-1.6.2', // Same MSVC as _md
         target_install: 'install',
         target_test: 'test'
     ],
     'msvc_mt': [
         name: 'msvc_mt',
         os: 'windows',
-        node: 'VisualStudio2017 && OCT-SDK-1.6.2',
+        node: 'VisualStudio2017 && OCT-SDK-1.6.2', // Test earlier MSVC
         target_install: 'install',
         target_test: 'test'
     ],

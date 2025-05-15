@@ -62,6 +62,11 @@
 
 #include "unzip.h"
 
+// undefined with minizip-ng
+#ifndef Z_BZIP2ED
+#define Z_BZIP2ED 12
+#endif
+
 #define CASESENSITIVITY (0)
 #define WRITEBUFFERSIZE (8192)
 #define MAXFILENAME (256)

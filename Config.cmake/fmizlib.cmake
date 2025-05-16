@@ -52,13 +52,13 @@ else() # build zlib from ThirdParty/zlib
         -DSKIP_INSTALL_HEADERS:BOOL=OFF
         -DSKIP_INSTALL_ALL:BOOL=OFF
         -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_BINARY_DIR}/zlibext/install
-	-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
     )
     if (FMILIB_INSTALL_SUBLIBS)
         list(APPEND ZLIB_SETTINGS -DSKIP_INSTALL_LIBRARIES:BOOL=OFF)
-    else ()
-	list(APPEND ZLIB_SETTINGS -DSKIP_INSTALL_LIBRARIES:BOOL=ON)
-    endif ()
+    else()
+    	list(APPEND ZLIB_SETTINGS -DSKIP_INSTALL_LIBRARIES:BOOL=ON)
+    endif()
 
     ExternalProject_Add_Step(
         zlibext dependent_reconfigure

@@ -14,6 +14,7 @@
     Modifications for FMI-Library:
         1. Changed all uses of printf to a new function minizip_printf
         2. Renamed main function to fmi_minizip
+        3. Removed code not related to just zipping
 */
 
 
@@ -74,10 +75,15 @@
 #define WRITEBUFFERSIZE (16384)
 #define MAXFILENAME (256)
 
-/* MODIFICATION Replace all stdout prints with this function for better control */
-static int minizip_printf( const char * format, ... )
-{
-    return 1;
+/**
+ * MODIFICATION: All calls to printf have been replaced with this function
+ * which just suppresses the output.
+ *
+ * FIXME: A lot of calls to this function are error messages. These messages
+ * should forwarded to the FMI logger and proper errors should be given.
+ */ 
+static int minizip_printf(const char * format, ...) {
+    return 0;
 }
 
 #ifdef _WIN32
@@ -167,46 +173,6 @@ static int check_exist_file(const char* filename) {
     else
         fclose(ftestexist);
     return ret;
-}
-
-/* calculate the CRC32 of a file,
-   because to encrypt a file, we need known the CRC32 of the file before */
-static int getFileCrc(const char* filenameinzip, void* buf, unsigned long size_buf, unsigned long* result_crc) {
-   unsigned long calculate_crc=0;
-   int err=ZIP_OK;
-   FILE * fin = FOPEN_FUNC(filenameinzip,"rb");
-
-   unsigned long size_read = 0;
-   /* unsigned long total_read = 0; */
-   if (fin==NULL)
-   {
-       err = ZIP_ERRNO;
-   }
-
-    if (err == ZIP_OK)
-        do
-        {
-            err = ZIP_OK;
-            size_read = fread(buf,1,size_buf,fin);
-            if (size_read < size_buf)
-                if (feof(fin)==0)
-            {
-                minizip_printf("error in reading %s\n",filenameinzip);
-                err = ZIP_ERRNO;
-            }
-
-            if (size_read>0)
-                calculate_crc = crc32_z(calculate_crc,buf,size_read);
-            /* total_read += size_read; */
-
-        } while ((err == ZIP_OK) && (size_read>0));
-
-    if (fin)
-        fclose(fin);
-
-    *result_crc=calculate_crc;
-    minizip_printf("file %s crc %lx\n", filenameinzip, calculate_crc);
-    return err;
 }
 
 static int isLargeFile(const char* filename) {
@@ -341,8 +307,6 @@ int fmi_minizip(const char* zip_file_path, int n_files_to_zip, const char** file
                                  (opt_compress_level != 0) ? Z_DEFLATED : 0,
                                  opt_compress_level);
 */
-                if ((password != NULL) && (err==ZIP_OK))
-                    err = getFileCrc(filenameinzip,buf,size_buf,&crcFile);
 
                 zip64 = isLargeFile(filenameinzip);
 

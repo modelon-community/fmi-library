@@ -13,7 +13,7 @@
 
     Modifications for FMI-Library:
         1. Changed all uses of printf to a new function minizip_printf
-        2. Renamed main function to fmi_miniunz
+        2. Renamed file and main function to fmi_miniunz
         3. Removed code not related to just unzipping
 */
 

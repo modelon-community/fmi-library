@@ -24,9 +24,11 @@ if(FMILIB_SYSTEM_MINIZIP)
     target_link_libraries(minizip INTERFACE ${MINIZIP_LIBRARY})
     target_include_directories(minizip INTERFACE ${MINIZIP_INCLUDE_DIR})
     set_target_properties(minizip PROPERTIES IMPORTED_LOCATION ${MINIZIP_LIBRARY})
-else ()
+else()
+    set(FMILIB_MINIZIP_SOURCE_DIR  ${ZLIB_SOURCE_DIR}/contrib/minizip)
+    set(FMILIB_MINIZIP_INCLUDE_DIR ${ZLIB_SOURCE_DIR}/contrib/minizip)
     add_subdirectory(Config.cmake/Minizip)
-endif ()
+endif()
 
 set(FMIZIPSOURCE
     ${FMIZIPDIR}/src/fmi_zip_unzip.c
@@ -57,7 +59,7 @@ target_include_directories(fmizip
 if(FMILIB_SYSTEM_MINIZIP AND TARGET zlib)
     target_link_libraries(fmizip PRIVATE zlib)
 else()
-    target_include_directories(fmizip PRIVATE ${FMILIB_THIRDPARTYLIBS}/Minizip/minizip)
+    target_include_directories(fmizip PRIVATE ${FMILIB_MINIZIP_INCLUDE_DIR})
 endif()
 
 endif(NOT FMIZIPDIR)

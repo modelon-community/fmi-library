@@ -42,7 +42,7 @@ function(merge_static_libs outlib)
         find_program(CMAKE_LIBTOOL NAMES libtool)
         if (NOT CMAKE_LIBTOOL)
             message(FATAL_ERROR "Cannot find libtool")
-        endif ()
+        endif()
         add_custom_command(TARGET ${outlib} POST_BUILD
             COMMAND rm
                     "$<TARGET_FILE:${outlib}>"

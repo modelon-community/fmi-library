@@ -30,25 +30,25 @@ if(CMAKE_COMPILER_IS_GNUCC)
 endif()
 
 set(SOURCE
-    ${FMILIB_THIRDPARTYLIBS}/Minizip/minizip/ioapi.c
-    #${FMILIB_THIRDPARTYLIBS}/Minizip/minizip/mztools.c
-    ${FMILIB_THIRDPARTYLIBS}/Minizip/minizip/unzip.c
-    ${FMILIB_THIRDPARTYLIBS}/Minizip/minizip/zip.c
+    ${FMILIB_MINIZIP_SOURCE_DIR}/ioapi.c
+    #${FMILIB_MINIZIP_SOURCE_DIR}/mztools.c
+    ${FMILIB_MINIZIP_SOURCE_DIR}/unzip.c
+    ${FMILIB_MINIZIP_SOURCE_DIR}/zip.c
 )
 
 if(WIN32)
-    set(SOURCE ${SOURCE} ${FMILIB_THIRDPARTYLIBS}/Minizip/minizip/iowin32.c)
+    set(SOURCE ${SOURCE} ${FMILIB_MINIZIP_SOURCE_DIR}/iowin32.c)
 endif(WIN32)
 
 set(HEADERS
-    ${FMILIB_THIRDPARTYLIBS}/Minizip/minizip/crypt.h
-    ${FMILIB_THIRDPARTYLIBS}/Minizip/minizip/ioapi.h
-    #${FMILIB_THIRDPARTYLIBS}/Minizip/minizip/mztools.h
-    ${FMILIB_THIRDPARTYLIBS}/Minizip/minizip/unzip.h
+    ${FMILIB_MINIZIP_INCLUDE_DIR}/crypt.h
+    ${FMILIB_MINIZIP_INCLUDE_DIR}/ioapi.h
+    #${FMILIB_MINIZIP_INCLUDE_DIR}/mztools.h
+    ${FMILIB_MINIZIP_INCLUDE_DIR}/unzip.h
 )
 
 if(WIN32)
-    set(HEADERS ${HEADERS} ${FMILIB_THIRDPARTYLIBS}/Minizip/minizip/iowin32.h)
+    set(HEADERS ${HEADERS} ${FMILIB_MINIZIP_INCLUDE_DIR}/iowin32.h)
 endif(WIN32)
 
 add_library(minizip ${SOURCE} ${HEADERS})

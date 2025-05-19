@@ -53,7 +53,7 @@ set_property(TARGET fmilib PROPERTY IMPORTED_LOCATION "${FMIL_HOME}/lib/${CMAKE_
 # Build the test
 add_executable(main main.c)
 if(WIN32)
-    target_link_libraries(main PRIVATE fmilib Shlwapi)
+    target_link_libraries(main PRIVATE fmilib shlwapi)
 else()
     target_link_libraries(main PRIVATE fmilib dl)
 endif()

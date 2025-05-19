@@ -18,7 +18,7 @@ if("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
   message(FATAL_ERROR "In-source build is not supported. Please, use an empty directory for building the project.")
 endif()
 
-project(FMILibrary)
+project(FMILibrary C)
 
 # Verify that float parsing will work for the platform/compiler config. Ignoring CHAR_BIT for exotic platforms.
 include(CheckTypeSize)
@@ -263,6 +263,7 @@ include(fmizlib)
 include(fmizip)
 include(fmiimport)
 if(FMILIB_BUILD_TESTS)
+    enable_language(CXX)
     include(runtime_test)
     # Configuration depends on values set in all the different test*.cmake files,
     # so can't be done until here.

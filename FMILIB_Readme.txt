@@ -222,7 +222,7 @@ source file is \ref ctest_fmi2_check_variable_naming_conventions_test.c.
 - \b ctest_fmi2_import_xml_test_empty, \b ctest_fmi2_import_xml_test_me,
 \b ctest_fmi2_import_xml_test_cs, \b ctest_fmi2_import_xml_test_mf \n
 Same as \b ctest_fmi_import_xml_test for FMI 2.0 modules. Test executable
-is \e fmi2_import_xml_test.exe, main source file \ref fmi2_import_xml_test.cc.
+is \e fmi2_import_xml_test.exe, main source file \ref fmi2_import_xml_test.c.
 - \b ctest_fmi2_import_test_me \n
 Load a basic FMI 2.0 model exchange FMU and simulate it. Test executable is
 \e fmi2_import_me_test, main source file is \ref fmi2_import_me_test.c.

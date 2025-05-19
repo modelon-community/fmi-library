@@ -286,6 +286,13 @@ if(MSVC AND (MSVC_VERSION LESS 1900))
     list(APPEND FMILIB_SHARED_SUBLIBS c99snprintf)
 endif()
 set(FMILIB_SUBLIBS fmiimport jmutils ${FMILIB_SHARED_SUBLIBS})
+
+if (FMILIB_BUILD_SHARED_LIB OR FMILIB_BUILD_FOR_SHARED_LIBS)
+    foreach(lib ${FMILIB_SUBLIBS})
+        set_target_properties (${lib} PROPERTIES POSITION_INDEPENDENT_CODE ON)
+    endforeach()
+endif ()
+
 # XXX: Unclear why we create intermediate sublibs instead of just giving everything as source.
 # Probably also wouldn't get problems with using PRIVATE/PUBLIC on linking sublibs on Windows.
 set(FMILIB_SHARED_SRC ${FMIIMPORTSOURCE} ${FMIIMPORTHEADERS} ${JMUTILSOURCE} ${JMUTIL_PUBHEADERS})
@@ -325,11 +332,6 @@ if(FMILIB_BUILD_STATIC_LIB)
     if(UNIX)
         target_link_libraries(fmilib PUBLIC dl)
     endif()
-    if (FMILIB_BUILD_FOR_SHARED_LIBS)
-        foreach(lib ${FMILIB_SUBLIBS})
-            set_target_properties (${lib} PROPERTIES POSITION_INDEPENDENT_CODE ON)
-        endforeach()
-    endif ()
     set(FMILIB_TARGETS ${FMILIB_TARGETS} fmilib)
     # Set PUBLIC include_directories such that test targets that link with fmilib inherit
     # the same include dirs as will exist for installation.

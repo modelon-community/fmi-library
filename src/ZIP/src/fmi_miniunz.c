@@ -13,7 +13,8 @@
 
     Modifications for FMI-Library:
         1. Changed all uses of printf to a new function minizip_printf
-        2. Renamed main function to fmi_miniunz
+        2. Renamed file and main function to fmi_miniunz
+        3. Removed code not related to just unzipping
 */
 
 #if (!defined(_WIN32)) && (!defined(WIN32)) && (!defined(__APPLE__))
@@ -71,21 +72,16 @@
 #include "iowin32.h"
 #endif
 
-/* MODIFICATION Replace all stdout prints with this function for better control */
-static int minizip_printf( const char * format, ... )
-{
-    return 1;
+/**
+ * MODIFICATION: All calls to printf have been replaced with this function
+ * which just suppresses the output.
+ *
+ * FIXME: A lot of calls to this function are error messages. These messages
+ * should forwarded to the FMI logger and proper errors should be given.
+ */ 
+static int minizip_printf(const char * format, ...) {
+    return 0;
 }
-
-/*
-  mini unzip, demo of unzip package
-
-  usage :
-  Usage : miniunz [-exvlo] file.zip [file_to_extract] [-d extractdir]
-
-  list the file in the zipfile, and print the content of FILE_ID.ZIP or README.TXT
-    if it exists
-*/
 
 
 /* change_file_date : change the date/time of a file
@@ -195,110 +191,6 @@ static int makedir(const char *newdir) {
   free(buffer);
   return 1;
 }
-
-
-static void Display64BitsSize(ZPOS64_T n, int size_char) {
-  /* to avoid compatibility problem , we do here the conversion */
-  char number[21];
-  int offset=19;
-  int pos_string = 19;
-  number[20]=0;
-  for (;;) {
-      number[offset]=(char)((n%10)+'0');
-      if (number[offset] != '0')
-          pos_string=offset;
-      n/=10;
-      if (offset==0)
-          break;
-      offset--;
-  }
-  {
-      int size_display_string = 19-pos_string;
-      while (size_char > size_display_string)
-      {
-          size_char--;
-          minizip_printf(" ");
-      }
-  }
-
-  minizip_printf("%s",&number[pos_string]);
-}
-
-static int do_list(unzFile uf) {
-    uLong i;
-    unz_global_info64 gi;
-    int err;
-
-    err = unzGetGlobalInfo64(uf,&gi);
-    if (err!=UNZ_OK)
-        minizip_printf("error %d with zipfile in unzGetGlobalInfo \n",err);
-    minizip_printf("  Length  Method     Size Ratio   Date    Time   CRC-32     Name\n");
-    minizip_printf("  ------  ------     ---- -----   ----    ----   ------     ----\n");
-    for (i=0;i<gi.number_entry;i++)
-    {
-        char filename_inzip[256];
-        unz_file_info64 file_info;
-        uLong ratio=0;
-        const char *string_method = "";
-        char charCrypt=' ';
-        err = unzGetCurrentFileInfo64(uf,&file_info,filename_inzip,sizeof(filename_inzip),NULL,0,NULL,0);
-        if (err!=UNZ_OK)
-        {
-            minizip_printf("error %d with zipfile in unzGetCurrentFileInfo\n",err);
-            break;
-        }
-        if (file_info.uncompressed_size>0)
-            ratio = (uLong)((file_info.compressed_size*100)/file_info.uncompressed_size);
-
-        /* display a '*' if the file is encrypted */
-        if ((file_info.flag & 1) != 0)
-            charCrypt='*';
-
-        if (file_info.compression_method==0)
-            string_method="Stored";
-        else
-        if (file_info.compression_method==Z_DEFLATED)
-        {
-            uInt iLevel=(uInt)((file_info.flag & 0x6)/2);
-            if (iLevel==0)
-              string_method="Defl:N";
-            else if (iLevel==1)
-              string_method="Defl:X";
-            else if ((iLevel==2) || (iLevel==3))
-              string_method="Defl:F"; /* 2:fast , 3 : extra fast*/
-        }
-        else
-        if (file_info.compression_method==Z_BZIP2ED)
-        {
-              string_method="BZip2 ";
-        }
-        else
-            string_method="Unkn. ";
-
-        Display64BitsSize(file_info.uncompressed_size,7);
-        minizip_printf("  %6s%c",string_method,charCrypt);
-        Display64BitsSize(file_info.compressed_size,7);
-        minizip_printf(" %3lu%%  %2.2lu-%2.2lu-%2.2lu  %2.2lu:%2.2lu  %8.8lx   %s\n",
-                ratio,
-                (uLong)file_info.tmu_date.tm_mon + 1,
-                (uLong)file_info.tmu_date.tm_mday,
-                (uLong)file_info.tmu_date.tm_year % 100,
-                (uLong)file_info.tmu_date.tm_hour,(uLong)file_info.tmu_date.tm_min,
-                (uLong)file_info.crc,filename_inzip);
-        if ((i+1)<gi.number_entry)
-        {
-            err = unzGoToNextFile(uf);
-            if (err!=UNZ_OK)
-            {
-                minizip_printf("error %d with zipfile in unzGoToNextFile\n",err);
-                break;
-            }
-        }
-    }
-
-    return 0;
-}
-
 
 static int do_extract_currentfile(unzFile uf, const int* popt_extract_without_path, int* popt_overwrite, const char* password) {
     char filename_inzip[256];

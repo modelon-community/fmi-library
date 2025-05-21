@@ -33,7 +33,7 @@ static int validate_initial(fmi2_causality_enu_t c,
     fmi2_variability_enu_t v = fmi2_variability_enu_constant;
     for (i = 0; i < N_VARIABILITIES; i++, v++) {
         fmi2_initial_enu_t initial = fmi2_get_default_initial(v, c);
-        ASSERT_MSG(initial == expected[i], fmi2_variability_to_string(v));
+        ASSERT_MSG(initial == expected[i], "%s", fmi2_variability_to_string(v));
     }
 
     return CTEST_RETURN_SUCCESS;
@@ -144,7 +144,7 @@ int validate_variability_causality(fmi2_causality_enu_t c, int expected[])
 
     for (i = 0; i < N_VARIABILITIES; i++, v++) {
         int is_valid = fmi2_is_valid_variability_causality(v, c);
-        ASSERT_MSG(is_valid == expected[i], fmi2_variability_to_string(v));
+        ASSERT_MSG(is_valid == expected[i], "%s", fmi2_variability_to_string(v));
     }
 
     return CTEST_RETURN_SUCCESS;

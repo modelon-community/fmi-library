@@ -14,7 +14,7 @@ static int test_invalid_variability_causality(fmi2_import_t *xml)
                "Invalid variability constant should be changed to continuous");
 
     errmsg = fmi2_import_get_last_error(xml);
-    ASSERT_MSG(strncmp(expected, errmsg, strlen(expected)) == 0, errmsg);
+    ASSERT_MSG(strncmp(expected, errmsg, strlen(expected)) == 0, "%s", errmsg);
 
     return CTEST_RETURN_SUCCESS;
 }

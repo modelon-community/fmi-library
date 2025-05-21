@@ -228,7 +228,7 @@ void printVariableInfo(fmi3_import_t* fmu,
             break;
         }
         case fmi3_base_type_enum:{
-            printf("start = %ld\n", fmi3_import_get_enum_variable_start(fmi3_import_get_variable_as_enum(v)));
+            printf("start = %lld\n", fmi3_import_get_enum_variable_start(fmi3_import_get_variable_as_enum(v)));
             break;
         }
         default:

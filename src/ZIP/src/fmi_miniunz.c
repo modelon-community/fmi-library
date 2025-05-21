@@ -68,8 +68,8 @@
 #define MAXFILENAME (256)
 
 #ifdef _WIN32
-#define USEWIN32IOAPI
-#include "iowin32.h"
+/* MODIFICATION: To allow smoother integration with system minizip-ng, don't use the original minizip's iowin32 API */
+#include <windows.h>
 #endif
 
 /**

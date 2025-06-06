@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<fmiTerminalsAndIcons fmiVersion="3.0-alpha">
+    <GraphicalRepresentation>
+        <!-- coordinate system does not fulfill x1 < x2, y1 < y2 -->
+        <CoordinateSystem x1="100" y1="100" x2="-100" y2="-100" suggestedScalingFactorTo_mm="0.1"/>
+    </GraphicalRepresentation>
+</fmiTerminalsAndIcons>

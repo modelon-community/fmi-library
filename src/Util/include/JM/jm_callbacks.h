@@ -126,6 +126,28 @@ jm_callbacks* jm_get_default_callbacks(void);
 FMILIB_EXPORT
 void jm_default_logger(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_level, jm_string message);
 
+#ifdef __GNUC__
+/**
+    \brief Macro to check parameters to printf format functions.
+    The GNU C compiler has support for checking printf-like functions for
+    correctness. One just needs to add this attribute at the end of the
+    function declaration. The macro parameter describes the position of the
+    format string in the parameter list.
+*/
+#define jm_printf_format(i) __attribute__ ((format (printf, (i), ((i)+1))))
+/**
+    \brief Macro to check parameters to vprintf format functions.
+    The GNU C compiler has support for checking vprintf-like functions for
+    correctness. One just needs to add this attribute at the end of the
+    function declaration. The macro parameter describes the position of the
+    format string in the parameter list.
+*/
+#define jm_vprintf_format(i) __attribute__ ((format (printf, (i), 0)))
+#else
+#define jm_printf_format(i)
+#define jm_vprintf_format(i)
+#endif
+
 /**
     \brief Send a message to the logger function.
     @param cb - callbacks to be used for reporting;
@@ -134,60 +156,60 @@ void jm_default_logger(jm_callbacks* c, jm_string module, jm_log_level_enu_t log
     @param fmt - "printf" type of format followed by the arguments.
 */
 FMILIB_EXPORT
-void jm_log(jm_callbacks* cb, const char* module, jm_log_level_enu_t log_level, const char* fmt, ...);
+void jm_log(jm_callbacks* cb, const char* module, jm_log_level_enu_t log_level, const char* fmt, ...) jm_printf_format(4);
 
 /** \copydoc jm_log()
     @param ap - variable size argument list.
 */
 FMILIB_EXPORT
-void jm_log_v(jm_callbacks* cb, const char* module, jm_log_level_enu_t log_level, const char* fmt, va_list ap);
+void jm_log_v(jm_callbacks* cb, const char* module, jm_log_level_enu_t log_level, const char* fmt, va_list ap) jm_vprintf_format(4);
 
 /** \brief Send a fatal error message to the logger function. See jm_log() for details.
 */
 FMILIB_EXPORT
-void jm_log_fatal_v(jm_callbacks* cb, const char* module, const char* fmt, va_list ap);
+void jm_log_fatal_v(jm_callbacks* cb, const char* module, const char* fmt, va_list ap) jm_vprintf_format(3);
 /** \brief Send a fatal error message to the logger function. See jm_log() for details.
 */
 FMILIB_EXPORT
-void jm_log_fatal(jm_callbacks* cb, const char* module, const char* fmt, ...);
+void jm_log_fatal(jm_callbacks* cb, const char* module, const char* fmt, ...) jm_printf_format(3);
 
 /** \brief Send a error message to the logger function. See jm_log() for details.
 */
 FMILIB_EXPORT
-void jm_log_error_v(jm_callbacks* cb, const char* module, const char* fmt, va_list ap);
+void jm_log_error_v(jm_callbacks* cb, const char* module, const char* fmt, va_list ap) jm_vprintf_format(3);
 
 /** \brief Send a error message to the logger function. See jm_log() for details.
 */
 FMILIB_EXPORT
-void jm_log_error(jm_callbacks* cb, const char* module, const char* fmt, ...);
+void jm_log_error(jm_callbacks* cb, const char* module, const char* fmt, ...) jm_printf_format(3);
 
 /** \brief Send a warning message to the logger function. See jm_log() for details.
 */
 FMILIB_EXPORT
-void jm_log_warning_v(jm_callbacks* cb, const char* module, const char* fmt, va_list ap);
+void jm_log_warning_v(jm_callbacks* cb, const char* module, const char* fmt, va_list ap) jm_vprintf_format(3);
 
 /** \brief Send a warning message to the logger function. See jm_log() for details.
 */
 FMILIB_EXPORT
-void jm_log_warning(jm_callbacks* cb, const char* module, const char* fmt, ...);
+void jm_log_warning(jm_callbacks* cb, const char* module, const char* fmt, ...) jm_printf_format(3);
 
 /** \brief Send an info message to the logger function. See jm_log() for details.
 */
 FMILIB_EXPORT
-void jm_log_info_v(jm_callbacks* cb, const char* module, const char* fmt, va_list ap);
+void jm_log_info_v(jm_callbacks* cb, const char* module, const char* fmt, va_list ap) jm_vprintf_format(3);
 /** \brief Send an info message to the logger function. See jm_log() for details.
 */
 FMILIB_EXPORT
-void jm_log_info(jm_callbacks* cb, const char* module, const char* fmt, ...);
+void jm_log_info(jm_callbacks* cb, const char* module, const char* fmt, ...) jm_printf_format(3);
 
 /** \brief Send a verbose message to the logger function. See jm_log() for details.
 */
 FMILIB_EXPORT
-void jm_log_verbose_v(jm_callbacks* cb, const char* module, const char* fmt, va_list ap);
+void jm_log_verbose_v(jm_callbacks* cb, const char* module, const char* fmt, va_list ap) jm_vprintf_format(3);
 /** \brief Send a verbose message to the logger function. See jm_log() for details.
 */
 FMILIB_EXPORT
-void jm_log_verbose(jm_callbacks* cb, const char* module, const char* fmt, ...);
+void jm_log_verbose(jm_callbacks* cb, const char* module, const char* fmt, ...) jm_printf_format(3);
 
 /** \brief Convert log level into a string */
 FMILIB_EXPORT
@@ -200,23 +222,25 @@ const char* jm_log_level_to_string(jm_log_level_enu_t level);
     Note that the function is only active if the library is configure with FMILIB_ENABLE_LOG_LEVEL_DEBUG=ON
 */
 FMILIB_EXPORT
-void jm_log_debug_v(jm_callbacks* cb, const char* module, const char* fmt, va_list ap);
+void jm_log_debug_v(jm_callbacks* cb, const char* module, const char* fmt, va_list ap) jm_vprintf_format(3);
 /** \brief Send a debug message to the logger function. See jm_log() for details.
 
     Note that the function is only active if the library is configure with FMILIB_ENABLE_LOG_LEVEL_DEBUG=ON
 */
 FMILIB_EXPORT
-void jm_log_debug(jm_callbacks* cb, const char* module, const char* fmt, ...);
+void jm_log_debug(jm_callbacks* cb, const char* module, const char* fmt, ...) jm_printf_format(3);
 #else
 /** \brief Send a debug message to the logger function. See jm_log() for details.
 
     Note that the function is only active if the library is configure with FMILIB_ENABLE_LOG_LEVEL_DEBUG=ON
 */
+static void jm_log_debug_v(jm_callbacks* cb, const char* module, const char* fmt, va_list ap) jm_vprintf_format(3);
 static void jm_log_debug_v(jm_callbacks* cb, const char* module, const char* fmt, va_list ap) {}
 /** \brief Send a debug message to the logger function. See jm_log() for details.
 
     Note that the function is only active if the library is configure with FMILIB_ENABLE_LOG_LEVEL_DEBUG=ON
 */
+static void jm_log_debug(jm_callbacks* cb, const char* module, const char* fmt, ...) jm_printf_format(3);
 static void jm_log_debug(jm_callbacks* cb, const char* module, const char* fmt, ...) {}
 #endif
 

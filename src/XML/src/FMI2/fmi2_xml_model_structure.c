@@ -269,13 +269,13 @@ int fmi2_xml_parse_dependencies(fmi2_xml_parser_context_t *context,
              }
              if(!ch) break;
              if(sscanf(cur, "%d", &ind) != 1) {
-                 fmi2_xml_parse_error(context, "XML element 'Unknown': could not parse item %d in the list for attribute 'dependencies'",
+                 fmi2_xml_parse_error(context, "XML element 'Unknown': could not parse item %zu in the list for attribute 'dependencies'",
                      numDepInd);
                 ms->isValidFlag = 0;
                 return 0;
              }
              if(ind < 1) {
-                 fmi2_xml_parse_error(context, "XML element 'Unknown': item %d=%d is less than one in the list for attribute 'dependencies'",
+                 fmi2_xml_parse_error(context, "XML element 'Unknown': item %zu=%d is less than one in the list for attribute 'dependencies'",
                      numDepInd, ind);
                 ms->isValidFlag = 0;
                 return 0;
@@ -340,7 +340,7 @@ int fmi2_xml_parse_dependencies(fmi2_xml_parser_context_t *context,
                  cur+=8;
              }
              else {
-                 fmi2_xml_parse_error(context, "XML element 'Unknown': could not parse item %d in the list for attribute 'dependenciesKind'",
+                 fmi2_xml_parse_error(context, "XML element 'Unknown': could not parse item %zu in the list for attribute 'dependenciesKind'",
                      numDepKind);
                  ms->isValidFlag = 0;
                  return 0;
@@ -366,7 +366,7 @@ int fmi2_xml_parse_dependencies(fmi2_xml_parser_context_t *context,
     if(listInd && listKind) {
         /* both lists are present - the number of items must match */
         if(numDepInd != numDepKind) {
-            fmi2_xml_parse_error(context, "XML element 'Unknown': different number of items (%u and %u) in the lists for 'dependencies' and 'dependenciesKind'",
+            fmi2_xml_parse_error(context, "XML element 'Unknown': different number of items (%zu and %zu) in the lists for 'dependencies' and 'dependenciesKind'",
                                  numDepInd, numDepKind);
             ms->isValidFlag = 0;
             return 0;

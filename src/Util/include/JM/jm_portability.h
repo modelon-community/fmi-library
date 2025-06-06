@@ -160,7 +160,7 @@ jm_status_enu_t jm_rmdir(jm_callbacks* cb, const char* dir);
     For example, compare vsnprintf documentation for MSVC 2013 and 2015.
 */
 FMILIB_EXPORT
-int jm_vsnprintf(char * str, size_t size, const char * fmt, va_list al);
+int jm_vsnprintf(char * str, size_t size, const char * fmt, va_list al) jm_vprintf_format(3);
 
 /**
     \brief C89 compatible implementation of C99 snprintf.
@@ -171,7 +171,7 @@ int jm_vsnprintf(char * str, size_t size, const char * fmt, va_list al);
     See jm_vsnprintf for more info.
 */
 FMILIB_EXPORT
-int jm_snprintf(char * str, size_t size, const char * fmt, ...);
+int jm_snprintf(char * str, size_t size, const char * fmt, ...) jm_printf_format(3);
 
 #ifdef HAVE_VA_COPY
 #define JM_VA_COPY va_copy

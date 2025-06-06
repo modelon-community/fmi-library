@@ -18,6 +18,7 @@
 
 #include <expat.h>
 
+#include <JM/jm_callbacks.h>
 #include <JM/jm_vector.h>
 #include <JM/jm_stack.h>
 #include <JM/jm_named_ptr.h>
@@ -297,8 +298,8 @@ int fmi2_xml_alloc_parse_buffer(fmi2_xml_parser_context_t *context, size_t items
 
 void fmi2_xml_free_parse_buffer(fmi2_xml_parser_context_t *context);
 
-void fmi2_xml_parse_fatal(fmi2_xml_parser_context_t *context, const char* fmt, ...);
-void fmi2_xml_parse_error(fmi2_xml_parser_context_t *context, const char* fmt, ...);
+void fmi2_xml_parse_fatal(fmi2_xml_parser_context_t *context, const char* fmt, ...) jm_printf_format(2);
+void fmi2_xml_parse_error(fmi2_xml_parser_context_t *context, const char* fmt, ...) jm_printf_format(2);
 
 int fmi2_xml_set_attr_string(fmi2_xml_parser_context_t *context, fmi2_xml_elm_enu_t elmID, fmi2_xml_attr_enu_t attrID, int required, jm_vector(char)* field);
 int fmi2_xml_set_attr_uint(fmi2_xml_parser_context_t *context, fmi2_xml_elm_enu_t elmID, fmi2_xml_attr_enu_t attrID, int required, unsigned int* field, unsigned int defaultVal);

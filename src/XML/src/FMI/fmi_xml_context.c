@@ -17,6 +17,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 
+#include "JM/jm_callbacks.h"
 #include "fmi_xml_context_impl.h"
 
 static char* MODULE="FMIXML";
@@ -59,6 +60,7 @@ void fmi_xml_set_configuration(fmi_xml_context_t *context, int configuration) {
     context->configuration = configuration;
 }
 
+void fmi_xml_fatal(fmi_xml_context_t *context, const char* fmt, ...) jm_printf_format(2);
 void fmi_xml_fatal(fmi_xml_context_t *context, const char* fmt, ...) {
     va_list args;
 

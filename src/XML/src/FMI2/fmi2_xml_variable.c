@@ -510,23 +510,23 @@ static void fmi2_log_error_if_start_required(
     fmi2_xml_variable_t *variable)
 {
     if (variable->causality == fmi2_causality_enu_input) {
-        jm_log_error(context->callbacks,
+        jm_log_error(context->callbacks, module,
                        "Error: variable %s: start value required for input variables",
                        variable->name);
     } else if (variable->causality == fmi2_causality_enu_parameter) {
-        jm_log_error(context->callbacks,
+        jm_log_error(context->callbacks, module,
                        "Error: variable %s: start value required for parameter variables",
                        variable->name);
     } else if (variable->variability == fmi2_variability_enu_constant) {
-        jm_log_error(context->callbacks,
+        jm_log_error(context->callbacks, module,
                        "Error: variable %s: start value required for variables with constant variability",
                        variable->name);
     } else if (variable->initial == fmi2_initial_enu_exact) {
-        jm_log_error(context->callbacks,
+        jm_log_error(context->callbacks, module,
                        "Error: variable %s: start value required for variables with initial == \"exact\"",
                        variable->name);
     } else if (variable->initial == fmi2_initial_enu_approx) {
-        jm_log_error(context->callbacks,
+        jm_log_error(context->callbacks, module,
                        "Error: variable %s: start value required for variables with initial == \"approx\"",
                        variable->name);
     }

@@ -308,7 +308,7 @@ void fmi3_log_forwarding(fmi3_instance_environment_t inst, fmi3_status_t status,
     if (fmu) {
         int bufsize = jm_vector_get_size(char)(&fmu->logMessageBufferCoded);
         int len;
-        len = jm_snprintf(curp, bufsize -(curp-buf), message);
+        len = jm_snprintf(curp, bufsize -(curp-buf), "%s", message);
         if (len > (bufsize -(curp-buf+1))) {
             int offset = (curp-buf);
             len = jm_vector_resize(char)(&fmu->logMessageBufferCoded, len + offset + 1) - offset;
@@ -319,7 +319,7 @@ void fmi3_log_forwarding(fmi3_instance_environment_t inst, fmi3_status_t status,
         msg = jm_vector_get_itemp(char)(&fmu->logMessageBufferExpanded,0);
     }
     else {
-        jm_snprintf(curp, BUFSIZE -(curp-buf), message);
+        jm_snprintf(curp, BUFSIZE -(curp-buf), "%s", message);
         strncpy(cb->errMessageBuffer, buf, JM_MAX_ERROR_MESSAGE_SIZE);
         cb->errMessageBuffer[JM_MAX_ERROR_MESSAGE_SIZE - 1] = '\0';
         msg = cb->errMessageBuffer;

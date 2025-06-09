@@ -412,13 +412,13 @@ fmi3_import_display_unit_t* fmi3_import_get_variable_display_unit_by_name(fmi3_i
         return NULL;
     }
     if (strcmp(name, fmi3_xml_get_variable_name(v)) == 0) { /* no alias */
-        fmi3_import_float32_variable_t* v32 = fmi3_import_get_variable_as_float32(v);
+        fmi3_xml_float32_variable_t* v32 = fmi3_xml_get_variable_as_float32(v);
         if (v32) {
-            return fmi3_xml_get_float32_type_display_unit(v32);
+            return fmi3_xml_get_float32_variable_display_unit(v32);
         }
-        fmi3_import_float32_variable_t* v64 = fmi3_import_get_variable_as_float64(v);
+        fmi3_xml_float64_variable_t* v64 = fmi3_xml_get_variable_as_float64(v);
         if (v64) {
-            return fmi3_xml_get_float64_type_display_unit(v64);
+            return fmi3_xml_get_float64_variable_display_unit(v64);
         }
         return NULL; /* non-float variable */
     } else { /* alias */

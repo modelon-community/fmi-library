@@ -393,3 +393,15 @@ void fmi3_import_init_logger(jm_callbacks* cb, fmi3_logger_context_t* loggerCall
 int fmi3_import_get_variable_has_alias(fmi3_import_variable_t* v) {
     return fmi3_xml_get_variable_aliases(v) != NULL;
 }
+
+const char* fmi3_import_get_variable_description_by_name(fmi3_import_t* fmu, const char* name) {
+    fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(fmu, name);
+    if (v == NULL) {
+        return NULL;
+    }
+    if (strcmp(name, fmi3_xml_get_variable_name(v)) == 0) {
+        return fmi3_xml_get_variable_description(v);
+    }
+    fmi3_xml_alias_variable_t* alias_var = fmi3_xml_get_alias_variable_by_name(v, name);
+    return fmi3_xml_get_alias_variable_description(alias_var);
+}

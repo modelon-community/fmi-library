@@ -53,6 +53,7 @@ fmi3_xml_alias_variable_t* fmi3_xml_get_alias(fmi3_xml_alias_variable_list_t* al
 const char* fmi3_xml_get_alias_variable_name(fmi3_xml_alias_variable_t* alias);
 const char* fmi3_xml_get_alias_variable_description(fmi3_xml_alias_variable_t* alias);
 fmi3_xml_display_unit_t* fmi3_xml_get_alias_variable_display_unit(fmi3_xml_alias_variable_t* alias);
+fmi3_xml_alias_variable_t* fmi3_xml_get_alias_variable_by_name(fmi3_xml_variable_t* v, const char* name);
 
 int fmi3_xml_variable_is_array(fmi3_xml_variable_t* v);
 

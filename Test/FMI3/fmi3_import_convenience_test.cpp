@@ -321,3 +321,31 @@ TEST_CASE("Test fmi3_import_get_variable_has_alias function") {
     REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
     fmi3_testutil_import_free(tfmu);
 }
+
+TEST_CASE("Test getting variable description by variable name") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/convenience/valid/variable_alias_attributes";
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* xml = tfmu->fmu;
+    REQUIRE(xml != nullptr);
+
+    const char* descr_a = fmi3_import_get_variable_description_by_name(xml, "a");
+    REQUIRE(descr_a != nullptr);
+    REQUIRE_STREQ(descr_a, "base");
+    
+    const char* descr_b = fmi3_import_get_variable_description_by_name(xml, "b");
+    REQUIRE(descr_b == nullptr); /* no description */
+    
+    const char* descr_c = fmi3_import_get_variable_description_by_name(xml, "c");
+    REQUIRE(descr_c != nullptr);
+    REQUIRE_STREQ(descr_c, "alias");
+    
+    const char* descr_d = fmi3_import_get_variable_description_by_name(xml, "d");
+    REQUIRE(descr_d != nullptr);
+    REQUIRE_STREQ(descr_d, ""); /* empty description */
+
+    const char* descr_e = fmi3_import_get_variable_description_by_name(xml, "e");
+    REQUIRE(descr_e == nullptr);
+
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
+    fmi3_testutil_import_free(tfmu);
+}

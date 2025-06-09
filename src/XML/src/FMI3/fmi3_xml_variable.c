@@ -966,6 +966,23 @@ fmi3_xml_display_unit_t* fmi3_xml_get_alias_variable_display_unit(fmi3_xml_alias
     return alias ? alias->displayUnit : NULL;
 }
 
+fmi3_xml_alias_variable_t* fmi3_xml_get_alias_variable_by_name(fmi3_xml_variable_t* v, const char* name) {
+    /* TODO: This could be more efficient creating corresponding maps in the modelDescription */
+    fmi3_xml_alias_variable_t* alias_var;
+    fmi3_xml_alias_variable_list_t* aliases = fmi3_xml_get_variable_aliases(v);
+    if (!aliases) {
+        return NULL;
+    }
+    size_t nAlias = fmi3_xml_get_alias_variables_number(aliases);
+    for (size_t i = 0; i < nAlias; i++) {
+        alias_var = fmi3_xml_get_alias(aliases, i);
+        if (strcmp(name, alias_var->name) == 0) {
+            return alias_var;
+        }
+    }
+    return NULL; /* safety */
+}
+
 // -----------------------------------------------------------------------------
 // Dimensions
 // -----------------------------------------------------------------------------

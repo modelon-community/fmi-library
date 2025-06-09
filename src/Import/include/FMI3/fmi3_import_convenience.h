@@ -184,6 +184,15 @@ void fmi3_import_init_logger(jm_callbacks* cb, fmi3_logger_context_t* loggerCall
 FMILIB_EXPORT
 int fmi3_import_get_variable_has_alias(fmi3_import_variable_t* v);
 
+/**
+    \brief Get variable description by variable name. Alias variable names result in the description of the alias variable.
+    @param fmu - An fmu object as returned by fmi3_import_parse_xml().
+    @param name - variable name
+    @return Description or empty string "" of description. NULL if no variable with given name exists or .
+*/
+FMILIB_EXPORT
+const char* fmi3_import_get_variable_description_by_name(fmi3_import_t* fmu, const char* name);
+
 /** @} */
 
 #ifdef __cplusplus

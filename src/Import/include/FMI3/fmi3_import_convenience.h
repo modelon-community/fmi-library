@@ -182,7 +182,7 @@ void fmi3_import_init_logger(jm_callbacks* cb, fmi3_logger_context_t* loggerCall
 
 /** \brief Check if the variable has aliases */
 FMILIB_EXPORT
-int fmi3_import_get_variable_has_alias(fmi3_import_variable_t* v);
+fmi3_boolean_t fmi3_import_get_variable_has_alias(fmi3_import_variable_t* v);
 
 /**
     \brief Get variable description by variable name. Alias variable names result in the description of the alias variable.
@@ -201,6 +201,12 @@ const char* fmi3_import_get_variable_description_by_name(fmi3_import_t* fmu, con
 */
 FMILIB_EXPORT
 fmi3_import_display_unit_t* fmi3_import_get_variable_display_unit_by_name(fmi3_import_t* fmu, const char* name);
+
+/**
+    \brief Checks if the variable "is clocked" by the clock variable.
+*/
+FMILIB_EXPORT
+fmi3_boolean_t fmi3_import_get_variable_is_clocked_by(fmi3_import_variable_t* var, fmi3_import_clock_variable_t* clock);
 
 /** @} */
 

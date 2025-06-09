@@ -404,3 +404,44 @@ TEST_CASE("Test getting variable display unit by variable name") {
     REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
     fmi3_testutil_import_free(tfmu);
 }
+
+TEST_CASE("Test checking if a variable is clocked by another variable") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/convenience/valid/variable_is_clocked_by";
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* xml = tfmu->fmu;
+    REQUIRE(xml != nullptr);
+
+    fmi3_import_variable_t* v1 = fmi3_import_get_variable_by_vr(xml, 10);
+    fmi3_import_variable_t* v2 = fmi3_import_get_variable_by_vr(xml, 11);
+    REQUIRE(v1 != nullptr);
+    REQUIRE(v2 != nullptr);
+
+    fmi3_import_variable_t* c1 = fmi3_import_get_variable_by_vr(xml, 1);
+    fmi3_import_variable_t* c2 = fmi3_import_get_variable_by_vr(xml, 2);
+    fmi3_import_variable_t* c3 = fmi3_import_get_variable_by_vr(xml, 3);
+    REQUIRE(c1 != nullptr);
+    REQUIRE(c2 != nullptr);
+    REQUIRE(c3 != nullptr);
+    fmi3_import_clock_variable_t* cv1 = fmi3_import_get_variable_as_clock(c1);
+    fmi3_import_clock_variable_t* cv2 = fmi3_import_get_variable_as_clock(c2);
+    fmi3_import_clock_variable_t* cv3 = fmi3_import_get_variable_as_clock(c3);
+    REQUIRE(cv1 != nullptr);
+    REQUIRE(cv2 != nullptr);
+    REQUIRE(cv3 != nullptr);
+
+    /* basic sanity checks */
+    REQUIRE(fmi3_import_get_variable_is_clocked_by(NULL, NULL) == false);
+    REQUIRE(fmi3_import_get_variable_is_clocked_by(v1, NULL) == false);
+    REQUIRE(fmi3_import_get_variable_is_clocked_by(NULL, cv1) == false);
+
+    REQUIRE(fmi3_import_get_variable_is_clocked_by(v1, cv1) == true);
+    REQUIRE(fmi3_import_get_variable_is_clocked_by(v1, cv2) == false);
+    REQUIRE(fmi3_import_get_variable_is_clocked_by(v1, cv3) == true);
+
+    REQUIRE(fmi3_import_get_variable_is_clocked_by(v2, cv1) == false);
+    REQUIRE(fmi3_import_get_variable_is_clocked_by(v2, cv2) == false);
+    REQUIRE(fmi3_import_get_variable_is_clocked_by(v2, cv3) == false);
+
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
+    fmi3_testutil_import_free(tfmu);
+}

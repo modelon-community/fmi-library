@@ -162,7 +162,7 @@ fmi3_boolean_t fmi3_xml_get_variable_intermediate_update(fmi3_xml_variable_t* v)
     return (fmi3_boolean_t)v->intermediateUpdate;
 }
 
-int fmi3_xml_variable_is_clocked(fmi3_xml_variable_t* v) {
+fmi3_boolean_t fmi3_xml_variable_is_clocked(fmi3_xml_variable_t* v) {
     /* A variable is considered clocked if it has the 'clocks' attribute */
     return v->clocks != NULL;
 }
@@ -188,6 +188,28 @@ jm_status_enu_t fmi3_xml_get_variable_clocks(fmi3_xml_model_description_t* md, f
         }
     }
     return jm_status_success;
+}
+
+fmi3_boolean_t fmi3_xml_get_variable_is_clocked_by(fmi3_xml_variable_t* v, fmi3_xml_clock_variable_t* clock) {
+    /* TODO: Could be made more efficient by adding more structures in the modelDescription */
+    if (!v || !clock) {
+        return false;
+    }
+    if (!(v->clocks)) {
+        return false;
+    }
+    fmi3_xml_variable_t* clockVarInput = (fmi3_xml_variable_t*)clock;
+    fmi3_value_reference_t clockVarInputVr = clockVarInput->vr;
+
+    size_t nClocks = jm_vector_get_size(fmi3_value_reference_t)(v->clocks);
+    fmi3_value_reference_t clockVr;
+    for (size_t i = 0; i < nClocks; i++) {
+        clockVr = jm_vector_get_item(fmi3_value_reference_t)(v->clocks, i);
+        if (clockVarInputVr == clockVr) {
+            return true;
+        }
+    }
+    return false;
 }
 
 static fmi3_xml_float_type_props_t* fmi3_xml_get_type_props_float(fmi3_xml_float_variable_t* v) {

@@ -66,8 +66,9 @@ fmi3_initial_enu_t fmi3_xml_get_variable_initial(fmi3_xml_variable_t*);
 fmi3_xml_variable_t* fmi3_xml_get_variable_previous(fmi3_xml_variable_t* v);
 fmi3_boolean_t fmi3_xml_get_variable_can_handle_multiple_set_per_time_instant(fmi3_xml_variable_t* v);
 fmi3_boolean_t fmi3_xml_get_variable_intermediate_update(fmi3_xml_variable_t* v);
-int fmi3_xml_variable_is_clocked(fmi3_xml_variable_t* v);
+fmi3_boolean_t fmi3_xml_variable_is_clocked(fmi3_xml_variable_t* v);
 jm_status_enu_t fmi3_xml_get_variable_clocks(fmi3_xml_model_description_t* md, fmi3_xml_variable_t* v, jm_vector(jm_voidp)* list);
+fmi3_boolean_t fmi3_xml_get_variable_is_clocked_by(fmi3_xml_variable_t* var, fmi3_xml_clock_variable_t* clock);
 
 fmi3_xml_float64_variable_t* fmi3_xml_get_variable_as_float64(fmi3_xml_variable_t*);
 fmi3_xml_float64_variable_t* fmi3_xml_get_float64_variable_derivative_of (fmi3_xml_float64_variable_t* v);

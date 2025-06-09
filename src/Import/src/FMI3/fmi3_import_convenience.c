@@ -390,7 +390,7 @@ void fmi3_import_init_logger(jm_callbacks* cb, fmi3_logger_context_t* loggerCall
     cb->context = loggerCallbacks;
 }
 
-int fmi3_import_get_variable_has_alias(fmi3_import_variable_t* v) {
+fmi3_boolean_t fmi3_import_get_variable_has_alias(fmi3_import_variable_t* v) {
     return fmi3_xml_get_variable_aliases(v) != NULL;
 }
 
@@ -428,4 +428,8 @@ fmi3_import_display_unit_t* fmi3_import_get_variable_display_unit_by_name(fmi3_i
         }
         return fmi3_xml_get_alias_variable_display_unit(alias_var);
     }
+}
+
+fmi3_boolean_t fmi3_import_get_variable_is_clocked_by(fmi3_import_variable_t* var, fmi3_import_clock_variable_t* clock) {
+    return fmi3_xml_get_variable_is_clocked_by(var, clock);
 }

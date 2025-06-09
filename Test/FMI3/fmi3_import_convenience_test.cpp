@@ -323,7 +323,7 @@ TEST_CASE("Test fmi3_import_get_variable_has_alias function") {
 }
 
 TEST_CASE("Test getting variable description by variable name") {
-    const char* xmldir = FMI3_TEST_XML_DIR "/convenience/valid/variable_alias_attributes";
+    const char* xmldir = FMI3_TEST_XML_DIR "/convenience/valid/variable_alias_description";
     fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
     fmi3_import_t* xml = tfmu->fmu;
     REQUIRE(xml != nullptr);
@@ -345,6 +345,61 @@ TEST_CASE("Test getting variable description by variable name") {
 
     const char* descr_e = fmi3_import_get_variable_description_by_name(xml, "e");
     REQUIRE(descr_e == nullptr);
+
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
+    fmi3_testutil_import_free(tfmu);
+}
+
+TEST_CASE("Test getting variable display unit by variable name") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/convenience/valid/variable_alias_display_unit";
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* xml = tfmu->fmu;
+    REQUIRE(xml != nullptr);
+
+    fmi3_import_display_unit_t* du;
+
+    /* Float 64 */
+    du = fmi3_import_get_variable_display_unit_by_name(xml, "f64_1");
+    REQUIRE(du != nullptr);
+    REQUIRE_STREQ(fmi3_import_get_display_unit_name(du), "degC");
+
+    du = fmi3_import_get_variable_display_unit_by_name(xml, "f64_1_X");
+    REQUIRE(du == nullptr);
+
+    du = fmi3_import_get_variable_display_unit_by_name(xml, "f64_1_C");
+    REQUIRE(du != nullptr);
+    REQUIRE_STREQ(fmi3_import_get_display_unit_name(du), "degC");
+
+    du = fmi3_import_get_variable_display_unit_by_name(xml, "f64_1_F");
+    REQUIRE(du != nullptr);
+    REQUIRE_STREQ(fmi3_import_get_display_unit_name(du), "degF");
+
+    /* Float 32 */
+    du = fmi3_import_get_variable_display_unit_by_name(xml, "f32_1");
+    REQUIRE(du != nullptr);
+    REQUIRE_STREQ(fmi3_import_get_display_unit_name(du), "degC");
+
+    du = fmi3_import_get_variable_display_unit_by_name(xml, "f32_1_X");
+    REQUIRE(du == nullptr);
+
+    du = fmi3_import_get_variable_display_unit_by_name(xml, "f32_1_C");
+    REQUIRE(du != nullptr);
+    REQUIRE_STREQ(fmi3_import_get_display_unit_name(du), "degC");
+
+    du = fmi3_import_get_variable_display_unit_by_name(xml, "f32_1_F");
+    REQUIRE(du != nullptr);
+    REQUIRE_STREQ(fmi3_import_get_display_unit_name(du), "degF");
+
+    /* Int32 */
+    du = fmi3_import_get_variable_display_unit_by_name(xml, "i32");
+    REQUIRE(du == nullptr);
+
+    du = fmi3_import_get_variable_display_unit_by_name(xml, "i32_a");
+    REQUIRE(du == nullptr);
+
+    /* Non-variable */
+    du = fmi3_import_get_variable_display_unit_by_name(xml, "f16");
+    REQUIRE(du == nullptr);
 
     REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
     fmi3_testutil_import_free(tfmu);

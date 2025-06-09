@@ -119,6 +119,7 @@ static void test_binary_default_attrs(fmi3_import_t* xml) {
     REQUIRE(fmi3_import_get_variable_can_handle_multiple_set_per_time_instant(v) == true); // default
     REQUIRE(fmi3_import_get_variable_intermediate_update(v) == false); // default
 
+    REQUIRE(fmi3_import_get_variable_is_clocked(v) == false);
     clockVars = fmi3_import_get_variable_clocks(xml, v);
     REQUIRE(fmi3_import_get_variable_list_size(clockVars) == 0);
     fmi3_import_free_variable_list(clockVars);
@@ -158,6 +159,7 @@ static void test_binary_all_attrs(fmi3_import_t* xml) {
     REQUIRE(preBv != nullptr);
     REQUIRE(fmi3_import_get_variable_vr(preBv) == 4001);
 
+    REQUIRE(fmi3_import_get_variable_is_clocked(v) == true);
     clockVars = fmi3_import_get_variable_clocks(xml, v);
     REQUIRE(fmi3_import_get_variable_list_size(clockVars) == 1);
     cv = fmi3_import_get_variable(clockVars, 0);
@@ -229,6 +231,7 @@ static void test_clock_attr_multi_value(fmi3_import_t* xml) {
     size_t nClocks = 3;
 
     REQUIRE(v != nullptr);
+    REQUIRE(fmi3_import_get_variable_is_clocked(v) == true);
     clockVars = fmi3_import_get_variable_clocks(xml, v);
     REQUIRE(fmi3_import_get_variable_list_size(clockVars) == nClocks);
     for (size_t i = 0; i < nClocks; i++) {
@@ -254,6 +257,7 @@ static void test_clock_default_attrs(fmi3_import_t* xml) {
     REQUIRE(fmi3_import_get_variable_variability(v) == fmi3_variability_enu_discrete);
     REQUIRE(fmi3_import_get_variable_initial(v) == fmi3_initial_enu_calculated);  // Depends on causality and variability
 
+    REQUIRE(fmi3_import_get_variable_is_clocked(v) == false);
     clockVars = fmi3_import_get_variable_clocks(xml, v);
     REQUIRE(fmi3_import_get_variable_list_size(clockVars) == 0);
     fmi3_import_free_variable_list(clockVars);

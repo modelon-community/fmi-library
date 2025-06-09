@@ -84,6 +84,10 @@ fmi3_boolean_t fmi3_import_get_variable_intermediate_update(fmi3_import_variable
     return fmi3_xml_get_variable_intermediate_update(v);
 }
 
+fmi3_boolean_t fmi3_import_get_variable_is_clocked(fmi3_import_variable_t* v) {
+    return fmi3_xml_variable_is_clocked(v);
+}
+
 fmi3_import_variable_list_t* fmi3_import_get_variable_clocks(fmi3_import_t* fmu, fmi3_import_variable_t* v) {
     if (!fmu || !v) {return NULL;}
     fmi3_import_variable_list_t* list = fmi3_import_alloc_variable_list(fmu, 0);

@@ -223,6 +223,9 @@ FMILIB_EXPORT fmi3_boolean_t fmi3_import_get_variable_can_handle_multiple_set_pe
 */
 FMILIB_EXPORT fmi3_boolean_t fmi3_import_get_variable_intermediate_update(fmi3_import_variable_t* v);
 
+/** \brief Check if the variable has the "clocks" attribute */
+FMILIB_EXPORT fmi3_boolean_t fmi3_import_get_variable_is_clocked(fmi3_import_variable_t* v);
+
 /** \brief Get a list of variables referenced in the 'clock' attribute.
  *  Note that the caller is responsible for deallocating the list.
  *

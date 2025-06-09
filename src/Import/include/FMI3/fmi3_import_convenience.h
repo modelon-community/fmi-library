@@ -180,6 +180,10 @@ void fmi3_default_callback_logger(fmi3_instance_environment_t inst, fmi3_string_
 FMILIB_EXPORT
 void fmi3_import_init_logger(jm_callbacks* cb, fmi3_logger_context_t* loggerCallbacks);
 
+/** \brief Check if the variable has aliases */
+FMILIB_EXPORT
+int fmi3_import_get_variable_has_alias(fmi3_import_variable_t* v);
+
 /** @} */
 
 #ifdef __cplusplus

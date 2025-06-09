@@ -389,3 +389,7 @@ void fmi3_import_init_logger(jm_callbacks* cb, fmi3_logger_context_t* loggerCall
     cb->logger = fmi3_logger;
     cb->context = loggerCallbacks;
 }
+
+int fmi3_import_get_variable_has_alias(fmi3_import_variable_t* v) {
+    return fmi3_xml_get_variable_aliases(v) != NULL;
+}

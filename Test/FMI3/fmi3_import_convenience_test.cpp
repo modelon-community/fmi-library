@@ -293,3 +293,31 @@ TEST_CASE("Get variable from alias name - mixed alphabetical order") {
     REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
     fmi3_testutil_import_free(tfmu);
 }
+
+TEST_CASE("Test fmi3_import_get_variable_has_alias function") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/convenience/valid/get_variable_by_alias_name2";
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* xml = tfmu->fmu;
+    REQUIRE(xml != nullptr);
+
+    fmi3_import_variable_t* baseVar;
+    
+    baseVar = fmi3_import_get_variable_by_name(xml, "a");
+    REQUIRE(baseVar != nullptr);
+    REQUIRE(fmi3_import_get_variable_has_alias(baseVar) == 1);
+
+    baseVar = fmi3_import_get_variable_by_name(xml, "c");
+    REQUIRE(baseVar != nullptr);
+    REQUIRE(fmi3_import_get_variable_has_alias(baseVar) == 1);
+
+    baseVar = fmi3_import_get_variable_by_name(xml, "b");
+    REQUIRE(baseVar != nullptr);
+    REQUIRE(fmi3_import_get_variable_has_alias(baseVar) == 0);
+
+    baseVar = fmi3_import_get_variable_by_name(xml, "d");
+    REQUIRE(baseVar != nullptr);
+    REQUIRE(fmi3_import_get_variable_has_alias(baseVar) == 0);
+
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
+    fmi3_testutil_import_free(tfmu);
+}

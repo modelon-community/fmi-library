@@ -556,6 +556,8 @@ FMILIB_EXPORT fmi3_uint64_t fmi3_import_get_clock_variable_shift_counter(fmi3_im
 /** \brief Get the original index in xml of the variable */
 FMILIB_EXPORT size_t fmi3_import_get_variable_original_order(fmi3_import_variable_t* v);
 
+/** \brief Check if the variable has aliases */
+FMILIB_EXPORT fmi3_boolean_t fmi3_import_get_variable_has_alias(fmi3_import_variable_t* v);
 /** \brief Get the alias variables. */
 FMILIB_EXPORT fmi3_import_alias_variable_list_t* fmi3_import_get_variable_alias_list(fmi3_import_variable_t* v);
 /** \brief Get the number of alias variables. */

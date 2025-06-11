@@ -25,6 +25,7 @@
 
 #include <FMI/fmi_import_context.h>
 #include <FMI3/fmi3_function_types.h>
+#include "fmi3_import_variable.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -179,10 +180,6 @@ void fmi3_default_callback_logger(fmi3_instance_environment_t inst, fmi3_string_
 */
 FMILIB_EXPORT
 void fmi3_import_init_logger(jm_callbacks* cb, fmi3_logger_context_t* loggerCallbacks);
-
-/** \brief Check if the variable has aliases */
-FMILIB_EXPORT
-fmi3_boolean_t fmi3_import_get_variable_has_alias(fmi3_import_variable_t* v);
 
 /**
     \brief Get variable description by variable name. Alias variable names result in the description of the alias variable.

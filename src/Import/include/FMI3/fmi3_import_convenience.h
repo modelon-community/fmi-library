@@ -200,7 +200,7 @@ FMILIB_EXPORT
 fmi3_import_display_unit_t* fmi3_import_get_variable_display_unit_by_name(fmi3_import_t* fmu, const char* name);
 
 /**
-    \brief Checks if the variable "is clocked" by the clock variable.
+    \brief Checks if the clock variable is a clock to the variable.
 */
 FMILIB_EXPORT
 fmi3_boolean_t fmi3_import_get_variable_is_clocked_by(fmi3_import_variable_t* var, fmi3_import_clock_variable_t* clock);

@@ -813,7 +813,6 @@ jm_vector(jm_voidp)* fmi3_xml_get_variables_vr_order(fmi3_xml_model_description_
     return &md->variablesByVR;
 }
 
-
 fmi3_xml_variable_t* fmi3_xml_get_variable_by_name(fmi3_xml_model_description_t* md, const char* name) {
     if (!name) return NULL;
     jm_named_ptr key, *found;
@@ -822,7 +821,6 @@ fmi3_xml_variable_t* fmi3_xml_get_variable_by_name(fmi3_xml_model_description_t*
     if (!found) return NULL;
     return found->ptr;
 }
-
 
 fmi3_xml_variable_t* fmi3_xml_get_variable_by_vr(fmi3_xml_model_description_t* md, fmi3_value_reference_t vr) {
     fmi3_xml_variable_t key;
@@ -833,4 +831,40 @@ fmi3_xml_variable_t* fmi3_xml_get_variable_by_vr(fmi3_xml_model_description_t* m
     found = jm_vector_bsearch(jm_voidp)(&md->variablesByVR, (void**)&pkey, fmi3_xml_compare_vr);
     if (!found) return NULL;
     return (fmi3_xml_variable_t*)(*found);
+}
+
+const char* fmi3_xml_get_variable_description_by_name(fmi3_xml_model_description_t* md, const char* name) {
+    fmi3_xml_variable_t* v = fmi3_xml_get_variable_by_name(md, name);
+    if (v == NULL) {
+        return NULL;
+    }
+    if (strcmp(name, fmi3_xml_get_variable_name(v)) == 0) {
+        return fmi3_xml_get_variable_description(v);
+    }
+    fmi3_xml_alias_variable_t* alias_var = fmi3_xml_get_alias_variable_by_name(v, name);
+    return fmi3_xml_get_alias_variable_description(alias_var);
+}
+
+fmi3_xml_display_unit_t* fmi3_xml_get_variable_display_unit_by_name(fmi3_xml_model_description_t* md, const char* name) {
+    fmi3_xml_variable_t* v = fmi3_xml_get_variable_by_name(md, name);
+    if (v == NULL) {
+        return NULL;
+    }
+    if (strcmp(name, fmi3_xml_get_variable_name(v)) == 0) { /* no alias */
+        fmi3_xml_float32_variable_t* v32 = fmi3_xml_get_variable_as_float32(v);
+        if (v32) {
+            return fmi3_xml_get_float32_variable_display_unit(v32);
+        }
+        fmi3_xml_float64_variable_t* v64 = fmi3_xml_get_variable_as_float64(v);
+        if (v64) {
+            return fmi3_xml_get_float64_variable_display_unit(v64);
+        }
+        return NULL; /* non-float variable */
+    } else { /* alias */
+        fmi3_xml_alias_variable_t* alias_var = fmi3_xml_get_alias_variable_by_name(v, name);
+        if (!alias_var) {
+            return NULL; /* safety*/
+        }
+        return fmi3_xml_get_alias_variable_display_unit(alias_var);
+    }
 }

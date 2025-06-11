@@ -391,39 +391,11 @@ void fmi3_import_init_logger(jm_callbacks* cb, fmi3_logger_context_t* loggerCall
 }
 
 const char* fmi3_import_get_variable_description_by_name(fmi3_import_t* fmu, const char* name) {
-    fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(fmu, name);
-    if (v == NULL) {
-        return NULL;
-    }
-    if (strcmp(name, fmi3_xml_get_variable_name(v)) == 0) {
-        return fmi3_xml_get_variable_description(v);
-    }
-    fmi3_xml_alias_variable_t* alias_var = fmi3_xml_get_alias_variable_by_name(v, name);
-    return fmi3_xml_get_alias_variable_description(alias_var);
+    return fmi3_xml_get_variable_description_by_name(fmu->md, name);
 }
 
 fmi3_import_display_unit_t* fmi3_import_get_variable_display_unit_by_name(fmi3_import_t* fmu, const char* name) {
-    fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(fmu, name);
-    if (v == NULL) {
-        return NULL;
-    }
-    if (strcmp(name, fmi3_xml_get_variable_name(v)) == 0) { /* no alias */
-        fmi3_xml_float32_variable_t* v32 = fmi3_xml_get_variable_as_float32(v);
-        if (v32) {
-            return fmi3_xml_get_float32_variable_display_unit(v32);
-        }
-        fmi3_xml_float64_variable_t* v64 = fmi3_xml_get_variable_as_float64(v);
-        if (v64) {
-            return fmi3_xml_get_float64_variable_display_unit(v64);
-        }
-        return NULL; /* non-float variable */
-    } else { /* alias */
-        fmi3_xml_alias_variable_t* alias_var = fmi3_xml_get_alias_variable_by_name(v, name);
-        if (!alias_var) {
-            return NULL; /* safety*/
-        }
-        return fmi3_xml_get_alias_variable_display_unit(alias_var);
-    }
+    return fmi3_xml_get_variable_display_unit_by_name(fmu->md, name);
 }
 
 fmi3_boolean_t fmi3_import_get_variable_is_clocked_by(fmi3_import_variable_t* var, fmi3_import_clock_variable_t* clock) {

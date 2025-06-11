@@ -106,7 +106,7 @@ const char* fmi3_xml_get_variable_name(fmi3_xml_variable_t* v) {
 }
 
 const char* fmi3_xml_get_variable_description(fmi3_xml_variable_t* v) {
-    return v->description;
+    return (v->description == NULL) ? "" : v->description;
 }
 
 size_t fmi3_xml_get_variable_original_order(fmi3_xml_variable_t* v) {
@@ -981,7 +981,7 @@ const char* fmi3_xml_get_alias_variable_name(fmi3_xml_alias_variable_t* alias) {
 }
 
 const char* fmi3_xml_get_alias_variable_description(fmi3_xml_alias_variable_t* alias) {
-    return alias->description;
+    return (alias->description == NULL) ? "" : alias->description;
 }
 
 fmi3_xml_display_unit_t* fmi3_xml_get_alias_variable_display_unit(fmi3_xml_alias_variable_t* alias) {

@@ -32,7 +32,9 @@ static void test_enum_default_attrs(fmi3_import_t* xml) {
 
     REQUIRE(v != nullptr);
     REQUIRE(fmi3_import_get_variable_vr(v) == 1);
-    REQUIRE(fmi3_import_get_variable_description(v) == nullptr); /* Default description is empty */
+    const char* desc = fmi3_import_get_variable_description(v); 
+    REQUIRE(desc != nullptr);
+    REQUIRE_STREQ(desc, ""); /* Default description is empty */
     REQUIRE(fmi3_import_get_variable_causality(v) == fmi3_causality_enu_local);
     REQUIRE(fmi3_import_get_variable_variability(v) == fmi3_variability_enu_discrete);
     REQUIRE(fmi3_import_get_variable_initial(v) == fmi3_initial_enu_calculated);
@@ -64,7 +66,9 @@ static void test_enum_all_attrs(fmi3_import_t* xml) {
 
     REQUIRE(v != nullptr);
     REQUIRE(fmi3_import_get_variable_vr(v) == 2);
-    REQUIRE_STREQ(fmi3_import_get_variable_description(v), "myDescription");
+    const char* desc = fmi3_import_get_variable_description(v); 
+    REQUIRE(desc != nullptr);
+    REQUIRE_STREQ(desc, "myDescription");
     REQUIRE(fmi3_import_get_variable_causality(v) == fmi3_causality_enu_output);
     REQUIRE(fmi3_import_get_variable_variability(v) == fmi3_variability_enu_discrete);
     REQUIRE(fmi3_import_get_variable_initial(v) == fmi3_initial_enu_exact);
@@ -112,7 +116,9 @@ static void test_binary_default_attrs(fmi3_import_t* xml) {
 
     REQUIRE(v != nullptr);
     REQUIRE(fmi3_import_get_variable_vr(v) == 3);
-    REQUIRE(fmi3_import_get_variable_description(v) == nullptr);
+    const char* desc = fmi3_import_get_variable_description(v);
+    REQUIRE(desc != nullptr);
+    REQUIRE_STREQ(desc, "");
     REQUIRE(fmi3_import_get_variable_causality(v) == fmi3_causality_enu_local);
     REQUIRE(fmi3_import_get_variable_variability(v) == fmi3_variability_enu_discrete);
     REQUIRE(fmi3_import_get_variable_initial(v) == fmi3_initial_enu_calculated);  // Depends on causality and variability
@@ -151,7 +157,9 @@ static void test_binary_all_attrs(fmi3_import_t* xml) {
     REQUIRE(fmi3_import_get_variable_causality(v) == fmi3_causality_enu_output);
     REQUIRE(fmi3_import_get_variable_variability(v) == fmi3_variability_enu_discrete);
     REQUIRE(fmi3_import_get_variable_initial(v) == fmi3_initial_enu_calculated);
-    REQUIRE_STREQ(fmi3_import_get_variable_description(v), "myDesc");
+    const char* desc = fmi3_import_get_variable_description(v);
+    REQUIRE(desc != nullptr);
+    REQUIRE_STREQ(desc, "myDesc");
     REQUIRE(fmi3_import_get_variable_can_handle_multiple_set_per_time_instant(v) == true); // default
     REQUIRE(fmi3_import_get_variable_intermediate_update(v) == true);
 
@@ -252,7 +260,9 @@ static void test_clock_default_attrs(fmi3_import_t* xml) {
     fmi3_import_variable_list_t* clockVars;
 
     REQUIRE(v != nullptr);
-    REQUIRE(fmi3_import_get_variable_description(v) == nullptr);
+    const char* desc = fmi3_import_get_variable_description(v); 
+    REQUIRE(desc != nullptr);
+    REQUIRE_STREQ(desc, "");
     REQUIRE(fmi3_import_get_variable_causality(v) == fmi3_causality_enu_local);
     REQUIRE(fmi3_import_get_variable_variability(v) == fmi3_variability_enu_discrete);
     REQUIRE(fmi3_import_get_variable_initial(v) == fmi3_initial_enu_calculated);  // Depends on causality and variability
@@ -518,11 +528,8 @@ static void check_aliases(fmi3_import_t* fmu, const char* baseVarName, size_t nA
         } else {
             REQUIRE_STREQ(name, namesExp[i]);
         }
-        if (descExp[i] == nullptr) {
-            REQUIRE(desc == nullptr);
-        } else {
-            REQUIRE_STREQ(desc, descExp[i]);
-        }
+        REQUIRE(desc != nullptr);
+        REQUIRE_STREQ(desc, descExp[i]);
         REQUIRE(displayUnit == duExp[i]);
     }
 }
@@ -555,7 +562,7 @@ TEST_CASE("Alias variables") {
     
     SECTION("Minimal alias") {
         const char* namesExp[]              = { "v2_a1" };
-        const char* descExp[]               = { nullptr };
+        const char* descExp[]               = { "" };
         fmi3_import_display_unit_t* duExp[] = { nullptr };
         check_aliases(fmu, "v2", 1, namesExp, descExp, duExp);
     }
@@ -569,28 +576,28 @@ TEST_CASE("Alias variables") {
     
     SECTION("Multiple aliases") {
         const char* namesExp[]              = { "v4_a1", "v4_a2", "v4_a3" };
-        const char* descExp[]               = { nullptr, nullptr, nullptr };
+        const char* descExp[]               = { "", "", "" };
         fmi3_import_display_unit_t* duExp[] = { nullptr, nullptr, nullptr };
         check_aliases(fmu, "v4", 3, namesExp, descExp, duExp);
     }
     
     SECTION("Multiple aliases with different optional attributes") {
         const char* namesExp[]              = { "v5_a1", "v5_a2"      };
-        const char* descExp[]               = { nullptr, "v5_a2_desc" };
+        const char* descExp[]               = { "", "v5_a2_desc" };
         fmi3_import_display_unit_t* duExp[] = { degC,    nullptr      };
         check_aliases(fmu, "v5", 2, namesExp, descExp, duExp);
     }
     
     SECTION("Alias on non-Float64") {
         const char* namesExp[]              = { "v6_a1" };
-        const char* descExp[]               = { nullptr };
+        const char* descExp[]               = { "" };
         fmi3_import_display_unit_t* duExp[] = { nullptr };
         check_aliases(fmu, "v6", 1, namesExp, descExp, duExp);
     }
     
     SECTION("Aliases with other sibling elements") {
         const char* namesExp[]              = { "v7_a1", "v7_a2" };
-        const char* descExp[]               = { nullptr, nullptr };
+        const char* descExp[]               = { "", "" };
         fmi3_import_display_unit_t* duExp[] = { nullptr, nullptr };
         check_aliases(fmu, "v7", 2, namesExp, descExp, duExp);
     }

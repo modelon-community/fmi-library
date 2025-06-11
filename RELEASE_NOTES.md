@@ -16,6 +16,8 @@ Note that version 2.1 is the first version with release notes. Please see the co
     - Getting display unit of variable or alias variable via name : `fmi3_import_get_variable_display_unit_by_name`.
     - Checking if a variable has clocks: `fmi3_import_get_variable_is_clocked`.
     - Checking if a variable is clocked by a clock variable: `fmi3_import_get_variable_is_clocked_by`.
+- `fmi3_import_get_variable_description` and `fmi3_import_get_alias_variable_description` now correctly return empty strings
+  for missing descriptions, as stated in the documentation.
 
 ## 3.0.3
 

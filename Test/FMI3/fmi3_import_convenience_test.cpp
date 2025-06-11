@@ -305,7 +305,8 @@ TEST_CASE("Test getting variable description by variable name") {
     REQUIRE_STREQ(descr_a, "base");
     
     const char* descr_b = fmi3_import_get_variable_description_by_name(xml, "b");
-    REQUIRE(descr_b == nullptr); /* no description */
+    REQUIRE(descr_b != nullptr);
+    REQUIRE_STREQ(descr_b, ""); /* no description */
     
     const char* descr_c = fmi3_import_get_variable_description_by_name(xml, "c");
     REQUIRE(descr_c != nullptr);
@@ -316,7 +317,7 @@ TEST_CASE("Test getting variable description by variable name") {
     REQUIRE_STREQ(descr_d, ""); /* empty description */
 
     const char* descr_e = fmi3_import_get_variable_description_by_name(xml, "e");
-    REQUIRE(descr_e == nullptr);
+    REQUIRE(descr_e == nullptr); /* no variable */
 
     REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
     fmi3_testutil_import_free(tfmu);

@@ -105,6 +105,10 @@ const char* fmi3_xml_get_variable_name(fmi3_xml_variable_t* v) {
     return v->name;
 }
 
+fmi3_boolean_t fmi3_xml_get_variable_has_description(fmi3_xml_variable_t* v) {
+    return (v->description == NULL) ? fmi3_false: fmi3_true;
+}
+
 const char* fmi3_xml_get_variable_description(fmi3_xml_variable_t* v) {
     return (v->description == NULL) ? "" : v->description;
 }
@@ -980,6 +984,10 @@ const char* fmi3_xml_get_alias_variable_name(fmi3_xml_alias_variable_t* alias) {
     return alias->name;
 }
 
+fmi3_boolean_t fmi3_xml_get_alias_variable_has_description(fmi3_xml_alias_variable_t* alias) {
+    return (alias->description == NULL) ? fmi3_false: fmi3_true;
+}
+
 const char* fmi3_xml_get_alias_variable_description(fmi3_xml_alias_variable_t* alias) {
     return (alias->description == NULL) ? "" : alias->description;
 }
@@ -1508,12 +1516,21 @@ static int fmi3_xml_handle_Variable_unchecked(fmi3_xml_parser_context_t* context
             return -1;
         }
 
-        // optional, failure to parse should only result in missing description
-        fmi3_xml_parse_attr_as_string(context, elm_id, FMI3_ATTR(fmi_attr_id_description), 0, bufDesc);
+        int descriptionExists = 0;
 
+        // optional, failure to parse should only result in missing description
+        fmi3_xml_parse_attr_as_string_exists(context, elm_id, FMI3_ATTR(fmi_attr_id_description), 0, &descriptionExists, bufDesc);
+
+        /* size = 0 if no description && empty description */
         if (jm_vector_get_size(char)(bufDesc)) {
             /* Add the description to the model-wide set and retrieve the pointer */
             description = jm_string_set_put(&md->descriptions, jm_vector_get_itemp(char)(bufDesc, 0));
+        } else {
+            if (descriptionExists) {
+                description = jm_string_set_put(&md->descriptions, "");
+            } else {
+                description = NULL;
+            }
         }
 
         // Create the variable and set name at same time:
@@ -2369,14 +2386,24 @@ int fmi3_xml_handle_Alias(fmi3_xml_parser_context_t* context, const char* data) 
 
         // FIXME: bufDesc will have size==0 when the attribute value is the empty string,
         // making it indistinguishable from not being defined at all.
-        bool hasDesc = fmi3_xml_peek_attr_str(context, FMI3_ATTR(fmi_attr_id_description)) != NULL;
+        //bool hasDesc = fmi3_xml_peek_attr_str(context, FMI3_ATTR(fmi_attr_id_description)) != NULL;
+        int hasDesc;
         
         // Read the attributes to memory owned by FMIL:
         jm_vector(char)* bufName = fmi3_xml_reserve_parse_buffer(context, bufIdx++, 100);
         jm_vector(char)* bufDesc = fmi3_xml_reserve_parse_buffer(context, bufIdx++, 100);
-        if (!bufName || !bufDesc) return -1;
-        if (fmi3_xml_parse_attr_as_string(context, elmID, FMI3_ATTR(fmi_attr_id_name),        1, bufName)) return -1;
-        if (fmi3_xml_parse_attr_as_string(context, elmID, FMI3_ATTR(fmi_attr_id_description), 0, bufDesc)) return -1;
+        if (!bufName || !bufDesc) { return -1;}
+        if (fmi3_xml_parse_attr_as_string(context, elmID, FMI3_ATTR(fmi_attr_id_name), 1, bufName)) { return -1;}
+        // optional, failure to parse should only result in missing description
+        fmi3_xml_parse_attr_as_string_exists(context, elmID, FMI3_ATTR(fmi_attr_id_description), 0, &hasDesc, bufDesc);
+
+        /* 
+        TODO: Possibly do not resize the buffer to length zero?
+        Could one then avoid the if check on buf size?
+        and instead rely on the return flag if the string attribute exists?
+        
+        What if we only created an empty string if there actually was an attribute?
+        */
 
         // Create the alias and set name at same time:
         const char* name;
@@ -2403,6 +2430,8 @@ int fmi3_xml_handle_Alias(fmi3_xml_parser_context_t* context, const char* data) 
             } else {
                 alias->description = jm_string_set_put(&md->descriptions, jm_vector_get_itemp(char)(bufDesc, 0));
             }
+        } else {
+            alias->description = NULL;
         }
 
         // Set displayUnit if FloatXX:

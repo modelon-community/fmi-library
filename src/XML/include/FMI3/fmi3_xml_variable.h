@@ -34,23 +34,25 @@ extern "C" {
     \addtogroup fmi3_xml_variables Functions for handling variable definitions
     @{
     */
-const char* fmi3_xml_get_variable_name(fmi3_xml_variable_t*);
-const char* fmi3_xml_get_variable_description(fmi3_xml_variable_t*);
+const char* fmi3_xml_get_variable_name(fmi3_xml_variable_t* v);
+fmi3_boolean_t fmi3_xml_get_variable_has_description(fmi3_xml_variable_t* v);
+const char* fmi3_xml_get_variable_description(fmi3_xml_variable_t* v);
 
 size_t fmi3_xml_get_variable_original_order(fmi3_xml_variable_t* v);
 
-fmi3_value_reference_t fmi3_xml_get_variable_vr(fmi3_xml_variable_t*);
+fmi3_value_reference_t fmi3_xml_get_variable_vr(fmi3_xml_variable_t* v);
 
 /*
     For scalar variable gives the type definition is present
 */
-fmi3_xml_variable_typedef_t* fmi3_xml_get_variable_declared_type(fmi3_xml_variable_t*);
-fmi3_base_type_enu_t fmi3_xml_get_variable_base_type(fmi3_xml_variable_t*);
+fmi3_xml_variable_typedef_t* fmi3_xml_get_variable_declared_type(fmi3_xml_variable_t* v);
+fmi3_base_type_enu_t fmi3_xml_get_variable_base_type(fmi3_xml_variable_t* v);
 
 fmi3_xml_alias_variable_list_t* fmi3_xml_get_variable_aliases(fmi3_xml_variable_t* v);
 size_t fmi3_xml_get_alias_variables_number(fmi3_xml_alias_variable_list_t* aliases);
 fmi3_xml_alias_variable_t* fmi3_xml_get_alias(fmi3_xml_alias_variable_list_t* aliases, size_t index);
 const char* fmi3_xml_get_alias_variable_name(fmi3_xml_alias_variable_t* alias);
+fmi3_boolean_t fmi3_xml_get_alias_variable_has_description(fmi3_xml_alias_variable_t* alias);
 const char* fmi3_xml_get_alias_variable_description(fmi3_xml_alias_variable_t* alias);
 fmi3_xml_display_unit_t* fmi3_xml_get_alias_variable_display_unit(fmi3_xml_alias_variable_t* alias);
 fmi3_xml_alias_variable_t* fmi3_xml_get_alias_variable_by_name(fmi3_xml_variable_t* v, const char* name);

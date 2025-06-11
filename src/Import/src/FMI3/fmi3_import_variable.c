@@ -33,6 +33,10 @@ const char* fmi3_import_get_variable_name(fmi3_import_variable_t* v) {
     return fmi3_xml_get_variable_name(v);
 }
 
+fmi3_boolean_t fmi3_import_get_variable_has_description(fmi3_import_variable_t* v) {
+    return fmi3_xml_get_variable_has_description(v);
+}
+
 const char* fmi3_import_get_variable_description(fmi3_import_variable_t* v) {
     return fmi3_xml_get_variable_description(v);
 }
@@ -617,6 +621,10 @@ fmi3_import_alias_variable_t* fmi3_import_get_alias(fmi3_import_alias_variable_l
 
 const char* fmi3_import_get_alias_variable_name(fmi3_import_alias_variable_t* alias) {
     return fmi3_xml_get_alias_variable_name(alias);
+}
+
+fmi3_boolean_t fmi3_import_get_alias_variable_has_description(fmi3_import_alias_variable_t* alias) {
+    return fmi3_xml_get_alias_variable_has_description(alias);
 }
 
 const char* fmi3_import_get_alias_variable_description(fmi3_import_alias_variable_t* alias) {

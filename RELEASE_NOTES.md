@@ -18,6 +18,8 @@ Note that version 2.1 is the first version with release notes. Please see the co
     - Checking if a variable is clocked by a clock variable: `fmi3_import_get_variable_is_clocked_by`.
 - `fmi3_import_get_variable_description` and `fmi3_import_get_alias_variable_description` now correctly return empty strings
   for missing descriptions, as stated in the documentation.
+- Added functions `fmi3_import_get_variable_has_description` and `fmi3_import_get_alias_variable_has_description` to check if an 
+  (alias) variable has a description. Use this to tell between empty description and no description.
 
 ## 3.0.3
 

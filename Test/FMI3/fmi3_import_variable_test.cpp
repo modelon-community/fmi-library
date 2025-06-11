@@ -1047,3 +1047,27 @@ TEST_CASE("Causality independent on non float") {
     REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 12);
     fmi3_testutil_import_free(tfmu);
 }
+
+TEST_CASE("Test fmi3_import_get_variable_has_alias function") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/variables/valid/alias1";
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* xml = tfmu->fmu;
+    REQUIRE(xml != nullptr);
+
+    fmi3_import_variable_t* baseVar;
+    
+    baseVar = fmi3_import_get_variable_by_name(xml, "v1");
+    REQUIRE(baseVar != nullptr);
+    REQUIRE(fmi3_import_get_variable_has_alias(baseVar) == false);
+
+    baseVar = fmi3_import_get_variable_by_name(xml, "v2");
+    REQUIRE(baseVar != nullptr);
+    REQUIRE(fmi3_import_get_variable_has_alias(baseVar) == true);
+
+    baseVar = fmi3_import_get_variable_by_name(xml, "v3");
+    REQUIRE(baseVar != nullptr);
+    REQUIRE(fmi3_import_get_variable_has_alias(baseVar) == true);
+
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
+    fmi3_testutil_import_free(tfmu);
+}

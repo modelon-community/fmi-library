@@ -851,7 +851,7 @@ fmi3_string_t fmi3_xml_get_binary_variable_mime_type(fmi3_xml_binary_variable_t*
     fmi3_xml_variable_t* vv = (fmi3_xml_variable_t*)v;
     fmi3_xml_binary_type_props_t* props = (fmi3_xml_binary_type_props_t*)fmi3_xml_find_type_props(vv->type);
     if (!props) return NULL;
-    return (fmi3_string_t)props->mimeType;
+    return props->mimeType ? (fmi3_string_t)props->mimeType: (fmi3_string_t)"";
 }
 
 fmi3_boolean_t fmi3_xml_get_binary_variable_has_max_size(fmi3_xml_binary_variable_t* v) {
@@ -1548,7 +1548,11 @@ static int fmi3_xml_handle_Variable_unchecked(fmi3_xml_parser_context_t* context
         // Unexpected (malloc) failures still force the parser to stop via fmi_xml_parse_fatal(...)
 
         /* Save start value for processing after reading all Dimensions */
-        res |= fmi3_xml_parse_attr_as_string(context, elm_id, FMI3_ATTR(fmi_attr_id_start), 0, &context->variableStartAttr);
+        int startExists = 0;
+        res |= fmi3_xml_parse_attr_as_string_exists(context, elm_id, FMI3_ATTR(fmi_attr_id_start), 0, &startExists, &context->variableStartAttr);
+        if (!startExists) {
+            jm_vector_resize(char)(&context->variableStartAttr, 0);
+        }
 
         /* Process common attributes */
         res |= fmi3_xml_variable_process_attr_causality_variability_initial(context, variable, elm_id);
@@ -1562,8 +1566,7 @@ static int fmi3_xml_handle_Variable_unchecked(fmi3_xml_parser_context_t* context
             // Errors&Warnings in optional attributes still yield a valid Variable
             return 0; // Variable successfully parsed
         }
-    }
-    else { /* end of xml tag */
+    } else { /* end of xml tag */
         /* Check that the type for the variable is set */
         if (!md->latestVariableIsValid) {return -1;} // skip post-processing for invalid variables
         fmi3_xml_variable_t* variable = jm_vector_get_last(jm_voidp)(&md->variablesOrigOrder);
@@ -2206,7 +2209,8 @@ int fmi3_xml_handle_BinaryVariableStart(fmi3_xml_parser_context_t* context, cons
             jm_vector_push_back(jm_voidp)(vec, attrAsStr);
         } else {
             jm_vector(char)* bufStartStr = fmi3_xml_reserve_parse_buffer(context, 1, 100);
-            if (fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_BinaryVariableStart), FMI3_ATTR(fmi_attr_id_value), 0, bufStartStr)) {
+            int valueExists = 0;
+            if (fmi3_xml_parse_attr_as_string_exists(context, FMI3_ELM(fmi3_xml_elmID_BinaryVariableStart), FMI3_ATTR(fmi_attr_id_value), 0, &valueExists, bufStartStr)) {
                 return -1;
             }
 
@@ -2240,19 +2244,21 @@ fmi3_xml_enum_variable_props_t* fmi3_xml_parse_enum_properties(fmi3_xml_parser_c
     fmi3_xml_model_description_t* md = context->modelDescription;
     fmi3_xml_enum_variable_props_t* props = 0;
     fmi3_xml_elm_t elmID = FMI3_ELM(fmi3_xml_elmID_Enumeration);
-    const char* quantity = 0;
 
     jm_vector(char)* bufQuantity = fmi3_xml_reserve_parse_buffer(context,3,100);
 
     props = (fmi3_xml_enum_variable_props_t*)fmi3_xml_alloc_variable_or_typedef_props(&md->typeDefinitions,
            &md->typeDefinitions.defaultEnumType.base.super, sizeof(fmi3_xml_enum_variable_props_t));
 
-    if (!bufQuantity || !props || fmi3_xml_parse_attr_as_string(context, elmID, FMI3_ATTR(fmi_attr_id_quantity), 0, bufQuantity))
+    int quantityExists = 0;
+    if (!bufQuantity || !props || fmi3_xml_parse_attr_as_string_exists(context, elmID, FMI3_ATTR(fmi_attr_id_quantity), 0, &quantityExists, bufQuantity)) {
         return 0;
-    if (jm_vector_get_size(char)(bufQuantity))
-        quantity = jm_string_set_put(&md->typeDefinitions.quantities, jm_vector_get_itemp(char)(bufQuantity, 0));
-
-    props->quantity = (quantity == 0) ? declaredType->quantity : quantity;
+    }
+    if (quantityExists) {
+        props->quantity = jm_string_set_put(&md->typeDefinitions.quantities, jm_vector_get_itemp(char)(bufQuantity, 0));
+    } else {
+        props->quantity = declaredType->quantity;
+    }
 
     if (fmi3_xml_parse_attr_as_int64(context, elmID, FMI3_ATTR(fmi_attr_id_min), 0, &props->typeMin, declaredType->typeMin) ||
         fmi3_xml_parse_attr_as_int64(context, elmID, FMI3_ATTR(fmi_attr_id_max), 0, &props->typeMax, declaredType->typeMax)) {
@@ -2395,9 +2401,12 @@ int fmi3_xml_handle_Alias(fmi3_xml_parser_context_t* context, const char* data) 
         alias->displayUnit = NULL;
         if (fmi3_base_type_enu_is_float(fmi3_xml_get_variable_base_type(baseVar))) {
             jm_vector(char)* bufDisplayUnit = fmi3_xml_reserve_parse_buffer(context, bufIdx++, 100);
-            if (!bufDisplayUnit) return -1;
-            if (fmi3_xml_parse_attr_as_string(context, elmID, FMI3_ATTR(fmi_attr_id_displayUnit), 0, bufDisplayUnit)) return -1;
-            if (jm_vector_get_size(char)(bufDisplayUnit)) {
+            if (!bufDisplayUnit) { return -1;}
+            int displayUnitExists = 0;
+            if (fmi3_xml_parse_attr_as_string_exists(context, elmID, FMI3_ATTR(fmi_attr_id_displayUnit), 0, &displayUnitExists, bufDisplayUnit)) {
+                return -1;
+            }
+            if (displayUnitExists) {
                 jm_named_ptr searchKey, *searchRes;
                 searchKey.name = jm_vector_get_itemp(char)(bufDisplayUnit, 0);
                 searchRes = jm_vector_bsearch(jm_named_ptr)(

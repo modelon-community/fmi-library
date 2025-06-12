@@ -202,7 +202,9 @@ static void test_binary_empty_mimeType(fmi3_import_t* xml) {
     REQUIRE(bv != nullptr);
 
     // BUG: Expected is to equal the empty string. Probably same for 'quantity'.
-    REQUIRE(fmi3_import_get_binary_variable_mime_type(bv) == nullptr);
+    const char* mimeType = fmi3_import_get_binary_variable_mime_type(bv);
+    REQUIRE(mimeType != nullptr);
+    REQUIRE_STREQ(mimeType, "");
 }
 
 /**
@@ -1152,6 +1154,10 @@ TEST_CASE("Test fmi3_import_get_(alias)_variable_has_description function") {
     REQUIRE(desc_cc != nullptr);
     REQUIRE_STREQ(desc_cc, "cc");
     REQUIRE(fmi3_import_get_alias_variable_has_description(aliasVar) == true);
+
+    const char* author = fmi3_import_get_author(xml);
+    REQUIRE(author != nullptr);
+    REQUIRE_STREQ(author, "");
 
     REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
     fmi3_testutil_import_free(tfmu);

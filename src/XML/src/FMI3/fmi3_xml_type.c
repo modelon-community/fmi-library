@@ -675,8 +675,10 @@ int fmi3_xml_handle_SimpleType(fmi3_xml_parser_context_t *context, const char* d
             return -1;
 
         /* read attributes to buffers */
-        if (fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_SimpleType), FMI3_ATTR(fmi_attr_id_name), 1, bufName) ||
-            fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_SimpleType), FMI3_ATTR(fmi_attr_id_description), 0, bufDescr)) {
+        int nameExists = 0;
+        int descriptionExist = 0;
+        if (fmi3_xml_parse_attr_as_string_exists(context, FMI3_ELM(fmi3_xml_elmID_SimpleType), FMI3_ATTR(fmi_attr_id_name), 1, &nameExists, bufName) ||
+            fmi3_xml_parse_attr_as_string_exists(context, FMI3_ELM(fmi3_xml_elmID_SimpleType), FMI3_ATTR(fmi_attr_id_description), 0, &descriptionExist, bufDescr)) {
             return -1;
         }
 
@@ -701,11 +703,10 @@ int fmi3_xml_handle_SimpleType(fmi3_xml_parser_context_t *context, const char* d
         /* initialize the type_base struct as a typedef, with a placeHolder type that will be overriden by the real primitive type */
         typeDef = pnamed->ptr;
         fmi3_xml_init_variable_type_base(&typeDef->super, fmi3_xml_type_struct_enu_typedef, placeHolderType);
-        if (jm_vector_get_size(char)(bufDescr)) {
-            const char* description = jm_string_set_put(&md->descriptions, jm_vector_get_itemp(char)(bufDescr, 0));
-            typeDef->description = description;
+        if (descriptionExist) {
+            typeDef->description = jm_string_set_put(&md->descriptions, jm_vector_get_itemp(char)(bufDescr, 0));
         } else {
-            typeDef->description = "";
+            typeDef->description = NULL;
         }
 
     } else { /* end of tag */
@@ -790,7 +791,6 @@ fmi3_xml_float_type_props_t* fmi3_xml_parse_float_type_properties(fmi3_xml_parse
     fmi3_xml_model_description_t* md = context->modelDescription;
     fmi3_xml_float_type_props_t* fallbackProps;
     fmi3_xml_float_type_props_t* props;
-    const char* quantity = NULL;
     unsigned int relQuanBuf, unboundedBuf;
 
     if (fallbackType->structKind == fmi3_xml_type_struct_enu_typedef) {
@@ -806,21 +806,24 @@ fmi3_xml_float_type_props_t* fmi3_xml_parse_float_type_properties(fmi3_xml_parse
     props = (fmi3_xml_float_type_props_t*)fmi3_xml_alloc_variable_or_typedef_props(
             &md->typeDefinitions, fallbackType, sizeof(fmi3_xml_float_type_props_t));
 
+    int quantityExists = 0;
+    int unitExists = 0;
+    int dispUnitExists = 0;
     if (!bufQuantity || !bufUnit || !bufDispUnit || !props ||
-            fmi3_xml_parse_attr_as_string(context, elmID, FMI3_ATTR(fmi_attr_id_quantity), 0, bufQuantity) ||
-            fmi3_xml_parse_attr_as_string(context, elmID, FMI3_ATTR(fmi_attr_id_unit), 0, bufUnit) ||
-            fmi3_xml_parse_attr_as_string(context, elmID, FMI3_ATTR(fmi_attr_id_displayUnit), 0, bufDispUnit))
+            fmi3_xml_parse_attr_as_string_exists(context, elmID, FMI3_ATTR(fmi_attr_id_quantity), 0, &quantityExists, bufQuantity) ||
+            fmi3_xml_parse_attr_as_string_exists(context, elmID, FMI3_ATTR(fmi_attr_id_unit), 0, &unitExists, bufUnit) ||
+            fmi3_xml_parse_attr_as_string_exists(context, elmID, FMI3_ATTR(fmi_attr_id_displayUnit), 0, &dispUnitExists, bufDispUnit))
     {
         fmi3_xml_parse_fatal(context, "Error parsing float type properties");
         return NULL;
     }
-    if (jm_vector_get_size(char)(bufQuantity)) {
-        quantity = jm_string_set_put(&md->typeDefinitions.quantities, jm_vector_get_itemp(char)(bufQuantity, 0));
+    if (quantityExists) {
+        props->quantity = jm_string_set_put(&md->typeDefinitions.quantities, jm_vector_get_itemp(char)(bufQuantity, 0));
+    } else {
+        props->quantity = NULL;
     }
-
-    props->quantity = quantity;
-    props->displayUnit = 0;
-    if (jm_vector_get_size(char)(bufDispUnit)) {
+    
+    if (dispUnitExists) {
         named.name = jm_vector_get_itemp(char)(bufDispUnit, 0);
         pnamed = jm_vector_bsearch(jm_named_ptr)(&(md->displayUnitDefinitions), &named, jm_compare_named);
         if (!pnamed) {
@@ -829,8 +832,10 @@ fmi3_xml_float_type_props_t* fmi3_xml_parse_float_type_properties(fmi3_xml_parse
         }
         props->displayUnit = pnamed->ptr;
     } else {
-        if (jm_vector_get_size(char)(bufUnit)) {
+        if (unitExists) {
             props->displayUnit = fmi3_xml_get_parsed_unit(context, bufUnit, 1);
+        } else {
+            props->displayUnit = NULL;
         }
     }
 
@@ -893,9 +898,8 @@ fmi3_xml_int_type_props_t* fmi3_xml_parse_intXX_type_properties(fmi3_xml_parser_
     fmi3_xml_type_definition_list_t* td = &md->typeDefinitions;
     fmi3_xml_int_type_props_t* fallbackProps = NULL;
     fmi3_xml_int_type_props_t* props = NULL;
-    const char* quantity = NULL;
 
-    // XXX: Why don't we give fatal errors in this funciton, but we do it for floatXX?
+    // TODO: Why don't we give fatal errors in this funciton, but we do it for floatXX?
 
     if (fallbackType->structKind == fmi3_xml_type_struct_enu_typedef) {
         fallbackProps = (void*)fallbackType->nextLayer;
@@ -904,22 +908,26 @@ fmi3_xml_int_type_props_t* fmi3_xml_parse_intXX_type_properties(fmi3_xml_parser_
     }
 
     jm_vector(char)* bufQuantity = fmi3_xml_reserve_parse_buffer(context, 1, 100);
-    if (!bufQuantity) return NULL;
+    if (!bufQuantity) { return NULL;}
 
     props = (fmi3_xml_int_type_props_t*)fmi3_xml_alloc_variable_or_typedef_props(td, fallbackType, sizeof(fmi3_xml_int_type_props_t));
-    if (!props) return NULL;
+    if (!props) { return NULL;}
 
-    if (fmi3_xml_parse_attr_as_string(context, elmID, FMI3_ATTR(fmi_attr_id_quantity), 0, bufQuantity))
+    int quantityExists = 0;
+    if (fmi3_xml_parse_attr_as_string_exists(context, elmID, FMI3_ATTR(fmi_attr_id_quantity), 0, &quantityExists, bufQuantity)) {
         return NULL;
+    }
 
-    if (jm_vector_get_size(char)(bufQuantity))
-        quantity = jm_string_set_put(&td->quantities, jm_vector_get_itemp(char)(bufQuantity, 0));
+    if (quantityExists) {
+        props->quantity = jm_string_set_put(&td->quantities, jm_vector_get_itemp(char)(bufQuantity, 0));;
+    } else {
+        props->quantity = NULL;
+    }
 
-    props->quantity = quantity;
-
-    if (    fmi3_xml_parse_attr_as_intXX(context, elmID, FMI3_ATTR(fmi_attr_id_min), 0, &props->typeMin, &fallbackProps->typeMin, primType) ||
-            fmi3_xml_parse_attr_as_intXX(context, elmID, FMI3_ATTR(fmi_attr_id_max), 0, &props->typeMax, &fallbackProps->typeMax, primType))
+    if (fmi3_xml_parse_attr_as_intXX(context, elmID, FMI3_ATTR(fmi_attr_id_min), 0, &props->typeMin, &fallbackProps->typeMin, primType) ||
+        fmi3_xml_parse_attr_as_intXX(context, elmID, FMI3_ATTR(fmi_attr_id_max), 0, &props->typeMax, &fallbackProps->typeMax, primType)) {
         return NULL;
+    }
 
     return props;
 }
@@ -1036,16 +1044,15 @@ fmi3_xml_binary_type_props_t* fmi3_xml_parse_binary_type_properties(fmi3_xml_par
     // mimeType:
     if (fmi3_xml_is_attr_defined(context, FMI3_ATTR(fmi_attr_id_mimeType))) {
         jm_vector(char)* mimeType = fmi3_xml_reserve_parse_buffer(context, 1, 100);
-        if (!mimeType) {return NULL;} // buffer allocation failure
-        if (fmi3_xml_parse_attr_as_string(context, elmID, FMI3_ATTR(fmi_attr_id_mimeType), 0, mimeType)) {
+        if (!mimeType) { return NULL;} // buffer allocation failure
+        int mimeTypeExists = 0;
+        if (fmi3_xml_parse_attr_as_string_exists(context, elmID, FMI3_ATTR(fmi_attr_id_mimeType), 0, &mimeTypeExists, mimeType)) {
             props->mimeType = fallbackProps->mimeType; // parsing failure
         } else { // successful parse
-            if (jm_vector_get_size(char)(mimeType) == 0) {
-                // XXX: Doesn't seem like we properly store the empty string? Will trigger assertion
-                // failures later, and 'quantity' is handled the same way.
-                props->mimeType = NULL;
-            } else {
+            if (mimeTypeExists) {
                 props->mimeType = jm_string_set_put(&td->mimeTypes, jm_vector_get_itemp(char)(mimeType, 0));
+            } else {
+                props->mimeType = fallbackProps->mimeType;
             }
         }
     } else {
@@ -1244,7 +1251,6 @@ int fmi3_xml_handle_EnumerationType(fmi3_xml_parser_context_t* context, const ch
         fmi3_xml_model_description_t* md = context->modelDescription;
         fmi3_xml_enum_typedef_props_t * props;
         fmi3_xml_variable_typedef_t* typeDef;
-        const char * quantity = 0;
         jm_vector(char)* bufQuantity = fmi3_xml_reserve_parse_buffer(context,3,100);
 
         props = (fmi3_xml_enum_typedef_props_t*)fmi3_xml_alloc_variable_or_typedef_props(
@@ -1259,14 +1265,15 @@ int fmi3_xml_handle_EnumerationType(fmi3_xml_parser_context_t* context, const ch
             fmi3_xml_init_enumeration_type_properties(props, context->callbacks);
             props->base.super.next = nextTmp;
         }
-        if (!bufQuantity || !props ||
-                fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_Int32Type), FMI3_ATTR(fmi_attr_id_quantity), 0, bufQuantity)
-                )
+        int quantityExists = 0;
+        if (!bufQuantity || !props || fmi3_xml_parse_attr_as_string_exists(context, FMI3_ELM(fmi3_xml_elmID_Int32Type), FMI3_ATTR(fmi_attr_id_quantity), 0, &quantityExists, bufQuantity)) {
             return -1;
-        if (jm_vector_get_size(char)(bufQuantity))
-            quantity = jm_string_set_put(&md->typeDefinitions.quantities, jm_vector_get_itemp(char)(bufQuantity, 0));
-
-        props->base.quantity = quantity;
+        }
+        if (quantityExists) {
+            props->base.quantity = jm_string_set_put(&md->typeDefinitions.quantities, jm_vector_get_itemp(char)(bufQuantity, 0));
+        } else {
+            props->base.quantity = NULL;
+        }
 
         // Get the typedef already created for SimpleType and set props
         typeDef = jm_vector_get_last(jm_named_ptr)(&context->modelDescription->typeDefinitions.typeDefinitions).ptr;
@@ -1317,10 +1324,12 @@ int fmi3_xml_handle_Item(fmi3_xml_parser_context_t* context, const char* data) {
         assert((enumProps->base.super.structKind == fmi3_xml_type_struct_enu_props)
             && (enumProps->base.super.baseType == fmi3_base_type_enum));
 
+        int nameExists = 0;
+        int descriptionExists = 0;
         if (!bufName || !bufDescr ||
-                fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_Item), FMI3_ATTR(fmi_attr_id_name), 1, bufName) ||
-                fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_Item), FMI3_ATTR(fmi_attr_id_description), 0, bufDescr) ||
-                fmi3_xml_parse_attr_as_int32( context, FMI3_ELM(fmi3_xml_elmID_Item), FMI3_ATTR(fmi_attr_id_value), 1, &value, 0)) {
+                fmi3_xml_parse_attr_as_string_exists(context, FMI3_ELM(fmi3_xml_elmID_Item), FMI3_ATTR(fmi_attr_id_name), 1, &nameExists, bufName) ||
+                fmi3_xml_parse_attr_as_string_exists(context, FMI3_ELM(fmi3_xml_elmID_Item), FMI3_ATTR(fmi_attr_id_description), 0, &descriptionExists, bufDescr) ||
+                fmi3_xml_parse_attr_as_int32(context, FMI3_ELM(fmi3_xml_elmID_Item), FMI3_ATTR(fmi_attr_id_value), 1, &value, 0)) {
             return -1;
         }
         descrlen = jm_vector_get_size(char)(bufDescr);
@@ -1336,9 +1345,13 @@ int fmi3_xml_handle_Item(fmi3_xml_parser_context_t* context, const char* data) {
         }
         item->itemName = named.name;
         item->value = value;
-        if (descrlen)
-            memcpy(item->itemDescription,jm_vector_get_itemp(char)(bufDescr,0), descrlen);
-        item->itemDescription[descrlen] = 0;
+        if (descriptionExists && descrlen) {
+            memcpy(item->itemDescription, jm_vector_get_itemp(char)(bufDescr, 0), descrlen);
+        } else {
+            item->itemDescription[0] = '\0';
+        }
+        // if (descrlen)
+        // item->itemDescription[descrlen] = 0;
     }
     return 0;
 }
@@ -1353,9 +1366,11 @@ fmi3_xml_variable_type_base_t* fmi3_parse_declared_type_attr(fmi3_xml_parser_con
     jm_named_ptr key, *found;
     jm_vector(char)* bufDeclaredType = fmi3_xml_reserve_parse_buffer(context, 1, 100);
 
-    fmi3_xml_parse_attr_as_string(context, elmID, FMI3_ATTR(fmi_attr_id_declaredType), 0, bufDeclaredType);
-    if ( !jm_vector_get_size(char)(bufDeclaredType) )
+    int declaredTypeExists = 0;
+    fmi3_xml_parse_attr_as_string_exists(context, elmID, FMI3_ATTR(fmi_attr_id_declaredType), 0, &declaredTypeExists, bufDeclaredType);
+    if (!declaredTypeExists) {
         return defaultType;
+    }
 
     key.name = jm_vector_get_itemp(char)(bufDeclaredType, 0);
     found = jm_vector_bsearch(jm_named_ptr)(&(context->modelDescription->typeDefinitions.typeDefinitions), &key, jm_compare_named);

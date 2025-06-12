@@ -1311,8 +1311,8 @@ int fmi3_xml_parse_model_description(fmi3_xml_model_description_t* md,
     }
     context->lastBaseUnit = 0;
     context->skipElementCnt = 0;
-    jm_stack_init(int)(&context->elmStack,  context->callbacks);
-    jm_vector_init(char)(&context->elmData,           0, context->callbacks);
+    jm_stack_init(int)(&context->elmStack, context->callbacks);
+    jm_vector_init(char)(&context->elmData, 0, context->callbacks);
     jm_vector_init(char)(&context->variableStartAttr, 0, context->callbacks);
     jm_vector_init(jm_voidp)(&context->currentStartVariableValues, 0, context->callbacks);
 

@@ -236,14 +236,14 @@ int fmi3_xml_get_attr_str(fmi3_xml_parser_context_t* context, fmi3_xml_elm_t elm
         return -1;
     }
 
-    *valp = value; /* can be NULL */ /* NULL if missing and not required */
+    *valp = value; /* NULL if missing (and not required) */
     return 0;
 }
 
 /**
  * Reads the attribute from attribute buffer as jm_vector(char). This will clear the attribute from the buffer.
+ * @param exists (return arg): If attribute exists (to tell empty string vs missing attribute)
  * @param field (return arg): Attribute value (memory owned by this vector)
- * @param exists (return arg): If attribute exists (to be able to tell between empty string and missing)
  */
 int fmi3_xml_parse_attr_as_string_exists(fmi3_xml_parser_context_t* context, fmi3_xml_elm_t elmID, fmi3_xml_attr_t attrID,
         int required, int* exists, jm_vector(char)* field)
@@ -253,21 +253,16 @@ int fmi3_xml_parse_attr_as_string_exists(fmi3_xml_parser_context_t* context, fmi
 
     /* Get pointer to attribute value (owned by expat) */
     if (fmi3_xml_get_attr_str(context, elmID, attrID, required, &val)) {
-        return -1;
+        return -1; /* (required and missing) or other error */
     };
-    /* val = NULL if non required && missing */
-    *exists = (val == NULL) ? 0 : 1;
 
-    if ((!val || !val[0]) && !required) {
-        /* Return empty string */
-        jm_vector_resize(char)(field, 1);       /* Allocate space for null character */
-        jm_vector_set_item(char)(field, 0, 0);  /* Push null character */
-        jm_vector_resize(char)(field, 0);       /* Make length same as for strlen */
-        return 0;
+    if (!val) { /* not required and missing */
+        *exists = 0;
+        return 0; 
     }
+    *exists = 1;
 
     len = strlen(val) + 1;
-
     /* Error check */
     if (jm_vector_resize(char)(field, len) < len) {
         jm_string elmName = fmi3_xml_elmid_to_name(context, elmID);
@@ -278,7 +273,6 @@ int fmi3_xml_parse_attr_as_string_exists(fmi3_xml_parser_context_t* context, fmi
 
     /* Copy to output memory owned by FMIL */
     strcpy(jm_vector_get_itemp(char)(field, 0), val);
-    jm_vector_resize(char)(field, len - 1);  // Make length as for strlen
     return 0;
 }
 

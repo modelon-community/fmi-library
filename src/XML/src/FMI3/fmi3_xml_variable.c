@@ -1495,63 +1495,41 @@ static int fmi3_xml_handle_Variable_unchecked(fmi3_xml_parser_context_t* context
 
     if (!data) {
         fmi3_xml_variable_t* variable;
-        const char* description = NULL;
         jm_vector(char)* bufName = fmi3_xml_reserve_parse_buffer(context, 1, 100);
         jm_vector(char)* bufDesc = fmi3_xml_reserve_parse_buffer(context, 2, 100);
         unsigned int vr;
 
         if (!bufName || !bufDesc) {return -1;} // failure is allocate buffers
 
-        /* Get vr, name and description */
-
         /* Get required attributes: VR, name */
         int req = 0;
+        int nameExists = 0;
         // |= rather than instant returns assure all attributes are parsed.
         req |= fmi3_xml_parse_attr_as_uint32(context, elm_id, FMI3_ATTR(fmi_attr_id_valueReference), 1, &vr, 0);
-        req |= fmi3_xml_parse_attr_as_string(context, elm_id, FMI3_ATTR(fmi_attr_id_name),           1, bufName);
-
-        if (req) {
-            // name or valueReference failed to parse
-            // Variable parsing failed, since these are required
-            return -1;
-        }
-
-        int descriptionExists = 0;
-
-        // optional, failure to parse should only result in missing description
-        fmi3_xml_parse_attr_as_string_exists(context, elm_id, FMI3_ATTR(fmi_attr_id_description), 0, &descriptionExists, bufDesc);
-
-        /* size = 0 if no description && empty description */
-        if (jm_vector_get_size(char)(bufDesc)) {
-            /* Add the description to the model-wide set and retrieve the pointer */
-            description = jm_string_set_put(&md->descriptions, jm_vector_get_itemp(char)(bufDesc, 0));
-        } else {
-            if (descriptionExists) {
-                description = jm_string_set_put(&md->descriptions, "");
-            } else {
-                description = NULL;
-            }
-        }
+        req |= fmi3_xml_parse_attr_as_string_exists(context, elm_id, FMI3_ATTR(fmi_attr_id_name), 1, &nameExists, bufName);
+        if (req) { return -1;} /* required attribute missing */
 
         // Create the variable and set name at same time:
-        const char* name;
-        if (jm_vector_get_size(char)(bufName) == 0) {  // FIXME: Empty string has been resized to 0
-            name = "";
-        } else {
-            name = jm_vector_get_itemp(char)(bufName, 0);
-        }
-        variable = fmi3_xml_alloc_variable_with_name(context, name);
-        if (!variable) {return -1;}
-
+        variable = fmi3_xml_alloc_variable_with_name(context, jm_vector_get_itemp(char)(bufName, 0));
+        if (!variable) { return -1;}
+        
         /* Add Variable ptr to modelDescription obj */
         if (!jm_vector_push_back(jm_voidp)(&md->variablesOrigOrder, variable)) {
             fmi3_xml_parse_fatal(context, "Could not allocate memory");
             return -1;
         }
 
+        int hasDesc = 0;
+        // optional, failure to parse should only result in missing description
+        fmi3_xml_parse_attr_as_string_exists(context, elm_id, FMI3_ATTR(fmi_attr_id_description), 0, &hasDesc, bufDesc);
+        if (hasDesc) {
+            variable->description = jm_string_set_put(&md->descriptions, jm_vector_get_itemp(char)(bufDesc, 0));
+        } else {
+            variable->description = NULL;
+        }
+
         /* Initialize rest of Variable */
         variable->vr = vr;
-        variable->description = description;
         /* Default values */
         variable->type = NULL;
         variable->originalIndex = jm_vector_get_size(jm_voidp)(&md->variablesOrigOrder) - 1;
@@ -2383,53 +2361,32 @@ int fmi3_xml_handle_Alias(fmi3_xml_parser_context_t* context, const char* data) 
         fmi3_xml_model_description_t* md = context->modelDescription;
         fmi3_xml_variable_t* baseVar = jm_vector_get_last(jm_voidp)(&md->variablesOrigOrder);
         size_t bufIdx = 1;
-
-        // FIXME: bufDesc will have size==0 when the attribute value is the empty string,
-        // making it indistinguishable from not being defined at all.
-        //bool hasDesc = fmi3_xml_peek_attr_str(context, FMI3_ATTR(fmi_attr_id_description)) != NULL;
-        int hasDesc;
         
         // Read the attributes to memory owned by FMIL:
         jm_vector(char)* bufName = fmi3_xml_reserve_parse_buffer(context, bufIdx++, 100);
         jm_vector(char)* bufDesc = fmi3_xml_reserve_parse_buffer(context, bufIdx++, 100);
         if (!bufName || !bufDesc) { return -1;}
-        if (fmi3_xml_parse_attr_as_string(context, elmID, FMI3_ATTR(fmi_attr_id_name), 1, bufName)) { return -1;}
-        // optional, failure to parse should only result in missing description
-        fmi3_xml_parse_attr_as_string_exists(context, elmID, FMI3_ATTR(fmi_attr_id_description), 0, &hasDesc, bufDesc);
-
-        /* 
-        TODO: Possibly do not resize the buffer to length zero?
-        Could one then avoid the if check on buf size?
-        and instead rely on the return flag if the string attribute exists?
+        int nameExists = 0;
+        if (fmi3_xml_parse_attr_as_string_exists(context, elmID, FMI3_ATTR(fmi_attr_id_name), 1, &nameExists, bufName)) { return -1;}
         
-        What if we only created an empty string if there actually was an attribute?
-        */
-
         // Create the alias and set name at same time:
-        const char* name;
-        if (jm_vector_get_size(char)(bufName) == 0) {  // FIXME: Empty string has been resized to 0
-            name = "";
-        } else {
-            name = jm_vector_get_itemp(char)(bufName, 0);
-        }
-        fmi3_xml_alias_variable_t* alias = fmi3_xml_alloc_alias_with_name(context, name);
-        if (!alias) return -1;
+        fmi3_xml_alias_variable_t* alias = fmi3_xml_alloc_alias_with_name(context, jm_vector_get_itemp(char)(bufName, 0));
+        if (!alias) { return -1;}
         
         // Add the alias to the base variable:
         if (!baseVar->aliases) {
             baseVar->aliases = jm_vector_alloc(jm_voidp)(0, 0, context->callbacks);
         }
         jm_vector_push_back(jm_voidp)(baseVar->aliases, alias);
-
+        
         // Set the other fields:
+        
+        int hasDesc = 0;
+        // optional, failure to parse should only result in missing description
+        fmi3_xml_parse_attr_as_string_exists(context, elmID, FMI3_ATTR(fmi_attr_id_description), 0, &hasDesc, bufDesc);
         if (hasDesc) {
             /* Add the description to the model-wide set and retrieve the pointer */
-            if (jm_vector_get_size(char)(bufDesc) == 0) {
-                // FIXME: It doesn't work to get empty string from bufDesc since it's resized to 0
-                alias->description = jm_string_set_put(&md->descriptions, "");
-            } else {
-                alias->description = jm_string_set_put(&md->descriptions, jm_vector_get_itemp(char)(bufDesc, 0));
-            }
+            alias->description = jm_string_set_put(&md->descriptions, jm_vector_get_itemp(char)(bufDesc, 0));
         } else {
             alias->description = NULL;
         }

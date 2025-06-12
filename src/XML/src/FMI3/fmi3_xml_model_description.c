@@ -418,16 +418,16 @@ int fmi3_xml_handle_fmiModelDescription(fmi3_xml_parser_context_t* context, cons
         md->fmuKind = fmi3_fmu_kind_unknown;
         /* process the attributes */
         int attrExists = 0; /* unused for now */
-        ret =   fmi3_xml_parse_attr_as_string_exists(context, FMI3_ELM(fmi3_xml_elmID_fmiModelDescription), FMI3_ATTR(fmi_attr_id_fmiVersion), 1, &attrExists, &(md->fmi3_xml_standard_version)) ||
-                fmi3_xml_parse_attr_as_string_exists(context, FMI3_ELM(fmi3_xml_elmID_fmiModelDescription), FMI3_ATTR(fmi_attr_id_modelName), 1, &attrExists, &(md->modelName)) ||
-                fmi3_xml_parse_attr_as_string_exists(context, FMI3_ELM(fmi3_xml_elmID_fmiModelDescription), FMI3_ATTR(fmi_attr_id_instantiationToken), 1, &attrExists, &(md->instantiationToken)) ||
-                fmi3_xml_parse_attr_as_string_exists(context, FMI3_ELM(fmi3_xml_elmID_fmiModelDescription), FMI3_ATTR(fmi_attr_id_description), 0, &attrExists, &(md->description)) ||
-                fmi3_xml_parse_attr_as_string_exists(context, FMI3_ELM(fmi3_xml_elmID_fmiModelDescription), FMI3_ATTR(fmi_attr_id_author), 0, &attrExists, &(md->author)) ||
-                fmi3_xml_parse_attr_as_string_exists(context, FMI3_ELM(fmi3_xml_elmID_fmiModelDescription), FMI3_ATTR(fmi_attr_id_version), 0, &attrExists, &(md->version)) ||
-                fmi3_xml_parse_attr_as_string_exists(context, FMI3_ELM(fmi3_xml_elmID_fmiModelDescription), FMI3_ATTR(fmi_attr_id_copyright), 0, &attrExists, &(md->copyright)) ||
-                fmi3_xml_parse_attr_as_string_exists(context, FMI3_ELM(fmi3_xml_elmID_fmiModelDescription), FMI3_ATTR(fmi_attr_id_license), 0, &attrExists, &(md->license)) ||
-                fmi3_xml_parse_attr_as_string_exists(context, FMI3_ELM(fmi3_xml_elmID_fmiModelDescription), FMI3_ATTR(fmi_attr_id_generationTool), 0, &attrExists, &(md->generationTool)) ||
-                fmi3_xml_parse_attr_as_string_exists(context, FMI3_ELM(fmi3_xml_elmID_fmiModelDescription), FMI3_ATTR(fmi_attr_id_generationDateAndTime), 0, &attrExists, &(md->generationDateAndTime)) ||
+        ret =   fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_fmiModelDescription), FMI3_ATTR(fmi_attr_id_fmiVersion), 1, &attrExists, &(md->fmi3_xml_standard_version)) ||
+                fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_fmiModelDescription), FMI3_ATTR(fmi_attr_id_modelName), 1, &attrExists, &(md->modelName)) ||
+                fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_fmiModelDescription), FMI3_ATTR(fmi_attr_id_instantiationToken), 1, &attrExists, &(md->instantiationToken)) ||
+                fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_fmiModelDescription), FMI3_ATTR(fmi_attr_id_description), 0, &attrExists, &(md->description)) ||
+                fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_fmiModelDescription), FMI3_ATTR(fmi_attr_id_author), 0, &attrExists, &(md->author)) ||
+                fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_fmiModelDescription), FMI3_ATTR(fmi_attr_id_version), 0, &attrExists, &(md->version)) ||
+                fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_fmiModelDescription), FMI3_ATTR(fmi_attr_id_copyright), 0, &attrExists, &(md->copyright)) ||
+                fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_fmiModelDescription), FMI3_ATTR(fmi_attr_id_license), 0, &attrExists, &(md->license)) ||
+                fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_fmiModelDescription), FMI3_ATTR(fmi_attr_id_generationTool), 0, &attrExists, &(md->generationTool)) ||
+                fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_fmiModelDescription), FMI3_ATTR(fmi_attr_id_generationDateAndTime), 0, &attrExists, &(md->generationDateAndTime)) ||
                 fmi3_xml_parse_attr_as_enum  (context, FMI3_ELM(fmi3_xml_elmID_fmiModelDescription), FMI3_ATTR(fmi_attr_id_variableNamingConvention), 0, (unsigned*)&(md->namingConvension),
                                        fmi3_naming_enu_flat, namingConventionMap);
         return ret;
@@ -516,7 +516,7 @@ static int fmi3_xml_process_interface_type_common_attrs(fmi3_xml_parser_context_
     }
 
     int modelIdentifierExists = 0;
-    if (fmi3_xml_parse_attr_as_string_exists(context, elmID, FMI3_ATTR(fmi_attr_id_modelIdentifier), 1, &modelIdentifierExists, modelIdentifierPtr)
+    if (fmi3_xml_parse_attr_as_string(context, elmID, FMI3_ATTR(fmi_attr_id_modelIdentifier), 1, &modelIdentifierExists, modelIdentifierPtr)
         ||
         fmi3_xml_parse_attr_as_boolean(context, elmID, FMI3_ATTR(fmi_attr_id_needsExecutionTool), 0,
                 &md->capabilities[fmi3_me_needsExecutionTool + offset], 0)
@@ -712,7 +712,7 @@ int fmi3_xml_handle_File(fmi3_xml_parser_context_t *context, const char* data) {
         if (!bufName) { return -1;}
         /* <xs:attribute name="name" type="xs:normalizedString" use="required"> */
         int nameExists = 0;
-        if (fmi3_xml_parse_attr_as_string_exists(context, FMI3_ELM(fmi3_xml_elmID_File), FMI3_ATTR(fmi_attr_id_name), 1, &nameExists, bufName)) {
+        if (fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_File), FMI3_ATTR(fmi_attr_id_name), 1, &nameExists, bufName)) {
             return -1;
         }
         return push_back_jm_string(context, &md->sourceFilesME, bufName);
@@ -733,7 +733,7 @@ int fmi3_xml_handle_FileCS(fmi3_xml_parser_context_t *context, const char* data)
         if (!bufName) { return -1;}
         /* <xs:attribute name="name" type="xs:normalizedString" use="required"> */
         int nameExists = 0;
-        if (fmi3_xml_parse_attr_as_string_exists(context, FMI3_ELM(fmi3_xml_elmID_File), FMI3_ATTR(fmi_attr_id_name), 1, &nameExists, bufName)) {
+        if (fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_File), FMI3_ATTR(fmi_attr_id_name), 1, &nameExists, bufName)) {
             return -1;
         }
         return push_back_jm_string(context, &md->sourceFilesCS, bufName);
@@ -763,13 +763,13 @@ int fmi3_xml_handle_Category(fmi3_xml_parser_context_t *context, const char* dat
         if (!bufName) return -1;
         /* <xs:attribute name="name" type="xs:normalizedString"> */
         int nameExists = 0;
-        if (fmi3_xml_parse_attr_as_string_exists(context, FMI3_ELM(fmi3_xml_elmID_Category), FMI3_ATTR(fmi_attr_id_name), 1, &nameExists, bufName)) {
+        if (fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_Category), FMI3_ATTR(fmi_attr_id_name), 1, &nameExists, bufName)) {
             return -1;
         }
         if (push_back_jm_string(context, &md->logCategories, bufName) < 0) { return -1;}
 
         int descriptionExists = 0;
-        if (fmi3_xml_parse_attr_as_string_exists(context, FMI3_ELM(fmi3_xml_elmID_Category), FMI3_ATTR(fmi_attr_id_description), 0, &descriptionExists, bufName) < 0) { return -1;}
+        if (fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_Category), FMI3_ATTR(fmi_attr_id_description), 0, &descriptionExists, bufName) < 0) { return -1;}
         if (push_back_jm_string(context, &md->logCategoryDescriptions, bufName) < 0) { return -1;}
         return 0;
     }

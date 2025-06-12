@@ -50,7 +50,7 @@ int fmi3_xml_handle_VariableTool(fmi3_xml_parser_context_t *context, const char*
         if (!bufName) return -1;
         /* <xs:attribute name="name" type="xs:normalizedString" use="required"> */
         int nameExists = 0;
-        if (fmi3_xml_parse_attr_as_string_exists(context, FMI3_ELM(fmi3_xml_elmID_Tool), FMI3_ATTR(fmi_attr_id_name), 1, &nameExists, bufName)) {
+        if (fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_Tool), FMI3_ATTR(fmi_attr_id_name), 1, &nameExists, bufName)) {
             return -1;
         }
         pvendor = jm_vector_push_back(jm_string)(&md->vendorList, vendor);
@@ -88,7 +88,7 @@ int fmi3_xml_handle_Tool(fmi3_xml_parser_context_t *context, const char* data) {
         if (!bufName) { return -1;}
         /* <xs:attribute name="name" type="xs:normalizedString" use="required"> */
         int nameExists = 0;
-        if (fmi3_xml_parse_attr_as_string_exists(context, FMI3_ELM(fmi3_xml_elmID_Tool), FMI3_ATTR(fmi_attr_id_name), 1, &nameExists, bufName)) {
+        if (fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_Tool), FMI3_ATTR(fmi_attr_id_name), 1, &nameExists, bufName)) {
             return -1;
         }
         pvendor = jm_vector_push_back(jm_string)(&md->vendorList, vendor);

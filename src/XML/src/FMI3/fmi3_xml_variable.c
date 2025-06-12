@@ -1506,7 +1506,7 @@ static int fmi3_xml_handle_Variable_unchecked(fmi3_xml_parser_context_t* context
         int nameExists = 0;
         // |= rather than instant returns assure all attributes are parsed.
         req |= fmi3_xml_parse_attr_as_uint32(context, elm_id, FMI3_ATTR(fmi_attr_id_valueReference), 1, &vr, 0);
-        req |= fmi3_xml_parse_attr_as_string_exists(context, elm_id, FMI3_ATTR(fmi_attr_id_name), 1, &nameExists, bufName);
+        req |= fmi3_xml_parse_attr_as_string(context, elm_id, FMI3_ATTR(fmi_attr_id_name), 1, &nameExists, bufName);
         if (req) { return -1;} /* required attribute missing */
 
         // Create the variable and set name at same time:
@@ -1521,7 +1521,7 @@ static int fmi3_xml_handle_Variable_unchecked(fmi3_xml_parser_context_t* context
 
         int hasDesc = 0;
         // optional, failure to parse should only result in missing description
-        fmi3_xml_parse_attr_as_string_exists(context, elm_id, FMI3_ATTR(fmi_attr_id_description), 0, &hasDesc, bufDesc);
+        fmi3_xml_parse_attr_as_string(context, elm_id, FMI3_ATTR(fmi_attr_id_description), 0, &hasDesc, bufDesc);
         if (hasDesc) {
             variable->description = jm_string_set_put(&md->descriptions, jm_vector_get_itemp(char)(bufDesc, 0));
         } else {
@@ -1549,7 +1549,7 @@ static int fmi3_xml_handle_Variable_unchecked(fmi3_xml_parser_context_t* context
 
         /* Save start value for processing after reading all Dimensions */
         int startExists = 0;
-        res |= fmi3_xml_parse_attr_as_string_exists(context, elm_id, FMI3_ATTR(fmi_attr_id_start), 0, &startExists, &context->variableStartAttr);
+        res |= fmi3_xml_parse_attr_as_string(context, elm_id, FMI3_ATTR(fmi_attr_id_start), 0, &startExists, &context->variableStartAttr);
         if (!startExists) {
             jm_vector_resize(char)(&context->variableStartAttr, 0);
         }
@@ -2210,7 +2210,7 @@ int fmi3_xml_handle_BinaryVariableStart(fmi3_xml_parser_context_t* context, cons
         } else {
             jm_vector(char)* bufStartStr = fmi3_xml_reserve_parse_buffer(context, 1, 100);
             int valueExists = 0;
-            if (fmi3_xml_parse_attr_as_string_exists(context, FMI3_ELM(fmi3_xml_elmID_BinaryVariableStart), FMI3_ATTR(fmi_attr_id_value), 0, &valueExists, bufStartStr)) {
+            if (fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_BinaryVariableStart), FMI3_ATTR(fmi_attr_id_value), 0, &valueExists, bufStartStr)) {
                 return -1;
             }
 
@@ -2251,7 +2251,7 @@ fmi3_xml_enum_variable_props_t* fmi3_xml_parse_enum_properties(fmi3_xml_parser_c
            &md->typeDefinitions.defaultEnumType.base.super, sizeof(fmi3_xml_enum_variable_props_t));
 
     int quantityExists = 0;
-    if (!bufQuantity || !props || fmi3_xml_parse_attr_as_string_exists(context, elmID, FMI3_ATTR(fmi_attr_id_quantity), 0, &quantityExists, bufQuantity)) {
+    if (!bufQuantity || !props || fmi3_xml_parse_attr_as_string(context, elmID, FMI3_ATTR(fmi_attr_id_quantity), 0, &quantityExists, bufQuantity)) {
         return 0;
     }
     if (quantityExists) {
@@ -2373,7 +2373,7 @@ int fmi3_xml_handle_Alias(fmi3_xml_parser_context_t* context, const char* data) 
         jm_vector(char)* bufDesc = fmi3_xml_reserve_parse_buffer(context, bufIdx++, 100);
         if (!bufName || !bufDesc) { return -1;}
         int nameExists = 0;
-        if (fmi3_xml_parse_attr_as_string_exists(context, elmID, FMI3_ATTR(fmi_attr_id_name), 1, &nameExists, bufName)) { return -1;}
+        if (fmi3_xml_parse_attr_as_string(context, elmID, FMI3_ATTR(fmi_attr_id_name), 1, &nameExists, bufName)) { return -1;}
         
         // Create the alias and set name at same time:
         fmi3_xml_alias_variable_t* alias = fmi3_xml_alloc_alias_with_name(context, jm_vector_get_itemp(char)(bufName, 0));
@@ -2389,7 +2389,7 @@ int fmi3_xml_handle_Alias(fmi3_xml_parser_context_t* context, const char* data) 
         
         int hasDesc = 0;
         // optional, failure to parse should only result in missing description
-        fmi3_xml_parse_attr_as_string_exists(context, elmID, FMI3_ATTR(fmi_attr_id_description), 0, &hasDesc, bufDesc);
+        fmi3_xml_parse_attr_as_string(context, elmID, FMI3_ATTR(fmi_attr_id_description), 0, &hasDesc, bufDesc);
         if (hasDesc) {
             /* Add the description to the model-wide set and retrieve the pointer */
             alias->description = jm_string_set_put(&md->descriptions, jm_vector_get_itemp(char)(bufDesc, 0));
@@ -2403,7 +2403,7 @@ int fmi3_xml_handle_Alias(fmi3_xml_parser_context_t* context, const char* data) 
             jm_vector(char)* bufDisplayUnit = fmi3_xml_reserve_parse_buffer(context, bufIdx++, 100);
             if (!bufDisplayUnit) { return -1;}
             int displayUnitExists = 0;
-            if (fmi3_xml_parse_attr_as_string_exists(context, elmID, FMI3_ATTR(fmi_attr_id_displayUnit), 0, &displayUnitExists, bufDisplayUnit)) {
+            if (fmi3_xml_parse_attr_as_string(context, elmID, FMI3_ATTR(fmi_attr_id_displayUnit), 0, &displayUnitExists, bufDisplayUnit)) {
                 return -1;
             }
             if (displayUnitExists) {

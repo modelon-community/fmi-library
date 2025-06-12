@@ -677,8 +677,8 @@ int fmi3_xml_handle_SimpleType(fmi3_xml_parser_context_t *context, const char* d
         /* read attributes to buffers */
         int nameExists = 0;
         int descriptionExist = 0;
-        if (fmi3_xml_parse_attr_as_string_exists(context, FMI3_ELM(fmi3_xml_elmID_SimpleType), FMI3_ATTR(fmi_attr_id_name), 1, &nameExists, bufName) ||
-            fmi3_xml_parse_attr_as_string_exists(context, FMI3_ELM(fmi3_xml_elmID_SimpleType), FMI3_ATTR(fmi_attr_id_description), 0, &descriptionExist, bufDescr)) {
+        if (fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_SimpleType), FMI3_ATTR(fmi_attr_id_name), 1, &nameExists, bufName) ||
+            fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_SimpleType), FMI3_ATTR(fmi_attr_id_description), 0, &descriptionExist, bufDescr)) {
             return -1;
         }
 
@@ -810,9 +810,9 @@ fmi3_xml_float_type_props_t* fmi3_xml_parse_float_type_properties(fmi3_xml_parse
     int unitExists = 0;
     int dispUnitExists = 0;
     if (!bufQuantity || !bufUnit || !bufDispUnit || !props ||
-            fmi3_xml_parse_attr_as_string_exists(context, elmID, FMI3_ATTR(fmi_attr_id_quantity), 0, &quantityExists, bufQuantity) ||
-            fmi3_xml_parse_attr_as_string_exists(context, elmID, FMI3_ATTR(fmi_attr_id_unit), 0, &unitExists, bufUnit) ||
-            fmi3_xml_parse_attr_as_string_exists(context, elmID, FMI3_ATTR(fmi_attr_id_displayUnit), 0, &dispUnitExists, bufDispUnit))
+            fmi3_xml_parse_attr_as_string(context, elmID, FMI3_ATTR(fmi_attr_id_quantity), 0, &quantityExists, bufQuantity) ||
+            fmi3_xml_parse_attr_as_string(context, elmID, FMI3_ATTR(fmi_attr_id_unit), 0, &unitExists, bufUnit) ||
+            fmi3_xml_parse_attr_as_string(context, elmID, FMI3_ATTR(fmi_attr_id_displayUnit), 0, &dispUnitExists, bufDispUnit))
     {
         fmi3_xml_parse_fatal(context, "Error parsing float type properties");
         return NULL;
@@ -914,7 +914,7 @@ fmi3_xml_int_type_props_t* fmi3_xml_parse_intXX_type_properties(fmi3_xml_parser_
     if (!props) { return NULL;}
 
     int quantityExists = 0;
-    if (fmi3_xml_parse_attr_as_string_exists(context, elmID, FMI3_ATTR(fmi_attr_id_quantity), 0, &quantityExists, bufQuantity)) {
+    if (fmi3_xml_parse_attr_as_string(context, elmID, FMI3_ATTR(fmi_attr_id_quantity), 0, &quantityExists, bufQuantity)) {
         return NULL;
     }
 
@@ -1046,7 +1046,7 @@ fmi3_xml_binary_type_props_t* fmi3_xml_parse_binary_type_properties(fmi3_xml_par
         jm_vector(char)* mimeType = fmi3_xml_reserve_parse_buffer(context, 1, 100);
         if (!mimeType) { return NULL;} // buffer allocation failure
         int mimeTypeExists = 0;
-        if (fmi3_xml_parse_attr_as_string_exists(context, elmID, FMI3_ATTR(fmi_attr_id_mimeType), 0, &mimeTypeExists, mimeType)) {
+        if (fmi3_xml_parse_attr_as_string(context, elmID, FMI3_ATTR(fmi_attr_id_mimeType), 0, &mimeTypeExists, mimeType)) {
             props->mimeType = fallbackProps->mimeType; // parsing failure
         } else { // successful parse
             if (mimeTypeExists) {
@@ -1266,7 +1266,7 @@ int fmi3_xml_handle_EnumerationType(fmi3_xml_parser_context_t* context, const ch
             props->base.super.next = nextTmp;
         }
         int quantityExists = 0;
-        if (!bufQuantity || !props || fmi3_xml_parse_attr_as_string_exists(context, FMI3_ELM(fmi3_xml_elmID_Int32Type), FMI3_ATTR(fmi_attr_id_quantity), 0, &quantityExists, bufQuantity)) {
+        if (!bufQuantity || !props || fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_Int32Type), FMI3_ATTR(fmi_attr_id_quantity), 0, &quantityExists, bufQuantity)) {
             return -1;
         }
         if (quantityExists) {
@@ -1327,8 +1327,8 @@ int fmi3_xml_handle_Item(fmi3_xml_parser_context_t* context, const char* data) {
         int nameExists = 0;
         int descriptionExists = 0;
         if (!bufName || !bufDescr ||
-                fmi3_xml_parse_attr_as_string_exists(context, FMI3_ELM(fmi3_xml_elmID_Item), FMI3_ATTR(fmi_attr_id_name), 1, &nameExists, bufName) ||
-                fmi3_xml_parse_attr_as_string_exists(context, FMI3_ELM(fmi3_xml_elmID_Item), FMI3_ATTR(fmi_attr_id_description), 0, &descriptionExists, bufDescr) ||
+                fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_Item), FMI3_ATTR(fmi_attr_id_name), 1, &nameExists, bufName) ||
+                fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_Item), FMI3_ATTR(fmi_attr_id_description), 0, &descriptionExists, bufDescr) ||
                 fmi3_xml_parse_attr_as_int32(context, FMI3_ELM(fmi3_xml_elmID_Item), FMI3_ATTR(fmi_attr_id_value), 1, &value, 0)) {
             return -1;
         }
@@ -1367,7 +1367,7 @@ fmi3_xml_variable_type_base_t* fmi3_parse_declared_type_attr(fmi3_xml_parser_con
     jm_vector(char)* bufDeclaredType = fmi3_xml_reserve_parse_buffer(context, 1, 100);
 
     int declaredTypeExists = 0;
-    fmi3_xml_parse_attr_as_string_exists(context, elmID, FMI3_ATTR(fmi_attr_id_declaredType), 0, &declaredTypeExists, bufDeclaredType);
+    fmi3_xml_parse_attr_as_string(context, elmID, FMI3_ATTR(fmi_attr_id_declaredType), 0, &declaredTypeExists, bufDeclaredType);
     if (!declaredTypeExists) {
         return defaultType;
     }

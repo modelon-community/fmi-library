@@ -233,7 +233,7 @@ int fmi3_xml_handle_Unit(fmi3_xml_parser_context_t *context, const char* data) {
             if (!buf) return -1;
             /*  <xs:attribute name="name" type="xs:normalizedString" use="required"> */
             int nameExists = 0;
-            if ( fmi3_xml_parse_attr_as_string_exists(context, FMI3_ELM(fmi3_xml_elmID_BaseUnit), FMI3_ATTR(fmi_attr_id_name), 1, &nameExists, buf) ||
+            if ( fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_BaseUnit), FMI3_ATTR(fmi_attr_id_name), 1, &nameExists, buf) ||
                 !(unit = fmi3_xml_get_parsed_unit(context, buf, 0))
                ) {
                 return -1;
@@ -262,7 +262,7 @@ int fmi3_xml_handle_DisplayUnit(fmi3_xml_parser_context_t *context, const char* 
             /*  <xs:attribute name="name" type="xs:normalizedString" use="required"/> */
 
             int nameExists = 0;
-            ret = fmi3_xml_parse_attr_as_string_exists(context, FMI3_ELM(fmi3_xml_elmID_DisplayUnit), FMI3_ATTR(fmi_attr_id_name), 1, &nameExists, buf);
+            ret = fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_DisplayUnit), FMI3_ATTR(fmi_attr_id_name), 1, &nameExists, buf);
             if (ret) { return ret;}
             /* alloc memory to the correct size and put display unit on the list for the base unit */
             named.ptr = 0;

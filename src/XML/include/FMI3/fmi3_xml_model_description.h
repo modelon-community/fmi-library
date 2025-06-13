@@ -249,6 +249,22 @@ fmi3_xml_variable_t* fmi3_xml_get_variable_by_name(fmi3_xml_model_description_t*
 */
 fmi3_xml_variable_t* fmi3_xml_get_variable_by_vr(fmi3_xml_model_description_t* md, fmi3_value_reference_t vr);
 
+/**
+    \brief Get description of variable or alias by variable name
+    @param md - the model description
+    @param name - variable name
+    @return description.
+*/
+const char* fmi3_xml_get_variable_description_by_name(fmi3_xml_model_description_t* md, const char* name);
+
+/**
+    \brief Get display unit of variable or alias by variable name
+    @param md - the model description
+    @param name - variable name
+    @return display unit, NULL if no display unit or variable not found.
+*/
+fmi3_xml_display_unit_t* fmi3_xml_get_variable_display_unit_by_name(fmi3_xml_model_description_t* md, const char* name);
+
 /** \brief Get the number of vendors that had annotations in the XML*/
 size_t fmi3_xml_get_vendors_num(fmi3_xml_model_description_t* md);
 

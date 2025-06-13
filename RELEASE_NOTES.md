@@ -10,6 +10,16 @@ Note that version 2.1 is the first version with release notes. Please see the co
 - CMake option FMILIB_FIND_PACKAGE_ZLIB is now obsolete, use FMILIB_SYSTEM_ZLIB instead
 - Use `c99_snprintf` third-party dependency only when compiling with MSVC 2015 and lower
 - Bump minimum cmake version 3.15 and enable compatibility with 4.x.
+- Added convenience functionality:
+    - Checking if a variable has aliases: `fmi3_import_get_variable_has_alias`.
+    - Getting description of variable or alias variable via name : `fmi3_import_get_variable_description_by_name`.
+    - Getting display unit of variable or alias variable via name : `fmi3_import_get_variable_display_unit_by_name`.
+    - Checking if a variable has clocks: `fmi3_import_get_variable_is_clocked`.
+    - Checking if a variable is clocked by a clock variable: `fmi3_import_get_variable_is_clocked_by`.
+- `fmi3_import_get_variable_description` and `fmi3_import_get_alias_variable_description` now correctly return empty strings
+  for missing descriptions, as stated in the documentation.
+- Added functions `fmi3_import_get_variable_has_description` and `fmi3_import_get_alias_variable_has_description` to check if an 
+  (alias) variable has a description. Use this to tell between empty description and no description.
 
 ## 3.0.3
 

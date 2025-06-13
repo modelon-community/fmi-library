@@ -1350,8 +1350,6 @@ int fmi3_xml_handle_Item(fmi3_xml_parser_context_t* context, const char* data) {
         } else {
             item->itemDescription[0] = '\0';
         }
-        // if (descrlen)
-        // item->itemDescription[descrlen] = 0;
     }
     return 0;
 }

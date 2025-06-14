@@ -30,7 +30,7 @@ void fmi3_xml_parse_error(fmi3_xml_parser_context_t* context, const char* fmt, .
     va_list args;
     va_start (args, fmt);
     if (context->parser)
-        jm_log_info(context->callbacks, module, "[Line:%u] Detected during parsing:", XML_GetCurrentLineNumber(context->parser));
+        jm_log_info(context->callbacks, module, "[Line:%lu] Detected during parsing:", XML_GetCurrentLineNumber(context->parser));
     jm_log_error_v(context->callbacks, module, fmt, args);
     va_end (args);
 }
@@ -39,7 +39,7 @@ void fmi3_xml_parse_warning(fmi3_xml_parser_context_t* context, const char* fmt,
     va_list args;
     va_start (args, fmt);
     if (context->parser)
-        jm_log_info(context->callbacks, module, "[Line:%u] Detected during parsing:", XML_GetCurrentLineNumber(context->parser));
+        jm_log_info(context->callbacks, module, "[Line:%lu] Detected during parsing:", XML_GetCurrentLineNumber(context->parser));
     jm_log_warning_v(context->callbacks, module, fmt, args);
     va_end (args);
 }

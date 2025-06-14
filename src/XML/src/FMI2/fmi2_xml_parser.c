@@ -138,7 +138,7 @@ void fmi2_xml_parse_error(fmi2_xml_parser_context_t *context, const char* fmt, .
     va_list args;
     va_start (args, fmt);
     if(context->parser)
-        jm_log_info(context->callbacks, module, "[Line:%u] Detected during parsing:", XML_GetCurrentLineNumber(context->parser));
+        jm_log_info(context->callbacks, module, "[Line:%lu] Detected during parsing:", XML_GetCurrentLineNumber(context->parser));
     jm_log_error_v(context->callbacks, module,fmt, args);
     va_end (args);
 }
@@ -404,7 +404,7 @@ static void XMLCALL fmi2_parse_element_start(void *c, const char *elm, const cha
 
     if(context->skipElementCnt) {
         context->skipElementCnt++;
-        jm_log_warning(context->callbacks, module, "[Line:%u] Skipping nested XML element '%s'",
+        jm_log_warning(context->callbacks, module, "[Line:%lu] Skipping nested XML element '%s'",
             XML_GetCurrentLineNumber(context->parser), elm);
         return;
     }
@@ -414,7 +414,7 @@ static void XMLCALL fmi2_parse_element_start(void *c, const char *elm, const cha
     currentElMap = jm_vector_bsearch(fmi2_xml_element_handle_map_t)(context->elmMap, &keyEl, fmi2_xml_compare_elmName);
     if(!currentElMap) {
         /* not found error*/
-        jm_log_error(context->callbacks, module, "[Line:%u] Unknown element '%s' in XML, skipping",
+        jm_log_error(context->callbacks, module, "[Line:%lu] Unknown element '%s' in XML, skipping",
             XML_GetCurrentLineNumber(context->parser), elm);
         context->skipElementCnt = 1;
         return;
@@ -428,7 +428,7 @@ static void XMLCALL fmi2_parse_element_start(void *c, const char *elm, const cha
 
         if(fmi2_xml_scheme_info[currentID].parentID != parentID) {
                 jm_log_error(context->callbacks, module, 
-                    "[Line:%u] XML element '%s' cannot be placed inside '%s', skipping",
+                    "[Line:%lu] XML element '%s' cannot be placed inside '%s', skipping",
                     XML_GetCurrentLineNumber(context->parser), elm, fmi2_element_handle_map[parentID].elementName);
                 context->skipElementCnt = 1;
                 return;
@@ -437,7 +437,7 @@ static void XMLCALL fmi2_parse_element_start(void *c, const char *elm, const cha
             if(siblingID == currentID) {
                 if(!fmi2_xml_scheme_info[currentID].multipleAllowed) {
                     jm_log_error(context->callbacks, module, 
-                        "[Line:%u] Multiple instances of XML element '%s' are not allowed, skipping",
+                        "[Line:%lu] Multiple instances of XML element '%s' are not allowed, skipping",
                         XML_GetCurrentLineNumber(context->parser), elm);
                     context->skipElementCnt = 1;
                     return;
@@ -449,7 +449,7 @@ static void XMLCALL fmi2_parse_element_start(void *c, const char *elm, const cha
 
                 if(lastSiblingIndex >= curSiblingIndex) {
                     jm_log_error(context->callbacks, module, 
-                        "[Line:%u] XML element '%s' cannot be placed after element '%s', skipping",
+                        "[Line:%lu] XML element '%s' cannot be placed after element '%s', skipping",
                         XML_GetCurrentLineNumber(context->parser), elm, fmi2_element_handle_map[siblingID].elementName);
                     context->skipElementCnt = 1;
                     return;
@@ -618,7 +618,7 @@ static void XMLCALL fmi2_parse_element_data(void* c, const XML_Char *s, int len)
         }
 
         if((i != len) && !context->has_produced_data_warning) {
-            jm_log_warning(context->callbacks, module, "[Line:%u] Skipping unexpected XML element data",
+            jm_log_warning(context->callbacks, module, "[Line:%lu] Skipping unexpected XML element data",
                     XML_GetCurrentLineNumber(context->parser));
             context->has_produced_data_warning = 1;
         }

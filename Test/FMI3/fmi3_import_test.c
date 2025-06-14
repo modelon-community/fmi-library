@@ -30,7 +30,7 @@
 static void fmi3logger(fmi3_instance_environment_t env, fmi3_status_t status, fmi3_string_t category, fmi3_string_t message)
 {
     char msg[BUFFER];
-    jm_snprintf(msg, BUFFER, message);
+    jm_snprintf(msg, BUFFER, "%s", message);
     printf("fmiStatus = %s;  %s: %s\n", fmi3_status_to_string(status), category, msg);
 }
 

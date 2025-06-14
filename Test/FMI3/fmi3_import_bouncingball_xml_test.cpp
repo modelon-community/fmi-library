@@ -229,7 +229,8 @@ void printVariableInfo(fmi3_import_t* fmu,
             break;
         }
         case fmi3_base_type_enum:{
-            printf("start = %" PRId64 "\n", fmi3_import_get_enum_variable_start(fmi3_import_get_variable_as_enum(v)));
+            // doesn't work on mingw_64, but there are enums in bouncing ball
+            // printf("start = %" PRId64 "\n", fmi3_import_get_enum_variable_start(fmi3_import_get_variable_as_enum(v)));
             break;
         }
         default:

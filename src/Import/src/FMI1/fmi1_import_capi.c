@@ -137,7 +137,7 @@ jm_status_enu_t fmi1_import_create_dllfmu(fmi1_import_t* fmu, fmi1_callback_func
             jm_log_debug(fmu->callbacks, module, "Created an empty active fmu list");
         }
         jm_vector_push_back(jm_voidp)(fmi1_import_active_fmu, fmu);
-        jm_log_debug(fmu->callbacks, module, "Registrered active fmu(%p)", fmu);
+        jm_log_debug(fmu->callbacks, module, "Registrered active fmu(%p)", (void*)fmu);
     }
 
     return jm_status_success;
@@ -174,7 +174,7 @@ void fmi1_import_destroy_dllfmu(fmi1_import_t* fmu) {
             nFmu = jm_vector_get_size(jm_voidp)(fmi1_import_active_fmu);
             if(index < nFmu) {
                 jm_vector_remove_item(jm_voidp)(fmi1_import_active_fmu,index);
-                jm_log_debug(fmu->callbacks, module, "Unregistrered active fmu(%p)", fmu);
+                jm_log_debug(fmu->callbacks, module, "Unregistrered active fmu(%p)", (void*)fmu);
                 if(nFmu == 1) {
                     jm_vector_free_data(jm_voidp)(fmi1_import_active_fmu);
                     fmi1_import_active_fmu = 0;

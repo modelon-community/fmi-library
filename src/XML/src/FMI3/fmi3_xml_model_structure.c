@@ -262,7 +262,7 @@ static int fmi3_xml_parse_dependencies(fmi3_xml_parser_context_t* context,
             }
             if (!ch) break;
             if (sscanf(cur, "%lld", &ind) != 1) {
-                fmi3_xml_parse_error(context, "XML element '%s': could not parse item %d, character '%c' in the list for attribute 'dependencies'",
+                fmi3_xml_parse_error(context, "XML element '%s': could not parse item %zu, character '%c' in the list for attribute 'dependencies'",
                     fmi3_xml_elmid_to_name(context, elmID), *numDepInd, ch);
                 return -1;
             }
@@ -330,7 +330,7 @@ static int fmi3_xml_parse_dependencies(fmi3_xml_parser_context_t* context,
                 cur+=8;
             }
             else {
-                fmi3_xml_parse_error(context, "XML element '%s': could not parse item %d in the list for attribute 'dependenciesKind'",
+                fmi3_xml_parse_error(context, "XML element '%s': could not parse item %zu in the list for attribute 'dependenciesKind'",
                     fmi3_xml_elmid_to_name(context, elmID), *numDepKind);
                 return -1;
             }
@@ -351,7 +351,7 @@ static int fmi3_xml_parse_dependencies(fmi3_xml_parser_context_t* context,
     if (listInd && listKind) {
         /* both lists are present - the number of items must match */
         if (*numDepInd != *numDepKind) {
-            fmi3_xml_parse_error(context, "XML element '%s': different number of items (%u and %u) in the lists for 'dependencies' and 'dependenciesKind'",
+            fmi3_xml_parse_error(context, "XML element '%s': different number of items (%zu and %zu) in the lists for 'dependencies' and 'dependenciesKind'",
                     fmi3_xml_elmid_to_name(context, elmID), *numDepInd, *numDepKind);
             return -1;
         }

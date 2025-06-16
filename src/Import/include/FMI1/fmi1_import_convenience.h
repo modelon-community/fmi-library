@@ -107,7 +107,7 @@ void fmi1_import_expand_variable_references(fmi1_import_t* fmu, const char* msgI
     Note that this function is not thread safe due to the use of the global list.
 */
 FMILIB_EXPORT 
-void  fmi1_log_forwarding(fmi1_component_t c, fmi1_string_t instanceName, fmi1_status_t status, fmi1_string_t category, fmi1_string_t message, ...);
+void  fmi1_log_forwarding(fmi1_component_t c, fmi1_string_t instanceName, fmi1_status_t status, fmi1_string_t category, fmi1_string_t message, ...) jm_printf_format(5);
 
 /**
     \brief An implementation of FMI 1.0 logger that forwards the messages to logger function inside ::jm_callbacks structure.
@@ -115,12 +115,12 @@ void  fmi1_log_forwarding(fmi1_component_t c, fmi1_string_t instanceName, fmi1_s
     See fmi1_log_forwarding() for more information.
 */
 FMILIB_EXPORT 
-void  fmi1_log_forwarding_v(fmi1_component_t c, fmi1_string_t instanceName, fmi1_status_t status, fmi1_string_t category, fmi1_string_t message, va_list args);
+void  fmi1_log_forwarding_v(fmi1_component_t c, fmi1_string_t instanceName, fmi1_status_t status, fmi1_string_t category, fmi1_string_t message, va_list args) jm_vprintf_format(5);
 
 
 /** \brief  Default FMI 1.0 logger may be used when instantiating FMUs */
 FMILIB_EXPORT
-void  fmi1_default_callback_logger(fmi1_component_t c, fmi1_string_t instanceName, fmi1_status_t status, fmi1_string_t category, fmi1_string_t message, ...);
+void  fmi1_default_callback_logger(fmi1_component_t c, fmi1_string_t instanceName, fmi1_status_t status, fmi1_string_t category, fmi1_string_t message, ...) jm_printf_format(5);
 
 /** \brief  Given ::fmi1_callback_functions_t logger (fmi1_logger), the ::jm_callbacks logger may be setup to redirect the messages to the fmi1_logger.
 

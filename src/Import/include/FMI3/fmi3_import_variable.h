@@ -112,7 +112,7 @@ typedef struct fmi3_xml_dimension_list_t fmi3_import_dimension_list_t;
 /** \brief Get the variable name */
 FMILIB_EXPORT const char* fmi3_import_get_variable_name(fmi3_import_variable_t* v);
 
-/** \brief Check if variable has description. */
+/** \brief Check if variable has a description. */
 FMILIB_EXPORT fmi3_boolean_t fmi3_import_get_variable_has_description(fmi3_import_variable_t* v);
 
 /** \brief Get variable description.
@@ -570,7 +570,7 @@ FMILIB_EXPORT fmi3_import_alias_variable_t* fmi3_import_get_alias(fmi3_import_al
 
 /** \brief Get name for the alias variable. */
 FMILIB_EXPORT const char* fmi3_import_get_alias_variable_name(fmi3_import_alias_variable_t* alias);
-/** \brief Check if alias variable has description. */
+/** \brief Check if an alias variable has a description. */
 FMILIB_EXPORT fmi3_boolean_t fmi3_import_get_alias_variable_has_description(fmi3_import_alias_variable_t* alias);
 /** \brief Get the description for the alias variable, empty string "" if missing */
 FMILIB_EXPORT const char* fmi3_import_get_alias_variable_description(fmi3_import_alias_variable_t* alias);

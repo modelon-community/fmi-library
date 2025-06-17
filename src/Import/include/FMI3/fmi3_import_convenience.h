@@ -194,7 +194,7 @@ const char* fmi3_import_get_variable_description_by_name(fmi3_import_t* fmu, con
     \brief Get variable display unit by variable name. Alias variable names result in the display unit of the alias variable.
     @param fmu - An fmu object as returned by fmi3_import_parse_xml().
     @param name - variable name
-    @return "display unit" object if existant. NULL if no variable exists, or no display unit.
+    @return Pointer to the display unit object if it exists; NULL if the variable does not exist or has no display unit.
 */
 FMILIB_EXPORT
 fmi3_import_display_unit_t* fmi3_import_get_variable_display_unit_by_name(fmi3_import_t* fmu, const char* name);

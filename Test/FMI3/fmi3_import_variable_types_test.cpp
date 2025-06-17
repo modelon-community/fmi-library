@@ -31,7 +31,9 @@ static void test_small_float64(fmi3_import_t* xml) {
     fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "var1");
     REQUIRE(v != nullptr);
     REQUIRE(fmi3_import_get_variable_vr(v) == 1);
-    REQUIRE(fmi3_import_get_variable_description(v) == nullptr);
+    const char* desc = fmi3_import_get_variable_description(v);
+    REQUIRE(desc != nullptr);
+    REQUIRE_STREQ(desc, "");
     REQUIRE(fmi3_import_get_variable_causality(v) == fmi3_causality_enu_local);
     REQUIRE(fmi3_import_get_variable_variability(v) == fmi3_variability_enu_continuous);
 
@@ -54,7 +56,9 @@ static void test_small_float32(fmi3_import_t* xml) {
     fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "var2");
     REQUIRE(v != nullptr);
     REQUIRE(fmi3_import_get_variable_vr(v) == 2);
-    REQUIRE(fmi3_import_get_variable_description(v) == nullptr);
+    const char* desc = fmi3_import_get_variable_description(v);
+    REQUIRE(desc != nullptr);
+    REQUIRE_STREQ(desc, "");
     REQUIRE(fmi3_import_get_variable_causality(v) == fmi3_causality_enu_local);
     REQUIRE(fmi3_import_get_variable_variability(v) == fmi3_variability_enu_continuous);
 

@@ -32,7 +32,10 @@ static void test_enum_default_attrs(fmi3_import_t* xml) {
 
     REQUIRE(v != nullptr);
     REQUIRE(fmi3_import_get_variable_vr(v) == 1);
-    REQUIRE(fmi3_import_get_variable_description(v) == nullptr); /* Default description is empty */
+    const char* desc = fmi3_import_get_variable_description(v); 
+    REQUIRE(desc != nullptr);
+    REQUIRE_STREQ(desc, ""); /* Default description is empty */
+    REQUIRE(fmi3_import_get_variable_has_description(v) == false);
     REQUIRE(fmi3_import_get_variable_causality(v) == fmi3_causality_enu_local);
     REQUIRE(fmi3_import_get_variable_variability(v) == fmi3_variability_enu_discrete);
     REQUIRE(fmi3_import_get_variable_initial(v) == fmi3_initial_enu_calculated);
@@ -64,7 +67,10 @@ static void test_enum_all_attrs(fmi3_import_t* xml) {
 
     REQUIRE(v != nullptr);
     REQUIRE(fmi3_import_get_variable_vr(v) == 2);
-    REQUIRE_STREQ(fmi3_import_get_variable_description(v), "myDescription");
+    const char* desc = fmi3_import_get_variable_description(v); 
+    REQUIRE(desc != nullptr);
+    REQUIRE_STREQ(desc, "myDescription");
+    REQUIRE(fmi3_import_get_variable_has_description(v) == true);
     REQUIRE(fmi3_import_get_variable_causality(v) == fmi3_causality_enu_output);
     REQUIRE(fmi3_import_get_variable_variability(v) == fmi3_variability_enu_discrete);
     REQUIRE(fmi3_import_get_variable_initial(v) == fmi3_initial_enu_exact);
@@ -112,13 +118,17 @@ static void test_binary_default_attrs(fmi3_import_t* xml) {
 
     REQUIRE(v != nullptr);
     REQUIRE(fmi3_import_get_variable_vr(v) == 3);
-    REQUIRE(fmi3_import_get_variable_description(v) == nullptr);
+    const char* desc = fmi3_import_get_variable_description(v);
+    REQUIRE(desc != nullptr);
+    REQUIRE_STREQ(desc, "");
+    REQUIRE(fmi3_import_get_variable_has_description(v) == false);
     REQUIRE(fmi3_import_get_variable_causality(v) == fmi3_causality_enu_local);
     REQUIRE(fmi3_import_get_variable_variability(v) == fmi3_variability_enu_discrete);
     REQUIRE(fmi3_import_get_variable_initial(v) == fmi3_initial_enu_calculated);  // Depends on causality and variability
     REQUIRE(fmi3_import_get_variable_can_handle_multiple_set_per_time_instant(v) == true); // default
     REQUIRE(fmi3_import_get_variable_intermediate_update(v) == false); // default
 
+    REQUIRE(fmi3_import_get_variable_is_clocked(v) == false);
     clockVars = fmi3_import_get_variable_clocks(xml, v);
     REQUIRE(fmi3_import_get_variable_list_size(clockVars) == 0);
     fmi3_import_free_variable_list(clockVars);
@@ -150,7 +160,10 @@ static void test_binary_all_attrs(fmi3_import_t* xml) {
     REQUIRE(fmi3_import_get_variable_causality(v) == fmi3_causality_enu_output);
     REQUIRE(fmi3_import_get_variable_variability(v) == fmi3_variability_enu_discrete);
     REQUIRE(fmi3_import_get_variable_initial(v) == fmi3_initial_enu_calculated);
-    REQUIRE_STREQ(fmi3_import_get_variable_description(v), "myDesc");
+    const char* desc = fmi3_import_get_variable_description(v);
+    REQUIRE(desc != nullptr);
+    REQUIRE_STREQ(desc, "myDesc");
+    REQUIRE(fmi3_import_get_variable_has_description(v) == true);
     REQUIRE(fmi3_import_get_variable_can_handle_multiple_set_per_time_instant(v) == true); // default
     REQUIRE(fmi3_import_get_variable_intermediate_update(v) == true);
 
@@ -158,6 +171,7 @@ static void test_binary_all_attrs(fmi3_import_t* xml) {
     REQUIRE(preBv != nullptr);
     REQUIRE(fmi3_import_get_variable_vr(preBv) == 4001);
 
+    REQUIRE(fmi3_import_get_variable_is_clocked(v) == true);
     clockVars = fmi3_import_get_variable_clocks(xml, v);
     REQUIRE(fmi3_import_get_variable_list_size(clockVars) == 1);
     cv = fmi3_import_get_variable(clockVars, 0);
@@ -188,7 +202,9 @@ static void test_binary_empty_mimeType(fmi3_import_t* xml) {
     REQUIRE(bv != nullptr);
 
     // BUG: Expected is to equal the empty string. Probably same for 'quantity'.
-    REQUIRE(fmi3_import_get_binary_variable_mime_type(bv) == nullptr);
+    const char* mimeType = fmi3_import_get_binary_variable_mime_type(bv);
+    REQUIRE(mimeType != nullptr);
+    REQUIRE_STREQ(mimeType, "");
 }
 
 /**
@@ -229,6 +245,7 @@ static void test_clock_attr_multi_value(fmi3_import_t* xml) {
     size_t nClocks = 3;
 
     REQUIRE(v != nullptr);
+    REQUIRE(fmi3_import_get_variable_is_clocked(v) == true);
     clockVars = fmi3_import_get_variable_clocks(xml, v);
     REQUIRE(fmi3_import_get_variable_list_size(clockVars) == nClocks);
     for (size_t i = 0; i < nClocks; i++) {
@@ -249,11 +266,15 @@ static void test_clock_default_attrs(fmi3_import_t* xml) {
     fmi3_import_variable_list_t* clockVars;
 
     REQUIRE(v != nullptr);
-    REQUIRE(fmi3_import_get_variable_description(v) == nullptr);
+    const char* desc = fmi3_import_get_variable_description(v); 
+    REQUIRE(desc != nullptr);
+    REQUIRE_STREQ(desc, "");
+    REQUIRE(fmi3_import_get_variable_has_description(v) == false);
     REQUIRE(fmi3_import_get_variable_causality(v) == fmi3_causality_enu_local);
     REQUIRE(fmi3_import_get_variable_variability(v) == fmi3_variability_enu_discrete);
     REQUIRE(fmi3_import_get_variable_initial(v) == fmi3_initial_enu_calculated);  // Depends on causality and variability
 
+    REQUIRE(fmi3_import_get_variable_is_clocked(v) == false);
     clockVars = fmi3_import_get_variable_clocks(xml, v);
     REQUIRE(fmi3_import_get_variable_list_size(clockVars) == 0);
     fmi3_import_free_variable_list(clockVars);
@@ -514,11 +535,8 @@ static void check_aliases(fmi3_import_t* fmu, const char* baseVarName, size_t nA
         } else {
             REQUIRE_STREQ(name, namesExp[i]);
         }
-        if (descExp[i] == nullptr) {
-            REQUIRE(desc == nullptr);
-        } else {
-            REQUIRE_STREQ(desc, descExp[i]);
-        }
+        REQUIRE(desc != nullptr);
+        REQUIRE_STREQ(desc, descExp[i]);
         REQUIRE(displayUnit == duExp[i]);
     }
 }
@@ -551,7 +569,7 @@ TEST_CASE("Alias variables") {
     
     SECTION("Minimal alias") {
         const char* namesExp[]              = { "v2_a1" };
-        const char* descExp[]               = { nullptr };
+        const char* descExp[]               = { "" };
         fmi3_import_display_unit_t* duExp[] = { nullptr };
         check_aliases(fmu, "v2", 1, namesExp, descExp, duExp);
     }
@@ -565,28 +583,28 @@ TEST_CASE("Alias variables") {
     
     SECTION("Multiple aliases") {
         const char* namesExp[]              = { "v4_a1", "v4_a2", "v4_a3" };
-        const char* descExp[]               = { nullptr, nullptr, nullptr };
+        const char* descExp[]               = { "", "", "" };
         fmi3_import_display_unit_t* duExp[] = { nullptr, nullptr, nullptr };
         check_aliases(fmu, "v4", 3, namesExp, descExp, duExp);
     }
     
     SECTION("Multiple aliases with different optional attributes") {
         const char* namesExp[]              = { "v5_a1", "v5_a2"      };
-        const char* descExp[]               = { nullptr, "v5_a2_desc" };
+        const char* descExp[]               = { "", "v5_a2_desc" };
         fmi3_import_display_unit_t* duExp[] = { degC,    nullptr      };
         check_aliases(fmu, "v5", 2, namesExp, descExp, duExp);
     }
     
     SECTION("Alias on non-Float64") {
         const char* namesExp[]              = { "v6_a1" };
-        const char* descExp[]               = { nullptr };
+        const char* descExp[]               = { "" };
         fmi3_import_display_unit_t* duExp[] = { nullptr };
         check_aliases(fmu, "v6", 1, namesExp, descExp, duExp);
     }
     
     SECTION("Aliases with other sibling elements") {
         const char* namesExp[]              = { "v7_a1", "v7_a2" };
-        const char* descExp[]               = { nullptr, nullptr };
+        const char* descExp[]               = { "", "" };
         fmi3_import_display_unit_t* duExp[] = { nullptr, nullptr };
         check_aliases(fmu, "v7", 2, namesExp, descExp, duExp);
     }
@@ -1041,5 +1059,106 @@ TEST_CASE("Causality independent on non float") {
     }
 
     REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 12);
+    fmi3_testutil_import_free(tfmu);
+}
+
+TEST_CASE("Test fmi3_import_get_variable_has_alias function") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/variables/valid/alias1";
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* xml = tfmu->fmu;
+    REQUIRE(xml != nullptr);
+
+    fmi3_import_variable_t* baseVar;
+    
+    baseVar = fmi3_import_get_variable_by_name(xml, "v1");
+    REQUIRE(baseVar != nullptr);
+    REQUIRE(fmi3_import_get_variable_has_alias(baseVar) == false);
+
+    baseVar = fmi3_import_get_variable_by_name(xml, "v2");
+    REQUIRE(baseVar != nullptr);
+    REQUIRE(fmi3_import_get_variable_has_alias(baseVar) == true);
+
+    baseVar = fmi3_import_get_variable_by_name(xml, "v3");
+    REQUIRE(baseVar != nullptr);
+    REQUIRE(fmi3_import_get_variable_has_alias(baseVar) == true);
+
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
+    fmi3_testutil_import_free(tfmu);
+}
+
+static fmi3_import_alias_variable_t* get_first_and_only_alias_variable(fmi3_import_variable_t* baseVar) {
+    fmi3_import_alias_variable_t* aliasVar;
+    fmi3_import_alias_variable_list_t* aliasVarList;
+
+    aliasVarList = fmi3_import_get_variable_alias_list(baseVar);
+    REQUIRE(aliasVarList != nullptr);
+    REQUIRE(fmi3_import_get_alias_variable_list_size(aliasVarList) == 1);
+    return fmi3_import_get_alias(aliasVarList, 0);
+}
+
+TEST_CASE("Test fmi3_import_get_(alias)_variable_has_description function") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/variables/valid/empty_description_no_description";
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* xml = tfmu->fmu;
+    REQUIRE(xml != nullptr);
+
+    fmi3_import_variable_t* baseVar;
+    fmi3_import_alias_variable_t* aliasVar;
+
+    /* no description */
+    baseVar = fmi3_import_get_variable_by_vr(xml, 1);
+    REQUIRE(baseVar != nullptr);
+    const char* desc_a = fmi3_import_get_variable_description(baseVar);
+    REQUIRE(desc_a != nullptr);
+    REQUIRE_STREQ(desc_a, "");
+    REQUIRE(fmi3_import_get_variable_has_description(baseVar) == false);
+
+    aliasVar = get_first_and_only_alias_variable(baseVar);
+    REQUIRE(aliasVar != nullptr);
+
+    const char* desc_aa = fmi3_import_get_alias_variable_description(aliasVar);
+    REQUIRE(desc_aa != nullptr);
+    REQUIRE_STREQ(desc_aa, "");
+    REQUIRE(fmi3_import_get_alias_variable_has_description(aliasVar) == false);
+
+    /* empty description */
+    baseVar = fmi3_import_get_variable_by_vr(xml, 2);
+    REQUIRE(baseVar != nullptr);
+    const char* desc_b = fmi3_import_get_variable_description(baseVar);
+    REQUIRE(desc_b != nullptr);
+    REQUIRE_STREQ(desc_b, "");
+    fmi3_boolean_t res = fmi3_import_get_variable_has_description(baseVar);
+    REQUIRE(fmi3_import_get_variable_has_description(baseVar) == true);
+
+    aliasVar = get_first_and_only_alias_variable(baseVar);
+    REQUIRE(aliasVar != nullptr);
+
+    const char* desc_bb = fmi3_import_get_alias_variable_description(aliasVar);
+    REQUIRE(desc_bb != nullptr);
+    REQUIRE_STREQ(desc_bb, "");
+    fmi3_import_get_alias_variable_has_description(aliasVar);
+    REQUIRE(fmi3_import_get_alias_variable_has_description(aliasVar) == true);
+
+    /* non-empty description */
+    baseVar = fmi3_import_get_variable_by_vr(xml, 3);
+    REQUIRE(baseVar != nullptr);
+    const char* desc_c = fmi3_import_get_variable_description(baseVar);
+    REQUIRE(desc_c != nullptr);
+    REQUIRE_STREQ(desc_c, "c");
+    REQUIRE(fmi3_import_get_variable_has_description(baseVar) == true);
+
+    aliasVar = get_first_and_only_alias_variable(baseVar);
+    REQUIRE(aliasVar != nullptr);
+
+    const char* desc_cc = fmi3_import_get_alias_variable_description(aliasVar);
+    REQUIRE(desc_cc != nullptr);
+    REQUIRE_STREQ(desc_cc, "cc");
+    REQUIRE(fmi3_import_get_alias_variable_has_description(aliasVar) == true);
+
+    const char* author = fmi3_import_get_author(xml);
+    REQUIRE(author != nullptr);
+    REQUIRE_STREQ(author, "");
+
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
     fmi3_testutil_import_free(tfmu);
 }

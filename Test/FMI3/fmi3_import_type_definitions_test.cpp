@@ -1358,3 +1358,34 @@ TEST_CASE("TypeDefinitions: Clock") {
     REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
     fmi3_testutil_import_free(tfmu);
 }
+
+TEST_CASE("TypeDefinitions: Enum; testing descriptions") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/type_definitions/valid/enum";
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* xml = tfmu->fmu;
+    REQUIRE(xml != nullptr);
+
+    fmi3_import_type_definition_list_t* tds = fmi3_import_get_type_definition_list(xml);
+    REQUIRE(tds != nullptr);
+    REQUIRE(fmi3_import_get_type_definition_list_size(tds) == 1);
+    fmi3_import_variable_typedef_t* td = fmi3_import_get_typedef(tds, 0);
+    REQUIRE(td != nullptr);
+
+    fmi3_import_enumeration_typedef_t* etd = fmi3_import_get_type_as_enum(td);
+    REQUIRE(etd != nullptr);
+    size_t s = fmi3_import_get_enum_type_size(etd);
+    REQUIRE(fmi3_import_get_enum_type_size(etd) == 3);
+
+    const char* desc_1 = fmi3_import_get_enum_type_item_description(etd, 1);
+    REQUIRE(desc_1 != nullptr);
+    REQUIRE_STREQ(desc_1, "");
+    const char* desc_2 = fmi3_import_get_enum_type_item_description(etd, 2);
+    REQUIRE(desc_2 != nullptr);
+    REQUIRE_STREQ(desc_2, "");
+    const char* desc_3 = fmi3_import_get_enum_type_item_description(etd, 3);
+    REQUIRE(desc_3 != nullptr);
+    REQUIRE_STREQ(desc_3, "desc");
+
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
+    fmi3_testutil_import_free(tfmu);
+}

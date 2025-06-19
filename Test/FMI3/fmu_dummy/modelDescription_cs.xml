@@ -29,7 +29,10 @@
     <Dimension start="2"/>
     <Dimension start="2"/>
   </Float64>
+  
 </ModelVariables>
 <ModelStructure>
+  <Output valueReference="0"/>
+  <Output valueReference="12"/>
 </ModelStructure>
 </fmiModelDescription>

@@ -39,6 +39,7 @@
 
 <ModelStructure>
   <Output valueReference="0"/>
+  <Output valueReference="12"/>
   <ContinuousStateDerivative valueReference="1"/>
   <ContinuousStateDerivative valueReference="2" dependencies="3" dependenciesKind="constant"/>
   <EventIndicator valueReference="17" dependencies="0" dependenciesKind="constant"/>

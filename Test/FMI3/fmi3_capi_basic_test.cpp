@@ -78,6 +78,51 @@ static void test_int_get_set(fmi3_import_t* fmu, jm_status_enu_t instantiate_sta
         REQUIRE(int64_values[1] == values_from_int_get[1]);
 }
 
+/* Helper function to verify get/set for float64 works as expected.
+    The input arguments are:
+        the FMU to use get/set on, note that this has to be the DUMMY FMU (of any kind)
+        the returned value from the FMU instantiation that has be done before calling this function.
+*/
+static void test_real_get_set(fmi3_import_t* fmu, jm_status_enu_t instantiate_status){
+        size_t n_value_references = 4;
+        /* This value reference does not matter because the Dummy FMU
+            implementation for set/get int64 uses a fixed dummy array.
+        */
+        size_t n_float_values = 7;
+        /* Sizes in arrays below are explicitly hard-coded to confine to older gcc standards */
+        const fmi3_value_reference_t value_references[4] = {0, 1, 3, 12};
+        const fmi3_float64_t grav = 4.;
+        const fmi3_float64_t float64_values[7] = {2, 8, grav, 1.23, 2.34, 3.45, 4.56};
+
+        REQUIRE(instantiate_status == jm_status_success);
+        fmi3_status_t status_from_float_set = fmi3_import_set_float64(
+            fmu,
+            value_references,
+            n_value_references,
+            float64_values,
+            n_float_values
+        );
+        REQUIRE(status_from_float_set == fmi3_status_ok);
+
+        fmi3_float64_t values_from_float_get[7] = {0, 0, 0, 0, 0, 0, 0};
+        fmi3_status_t status_from_float_get = fmi3_import_get_float64(
+            fmu,
+            value_references,
+            n_value_references,
+            values_from_float_get,
+            n_float_values
+        );
+        REQUIRE(status_from_float_get == fmi3_status_ok);
+        REQUIRE(values_from_float_get[0] == float64_values[0]);
+        REQUIRE(values_from_float_get[1] == float64_values[1]);
+        REQUIRE(values_from_float_get[2] == float64_values[2]);
+        // Outputs; see modelDescription.xml
+        REQUIRE(values_from_float_get[3] == float64_values[0]);
+        REQUIRE(values_from_float_get[4] == float64_values[1]);
+        REQUIRE(values_from_float_get[5] == float64_values[1]);
+        REQUIRE(values_from_float_get[6] == float64_values[2]);
+}
+
 TEST_CASE("Test CAPI methods using a Model Exchange FMU", test_file_name)
 {
     jm_callbacks callbacks;
@@ -120,6 +165,7 @@ TEST_CASE("Test CAPI methods using a Model Exchange FMU", test_file_name)
     );
 
     test_int_get_set(fmu, instantiate_status);
+    test_real_get_set(fmu, instantiate_status);
 
     // TODO: Various issues related to parsing of Annotations, see also _sim_me_test
     REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 5);
@@ -179,6 +225,7 @@ TEST_CASE("Test CAPI methods using a Co-Simulation FMU", test_file_name)
 
 
     test_int_get_set(fmu, instantiate_status);
+    test_real_get_set(fmu, instantiate_status);
 
     REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
     fmi3_import_free_instance(fmu);
@@ -231,6 +278,7 @@ TEST_CASE("Test CAPI methods using a Scheduled-Execution FMU", test_file_name)
     );
 
     test_int_get_set(fmu, instantiate_status);
+    test_real_get_set(fmu, instantiate_status);
 
     REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
     fmi3_import_free_instance(fmu);

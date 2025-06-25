@@ -36,10 +36,10 @@
 /* Model calculation functions */
 static int calc_initialize(instance_ptr_t inst)
 {
-    inst->states[VAR_R_HEIGHT]        = 1.0;
+    inst->states[VAR_R_HEIGHT]       = 1.0;
     inst->states[VAR_R_HEIGHT_SPEED] = 4;
-    inst->reals    [VAR_R_GRATIVY]        = -9.81;
-    inst->reals    [VAR_R_BOUNCE_CONF]    = 0.5;
+    inst->reals[VAR_R_GRAVITY]       = -9.81;
+    inst->reals[VAR_R_BOUNCE_CONF]   = 0.5;
     if(inst->loggingOn) {
         char msg[1000];
         size_t msg_sz = sizeof(msg) / sizeof(char);
@@ -52,7 +52,7 @@ static int calc_initialize(instance_ptr_t inst)
         snprintf(msg, msg_sz, "Init #%d#=%g",VAR_R_HEIGHT_SPEED, inst->states[VAR_R_HEIGHT_SPEED]);
         inst->cb.logMessage(inst->cb.instanceEnvironment, fmi3OK, "INFO", msg);
 
-        snprintf(msg, msg_sz, "Init #%d#=%g",VAR_R_GRATIVY, inst->reals[VAR_R_GRATIVY]);
+        snprintf(msg, msg_sz, "Init #%d#=%g",VAR_R_GRAVITY, inst->reals[VAR_R_GRAVITY]);
         inst->cb.logMessage(inst->cb.instanceEnvironment, fmi3OK, "INFO", msg);
 
         snprintf(msg, msg_sz, "Init #%d#=%g",VAR_R_BOUNCE_CONF, inst->reals[VAR_R_BOUNCE_CONF]);
@@ -63,8 +63,8 @@ static int calc_initialize(instance_ptr_t inst)
 
 static int calc_get_derivatives(instance_ptr_t inst)
 {
-    inst->states_der[VAR_R_HEIGHT]        = inst->states[VAR_R_HEIGHT_SPEED];
-    inst->states_der[VAR_R_HEIGHT_SPEED] = inst->reals[VAR_R_GRATIVY];
+    inst->states_der[VAR_R_HEIGHT]       = inst->states[VAR_R_HEIGHT_SPEED];
+    inst->states_der[VAR_R_HEIGHT_SPEED] = inst->reals[VAR_R_GRAVITY];
     return 0;
 }
 
@@ -118,15 +118,15 @@ fmi3Status fmi_get_float64(fmi3Instance instance, const fmi3ValueReference value
     if (inst == NULL) {
         return fmi3Fatal;
     } else {
-        int k;
-        int m = 0; /* index in values, considering that arrays will require many indices */
+        size_t k;
+        size_t m = 0; /* index in values, considering that arrays will require many indices */
         for (k = 0; k < nValueReferences; k++) {
             fmi3ValueReference currentValueReference = valueReferences[k];
             if (currentValueReference < N_STATES) {
                 values[m] = inst->states[currentValueReference];
                 m++;
             }
-            else if(currentValueReference == 4) {
+            else if(currentValueReference == VAR_R_GRAVITY) {
                 calc_get_derivatives(inst);
                 values[m] = inst->states_der[1];
                 m++;
@@ -251,23 +251,25 @@ fmi3Status fmi_set_float64(fmi3Instance instance, const fmi3ValueReference value
         return fmi3Fatal;
     } else {
         size_t k;
+        size_t n = 0;
         for (k = 0; k < nValueReferences; k++) {
             fmi3ValueReference currentValueReference = valueReferences[k];
             if (currentValueReference < N_STATES) {
-                inst->states[currentValueReference] = values[k];
+                inst->states[currentValueReference] = values[n];
+                n++;
             }
-            else if(currentValueReference == 4) {
+            else if (currentValueReference == 2) {
                 inst->cb.logMessage(instance, fmi3Warning, "WARNING", "Cannot set acceleration values (calculated)");
                 return fmi3Error;
             }
-            else if(currentValueReference == 12) {
-                // For the dummy FMU we are testing an array of 4 elements.
-                for(int i = 0; i < 4; i++) {
-                    inst->reals[currentValueReference + i] = values[i];
-                }
-            }
-            else {
-                inst->reals[currentValueReference] = values[k];
+            else if (currentValueReference == 12) {
+                // Dummy array is an output and will be re-computed upon getting; set nothing
+            } else if ((currentValueReference == 17) && (inst->fmu_type == fmu_type_me)) {
+                inst->event_indicators[0] = values[n];
+                n++;
+            } else {
+                inst->reals[currentValueReference] = values[n];
+                n++;
             }
         }
         return fmi3OK;
@@ -634,16 +636,16 @@ fmi3Instance fmi_instantiate(
         inst->loggingOn = loggingOn;
 
         /* Set default values */
-        for (k = 0; k < N_STATES;            k++) inst->states[k]            = 0.0;
-        for (k = 0; k < N_STATES;            k++) inst->states_prev[k]        = 0.0; /* Used in CS only */
-        for (k = 0; k < N_STATES;            k++) inst->states_nom[k]        = 1.0;
-        for (k = 0; k < N_STATES;            k++) inst->states_der[k]        = 0.0;
-        for (k = 0; k < N_EVENT_INDICATORS; k++) inst->event_indicators[k]    = 1e10;
-        for (k = 0; k < N_REAL;                k++) inst->reals[k]                = 0.0;
-        for (k = 0; k < N_INTEGER;            k++) inst->integers[k]            = 0;
-        for (k = 0; k < N_BOOLEAN;            k++) inst->booleans[k]            = fmi3False;
-        for (k = 0; k < N_STRING;            k++) inst->strings[k]            = NULL;
-        for (k = 0; k < N_BINARY;            k++) inst->binaries[k]            = NULL;
+        for (k = 0; k < N_STATES;           k++) inst->states[k]           = 0.0;
+        for (k = 0; k < N_STATES;           k++) inst->states_prev[k]      = 0.0; /* Used in CS only */
+        for (k = 0; k < N_STATES;           k++) inst->states_nom[k]       = 1.0;
+        for (k = 0; k < N_STATES;           k++) inst->states_der[k]       = 0.0;
+        for (k = 0; k < N_EVENT_INDICATORS; k++) inst->event_indicators[k] = 1e10;
+        for (k = 0; k < N_REAL;             k++) inst->reals[k]            = 0.0;
+        for (k = 0; k < N_INTEGER;          k++) inst->integers[k]         = 0;
+        for (k = 0; k < N_BOOLEAN;          k++) inst->booleans[k]         = fmi3False;
+        for (k = 0; k < N_STRING;           k++) inst->strings[k]          = NULL;
+        for (k = 0; k < N_BINARY;           k++) inst->binaries[k]         = NULL;
 
         /* Set default event info */
         inst->discreteStatesNeedUpdate          = fmi3False;

@@ -417,16 +417,17 @@ int fmi3_xml_handle_fmiModelDescription(fmi3_xml_parser_context_t* context, cons
         jm_log_verbose(context->callbacks, module, "Parsing XML element fmiModelDescription");
         md->fmuKind = fmi3_fmu_kind_unknown;
         /* process the attributes */
-        ret =   fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_fmiModelDescription), FMI3_ATTR(fmi_attr_id_fmiVersion), 1, &(md->fmi3_xml_standard_version)) ||
-                fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_fmiModelDescription), FMI3_ATTR(fmi_attr_id_modelName), 1, &(md->modelName)) ||
-                fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_fmiModelDescription), FMI3_ATTR(fmi_attr_id_instantiationToken), 1, &(md->instantiationToken)) ||
-                fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_fmiModelDescription), FMI3_ATTR(fmi_attr_id_description), 0, &(md->description)) ||
-                fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_fmiModelDescription), FMI3_ATTR(fmi_attr_id_author), 0, &(md->author)) ||
-                fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_fmiModelDescription), FMI3_ATTR(fmi_attr_id_version), 0, &(md->version)) ||
-                fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_fmiModelDescription), FMI3_ATTR(fmi_attr_id_copyright), 0, &(md->copyright)) ||
-                fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_fmiModelDescription), FMI3_ATTR(fmi_attr_id_license), 0, &(md->license)) ||
-                fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_fmiModelDescription), FMI3_ATTR(fmi_attr_id_generationTool), 0, &(md->generationTool)) ||
-                fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_fmiModelDescription), FMI3_ATTR(fmi_attr_id_generationDateAndTime), 0, &(md->generationDateAndTime)) ||
+        int attrExists = 0; /* unused for now */
+        ret =   fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_fmiModelDescription), FMI3_ATTR(fmi_attr_id_fmiVersion), 1, &attrExists, &(md->fmi3_xml_standard_version)) ||
+                fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_fmiModelDescription), FMI3_ATTR(fmi_attr_id_modelName), 1, &attrExists, &(md->modelName)) ||
+                fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_fmiModelDescription), FMI3_ATTR(fmi_attr_id_instantiationToken), 1, &attrExists, &(md->instantiationToken)) ||
+                fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_fmiModelDescription), FMI3_ATTR(fmi_attr_id_description), 0, &attrExists, &(md->description)) ||
+                fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_fmiModelDescription), FMI3_ATTR(fmi_attr_id_author), 0, &attrExists, &(md->author)) ||
+                fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_fmiModelDescription), FMI3_ATTR(fmi_attr_id_version), 0, &attrExists, &(md->version)) ||
+                fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_fmiModelDescription), FMI3_ATTR(fmi_attr_id_copyright), 0, &attrExists, &(md->copyright)) ||
+                fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_fmiModelDescription), FMI3_ATTR(fmi_attr_id_license), 0, &attrExists, &(md->license)) ||
+                fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_fmiModelDescription), FMI3_ATTR(fmi_attr_id_generationTool), 0, &attrExists, &(md->generationTool)) ||
+                fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_fmiModelDescription), FMI3_ATTR(fmi_attr_id_generationDateAndTime), 0, &attrExists, &(md->generationDateAndTime)) ||
                 fmi3_xml_parse_attr_as_enum  (context, FMI3_ELM(fmi3_xml_elmID_fmiModelDescription), FMI3_ATTR(fmi_attr_id_variableNamingConvention), 0, (unsigned*)&(md->namingConvension),
                                        fmi3_naming_enu_flat, namingConventionMap);
         return ret;
@@ -514,7 +515,8 @@ static int fmi3_xml_process_interface_type_common_attrs(fmi3_xml_parser_context_
             return -1;
     }
 
-    if (fmi3_xml_parse_attr_as_string(context, elmID, FMI3_ATTR(fmi_attr_id_modelIdentifier), 1, modelIdentifierPtr)
+    int modelIdentifierExists = 0;
+    if (fmi3_xml_parse_attr_as_string(context, elmID, FMI3_ATTR(fmi_attr_id_modelIdentifier), 1, &modelIdentifierExists, modelIdentifierPtr)
         ||
         fmi3_xml_parse_attr_as_boolean(context, elmID, FMI3_ATTR(fmi_attr_id_needsExecutionTool), 0,
                 &md->capabilities[fmi3_me_needsExecutionTool + offset], 0)
@@ -707,13 +709,14 @@ int fmi3_xml_handle_File(fmi3_xml_parser_context_t *context, const char* data) {
         fmi3_xml_model_description_t* md = context->modelDescription;
         jm_vector(char)* bufName = fmi3_xml_reserve_parse_buffer(context,1,100);
 
-        if(!bufName) return -1;
+        if (!bufName) { return -1;}
         /* <xs:attribute name="name" type="xs:normalizedString" use="required"> */
-        if( fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_File), FMI3_ATTR(fmi_attr_id_name), 1, bufName))
+        int nameExists = 0;
+        if (fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_File), FMI3_ATTR(fmi_attr_id_name), 1, &nameExists, bufName)) {
             return -1;
+        }
         return push_back_jm_string(context, &md->sourceFilesME, bufName);
-    }
-    else {
+    } else {
         return 0;
     }
 }
@@ -727,13 +730,14 @@ int fmi3_xml_handle_FileCS(fmi3_xml_parser_context_t *context, const char* data)
         fmi3_xml_model_description_t* md = context->modelDescription;
         jm_vector(char)* bufName = fmi3_xml_reserve_parse_buffer(context,1,100);
 
-        if(!bufName) return -1;
+        if (!bufName) { return -1;}
         /* <xs:attribute name="name" type="xs:normalizedString" use="required"> */
-        if( fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_File), FMI3_ATTR(fmi_attr_id_name), 1, bufName))
+        int nameExists = 0;
+        if (fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_File), FMI3_ATTR(fmi_attr_id_name), 1, &nameExists, bufName)) {
             return -1;
+        }
         return push_back_jm_string(context, &md->sourceFilesCS, bufName);
-    }
-    else {
+    } else {
         return 0;
     }
 }
@@ -744,8 +748,7 @@ int fmi3_xml_handle_LogCategories(fmi3_xml_parser_context_t *context, const char
         jm_log_verbose(context->callbacks, module, "Parsing XML element LogCategories");
         /* process the attributes */
         return (0);
-    }
-    else {
+    } else {
         /* don't do anything. might give out a warning if(data[0] != 0) */
         return 0;
     }
@@ -759,12 +762,15 @@ int fmi3_xml_handle_Category(fmi3_xml_parser_context_t *context, const char* dat
 
         if (!bufName) return -1;
         /* <xs:attribute name="name" type="xs:normalizedString"> */
-        if (fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_Category), FMI3_ATTR(fmi_attr_id_name), 1, bufName))
+        int nameExists = 0;
+        if (fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_Category), FMI3_ATTR(fmi_attr_id_name), 1, &nameExists, bufName)) {
             return -1;
-        if (push_back_jm_string(context, &md->logCategories, bufName) < 0) return -1;
+        }
+        if (push_back_jm_string(context, &md->logCategories, bufName) < 0) { return -1;}
 
-        if (fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_Category), FMI3_ATTR(fmi_attr_id_description), 0, bufName) < 0) return -1;
-        if (push_back_jm_string(context, &md->logCategoryDescriptions, bufName) < 0) return -1;
+        int descriptionExists = 0;
+        if (fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_Category), FMI3_ATTR(fmi_attr_id_description), 0, &descriptionExists, bufName) < 0) { return -1;}
+        if (push_back_jm_string(context, &md->logCategoryDescriptions, bufName) < 0) { return -1;}
         return 0;
     }
     else {
@@ -813,7 +819,6 @@ jm_vector(jm_voidp)* fmi3_xml_get_variables_vr_order(fmi3_xml_model_description_
     return &md->variablesByVR;
 }
 
-
 fmi3_xml_variable_t* fmi3_xml_get_variable_by_name(fmi3_xml_model_description_t* md, const char* name) {
     if (!name) return NULL;
     jm_named_ptr key, *found;
@@ -822,7 +827,6 @@ fmi3_xml_variable_t* fmi3_xml_get_variable_by_name(fmi3_xml_model_description_t*
     if (!found) return NULL;
     return found->ptr;
 }
-
 
 fmi3_xml_variable_t* fmi3_xml_get_variable_by_vr(fmi3_xml_model_description_t* md, fmi3_value_reference_t vr) {
     fmi3_xml_variable_t key;
@@ -833,4 +837,40 @@ fmi3_xml_variable_t* fmi3_xml_get_variable_by_vr(fmi3_xml_model_description_t* m
     found = jm_vector_bsearch(jm_voidp)(&md->variablesByVR, (void**)&pkey, fmi3_xml_compare_vr);
     if (!found) return NULL;
     return (fmi3_xml_variable_t*)(*found);
+}
+
+const char* fmi3_xml_get_variable_description_by_name(fmi3_xml_model_description_t* md, const char* name) {
+    fmi3_xml_variable_t* v = fmi3_xml_get_variable_by_name(md, name);
+    if (v == NULL) {
+        return NULL;
+    }
+    if (strcmp(name, fmi3_xml_get_variable_name(v)) == 0) {
+        return fmi3_xml_get_variable_description(v);
+    }
+    fmi3_xml_alias_variable_t* alias_var = fmi3_xml_get_alias_variable_by_name(v, name);
+    return fmi3_xml_get_alias_variable_description(alias_var);
+}
+
+fmi3_xml_display_unit_t* fmi3_xml_get_variable_display_unit_by_name(fmi3_xml_model_description_t* md, const char* name) {
+    fmi3_xml_variable_t* v = fmi3_xml_get_variable_by_name(md, name);
+    if (v == NULL) {
+        return NULL;
+    }
+    if (strcmp(name, fmi3_xml_get_variable_name(v)) == 0) { /* no alias */
+        fmi3_xml_float32_variable_t* v32 = fmi3_xml_get_variable_as_float32(v);
+        if (v32) {
+            return fmi3_xml_get_float32_variable_display_unit(v32);
+        }
+        fmi3_xml_float64_variable_t* v64 = fmi3_xml_get_variable_as_float64(v);
+        if (v64) {
+            return fmi3_xml_get_float64_variable_display_unit(v64);
+        }
+        return NULL; /* non-float variable */
+    } else { /* alias */
+        fmi3_xml_alias_variable_t* alias_var = fmi3_xml_get_alias_variable_by_name(v, name);
+        if (!alias_var) {
+            return NULL; /* safety*/
+        }
+        return fmi3_xml_get_alias_variable_display_unit(alias_var);
+    }
 }

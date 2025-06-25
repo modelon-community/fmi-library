@@ -231,11 +231,12 @@ int fmi3_xml_handle_Unit(fmi3_xml_parser_context_t *context, const char* data) {
             jm_vector(char)* buf = fmi3_xml_reserve_parse_buffer(context,1,100);
 
             if (!buf) return -1;
-            if ( 
-                /*  <xs:attribute name="name" type="xs:normalizedString" use="required"> */
-                fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_BaseUnit), FMI3_ATTR(fmi_attr_id_name), 1, buf) ||
-                !(unit = fmi3_xml_get_parsed_unit(context, buf, 0))
-               ) return -1;
+            /*  <xs:attribute name="name" type="xs:normalizedString" use="required"> */
+            int nameExists = 0;
+            if (fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_BaseUnit), FMI3_ATTR(fmi_attr_id_name), 1, &nameExists, buf) ||
+                !(unit = fmi3_xml_get_parsed_unit(context, buf, 0))) {
+                return -1;
+            }
             context->lastBaseUnit = unit->baseUnit;
     } else {
         /* don't do anything. might give out a warning if (data[0] != 0) */
@@ -258,8 +259,10 @@ int fmi3_xml_handle_DisplayUnit(fmi3_xml_parser_context_t *context, const char* 
             if (!buf) return -1;
             /* first read the required name attribute */
             /*  <xs:attribute name="name" type="xs:normalizedString" use="required"/> */
-            ret = fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_DisplayUnit), FMI3_ATTR(fmi_attr_id_name), 1, buf);
-            if (ret) return ret;
+
+            int nameExists = 0;
+            ret = fmi3_xml_parse_attr_as_string(context, FMI3_ELM(fmi3_xml_elmID_DisplayUnit), FMI3_ATTR(fmi_attr_id_name), 1, &nameExists, buf);
+            if (ret) { return ret;}
             /* alloc memory to the correct size and put display unit on the list for the base unit */
             named.ptr = 0;
             pnamed = jm_vector_push_back(jm_named_ptr)(&(md->displayUnitDefinitions),named);

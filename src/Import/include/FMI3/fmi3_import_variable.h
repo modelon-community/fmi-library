@@ -112,8 +112,11 @@ typedef struct fmi3_xml_dimension_list_t fmi3_import_dimension_list_t;
 /** \brief Get the variable name */
 FMILIB_EXPORT const char* fmi3_import_get_variable_name(fmi3_import_variable_t* v);
 
+/** \brief Check if variable has a description. */
+FMILIB_EXPORT fmi3_boolean_t fmi3_import_get_variable_has_description(fmi3_import_variable_t* v);
+
 /** \brief Get variable description.
-    @return Description string or empty string ("") if no description in the XML file was given.
+    @return Description string or empty string if no description in the XML file was given.
 */
 FMILIB_EXPORT const char* fmi3_import_get_variable_description(fmi3_import_variable_t* v);
 
@@ -222,6 +225,9 @@ FMILIB_EXPORT fmi3_boolean_t fmi3_import_get_variable_can_handle_multiple_set_pe
     @return If true, the variable can be accessed in Intermediate Update Mode
 */
 FMILIB_EXPORT fmi3_boolean_t fmi3_import_get_variable_intermediate_update(fmi3_import_variable_t* v);
+
+/** \brief Check if the variable has the "clocks" attribute */
+FMILIB_EXPORT fmi3_boolean_t fmi3_import_get_variable_is_clocked(fmi3_import_variable_t* v);
 
 /** \brief Get a list of variables referenced in the 'clock' attribute.
  *  Note that the caller is responsible for deallocating the list.
@@ -553,6 +559,8 @@ FMILIB_EXPORT fmi3_uint64_t fmi3_import_get_clock_variable_shift_counter(fmi3_im
 /** \brief Get the original index in xml of the variable */
 FMILIB_EXPORT size_t fmi3_import_get_variable_original_order(fmi3_import_variable_t* v);
 
+/** \brief Check if the variable has aliases */
+FMILIB_EXPORT fmi3_boolean_t fmi3_import_get_variable_has_alias(fmi3_import_variable_t* v);
 /** \brief Get the alias variables. */
 FMILIB_EXPORT fmi3_import_alias_variable_list_t* fmi3_import_get_variable_alias_list(fmi3_import_variable_t* v);
 /** \brief Get the number of alias variables. */
@@ -562,7 +570,9 @@ FMILIB_EXPORT fmi3_import_alias_variable_t* fmi3_import_get_alias(fmi3_import_al
 
 /** \brief Get name for the alias variable. */
 FMILIB_EXPORT const char* fmi3_import_get_alias_variable_name(fmi3_import_alias_variable_t* alias);
-/** \brief Get the description for the alias variable */
+/** \brief Check if an alias variable has a description. */
+FMILIB_EXPORT fmi3_boolean_t fmi3_import_get_alias_variable_has_description(fmi3_import_alias_variable_t* alias);
+/** \brief Get the description for the alias variable, empty string if missing */
 FMILIB_EXPORT const char* fmi3_import_get_alias_variable_description(fmi3_import_alias_variable_t* alias);
 /** \brief Get the displayUnit for the alias variable, or NULL if not defined. */
 FMILIB_EXPORT fmi3_import_display_unit_t* fmi3_import_get_alias_variable_display_unit(fmi3_import_alias_variable_t* alias);

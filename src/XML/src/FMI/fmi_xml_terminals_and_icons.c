@@ -110,8 +110,9 @@ int fmi_xml_handle_fmiTerminalsAndIcons(fmi3_xml_parser_context_t* context, cons
         }
         jm_log_verbose(context->callbacks, module, "Parsing XML element fmiTerminalsAndIcons");
 
+        int versionExists = 0;
         ret = fmi3_xml_parse_attr_as_string(context, FMI_ELM_TERMICON(fmi_xml_elmID_termIcon_fmiTerminalsAndIcons), FMI_ATTR_TERMICON(fmi_attr_id_fmiVersion), 1 /* required */,
-                                            &(termIcon->fmi3_xml_standard_version));
+                                            &versionExists, &(termIcon->fmi3_xml_standard_version));
         if (ret) {
             return ret;
         }
@@ -192,7 +193,8 @@ int fmi_xml_handle_Terminal(fmi3_xml_parser_context_t* context, const char* data
         // parse name
         jm_vector(char)* bufName = fmi3_xml_reserve_parse_buffer(context, bufIdx++, 100);
         if (!bufName) {return -1;}
-        if (fmi3_xml_parse_attr_as_string(context, FMI_ELM_TERMICON(fmi_xml_elmID_termIcon_Terminal), FMI_ATTR_TERMICON(fmi_attr_id_name), 1 /* required */, bufName)) {return -1;}
+        int nameExists = 0;
+        if (fmi3_xml_parse_attr_as_string(context, FMI_ELM_TERMICON(fmi_xml_elmID_termIcon_Terminal), FMI_ATTR_TERMICON(fmi_attr_id_name), 1 /* required */, &nameExists, bufName)) {return -1;}
 
         /* Add the name to the terminalsAndIcons-wide set and retrieve the pointer */
         if (jm_vector_get_size(char)(bufName)) {

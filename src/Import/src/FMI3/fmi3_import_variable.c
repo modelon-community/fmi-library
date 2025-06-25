@@ -33,6 +33,10 @@ const char* fmi3_import_get_variable_name(fmi3_import_variable_t* v) {
     return fmi3_xml_get_variable_name(v);
 }
 
+fmi3_boolean_t fmi3_import_get_variable_has_description(fmi3_import_variable_t* v) {
+    return fmi3_xml_get_variable_has_description(v);
+}
+
 const char* fmi3_import_get_variable_description(fmi3_import_variable_t* v) {
     return fmi3_xml_get_variable_description(v);
 }
@@ -82,6 +86,10 @@ fmi3_boolean_t fmi3_import_get_variable_can_handle_multiple_set_per_time_instant
 
 fmi3_boolean_t fmi3_import_get_variable_intermediate_update(fmi3_import_variable_t* v) {
     return fmi3_xml_get_variable_intermediate_update(v);
+}
+
+fmi3_boolean_t fmi3_import_get_variable_is_clocked(fmi3_import_variable_t* v) {
+    return fmi3_xml_variable_is_clocked(v);
 }
 
 fmi3_import_variable_list_t* fmi3_import_get_variable_clocks(fmi3_import_t* fmu, fmi3_import_variable_t* v) {
@@ -595,6 +603,10 @@ fmi3_int64_t fmi3_import_get_enum_variable_max(fmi3_import_enum_variable_t* v) {
 // Alias variable
 // -----------------------------------------------------------------------------
 
+fmi3_boolean_t fmi3_import_get_variable_has_alias(fmi3_import_variable_t* v) {
+    return fmi3_xml_get_variable_aliases(v) != NULL;
+}
+
 fmi3_import_alias_variable_list_t* fmi3_import_get_variable_alias_list(fmi3_import_variable_t* v) {
     return fmi3_xml_get_variable_aliases(v);
 }
@@ -609,6 +621,10 @@ fmi3_import_alias_variable_t* fmi3_import_get_alias(fmi3_import_alias_variable_l
 
 const char* fmi3_import_get_alias_variable_name(fmi3_import_alias_variable_t* alias) {
     return fmi3_xml_get_alias_variable_name(alias);
+}
+
+fmi3_boolean_t fmi3_import_get_alias_variable_has_description(fmi3_import_alias_variable_t* alias) {
+    return fmi3_xml_get_alias_variable_has_description(alias);
 }
 
 const char* fmi3_import_get_alias_variable_description(fmi3_import_alias_variable_t* alias) {

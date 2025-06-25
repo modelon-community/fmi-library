@@ -293,3 +293,128 @@ TEST_CASE("Get variable from alias name - mixed alphabetical order") {
     REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
     fmi3_testutil_import_free(tfmu);
 }
+
+TEST_CASE("Test getting variable description by variable name") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/convenience/valid/variable_alias_description";
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* xml = tfmu->fmu;
+    REQUIRE(xml != nullptr);
+
+    const char* descr_a = fmi3_import_get_variable_description_by_name(xml, "a");
+    REQUIRE(descr_a != nullptr);
+    REQUIRE_STREQ(descr_a, "base");
+    
+    const char* descr_b = fmi3_import_get_variable_description_by_name(xml, "b");
+    REQUIRE(descr_b != nullptr);
+    REQUIRE_STREQ(descr_b, ""); /* no description */
+    
+    const char* descr_c = fmi3_import_get_variable_description_by_name(xml, "c");
+    REQUIRE(descr_c != nullptr);
+    REQUIRE_STREQ(descr_c, "alias");
+    
+    const char* descr_d = fmi3_import_get_variable_description_by_name(xml, "d");
+    REQUIRE(descr_d != nullptr);
+    REQUIRE_STREQ(descr_d, ""); /* empty description */
+
+    const char* descr_e = fmi3_import_get_variable_description_by_name(xml, "e");
+    REQUIRE(descr_e == nullptr); /* no variable */
+
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
+    fmi3_testutil_import_free(tfmu);
+}
+
+TEST_CASE("Test getting variable display unit by variable name") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/convenience/valid/variable_alias_display_unit";
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* xml = tfmu->fmu;
+    REQUIRE(xml != nullptr);
+
+    fmi3_import_display_unit_t* du;
+
+    /* Float 64 */
+    du = fmi3_import_get_variable_display_unit_by_name(xml, "f64_1");
+    REQUIRE(du != nullptr);
+    REQUIRE_STREQ(fmi3_import_get_display_unit_name(du), "degC");
+
+    du = fmi3_import_get_variable_display_unit_by_name(xml, "f64_1_X");
+    REQUIRE(du == nullptr);
+
+    du = fmi3_import_get_variable_display_unit_by_name(xml, "f64_1_C");
+    REQUIRE(du != nullptr);
+    REQUIRE_STREQ(fmi3_import_get_display_unit_name(du), "degC");
+
+    du = fmi3_import_get_variable_display_unit_by_name(xml, "f64_1_F");
+    REQUIRE(du != nullptr);
+    REQUIRE_STREQ(fmi3_import_get_display_unit_name(du), "degF");
+
+    /* Float 32 */
+    du = fmi3_import_get_variable_display_unit_by_name(xml, "f32_1");
+    REQUIRE(du != nullptr);
+    REQUIRE_STREQ(fmi3_import_get_display_unit_name(du), "degC");
+
+    du = fmi3_import_get_variable_display_unit_by_name(xml, "f32_1_X");
+    REQUIRE(du == nullptr);
+
+    du = fmi3_import_get_variable_display_unit_by_name(xml, "f32_1_C");
+    REQUIRE(du != nullptr);
+    REQUIRE_STREQ(fmi3_import_get_display_unit_name(du), "degC");
+
+    du = fmi3_import_get_variable_display_unit_by_name(xml, "f32_1_F");
+    REQUIRE(du != nullptr);
+    REQUIRE_STREQ(fmi3_import_get_display_unit_name(du), "degF");
+
+    /* Int32 */
+    du = fmi3_import_get_variable_display_unit_by_name(xml, "i32");
+    REQUIRE(du == nullptr);
+
+    du = fmi3_import_get_variable_display_unit_by_name(xml, "i32_a");
+    REQUIRE(du == nullptr);
+
+    /* Non-variable */
+    du = fmi3_import_get_variable_display_unit_by_name(xml, "f16");
+    REQUIRE(du == nullptr);
+
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
+    fmi3_testutil_import_free(tfmu);
+}
+
+TEST_CASE("Test checking if a variable is clocked by another variable") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/convenience/valid/variable_is_clocked_by";
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* xml = tfmu->fmu;
+    REQUIRE(xml != nullptr);
+
+    fmi3_import_variable_t* v1 = fmi3_import_get_variable_by_vr(xml, 10);
+    fmi3_import_variable_t* v2 = fmi3_import_get_variable_by_vr(xml, 11);
+    REQUIRE(v1 != nullptr);
+    REQUIRE(v2 != nullptr);
+
+    fmi3_import_variable_t* c1 = fmi3_import_get_variable_by_vr(xml, 1);
+    fmi3_import_variable_t* c2 = fmi3_import_get_variable_by_vr(xml, 2);
+    fmi3_import_variable_t* c3 = fmi3_import_get_variable_by_vr(xml, 3);
+    REQUIRE(c1 != nullptr);
+    REQUIRE(c2 != nullptr);
+    REQUIRE(c3 != nullptr);
+    fmi3_import_clock_variable_t* cv1 = fmi3_import_get_variable_as_clock(c1);
+    fmi3_import_clock_variable_t* cv2 = fmi3_import_get_variable_as_clock(c2);
+    fmi3_import_clock_variable_t* cv3 = fmi3_import_get_variable_as_clock(c3);
+    REQUIRE(cv1 != nullptr);
+    REQUIRE(cv2 != nullptr);
+    REQUIRE(cv3 != nullptr);
+
+    /* basic sanity checks */
+    REQUIRE(fmi3_import_get_variable_is_clocked_by(NULL, NULL) == false);
+    REQUIRE(fmi3_import_get_variable_is_clocked_by(v1, NULL) == false);
+    REQUIRE(fmi3_import_get_variable_is_clocked_by(NULL, cv1) == false);
+
+    REQUIRE(fmi3_import_get_variable_is_clocked_by(v1, cv1) == true);
+    REQUIRE(fmi3_import_get_variable_is_clocked_by(v1, cv2) == false);
+    REQUIRE(fmi3_import_get_variable_is_clocked_by(v1, cv3) == true);
+
+    REQUIRE(fmi3_import_get_variable_is_clocked_by(v2, cv1) == false);
+    REQUIRE(fmi3_import_get_variable_is_clocked_by(v2, cv2) == false);
+    REQUIRE(fmi3_import_get_variable_is_clocked_by(v2, cv3) == false);
+
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
+    fmi3_testutil_import_free(tfmu);
+}

@@ -263,13 +263,13 @@ FMILIB_EXPORT unsigned int fmi3_import_get_enum_type_max(fmi3_import_enumeration
 /** \brief Get the number of elements in the enum */
 FMILIB_EXPORT size_t fmi3_import_get_enum_type_size(fmi3_import_enumeration_typedef_t* td);
 
-/** \brief Get an enumeration item name by index */
+/** \brief Get an enumeration item name by index (1-based) */
 FMILIB_EXPORT const char* fmi3_import_get_enum_type_item_name(fmi3_import_enumeration_typedef_t* td, size_t item);
 
-/** \brief Get an enumeration item value by index */
+/** \brief Get an enumeration item value by index (1-based) */
 FMILIB_EXPORT int fmi3_import_get_enum_type_item_value(fmi3_import_enumeration_typedef_t* td, size_t item);
 
-/** \brief Get an enumeration item description by index */
+/** \brief Get an enumeration item description by index (1-based) */
 FMILIB_EXPORT const char* fmi3_import_get_enum_type_item_description(fmi3_import_enumeration_typedef_t* td, size_t item);
 
 /** \brief Get an enumeration item name for the given value */

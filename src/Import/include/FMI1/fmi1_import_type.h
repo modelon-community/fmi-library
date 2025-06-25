@@ -140,9 +140,9 @@ FMILIB_EXPORT unsigned int fmi1_import_get_enum_type_max(fmi1_import_enumeration
 /** \brief Get the number of elements in the enum */
 FMILIB_EXPORT unsigned int  fmi1_import_get_enum_type_size(fmi1_import_enumeration_typedef_t*);
 
-/** \brief Get an enumeration item name by index */
+/** \brief Get an enumeration item name by index (1-based) */
 FMILIB_EXPORT const char* fmi1_import_get_enum_type_item_name(fmi1_import_enumeration_typedef_t*, unsigned int  item);
-/** \brief Get an enumeration item description by index */
+/** \brief Get an enumeration item description by index (1-based) */
 FMILIB_EXPORT const char* fmi1_import_get_enum_type_item_description(fmi1_import_enumeration_typedef_t*, unsigned int  item);
 
 /**

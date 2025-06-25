@@ -348,12 +348,14 @@ unsigned int fmi3_xml_get_enum_type_size(fmi3_xml_enumeration_typedef_t* t) {
 }
 
 const char* fmi3_xml_get_enum_type_item_name(fmi3_xml_enumeration_typedef_t* t, unsigned int  item) {
+    /* TODO: FMI4; make this 0-based */
     fmi3_xml_enum_typedef_props_t* props = fmi3_xml_get_enum_typedef_props(t);
     if((item == 0) || (item > fmi3_xml_get_enum_type_size(t) )) return  0;
     return jm_vector_get_item(jm_named_ptr)(&props->enumItems,item-1).name;
 }
 
 int fmi3_xml_get_enum_type_item_value(fmi3_xml_enumeration_typedef_t* t, unsigned int  item) {
+    /* TODO: FMI4; make this 0-based */
     fmi3_xml_enum_typedef_props_t* props = fmi3_xml_get_enum_typedef_props(t);
     fmi3_xml_enum_type_item_t* eitem;
     if((item == 0) || (item > fmi3_xml_get_enum_type_size(t) )) return  0;
@@ -373,6 +375,7 @@ const char* fmi3_xml_get_enum_type_value_name(fmi3_xml_enumeration_typedef_t* t,
 }
 
 const char* fmi3_xml_get_enum_type_item_description(fmi3_xml_enumeration_typedef_t* t, unsigned int  item){
+    /* TODO: FMI4; make this 0-based */
     fmi3_xml_enum_typedef_props_t* props = fmi3_xml_get_enum_typedef_props(t);
     fmi3_xml_enum_type_item_t* e;
     if(item > fmi3_xml_get_enum_type_size(t) ) return  0;

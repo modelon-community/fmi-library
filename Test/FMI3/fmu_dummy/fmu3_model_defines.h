@@ -31,7 +31,7 @@
 #define VAR_R_HEIGHT       0
 #define VAR_R_HEIGHT_SPEED 1
 /* Real */
-#define VAR_R_GRATIVY      3
+#define VAR_R_GRAVITY      3
 #define VAR_R_BOUNCE_CONF  4
 
 /* Event indicators */

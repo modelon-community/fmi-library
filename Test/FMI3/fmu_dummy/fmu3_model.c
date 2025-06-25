@@ -38,7 +38,7 @@ static int calc_initialize(instance_ptr_t inst)
 {
     inst->states[VAR_R_HEIGHT]       = 1.0;
     inst->states[VAR_R_HEIGHT_SPEED] = 4;
-    inst->reals[VAR_R_GRATIVY]       = -9.81;
+    inst->reals[VAR_R_GRAVITY]       = -9.81;
     inst->reals[VAR_R_BOUNCE_CONF]   = 0.5;
     if(inst->loggingOn) {
         char msg[1000];
@@ -52,7 +52,7 @@ static int calc_initialize(instance_ptr_t inst)
         snprintf(msg, msg_sz, "Init #%d#=%g",VAR_R_HEIGHT_SPEED, inst->states[VAR_R_HEIGHT_SPEED]);
         inst->cb.logMessage(inst->cb.instanceEnvironment, fmi3OK, "INFO", msg);
 
-        snprintf(msg, msg_sz, "Init #%d#=%g",VAR_R_GRATIVY, inst->reals[VAR_R_GRATIVY]);
+        snprintf(msg, msg_sz, "Init #%d#=%g",VAR_R_GRAVITY, inst->reals[VAR_R_GRAVITY]);
         inst->cb.logMessage(inst->cb.instanceEnvironment, fmi3OK, "INFO", msg);
 
         snprintf(msg, msg_sz, "Init #%d#=%g",VAR_R_BOUNCE_CONF, inst->reals[VAR_R_BOUNCE_CONF]);
@@ -64,7 +64,7 @@ static int calc_initialize(instance_ptr_t inst)
 static int calc_get_derivatives(instance_ptr_t inst)
 {
     inst->states_der[VAR_R_HEIGHT]       = inst->states[VAR_R_HEIGHT_SPEED];
-    inst->states_der[VAR_R_HEIGHT_SPEED] = inst->reals[VAR_R_GRATIVY];
+    inst->states_der[VAR_R_HEIGHT_SPEED] = inst->reals[VAR_R_GRAVITY];
     return 0;
 }
 
@@ -126,7 +126,7 @@ fmi3Status fmi_get_float64(fmi3Instance instance, const fmi3ValueReference value
                 values[m] = inst->states[currentValueReference];
                 m++;
             }
-            else if(currentValueReference == VAR_R_GRATIVY) {
+            else if(currentValueReference == VAR_R_GRAVITY) {
                 calc_get_derivatives(inst);
                 values[m] = inst->states_der[1];
                 m++;

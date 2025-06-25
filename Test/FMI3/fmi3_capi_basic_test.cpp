@@ -90,9 +90,18 @@ static void test_real_get_set(fmi3_import_t* fmu, jm_status_enu_t instantiate_st
         */
         size_t n_float_values = 7;
         /* Sizes in arrays below are explicitly hard-coded to confine to older gcc standards */
-        const fmi3_value_reference_t value_references[4] = {0, 1, 3, 12};
-        const fmi3_float64_t grav = 4.;
-        const fmi3_float64_t float64_values[7] = {2, 8, grav, 1.23, 2.34, 3.45, 4.56};
+        const fmi3_value_reference_t value_references[4] = {
+            0, // HEIGHT
+            1, // HEIGHT_SPEED
+            3, // GRAVITY
+            12 // array_of_states
+        };
+        const fmi3_float64_t float64_values[7] = {
+            2, // HEIGHT
+            8, // HEIGHT_SPEED
+            4, // GRAVITY
+            1.23, 2.34, 3.45, 4.56 // array_of_states
+        };
 
         REQUIRE(instantiate_status == jm_status_success);
         fmi3_status_t status_from_float_set = fmi3_import_set_float64(

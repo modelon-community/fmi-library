@@ -185,7 +185,7 @@ void fmi3_import_init_logger(jm_callbacks* cb, fmi3_logger_context_t* loggerCall
     \brief Get variable description by variable name. Alias variable names result in the description of the alias variable.
     @param fmu - An fmu object as returned by fmi3_import_parse_xml().
     @param name - variable name
-    @return Description, empty string "" if missing description. NULL if no variable with given name exists.
+    @return Description, empty string if missing description. NULL if no variable with given name exists.
 */
 FMILIB_EXPORT
 const char* fmi3_import_get_variable_description_by_name(fmi3_import_t* fmu, const char* name);

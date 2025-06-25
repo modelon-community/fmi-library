@@ -116,7 +116,7 @@ FMILIB_EXPORT const char* fmi3_import_get_variable_name(fmi3_import_variable_t* 
 FMILIB_EXPORT fmi3_boolean_t fmi3_import_get_variable_has_description(fmi3_import_variable_t* v);
 
 /** \brief Get variable description.
-    @return Description string or empty string ("") if no description in the XML file was given.
+    @return Description string or empty string if no description in the XML file was given.
 */
 FMILIB_EXPORT const char* fmi3_import_get_variable_description(fmi3_import_variable_t* v);
 
@@ -572,7 +572,7 @@ FMILIB_EXPORT fmi3_import_alias_variable_t* fmi3_import_get_alias(fmi3_import_al
 FMILIB_EXPORT const char* fmi3_import_get_alias_variable_name(fmi3_import_alias_variable_t* alias);
 /** \brief Check if an alias variable has a description. */
 FMILIB_EXPORT fmi3_boolean_t fmi3_import_get_alias_variable_has_description(fmi3_import_alias_variable_t* alias);
-/** \brief Get the description for the alias variable, empty string "" if missing */
+/** \brief Get the description for the alias variable, empty string if missing */
 FMILIB_EXPORT const char* fmi3_import_get_alias_variable_description(fmi3_import_alias_variable_t* alias);
 /** \brief Get the displayUnit for the alias variable, or NULL if not defined. */
 FMILIB_EXPORT fmi3_import_display_unit_t* fmi3_import_get_alias_variable_display_unit(fmi3_import_alias_variable_t* alias);

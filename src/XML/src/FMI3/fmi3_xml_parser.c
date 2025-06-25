@@ -226,7 +226,7 @@ int fmi3_xml_get_attr_str(fmi3_xml_parser_context_t* context, fmi3_xml_elm_t elm
         int required, const char** valp)
 {
     /* Read and clear attribute */
-    jm_string value = fmi3_xml_peek_attr_str(context, attrID);
+    jm_string value = fmi3_xml_peek_attr_str(context, attrID); /* NULL if doesn't exist*/
     jm_vector_set_item(jm_string)(context->attrMapById, attrID.any, 0);
 
     if (!value && required) {
@@ -236,35 +236,33 @@ int fmi3_xml_get_attr_str(fmi3_xml_parser_context_t* context, fmi3_xml_elm_t elm
         return -1;
     }
 
-    *valp = value; /* can be NULL */
+    *valp = value; /* NULL if missing (and not required) */
     return 0;
 }
 
 /**
  * Reads the attribute from attribute buffer as jm_vector(char). This will clear the attribute from the buffer.
+ * @param exists (return arg): If attribute exists (to tell empty string vs missing attribute)
  * @param field (return arg): Attribute value (memory owned by this vector)
  */
 int fmi3_xml_parse_attr_as_string(fmi3_xml_parser_context_t* context, fmi3_xml_elm_t elmID, fmi3_xml_attr_t attrID,
-        int required, jm_vector(char)* field)
+        int required, int* exists, jm_vector(char)* field)
 {
     jm_string val;
     size_t len;
 
     /* Get pointer to attribute value (owned by expat) */
     if (fmi3_xml_get_attr_str(context, elmID, attrID, required, &val)) {
-        return -1;
+        return -1; /* (required and missing) or other error */
     };
 
-    if ((!val || !val[0]) && !required) {
-        /* Return empty string */
-        jm_vector_resize(char)(field, 1);       /* Allocate space for null character */
-        jm_vector_set_item(char)(field, 0, 0);  /* Push null character */
-        jm_vector_resize(char)(field, 0);       /* Make length same as for strlen */
-        return 0;
+    if (!val) { /* not required and missing */
+        *exists = 0;
+        return 0; 
     }
+    *exists = 1;
 
     len = strlen(val) + 1;
-
     /* Error check */
     if (jm_vector_resize(char)(field, len) < len) {
         jm_string elmName = fmi3_xml_elmid_to_name(context, elmID);
@@ -275,7 +273,6 @@ int fmi3_xml_parse_attr_as_string(fmi3_xml_parser_context_t* context, fmi3_xml_e
 
     /* Copy to output memory owned by FMIL */
     strcpy(jm_vector_get_itemp(char)(field, 0), val);
-    jm_vector_resize(char)(field, len - 1);  // Make length as for strlen
     return 0;
 }
 
@@ -1275,8 +1272,8 @@ int fmi3_xml_parse_model_description(fmi3_xml_model_description_t* md,
     }
     context->lastBaseUnit = 0;
     context->skipElementCnt = 0;
-    jm_stack_init(int)(&context->elmStack,  context->callbacks);
-    jm_vector_init(char)(&context->elmData,           0, context->callbacks);
+    jm_stack_init(int)(&context->elmStack, context->callbacks);
+    jm_vector_init(char)(&context->elmData, 0, context->callbacks);
     jm_vector_init(char)(&context->variableStartAttr, 0, context->callbacks);
     jm_vector_init(jm_voidp)(&context->currentStartVariableValues, 0, context->callbacks);
 

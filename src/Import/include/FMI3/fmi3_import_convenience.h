@@ -25,6 +25,7 @@
 
 #include <FMI/fmi_import_context.h>
 #include <FMI3/fmi3_function_types.h>
+#include "fmi3_import_variable.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -179,6 +180,30 @@ void fmi3_default_callback_logger(fmi3_instance_environment_t inst, fmi3_string_
 */
 FMILIB_EXPORT
 void fmi3_import_init_logger(jm_callbacks* cb, fmi3_logger_context_t* loggerCallbacks);
+
+/**
+    \brief Get variable description by variable name. Alias variable names result in the description of the alias variable.
+    @param fmu - An fmu object as returned by fmi3_import_parse_xml().
+    @param name - variable name
+    @return Description, empty string if missing description. NULL if no variable with given name exists.
+*/
+FMILIB_EXPORT
+const char* fmi3_import_get_variable_description_by_name(fmi3_import_t* fmu, const char* name);
+
+/**
+    \brief Get variable display unit by variable name. Alias variable names result in the display unit of the alias variable.
+    @param fmu - An fmu object as returned by fmi3_import_parse_xml().
+    @param name - variable name
+    @return Pointer to the display unit object if it exists; NULL if the variable does not exist or has no display unit.
+*/
+FMILIB_EXPORT
+fmi3_import_display_unit_t* fmi3_import_get_variable_display_unit_by_name(fmi3_import_t* fmu, const char* name);
+
+/**
+    \brief Checks if the clock variable is a clock to the variable.
+*/
+FMILIB_EXPORT
+fmi3_boolean_t fmi3_import_get_variable_is_clocked_by(fmi3_import_variable_t* var, fmi3_import_clock_variable_t* clock);
 
 /** @} */
 

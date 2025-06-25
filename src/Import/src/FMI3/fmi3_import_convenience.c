@@ -389,3 +389,15 @@ void fmi3_import_init_logger(jm_callbacks* cb, fmi3_logger_context_t* loggerCall
     cb->logger = fmi3_logger;
     cb->context = loggerCallbacks;
 }
+
+const char* fmi3_import_get_variable_description_by_name(fmi3_import_t* fmu, const char* name) {
+    return fmi3_xml_get_variable_description_by_name(fmu->md, name);
+}
+
+fmi3_import_display_unit_t* fmi3_import_get_variable_display_unit_by_name(fmi3_import_t* fmu, const char* name) {
+    return fmi3_xml_get_variable_display_unit_by_name(fmu->md, name);
+}
+
+fmi3_boolean_t fmi3_import_get_variable_is_clocked_by(fmi3_import_variable_t* var, fmi3_import_clock_variable_t* clock) {
+    return fmi3_xml_get_variable_is_clocked_by(var, clock);
+}

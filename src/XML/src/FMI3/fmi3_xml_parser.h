@@ -76,7 +76,7 @@ void fmi3_xml_free_parse_buffer(fmi3_xml_parser_context_t* context);
  */
 void fmi3_xml_parse_attr_error(fmi3_xml_parser_context_t* context, fmi3_xml_elm_t elmID, const fmi3_xml_attr_t attrID, const char* attrStr);
 
-int fmi3_xml_parse_attr_as_string (fmi3_xml_parser_context_t* context, fmi3_xml_elm_t elmID, const fmi3_xml_attr_t attrID, int required, jm_vector(char)* field);
+int fmi3_xml_parse_attr_as_string (fmi3_xml_parser_context_t* context, fmi3_xml_elm_t elmID, const fmi3_xml_attr_t attrID, int required, int* exists, jm_vector(char)* field);
 int fmi3_xml_parse_attr_as_enum   (fmi3_xml_parser_context_t* context, fmi3_xml_elm_t elmID, const fmi3_xml_attr_t attrID, int required, unsigned int*    field, unsigned int   defaultVal, jm_name_ID_map_t* nameMap);
 int fmi3_xml_parse_attr_as_bool   (fmi3_xml_parser_context_t* context, fmi3_xml_elm_t elmID, const fmi3_xml_attr_t attrID, int required, bool*            field, bool           defaultVal);
 int fmi3_xml_parse_attr_as_boolean(fmi3_xml_parser_context_t* context, fmi3_xml_elm_t elmID, const fmi3_xml_attr_t attrID, int required, unsigned int*    field, unsigned int   defaultVal);

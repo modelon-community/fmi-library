@@ -6,6 +6,8 @@ Note that version 2.1 is the first version with release notes. Please see the co
 
 ## FUTURE
 
+- Minizip: use localtime_r instead of localtime on POSIX systems. Avoids problems in multithreaded applications.
+
 ## 3.0.4
 
 - Add FMILIB_EXTERNAL_LIBS option to enable external zlib/minizip/expat dependencies

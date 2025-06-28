@@ -15,6 +15,7 @@
         1. Changed all uses of printf to a new function minizip_printf
         2. Renamed file and main function to fmi_minizip
         3. Removed code not related to just zipping
+        4. Replaced localtime with localtime_r on POSIX systems
 */
 
 
@@ -44,6 +45,10 @@
 #define FSEEKO_FUNC(stream, offset, origin) fseeko64(stream, offset, origin)
 #endif
 
+#if defined(__unix__) || defined(__APPLE__)
+/* For localtime_r */
+#define _POSIX_C_SOURCE 200112L
+#endif
 
 
 #include <stdio.h>
@@ -115,7 +120,8 @@ static int filetime(const char *f, tm_zip *tmzip, uLong *dt) {
   (void)dt;
   int ret=0;
   struct stat s;        /* results of stat() */
-  struct tm* filedate;
+  struct tm filedate;
+  struct tm* filedatePtr;
   time_t tm_t=0;
 
   if (strcmp(f,"-")!=0)
@@ -138,14 +144,14 @@ static int filetime(const char *f, tm_zip *tmzip, uLong *dt) {
       ret = 1;
     }
   }
-  filedate = localtime(&tm_t);
+  filedatePtr = localtime_r(&tm_t, &filedate);
 
-  tmzip->tm_sec  = filedate->tm_sec;
-  tmzip->tm_min  = filedate->tm_min;
-  tmzip->tm_hour = filedate->tm_hour;
-  tmzip->tm_mday = filedate->tm_mday;
-  tmzip->tm_mon  = filedate->tm_mon ;
-  tmzip->tm_year = filedate->tm_year;
+  tmzip->tm_sec  = filedatePtr->tm_sec;
+  tmzip->tm_min  = filedatePtr->tm_min;
+  tmzip->tm_hour = filedatePtr->tm_hour;
+  tmzip->tm_mday = filedatePtr->tm_mday;
+  tmzip->tm_mon  = filedatePtr->tm_mon ;
+  tmzip->tm_year = filedatePtr->tm_year;
 
   return ret;
 }

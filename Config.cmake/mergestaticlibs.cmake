@@ -52,7 +52,7 @@ function(merge_static_libs outlib)
             COMMAND_EXPAND_LISTS
             VERBATIM
         )
-    else() # general UNIX - need to "ar -x" and then "ar -ru"
+    elseif(CMAKE_HOST_UNIX) # general UNIX - need to "ar -x" and then "ar -ru"
         foreach(libtarget ${libs})
             set(objlistfile  ${CMAKE_CURRENT_BINARY_DIR}/${libtarget}.objlist)  # Contains a list of the object files
             set(objdir       ${CMAKE_CURRENT_BINARY_DIR}/${libtarget}.objdir)   # Directory where to extract object files
@@ -90,6 +90,11 @@ EXECUTE_PROCESS(COMMAND ls .
         add_custom_command(TARGET ${outlib} POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E echo "Running: ${CMAKE_RANLIB} $<TARGET_FILE:${outlib}>"
             COMMAND ${CMAKE_RANLIB} $<TARGET_FILE:${outlib}>)
+    else()
+        # only works with static third-party libs
+        foreach(libtarget ${libs})
+            target_sources(${outlib} PUBLIC $<TARGET_OBJECTS:${libtarget}>)
+        endforeach()
     endif()
     file(WRITE ${dummyfile}.base "const char* ${outlib}_sublibs=\"${libs}\";")
     add_custom_command(

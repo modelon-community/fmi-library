@@ -338,8 +338,8 @@ if(FMILIB_BUILD_STATIC_LIB)
     # the same include dirs as will exist for installation.
     target_include_directories(fmilib
         PUBLIC
-            ${JMUTIL_PUBLIC_INCLUDE_DIR}
-            ${FMIIMPORT_PUBLIC_INCLUDE_DIR}
+            ${JMUTILS_PUBLIC_INCLUDE_DIRS}
+            ${FMIIMPORT_PUBLIC_INCLUDE_DIRS}
             ${FMILIB_INCLUDE_DIR}
             ${FMILIB_CONFIG_INCLUDE_DIR}
     )

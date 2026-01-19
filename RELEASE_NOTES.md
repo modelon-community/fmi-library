@@ -7,6 +7,8 @@ Note that version 2.1 is the first version with release notes. Please see the co
 ## FUTURE
 
 - Minizip: use localtime_r instead of localtime on POSIX systems. Avoids problems in multithreaded applications.
+- Fixed the issue that `fmi3SetIntervalDecimal`, `fmi3SetIntervalFraction`, `fmi3SetShiftDecimal` and `fmi3SetShiftFraction` 
+  were not loaded for Scheduled-Execution FMUs.
 
 ## 3.0.4
 

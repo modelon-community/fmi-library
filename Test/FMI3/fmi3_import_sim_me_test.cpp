@@ -82,6 +82,19 @@ void test_capi_wrappers_me(fmi3_import_t* fmu) {
     INFO("Test that get_nominals API is loaded");
     REQUIRE(fmi3_import_get_nominals_of_continuous_states(fmu, NULL, 0) == fmi3_status_ok);
 
+    INFO("Testing Clocks CAPI wrappers");
+    REQUIRE(fmi3_import_set_clock(fmu, nullptr, 0, nullptr) == fmi3_status_ok);
+    REQUIRE(fmi3_import_set_interval_decimal(fmu, nullptr, 0, nullptr) == fmi3_status_ok);
+    REQUIRE(fmi3_import_set_interval_fraction(fmu, nullptr, 0, nullptr, nullptr) == fmi3_status_ok);
+    REQUIRE(fmi3_import_set_shift_decimal(fmu, nullptr, 0, nullptr) == fmi3_status_ok);
+    REQUIRE(fmi3_import_set_shift_fraction(fmu, nullptr, 0, nullptr, nullptr) == fmi3_status_ok);
+
+    REQUIRE(fmi3_import_get_clock(fmu, nullptr, 0, nullptr) == fmi3_status_ok);
+    REQUIRE(fmi3_import_get_interval_decimal(fmu, nullptr, 0, nullptr, nullptr) == fmi3_status_ok);
+    REQUIRE(fmi3_import_get_interval_fraction(fmu, nullptr, 0, nullptr, nullptr, nullptr) == fmi3_status_ok);
+    REQUIRE(fmi3_import_get_shift_decimal(fmu, nullptr, 0, nullptr) == fmi3_status_ok);
+    REQUIRE(fmi3_import_get_shift_fraction(fmu, nullptr, 0, nullptr, nullptr) == fmi3_status_ok);
+
     REQUIRE(fmi3_import_terminate(fmu) == fmi3_status_ok);
     fmi3_import_free_instance(fmu);
 }

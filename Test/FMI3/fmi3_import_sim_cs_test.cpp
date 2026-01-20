@@ -130,6 +130,19 @@ void test_simulate_cs(fmi3_import_t* fmu) {
     INFO("Testing dependecies");
     call_dependency_functions(fmu);
 
+    INFO("Testing Clocks CAPI wrappers");
+    REQUIRE(fmi3_import_set_clock(fmu, nullptr, 0, nullptr) == fmi3_status_ok);
+    REQUIRE(fmi3_import_set_interval_decimal(fmu, nullptr, 0, nullptr) == fmi3_status_ok);
+    REQUIRE(fmi3_import_set_interval_fraction(fmu, nullptr, 0, nullptr, nullptr) == fmi3_status_ok);
+    REQUIRE(fmi3_import_set_shift_decimal(fmu, nullptr, 0, nullptr) == fmi3_status_ok);
+    REQUIRE(fmi3_import_set_shift_fraction(fmu, nullptr, 0, nullptr, nullptr) == fmi3_status_ok);
+
+    REQUIRE(fmi3_import_get_clock(fmu, nullptr, 0, nullptr) == fmi3_status_ok);
+    REQUIRE(fmi3_import_get_interval_decimal(fmu, nullptr, 0, nullptr, nullptr) == fmi3_status_ok);
+    REQUIRE(fmi3_import_get_interval_fraction(fmu, nullptr, 0, nullptr, nullptr, nullptr) == fmi3_status_ok);
+    REQUIRE(fmi3_import_get_shift_decimal(fmu, nullptr, 0, nullptr) == fmi3_status_ok);
+    REQUIRE(fmi3_import_get_shift_fraction(fmu, nullptr, 0, nullptr, nullptr) == fmi3_status_ok);
+
     INFO("Simulation");
     fmi3_float64_t rvalue;
     tcur = tstart;

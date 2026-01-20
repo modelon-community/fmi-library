@@ -116,6 +116,17 @@ static jm_status_enu_t fmi3_capi_load_common_fcn(fmi3_capi_t* fmu)
     LOAD_DLL_FUNCTION(fmi3EvaluateDiscreteStates);
     LOAD_DLL_FUNCTION(fmi3UpdateDiscreteStates);
 
+    LOAD_DLL_FUNCTION(fmi3GetClock);
+    LOAD_DLL_FUNCTION(fmi3GetIntervalDecimal);
+    LOAD_DLL_FUNCTION(fmi3GetIntervalFraction);
+    LOAD_DLL_FUNCTION(fmi3GetShiftDecimal);
+    LOAD_DLL_FUNCTION(fmi3GetShiftFraction);
+    
+    LOAD_DLL_FUNCTION(fmi3SetIntervalDecimal);
+    LOAD_DLL_FUNCTION(fmi3SetIntervalFraction);
+    LOAD_DLL_FUNCTION(fmi3SetShiftDecimal);
+    LOAD_DLL_FUNCTION(fmi3SetShiftFraction);
+
     return jm_status;
 }
 
@@ -129,17 +140,8 @@ static jm_status_enu_t fmi3_capi_load_cs_fcn(fmi3_capi_t* fmu)
 
     jm_status = fmi3_capi_load_common_fcn(fmu);
 
-    /* Clock functions */
-    LOAD_DLL_FUNCTION(fmi3GetClock);
+    /* Clock related functions */
     LOAD_DLL_FUNCTION(fmi3SetClock);
-    LOAD_DLL_FUNCTION(fmi3GetIntervalDecimal);
-    LOAD_DLL_FUNCTION(fmi3GetShiftDecimal);
-    LOAD_DLL_FUNCTION(fmi3GetShiftFraction);
-    LOAD_DLL_FUNCTION(fmi3GetIntervalFraction);
-    LOAD_DLL_FUNCTION(fmi3SetIntervalDecimal);
-    LOAD_DLL_FUNCTION(fmi3SetIntervalFraction);
-    LOAD_DLL_FUNCTION(fmi3SetShiftDecimal);
-    LOAD_DLL_FUNCTION(fmi3SetShiftFraction);
 
     /* Simulating the slave */
     LOAD_DLL_FUNCTION(fmi3EnterStepMode);
@@ -158,13 +160,6 @@ static jm_status_enu_t fmi3_capi_load_se_fcn(fmi3_capi_t* fmu)
 
     jm_status = fmi3_capi_load_common_fcn(fmu);
 
-    /* Clock functions */
-    LOAD_DLL_FUNCTION(fmi3GetClock);
-    LOAD_DLL_FUNCTION(fmi3GetShiftDecimal);
-    LOAD_DLL_FUNCTION(fmi3GetShiftFraction);
-    LOAD_DLL_FUNCTION(fmi3GetIntervalDecimal);
-    LOAD_DLL_FUNCTION(fmi3GetIntervalFraction);
-
     /* Simulating the slave */
     LOAD_DLL_FUNCTION(fmi3ActivateModelPartition);
 
@@ -180,17 +175,8 @@ static jm_status_enu_t fmi3_capi_load_me_fcn(fmi3_capi_t* fmu)
 
     jm_status = fmi3_capi_load_common_fcn(fmu);
 
-    /* Clock functions */
-    LOAD_DLL_FUNCTION(fmi3GetClock);
+    /* Clock related functions */
     LOAD_DLL_FUNCTION(fmi3SetClock);
-    LOAD_DLL_FUNCTION(fmi3GetIntervalDecimal);
-    LOAD_DLL_FUNCTION(fmi3GetShiftDecimal);
-    LOAD_DLL_FUNCTION(fmi3GetShiftFraction);
-    LOAD_DLL_FUNCTION(fmi3GetIntervalFraction);
-    LOAD_DLL_FUNCTION(fmi3SetIntervalDecimal);
-    LOAD_DLL_FUNCTION(fmi3SetIntervalFraction);
-    LOAD_DLL_FUNCTION(fmi3SetShiftDecimal);
-    LOAD_DLL_FUNCTION(fmi3SetShiftFraction);
 
     /* Enter and exit the different modes */
     LOAD_DLL_FUNCTION(fmi3EnterContinuousTimeMode);

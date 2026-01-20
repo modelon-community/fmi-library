@@ -96,6 +96,18 @@ void test_capi_wrappers_se(fmi3_import_t* fmu) {
     /* verify that the CAPI wrappers are loaded and have matching signatures */
     REQUIRE(fmi3_import_activate_model_partition(fmu, 0, 0) == fmi3_status_ok);
 
+    INFO("Testing Clocks CAPI wrappers");
+    REQUIRE(fmi3_import_set_interval_decimal(fmu, nullptr, 0, nullptr) == fmi3_status_ok);
+    REQUIRE(fmi3_import_set_interval_fraction(fmu, nullptr, 0, nullptr, nullptr) == fmi3_status_ok);
+    REQUIRE(fmi3_import_set_shift_decimal(fmu, nullptr, 0, nullptr) == fmi3_status_ok);
+    REQUIRE(fmi3_import_set_shift_fraction(fmu, nullptr, 0, nullptr, nullptr) == fmi3_status_ok);
+
+    REQUIRE(fmi3_import_get_clock(fmu, nullptr, 0, nullptr) == fmi3_status_ok);
+    REQUIRE(fmi3_import_get_interval_decimal(fmu, nullptr, 0, nullptr, nullptr) == fmi3_status_ok);
+    REQUIRE(fmi3_import_get_interval_fraction(fmu, nullptr, 0, nullptr, nullptr, nullptr) == fmi3_status_ok);
+    REQUIRE(fmi3_import_get_shift_decimal(fmu, nullptr, 0, nullptr) == fmi3_status_ok);
+    REQUIRE(fmi3_import_get_shift_fraction(fmu, nullptr, 0, nullptr, nullptr) == fmi3_status_ok);
+
     /* clean up */
     REQUIRE(fmi3_import_terminate(fmu) == fmi3_status_ok);
     fmi3_import_free_instance(fmu);

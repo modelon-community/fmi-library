@@ -352,6 +352,8 @@ if(FMILIB_BUILD_SHARED_LIB)
     # fmiimport's dependencies such as generated code is built first.
     add_dependencies(fmilib_shared fmiimport)
 
+    set_target_properties (fmilib_shared PROPERTIES SOVERSION 3 VERSION 3.0)
+
     if(UNIX AND NOT APPLE)
         target_compile_definitions(fmilib_shared PRIVATE -D_GNU_SOURCE)
     endif()

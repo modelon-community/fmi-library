@@ -21,10 +21,10 @@ function(fmi_platform platform fmi_version)
     endif()
 
     # set os tag
-    if(CMAKE_HOST_WIN32 AND FMI_1_OR_2)
+    if(WIN32 AND FMI_1_OR_2)
         set(operatingsystem "win")
     else()
-        string(TOLOWER "${CMAKE_HOST_SYSTEM_NAME}" operatingsystem)
+        string(TOLOWER "${CMAKE_SYSTEM_NAME}" operatingsystem)
     endif()
 
     # set arch tag

@@ -35,7 +35,26 @@
 /* MODIFICATION: fopen64 etc. are not defined for MSVC. Original minizip handles this via ioapi.h, but minizip-ng doesn't. */
 #if defined(__APPLE__) || defined(__HAIKU__) || defined(MINIZIP_FOPEN_NO_64) || defined(_MSC_VER)
 // In darwin and perhaps other BSD variants off_t is a 64 bit value, hence no need for specific 64 bit functions
+#if defined(_WIN32)
+static FILE* fopen_utf8(const char* filename, const char* mode) {
+    wchar_t* wfilename = NULL;
+    wchar_t* wmode = NULL;
+    FILE* f = NULL;
+    int nlen = MultiByteToWideChar(CP_UTF8, 0, filename, -1, NULL, 0);
+    int mlen = MultiByteToWideChar(CP_UTF8, 0, mode, -1, NULL, 0);
+    wfilename = (wchar_t*)malloc((nlen + mlen) * sizeof(wchar_t));
+    if (!wfilename) return NULL;
+    wmode = wfilename + nlen;
+    MultiByteToWideChar(CP_UTF8, 0, filename, -1, wfilename, nlen);
+    MultiByteToWideChar(CP_UTF8, 0, mode, -1, wmode, mlen);
+    f = _wfopen(wfilename, wmode);
+    free(wfilename);
+    return f;
+}
+#define FOPEN_FUNC(filename, mode) fopen_utf8(filename, mode)
+#else
 #define FOPEN_FUNC(filename, mode) fopen(filename, mode)
+#endif
 #define FTELLO_FUNC(stream) ftello(stream)
 #define FSEEKO_FUNC(stream, offset, origin) fseeko(stream, offset, origin)
 #else
@@ -94,8 +113,19 @@ static void change_file_date(const char *filename, uLong dosdate, tm_unz tmu_dat
   HANDLE hFile;
   FILETIME ftm,ftLocal,ftCreate,ftLastAcc,ftLastWrite;
 
-  hFile = CreateFileA(filename,GENERIC_READ | GENERIC_WRITE,
-                      0,NULL,OPEN_EXISTING,0,NULL);
+  {
+      wchar_t* wfilename = NULL;
+      int nlen = MultiByteToWideChar(CP_UTF8, 0, filename, -1, NULL, 0);
+      wfilename = (wchar_t*)malloc(nlen * sizeof(wchar_t));
+      if (wfilename) {
+          MultiByteToWideChar(CP_UTF8, 0, filename, -1, wfilename, nlen);
+          hFile = CreateFileW(wfilename, GENERIC_READ | GENERIC_WRITE,
+                              0, NULL, OPEN_EXISTING, 0, NULL);
+          free(wfilename);
+      } else {
+          hFile = INVALID_HANDLE_VALUE;
+      }
+  }
   GetFileTime(hFile,&ftCreate,&ftLastAcc,&ftLastWrite);
   DosDateTimeToFileTime((WORD)(dosdate>>16),(WORD)dosdate,&ftLocal);
   LocalFileTimeToFileTime(&ftLocal,&ftm);
@@ -134,7 +164,16 @@ static void change_file_date(const char *filename, uLong dosdate, tm_unz tmu_dat
 static int mymkdir(const char* dirname) {
     int ret=0;
 #ifdef _WIN32
-    ret = _mkdir(dirname);
+    wchar_t* wdirname = NULL;
+    int nlen = MultiByteToWideChar(CP_UTF8, 0, dirname, -1, NULL, 0);
+    wdirname = (wchar_t*)malloc(nlen * sizeof(wchar_t));
+    if (wdirname) {
+        MultiByteToWideChar(CP_UTF8, 0, dirname, -1, wdirname, nlen);
+        ret = _wmkdir(wdirname);
+        free(wdirname);
+    } else {
+        ret = -1;
+    }
 #elif defined(__unix__)
     ret = mkdir (dirname,0775);
 #elif __APPLE__
@@ -439,14 +478,29 @@ int fmi_miniunz(const char* zipfilename, const char* dirname) {
 
 
 #ifdef _WIN32
-    if (_chdir(dirname))
+    {
+        wchar_t* wdirname = NULL;
+        int nlen = MultiByteToWideChar(CP_UTF8, 0, dirname, -1, NULL, 0);
+        wdirname = (wchar_t*)malloc(nlen * sizeof(wchar_t));
+        int ret = -1;
+        if (wdirname) {
+            MultiByteToWideChar(CP_UTF8, 0, dirname, -1, wdirname, nlen);
+            ret = _wchdir(wdirname);
+            free(wdirname);
+        }
+        if (ret)
+        {
+            minizip_printf("Error changing into %s, aborting\n", dirname);
+            return 1;
+        }
+    }
 #else
     if (chdir(dirname))
-#endif
     {
-      minizip_printf("Error changing into %s, aborting\n", dirname);
-      exit(-1);
+        minizip_printf("Error changing into %s, aborting\n", dirname);
+        return 1;
     }
+#endif
 
     ret_value = do_extract(uf, 0, 1, NULL);
 

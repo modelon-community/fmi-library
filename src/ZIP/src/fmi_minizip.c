@@ -34,9 +34,28 @@
         #endif
 #endif
 
-#if defined(__APPLE__) || defined(__HAIKU__) || defined(MINIZIP_FOPEN_NO_64)
+#if defined(__APPLE__) || defined(__HAIKU__) || defined(MINIZIP_FOPEN_NO_64) || defined(_MSC_VER)
 // In darwin and perhaps other BSD variants off_t is a 64 bit value, hence no need for specific 64 bit functions
+#if defined(_WIN32)
+static FILE* fopen_utf8(const char* filename, const char* mode) {
+    wchar_t* wfilename = NULL;
+    wchar_t* wmode = NULL;
+    FILE* f = NULL;
+    int nlen = MultiByteToWideChar(CP_UTF8, 0, filename, -1, NULL, 0);
+    int mlen = MultiByteToWideChar(CP_UTF8, 0, mode, -1, NULL, 0);
+    wfilename = (wchar_t*)malloc((nlen + mlen) * sizeof(wchar_t));
+    if (!wfilename) return NULL;
+    wmode = wfilename + nlen;
+    MultiByteToWideChar(CP_UTF8, 0, filename, -1, wfilename, nlen);
+    MultiByteToWideChar(CP_UTF8, 0, mode, -1, wmode, mlen);
+    f = _wfopen(wfilename, wmode);
+    free(wfilename);
+    return f;
+}
+#define FOPEN_FUNC(filename, mode) fopen_utf8(filename, mode)
+#else
 #define FOPEN_FUNC(filename, mode) fopen(filename, mode)
+#endif
 #define FTELLO_FUNC(stream) ftello(stream)
 #define FSEEKO_FUNC(stream, offset, origin) fseeko(stream, offset, origin)
 #else
@@ -99,9 +118,14 @@ static int filetime(const char *f, tm_zip *tmzip, uLong *dt) {
   {
       FILETIME ftLocal;
       HANDLE hFind;
-      WIN32_FIND_DATAA ff32;
-
-      hFind = FindFirstFileA(f,&ff32);
+      WIN32_FIND_DATAW ff32;
+      wchar_t* wf = NULL;
+      int nlen = MultiByteToWideChar(CP_UTF8, 0, f, -1, NULL, 0);
+      wf = (wchar_t*)malloc(nlen * sizeof(wchar_t));
+      if (!wf) return 0;
+      MultiByteToWideChar(CP_UTF8, 0, f, -1, wf, nlen);
+      hFind = FindFirstFileW(wf,&ff32);
+      free(wf);
       if (hFind != INVALID_HANDLE_VALUE)
       {
         FileTimeToLocalFileTime(&(ff32.ftLastWriteTime),&ftLocal);

@@ -33,6 +33,16 @@
 #endif
 
 /* MODIFICATION: fopen64 etc. are not defined for MSVC. Original minizip handles this via ioapi.h, but minizip-ng doesn't. */
+
+/* MODIFICATION: Include stdio.h (for FILE), stdlib.h, string.h, and windows.h here before fopen_utf8 to ensure types are declared for MSVC */
+/* MODIFICATION: The original minizip includes these after the FOPEN_FUNC block, but MSVC requires them to be declared before first use */
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
 #if defined(__APPLE__) || defined(__HAIKU__) || defined(MINIZIP_FOPEN_NO_64) || defined(_MSC_VER)
 // In darwin and perhaps other BSD variants off_t is a 64 bit value, hence no need for specific 64 bit functions
 #if defined(_WIN32)

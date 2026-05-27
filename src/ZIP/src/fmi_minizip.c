@@ -34,6 +34,18 @@
         #endif
 #endif
 
+#if defined(__unix__) || defined(__APPLE__)
+/* For localtime_r - must be defined before any includes */
+#define _POSIX_C_SOURCE 200112L
+#endif
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
 #if defined(__APPLE__) || defined(__HAIKU__) || defined(MINIZIP_FOPEN_NO_64) || defined(_MSC_VER)
 // In darwin and perhaps other BSD variants off_t is a 64 bit value, hence no need for specific 64 bit functions
 #if defined(_WIN32)
@@ -62,11 +74,6 @@ static FILE* fopen_utf8(const char* filename, const char* mode) {
 #define FOPEN_FUNC(filename, mode) fopen64(filename, mode)
 #define FTELLO_FUNC(stream) ftello64(stream)
 #define FSEEKO_FUNC(stream, offset, origin) fseeko64(stream, offset, origin)
-#endif
-
-#if defined(__unix__) || defined(__APPLE__)
-/* For localtime_r */
-#define _POSIX_C_SOURCE 200112L
 #endif
 
 

@@ -250,6 +250,11 @@ fmi3_capi_t* fmi3_capi_create_dllfmu(jm_callbacks* cb, const char* dllPath, cons
 
     /* Create options */
     fmu->options = fmi_util_allocate_options(cb);
+    if (!fmu->options) {
+        jm_log_fatal(cb, FMI_CAPI_MODULE_NAME, "Could not allocate memory for options.");
+        fmi3_capi_destroy_dllfmu(fmu);
+        return NULL;
+    }
 
     /* Copy DLL path */
     fmu->dllPath = (char*)cb->calloc(sizeof(char), strlen(dllPath) + 1);

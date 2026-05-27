@@ -1319,7 +1319,9 @@ int fmi3_xml_parse_model_description(fmi3_xml_model_description_t* md,
     }
 
     while (!feof(file)) {
-        char * text = jm_vector_get_itemp(char)(fmi3_xml_reserve_parse_buffer(context,0,XML_BLOCK_SIZE),0);
+        jm_vector(char)* buf = fmi3_xml_reserve_parse_buffer(context,0,XML_BLOCK_SIZE);
+        if (!buf) { fclose(file); fmi3_xml_parse_free_context(context); return -1; }
+        char * text = jm_vector_get_itemp(char)(buf,0);
         int n = (int)fread(text, sizeof(char), XML_BLOCK_SIZE, file);
         if (ferror(file)) {
             fmi3_xml_parse_fatal(context, "Error reading from file %s", filename);
@@ -1415,7 +1417,9 @@ int fmi3_xml_parse_terminals_and_icons(fmi_xml_terminals_and_icons_t* termIcon,
     XML_SetCharacterDataHandler(parser, fmi3_parse_element_data);
 
     while (!feof(file)) {
-        char* text = jm_vector_get_itemp(char)(fmi3_xml_reserve_parse_buffer(context, 0, XML_BLOCK_SIZE), 0);
+        jm_vector(char)* buf = fmi3_xml_reserve_parse_buffer(context, 0, XML_BLOCK_SIZE);
+        if (!buf) return -1;
+        char* text = jm_vector_get_itemp(char)(buf, 0);
         int n = (int)fread(text, sizeof(char), XML_BLOCK_SIZE, file);
         if (ferror(file)) {
             fmi3_xml_parse_fatal(context, "Error reading from file %s", filename);

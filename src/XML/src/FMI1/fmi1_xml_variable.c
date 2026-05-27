@@ -1252,7 +1252,7 @@ int fmi1_xml_handle_ModelVariables(fmi1_xml_parser_context_t *context, const cha
                 numvar--; i--;
                 fmi1_xml_free_direct_dependencies(named);
                 md->callbacks->free(v);
-                assert(0);
+                return -1;
             }
             if (v->causality == fmi1_causality_enu_input){
                 jm_vector_set_item(jm_voidp)(inputVars, num_in, jm_vector_get_item(jm_named_ptr)(&md->variablesByName,i).ptr);

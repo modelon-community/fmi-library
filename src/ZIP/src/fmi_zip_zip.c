@@ -28,6 +28,8 @@ jm_status_enu_t fmi_zip_zip(const char* zip_file_path, int n_files_to_zip, const
     char cd[FILENAME_MAX];
     int status;
 
+    if (!callbacks) callbacks = jm_get_default_callbacks();
+
     /* Temporary save the current directory */
     if (jm_portability_get_current_working_directory(cd, sizeof(cd) / sizeof(char)) == jm_status_error) {
         jm_log(callbacks, "UNZIP", jm_log_level_error, "Could not get Current Directory");

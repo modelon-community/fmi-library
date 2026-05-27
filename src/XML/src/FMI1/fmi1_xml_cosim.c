@@ -125,14 +125,14 @@ int fmi1_xml_handle_File(fmi1_xml_parser_context_t *context, const char* data) {
             if(fmi1_xml_set_attr_string(context, fmi1_xml_elmID_Model, fmi_attr_id_file, 1, bufFileName))
                 return -1;
             len = jm_vector_get_size_char(bufFileName);
-            pname = jm_vector_push_back(jm_string)(&md->additionalModels,fileName);
-            if(pname) *pname = fileName =  md->callbacks->malloc(len + 1);
-            if(!pname || !fileName) {
-                fmi1_xml_parse_fatal(context, "Could not allocate memory");
-                return -1;
-            }
-            memcpy(fileName, jm_vector_get_itemp(char)(bufFileName,0), len);
-            fileName[len] = 0;
+        pname = jm_vector_push_back(jm_string)(&md->additionalModels,fileName);
+        if(pname) *pname = fileName =  md->callbacks->malloc(len + 1);
+        if(!pname || !fileName) {
+            fmi1_xml_parse_fatal(context, "Could not allocate memory");
+            return -1;
+        }
+        memcpy(fileName, jm_vector_get_itemp(char)(bufFileName,0), len);
+        fileName[len] = 0;
     }
     else {
         /* might give out a warning if(data[0] != 0) */

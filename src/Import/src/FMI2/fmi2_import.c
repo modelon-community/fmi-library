@@ -112,7 +112,10 @@ fmi2_import_t* fmi2_import_parse_xml(fmi_import_context_t* context, const char* 
 
     if(jm_get_dir_abspath(context->callbacks, dirPath, absPath, FILENAME_MAX + 2)) {
         size_t len = strlen(absPath);
-        strcpy(absPath + len, FMI_FILE_SEP "resources");
+        size_t remaining = (FILENAME_MAX + 2) - len;
+        if (remaining > strlen(FMI_FILE_SEP "resources")) {
+            strcpy(absPath + len, FMI_FILE_SEP "resources");
+        }
         fmu->resourceLocation = fmi_import_create_URL_from_abs_path(context->callbacks, absPath);
     }
     fmu->dirPath = context->callbacks->malloc(strlen(dirPath) + 1);

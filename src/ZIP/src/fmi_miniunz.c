@@ -355,8 +355,6 @@ static int do_extract_currentfile(unzFile uf, const int* popt_extract_without_pa
                 minizip_printf("error %d with zipfile in unzCloseCurrentFile\n",err);
             }
         }
-        else
-            unzCloseCurrentFile(uf); /* don't lose the error */
     }
 
     free(buf);
@@ -445,7 +443,7 @@ int fmi_miniunz(const char* zipfilename, const char* dirname) {
 #endif
     {
       minizip_printf("Error changing into %s, aborting\n", dirname);
-      exit(-1);
+      return 1;
     }
 
     ret_value = do_extract(uf, 0, 1, NULL);

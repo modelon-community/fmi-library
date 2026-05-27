@@ -34,8 +34,11 @@ fmi1_component_t fmi1_capi_instantiate_model(fmi1_capi_t* fmu, fmi1_string_t ins
 
 void fmi1_capi_free_model_instance(fmi1_capi_t* fmu)
 {
-    jm_log_verbose(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Calling fmiFreeModelInstance");
-    fmu->fmiFreeModelInstance(fmu->c);
+    if (fmu != NULL && fmu->c != NULL) {
+        jm_log_verbose(fmu->callbacks, FMI_CAPI_MODULE_NAME, "Calling fmiFreeModelInstance");
+        fmu->fmiFreeModelInstance(fmu->c);
+        fmu->c = 0;
+    }
 }
 
 fmi1_status_t fmi1_capi_initialize(fmi1_capi_t* fmu, fmi1_boolean_t toleranceControlled, fmi1_real_t relativeTolerance, fmi1_event_info_t* eventInfo)

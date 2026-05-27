@@ -383,7 +383,7 @@ int fmi_minizip(const char* zip_file_path, int n_files_to_zip, const char** file
                 }
             }
         }
-        errclose = zipClose(zf,NULL);
+        errclose = (zf != NULL) ? zipClose(zf,NULL) : ZIP_ERRNO;
         if (errclose != ZIP_OK)
             minizip_printf("error in closing %s\n",filename_try);
     }

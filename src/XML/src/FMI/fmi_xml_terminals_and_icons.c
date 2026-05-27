@@ -24,7 +24,7 @@ static const char* module = "FMIXML";
 fmi_xml_terminals_and_icons_t* fmi_xml_allocate_terminals_and_icons(jm_callbacks* callbacks) {
     jm_callbacks* cb = callbacks ? callbacks : jm_get_default_callbacks();
 
-    fmi_xml_terminals_and_icons_t* termIcon = (fmi_xml_terminals_and_icons_t*)callbacks->calloc(1, sizeof(fmi_xml_terminals_and_icons_t));
+    fmi_xml_terminals_and_icons_t* termIcon = (fmi_xml_terminals_and_icons_t*)cb->calloc(1, sizeof(fmi_xml_terminals_and_icons_t));
     if (!termIcon) {
         jm_log_fatal(cb, module, "Could not allocate memory");
         return 0;

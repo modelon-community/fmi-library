@@ -59,11 +59,12 @@ fmi2_import_variable_list_t* fmi2_import_join_var_list(fmi2_import_variable_list
     size_t asize = fmi2_import_get_variable_list_size(a);
     size_t bsize = fmi2_import_get_variable_list_size(b);
     size_t joinSize = asize + bsize;
+    if (!a) return 0;
     fmi2_import_variable_list_t* list = fmi2_import_alloc_variable_list(a->fmu,joinSize);
     if(!list) {
         return list;
     }
-    jm_vector_copy(jm_voidp)(&list->variables,&a->variables);
+    if (a) jm_vector_copy(jm_voidp)(&list->variables,&a->variables);
     jm_vector_resize(jm_voidp)(&list->variables,joinSize);
     memcpy((void*)jm_vector_get_itemp(jm_voidp)(&list->variables,asize), (void*)jm_vector_get_itemp(jm_voidp)(&b->variables,0), sizeof(jm_voidp)*bsize);
     return list;

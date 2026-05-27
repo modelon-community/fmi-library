@@ -221,6 +221,8 @@ jm_status_enu_t fmi3_import_instantiate_model_exchange(fmi3_import_t* fmu,
 
     if(!fmu->capi) {
         jm_log_error(fmu->callbacks, module, "FMU CAPI is not loaded");
+        fmu->callbacks->free(fmu->instanceName);
+        fmu->instanceName = NULL;
         return jm_status_error;
     }
     c = fmi3_capi_instantiate_model_exchange(
@@ -231,6 +233,8 @@ jm_status_enu_t fmi3_import_instantiate_model_exchange(fmi3_import_t* fmu,
             visible,
             loggingOn);
     if (c == NULL) {
+        fmu->callbacks->free(fmu->instanceName);
+        fmu->instanceName = NULL;
         return jm_status_error;
     } else {
         return jm_status_success;
@@ -263,6 +267,8 @@ jm_status_enu_t fmi3_import_instantiate_co_simulation(
 
     if(!fmu->capi) {
         jm_log_error(fmu->callbacks, module, "FMU CAPI is not loaded");
+        fmu->callbacks->free(fmu->instanceName);
+        fmu->instanceName = NULL;
         return jm_status_error;
     }
     c = fmi3_capi_instantiate_co_simulation(
@@ -278,6 +284,8 @@ jm_status_enu_t fmi3_import_instantiate_co_simulation(
            nRequiredIntermediateVariables,
            intermediateUpdate);
     if (c == NULL) {
+        fmu->callbacks->free(fmu->instanceName);
+        fmu->instanceName = NULL;
         return jm_status_error;
     } else {
         return jm_status_success;
@@ -308,6 +316,8 @@ jm_status_enu_t fmi3_import_instantiate_scheduled_execution(
 
     if(!fmu->capi) {
         jm_log_error(fmu->callbacks, module, "FMU CAPI is not loaded");
+        fmu->callbacks->free(fmu->instanceName);
+        fmu->instanceName = NULL;
         return jm_status_error;
     }
     c = fmi3_capi_instantiate_scheduled_execution(
@@ -321,6 +331,8 @@ jm_status_enu_t fmi3_import_instantiate_scheduled_execution(
            lockPreemption,
            unlockPreemption);
     if (c == NULL) {
+        fmu->callbacks->free(fmu->instanceName);
+        fmu->instanceName = NULL;
         return jm_status_error;
     } else {
         return jm_status_success;

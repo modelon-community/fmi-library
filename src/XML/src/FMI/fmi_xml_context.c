@@ -70,7 +70,7 @@ void fmi_xml_fatal(fmi_xml_context_t *context, const char* fmt, ...) {
 
     va_end (args);
 
-    XML_StopParser(context->parser,0);
+    if (context->parser) XML_StopParser(context->parser,0);
 }
 
 void XMLCALL fmi_xml_parse_element_start(void *c, const char *elm, const char **attr) {
@@ -156,6 +156,7 @@ fmi_version_enu_t fmi_xml_get_fmi_version(fmi_xml_context_t* context, const char
     file = fopen(filename, "rb");
     if (file == NULL) {
         fmi_xml_fatal(context, "Cannot open file '%s' for parsing", filename);
+        fmi_xml_free_context(context);
         return fmi_version_unknown_enu;
     }
 
@@ -169,6 +170,7 @@ fmi_version_enu_t fmi_xml_get_fmi_version(fmi_xml_context_t* context, const char
         if(ferror(file)) {
             fmi_xml_fatal(context, "Error reading from file %s", filename);
             fclose(file);
+            fmi_xml_free_context(context);
             return fmi_version_unknown_enu;
         }
         if (!XML_Parse(parser, text, n, feof(file)) && (context->fmi_version == fmi_version_unknown_enu)) {
@@ -176,6 +178,7 @@ fmi_version_enu_t fmi_xml_get_fmi_version(fmi_xml_context_t* context, const char
                          (int)XML_GetCurrentLineNumber(parser),
                          XML_ErrorString(XML_GetErrorCode(parser)));
              fclose(file);
+             fmi_xml_free_context(context);
              return fmi_version_unknown_enu; /* failure */
         }
         if(context->fmi_version != fmi_version_unknown_enu) break;

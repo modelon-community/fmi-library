@@ -866,6 +866,7 @@ void fmi1_xml_eliminate_bad_alias(fmi1_xml_parser_context_t *context, jm_vector(
     jm_named_ptr key;
 
     n = jm_vector_get_size(jm_voidp)(varByVR);
+    (void)n;
     v = (fmi1_xml_variable_t*)jm_vector_get_item(jm_voidp)(varByVR, indexVR);
 
     jm_vector_remove_item_jm_voidp(varByVR, indexVR);

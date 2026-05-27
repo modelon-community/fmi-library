@@ -236,7 +236,7 @@ fmi3Status fmi_get_binary(fmi3Instance instance, const fmi3ValueReference valueR
     }
 
     for (k = 0; k < nValueReferences; k++) {
-        values[k] = inst->binaries[valueReferences[k]];
+        values[k] = (fmi3Binary)inst->binaries[valueReferences[k]];
         sizes[k] = inst->binaries_sz[k];
     }
     return fmi3OK;

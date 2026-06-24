@@ -93,19 +93,19 @@ void XMLCALL fmi_xml_parse_element_start(void *c, const char *elm, const char **
         fmi_xml_fatal(context, "Could not find fmiVersion attribute in the XML. Cannot proceed.");
         return;
     }
-    if( strcmp(fmiVersion, "1.0") == 0 ) {
+    if( strcmp(fmiVersion, "1.0") == 0 && (fmiVersion[3] == '\0' || fmiVersion[3] == '.') ) {
         jm_log_verbose(context->callbacks, MODULE, "XML specifies FMI 1.0");
         context->fmi_version = fmi_version_1_enu;
         XML_StopParser(context->parser,0);
         return;
     }
-    else if( strcmp(fmiVersion, "2.0") == 0 ) {
+    else if( strcmp(fmiVersion, "2.0") == 0 && (fmiVersion[3] == '\0' || fmiVersion[3] == '.') ) {
         jm_log_verbose(context->callbacks, MODULE, "XML specifies FMI 2.0");
         context->fmi_version = fmi_version_2_0_enu;
         XML_StopParser(context->parser,0);
         return;
     }
-    else if( strcmp(fmiVersion, "3.0") == 0 ) {
+    else if( strncmp(fmiVersion, "3.0", 3) == 0 && (fmiVersion[3] == '\0' || fmiVersion[3] == '.') ) {
         jm_log_verbose(context->callbacks, MODULE, "XML specifies FMI 3.0");
         context->fmi_version = fmi_version_3_0_enu;
         XML_StopParser(context->parser,0);

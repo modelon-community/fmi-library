@@ -16,6 +16,8 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdarg.h>
+#include <stdlib.h>
+#include <ctype.h>
 
 #include "JM/jm_callbacks.h"
 #include "fmi_xml_context_impl.h"
@@ -73,9 +75,68 @@ void fmi_xml_fatal(fmi_xml_context_t *context, const char* fmt, ...) {
     XML_StopParser(context->parser,0);
 }
 
+/* Returns non-zero if 'str[0..len)' is empty or contains any non-digit character. */
+static int fmi_xml_str_is_number(const char* str, size_t len) {
+    size_t i;
+    if (len == 0) {
+        return 0;
+    }
+    for (i = 0; i < len; i++) {
+        if (!isdigit((unsigned char)str[i])) {
+            return 0;
+        }
+    }
+    return 1;
+}
+
+/**
+ * Parses a version string of the form "major.minor" or "major.minor.patch",
+ * where each component must be a non-empty sequence of digits (no signs,
+ * whitespace, or other characters). 'patch' is set to 0 if not present.
+ *
+ * Returns 0 on success, non-zero if 'version' is not on the expected form.
+ */
+static int fmi_xml_parse_version(const char* version, unsigned int* major, unsigned int* minor, unsigned int* patch) {
+    const char* dot1 = strchr(version, '.');
+    const char* dot2;
+    const char* patch_str = 0;
+    size_t major_len;
+    size_t minor_len;
+
+    if (!dot1) {
+        return 1;
+    }
+    major_len = (size_t)(dot1 - version);
+
+    dot2 = strchr(dot1 + 1, '.');
+    if (dot2) {
+        minor_len = (size_t)(dot2 - (dot1 + 1));
+        patch_str = dot2 + 1;
+        if (strchr(patch_str, '.')) {
+            /* More than three components, e.g., "1.2.3.4" */
+            return 1;
+        }
+    } else {
+        minor_len = strlen(dot1 + 1);
+    }
+
+    if (!fmi_xml_str_is_number(version, major_len) ||
+        !fmi_xml_str_is_number(dot1 + 1, minor_len) ||
+        (patch_str && !fmi_xml_str_is_number(patch_str, strlen(patch_str)))) {
+        return 1;
+    }
+
+    *major = (unsigned int)strtoul(version, NULL, 10);
+    *minor = (unsigned int)strtoul(dot1 + 1, NULL, 10);
+    *patch = patch_str ? (unsigned int)strtoul(patch_str, NULL, 10) : 0;
+
+    return 0;
+}
+
 void XMLCALL fmi_xml_parse_element_start(void *c, const char *elm, const char **attr) {
     fmi_xml_context_t *context = (fmi_xml_context_t*)c;
     const char* fmiVersion = 0;
+    unsigned int major, minor, patch;
     int i = 0;
 
     if(strcmp(elm, "fmiModelDescription") != 0) {
@@ -93,19 +154,23 @@ void XMLCALL fmi_xml_parse_element_start(void *c, const char *elm, const char **
         fmi_xml_fatal(context, "Could not find fmiVersion attribute in the XML. Cannot proceed.");
         return;
     }
-    if( strcmp(fmiVersion, "1.0") == 0 && (fmiVersion[3] == '\0' || fmiVersion[3] == '.') ) {
+    if (fmi_xml_parse_version(fmiVersion, &major, &minor, &patch) != 0) {
+        fmi_xml_fatal(context, "Could not parse fmiVersion attribute '%s'. Expected format is 'major.minor' or 'major.minor.patch' with numeric components", fmiVersion);
+        return;
+    }
+    if( major == 1 && minor == 0 ) {
         jm_log_verbose(context->callbacks, MODULE, "XML specifies FMI 1.0");
         context->fmi_version = fmi_version_1_enu;
         XML_StopParser(context->parser,0);
         return;
     }
-    else if( strcmp(fmiVersion, "2.0") == 0 && (fmiVersion[3] == '\0' || fmiVersion[3] == '.') ) {
+    else if( major == 2 && minor == 0 ) {
         jm_log_verbose(context->callbacks, MODULE, "XML specifies FMI 2.0");
         context->fmi_version = fmi_version_2_0_enu;
         XML_StopParser(context->parser,0);
         return;
     }
-    else if( strncmp(fmiVersion, "3.0", 3) == 0 && (fmiVersion[3] == '\0' || fmiVersion[3] == '.') ) {
+    else if( major == 3 && minor == 0 ) {
         jm_log_verbose(context->callbacks, MODULE, "XML specifies FMI 3.0");
         context->fmi_version = fmi_version_3_0_enu;
         XML_StopParser(context->parser,0);

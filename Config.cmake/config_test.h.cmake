@@ -31,6 +31,7 @@
 #define FMU3_ME_PATH "@FMU3_ME_PATH@"
 #define FMU3_CS_PATH "@FMU3_CS_PATH@"
 #define FMU3_SE_PATH "@FMU3_SE_PATH@"
+#define FMU3_PATCHED_PATH "@FMU3_PATCHED_PATH@"
 
 /* Paths to temp directories */
 #define FMU_UNPACK_DIR "@FMU_UNPACK_DIR@"

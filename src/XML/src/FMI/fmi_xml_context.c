@@ -75,7 +75,7 @@ void fmi_xml_fatal(fmi_xml_context_t *context, const char* fmt, ...) {
     XML_StopParser(context->parser,0);
 }
 
-/* Returns non-zero if 'str[0..len)' is empty or contains any non-digit character. */
+/* Returns zero if 'str[0..len)' is empty or contains any non-digit character. */
 static int fmi_xml_str_is_number(const char* str, size_t len) {
     size_t i;
     if (len == 0) {

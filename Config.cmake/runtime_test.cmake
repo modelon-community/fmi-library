@@ -154,6 +154,10 @@ add_executable(fmi_zip_unzip_test ${FMIL_TEST_DIR}/fmi_zip_unzip_test.c )
 target_link_libraries(fmi_zip_unzip_test fmizip)
 target_include_directories(fmi_zip_unzip_test PRIVATE ${FMIL_TEST_INCLUDE_DIRS})
 
+add_executable(fmi_zip_unicode_test ${FMIL_TEST_DIR}/fmi_zip_unicode_test.c )
+target_link_libraries(fmi_zip_unicode_test fmizip jmutils)
+target_include_directories(fmi_zip_unicode_test PRIVATE ${FMIL_TEST_INCLUDE_DIRS})
+
 add_executable(fmi_import_test
                     ${FMIL_TEST_DIR}/fmi_import_test.c
                     ${FMIL_TEST_DIR}/FMI1/fmi1_import_test.c
@@ -185,6 +189,8 @@ endif()
 
 add_test(NAME ctest_fmi_zip_unzip_test COMMAND fmi_zip_unzip_test)
 add_test(NAME ctest_fmi_zip_zip_test COMMAND fmi_zip_zip_test)
+add_test(NAME ctest_fmi_zip_unicode_test COMMAND fmi_zip_unicode_test)
+set_tests_properties(ctest_fmi_zip_unicode_test PROPERTIES DEPENDS ctest_build_all)
 
 
 # ------------------------------------------------------------------------------

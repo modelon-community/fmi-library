@@ -16,8 +16,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <errno.h>
 
 #include <locale.h>
+#include <sys/stat.h>
 
 #if defined(_GNU_SOURCE) || defined(__APPLE__)
 #define UNIX_THREAD_LOCALE
@@ -36,14 +38,27 @@
 static const char * module = "JMPRT";
 
 #ifdef WIN32
+#include <windows.h>
 #include <shlwapi.h>
 #include <direct.h>
-#define get_current_working_directory _getcwd
-#define set_current_working_directory _chdir    
+#include <io.h>
+
+static wchar_t* jm_utf8_to_wide(const char* utf8) {
+    int len = MultiByteToWideChar(CP_UTF8, 0, utf8, -1, NULL, 0);
+    wchar_t* wide = (wchar_t*)malloc(len * sizeof(wchar_t));
+    if (wide) MultiByteToWideChar(CP_UTF8, 0, utf8, -1, wide, len);
+    return wide;
+}
+
+static char* jm_wide_to_utf8(const wchar_t* wide) {
+    int len = WideCharToMultiByte(CP_UTF8, 0, wide, -1, NULL, 0, NULL, NULL);
+    char* utf8 = (char*)malloc(len);
+    if (utf8) WideCharToMultiByte(CP_UTF8, 0, wide, -1, utf8, len, NULL, NULL);
+    return utf8;
+}
+
 #else
 #include <unistd.h>
-#define get_current_working_directory getcwd
-#define set_current_working_directory chdir
 #endif
 
 #define JM_PORTABILITY_DLL_ERROR_MESSAGE_SIZE 1000
@@ -119,82 +134,104 @@ char* jm_portability_get_last_dll_error(void)
 
 jm_status_enu_t jm_portability_get_current_working_directory(char* buffer, size_t len)
 {
+#ifdef WIN32
+    wchar_t* wbuf = _wgetcwd(NULL, 0);
+    if (!wbuf) return jm_status_error;
+    char* utf8 = jm_wide_to_utf8(wbuf);
+    free(wbuf);
+    if (!utf8) return jm_status_error;
+    strncpy(buffer, utf8, len);
+    buffer[len - 1] = 0;
+    free(utf8);
+    return jm_status_success;
+#else
     int ilen = (int)len;
     if(ilen != len) ilen = FILENAME_MAX + 2;
-    setlocale(LC_CTYPE, "en_US.UTF-8"); /* just in case, does not seem to have an effect */
-    if (get_current_working_directory(buffer, ilen) == NULL) {
+    setlocale(LC_CTYPE, "en_US.UTF-8");
+    if (getcwd(buffer, ilen) == NULL) {
         return jm_status_error;
     } else {
         return jm_status_success;
     }
+#endif
 }
 
 jm_status_enu_t jm_portability_set_current_working_directory(const char* cwd)
 {
-    if (set_current_working_directory(cwd) == 0) {
+#ifdef WIN32
+    wchar_t* wcwd = jm_utf8_to_wide(cwd);
+    if (!wcwd) return jm_status_error;
+    int ret = _wchdir(wcwd);
+    free(wcwd);
+    return (ret == 0) ? jm_status_success : jm_status_error;
+#else
+    if (chdir(cwd) == 0) {
         return jm_status_success;
     } else {
         return jm_status_error;
     }
-}
-
-#ifdef WIN32
-#define MAX_TEMP_DIR_NAME_LENGTH 262
-TCHAR jm_temp_dir_buffer[MAX_TEMP_DIR_NAME_LENGTH];
 #endif
+}
 
 const char* jm_get_system_temp_dir() {
 #ifdef WIN32
-    if(!GetTempPath(MAX_TEMP_DIR_NAME_LENGTH, jm_temp_dir_buffer)) return 0;
-    return jm_temp_dir_buffer;
+    static char jm_temp_dir_utf8[MAX_PATH + 1];
+    wchar_t wbuf[MAX_PATH + 1];
+    DWORD ret = GetTempPathW(MAX_PATH + 1, wbuf);
+    if (!ret || ret > MAX_PATH) return 0;
+    WideCharToMultiByte(CP_UTF8, 0, wbuf, -1, jm_temp_dir_utf8, MAX_PATH, NULL, NULL);
+    return jm_temp_dir_utf8;
 #else
     return "/tmp/";
 #endif
 }
 
-#ifdef WIN32
-#include <io.h>
-#else
-#include <stdlib.h>
-#endif
 char *jm_mkdtemp(jm_callbacks *cb, char *tmplt)
 {
 #ifdef WIN32
-    /* Windows does not have mkdtemp, use mktemp + mkdir */
-
-    if(!_mktemp(tmplt)) {
+    wchar_t* wbuf = jm_utf8_to_wide(tmplt);
+    if (!wbuf) return NULL;
+    if (!_wmktemp(wbuf)) {
+        free(wbuf);
         jm_log_fatal(cb, module, "Could not create a unique temporary directory name");
         return NULL;
     }
+    char* utf8 = jm_wide_to_utf8(wbuf);
+    free(wbuf);
+    if (!utf8) return NULL;
+    strcpy(tmplt, utf8);
+    free(utf8);
     if(jm_mkdir(cb, tmplt) != jm_status_success) {
         return NULL;
     }
     return tmplt;
-
 #else
     return mkdtemp(tmplt);
 #endif
 }
 
-#ifdef WIN32
-#include <direct.h>
-#define MKDIR(dir) _mkdir(dir)
-#else
-#include <errno.h>
-#include <sys/stat.h>
-#define MKDIR(dir) mkdir(dir, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH)
-#endif
-
 jm_status_enu_t jm_mkdir(jm_callbacks* cb, const char* dir) {
     if(!cb) {
         cb = jm_get_default_callbacks();
     }
-    if(MKDIR(dir)) {
+#ifdef WIN32
+    wchar_t* wdir = jm_utf8_to_wide(dir);
+    if (!wdir) return jm_status_error;
+    int ret = _wmkdir(wdir);
+    free(wdir);
+    if (ret) {
+        jm_log_fatal(cb,module,"Could not create directory %s", dir);
+        return jm_status_error;
+    }
+    return jm_status_success;
+#else
+    if (mkdir(dir, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH)) {
         jm_log_fatal(cb,module,"Could not create directory %s", dir);
         return jm_status_error;
     }
     else
         return jm_status_success;
+#endif
 }
 
 
@@ -318,17 +355,21 @@ char* jm_create_URL_from_abs_path(jm_callbacks* cb, const char* path) {
 
 #if defined(_WIN32) || defined(WIN32)
     {
+        wchar_t* wpath = jm_utf8_to_wide(path);
+        if (!wpath) return 0;
+        wchar_t wurl[MAX_URL_LENGTH];
         DWORD pathLen = MAX_URL_LENGTH;
-        HRESULT code = UrlCreateFromPathA(
-            path,
-            buffer,
-            &pathLen,
-            0);
+        HRESULT code = UrlCreateFromPathW(wpath, wurl, &pathLen, 0);
+        free(wpath);
         if( (code != S_FALSE) && (code != S_OK)) {
             jm_log_fatal(cb, module,"Could not constuct file URL from path %s", path);
             return 0;
         }
-        urllen = pathLen;
+        char* utf8url = jm_wide_to_utf8(wurl);
+        if (!utf8url) return 0;
+        urllen = strlen(utf8url);
+        strcpy(buffer, utf8url);
+        free(utf8url);
     }
 #else
     {

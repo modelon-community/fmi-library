@@ -31,11 +31,14 @@
 static const char* module = "FMILIB";
 
 char* fmi3_import_get_dll_path(const char* fmu_unzipped_path, const char* model_identifier, jm_callbacks* callbacks) {
+    char* dllFile;
     char* dllDir = fmi_construct_dll_dir_name(callbacks, fmu_unzipped_path, fmi_version_3_0_enu);
     if (!dllDir) {
         return NULL;
     }
-    return fmi_construct_dll_file_name(callbacks, dllDir, model_identifier);
+    dllFile = fmi_construct_dll_file_name(callbacks, dllDir, model_identifier);
+    callbacks->free(dllDir);
+    return dllFile;
 }
 
 fmi3_import_t* fmi3_import_allocate(jm_callbacks* cb) {

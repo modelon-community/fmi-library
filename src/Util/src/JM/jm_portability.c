@@ -111,7 +111,7 @@ char* jm_portability_get_last_dll_error(void)
     FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR)&lpMsgBuf, 0, NULL);
     jm_snprintf(err_str, JM_PORTABILITY_DLL_ERROR_MESSAGE_SIZE, "%s", lpMsgBuf);
 #else
-    jm_snprintf(err_str, JM_PORTABILITY_DLL_ERROR_MESSAGE_SIZE, "%s", dlerror());
+    { const char* e = dlerror(); jm_snprintf(err_str, JM_PORTABILITY_DLL_ERROR_MESSAGE_SIZE, "%s", e ? e : "unknown error"); }
 #endif    
     return err_str;
 }
@@ -213,7 +213,7 @@ jm_status_enu_t jm_rmdir(jm_callbacks* cb, const char* dir) {
         jm_log_error(cb,module,"Could not allocate memory");
         return jm_status_error;
     }
-    sprintf(buf, fmt_cmd, dir);/*safe*/
+    jm_snprintf(buf, strlen(dir)+strlen(fmt_cmd)+1, fmt_cmd, dir);
 #ifdef WIN32
     {
         char* ch = buf+strlen(fmt_cmd) - 2;
@@ -301,6 +301,8 @@ char* jm_mk_temp_dir(jm_callbacks* cb, const char* systemTempDir, const char* te
 
     if (jm_mkdtemp(cb, tmpPath) == NULL) {
         jm_log_fatal(cb, module,"Could not create a unique temporary directory");
+        cb->free(tmpPath);
+        return 0;
     }
 
     return tmpPath;
@@ -454,7 +456,7 @@ err1:
 
         if (setlocale(LC_NUMERIC, value) == NULL) {
             jm_log_error(cb, module, "Failed to call 'setlocale' for LC_NUMERIC with value: '%s'", value);
-            free(jmloc->locale_old);
+            cb->free(jmloc->locale_old);
             free(jmloc);
             return NULL;
         }

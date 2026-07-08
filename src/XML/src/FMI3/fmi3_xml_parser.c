@@ -155,16 +155,16 @@ void fmi3_xml_parse_free_context(fmi3_xml_parser_context_t* context) {
         jm_vector_free(jm_string)(context->attrMapById);
         context->attrMapById = 0;
     }
-    if (&(context->elmStack) && (context->elmStack.size > 0)) {
+    if (context->elmStack.size > 0) {
         jm_stack_free_data(int)(&context->elmStack);
     }
-    if (&(context->elmData) && (context->elmData.size > 0)) {
+    if (context->elmData.size > 0) {
         jm_vector_free_data(char)(&context->elmData);
     }
-    if (&(context->variableStartAttr) && (context->variableStartAttr.items)) {
+    if (context->variableStartAttr.items) {
         jm_vector_free_data(char)(&context->variableStartAttr);
     }
-    if (&(context->currentStartVariableValues) && (context->currentStartVariableValues.items)) {
+    if (context->currentStartVariableValues.items) {
         jm_vector_free_data(jm_voidp)(&context->currentStartVariableValues);
     }
 
@@ -494,8 +494,24 @@ static int fmi3_xml_str_to_intXX(fmi3_xml_parser_context_t* context, int require
     int status = 0;               /* status flag for value boundary check */
 
     if (!strVal && !required) {
-        value = defaultVal;
-        useDefault = 1;
+        useDefault = 0;
+        if (primType->isSigned) {
+            switch (primType->bitness) {
+            case fmi3_bitness_64: *(fmi3_int64_t*)field = *(fmi3_int64_t*)defaultVal; return 0;
+            case fmi3_bitness_32: *(fmi3_int32_t*)field = *(fmi3_int32_t*)defaultVal; return 0;
+            case fmi3_bitness_16: *(fmi3_int16_t*)field = *(fmi3_int16_t*)defaultVal; return 0;
+            case fmi3_bitness_8:  *(fmi3_int8_t*) field = *(fmi3_int8_t*) defaultVal; return 0;
+            default: assert(0); return -1;
+            }
+        } else {
+            switch (primType->bitness) {
+            case fmi3_bitness_64: *(fmi3_uint64_t*)field = *(fmi3_uint64_t*)defaultVal; return 0;
+            case fmi3_bitness_32: *(fmi3_uint32_t*)field = *(fmi3_uint32_t*)defaultVal; return 0;
+            case fmi3_bitness_16: *(fmi3_uint16_t*)field = *(fmi3_uint16_t*)defaultVal; return 0;
+            case fmi3_bitness_8:  *(fmi3_uint8_t*) field = *(fmi3_uint8_t*) defaultVal; return 0;
+            default: assert(0); return -1;
+            }
+        }
     } else {
         if (sscanf(strVal, formatter, &valueBuf) != 1) {
             return -1;
@@ -625,8 +641,13 @@ static int fmi3_xml_str_to_floatXX(fmi3_xml_parser_context_t* context, int requi
 
     /* get the value */
     if (!strVal && !required) {
-        value = defaultVal;
         useDefault = 1;
+        if (primType->bitness == fmi3_bitness_64) {
+            *(fmi3_float64_t*)field = *(fmi3_float64_t*)defaultVal;
+        } else {
+            *(fmi3_float32_t*)field = *(fmi3_float32_t*)defaultVal;
+        }
+        return 0;
     } else {
         if (sscanf(strVal, formatter, &valReadBuff) != 1) {
             return -1;
@@ -765,7 +786,7 @@ static int fmi3_xml_str_to_array(
         res = -1;
         goto err1;
     }
-    strncpy(strCopy, str, strlen(str) + 1);
+    strcpy(strCopy, str);
 
     /* Allocate memory for the start values */
     vals = context->callbacks->malloc(nVals * primType->size); /* freed in fmi3_xml_clear_model_description */
@@ -1319,7 +1340,9 @@ int fmi3_xml_parse_model_description(fmi3_xml_model_description_t* md,
     }
 
     while (!feof(file)) {
-        char * text = jm_vector_get_itemp(char)(fmi3_xml_reserve_parse_buffer(context,0,XML_BLOCK_SIZE),0);
+        jm_vector(char)* buf = fmi3_xml_reserve_parse_buffer(context,0,XML_BLOCK_SIZE);
+        if (!buf) { fclose(file); fmi3_xml_parse_free_context(context); return -1; }
+        char * text = jm_vector_get_itemp(char)(buf,0);
         int n = (int)fread(text, sizeof(char), XML_BLOCK_SIZE, file);
         if (ferror(file)) {
             fmi3_xml_parse_fatal(context, "Error reading from file %s", filename);
@@ -1415,7 +1438,9 @@ int fmi3_xml_parse_terminals_and_icons(fmi_xml_terminals_and_icons_t* termIcon,
     XML_SetCharacterDataHandler(parser, fmi3_parse_element_data);
 
     while (!feof(file)) {
-        char* text = jm_vector_get_itemp(char)(fmi3_xml_reserve_parse_buffer(context, 0, XML_BLOCK_SIZE), 0);
+        jm_vector(char)* buf = fmi3_xml_reserve_parse_buffer(context, 0, XML_BLOCK_SIZE);
+        if (!buf) return -1;
+        char* text = jm_vector_get_itemp(char)(buf, 0);
         int n = (int)fread(text, sizeof(char), XML_BLOCK_SIZE, file);
         if (ferror(file)) {
             fmi3_xml_parse_fatal(context, "Error reading from file %s", filename);

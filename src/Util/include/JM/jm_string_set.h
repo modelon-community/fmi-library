@@ -106,9 +106,15 @@ static jm_string jm_string_set_put(jm_string_set* s, jm_string str) {
     } else {
         pnewstr = jm_vector_push_back(jm_string)(s, str);
     }
-    if(pnewstr) *pnewstr = newstr = s->callbacks->malloc(len);
-    if(!pnewstr || !newstr) return 0;
+    newstr = s->callbacks->malloc(len);
+    if (!newstr) return 0;
     memcpy(newstr, str, len);
+    if (pnewstr) {
+        *pnewstr = newstr;
+    } else {
+        s->callbacks->free(newstr);
+        return 0;
+    }
     return *pnewstr;
 }
 

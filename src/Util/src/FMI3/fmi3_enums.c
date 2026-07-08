@@ -365,7 +365,9 @@ size_t fmi3_SI_base_unit_exp_to_string(const int exp[fmi3_SI_base_units_Num], si
         if(num_neg_exp > 1)
             tmp[len++] = ')';
     }
-    strncpy(buf, tmp, bufSize);
-    if(len < bufSize) buf[len] = 0;
+    if (bufSize > 0) {
+        strncpy(buf, tmp, bufSize);
+        buf[bufSize - 1] = 0;
+    }
     return len + 1;
 }

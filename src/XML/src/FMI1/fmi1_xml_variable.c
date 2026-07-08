@@ -866,6 +866,7 @@ void fmi1_xml_eliminate_bad_alias(fmi1_xml_parser_context_t *context, jm_vector(
     jm_named_ptr key;
 
     n = jm_vector_get_size(jm_voidp)(varByVR);
+    (void)n;
     v = (fmi1_xml_variable_t*)jm_vector_get_item(jm_voidp)(varByVR, indexVR);
 
     jm_vector_remove_item_jm_voidp(varByVR, indexVR);
@@ -1252,7 +1253,7 @@ int fmi1_xml_handle_ModelVariables(fmi1_xml_parser_context_t *context, const cha
                 numvar--; i--;
                 fmi1_xml_free_direct_dependencies(named);
                 md->callbacks->free(v);
-                assert(0);
+                return -1;
             }
             if (v->causality == fmi1_causality_enu_input){
                 jm_vector_set_item(jm_voidp)(inputVars, num_in, jm_vector_get_item(jm_named_ptr)(&md->variablesByName,i).ptr);

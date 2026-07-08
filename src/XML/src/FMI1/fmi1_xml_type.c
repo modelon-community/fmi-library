@@ -28,8 +28,8 @@ fmi1_xml_display_unit_t* fmi1_xml_get_type_display_unit(fmi1_xml_real_typedef_t*
     fmi1_xml_variable_typedef_t* vt = (void*)t;
     fmi1_xml_real_type_props_t * props = (fmi1_xml_real_type_props_t*)vt->super.nextLayer;
     fmi1_xml_display_unit_t* du = props->displayUnit;
-    if(du->displayUnit) return du;
-    return 0;
+    if(!du || !du->displayUnit[0]) return 0;
+    return du;
 }
 
 size_t fmi1_xml_get_type_definition_number(fmi1_xml_type_definitions_t* td) {

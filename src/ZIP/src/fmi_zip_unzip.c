@@ -35,6 +35,8 @@ jm_status_enu_t fmi_zip_unzip(const char* zip_file_path, const char* output_fold
 
     int status;
 
+    if (!callbacks) callbacks = jm_get_default_callbacks();
+
     jm_log_verbose(callbacks, module, "Unpacking FMU into %s", output_folder);
 
 

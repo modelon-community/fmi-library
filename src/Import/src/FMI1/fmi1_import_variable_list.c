@@ -61,6 +61,7 @@ fmi1_import_variable_list_t* fmi1_import_join_var_list(fmi1_import_variable_list
     size_t asize = fmi1_import_get_variable_list_size(a);
     size_t bsize = fmi1_import_get_variable_list_size(b);
     size_t joinSize = asize + bsize;
+    if (!a) return 0;
     fmi1_import_variable_list_t* list = fmi1_import_alloc_variable_list(a->fmu,joinSize);
     if(!list) {
         return list;

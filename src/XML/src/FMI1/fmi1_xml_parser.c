@@ -120,7 +120,7 @@ void fmi1_xml_parse_fatal(fmi1_xml_parser_context_t *context, const char* fmt, .
     va_start (args, fmt);
     jm_log_fatal_v(context->callbacks, module, fmt, args);
     va_end (args);
-    XML_StopParser(context->parser,0);
+    if (context->parser) XML_StopParser(context->parser,0);
 }
 
 static void fmi1_xml_parse_log_message(fmi1_xml_parser_context_t* context, const char* fmt,
@@ -590,6 +590,7 @@ int fmi1_xml_parse_model_description(fmi1_xml_model_description_t* md, const cha
     if(!context) {
         jm_log_fatal(md->callbacks, module,
                      "Could not allocate memory for XML parser context");
+        return -1;
     }
     context->callbacks = md->callbacks;
     context->modelDescription = md;
@@ -642,7 +643,9 @@ int fmi1_xml_parse_model_description(fmi1_xml_model_description_t* md, const cha
     }
 
     while (!feof(file)) {
-        char * text = jm_vector_get_itemp(char)(fmi1_xml_reserve_parse_buffer(context,0,XML_BLOCK_SIZE),0);
+        jm_vector(char)* buf = fmi1_xml_reserve_parse_buffer(context,0,XML_BLOCK_SIZE);
+        if (!buf) return -1;
+        char * text = jm_vector_get_itemp(char)(buf,0);
         int n = (int)fread(text, sizeof(char), XML_BLOCK_SIZE, file);
         if(ferror(file)) {
             fmi1_xml_parse_fatal(context, "Error reading from file %s", filename);

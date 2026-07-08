@@ -23,7 +23,7 @@ void fmi3_xml_parse_fatal(fmi3_xml_parser_context_t* context, const char* fmt, .
     va_start (args, fmt);
     jm_log_fatal_v(context->callbacks, module, fmt, args);
     va_end (args);
-    XML_StopParser(context->parser,0);
+    if (context->parser) XML_StopParser(context->parser,0);
 }
 
 void fmi3_xml_parse_error(fmi3_xml_parser_context_t* context, const char* fmt, ...) {

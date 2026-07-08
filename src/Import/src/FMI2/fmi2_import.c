@@ -32,11 +32,14 @@
 static const char* module = "FMILIB";
 
 char* fmi2_import_get_dll_path(const char* fmu_unzipped_path, const char* model_identifier, jm_callbacks* callbacks) {
+    char* dllFile;
     char* dllDir = fmi_construct_dll_dir_name(callbacks, fmu_unzipped_path, fmi_version_2_0_enu);
     if (!dllDir) {
         return NULL;
     }
-    return fmi_construct_dll_file_name(callbacks, dllDir, model_identifier);
+    dllFile = fmi_construct_dll_file_name(callbacks, dllDir, model_identifier);
+    callbacks->free(dllDir);
+    return dllFile;
 }
 
 fmi2_import_t* fmi2_import_allocate(jm_callbacks* cb) {
@@ -112,7 +115,10 @@ fmi2_import_t* fmi2_import_parse_xml(fmi_import_context_t* context, const char* 
 
     if(jm_get_dir_abspath(context->callbacks, dirPath, absPath, FILENAME_MAX + 2)) {
         size_t len = strlen(absPath);
-        strcpy(absPath + len, FMI_FILE_SEP "resources");
+        size_t remaining = (FILENAME_MAX + 2) - len;
+        if (remaining > strlen(FMI_FILE_SEP "resources")) {
+            strcpy(absPath + len, FMI_FILE_SEP "resources");
+        }
         fmu->resourceLocation = fmi_import_create_URL_from_abs_path(context->callbacks, absPath);
     }
     fmu->dirPath = context->callbacks->malloc(strlen(dirPath) + 1);

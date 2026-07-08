@@ -55,7 +55,7 @@ static void fmi1_xml_q_skip_space(jm_string* cur) {
     char curCh;
     if(!curChP) return;
     curCh = *curChP;
-    while(curCh || (curCh == ' ') || (curCh == '\t')) {
+    while(curCh && ((curCh == ' ') || (curCh == '\t'))) {
         curChP++; curCh = *curChP;
     }
     *cur = curChP;
@@ -266,7 +266,7 @@ int fmi1_xml_q_filter_variable(fmi1_xml_variable_t* var, fmi1_xml_q_expression_t
             jm_vector_resize(jm_voidp)(stack, curlen -1);
             if(argL->kind == fmi1_xml_q_term_enu_TRUE)
                 jm_vector_push_back(jm_voidp)(stack, &expr->termFalse);
-            else if(argL->kind == fmi1_xml_q_term_enu_TRUE)
+            else if(argL->kind == fmi1_xml_q_term_enu_FALSE)
                 jm_vector_push_back(jm_voidp)(stack, &expr->termTrue);
             else {
                 jm_vector_push_back(jm_voidp)(stack, (fmi1_xml_evaluate_terminal(var, argL)?   &expr->termFalse: &expr->termTrue));

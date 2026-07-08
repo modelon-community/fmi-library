@@ -353,7 +353,7 @@ void fmi3_default_callback_logger(fmi3_instance_environment_t c, fmi3_string_t i
     if (category) {
         curp += jm_snprintf(curp, 200, "[%s]", category);
     }
-    fprintf(stdout, "%s[status=%s]", buf, fmi3_status_to_string(status));
+    fprintf(stdout, "%s[status=%s] %s", buf, fmi3_status_to_string(status), message ? message : "");
     fprintf(stdout, "\n");
 }
 

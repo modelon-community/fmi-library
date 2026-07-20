@@ -17,6 +17,7 @@
 #include <stdint.h>
 #include <limits.h>
 #include <float.h>
+#include <cmath>
 
 #include "fmilib.h"
 #include "config_test.h"
@@ -125,6 +126,58 @@ TEST_CASE("Varibles types testing") {
 
     test_full_float64(fmu);
     test_full_float_32(fmu);
+
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
+    fmi3_testutil_import_free(tfmu);
+}
+
+/* Parse INF start values */
+static void test_inf_float64_positive(fmi3_import_t* xml) {
+    fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "var1");
+    REQUIRE(v != nullptr);
+    fmi3_import_float64_variable_t* var = fmi3_import_get_variable_as_float64(v);
+    REQUIRE(var != nullptr);
+    REQUIRE(std::isinf(fmi3_import_get_float64_variable_start(var)));
+    REQUIRE(fmi3_import_get_float64_variable_start(var) > 0);
+}
+
+static void test_inf_float64_negative(fmi3_import_t* xml) {
+    fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "var2");
+    REQUIRE(v != nullptr);
+    fmi3_import_float64_variable_t* var = fmi3_import_get_variable_as_float64(v);
+    REQUIRE(var != nullptr);
+    REQUIRE(std::isinf(fmi3_import_get_float64_variable_start(var)));
+    REQUIRE(fmi3_import_get_float64_variable_start(var) < 0);
+}
+
+static void test_inf_float32_positive(fmi3_import_t* xml) {
+    fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "var3");
+    REQUIRE(v != nullptr);
+    fmi3_import_float32_variable_t* var = fmi3_import_get_variable_as_float32(v);
+    REQUIRE(var != nullptr);
+    REQUIRE(std::isinf(fmi3_import_get_float32_variable_start(var)));
+    REQUIRE(fmi3_import_get_float32_variable_start(var) > 0);
+}
+
+static void test_inf_float32_negative(fmi3_import_t* xml) {
+    fmi3_import_variable_t* v = fmi3_import_get_variable_by_name(xml, "var4");
+    REQUIRE(v != nullptr);
+    fmi3_import_float32_variable_t* var = fmi3_import_get_variable_as_float32(v);
+    REQUIRE(var != nullptr);
+    REQUIRE(std::isinf(fmi3_import_get_float32_variable_start(var)));
+    REQUIRE(fmi3_import_get_float32_variable_start(var) < 0);
+}
+
+TEST_CASE("INF start values") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/variable_types/inf_start";
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu != nullptr);
+
+    test_inf_float64_positive(fmu);
+    test_inf_float64_negative(fmu);
+    test_inf_float32_positive(fmu);
+    test_inf_float32_negative(fmu);
 
     REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
     fmi3_testutil_import_free(tfmu);

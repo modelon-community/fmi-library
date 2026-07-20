@@ -623,6 +623,12 @@ static int fmi3_xml_str_to_floatXX(fmi3_xml_parser_context_t* context, int requi
     void* value = NULL;            /* points to the buffer that holds the value: default or read */
     int status = 0;                /* status flag for value boundary check */
 
+    /* detect INF values - allow them to skip the boundary check */
+    int isInf = 0;
+    if (strVal) {
+        isInf = (strcmp(strVal, "INF") == 0 || strcmp(strVal, "+INF") == 0 || strcmp(strVal, "-INF") == 0);
+    }
+
     /* get the value */
     if (!strVal && !required) {
         value = defaultVal;
@@ -632,6 +638,19 @@ static int fmi3_xml_str_to_floatXX(fmi3_xml_parser_context_t* context, int requi
             return -1;
         }
         value = &valReadBuff;
+    }
+
+    if (isInf) {
+        /* INF values are valid per FMI spec; assign directly without boundary check */
+        switch(primType->bitness) {
+        case fmi3_bitness_64:
+            *(fmi3_float64_t*)field = (fmi3_float64_t)valReadBuff; break;
+        case fmi3_bitness_32:
+            *(fmi3_float32_t*)field = (fmi3_float32_t)valReadBuff; break;
+        default:
+            assert(0); /* impl. error */
+        }
+        return 0;
     }
 
     /* downcast */

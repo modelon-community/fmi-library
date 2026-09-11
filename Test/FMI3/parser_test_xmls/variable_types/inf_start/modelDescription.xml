@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription fmiVersion="3.0" modelName="" instantiationToken="">
+<CoSimulation modelIdentifier="id"/>
+
+<ModelVariables>
+  <Float64 name="var1" valueReference="1" start="INF" initial="exact"/>
+  <Float64 name="var2" valueReference="2" start="-INF" initial="exact"/>
+  <Float32 name="var3" valueReference="3" start="INF" initial="exact"/>
+  <Float32 name="var4" valueReference="4" start="-INF" initial="exact"/>
+</ModelVariables>
+
+<ModelStructure/>
+</fmiModelDescription>

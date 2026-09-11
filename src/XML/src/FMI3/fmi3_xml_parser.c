@@ -16,6 +16,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <float.h>
+#include <math.h>
 #include <inttypes.h>
 
 #if defined (_MSC_VER) && _MSC_VER >= 1600
@@ -625,8 +626,19 @@ static int fmi3_xml_str_to_floatXX(fmi3_xml_parser_context_t* context, int requi
 
     /* get the value */
     if (!strVal && !required) {
-        value = defaultVal;
-        useDefault = 1;
+        /* Attribute missing: use default value directly with correct width and
+         * return early (no boundary check needed for FMIL-provided defaults).
+         * This also avoids reading a 32-bit default through a 64-bit pointer,
+         * which would be out-of-bounds in the isinf/downcast checks below. */
+        switch (primType->bitness) {
+        case fmi3_bitness_64:
+            *(fmi3_float64_t*)field = *(fmi3_float64_t*)defaultVal; break;
+        case fmi3_bitness_32:
+            *(fmi3_float32_t*)field = *(fmi3_float32_t*)defaultVal; break;
+        default:
+            assert(0); /* impl. error */
+        }
+        return 0;
     } else {
         if (sscanf(strVal, formatter, &valReadBuff) != 1) {
             return -1;
@@ -634,11 +646,22 @@ static int fmi3_xml_str_to_floatXX(fmi3_xml_parser_context_t* context, int requi
         value = &valReadBuff;
     }
 
+    if (isinf(*(fmi3_float_buf_t*)value)) {
+        /* INF values are valid per FMI spec; assign directly without boundary check */
+        switch(primType->bitness) {
+        case fmi3_bitness_64:
+            *(fmi3_float64_t*)field = (fmi3_float64_t)*(fmi3_float_buf_t*)value; break;
+        case fmi3_bitness_32:
+            *(fmi3_float32_t*)field = (fmi3_float32_t)*(fmi3_float_buf_t*)value; break;
+        default:
+            assert(0); /* impl. error */
+        }
+        return 0;
+    }
+
     /* downcast */
     switch(primType->bitness) {
     case fmi3_bitness_64:
-        /* out-of-bounds values are considered +-inf for me after being written to 'value' -  this could be platform
-           dependent */
         fmi3_xml_assign_downcast(fmi3_float_buf_t, fmi3_float64_t, -DBL_MAX, DBL_MAX, value, field, useDefault, status); break;
     case fmi3_bitness_32:
         /* NOTE: using hard-coded boundary values to guarantee 32 bit */

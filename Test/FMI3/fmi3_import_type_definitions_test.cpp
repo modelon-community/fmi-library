@@ -1053,8 +1053,8 @@ TEST_CASE("TypeDefinitions: value_boundary_check") {
     REQUIRE(fmu != nullptr);
 
     /* update these if you change xml: */
-    int nBadTds = 20;
-    int nBadVars = 21;
+    int nBadTds = 18;
+    int nBadVars = 19;
 
     REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 2 * (nBadTds + nBadVars));
     fmi3_testutil_import_free(tfmu);

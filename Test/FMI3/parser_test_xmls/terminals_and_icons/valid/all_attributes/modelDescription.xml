@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<fmiModelDescription fmiVersion="3.0" modelName="terminalsAndIcons_testing" instantiationToken="">
+<ModelExchange modelIdentifier="id"/>
+
+<ModelVariables>
+    <Float64 name="p.v" valueReference="1"/>
+    <Float64 name="p.i" valueReference="2"/>
+    <Float64 name="p.h_outflow" valueReference="3"/>
+    <Float64 name="p.h_outflow_inStream" valueReference="4"/>
+</ModelVariables>
+
+<ModelStructure/>
+</fmiModelDescription>

@@ -57,8 +57,20 @@ TEST_CASE("Test parse terminals and icons") {
         REQUIRE(fmi_import_get_terminal_name(nullptr) == nullptr);
     }
 
-    // TODO: Current example xml includes elements/attributes not yet parsed
-    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 11); 
+    // TODO: Current example xml includes nested Terminals, which are not yet parsed
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 2);
+    fmi3_testutil_import_free(tfmu);
+}
+
+TEST_CASE("Every attribute of the schema") {
+    const char* xmldir = FMI3_TEST_XML_DIR "/terminals_and_icons/valid/all_attributes";
+    fmi3_testutil_import_t* tfmu = fmi3_testutil_parse_xml_with_log(xmldir);
+    fmi3_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu != nullptr);
+    REQUIRE(fmi3_import_get_has_terminals_and_icons(fmu) == 1);
+    REQUIRE(fmi3_import_get_terminal_by_name(fmu, "p") != nullptr);
+
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 0);
     fmi3_testutil_import_free(tfmu);
 }
 
@@ -144,7 +156,6 @@ TEST_CASE("Test clearing of attribute buffer with invalid elements") {
     REQUIRE_STREQ(fmi_import_get_terminal_name(term), "terminalA");
     // TODO: Check that optional attributes from Terminal without name are not present in this one
 
-    // TODO: Current example xml includes elements/attributes not yet parsed  
-    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 3);
+    REQUIRE(fmi3_testutil_get_num_problems(tfmu) == 1);
     fmi3_testutil_import_free(tfmu);
 }

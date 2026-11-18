@@ -130,7 +130,9 @@ int fmi_xml_handle_fmiTerminalsAndIcons(fmi3_xml_parser_context_t* context, cons
         if (ret) {
             return ret;
         }
-        // Error check: fmiVersion in terminalsAndIcons and modelDescription must match
+        // Error check: fmiVersion in terminalsAndIcons and modelDescription must match.
+        // In an FMI 2.0 FMU it names the FMI version that defines the file, which is
+        // FMI 3.0 (FMI 3.0, 2.4.9 Terminals and Icons).
         const char* modelDescrfmiVersion = NULL;
         if (termIcon->md2 && !(termIcon->md3)) {
             modelDescrfmiVersion = fmi2_xml_get_model_standard_version(termIcon->md2);
@@ -139,7 +141,8 @@ int fmi_xml_handle_fmiTerminalsAndIcons(fmi3_xml_parser_context_t* context, cons
             modelDescrfmiVersion = fmi3_xml_get_model_standard_version(termIcon->md3);
         } 
         const char* termIconfmiVersion = jm_vector_char2string(&(termIcon->fmi3_xml_standard_version));
-        if (strcmp(modelDescrfmiVersion, termIconfmiVersion)) {
+        int definedByFMI3 = termIcon->md2 && strncmp(termIconfmiVersion, "3.", 2) == 0;
+        if (strcmp(modelDescrfmiVersion, termIconfmiVersion) && !definedByFMI3) {
             fmi3_xml_parse_fatal(context,
                                  "Mismatch of attribute 'fmiVersion' in modelDescription.xml: '%s' and terminalsAndIcons.xml: '%s'.", 
                                  modelDescrfmiVersion,

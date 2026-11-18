@@ -12,6 +12,8 @@ Note that version 2.1 is the first version with release notes. Please see the co
 - Parsing of `modelDescription.xml` now supports `fmiVersion` for patch releases, e.g., `fmiVersion="3.0.1"`.
 - Parsing of `terminalsAndIcons.xml` no longer logs errors or warnings for the `GraphicalRepresentation` element
   and for the attributes of the FMI 3.0 schema. The API does not give these values yet.
+- FMI 2.0 FMUs: `terminalsAndIcons.xml` can now have an FMI 3.0 `fmiVersion`, e.g., `fmiVersion="3.0"`,
+  as the FMI 3.0 standard requires for FMUs of earlier FMI versions.
 
 ## 3.0.4
 

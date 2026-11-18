@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<fmiTerminalsAndIcons fmiVersion="3.0">
+    <GraphicalRepresentation>
+        <CoordinateSystem x1="-100" y1="-100" x2="100" y2="100" suggestedScalingFactorTo_mm="0.1"/>
+        <Icon x1="-100" y1="-100" x2="100" y2="100"/>
+    </GraphicalRepresentation>
+    <Terminals>
+        <Terminal name="p" matchingRule="plug" terminalKind="org.example.Pin" description="A pin">
+            <TerminalMemberVariable variableName="p.v" memberName="v" variableKind="signal"/>
+            <TerminalMemberVariable variableName="p.i" memberName="i" variableKind="inflow"/>
+            <TerminalStreamMemberVariable inStreamMemberName="h_outflow_inStream" outStreamMemberName="h_outflow"
+                                          inStreamVariableName="p.h_outflow_inStream" outStreamVariableName="p.h_outflow"/>
+            <TerminalGraphicalRepresentation defaultConnectionColor="0 0 255" defaultConnectionStrokeSize="1"
+                                             x1="-110" y1="-10" x2="-90" y2="10" iconBaseName="p"/>
+        </Terminal>
+    </Terminals>
+</fmiTerminalsAndIcons>

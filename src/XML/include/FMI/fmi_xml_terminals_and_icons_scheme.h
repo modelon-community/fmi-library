@@ -26,11 +26,31 @@ extern "C" {
 #define FMI_XML_ATTRLIST_TERM_ICON(EXPAND_XML_ATTRNAME) \
     EXPAND_XML_ATTRNAME(fmiVersion) \
     EXPAND_XML_ATTRNAME(name) \
-    EXPAND_XML_ATTRNAME(description)
+    EXPAND_XML_ATTRNAME(description) \
+    EXPAND_XML_ATTRNAME(matchingRule) \
+    EXPAND_XML_ATTRNAME(terminalKind) \
+    EXPAND_XML_ATTRNAME(variableName) \
+    EXPAND_XML_ATTRNAME(memberName) \
+    EXPAND_XML_ATTRNAME(variableKind) \
+    EXPAND_XML_ATTRNAME(inStreamMemberName) \
+    EXPAND_XML_ATTRNAME(outStreamMemberName) \
+    EXPAND_XML_ATTRNAME(inStreamVariableName) \
+    EXPAND_XML_ATTRNAME(outStreamVariableName) \
+    EXPAND_XML_ATTRNAME(defaultConnectionColor) \
+    EXPAND_XML_ATTRNAME(defaultConnectionStrokeSize) \
+    EXPAND_XML_ATTRNAME(iconBaseName) \
+    EXPAND_XML_ATTRNAME(x1) \
+    EXPAND_XML_ATTRNAME(y1) \
+    EXPAND_XML_ATTRNAME(x2) \
+    EXPAND_XML_ATTRNAME(y2) \
+    EXPAND_XML_ATTRNAME(suggestedScalingFactorTo_mm)
 
 /* Element names found in terminalsAndIcons.xml */
 #define FMI_XML_ELMLIST_TERM_ICON(EXPAND_XML_ELMNAME) \
     EXPAND_XML_ELMNAME(fmiTerminalsAndIcons) \
+    EXPAND_XML_ELMNAME(GraphicalRepresentation) \
+    EXPAND_XML_ELMNAME(CoordinateSystem) \
+    EXPAND_XML_ELMNAME(Icon) \
     EXPAND_XML_ELMNAME(Terminals) \
     EXPAND_XML_ELMNAME(Terminal) \
     EXPAND_XML_ELMNAME(TerminalMemberVariable) \
@@ -50,6 +70,10 @@ extern "C" {
 */
 /*      scheme_ID,                                              super_type,                   parent_ID,                                   sib_idx, multi_elem */
 #define fmi_xml_scheme_termIcon_fmiTerminalsAndIcons            {fmi_xml_elmID_termIcon_none, fmi_xml_elmID_termIcon_none,                 0,       0}
+
+#define fmi_xml_scheme_termIcon_GraphicalRepresentation         {fmi_xml_elmID_termIcon_none, fmi_xml_elmID_termIcon_fmiTerminalsAndIcons, 0,       0}
+#define fmi_xml_scheme_termIcon_CoordinateSystem                {fmi_xml_elmID_termIcon_none, fmi_xml_elmID_termIcon_GraphicalRepresentation, 0,    0}
+#define fmi_xml_scheme_termIcon_Icon                            {fmi_xml_elmID_termIcon_none, fmi_xml_elmID_termIcon_GraphicalRepresentation, 1,    0}
 
 #define fmi_xml_scheme_termIcon_Terminals                       {fmi_xml_elmID_termIcon_none, fmi_xml_elmID_termIcon_fmiTerminalsAndIcons, 1,       0}
 #define fmi_xml_scheme_termIcon_Terminal                        {fmi_xml_elmID_termIcon_none, fmi_xml_elmID_termIcon_Terminals,            0,       1}

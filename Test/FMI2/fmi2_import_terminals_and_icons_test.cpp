@@ -57,8 +57,8 @@ TEST_CASE("Test parse terminals and icons") {
         REQUIRE(fmi_import_get_terminal_name(nullptr) == nullptr);
     }
 
-    // TODO: Current example xml includes elements/attributes not yet parsed
-    REQUIRE(fmi2_testutil_get_num_problems(tfmu) == 11);
+    // TODO: Current example xml includes nested Terminals, which are not yet parsed
+    REQUIRE(fmi2_testutil_get_num_problems(tfmu) == 2);
     fmi2_testutil_import_free(tfmu);
 }
 
@@ -72,6 +72,32 @@ TEST_CASE("No terminalsAndIcons.xml, test log message") {
 
     REQUIRE(fmi2_testutil_log_contains(tfmu, "Could not find or open terminalsAndIcons.xml:"));
     REQUIRE(fmi2_testutil_get_num_problems(tfmu) == 0);
+    fmi2_testutil_import_free(tfmu);
+}
+
+TEST_CASE("fmiVersion of terminalsAndIcons.xml is the FMI 3.0 version that defines it") {
+    const char* xmldir = FMI2_TEST_XML_DIR "/terminals_and_icons/valid/fmi3_fmiVersion";
+    fmi2_testutil_import_t* tfmu = fmi2_testutil_parse_xml_with_log(xmldir);
+    fmi2_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu != nullptr);
+    REQUIRE(fmi2_import_get_has_terminals_and_icons(fmu) == 1);
+    REQUIRE(fmi2_import_get_terminal_by_name(fmu, "terminalA") != nullptr);
+
+    REQUIRE(fmi2_testutil_get_num_problems(tfmu) == 0);
+    fmi2_testutil_import_free(tfmu);
+}
+
+TEST_CASE("Error check; Mismatching fmiVersions of modelDescription.xml and terminalsAndIcons.xml") {
+    const char* xmldir = FMI2_TEST_XML_DIR "/terminals_and_icons/invalid/mismatching_fmiVersion";
+    fmi2_testutil_import_t* tfmu = fmi2_testutil_parse_xml_with_log(xmldir);
+    fmi2_import_t* fmu = tfmu->fmu;
+    REQUIRE(fmu != nullptr); // successful parse of modelDescription
+    REQUIRE(fmi2_import_get_has_terminals_and_icons(fmu) == 0); // failed parse of terminalsAndIcons
+
+    const char* logMsg = "Mismatch of attribute 'fmiVersion' in modelDescription.xml: '2.0' and terminalsAndIcons.xml: '2.0-beta'.";
+    REQUIRE(fmi2_testutil_log_contains(tfmu, logMsg)); // fatal, counts as 2
+
+    REQUIRE(fmi2_testutil_get_num_problems(tfmu) == 2);
     fmi2_testutil_import_free(tfmu);
 }
 

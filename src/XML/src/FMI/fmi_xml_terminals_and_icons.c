@@ -80,6 +80,20 @@ void fmi_xml_free_terminals_and_icons(fmi_xml_terminals_and_icons_t* termIcon) {
     callbacks->free(termIcon);
 }
 
+/* Reads attributes that are not stored, so that they are not reported as unprocessed. */
+static void fmi_xml_skip_attrs(fmi3_xml_parser_context_t* context, fmi_xml_elm_termIcon_enu_t elmID,
+                               const fmi_xml_attr_termIcon_enu_t* attrIDs, size_t n) {
+    const char* value;
+    for (size_t i = 0; i < n; i++) {
+        fmi3_xml_get_attr_str(context, FMI_ELM_TERMICON(elmID), FMI_ATTR_TERMICON(attrIDs[i]), 0, &value);
+    }
+}
+
+#define FMI_XML_SKIP_ATTRS(context, elm, ...) do { \
+        const fmi_xml_attr_termIcon_enu_t attrIDs[] = {__VA_ARGS__}; \
+        fmi_xml_skip_attrs(context, fmi_xml_elmID_termIcon_##elm, attrIDs, sizeof(attrIDs)/sizeof(attrIDs[0])); \
+    } while (0)
+
 int fmi2_xml_terminals_and_icons_set_model_description(fmi_xml_terminals_and_icons_t* termIcon,
                                                        fmi2_xml_model_description_t* md) {
     if (!termIcon || !md || termIcon->md3) {
@@ -111,12 +125,14 @@ int fmi_xml_handle_fmiTerminalsAndIcons(fmi3_xml_parser_context_t* context, cons
         jm_log_verbose(context->callbacks, module, "Parsing XML element fmiTerminalsAndIcons");
 
         int versionExists = 0;
-        ret = fmi3_xml_parse_attr_as_string(context, FMI_ELM_TERMICON(fmi_xml_elmID_termIcon_fmiTerminalsAndIcons), FMI_ATTR_TERMICON(fmi_attr_id_fmiVersion), 1 /* required */,
+        ret = fmi3_xml_parse_attr_as_string(context, FMI_ELM_TERMICON(fmi_xml_elmID_termIcon_fmiTerminalsAndIcons), FMI_ATTR_TERMICON(fmi_termIcon_attr_id_fmiVersion), 1 /* required */,
                                             &versionExists, &(termIcon->fmi3_xml_standard_version));
         if (ret) {
             return ret;
         }
-        // Error check: fmiVersion in terminalsAndIcons and modelDescription must match
+        // Error check: fmiVersion in terminalsAndIcons and modelDescription must match.
+        // In an FMI 2.0 FMU it names the FMI version that defines the file, which is
+        // FMI 3.0 (FMI 3.0, 2.4.9 Terminals and Icons).
         const char* modelDescrfmiVersion = NULL;
         if (termIcon->md2 && !(termIcon->md3)) {
             modelDescrfmiVersion = fmi2_xml_get_model_standard_version(termIcon->md2);
@@ -125,7 +141,8 @@ int fmi_xml_handle_fmiTerminalsAndIcons(fmi3_xml_parser_context_t* context, cons
             modelDescrfmiVersion = fmi3_xml_get_model_standard_version(termIcon->md3);
         } 
         const char* termIconfmiVersion = jm_vector_char2string(&(termIcon->fmi3_xml_standard_version));
-        if (strcmp(modelDescrfmiVersion, termIconfmiVersion)) {
+        int definedByFMI3 = termIcon->md2 && strncmp(termIconfmiVersion, "3.", 2) == 0;
+        if (strcmp(modelDescrfmiVersion, termIconfmiVersion) && !definedByFMI3) {
             fmi3_xml_parse_fatal(context,
                                  "Mismatch of attribute 'fmiVersion' in modelDescription.xml: '%s' and terminalsAndIcons.xml: '%s'.", 
                                  modelDescrfmiVersion,
@@ -136,6 +153,27 @@ int fmi_xml_handle_fmiTerminalsAndIcons(fmi3_xml_parser_context_t* context, cons
         return ret;
     } else { // post process <fmiTerminalsAndIcons>
         ;
+    }
+    return 0;
+}
+
+int fmi_xml_handle_GraphicalRepresentation(fmi3_xml_parser_context_t* context, const char* data) {
+    return 0;
+}
+
+int fmi_xml_handle_CoordinateSystem(fmi3_xml_parser_context_t* context, const char* data) {
+    if (!data) {
+        FMI_XML_SKIP_ATTRS(context, CoordinateSystem,
+                           fmi_termIcon_attr_id_x1, fmi_termIcon_attr_id_y1, fmi_termIcon_attr_id_x2, fmi_termIcon_attr_id_y2,
+                           fmi_termIcon_attr_id_suggestedScalingFactorTo_mm);
+    }
+    return 0;
+}
+
+int fmi_xml_handle_Icon(fmi3_xml_parser_context_t* context, const char* data) {
+    if (!data) {
+        FMI_XML_SKIP_ATTRS(context, Icon,
+                           fmi_termIcon_attr_id_x1, fmi_termIcon_attr_id_y1, fmi_termIcon_attr_id_x2, fmi_termIcon_attr_id_y2);
     }
     return 0;
 }
@@ -194,14 +232,16 @@ int fmi_xml_handle_Terminal(fmi3_xml_parser_context_t* context, const char* data
         jm_vector(char)* bufName = fmi3_xml_reserve_parse_buffer(context, bufIdx++, 100);
         if (!bufName) {return -1;}
         int nameExists = 0;
-        if (fmi3_xml_parse_attr_as_string(context, FMI_ELM_TERMICON(fmi_xml_elmID_termIcon_Terminal), FMI_ATTR_TERMICON(fmi_attr_id_name), 1 /* required */, &nameExists, bufName)) {return -1;}
+        if (fmi3_xml_parse_attr_as_string(context, FMI_ELM_TERMICON(fmi_xml_elmID_termIcon_Terminal), FMI_ATTR_TERMICON(fmi_termIcon_attr_id_name), 1 /* required */, &nameExists, bufName)) {return -1;}
 
         /* Add the name to the terminalsAndIcons-wide set and retrieve the pointer */
         if (jm_vector_get_size(char)(bufName)) {
             term->name = jm_string_set_put(&termIcon->names, jm_vector_get_itemp(char)(bufName, 0));
         }
 
-        // TODO: Parse the remaining attributes
+        // TODO: Store the remaining attributes
+        FMI_XML_SKIP_ATTRS(context, Terminal,
+                           fmi_termIcon_attr_id_matchingRule, fmi_termIcon_attr_id_terminalKind, fmi_termIcon_attr_id_description);
 
     } else { // post process <Terminal>
         ;
@@ -212,7 +252,8 @@ int fmi_xml_handle_Terminal(fmi3_xml_parser_context_t* context, const char* data
 int fmi_xml_handle_TerminalMemberVariable(fmi3_xml_parser_context_t* context, const char* data) {
     // TODO: Implement
     if (!data) {
-        ;
+        FMI_XML_SKIP_ATTRS(context, TerminalMemberVariable,
+                           fmi_termIcon_attr_id_variableName, fmi_termIcon_attr_id_memberName, fmi_termIcon_attr_id_variableKind);
     } else {
         ;
     }
@@ -222,7 +263,9 @@ int fmi_xml_handle_TerminalMemberVariable(fmi3_xml_parser_context_t* context, co
 int fmi_xml_handle_TerminalStreamMemberVariable(fmi3_xml_parser_context_t* context, const char* data) {
     // TODO: Implement
     if (!data) {
-        ;
+        FMI_XML_SKIP_ATTRS(context, TerminalStreamMemberVariable,
+                           fmi_termIcon_attr_id_inStreamMemberName, fmi_termIcon_attr_id_outStreamMemberName,
+                           fmi_termIcon_attr_id_inStreamVariableName, fmi_termIcon_attr_id_outStreamVariableName);
     } else {
         ;
     }
@@ -232,7 +275,10 @@ int fmi_xml_handle_TerminalStreamMemberVariable(fmi3_xml_parser_context_t* conte
 int fmi_xml_handle_TerminalGraphicalRepresentation(fmi3_xml_parser_context_t* context, const char* data) {
     // TODO: Implement
     if (!data) {
-        ;
+        FMI_XML_SKIP_ATTRS(context, TerminalGraphicalRepresentation,
+                           fmi_termIcon_attr_id_defaultConnectionColor, fmi_termIcon_attr_id_defaultConnectionStrokeSize,
+                           fmi_termIcon_attr_id_x1, fmi_termIcon_attr_id_y1, fmi_termIcon_attr_id_x2, fmi_termIcon_attr_id_y2,
+                           fmi_termIcon_attr_id_iconBaseName);
     } else {
         ;
     }
